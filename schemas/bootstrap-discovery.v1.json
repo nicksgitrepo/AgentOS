@@ -24,11 +24,20 @@
     "CONFLICT",
     "UNKNOWN"
   ],
+  "epistemic_classes": [
+    "OBSERVED",
+    "OWNER_CONFIRMED",
+    "ACCEPTED_AUTHORITY",
+    "INFERRED_CANDIDATE",
+    "CONFLICT",
+    "UNKNOWN",
+    "DEFERRED_NONBLOCKING"
+  ],
   "fact_contract": {
     "required_fields": [
-      "fact_id", "status", "source_kind", "source_locator", "confidence", "secret_free"
+      "fact_id", "status", "source_kind", "source_locator", "epistemic_class", "secret_free"
     ],
-    "value_rule": "Values are limited to typed, secret-free observations; an observed fact never becomes owner intent without confirmation.",
+    "value_rule": "Values are limited to typed, secret-free observations; an observed fact never becomes owner intent without confirmation. Every fact carries an explicit epistemic class rather than a confidence score.",
     "conflict_rule": "Conflicts and unknowns are surfaced for the Interview; Bootstrap may not silently choose between them."
   },
   "operations": {

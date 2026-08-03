@@ -18,20 +18,12 @@ const SAFE_ENVIRONMENT = {
 };
 
 const TOOL_NAMES = [
-  ["GIT", "git"],
-  ["GITHUB", "gh"],
-  ["GITLAB", "glab"],
-  ["AWS", "aws"],
-  ["CLOUDFLARE", "wrangler"],
-  ["VERCEL", "vercel"],
-  ["NETLIFY", "netlify"],
-  ["FLY_IO", "flyctl"],
-  ["GOOGLE_CLOUD", "gcloud"],
-  ["AZURE", "az"],
-  ["DIGITALOCEAN", "doctl"],
-  ["KUBERNETES", "kubectl"],
-  ["DOCKER", "docker"],
-  ["TERRAFORM", "terraform"],
+  ["VERSION_CONTROL", "git"],
+  ["JAVASCRIPT_RUNTIME", "node"],
+  ["PYTHON_RUNTIME", "python3"],
+  ["PACKAGE_MANAGER", "npm"],
+  ["CONTAINER_RUNTIME", "docker"],
+  ["INFRASTRUCTURE_TOOL", "terraform"],
 ];
 
 const PROJECT_MARKERS = [
@@ -49,9 +41,18 @@ const DESIGN_CANDIDATES = [
 ];
 
 const DEPLOYMENT_MARKERS = [
-  ".openai/hosting.json", "wrangler.toml", "vercel.json", "Dockerfile",
-  "docker-compose.yml", "compose.yml", "fly.toml", "netlify.toml",
+  "deployment", "deploy", "infra", "Dockerfile", "docker-compose.yml", "compose.yml",
 ];
+
+export const EPISTEMIC_CLASSES = Object.freeze([
+  "OBSERVED",
+  "OWNER_CONFIRMED",
+  "ACCEPTED_AUTHORITY",
+  "INFERRED_CANDIDATE",
+  "CONFLICT",
+  "UNKNOWN",
+  "DEFERRED_NONBLOCKING",
+]);
 
 function requireString(value, label) {
   if (typeof value !== "string" || value.length === 0) {
@@ -147,13 +148,15 @@ function normalizeRemote(raw) {
   return {status: "OBSERVED_FACT", value: raw};
 }
 
-function addFact(facts, status, factId, value, sourceKind, sourceLocator, confidence = "HIGH", reason = null) {
+function addFact(facts, status, factId, value, sourceKind, sourceLocator, epistemicClass = null, reason = null) {
+  const classification = epistemicClass ?? (status === "CONFLICT" ? "CONFLICT" : status === "UNKNOWN" ? "UNKNOWN" : "OBSERVED");
+  if (!EPISTEMIC_CLASSES.includes(classification)) throw new Error("discovery epistemic class is invalid");
   const fact = {
     fact_id: factId,
     status,
     source_kind: sourceKind,
     source_locator: sourceLocator,
-    confidence,
+    epistemic_class: classification,
     secret_free: true,
   };
   if (value !== undefined) fact.value = value;
@@ -164,12 +167,12 @@ function addFact(facts, status, factId, value, sourceKind, sourceLocator, confid
 function addPathFact(facts, root, factId, relativePath, sourceKind = "FILESYSTEM") {
   const inspected = inspectPath(root, relativePath);
   if (inspected.type === "SYMBOLIC_LINK" || inspected.type === "UNSAFE_OBJECT") {
-    addFact(facts, "CONFLICT", factId, inspected.type, sourceKind, relativePath, "HIGH",
+    addFact(facts, "CONFLICT", factId, inspected.type, sourceKind, relativePath, "CONFLICT",
       "UNSAFE_FILESYSTEM_OBJECT");
   } else if (inspected.exists) {
     addFact(facts, "OBSERVED_FACT", factId, inspected.type, sourceKind, relativePath);
   } else {
-    addFact(facts, "UNKNOWN", factId, undefined, sourceKind, relativePath, "LOW",
+    addFact(facts, "UNKNOWN", factId, undefined, sourceKind, relativePath, "UNKNOWN",
       "NOT_PRESENT");
   }
 }
@@ -192,22 +195,22 @@ export function discoverProject(projectRoot, mode = "RECOMMENDED") {
       addFact(facts, "OBSERVED_FACT", "repositories.topology", "SINGLE_REPOSITORY", "GIT", root);
     } else {
       addFact(facts, "CONFLICT", "repositories.topology", "PARENT_OR_FOREIGN_REPOSITORY", "GIT", root,
-        "HIGH", "GIT_TOP_LEVEL_DIFFERS_FROM_PROJECT_ROOT");
+        "CONFLICT", "GIT_TOP_LEVEL_DIFFERS_FROM_PROJECT_ROOT");
     }
   } else if (git.installed) {
-    addFact(facts, "UNKNOWN", "repositories.topology", undefined, "GIT", root, "LOW", "NOT_A_GIT_REPOSITORY");
+    addFact(facts, "UNKNOWN", "repositories.topology", undefined, "GIT", root, "UNKNOWN", "NOT_A_GIT_REPOSITORY");
   } else {
-    addFact(facts, "UNKNOWN", "repositories.topology", undefined, "GIT", root, "LOW", "GIT_NOT_INSTALLED");
+    addFact(facts, "UNKNOWN", "repositories.topology", undefined, "GIT", root, "UNKNOWN", "GIT_NOT_INSTALLED");
   }
 
   if (git.exit_code === 0) {
     const remote = runLocal("git", ["config", "--get", "remote.origin.url"], root);
     if (remote.exit_code === 0 && remote.stdout.length > 0) {
       const normalized = normalizeRemote(remote.stdout);
-      addFact(facts, normalized.status, "repositories.origin", normalized.value, "GIT", ".git/config", "HIGH",
+      addFact(facts, normalized.status, "repositories.origin", normalized.value, "GIT", ".git/config", normalized.status === "CONFLICT" ? "CONFLICT" : "OBSERVED",
         normalized.reason ?? null);
     } else {
-      addFact(facts, "UNKNOWN", "repositories.origin", undefined, "GIT", ".git/config", "LOW", "ORIGIN_NOT_CONFIGURED");
+      addFact(facts, "UNKNOWN", "repositories.origin", undefined, "GIT", ".git/config", "UNKNOWN", "ORIGIN_NOT_CONFIGURED");
     }
   }
 
@@ -221,7 +224,7 @@ export function discoverProject(projectRoot, mode = "RECOMMENDED") {
     const inspected = inspectPath(root, relativePath);
     if (inspected.exists) {
       addFact(facts, inspected.type === "FILE" ? "OBSERVED_FACT" : "CONFLICT",
-        `project.marker.${relativePath}`, inspected.type, "FILESYSTEM", relativePath, "HIGH",
+        `project.marker.${relativePath}`, inspected.type, "FILESYSTEM", relativePath, inspected.type === "FILE" ? "OBSERVED" : "CONFLICT",
         inspected.type === "FILE" ? null : "UNSAFE_PROJECT_MARKER");
     }
   }
@@ -229,7 +232,7 @@ export function discoverProject(projectRoot, mode = "RECOMMENDED") {
     const inspected = inspectPath(root, relativePath);
     if (inspected.exists) {
       addFact(facts, inspected.type === "FILE" ? "OBSERVED_FACT" : "CONFLICT",
-        `delivery.marker.${relativePath}`, inspected.type, "FILESYSTEM", relativePath, "HIGH",
+        `delivery.marker.${relativePath}`, inspected.type, "FILESYSTEM", relativePath, inspected.type === "FILE" ? "OBSERVED" : "CONFLICT",
         inspected.type === "FILE" ? null : "UNSAFE_DEPLOYMENT_MARKER");
     }
   }

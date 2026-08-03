@@ -1,0 +1,124 @@
+{
+  "schema": "governance.campaign_lifecycle.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "One executable lifecycle for cumulative Product custody, reusable campaign-local Platform Agents, checkpoint-bound audits, finalization, scoped holds, Runtime release, and the next-campaign orientation handoff.",
+  "stages": [
+    "BUILDING",
+    "TERMINAL_PROPOSED",
+    "FIRST_PASS_REPAIR_REQUIRED",
+    "TERMINAL_SETTLED",
+    "FINALIZER_ACTIVE",
+    "FINALIZER_COMPLETE",
+    "DELTA_AUDIT",
+    "READY_FOR_ACCEPTANCE",
+    "DEPLOYMENT_CLEARED",
+    "ACCEPTED_LIVE_PENDING_CLOSURE",
+    "ACCEPTED_LIVE_CLOSED"
+  ],
+  "stage_transitions": {
+    "BUILDING": ["BUILDING", "TERMINAL_PROPOSED"],
+    "TERMINAL_PROPOSED": ["TERMINAL_PROPOSED", "FIRST_PASS_REPAIR_REQUIRED", "TERMINAL_SETTLED"],
+    "FIRST_PASS_REPAIR_REQUIRED": ["FIRST_PASS_REPAIR_REQUIRED", "BUILDING"],
+    "TERMINAL_SETTLED": ["TERMINAL_SETTLED", "FINALIZER_ACTIVE", "READY_FOR_ACCEPTANCE"],
+    "FINALIZER_ACTIVE": ["FINALIZER_ACTIVE", "FINALIZER_COMPLETE"],
+    "FINALIZER_COMPLETE": ["FINALIZER_COMPLETE", "DELTA_AUDIT"],
+    "DELTA_AUDIT": ["DELTA_AUDIT", "FINALIZER_ACTIVE", "READY_FOR_ACCEPTANCE"],
+    "READY_FOR_ACCEPTANCE": ["READY_FOR_ACCEPTANCE", "DEPLOYMENT_CLEARED"],
+    "DEPLOYMENT_CLEARED": ["DEPLOYMENT_CLEARED", "ACCEPTED_LIVE_PENDING_CLOSURE"],
+    "ACCEPTED_LIVE_PENDING_CLOSURE": ["ACCEPTED_LIVE_PENDING_CLOSURE", "ACCEPTED_LIVE_CLOSED"],
+    "ACCEPTED_LIVE_CLOSED": ["ACCEPTED_LIVE_CLOSED"]
+  },
+  "holds": {
+    "orthogonal_to_stage": true,
+    "states": [
+      "CONTEXT",
+      "AUTHORITY_BOUNDARY",
+      "EXTERNAL_DEPENDENCY",
+      "CREDENTIAL_ACCESS",
+      "OWNER_DECISION",
+      "PROTECTED_RESOURCE"
+    ],
+    "rule": "A hold pauses only its dependent outcome. The underlying stage, unaffected work, exact resume condition, and authority boundary remain explicit. A hold is never a terminal stage and never changes Product acceptance roots."
+  },
+  "transition_journal": {
+    "required_fields": [
+      "sequence",
+      "from_state_sha256",
+      "from_stage",
+      "to_stage",
+      "event_type",
+      "payload",
+      "at_utc",
+      "event_sha256"
+    ],
+    "rule": "Every lifecycle state begins with one content-addressed GENESIS entry and every state mutation, including same-stage custody, hold, evidence, and live-delta updates, appends one event bound to the prior state digest, source stage, target stage, exact event payload, and UTC time. A stage or authority field cannot change by snapshot editing alone; compare-and-swap persists the appended journal with the new state digest.",
+    "stage_rule": "The last journal target stage must equal the state stage; legal stage transitions are enforced by control/campaign-lifecycle.mjs."
+  },
+  "platform_pool": {
+    "states": [
+      "UNSPAWNED",
+      "AVAILABLE",
+      "LEASED",
+      "WORKING",
+      "HANDOFF_READY",
+      "ARCHIVED_UNPINNED"
+    ],
+    "identity_rule": "One logical capability identity has one campaign-local execution session and one stable platform worktree. A completed lease may be released and assigned to another Feature Agent in the same campaign; the logical identity and worktree do not change.",
+    "supervision_rule": "Exactly zero or one Feature Agent holds a supervision lease at a time. Ordinary reports go to the current supervisor. The Campaign Orchestrator schedules availability and prevents collisions but does not become the routine supervisor.",
+    "lease_goal_rule": "Every request, supervision lease, release receipt, and active writer binds one exact lowercase SHA-256 goal identity. A lease is valid only when its Feature Agent session and role match the current campaign roster.",
+    "required_fields": [
+      "logical_capability_id",
+      "logical_agent_id",
+      "execution_session_id",
+      "state",
+      "platform_worktree",
+      "supervision",
+      "request_queue",
+      "handoff_receipts"
+    ]
+  },
+  "checkpoint_ledger": {
+    "rule": "Every checkpoint is immutable and binds its parent, commit, tree, worktree, clean/pushed proof, applicable audit plan, reports, reconciliation, and finding disposition. Audits may settle an earlier checkpoint while the first-pass builder advances a later checkpoint.",
+    "terminal_rule": "Only the terminal proposed checkpoint must settle every applicable discipline before finalization. Intermediate checkpoints may retain pending or deferred discipline entries.",
+    "repair_rule": "An immediate first-pass repair creates a new checkpoint identity on the same logical lineage. A terminal checkpoint is never rewritten in place."
+  },
+  "finalizer": {
+    "handoff": "TERMINAL_FIRST_PASS -> FIRST_PASS_TO_FINALIZER_HANDOFF -> FINALIZER_ACTIVE",
+    "writer_rule": "The Feature Agent releases Product custody before the Finalizer receives a fresh exclusive writer lease. The Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded FINALIZER_TO_AUDITOR_HANDOFF.",
+    "goal_rule": "Finalizer custody binds the exact correction-goal digest in the Finalizer record and active writer lease.",
+    "authority": ["NO_INTENT", "NO_ACCEPTANCE", "NO_DEPLOYMENT", "NO_SELF_ACCEPTANCE"]
+  },
+  "successor_orientation": {
+    "statuses": ["NONE", "ORCHESTRATOR_ORIENTED_HELD", "LIVE_DELTA_RECEIVED", "CAMPAIGN_ADMITTED"],
+    "rule": "Release clearance spawns only the next-campaign Orchestrator in orientation-only custody. No next Auditor, Feature Agent, Platform Agent, or Product writer lease exists before the current campaign reaches accepted-live closure and the next campaign is explicitly admitted.",
+    "required_fields": [
+      "status",
+      "orchestrator_binding",
+      "predeployment_candidate_sha256",
+      "live_delta_sha256",
+      "final_candidate_sha256",
+      "auditor_binding",
+      "feature_agent_bindings",
+      "platform_agent_bindings",
+      "product_writer_lease"
+    ]
+  },
+  "acceptance": {
+    "ordered_roots": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+    "rule": "The Product acceptance engine has exactly three roots. Code quality is an audit discipline only; a material hygiene finding must identify a concrete consequence in one of the three roots or be classified NONBLOCKING_HYGIENE.",
+    "required_fields": ["question_tree_sha256", "observations_sha256", "question_states", "open_question_ids", "invalidated_question_ids", "authorized_exception_ids", "root_non_applicability", "roots", "rc_ready", "final_candidate_commit", "final_candidate_tree", "auditor_session_id", "product_receipt_sha256"],
+    "closure": "Deployment clearance requires a content-addressed Product acceptance receipt whose exact question tree, current question states, derived open/invalidated/exception inventories, final candidate identity, three PASS roots, and independent Auditor identity bind to the campaign root."
+  },
+  "heartbeat": {
+    "interval_minutes": 15,
+    "rule": "The Campaign Orchestrator reconciles liveness, custody, Git, worktree, roster, Runtime, deployment, rollback, and ledger identity every fifteen minutes. A heartbeat does not create an approval queue or pause useful work."
+  },
+  "loop_limits": {
+    "finalization_passes": 1,
+    "targeted_delta_repair_passes": 1,
+    "supervisor_reframes_per_causal_root": 1,
+    "equivalent_retry": "STOP_AND_CLASSIFY"
+  }
+}

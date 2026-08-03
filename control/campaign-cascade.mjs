@@ -4,12 +4,13 @@ import crypto from "node:crypto";
 
 export const CASCADE_STAGES = Object.freeze([
   "FIRST_PASS_BUILDING",
-  "FIRST_PASS_CANDIDATE",
+  "TERMINAL_PROPOSED",
+  "FIRST_PASS_REPAIR_REQUIRED",
+  "TERMINAL_SETTLED",
   "FINALIZER_PENDING",
   "FINALIZING",
   "DELTA_REPAIR",
   "READY_FOR_ACCEPTANCE",
-  "BLOCKED",
 ]);
 export const CASCADE_MODES = Object.freeze([
   "SMALL_DETERMINISTIC",
@@ -62,6 +63,7 @@ const DISPOSITIONS = new Set(AUDIT_DISPOSITIONS);
 const SEVERITIES = new Set(FINDING_SEVERITIES);
 const ROUTES = new Set(FINDING_ROUTES);
 const MODEL_ROLES = new Set(MODEL_POLICY_ROLES);
+const HOLD_KINDS = new Set(["CONTEXT", "AUTHORITY_BOUNDARY", "EXTERNAL_DEPENDENCY", "CREDENTIAL_ACCESS", "OWNER_DECISION", "PROTECTED_RESOURCE"]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -161,14 +163,14 @@ function validateQualityFloor(floor, terminal = false) {
 const CHECKPOINT_KEYS = [
   "schema", "candidate_id", "campaign_id", "campaign_version", "logical_lineage_id",
   "worktree_id", "branch", "commit", "tree", "remote_commit", "remote_tree",
-  "clean", "pushed", "changed_paths", "changed_surfaces", "owner_role_id",
+  "clean", "pushed", "changed_paths", "changed_surfaces", "owner_role_id", "auditor_session_id",
   "checkpoint_kind", "terminal", "quality_floor", "created_at_utc", "candidate_sha256",
 ];
 
 export function validateFirstPassCandidate(candidate) {
   exactKeys(candidate, CHECKPOINT_KEYS, "first-pass candidate");
   assert(candidate.schema === "governance.first_pass_candidate.v1", "first-pass candidate schema mismatch");
-  for (const field of ["candidate_id", "campaign_id", "campaign_version", "logical_lineage_id", "worktree_id", "branch", "commit", "tree", "remote_commit", "remote_tree", "owner_role_id", "checkpoint_kind"]) {
+  for (const field of ["candidate_id", "campaign_id", "campaign_version", "logical_lineage_id", "worktree_id", "branch", "commit", "tree", "remote_commit", "remote_tree", "owner_role_id", "auditor_session_id", "checkpoint_kind"]) {
     requireString(candidate[field], `first-pass candidate ${field}`);
   }
   assert(CASCADE_ID.test(candidate.candidate_id), "first-pass candidate ID is invalid");
@@ -177,7 +179,10 @@ export function validateFirstPassCandidate(candidate) {
   assert(typeof candidate.terminal === "boolean", "first-pass terminal flag is invalid");
   assert(candidate.terminal === (candidate.checkpoint_kind === "TERMINAL_FIRST_PASS"), "first-pass terminal flag contradicts checkpoint kind");
   assert(typeof candidate.clean === "boolean" && typeof candidate.pushed === "boolean", "first-pass checkpoint state is invalid");
-  if (candidate.pushed) assert(candidate.commit === candidate.remote_commit && candidate.tree === candidate.remote_tree, "pushed first-pass candidate is not remote-equal");
+  if (candidate.pushed) {
+    assert(candidate.clean === true, "pushed first-pass candidate is not clean");
+    assert(candidate.commit === candidate.remote_commit && candidate.tree === candidate.remote_tree, "pushed first-pass candidate is not remote-equal");
+  }
   validatePathList(candidate.changed_paths, "first-pass changed paths");
   sortedUniqueStrings(candidate.changed_surfaces, "first-pass changed surfaces");
   validateQualityFloor(candidate.quality_floor, candidate.terminal);
@@ -210,29 +215,31 @@ export function compileFirstPassCandidate(input) {
 }
 
 const SURFACE_DISCIPLINES = new Map([
-  ["UI", ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "CODE_QUALITY_HYGIENE"]],
-  ["AUTHENTICATED_UI", ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"]],
-  ["BACKEND_API", ["FUNCTIONALITY", "SECURITY", "CODE_QUALITY_HYGIENE"]],
-  ["DATABASE_SCHEMA", ["FUNCTIONALITY", "SECURITY", "CODE_QUALITY_HYGIENE"]],
-  ["PROVIDER_INTEGRATION", ["FUNCTIONALITY", "SECURITY", "CODE_QUALITY_HYGIENE"]],
-  ["RUNTIME_CONFIG", ["FUNCTIONALITY", "SECURITY", "CODE_QUALITY_HYGIENE"]],
+  ["UI", ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION"]],
+  ["AUTHENTICATED_UI", ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY"]],
+  ["BACKEND_API", ["FUNCTIONALITY"]],
+  ["DATABASE_SCHEMA", ["FUNCTIONALITY"]],
+  ["PROVIDER_INTEGRATION", ["FUNCTIONALITY"]],
+  ["RUNTIME_CONFIG", ["FUNCTIONALITY"]],
+  ["SECURITY_BOUNDARY", ["SECURITY"]],
 ]);
 
-function deriveApplicableDisciplines(changedSurfaces) {
-  const result = new Set(["SECURITY", "CODE_QUALITY_HYGIENE"]);
+export function deriveApplicableDisciplines(changedSurfaces) {
+  const result = new Set();
   for (const surface of changedSurfaces) {
     for (const discipline of SURFACE_DISCIPLINES.get(surface) ?? []) result.add(discipline);
   }
   return result;
 }
 
-const AUDIT_PLAN_KEYS = ["schema", "candidate_id", "candidate_commit", "candidate_tree", "terminal", "disciplines", "plan_sha256"];
+const AUDIT_PLAN_KEYS = ["schema", "candidate_id", "candidate_commit", "candidate_tree", "auditor_session_id", "terminal", "disciplines", "plan_sha256"];
 const AUDIT_PLAN_DISCIPLINE_KEYS = ["discipline", "disposition", "applicability_evidence_sha256"];
 
 export function validateAuditPlan(plan) {
   exactKeys(plan, AUDIT_PLAN_KEYS, "cascade audit plan");
   assert(plan.schema === "governance.cascade_audit_plan.v1", "cascade audit plan schema mismatch");
   for (const field of ["candidate_id", "candidate_commit", "candidate_tree"]) requireString(plan[field], `audit plan ${field}`);
+  requireString(plan.auditor_session_id, "audit plan Auditor session");
   assert(typeof plan.terminal === "boolean", "audit plan terminal flag is invalid");
   assert(Array.isArray(plan.disciplines) && plan.disciplines.length === AUDIT_DISCIPLINES.length, "audit plan must contain all four disciplines");
   const seen = new Set();
@@ -251,18 +258,25 @@ export function validateAuditPlan(plan) {
   return plan;
 }
 
-export function compileAuditPlan({candidate, terminal = false, applicability = {}, nonApplicabilityEvidence = {}}) {
+export function compileAuditPlan({candidate, auditorSessionId, terminal = false, applicability = {}, deterministicOnly = [], nonApplicabilityEvidence = {}}) {
   validateFirstPassCandidate(candidate);
+  requireString(auditorSessionId, "audit plan Auditor session");
+  assert(auditorSessionId === candidate.auditor_session_id, "audit plan Auditor differs from the checkpoint Auditor");
   const applicable = deriveApplicableDisciplines(candidate.changed_surfaces);
   const disciplines = AUDIT_DISCIPLINES.map((discipline) => {
     const explicitlySet = applicability[discipline];
-    const isApplicable = explicitlySet === undefined ? applicable.has(discipline) : explicitlySet;
-    assert(typeof isApplicable === "boolean", `audit applicability for ${discipline} must be boolean`);
-    const disposition = isApplicable
-      ? "REQUIRED"
-      : terminal ? "NOT_APPLICABLE_WITH_PROOF" : "DEFERRED_UNTIL_TERMINAL";
+    if (explicitlySet !== undefined) assert(typeof explicitlySet === "boolean" || explicitlySet === "DETERMINISTIC_ONLY", `audit applicability for ${discipline} must be boolean or DETERMINISTIC_ONLY`);
+    const deterministic = deterministicOnly.includes(discipline) || explicitlySet === "DETERMINISTIC_ONLY";
+    const isApplicable = explicitlySet === undefined ? applicable.has(discipline) : explicitlySet === true || explicitlySet === "DETERMINISTIC_ONLY";
+    assert(typeof isApplicable === "boolean", `audit applicability for ${discipline} must be boolean or DETERMINISTIC_ONLY`);
+    const disposition = deterministic
+      ? "DETERMINISTIC_ONLY"
+      : isApplicable
+        ? "REQUIRED"
+        : terminal ? "NOT_APPLICABLE_WITH_PROOF" : "DEFERRED_UNTIL_TERMINAL";
     const proof = disposition === "NOT_APPLICABLE_WITH_PROOF"
       ? nonApplicabilityEvidence[discipline]
+        ?? cascadeDigest({candidate_id: candidate.candidate_id, candidate_commit: candidate.commit, candidate_tree: candidate.tree, discipline, changed_surfaces: candidate.changed_surfaces, rule: "NO_APPLICABLE_SURFACE"})
       : null;
     if (disposition === "NOT_APPLICABLE_WITH_PROOF") requireSha(proof, `${discipline} non-applicability evidence`);
     return {discipline, disposition, applicability_evidence_sha256: proof};
@@ -272,6 +286,7 @@ export function compileAuditPlan({candidate, terminal = false, applicability = {
     candidate_id: candidate.candidate_id,
     candidate_commit: candidate.commit,
     candidate_tree: candidate.tree,
+    auditor_session_id: auditorSessionId,
     terminal,
     disciplines,
     plan_sha256: "",
@@ -292,6 +307,12 @@ function validateFinding(finding, expectedDiscipline, candidateCommit, candidate
   assert(SEVERITIES.has(finding.severity) && ROUTES.has(finding.route), "finding severity or route is invalid");
   validateQuestionIds(finding.question_ids, "finding question IDs", {allowEmpty: true});
   requireSha(finding.evidence_sha256, "finding evidence");
+  if (["MATERIAL", "CATASTROPHIC"].includes(finding.severity)) {
+    assert(finding.question_ids.length > 0, "material findings must map to a Function, Design Bible, or Security question");
+  }
+  if (finding.discipline === "CODE_QUALITY_HYGIENE" && finding.severity !== "NONCRITICAL") {
+    assert(finding.question_ids.length > 0, "Code Quality findings must map to a Product root or remain NONCRITICAL hygiene");
+  }
   if (finding.severity === "CATASTROPHIC") assert(["IMMEDIATE_FIRST_PASS_REPAIR", "OWNER_ONLY"].includes(finding.route), "catastrophic finding cannot wait for finalization");
   if (finding.severity === "OWNER_ONLY") assert(finding.route === "OWNER_ONLY", "owner-only finding must route to owner");
   if (finding.route === "FINALIZATION_QUEUE") assert(["NONCRITICAL", "MATERIAL"].includes(finding.severity), "only ordinary findings may enter finalization queue");
@@ -307,8 +328,12 @@ export function validateAuditReport(report, plan) {
   assert(report.report_id === `${report.discipline}-REPORT`, "audit report ID is not canonically bound to its discipline");
   for (const field of ["report_id", "candidate_id", "candidate_commit", "candidate_tree", "auditor_session_id", "evidence_sha256"]) requireString(report[field], `audit report ${field}`);
   assert(report.candidate_id === plan.candidate_id && report.candidate_commit === plan.candidate_commit && report.candidate_tree === plan.candidate_tree, "audit report candidate identity mismatch");
+  assert(report.auditor_session_id === plan.auditor_session_id, "audit report is bound to a different campaign Auditor");
   assert(report.worker_session_id === null || typeof report.worker_session_id === "string", "audit worker identity is invalid");
-  if (plan.terminal) requireString(report.worker_session_id, "terminal audit worker identity");
+  if (plan.terminal && planItem.disposition === "REQUIRED") {
+    assert(report.worker_session_id === null || typeof report.worker_session_id === "string", "terminal audit worker identity is invalid");
+  }
+  if (planItem.disposition === "DETERMINISTIC_ONLY") assert(report.worker_session_id === null, "deterministic audit must not spawn a worker");
   assert(report.read_only === true && report.settled === true, "audit report is not read-only and settled");
   validateQuestionIds(report.reviewed_question_ids, "audit reviewed question IDs", {allowEmpty: true});
   validateQuestionIds(report.failed_question_ids, "audit failed question IDs", {allowEmpty: true});
@@ -425,6 +450,7 @@ export function validateAuditReconciliation(reconciliation, plan) {
   sortedUniqueStrings(reconciliation.settled_disciplines, "settled audit disciplines");
   assert(reconciliation.settled_disciplines.every((discipline) => DISCIPLINES.has(discipline)), "settled audit discipline invalid");
   assert(Array.isArray(reconciliation.reports), "audit report bindings are required");
+  for (const binding of reconciliation.reports) assert(binding.auditor_session_id === plan.auditor_session_id, "audit report binding is bound to a different campaign Auditor");
   const reportDisciplines = [];
   const reportDigests = [];
   for (const binding of reconciliation.reports) {
@@ -432,7 +458,11 @@ export function validateAuditReconciliation(reconciliation, plan) {
     assert(DISCIPLINES.has(binding.discipline), "audit report binding discipline is invalid");
     requireSha(binding.report_sha256, "audit report digest");
     requireString(binding.auditor_session_id, "audit report Auditor session");
-    if (plan.terminal) requireString(binding.worker_session_id, "terminal audit worker session");
+    const planItem = plan.disciplines.find((item) => item.discipline === binding.discipline);
+    if (plan.terminal && planItem?.disposition === "REQUIRED") {
+      assert(binding.worker_session_id === null || typeof binding.worker_session_id === "string", "terminal audit worker session is invalid");
+    }
+    if (planItem?.disposition === "DETERMINISTIC_ONLY") assert(binding.worker_session_id === null, "deterministic audit binding must not claim a worker");
     else assert(binding.worker_session_id === null || typeof binding.worker_session_id === "string", "audit worker session is invalid");
     reportDisciplines.push(binding.discipline);
     reportDigests.push(binding.report_sha256);
@@ -440,7 +470,8 @@ export function validateAuditReconciliation(reconciliation, plan) {
   sortedUniqueStrings(reportDisciplines, "audit report binding disciplines", {allowEmpty: true});
   sortedUniqueStrings([...reportDigests].sort(compareUtf8), "audit report digests", {allowEmpty: true});
   if (plan.terminal) {
-    assert(new Set(reconciliation.reports.map((binding) => binding.worker_session_id)).size === reconciliation.reports.length, "terminal audit disciplines must use distinct worker sessions");
+    const workerSessions = reconciliation.reports.map((binding) => binding.worker_session_id).filter((session) => session !== null);
+    assert(new Set(workerSessions).size === workerSessions.length, "terminal audit disciplines must use distinct worker sessions");
   }
   const expectedSettled = plan.disciplines
     .filter((item) => item.disposition !== "DEFERRED_UNTIL_TERMINAL")
@@ -508,7 +539,7 @@ export function validateFinalizer(finalizer, candidate, {allowActive = true} = {
   validatePathList(finalizer.changed_paths, "Campaign Finalizer changed paths", {allowEmpty: true});
   assert(Number.isSafeInteger(finalizer.reframe_count) && finalizer.reframe_count >= 0 && finalizer.reframe_count <= 1, "Campaign Finalizer reframe count exceeds one");
   assert(Number.isSafeInteger(finalizer.repair_pass_count) && finalizer.repair_pass_count >= 0 && finalizer.repair_pass_count <= 1, "Campaign Finalizer repair pass count exceeds one");
-  assert(["ACTIVE", "COMPLETE", "BLOCKED"].includes(finalizer.status), "Campaign Finalizer status is invalid");
+  assert(["ACTIVE", "COMPLETE"].includes(finalizer.status), "Campaign Finalizer status is invalid");
   if (finalizer.status === "ACTIVE" && allowActive) {
     assert(finalizer.final_commit === null && finalizer.final_tree === null && finalizer.final_clean === null && finalizer.final_pushed === null, "active Campaign Finalizer claims a completed candidate");
   }
@@ -711,6 +742,123 @@ export function compileModelPolicy({profile, completionFloor, marketSnapshotSha2
   return policy;
 }
 
+const CHECKPOINT_LEDGER_ENTRY_KEYS = [
+  "candidate_id", "candidate_commit", "candidate_tree", "terminal", "audit_plan_sha256",
+  "audit_reconciliation_sha256", "finding_status", "status",
+];
+
+export function validateCheckpointAuditLedger(ledger, activeCandidate = null) {
+  exactKeys(ledger, ["schema", "entries", "active_candidate_id", "ledger_sha256"], "first-pass checkpoint ledger");
+  assert(ledger.schema === "governance.first_pass_checkpoint_ledger.v1", "checkpoint ledger schema mismatch");
+  assert(Array.isArray(ledger.entries) && ledger.entries.length > 0, "checkpoint ledger entries are required");
+  requireString(ledger.active_candidate_id, "active checkpoint candidate");
+  const ids = new Set();
+  for (const entry of ledger.entries) {
+    exactKeys(entry, CHECKPOINT_LEDGER_ENTRY_KEYS, "checkpoint ledger entry");
+    for (const field of ["candidate_id", "candidate_commit", "candidate_tree", "finding_status", "status"]) requireString(entry[field], `checkpoint ledger ${field}`);
+    assert(typeof entry.terminal === "boolean", "checkpoint ledger terminal flag is invalid");
+    assert(!ids.has(entry.candidate_id), "checkpoint ledger candidate IDs duplicate");
+    ids.add(entry.candidate_id);
+    for (const field of ["audit_plan_sha256", "audit_reconciliation_sha256"]) {
+      if (entry[field] !== null) requireSha(entry[field], `checkpoint ledger ${field}`);
+    }
+    assert(["BUILDING", "AUDITING", "TERMINAL_PROPOSED", "REPAIR_REQUIRED", "SETTLED", "SUPERSEDED"].includes(entry.status), "checkpoint ledger status is invalid");
+    if (entry.status === "SETTLED") assert(entry.audit_reconciliation_sha256 !== null, "settled checkpoint lacks reconciliation");
+  }
+  assert(ids.has(ledger.active_candidate_id), "checkpoint ledger active candidate is missing");
+  if (activeCandidate !== null) {
+    validateFirstPassCandidate(activeCandidate);
+    const current = ledger.entries.find((entry) => entry.candidate_id === ledger.active_candidate_id);
+    assert(current.candidate_commit === activeCandidate.commit && current.candidate_tree === activeCandidate.tree, "checkpoint ledger active identity does not match first-pass state");
+  }
+  const body = structuredClone(ledger);
+  delete body.ledger_sha256;
+  assert(ledger.ledger_sha256 === cascadeDigest(body), "checkpoint ledger digest is not content-addressed");
+  return ledger;
+}
+
+export function compileCheckpointAuditLedger({entries, activeCandidateId}) {
+  assert(Array.isArray(entries) && entries.length > 0, "checkpoint ledger entries are required");
+  const ledger = {
+    schema: "governance.first_pass_checkpoint_ledger.v1",
+    entries: structuredClone(entries),
+    active_candidate_id: activeCandidateId,
+    ledger_sha256: "",
+  };
+  const body = structuredClone(ledger);
+  delete body.ledger_sha256;
+  ledger.ledger_sha256 = cascadeDigest(body);
+  validateCheckpointAuditLedger(ledger);
+  return ledger;
+}
+
+const ROLLING_AUDIT_KEYS = ["candidate_id", "candidate_commit", "candidate_tree", "audit_plan", "audit_reconciliation", "rolling_audit_sha256"];
+
+export function compileRollingAudit({candidate, auditPlan, auditReconciliation = null}) {
+  validateFirstPassCandidate(candidate);
+  assert(candidate.terminal === false, "rolling audit must target a nonterminal checkpoint");
+  validateAuditPlan(auditPlan);
+  assert(auditPlan.terminal === false && auditPlan.candidate_id === candidate.candidate_id
+    && auditPlan.candidate_commit === candidate.commit && auditPlan.candidate_tree === candidate.tree,
+  "rolling audit plan is not bound to its checkpoint");
+  assert(auditPlan.auditor_session_id === candidate.auditor_session_id, "rolling audit plan Auditor differs from its checkpoint Auditor");
+  if (auditReconciliation !== null) {
+    validateAuditReconciliation(auditReconciliation, auditPlan);
+    assert(auditReconciliation.terminal === false, "rolling audit reconciliation cannot be terminal");
+  }
+  const entry = {
+    candidate_id: candidate.candidate_id,
+    candidate_commit: candidate.commit,
+    candidate_tree: candidate.tree,
+    audit_plan: structuredClone(auditPlan),
+    audit_reconciliation: structuredClone(auditReconciliation),
+    rolling_audit_sha256: "",
+  };
+  const body = structuredClone(entry);
+  delete body.rolling_audit_sha256;
+  entry.rolling_audit_sha256 = cascadeDigest(body);
+  validateRollingAudit(entry);
+  return entry;
+}
+
+export function validateRollingAudit(entry) {
+  exactKeys(entry, ROLLING_AUDIT_KEYS, "rolling audit entry");
+  requireString(entry.candidate_id, "rolling audit candidate");
+  requireString(entry.candidate_commit, "rolling audit commit");
+  requireString(entry.candidate_tree, "rolling audit tree");
+  validateAuditPlan(entry.audit_plan);
+  assert(entry.audit_plan.terminal === false && entry.audit_plan.candidate_id === entry.candidate_id
+    && entry.audit_plan.candidate_commit === entry.candidate_commit && entry.audit_plan.candidate_tree === entry.candidate_tree,
+  "rolling audit plan identity mismatch");
+  if (entry.audit_reconciliation !== null) {
+    validateAuditReconciliation(entry.audit_reconciliation, entry.audit_plan);
+    assert(entry.audit_reconciliation.terminal === false, "rolling audit reconciliation is terminal");
+  }
+  requireSha(entry.rolling_audit_sha256, "rolling audit digest");
+  const body = structuredClone(entry);
+  delete body.rolling_audit_sha256;
+  assert(entry.rolling_audit_sha256 === cascadeDigest(body), "rolling audit is not content-addressed");
+  return entry;
+}
+
+export function attachRollingAudit(state, entry) {
+  validateCascadeState(state);
+  validateRollingAudit(entry);
+  assert(state.checkpoint_ledger.entries.some((candidate) => candidate.candidate_id === entry.candidate_id
+    && candidate.candidate_commit === entry.candidate_commit && candidate.candidate_tree === entry.candidate_tree),
+  "rolling audit checkpoint is not in the campaign ledger");
+  assert(entry.candidate_id !== state.first_pass.candidate_id, "rolling audit must target an earlier checkpoint while the builder advances");
+  assert(!state.rolling_audits.some((item) => item.candidate_id === entry.candidate_id), "rolling audit already exists for this checkpoint");
+  const next = structuredClone(state);
+  next.rolling_audits.push(structuredClone(entry));
+  next.rolling_audits.sort((left, right) => compareUtf8(left.candidate_id, right.candidate_id));
+  const body = structuredClone(next);
+  delete body.cascade_sha256;
+  next.cascade_sha256 = cascadeDigest(body);
+  validateCascadeState(next);
+  return next;
+}
+
 const ACCEPTANCE_KEYS = ["product_acceptance_sha256", "question_tree_sha256", "final_candidate_commit", "final_candidate_tree", "roots", "rc_ready", "auditor_session_id"];
 const ROOTS = ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"];
 
@@ -721,12 +869,12 @@ function validateCascadeAcceptance(acceptance) {
   requireString(acceptance.final_candidate_tree, "cascade acceptance final tree");
   requireString(acceptance.auditor_session_id, "cascade acceptance Auditor");
   exactKeys(acceptance.roots, ROOTS, "cascade acceptance roots");
-  for (const root of ROOTS) assert(["PASS", "OPEN_REPAIR", "BLOCKED", "PENDING_ADMISSION"].includes(acceptance.roots[root]), `cascade acceptance root ${root} is invalid`);
+  for (const root of ROOTS) assert(["PASS", "OPEN_REPAIR", "UNKNOWN", "NOT_APPLICABLE"].includes(acceptance.roots[root]), `cascade acceptance root ${root} is invalid`);
   assert(typeof acceptance.rc_ready === "boolean" && acceptance.rc_ready === ROOTS.every((root) => acceptance.roots[root] === "PASS"), "cascade acceptance RC_READY is not the exact three-root conjunction");
   if (acceptance.rc_ready) assert(acceptance.product_acceptance_sha256 !== "0".repeat(64), "cascade acceptance cannot use an empty Product proof digest");
 }
 
-const CASCADE_STATE_KEYS = ["schema", "governance_version", "campaign_id", "campaign_version", "mode", "stage", "logical_lineage_id", "first_pass", "audit_plan", "audit_reconciliation", "finalizer", "delta_audit", "acceptance", "model_policy", "telemetry", "loop_control", "cascade_sha256"];
+const CASCADE_STATE_KEYS = ["schema", "governance_version", "campaign_id", "campaign_version", "mode", "stage", "logical_lineage_id", "first_pass", "checkpoint_ledger", "rolling_audits", "holds", "audit_plan", "audit_reconciliation", "finalizer", "delta_audit", "acceptance", "model_policy", "telemetry", "loop_control", "cascade_sha256"];
 const LOOP_KEYS = ["max_finalization_passes", "max_delta_repair_passes", "max_supervisor_reframes", "equivalent_retry_policy"];
 const TELEMETRY_KEYS = ["records", "evidence_reuse_count", "escaped_finding_count", "owner_interruptions"];
 
@@ -753,7 +901,27 @@ export function validateCascadeState(state, options = {}) {
   assert(MODES.has(state.mode) && STAGES.has(state.stage), "campaign cascade mode or stage is invalid");
   validateFirstPassCandidate(state.first_pass);
   assert(state.first_pass.campaign_id === state.campaign_id && state.first_pass.campaign_version === state.campaign_version && state.first_pass.logical_lineage_id === state.logical_lineage_id, "cascade first-pass lineage mismatch");
+  validateCheckpointAuditLedger(state.checkpoint_ledger, state.first_pass);
+  assert(Array.isArray(state.rolling_audits), "rolling audits are required");
+  let previousRollingCandidate = null;
+  for (const entry of state.rolling_audits) {
+    validateRollingAudit(entry);
+    assert(previousRollingCandidate === null || compareUtf8(previousRollingCandidate, entry.candidate_id) < 0, "rolling audits must be UTF-8 sorted");
+    previousRollingCandidate = entry.candidate_id;
+    assert(entry.candidate_id !== state.first_pass.candidate_id, "rolling audit cannot target the active builder checkpoint");
+  }
+  assert(Array.isArray(state.holds), "cascade holds are required");
+  const holdIds = new Set();
+  for (const hold of state.holds) {
+    exactKeys(hold, ["hold_id", "kind", "scope", "authority_boundary", "resume_condition", "owner_role_id", "created_at_utc"], "cascade hold");
+    requireString(hold.hold_id, "cascade hold ID");
+    assert(HOLD_KINDS.has(hold.kind), "cascade hold kind is invalid");
+    for (const field of ["scope", "authority_boundary", "resume_condition", "owner_role_id", "created_at_utc"]) requireString(hold[field], `cascade hold ${field}`);
+    assert(!holdIds.has(hold.hold_id), "cascade hold IDs duplicate");
+    holdIds.add(hold.hold_id);
+  }
   if (state.audit_plan !== null) validateAuditPlan(state.audit_plan);
+  if (state.audit_plan !== null) assert(state.audit_plan.auditor_session_id === state.first_pass.auditor_session_id, "cascade audit plan Auditor differs from the active checkpoint Auditor");
   if (state.audit_reconciliation !== null) {
     assert(state.audit_plan !== null, "cascade reconciliation lacks an audit plan");
     validateAuditReconciliation(state.audit_reconciliation, state.audit_plan);
@@ -767,7 +935,11 @@ export function validateCascadeState(state, options = {}) {
   if (state.stage === "FIRST_PASS_BUILDING") {
     assert(state.first_pass.terminal === false && state.audit_plan === null && state.audit_reconciliation === null && state.finalizer === null && state.delta_audit === null && state.acceptance.rc_ready === false, "building cascade carries later-stage authority");
   }
-  if (["FIRST_PASS_CANDIDATE", "FINALIZER_PENDING", "FINALIZING", "DELTA_REPAIR", "READY_FOR_ACCEPTANCE"].includes(state.stage)) {
+  if (state.stage === "TERMINAL_PROPOSED") {
+    assert(state.first_pass.terminal === true, "terminal proposal lacks a terminal checkpoint");
+    if (state.audit_plan !== null) assert(state.audit_plan.candidate_id === state.first_pass.candidate_id, "rolling audit plan is bound to the wrong checkpoint");
+  }
+  if (["FIRST_PASS_REPAIR_REQUIRED", "TERMINAL_SETTLED", "FINALIZER_PENDING", "FINALIZING", "DELTA_REPAIR", "READY_FOR_ACCEPTANCE"].includes(state.stage)) {
     assert(state.first_pass.terminal === true && state.audit_plan !== null && state.audit_reconciliation !== null, "terminal cascade is missing settled audit state");
     assert(state.audit_plan.terminal === true, "terminal cascade uses a nonterminal audit plan");
     assert(state.audit_reconciliation.terminal === true, "terminal cascade uses a nonterminal reconciliation");
@@ -818,10 +990,22 @@ export function applyCascadeTransition(previous, next) {
   validateCascadeState(next);
   assert(previous.campaign_id === next.campaign_id && previous.campaign_version === next.campaign_version && previous.logical_lineage_id === next.logical_lineage_id, "cascade transition changed campaign lineage");
   assert(next.cascade_sha256 !== previous.cascade_sha256, "cascade transition did not change state");
-  assert(next.first_pass.candidate_id === previous.first_pass.candidate_id, "cascade transition replaced first-pass candidate identity");
-  const stageOrder = new Map(CASCADE_STAGES.map((stage, index) => [stage, index]));
-  assert(stageOrder.get(next.stage) >= stageOrder.get(previous.stage) || next.stage === "BLOCKED", "cascade transition moved backward without a blocked classification");
-  if (previous.first_pass.terminal) assert(next.first_pass.commit === previous.first_pass.commit && next.first_pass.tree === previous.first_pass.tree, "cascade transition rewrote terminal first-pass candidate");
+  const allowed = new Map([
+    ["FIRST_PASS_BUILDING", new Set(["FIRST_PASS_BUILDING", "TERMINAL_PROPOSED"])],
+    ["TERMINAL_PROPOSED", new Set(["TERMINAL_PROPOSED", "FIRST_PASS_REPAIR_REQUIRED", "TERMINAL_SETTLED"])],
+    ["FIRST_PASS_REPAIR_REQUIRED", new Set(["FIRST_PASS_REPAIR_REQUIRED", "FIRST_PASS_BUILDING"])],
+    ["TERMINAL_SETTLED", new Set(["TERMINAL_SETTLED", "FINALIZER_PENDING", "READY_FOR_ACCEPTANCE"])],
+    ["FINALIZER_PENDING", new Set(["FINALIZER_PENDING", "FINALIZING"])],
+    ["FINALIZING", new Set(["FINALIZING", "DELTA_REPAIR"])],
+    ["DELTA_REPAIR", new Set(["DELTA_REPAIR", "FINALIZING", "READY_FOR_ACCEPTANCE"])],
+    ["READY_FOR_ACCEPTANCE", new Set(["READY_FOR_ACCEPTANCE"])]
+  ]);
+  assert(allowed.get(previous.stage)?.has(next.stage), `cascade transition ${previous.stage} -> ${next.stage} is not allowed`);
+  if (previous.stage === "FIRST_PASS_REPAIR_REQUIRED" && next.stage === "FIRST_PASS_BUILDING") {
+    assert(next.first_pass.candidate_id !== previous.first_pass.candidate_id, "first-pass repair rewrote the same candidate identity");
+  } else if (previous.first_pass.terminal) {
+    assert(next.first_pass.commit === previous.first_pass.commit && next.first_pass.tree === previous.first_pass.tree, "cascade transition rewrote terminal first-pass candidate");
+  }
   if (next.finalizer !== null && next.first_pass.terminal) assert(next.finalizer.source_commit === next.first_pass.commit && next.finalizer.source_tree === next.first_pass.tree, "cascade finalizer detached from first-pass candidate");
   return next;
 }

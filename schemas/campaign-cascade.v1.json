@@ -27,12 +27,13 @@
   },
   "stages": [
     "FIRST_PASS_BUILDING",
-    "FIRST_PASS_CANDIDATE",
+    "TERMINAL_PROPOSED",
+    "FIRST_PASS_REPAIR_REQUIRED",
+    "TERMINAL_SETTLED",
     "FINALIZER_PENDING",
     "FINALIZING",
     "DELTA_REPAIR",
-    "READY_FOR_ACCEPTANCE",
-    "BLOCKED"
+    "READY_FOR_ACCEPTANCE"
   ],
   "audit_disciplines": [
     "FUNCTIONALITY",
@@ -78,9 +79,49 @@
       "dirty_or_unpushed_checkpoint"
     ]
   },
+  "first_pass_candidate": {
+    "required_fields": [
+      "schema",
+      "candidate_id",
+      "campaign_id",
+      "campaign_version",
+      "logical_lineage_id",
+      "worktree_id",
+      "branch",
+      "commit",
+      "tree",
+      "remote_commit",
+      "remote_tree",
+      "clean",
+      "pushed",
+      "changed_paths",
+      "changed_surfaces",
+      "owner_role_id",
+      "auditor_session_id",
+      "checkpoint_kind",
+      "terminal",
+      "quality_floor",
+      "created_at_utc",
+      "candidate_sha256"
+    ],
+    "auditor_binding": "Every immutable checkpoint binds the exact current campaign Auditor session. Audit plans, reports, rolling audits, and final acceptance must preserve that identity."
+  },
+  "audit_plan": {
+    "required_fields": [
+      "schema",
+      "candidate_id",
+      "candidate_commit",
+      "candidate_tree",
+      "auditor_session_id",
+      "terminal",
+      "disciplines",
+      "plan_sha256"
+    ],
+    "rule": "Each plan covers Functionality, Design/UI/Shell/Navigation, Security, and Code Quality/Hygiene and binds the current campaign Auditor session. Applicability is derived from changed surfaces; non-applicable disciplines require an exact proof digest."
+  },
   "audit_rule": {
     "intermediate": "Only materially applicable disciplines need an immediate report; unaffected disciplines remain deferred until the terminal checkpoint.",
-    "terminal": "All four disciplines must settle exactly once as REQUIRED, DETERMINISTIC_ONLY, or NOT_APPLICABLE_WITH_PROOF.",
+    "terminal": "All four disciplines must settle exactly once as REQUIRED, DETERMINISTIC_ONLY, or NOT_APPLICABLE_WITH_PROOF. Deterministic proof is attempted first; a REQUIRED discipline may be settled directly by the independent Auditor without a worker, and a specialist Audit Worker is created only when unresolved judgment remains. DETERMINISTIC_ONLY always uses no Audit Worker session.",
     "read_only": "Auditors and audit workers inspect exact immutable candidate identities and never write Product or repair findings.",
     "critical_route": "A catastrophic, wrong-direction, foundational-dependency, or critical security/safety finding returns to the first-pass owner immediately and cannot be queued only for finalization.",
     "ordinary_route": "Material and noncritical findings are consolidated by causal root and sent to the Campaign Finalizer when finalization is required."
@@ -94,12 +135,13 @@
         "auditor_session_id",
         "worker_session_id"
       ],
-      "rule": "Each required or deterministic-only discipline has exactly one content-addressed report binding; terminal reports use distinct on-demand worker sessions and every finding references a listed report digest."
+      "rule": "Each required or deterministic-only discipline has exactly one content-addressed report binding; terminal REQUIRED reports use distinct on-demand worker sessions, deterministic reports use no worker, and every finding references a listed report digest."
     }
   },
   "finalizer": {
     "role": "CAMPAIGN_FINALIZER",
-    "source": "Exact terminal FIRST_PASS_CANDIDATE commit and tree",
+    "statuses": ["ACTIVE", "COMPLETE"],
+    "source": "Exact terminal proposed First-Pass checkpoint commit and tree",
     "worktree": "Fresh clean derived worktree with exclusive writer custody",
     "owns": [
       "cross-cutting corrections",
@@ -116,7 +158,8 @@
       "greenfield rewrite or unrelated scope"
     ],
     "change_rule": "Every finalizer change must close a failed question, close a material finding, repair its shared causal root, remove a duplicate truth source, simplify with a concrete reliability/security/performance/maintenance consequence, or preserve behavior required for one of those outcomes.",
-    "loop_rule": "One finalization pass and at most one targeted delta-repair pass are the normal limit. The same causal failure receives one materially different route or one supervisor-selected reframe; equivalent retries stop."
+    "loop_rule": "One finalization pass and at most one targeted delta-repair pass are the normal limit. The same causal failure receives one materially different route or one supervisor-selected reframe; equivalent retries stop.",
+    "custody": "The Feature Agent releases Product custody before Finalizer admission. Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded handoff."
   },
   "delta_rule": {
     "rerun": [
@@ -178,5 +221,15 @@
       "closure_receipt_sha256"
     ],
     "rule": "Accepted-live closure is invalid unless the exact finalizer candidate, exact three-root Product acceptance proof, deployment, rollback, independent audit, and closure receipt all bind to the same cascade state."
+  },
+  "checkpoint_ledger": {
+    "schema": "governance.first_pass_checkpoint_ledger.v1",
+    "required_fields": ["candidate_id", "candidate_commit", "candidate_tree", "terminal", "audit_plan_sha256", "audit_reconciliation_sha256", "finding_status", "status"],
+    "rolling_audit": "Earlier checkpoint reports remain bound while later first-pass checkpoints advance. Only the terminal proposed checkpoint must settle every applicable discipline.",
+    "repair": "Immediate first-pass repair creates a new candidate identity on the same logical lineage; terminal bytes are never rewritten in place."
+  },
+  "rolling_audits": {
+    "required_fields": ["candidate_id", "candidate_commit", "candidate_tree", "audit_plan", "audit_reconciliation", "rolling_audit_sha256"],
+    "rule": "A nonterminal checkpoint may retain its own content-addressed applicable audit plan and reconciliation while the active first-pass builder advances to a later checkpoint. The active builder checkpoint is never simultaneously treated as a prior rolling-audit checkpoint; each rolling entry is immutable and remains bound to its exact candidate identity."
   }
 }

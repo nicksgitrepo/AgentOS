@@ -2,39 +2,33 @@
   "schema": "governance.portable_question_tree.v1",
   "version": 1,
   "release_candidate": "2.1rc",
-  "purpose": "Project-agnostic executable product acceptance and targeted repair routing.",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Project-agnostic executable Product acceptance and selective repair routing.",
   "acceptance_roots": [
     "FUNCTION_REQUIREMENTS",
     "DESIGN_BIBLE",
     "SECURITY"
   ],
-  "final_admission": "FUNCTION_REQUIREMENTS_PASS && DESIGN_BIBLE_PASS && SECURITY_PASS",
-  "admission_proof": {
-    "schema": "governance.product_acceptance_proof.v1",
-    "required_inputs": [
-      "tree",
-      "observations",
-      "evidence_cache",
-      "auditor_attestation",
-      "evaluated_at_utc",
-      "critical_freezes"
-    ],
-    "rule": "RC_READY is admitted only after the controller recomputes the exact result from the proof inputs, matches roots, question IDs, evidence-cache digest, timing, and freeze state, and verifies the Auditor attestation is derived from that result."
-  },
-  "dispositions": [
-    "YES_WITH_EVIDENCE",
+  "ordered_admission": "FUNCTION_REQUIREMENTS_PASS -> DESIGN_BIBLE_PASS -> SECURITY_PASS -> RC_READY",
+  "answer_values": [
+    "YES",
     "NO",
     "UNKNOWN",
-    "NOT_APPLICABLE_WITH_PROOF",
-    "EXCEPTION_REQUESTED",
-    "AUTHORIZED_EXCEPTION",
-    "BLOCKED_AUTHORITY_BOUNDARY"
+    "NOT_APPLICABLE",
+    "EXCEPTION_REQUESTED"
   ],
+  "lifecycle_states": [
+    "UNEVALUATED",
+    "EVIDENCE_PENDING",
+    "OPEN_REPAIR",
+    "VERIFIED",
+    "INVALIDATED"
+  ],
+  "separation_rule": "The answer describes the observed result. The lifecycle describes whether that result is current and usable. Invalidation changes lifecycle without rewriting the historical answer.",
   "root_statuses": [
     "PASS",
     "OPEN_REPAIR",
-    "BLOCKED",
-    "PENDING_ADMISSION"
+    "UNKNOWN"
   ],
   "question_contract": {
     "required_fields": [
@@ -84,63 +78,65 @@
       "allowed",
       "granting_authority_ids",
       "scope"
-    ],
-    "question_rules": [
-      "One question asks one observable yes-or-no proposition.",
-      "Every question ends with a question mark.",
-      "Every required evidence kind is independently present before YES_WITH_EVIDENCE.",
-      "Applicability is evaluated independently for every question; simultaneous domains are not elif branches.",
-      "Confidence scores, weighted aggregates, mostly-compliant states, and self-attested pass claims are forbidden."
     ]
   },
+  "question_rules": [
+    "Every question is one observable yes-or-no proposition.",
+    "Every question ends with a question mark.",
+    "Every answer binds the exact evidence, commit, worktree, build, environment, observation time, and question-tree version.",
+    "Applicability is evaluated independently for every selected question.",
+    "A root with no selected questions carries one compact non-applicability proof.",
+    "Confidence scores, weighted aggregates, mostly-compliant states, and self-attested acceptance are forbidden."
+  ],
   "slice_compiler": {
-    "rule": "The full library is available law. Each checkpoint compiles only questions triggered by its exact changed-surface manifest, plus reusable answers invalidated by those changes.",
     "inputs": [
       "content-addressed source-clause library",
-      "exact changed paths and derived surfaces",
+      "exact changed paths and surfaces",
       "prior valid answer cache",
       "selective invalidation conditions"
     ],
     "outputs": [
-      "compact selected question IDs",
-      "one compact proof for any root with no applicable questions",
-      "reused evidence count",
-      "new evidence needed",
-      "open repairs"
+      "smallest applicable question slice",
+      "root non-applicability proof where applicable",
+      "reused evidence IDs",
+      "new evidence IDs",
+      "open repair IDs"
     ],
     "forbidden": [
-      "running the complete library ceremonially",
-      "writing one N/A essay per irrelevant question",
-      "asking a model to judge what a deterministic check can prove",
-      "emitting unchanged question results as new events"
-    ],
-    "granularity": "One question should normally map to one coherent repair owner and outcome; neither vague quality prompts nor visual trivia are admitted."
+      "whole-library questionnaire on every edit",
+      "one narrative non-applicability answer per irrelevant question",
+      "agent judgment replacing deterministic proof",
+      "re-emitting unchanged answers as new events"
+    ]
   },
-  "evidence_cache": {
-    "rule": "Reuse an admitted answer only when its question-tree version and exact relevant hashes still match and selective invalidation did not touch the question.",
-    "scopes": {
-      "SOURCE_STABLE": "May survive a new build identity only while every bound relevant source hash is unchanged.",
-      "BUILD_ENVIRONMENT_BOUND": "Requires the same build and environment identities in addition to unchanged relevant hashes."
+  "answer_lifecycle_contract": {
+    "YES": {
+      "required_lifecycle": "VERIFIED",
+      "route": "EVALUATE_DEPENDENT_CHILDREN"
     },
-    "output": "A compact plan of reused question IDs and question IDs needing new evidence.",
-    "forbidden": "Narrative claims, stale versions, changed relevant hashes, or untyped reuse scopes never reuse proof."
+    "NO": {
+      "required_lifecycle": "OPEN_REPAIR",
+      "route": "TARGETED_REPAIR_CONTINUE_UNRELATED"
+    },
+    "UNKNOWN": {
+      "required_lifecycle": "EVIDENCE_PENDING or OPEN_REPAIR",
+      "route": "AUTONOMOUS_EVIDENCE_ACQUISITION"
+    },
+    "NOT_APPLICABLE": {
+      "required_lifecycle": "VERIFIED",
+      "route": "PRESERVE_APPLICABILITY_PROOF"
+    },
+    "EXCEPTION_REQUESTED": {
+      "requested_lifecycle": "OPEN_REPAIR",
+      "authorized_lifecycle": "VERIFIED",
+      "route": "NAMED_AUTHORITY_ONLY"
+    },
+    "INVALIDATED": {
+      "rule": "Any prior answer may be retained with INVALIDATED lifecycle until a new current observation is recorded. It cannot contribute to PASS."
+    }
   },
-  "exception_contract": {
-    "required_fields": [
-      "granting_authority",
-      "scope",
-      "rationale",
-      "compensating_control",
-      "expires_at_utc",
-      "reevaluation_trigger",
-      "commit_sha",
-      "build_identity",
-      "environment_id",
-      "authorization_sha256"
-    ],
-    "rule": "EXCEPTION_REQUESTED never passes. AUTHORIZED_EXCEPTION passes only inside the exact grant scope and before expiry."
-  },
-  "owner_blocker_contract": {
+  "owner_boundary_contract": {
+    "rule": "True owner boundaries are a separate blocker object, never a fourth Product root or a replacement answer.",
     "required_fields": [
       "owner_boundary_class",
       "authority_boundary_id",
@@ -149,196 +145,34 @@
       "attempted_safe_alternatives",
       "unaffected_work"
     ],
-    "rule": "An ordinary technical repair cannot be encoded as an owner boundary."
+    "scope": "Pause only the affected outcome; continue unrelated work."
   },
-  "critical_freeze_contract": {
-    "required_fields": [
-      "domain",
-      "severity",
-      "finding_id",
-      "evidence_sha256",
-      "auditor_session_id",
-      "auditor_roster_receipt_sha256",
-      "affected_surfaces",
-      "global_impact"
-    ],
-    "rule": "Only an exact critical Security or human-safety finding from the bound Auditor freezes a surface. A global freeze additionally requires exact global-impact evidence."
-  },
-  "root_families": {
-    "FUNCTION_REQUIREMENTS": [
-      "FR-ENTRY",
-      "FR-ACTION",
-      "FR-RESULT",
-      "FR-DATA",
-      "FR-PERSISTENCE",
-      "FR-ALTERNATE",
-      "FR-UNAVAILABLE",
-      "FR-UNCHANGED"
-    ],
-    "DESIGN_BIBLE": [
-      "DB-SURFACE",
-      "DB-TEMPLATE",
-      "DB-SHELL",
-      "DB-NAVIGATION",
-      "DB-HIERARCHY",
-      "DB-ACTIONS",
-      "DB-LANGUAGE",
-      "DB-STATES",
-      "DB-RECEIPTS",
-      "DB-EVIDENCE",
-      "DB-DIAGNOSTICS",
-      "DB-RESPONSIVE",
-      "DB-ACCESSIBILITY",
-      "DB-FIELD-UX",
-      "DB-TOKENS",
-      "DB-COMPONENTS",
-      "DB-CROSS-ROUTE-CONSISTENCY"
-    ],
-    "SECURITY": [
-      "SEC-ARCHITECTURE",
-      "SEC-ACCESS-CONTROL",
-      "SEC-TENANT-ISOLATION",
-      "SEC-AUTHENTICATION",
-      "SEC-SESSION",
-      "SEC-AUTHORIZATION",
-      "SEC-INPUT",
-      "SEC-INJECTION",
-      "SEC-OUTPUT",
-      "SEC-DATA-PROTECTION",
-      "SEC-SECRETS",
-      "SEC-CRYPTOGRAPHY",
-      "SEC-API",
-      "SEC-BUSINESS-LOGIC",
-      "SEC-RESOURCE-CONSUMPTION",
-      "SEC-SUPPLY-CHAIN",
-      "SEC-BUILD-INTEGRITY",
-      "SEC-CONFIGURATION",
-      "SEC-LOGGING-ALERTING",
-      "SEC-PRIVACY",
-      "SEC-EXCEPTION-HANDLING",
-      "SEC-DEPLOYMENT",
-      "SEC-MOBILE"
+  "evidence_cache": {
+    "reuse_rule": "Reuse only when the answer is VERIFIED, the question-tree version and exact relevant hashes match, the environment contract permits reuse, and selective invalidation did not touch the question.",
+    "scopes": [
+      "SOURCE_STABLE",
+      "BUILD_ENVIRONMENT_BOUND"
     ]
   },
-  "security_baseline_policy": {
-    "rule": "Bootstrap records versioned security standards and project-specific overlays. The question compiler selects only applicable atomic requirements.",
-    "portable_examples": [
-      "OWASP ASVS",
-      "OWASP Top 10",
-      "OWASP API Security Top 10",
-      "OWASP MASVS"
-    ],
-    "forbidden": "A single vague compliance question cannot replace atomic applicable requirements."
-  },
-  "case_engine": {
-    "if_not_applicable": "Require applicability evidence and return NOT_APPLICABLE_WITH_PROOF.",
-    "elif_yes": "Require every evidence binding and return YES_WITH_EVIDENCE.",
-    "elif_no": "Create one targeted repair for the exact failed question and continue unrelated work.",
-    "elif_unknown": "Acquire missing evidence autonomously; do not ask the owner.",
-    "elif_exception_requested": "Route to the named granting authority; do not pass.",
-    "elif_authorized_exception": "Validate scope, identity, expiry, compensating control, and re-evaluation trigger.",
-    "elif_owner_boundary": "Return one precise blocker and continue unaffected work.",
-    "else": "Fail closed and route internally to the Campaign Orchestrator.",
-    "exceptions": {
-      "transient_tool_or_runtime_failure": "Retry, use a safe fallback, or reassign; never convert failure into PASS.",
-      "critical_security_or_safety_finding": "Freeze only the affected surface immediately; freeze unrelated work only when evidence proves global impact."
-    }
-  },
-  "role_interaction": {
-    "GLOBAL_ORCHESTRATOR": "Owns compiled tree state, custody, dependency order, repair routing, selective invalidation, compact status, and true owner blockers.",
-    "FEATURE_AGENT": "Implements the intended feature and answers assigned atomic questions with evidence; fixes authorized NO outcomes without permission-seeking.",
-    "PLATFORM_AGENT": "Repairs only the exact platform seam and returns evidence for the assigned question IDs.",
-    "AUDITOR": "Compiles and evaluates questions independently in parallel, records only changed answers, NO, or UNKNOWN, and never becomes a serial approval queue or Product writer.",
-    "AUDIT_WORKER": "A fresh on-demand read-only worker of the Auditor that evaluates exact question IDs for one material seam and cannot implement, redefine requirements, or grant exceptions.",
-    "GLOBAL_RUNTIME": "Executes accepted integration, deployment, rollback, and runtime evidence actions; it does not decide Product semantics."
-  },
-  "owner_boundary_classes": [
-    "NEW_OR_INCREASED_UNAPPROVED_COST",
-    "HUMAN_AUTHENTICATION_OR_LEGAL_ACCEPTANCE",
-    "GOVERNED_STACK_OR_CONSTITUTIONAL_ARCHITECTURE_CHANGE",
-    "REPOSITORY_AUTHORITY_TOPOLOGY_CHANGE",
-    "DELETION_OF_ACCEPTED_OR_PROTECTED_WORK_OR_PRODUCTION_DATA",
-    "UNRESOLVED_MATERIAL_PRODUCT_INTENT_CONTRADICTION",
-    "OTHER_IRREVERSIBLE_ACTION_OUTSIDE_DELEGATED_AUTHORITY"
-  ],
-  "internal_repair_examples": [
-    "failing_test",
-    "implementation_choice",
-    "merge_conflict",
-    "context_limit",
-    "unfamiliar_code",
-    "reversible_decision",
-    "missing_evidence",
-    "internal_dependency_repair",
-    "ordinary_debugging"
-  ],
   "invalidation": {
-    "binding_fields": [
-      "commit_sha",
-      "worktree_id",
-      "relevant_hashes",
-      "build_identity",
-      "environment_id",
-      "observed_at_utc",
-      "question_tree_version"
-    ],
-    "rule": "Invalidate directly matched questions and their dependent descendants. Preserve unrelated verified leaves.",
-    "cross_root_examples": {
-      "css_or_token": [
-        "DESIGN_BIBLE"
-      ],
-      "api_authorization": [
-        "FUNCTION_REQUIREMENTS",
-        "SECURITY"
-      ],
-      "shell": [
-        "DESIGN_BIBLE"
-      ],
-      "database_migration": [
-        "FUNCTION_REQUIREMENTS",
-        "SECURITY"
-      ],
-      "security_repair": [
-        "FUNCTION_REQUIREMENTS",
-        "DESIGN_BIBLE",
-        "SECURITY"
-      ]
-    }
-  },
-  "repair_loop": {
-    "first_no": "Create one targeted repair for the exact question and causal root.",
-    "repeated_no_different_cause_or_route": "Proceed only when the causal model, implementation route, evidence state, or governing assumption materially changed.",
-    "repeated_no_same_cause": "Do not create an equivalent retry. The direct supervisor performs exactly one reframe.",
-    "post_reframe": [
-      "execute one new viable in-scope route",
-      "use honest unavailable behavior when it satisfies intent",
-      "return one true authority blocker",
-      "stop retrying that unchanged mechanism"
-    ],
-    "rule": "Different wording is not material progress."
-  },
-  "compact_status": {
-    "fields": [
-      "FUNCTION_REQUIREMENTS",
-      "DESIGN_BIBLE",
-      "SECURITY",
-      "TRUE_OWNER_BLOCKERS"
-    ],
-    "rule": "Agents exchange failing question IDs and bounded repair evidence, not compliance narration or repeated receipt inventories."
-  },
-  "minimum_live_rc": {
-    "scope": "One real campaign, one cumulative root, one Feature Agent, on-demand Platform Agents, one parallel Auditor, one Campaign Orchestrator, and one Runtime.",
-    "required_demonstrations": [
-      "compile project intent into atomic function questions",
-      "compile applicable design clauses into atomic design questions",
-      "compile versioned applicable security requirements into atomic security questions",
-      "route one NO to an autonomous targeted repair",
-      "route one UNKNOWN to autonomous evidence acquisition",
-      "prove one NOT_APPLICABLE result",
-      "prove one selective cross-root invalidation",
-      "prove one affected-surface critical freeze while unrelated work continues",
-      "prove one true owner blocker or prove none",
-      "admit only when all three roots pass"
+    "rule": "A repair invalidates only the changed question and dependent descendants. Unaffected verified answers remain reusable.",
+    "required_record": [
+      "question_id",
+      "invalidated_by",
+      "prior_answer",
+      "lifecycle"
     ]
+  },
+  "critical_freeze": {
+    "domains": [
+      "SECURITY",
+      "HUMAN_SAFETY"
+    ],
+    "rule": "A critical finding freezes only affected surfaces unless exact evidence proves global impact. Unaffected work continues."
+  },
+  "machine_authority": {
+    "controller": "control/question-tree.mjs",
+    "acceptance_bridge": "control/acceptance-bridge.mjs",
+    "status": "PREPARED_NOT_ACTIVATED"
   }
 }

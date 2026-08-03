@@ -1,24 +1,20 @@
 # AgentOS 2.1rc Operator Guide
 
-AgentOS is a portable governance package. Before use, copy the package into
-the admitted project root and provide a project-context instance derived from
-`authority/templates/project-context.v1.json`.
+Keep the package and its binding at `PREPARED_NOT_ACTIVATED` until an owner explicitly approves activation. A consuming project supplies its own typed Project Context; it does not modify the portable kernel.
 
-The operator is responsible for confirming project identity, repository
-ownership, provider and deployment choices, model policy, retention, and
-protected boundaries. Bootstrap discovers facts read-only, asks one material
-question at a time, and persists its typed state. It does not invent missing
-project truth.
+Before setup, verify `schemas/bootstrap-binding.v1.json` against the exact files. Run `node tests/verify-portability.mjs` and `node tests/verify-all.mjs` from the candidate. Do not use a dirty convenience copy as authority.
 
-Run the portability verifier and the complete verifier before admitting a
-project context. Keep the package `PREPARED_NOT_ACTIVATED` until the source,
-context, independent review, and owner decision are recorded. Product work,
-deployment, and promotion remain outside this repository.
+Bootstrap is controlled by `control/bootstrap-compiler.mjs`:
 
-`RC_READY` requires a content-addressed question-tree proof. The campaign
-controller recomputes the result from the exact tree and observations, checks
-the evidence-cache digest, and verifies the Auditor attestation is derived
-from that result. A receipt alone is not an admission substitute.
+```text
+discover -> plan -> display exact digests -> APPROVE_EXACT_PLAN
+        -> stage -> read back -> independent setup audit -> seal/promote
+```
 
-GPT_ASSIST is optional Markdown exchange only. The canonical JSON payload,
-source identity, chronology, and project context remain authoritative.
+The setup Auditor must use a distinct session. Imported authority must have a verified `legacy.zip` before replacement writes. Generic `PROCEED` is not a valid approval.
+
+At campaign runtime, `control/campaign-lifecycle.mjs` owns leases, custody, checkpoints, holds, append-only state, Runtime continuity, and next-campaign orientation. `control/campaign-cascade.mjs` owns applicable rolling audits, terminal settlement, Finalizer handoff, and delta scope. `control/question-tree.mjs` owns the exact three-root answer/lifecycle engine.
+
+Runtime is the only merge/deployment executor. The Auditor is read-only. A successor release begins with an orientation-only Orchestrator after current Auditor release clearance; no successor roster or Product writer exists before accepted-live closure and explicit admission.
+
+GPT_ASSIST is optional and advisory. Its source identity, chronology, current roster, exact questions, response JSON, and handoff digest are mechanically bound; it never writes authority or creates successor custody.

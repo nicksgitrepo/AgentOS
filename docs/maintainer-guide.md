@@ -1,15 +1,17 @@
 # AgentOS 2.1rc Maintainer Guide
 
-Normative behavior belongs in `governance/2.1rc/`, machine contracts in
-`schemas/`, and executable behavior in `control/`. Project facts belong only
-in a consuming project's context binding or in synthetic examples.
+Normative behavior belongs in `governance/2.1rc/`, machine contracts in `schemas/`, and executable behavior in `control/`. Project facts belong only in a consuming Project Context or synthetic examples.
 
-When changing a bound article, registry, controller, or verifier, update its
-SHA-256 entry in `schemas/bootstrap-binding.v1.json`. Keep the binding
-inventory exact and keep migration provenance separate from normative
-authority. Add a positive and a hostile case for every new transition or
-boundary.
+Keep one canonical implementation for each authority:
 
-Run `node tests/verify-portability.mjs` and `node tests/verify-all.mjs`, then
-run each focused verifier under `tests/`. Do not add credentials, real project
-paths, deployment receipts, release evidence, or product-specific policy.
+- Bootstrap: `control/bootstrap-compiler.mjs`;
+- lifecycle and custody: `control/campaign-lifecycle.mjs`;
+- cascade: `control/campaign-cascade.mjs`;
+- acceptance: `control/question-tree.mjs`;
+- optional exchange: `control/gpt-assist.mjs`.
+
+Compatibility entrypoints are import-only aliases. They cannot create setup state, campaign state, provider identity, Product custody, or successor rosters.
+
+When changing a bound controller, schema, article, or verifier, update its SHA-256 in `schemas/bootstrap-binding.v1.json`. Add positive, hostile, deterministic, containment, and transition coverage for every new boundary. Keep source provenance in migrations, not normative authority.
+
+Before handoff, run `node tests/verify-portability.mjs`, `node tests/verify-all.mjs`, and each focused verifier. Never add credentials, real project paths, deployment receipts, release evidence, or product-specific policy.

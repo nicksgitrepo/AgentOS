@@ -1,113 +1,66 @@
-# Campaign cascade authority
+# 2.1rc Campaign Cascade
 
-Status: `RELEASE CANDIDATE — PREPARED_NOT_ACTIVATED`
+Status: `PREPARED_NOT_ACTIVATED`
 
-This article defines the adaptive development path for substantial work. The
-machine contract is [`schemas/campaign-cascade.v1.json`](../../schemas/campaign-cascade.v1.json),
-SHA-256: `e5e4c02787503b088b2bb5258baa4c4839ae6d5fdb010b806184ebed0bc0a595`, and the executable controller is
-[`control/campaign-cascade.mjs`](../../control/campaign-cascade.mjs),
-SHA-256: `a9c26dfae9814559468d59da27bdaee269a38c449f3492ab30d082971b7309a9`.
-
-## Canonical path
-
-One logical Product lineage moves forward through immutable, pushed
-checkpoints. Physical worktrees can be isolated, but no audit, finalizer, or
-Runtime action may claim a different parent than the exact commit and tree it
-received.
+The executable authority is [control/campaign-cascade.mjs](../../control/campaign-cascade.mjs) and [schemas/campaign-cascade.v1.json](../../schemas/campaign-cascade.v1.json). This article describes the adaptive first-pass, audit, Finalizer, and delta path.
 
 ```text
-Capability-selected Feature / Platform Agents
+accepted campaign root
         |
-        +--> immutable substantial checkpoints
-        |          |
-        |          +--> applicable read-only audit lenses in parallel
-        |          |
-        +----------+--> terminal FIRST_PASS_CANDIDATE
-                              |
-                              +--> four-lens terminal settlement
-                              |
-                              +--> fresh CAMPAIGN_FINALIZER worktree
-                                           |
-                                           +--> one correction batch
-                                           |
-                                           +--> delta-only audit and at most one targeted repair
-                                                        |
-                                                        +--> three-root RC_READY
-                                                                     |
-                                                                     +--> Runtime integration, deployment, and live audit
+        v
+FIRST_PASS_BUILDING <-----------------------------+
+        |                                          |
+        +--> rolling checkpoint-bound audits       |
+        |                                          |
+        v                                          |
+TERMINAL_PROPOSED                                 |
+        |                                          |
+        +--> immediate first-pass repair ----------+
+        |                                          |
+        v                                          |
+TERMINAL_SETTLED                                  |
+        |                                          |
+        v                                          |
+FINALIZER_ACTIVE -> FINALIZER_COMPLETE             |
+        |                                          |
+        v                                          |
+DELTA_AUDIT <---- targeted delta repair -----------+
+        |
+        v
+READY_FOR_ACCEPTANCE -> Runtime -> live audit -> exact closure
 ```
 
-The four lenses are `FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`,
-and `CODE_QUALITY_HYGIENE`. Intermediate checkpoints run only the materially
-applicable lenses. The terminal checkpoint settles every lens exactly once as
-required, deterministic-only, or not applicable with content-addressed proof.
-The reconciliation binds the exact non-deferred discipline set and one report
-for each required discipline, including the Auditor session, worker session,
-and report digest. Terminal reports use distinct on-demand worker sessions;
-missing roster bindings cannot advance the cascade.
+## First pass
 
-## First-pass floor
+The Feature Agents build one logical Product lineage and publish substantial immutable checkpoints. Each checkpoint binds campaign, lineage, worktree, branch, commit, tree, remote identity, clean/pushed proof, changed paths, changed surfaces, quality floor, and parent identity.
 
-The first-pass builder is allowed to be economical, but it must produce a
-coherent candidate. The intended route exists, affected stable checks pass,
-interfaces are coherent, known critical defects are disclosed, operations are
-safe, and the checkpoint is clean and pushed. Incomplete work is named in the
-handoff. “Rough draft” is not a machine state; the canonical state is
-`FIRST_PASS_CANDIDATE`.
+The quality floor proves the intended path exists, affected stable checks pass, interfaces are coherent, critical defects are disclosed, safe operations hold, and the checkpoint is clean and pushed. A terminal checkpoint cannot be rewritten; a repair creates a new identity on the same lineage.
 
-Wrong direction, foundational dependency failure, catastrophic safety or
-security evidence, and a concealed critical defect return immediately to the
-first-pass owner. Ordinary material findings are deduplicated by causal root
-and sent to finalization.
+## Audits
+
+Audits are read-only and concurrent with useful building. Applicability is derived from changed surfaces. The four disciplines are:
+
+- `FUNCTIONALITY`
+- `DESIGN_UI_SHELL_NAVIGATION`
+- `SECURITY`
+- `CODE_QUALITY_HYGIENE`
+
+Unrelated disciplines remain deferred. Security and hygiene do not become mandatory merely because a campaign is substantial. At terminalization every applicable discipline settles exactly once as `REQUIRED`, `DETERMINISTIC_ONLY`, or `NOT_APPLICABLE_WITH_PROOF`. Deterministic proof has no worker session; required reports use distinct fresh read-only workers.
+
+Findings are content-addressed and question-bound. Catastrophic, wrong-direction, foundational, and critical safety/security findings return to the first-pass owner immediately. Material findings are consolidated by causal root. A noncritical hygiene finding is nonblocking unless it names a concrete consequence in one of the three Product roots.
 
 ## Campaign Finalizer
 
-The `CAMPAIGN_FINALIZER` is spawned only after terminal first-pass audit
-settlement. It receives one exact first-pass commit/tree, one fresh clean
-worktree, exclusive writer custody, a content-addressed model policy, and one
-consolidated correction batch. It may repair cross-cutting causes and make a
-bounded simplification when the reliability, security, performance, or
-maintenance consequence is explicit.
+The Finalizer receives the exact terminal proposed commit/tree in a fresh clean worktree after the Feature Agent releases Product custody. Its scope is one consolidated causal correction batch, bounded simplification, and proof preparation. It has no owner-intent, acceptance, deployment, exception, or self-acceptance authority.
 
-It cannot change owner intent, grant an exception, decide Product acceptance,
-deploy, rollback, or accept its own work. A greenfield rewrite, style-only
-change, or unrelated scope expansion is outside its custody.
+On completion the Finalizer releases its writer lease and the campaign root adopts the exact final commit/tree through a recorded handoff. The finalizer never silently replaces the Product root or changes the campaign identity.
 
-## Delta proof and loop limits
+## Delta proof
 
-After finalizer changes, retest only previously failed questions, directly
-touched questions, dependent child questions, and one small end-to-end smoke
-set. Reuse unaffected accepted evidence only when its exact question-tree
-version, relevant hashes, build, and environment still match. A complete tree
-restart without invalidation is invalid.
+Delta audit includes previously failed questions, directly touched questions, dependent descendants, and one small end-to-end smoke set. Unaffected accepted evidence is reused only when question-tree version, relevant hashes, build identity, and environment identity still match. A repair invalidates only dependent answers; it does not restart the whole question corpus or create a serial approval queue.
 
-The normal limit is one finalization pass and zero or one targeted delta-repair
-pass. The same causal failure gets one materially different route or one
-supervisor-selected reframe. Equivalent retries stop and are classified as an
-ordinary blocker, honest unavailability, model-promotion need, or owner-only
-boundary.
+One targeted delta repair and one supervisor-selected reframe per causal root are the normal limit. Equivalent retries stop and the failure is classified.
 
-## Acceptance and release boundary
+## Closure
 
-The Campaign Finalizer prepares the candidate and proof. The Auditor remains
-independent and read-only. `FUNCTION_REQUIREMENTS → DESIGN_BIBLE → SECURITY`
-must all be `PASS` before `RC_READY`. The accepted-live closure additionally
-binds the cascade digest, final candidate commit/tree, Product acceptance
-digest, deployment identity, rollback identity, independent live-audit
-identity, and closure receipt. Runtime alone performs integration and
-deployment; no pre-deployment audit can substitute for live proof.
-
-## Model economics
-
-Model choice is role- and workload-specific. Bootstrap compares current
-external model facts against the completion-reliability floor, required tools,
-context, privacy, deadline, and expected accepted cost including retries,
-supervision, repair, and integration. It excludes candidates below the floor
-and fails closed when no eligible or budget-feasible candidate remains. Model
-names and market snapshots are project configuration, not portable authority.
-
-The cascade records secret-free telemetry for first-pass cost, audit cost by
-lens, finalizer cost, delta cost, wall time, first-pass survival, rewrite rate,
-evidence reuse, escaped findings, owner interruptions, and cost per accepted
-Function outcome. Recalibration waits for several observed campaigns and never
-quietly lowers the completion floor.
+The final candidate is admissible only when the exact cascade state binds `FUNCTION_REQUIREMENTS_PASS`, `DESIGN_BIBLE_PASS`, `SECURITY_PASS`, deployment and rollback identities, independent live audit, and the closure receipt. Runtime is the sole merge/deployment executor. Until all closure facts are reconciled, the campaign is `ACCEPTED_LIVE_PENDING_CLOSURE`.

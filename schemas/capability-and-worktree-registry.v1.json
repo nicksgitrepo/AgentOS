@@ -157,11 +157,11 @@
   "active_window_days": "${evidence_retention_days}",
     "active_dossier": {
       "contains": [
-        "global_orchestrator",
+        "campaign_orchestrator",
         "feature_agents",
         "platform_agents",
         "independent_auditor",
-        "global_runtime",
+        "persistent_runtime",
         "tests",
         "screenshots",
         "research",
@@ -196,7 +196,7 @@
     "authority_boundary": "Archiving preserves evidence and supplies no Product, audit, release, runtime, acceptance, or owner-only authority."
   },
   "context_elicitation": {
-    "owner": "GLOBAL_ORCHESTRATOR",
+    "owner": "CAMPAIGN_ORCHESTRATOR",
     "mode": "SEMI_SCRIPTED_DRILL_ME",
     "rule": "The Campaign Orchestrator asks one material question at a time, incorporates the answer, inspects admitted authority and source for discoverable facts, and continues only until the context is reasonably sufficient to compile a truthful runnable route.",
     "subject_scripts": {
@@ -278,8 +278,17 @@
     "continuity": "A blocker holds only the dependent outcome. The compiler continues all unaffected feature, lane, authority-corpus, and evidence work.",
     "closure": "Close only when the exact answer or evidence is bound and the affected pages, indexes, capsules, and compiler inputs are refreshed."
   },
+  "campaign_lifecycle": {
+    "schema": "governance.campaign_lifecycle.v1",
+    "contract": "schemas/campaign-lifecycle.v1.json",
+    "controller": "control/campaign-controller.mjs",
+    "state_schema": "governance.campaign_lifecycle_state.v1",
+    "single_scheduler": "control/campaign-cascade.mjs compiles audit applicability; campaign-controller records custody and state",
+    "hold_rule": "holds are orthogonal to stage and pause only the dependent outcome",
+    "successor_rule": "ORCHESTRATOR_ORIENTED_HELD before closure; CAMPAIGN_ADMITTED only after accepted-live closure"
+  },
   "portable_campaign_controller": {
-    "schema": "governance.portable_campaign_state.v1",
+    "schema": "governance.campaign_lifecycle_state.v1",
     "cascade_state": {
       "schema": "governance.campaign_cascade_state.v1",
       "required": true,
@@ -287,7 +296,7 @@
       "rule": "Every campaign snapshot carries the exact first-pass, four-lens audit, finalizer, delta, model-policy, and loop-control state."
     },
     "authority_writer": {
-      "role": "GLOBAL_ORCHESTRATOR",
+      "role": "CAMPAIGN_ORCHESTRATOR",
       "rule": "Agents never write canonical authority directly. Each admitted agent may append only its own typed content-addressed event file inside the cumulative campaign root. The Campaign Orchestrator owns topology, compiled active-campaign snapshots, standard-article promotion, supersession, and recovery reconciliation.",
       "standard_articles": "LAST_ACCEPTED_LIVE_RELEASE_ONLY",
       "active_campaign_article": "WORK_IN_PROGRESS_ONLY",
@@ -299,7 +308,7 @@
         "compiled_view": "campaigns/<campaign-id>/current.md",
         "event_write": "ONE_UNIQUE_EXCLUSIVE_NO_FOLLOW_CONTENT_ADDRESSED_FILE_IN_AN_INDEPENDENT_PER_SESSION_STREAM_BY_THE_EXACT_ROSTER_BOUND_SESSION; FULL_READBACK_REJECTS_MISSING_EXTRA_RENAMED_REWRITTEN_OR_SYMLINKED_ENTRIES",
         "orchestrator_spawn_binding": "THE_ORCHESTRATOR_RECORDS_EVERY_AGENT_SESSION_IT_CREATES",
-        "feature_spawn_binding": "THE_ACTIVE_FEATURE_AGENT_RECORDS_EVERY_ON_DEMAND_PLATFORM_AGENT_SESSION_IT_CREATES",
+        "feature_spawn_binding": "THE_CAMPAIGN_ORCHESTRATOR_RECORDS_EVERY_LOGICAL_PLATFORM_SESSION_AND_CURRENT_FEATURE_SUPERVISION_LEASE",
         "compile_times": [
           "configured progress interval after material change",
           "checkpoint",
@@ -308,16 +317,17 @@
           "terminal Runtime transfer"
         ],
         "handoff": "EVERY_ORCHESTRATOR_SNAPSHOT_AND_CHECKPOINT_HANDOFF_BINDS_EVENT_COUNT_AGGREGATE_LEDGER_DIGEST_PER_SESSION_WRITER_HEADS_AND_CURRENT_VIEW_SHA256; THE_RECIPIENT_PROVES_MONOTONIC_PREFIX_CONTINUITY_BEFORE_WORK",
-        "platform_return_binding": "A_PLATFORM_RETURN_BINDS_THE_EXACT_PRIOR_SPAWN_EVENT_ACTIVE_GOAL_DEPENDENCY_MATERIAL_SEAM_AND_CONTENT_ADDRESSED_EVIDENCE_POINTER",
+        "platform_return_binding": "A_PLATFORM_RETURN_BINDS_THE_LOGICAL_CAPABILITY_ID_STABLE_WORKTREE_CURRENT_SUPERVISION_LEASE_ASSIGNMENT_AND_CONTENT_ADDRESSED_HANDOFF_RECEIPT",
         "gpt_assist_mode": "The campaign state binds GPT_ASSIST or DIRECT_ONLY. Only GPT_ASSIST campaigns require and consume a successor GPT_ASSIST handoff digest; DIRECT_ONLY campaigns retain a null handoff.",
-        "gpt_assist_successor_binding": "A_GPT_ASSIST_HANDOFF_BINDS_VALIDATED_CURRENT_AND_SUCCESSOR_ROSTER_RECEIPTS_AND_ITS_EXACT_HANDOFF_DIGEST_IS_CONSUMED_BY_THE_NEXT_CAMPAIGN_TRANSITION",
-        "parallelism": "PER_SESSION_CHAINS_AVOID_SHARED_NEXT_SEQUENCE_OR_FILE_CONTENTION; THE_ORCHESTRATOR_COMPILES_ONE_DETERMINISTIC_LEDGER_DIGEST",
+        "gpt_assist_successor_binding": "A_GPT_ASSIST_HANDOFF_BINDS_THE_VALIDATED_CURRENT_ROSTER_AND_EXACT_HANDOFF_DIGEST; SUCCESSOR_ROSTER_RECEIPT_MUST_BE_NULL_UNTIL_LIFECYCLE_ADMISSION",
+        "parallelism": "PER_SESSION_CHAINS_AVOID_SHARED_NEXT_SEQUENCE_OR_FILE_CONTENTION; THE_ORCHESTRATOR_COMPILES_ONE_DETERMINISTIC_LEDGER_DIGEST_AND_SERIALIZES_PLATFORM_LEASES",
         "forbidden": [
           "rewriting or deleting a prior event",
           "writing another session's event",
           "changing topology or accepted checkpoints through an event",
           "treating event append custody as Product writer custody",
-          "letting a Platform Agent create another agent"
+          "letting a Platform Agent create another agent",
+          "letting two Feature Agents hold one logical Platform Agent simultaneously"
         ]
       }
     },
@@ -354,12 +364,12 @@
       "goal_rule": "One substantial feature phase equals one host macro goal bound to an exact goal-system ID, stage, owner, instruction SHA-256, DONE-WHEN SHA-256, start time, and completion-receipt SHA-256. The goal closes only after a clean remote-equal pushed checkpoint, lease release, and accepted identity-bound same-root handoff to the next compiled dependency owner or terminal Runtime.",
       "handoff_identity": "Checkpoint ID, root, branch, local and remote commit/tree, released lease, source owner/goal, recipient owner/goal, and accepted transition must agree mechanically. The immediate next snapshot must preserve the clean pushed remote-equal checkpoint, activate that exact recipient, and issue a fresh lease on the same root; terminal handoff must enter Runtime/release state.",
       "new_dependency": "The admitted dependency graph and cumulative root identity are immutable after campaign open. A newly discovered local prerequisite is solved inside the current owner or by an on-demand Platform Agent; a genuinely new cross-feature dependency is recorded for the next campaign or triggers one explicit owner-visible campaign replacement without rewriting accepted checkpoints.",
-      "cycle": "Collapse a dependency cycle into one Global-Orchestrator-owned shared-contract checkpoint with one primary writer, then resume the ordered feature chain.",
+      "cycle": "Collapse a dependency cycle into one Campaign-Orchestrator-owned shared-contract checkpoint with one primary writer, then resume the ordered feature chain.",
       "final": "The terminal cumulative root transfers once to Runtime only after the terminal First-Pass Candidate has settled all four audit lenses, the Campaign Finalizer and any delta audit are complete, and the three acceptance roots are RC_READY; Runtime then performs integration, artifact mint, deployment, rollback readback, live audit, and closure."
     },
     "agent_lifecycle": {
       "persistent": [
-        "GLOBAL_RUNTIME"
+        "RUNTIME"
       ],
       "campaign_start": [
         "spawn one fresh campaign-scoped Campaign Orchestrator from the latest admitted governance and admitted high-return orchestration model",
@@ -369,7 +379,7 @@
         "record exact role, session, predecessor session, model, governance, campaign, and evidence-library identities"
       ],
       "campaign_finalizer": "For a substantial or foundational campaign, create one fresh pinned Campaign Finalizer only after the terminal First-Pass Candidate and consolidated four-lens audit are sealed. Bind its session and model-policy digest to a fresh exclusive worktree based on the exact first-pass commit and tree.",
-      "platform_agents": "Spawn and pin one Platform Agent only on demand when a Feature Orchestrator identifies an exact material seam. Bind it to one campaign, feature, capability, worktree, proof scope, and direct supervisor. Reuse it only for that same feature during that campaign; do not pre-spawn a platform wave, share it across features, or reuse it after the feature/campaign boundary.",
+      "platform_agents": "Spawn one logical Platform Agent per materially used capability on first demand. Pin it for the campaign, give it one stable platform worktree, and lease its supervision sequentially to Feature Agents. The current Feature Agent is its direct supervisor; the Campaign Orchestrator schedules availability and prevents collisions. Archive the logical agent only at campaign closure.",
       "archive": "Completed campaign agents are archived and never deleted. Their session IDs remain optional provenance; compact handoffs and Git/evidence identities remain sufficient without chat access.",
       "depin_precondition": [
         "current Auditor recorded one deduplicated dependency-ordered next-campaign candidate or NO_NEXT_CAMPAIGN_REQUIRED before terminal Runtime handoff",
@@ -378,7 +388,7 @@
         "closing Auditor remains pinned through exact-live audit",
         "all final session IDs, checkpoints, open owner questions, and evidence-library pointers are recorded"
       ],
-      "freshness_binding": "Every admitted dependency owner maps to a fresh pinned Feature Orchestrator for that campaign, and the active goal maps to exactly one such session even when archived predecessors remain recorded. Orchestrator, Auditor, and Feature spawn reasons are FRESH_CAMPAIGN and exact display names bind one-word role, campaign version, and governance version. A material Platform Agent is ON_DEMAND, feature-exclusive, and reusable only inside its bound campaign/feature capsule. Auditor and Runtime state objects bind sessions of the matching pinned role kind. Successor continuity binds an exact candidate packet digest; successor sessions remain absent until a distinct later campaign admission."
+      "freshness_binding": "Every admitted dependency owner maps to a fresh pinned Feature Agent for that campaign, and the active goal maps to exactly one such session even when archived predecessors remain recorded. Orchestrator, Auditor, and Feature spawn reasons are FRESH_CAMPAIGN and exact display names bind one-word role, campaign version, and governance version. A material Platform Agent is ON_DEMAND by capability, has one stable campaign worktree, and may be sequentially leased to multiple Feature Agents with one supervisor at a time. Auditor and Runtime state objects bind sessions of the matching pinned role kind. Successor continuity binds an exact candidate packet digest; only the next Orchestrator exists during orientation and all other successor sessions remain absent until a distinct later campaign admission."
     },
     "auditor": {
       "during_campaign": "Audit substantial pushed checkpoint deltas asynchronously through the Functionality, Design/UI/Shell/Navigation, Security, and Code Quality/Hygiene lenses. At terminal first pass, settle all four exactly once. Accept, return one material correction, record an owner-intent question, or raise a higher-authority emergency. Do not interrupt ordinary fixes, demand perfection, or take Product custody.",
@@ -443,7 +453,7 @@
         "why continued work cannot remain honest",
         "one exact owner question"
       ],
-    "effect": "The campaign-scoped Orchestrator writes TRUE_BLOCKER_SUSPENDED, suspends the same macro goal and configured progress timer, retains one blocker-resolution watcher, and resumes the same goal after mechanical resolution. Difficulty, unfamiliar code, a failing test, missing fixture, compile error, or first failed mechanism is not a true blocker."
+    "effect": "The campaign-scoped Orchestrator records ON_HOLD_DEPENDENT_OUTCOME for the affected outcome, keeps unrelated work and its progress interval active, retains one blocker-resolution watcher, and resumes the held outcome after mechanical resolution. Difficulty, unfamiliar code, a failing test, missing fixture, compile error, or first failed mechanism is not a true boundary."
     },
     "recovery": {
       "portable_inputs": [
@@ -458,12 +468,12 @@
       ],
       "fresh_machine": "Recreate roots from variables, verify repository and Runtime reality, mark machine-local leases stale, reissue one exclusive lease, and resume the recorded next action. Old chat access is optional.",
       "partial_transaction": "Prepare, perform, verify, then commit a state transition. On partial failure, preserve Product bytes and either resume idempotently or record one recovery discrepancy; never silently duplicate or revert work.",
-    "closure_binding": "Standard promotion requires a terminal accepted Runtime handoff, clean remote-equal root, exact Runtime deployed and rollback identities, matching standard release identity, one matching independent-audit identity, one lowercase SHA-256 closure receipt, no unresolved owner hold, and a recorded successor/no-successor disposition. TRUE_BLOCKER_SUSPENDED, SUSPENDED_TRUE_BLOCKER, and blocker presence are converses."
+    "closure_binding": "Standard promotion requires a terminal accepted Runtime handoff, clean remote-equal root, exact Runtime deployed and rollback identities, matching standard release identity, one matching independent-audit identity, one lowercase SHA-256 closure receipt, no unresolved owner hold, and a recorded successor/no-successor disposition. A hold is scoped to its dependent outcome and is not a campaign terminal state."
     }
   },
   "specialist_execution_autonomy": {
     "default_posture": "WORK_SILENTLY_TO_DONE",
-    "rule": "A Feature Orchestrator or Platform Agent executes the full bounded batch, solves ordinary technical puzzles, and uses safe reversible alternatives without requesting routine permission.",
+    "rule": "A Feature Agent or Platform Agent executes the full bounded batch, solves ordinary technical puzzles, and uses safe reversible alternatives without requesting routine permission.",
     "allowed_local_actions": [
       "inspect admitted authority, source, contracts, tests, and tool output",
       "choose among equivalent in-scope implementation details",
@@ -490,7 +500,7 @@
   },
   "roles": [
     {
-      "role_id": "GLOBAL_ORCHESTRATOR",
+      "role_id": "CAMPAIGN_ORCHESTRATOR",
       "lifecycle": "fresh campaign-scoped, pinned for one campaign, archived and unpinned after accepted-live closure; never reused as the next campaign Orchestrator",
       "owns": [
         "portfolio and campaign admission",
@@ -525,11 +535,11 @@
         "project, design-system, and feature context blocker record",
         "closure receipt"
       ],
-      "handoff_in": "feature READY_FOR_GLOBAL_INTEGRATION, auditor emergency or consolidated disposition, runtime launch/blocker receipt",
+      "handoff_in": "feature READY_FOR_CENTRAL_REVIEW, Auditor emergency or consolidated disposition, Runtime launch/blocker receipt",
       "handoff_out": "feature admission, shared-custody decision, runtime integration/deployment custody, owner-only question"
     },
     {
-      "role_id": "FEATURE_LEAD",
+      "role_id": "FEATURE_AGENT",
       "lifecycle": "campaign-durable or persistent feature-family owner",
       "owns": [
         "observable feature outcome and boundaries",
@@ -551,28 +561,28 @@
         "independent audit acceptance",
         "owner-only policy"
       ],
-      "writer_authority": "exclusive writer for the admitted feature worktree except during an explicit platform-agent sublease",
+      "writer_authority": "exclusive writer for the admitted feature worktree; Platform Agents write only their separate campaign-local stable worktrees",
       "may_create": [
         "one macro-stage goal",
-        "fresh feature-bound platform agents",
+        "campaign-local Platform pool lease requests",
         "feature-local contract candidates",
         "substantial batch commits",
         "checkpoint manifests",
-        "READY_FOR_GLOBAL_INTEGRATION handoff"
+        "READY_FOR_CENTRAL_REVIEW handoff"
       ],
       "handoff_in": "campaign admission or prior immutable feature checkpoint",
       "handoff_out": "next feature owner in a cumulative stream, Campaign Orchestrator for shared conflict/integration, Auditor after exact deployment only"
     },
     {
       "role_id": "PLATFORM_AGENT",
-      "lifecycle": "on-demand, feature-exclusive, campaign-local, reusable for same-feature returns, archived at the feature/campaign boundary",
+      "lifecycle": "on-demand, campaign-local logical capability with one stable worktree and sequential supervision leases across Feature Agents; archived at campaign closure",
       "owns": [
         "one named platform capability seam",
         "source-backed advisory or bounded implementation within its capsule",
         "autonomous resolution of ordinary technical puzzles inside its capsule",
         "capability pseudocode and contextual implementation notes for its exact seam",
         "capability-specific hostile proof",
-        "exact return packet to Feature Orchestrator"
+        "exact return packet to the current Feature Agent supervisor"
       ],
       "does_not_own": [
         "feature intent",
@@ -584,15 +594,15 @@
         "independent acceptance",
         "owner-only decisions"
       ],
-      "writer_authority": "none for advisory mode; exclusive exact-path sublease or isolated child worktree only when explicitly admitted",
+      "writer_authority": "none for advisory mode; a materially needed implementation uses only the campaign-local stable Platform worktree under one supervision lease",
       "may_create": [
         "capability packet",
         "bounded implementation commit when writable",
         "hostile and affected checks",
         "handoff receipt"
       ],
-      "handoff_in": "feature/checkpoint/capability capsule from Feature Orchestrator",
-      "handoff_out": "directly to the Feature Orchestrator; shared-authority blocker may be copied to Campaign Orchestrator without transferring feature custody"
+      "handoff_in": "feature/checkpoint/capability capsule from the current Feature Agent supervisor",
+      "handoff_out": "directly to the current Feature Agent supervisor; shared-authority blocker may be copied to Campaign Orchestrator without transferring feature custody"
     },
     {
       "role_id": "INDEPENDENT_AUDITOR",
@@ -621,7 +631,7 @@
         "live-audit disposition"
       ],
       "handoff_in": "exact accepted source/artifact identity and later exact deployed identity",
-      "handoff_out": "ordinary feature findings to the matching Feature Orchestrator backlog; shared findings to Campaign Orchestrator; emergencies immediately to higher authority"
+      "handoff_out": "ordinary feature findings to the matching Feature Agent backlog; shared findings to Campaign Orchestrator; emergencies immediately to higher authority"
     },
     {
       "role_id": "CAMPAIGN_FINALIZER",
@@ -650,7 +660,7 @@
       "handoff_out": "exact final candidate and delta-only proof to the Auditor and Campaign Orchestrator"
     },
     {
-      "role_id": "GLOBAL_RUNTIME",
+      "role_id": "RUNTIME",
       "lifecycle": "the only persistent cross-campaign agent; pinned exclusive release operator",
       "owns": [
         "mechanical integration under exact semantic decisions",
@@ -936,15 +946,15 @@
   },
   "worktree_modes": [
     {
-      "mode_id": "FEATURE_ROOT_EXCLUSIVE",
-      "owner": "FEATURE_LEAD",
+      "mode_id": "FEATURE_ROOT_CUMULATIVE",
+      "owner": "FEATURE_AGENT",
       "use_when": "normal feature blueprint and build",
       "writers": 1,
-      "rule": "Feature Orchestrator is the exclusive writer except during an explicit sublease.",
+      "rule": "The Feature Agent is the exclusive writer for its cumulative feature root except while a declared platform lease owns a separate stable Platform worktree.",
       "handoff": "immutable feature checkpoint"
     },
     {
-      "mode_id": "PLATFORM_ADVISORY_NO_WORKTREE",
+      "mode_id": "PLATFORM_ADVISORY_READ_ONLY",
       "owner": "PLATFORM_AGENT",
       "use_when": "source guidance, contract review, proof design, or no material implementation seam",
       "writers": 0,
@@ -952,24 +962,16 @@
       "handoff": "capability advisory packet"
     },
     {
-      "mode_id": "PLATFORM_SAME_ROOT_SUBLEASE",
+      "mode_id": "PLATFORM_STABLE_WORKTREE_LEASE",
       "owner": "PLATFORM_AGENT",
-      "use_when": "one platform seam must edit the feature root and the Feature Orchestrator can pause writes",
+      "use_when": "a materially needed platform capability must make bounded changes in its campaign-local stable worktree",
       "writers": 1,
-      "rule": "Feature Orchestrator temporarily releases writer custody; agent receives exact paths, base, goal, proof, and expiry; custody returns after clean pushed handoff.",
-      "handoff": "sublease close receipt and exact commit"
-    },
-    {
-      "mode_id": "PLATFORM_ISOLATED_CHILD_WORKTREE",
-      "owner": "PLATFORM_AGENT",
-      "use_when": "material seam is independently committable or requires isolation",
-      "writers": 1,
-      "rule": "Fresh child worktree starts from the exact feature checkpoint. Feature Orchestrator integrates the returned commit after overlap classification.",
-      "handoff": "isolated commit/tree plus integration manifest"
+      "rule": "The current Feature Agent grants one supervision lease; the Platform Agent writes only its stable worktree allowlist, then returns a clean pushed checkpoint and releases the lease to AVAILABLE.",
+      "handoff": "content-addressed platform handoff receipt and exact commit/tree"
     },
     {
       "mode_id": "SHARED_CONTRACT_PRIMARY_WORKTREE",
-      "owner": "GLOBAL_ORCHESTRATOR_SELECTED_PRIMARY",
+      "owner": "CAMPAIGN_ORCHESTRATOR_SELECTED_PRIMARY",
       "use_when": "multiple features require one shared contract, schema, migration, or generated surface",
       "writers": 1,
       "rule": "Campaign Orchestrator selects one primary owner, allocates migrations/resources, and freezes competing writers. Consumers provide requirements and later rebind.",
@@ -984,8 +986,8 @@
       "handoff": "deduplicated audit disposition"
     },
     {
-      "mode_id": "GLOBAL_INTEGRATION_RELEASE_WORKTREE",
-      "owner": "GLOBAL_RUNTIME",
+      "mode_id": "RUNTIME_INTEGRATION_RELEASE_WORKTREE",
+      "owner": "RUNTIME",
       "use_when": "serialized accepted integration, artifact creation, deployment, or rollback",
       "writers": 1,
       "rule": "Runtime follows exact semantic decisions and accepted commit order; it never invents Product intent.",
@@ -994,14 +996,18 @@
   ],
   "platform_agent_capsule": {
     "required_fields": [
-      "feature_and_stage",
-      "feature_owner",
+      "campaign_id",
+      "logical_capability_id",
+      "logical_agent_id",
+      "execution_session_id",
+      "current_feature_assignment",
       "direct_supervisor_and_continuity_deputy",
       "capability_id",
       "mode_id",
       "exact_source_commits_and_trees",
-      "worktree_or_read_only_source_location",
-      "lease_or_sublease",
+      "stable_platform_worktree",
+      "supervision_lease",
+      "request_queue_position",
       "observable_outcome",
       "exact_seam",
       "path_allowlist",
@@ -1015,8 +1021,8 @@
       "return_route",
       "archive_condition"
     ],
-    "freshness": "A Platform Agent is fresh for one campaign/feature/capability capsule and remains available for same-feature checkpoints until that capsule closes.",
-    "reuse_forbidden": "A Platform Agent is never reused after its feature/campaign/repair boundary; it may be reused only by the same Feature Orchestrator inside that bound capsule and is never shared with another feature.",
+    "freshness": "A logical Platform Agent is created once per materially used capability per campaign, retains one stable worktree and execution identity, and is available for sequential Feature-Agent supervision leases until campaign closure.",
+    "reuse_rule": "The logical Platform Agent and stable worktree are intentionally reused across Feature Agents in the same campaign. A completed lease is released to AVAILABLE with an exact clean pushed handoff; a repair generation or later campaign receives a fresh binding and never mutates the completed lease history.",
     "model_policy": "Project context selects the model and reasoning posture; the portable registry requires freshness and exact binding, not a provider-specific model."
   },
   "context_capsule": {
@@ -1058,74 +1064,39 @@
   },
   "feature_workflow": [
     {
-      "step": 1,
-      "state": "CAMPAIGN_ADMITTED",
-      "owner": "GLOBAL_ORCHESTRATOR",
-      "action": "Bind feature owner, exact bases, feature root, lease, protected surfaces, shared-resource posture, and rollback baseline."
+      "stage": "BLUEPRINT",
+      "owner": "FEATURE_AGENT",
+      "action": "Bind the feature outcome, exact source reality, boundaries, dependencies, applicable question slice, smallest reversible batch, and material Platform seams."
     },
     {
-      "step": 2,
-      "state": "BLUEPRINT",
-      "owner": "FEATURE_LEAD",
-      "action": "Reframe outcome, inspect reality, classify contracts/dependencies, select the smallest reversible batch, and identify material platform seams."
+      "stage": "BUILD",
+      "owner": "FEATURE_AGENT",
+      "action": "Run substantial batches on the cumulative feature root, acquire campaign-local Platform leases only for material seams, run affected stable checks, and push an immutable checkpoint."
     },
     {
-      "step": 3,
-      "state": "CAPABILITY_SELECTION",
-      "owner": "FEATURE_LEAD",
-      "action": "For every generic capability, classify MATERIAL_ADVISORY, MATERIAL_WRITER, NO_MATERIAL_SEAM, DEFERRED_OWNER_ONLY, or NOT_APPLICABLE_WITH_AUTHORITY."
+      "stage": "LAUNCH",
+      "owner": "RUNTIME",
+      "action": "After Campaign Orchestrator acceptance, integrate the exact candidate, build or rebind the artifact, verify rollback, deploy, and return the live identity or a precise mechanical blocker."
     },
     {
-      "step": 4,
-      "state": "PLATFORM_AGENT_WAVE",
-      "owner": "FEATURE_LEAD",
-      "action": "Generate fresh agents only for material capabilities, choose advisory/sublease/isolated mode, collect packets or commits, archive agents, and consolidate once."
-    },
-    {
-      "step": 5,
-      "state": "BUILD",
-      "owner": "FEATURE_LEAD",
-      "action": "Implement substantial batches, integrate platform returns, run affected proof, invoke FAILURE_REFRAME for a materially distinct failure, build artifact, commit/push, and keep one cumulative manifest."
-    },
-    {
-      "step": 6,
-      "state": "BUILDER_READINESS",
-      "owner": "FEATURE_LEAD",
-      "action": "Give the exact integrated candidate to material platform capabilities; consolidate one must-fix batch; move noncritical findings to IMPROVE."
-    },
-    {
-      "step": 7,
-      "state": "READY_FOR_GLOBAL_INTEGRATION",
-      "owner": "GLOBAL_ORCHESTRATOR",
-      "action": "Accept or return one consolidated correction batch; resolve shared semantic conflicts; issue exact Runtime custody."
-    },
-    {
-      "step": 8,
-      "state": "LAUNCH",
-      "owner": "GLOBAL_RUNTIME",
-      "action": "Integrate accepted commits, build/rebind artifacts, verify environment and rollback, deploy exact identity, and return live draft or mechanical blocker."
-    },
-    {
-      "step": 9,
-      "state": "LIVE_AUDIT",
+      "stage": "LIVE AUDIT",
       "owner": "INDEPENDENT_AUDITOR",
-      "action": "Audit exact live identity; route ordinary findings to next-cycle owners and emergencies to higher authority."
+      "action": "Inspect the exact deployed identity and return question-bound findings directly to the affected Feature Agent or to the Campaign Orchestrator for shared custody."
     },
     {
-      "step": 10,
-      "state": "CLOSURE",
-      "owner": "GLOBAL_ORCHESTRATOR",
-      "action": "Verify Git, evidence, deployment, rollback, clean worktrees, archived agents, released resources, retained backlog, and final accepted-live closure."
+      "stage": "IMPROVE",
+      "owner": "FEATURE_AGENT",
+      "action": "Apply only grouped, question-bound or concrete-value improvements; reuse unaffected evidence and return to the current macro-stage when a material repair is required."
     }
   ],
   "failure_reframe_workflow": {
     "owner": "The direct supervising agent, never the building or executing agent that encountered the failure.",
     "supervision": {
-      "PLATFORM_AGENT": "FEATURE_LEAD",
-      "FEATURE_LEAD": "GLOBAL_ORCHESTRATOR",
-      "GLOBAL_RUNTIME": "GLOBAL_ORCHESTRATOR",
-      "INDEPENDENT_AUDITOR": "GLOBAL_ORCHESTRATOR for routing only without weakening audit independence",
-      "GLOBAL_ORCHESTRATOR": "admitted owner or higher authority only for a portable owner-only class; otherwise bounded self-reframe without Product custody expansion"
+      "PLATFORM_AGENT": "FEATURE_AGENT",
+      "FEATURE_AGENT": "CAMPAIGN_ORCHESTRATOR",
+      "RUNTIME": "CAMPAIGN_ORCHESTRATOR",
+      "INDEPENDENT_AUDITOR": "CAMPAIGN_ORCHESTRATOR for routing only without weakening audit independence",
+      "CAMPAIGN_ORCHESTRATOR": "admitted owner or higher authority only for a portable owner-only class; otherwise bounded self-reframe without Product custody expansion"
     },
     "supervisor_liveness": {
       "deadline": "Project context binds one finite response interval.",
@@ -1246,7 +1217,7 @@
       "unresolved seams",
       "custody release"
     ],
-    "feature_to_global": [
+    "feature_to_campaign_orchestrator": [
       "integrated commits/trees",
       "cumulative manifest",
       "shared-contract versions",
@@ -1254,7 +1225,7 @@
       "rollback",
       "next-cycle backlog"
     ],
-    "global_to_runtime": [
+    "campaign_orchestrator_to_runtime": [
       "accepted integration order",
       "semantic conflict decisions",
       "exact source/artifact target",
@@ -1268,7 +1239,7 @@
       "rollback identity",
       "admitted live endpoints and roles"
     ],
-    "auditor_to_global": [
+    "auditor_to_campaign_orchestrator": [
       "exact live binding",
       "deduplicated causal roots",
       "emergency classification",
@@ -1278,12 +1249,12 @@
   },
   "selection_algorithm": [
     "If no material seam exists, return NO_MATERIAL_SEAM and create no platform agent.",
-    "If expertise is needed but no Product edit is needed, use PLATFORM_ADVISORY_NO_WORKTREE.",
-    "If one capability must edit exact paths and the Feature Orchestrator can pause, use PLATFORM_SAME_ROOT_SUBLEASE.",
-    "If the seam is independently committable or needs isolation, use PLATFORM_ISOLATED_CHILD_WORKTREE.",
+    "If expertise is needed but no Product edit is needed, use PLATFORM_ADVISORY_READ_ONLY.",
+    "If one capability needs bounded implementation, acquire the campaign-local stable Platform worktree lease for the current Feature Agent.",
+    "After the capability checkpoint is clean and pushed, release the lease to AVAILABLE; the next Feature Agent receives the exact current platform identity and context delta.",
     "If multiple features contend for one contract/schema/migration/generated surface, route to SHARED_CONTRACT_PRIMARY_WORKTREE.",
     "If independent acceptance is required, use AUDIT_EVIDENCE_ROOT after exact candidate or deployment identity exists.",
-    "If integration, artifact, deployment, or rollback execution is required, only GLOBAL_INTEGRATION_RELEASE_WORKTREE may write."
+    "If integration, artifact, deployment, or rollback execution is required, only RUNTIME_INTEGRATION_RELEASE_WORKTREE may write."
   ],
   "campaign_compiler": {
     "purpose": "Allow the Campaign Orchestrator to compile accepted governance and project authority context into one cumulative single-root development campaign by default, with multi-lane execution admitted only by an explicit evidence-backed exception.",
@@ -1311,21 +1282,21 @@
       "Order features cumulatively inside the one admitted root.",
       "Allocate one campaign root, branch namespace, exclusive lease, migration range, contract namespace, and rollback baseline.",
       "Create one campaign-open record; spawn and pin one fresh campaign-scoped Orchestrator, one fresh Auditor, and the admitted fresh Feature Agents using the exact `<Role> <CampaignVersion> 2.1rc` name; activate only the first feature owner in the root or each exceptionally admitted lane.",
-      "Allow Feature Orchestrators to run Blueprint and Build autonomously under the portable workflow.",
-      "Monitor concrete checkpoint progress at the configured interval while active, repair safe broken chains without creating extra goals, roots, or approval loops, and suspend both the same goal and its progress timer only for one exact true blocker.",
+      "Allow Feature Agents to run Blueprint and Build autonomously under the portable workflow.",
+      "Monitor concrete checkpoint progress at the configured interval while active, repair safe broken chains without creating extra goals, roots, or approval loops, and hold only the dependent outcome for one exact true boundary while unaffected work continues.",
       "At each substantial pushed checkpoint, compile a checkpoint-bound First-Pass Candidate identity, classify changed surfaces, create and pin only the required read-only audit workers, and run the applicable four audit disciplines in parallel while safe root progress continues.",
       "At the terminal cumulative checkpoint, require the FIRST_PASS_CANDIDATE quality floor and settle Functionality, Design/UI/Shell/Navigation, Security, and Code Quality/Hygiene exactly once; immediate critical, wrong-direction, foundational-dependency, or safety/security findings return to the first-pass owner.",
       "For a standard or foundational campaign, create one fresh Campaign Finalizer in a clean derived worktree from the exact terminal first-pass commit/tree. Give it one consolidated causal correction batch and no intent, acceptance, deployment, exception, or self-acceptance authority.",
       "After finalizer completion, compile one delta-only audit from failed, directly touched, dependent, and small smoke questions; reuse unaffected evidence and permit at most one targeted repair pass plus one supervisor-selected reframe per causal root.",
       "At a coherent end-to-end milestone, accept the exact finalizer candidate only when the three ordered Product roots are RC_READY rather than merging individual feature checkpoints to the shared default branch.",
-      "At terminal handoff to Runtime, require the current Auditor to submit the next-campaign candidate, then create and pin the fresh next-campaign Orchestrator, Auditor, and Feature Agents for orientation only; hold their Product writer lease until the current release is accepted live.",
+      "At terminal handoff to Runtime, require the current Auditor to submit the next-campaign candidate, then orient only the fresh next-campaign Orchestrator; create no next Auditor, Feature Agent, Platform Agent, or Product writer lease until accepted-live closure and explicit next-campaign admission.",
       "Converge exact terminal commits once through the Runtime after Campaign Orchestrator semantic decisions.",
       "Mint and deploy the exact integrated milestone once, audit exact live identity, route ordinary findings to the next-cycle backlog, and close."
     ],
     "topology_selection": {
       "SINGLE_LANE": {
         "admission": "default; no exception proof is required",
-        "shape": "One cumulative campaign root passes sequentially through causally ordered Feature Orchestrators. For multiple repositories, one cumulative worktree per repository travels together as one custody unit.",
+        "shape": "One cumulative campaign root passes sequentially through causally ordered Feature Agents. For multiple repositories, one cumulative worktree per repository travels together as one custody unit.",
         "checkpoint_rule": "Each feature completes one substantial usable batch, runs affected stable proof, commits and pushes an immutable checkpoint, closes its lease, and transfers the same clean root to the next exact owner.",
         "integration_rule": "Feature checkpoints are not individually merged to the shared default branch. One terminal cumulative checkpoint is integrated, minted, and deployed at the coherent milestone.",
         "benefit": "Simplest custody, integration, rollback, and conflict surface."
@@ -1341,7 +1312,7 @@
           "measured or source-backed expected parallelism materially reduces milestone time relative to one cumulative root",
           "bounded reconciliation, migration, rollback, and proof cost is lower than the expected parallelism benefit"
         ],
-        "shape": "Two or more cumulative roots progress in parallel; each root passes sequentially through its assigned Feature Orchestrators and ends in one immutable terminal checkpoint.",
+        "shape": "Two or more cumulative roots progress in parallel; each root passes sequentially through its assigned Feature Agents and ends in one immutable terminal checkpoint.",
         "benefit": "Parallel Product progress without multiple owners writing the same truth."
       },
       "lane_count_rule": "Governance 2.1rc activates exactly one cumulative root. The retained MULTI_LANE_CASCADE predicates may inform a later implementation but cannot mint a second writer root.",
@@ -1366,7 +1337,7 @@
       "trigger": "A material dependency, ownership, resource, rollback, or contract fact changes the compiled lane structure.",
       "allowed_only_when": [
         "every affected lane is at an immutable pushed checkpoint",
-        "no affected lane or platform sublease has an active writer",
+        "no affected lane or Platform Agent supervision lease has an active writer",
         "unaffected lanes can preserve their exact roots and leases",
         "the dependency and ownership graph is recomputed from current identities",
         "the amendment preserves the append-only checkpoint ledger and rollback"
@@ -1402,7 +1373,7 @@
         "current_owner_stage_goal_and_next_action"
       ],
       "cumulative_rule": "Each feature starts from the prior immutable campaign checkpoint and may not restart, fork an unadmitted root, erase earlier accepted work, or hand off an unpushed dirty worktree.",
-      "writer_rule": "Exactly one Feature Orchestrator or admitted platform sublease holds writer custody for a lane at a time.",
+      "writer_rule": "Exactly one Feature Agent holds Product-lane writer custody at a time. A Platform Agent writes only its separate stable platform worktree under one current Feature-Agent supervision lease; it never owns the Product lane lease.",
       "handoff_rule": "A feature checkpoint closes its lease and transfers the same cumulative campaign root to the next exact owner.",
       "merge_rule": "Intermediate feature checkpoints remain on the cumulative campaign branch and are not merged individually to the shared default branch."
     },
@@ -1423,7 +1394,7 @@
       "conflict": "Campaign Orchestrator chooses one primary owner and exact semantic outcome; Runtime performs only the mechanical convergence."
     },
       "autonomy": {
-      "global_orchestrator_may": [
+      "campaign_orchestrator_may": [
         "choose lane topology and count",
         "assign feature order and leases",
         "select primary owners for shared seams",
@@ -1433,18 +1404,18 @@
         "continue unaffected lanes around a dependent blocker",
         "issue Runtime convergence and deployment custody after acceptance"
       ],
-      "global_orchestrator_must_not": [
+      "campaign_orchestrator_must_not": [
         "manage routine feature implementation",
         "require approval for an in-scope feature stage transition",
         "create micro-review loops for nonmaterial evidence discrepancies",
         "reinterpret feature or domain intent",
         "allow simultaneous writers in one lane",
-        "allow a platform agent to retain campaign custody",
+        "allow a Platform Agent to retain campaign or Product-lane custody",
         "let Runtime decide semantic conflicts",
         "let Auditor implement findings"
       ],
-      "owner_escalation": "Only an exact portable true-blocker class with exhausted safe alternatives interrupts the owner. The campaign-scoped Orchestrator records TRUE_BLOCKER_SUSPENDED, suspends the same macro goal and configured progress timer, keeps one resolution watcher, and resumes the same goal only after mechanical resolution.",
-      "agent_context_rule": "Every Feature Orchestrator and platform agent receives one exact context capsule: the admitted governance identity plus only the project-context and task-specific authority objects relevant to its feature/capability. The agent uses the authority corpus for intent, ownership, boundaries, contracts, and failure law, then inspects source/runtime for current reality."
+      "owner_escalation": "Only an exact portable true-boundary class with exhausted safe alternatives interrupts the owner. The campaign-scoped Orchestrator records the affected outcome as ON_HOLD_DEPENDENT_OUTCOME, keeps unrelated work active, and resumes the held outcome only after mechanical resolution.",
+      "agent_context_rule": "Every Feature Agent and Platform Agent receives one exact context capsule: the admitted governance identity plus only the project-context and task-specific authority objects relevant to its feature/capability. The agent uses the authority corpus for intent, ownership, boundaries, contracts, and failure law, then inspects source/runtime for current reality."
     },
     "progress_control": {
       "concrete_progress": [
@@ -1454,14 +1425,14 @@
         "resolved dependency or accepted contract version",
         "exact blocker with an immediately executing in-scope recovery"
       ],
-      "stall_rule": "If no concrete progress occurs within the project-context progress interval while the campaign is active, inspect active owners, goals, budgets, leases, worktrees, and dependencies; repair the in-scope broken chain immediately. A TRUE_BLOCKER_SUSPENDED campaign has no stall timer until its exact resume check passes.",
+      "stall_rule": "If no concrete progress occurs within the project-context progress interval while a dependent outcome is active, inspect active owners, goals, budgets, leases, worktrees, and dependencies; repair the in-scope broken chain immediately. A held dependent outcome has no progress timer until its exact resume check passes; unrelated work continues.",
       "forbidden_recovery": [
         "new micro goal",
         "extra root without topology amendment",
         "cross-scope custody",
         "repeated broad review",
-        "restarting completed discovery",
-      "pausing unaffected lanes for an ordinary dependency or puzzle; an exact owner-required true blocker pauses the campaign"
+      "restarting completed discovery",
+      "pausing unaffected outcomes for an ordinary dependency or puzzle"
       ]
     },
     "convergence": {
@@ -1478,10 +1449,10 @@
     }
   },
   "hostile_boundaries": [
-    "Feature Orchestrator silently edits another feature root.",
+    "Feature Agent silently edits another feature root.",
     "Two writers hold one feature root simultaneously.",
     "Platform agent redefines feature intent or owner-only policy.",
-    "Completed platform agent is reused.",
+    "A Platform Agent is leased without AVAILABLE state, an exact supervision lease, or a clean pushed handoff.",
     "Advisory agent claims implementation or readiness.",
     "Auditor edits Product or closes its own finding.",
     "Campaign Orchestrator becomes routine implementation manager.",

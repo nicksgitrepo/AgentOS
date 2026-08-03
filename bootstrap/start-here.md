@@ -1,317 +1,101 @@
 # Governance 2.1rc Bootstrap — Start Here
 
-Status: `RELEASE CANDIDATE — LAUNCH READINESS`
+Status: `PREPARED_NOT_ACTIVATED`
 
-Governance 2.1rc is a portable project bootstrap, authority-corpus maintainer,
-campaign controller, specialist handoff protocol, audit workflow, evidence
-library, and release lifecycle. It contains no project identity or domain
-policy. Those enter only through the project context created or imported
-during Bootstrap.
+AgentOS is a portable setup and campaign-governance kernel. It contains no real project, repository, provider, deployment, credential, task, or domain identity. Those facts enter through a typed Project Context.
 
-The exact files and SHA-256 identities for this release candidate are in
-`schemas/bootstrap-binding.v1.json`. That machine binding is the
-only digest inventory. This article does not duplicate a recursively stale
-hash table.
+The binding at [schemas/bootstrap-binding.v1.json](../schemas/bootstrap-binding.v1.json) is the exact digest inventory. Verify it before consequential setup.
 
-## Start
-
-1. Treat the directory containing this file as the admitted project root.
-2. Name the current task `Bootstrap 2.1rc`.
-3. Pin the task when the host supports pinning.
-4. Read the exact bootstrap binding and verify every bound file.
-5. Resume an existing valid Bootstrap state or create a new one.
-6. Ask the Bootstrap Interview's first question before any discovery or technical setup details.
-7. If the owner permits discovery, run `control/bootstrap-discovery.mjs discover <project-root> <mode>`
-   and import its typed, secret-free observations.
-8. Persist every answer through the Bootstrap controller.
-9. In direct mode, continue the same Bootstrap task. In the optional Markdown exchange,
-   export the exact phase Markdown prompt plus its canonical JSON manifest and import only
-   a schema-valid response bound to that package.
-10. Bootstrap itself imports, aligns/refactors, or creates the authority corpus, Design
-    Bible, and intent pages. It never delegates those writes to another agent.
-11. Do not open a development campaign until authority corpus, Design Bible, configuration,
-    and independent setup-audit completion are sealed.
-12. Ask whether ongoing campaigns use `GPT_ASSIST` or `DIRECT_ONLY`.
-
-Missing, ambiguous, stale, copied, or mismatched authority is `UNPROVEN` and
-fails consequential work closed.
-
-## First-run choices
-
-Bootstrap detects authority and design sources but never chooses for the user.
-The authority-corpus path is one of:
-
-- `IMPORT`;
-- `REFACTOR_PREVIOUS_GOVERNANCE`;
-- `CREATE_NEW`.
-
-The Design Bible path is independently one of:
-
-- `IMPORT`;
-- `REFACTOR_PREVIOUS_GOVERNANCE`;
-- `CREATE_NEW`;
-- `DEFER_WITH_EXPLICIT_UNAVAILABLE_STATE`.
-
-Import and refactor preserve the source. The same `Bootstrap 2.1rc` task
-performs the selected operations, builds the normalized authority tree and
-indexes, checks consistency, and records exact phase outputs. A fresh
-read-only setup Auditor inspects the completed result; Bootstrap remains the
-sole setup writer.
-
-## First interaction
-
-Before any discovery, the first question is exactly:
-
-> May Bootstrap perform safe read-only discovery of this project so it can answer technical setup questions for you?
-
-The recommended answer is `RECOMMENDED`: Bootstrap may then inspect source,
-configuration shape, documentation, tests, and available local tool metadata
-read-only, then ask only material owner questions. The other setup depths are
-`GUIDED`, `EXPERT`, `LOCAL_ONLY`, and `MANUAL`; `MANUAL` runs no discovery.
-Discovery never modifies, authenticates, requests secrets, spends money,
-publishes, deploys, or deletes.
-Detected facts are labelled `OBSERVED_FACT`, `CANDIDATE_INTERPRETATION`,
-`CONFLICT`, or `UNKNOWN`; they never become owner intent automatically.
-
-The optional ChatGPT exchange is a transport for Bootstrap Interview prompts,
-not a setup mode or authority. It may receive a compact Markdown prompt and
-canonical JSON package, but it has no repository, provider, authority, goal, or
-custody rights.
-
-Bootstrap asks roughly six to nine compact owner questions: project boundary,
-north-star outcome, first proving workflow, delivery boundary, protected and
-true-blocker boundaries, authority-corpus source, any unresolved design or
-technology constraint, and model economics. It skips questions answered by
-discovery or a safe default and stops when the first route is sufficient.
-
-For an imported authority corpus, Bootstrap must first create and verify an
-immutable `legacy.zip`, `legacy.manifest.json`, `legacy.index.jsonl`, and
-`legacy.receipt.json` at the new authority-corpus root. Only after that receipt
-is sealed may it build or rewrite the new corpus. The legacy archive is a
-lookup source, not current authority.
-
-The optional Markdown exchange is separate from `workflow.gpt_assist_mode`.
-The latter controls ongoing campaigns:
-
-- `GPT_ASSIST`: the Auditor emits one compact status/question Markdown; ChatGPT
-  asks only its listed questions one at a time, stops when they are answered
-  or deferred, and returns one bound response Markdown; the Auditor then
-  corrects the next-campaign candidate packet. A later admitted next-release
-  Orchestrator consumes that packet; no successor session is created at this
-  handoff.
-- `DIRECT_ONLY`: owner context is collected through the configured direct
-  project workflow without a ChatGPT handoff.
-
-In both modes the Auditor is read-only. The next Campaign Orchestrator becomes
-the work-in-progress authority-corpus writer only after a distinct campaign is
-admitted, and standard articles remain the last accepted-live release until
-accepted-live closure.
-
-Foundation model recommendations use current host spawnability plus an
-optional current comparison source. A candidate below the configured
-completion-reliability floor is excluded, even when it is cheap. `ECO_CONTINUOUS`
-means up to twenty work slots across a 24/7 week; `STANDARD_WORKWEEK` means a
-normal 40-hour week; `PERFORMANCE` prioritizes elapsed time; and `CUSTOM`
-accepts typed conditions. Recommendations minimize expected cost per accepted
-result, including retries, rework, coordination, and failure risk—not token
-price alone. Capability gates include context, required tools, reasoning,
-privacy, deadline, and role. If no candidate is eligible or feasible under the
-budget, Bootstrap fails closed. Governance never hardcodes a model name.
-
-## Substantial campaign cascade
-
-The canonical machine state is `FIRST_PASS_CANDIDATE`, not “rough draft.” A
-substantial campaign moves one logical Product lineage through immutable
-checkpoints, runs the applicable read-only lenses in parallel, and settles the
-four terminal disciplines: `FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`,
-`SECURITY`, and `CODE_QUALITY_HYGIENE`. Catastrophic, wrong-direction,
-foundational, or critical security/safety findings return to the first-pass
-owner.
-
-The `CAMPAIGN_FINALIZER` is created only after terminal first-pass settlement.
-It receives a fresh exclusive worktree based on the exact terminal checkpoint
-and one consolidated causal correction batch. It has no intent, acceptance,
-deployment, exception, or self-acceptance authority. After finalization, only
-failed, touched, dependent, and a small smoke set are retested; unaffected
-evidence is reused. One finalization pass and at most one targeted repair pass
-are normal, with one supervisor-selected reframe per causal root.
-
-## Portable authority numbering
-
-Bootstrap uses stable, non-overlapping half-open article blocks:
-
-- `000`: Bootstrap and recovery entry;
-- `0001–0099`: portable governance;
-- `0100–0199`: shared project context and documentation;
-- `0200–0299`: the first allocated feature;
-- every later 100-number block: one additional feature.
-
-Each feature block has fixed compact slots for its index, intent, gates,
-workflows, ownership, dependencies, contracts, data/RLS, backend/API,
-UI/views, shell/navigation, integrations, security, runtime/recovery, tests,
-unavailable behavior, implementation map, event log, handoffs, decisions,
-release history, open questions, and deferred work. Accepted IDs never move.
-Adding a feature uses the next free block; overflow uses a linked extension
-block rather than renumbering old authority. Filenames are
-`<number>-<short-stable-slug>.md`.
-
-Active campaign records remain in a separate work-in-progress tree. Standard
-numbered articles describe the last accepted live release and are promoted
-only after accepted-live closure.
-
-## Browser, automation, and authentication
-
-Bootstrap never assumes a browser, automation framework, or authentication
-route. It asks the user to select each applicable route and seals those
-choices in the configuration snapshot.
-
-1. Open the exact configured interactive browser through its admitted control
-   surface. Never invoke an operating-system default browser, generic
-   `open URL` action, or unconfigured fallback.
-2. Use only the configured automation framework and explicit browser project
-   with an isolated automation profile. Never attach automation to the
-   owner’s everyday browser profile.
-3. Use only the configured builder, Auditor, and Runtime authentication route
-   for that environment. A project-specific development-auth system is
-   context, not portable governance.
-4. Treat provider login and application login as separate boundaries.
-5. Keep tokens, cookies, tickets, nonces, signed links, credentials, and
-   protected payloads runtime-only.
-6. If selected browser control is unavailable, return
-   `SELECTED_BROWSER_CONTROL_UNAVAILABLE`.
-   Never substitute another browser.
-
-## Provider access
-
-Bootstrap discovers common version-control, cloud, hosting, routing, database,
-container, and infrastructure tools and permits a user-defined list of
-additional providers. Installed tooling, authenticated identity, and required
-permission are separate facts.
-
-When Runtime lacks required external access, it returns
-`UNAVAILABLE_CREDENTIAL_OR_EXTERNAL_ACCESS` with:
-
-- provider and environment;
-- a public, non-sensitive HTTPS authorization origin/path;
-- an instruction to open the exact configured browser explicitly;
-- the mechanical resume check;
-- the exact suspended goal.
-
-The Orchestrator suspends the same goal and progress timer during that true
-blocker. It resumes both only after the access check succeeds. Sensitive or
-signed authorization links are never stored.
-
-## Deterministic question and action loop
+## Bootstrap path
 
 ```text
-state := load_or_create_bootstrap_state(project_root)
-
-while state is not sealed:
-  verify(state)
-  discovery := read_only_discovery(project_root)
-
-  if discovery materially differs:
-    reconcile_discovery_without_retaining_secrets()
-
-  question := next_deterministic_unresolved_question(state)
-  if question exists:
-    ask_exactly_one(question)
-    persist_answer_atomically()
-    continue
-
-  if current_phase_context_is_complete_and_output_is_missing:
-    Bootstrap_imports_aligns_or_creates_the_phase_output()
-    read_back_import_bytes_and_real_git_or_typed_local_output_identity()
-    verify_and_content_address_phase_output()
-    append_phase_output_atomically()
-    continue
-
-  if Bootstrap_findings_need_owner_intent:
-    ask_exactly_one_material_question()
-    persist_answer_atomically()
-    continue
-
-  if independent_setup_audit_is_due:
-    spawn_fresh_pinned_read_only_auditor()
-    bind_report_and_reconcile_material_findings()
-    continue
-
-  seal_append_only_configuration_snapshot()
+read-only discovery
+        -> compact unresolved questions
+        -> complete exact creation plan
+        -> display plan and digests
+        -> APPROVE_EXACT_PLAN
+        -> resumable staging transaction
+        -> independent setup audit
+        -> sealed project context and authority corpus
 ```
 
-Question order, answer types, allowed choices, effects, and next-question
-selection are machine validated. Freeform answers cannot bypass an enumerated
-choice or typed custom-value rule.
+Bootstrap may discover facts but cannot turn a discovery fact into owner intent. It asks only for material intent, protected boundary, or unresolved choice. It chooses safe configuration defaults when governance already supplies them and reports those defaults in the plan.
 
-## Setup launch
+Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, deployment markers, and available local tools. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
 
-After every phase output and the independent setup audit are sealed,
-Bootstrap asks exactly:
+## Questions
 
-> `<ProjectName>'s 2.1rc environment is ready for launch. Proceed?`
+The compact catalog covers:
 
-Only `PROCEED` advances. Bootstrap resolves the user-configured Auditor model,
-emits one fresh pinned first-Auditor activation, and verifies an exact session
-distinct from both Bootstrap and the setup Auditor is actively designing the
-initial campaign. The working observation must name the exact activated
-session. The first Auditor is read-only:
-it turns authority and current source into one dependency-ordered campaign,
-then creates and pins that campaign’s fresh Orchestrator from the configured
-model rules. Only after working-state proof does Bootstrap thank the user,
-complete its setup goal, and unpin itself.
+- project identity, boundary, users, outcome, and non-goals;
+- the north-star intent and smallest proving workflow;
+- protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent boundaries;
+- authority-corpus source and legacy preservation;
+- design authority and required user/device/state coverage when visible surfaces exist;
+- technical constraints, testing, authentication, deployment, and rollback where discovery cannot establish them;
+- security standard identity and atomic requirement IDs;
+- model economics and operating conditions;
+- persistent Runtime binding and the first campaign context.
 
-## Campaign operation
+The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
 
-After setup, the Campaign Orchestrator compiles one deterministic dependency
-order. A single cumulative campaign root is the default. Multi-lane execution
-requires explicit evidence that the lanes are genuinely independent.
+## Exact plan and approval
 
-Each dependency owner receives:
+The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
 
-- one fresh pinned Feature Agent;
-- the same cumulative root when its predecessor hands off;
-- one host goal with exact instruction and `DONE WHEN` digests;
-- one exclusive lease;
-- the compact project context needed for that dependency.
+The owner approves the exact displayed plan with:
 
-Platform specialists are created on demand only for material seams. They work
-within the Feature Agent’s root and authority, solve ordinary puzzles
-autonomously, and report only a compact result. Changed surfaces determine the
-required read-only seam reviews; Security is always included. Findings bind
-the exact checkpoint and return material corrections to the originating
-Feature Agent at the next stable handoff. A rejection never erases accepted
-work.
+```text
+APPROVE_EXACT_PLAN
+```
 
-At the configured progress interval, except during a recorded true blocker, the Orchestrator
-compares the authority snapshot with local and remote Git, goal, lease,
-checkpoint, agent, Auditor, Runtime, deployed, and rollback reality. It writes
-only semantic changes. No progress triggers immediate broken-chain recovery.
+Approval binds both the plan digest and the discovery digest. A changed plan, changed discovery, changed source observation, or mismatched digest is rejected. Generic `PROCEED` is not a valid setup decision.
 
-## Evidence and retention
+Execution is resumable and transactional. It stages under the admitted project root, verifies readback, seals state, and promotes only after the independent setup Auditor proves exact plan identity, approval, context separation, no secrets, Runtime binding, authority-corpus output, and the three-root slice. Re-running an exact sealed plan is idempotent; a different plan cannot overwrite it.
 
-Active authority contains compact status, gates, decisions, paths, symbols,
-current checkpoint, blocker, and next action. Raw logs, screenshots, research,
-test output, and receipts live in the release evidence dossier.
+## Legacy preservation
 
-The evidence active-window length is a Bootstrap preference. At the configured
-boundary, the exact release dossier becomes a deterministic verified ZIP in
-the historical evidence library. Historical archives are not deleted.
+When an authority corpus is imported or refactored, Bootstrap first creates and verifies these files at the new authority root:
 
-## Launch boundary
+```text
+legacy.zip
+legacy.manifest.json
+legacy.index.jsonl
+legacy.receipt.json
+```
 
-Feature agents build and fix bugs until their terminal checkpoint is ready.
-Only Runtime receives the completed campaign root for merge, release, and
-deployment. The independent Auditor verifies the exact deployed identity.
-Standard authority is updated only after accepted-live closure; the campaign
-article remains the recovery source until then.
+The archive preserves exact source bytes and records source repository/commit/tree or an explicit non-Git observation, dirty/untracked state, exclusions, entry hashes, and readback. The source is rechecked before replacement writes. The archive is historical lookup, never current authority.
 
-Governance 2.1rc is launch-ready only when the binding, controllers, portable
-articles, README, direct tests, hostile tests, and retained compatibility
-tests all pass from the exact candidate.
+## Authority corpus
 
-Until an explicit generation-open record exists, this candidate:
+Creation is project-context driven and produces the canonical roots: project context, goals, Design Authority, features, platform capabilities, campaigns, decisions, cases, evidence indexes, archive, and an evidence library. Root variables and article numbering come from [governance/2.1rc/portable-authority-corpus-format.md](../governance/2.1rc/portable-authority-corpus-format.md). Imported accepted article IDs are preserved; new feature blocks are allocated by unsigned UTF-8 order and never renumbered.
 
-- does not activate or globally adopt Governance 2.1rc;
-- does not rebind an active campaign or release;
-- does not create a Product task, goal, worktree, lease, or deployment;
-- does not infer or replace project-specific authority.
+Project-specific extensions may add facts or stricter constraints, but cannot weaken or rewrite the portable kernel. A clean synthetic project must compile without product-specific context.
+
+## Model economics
+
+Bootstrap recommends models against a typed completion-reliability floor, capability requirements, current market snapshot, host capacity, rate limits, concurrency, duty cycle, deadlines, and budget. It estimates expected cost per accepted result, including retries and rework. A cheap model below the completion floor is excluded. `ECO_CONTINUOUS` describes a 168-hour week with up to twenty work slots; `STANDARD_WORKWEEK` describes 40 hours; `PERFORMANCE` prioritizes elapsed time; `CUSTOM` requires typed conditions. No eligible or feasible model fails closed.
+
+## Product acceptance
+
+The Product engine has exactly three ordered roots:
+
+1. `FUNCTION_REQUIREMENTS`
+2. `DESIGN_BIBLE`
+3. `SECURITY`
+
+Answers are `YES`, `NO`, `UNKNOWN`, `NOT_APPLICABLE`, or `EXCEPTION_REQUESTED`. Lifecycle is separate: `UNEVALUATED`, `EVIDENCE_PENDING`, `OPEN_REPAIR`, `VERIFIED`, or `INVALIDATED`. A repair invalidates only dependent answers. Code quality is an audit discipline, not a fourth root.
+
+## First campaign handoff
+
+Bootstrap remains separate from Product execution. After setup is independently audited and explicitly admitted, the first campaign compiles one cumulative root by default. Platform Agents are created on demand as a campaign-local reusable pool with sequential Feature-Agent leases. Runtime remains persistent across campaigns.
+
+The current Auditor may clear a release for deployment and prepare a next-campaign candidate. That candidate creates only an orientation-only next Campaign Orchestrator. No next Auditor, Feature Agent, Platform Agent, Product writer, or campaign start exists before accepted-live closure and explicit admission.
+
+## Optional GPT_ASSIST
+
+GPT_ASSIST is only a Markdown exchange. The Auditor binds one exact status packet and parses one canonical JSON response. ChatGPT may help with listed questions, research, scenarios, and comparisons, but cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+
+## Activation boundary
+
+This package remains `PREPARED_NOT_ACTIVATED`. It does not merge, deploy, activate, or rebind a Product campaign.

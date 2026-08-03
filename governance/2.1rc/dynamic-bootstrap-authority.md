@@ -1,254 +1,43 @@
-# 1236 — V1 Governance 2.1rc Dynamic Bootstrap Configurator Authority
+# Bootstrap discovery and exact-plan authority
 
-Status: `RETAINED COMPATIBILITY AUTHORITY — NOT ACTIVATED`
+Status: `PREPARED_NOT_ACTIVATED`
 
-## 1. Purpose
+The canonical setup machine authority is [control/bootstrap-compiler.mjs](../../control/bootstrap-compiler.mjs) with [control/bootstrap-discovery.mjs](../../control/bootstrap-discovery.mjs), [schemas/bootstrap-plan.v1.json](../../schemas/bootstrap-plan.v1.json), and [schemas/bootstrap-discovery.v1.json](../../schemas/bootstrap-discovery.v1.json). Older guided and dynamic paths are migration-only aliases.
 
-`Bootstrap <GovernanceVersion>` is the user-facing project configurator for a
-Governance 2.1rc project. It discovers the current environment, fills typed
-variables, recommends reversible defaults, asks exactly one unresolved
-material question at a time, and resumes from its last durable checkpoint.
+## Discovery
 
-Bootstrap is not the project constitution and does not invent Product intent.
-The portable governance kernel supplies stable behavior. Project
-configuration supplies changeable preferences. Project context supplies
-Product meaning. Campaign state supplies work in progress. Sealed release
-snapshots preserve what each accepted release actually used.
+Bootstrap Discovery is secret-free, read-only, deterministic, and contained by the admitted project root. It observes repository topology, credential-free remote shape, authority/design candidates, project markers, deployment markers, and available local tools. It rejects inherited parent repositories, unsafe paths, symlinks, credential-bearing remotes, query/fragment secret material, and any operation that authenticates, spends, publishes, deploys, deletes, or mutates.
 
-Machine authority:
+Facts are typed `OBSERVED_FACT`, `CANDIDATE_INTERPRETATION`, `CONFLICT`, or `UNKNOWN`. A fact can recommend an answer but cannot supply owner intent or select an import/refactor/create decision without an owner-bound plan.
 
-- `schemas/dynamic-bootstrap.v1.json`
-- `schemas/guided-bootstrap.v1.json`
-- `control/guided-bootstrap.mjs`
-- `tests/verify-guided-bootstrap.mjs`
-- canonical setup: `schemas/bootstrap-interview.v1.json` and
-  `control/bootstrap-interview.mjs`
-- canonical discovery alias: `control/bootstrap-discovery.mjs`
+## Question compiler
 
-`control/dynamic-bootstrap.mjs` and its verifier are retained
-only as a compatibility engine for earlier discovery, preference-history, and
-snapshot records. Its former temporary-worker execution path is not setup
-authority. New 2.1rc setup uses the Bootstrap Interview and Bootstrap
-Discovery; old guided/dynamic state is imported through the migration aliases.
+The compact question catalog classifies each owner-facing question as exactly one of `DISCOVERY_PERMISSION`, `OWNER_INTENT`, `OWNER_BOUNDARY`, `MATERIAL_PREFERENCE`, or `CREATION_AUTHORIZATION`. Mechanical facts are discovered, not asked. Bootstrap asks only when discovery, accepted authority, a safe reversible default, or honest deferral cannot settle a material choice. The compiled question plan reports visible, answered, unresolved, and recommended maximum counts. It never expands into a whole-project questionnaire.
 
-## 2. Startup and discovery
+## Complete creation plan
 
-The first admitted agent is named `Bootstrap 2.1rc`. It starts in the
-user-selected project directory and performs read-only discovery before asking
-questions:
+Bootstrap compiles one content-addressed plan containing:
 
-- authority corpus or prior authority corpus-compatible tree;
-- project name, Git repository, remotes, default branch, and worktree state;
-- package/build/deployment metadata;
-- installed common provider tools plus user-named additional providers;
-- verified provider identity and separately verified required permission;
-- existing Design Bible or design-system sources;
-- existing bootstrap state and incomplete legacy setup records.
+- project definition and north star;
+- smallest proving workflow;
+- candidate Function Requirements compiled from the North Star and proving workflow;
+- technical baseline and Design Bible;
+- typed Security standard and requirement identities;
+- authority boundaries and authority corpus roots/numbering;
+- model economics and completion floor;
+- persistent Runtime binding;
+- first campaign context;
+- exact files, roots, side effects, prohibited actions, rollback, and legacy gate;
+- exact `FUNCTION_REQUIREMENTS`, `DESIGN_BIBLE`, `SECURITY` slice.
 
-Installed tooling, present credentials, verified authentication, and verified
-permission are four distinct states. Bootstrap never reports successful
-authentication merely because a command exists.
+The plan digest excludes only its digest field. Approval requires `APPROVE_EXACT_PLAN`, the displayed plan digest, the current discovery digest, a nonempty actor, and UTC time. Any TOCTOU change fails closed. `PROCEED` is not a valid plan approval.
 
-Discovery does not search outside the admitted project root except for
-explicit provider-tool identity checks. It never reads or persists tokens,
-cookies, credential files, signed authorization links, or secret values.
-An inherited parent Git repository is not the selected project repository:
-the discovered Git top-level must equal the canonical admitted project root
-unless a later explicit contained-repository model is chosen. A remote is
-persisted only after rejecting credentials, query parameters, and fragments.
-Standard `git@host:path` SSH syntax is normalized to a credential-free
-`ssh://host/path` value before persistence. Other user-information forms are
-rejected rather than copied into Bootstrap state.
+## Transaction and audit
 
-Detected authority and design paths are read-only candidates. Their existence
-never selects `IMPORT`, `REFACTOR_PREVIOUS_GOVERNANCE`, or any other material
-choice for the user.
+Execution is resumable and staged inside the project root. Imported or refactored authority must first be sealed as `legacy.zip`, with manifest, index, receipt, source observation, and exact readback. Replacement writes begin only after that gate. The plan is read back from staging before the state becomes `SEALED`.
 
-## 3. One-question interaction
+A distinct setup Auditor verifies plan and approval identity, TOCTOU readback, project-context separation, no secrets, legacy gate, corpus output, Runtime binding, and the three-root slice. Setup output is not Product work and does not activate a campaign.
 
-Bootstrap asks only when discovery and admitted authority cannot safely choose.
-Every turn contains:
+## Project-specific extensions
 
-1. the currently detected fact;
-2. one material question;
-3. a recommended answer;
-4. two or more bounded choices;
-5. the consequence of each choice;
-6. `accept recommendation` when safe.
-
-Known or irrelevant questions are skipped. Answers are checkpointed
-immediately. Restarting Bootstrap resumes from the next unresolved question.
-
-The initial authority-corpus choice is exactly:
-
-- `IMPORT`;
-- `REFACTOR_PREVIOUS_GOVERNANCE`;
-- `CREATE_NEW`.
-
-Import and refactor are non-destructive. The source remains unchanged.
-Bootstrap produces a mapping and destination plan before the same bound
-Bootstrap session writes the new authority corpus.
-
-The Design Bible choice is independently:
-
-- `IMPORT`;
-- `REFACTOR_PREVIOUS_GOVERNANCE`;
-- `CREATE_NEW`;
-- `DEFER_WITH_EXPLICIT_UNAVAILABLE_STATE`.
-
-Design elicitation may begin after the Foundation phase. Bootstrap cannot
-write Design Bible authority until the minimal project identity, goals,
-repository, privacy, and path configuration is sealed.
-
-## 4. Mutable configuration
-
-Every preference is changeable through the same Bootstrap interface. Each
-preference records:
-
-- typed value;
-- provenance: `DETECTED`, `RECOMMENDED`, `USER_SELECTED`, or `IMPORTED`;
-- confidence;
-- last-changed timestamp and actor;
-- effective boundary;
-- required revalidation.
-
-Track choices and their source paths are preferences under the same rules.
-Every preference change appends a content-addressed event with its prior value
-digest and prior-event digest. Actors are nonempty, timestamps are valid UTC,
-values match their declared types, confidence/effect values are enumerated,
-and revalidation dependencies are nonempty strings. History is monotonic and
-cannot be deleted, reordered, or rewritten. Once a preference key has a
-declared value type, later ordinary changes must preserve it; changing that
-type requires a separately admitted schema migration.
-
-Changes are classified:
-
-- `IMMEDIATE`;
-- `NEXT_HANDOFF`;
-- `NEXT_CAMPAIGN`;
-- `REQUIRES_MIGRATION`;
-- `OWNER_CONFIRMATION`.
-
-Changing current configuration never rewrites a sealed campaign or release
-snapshot. Path, provider, visibility, public publication, paid resource, DNS,
-destructive, credential, or production changes receive an explicit preview
-and the required owner confirmation.
-
-## 5. Provider and environment readiness
-
-Bootstrap supports multiple provider-neutral selections for version control,
-repository hosting, local-only execution, managed hosting, VPS, containers,
-serverless systems, DNS/routing, databases, object storage, maps, and other
-APIs.
-
-When authentication is missing, Bootstrap asks whether to configure it now,
-skip the provider, or choose another provider. `CONFIGURE_NOW` creates one
-true external-access blocker containing only an admitted public HTTPS
-authorization origin/path. The owner opens the exact configured interactive
-browser explicitly.
-Sensitive or signed links and all credentials remain runtime-only.
-
-Bootstrap resumes the same setup goal after a mechanical identity and
-permission check succeeds.
-
-Evidence active-window retention, progress intervals, model policies, paths,
-publication, merge/release behavior, deployment providers, pinning, archival,
-and topology defaults are typed Bootstrap preferences rather than fixed
-project assumptions.
-
-## 6. Setup execution and optional ChatGPT guidance
-
-The bound Bootstrap session is the sole setup writer. It imports,
-aligns/refactors, or creates the authority corpus, Design Bible, project context, and
-feature intent. It records an immutable verified phase output before moving
-to the next phase. Imported project-relative or explicitly external sources
-are read back from canonical paths with no symlink component and their real
-bytes are hashed before admission. The persisted project root must itself be
-canonical, not an alias. A phase output binds a real artifact directory and
-four distinct in-directory role files. It binds either an existing Git
-commit/tree plus four exact regular-file blobs and their bytes at that commit,
-or a typed
-local-content manifest whose files are read back. Self-declared paths,
-commits, trees, or digests are not completion evidence. It never spawns authority corpus,
-Design Bible, or intent workers.
-
-The canonical first interaction is discovery permission: `RECOMMENDED`,
-`GUIDED`, `EXPERT`, `LOCAL_ONLY`, or `MANUAL`. An optional Markdown exchange
-may carry a compact Bootstrap Interview package to ChatGPT. ChatGPT may help
-elicit scenarios, comparisons, and edge cases, but it has no repository,
-provider, authority, goal, or custody rights. Bootstrap accepts only
-schema-valid answers bound to the exact package and remains the actor that
-performs every write.
-
-Bootstrap separately asks the typed preference
-`workflow.gpt_assist_mode = GPT_ASSIST | DIRECT_ONLY`. `GPT_ASSIST` governs
-ongoing campaigns, not setup. The Auditor emits the compact project-status and
-material-question Markdown. ChatGPT asks only those listed questions one at a
-time, invents no project truth, and stops when every question is answered or
-explicitly deferred. Its bound response Markdown returns to the Auditor. The
-Auditor uses confirmed answers to complete the next-campaign candidate and
-hands that candidate plus a work-in-progress authority corpus-update candidate to a
-later admitted next Campaign Orchestrator. The Auditor remains read-only; no
-successor session or Product lease exists before that admission.
-Standard articles remain last accepted-live truth until closure.
-
-The authority corpus uses stable half-open article blocks: `000` Bootstrap,
-`0001–0099` governance, `0100–0199` shared project context, and one
-100-number block per feature beginning at `0200`. A content-addressed
-allocation registry preserves existing feature blocks. New features use the
-next free block; overflow uses a linked extension block without renumbering.
-Every extension chain is acyclic and terminates at the one primary block for
-that feature.
-Active campaign records remain separate work-in-progress authority until
-accepted-live closure promotes their resulting truth.
-
-Bootstrap performs bounded self-consistency checks as it writes. These checks
-are not independent acceptance. After Bootstrap reconciles material findings
-with the owner one question at a time, one fresh independent Auditor inspects
-the resulting setup before the first development campaign. The Auditor
-session must be distinct from Bootstrap and binds one exact report digest.
-The later first-campaign Auditor is also an exact fresh session, distinct
-from both Bootstrap and the setup Auditor; Bootstrap exits only when the
-working observation names that same activated session.
-
-## 7. Completion
-
-Bootstrap completes only when:
-
-- project identity and paths are valid;
-- versioning and repository policy are explicit;
-- applicable provider readiness is verified or honestly deferred;
-- authority corpus output and compact findings are reconciled and bound to Bootstrap;
-- Design Bible output is complete or explicitly deferred and bound to Bootstrap;
-- mutable configuration is valid;
-- one sealed configuration snapshot is reproducible;
-- restart/resume from the durable state is verified;
-- independent audit is accepted or its material corrections are reconciled;
-- the first campaign can bootstrap without private chat context.
-
-Bootstrap retains its compact task/session identity and the setup Auditor
-identity. Raw evidence belongs in the release evidence library, not in the
-active handoff.
-
-Sealing is an append-only state transition, not a detached receipt. Every
-snapshot carries a unique release identity, monotonic UTC seal time, previous
-snapshot digest, exact configuration and track choices, exact phase outputs
-(including any explicit Design Bible defer identity), independent audit
-report, and a recomputed canonical digest. The exact distinct Bootstrap and
-Auditor session identities are sealed beside those evidence digests. Earlier snapshot prefixes
-cannot be deleted, reordered, or rewritten.
-
-## 8. Non-goals
-
-Bootstrap does not:
-
-- build Product;
-- infer domain policy;
-- create a campaign before setup completion;
-- silently publish a public repository;
-- accept unexpected cost;
-- replace a technology stack;
-- deploy production;
-- request secrets in chat;
-- rewrite imported authority;
-- turn every preference change into a governance amendment.
+Project Context may add repositories, providers, model candidates, authentication routes, deployment bindings, design details, retention preferences, and feature intent. It may add stricter constraints but cannot weaken the portable kernel. The project-context digest remains separate from the governance digest.

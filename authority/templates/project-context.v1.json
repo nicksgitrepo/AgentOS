@@ -2,6 +2,25 @@
   "schema": "governance.project_context_template.v1",
   "version": 1,
   "purpose": "Portable input template for binding one project to the Governance 2.1rc kernel without importing another project's context.",
+  "bootstrap_compiler_output": {
+    "contract": "schemas/bootstrap-plan.v1.json",
+    "required_groups": [
+      "PROJECT_DEFINITION",
+      "NORTH_STAR",
+      "PROVING_WORKFLOW",
+      "FUNCTION_REQUIREMENTS",
+      "TECHNICAL_BASELINE",
+      "DESIGN_BIBLE",
+      "SECURITY_BASELINE",
+      "AUTHORITY_BOUNDARIES",
+      "AUTHORITY_CORPUS",
+      "MODEL_POLICY",
+      "PERSISTENT_RUNTIME",
+      "FIRST_CAMPAIGN",
+      "EXACT_CREATION_PLAN"
+    ],
+    "rule": "Bootstrap compiles these groups before any setup side effect. Each group records source, epistemic class, owner authority, unresolved gaps, and the smallest honest unavailable behavior."
+  },
   "required": {
     "project_identity": [
       "project_name",
@@ -58,11 +77,11 @@
       "protected_paths"
     ],
     "roles": [
-      "global_orchestrator",
-      "feature_lead_registry",
+      "campaign_orchestrator",
+      "feature_agent_registry",
       "platform_agent_policy",
       "independent_auditor",
-      "global_runtime"
+      "persistent_runtime"
     ],
     "resources": [
       "maximum_parallel_writer_lanes",

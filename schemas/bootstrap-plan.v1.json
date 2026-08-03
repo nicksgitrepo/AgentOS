@@ -1,0 +1,42 @@
+{
+  "schema": "agentos.bootstrap_plan_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Compile discovery and the smallest material owner answers into one exact, reviewable, resumable Bootstrap creation plan.",
+  "question_rule": "Ask only the earliest unresolved field whose answer cannot be discovered, safely defaulted, or deferred without changing the first route, authority, proof, rollback, or owner boundary.",
+  "required_output_groups": [
+    "PROJECT_DEFINITION",
+    "NORTH_STAR",
+    "PROVING_WORKFLOW",
+    "FUNCTION_REQUIREMENTS",
+    "TECHNICAL_BASELINE",
+    "DESIGN_BIBLE",
+    "SECURITY_BASELINE",
+    "AUTHORITY_BOUNDARIES",
+    "AUTHORITY_CORPUS",
+    "MODEL_POLICY",
+    "PERSISTENT_RUNTIME",
+    "FIRST_CAMPAIGN",
+    "EXACT_CREATION_PLAN"
+  ],
+  "approval": {
+    "decision": "APPROVE_EXACT_PLAN",
+    "rule": "Bootstrap displays the complete plan and SHA-256 before approval. The approval receipt binds the exact plan digest, discovery digest, actor, time, and execution boundary. A generic PROCEED answer is insufficient.",
+    "toctou": "Re-read discovery, source identities, destination containment, and plan digest immediately before each external side effect. A mismatch returns to planning without mutation."
+  },
+  "plan_identity": {
+    "required_fields": ["project_root", "discovery_mode", "discovery_digest_sha256", "answers_sha256", "plan_sha256"],
+    "rule": "The exact plan always binds the canonical project root, the discovery mode and digest used to compile it, and the imported source content and filesystem observation when a legacy corpus is selected. Before staging, Bootstrap re-observes the same root and refuses changed discovery, source bytes, or imported source identity."
+  },
+  "execution": {
+    "phases": ["PLANNED", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"],
+    "rule": "Stage writes under a contained temporary directory, seal the complete staged file inventory and digest, verify readback and all receipts, then promote each exact staged root without overwriting a different digest. Resume from the last sealed phase using the same plan and staged inventory; already promoted exact roots are accepted, different bytes are rejected, and repeat execution is idempotent.",
+    "legacy_gate": "When an existing authority corpus is imported or refactored, legacy.zip, legacy.manifest.json, legacy.index.jsonl, and legacy.receipt.json are created and verified before replacement corpus writes."
+  },
+  "security_baseline": {
+    "required": ["standard_identity", "version", "standard_sha256", "requirement_ids"],
+    "rule": "The security standard identity, version, requirement IDs, and their digest are explicit and content-addressed."
+  },
+  "extension_boundary": "Project-specific context can fill typed fields and add stricter clauses, but cannot remove required output groups, weaken lifecycle, change acceptance roots, or replace the portable kernel."
+}

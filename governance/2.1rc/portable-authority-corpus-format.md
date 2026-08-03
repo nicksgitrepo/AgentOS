@@ -128,7 +128,7 @@ Every standard article begins with:
 ```text
 article: <immutable number>
 title: <short stable title>
-status: <DRAFT | PLANNED | BUILDING | PROTOTYPED | TESTING | VERIFIED | ACCEPTED_LIVE | BLOCKED | DEFERRED | UNAVAILABLE | SUPERSEDED>
+status: <DRAFT | PLANNED | BUILDING | PROTOTYPED | TESTING | VERIFIED | ACCEPTED_LIVE | ON_HOLD | DEFERRED | UNAVAILABLE | SUPERSEDED>
 owner: <one role or owner ID>
 applies_to: <project, feature, capability, environment, or release>
 accepted_release: <exact accepted-live identity or UNRELEASED>
@@ -174,7 +174,7 @@ each carries its own receipt digest; free-form release labels are insufficient.
 Allowed lifecycle statuses are:
 
 `PLANNED`, `BUILDING`, `PROTOTYPED`, `TESTING`, `VERIFIED`,
-`ACCEPTED_LIVE`, `BLOCKED`, `DEFERRED`, `UNAVAILABLE`, `SUPERSEDED`.
+`ACCEPTED_LIVE`, `ON_HOLD`, `DEFERRED`, `UNAVAILABLE`, `SUPERSEDED`.
 
 Evidence disposition is separately one of `PASS_WITH_EVIDENCE`,
 `FAIL_ACTIVE_REPAIR`, `UNPROVEN_ACTIVE_EVIDENCE`,

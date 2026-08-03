@@ -17,6 +17,10 @@
     "mode": "preserved regular-file permission bits",
     "content": "exact source bytes at the read-only preservation boundary"
   },
+  "source_observation": {
+    "required": ["repository", "commit", "tree", "dirty", "entries", "observation_sha256"],
+    "rule": "Capture Git commit/tree plus dirty and untracked status when available. A non-Git source is explicit. The pre-capture and pre-promotion observations must match exactly."
+  },
   "default_exclusions": {
     "directories": [".git", ".cache", ".next", ".turbo", "build", "coverage", "dist", "node_modules"],
     "files": [".DS_Store"],
@@ -27,7 +31,9 @@
     "source contains symbolic links or unsafe filesystem objects",
     "destination is inside the source tree",
     "an output already exists",
-    "archive, manifest, index, or receipt readback differs from the source plan"
+    "archive, manifest, index, or receipt readback differs from the source plan",
+    "source commit, tree, dirty state, untracked inventory, or content changes during capture",
+    "size or publication policy cannot be satisfied without silently dropping a source path"
   ],
   "receipt": "The receipt binds source content, included and excluded records, archive, manifest, index, output directory, and creation time by SHA-256."
 }

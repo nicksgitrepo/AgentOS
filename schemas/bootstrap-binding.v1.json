@@ -1,206 +1,64 @@
 {
-  "schema": "governance.governance_2_1rc_bootstrap_binding.v1",
-  "version": 1,
+  "schema": "agentos.governance_2_1rc_bootstrap_binding.v2",
+  "version": 2,
   "release_candidate": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
-  "bootstrap": {
-    "path": "bootstrap/start-here.md",
-    "sha256": "f3a77f540c7287fae1717d189fd38d71cb4ef023dfd3d6a87981aed054825195"
+  "normative": {
+    "bootstrap_entrypoint": {"path": "bootstrap/start-here.md", "sha256": "6a9c9518547631abc08ee2f364f2de921f7b553a6758ae6c50b48abbb23c6148"},
+    "bootstrap_compiler": {"path": "control/bootstrap-compiler.mjs", "sha256": "2c59560557dcde6347f96309cd39bb7c9c8fb24d8febb94f92b4157eca49bfd4"},
+    "bootstrap_contract": {"path": "schemas/bootstrap-plan.v1.json", "sha256": "1c0e47bade72367f3b10cace67798dd63493e7cfbd4458615b404bbe9ecdac28"},
+    "bootstrap_verifier": {"path": "tests/verify-bootstrap-alignment.mjs", "sha256": "8ba528c025f46306784a20d023a75f7e3cddd980e6b96e5412033faa234fbc01"},
+    "bootstrap_discovery": {"path": "control/bootstrap-discovery.mjs", "sha256": "33d52550b4ed924919e92b259ac5f3876c95979ed99e20c02945904d61368a95"},
+    "bootstrap_discovery_contract": {"path": "schemas/bootstrap-discovery.v1.json", "sha256": "599f7600978cc803a34a4f1654bd2f0cbed96415f1fa7d6a48b54941e0ad760e"},
+    "legacy_preservation": {"path": "control/legacy-preservation.mjs", "sha256": "985c1e63bd972f8c067a338bbf5f5c9163434a0c6efb9dd02f60759a00c56a9e"},
+    "legacy_preservation_contract": {"path": "schemas/legacy-preservation.v1.json", "sha256": "1f726858973ca9012ce6c6647986a8631a90eb420178e9c3354f944ca77cf7b4"},
+    "authority_corpus_compiler": {"path": "control/authority-corpus.mjs", "sha256": "60abb25de0366bc50b8860e852c8c180f9792cd822e7c2d1cb8abfb2b894b4c2"},
+    "evidence_library_compiler": {"path": "control/evidence-library.mjs", "sha256": "76c2b4df13597c78bad3a5d36a972b6bf8274401b4d6627eeeac353b2a110617"},
+    "campaign_controller": {"path": "control/campaign-controller.mjs", "sha256": "6b1c3f5d50a0b9173c2a1eb6fe754d7f4bf81733090226747ce388a212d2c89b"},
+    "campaign_lifecycle_controller": {"path": "control/campaign-lifecycle.mjs", "sha256": "58c102bb98cbd804493875d55c38754539160fcd031efe320db75f3160ea591d"},
+    "campaign_lifecycle_contract": {"path": "schemas/campaign-lifecycle.v1.json", "sha256": "21fb27126d1f7550ff1bd2f28b4d644c0e6aaf29b38f761090be2a35a1f40b69"},
+    "campaign_controller_verifier": {"path": "tests/verify-campaign-controller.mjs", "sha256": "2f137b1453a8d8fce82eb3b63903dbf975fa6d30c16a643ce5c0f87791edd1b4"},
+    "campaign_cascade": {"path": "control/campaign-cascade.mjs", "sha256": "43356ab2d220549d7b1673d6a64560efa56ccdb9ad5f35013b04477f0f78977e"},
+    "campaign_cascade_contract": {"path": "schemas/campaign-cascade.v1.json", "sha256": "d53bea0ba20299e3952c54d080d117580b443c0729116839583036ea60a9a052"},
+    "campaign_cascade_verifier": {"path": "tests/verify-campaign-cascade.mjs", "sha256": "19d3e4888cf3f30cbdf1ebd484ab40c2f553b7001b9963d3939d758c9e086da7"},
+    "question_tree": {"path": "control/question-tree.mjs", "sha256": "871e7fd307b2392daf5909b0e2580148e726a59c52e8f756dbf717063e112be9"},
+    "question_tree_contract": {"path": "schemas/question-tree.v1.json", "sha256": "8db8d372d48c04bba21cfeb401db10a95b300e7fa7b8c55e1cc46b8167ecafe7"},
+    "question_tree_verifier": {"path": "tests/verify-question-tree.mjs", "sha256": "a32ce9b371479265f745aeff65c5566dc53bb205fa12c5606d41d5a4529ae08f"},
+    "acceptance_bridge": {"path": "control/acceptance-bridge.mjs", "sha256": "fc331f0b79feb75c68c120b58bd4bbdbe15e66c9586c1fc4f21b622db366a5ce"},
+    "gpt_assist_controller": {"path": "control/gpt-assist.mjs", "sha256": "ae5b8e48eac3729feea2a5bd9b0cb17f5cb6d3fbfd52676e56bd04dad9a1a8a8"},
+    "gpt_assist_contract": {"path": "schemas/gpt-assist.v1.json", "sha256": "ce0321dcb88abc7f73c9da29ef969f5f3b99796370ad1cd2ad5f2752280d6858"},
+    "gpt_assist_verifier": {"path": "tests/verify-gpt-assist.mjs", "sha256": "5cda43a6465494efc6ddcb7b7e7c347a8a334d65dda502ee022f0dc7f33dd421"},
+    "runtime_lifecycle_contract": {"path": "schemas/browser-runtime-lifecycle.v1.json", "sha256": "d442e57abb0a246da72e7daba827c428cc6b037d5ab8aca05beb73d0fce45352"},
+    "runtime_lifecycle_verifier": {"path": "tests/verify-browser-runtime-lifecycle.mjs", "sha256": "8fcfccf53683705e4e3ce8f72f85ac81fce32341000900fe0af7131223cb7e49"},
+    "naming_registry": {"path": "schemas/naming-and-terminology.v1.json", "sha256": "9df2b891b563f2e3bcb0550e4bba6e76e02004e390b037a6f5b2f791bd004369"},
+    "naming_article": {"path": "governance/2.1rc/naming-and-terminology.md", "sha256": "55da748755b1fae7dd8a06a0694bacfd5a2e5f0ffb30393516e184df81962249"},
+    "workflow_registry": {"path": "schemas/capability-and-worktree-registry.v1.json", "sha256": "b0b8e1139446b59ffd37d722c385c4ddd13e9ef96252ecacd445df365029490c"},
+    "workflow_article": {"path": "governance/2.1rc/feature-platform-workflow.md", "sha256": "570566ce140c256110161b364c5ccb16974b90ff991ec5dcb42fd933fe5b1a95"},
+    "kernel_registry": {"path": "schemas/kernel.v1.json", "sha256": "34be12c08fed594fb90691aa292e258127f1d421b18e279e8cb30a6083e650f9"},
+    "kernel_article": {"path": "governance/2.1rc/portable-kernel.md", "sha256": "175f3d17d019323adf28cc8445c21ab16966f0a317687d2b364c9ed162c687c1"},
+    "authority_format": {"path": "governance/2.1rc/portable-authority-corpus-format.md", "sha256": "d6e62d890d576aeb6f32d0287fd3538a350fcde71ec17038c0e4703dde3fc53f"},
+    "project_context_template": {"path": "authority/templates/project-context.v1.json", "sha256": "88cecf7e28dbdc1e6f46d4a6434ef6fc6867f25c7fab4b2f47e74caa04fe0dbc"},
+    "synthetic_context": {"path": "examples/project-context-fixture.v1.json", "sha256": "957f41aa6fa8276f40c3e58a6171a5cdd913d21ade0f17183f3d6a608e0b4311"},
+    "extraction_manifest": {"path": "migrations/2.1rc-extraction-manifest.json", "sha256": "d0ac7060b03dcce50e56306e35e715d44690dc4b55f89e0a3af3c93e553ece2d"},
+    "portability_verifier": {"path": "tests/verify-portability.mjs", "sha256": "8221b6e8ba19ca7a46b5e80b2fd9f1087c8f5a515ad1d800bd3e9ef6ec05197c"},
+    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "00a7aa39f2ef1cf3768925f9598b1c1e3c14a6560d733339268b75ad5fa4395a"}
   },
-  "user_readme": {
-    "path": "docs/user-guide.md",
-    "sha256": "4edf7166265369f289d5867c964dba657d00f49abe960338d079110e11b21522"
+  "compatibility_only": {
+    "bootstrap_interview_alias": {"path": "control/bootstrap-interview.mjs", "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"},
+    "guided_bootstrap_alias": {"path": "control/guided-bootstrap.mjs", "sha256": "f8f8c8955907bfc207dcf0135d860f60b035930cf818410708224ea6a9052e88"},
+    "dynamic_bootstrap_alias": {"path": "control/dynamic-bootstrap.mjs", "sha256": "1fe67f564c2484cf9ca41019660d464278320626471f0e48c02251a3749c3626"},
+    "legacy_contracts": ["schemas/bootstrap-interview.v1.json", "schemas/guided-bootstrap.v1.json", "schemas/dynamic-bootstrap.v1.json"],
+    "rule": "Compatibility aliases may translate previous records into the canonical contracts and may delegate an already approved exact plan to the canonical controller. They cannot independently create setup state, campaign state, provider identity, Product custody, or successor rosters."
   },
-  "portable_kernel": {
-    "article_path": "governance/2.1rc/portable-kernel.md",
-    "article_sha256": "f05af0cfcac3a1a6b7b919f6566fba2ded6e6127f534de5cacdeae187b67a364",
-    "registry_path": "schemas/kernel.v1.json",
-    "registry_sha256": "707d94fdf9600176dc2cacf617b47d79b2f101bbafdc2fe37d4a570bdf008ebc"
+  "portable_context": {
+    "supplied_by": "typed project context and authority-corpus templates",
+    "contains_no": ["project identity", "repository identity", "provider account", "deployment identity", "credential", "task identity", "domain policy"],
+    "extension_rule": "Project-specific extensions may add stricter clauses and facts but cannot weaken normative governance."
   },
-  "portable_workflow": {
-    "article_path": "governance/2.1rc/feature-platform-workflow.md",
-    "article_sha256": "6971e3aebc4bbc5dd968b0fa3b53b73aa8aaddb9e254003f7f5a5610a9be7f08",
-    "registry_path": "schemas/capability-and-worktree-registry.v1.json",
-    "registry_sha256": "6854a0633414c8ff7531176d69bd970f3888885aa9926aa2b7be0cfc27331324"
-  },
-  "project_context_template": {
-    "path": "authority/templates/project-context.v1.json",
-    "sha256": "97390776911d4b022f5e9df8139409c992e206f97d615f10a09fc58a3daa77a5"
-  },
-  "project_context_fixture": {
-    "path": "examples/project-context-fixture.v1.json",
-    "sha256": "d26e1a54934e3439ce6bfb20c3d9780e37d1ad751a3b8bbd8797ede7cf19645d"
-  },
-  "authority_corpus_compiler": {
-    "path": "control/authority-corpus.mjs",
-    "sha256": "aab5193fe91887de0d4ed9dc77173a2427eaa7f6c0aa46f41db71d40ac6824b9"
-  },
-  "evidence_library_compiler": {
-    "path": "control/evidence-library.mjs",
-    "sha256": "76c2b4df13597c78bad3a5d36a972b6bf8274401b4d6627eeeac353b2a110617"
-  },
-  "campaign_controller": {
-    "path": "control/campaign-controller.mjs",
-    "sha256": "7dd5d605eb3e5351321b3b800ffae474a11102f491c1f86d2fb6ecfe6626b21d"
-  },
-  "acceptance_bridge": {
-    "path": "control/acceptance-bridge.mjs",
-    "sha256": "47083fcf28fdc29884b26ecdbac5aef163abc41700800157fd10942fbe18ae28"
-  },
-  "campaign_controller_verifier": {
-    "path": "tests/verify-campaign-controller.mjs",
-    "sha256": "62b6d32af9e6a649dbe5e6b0885a28e6d9b6cbaf45a7296d6b45f9c47e4db506"
-  },
-  "browser_runtime_lifecycle": {
-    "path": "schemas/browser-runtime-lifecycle.v1.json",
-    "sha256": "2d78eb1e8b8adfe793a04f55de0ca7c16e88a946e41071e86f0cfa565f3d0946"
-  },
-  "browser_runtime_lifecycle_verifier": {
-    "path": "tests/verify-browser-runtime-lifecycle.mjs",
-    "sha256": "6b14c3057d6fa68cbaf83efc0cae5d9057fdef950d79102be8ce1a432a98051c"
-  },
-  "dynamic_bootstrap": {
-    "article_path": "governance/2.1rc/dynamic-bootstrap-authority.md",
-    "article_sha256": "6d2ea81fd6925f91701e5c6ddb4c68f7bdc95979f73d070d42c878005501e69a",
-    "registry_path": "schemas/dynamic-bootstrap.v1.json",
-    "registry_sha256": "5c4b9087e173e81a45ee61550e6e08aec30b543426644e30192b2f7df929fdfa"
-  },
-  "dynamic_bootstrap_controller": {
-    "path": "control/dynamic-bootstrap.mjs",
-    "sha256": "1f9f4bb3fd3e7f7a396a609e66c2f2110401f9e2e0c91e4d6a81a964ca7eb068"
-  },
-  "dynamic_bootstrap_verifier": {
-    "path": "tests/verify-dynamic-bootstrap.mjs",
-    "sha256": "4132d06271215158dd843fd8ca1398f3f482c65081ff8c55e6936b6964382d2f"
-  },
-  "naming_and_terminology": {
-    "article_path": "governance/2.1rc/naming-and-terminology.md",
-    "article_sha256": "1454fe2275806c1f16db328a6ed4465fc6ccfc57d9ffc7121a0e5e6241765ff8",
-    "registry_path": "schemas/naming-and-terminology.v1.json",
-    "registry_sha256": "8994bbe25f267d34acb3b06bfd58f15f8b5f66a378ed542029541c56abd6482d"
-  },
-  "bootstrap_interview": {
-    "registry_path": "schemas/bootstrap-interview.v1.json",
-    "registry_sha256": "a3ef5df1a3f051105a39ddb1584d63f62525426124f8bd05602bb09fe7c9c49f",
-    "controller_path": "control/bootstrap-interview.mjs",
-    "controller_sha256": "5d673c6d037dd7bf08119808b8c183c4d8a637c0469094c15592b29a9a6f839f"
-  },
-  "bootstrap_discovery": {
-    "registry_path": "schemas/bootstrap-discovery.v1.json",
-    "registry_sha256": "041f917d5c220298ec6e5491710623644d4f509aeafe9f40b94744b506fb36bd",
-    "controller_path": "control/bootstrap-discovery.mjs",
-    "controller_sha256": "e66a6bb845ed95d25ff3e2176f3a6c03888656a8c305f58a257f3ff2b12a8521"
-  },
-  "legacy_preservation": {
-    "registry_path": "schemas/legacy-preservation.v1.json",
-    "registry_sha256": "410a207a32e5a2fc79848bc47303315c14b59525a04ea3551d192fef5897ebed",
-    "controller_path": "control/legacy-preservation.mjs",
-    "controller_sha256": "37d77b132128be7a7a2689cda5c88bd16854c612f78a0e3d11c9abd7600da8b3",
-    "zip_controller_path": "control/deterministic-zip.mjs",
-    "zip_controller_sha256": "9bf90b4648740bcc86ea8d8e52ad98654d4be1e1017c2f2a2bdd5ddad44b9398"
-  },
-  "bootstrap_naming_migration": {
-    "path": "migrations/bootstrap-naming.v1.json",
-    "sha256": "7dcf2c4eaab87d04db47686ccfcf8d879f5da1b1925ea6ca318b8c7f0d3b4f1f"
-  },
-  "bootstrap_alignment_verifier": {
-    "path": "tests/verify-bootstrap-alignment.mjs",
-    "sha256": "1c0c55b069b938a985863983a0a963231d52dda2e4165063bfde3b3e4cd56872"
-  },
-  "guided_bootstrap": {
-    "registry_path": "schemas/guided-bootstrap.v1.json",
-    "registry_sha256": "a4fe7dcb4bbc0e6ca3de6873f2182d17fefa7cc9d05321ff88a125cb6392227d",
-    "controller_path": "control/guided-bootstrap.mjs",
-    "controller_sha256": "8137c34ab5e4d41c0a5a7553ffd5805b17e5975f75497217ad40c7b2b4cf25f9",
-    "verifier_path": "tests/verify-guided-bootstrap.mjs",
-    "verifier_sha256": "08ce8c59448ebda542c5429f6d52a16999bd1442426b53906332b78687d174b7"
-  },
-  "gpt_assist": {
-    "article_path": "governance/2.1rc/gpt-assist-authority.md",
-    "article_sha256": "1c622ea5175783afb08d15ea2d78ec39cb7acbd37f68672664578a8761d667cf",
-    "registry_path": "schemas/gpt-assist.v1.json",
-    "registry_sha256": "205dd71fc7574892719e68b5d6516eaafe34f660294210f5b8c5ee7af1596526",
-    "controller_path": "control/gpt-assist.mjs",
-    "controller_sha256": "e85320fae8432cdc23e0f10f6f70921b718db3b33189e0be456fceecf4c0b30d",
-    "verifier_path": "tests/verify-gpt-assist.mjs",
-    "verifier_sha256": "b69a0b294bbd5cb9c67d1c9a90f0b4d6407a31d1abb497b1f32ec8e02be14f37"
-  },
-  "question_tree": {
-    "article_path": "governance/2.1rc/question-tree-authority.md",
-    "article_sha256": "95271671b7afefeaeff29f875a3de1c1f1712c777bfae73503fc893fa366f017",
-    "registry_path": "schemas/question-tree.v1.json",
-    "registry_sha256": "15f6ae64282f30428f4f69e857c8e4d842a697f1973cb5c9874706c4dd1dc0e4",
-    "controller_path": "control/question-tree.mjs",
-    "controller_sha256": "6ae6ec8f9a05479c6810048d3416e1c949eda93492059fad253e4e74669d2e0d",
-    "verifier_path": "tests/verify-question-tree.mjs",
-    "verifier_sha256": "c59fe300ffb18a0ab4efc823d9c930fd7089d02082dfc743c06db1344a1e2b19"
-  },
-  "campaign_cascade": {
-    "article_path": "governance/2.1rc/campaign-cascade.md",
-    "article_sha256": "628694047cf73c0553d9f59cf79be7e53dd267ffbd7ef8bc3fbace95cc020607",
-    "registry_path": "schemas/campaign-cascade.v1.json",
-    "registry_sha256": "e5e4c02787503b088b2bb5258baa4c4839ae6d5fdb010b806184ebed0bc0a595",
-    "controller_path": "control/campaign-cascade.mjs",
-    "controller_sha256": "a9c26dfae9814559468d59da27bdaee269a38c449f3492ab30d082971b7309a9",
-    "verifier_path": "tests/verify-campaign-cascade.mjs",
-    "verifier_sha256": "e705be882c7c02d29f065a6160158a42f241d2680b9d3a231e8b3be494cb4b26"
-  },
-  "portable_authority_format": {
-    "path": "governance/2.1rc/portable-authority-corpus-format.md",
-    "sha256": "43a21bf1c91ab9109280ea9134c335f6f6a03afaf92280078bee6c383c686f17"
-  },
-  "portability_verifier": {
-    "path": "tests/verify-portability.mjs",
-    "sha256": "0c01d97ee4deb21cfb4488c96dd8a59ab92455d19d78a9a281319d292194db91"
-  },
-  "fixed_2_1rc_laws": [
-    "materiality_filter",
-    "blueprint_budget",
-    "delegated_stage_transition",
-    "audit_deployment_boundary",
-    "authority_reality_split",
-    "draft_and_seal",
-    "mechanical_receipts",
-    "proportionality",
-    "owner_only_filter",
-    "governance_context_separation",
-    "failure_reframe",
-    "campaign_compiler",
-    "feature_platform_worktree_topology",
-    "machine_first_governance",
-    "authority_corpus_lifecycle",
-    "compact_context_and_evidence_library",
-    "portable_campaign_control_and_recovery",
-    "context_elicitation_and_blockers",
-    "execution_autonomy_and_communication",
-    "dynamic_bootstrap_configurator"
-    ,"launch_readiness_and_user_guide",
-    "guided_bootstrap_and_first_campaign_launch",
-    "portable_authority_format",
-    "gpt_assist_campaign_context",
-    "executable_question_tree_acceptance",
-    "naming_and_terminology",
-    "bootstrap_interview_discovery_first",
-    "legacy_preservation_before_build",
-    "governance_value_and_causality",
-    "candidate_only_successor_handoff",
-    "adaptive_campaign_cascade"
-  ],
-  "retained_2_0rc_laws": [
-    "single_goal",
-    "root_cause",
-    "case_evaluation.self_tightening",
-    "authority_source",
-    "handoff"
-  ],
   "activation": {
-    "requires_owner_acceptance": true,
-    "requires_independent_source_review": true,
-    "requires_source_repository_integration": true,
-    "requires_generation_open_record": true,
-    "current_campaign_rebind": false,
-    "current_release_rebind": false,
-    "product_custody": false,
-    "release_or_deployment_custody": false
+    "requires_explicit_owner_approval": true,
+    "product_campaign_rebind": false,
+    "deployment_custody": false,
+    "source_repository_modified": false
   }
 }

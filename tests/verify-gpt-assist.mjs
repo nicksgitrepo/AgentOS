@@ -212,49 +212,30 @@ try {
     }],
     evidence_sha256: "c".repeat(64),
   });
-  const successorRosterReceipt = compileGptAssistRosterReceipt({
-    campaign_id: "campaign-002",
-    release_id: "release-002",
-    governance_version: "2.1rc",
-    campaign_state_sha256: "a".repeat(64),
-    agents: [{
-      session_id: "orchestrator-session-002",
-      role: "GLOBAL_ORCHESTRATOR",
-      release_id: "release-002",
-      governance_version: "2.1rc",
-      fresh: true,
-      pinned: true,
-    }],
-    evidence_sha256: "d".repeat(64),
-  });
   const handoffInput = {
     auditor_session_id: "auditor-session-001",
     next_campaign_sha256: "a".repeat(64),
     authority_update_candidate_sha256: "b".repeat(64),
     next_release_id: "release-002",
     current_roster_receipt: currentRosterReceipt,
-    successor_roster_receipt: successorRosterReceipt,
+    successor_roster_receipt: null,
     handed_off_at: "2026-01-01T01:01:00.000Z",
   };
   const handoff = compileGptAssistNextCampaignHandoff(response, packet, handoffInput);
-  if (handoff.disposition !== "NEXT_RELEASE_ORCHESTRATOR_AUTHORITY_UPDATE_AND_CAMPAIGN_START"
+  if (handoff.disposition !== "ORCHESTRATOR_ORIENTATION_HELD_PENDING_ACCEPTED_LIVE_CLOSURE"
       || handoff.fixed_finding_ids.length !== 0
       || handoff.standard_authority_promotion !== false
       || handoff.auditor_writes_authority !== false
-      || handoff.next_orchestrator_writes_campaign_authority !== true) {
+      || handoff.next_orchestrator_writes_campaign_authority !== false
+      || handoff.orientation_only !== true
+      || handoff.product_writer_lease !== "NONE") {
     failures.push("GPT_ASSIST next-campaign handoff crosses its authority boundary");
   }
-  const candidateOnlyHandoff = compileGptAssistNextCampaignHandoff(
-    response,
-    packet,
-    {...handoffInput, successor_roster_receipt: null},
-  );
-  if (candidateOnlyHandoff.disposition !== "NEXT_CAMPAIGN_CANDIDATE_RECORDED"
-      || candidateOnlyHandoff.candidate_only !== true
-      || candidateOnlyHandoff.successor_roster_created !== false
-      || candidateOnlyHandoff.next_orchestrator_writes_campaign_authority !== false) {
-    failures.push("GPT_ASSIST candidate-only handoff created successor authority");
-  }
+  reject("GPT_ASSIST accepts a successor roster before admission", () =>
+    compileGptAssistNextCampaignHandoff(response, packet, {
+      ...handoffInput,
+      successor_roster_receipt: {unexpected: true},
+    }));
 
   reject("GPT_ASSIST is disabled", () =>
     compileGptAssistStatus({...input, mode: "DIRECT_ONLY"}, gitRoot));
@@ -412,7 +393,7 @@ try {
       campaign_state_sha256: "a".repeat(64),
       agents: [{
         session_id: "auditor-session-001",
-        role: "GLOBAL_ORCHESTRATOR",
+        role: "CAMPAIGN_ORCHESTRATOR",
         release_id: "release-002",
         governance_version: "2.1rc",
         fresh: true,

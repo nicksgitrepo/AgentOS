@@ -1,315 +1,172 @@
 #!/usr/bin/env node
 
-import crypto from "node:crypto";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
   BOOTSTRAP_QUESTIONS,
+  PLAN_APPROVAL,
+  approveBootstrapPlan,
+  auditBootstrapSetup,
   compileBootstrapPlan,
-  compileModelEconomics,
-  normalizeModelProfile,
-  planBootstrapInterview,
+  createBootstrapExecution,
+  executeBootstrapPlan,
+  promoteBootstrapExecution,
+  planBootstrapQuestions,
   recommendModels,
-} from "../control/bootstrap-interview.mjs";
+  validateBootstrapPlan,
+} from "../control/bootstrap-compiler.mjs";
 import {discoverProject} from "../control/bootstrap-discovery.mjs";
-import {
-  compileLegacyPreservationPlan,
-  preserveLegacyCorpus,
-  verifyLegacyPreservation,
-} from "../control/legacy-preservation.mjs";
+import {verifyLegacyPreservation} from "../control/legacy-preservation.mjs";
 
-const failures = [];
-let hostiles = 0;
-
-function expect(condition, message) {
-  if (!condition) failures.push(message);
-}
-
-function expectRejected(label, operation) {
-  try {
-    operation();
-    failures.push(`hostile accepted: ${label}`);
-  } catch {
-    hostiles += 1;
-  }
-}
-
-function digest(value) {
-  return crypto.createHash("sha256")
-    .update(JSON.stringify(value), "utf8")
-    .digest("hex");
-}
-
-const discovery = [
-  {
-    fact_id: "environment.project_root",
-    value: "/synthetic/project",
-    confidence: "HIGH",
-    source_kind: "FILESYSTEM",
-    source_locator: "root",
-    observed_at: "2026-01-01T00:00:00.000Z",
-    secret_free: true,
-  },
-  {
-    fact_id: "repositories.topology.detected",
-    value: "SINGLE_REPOSITORY",
-    confidence: "HIGH",
-    source_kind: "GIT",
-    source_locator: "root",
-    observed_at: "2026-01-01T00:00:00.000Z",
-    secret_free: true,
-  },
-  {
-    fact_id: "stack.framework.detected",
-    value: "synthetic-framework",
-    confidence: "HIGH",
-    source_kind: "SOURCE",
-    source_locator: "manifest",
-    observed_at: "2026-01-01T00:00:00.000Z",
-    secret_free: true,
-  },
-  {
-    fact_id: "ui.routes.detected",
-    value: ["/synthetic-route"],
-    confidence: "HIGH",
-    source_kind: "SOURCE",
-    source_locator: "route-index",
-    observed_at: "2026-01-01T00:00:00.000Z",
-    secret_free: true,
-  },
-  {
-    fact_id: "authority-corpus.source.detected",
-    value: "external-readable-source",
-    confidence: "HIGH",
-    source_kind: "FILESYSTEM",
-    source_locator: "authority-root",
-    observed_at: "2026-01-01T00:00:00.000Z",
-    secret_free: true,
-  },
-];
-
-const initial = planBootstrapInterview({discovery});
-expect(initial.next === "bootstrap.discovery.mode", "discovery permission is not the first question");
-expect(initial.questions[0].class === "OWNER_BOUNDARY", "first question is not an owner boundary");
-expect(initial.questions.every((question) => question.discovered_facts), "question plan lost discovery context");
-expect(BOOTSTRAP_QUESTIONS.some((question) => question.id === "project.north_star"),
-  "north-star question is missing");
-expect(BOOTSTRAP_QUESTIONS.some((question) => question.id === "project.model_economics"),
-  "model economics question is missing");
-
-const discoveryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-discovery-alignment-"));
-try {
-  fs.writeFileSync(path.join(discoveryRoot, "package.json"), "{}\n");
-  const observed = discoverProject(discoveryRoot, "RECOMMENDED");
-  expect(observed.schema === "agentos.bootstrap_discovery_result.v1"
-    && observed.operations.read_only === true
-    && observed.operations.authentication_attempted === false
-    && observed.operations.secrets_requested === false,
-  "canonical Bootstrap Discovery is not read-only");
-  expect(observed.facts.every((fact) => fact.secret_free === true),
-    "canonical Bootstrap Discovery emitted a non-secret-free fact");
-  expect(observed.facts.some((fact) => fact.fact_id === "project.marker.package.json"),
-    "canonical Bootstrap Discovery missed a safe project marker");
-  const observedPlan = planBootstrapInterview({discovery: observed.facts});
-  expect(observedPlan.schema === "agentos.bootstrap_interview_plan.v1"
-    && observedPlan.discovery_digest_sha256.length === 64,
-  "Bootstrap Interview rejected canonical Discovery facts");
-  expectRejected("canonical discovery invalid mode", () => discoverProject(discoveryRoot, "AUTHENTICATED"));
-  expectRejected("manual mode runs discovery", () => discoverProject(discoveryRoot, "MANUAL"));
-} finally {
-  fs.rmSync(discoveryRoot, {recursive: true, force: true});
-}
-
-expect(normalizeModelProfile("ECO") === "ECO_CONTINUOUS", "ECO alias was not normalized");
-expect(normalizeModelProfile("ECONOMICAL") === "ECO_CONTINUOUS",
-  "ECONOMICAL alias was not normalized");
-const economics = compileModelEconomics({profile: "ECO", completion_floor: 0.8});
-expect(economics.profile === "ECO_CONTINUOUS" && economics.profile_alias === "ECO",
-  "model profile compatibility record is incomplete");
-const recommendation = recommendModels({
-  economics: {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
-  candidates: [
-    {
-      model: "too-weak",
-      reasoning: "medium",
-      spawnable: true,
-      estimated_success_probability: 0.6,
-      estimated_attempts: 1,
-      relative_unit_cost: 1,
-    },
-    {
-      model: "reliable-efficient",
-      reasoning: "high",
-      spawnable: true,
-      estimated_success_probability: 0.9,
-      estimated_attempts: 1.1,
-      relative_unit_cost: 2,
-    },
-    {
-      model: "reliable-expensive",
-      reasoning: "highest",
-      spawnable: true,
-      estimated_success_probability: 0.98,
-      estimated_attempts: 1,
-      relative_unit_cost: 8,
-    },
-  ],
-});
-expect(recommendation.recommended.model === "reliable-efficient",
-  "eco recommendation did not minimize expected completion cost");
-expect(recommendation.excluded.some((entry) => entry.reason === "BELOW_COMPLETION_FLOOR"),
-  "below-floor model was not excluded");
-const roleRecommendation = recommendModels({
-  role: "CAMPAIGN_FINALIZER",
-  economics: {
-    profile: "ECO_CONTINUOUS",
-    completion_floor: 0.8,
-    max_expected_cost: 10,
-  },
-  requirements: {
-    required_context_window: 100,
-    required_tools: ["shell", "git"],
-    minimum_reasoning: "HIGH",
-  },
-  candidates: [
-    {
-      model: "too-small",
-      reasoning: "HIGH",
-      spawnable: true,
-      context_window: 32,
-      tools: ["shell", "git"],
-      estimated_success_probability: 0.99,
-      estimated_attempts: 1,
-      relative_unit_cost: 1,
-    },
-    {
-      model: "finalizer-feasible",
-      reasoning: "HIGH",
-      spawnable: true,
-      context_window: 128,
-      tools: ["shell", "git"],
-      estimated_success_probability: 0.9,
-      estimated_attempts: 1.1,
-      relative_unit_cost: 4,
-      supervisor_cost: 0.5,
-      repair_cost: 0.5,
-      integration_cost: 0.5,
-      estimated_wall_hours: 4,
-    },
-  ],
-});
-expect(roleRecommendation.role === "CAMPAIGN_FINALIZER"
-  && roleRecommendation.recommended.model === "finalizer-feasible"
-  && roleRecommendation.recommended.expected_completion_cost_range.expected === 5.9
-  && roleRecommendation.pareto_frontier.includes("finalizer-feasible"),
-"role-specific model policy did not bind capability floors and accepted-cost economics");
-expectRejected("no eligible model after capability gates", () => recommendModels({
-  role: "CAMPAIGN_FINALIZER",
-  economics: {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
-  requirements: {required_context_window: 999},
-  candidates: [{
-    model: "ineligible",
-    reasoning: "HIGH",
-    spawnable: true,
-    context_window: 128,
-    estimated_success_probability: 0.99,
-    estimated_attempts: 1,
-    relative_unit_cost: 1,
-  }],
-}));
-expectRejected("unknown model recommendation role", () => recommendModels({
-  role: "UNREGISTERED_ROLE",
-  economics: {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
-  candidates: [{
-    model: "eligible-but-unbound",
-    reasoning: "HIGH",
-    spawnable: true,
-    estimated_success_probability: 0.99,
-    estimated_attempts: 1,
-    relative_unit_cost: 1,
-  }],
-}));
-
+const ISO = "2026-01-01T00:00:00.000Z";
+const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-project-"));
+const discovery = discoverProject(projectRoot, "RECOMMENDED").facts;
 const answers = {
   "bootstrap.discovery.mode": "RECOMMENDED",
-  "project.boundary": {repositories: "discovered", external_systems: []},
-  "project.north_star": {user: "operator", recurring_moment: "complete work", better: "less friction"},
-  "project.first_workflow": {workflow: "complete work", done_when: "verified result"},
-  "project.delivery_boundary": "DEVELOPMENT_READY",
-  "project.protected_boundaries": {owner_only: ["irreversible production action"]},
-  "authority-corpus.source": {operation: "CREATE_NEW", source: null},
-  "project.design_posture": {surfaces: "discovered", posture: "clear and accessible"},
-  "project.model_economics": {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
-  "bootstrap.confirmation": "PROCEED",
+  "project.north_star": {user: "synthetic user", outcome: "complete the first useful workflow"},
+  "project.first_workflow": {name: "synthetic workflow", success: "one accepted result"},
+  "project.boundary": {project_name: "Synthetic Project", repositories: [{repository_id: "main", remote: "synthetic", default_branch: "main"}], branches: ["main"]},
+  "project.protected_boundaries": {owner_only: ["destructive production actions"], protected: ["secrets", "accepted truth"]},
+  "authority-corpus.source": {operation: "CREATE_NEW"},
+  "project.design": {page_families: ["WORKFLOW"], templates: ["PRIMARY"], tokens: ["DEFAULT"], protected_surfaces: []},
+  "project.technical_constraints": {testing: "deterministic", deployment: "not yet configured"},
+  "project.model_economics": {profile: "ECO", completion_floor: 0.8},
+  "project.runtime": {session_id: "RUNTIME-1", environment_identity: "SYNTHETIC_ENV", capabilities: ["filesystem", "git"]},
 };
-const compiled = compileBootstrapPlan({discovery, answers});
-expect(compiled.plan_sha256 === compiled.plan_sha256 && compiled.legacy_preservation_required === false,
-  "compiled Bootstrap plan is not canonical for a new corpus");
 
-const parent = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-alignment-"));
-const source = path.join(parent, "imported-authority");
-const destination = path.join(parent, "new-authority");
-const secondDestination = path.join(parent, "new-authority-repeat");
-fs.mkdirSync(path.join(source, ".git"), {recursive: true});
-fs.mkdirSync(path.join(source, "nested"), {recursive: true});
-fs.mkdirSync(path.join(source, ".cache"), {recursive: true});
-fs.writeFileSync(path.join(source, "README.md"), "legacy truth\n");
-fs.writeFileSync(path.join(source, ".hidden.md"), "hidden but relevant\n");
-fs.writeFileSync(path.join(source, "nested", "context.md"), "context\n");
-fs.writeFileSync(path.join(source, ".git", "objects"), "excluded\n");
-fs.writeFileSync(path.join(source, ".cache", "item"), "excluded\n");
-fs.writeFileSync(path.join(source, ".DS_Store"), "metadata\n");
-fs.mkdirSync(destination);
-fs.mkdirSync(secondDestination);
-const firstPlan = compileLegacyPreservationPlan(source, destination);
-const secondPlan = compileLegacyPreservationPlan(source, secondDestination);
-expect(firstPlan.archive_sha256 === secondPlan.archive_sha256
-  && firstPlan.manifest_sha256 === secondPlan.manifest_sha256
-  && firstPlan.index_sha256 === secondPlan.index_sha256,
-"legacy preservation plan is not deterministic");
-expect(!fs.existsSync(path.join(destination, "legacy.zip")),
-  "legacy planning wrote before preservation was applied");
-const preserved = preserveLegacyCorpus(source, destination, "2026-01-01T00:00:00.000Z");
-expect(preserved.verification.status === "VERIFIED_EXACT", "legacy archive did not verify");
-expect(preserved.verification.included_files === 3 && preserved.verification.excluded_paths === 3,
-  "legacy include/exclude inventory is incorrect");
-expect(verifyLegacyPreservation(destination).archive_sha256 === firstPlan.archive_sha256,
-  "legacy archive readback changed its planned identity");
+const planned = planBootstrapQuestions({discovery});
+assert.equal(planned.next, "bootstrap.discovery.mode");
+assert.equal(planned.status, "QUESTION_PENDING");
+assert(planned.questions.every((question) => question.discovered_facts !== undefined));
+assert(BOOTSTRAP_QUESTIONS.some((question) => question.output === "NORTH_STAR"));
+assert.equal(planBootstrapQuestions({discovery, answers}).status, "READY_TO_COMPILE");
 
-expectRejected("legacy destination inside source", () => {
-  const nestedDestination = path.join(source, "new-authority");
-  fs.mkdirSync(nestedDestination);
-  compileLegacyPreservationPlan(source, nestedDestination);
-});
-expectRejected("legacy source symlink", () => {
-  const symlinkSource = path.join(parent, "symlink-source");
-  const symlinkDestination = path.join(parent, "symlink-destination");
-  fs.mkdirSync(symlinkSource);
-  fs.mkdirSync(symlinkDestination);
-  fs.writeFileSync(path.join(symlinkSource, "real.md"), "real\n");
-  fs.symlinkSync(path.join(symlinkSource, "real.md"), path.join(symlinkSource, "alias.md"));
-  compileLegacyPreservationPlan(symlinkSource, symlinkDestination);
-});
-expectRejected("legacy root symlink", () => {
-  const realSource = path.join(parent, "real-source");
-  const linkedSource = path.join(parent, "linked-source");
-  const linkedDestination = path.join(parent, "linked-destination");
-  fs.mkdirSync(realSource);
-  fs.mkdirSync(linkedDestination);
-  fs.writeFileSync(path.join(realSource, "README.md"), "real\n");
-  fs.symlinkSync(realSource, linkedSource, "dir");
-  compileLegacyPreservationPlan(linkedSource, linkedDestination);
-});
-expectRejected("secret-bearing discovery", () => planBootstrapInterview({
-  discovery: [{...discovery[0], value: "api_key: hidden"}],
-}));
-expectRejected("custom model without conditions", () => compileModelEconomics({profile: "CUSTOM"}));
+const plan = compileBootstrapPlan({discovery, answers, projectRoot});
+validateBootstrapPlan(plan);
+assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");
+assert.deepEqual(plan.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
+for (const group of ["project_definition", "north_star", "proving_workflow", "technical_baseline", "design_bible", "security_baseline", "authority_boundaries", "authority_corpus", "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan"]) assert(plan[group] !== undefined, `missing compiled group ${group}`);
+assert.equal(plan.authority_corpus.numbering.bootstrap, "000");
+assert.equal(plan.authority_corpus.numbering.feature_block_size, 100);
+assert.equal(plan.model_policy.work_slots, 20);
+assert.equal(plan.persistent_runtime.never_despawn_between_campaigns, true);
 
-fs.rmSync(parent, {recursive: true, force: true});
-if (failures.length > 0) {
-  for (const failure of failures) console.error(`FAIL: ${failure}`);
-  process.exitCode = 1;
-} else {
-  console.log(`PASS AgentOS Bootstrap alignment: discovery-first interview, model-floor economics, deterministic legacy preservation, and ${hostiles} hostile cases passed`);
+assert.throws(() => approveBootstrapPlan(plan, {decision: "PROCEED", planSha256: plan.plan_sha256, discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO}));
+const approved = approveBootstrapPlan(plan, {decision: PLAN_APPROVAL, planSha256: plan.plan_sha256, discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
+assert.equal(approved.status, "APPROVED_EXACT_DIGEST");
+assert.notEqual(approved.plan_sha256, plan.plan_sha256);
+assert.equal(approved.approval_receipt.plan_sha256, plan.plan_sha256);
+assert.throws(() => approveBootstrapPlan(plan, {decision: PLAN_APPROVAL, planSha256: "b".repeat(64), discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO}));
+
+const modelRecommendation = recommendModels({
+  role: "CAMPAIGN_FINALIZER",
+  economics: {profile: "ECO", completion_floor: 0.8},
+  requirements: {required_context_window: 100, minimum_reasoning: "HIGH", required_tools: ["shell"]},
+  candidates: [
+    {model: "too-weak", reasoning: "MEDIUM", spawnable: true, context_window: 128, tools: ["shell"], estimated_success_probability: 0.7, estimated_attempts: 1, relative_unit_cost: 1},
+    {model: "reliable", reasoning: "HIGH", spawnable: true, context_window: 128, tools: ["shell"], estimated_success_probability: 0.9, estimated_attempts: 1.1, relative_unit_cost: 2},
+  ],
+});
+assert.equal(modelRecommendation.recommended.model, "reliable");
+assert(modelRecommendation.excluded.some((entry) => entry.reason === "BELOW_COMPLETION_FLOOR"));
+const acceptedCostRecommendation = recommendModels({
+  economics: {profile: "ECO", completion_floor: 0.8},
+  candidates: [
+    {model: "cheap-but-fragile", reasoning: "HIGH", spawnable: true, context_window: 128, estimated_success_probability: 0.8, estimated_attempts: 1, relative_unit_cost: 1},
+    {model: "slightly-costlier-but-reliable", reasoning: "HIGH", spawnable: true, context_window: 128, estimated_success_probability: 0.95, estimated_attempts: 1, relative_unit_cost: 1.1},
+  ],
+});
+assert.equal(acceptedCostRecommendation.recommended.model, "slightly-costlier-but-reliable");
+assert(acceptedCostRecommendation.recommended.expected_completion_cost < 1.2);
+assert.throws(() => recommendModels({economics: {profile: "ECO", completion_floor: 0.9}, candidates: [{model: "weak", reasoning: "LOW", spawnable: true, estimated_success_probability: 0.5, estimated_attempts: 1, relative_unit_cost: 1}]}));
+
+const observedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-discovery-"));
+try {
+  fs.writeFileSync(path.join(observedRoot, "package.json"), "{}\n");
+  const observed = discoverProject(observedRoot, "RECOMMENDED");
+  assert.equal(observed.operations.read_only, true);
+  assert.equal(observed.operations.authentication_attempted, false);
+  assert(observed.facts.every((fact) => fact.secret_free === true));
+  assert.throws(() => discoverProject(observedRoot, "MANUAL"));
+} finally {
+  fs.rmSync(observedRoot, {recursive: true, force: true});
 }
+
+try {
+  const workflow = JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8"));
+  const resumable = createBootstrapExecution(approved, {bootstrapSessionId: "BOOTSTRAP-2", projectRoot, nowUtc: ISO});
+  assert.equal(resumable.phase, "APPROVED");
+  const execution = executeBootstrapPlan(approved, {bootstrapSessionId: "BOOTSTRAP-1", projectRoot, workflow, nowUtc: ISO});
+  assert.equal(execution.state.phase, "SEALED");
+  assert(fs.existsSync(path.join(execution.staging_root, "bootstrap.plan.json")));
+  const audit = auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow});
+  assert.equal(audit.status, "PASS");
+  const contextPath = path.join(execution.staging_root, plan.authority_corpus.roots.project_context_root, "project-context.json");
+  const context = JSON.parse(fs.readFileSync(contextPath, "utf8"));
+  assert.equal(context.source_plan_sha256, approved.plan_sha256);
+  assert.equal(context.project_definition.project_name, plan.project_definition.project_name);
+  assert.deepEqual(context.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
+  const promoted = promoteBootstrapExecution({plan: approved, executionState: execution.state, setupAudit: audit, projectRoot, nowUtc: "2026-01-01T00:01:00.000Z"});
+  assert.equal(promoted.state.phase, "PROMOTED");
+  assert.equal(promoted.receipt.schema, "agentos.bootstrap_promotion_receipt.v1");
+  assert(fs.existsSync(path.join(projectRoot, "bootstrap.promotion.receipt.json")));
+  assert.equal(promoteBootstrapExecution({plan: approved, executionState: promoted.state, setupAudit: audit, projectRoot, nowUtc: "2026-01-01T00:02:00.000Z"}).resumed, true);
+} finally {
+  fs.rmSync(projectRoot, {recursive: true, force: true});
+}
+
+const sourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-legacy-source-"));
+const importedProject = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-imported-project-"));
+try {
+  fs.writeFileSync(path.join(sourceRoot, "legacy.md"), "legacy bytes\n");
+  const importedAnswers = structuredClone(answers);
+  importedAnswers["authority-corpus.source"] = {operation: "IMPORT", source_root: sourceRoot};
+  const importedDiscovery = discoverProject(importedProject, "RECOMMENDED").facts;
+  const importedPlan = compileBootstrapPlan({discovery: importedDiscovery, answers: importedAnswers, projectRoot: importedProject});
+  const importedApproval = approveBootstrapPlan(importedPlan, {decision: PLAN_APPROVAL, planSha256: importedPlan.plan_sha256, discoveryDigestSha256: importedPlan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
+  const execution = executeBootstrapPlan(importedApproval, {bootstrapSessionId: "BOOTSTRAP-IMPORT", projectRoot: importedProject, legacySourceRoot: sourceRoot, workflow: JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8")), nowUtc: ISO});
+  const legacyRoot = path.join(execution.staging_root, importedPlan.authority_corpus.roots.authority_root);
+  assert.equal(verifyLegacyPreservation(legacyRoot).status, "VERIFIED_EXACT");
+} finally {
+  fs.rmSync(sourceRoot, {recursive: true, force: true});
+  fs.rmSync(importedProject, {recursive: true, force: true});
+}
+
+const toctouSourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-legacy-toctou-source-"));
+const toctouProject = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-toctou-project-"));
+try {
+  fs.writeFileSync(path.join(toctouSourceRoot, "legacy.md"), "original legacy bytes\n");
+  const toctouAnswers = structuredClone(answers);
+  toctouAnswers["authority-corpus.source"] = {operation: "IMPORT", source_root: toctouSourceRoot};
+  const toctouDiscovery = discoverProject(toctouProject, "RECOMMENDED").facts;
+  const toctouPlan = compileBootstrapPlan({discovery: toctouDiscovery, answers: toctouAnswers, projectRoot: toctouProject});
+  const toctouApproval = approveBootstrapPlan(toctouPlan, {decision: PLAN_APPROVAL, planSha256: toctouPlan.plan_sha256, discoveryDigestSha256: toctouPlan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
+  fs.writeFileSync(path.join(toctouSourceRoot, "legacy.md"), "changed after approval\n");
+  assert.throws(() => executeBootstrapPlan(toctouApproval, {
+    bootstrapSessionId: "BOOTSTRAP-TOCTOU",
+    projectRoot: toctouProject,
+    legacySourceRoot: toctouSourceRoot,
+    workflow: JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8")),
+    nowUtc: ISO,
+  }), /legacy source contents changed/u);
+} finally {
+  fs.rmSync(toctouSourceRoot, {recursive: true, force: true});
+  fs.rmSync(toctouProject, {recursive: true, force: true});
+}
+
+const secretSourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-legacy-secret-source-"));
+const secretProject = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-secret-project-"));
+try {
+  fs.writeFileSync(path.join(secretSourceRoot, ".env"), "API_KEY=not-a-placeholder-secret\n");
+  const secretAnswers = structuredClone(answers);
+  secretAnswers["authority-corpus.source"] = {operation: "IMPORT", source_root: secretSourceRoot};
+  const secretDiscovery = discoverProject(secretProject, "RECOMMENDED").facts;
+  assert.throws(() => compileBootstrapPlan({discovery: secretDiscovery, answers: secretAnswers, projectRoot: secretProject}), /secret-bearing file/u);
+} finally {
+  fs.rmSync(secretSourceRoot, {recursive: true, force: true});
+  fs.rmSync(secretProject, {recursive: true, force: true});
+}
+
+console.log("PASS AgentOS Bootstrap compiler alignment (exact-plan approval, discovery, model floor, transaction, setup audit, and legacy gate)");

@@ -8,7 +8,7 @@ import {spawnSync} from "node:child_process";
 const SHA256 = /^[0-9a-f]{64}$/;
 const GIT_OBJECT = /^[0-9a-f]{40,64}$/;
 const CAMPAIGN_STATUSES = new Set([
-  "DESIGNING", "ACTIVE", "OWNER_BLOCKED", "READY_FOR_RUNTIME",
+  "DESIGNING", "ACTIVE", "HOLD_DEPENDENT_OUTCOME", "READY_FOR_RUNTIME",
   "DEPLOYING", "LIVE_AUDIT", "ACCEPTED_LIVE_CLOSED",
 ]);
 const FINDING_STATUSES = new Set([
@@ -671,36 +671,20 @@ export function compileGptAssistNextCampaignHandoff(response, packet, handoff) {
   const currentRoster = validateRosterReceipt(
     handoff.current_roster_receipt, "current campaign roster receipt",
   );
-  if (handoff.successor_roster_receipt !== null
-      && (typeof handoff.successor_roster_receipt !== "object"
-        || Array.isArray(handoff.successor_roster_receipt))) {
-    throw new Error("successor campaign roster receipt must be absent until admission or a valid object");
+  if (handoff.successor_roster_receipt !== null) {
+    throw new Error("GPT_ASSIST cannot create or accept a successor roster before lifecycle admission");
   }
-  const successorRoster = handoff.successor_roster_receipt === null
-    ? null
-    : validateRosterReceipt(
-      handoff.successor_roster_receipt, "successor campaign roster receipt",
-    );
+  const successorRoster = null;
   const currentAuditor = currentRoster.agents.filter((agent) =>
     agent.role === "INDEPENDENT_AUDITOR"
     && agent.session_id === packet.auditor.session_id);
-  const nextOrchestrator = successorRoster === null ? [] : successorRoster.agents.filter((agent) =>
-    agent.role === "GLOBAL_ORCHESTRATOR"
-    && agent.release_id === handoff.next_release_id);
   const currentSessions = new Set(currentRoster.agents.map((agent) => agent.session_id));
   if (currentRoster.campaign_id !== packet.campaign_id
       || currentRoster.release_id !== packet.release_id
       || currentRoster.campaign_state_sha256 !== packet.authority_snapshot_sha256
       || currentAuditor.length !== 1
-      || (successorRoster !== null && (
-        successorRoster.release_id !== handoff.next_release_id
-        || successorRoster.campaign_state_sha256 !== handoff.next_campaign_sha256
-        || nextOrchestrator.length !== 1
-        || successorRoster.agents.some((agent) => currentSessions.has(agent.session_id))))) {
+      || currentSessions.size !== currentRoster.agents.length) {
     throw new Error("GPT_ASSIST handoff is not bound to its current roster or admitted successor roster");
-  }
-  if (successorRoster !== null && nextOrchestrator[0].session_id === handoff.auditor_session_id) {
-    throw new Error("Auditor cannot become the next release Orchestrator");
   }
   requireUtc(handoff.handed_off_at, "next-campaign handoff time");
   if (new Date(handoff.handed_off_at) < new Date(response.completed_at)) {
@@ -714,15 +698,15 @@ export function compileGptAssistNextCampaignHandoff(response, packet, handoff) {
     normalized_response_markdown_sha256: crypto.createHash("sha256")
       .update(renderGptAssistResponseMarkdown(response, packet), "utf8").digest("hex"),
     ...structuredClone(handoff),
-    disposition: successorRoster === null
-      ? "NEXT_CAMPAIGN_CANDIDATE_RECORDED"
-      : "NEXT_RELEASE_ORCHESTRATOR_AUTHORITY_UPDATE_AND_CAMPAIGN_START",
+    disposition: "ORCHESTRATOR_ORIENTATION_HELD_PENDING_ACCEPTED_LIVE_CLOSURE",
     auditor_updated_next_campaign: true,
     auditor_writes_authority: false,
-    next_orchestrator_writes_campaign_authority: successorRoster !== null,
-    start_next_release_after_authority_update: successorRoster !== null,
-    candidate_only: successorRoster === null,
-    successor_roster_created: successorRoster !== null,
+    next_orchestrator_writes_campaign_authority: false,
+    start_next_release_after_authority_update: false,
+    candidate_only: true,
+    orientation_only: true,
+    successor_roster_created: false,
+    product_writer_lease: "NONE",
     fixed_finding_ids: [],
     standard_authority_promotion: false,
   };

@@ -3,111 +3,58 @@
   "version": 1,
   "governance_version": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
-  "purpose": "Keep public names, machine identifiers, file names, and migration aliases stable as AgentOS grows.",
+  "purpose": "Keep public names, machine identifiers, paths, and migration aliases stable as AgentOS evolves.",
   "naming_rules": {
-    "public_names": "Title Case for named concepts; avoid product, provider, or transport assumptions.",
-    "machine_ids": "Uppercase snake case for stable role, state, and disposition enums; lowercase dot-separated kebab segments for question and object IDs.",
-    "files": "Lowercase kebab case with a stable semantic noun; retain a compatibility file when a published path has already been consumed.",
-    "articles": "Stable numeric identity plus a short lowercase kebab slug; never renumber an accepted article.",
-    "aliases": "Aliases normalize to one canonical identity before validation and are retained only for migration or read compatibility.",
+    "public_names": "Use readable Title Case names without project, provider, repository, or transport assumptions.",
+    "machine_ids": "Use stable uppercase enums for roles and states and compact repository-safe identifiers for questions and objects.",
+    "files": "Use lowercase kebab case and retain a compatibility alias when a published path has already been consumed.",
+    "articles": "Use stable numeric identity plus a short semantic slug; never renumber accepted authority.",
+    "aliases": "Normalize aliases before validation. An alias cannot create a second authority identity or operating model.",
     "project_context": "Project names, repositories, providers, deployments, domains, and owner identities are data, never canonical AgentOS names."
   },
   "canonical_terms": {
-    "AGENTOS": {
-      "public_name": "AgentOS",
-      "meaning": "Portable governance and orchestration kernel."
-    },
-    "BOOTSTRAP": {
-      "public_name": "Bootstrap",
-      "meaning": "The one setup controller that discovers, asks, compiles, and seals project configuration before a campaign."
-    },
-    "BOOTSTRAP_INTERVIEW": {
-      "public_name": "Bootstrap Interview",
-      "meaning": "The compact owner-question catalog and compiler used by Bootstrap."
-    },
-    "BOOTSTRAP_DISCOVERY": {
-      "public_name": "Bootstrap Discovery",
-      "meaning": "Secret-free, read-only inspection that supplies facts and candidate interpretations to Bootstrap."
-    },
-    "AUTHORITY_CORPUS": {
-      "public_name": "Authority Corpus",
-      "meaning": "The project-bound source of truth compiled from governance plus project context."
-    },
-    "PROJECT_CONTEXT": {
-      "public_name": "Project Context",
-      "meaning": "Typed project facts, intent, boundaries, preferences, and external bindings supplied to governance."
-    },
-    "CAMPAIGN_ORCHESTRATOR": {
-      "public_name": "Campaign Orchestrator",
-      "meaning": "The campaign-scoped liveness, custody, dependency, and coherence owner."
-    },
-    "FEATURE_ORCHESTRATOR": {
-      "public_name": "Feature Orchestrator",
-      "meaning": "The feature-scoped owner that directly supervises feature work and any leased Platform Agent."
-    },
-    "PLATFORM_AGENT": {
-      "public_name": "Platform Agent",
-      "meaning": "An on-demand, feature-exclusive capability worker reused by that feature during the current campaign."
-    },
-    "AUDITOR": {
-      "public_name": "Auditor",
-      "meaning": "An independent read-only verifier; audit workers are optional children, not a standing review wave."
-    },
-    "CAMPAIGN_CASCADE": {
-      "public_name": "Campaign Cascade",
-      "meaning": "The adaptive first-pass, four-discipline audit, finalization, delta-repair, and exact acceptance path for one logical campaign lineage."
-    },
-    "FIRST_PASS_BUILDER": {
-      "public_name": "First-Pass Builder",
-      "meaning": "A capability-selected Feature or Platform Agent that advances the cumulative campaign root toward its terminal First-Pass Candidate."
-    },
-    "FIRST_PASS_CANDIDATE": {
-      "public_name": "First-Pass Candidate",
-      "meaning": "The first coherent, committed, pushed Product checkpoint produced by the build cascade before finalization."
-    },
-    "CAMPAIGN_FINALIZER": {
-      "public_name": "Campaign Finalizer",
-      "meaning": "A fresh, stronger, exclusive-writer repair agent that inherits one exact terminal First-Pass Candidate and consolidated findings."
-    },
-    "NEXT_CAMPAIGN_CANDIDATE": {
-      "public_name": "Next-Campaign Candidate",
-      "meaning": "A durable, content-addressed packet for a separately admitted future campaign; it creates no successor session or lease by itself."
-    },
-    "RUNTIME": {
-      "public_name": "Runtime",
-      "meaning": "The exact deployment, rollback, and live-operation control identity."
-    },
-    "GOVERNANCE_VALUE_TEST": {
-      "public_name": "Governance Value Test",
-      "meaning": "The test that permits governance work only when it advances product progress, trustworthy proof, causal repair, continuity, or a genuine authority decision."
-    }
+    "AGENTOS": {"public_name": "AgentOS", "meaning": "Portable governance and orchestration kernel."},
+    "BOOTSTRAP": {"public_name": "Bootstrap", "meaning": "The read-only discovery, owner-question, exact-plan, approval, and resumable setup controller."},
+    "AUTHORITY_CORPUS": {"public_name": "Authority Corpus", "meaning": "The project-bound source of truth compiled from governance and typed project context."},
+    "PROJECT_CONTEXT": {"public_name": "Project Context", "meaning": "Typed project facts, intent, boundaries, preferences, and external bindings supplied to governance."},
+    "CAMPAIGN_ORCHESTRATOR": {"public_name": "Campaign Orchestrator", "meaning": "Campaign-scoped liveness, custody, dependency, recovery, and closure owner."},
+    "FEATURE_AGENT": {"public_name": "Feature Agent", "meaning": "Feature-scoped owner that directly supervises feature work and sequentially leased Platform capabilities."},
+    "PLATFORM_AGENT": {"public_name": "Platform Agent", "meaning": "Campaign-local logical capability with one stable worktree and sequential Feature-Agent supervision leases."},
+    "AUDITOR": {"public_name": "Independent Auditor", "meaning": "Fresh read-only verifier of exact checkpoints and the deployed live identity."},
+    "CAMPAIGN_CASCADE": {"public_name": "Campaign Cascade", "meaning": "Adaptive first-pass, applicable audit, Finalizer, delta-repair, and exact acceptance path."},
+    "FIRST_PASS_CANDIDATE": {"public_name": "First-Pass Candidate", "meaning": "Immutable coherent checkpoint produced before Finalizer custody."},
+    "CAMPAIGN_FINALIZER": {"public_name": "Campaign Finalizer", "meaning": "Fresh exclusive-writer correction owner for one consolidated causal batch."},
+    "NEXT_CAMPAIGN_CANDIDATE": {"public_name": "Next-Campaign Candidate", "meaning": "Content-addressed future-work packet consumed first by one orientation-only next Campaign Orchestrator."},
+    "RUNTIME": {"public_name": "Runtime", "meaning": "Persistent exact integration, deployment, rollback, and live-operation identity."}
   },
   "compatibility_aliases": {
-    "guided-bootstrap": "bootstrap-interview",
+    "guided-bootstrap": "bootstrap",
     "dynamic-bootstrap": "bootstrap-discovery",
-    "GUIDED_BOOTSTRAP": "BOOTSTRAP_INTERVIEW",
+    "GUIDED_BOOTSTRAP": "BOOTSTRAP",
     "DYNAMIC_BOOTSTRAP": "BOOTSTRAP_DISCOVERY",
-    "FEATURE_LEAD": "FEATURE_ORCHESTRATOR",
+    "FEATURE_LEAD": "FEATURE_AGENT",
+    "FEATURE_ORCHESTRATOR": "FEATURE_AGENT",
     "GLOBAL_ORCHESTRATOR": "CAMPAIGN_ORCHESTRATOR",
     "successor_wave": "next_campaign_candidate",
+    "rough_draft": "first_pass_candidate",
+    "finalizer": "campaign_finalizer",
+    "feature_platform_worker": "campaign_local_platform_pool",
+    "successor_roster": "next_campaign_orientation",
     "ECO": "ECO_CONTINUOUS",
     "ECONOMICAL": "ECO_CONTINUOUS",
     "setup.interaction_mode": "bootstrap.discovery.mode",
-    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode",
-    "authority_corpus": "authority-corpus",
-    "project_context": "project-context",
-    "rough_draft": "first_pass_candidate",
-    "finalizer": "campaign_finalizer"
+    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode"
   },
   "canonical_paths": {
-    "bootstrap_interview_controller": "control/bootstrap-interview.mjs",
+    "bootstrap_controller": "control/bootstrap-compiler.mjs",
+    "bootstrap_contract": "schemas/bootstrap-plan.v1.json",
     "bootstrap_discovery_controller": "control/bootstrap-discovery.mjs",
-    "bootstrap_discovery_contract": "schemas/bootstrap-discovery.v1.json",
     "legacy_preservation_controller": "control/legacy-preservation.mjs",
-    "bootstrap_interview_contract": "schemas/bootstrap-interview.v1.json",
-    "legacy_preservation_contract": "schemas/legacy-preservation.v1.json",
-    "migration_manifest": "migrations/bootstrap-naming.v1.json",
-    "campaign_cascade_contract": "schemas/campaign-cascade.v1.json",
-    "campaign_cascade_controller": "control/campaign-cascade.mjs"
+    "campaign_lifecycle_controller": "control/campaign-lifecycle.mjs",
+    "campaign_controller": "control/campaign-controller.mjs",
+    "campaign_cascade_controller": "control/campaign-cascade.mjs",
+    "question_tree_controller": "control/question-tree.mjs",
+    "gpt_assist_controller": "control/gpt-assist.mjs",
+    "naming_migration": "migrations/bootstrap-naming.v1.json"
   }
 }

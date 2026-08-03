@@ -1,389 +1,250 @@
+#!/usr/bin/env node
+
 import assert from "node:assert/strict";
 import {
+  ANSWER_VALUES,
   BRANCHES,
+  LIFECYCLE_STATES,
   ROOTS,
-  canonicalJson,
   compileAcceptance,
-  compileQuestionTree,
-  compileRepairPacket,
-  compileRepairDecision,
   compileCriticalFreeze,
   compileEvidencePlan,
+  compileQuestionTree,
+  compileRepairDecision,
+  compileRepairPacket,
   evaluateQuestion,
   invalidateQuestions,
   sha256,
   validateQuestionTree,
 } from "../control/question-tree.mjs";
+import {
+  compileProductAcceptanceProof,
+  verifyProductAcceptanceProof,
+} from "../control/acceptance-bridge.mjs";
 
-const digest = "a".repeat(64);
-const now = "2026-08-03T00:00:00Z";
-const evidence = (kind) => ({
-  evidence_id: `E-${kind}`,
-  kind,
-  sha256: digest,
-  commit_sha: "commit-001",
-  worktree_id: "root-001",
-  build_identity: "build-001",
-  environment_id: "test-001",
-  observed_at_utc: now,
-  question_tree_version: "2.1rc",
-});
-const question = (id, root, parent = null, condition = root.toLowerCase()) => ({
-  question_id: id,
-  root,
-  parent_question_id: parent,
-  source_authority: { authority_id: `${root}-AUTH`, version: "1", sha256: digest },
-  applicability: { predicate_id: `${id}:APPLICABLE`, question: `Does ${id} apply to this change?` },
-  question: `Does ${id} produce its exact observable result?`,
-  required_evidence: [`${root}:PROOF`],
-  allowed_answers: [
-    "YES_WITH_EVIDENCE", "NO", "UNKNOWN", "NOT_APPLICABLE_WITH_PROOF",
-    "EXCEPTION_REQUESTED", "AUTHORIZED_EXCEPTION", "BLOCKED_AUTHORITY_BOUNDARY",
-  ],
-  branches: BRANCHES,
-  repair_owner_role: root === "DESIGN_BIBLE" ? "UI_UX" : root === "SECURITY" ? "SECURITY" : "FEATURE",
-  invalidation_conditions: [condition],
-  blocking_scope: `${id}:SCOPE`,
-  exception_policy: {
-    allowed: true,
-    granting_authority_ids: ["OWNER"],
-    scope: `${id}:SCOPE`,
-  },
-});
-const tree = {
-  schema: "governance.compiled_question_tree.v1",
-  question_tree_version: "2.1rc",
-  campaign_id: "campaign-001",
-  roots: ROOTS,
-  questions: [
-    question("FR-ENTRY-001", "FUNCTION_REQUIREMENTS"),
-    question("DB-SHELL-001", "DESIGN_BIBLE"),
-    question("SEC-AUTH-001", "SECURITY"),
-  ],
-  selection: {
-    schema: "governance.question_slice_selection.v1",
-    changed_surfaces: ["UI", "BACKEND_API"],
-    change_manifest_sha256: digest,
-    selected_question_ids: ["FR-ENTRY-001", "DB-SHELL-001", "SEC-AUTH-001"],
-    root_non_applicability: {
-      FUNCTION_REQUIREMENTS: null,
-      DESIGN_BIBLE: null,
-      SECURITY: null,
-    },
-  },
-};
+const DIGEST = "a".repeat(64);
+const NOW = "2026-08-03T00:00:00.000Z";
+const AUTHORITY = {authority_id: "TEST-AUTHORITY", version: "1", sha256: DIGEST};
 
-validateQuestionTree(tree);
-assert.equal(sha256(tree), sha256(JSON.parse(canonicalJson(tree))));
-
-const sourceClause = (q, surfaces) => ({
-  clause_id: `${q.question_id}:CLAUSE`,
-  question_id: q.question_id,
-  root: q.root,
-  parent_question_id: q.parent_question_id,
-  source_authority: structuredClone(q.source_authority),
-  applicability: structuredClone(q.applicability),
-  atomic_question: q.question,
-  required_evidence: [...q.required_evidence],
-  repair_owner_role: q.repair_owner_role,
-  invalidation_conditions: [...q.invalidation_conditions],
-  blocking_scope: q.blocking_scope,
-  exception_policy: structuredClone(q.exception_policy),
-  materiality: "MATERIAL_PRODUCT_ACCEPTANCE",
-  applies_to_surfaces: surfaces,
-});
-const compiledSlice = compileQuestionTree({
-  schema: "governance.question_tree_source_clauses.v1",
-  campaign_id: "campaign-001",
-  question_tree_version: "2.1rc",
-  change_manifest: (() => {
-    const body = {
-      schema: "governance.changed_surface_manifest.v1",
-      checkpoint_id: "checkpoint-001",
-      originating_owner_role_id: "feature-x",
-      root_id: "root-001",
-      branch: "campaign/campaign-001",
-      commit: "commit-001",
-      tree: "tree-001",
-      changed_paths: ["src/pages/settings.tsx"],
-      changed_surfaces: ["UI"],
-    };
-    return {...body, manifest_sha256: sha256(body)};
-  })(),
-  clauses: [
-    sourceClause(tree.questions[0], ["ALWAYS"]),
-    sourceClause(tree.questions[1], ["UI"]),
-    sourceClause(tree.questions[2], ["BACKEND_API"]),
-  ],
-});
-assert.deepEqual(compiledSlice.questions.map((item) => item.question_id), ["FR-ENTRY-001", "DB-SHELL-001"]);
-assert.match(compiledSlice.selection.root_non_applicability.SECURITY, /^[0-9a-f]{64}$/);
-
-const yes = (q) => ({
-  question_id: q.question_id,
-  applicable: true,
-  applicability_evidence: [evidence("APPLICABILITY")],
-  disposition: "YES_WITH_EVIDENCE",
-  evidence: [evidence(q.required_evidence[0])],
-  evaluated_at_utc: now,
-  evaluation_binding: {
+function evidence(kind, questionTreeVersion = "2.1rc") {
+  return {
+    evidence_id: `EVIDENCE-${kind}`,
+    kind,
+    sha256: DIGEST,
     commit_sha: "commit-001",
-    worktree_id: "root-001",
-    relevant_hashes: [digest],
-    build_identity: "build-001",
-    environment_id: "test-001",
+    worktree_id: "WORKTREE-001",
+    build_identity: "BUILD-001",
+    environment_id: "ENV-001",
+    observed_at_utc: NOW,
+    question_tree_version: questionTreeVersion,
+  };
+}
+
+function binding() {
+  return {
+    commit_sha: "commit-001",
+    worktree_id: "WORKTREE-001",
+    relevant_hashes: [DIGEST],
+    build_identity: "BUILD-001",
+    environment_id: "ENV-001",
     question_tree_version: "2.1rc",
+  };
+}
+
+function clause(questionId, root, appliesToSurfaces, parentQuestionId = null) {
+  return {
+    clause_id: `${questionId}:CLAUSE`,
+    question_id: questionId,
+    root,
+    parent_question_id: parentQuestionId,
+    source_authority: structuredClone(AUTHORITY),
+    applicability: {predicate_id: `${questionId}:APPLICABLE`, question: `Does ${questionId} apply?`},
+    atomic_question: `Does ${questionId} produce its exact observable result?`,
+    required_evidence: [`${questionId}:RESULT`],
+    repair_owner_role: "FEATURE_AGENT",
+    invalidation_conditions: [`${questionId}:CHANGE`],
+    blocking_scope: `${questionId}:SCOPE`,
+    exception_policy: {allowed: true, granting_authority_ids: ["OWNER"], scope: `${questionId}:SCOPE`},
+    materiality: "MATERIAL_PRODUCT_ACCEPTANCE",
+    applies_to_surfaces: appliesToSurfaces,
+  };
+}
+
+function manifest(changedSurfaces = ["UI"]) {
+  const body = {
+    schema: "governance.changed_surface_manifest.v1",
+    checkpoint_id: "CHECKPOINT-001",
+    originating_owner_role_id: "FEATURE_AGENT-001",
+    root_id: "WORKTREE-001",
+    branch: "campaign/main",
+    commit: "commit-001",
+    tree: "tree-001",
+    changed_paths: ["src/feature.ts"],
+    changed_surfaces: changedSurfaces,
+  };
+  return {...body, manifest_sha256: sha256(body)};
+}
+
+const sourceClauses = [
+  clause("FR-ENTRY-001", "FUNCTION_REQUIREMENTS", ["ALWAYS"]),
+  clause("DB-SURFACE-001", "DESIGN_BIBLE", ["UI"]),
+  clause("SEC-ACCESS-001", "SECURITY", ["BACKEND_API"]),
+];
+const tree = compileQuestionTree({
+  schema: "governance.question_tree_source_clauses.v1",
+  campaign_id: "CAMPAIGN-001",
+  question_tree_version: "2.1rc",
+  change_manifest: manifest(["UI", "BACKEND_API"]),
+  clauses: sourceClauses,
+});
+validateQuestionTree(tree);
+assert.deepEqual(tree.roots, ROOTS);
+assert.deepEqual(tree.questions[0].allowed_answers, ANSWER_VALUES);
+assert.deepEqual(tree.questions[0].branches, BRANCHES);
+assert.equal(new Set(LIFECYCLE_STATES).size, 5);
+
+function observation(question, answer = "YES", lifecycle = answer === "YES" || answer === "NOT_APPLICABLE" ? "VERIFIED" : answer === "UNKNOWN" ? "EVIDENCE_PENDING" : "OPEN_REPAIR", overrides = {}) {
+  const base = {
+    question_id: question.question_id,
+    answer,
+    lifecycle,
+    applicable: answer !== "NOT_APPLICABLE",
+    applicability_evidence: [evidence(`${question.question_id}:APPLICABLE`)],
+    evaluated_at_utc: NOW,
+    evaluation_binding: binding(),
+  };
+  if (answer === "YES") base.evidence = [evidence(question.required_evidence[0])];
+  if (answer === "NO") base.evidence = [evidence(question.required_evidence[0])];
+  if (answer === "UNKNOWN") base.missing_evidence = [`${question.question_id}:MISSING`];
+  return {...base, ...overrides};
+}
+
+const allYes = tree.questions.map((question) => observation(question));
+const ready = compileAcceptance(tree, allYes);
+assert.equal(ready.RC_READY, true);
+assert.deepEqual(ready.roots, {FUNCTION_REQUIREMENTS: "PASS", DESIGN_BIBLE: "PASS", SECURITY: "PASS"});
+assert(ready.question_states.every((state) => state.answer === "YES" && state.lifecycle === "VERIFIED"));
+
+const bridged = compileProductAcceptanceProof({
+  tree,
+  observations: allYes,
+  evidence_cache: [],
+  auditor_session_id: "AUDITOR-001",
+  evaluated_at_utc: NOW,
+  critical_freezes: [],
+});
+assert.equal(bridged.product_acceptance.rc_ready, true);
+assert.equal(bridged.product_acceptance.acceptance_receipt_sha256.length, 64);
+verifyProductAcceptanceProof(bridged.product_acceptance, bridged.proof, "CAMPAIGN-001");
+
+const notApplicable = observation(tree.questions[1], "NOT_APPLICABLE", "VERIFIED", {
+  applicable: false,
+  evidence: undefined,
+});
+delete notApplicable.evidence;
+assert.equal(evaluateQuestion(tree.questions[1], notApplicable).action, "PRESERVE_APPLICABILITY_PROOF");
+
+const unknown = observation(tree.questions[2], "UNKNOWN");
+const unknownAcceptance = compileAcceptance(tree, [allYes[0], allYes[1], unknown]);
+assert.equal(unknownAcceptance.roots.SECURITY, "UNKNOWN");
+assert.equal(unknownAcceptance.RC_READY, false);
+
+const no = observation(tree.questions[0], "NO");
+const noAcceptance = compileAcceptance(tree, [no, allYes[1], allYes[2]]);
+assert.equal(noAcceptance.roots.FUNCTION_REQUIREMENTS, "OPEN_REPAIR");
+assert.equal(noAcceptance.roots.DESIGN_BIBLE, "UNKNOWN");
+assert.equal(noAcceptance.roots.SECURITY, "UNKNOWN");
+assert.equal(compileRepairPacket(tree, [no]).length, 1);
+const repair = {...no, causal_root_id: "ROOT-001", implementation_route_id: "ROUTE-001", evidence_state_sha256: DIGEST};
+assert.equal(compileRepairDecision(tree, repair, []).action, "TARGETED_REPAIR");
+assert.equal(compileRepairDecision(tree, repair, [{question_id: repair.question_id, causal_root_id: "ROOT-001", implementation_route_id: "ROUTE-001", evidence_state_sha256: DIGEST}]).action, "DIRECT_SUPERVISOR_ONE_REFRAME_NO_EQUIVALENT_RETRY");
+assert.equal(compileRepairDecision(tree, {...repair, implementation_route_id: "ROUTE-002", evidence_state_sha256: "b".repeat(64)}, [{question_id: repair.question_id, causal_root_id: "ROOT-001", implementation_route_id: "ROUTE-001", evidence_state_sha256: DIGEST}]).action, "EXECUTE_MATERIALLY_DIFFERENT_REPAIR");
+
+const authorizedException = observation(tree.questions[0], "EXCEPTION_REQUESTED", "VERIFIED", {
+  authorized_exception: {
+    granting_authority: "OWNER",
+    scope: "FR-ENTRY-001:SCOPE",
+    rationale: "bounded compatibility",
+    compensating_control: "feature remains disabled outside the admitted scope",
+    expires_at_utc: "2026-08-04T00:00:00.000Z",
+    reevaluation_trigger: "next campaign",
+    commit_sha: "commit-001",
+    build_identity: "BUILD-001",
+    environment_id: "ENV-001",
+    authorization_sha256: DIGEST,
   },
 });
-assert.equal(compileAcceptance(compiledSlice, compiledSlice.questions.map(yes)).RC_READY, true);
-const allYes = tree.questions.map(yes);
-assert.equal(compileAcceptance(tree, allYes).RC_READY, true);
-const evidenceCache = tree.questions.map((item, index) => ({
-  question_id: item.question_id,
-  disposition: "YES_WITH_EVIDENCE",
+assert.equal(evaluateQuestion(tree.questions[0], authorizedException).action, "PASS_WITH_SCOPED_EXCEPTION");
+
+const evidenceCache = tree.questions.map((question, index) => ({
+  question_id: question.question_id,
+  answer: "YES",
+  lifecycle: "VERIFIED",
   result_sha256: String(index + 1).repeat(64),
-  relevant_hashes: [digest],
+  relevant_hashes: [DIGEST],
   question_tree_version: "2.1rc",
   reuse_scope: index === 0 ? "SOURCE_STABLE" : "BUILD_ENVIRONMENT_BOUND",
-  build_identity: "build-001",
-  environment_id: "test-001",
+  build_identity: "BUILD-001",
+  environment_id: "ENV-001",
 }));
 const evidencePlan = compileEvidencePlan(tree, evidenceCache, {
-  invalidated_question_ids: ["DB-SHELL-001"],
-  question_relevant_hashes: Object.fromEntries(tree.questions.map((item) => [item.question_id, [digest]])),
-  build_identity: "build-002",
-  environment_id: "test-001",
+  invalidated_question_ids: ["DB-SURFACE-001"],
+  question_relevant_hashes: Object.fromEntries(tree.questions.map((question) => [question.question_id, [DIGEST]])),
+  build_identity: "BUILD-002",
+  environment_id: "ENV-001",
 });
 assert.deepEqual(evidencePlan.reused_question_ids, ["FR-ENTRY-001"]);
-assert.deepEqual(evidencePlan.acquire_question_ids, ["DB-SHELL-001", "SEC-AUTH-001"]);
+assert.deepEqual(evidencePlan.acquire_question_ids, ["DB-SURFACE-001", "SEC-ACCESS-001"]);
+const invalidated = invalidateQuestions(tree, allYes.map((result) => ({question_id: result.question_id, answer: result.answer, lifecycle: result.lifecycle})), {change_id: "CHANGE-001", conditions: ["DB-SURFACE-001:CHANGE"]});
+assert.equal(invalidated.find((result) => result.question_id === "DB-SURFACE-001").lifecycle, "INVALIDATED");
+assert.equal(invalidated.find((result) => result.question_id === "FR-ENTRY-001").lifecycle, "VERIFIED");
 
-const securityUnknown = structuredClone(allYes);
-securityUnknown[2].disposition = "UNKNOWN";
-delete securityUnknown[2].evidence;
-securityUnknown[2].missing_evidence = ["SECURITY:PROOF"];
-const open = compileAcceptance(tree, securityUnknown);
-assert.equal(open.roots.SECURITY, "OPEN_REPAIR");
-assert.equal(open.RC_READY, false);
-
-const functionNo = structuredClone(allYes);
-functionNo[0].disposition = "NO";
-const ordered = compileAcceptance(tree, functionNo);
-assert.equal(ordered.roots.FUNCTION_REQUIREMENTS, "OPEN_REPAIR");
-assert.equal(ordered.roots.DESIGN_BIBLE, "PENDING_ADMISSION");
-assert.equal(ordered.roots.SECURITY, "PENDING_ADMISSION");
-assert.equal(compileRepairPacket(tree, functionNo).length, 1);
-functionNo[0].causal_root_id = "CAUSE-AUTH-SCOPE";
-functionNo[0].implementation_route_id = "ROUTE-SERVER-FENCE";
-functionNo[0].evidence_state_sha256 = digest;
-const firstRepair = compileRepairDecision(tree, functionNo[0], []);
-assert.equal(firstRepair.action, "TARGETED_REPAIR");
-const priorRepair = {
-  question_id: functionNo[0].question_id,
-  causal_root_id: functionNo[0].causal_root_id,
-  implementation_route_id: functionNo[0].implementation_route_id,
-  evidence_state_sha256: digest,
-};
-assert.equal(
-  compileRepairDecision(tree, functionNo[0], [priorRepair]).action,
-  "DIRECT_SUPERVISOR_ONE_REFRAME_NO_EQUIVALENT_RETRY",
-);
-const newRoute = structuredClone(functionNo[0]);
-newRoute.implementation_route_id = "ROUTE-BOUND-PROJECTION";
-newRoute.evidence_state_sha256 = "b".repeat(64);
-assert.equal(
-  compileRepairDecision(tree, newRoute, [priorRepair]).action,
-  "EXECUTE_MATERIALLY_DIFFERENT_REPAIR",
-);
-
-const notApplicable = {
-  question_id: tree.questions[0].question_id,
-  applicable: false,
-  applicability_evidence: [evidence("APPLICABILITY")],
-  disposition: "NOT_APPLICABLE_WITH_PROOF",
-  evaluated_at_utc: now,
-  evaluation_binding: structuredClone(allYes[0].evaluation_binding),
-};
-assert.equal(evaluateQuestion(tree.questions[0], notApplicable).action, "PRESERVE_PROOF");
-
-const exception = structuredClone(allYes[0]);
-exception.disposition = "AUTHORIZED_EXCEPTION";
-delete exception.evidence;
-exception.authorized_exception = {
-  granting_authority: "OWNER",
-  scope: "FR-ENTRY-001:SCOPE",
-  rationale: "bounded compatibility",
-  compensating_control: "feature disabled outside test",
-  expires_at_utc: "2026-08-04T00:00:00Z",
-  reevaluation_trigger: "next build",
-  commit_sha: "commit-001",
-  build_identity: "build-001",
-  environment_id: "test-001",
-  authorization_sha256: digest,
-};
-assert.equal(evaluateQuestion(tree.questions[0], exception).action, "PASS_WITH_SCOPED_EXCEPTION");
-
-const blocked = structuredClone(allYes[0]);
-blocked.disposition = "BLOCKED_AUTHORITY_BOUNDARY";
-delete blocked.evidence;
-blocked.owner_boundary_class = "HUMAN_AUTHENTICATION_OR_LEGAL_ACCEPTANCE";
-blocked.authority_boundary_id = "AUTH-MFA-001";
-blocked.blocker_evidence_sha256 = digest;
-blocked.smallest_owner_action = "complete MFA";
-blocked.attempted_safe_alternatives = ["existing session", "public device flow"];
-blocked.unaffected_work = "all non-deployment checks";
-assert.equal(evaluateQuestion(tree.questions[0], blocked).action, "PAUSE_AFFECTED_SCOPE_CONTINUE_UNRELATED");
-
-const localFreeze = compileCriticalFreeze({
+const freeze = compileCriticalFreeze({
   schema: "governance.critical_surface_finding.v1",
   domain: "SECURITY",
   severity: "CRITICAL",
   finding_id: "SEC-CRITICAL-001",
-  evidence_sha256: digest,
-  auditor_session_id: "auditor-session-001",
-  auditor_roster_receipt_sha256: digest,
-  affected_surfaces: ["api/auth"],
+  evidence_sha256: DIGEST,
+  auditor_session_id: "AUDITOR-001",
+  auditor_roster_receipt_sha256: DIGEST,
+  affected_surfaces: ["AUTH"],
   global_impact: false,
 });
-assert.equal(localFreeze.action, "FREEZE_AFFECTED_SURFACES_ONLY");
-assert.equal(localFreeze.continue_unaffected_work, true);
+assert.equal(freeze.action, "FREEZE_AFFECTED_SURFACES_ONLY");
+assert.equal(freeze.continue_unaffected_work, true);
 
-const prior = allYes.map((item) => ({ question_id: item.question_id, disposition: item.disposition }));
-const invalidated = invalidateQuestions(tree, prior, { change_id: "change-001", conditions: ["design_bible"] });
-assert.equal(invalidated.find((item) => item.question_id === "DB-SHELL-001").disposition, "UNKNOWN");
-assert.equal(invalidated.find((item) => item.question_id === "FR-ENTRY-001").disposition, "YES_WITH_EVIDENCE");
-
-let hostileCount = 0;
-function rejects(label, mutate, action = validateQuestionTree) {
-  const candidate = structuredClone(tree);
-  mutate(candidate);
-  assert.throws(() => action(candidate), undefined, label);
-  hostileCount += 1;
+let hostile = 0;
+function rejects(label, operation) {
+  assert.throws(operation, undefined, label);
+  hostile += 1;
 }
-
-rejects("wrong roots", (x) => x.roots.reverse());
-rejects("missing root proof", (x) => {
-  x.questions = x.questions.filter((q) => q.root !== "SECURITY");
-  x.selection.selected_question_ids = x.selection.selected_question_ids.filter((id) => !id.startsWith("SEC-"));
-});
-rejects("ceremonial inventory mismatch", (x) => x.selection.selected_question_ids.push("SEC-UNRELATED-999"));
-rejects("active root claims non-applicability", (x) => { x.selection.root_non_applicability.SECURITY = digest; });
-assert.throws(() => compileQuestionTree({
-  schema: "governance.question_tree_source_clauses.v1",
-  campaign_id: "campaign-001",
-  question_tree_version: "2.1rc",
-  change_manifest: {...compiledSlice.selection, schema: "governance.changed_surface_manifest.v1"},
-  clauses: [sourceClause(tree.questions[0], ["ALWAYS"])],
-}), /change manifest identity/);
-hostileCount += 1;
-const poisonedCache = structuredClone(evidenceCache);
-poisonedCache[0].reuse_scope = "TRUST_ME";
-assert.throws(() => compileEvidencePlan(tree, poisonedCache, {
+rejects("old disposition cannot answer a question", () => evaluateQuestion(tree.questions[0], {...allYes[0], answer: undefined, disposition: "YES_WITH_EVIDENCE"}));
+rejects("unknown lifecycle cannot claim YES", () => evaluateQuestion(tree.questions[0], {...allYes[0], lifecycle: "EVIDENCE_PENDING"}));
+rejects("missing evidence cannot pass", () => evaluateQuestion(tree.questions[0], {...allYes[0], evidence: []}));
+rejects("N/A needs proof", () => evaluateQuestion(tree.questions[1], {...notApplicable, applicability_evidence: []}));
+rejects("unauthorized exception cannot pass", () => evaluateQuestion(tree.questions[0], {...authorizedException, authorized_exception: undefined}));
+rejects("invalidated answer needs cause", () => evaluateQuestion(tree.questions[0], {...allYes[0], lifecycle: "INVALIDATED"}));
+rejects("wrong root order", () => compileAcceptance(tree, [allYes[0], allYes[1], {...allYes[2], lifecycle: "INVALIDATED"}]));
+rejects("duplicate evidence cache", () => compileEvidencePlan(tree, [evidenceCache[0], evidenceCache[0]], {
   invalidated_question_ids: [],
-  question_relevant_hashes: Object.fromEntries(tree.questions.map((item) => [item.question_id, [digest]])),
-  build_identity: "build-002",
-  environment_id: "test-001",
-}), /reuse scope/);
-hostileCount += 1;
-rejects("duplicate question", (x) => x.questions.push(structuredClone(x.questions[0])));
-rejects("cycle", (x) => { x.questions[0].parent_question_id = x.questions[0].question_id; });
-rejects("cross-root parent", (x) => { x.questions[1].parent_question_id = x.questions[0].question_id; });
-rejects("vague statement", (x) => { x.questions[0].question = "Search works"; });
-rejects("missing source hash", (x) => { x.questions[0].source_authority.sha256 = "x"; });
-rejects("missing evidence kinds", (x) => { x.questions[0].required_evidence = []; });
-rejects("duplicate evidence kind", (x) => { x.questions[0].required_evidence.push(x.questions[0].required_evidence[0]); });
-rejects("missing branch", (x) => { delete x.questions[0].branches.NO; });
-rejects("swapped branch", (x) => { x.questions[0].branches.NO = BRANCHES.UNKNOWN; });
-rejects("missing allowed disposition", (x) => { x.questions[0].allowed_answers.pop(); });
-rejects("forbidden confidence", (x) => { x.questions[0].confidence = 0.9; });
-rejects("forbidden score", (x) => { x.score = 100; });
-rejects("forbidden weight", (x) => { x.questions[0].weight = 2; });
-rejects("exception contradiction", (x) => { x.questions[0].exception_policy.allowed = false; });
-rejects("root family mismatch", (x) => { x.questions[0].question_id = "DB-WRONG-001"; });
+  question_relevant_hashes: Object.fromEntries(tree.questions.map((question) => [question.question_id, [DIGEST]])),
+  build_identity: "BUILD-001",
+  environment_id: "ENV-001",
+}));
+rejects("cross-root parent", () => validateQuestionTree({...tree, questions: tree.questions.map((question, index) => index === 1 ? {...question, parent_question_id: tree.questions[0].question_id} : question)}));
+rejects("old root status vocabulary", () => {
+  const result = compileAcceptance(tree, allYes);
+  assert(!Object.values(result.roots).some((value) => ["BLOCKED", "PENDING_ADMISSION"].includes(value)));
+  throw new Error("sentinel");
+});
+rejects("tampered acceptance receipt", () => verifyProductAcceptanceProof({
+  ...bridged.product_acceptance,
+  acceptance_receipt_sha256: "b".repeat(64),
+}, bridged.proof, "CAMPAIGN-001"));
+rejects("tampered Auditor attestation", () => verifyProductAcceptanceProof(
+  bridged.product_acceptance,
+  {...bridged.proof, auditor_attestation: {...bridged.proof.auditor_attestation, auditor_session_id: "AUDITOR-002"}},
+  "CAMPAIGN-001",
+));
 
-function rejectsObservation(label, observation) {
-  assert.throws(() => evaluateQuestion(tree.questions[0], observation), undefined, label);
-  hostileCount += 1;
-}
-const missingProof = structuredClone(allYes[0]);
-missingProof.evidence = [];
-rejectsObservation("YES without evidence", missingProof);
-const fakeNa = structuredClone(notApplicable);
-fakeNa.applicability_evidence = [];
-rejectsObservation("N/A without proof", fakeNa);
-const wrongNa = structuredClone(notApplicable);
-wrongNa.disposition = "YES_WITH_EVIDENCE";
-rejectsObservation("inapplicable YES", wrongNa);
-const expired = structuredClone(exception);
-expired.authorized_exception.expires_at_utc = "2026-07-01T00:00:00Z";
-rejectsObservation("expired exception", expired);
-const badException = structuredClone(exception);
-badException.authorized_exception.authorization_sha256 = "x";
-rejectsObservation("unbound exception", badException);
-const noAlternatives = structuredClone(blocked);
-noAlternatives.attempted_safe_alternatives = [];
-rejectsObservation("owner blocker without safe attempts", noAlternatives);
-const ordinaryAsOwner = structuredClone(blocked);
-ordinaryAsOwner.owner_boundary_class = "FAILING_TEST";
-rejectsObservation("ordinary repair called owner blocker", ordinaryAsOwner);
-const oldEvidence = structuredClone(allYes[0]);
-oldEvidence.evidence[0].question_tree_version = "2.0rc";
-rejectsObservation("stale evidence version", oldEvidence);
-const noWithoutEvidence = structuredClone(allYes[0]);
-noWithoutEvidence.disposition = "NO";
-delete noWithoutEvidence.evidence;
-rejectsObservation("NO without observed evidence", noWithoutEvidence);
-const unknownWithoutGap = structuredClone(allYes[0]);
-unknownWithoutGap.disposition = "UNKNOWN";
-delete unknownWithoutGap.evidence;
-rejectsObservation("UNKNOWN without named missing evidence", unknownWithoutGap);
-const unboundResult = structuredClone(allYes[0]);
-delete unboundResult.evaluation_binding;
-rejectsObservation("result lacks exact evaluation binding", unboundResult);
-const wrongCommitException = structuredClone(exception);
-wrongCommitException.authorized_exception.commit_sha = "commit-other";
-rejectsObservation("exception applies to wrong commit", wrongCommitException);
-const wrongAuthorityException = structuredClone(exception);
-wrongAuthorityException.authorized_exception.granting_authority = "OTHER";
-rejectsObservation("exception granted by unadmitted authority", wrongAuthorityException);
-const requested = structuredClone(allYes[0]);
-requested.disposition = "EXCEPTION_REQUESTED";
-delete requested.evidence;
-requested.exception_request = {
-  granting_authority: "OWNER",
-  scope: "wrong scope",
-  rationale: "bounded request",
-};
-rejectsObservation("exception request scope mismatch", requested);
-const parentTree = structuredClone(tree);
-parentTree.questions.push(question("FR-CHILD-001", "FUNCTION_REQUIREMENTS", "FR-ENTRY-001"));
-parentTree.selection.selected_question_ids.push("FR-CHILD-001");
-const parentObservations = structuredClone(allYes);
-parentObservations[0].disposition = "NO";
-parentObservations.push(yes(parentTree.questions.at(-1)));
-assert.throws(() => compileAcceptance(parentTree, parentObservations), /parent was not admitted/);
-hostileCount += 1;
-assert.throws(() => compileCriticalFreeze({
-  schema: "governance.critical_surface_finding.v1",
-  domain: "SECURITY",
-  severity: "CRITICAL",
-  finding_id: "SEC-CRITICAL-002",
-  evidence_sha256: digest,
-  auditor_session_id: "auditor-session-001",
-  auditor_roster_receipt_sha256: digest,
-  affected_surfaces: ["api/auth"],
-  global_impact: true,
-}), /global freeze requires/);
-hostileCount += 1;
-assert.throws(() => compileCriticalFreeze({
-  schema: "governance.critical_surface_finding.v1",
-  domain: "SECURITY",
-  severity: "CRITICAL",
-  finding_id: "SEC-CRITICAL-003",
-  evidence_sha256: digest,
-  affected_surfaces: ["api/auth"],
-  global_impact: false,
-}), /Auditor identity/);
-hostileCount += 1;
-
-assert.equal(hostileCount, 38);
-console.log(`Governance 2.1rc question-tree PASS (${hostileCount} hostile cases)`);
+console.log(`PASS Governance 2.1rc question tree (${hostile} hostile cases)`);

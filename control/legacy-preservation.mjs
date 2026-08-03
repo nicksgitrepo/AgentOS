@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import crypto from "node:crypto";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -31,6 +32,10 @@ const DEFAULT_EXCLUDED_SUFFIXES = new Map([
   [".swo", "editor swap file"],
   [".tmp", "temporary file"],
 ]);
+const SENSITIVE_LEGACY_NAME = /(?:^|[._-])(?:credentials?|secrets?|private[-_]?keys?|id_(?:rsa|dsa|ecdsa|ed25519)|access[-_]?tokens?)(?:$|[._-])/iu;
+const ENVIRONMENT_FILE_NAME = /^\.env(?:$|\.)/u;
+const SENSITIVE_ASSIGNMENT = /^\s*(?:[A-Z][A-Z0-9_]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|PRIVATE)|api[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token|client[_-]?secret|password|secret|private[_-]?key)\s*[:=]\s*["']?([^\s"'#]{8,})/imu;
+const SAFE_PLACEHOLDER = /^(?:example|placeholder|change[-_]?me|your[-_].*|replace[-_].*|none|null|false|true)$/iu;
 
 function compareUtf8(left, right) {
   return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
@@ -130,6 +135,19 @@ function exclusionFor(name, isDirectory) {
   return null;
 }
 
+function rejectSecretBearingFile(relative, bytes) {
+  const basename = path.posix.basename(relative);
+  if (ENVIRONMENT_FILE_NAME.test(basename) || SENSITIVE_LEGACY_NAME.test(basename)
+      || /\.(?:pem|key|p12|pfx|kdbx)$/iu.test(basename)) {
+    throw new Error(`legacy source contains a possible secret-bearing file: ${relative}`);
+  }
+  const text = bytes.toString("utf8");
+  const match = SENSITIVE_ASSIGNMENT.exec(text);
+  if (match && !SAFE_PLACEHOLDER.test(match[1])) {
+    throw new Error(`legacy source contains a possible credential assignment: ${relative}`);
+  }
+}
+
 function collectSource(source) {
   const included = [];
   const excluded = [];
@@ -153,6 +171,7 @@ function collectSource(source) {
         continue;
       }
       const bytes = fs.readFileSync(absolute);
+      rejectSecretBearingFile(relative, bytes);
       included.push({
         path: requireSafeRelativePath(relative, "legacy source path"),
         mode: stat.mode & 0o777,
@@ -169,16 +188,62 @@ function collectSource(source) {
   return {included, excluded};
 }
 
+export function inspectLegacySource(sourceRoot) {
+  const source = canonicalDirectory(sourceRoot, "legacy source root");
+  const collected = collectSource(source);
+  const manifest = manifestFor(collected, gitObservation(source));
+  return {
+    source_root: source,
+    source_content_sha256: manifest.source_content_sha256,
+    source_observation_sha256: manifest.source_observation.observation_sha256,
+    included_files: manifest.included_files.length,
+    excluded_paths: manifest.excluded_paths.length,
+  };
+}
+
+function gitObservation(source) {
+  const environment = {
+    PATH: process.env.PATH ?? "",
+    LANG: "C",
+    LC_ALL: "C",
+    GIT_TERMINAL_PROMPT: "0",
+    GIT_CONFIG_NOSYSTEM: "1",
+  };
+  const run = (args) => spawnSync("git", args, {
+    cwd: source,
+    encoding: "utf8",
+    timeout: 10_000,
+    env: environment,
+  });
+  const commit = run(["rev-parse", "HEAD"]);
+  const tree = run(["rev-parse", "HEAD^{tree}"]);
+  if (commit.status !== 0 || tree.status !== 0) {
+    const observation = {repository: "NOT_A_GIT_REPOSITORY", commit: null, tree: null, dirty: null, entries: []};
+    return {...observation, observation_sha256: digest(observation)};
+  }
+  const status = run(["status", "--porcelain=v1", "--untracked-files=all"]);
+  const entries = (status.stdout ?? "").trim().split("\n").filter(Boolean).sort(compareUtf8);
+  const observation = {
+    repository: "GIT",
+    commit: (commit.stdout ?? "").trim(),
+    tree: (tree.stdout ?? "").trim(),
+    dirty: entries.length > 0,
+    entries,
+  };
+  return {...observation, observation_sha256: digest(observation)};
+}
+
 function publicFiles(included) {
   return included.map(({bytes, ...record}) => record);
 }
 
-function manifestFor(collected) {
+function manifestFor(collected, sourceObservation) {
   const includedFiles = publicFiles(collected.included);
   const excludedPaths = collected.excluded;
   return {
     schema: "governance.legacy_preservation_manifest.v1",
     archive_entry_root: "SOURCE_ROOT",
+    source_observation: sourceObservation,
     source_content_sha256: digest({included_files: includedFiles, excluded_paths: excludedPaths}),
     included_files: includedFiles,
     excluded_paths: excludedPaths,
@@ -192,6 +257,8 @@ function indexBytes(included) {
 function verifyManifest(manifest) {
   if (!manifest || manifest.schema !== "governance.legacy_preservation_manifest.v1"
       || manifest.archive_entry_root !== "SOURCE_ROOT"
+      || !manifest.source_observation
+      || typeof manifest.source_observation.observation_sha256 !== "string"
       || !SHA256.test(manifest.source_content_sha256)
       || !Array.isArray(manifest.included_files)
       || !Array.isArray(manifest.excluded_paths)) {
@@ -226,12 +293,17 @@ function verifyManifest(manifest) {
   if (expected !== manifest.source_content_sha256) {
     throw new Error("legacy source content digest mismatch");
   }
+  const observationBody = structuredClone(manifest.source_observation);
+  delete observationBody.observation_sha256;
+  if (digest(observationBody) !== manifest.source_observation.observation_sha256) {
+    throw new Error("legacy source observation digest mismatch");
+  }
 }
 
 export function compileLegacyPreservationPlan(sourceRoot, destinationRoot) {
   const roots = sourceAndDestination(sourceRoot, destinationRoot);
   const collected = collectSource(roots.source);
-  const manifest = manifestFor(collected);
+  const manifest = manifestFor(collected, gitObservation(roots.source));
   const manifestBytes = Buffer.from(canonicalJson(manifest), "utf8");
   const index = indexBytes(collected.included);
   const zipBytes = buildStoredZip(collected.included.map((entry) => ({
@@ -264,6 +336,13 @@ function writeExclusive(target, bytes) {
   }
 }
 
+function moveExclusive(source, target) {
+  // The temporary directory is created inside the destination, so a hard-link
+  // gives us an exclusive, same-filesystem publish without rename overwrite.
+  fs.linkSync(source, target);
+  fs.unlinkSync(source);
+}
+
 export function verifyLegacyPreservation(outputRoot, expectedReceipt = null) {
   const root = canonicalDirectory(outputRoot, "legacy output root");
   const archiveBytes = fs.readFileSync(path.join(root, "legacy.zip"));
@@ -278,6 +357,7 @@ export function verifyLegacyPreservation(outputRoot, expectedReceipt = null) {
       || !Number.isSafeInteger(receipt.included_files)
       || !Number.isSafeInteger(receipt.excluded_paths)
       || !SHA256.test(receipt.source_content_sha256)
+      || !SHA256.test(receipt.source_observation_sha256)
       || !SHA256.test(receipt.archive_sha256)
       || !SHA256.test(receipt.manifest_sha256)
       || !SHA256.test(receipt.index_sha256)
@@ -297,7 +377,8 @@ export function verifyLegacyPreservation(outputRoot, expectedReceipt = null) {
   if (sha256(archiveBytes) !== receipt.archive_sha256
       || sha256(manifestBytes) !== receipt.manifest_sha256
       || sha256(indexBytesObserved) !== receipt.index_sha256
-      || receipt.source_content_sha256 !== manifest.source_content_sha256) {
+      || receipt.source_content_sha256 !== manifest.source_content_sha256
+      || receipt.source_observation_sha256 !== manifest.source_observation.observation_sha256) {
     throw new Error("legacy receipt does not bind its outputs");
   }
   if (receipt.included_files !== manifest.included_files.length
@@ -345,12 +426,14 @@ export function preserveLegacyCorpus(sourceRoot, destinationRoot, now) {
     throw new Error("legacy preservation plan is not deterministic");
   }
   const current = compileLegacyPreservationPlan(plan.source_root, plan.destination_root);
-  if (current.manifest.source_content_sha256 !== plan.manifest.source_content_sha256) {
+  if (current.manifest.source_content_sha256 !== plan.manifest.source_content_sha256
+      || current.manifest.source_observation.observation_sha256 !== plan.manifest.source_observation.observation_sha256) {
     throw new Error("legacy source changed after inspection");
   }
   const receiptBody = {
     schema: "governance.legacy_preservation_receipt.v1",
     source_content_sha256: plan.manifest.source_content_sha256,
+    source_observation_sha256: plan.manifest.source_observation.observation_sha256,
     archive_sha256: plan.archive_sha256,
     manifest_sha256: plan.manifest_sha256,
     index_sha256: plan.index_sha256,
@@ -368,13 +451,19 @@ export function preserveLegacyCorpus(sourceRoot, destinationRoot, now) {
     writeExclusive(path.join(temporary, "legacy.index.jsonl"), plan.index_bytes);
     writeExclusive(path.join(temporary, "legacy.receipt.json"), Buffer.from(canonicalJson(receipt), "utf8"));
     const verification = verifyLegacyPreservation(temporary);
-    for (const name of OUTPUT_NAMES) fs.renameSync(path.join(temporary, name), path.join(plan.destination_root, name));
+    const finalCheck = compileLegacyPreservationPlan(plan.source_root, plan.destination_root);
+    if (finalCheck.manifest.source_content_sha256 !== plan.manifest.source_content_sha256
+        || finalCheck.manifest.source_observation.observation_sha256 !== plan.manifest.source_observation.observation_sha256) {
+      throw new Error("legacy source changed during preservation publish");
+    }
+    for (const name of OUTPUT_NAMES) moveExclusive(path.join(temporary, name), path.join(plan.destination_root, name));
     fs.rmdirSync(temporary);
     return {plan: {
       schema: plan.schema,
       archive_sha256: plan.archive_sha256,
       manifest_sha256: plan.manifest_sha256,
       index_sha256: plan.index_sha256,
+      source_observation_sha256: plan.manifest.source_observation.observation_sha256,
       included_files: plan.manifest.included_files.length,
       excluded_paths: plan.manifest.excluded_paths.length,
     }, receipt, verification};
