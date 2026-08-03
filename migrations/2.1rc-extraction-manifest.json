@@ -1,0 +1,68 @@
+{
+  "schema": "agentos.governance_2_1rc_extraction_manifest.v1",
+  "version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "source": {
+    "repository_role": "READ_ONLY_CANONICAL_GOVERNANCE_SOURCE",
+    "branch": "governance/2-1rc-launch-readiness-001",
+    "commit": "9e085536e89254a6bab7df9a7f5e7ac490113a22",
+    "tree": "a79262413e48e1a8536b4f9d2649a0abeb1c95ae",
+    "parent": "cf59435295ad1b4d0adc907b0ad75299b5955485",
+    "review_packet_sha256": "48f1d290fe5a3fdf1d78f02c054dc51e00da5eb08ceebf1723fcacc97d98cd23"
+  },
+  "target": {
+    "repository_role": "STANDALONE_PORTABLE_GOVERNANCE_REPOSITORY",
+    "base_commit": "6cad8d8309b6e30165a79081ed60041a5913815f",
+    "branch": "agent/extract-2.1rc"
+  },
+  "portable_mapping": [
+    ["bootstrap entrypoint", "bootstrap/start-here.md"],
+    ["portable governance articles", "governance/2.1rc/"],
+    ["project-context template", "authority/templates/project-context.v1.json"],
+    ["machine contracts", "schemas/"],
+    ["executable controllers", "control/"],
+    ["positive and hostile verification", "tests/"],
+    ["operator and maintainer documentation", "docs/"],
+    ["extraction provenance and version mappings", "migrations/"],
+    ["synthetic project example", "examples/project-context-fixture.v1.json"]
+  ],
+  "parameterized_context": [
+    "project identity and ownership",
+    "repositories, branches, and worktrees",
+    "feature and capability roster",
+    "design authority",
+    "testing, browser, and authentication choices",
+    "providers, environments, deployment, and rollback bindings",
+    "model assignments and reasoning policy",
+    "retention, paths, hosting, and user preferences"
+  ],
+  "excluded_material": [
+    {
+      "class": "PRODUCT_BOUND_PROJECT_CONTEXT",
+      "reason": "replaced by the typed authority/templates/project-context.v1.json contract and synthetic example"
+    },
+    {
+      "class": "HISTORICAL_REVIEW_PACKETS_AND_CAMPAIGN_RECEIPTS",
+      "reason": "kept outside normative authority; provenance is retained only in this manifest"
+    },
+    {
+      "class": "SECRETS_ENVIRONMENT_FILES_ARCHIVES_AND_RELEASE_EVIDENCE",
+      "reason": "not part of the portable kernel"
+    }
+  ],
+  "extraction_repairs": [
+    "renamed legacy article-store semantic identifiers to provider-neutral authority-corpus terms",
+    "rebound all machine paths and digests to the standalone layout",
+    "made project-context governance override attempts fail closed",
+    "required complete successor Feature Agent coverage for every dependency owner",
+    "made DIRECT_ONLY successor waves omit GPT_ASSIST handoffs",
+    "rejected final current-view symlinks and content-unbound Product-acceptance receipts",
+    "bound RC_READY to a recomputed question-tree proof and Auditor attestation"
+  ],
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "product_campaign_rebind": false,
+    "deployment_custody": false,
+    "source_repository_modified": false
+  }
+}

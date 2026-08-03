@@ -1,0 +1,111 @@
+{
+  "schema": "governance.portable_browser_runtime_lifecycle.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "browser": {
+    "interactive_browser": "CONFIGURATION_SNAPSHOT_SELECTED",
+    "open_instruction": "Open the exact user-selected interactive browser through its admitted control surface.",
+    "forbidden": [
+      "OPERATING_SYSTEM_DEFAULT_BROWSER",
+      "GENERIC_OPEN_URL",
+      "UNCONFIGURED_FALLBACK_BROWSER"
+    ],
+    "unavailable_status": "SELECTED_BROWSER_CONTROL_UNAVAILABLE"
+  },
+  "automation": {
+    "framework": "CONFIGURATION_SNAPSHOT_SELECTED",
+    "browser_project": "EXPLICIT_USER_SELECTED_PROJECT",
+    "profile": "ISOLATED_AUTOMATION_PROFILE",
+    "owner_profile_forbidden": true,
+    "implicit_session_inheritance_forbidden": true,
+    "authentication_source": "CONFIGURATION_SNAPSHOT_SELECTED_AUTH_ROUTE"
+  },
+  "provider_auth_blocker": {
+    "class": "UNAVAILABLE_CREDENTIAL_OR_EXTERNAL_ACCESS",
+    "required_fields": [
+      "provider",
+      "environment",
+      "reason",
+      "official_authorization_url",
+      "selected_browser_required",
+      "sensitive_link",
+      "resume_check",
+      "resume_goal_id"
+    ],
+    "official_url_scheme": "https",
+    "selected_browser_required": true,
+    "secret_retention_forbidden": true,
+    "persisted_sensitive_link": false,
+    "url_credentials_query_fragment_forbidden": true,
+    "campaign_status": "TRUE_BLOCKER_SUSPENDED",
+    "goal_status": "SUSPENDED_TRUE_BLOCKER",
+    "timer_status": "STOPPED",
+    "watcher": "ONE_BLOCKER_RESOLUTION_WATCHER",
+    "resume": "MECHANICAL_CHECK_RESUMES_SAME_GOAL_AND_TIMER"
+  },
+  "agent_lifecycle": {
+    "persistent_roles": [
+      "GLOBAL_RUNTIME"
+    ],
+    "fresh_campaign_roles": [
+      "GLOBAL_ORCHESTRATOR",
+      "INDEPENDENT_AUDITOR",
+      "FEATURE_AGENT"
+    ],
+    "on_demand_roles": [
+      "PLATFORM_AGENT"
+    ],
+    "campaign_display_name": "<OneWordRole> <CampaignVersion> <GovernanceVersion>",
+    "runtime_display_name": "Runtime Persistent 2.1rc",
+    "current_identity_cardinality": "EXACTLY_ONE_ORCHESTRATOR_ONE_AUDITOR_ONE_RUNTIME_AND_ONE_FEATURE_PER_DEPENDENCY_OWNER",
+    "successor_identity_rule": "PAIRWISE_DISTINCT_ROLES_AND_SESSIONS_DISJOINT_FROM_CURRENT_ROSTER",
+    "archive_policy": "ARCHIVE_AND_UNPIN_NEVER_DELETE_OR_REUSE",
+    "successor_creation_trigger": "TERMINAL_HANDOFF_TO_RUNTIME",
+    "successor_pre_live_scope": "ORIENTATION_AND_BLUEPRINT_ONLY",
+    "successor_product_lease": "HELD_UNTIL_PREDECESSOR_ACCEPTED_LIVE",
+    "closing_auditor": "REMAINS_PINNED_THROUGH_EXACT_LIVE_AUDIT"
+  },
+  "seam_review": {
+    "trigger": "SUBSTANTIAL_PUSHED_CHECKPOINT",
+    "always_required": [
+      "SECURITY"
+    ],
+    "surface_map": {
+      "UI": [
+        "UI_UX",
+        "SHELL_NAVIGATION",
+        "ACCESSIBILITY"
+      ],
+      "AUTHENTICATED_UI": [
+        "UI_UX",
+        "SHELL_NAVIGATION",
+        "ACCESSIBILITY",
+        "IDENTITY_ACCESS"
+      ],
+      "BACKEND_API": [
+        "BACKEND_API"
+      ],
+      "DATABASE_SCHEMA": [
+        "DATABASE_RLS",
+        "RECOVERY"
+      ],
+      "PROVIDER_INTEGRATION": [
+        "INTEGRATION",
+        "RUNTIME"
+      ],
+      "RUNTIME_CONFIG": [
+        "RUNTIME"
+      ]
+    },
+    "reviewer_mode": "FRESH_PINNED_READ_ONLY_ON_DEMAND",
+    "reviewer_identity_binding": "EXACT_CURRENT_CAMPAIGN_PLATFORM_AGENT_SESSION_ROLE_AND_MATERIAL_SEAM",
+    "root_progress": "CONTINUES_WHERE_SAFE",
+    "severity": {
+      "CATASTROPHIC": "HOLD_AFFECTED_HANDOFF_IMMEDIATELY",
+      "MATERIAL": "RETURN_CURRENT_ROOT_TO_ORIGINATING_FEATURE_AT_NEXT_STABLE_HANDOFF",
+      "NONCRITICAL": "NEXT_CAMPAIGN_BACKLOG",
+      "PASS": "NO_CORRECTION_CUSTODY"
+    },
+    "rejection_never_reverts_product": true
+  }
+}

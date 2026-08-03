@@ -1,0 +1,96 @@
+{
+  "schema": "governance.gpt_assist_authority.v1",
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "bootstrap_preference": {
+    "question_id": "workflow.gpt_assist_mode",
+    "choices": [
+      "GPT_ASSIST",
+      "DIRECT_ONLY"
+    ],
+    "default_recommendation": "GPT_ASSIST",
+    "changeable": true
+  },
+  "purpose": "Give the user one portable, current project-status and question brief that can bootstrap ChatGPT conversation, voice, research, scenarios, and specialized models without transferring project authority.",
+  "producer": {
+    "role": "INDEPENDENT_AUDITOR",
+    "timing": "IN_PARALLEL_WITH_CAMPAIGN_DESIGN_AND_AUDIT_UPDATES",
+    "custody": "READ_ONLY",
+    "output": "CONTENT_ADDRESSED_STATUS_PACKET_AND_PLAIN_MARKDOWN"
+  },
+  "canonical_writer": {
+    "role": "GLOBAL_ORCHESTRATOR",
+    "writes": "CURRENT_CAMPAIGN_WORK_IN_PROGRESS_ONLY",
+    "standard_article_promotion": "ONLY_AFTER_ACCEPTED_LIVE_CLOSURE",
+    "chatgpt_import": "AUDITOR_VALIDATES_OWNER_RESPONSE_AND_PREPARES_NEXT_CAMPAIGN_HANDOFF; NEXT_RELEASE_ORCHESTRATOR_WRITES"
+  },
+  "status_sections": [
+    "DONE",
+    "IN_PROGRESS",
+    "NOT_DONE",
+    "NEEDS_PLANNING",
+    "AUDIT_FINDINGS_WITH_FIXED_STATUS",
+    "MISSING_CONTEXT",
+    "USER_DECISIONS",
+    "OPEN_QUESTIONS"
+  ],
+  "chatgpt": {
+    "cadence": "ONE_QUESTION_THEN_WAIT",
+    "allowed": [
+      "conversation",
+      "voice",
+      "research",
+      "specialized models",
+      "scenario and edge-case exploration",
+      "product comparison",
+      "user questions"
+    ],
+    "forbidden": [
+      "marking a finding fixed",
+      "writing project authority",
+      "changing custody",
+      "claiming deployed or accepted-live truth",
+      "retaining credentials or private raw evidence"
+    ],
+    "return": "ONE_CONTENT_ADDRESSED_PLAIN_MARKDOWN_RESPONSE_AFTER_ALL_LISTED_QUESTIONS_ARE_ANSWERED_OR_DEFERRED",
+    "question_source": "ONLY_THE_AUDITOR_STATUS_MARKDOWN",
+    "sufficiency_rule": "DO_NOT_ADD_QUESTIONS; STOP_WHEN_EVERY_LISTED_MATERIAL_QUESTION_IS_ANSWERED_OR_EXPLICITLY_DEFERRED"
+  },
+  "next_campaign_handoff": {
+    "response_returns_to": "EXACT_SOURCE_AUDITOR",
+    "auditor_action": "VALIDATE_RESPONSE_AND_MODIFY_NEXT_CAMPAIGN_CANDIDATE",
+    "required_bindings": [
+      "source_status_package_sha256",
+      "source_response_markdown_sha256",
+      "response_sha256",
+      "normalized_response_markdown_sha256",
+      "next_campaign_sha256",
+      "work_in_progress_authority_update_candidate_sha256",
+      "next_release_id",
+      "current_campaign_roster_receipt_sha256",
+      "successor_campaign_roster_receipt_sha256",
+      "current_authority_snapshot_sha256_equals_current_roster_campaign_state_sha256",
+      "next_campaign_sha256_equals_successor_roster_campaign_state_sha256",
+      "fresh_pinned_next_release_orchestrator_identity",
+      "handoff_sha256_consumed_by_next_campaign_transition"
+    ],
+    "auditor_writes_authority": false,
+    "response_import": "THE RESPONSE MARKDOWN CONTAINS EXACTLY ONE CANONICAL JSON PAYLOAD AND NO UNPARSED AUTHORITATIVE PROSE; THE SOURCE AUDITOR PARSES THAT PAYLOAD DIRECTLY AND MAY NOT SUPPLY A PARALLEL EXTRACTION OBJECT",
+    "chronology": "STATUS_GENERATED_AT_STRICTLY_PRECEDES_RESPONSE_COMPLETED_AT; HANDOFF_AT_IS_EQUAL_OR_LATER_THAN_RESPONSE_COMPLETION",
+    "git_reality": "STATUS SOURCE COMMIT AND TREE MUST BE READ BACK AS AN ACTUAL COMMIT_TO_TREE RELATIONSHIP IN THE ADMITTED REPOSITORY",
+    "next_release_orchestrator_action": "VALIDATE_HANDOFF_UPDATE_WORK_IN_PROGRESS_AUTHORITY_AND_BEGIN_NEXT_RELEASE",
+    "standard_article_promotion": "FORBIDDEN_BEFORE_ACCEPTED_LIVE_CLOSURE"
+  },
+  "campaign_file": {
+    "path": "06-gpt-assist-project-status.md",
+    "conditional": "ONLY_WHEN_GPT_ASSIST_IS_ENABLED",
+    "raw_evidence": "EXCLUDED_AND_LINKED_BY_DIGEST"
+  },
+  "portability": {
+    "private_chat_required_for_recovery": false,
+    "source_commit_tree_bound": true,
+    "authority_snapshot_bound": true,
+    "auditor_report_bound": true,
+    "secret_free": true
+  }
+}

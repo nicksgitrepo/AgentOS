@@ -1,0 +1,159 @@
+{
+  "schema": "governance.project_context_template.v1",
+  "version": 1,
+  "purpose": "Portable input template for binding one project to the Governance 2.1rc kernel without importing another project's context.",
+  "required": {
+    "project_identity": [
+      "project_name",
+      "context_version",
+      "exact_context_digest"
+    ],
+    "authority": [
+      "authority_repository",
+      "exact_admitted_commit",
+      "charter",
+      "project_context_articles",
+      "authority_order"
+    ],
+    "authority_corpus_roots": [
+      "authority_root",
+      "authority_index_path",
+      "project_context_root",
+      "project_goals_root",
+      "design_system_root",
+      "features_root",
+      "platform_capabilities_root",
+      "campaigns_root",
+      "decisions_root",
+      "cases_root",
+      "evidence_index_root",
+      "archive_root",
+      "evidence_library_root"
+    ],
+    "authority_corpus_entities": [
+      "feature_ids",
+      "capability_ids",
+      "campaign_ids",
+      "release_ids"
+    ],
+    "authority_article_numbering": [
+      "bootstrap_article",
+      "governance_start",
+      "governance_end_exclusive",
+      "project_start",
+      "project_end_exclusive",
+      "feature_block_size",
+      "first_feature_start",
+      "existing_feature_blocks",
+      "registry_path"
+    ],
+    "authority_corpus_activation": [
+      "PREPARED_NOT_ACTIVATED_or_ACTIVATED"
+    ],
+    "repositories": [
+      "repository_id",
+      "remote",
+      "default_branch",
+      "ownership",
+      "protected_paths"
+    ],
+    "roles": [
+      "global_orchestrator",
+      "feature_lead_registry",
+      "platform_agent_policy",
+      "independent_auditor",
+      "global_runtime"
+    ],
+    "resources": [
+      "maximum_parallel_writer_lanes",
+      "worktree_roots",
+      "branch_namespace",
+      "migration_namespaces",
+      "shared_resource_namespaces"
+    ],
+    "operational_intervals": [
+      "concrete_progress_interval",
+      "supervisor_reframe_response_interval",
+      "lease_recovery_inspection_interval"
+    ],
+    "release": [
+      "exclusive_release_operator",
+      "integration_branch",
+      "artifact_authority",
+      "deployment_targets",
+      "rollback_authority",
+      "evidence_retention",
+      "evidence_library_active_window_days",
+      "evidence_library_loose_compaction_policy"
+    ],
+    "protected_boundaries": [
+      "safety_and_law",
+      "security_privacy_and_tenancy",
+      "durable_data_and_migrations",
+      "owner_only_policy",
+      "protected_user_surfaces",
+      "production_promotion"
+    ],
+    "capabilities": [
+      "enabled_baseline_capability_ids",
+      "typed_project_capability_extensions"
+    ],
+    "context_elicitation": [
+      "project_goal_question_overrides_or_extensions",
+      "design_system_question_overrides_or_extensions",
+      "feature_question_overrides_or_extensions",
+      "owner_only_preference_routes",
+      "accepted_safe_defaults",
+      "context_blocker_owner_routes"
+    ]
+  },
+  "authority_corpus_binding": {
+    "root_rule": "Every configured authority or evidence-library root is repository-relative or resolves beneath the admitted authority_root after canonical normalization. Absolute host-specific storage is forbidden unless the project explicitly admits it as nonportable context.",
+    "tree_rule": "The portable authority-corpus tree may be extended with typed project nodes, but required page identities, ownership, provenance, freshness, append-only logs, pseudocode context, sealed-history, and deterministic indexing cannot be removed.",
+    "numbering_rule": "Generated standard authority uses immutable half-open numeric blocks: 000 Bootstrap, 0001..0099 governance, 0100..0199 shared project context, then one 100-number block per feature beginning at 0200. Existing allocations are preserved; overflow uses linked extensions.",
+    "index_rule": "The authority index path is unique and generated from exact page bytes and metadata; it is not hand-maintained authority.",
+    "bootstrap_rule": "An empty project may instantiate the complete initial tree and adjacent active/historical evidence-library layout from this context plus the portable registry without importing another project's pages or facts."
+  },
+  "concrete_instance_binding": {
+    "field": "portable_template_instance",
+    "rule": "A project-specific registry MUST contain one portable_template_instance whose groups and fields conform exactly to required. Project-specific compatibility fields may coexist outside that instance but cannot substitute for it.",
+    "digest_rule": "project_identity.exact_context_digest is lowercase SHA-256 of the UTF-8 compact canonical JSON for portable_template_instance after omitting exact_context_digest itself. Canonical JSON recursively orders object keys by unsigned UTF-8 byte order, preserves array order, and contains no insignificant whitespace.",
+    "repository_rule": "repositories is a nonempty array of typed records. Every repository_id is unique; every remote, default_branch, ownership value, and protected_paths member is a nonempty string.",
+    "capability_rule": "enabled_baseline_capability_ids contains every exact portable baseline capability ID once. typed_project_capability_extensions is an array whose members conform to extension_schema.",
+    "interval_rule": "Every operational interval is a positive finite integer number of minutes.",
+    "extension_rule": "Additional project fields are permitted only outside portable_template_instance or through typed_project_capability_extensions; they cannot shadow or weaken a required portable field."
+  },
+  "elicitation_binding": {
+    "rule": "Project extensions may add domain-specific questions and safe defaults but cannot remove the portable project-goal, design-system, or feature drill-me foundations.",
+    "human_question_boundary": "Ask the human only when exact admitted authority and mechanical source/runtime inspection cannot safely resolve a material intent, preference, conflict, or owner-only decision.",
+    "completion": "Reasonable sufficiency, not exhaustive certainty, permits compilation. Remaining non-route-changing gaps are explicit deferred context."
+  },
+  "extension_schema": {
+    "required_fields": [
+      "capability_id",
+      "scope",
+      "minimum_questions",
+      "must_not_claim",
+      "material_when",
+      "owner_role",
+      "handoff_route"
+    ],
+    "rule": "Extensions add project capability context only and cannot override portable roles, writer exclusivity, audit independence, Runtime execution-only authority, owner-only classes, or kernel authority/failure/proof/handoff law."
+  },
+  "validation": {
+    "reject": [
+      "missing exact authority or project-context identity",
+      "copied identity, path, role, credential, provider, domain, or protected surface from another project",
+      "missing, unresolved, escaping, overlapping, or host-specific authority-corpus root without explicit nonportable admission",
+      "authority page or index without one owner, provenance, freshness, and supersession law",
+      "context elicitation that asks for discoverable facts, invents answers, or requires exhaustive certainty",
+      "context blocker without affected outcome, unaffected work, responsible owner, safe default, and exact resume condition",
+      "ambiguous repository or owner",
+      "unbounded writer or migration namespace",
+      "missing progress, supervisor, or lease-recovery interval",
+      "capability extension without one owner and handoff",
+      "project context that weakens or overrides the portable kernel"
+    ],
+    "result": "One self-contained project-context registry and compact task-specific context capsules."
+  }
+}

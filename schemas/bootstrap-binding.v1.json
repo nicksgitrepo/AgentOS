@@ -1,0 +1,156 @@
+{
+  "schema": "governance.governance_2_1rc_bootstrap_binding.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "bootstrap": {
+    "path": "bootstrap/start-here.md",
+    "sha256": "8b4b39620bd577033ad62578749ad520e9562f52d77b6c2fdb1637f953768bea"
+  },
+  "user_readme": {
+    "path": "docs/user-guide.md",
+    "sha256": "28d02fb537c287f4d49cc7e034cb26dee605497c636ee284f3f4d79491231ceb"
+  },
+  "portable_kernel": {
+    "article_path": "governance/2.1rc/portable-kernel.md",
+    "article_sha256": "c6054405229766bdadc9ac44b57ce02b34ba969bdfa58ca1841b034ffbc8fbda",
+    "registry_path": "schemas/kernel.v1.json",
+    "registry_sha256": "450bc41a79b1177a229a2563761378bb17f155bd13254b5246181b7fa265bae3"
+  },
+  "portable_workflow": {
+    "article_path": "governance/2.1rc/feature-platform-workflow.md",
+    "article_sha256": "d32e951a56b4e9c9b774e94f71ebd006868b88c64f1abc225b6d1e947da9dcfa",
+    "registry_path": "schemas/capability-and-worktree-registry.v1.json",
+    "registry_sha256": "d032e64c01e07b855cf7e3509071cd8ee92ad5d0f103f80d52264160a9ab96a5"
+  },
+  "project_context_template": {
+    "path": "authority/templates/project-context.v1.json",
+    "sha256": "97390776911d4b022f5e9df8139409c992e206f97d615f10a09fc58a3daa77a5"
+  },
+  "project_context_fixture": {
+    "path": "examples/project-context-fixture.v1.json",
+    "sha256": "d26e1a54934e3439ce6bfb20c3d9780e37d1ad751a3b8bbd8797ede7cf19645d"
+  },
+  "authority_corpus_compiler": {
+    "path": "control/authority-corpus.mjs",
+    "sha256": "a305e224c661d10484d9b0cd728975811225eeac5d257e6c755da66b7f9637ab"
+  },
+  "evidence_library_compiler": {
+    "path": "control/evidence-library.mjs",
+    "sha256": "2a69ef95e06ff276f372da4da0eb48f0dda77e960e3c485e4da5c3733b7d03bb"
+  },
+  "campaign_controller": {
+    "path": "control/campaign-controller.mjs",
+    "sha256": "4d9f11241148328ce90d73e02091bff3a6885487f2a95b53898e6a767c0b6ffd"
+  },
+  "acceptance_bridge": {
+    "path": "control/acceptance-bridge.mjs",
+    "sha256": "47083fcf28fdc29884b26ecdbac5aef163abc41700800157fd10942fbe18ae28"
+  },
+  "campaign_controller_verifier": {
+    "path": "tests/verify-campaign-controller.mjs",
+    "sha256": "46a5009fce221a85ae8204faaff10464f27bb716bae04748c7e8c5b17841e508"
+  },
+  "browser_runtime_lifecycle": {
+    "path": "schemas/browser-runtime-lifecycle.v1.json",
+    "sha256": "2d78eb1e8b8adfe793a04f55de0ca7c16e88a946e41071e86f0cfa565f3d0946"
+  },
+  "browser_runtime_lifecycle_verifier": {
+    "path": "tests/verify-browser-runtime-lifecycle.mjs",
+    "sha256": "6b14c3057d6fa68cbaf83efc0cae5d9057fdef950d79102be8ce1a432a98051c"
+  },
+  "dynamic_bootstrap": {
+    "article_path": "governance/2.1rc/dynamic-bootstrap-authority.md",
+    "article_sha256": "578a4c7704cba396a2cfd1b9b43143938145e7decc21b0e34c0ae6d3528027a9",
+    "registry_path": "schemas/dynamic-bootstrap.v1.json",
+    "registry_sha256": "5c4b9087e173e81a45ee61550e6e08aec30b543426644e30192b2f7df929fdfa"
+  },
+  "dynamic_bootstrap_controller": {
+    "path": "control/dynamic-bootstrap.mjs",
+    "sha256": "1f9f4bb3fd3e7f7a396a609e66c2f2110401f9e2e0c91e4d6a81a964ca7eb068"
+  },
+  "dynamic_bootstrap_verifier": {
+    "path": "tests/verify-dynamic-bootstrap.mjs",
+    "sha256": "4132d06271215158dd843fd8ca1398f3f482c65081ff8c55e6936b6964382d2f"
+  },
+  "guided_bootstrap": {
+    "registry_path": "schemas/guided-bootstrap.v1.json",
+    "registry_sha256": "4274f7bda585d097486a7f60646bfa9697bd45bf3db34e06a08659a317b53609",
+    "controller_path": "control/guided-bootstrap.mjs",
+    "controller_sha256": "8137c34ab5e4d41c0a5a7553ffd5805b17e5975f75497217ad40c7b2b4cf25f9",
+    "verifier_path": "tests/verify-guided-bootstrap.mjs",
+    "verifier_sha256": "08ce8c59448ebda542c5429f6d52a16999bd1442426b53906332b78687d174b7"
+  },
+  "gpt_assist": {
+    "article_path": "governance/2.1rc/gpt-assist-authority.md",
+    "article_sha256": "6252401f054141cbf68657cc636a2c2870bda6b7e7c771adb0f42079017f7ccb",
+    "registry_path": "schemas/gpt-assist.v1.json",
+    "registry_sha256": "31da10edd5484125c102543db04bd33d29025f865378866e9c3e13e9108efbb6",
+    "controller_path": "control/gpt-assist.mjs",
+    "controller_sha256": "9094c53723d9247bed59f5522d75f1f19b79ab07c65212a479f9ab65288eeca9",
+    "verifier_path": "tests/verify-gpt-assist.mjs",
+    "verifier_sha256": "36a377f8e7b8e5563ae3e58884632d5f3499c9e5344527225483d26a8e18d9a4"
+  },
+  "question_tree": {
+    "article_path": "governance/2.1rc/question-tree-authority.md",
+    "article_sha256": "dd262a8db99b70460789da073b914dc00a89bf2af1e7887b0ccc23f6890dc6ee",
+    "registry_path": "schemas/question-tree.v1.json",
+    "registry_sha256": "6810c4c7e4ef28669e4aa892b961a5b790d39e5c973c5f05210b1d2bbcb6510c",
+    "controller_path": "control/question-tree.mjs",
+    "controller_sha256": "6ae6ec8f9a05479c6810048d3416e1c949eda93492059fad253e4e74669d2e0d",
+    "verifier_path": "tests/verify-question-tree.mjs",
+    "verifier_sha256": "c59fe300ffb18a0ab4efc823d9c930fd7089d02082dfc743c06db1344a1e2b19"
+  },
+  "portable_authority_format": {
+    "path": "governance/2.1rc/portable-authority-corpus-format.md",
+    "sha256": "43a21bf1c91ab9109280ea9134c335f6f6a03afaf92280078bee6c383c686f17"
+  },
+  "portability_verifier": {
+    "path": "tests/verify-portability.mjs",
+    "sha256": "0c01d97ee4deb21cfb4488c96dd8a59ab92455d19d78a9a281319d292194db91"
+  },
+  "fixed_2_1rc_laws": [
+    "materiality_filter",
+    "blueprint_budget",
+    "delegated_stage_transition",
+    "audit_deployment_boundary",
+    "authority_reality_split",
+    "draft_and_seal",
+    "mechanical_receipts",
+    "proportionality",
+    "owner_only_filter",
+    "governance_context_separation",
+    "failure_reframe",
+    "campaign_compiler",
+    "feature_platform_worktree_topology",
+    "machine_first_governance",
+    "authority_corpus_lifecycle",
+    "compact_context_and_evidence_library",
+    "portable_campaign_control_and_recovery",
+    "context_elicitation_and_blockers",
+    "execution_autonomy_and_communication",
+    "dynamic_bootstrap_configurator"
+    ,"launch_readiness_and_user_guide",
+    "guided_bootstrap_and_first_campaign_launch",
+    "portable_authority_format",
+    "gpt_assist_campaign_context",
+    "executable_question_tree_acceptance"
+  ],
+  "retained_2_0rc_laws": [
+    "single_goal",
+    "root_cause",
+    "case_evaluation.self_tightening",
+    "authority_source",
+    "handoff"
+  ],
+  "activation": {
+    "requires_owner_acceptance": true,
+    "requires_independent_source_review": true,
+    "requires_source_repository_integration": true,
+    "requires_generation_open_record": true,
+    "current_campaign_rebind": false,
+    "current_release_rebind": false,
+    "product_custody": false,
+    "release_or_deployment_custody": false
+  }
+}

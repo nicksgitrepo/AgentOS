@@ -21,3 +21,20 @@ This repository is the standalone home of the `2.1rc` generation. It is intentio
 `2.1rc` is under development and is not activated by this scaffold.
 
 No license has been selected yet.
+
+## Verification
+
+From the repository root, run:
+
+```text
+node tests/verify-portability.mjs
+node tests/verify-all.mjs
+```
+
+The first command checks the whole package for portability, syntax, path
+containment, deterministic empty-project creation, context separation,
+extension boundaries, and symlink refusal. The second runs the complete
+positive and hostile governance suite.
+
+Extraction provenance and the activation hold are recorded in
+`migrations/2.1rc-extraction-manifest.json`.

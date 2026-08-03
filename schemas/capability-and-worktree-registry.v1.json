@@ -1,0 +1,1479 @@
+{
+  "schema": "governance.portable_capability_worktree_registry.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "purpose": "Portable roles, capability catalog, worktree topology, custody, and handoff workflow for feature-led multi-agent software delivery.",
+  "authority_corpus_system": {
+    "purpose": "Bootstrap, generate, index, and maintain one project authority corpus from project-bound root variables without assuming a storage product or repository layout.",
+    "root_variables": [
+      "authority_root",
+      "authority_index_path",
+      "project_context_root",
+      "project_goals_root",
+      "design_system_root",
+      "features_root",
+      "platform_capabilities_root",
+      "campaigns_root",
+      "decisions_root",
+      "cases_root",
+      "evidence_index_root",
+      "archive_root",
+      "evidence_library_root"
+    ],
+    "tree_template": {
+      "project": [
+        "${project_context_root}/project-intent.md",
+        "${project_goals_root}/current-goals.md",
+        "${project_goals_root}/decision-history.md",
+        "${design_system_root}/design-intent.md",
+        "${design_system_root}/tokens-components-and-patterns.md",
+        "${design_system_root}/protected-baselines.md"
+      ],
+      "corpus_indexes": [
+        "${decisions_root}/index.md",
+        "${cases_root}/index.md",
+        "${evidence_index_root}/index.md",
+        "${archive_root}/index.md"
+      ],
+      "per_feature": [
+        "${features_root}/${feature_id}/overview.md",
+        "${features_root}/${feature_id}/intent.md",
+        "${features_root}/${feature_id}/current-state.md",
+        "${features_root}/${feature_id}/build-log.md",
+        "${features_root}/${feature_id}/contracts.md",
+        "${features_root}/${feature_id}/dependencies.md",
+        "${features_root}/${feature_id}/failure-and-unavailable.md",
+        "${features_root}/${feature_id}/decisions.md",
+        "${features_root}/${feature_id}/handoffs.md"
+      ],
+      "per_platform_capability": [
+        "${platform_capabilities_root}/${capability_id}/overview.md",
+        "${platform_capabilities_root}/${capability_id}/scope-and-authority.md",
+        "${platform_capabilities_root}/${capability_id}/context.md",
+        "${platform_capabilities_root}/${capability_id}/pseudocode.md",
+        "${platform_capabilities_root}/${capability_id}/implementation-notes.md",
+        "${platform_capabilities_root}/${capability_id}/proof-and-hostiles.md",
+        "${platform_capabilities_root}/${capability_id}/handoffs.md"
+      ],
+      "campaign": [
+        "${campaigns_root}/${campaign_id}/authority.md",
+        "${campaigns_root}/${campaign_id}/current-state.md",
+        "${campaigns_root}/${campaign_id}/ownership-and-topology.md",
+        "${campaigns_root}/${campaign_id}/contract-index.md",
+        "${campaigns_root}/${campaign_id}/checkpoint-ledger.md",
+        "${campaigns_root}/${campaign_id}/release-and-rollback.md"
+      ],
+      "per_release": [
+        "${evidence_index_root}/releases/${release_id}.md"
+      ]
+    },
+    "page_contract": {
+      "required_metadata": [
+        "page_id",
+        "page_type",
+        "schema_version",
+        "authority_status",
+        "owner",
+        "source_identity",
+        "created_at",
+        "last_verified_at",
+        "supersedes",
+        "freshness_and_invalidation"
+      ],
+      "required_sections": [
+        "intent_or_outcome",
+        "current_source_and_runtime_reality",
+        "authority_and_ownership",
+        "contracts_and_dependencies",
+        "failure_and_unavailable_behavior",
+        "proof",
+        "open_context",
+        "owner_and_next"
+      ],
+      "platform_context_rule": "Every platform capability page includes compact pseudocode for the admitted seam and contextual comments explaining intent, assumptions, boundaries, error behavior, and non-ownership. Comments are context, not executable authority.",
+      "build_log_rule": "Build logs are append-only checkpoint summaries. They reference exact commits, changed paths, contracts, proof, failures, decisions, and handoffs; they do not become a second current-state authority.",
+      "overview_rule": "Each feature and persistent platform capability has one compact operating card: intent, current stage/owner/root/source/batch/next action, Auditor-defined gate register with separate progress and audit states, working/unavailable/deferred capability, contracts and ownership, current blocker, latest handoff, and no more than ten recent substantial events. Detailed evidence is linked, never copied into the card.",
+      "gate_ownership_rule": "The Independent Auditor defines, deduplicates, verifies, fails, or retires intended-Product gates. Feature owners and Platform Agents may update progress and attach evidence but cannot grant independent verification or weaken gate intent.",
+      "release_summary_rule": "Each release has one permanent compact authority-corpus summary binding exact source, artifact, deployment, rollback, audit, gate summary, durable decisions, next-cycle backlog, and the active-dossier or historical-archive pointer and digest."
+    },
+    "compiler": {
+      "input": "Exact portable kernel, exact project-context registry, root variables, accepted context records, and mechanical source/runtime readback.",
+      "create": "Create missing admitted tree nodes, page skeletons, and indexes from templates. Never invent project facts to fill a page.",
+      "update": "Update the smallest affected current page and append its build, decision, case, or handoff record. Preserve sealed history and explicit supersession.",
+      "index": "Regenerate a deterministic authority index containing path, page_id, type, owner, status, content digest, source identity, supersession, freshness, and dependencies.",
+      "comments": "Generate concise contextual comments and pseudocode only from accepted intent, contracts, and current source reality; label inferred or unavailable details.",
+      "refusal": "Reject unresolved root variables, lexical or realpath escape, symbolic-link traversal, equal or ancestor/descendant corpus roots, an index path overlapping a corpus root, duplicate page identity, unowned authority, silent overwrite, recursive self-hash, stale source identity, or project facts copied from another context. authority_root is the sole permitted container of the distinct corpus roots; authority_index_path is a file.",
+      "idempotency": "The same canonical inputs produce the same tree plan and authority index. An unchanged page is not rewritten."
+    },
+    "ordering": {
+      "rule": "All canonical object keys, normalized entity identifiers, paths, index entries, and tie-break strings are ordered by unsigned UTF-8 byte order. Locale, collation, ICU defaults, filesystem enumeration order, and host language defaults are forbidden.",
+      "digest_input": "Plan and context digests use compact canonical JSON with object keys recursively sorted by unsigned UTF-8 byte order and arrays preserved in their already governed order."
+    },
+    "maintenance_triggers": [
+      "accepted project context is added or materially changed",
+      "project goal or protected boundary changes",
+      "feature is admitted, checkpointed, handed off, released, or archived",
+      "platform capability scope, contract, proof, or owner changes",
+      "case or causal-root law changes",
+      "deployment or live audit changes current reality",
+      "freshness or invalidation law fires",
+      "release closes, reaches its configured archive boundary, is archived, or receives an additive archive correction"
+    ],
+    "maintenance_boundary": "The corpus maintainer records and routes authority; it does not grant Product, audit, runtime, release, or owner-only custody."
+  },
+  "question_tree_system": {
+    "registry": "${question_tree_registry_path}",
+    "controller": "${question_tree_controller_path}",
+    "verifier": "${question_tree_verifier_path}",
+    "acceptance_roots": [
+      "FUNCTION_REQUIREMENTS",
+      "DESIGN_BIBLE",
+      "SECURITY"
+    ],
+    "compile_inputs": [
+      "accepted owner intent and feature requirements",
+      "accepted design-system clauses",
+      "Bootstrap-configured versioned security standards",
+      "project-specific security, privacy, data, and release overlays",
+      "exact changed surfaces and dependency topology"
+    ],
+    "routing": "The Auditor evaluates in parallel; the Global Orchestrator owns compiled state and routes NO or UNKNOWN to the exact Feature or Platform owner without serial approval.",
+    "critical_freeze": "Credible critical safety or security evidence freezes the affected writable surface immediately. Unrelated work continues unless evidence proves global impact.",
+    "compact_exchange": "Repair packets contain only failing question IDs, observed evidence, bounded writable scope, repair owner, and evidence required for pass.",
+    "acceptance_receipt": "The Product-acceptance receipt is the SHA-256 of the exact acceptance result after omitting its receipt field; roots, open questions, Auditor identity, timing, and freeze state cannot be changed without a new receipt.",
+    "compiler_binding": "RC_READY additionally requires an external content-addressed proof whose exact tree and observations are recomputed by the question-tree controller, whose evidence-cache digest matches the state, and whose Auditor attestation is derived from that compiler result.",
+    "admission": "RC_READY requires exact PASS for all three roots. Control-plane health remains separately enforced by the campaign controller."
+  },
+  "evidence_library_system": {
+    "purpose": "Preserve complete release-by-release agent evidence without bloating feature, capability, campaign, handoff, or release-summary pages.",
+    "root": "${evidence_library_root}",
+    "layout": {
+      "active": "${evidence_library_root}/active/${release_id}",
+      "historical": "${evidence_library_root}/historical/${release_id}",
+      "archive": "${evidence_library_root}/historical/${release_id}/${release_id}.evidence.zip",
+      "manifest": "${evidence_library_root}/historical/${release_id}/${release_id}.manifest.json",
+      "checksum": "${evidence_library_root}/historical/${release_id}/${release_id}.sha256"
+    },
+  "active_window_days": "${evidence_retention_days}",
+    "active_dossier": {
+      "contains": [
+        "global_orchestrator",
+        "feature_agents",
+        "platform_agents",
+        "independent_auditor",
+        "global_runtime",
+        "tests",
+        "screenshots",
+        "research",
+        "packets",
+        "receipts",
+        "deployment",
+        "rollback",
+        "decisions"
+      ],
+      "rule": "Detailed outputs remain in the release dossier and are referenced by digest from compact authority pages. They are not pasted into handoffs or current-state cards."
+    },
+    "archive_trigger": "After ACCEPTED_LIVE_CLOSED and the exact Bootstrap-configured active window, the maintainer creates one deterministic UTF-8 stored ZIP from every regular payload file only when the declared participating-agent inventory exactly equals the observed agents/<owner> dossier namespaces.",
+    "archive_requirements": [
+      "canonical compact manifest",
+      "relative safe paths only",
+      "no symbolic links or unsupported filesystem objects",
+      "unsigned UTF-8 byte ordering",
+      "fixed ZIP metadata",
+      "payload size, mode, and SHA-256",
+      "exact source, artifact, deployment, rollback, and audit identities",
+      "all participating agent evidence owners",
+      "exact equality between declared agent owners and observed agents/<owner> namespaces",
+      "adjacent archive checksum exact digest and archive basename readback",
+      "archive readback against the embedded and adjacent manifest",
+      "central-directory regular-file mode equals each manifest mode",
+      "unique typed manifest payload records",
+      "no unmanifested or duplicate entry"
+    ],
+    "loose_evidence_rule": "Evidence is never deleted as information. Loose active files may be removed as verified duplicates only after archive, manifest, checksum, and full readback succeed and one explicit compaction action records the archive identity.",
+    "historical_read_rule": "Agents read the permanent compact release summary and archive manifest first, then selectively extract only specifically required historical files into a temporary read-only location. Loading an entire historical archive into task context by default is forbidden.",
+    "failure_rule": "Missing identity, early archive, unsafe path, symbolic-link traversal, duplicate or malformed manifest record, checksum content/name mismatch, central mode mismatch, unclosed release, or omitted/extra agent namespace fails archive and preserves the active dossier unchanged.",
+    "authority_boundary": "Archiving preserves evidence and supplies no Product, audit, release, runtime, acceptance, or owner-only authority."
+  },
+  "context_elicitation": {
+    "owner": "GLOBAL_ORCHESTRATOR",
+    "mode": "SEMI_SCRIPTED_DRILL_ME",
+    "rule": "The Global Orchestrator asks one material question at a time, incorporates the answer, inspects admitted authority and source for discoverable facts, and continues only until the context is reasonably sufficient to compile a truthful runnable route.",
+    "subject_scripts": {
+      "PROJECT_GOALS": [
+        "What observable outcome should this project create, for whom, and why now?",
+        "What is explicitly in scope, out of scope, protected, and owner-only?",
+        "What does success look like in current reality, and what may remain honestly unavailable?",
+        "Which repositories, environments, roles, costs, release targets, and rollback authorities are admitted?",
+        "Which decisions would materially change direction, risk, or ownership?"
+      ],
+      "DESIGN_SYSTEM": [
+        "Which users, devices, accessibility needs, brand qualities, and protected visual baselines govern the design?",
+        "Which tokens, components, page families, navigation rules, density, and responsive behavior already exist?",
+        "Which loading, empty, unavailable, offline, permission, stale, conflict, partial, and error states must be explicit?",
+        "Which visual or interaction choices require owner preference, and which can the agent safely derive from established patterns?",
+        "What deployed perceptual proof is required, and what cannot be claimed from source or static rendering?"
+      ],
+      "FEATURE": [
+        "Who is the user and what concrete repeated moment should improve?",
+        "What exact outcome, source of truth, authority, and unavailable behavior belong to this feature?",
+        "What exists now in source, data, runtime, views, settings, integrations, and tests?",
+        "Which contracts, dependencies, shared paths, migrations, events, identities, and platform capabilities are touched?",
+        "What is protected, explicitly excluded, owner-only, deferred, or not yet connected?",
+        "What is the smallest reversible substantial batch and exact proof that makes it honestly useful?"
+      ]
+    },
+    "question_selection": "Ask the earliest unanswered question whose answer can materially change outcome, authority, ownership, route, proof, rollback, or unavailable behavior. Skip questions already answered by exact admitted authority or mechanical source/runtime evidence.",
+    "agent_fill_rule": "After each answer, the agent fills reasonable gaps from accepted project context, exact source, contracts, and mechanical readback. It labels VERIFIED, INFERRED, UNPROVEN, and OWNER_ONLY and does not ask the human to repeat discoverable facts.",
+    "stop_when": [
+      "observable outcome and user are clear",
+      "authority, ownership, protected boundaries, and owner-only holds are explicit",
+      "current reality and missing foundations are distinguished",
+      "smallest reversible route is runnable",
+      "failure and unavailable behavior are honest",
+      "proof, rollback, next owner, and invalidation are named",
+      "remaining unknowns cannot materially change the first bounded batch or are explicitly deferred"
+    ],
+    "must_not": [
+      "interrogate for exhaustive certainty",
+      "ask multiple sprawling questions at once",
+      "invent answers",
+      "convert preference into technical authority",
+      "block unaffected work on later context",
+      "create a micro-phase or repeated review loop"
+    ],
+    "outputs": [
+      "accepted context record or explicit draft",
+      "updated authority-corpus tree plan",
+      "context gap ledger",
+      "exact blockers and owner questions",
+      "runnable campaign or feature compiler input"
+    ]
+  },
+  "context_blocker_system": {
+    "states": [
+      "CONTEXT_SUFFICIENT",
+      "MISSING_REQUIRED_CONTEXT",
+      "CONTRADICTORY_CONTEXT",
+      "MISSING_AUTHORITY",
+      "SOURCE_REALITY_GAP",
+      "OWNER_ONLY_CONTEXT",
+      "DEPENDENCY_CONTEXT_PENDING",
+      "HONESTLY_UNAVAILABLE"
+    ],
+    "required_record": [
+      "blocker_id",
+      "subject",
+      "missing_or_conflicting_fact",
+      "why_material",
+      "known_evidence",
+      "question_or_discriminating_check",
+      "responsible_owner",
+      "safe_default",
+      "affected_outcome_only",
+      "unaffected_work",
+      "resume_condition"
+    ],
+    "routing": "Discoverable source/context gaps stay with the Global Orchestrator or owning specialist; cross-owner conflicts route to the Global Orchestrator; only a named portable owner-only class reaches the owner.",
+    "continuity": "A blocker holds only the dependent outcome. The compiler continues all unaffected feature, lane, authority-corpus, and evidence work.",
+    "closure": "Close only when the exact answer or evidence is bound and the affected pages, indexes, capsules, and compiler inputs are refreshed."
+  },
+  "portable_campaign_controller": {
+    "schema": "governance.portable_campaign_state.v1",
+    "authority_writer": {
+      "role": "GLOBAL_ORCHESTRATOR",
+      "rule": "Agents never write canonical authority directly. Each admitted agent may append only its own typed content-addressed event file inside the cumulative campaign root. The Global Orchestrator owns topology, compiled active-campaign snapshots, standard-article promotion, supersession, and recovery reconciliation.",
+      "standard_articles": "LAST_ACCEPTED_LIVE_RELEASE_ONLY",
+      "active_campaign_article": "WORK_IN_PROGRESS_ONLY",
+      "promotion_trigger": "ACCEPTED_LIVE_CLOSED",
+      "merge_without_live": "MERGED_NOT_ACCEPTED_LIVE",
+      "apply_boundary": "Every authority transition and compiled current view is applied by an admitted pinned Global Orchestrator session against the prior exact snapshot sequence, aggregate ledger digest, and per-session writer heads. A state field that merely names the Orchestrator is not writer proof.",
+      "living_campaign": {
+        "events_root": "campaigns/<campaign-id>/events/<writer-session-digest>/",
+        "compiled_view": "campaigns/<campaign-id>/current.md",
+        "event_write": "ONE_UNIQUE_EXCLUSIVE_NO_FOLLOW_CONTENT_ADDRESSED_FILE_IN_AN_INDEPENDENT_PER_SESSION_STREAM_BY_THE_EXACT_ROSTER_BOUND_SESSION; FULL_READBACK_REJECTS_MISSING_EXTRA_RENAMED_REWRITTEN_OR_SYMLINKED_ENTRIES",
+        "orchestrator_spawn_binding": "THE_ORCHESTRATOR_RECORDS_EVERY_AGENT_SESSION_IT_CREATES",
+        "feature_spawn_binding": "THE_ACTIVE_FEATURE_AGENT_RECORDS_EVERY_ON_DEMAND_PLATFORM_AGENT_SESSION_IT_CREATES",
+        "compile_times": [
+          "configured progress interval after material change",
+          "checkpoint",
+          "handoff",
+          "true-blocker suspension or resume",
+          "terminal Runtime transfer"
+        ],
+        "handoff": "EVERY_ORCHESTRATOR_SNAPSHOT_AND_CHECKPOINT_HANDOFF_BINDS_EVENT_COUNT_AGGREGATE_LEDGER_DIGEST_PER_SESSION_WRITER_HEADS_AND_CURRENT_VIEW_SHA256; THE_RECIPIENT_PROVES_MONOTONIC_PREFIX_CONTINUITY_BEFORE_WORK",
+        "platform_return_binding": "A_PLATFORM_RETURN_BINDS_THE_EXACT_PRIOR_SPAWN_EVENT_ACTIVE_GOAL_DEPENDENCY_MATERIAL_SEAM_AND_CONTENT_ADDRESSED_EVIDENCE_POINTER",
+        "gpt_assist_mode": "The campaign state binds GPT_ASSIST or DIRECT_ONLY. Only GPT_ASSIST campaigns require and consume a successor GPT_ASSIST handoff digest; DIRECT_ONLY campaigns retain a null handoff.",
+        "gpt_assist_successor_binding": "A_GPT_ASSIST_HANDOFF_BINDS_VALIDATED_CURRENT_AND_SUCCESSOR_ROSTER_RECEIPTS_AND_ITS_EXACT_HANDOFF_DIGEST_IS_CONSUMED_BY_THE_NEXT_CAMPAIGN_TRANSITION",
+        "parallelism": "PER_SESSION_CHAINS_AVOID_SHARED_NEXT_SEQUENCE_OR_FILE_CONTENTION; THE_ORCHESTRATOR_COMPILES_ONE_DETERMINISTIC_LEDGER_DIGEST",
+        "forbidden": [
+          "rewriting or deleting a prior event",
+          "writing another session's event",
+          "changing topology or accepted checkpoints through an event",
+          "treating event append custody as Product writer custody",
+          "letting a Platform Agent create another agent"
+        ]
+      }
+    },
+    "heartbeat": {
+      "interval_source": "SEALED_CONFIGURATION_SNAPSHOT",
+      "minimum_minutes": 1,
+      "maximum_minutes": 1440,
+      "inspect": [
+        "active task and session state",
+        "single macro goal",
+        "exclusive lease",
+        "worktree bytes and clean state",
+        "local and remote Git commit and tree",
+        "dependency and checkpoint state",
+        "Runtime session/state plus deployment and rollback identities",
+        "Auditor session and audit-state identity"
+      ],
+      "material_progress": [
+        "new Product commit or immutable checkpoint",
+        "completed substantial batch",
+        "released or transferred lease",
+        "resolved dependency or accepted contract",
+        "exact true blocker with owner question",
+        "immediately executing broken-chain recovery"
+      ],
+      "healthy_no_change": "Do not create a timestamp-only authority commit.",
+      "changed": "Reconcile mechanical reality and write one compact campaign snapshot.",
+      "stalled": "Repair task, budget, lease, worktree, goal, or dependency in bounds, then write one recovery snapshot.",
+      "reality_precedence": "Verified Git, task, worktree, Runtime, and deployment reality may advance the snapshot; Product work is never automatically reverted to make prose agree."
+    },
+    "dependency_execution": {
+      "compile": "Build a directed dependency graph and deterministic topological order. X then Z then Y means the same cumulative root is leased to X, checkpointed and handed to Z, then checkpointed and handed to Y.",
+      "default_root": "SINGLE_CUMULATIVE_ROOT",
+      "goal_rule": "One substantial feature phase equals one host macro goal bound to an exact goal-system ID, stage, owner, instruction SHA-256, DONE-WHEN SHA-256, start time, and completion-receipt SHA-256. The goal closes only after a clean remote-equal pushed checkpoint, lease release, and accepted identity-bound same-root handoff to the next compiled dependency owner or terminal Global Runtime.",
+      "handoff_identity": "Checkpoint ID, root, branch, local and remote commit/tree, released lease, source owner/goal, recipient owner/goal, and accepted transition must agree mechanically. The immediate next snapshot must preserve the clean pushed remote-equal checkpoint, activate that exact recipient, and issue a fresh lease on the same root; terminal handoff must enter Runtime/release state.",
+      "new_dependency": "The admitted dependency graph and cumulative root identity are immutable after campaign open. A newly discovered local prerequisite is solved inside the current owner or by an on-demand Platform Agent; a genuinely new cross-feature dependency is recorded for the next campaign or triggers one explicit owner-visible campaign replacement without rewriting accepted checkpoints.",
+      "cycle": "Collapse a dependency cycle into one Global-Orchestrator-owned shared-contract checkpoint with one primary writer, then resume the ordered feature chain.",
+      "final": "The terminal cumulative root transfers once to Global Runtime for integration, artifact mint, deployment, rollback readback, live audit, and closure."
+    },
+    "agent_lifecycle": {
+      "persistent": [
+        "GLOBAL_RUNTIME"
+      ],
+      "campaign_start": [
+        "spawn one fresh campaign-scoped Global Orchestrator from the latest admitted governance and admitted high-return orchestration model",
+        "spawn one fresh Independent Auditor from the latest admitted governance and strongest admitted light-model class",
+        "spawn fresh Feature Agents for the admitted campaign roster",
+        "pin every created Orchestrator, Auditor, and Feature Agent immediately",
+        "record exact role, session, predecessor session, model, governance, campaign, and evidence-library identities"
+      ],
+      "platform_agents": "Spawn a fresh Platform Agent only on demand when a Feature Agent identifies an exact material seam. Pin it immediately. Do not pre-spawn a platform wave and do not reuse a completed platform session.",
+      "archive": "Completed campaign agents are archived and never deleted. Their session IDs remain optional provenance; compact handoffs and Git/evidence identities remain sufficient without chat access.",
+      "depin_precondition": [
+        "current Auditor recorded one deduplicated dependency-ordered next-campaign candidate or NO_NEXT_CAMPAIGN_REQUIRED before terminal Runtime handoff",
+        "fresh successor Orchestrator, Auditor, and Feature Agents are created and pinned for orientation at terminal Runtime handoff when another campaign is admitted",
+        "successor Product writer lease remains held until predecessor accepted-live closure",
+        "closing Auditor remains pinned through exact-live audit",
+        "all final session IDs, checkpoints, open owner questions, and evidence-library pointers are recorded"
+      ],
+      "freshness_binding": "Every dependency owner maps to a fresh pinned Feature Agent for the campaign, and the active goal maps to exactly one such session even when archived predecessors remain recorded. Orchestrator, Auditor, and Feature spawn reasons are FRESH_CAMPAIGN and exact display names bind one-word role, campaign version, and governance version. Auditor and Runtime state objects bind sessions of the matching pinned role kind. Successor continuity binds an exact candidate digest and either a different successor campaign with pinned FRESH_CAMPAIGN Orchestrator/Auditor/Feature records whose sessions are disjoint from the current roster, or an exact NO_NEXT_CAMPAIGN_REQUIRED disposition."
+    },
+    "auditor": {
+      "during_campaign": "Audit substantial pushed checkpoint deltas asynchronously. Accept, return one material correction, record an owner-intent question, or raise a higher-authority emergency. Do not interrupt ordinary fixes, demand perfection, or take Product custody.",
+      "next_campaign": "Before depinning, deduplicate source, checkpoint, and exact-live findings by causal root; preserve owner answers; build one dependency graph and ordered next-campaign candidate; send it to the Global Orchestrator.",
+      "cannot": [
+        "activate its proposed campaign",
+        "assign Product leases",
+        "implement findings",
+        "merge or deploy",
+        "promote work in progress into standard authority"
+      ]
+    },
+    "communication": {
+      "compact_event_fields": [
+        "schema",
+        "event_id",
+        "campaign_id",
+        "snapshot_sequence",
+        "recorded_at",
+        "session_id",
+        "root_id",
+        "branch",
+        "event",
+        "role",
+        "goal",
+        "result",
+        "commit",
+        "tree",
+        "changed_surfaces",
+        "checks",
+        "blocker",
+        "next",
+        "previous_event_sha256",
+        "evidence_pointer_sha256"
+      ],
+      "event_identity": "event_id is SHA-256 of the exact canonical compact event body. previous_event_sha256 forms an append-only chain; evidence_pointer_sha256 is null or one exact release-dossier pointer.",
+      "living_event_identity": "Every worktree-carried living event binds campaign/version, writer-local sequence, time, writer session/role/kind, allowed event type, root/branch, goal/dependency, concise summary/next action, optional exact Platform spawn or checkpoint identity, and that writer session's prior event SHA-256. The generated path is campaigns/<campaign-id>/events/<writer-session-digest>/<writer-sequence>-<event-id>.json. The compiled ledger SHA-256 binds the deterministically ordered event IDs across all session streams.",
+      "forbidden": [
+        "step narration",
+        "test-by-test output in authority",
+        "raw screenshots or receipts in handoffs",
+        "per-file evidence IDs when Git supplies identity",
+        "routine permission requests",
+        "formal root-cause packets for obvious bounded corrections"
+      ],
+      "evidence": "Detailed output remains in the release dossier and is mechanically indexed. Builders optimize for Product progress; evidence packaging is automatic."
+    },
+    "true_blocker": {
+      "classes": [
+        "OWNER_PRODUCT_OR_POLICY_DECISION",
+        "SAFETY_LAW_PRIVATE_DATA_AUTHORITY",
+        "UNAVAILABLE_CREDENTIAL_OR_EXTERNAL_ACCESS",
+        "UNEXPECTED_MATERIAL_COST",
+        "DESTRUCTIVE_OR_IRREVERSIBLE_PRODUCTION_ACTION",
+        "TECHNOLOGY_STACK_REPLACEMENT",
+        "UNRESOLVABLE_ACTIVE_WRITER_OR_SHARED_AUTHORITY_CONFLICT",
+        "EXTERNAL_DEPENDENCY_WITHOUT_HONEST_FALLBACK"
+      ],
+      "required": [
+        "exact missing authority",
+        "safe alternatives attempted and exhausted",
+        "why continued work cannot remain honest",
+        "one exact owner question"
+      ],
+    "effect": "The campaign-scoped Orchestrator writes TRUE_BLOCKER_SUSPENDED, suspends the same macro goal and configured progress timer, retains one blocker-resolution watcher, and resumes the same goal after mechanical resolution. Difficulty, unfamiliar code, a failing test, missing fixture, compile error, or first failed mechanism is not a true blocker."
+    },
+    "recovery": {
+      "portable_inputs": [
+        "exact governance Git object",
+        "project-context binding",
+        "last pushed active-campaign snapshot",
+        "repository remotes and commits",
+        "compact handoff/event history",
+        "adjacent evidence-library manifests",
+        "Runtime deployment and rollback identities",
+        "secret references without secret values"
+      ],
+      "fresh_machine": "Recreate roots from variables, verify repository and Runtime reality, mark machine-local leases stale, reissue one exclusive lease, and resume the recorded next action. Old chat access is optional.",
+      "partial_transaction": "Prepare, perform, verify, then commit a state transition. On partial failure, preserve Product bytes and either resume idempotently or record one recovery discrepancy; never silently duplicate or revert work.",
+    "closure_binding": "Standard promotion requires a terminal accepted Runtime handoff, clean remote-equal root, exact Runtime deployed and rollback identities, matching standard release identity, one matching independent-audit identity, one lowercase SHA-256 closure receipt, no unresolved owner hold, and a recorded successor/no-successor disposition. TRUE_BLOCKER_SUSPENDED, SUSPENDED_TRUE_BLOCKER, and blocker presence are converses."
+    }
+  },
+  "specialist_execution_autonomy": {
+    "default_posture": "WORK_SILENTLY_TO_DONE",
+    "rule": "A Feature Lead or Platform Agent executes the full bounded batch, solves ordinary technical puzzles, and uses safe reversible alternatives without requesting routine permission.",
+    "allowed_local_actions": [
+      "inspect admitted authority, source, contracts, tests, and tool output",
+      "choose among equivalent in-scope implementation details",
+      "fix syntax, compilation, test, type, API-shape, refactor, and toolchain issues",
+      "run affected proof and repeat after bounded corrections",
+      "replace a failed local mechanism with a safer existing-architecture mechanism that preserves the same outcome and boundaries",
+      "record noncritical discoveries for the final packet or next-cycle backlog"
+    ],
+    "report_only_when": [
+      "new or conflicting authority is required",
+      "writer custody, root, allowlist, or ownership must broaden",
+      "shared contract, schema, migration, generated output, or resource allocation is missing or conflicting",
+      "a protected owner-only, safety, law, security, privacy, credential, destructive-production, or promotion boundary is crossed",
+      "an external dependency is unavailable and no honest in-scope fallback exists",
+      "safe in-scope alternatives are exhausted and DONE WHEN cannot be reached",
+      "the failure-reframe law classifies a material route decision"
+    ],
+    "communication": {
+      "ordinary": "No step narration, per-test updates, speculative warnings, repeated status pings, or permission requests for routine choices.",
+      "completion": "One consolidated return binds implementation, proof, failures classified, unresolved seams, context updates, source identity, and handoff.",
+      "blocker": "One exact blocker packet binds evidence, attempts exhausted, root, dependent outcome, unaffected work, authority/dependency needed, recommendation, safe default, and resume condition."
+    },
+    "boundary": "Autonomy applies only inside admitted authority and custody. It never permits silent scope expansion, weakened proof, hidden assumptions, cross-owner edits, destructive action, or false completion."
+  },
+  "roles": [
+    {
+      "role_id": "GLOBAL_ORCHESTRATOR",
+      "lifecycle": "fresh campaign-scoped, pinned for one campaign, archived and unpinned after accepted-live closure; never reused as the next campaign Orchestrator",
+      "owns": [
+        "portfolio and campaign admission",
+        "feature ownership and active-slot allocation",
+        "shared-resource and cross-feature conflict decisions",
+        "migration allocation",
+        "primary-owner selection for shared contracts",
+        "authority-corpus bootstrap, deterministic tree compilation, and maintenance routing",
+        "semi-scripted project, design-system, and feature context elicitation",
+        "serialized integration admission",
+        "owner-only routing",
+        "broken-chain recovery",
+        "final launch acceptance and closure"
+      ],
+      "does_not_own": [
+        "routine feature implementation",
+        "routine feature-stage progression",
+        "another owner's Product worktree",
+        "independent audit findings",
+        "runtime deployment execution",
+        "domain truth outside accepted authority"
+      ],
+      "writer_authority": "none by default; only a separately admitted bounded governance or integration worktree",
+      "may_create": [
+        "campaign open record",
+        "feature lease",
+        "shared-custody decision",
+        "migration allocation",
+        "integration custody packet",
+        "owner question",
+        "authority-corpus tree plan and deterministic index",
+        "project, design-system, and feature context blocker record",
+        "closure receipt"
+      ],
+      "handoff_in": "feature READY_FOR_GLOBAL_INTEGRATION, auditor emergency or consolidated disposition, runtime launch/blocker receipt",
+      "handoff_out": "feature admission, shared-custody decision, runtime integration/deployment custody, owner-only question"
+    },
+    {
+      "role_id": "FEATURE_LEAD",
+      "lifecycle": "campaign-durable or persistent feature-family owner",
+      "owns": [
+        "observable feature outcome and boundaries",
+        "one feature campaign root and exclusive feature lease",
+        "one active macro-stage goal",
+        "feature blueprint and substantial batches",
+        "platform-agent selection and orchestration",
+        "feature-local contracts and implementation",
+        "feature intent, current-state, build-log, contract, decision, and handoff context updates",
+        "readiness consolidation",
+        "feature checkpoint and handoff",
+        "feature-local next-cycle backlog"
+      ],
+      "does_not_own": [
+        "another feature's truth or active worktree",
+        "shared migration allocation",
+        "global integration",
+        "production deployment",
+        "independent audit acceptance",
+        "owner-only policy"
+      ],
+      "writer_authority": "exclusive writer for the admitted feature worktree except during an explicit platform-agent sublease",
+      "may_create": [
+        "one macro-stage goal",
+        "fresh feature-bound platform agents",
+        "feature-local contract candidates",
+        "substantial batch commits",
+        "checkpoint manifests",
+        "READY_FOR_GLOBAL_INTEGRATION handoff"
+      ],
+      "handoff_in": "campaign admission or prior immutable feature checkpoint",
+      "handoff_out": "next feature owner in a cumulative stream, Global Orchestrator for shared conflict/integration, Auditor after exact deployment only"
+    },
+    {
+      "role_id": "PLATFORM_AGENT",
+      "lifecycle": "fresh, feature-bound, nonpersistent, never reused after archive",
+      "owns": [
+        "one named platform capability seam",
+        "source-backed advisory or bounded implementation within its capsule",
+        "autonomous resolution of ordinary technical puzzles inside its capsule",
+        "capability pseudocode and contextual implementation notes for its exact seam",
+        "capability-specific hostile proof",
+        "exact return packet to Feature Lead"
+      ],
+      "does_not_own": [
+        "feature intent",
+        "feature macro-stage goal",
+        "campaign root",
+        "unrelated platform seams",
+        "global integration",
+        "production deployment",
+        "independent acceptance",
+        "owner-only decisions"
+      ],
+      "writer_authority": "none for advisory mode; exclusive exact-path sublease or isolated child worktree only when explicitly admitted",
+      "may_create": [
+        "capability packet",
+        "bounded implementation commit when writable",
+        "hostile and affected checks",
+        "handoff receipt"
+      ],
+      "handoff_in": "feature/checkpoint/capability capsule from Feature Lead",
+      "handoff_out": "directly to the Feature Lead; shared-authority blocker may be copied to Global Orchestrator without transferring feature custody"
+    },
+    {
+      "role_id": "INDEPENDENT_AUDITOR",
+      "lifecycle": "fresh campaign-scoped pinned Auditor with fresh bounded read-only seam reviewers; remains pinned through its campaign's exact-live audit and next-campaign design handoff",
+      "owns": [
+        "independent source/artifact/live inspection",
+        "exact deployed-identity binding",
+        "finding evidence and severity",
+        "root-cause deduplication",
+        "emergency classification",
+        "consolidated audit disposition"
+      ],
+      "does_not_own": [
+        "Product implementation",
+        "feature worktree",
+        "repair custody",
+        "deployment",
+        "semantic self-acceptance",
+        "ordinary Product finding as a deployment blocker"
+      ],
+      "writer_authority": "evidence-only audit root; never Product",
+      "may_create": [
+        "fresh read-only audit workers",
+        "audit evidence",
+        "deduplicated findings",
+        "live-audit disposition"
+      ],
+      "handoff_in": "exact accepted source/artifact identity and later exact deployed identity",
+      "handoff_out": "ordinary feature findings to the matching Feature Lead backlog; shared findings to Global Orchestrator; emergencies immediately to higher authority"
+    },
+    {
+      "role_id": "GLOBAL_RUNTIME",
+      "lifecycle": "the only persistent cross-campaign agent; pinned exclusive release operator",
+      "owns": [
+        "mechanical integration under exact semantic decisions",
+        "artifact build or exact reuse proof",
+        "release environment and provider execution",
+        "deployment and rollback execution",
+        "bounded live health and identity readback",
+        "release custody and receipts"
+      ],
+      "does_not_own": [
+        "Product intent",
+        "semantic merge-conflict decisions",
+        "feature repair",
+        "audit acceptance",
+        "owner-only promotion when not already granted"
+      ],
+      "writer_authority": "one serialized integration/release worktree and bounded runtime/provider executor",
+      "may_create": [
+        "integration commit under admitted order",
+        "content-addressed artifacts",
+        "release candidate",
+        "deployment and rollback receipts",
+        "runtime blocker"
+      ],
+      "handoff_in": "Global Orchestrator exact integration/deployment custody",
+      "handoff_out": "LIVE_DRAFT_AWAITING_AUDIT or exact mechanical blocker to Global Orchestrator"
+    }
+  ],
+  "generic_web_capabilities": [
+    {
+      "capability_id": "DATABASE_RLS",
+      "scope": "schemas, migrations, constraints, grants, row-level security, tenant isolation, revisions, durability, backup/restore, data provenance",
+      "minimum_questions": [
+        "What is the canonical durable authority?",
+        "How are tenant and role boundaries enforced?",
+        "What migration and rollback strategy applies?",
+        "How do restart, replay, restore, and conflict behave?"
+      ],
+      "must_not_claim": [
+        "UI success",
+        "API authorization from schema presence alone",
+        "live behavior without executed proof"
+      ],
+      "material_when": "durable state, tenant scope, migration, grants, retention, recovery, or data ownership changes"
+    },
+    {
+      "capability_id": "BACKEND_API",
+      "scope": "API contracts, commands/queries, authorization, validation, idempotency, concurrency, events, errors, integrations, compatibility",
+      "minimum_questions": [
+        "What exact request and response contract is authoritative?",
+        "Where is authorization enforced?",
+        "What is idempotent and conflict-safe?",
+        "What failure and unavailable shapes are stable?"
+      ],
+      "must_not_claim": [
+        "database durability without data proof",
+        "client usability",
+        "external-provider success from local mocks"
+      ],
+      "material_when": "public or internal contract, mutation, event, authorization, compatibility, or integration behavior changes"
+    },
+    {
+      "capability_id": "IDENTITY_ACCESS",
+      "scope": "authentication, sessions, tenant/org membership, roles, permissions, revocation, device/account distinction, residue clearing",
+      "minimum_questions": [
+        "Who is the subject and which scope is active?",
+        "What server-side authority grants access?",
+        "How do scope change, logout, and revocation clear residue?",
+        "Which signals are insufficient identity proof?"
+      ],
+      "must_not_claim": [
+        "device identity equals human identity",
+        "UI visibility grants authorization",
+        "stale session success"
+      ],
+      "material_when": "authentication, authorization, session, tenant, membership, role, revocation, or protected residue changes"
+    },
+    {
+      "capability_id": "SECURITY_PRIVACY",
+      "scope": "threat boundaries, secrets, abuse, denial behavior, tenant separation, redaction, privacy, supply chain, secure failure",
+      "minimum_questions": [
+        "What is the highest-risk wrong-scope path?",
+        "What data must be redacted or unavailable?",
+        "What hostile inputs and residue paths exist?",
+        "What secrets or dependencies are introduced?"
+      ],
+      "must_not_claim": [
+        "security from happy-path tests",
+        "privacy from hidden UI",
+        "absence of evidence as safe"
+      ],
+      "material_when": "visible/authenticated work, sensitive data, external input, dependency, secret, authorization, or trust boundary changes"
+    },
+    {
+      "capability_id": "UI_UX",
+      "scope": "user outcome, interaction, information hierarchy, states, accessibility, responsive behavior, visual truth, error recovery",
+      "minimum_questions": [
+        "What is the primary user moment and action?",
+        "How are loading, empty, stale, partial, denied, offline, conflict, and error represented?",
+        "What remains keyboard, screen-reader, and responsive usable?",
+        "What visual language could overstate truth?"
+      ],
+      "must_not_claim": [
+        "browser behavior from source inspection",
+        "authority from labels or color",
+        "responsive/accessibility pass without applicable proof"
+      ],
+      "material_when": "visible route, component, workflow, state, layout, accessibility, or interaction changes"
+    },
+    {
+      "capability_id": "SHELL_NAVIGATION",
+      "scope": "application shell, routing, navigation, layout mounting, overlays, focus, scroll, safe areas, route eligibility, context cleanup",
+      "minimum_questions": [
+        "Where is the feature mounted?",
+        "How is route eligibility enforced?",
+        "How do navigation, overlays, focus, and scroll recover?",
+        "What scope state is cleared on route or identity change?"
+      ],
+      "must_not_claim": [
+        "feature truth ownership",
+        "authorization from route presence",
+        "browser continuity without deployed proof"
+      ],
+      "material_when": "route, shell, navigation, overlay, top bar, drawer, focus, or feature mounting changes"
+    },
+    {
+      "capability_id": "SETTINGS_CONFIGURATION",
+      "scope": "typed settings, defaults, organization policy, user preference, effective dates, precedence, invalidation, durable readback",
+      "minimum_questions": [
+        "Is this policy, organization default, or user preference?",
+        "What type/range/allowlist applies?",
+        "What is the precedence order?",
+        "How is configuration versioned, persisted, invalidated, and rolled back?"
+      ],
+      "must_not_claim": [
+        "settings creates domain truth",
+        "silent scalar clamping",
+        "process-local change as durable success"
+      ],
+      "material_when": "configurable behavior, defaults, policy, preference, feature flag, rollout, or environment binding changes"
+    },
+    {
+      "capability_id": "DOMAIN_VIEW",
+      "scope": "feature-specific read model, workflow meaning, projections, evidence context, unavailable behavior, domain-owned actions",
+      "minimum_questions": [
+        "What truth does this view own versus consume?",
+        "What is planned, observed, calculated, accepted, historical, conflicting, or unavailable?",
+        "Which actions are permitted?",
+        "What must never be inferred from rendering?"
+      ],
+      "must_not_claim": [
+        "presentation creates domain authority",
+        "fixture or demo state is current truth",
+        "calculated or visual plausibility is physical, legal, safety, or engineering proof"
+      ],
+      "material_when": "feature meaning, domain state, projection, evidence, action, or unavailable behavior changes"
+    },
+    {
+      "capability_id": "INTEGRATIONS_PROVIDERS",
+      "scope": "external APIs, webhooks, imports/exports, provider identity, retries, rate limits, reconciliation, receipts, degraded operation",
+      "minimum_questions": [
+        "What exact provider/account/environment is admitted?",
+        "What request, response, webhook, and receipt identity is bound?",
+        "How do retry, replay, duplication, rate limit, and outage behave?",
+        "What no-provider fallback remains honest?"
+      ],
+      "must_not_claim": [
+        "provider success from local mocks",
+        "delivery from request acceptance",
+        "ambient credentials or environment as identity proof"
+      ],
+      "material_when": "external provider, webhook, import/export, delivery, callback, credential, or reconciliation changes"
+    },
+    {
+      "capability_id": "MESSAGING_NOTIFICATIONS",
+      "scope": "message lifecycle, recipients, authorization, delivery, acknowledgement, action, resolution, attachments, mandatory policy versus preferences",
+      "minimum_questions": [
+        "Who is the authorized recipient?",
+        "Which delivery and acknowledgement states are distinct?",
+        "What source consequence is carried but not rewritten?",
+        "What happens offline or under uncertain delivery?"
+      ],
+      "must_not_claim": [
+        "delivery equals understanding",
+        "acknowledgement equals resolution",
+        "communication completes source work"
+      ],
+      "material_when": "message, notification, recipient, attachment, delivery, acknowledgement, escalation, or workflow consequence changes"
+    },
+    {
+      "capability_id": "DOCUMENTS_RECORDS",
+      "scope": "record identity, provenance, revisions, retention labels, redaction, corrections, signatures, reports, downloads, public trust, support evidence",
+      "minimum_questions": [
+        "What record/source/revision is authoritative?",
+        "What does signature, acknowledgement, or retention label mean?",
+        "How are corrections append-only?",
+        "What is unavailable when generation, download, delivery, or support receipt is not admitted?"
+      ],
+      "must_not_claim": [
+        "document presence equals approval",
+        "draft equals delivery",
+        "report projection rewrites source truth"
+      ],
+      "material_when": "record, report, file, signature, retention, redaction, download, support, or public claim changes"
+    },
+    {
+      "capability_id": "SEARCH_AI",
+      "scope": "retrieval, ranking, summarization, generation, citations, context scoping, tool use, uncertainty, refusal, privacy",
+      "minimum_questions": [
+        "What authorized sources and scope are searched?",
+        "What citations and freshness are preserved?",
+        "What may AI draft versus control?",
+        "How are ambiguity, insufficient evidence, privacy, and unsafe automation handled?"
+      ],
+      "must_not_claim": [
+        "generated answer is source truth",
+        "ranking is authority",
+        "AI action bypasses confirmed control"
+      ],
+      "material_when": "search source, retrieval, ranking, model, prompt contract, generation, tool call, or AI-controlled workflow changes"
+    },
+    {
+      "capability_id": "OBSERVABILITY_OPERATIONS",
+      "scope": "health, logs, metrics, traces, alerts, runbooks, failure visibility, operational receipts, incident context",
+      "minimum_questions": [
+        "What exact component and identity is observed?",
+        "Which signals prove health versus activity?",
+        "How are alerts deduplicated and routed?",
+        "What evidence survives failure and recovery?"
+      ],
+      "must_not_claim": [
+        "green metric equals user outcome",
+        "absence of logs equals absence of failure",
+        "alert acknowledgement equals resolution"
+      ],
+      "material_when": "runtime operation, health, telemetry, alert, runbook, incident, or recovery behavior changes"
+    },
+    {
+      "capability_id": "RUNTIME_RELEASE",
+      "scope": "build contexts, artifacts, configuration, environments, release identity, deployment, rollback, health, provider execution",
+      "minimum_questions": [
+        "What exact source and artifact identities deploy?",
+        "What account, region, environment, target, and role are admitted?",
+        "What rollback identity and durable-data compatibility exist?",
+        "Which failures refuse before mutation?"
+      ],
+      "must_not_claim": [
+        "source pass equals deployed parity",
+        "artifact presence equals release authority",
+        "runtime operator decides Product intent"
+      ],
+      "material_when": "build context, artifact, configuration, environment, provider, deployment, rollback, or live identity changes"
+    },
+    {
+      "capability_id": "QUALITY_TEST_ARCHITECTURE",
+      "scope": "test strategy, deterministic fixtures, contract matrices, hostile cases, baseline classification, flake isolation, artifact inspection",
+      "minimum_questions": [
+        "Which invariant is proved at which layer?",
+        "What hostile and degraded paths discriminate the mechanism?",
+        "Which failures are introduced versus unchanged baseline?",
+        "What remains live-only?"
+      ],
+      "must_not_claim": [
+        "test count equals coverage",
+        "mock equals provider or live proof",
+        "unrelated suite failure broadens feature scope"
+      ],
+      "material_when": "proof route, test harness, fixture authority, baseline classification, or release evidence changes"
+    }
+  ],
+  "capability_extension_law": {
+    "baseline": "The fifteen generic web capabilities are a portable baseline, not an exhaustive universal roster.",
+    "project_extension": "Project context may add typed capability families with a unique identifier, scope, minimum questions, prohibited claims, material trigger, owner role, and handoff route.",
+    "cannot_override": [
+      "portable roles or supervision chain",
+      "writer exclusivity",
+      "audit independence",
+      "Runtime execution-only boundary",
+      "owner-only classes",
+      "kernel authority, failure, proof, or handoff law"
+    ],
+    "validation": "Duplicate, ambiguous, unowned, or boundary-overriding extensions fail campaign compilation closed."
+  },
+  "worktree_modes": [
+    {
+      "mode_id": "FEATURE_ROOT_EXCLUSIVE",
+      "owner": "FEATURE_LEAD",
+      "use_when": "normal feature blueprint and build",
+      "writers": 1,
+      "rule": "Feature Lead is the exclusive writer except during an explicit sublease.",
+      "handoff": "immutable feature checkpoint"
+    },
+    {
+      "mode_id": "PLATFORM_ADVISORY_NO_WORKTREE",
+      "owner": "PLATFORM_AGENT",
+      "use_when": "source guidance, contract review, proof design, or no material implementation seam",
+      "writers": 0,
+      "rule": "Fresh agent receives exact source identities and returns a read-only packet.",
+      "handoff": "capability advisory packet"
+    },
+    {
+      "mode_id": "PLATFORM_SAME_ROOT_SUBLEASE",
+      "owner": "PLATFORM_AGENT",
+      "use_when": "one platform seam must edit the feature root and the Feature Lead can pause writes",
+      "writers": 1,
+      "rule": "Feature Lead temporarily releases writer custody; agent receives exact paths, base, goal, proof, and expiry; custody returns after clean pushed handoff.",
+      "handoff": "sublease close receipt and exact commit"
+    },
+    {
+      "mode_id": "PLATFORM_ISOLATED_CHILD_WORKTREE",
+      "owner": "PLATFORM_AGENT",
+      "use_when": "material seam is independently committable or requires isolation",
+      "writers": 1,
+      "rule": "Fresh child worktree starts from the exact feature checkpoint. Feature Lead integrates the returned commit after overlap classification.",
+      "handoff": "isolated commit/tree plus integration manifest"
+    },
+    {
+      "mode_id": "SHARED_CONTRACT_PRIMARY_WORKTREE",
+      "owner": "GLOBAL_ORCHESTRATOR_SELECTED_PRIMARY",
+      "use_when": "multiple features require one shared contract, schema, migration, or generated surface",
+      "writers": 1,
+      "rule": "Global Orchestrator selects one primary owner, allocates migrations/resources, and freezes competing writers. Consumers provide requirements and later rebind.",
+      "handoff": "versioned shared-contract checkpoint"
+    },
+    {
+      "mode_id": "AUDIT_EVIDENCE_ROOT",
+      "owner": "INDEPENDENT_AUDITOR",
+      "use_when": "independent source/artifact/live inspection",
+      "writers": 0,
+      "rule": "Evidence-only root; no Product edits or repair custody.",
+      "handoff": "deduplicated audit disposition"
+    },
+    {
+      "mode_id": "GLOBAL_INTEGRATION_RELEASE_WORKTREE",
+      "owner": "GLOBAL_RUNTIME",
+      "use_when": "serialized accepted integration, artifact creation, deployment, or rollback",
+      "writers": 1,
+      "rule": "Runtime follows exact semantic decisions and accepted commit order; it never invents Product intent.",
+      "handoff": "deployment, rollback, and live-identity receipt"
+    }
+  ],
+  "platform_agent_capsule": {
+    "required_fields": [
+      "feature_and_stage",
+      "feature_owner",
+      "direct_supervisor_and_continuity_deputy",
+      "capability_id",
+      "mode_id",
+      "exact_source_commits_and_trees",
+      "worktree_or_read_only_source_location",
+      "lease_or_sublease",
+      "observable_outcome",
+      "exact_seam",
+      "path_allowlist",
+      "relied_upon_contracts",
+      "protected_surfaces",
+      "minimum_build_inputs",
+      "required_proof",
+      "failure_and_unavailable_behavior",
+      "rollback_or_reversion",
+      "done_when",
+      "return_route",
+      "archive_condition"
+    ],
+    "freshness": "A platform agent is fresh for one feature/checkpoint/capability capsule and is archived after return.",
+    "reuse_forbidden": "A completed platform agent is never reused for a later feature, checkpoint, repair generation, or audit.",
+    "model_policy": "Project context selects the model and reasoning posture; the portable registry requires freshness and exact binding, not a provider-specific model."
+  },
+  "context_capsule": {
+    "purpose": "Give each agent the smallest sufficient authority context without flooding or silently omitting authority.",
+    "required_fields": [
+      "exact_governance_commit_and_kernel",
+      "project_context_identity",
+      "task_outcome_and_non_goals",
+      "authority_order_and_task_specific_articles",
+      "ownership_and_custody",
+      "current_source_runtime_reality",
+      "contracts_and_dependencies",
+      "protected_surfaces",
+      "failure_and_unavailable_behavior",
+      "proof_and_done_when",
+      "freshness_and_invalidation",
+      "return_route"
+    ],
+    "budget": "Include only context material to the outcome, authority, ownership, dependency, proof, or failure behavior. Link exact additional authority objects rather than copying the whole authority corpus.",
+    "missing_rule": "A missing material authority or context identity is UNPROVEN; generic memory or another project's context cannot substitute.",
+    "conflict_rule": "Contradictory context is routed by authority order and current-reality inspection, then recorded explicitly."
+  },
+  "lease_recovery": {
+    "required_fields": [
+      "lease_id",
+      "root_and_branch",
+      "owner_and_direct_supervisor",
+      "exact_starting_checkpoint",
+      "path_and_resource_scope",
+      "granted_at",
+      "finite_progress_interval",
+      "last_concrete_progress_identity",
+      "expiry_or_recovery_condition",
+      "continuity_deputy",
+      "release_condition"
+    ],
+    "recovery": "On agent crash, budget exhaustion, or interval expiry, freeze writes; inspect exact task state, worktree, uncommitted bytes, remote head, and dependencies; preserve or quarantine bytes; then continue through the predeclared same-role deputy or return the lease to the supervising owner.",
+    "safety": "Recovery never creates a second simultaneous writer, silently transfers scope, discards user work, broadens the root, or represents administrative goal completion as stage completion."
+  },
+  "feature_workflow": [
+    {
+      "step": 1,
+      "state": "CAMPAIGN_ADMITTED",
+      "owner": "GLOBAL_ORCHESTRATOR",
+      "action": "Bind feature owner, exact bases, feature root, lease, protected surfaces, shared-resource posture, and rollback baseline."
+    },
+    {
+      "step": 2,
+      "state": "BLUEPRINT",
+      "owner": "FEATURE_LEAD",
+      "action": "Reframe outcome, inspect reality, classify contracts/dependencies, select the smallest reversible batch, and identify material platform seams."
+    },
+    {
+      "step": 3,
+      "state": "CAPABILITY_SELECTION",
+      "owner": "FEATURE_LEAD",
+      "action": "For every generic capability, classify MATERIAL_ADVISORY, MATERIAL_WRITER, NO_MATERIAL_SEAM, DEFERRED_OWNER_ONLY, or NOT_APPLICABLE_WITH_AUTHORITY."
+    },
+    {
+      "step": 4,
+      "state": "PLATFORM_AGENT_WAVE",
+      "owner": "FEATURE_LEAD",
+      "action": "Generate fresh agents only for material capabilities, choose advisory/sublease/isolated mode, collect packets or commits, archive agents, and consolidate once."
+    },
+    {
+      "step": 5,
+      "state": "BUILD",
+      "owner": "FEATURE_LEAD",
+      "action": "Implement substantial batches, integrate platform returns, run affected proof, invoke FAILURE_REFRAME for a materially distinct failure, build artifact, commit/push, and keep one cumulative manifest."
+    },
+    {
+      "step": 6,
+      "state": "BUILDER_READINESS",
+      "owner": "FEATURE_LEAD",
+      "action": "Give the exact integrated candidate to material platform capabilities; consolidate one must-fix batch; move noncritical findings to IMPROVE."
+    },
+    {
+      "step": 7,
+      "state": "READY_FOR_GLOBAL_INTEGRATION",
+      "owner": "GLOBAL_ORCHESTRATOR",
+      "action": "Accept or return one consolidated correction batch; resolve shared semantic conflicts; issue exact Runtime custody."
+    },
+    {
+      "step": 8,
+      "state": "LAUNCH",
+      "owner": "GLOBAL_RUNTIME",
+      "action": "Integrate accepted commits, build/rebind artifacts, verify environment and rollback, deploy exact identity, and return live draft or mechanical blocker."
+    },
+    {
+      "step": 9,
+      "state": "LIVE_AUDIT",
+      "owner": "INDEPENDENT_AUDITOR",
+      "action": "Audit exact live identity; route ordinary findings to next-cycle owners and emergencies to higher authority."
+    },
+    {
+      "step": 10,
+      "state": "CLOSURE",
+      "owner": "GLOBAL_ORCHESTRATOR",
+      "action": "Verify Git, evidence, deployment, rollback, clean worktrees, archived agents, released resources, retained backlog, and final accepted-live closure."
+    }
+  ],
+  "failure_reframe_workflow": {
+    "owner": "The direct supervising agent, never the building or executing agent that encountered the failure.",
+    "supervision": {
+      "PLATFORM_AGENT": "FEATURE_LEAD",
+      "FEATURE_LEAD": "GLOBAL_ORCHESTRATOR",
+      "GLOBAL_RUNTIME": "GLOBAL_ORCHESTRATOR",
+      "INDEPENDENT_AUDITOR": "GLOBAL_ORCHESTRATOR for routing only without weakening audit independence",
+      "GLOBAL_ORCHESTRATOR": "admitted owner or higher authority only for a portable owner-only class; otherwise bounded self-reframe without Product custody expansion"
+    },
+    "supervisor_liveness": {
+      "deadline": "Project context binds one finite response interval.",
+      "continuity": "One predeclared same-role deputy may act after verified supervisor unavailability or interval expiry.",
+      "boundary": "The deputy receives the same immutable packet and no broader custody. Without a deputy, hold only the dependent outcome and continue unaffected work."
+    },
+    "trigger": {
+      "rule": "Trigger before another retry when a material failure creates a route decision.",
+      "automatic_when": [
+        "the same mechanism fails twice for one unresolved causal root",
+        "an acceptance invariant is FAIL or remains UNPROVEN at a stage or handoff boundary",
+        "progress requires missing context, a new assumption, broader custody, or a different contract or dependency",
+        "authority contradicts current source or runtime reality",
+        "the proposed repair broadens scope, adds infrastructure, weakens proof, or crosses ownership",
+        "the task makes no substantial progress within its governed progress interval"
+      ],
+      "not_for": "A localized failure with an obvious bounded correction that preserves route, authority, custody, and acceptance boundary. The builder corrects that inside current custody."
+    },
+    "lens_sampler": {
+      "input_validation": "failure_root_id is a nonempty UTF-8 string; first_admitted_failed_evidence_sha256 is exactly 64 lowercase hexadecimal characters.",
+      "seed": "seed_sha256 = SHA-256(UTF8(compact JSON [\"governance.reframe.lens-seed.v1\", failure_root_id, first_admitted_failed_evidence_sha256])); later evidence never reseeds the same root",
+      "selection": "For each lens compute SHA-256(UTF8(compact JSON [\"governance.reframe.lens-rank.v1\", seed_sha256, lens])); sort by unsigned UTF-8 byte order of digest with unsigned UTF-8 byte order of lens identifier as tie-break; take exactly the first lens.",
+      "selected_lens_count": 1,
+      "catalog": [
+        "ELI5",
+        "PHILOSOPHY_OR_FIRST_PRINCIPLES",
+        "PSEUDOCODE",
+        "IF_THEN_CASES",
+        "PROJECT_CONTEXT",
+        "ANALOGY",
+        "TEST_GATES",
+        "WHAT_DO_YOU_THINK",
+        "HOW_WOULD_YOU_SOLVE_THIS"
+      ],
+      "boundary": "Lens selection diversifies reasoning only; it cannot select truth, authority, custody, acceptance, or implementation."
+    },
+    "steps": [
+      "Builder freezes and preserves the failed attempt, exact evidence, mutation boundary, and current custody.",
+      "Builder sends the unchanged failure packet to its direct supervisor without proposing a self-approved reframe.",
+      "Supervisor classifies the root cause and failure class.",
+      "Supervisor restates the observable outcome and protected invariants without naming the failed implementation.",
+      "Supervisor inventories exact known context and gaps across the authority corpus, source, contracts, dependencies, runtime, and prior receipts.",
+      "Supervisor samples and answers the one reframing lens.",
+      "Supervisor runs the smallest reversible discriminating inspection or test needed to fill material gaps.",
+      "Supervisor generates alternate routes using existing architecture and already-admitted capabilities.",
+      "Supervisor rejects any route that weakens authority, truth, security, privacy, tenancy, safety, durable data, proof, rollback, or owner boundaries.",
+      "Supervisor compares remaining routes by user outcome, reversibility, scope, complexity, risk, dependency count, proof cost, and rollback.",
+      "Supervisor returns one exact route decision and bounded custody; builder executes that route only.",
+      "Supervisor records one reusable resolution rule keyed by causal root while unaffected work continues."
+    ],
+    "context_gap_sources": [
+      "exact admitted authority corpus",
+      "current source and contract definitions",
+      "repository history and accepted checkpoints",
+      "runtime and provider readback",
+      "platform capability packets",
+      "independent audit evidence",
+      "one exact owner decision only when a portable owner-only class is crossed"
+    ],
+    "output": {
+      "required_fields": [
+        "failure_root_id",
+        "builder_identity",
+        "direct_supervisor_identity",
+        "failed_route_and_evidence",
+        "protected_outcome",
+        "affected_invariants",
+        "known_context",
+        "context_gaps",
+        "lens_seed",
+        "selected_lenses",
+        "lens_answers",
+        "discriminating_checks",
+        "alternate_routes",
+        "rejected_routes_and_reasons",
+        "selected_route",
+        "proof_and_rollback",
+        "unaffected_work",
+        "resolution_rule",
+        "freshness_and_invalidation"
+      ],
+      "allowed_dispositions": [
+        "ALTERNATE_ROUTE_SELECTED",
+        "SAME_ROUTE_REPAIR_SELECTED_WITH_REASON",
+        "HONEST_UNAVAILABLE_SELECTED",
+        "OWNER_ONLY_WITH_EXACT_CLASS",
+        "DEPENDENCY_HELD_UNAFFECTED_WORK_CONTINUES"
+      ]
+    },
+    "anti_loop": "One supervisor-owned reframe per materially distinct causal root. Repeated evidence attaches to the existing root and reuses its resolution rule unless authority, mechanism, invariant, or proof materially changes. Builders cannot self-reframe repeatedly or shop among supervisors.",
+    "technical_advice": "The supervisor may request one bounded technical recommendation from the reporting specialist or one fresh advisory agent. Advice transfers neither route authority nor Product custody.",
+    "builder_feasibility_objection": "The builder may return one evidence-backed feasibility objection to the selected route. The supervisor confirms or replaces the route once; further disagreement holds only the dependent outcome.",
+    "not_allowed": [
+      "the builder approving its own reframe or alternate route",
+      "the builder selecting a different supervisor",
+      "renaming the same failed route as an alternative",
+      "weakening acceptance or proof",
+      "bypassing authorization or tenant scope",
+      "turning unavailable behavior into invented success",
+      "creating a micro goal, phase, root, or worktree for the reframe",
+      "asking the owner before safe reversible alternatives are exhausted"
+    ]
+  },
+  "handoff_contracts": {
+    "feature_to_platform": [
+      "capsule identity",
+      "exact checkpoint",
+      "mode and custody",
+      "seam and allowlist",
+      "proof and unavailable behavior",
+      "return and archive condition"
+    ],
+    "platform_to_feature": [
+      "source identities",
+      "guidance or commit/tree",
+      "changed paths and contracts",
+      "verification",
+      "unresolved seams",
+      "custody release"
+    ],
+    "feature_to_global": [
+      "integrated commits/trees",
+      "cumulative manifest",
+      "shared-contract versions",
+      "proof and artifact",
+      "rollback",
+      "next-cycle backlog"
+    ],
+    "global_to_runtime": [
+      "accepted integration order",
+      "semantic conflict decisions",
+      "exact source/artifact target",
+      "environment and rollback authority",
+      "allowed runtime mutations"
+    ],
+    "runtime_to_auditor": [
+      "exact deployed source/artifacts",
+      "deployment receipt",
+      "target and runtime identity",
+      "rollback identity",
+      "admitted live endpoints and roles"
+    ],
+    "auditor_to_global": [
+      "exact live binding",
+      "deduplicated causal roots",
+      "emergency classification",
+      "ordinary owner-routed backlog",
+      "audit disposition"
+    ]
+  },
+  "selection_algorithm": [
+    "If no material seam exists, return NO_MATERIAL_SEAM and create no platform agent.",
+    "If expertise is needed but no Product edit is needed, use PLATFORM_ADVISORY_NO_WORKTREE.",
+    "If one capability must edit exact paths and the Feature Lead can pause, use PLATFORM_SAME_ROOT_SUBLEASE.",
+    "If the seam is independently committable or needs isolation, use PLATFORM_ISOLATED_CHILD_WORKTREE.",
+    "If multiple features contend for one contract/schema/migration/generated surface, route to SHARED_CONTRACT_PRIMARY_WORKTREE.",
+    "If independent acceptance is required, use AUDIT_EVIDENCE_ROOT after exact candidate or deployment identity exists.",
+    "If integration, artifact, deployment, or rollback execution is required, only GLOBAL_INTEGRATION_RELEASE_WORKTREE may write."
+  ],
+  "campaign_compiler": {
+    "purpose": "Allow the Global Orchestrator to compile accepted governance and project authority context into one cumulative single-root development campaign by default, with multi-lane execution admitted only by an explicit evidence-backed exception.",
+    "required_inputs": [
+      "exact portable-kernel identity",
+      "exact project-context identity",
+      "exact admitted authority-corpus commit or immutable snapshot",
+      "owner outcome and protected boundaries",
+      "current repository commits and trees",
+      "deduplicated backlog grouped by causal root and feature owner",
+      "feature and capability roster",
+      "file, contract, schema, event, configuration, generated-output, migration, and runtime ownership map",
+      "dependency graph",
+      "available writer and runtime resources",
+      "rollback baseline",
+      "owner-only holds"
+    ],
+      "compile_steps": [
+      "Load the exact kernel and project context from the admitted governance commit.",
+      "Reframe the owner outcome and preserve protected boundaries.",
+      "Resolve every backlog item to one causal root and primary feature or platform owner.",
+      "Build a directed dependency graph across features, shared contracts, migrations, generated surfaces, and runtime consumers.",
+      "Classify shared paths and contracts by one primary owner and exact consumers.",
+      "Select exactly one cumulative campaign root for 2.1rc activation. Retain multi-lane predicates as a later design library, not executable authority.",
+      "Order features cumulatively inside the one admitted root.",
+      "Allocate one campaign root, branch namespace, exclusive lease, migration range, contract namespace, and rollback baseline.",
+      "Create one campaign-open record; spawn and pin one fresh campaign-scoped Orchestrator, one fresh Auditor, and the admitted fresh Feature Agents using the exact `<Role> <CampaignVersion> 2.1rc` name; activate only the first feature owner in the root or each exceptionally admitted lane.",
+      "Allow Feature Leads to run Blueprint and Build autonomously under the portable workflow.",
+      "Monitor concrete checkpoint progress at the configured interval while active, repair safe broken chains without creating extra goals, roots, or approval loops, and suspend both the same goal and its progress timer only for one exact true blocker.",
+      "At each substantial pushed checkpoint, classify changed surfaces, create and pin only the required read-only seam reviewers, run them in parallel while safe root progress continues, and queue material corrections for the originating Feature Agent at the next stable handoff.",
+      "At a coherent end-to-end milestone, accept the terminal cumulative checkpoint rather than merging individual feature checkpoints to the shared default branch.",
+      "At terminal handoff to Global Runtime, require the current Auditor to submit the next-campaign candidate, then create and pin the fresh next-campaign Orchestrator, Auditor, and Feature Agents for orientation only; hold their Product writer lease until the current release is accepted live.",
+      "Converge exact terminal commits once through the Global Runtime after Global Orchestrator semantic decisions.",
+      "Mint and deploy the exact integrated milestone once, audit exact live identity, route ordinary findings to the next-cycle backlog, and close."
+    ],
+    "topology_selection": {
+      "SINGLE_LANE": {
+        "admission": "default; no exception proof is required",
+        "shape": "One cumulative campaign root passes sequentially through causally ordered Feature Leads. For multiple repositories, one cumulative worktree per repository travels together as one custody unit.",
+        "checkpoint_rule": "Each feature completes one substantial usable batch, runs affected stable proof, commits and pushes an immutable checkpoint, closes its lease, and transfers the same clean root to the next exact owner.",
+        "integration_rule": "Feature checkpoints are not individually merged to the shared default branch. One terminal cumulative checkpoint is integrated, minted, and deployed at the coherent milestone.",
+        "benefit": "Simplest custody, integration, rollback, and conflict surface."
+      },
+      "MULTI_LANE_CASCADE": {
+        "admission": "DESIGN_ONLY_NOT_ACTIVATABLE_IN_2_1RC; a later governance version must first add executable per-lane state, lane-local blockers, custody, transitions, convergence, and hostile proof",
+        "choose_when_all": [
+          "two or more dependency-independent feature sequences exist",
+          "each lane has an exact disjoint primary ownership boundary",
+          "shared contracts have explicit producer and consumer versions",
+          "one exclusive writer lease per lane can be guaranteed",
+          "a finite Global Runtime convergence order can be compiled",
+          "measured or source-backed expected parallelism materially reduces milestone time relative to one cumulative root",
+          "bounded reconciliation, migration, rollback, and proof cost is lower than the expected parallelism benefit"
+        ],
+        "shape": "Two or more cumulative roots progress in parallel; each root passes sequentially through its assigned Feature Leads and ends in one immutable terminal checkpoint.",
+        "benefit": "Parallel Product progress without multiple owners writing the same truth."
+      },
+      "lane_count_rule": "Governance 2.1rc activates exactly one cumulative root. The retained MULTI_LANE_CASCADE predicates may inform a later implementation but cannot mint a second writer root.",
+      "default": "SINGLE_LANE_ONLY_FOR_2_1RC_ACTIVATION",
+      "failure_default": "Any request for more than one Product lane fails closed to one cumulative root."
+    },
+    "milestone_release_policy": {
+      "milestone_definition": "A coherent end-to-end user outcome across related features with exact cumulative source, contracts, proof, rollback, and unavailable behavior; never a file count, task count, timer, or arbitrary feature count.",
+      "feature_checkpoint": "Checkpoint and hand off within the cumulative campaign root; do not merge, mint, or deploy merely because one feature completed.",
+      "terminal_sequence": [
+        "accept the terminal cumulative campaign checkpoint",
+        "run cumulative affected verification and production artifact build",
+        "perform one serialized integration to the admitted shared branch",
+        "mint exact immutable release artifacts",
+        "deploy through the exclusive Global Runtime",
+        "audit the exact live identity",
+        "close or open one grouped next-cycle repair"
+      ],
+      "early_release_exception": "An earlier deployment requires an explicit milestone reclassification or higher-authority emergency; convenience, review latency, or a small checkpoint is insufficient."
+    },
+    "topology_amendment": {
+      "trigger": "A material dependency, ownership, resource, rollback, or contract fact changes the compiled lane structure.",
+      "allowed_only_when": [
+        "every affected lane is at an immutable pushed checkpoint",
+        "no affected lane or platform sublease has an active writer",
+        "unaffected lanes can preserve their exact roots and leases",
+        "the dependency and ownership graph is recomputed from current identities",
+        "the amendment preserves the append-only checkpoint ledger and rollback"
+      ],
+      "allowed_changes": [
+        "reorder future unstarted feature owners",
+        "collapse future lane tails into one cumulative lane",
+        "split only an unstarted future lane tail into disjoint roots",
+        "change future consumer holds after an exact producer contract checkpoint"
+      ],
+      "forbidden": [
+        "moving or rewriting an accepted checkpoint",
+        "changing an active owner behind its lease",
+        "creating a temporary extra writer",
+        "copying Product bytes across lanes instead of versioning a contract",
+        "using topology change to bypass a failed stage"
+      ]
+    },
+    "lane_record": {
+      "required_fields": [
+        "lane_id",
+        "ordered_feature_owners",
+        "repository_roots_and_branches",
+        "exact_starting_commits_and_trees",
+        "writer_lease",
+        "path_and_contract_primary_ownership",
+        "migration_allocation",
+        "generated_output_ownership",
+        "cross_lane_contracts_produced_and_consumed",
+        "protected_surfaces",
+        "rollback_baseline",
+        "checkpoint_ledger",
+        "current_owner_stage_goal_and_next_action"
+      ],
+      "cumulative_rule": "Each feature starts from the prior immutable campaign checkpoint and may not restart, fork an unadmitted root, erase earlier accepted work, or hand off an unpushed dirty worktree.",
+      "writer_rule": "Exactly one Feature Lead or admitted platform sublease holds writer custody for a lane at a time.",
+      "handoff_rule": "A feature checkpoint closes its lease and transfers the same cumulative campaign root to the next exact owner.",
+      "merge_rule": "Intermediate feature checkpoints remain on the cumulative campaign branch and are not merged individually to the shared default branch."
+    },
+    "cross_lane_contract_law": {
+      "required_fields": [
+        "contract_id",
+        "producer_lane_and_checkpoint",
+        "primary_owner",
+        "version",
+        "digest",
+        "compatibility_range",
+        "consumer_lanes_and_features",
+        "unavailable_behavior_before_producer_checkpoint",
+        "freshness_and_invalidation"
+      ],
+      "rule": "Cross-lane sharing occurs through versioned immutable contracts, never cherry-picks, copied diffs, foreign-worktree edits, or narrative assumptions.",
+      "consumer_hold": "A consumer preserves explicit unavailable behavior until the exact producer checkpoint exists.",
+      "conflict": "Global Orchestrator chooses one primary owner and exact semantic outcome; Global Runtime performs only the mechanical convergence."
+    },
+      "autonomy": {
+      "global_orchestrator_may": [
+        "choose lane topology and count",
+        "assign feature order and leases",
+        "select primary owners for shared seams",
+        "allocate migrations and namespaces",
+        "admit safe reversible broken-chain recovery",
+        "activate the next owner after an exact accepted checkpoint",
+        "continue unaffected lanes around a dependent blocker",
+        "issue Global Runtime convergence and deployment custody after acceptance"
+      ],
+      "global_orchestrator_must_not": [
+        "manage routine feature implementation",
+        "require approval for an in-scope feature stage transition",
+        "create micro-review loops for nonmaterial evidence discrepancies",
+        "reinterpret feature or domain intent",
+        "allow simultaneous writers in one lane",
+        "allow a platform agent to retain campaign custody",
+        "let Runtime decide semantic conflicts",
+        "let Auditor implement findings"
+      ],
+      "owner_escalation": "Only an exact portable true-blocker class with exhausted safe alternatives interrupts the owner. The campaign-scoped Orchestrator records TRUE_BLOCKER_SUSPENDED, suspends the same macro goal and configured progress timer, keeps one resolution watcher, and resumes the same goal only after mechanical resolution.",
+      "agent_context_rule": "Every Feature Lead and platform agent receives one exact context capsule: the admitted governance identity plus only the project-context and task-specific authority objects relevant to its feature/capability. The agent uses the authority corpus for intent, ownership, boundaries, contracts, and failure law, then inspects source/runtime for current reality."
+    },
+    "progress_control": {
+      "concrete_progress": [
+        "new Product commit or immutable checkpoint",
+        "completed substantial batch",
+        "released or transferred lease",
+        "resolved dependency or accepted contract version",
+        "exact blocker with an immediately executing in-scope recovery"
+      ],
+      "stall_rule": "If no concrete progress occurs within the project-context progress interval while the campaign is active, inspect active owners, goals, budgets, leases, worktrees, and dependencies; repair the in-scope broken chain immediately. A TRUE_BLOCKER_SUSPENDED campaign has no stall timer until its exact resume check passes.",
+      "forbidden_recovery": [
+        "new micro goal",
+        "extra root without topology amendment",
+        "cross-scope custody",
+        "repeated broad review",
+        "restarting completed discovery",
+      "pausing unaffected lanes for an ordinary dependency or puzzle; an exact owner-required true blocker pauses the campaign"
+      ]
+    },
+    "convergence": {
+      "preconditions": [
+        "every lane has one clean pushed terminal checkpoint",
+        "cross-lane contracts and consumer impacts are exact",
+        "shared semantic conflicts have Global Orchestrator decisions",
+        "rollback baseline is exact",
+        "ordinary next-cycle backlog is preserved"
+      ],
+      "runtime_order": "Global Runtime starts from the accepted current main and applies terminal lane commits in the exact compiled order.",
+      "rehearsal": "A disposable no-push rehearsal may test mechanical ordering; it cannot decide Product semantics or replace final integration proof.",
+      "result": "One canonical integrated commit, exact artifacts, deployment identity, rollback, and live-audit baseline."
+    }
+  },
+  "hostile_boundaries": [
+    "Feature Lead silently edits another feature root.",
+    "Two writers hold one feature root simultaneously.",
+    "Platform agent redefines feature intent or owner-only policy.",
+    "Completed platform agent is reused.",
+    "Advisory agent claims implementation or readiness.",
+    "Auditor edits Product or closes its own finding.",
+    "Global Orchestrator becomes routine implementation manager.",
+    "Global Runtime resolves semantic Product conflicts.",
+    "Route visibility, UI label, document, fixture, or local state is treated as authority.",
+    "Deployment is blocked by an ordinary Product finding.",
+    "Worktree handoff occurs without pushed commit, clean state, exact manifest, and custody release.",
+    "A multi-lane campaign is selected before path, contract, migration, and writer ownership are classified.",
+    "A consumer reads another lane's uncheckpointed Product bytes.",
+    "A prior campaign's lane count or order is reused without recompiling current dependencies.",
+    "The Global Orchestrator asks the owner or Central for routine in-scope stage progression.",
+    "An agent receives generic governance without the exact project authority context, or receives project context without the exact kernel.",
+    "An agent retries a failed mechanism without reframing the protected outcome or filling material context gaps.",
+    "An alternate route bypasses authority, proof, tenancy, security, privacy, safety, durable data, rollback, or owner boundaries.",
+    "A repeated failure root creates another reframe loop instead of reusing the recorded resolution rule.",
+    "Authority-corpus generation uses unresolved roots, escapes an admitted root, overwrites sealed history, duplicates page identity, or invents missing project facts.",
+    "A build log becomes a competing current-state authority instead of an append-only checkpoint reference.",
+    "Platform pseudocode or comments claim authority, behavior, or proof absent from accepted context and current source.",
+    "Context elicitation asks for facts already available in exact authority or source, seeks exhaustive certainty, or blocks unrelated work.",
+    "A context blocker omits materiality, safe default, unaffected work, responsible owner, or exact resumption condition.",
+    "A specialist reports an ordinary technical puzzle, asks routine permission, or narrates intermediate steps before exhausting safe in-scope alternatives.",
+    "A specialist uses autonomous execution as permission to broaden custody, weaken proof, hide assumptions, edit another owner, or claim false completion."
+    ,
+    "An agent opens an operating-system default browser, generic URL launcher, or unconfigured fallback instead of the exact user-selected interactive browser.",
+    "Browser automation uses the owner's normal browser profile, an implicit default browser, an unselected framework, or authentication state not created by the configured project auth route.",
+    "A provider-auth blocker omits the official HTTPS authorization route, exact provider/environment, selected-browser requirement, resume check, or suspended goal identity.",
+    "A campaign-scoped Orchestrator or Auditor is reused across campaigns, or its display name omits the campaign and governance versions.",
+    "A material seam review silently reverts Product, blocks unrelated safe work, or transfers correction custody to anyone except the originating Feature Agent at a stable handoff.",
+    "A Platform Agent is pre-spawned without a material seam or remains active after its exact campaign handoff."
+  ]
+}
