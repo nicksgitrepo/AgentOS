@@ -163,6 +163,123 @@ function validateRoot(root) {
   }
 }
 
+const DEPLOYMENT_RECEIPT_KEYS = [
+  "schema", "final_candidate_commit", "final_candidate_tree", "deployed_identity", "rollback_identity",
+  "runtime_session_id", "deployed_at_utc", "receipt_sha256",
+];
+const LIVE_AUDIT_RECEIPT_KEYS = [
+  "schema", "final_candidate_commit", "final_candidate_tree", "deployed_identity", "independent_audit_identity",
+  "audited_at_utc", "audit_receipt_sha256",
+];
+const CLOSURE_RECEIPT_KEYS = [
+  "schema", "final_candidate_commit", "final_candidate_tree", "deployment_receipt", "live_audit_receipt",
+  "closed_at_utc", "closure_receipt_sha256",
+];
+
+function validateDeploymentReceipt(receipt) {
+  exactKeys(receipt, DEPLOYMENT_RECEIPT_KEYS, "live deployment receipt");
+  assert(receipt.schema === "governance.live_deployment_receipt.v1", "live deployment receipt schema mismatch");
+  for (const field of ["final_candidate_commit", "final_candidate_tree", "deployed_identity", "rollback_identity", "runtime_session_id"]) requireString(receipt[field], `live deployment ${field}`);
+  requireUtc(receipt.deployed_at_utc, "live deployment time");
+  requireSha(receipt.receipt_sha256, "live deployment receipt digest");
+  assert(receipt.receipt_sha256 === lifecycleDigest({...receipt, receipt_sha256: null}), "live deployment receipt is not content-addressed");
+  return receipt;
+}
+
+export function compileDeploymentReceipt({finalCandidateCommit, finalCandidateTree, deployedIdentity, rollbackIdentity, runtimeSessionId, deployedAtUtc}) {
+  const receipt = {
+    schema: "governance.live_deployment_receipt.v1",
+    final_candidate_commit: finalCandidateCommit,
+    final_candidate_tree: finalCandidateTree,
+    deployed_identity: deployedIdentity,
+    rollback_identity: rollbackIdentity,
+    runtime_session_id: runtimeSessionId,
+    deployed_at_utc: deployedAtUtc,
+    receipt_sha256: null,
+  };
+  receipt.receipt_sha256 = lifecycleDigest({...receipt, receipt_sha256: null});
+  return validateDeploymentReceipt(receipt);
+}
+
+function validateLiveAuditReceipt(receipt) {
+  exactKeys(receipt, LIVE_AUDIT_RECEIPT_KEYS, "independent live audit receipt");
+  assert(receipt.schema === "governance.independent_live_audit_receipt.v1", "independent live audit receipt schema mismatch");
+  for (const field of ["final_candidate_commit", "final_candidate_tree", "deployed_identity", "independent_audit_identity"]) requireString(receipt[field], `live audit ${field}`);
+  requireUtc(receipt.audited_at_utc, "live audit time");
+  requireSha(receipt.audit_receipt_sha256, "live audit receipt digest");
+  assert(receipt.audit_receipt_sha256 === lifecycleDigest({...receipt, audit_receipt_sha256: null}), "independent live audit receipt is not content-addressed");
+  return receipt;
+}
+
+export function compileLiveAuditReceipt({finalCandidateCommit, finalCandidateTree, deployedIdentity, independentAuditIdentity, auditedAtUtc}) {
+  const receipt = {
+    schema: "governance.independent_live_audit_receipt.v1",
+    final_candidate_commit: finalCandidateCommit,
+    final_candidate_tree: finalCandidateTree,
+    deployed_identity: deployedIdentity,
+    independent_audit_identity: independentAuditIdentity,
+    audited_at_utc: auditedAtUtc,
+    audit_receipt_sha256: null,
+  };
+  receipt.audit_receipt_sha256 = lifecycleDigest({...receipt, audit_receipt_sha256: null});
+  return validateLiveAuditReceipt(receipt);
+}
+
+function validateClosureReceipt(receipt) {
+  exactKeys(receipt, CLOSURE_RECEIPT_KEYS, "accepted-live closure receipt");
+  assert(receipt.schema === "governance.accepted_live_closure_receipt.v1", "accepted-live closure receipt schema mismatch");
+  for (const field of ["final_candidate_commit", "final_candidate_tree"]) requireString(receipt[field], `closure ${field}`);
+  validateDeploymentReceipt(receipt.deployment_receipt);
+  validateLiveAuditReceipt(receipt.live_audit_receipt);
+  assert(receipt.deployment_receipt.final_candidate_commit === receipt.final_candidate_commit && receipt.deployment_receipt.final_candidate_tree === receipt.final_candidate_tree, "closure deployment candidate mismatch");
+  assert(receipt.live_audit_receipt.final_candidate_commit === receipt.final_candidate_commit && receipt.live_audit_receipt.final_candidate_tree === receipt.final_candidate_tree, "closure audit candidate mismatch");
+  assert(receipt.live_audit_receipt.deployed_identity === receipt.deployment_receipt.deployed_identity, "closure audit deployment identity mismatch");
+  requireUtc(receipt.closed_at_utc, "accepted-live closure time");
+  requireSha(receipt.closure_receipt_sha256, "accepted-live closure digest");
+  assert(receipt.closure_receipt_sha256 === lifecycleDigest({...receipt, closure_receipt_sha256: null}), "accepted-live closure receipt is not content-addressed");
+  return receipt;
+}
+
+export function compileAcceptedLiveClosureReceipt({deploymentReceipt, liveAuditReceipt, closedAtUtc}) {
+  validateDeploymentReceipt(deploymentReceipt);
+  validateLiveAuditReceipt(liveAuditReceipt);
+  assert(deploymentReceipt.final_candidate_commit === liveAuditReceipt.final_candidate_commit && deploymentReceipt.final_candidate_tree === liveAuditReceipt.final_candidate_tree, "closure inputs target different candidates");
+  assert(deploymentReceipt.deployed_identity === liveAuditReceipt.deployed_identity, "closure inputs target different deployments");
+  const receipt = {
+    schema: "governance.accepted_live_closure_receipt.v1",
+    final_candidate_commit: deploymentReceipt.final_candidate_commit,
+    final_candidate_tree: deploymentReceipt.final_candidate_tree,
+    deployment_receipt: structuredClone(deploymentReceipt),
+    live_audit_receipt: structuredClone(liveAuditReceipt),
+    closed_at_utc: closedAtUtc,
+    closure_receipt_sha256: null,
+  };
+  receipt.closure_receipt_sha256 = lifecycleDigest({...receipt, closure_receipt_sha256: null});
+  return validateClosureReceipt(receipt);
+}
+
+function validateLiveTransitionEvidence(state) {
+  if (state.stage === "ACCEPTED_LIVE_PENDING_CLOSURE") {
+    const event = [...state.transition_journal].reverse().find((entry) => entry.to_stage === "ACCEPTED_LIVE_PENDING_CLOSURE" && entry.payload?.deployment_receipt);
+    assert(event, "accepted-live pending closure lacks its deployment transition");
+    exactKeys(event.payload, ["deployment_receipt"], "accepted-live deployment transition payload");
+    const receipt = validateDeploymentReceipt(event.payload.deployment_receipt);
+    assert(receipt.final_candidate_commit === state.root.commit && receipt.final_candidate_tree === state.root.tree, "deployment receipt is not bound to the accepted root");
+    assert(state.runtime.deployed_identity === receipt.deployed_identity && state.runtime.rollback_identity === receipt.rollback_identity, "Runtime identity does not match deployment receipt");
+    assert(state.runtime.session_id === receipt.runtime_session_id, "Runtime session does not match deployment receipt");
+  }
+  if (state.stage === "ACCEPTED_LIVE_CLOSED") {
+    const event = [...state.transition_journal].reverse().find((entry) => entry.to_stage === "ACCEPTED_LIVE_CLOSED" && entry.payload?.closure_receipt);
+    assert(event, "accepted-live closure lacks its closure transition");
+    exactKeys(event.payload, ["closure_receipt"], "accepted-live closure transition payload");
+    const receipt = validateClosureReceipt(event.payload.closure_receipt);
+    assert(receipt.final_candidate_commit === state.root.commit && receipt.final_candidate_tree === state.root.tree, "closure receipt is not bound to the accepted root");
+    assert(state.runtime.deployed_identity === receipt.deployment_receipt.deployed_identity && state.runtime.rollback_identity === receipt.deployment_receipt.rollback_identity, "closed Runtime identity does not match closure receipt");
+    assert(receipt.live_audit_receipt.independent_audit_identity === state.roster.auditor.session_id, "closed live audit is not bound to the independent campaign Auditor");
+    assert(receipt.live_audit_receipt.independent_audit_identity !== state.runtime.session_id, "Runtime cannot perform the independent live audit");
+  }
+}
+
 const WORKTREE_KEYS = ["worktree_id", "branch", "base_commit", "current_commit", "base_tree", "current_tree", "clean", "pushed"];
 
 function validatePlatformWorktree(worktree, label) {
@@ -396,6 +513,7 @@ export function validateCheckpoint(checkpoint) {
   if (checkpoint.parent_candidate_id !== null) requireIdentifier(checkpoint.parent_candidate_id, "checkpoint parent");
   assert(typeof checkpoint.clean === "boolean" && typeof checkpoint.pushed === "boolean" && typeof checkpoint.terminal === "boolean", "checkpoint flags are invalid");
   if (checkpoint.pushed) assert(checkpoint.clean, "pushed checkpoint must be clean");
+  if (checkpoint.terminal) assert(checkpoint.clean === true && checkpoint.pushed === true, "terminal checkpoint must be clean and pushed");
   for (const field of ["audit_plan_sha256", "audit_reconciliation_sha256"]) {
     if (checkpoint[field] !== null) requireSha(checkpoint[field], `checkpoint ${field}`);
   }
@@ -715,10 +833,13 @@ function appendTransition(next, previous, event) {
 }
 
 export function validateLifecycleState(state) {
-  exactKeys(state, ["schema", "governance_version", "status", "campaign_id", "campaign_version", "logical_lineage_id", "stage", "root", "active_writer", "holds", "platform_pool", "checkpoint_ledger", "finalizer", "acceptance", "runtime", "roster", "successor_orientation", "living_ledger", "transition_journal", "state_sha256"], "campaign lifecycle state");
+  exactKeys(state, ["schema", "governance_version", "status", "campaign_id", "campaign_version", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "stage", "root", "active_writer", "holds", "platform_pool", "checkpoint_ledger", "finalizer", "acceptance", "runtime", "roster", "successor_orientation", "living_ledger", "transition_journal", "state_sha256"], "campaign lifecycle state");
   assert(state.schema === "governance.campaign_lifecycle_state.v1" && state.governance_version === "2.1rc", "campaign lifecycle identity is invalid");
   assert(state.status === "PREPARED_NOT_ACTIVATED", "campaign lifecycle must remain prepared and inactive");
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) requireIdentifier(state[field], `campaign ${field}`);
+  assert(Number.isSafeInteger(state.policy_epoch) && state.policy_epoch >= 1, "campaign policy epoch is invalid");
+  requireSha(state.policy_state_sha256, "campaign policy snapshot");
+  requireSha(state.acceptance_contract_sha256, "campaign acceptance contract");
   assert(LIFECYCLE_STAGES.includes(state.stage), "campaign lifecycle stage is invalid");
   validateTransitionJournal(state.transition_journal, state.stage);
   validateRoot(state.root);
@@ -756,6 +877,7 @@ export function validateLifecycleState(state) {
   validateAcceptance(state.acceptance);
   exactKeys(state.runtime, ["session_id", "state_identity", "deployed_identity", "rollback_identity"], "Runtime binding");
   for (const field of ["session_id", "state_identity", "deployed_identity", "rollback_identity"]) requireString(state.runtime[field], `Runtime ${field}`);
+  if (["ACCEPTED_LIVE_PENDING_CLOSURE", "ACCEPTED_LIVE_CLOSED"].includes(state.stage)) validateLiveTransitionEvidence(state);
   validateRoster(state.roster);
   assert(state.acceptance.auditor_session_id === state.roster.auditor.session_id || state.stage === "BUILDING" || state.stage === "TERMINAL_PROPOSED" || state.stage === "FIRST_PASS_REPAIR_REQUIRED" || state.stage === "TERMINAL_SETTLED" || state.stage === "FINALIZER_ACTIVE" || state.stage === "FINALIZER_COMPLETE" || state.stage === "DELTA_AUDIT",
     "Product acceptance Auditor is not the current campaign Auditor");
@@ -774,6 +896,8 @@ export function validateLifecycleState(state) {
     assert(state.acceptance.rc_ready === true, `${state.stage} lacks all three Product roots`);
     assert(state.acceptance.final_candidate_commit === state.root.commit && state.acceptance.final_candidate_tree === state.root.tree,
       `${state.stage} Product acceptance is not bound to the campaign root`);
+    assert(state.root.clean === true && state.root.pushed === true && state.root.commit === state.root.remote_commit && state.root.tree === state.root.remote_tree,
+      `${state.stage} requires a clean pushed remote-equal campaign root`);
   }
   if (state.stage === "ACCEPTED_LIVE_CLOSED") assert(state.active_writer === null && state.holds.length === 0, "accepted-live closure is incomplete");
   const body = structuredClone(state);
@@ -815,6 +939,9 @@ export function createLifecycleState(input) {
     campaign_id: input.campaign_id,
     campaign_version: input.campaign_version,
     logical_lineage_id: input.logical_lineage_id,
+    policy_epoch: input.policy_epoch,
+    policy_state_sha256: input.policy_state_sha256,
+    acceptance_contract_sha256: input.acceptance_contract_sha256,
     stage: input.stage ?? "BUILDING",
     root: structuredClone(input.root),
     active_writer: input.active_writer ?? null,
@@ -835,6 +962,7 @@ export function createLifecycleState(input) {
 
 function assertLineage(previous, next) {
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) assert(previous[field] === next[field], `lifecycle transition changed ${field}`);
+  for (const field of ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"]) assert(previous[field] === next[field], `lifecycle transition changed ${field} without a policy or acceptance rebind`);
 }
 
 export function applyLifecycleTransition(previous, next, event = {}) {
@@ -864,6 +992,19 @@ export function applyLifecycleTransition(previous, next, event = {}) {
     const finalCommit = candidate.finalizer.final_commit;
     const finalTree = candidate.finalizer.final_tree;
     assert(candidate.root.commit === finalCommit && candidate.root.tree === finalTree && candidate.root.remote_commit === finalCommit && candidate.root.remote_tree === finalTree, "campaign root did not adopt exact Finalizer output");
+  }
+  if (previous.stage === "DEPLOYMENT_CLEARED" && candidate.stage === "ACCEPTED_LIVE_PENDING_CLOSURE") {
+    exactKeys(event.payload, ["deployment_receipt"], "accepted-live deployment transition payload");
+    const receipt = validateDeploymentReceipt(event.payload.deployment_receipt);
+    assert(receipt.final_candidate_commit === candidate.root.commit && receipt.final_candidate_tree === candidate.root.tree, "deployment transition is not bound to the accepted root");
+    assert(candidate.runtime.deployed_identity === receipt.deployed_identity && candidate.runtime.rollback_identity === receipt.rollback_identity, "deployment transition Runtime identity mismatch");
+    assert(candidate.runtime.session_id === receipt.runtime_session_id, "deployment transition Runtime session mismatch");
+  }
+  if (previous.stage === "ACCEPTED_LIVE_PENDING_CLOSURE" && candidate.stage === "ACCEPTED_LIVE_CLOSED") {
+    exactKeys(event.payload, ["closure_receipt"], "accepted-live closure transition payload");
+    const receipt = validateClosureReceipt(event.payload.closure_receipt);
+    assert(receipt.final_candidate_commit === candidate.root.commit && receipt.final_candidate_tree === candidate.root.tree, "closure transition is not bound to the accepted root");
+    assert(candidate.runtime.deployed_identity === receipt.deployment_receipt.deployed_identity && candidate.runtime.rollback_identity === receipt.deployment_receipt.rollback_identity, "closure transition Runtime identity mismatch");
   }
   appendTransition(candidate, previous, event);
   const sealed = sealLifecycleState(candidate);

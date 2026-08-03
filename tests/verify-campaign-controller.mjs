@@ -18,7 +18,10 @@ import {
   completeFinalizer,
   createLifecycleState,
   clearHold,
+  compileAcceptedLiveClosureReceipt,
   decideHeartbeatAction,
+  compileDeploymentReceipt,
+  compileLiveAuditReceipt,
   enqueuePlatformRequest,
   handoffToFinalizer,
   lifecycleDigest,
@@ -96,6 +99,7 @@ function makeState(overrides = {}) {
   })];
   return createLifecycleState({
     campaign_id: "CAMPAIGN-1", campaign_version: "v1", logical_lineage_id: "LINE-1",
+    policy_epoch: 1, policy_state_sha256: SHA, acceptance_contract_sha256: SHA,
     stage: overrides.stage ?? "BUILDING", root: structuredClone(overrides.root ?? root), active_writer: overrides.active_writer === undefined ? {
       kind: "FEATURE_AGENT", role_id: "FEATURE_AGENT:ONE", session_id: "SESSION-FEATURE-1", lease_id: "LEASE-1", worktree_id: "root-worktree", writable_scope: "FEATURE_SCOPE",
       goal_sha256: SHA,
@@ -201,12 +205,36 @@ assert.equal(oriented.successor_orientation.status, "ORCHESTRATOR_ORIENTED_HELD"
 assert.equal(oriented.successor_orientation.auditor_binding, null);
 assert.equal(oriented.successor_orientation.product_writer_lease, "NONE");
 
-const pendingClosure = applyLifecycleTransition(oriented, {...oriented, stage: "ACCEPTED_LIVE_PENDING_CLOSURE"}, {
-  type: "DEPLOYMENT_CLEARED", at_utc: "2026-01-01T00:03:00.000Z", payload: {runtime: "CLEARED"},
+const deploymentReceipt = compileDeploymentReceipt({
+  finalCandidateCommit: oriented.root.commit,
+  finalCandidateTree: oriented.root.tree,
+  deployedIdentity: "deployment-final",
+  rollbackIdentity: "rollback-previous",
+  runtimeSessionId: oriented.runtime.session_id,
+  deployedAtUtc: "2026-01-01T00:03:00.000Z",
+});
+const pendingClosure = applyLifecycleTransition(oriented, {
+  ...oriented,
+  stage: "ACCEPTED_LIVE_PENDING_CLOSURE",
+  runtime: {...oriented.runtime, deployed_identity: deploymentReceipt.deployed_identity, rollback_identity: deploymentReceipt.rollback_identity},
+}, {
+  type: "DEPLOYMENT_CLEARED", at_utc: "2026-01-01T00:03:00.000Z", payload: {deployment_receipt: deploymentReceipt},
 });
 const liveDelta = recordLiveDelta(pendingClosure, "SESSION-NEXT-ORCHESTRATOR", SHA);
+const liveAuditReceipt = compileLiveAuditReceipt({
+  finalCandidateCommit: deploymentReceipt.final_candidate_commit,
+  finalCandidateTree: deploymentReceipt.final_candidate_tree,
+  deployedIdentity: deploymentReceipt.deployed_identity,
+  independentAuditIdentity: "SESSION-AUDITOR",
+  auditedAtUtc: "2026-01-01T00:04:00.000Z",
+});
+const closureReceipt = compileAcceptedLiveClosureReceipt({
+  deploymentReceipt,
+  liveAuditReceipt,
+  closedAtUtc: "2026-01-01T00:04:00.000Z",
+});
 const closed = applyLifecycleTransition(liveDelta, {...liveDelta, stage: "ACCEPTED_LIVE_CLOSED"}, {
-  type: "ACCEPTED_LIVE_CLOSURE", at_utc: "2026-01-01T00:04:00.000Z", payload: {closure: "VERIFIED"},
+  type: "ACCEPTED_LIVE_CLOSURE", at_utc: "2026-01-01T00:04:00.000Z", payload: {closure_receipt: closureReceipt},
 });
 const admitted = admitNextCampaign(closed, {
   finalCandidateSha256: SHA,
@@ -259,6 +287,40 @@ hostileCase("tampered lifecycle transition event", () => {
   tampered.state_sha256 = lifecycleDigest(tampered);
   validateCampaignState(tampered);
 });
+hostileCase("deployment closure without typed deployment receipt", () => applyLifecycleTransition(oriented, {
+  ...oriented,
+  stage: "ACCEPTED_LIVE_PENDING_CLOSURE",
+}, {
+  type: "DEPLOYMENT_CLEARED",
+  at_utc: "2026-01-01T00:03:00.000Z",
+  payload: {runtime: "CLEARED"},
+}));
+hostileCase("accepted-live closure without independent live audit", () => applyLifecycleTransition(liveDelta, {
+  ...liveDelta,
+  stage: "ACCEPTED_LIVE_CLOSED",
+}, {
+  type: "ACCEPTED_LIVE_CLOSURE",
+  at_utc: "2026-01-01T00:04:00.000Z",
+  payload: {closure_receipt: deploymentReceipt},
+}));
+hostileCase("Runtime self-audit", () => applyLifecycleTransition(liveDelta, {
+  ...liveDelta,
+  stage: "ACCEPTED_LIVE_CLOSED",
+}, {
+  type: "ACCEPTED_LIVE_CLOSURE",
+  at_utc: "2026-01-01T00:04:00.000Z",
+  payload: {closure_receipt: compileAcceptedLiveClosureReceipt({
+    deploymentReceipt,
+    liveAuditReceipt: compileLiveAuditReceipt({
+      finalCandidateCommit: deploymentReceipt.final_candidate_commit,
+      finalCandidateTree: deploymentReceipt.final_candidate_tree,
+      deployedIdentity: deploymentReceipt.deployed_identity,
+      independentAuditIdentity: "SESSION-RUNTIME",
+      auditedAtUtc: "2026-01-01T00:04:00.000Z",
+    }),
+    closedAtUtc: "2026-01-01T00:04:00.000Z",
+  })},
+}));
 hostileCase("speculative successor auditor", () => orientNextCampaignOrchestrator(accepted, {
   ...identity("INDEPENDENT_AUDITOR", "SESSION-EARLY-AUDITOR", true),
 }, SHA));

@@ -48,6 +48,12 @@ import {
   validateProjectImportPlan,
   verifySourcePreservation,
 } from "./project-import.mjs";
+import {
+  compileGlobalPolicyState,
+  getPolicyValue,
+  policyStateDigest,
+  validatePolicyState,
+} from "./global-policy-state.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
@@ -708,6 +714,30 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     protected_boundaries: normalizedAnswers["project.protected_boundaries"],
     discovery_digest_sha256: canonicalDigest(discovery),
   };
+  const modelEconomics = normalizedAnswers["project.model_economics"] ?? {};
+  const modelClass = modelEconomics.profile === "ECO_CONTINUOUS" || modelEconomics.profile === "ECO" || modelEconomics.profile === "ECONOMICAL"
+    ? "ECONOMICAL"
+    : modelEconomics.profile === "PERFORMANCE" ? "PERFORMANCE" : "BALANCED";
+  const globalPolicyState = compileGlobalPolicyState({
+    projectId: context.project_name,
+    values: {
+      "PROJECT.NORTH_STAR": JSON.stringify(normalizedAnswers["project.north_star"]),
+      "PROJECT.PROVING_WORKFLOW": JSON.stringify(normalizedAnswers["project.first_workflow"]),
+      "MODEL.PROFILE": modelClass,
+    },
+    nowUtc: "1970-01-01T00:00:00.000Z",
+  });
+  const ownerReviewPolicy = {
+    schema: "agentos.owner_review_policy.v1",
+    policy_epoch: globalPolicyState.policy_epoch,
+    policy_state_sha256: policyStateDigest(globalPolicyState),
+    user_review_mode: getPolicyValue(globalPolicyState, "REVIEW.USER_REVIEW_MODE"),
+    transport: getPolicyValue(globalPolicyState, "REVIEW.TRANSPORT"),
+    memory_posture: getPolicyValue(globalPolicyState, "REVIEW.MEMORY_POSTURE"),
+    voice_recommended: getPolicyValue(globalPolicyState, "REVIEW.VOICE_RECOMMENDED"),
+    model_selection: getPolicyValue(globalPolicyState, "REVIEW.MODEL_SELECTION"),
+    approval_route: getPolicyValue(globalPolicyState, "REVIEW.APPROVAL_ROUTE"),
+  };
   const output = {
     schema: "agentos.bootstrap_creation_plan.v1",
     governance_version: "2.1rc",
@@ -735,6 +765,8 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     normalization_policy: normalizationPolicy,
     project_import: projectImport,
     model_policy: deriveModelPolicy(normalizedAnswers["project.model_economics"]),
+    global_policy_state: globalPolicyState,
+    owner_review_policy: ownerReviewPolicy,
     persistent_runtime: deriveRuntime(normalizedAnswers["project.runtime"]),
     first_campaign: deriveFirstCampaign(discovery, normalizedAnswers),
     exact_creation_plan: {
@@ -759,6 +791,8 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       source_preservation_sha256: projectImport?.source_identity?.source_content_sha256 ?? null,
       project_life_contract_sha256: projectLifeContract.life_contract_sha256,
       boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
+      global_policy_state_sha256: globalPolicyState.policy_state_sha256,
+      owner_review_policy_sha256: canonicalDigest(ownerReviewPolicy),
       expected_writes: ["bootstrap.plan.json", "authority corpus roots", "typed project context", "delivery policy and probe bindings", "Bootstrap receipts", "source-preservation artifacts when PROJECT_IMPORT applies"],
       side_effects: ["CREATE_OR_UPDATE_TYPED_PROJECT_CONTEXT", "CREATE_AUTHORITY_CORPUS", "CREATE_DESIGN_AUTHORITY", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
       prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
@@ -822,6 +856,12 @@ export function validateBootstrapPlan(plan) {
   assert(plan.delivery_policy.delivery_target.target_sha256 === plan.delivery_target.target_sha256, "delivery policy and plan delivery target differ");
   requireRecord(plan.boundary_contract, "boundary contract");
   validateBoundaryContract(plan.boundary_contract);
+  requireRecord(plan.global_policy_state, "global policy state");
+  validatePolicyState(plan.global_policy_state);
+  assert(plan.global_policy_state.policy_state_sha256 === plan.exact_creation_plan.global_policy_state_sha256, "Bootstrap global policy digest is not bound to the exact plan");
+  requireRecord(plan.owner_review_policy, "owner review policy");
+  assert(plan.owner_review_policy.policy_state_sha256 === plan.global_policy_state.policy_state_sha256, "Bootstrap owner review policy is not bound to global policy state");
+  assert(canonicalDigest(plan.owner_review_policy) === plan.exact_creation_plan.owner_review_policy_sha256, "Bootstrap owner review policy digest is not bound to the exact plan");
   requireRecord(plan.delivery_probe_plan, "delivery probe plan");
   validateDeliveryProbePlan(plan.delivery_probe_plan);
   assert(plan.delivery_probe_plan.policy_sha256 === plan.delivery_policy.policy_sha256, "delivery probe plan is not bound to delivery policy");
@@ -959,7 +999,7 @@ function contextFromPlan(plan) {
       bootstrap_output_groups: [
         "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "PROVING_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
         "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
-        "AUTHORITY_CORPUS", "MODEL_POLICY", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
+        "AUTHORITY_CORPUS", "MODEL_POLICY", "GLOBAL_POLICY_STATE", "OWNER_REVIEW", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
         "EXACT_CREATION_PLAN",
       ],
       project_life_contract_sha256: plan.project_life_contract.life_contract_sha256,

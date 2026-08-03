@@ -45,7 +45,7 @@ Audits are read-only and concurrent with useful building. Applicability is deriv
 - `SECURITY`
 - `CODE_QUALITY_HYGIENE`
 
-Unrelated disciplines remain deferred. Security and hygiene do not become mandatory merely because a campaign is substantial. At terminalization every applicable discipline settles exactly once as `REQUIRED`, `DETERMINISTIC_ONLY`, or `NOT_APPLICABLE_WITH_PROOF`. Deterministic proof has no worker session; required reports use distinct fresh read-only workers.
+Unrelated disciplines remain deferred. Security and hygiene do not become mandatory merely because a campaign is substantial. At terminalization every applicable discipline settles exactly once as `REQUIRED`, `DETERMINISTIC_ONLY`, or `NOT_APPLICABLE_WITH_PROOF`. Deterministic proof has no worker session; required reports use distinct fresh read-only workers. Every report uses the fixed `INDEPENDENT_DOMAIN_WIDE` scope basis and records that its search is independent of builder scope.
 
 Findings are content-addressed and question-bound. Catastrophic, wrong-direction, foundational, and critical safety/security findings return to the first-pass owner immediately. Material findings are consolidated by causal root. A noncritical hygiene finding is nonblocking unless it names a concrete consequence in one of the three Product roots.
 
@@ -68,6 +68,10 @@ rates and estimates alone remain `UNPROVEN`. At least three accepted task-class
 observations are required before the cascade becomes the default for that task
 class.
 
+Adjacent improvements are recorded as `ADJACENT_IMPROVEMENT` entries in the
+append-only next-campaign ledger. They do not silently expand the current
+implementation and do not reopen a completed acceptance contract.
+
 ## Delta proof
 
 Delta audit includes previously failed questions, directly touched questions, dependent descendants, and one small end-to-end smoke set. Unaffected accepted evidence is reused only when question-tree version, relevant hashes, build identity, and environment identity still match. A repair invalidates only dependent answers; it does not restart the whole question corpus or create a serial approval queue.
@@ -76,4 +80,4 @@ One targeted delta repair and one supervisor-selected reframe per causal root ar
 
 ## Closure
 
-The final candidate is admissible only when the exact cascade state binds `FUNCTION_REQUIREMENTS_PASS`, `DESIGN_BIBLE_PASS`, `SECURITY_PASS`, deployment and rollback identities, independent live audit, and the closure receipt. Runtime is the sole merge/deployment executor. Until all closure facts are reconciled, the campaign is `ACCEPTED_LIVE_PENDING_CLOSURE`.
+The final candidate is admissible only when the exact cascade state binds `FUNCTION_REQUIREMENTS_PASS`, `DESIGN_BIBLE_PASS`, `SECURITY_PASS`, the final candidate commit/tree, the Product-acceptance receipt, typed deployment and rollback receipt digests, a live-audit receipt from the independent campaign Auditor, and the closure receipt. Runtime is the sole merge/deployment executor. Until all closure facts are reconciled, the campaign is `ACCEPTED_LIVE_PENDING_CLOSURE`.

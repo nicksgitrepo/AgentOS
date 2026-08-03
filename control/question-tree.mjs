@@ -552,6 +552,16 @@ export function compileEvidencePlan(tree, cacheEntries, current) {
 export function invalidateQuestions(tree, acceptedResults, change) {
   validateQuestionTree(tree);
   assert(Array.isArray(acceptedResults), "accepted results are required");
+  const questionIds = new Set(tree.questions.map((question) => question.question_id));
+  const acceptedIds = new Set();
+  for (const result of acceptedResults) {
+    assert(result && typeof result === "object" && !Array.isArray(result), "accepted question result must be an object");
+    requireString(result.question_id, "accepted question result ID");
+    assert(questionIds.has(result.question_id), `accepted question result references an unknown question: ${result.question_id}`);
+    assert(!acceptedIds.has(result.question_id), "accepted question results contain duplicates");
+    acceptedIds.add(result.question_id);
+    assert(ANSWER_VALUES.includes(result.answer) && LIFECYCLE_STATES.includes(result.lifecycle), "accepted question result answer or lifecycle is invalid");
+  }
   sortedUniqueStrings(change?.conditions, "invalidation conditions");
   requireString(change.change_id, "invalidation change ID");
   const invalid = new Set(tree.questions.filter((question) => question.invalidation_conditions.some((condition) => change.conditions.includes(condition))).map((question) => question.question_id));
@@ -567,5 +577,38 @@ export function invalidateQuestions(tree, acceptedResults, change) {
   }
   return acceptedResults.map((result) => invalid.has(result.question_id)
     ? {...result, lifecycle: "INVALIDATED", invalidated_by: change.change_id}
+    : result);
+}
+
+export function invalidateQuestionsFromPolicyAmendment(tree, acceptedResults, amendment) {
+  validateQuestionTree(tree);
+  assert(Array.isArray(acceptedResults), "accepted results are required");
+  const questionIds = new Set(tree.questions.map((question) => question.question_id));
+  const acceptedIds = new Set();
+  for (const result of acceptedResults) {
+    assert(result && typeof result === "object" && !Array.isArray(result), "accepted question result must be an object");
+    requireString(result.question_id, "accepted question result ID");
+    assert(questionIds.has(result.question_id), `accepted question result references an unknown question: ${result.question_id}`);
+    assert(!acceptedIds.has(result.question_id), "accepted question results contain duplicates");
+    acceptedIds.add(result.question_id);
+    assert(ANSWER_VALUES.includes(result.answer) && LIFECYCLE_STATES.includes(result.lifecycle), "accepted question result answer or lifecycle is invalid");
+  }
+  requireString(amendment?.amendment_id, "policy amendment ID");
+  requireSha(amendment?.amendment_sha256, "policy amendment digest");
+  sortedUniqueStrings(amendment.invalidated_question_ids, "policy amendment invalidated question IDs", {allowEmpty: true});
+  for (const questionId of amendment.invalidated_question_ids) assert(questionIds.has(questionId), `policy amendment references an unknown question: ${questionId}`);
+  const invalid = new Set(amendment.invalidated_question_ids);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const question of tree.questions) {
+      if (question.parent_question_id && invalid.has(question.parent_question_id) && !invalid.has(question.question_id)) {
+        invalid.add(question.question_id);
+        grew = true;
+      }
+    }
+  }
+  return acceptedResults.map((result) => invalid.has(result.question_id)
+    ? {...result, lifecycle: "INVALIDATED", invalidated_by: amendment.amendment_id, invalidated_by_sha256: amendment.amendment_sha256}
     : result);
 }

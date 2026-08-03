@@ -23,6 +23,8 @@
       "BOUNDARY_CONTRACT",
       "AUTHORITY_CORPUS",
       "MODEL_POLICY",
+      "GLOBAL_POLICY_STATE",
+      "OWNER_REVIEW",
       "PERSISTENT_RUNTIME",
       "FIRST_CAMPAIGN",
       "EXACT_CREATION_PLAN"
@@ -182,6 +184,25 @@
       "outputs",
       "material_gaps",
       "coverage_sha256"
+    ],
+    "global_policy_state": [
+      "schema",
+      "policy_epoch",
+      "policy_state_sha256",
+      "variables",
+      "dependency_graph",
+      "amendment_ledger"
+    ],
+    "owner_review_policy": [
+      "schema",
+      "policy_epoch",
+      "policy_state_sha256",
+      "user_review_mode",
+      "transport",
+      "memory_posture",
+      "voice_recommended",
+      "model_selection",
+      "approval_route"
     ],
     "protected_boundaries": [
       "safety_and_law",

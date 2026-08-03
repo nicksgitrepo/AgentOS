@@ -68,6 +68,8 @@
     "BOUNDARY_CONTRACT",
     "AUTHORITY_CORPUS",
     "MODEL_POLICY",
+    "GLOBAL_POLICY_STATE",
+    "OWNER_REVIEW",
     "PERSISTENT_RUNTIME",
     "FIRST_CAMPAIGN",
     "EXACT_CREATION_PLAN"
@@ -94,6 +96,8 @@
     {"output_id": "BOUNDARY_CONTRACT", "category": "TRUST", "question_ids": []},
     {"output_id": "DELIVERY_PROBES", "category": "DELIVERY", "question_ids": []},
     {"output_id": "MODEL_POLICY", "category": "CREATION", "question_ids": ["project.model_economics"]},
+    {"output_id": "GLOBAL_POLICY_STATE", "category": "TRUST", "question_ids": []},
+    {"output_id": "OWNER_REVIEW", "category": "INTENT", "question_ids": ["review.user_review_mode"]},
     {"output_id": "PERSISTENT_RUNTIME", "category": "RUNTIME", "question_ids": ["project.runtime"]},
     {"output_id": "FUNCTION_REQUIREMENTS", "category": "PRODUCT_PROOF", "question_ids": []},
     {"output_id": "FIRST_CAMPAIGN", "category": "CAMPAIGN", "question_ids": []},

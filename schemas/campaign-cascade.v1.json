@@ -86,6 +86,11 @@
       "campaign_id",
       "campaign_version",
       "logical_lineage_id",
+      "policy_epoch",
+      "policy_snapshot_sha256",
+      "acceptance_contract",
+      "acceptance_contract_sha256",
+      "scope_justification",
       "worktree_id",
       "branch",
       "commit",
@@ -106,12 +111,20 @@
     ],
     "auditor_binding": "Every immutable checkpoint binds the exact current campaign Auditor session. Audit plans, reports, rolling audits, and final acceptance must preserve that identity."
   },
+  "state_binding": {
+    "required_fields": ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"],
+    "rule": "The cascade state and its first-pass candidate carry the same policy and complete acceptance identity. A same-campaign cascade transition cannot change either identity without a new admitted campaign."
+  },
   "audit_plan": {
     "required_fields": [
       "schema",
       "candidate_id",
       "candidate_commit",
       "candidate_tree",
+      "policy_epoch",
+      "policy_state_sha256",
+      "acceptance_contract_sha256",
+      "required_question_ids",
       "auditor_session_id",
       "terminal",
       "disciplines",
@@ -138,6 +151,27 @@
       "rule": "Each required or deterministic-only discipline has exactly one content-addressed report binding; terminal REQUIRED reports use distinct on-demand worker sessions, deterministic reports use no worker, and every finding references a listed report digest."
     }
   },
+  "audit_report": {
+    "required_fields": [
+      "schema",
+      "report_id",
+      "discipline",
+      "candidate_id",
+      "candidate_commit",
+      "candidate_tree",
+      "auditor_session_id",
+      "worker_session_id",
+      "read_only",
+      "reviewed_question_ids",
+      "failed_question_ids",
+      "findings",
+      "coverage",
+      "evidence_sha256",
+      "settled",
+      "report_sha256"
+    ],
+    "coverage_rule": "Every report records inspected surfaces, excluded paths, honest unavailable behavior, and the fixed INDEPENDENT_DOMAIN_WIDE scope basis. Auditor coverage is read-only and may not be narrowed to the builder's declared scope. A terminal REQUIRED discipline must bind a nonempty applicable question slice."
+  },
   "finalizer": {
     "role": "CAMPAIGN_FINALIZER",
     "statuses": ["ACTIVE", "COMPLETE"],
@@ -158,6 +192,11 @@
       "greenfield rewrite or unrelated scope"
     ],
     "change_rule": "Every finalizer change must close a failed question, close a material finding, repair its shared causal root, remove a duplicate truth source, simplify with a concrete reliability/security/performance/maintenance consequence, or preserve behavior required for one of those outcomes.",
+    "change_justification": {
+      "required_fields": ["basis", "references", "summary", "owner_authorization_sha256", "changed_paths"],
+      "bases": ["REQUIRED_ACCEPTANCE", "HARD_RULE_OR_MATERIAL_RISK", "OBSERVED_BLOCKER", "OWNER_AUTHORIZATION"],
+      "rule": "Every changed path must be listed in the justification. A nonempty changed-path set must cite an acceptance contract, hard rule or present risk, observed blocker, or explicit owner authorization. Empty finding scope is not a justification."
+    },
     "loop_rule": "One finalization pass and at most one targeted delta-repair pass are the normal limit. The same causal failure receives one materially different route or one supervisor-selected reframe; equivalent retries stop.",
     "custody": "The Feature Agent releases Product custody before Finalizer admission. Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded handoff.",
     "rewrite_assessment": {
@@ -256,7 +295,9 @@
       "deployed_identity",
       "rollback_identity",
       "independent_audit_identity",
-      "closure_receipt_sha256"
+      "closure_receipt_sha256",
+      "deployment_receipt_sha256",
+      "independent_audit_receipt_sha256"
     ],
     "rule": "Accepted-live closure is invalid unless the exact finalizer candidate, exact three-root Product acceptance proof, deployment, rollback, independent audit, and closure receipt all bind to the same cascade state."
   },
@@ -265,6 +306,12 @@
     "required_fields": ["candidate_id", "candidate_commit", "candidate_tree", "terminal", "audit_plan_sha256", "audit_reconciliation_sha256", "finding_status", "status"],
     "rolling_audit": "Earlier checkpoint reports remain bound while later first-pass checkpoints advance. Only the terminal proposed checkpoint must settle every applicable discipline.",
     "repair": "Immediate first-pass repair creates a new candidate identity on the same logical lineage; terminal bytes are never rewritten in place."
+  },
+  "next_campaign_ledger": {
+    "required_fields": ["entry_id", "category", "summary", "references", "status", "created_at_utc", "entry_sha256"],
+    "category": "ADJACENT_IMPROVEMENT",
+    "status": "DEFERRED_NEXT_CAMPAIGN",
+    "rule": "Every adjacent improvement discovered during the campaign is recorded here instead of being silently implemented. The ledger is append-only across cascade transitions and does not reopen a completed acceptance contract."
   },
   "rolling_audits": {
     "required_fields": ["candidate_id", "candidate_commit", "candidate_tree", "audit_plan", "audit_reconciliation", "rolling_audit_sha256"],

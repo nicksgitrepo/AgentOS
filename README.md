@@ -37,6 +37,7 @@ classified as a rebuild rather than quietly called a repair.
 - **Local, managed site, VPS, cloud, or hybrid:** Bootstrap recommends the smallest capable delivery route from the project’s actual needs.
 - **Eco, standard, or performance:** choose the operating condition; the cheapest model is rejected when it is unlikely to finish reliably.
 - **Optional continuity:** import a predecessor handoff, preserve a legacy authority corpus, or recover context from selected sessions or files.
+- **User Review Campaign:** talk through the next campaign in ordinary Chat or Voice before AgentOS spends agentic usage; the Orchestrator returns one exact candidate and model recommendation for approval.
 
 ## Why use it?
 
@@ -54,6 +55,22 @@ The tradeoffs are honest: this is still an unactivated release candidate; deep n
 ## Project protection
 
 AgentOS does not silently spend money, publish source, expose secrets, delete accepted work, change repository ownership, or deploy production. Imported documents and predecessor agents are evidence, not authority. A real hold pauses only the affected outcome while unrelated safe work continues.
+
+## Policy and owner review
+
+AgentOS keeps campaign behavior in a content-addressed Global Policy State. The
+owner can change declared variables such as campaign mode, role model class,
+North Star, proving workflow, review transport, memory posture, and heartbeat
+preference. Dependencies, invalidated question slices, safe effective
+boundaries, and required rotations are calculated and retained in an amendment
+ledger. Constitutional rules cannot be weakened by a project setting.
+
+For substantial or ambiguous work, the recommended route is a `USER REVIEW CAMPAIGN`.
+It is advisory until the Orchestrator reconciles the return and the
+owner gives authenticated exact approval over one digest. Chat memory supplies
+continuity only; it never overrides the current packet. A review packet cannot
+write Product, spawn Product agents, authorize spending, merge, deploy, or
+delete.
 
 ## Start-here and verification
 

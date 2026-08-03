@@ -14,6 +14,7 @@ import {
   compileRepairPacket,
   evaluateQuestion,
   invalidateQuestions,
+  invalidateQuestionsFromPolicyAmendment,
   sha256,
   validateQuestionTree,
 } from "../control/question-tree.mjs";
@@ -198,6 +199,12 @@ assert.deepEqual(evidencePlan.acquire_question_ids, ["DB-SURFACE-001", "SEC-ACCE
 const invalidated = invalidateQuestions(tree, allYes.map((result) => ({question_id: result.question_id, answer: result.answer, lifecycle: result.lifecycle})), {change_id: "CHANGE-001", conditions: ["DB-SURFACE-001:CHANGE"]});
 assert.equal(invalidated.find((result) => result.question_id === "DB-SURFACE-001").lifecycle, "INVALIDATED");
 assert.equal(invalidated.find((result) => result.question_id === "FR-ENTRY-001").lifecycle, "VERIFIED");
+const policyInvalidated = invalidateQuestionsFromPolicyAmendment(tree, allYes.map((result) => ({question_id: result.question_id, answer: result.answer, lifecycle: result.lifecycle})), {
+  amendment_id: "AMENDMENT-001",
+  amendment_sha256: DIGEST,
+  invalidated_question_ids: ["DB-SURFACE-001"],
+});
+assert.equal(policyInvalidated.find((result) => result.question_id === "DB-SURFACE-001").invalidated_by, "AMENDMENT-001");
 
 const freeze = compileCriticalFreeze({
   schema: "governance.critical_surface_finding.v1",
@@ -246,5 +253,19 @@ rejects("tampered Auditor attestation", () => verifyProductAcceptanceProof(
   {...bridged.proof, auditor_attestation: {...bridged.proof.auditor_attestation, auditor_session_id: "AUDITOR-002"}},
   "CAMPAIGN-001",
 ));
+rejects("policy amendment invalidates an unknown question", () => invalidateQuestionsFromPolicyAmendment(tree, allYes, {
+  amendment_id: "AMENDMENT-UNKNOWN",
+  amendment_sha256: DIGEST,
+  invalidated_question_ids: ["FR-NOT-IN-TREE"],
+}));
+rejects("policy amendment without a digest", () => invalidateQuestionsFromPolicyAmendment(tree, allYes, {
+  amendment_id: "AMENDMENT-NO-DIGEST",
+  invalidated_question_ids: [],
+}));
+rejects("invalidation result from outside the tree", () => invalidateQuestionsFromPolicyAmendment(tree, [{question_id: "FR-OUTSIDE", answer: "YES", lifecycle: "VERIFIED"}], {
+  amendment_id: "AMENDMENT-OUTSIDE-RESULT",
+  amendment_sha256: DIGEST,
+  invalidated_question_ids: [],
+}));
 
 console.log(`PASS Governance 2.1rc question tree (${hostile} hostile cases)`);

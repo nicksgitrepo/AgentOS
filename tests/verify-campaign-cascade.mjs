@@ -21,10 +21,29 @@ import {
   validateRollingAudit,
 } from "../control/campaign-cascade.mjs";
 import {compileFinalizerRewriteAssessment} from "../control/cascade-economics.mjs";
+import {compileCampaignAcceptanceContract} from "../control/campaign-acceptance-contract.mjs";
 
 const SHA = "a".repeat(64);
+const acceptanceContract = compileCampaignAcceptanceContract({
+  campaignId: "CAMPAIGN-1",
+  campaignVersion: "v1",
+  logicalLineageId: "LINE-1",
+  policyEpoch: 1,
+  policyStateSha256: SHA,
+  questionTreeSha256: SHA,
+  requiredQuestionIdsByRoot: {FUNCTION_REQUIREMENTS: ["FR-ENTRY"], DESIGN_BIBLE: ["DB-SURFACE"], SECURITY: ["SEC-ACCESS"]},
+  requiredQuestionIds: ["FR-ENTRY", "DB-SURFACE", "SEC-ACCESS"],
+  operationalRequirements: ["clean pushed checkpoint"],
+  evidenceRequirements: ["independent three-root acceptance receipt"],
+  nonGoals: ["unrelated polish"],
+  hardRules: ["no secrets", "independent acceptance"],
+  stopCondition: "All required Function Requirements, Design Bible, and Security questions pass.",
+  ownerIntentSha256: SHA,
+});
 const candidateInput = {
   candidate_id: "CANDIDATE-1", campaign_id: "CAMPAIGN-1", campaign_version: "v1", logical_lineage_id: "LINE-1",
+  policy_epoch: 1, policy_snapshot_sha256: SHA, acceptance_contract: acceptanceContract, acceptance_contract_sha256: acceptanceContract.contract_sha256,
+  scope_justification: {basis: "REQUIRED_ACCEPTANCE", references: ["FR-ENTRY"], summary: "The checkpoint implements the accepted proving slice.", owner_authorization_sha256: null, changed_paths: ["docs/guide.md"]},
   worktree_id: "ROOT-WORKTREE", branch: "campaign/main", commit: "commit-1", tree: "tree-1", remote_commit: "commit-1", remote_tree: "tree-1",
   clean: true, pushed: true, changed_paths: ["docs/guide.md"], changed_surfaces: ["DOCS"], owner_role_id: "FEATURE_AGENT:ONE",
   auditor_session_id: "AUDITOR-1",
@@ -93,13 +112,14 @@ const directAuditorReports = fullPlan.disciplines
     discipline: item.discipline,
     auditorSessionId: "AUDITOR-1",
     workerSessionId: null,
+    reviewedQuestionIds: item.disposition === "REQUIRED" ? [item.discipline === "FUNCTIONALITY" ? "FR-ENTRY" : item.discipline === "DESIGN_UI_SHELL_NAVIGATION" ? "DB-SURFACE" : item.discipline === "SECURITY" ? "SEC-ACCESS" : "FR-RESULT"] : [],
     evidenceSha256: SHA,
   }));
 const directAuditorReconciliation = reconcileAuditFindings({plan: fullPlan, reports: directAuditorReports});
 assert(directAuditorReconciliation.reports.every((report) => report.worker_session_id === null));
 const rollingAudit = compileRollingAudit({candidate, auditPlan: docPlan});
 validateRollingAudit(rollingAudit);
-const finalizer = openCampaignFinalizer({candidate: fullCandidate, auditPlan: fullPlan, reconciliation, modelPolicyDigestSha256: SHA, sessionId: "FINALIZER-1", worktreeId: "FINALIZER-WORKTREE", branch: "campaign/finalizer", correctionBatchSha256: SHA});
+const finalizer = openCampaignFinalizer({candidate: fullCandidate, auditPlan: fullPlan, reconciliation, modelPolicyDigestSha256: SHA, sessionId: "FINALIZER-1", worktreeId: "FINALIZER-WORKTREE", branch: "campaign/finalizer", changeJustification: {basis: "REQUIRED_ACCEPTANCE", references: ["FR-ENTRY"], summary: "Finalizer prepares proof for the accepted function slice.", owner_authorization_sha256: null, changed_paths: ["src/feature.ts"]}, correctionBatchSha256: SHA});
 const rewriteAssessment = compileFinalizerRewriteAssessment({
   relevant_hunks_replaced: 1, relevant_hunks_total: 10, files_substantially_rewritten: 0,
   public_contracts_reinterpreted: false, architecture_changed: false, owner_intent_recompiled: false,
@@ -135,11 +155,48 @@ hostileCase("deterministic worker", () => compileAuditReport({plan: deterministi
 hostileCase("wrong campaign Auditor", () => compileAuditReport({plan: fullPlan, discipline: "FUNCTIONALITY", auditorSessionId: "AUDITOR-WRONG", workerSessionId: null, evidenceSha256: SHA}));
 hostileCase("changed candidate reused", () => compileDeltaAudit({baselineCommit: "same", baselineTree: "same", candidateCommit: "same", candidateTree: "same", allQuestionIds: ["FR-ENTRY"], smokeQuestionIds: ["FR-ENTRY"], evidenceReuseSha256: SHA}));
 hostileCase("second report", () => reconcileAuditFindings({plan: fullPlan, reports: [...reports, reports[0]]}));
+hostileCase("applicable discipline suppressed", () => compileAuditPlan({
+  candidate: fullCandidate,
+  auditorSessionId: "AUDITOR-1",
+  terminal: true,
+  applicability: {SECURITY: false},
+}));
+hostileCase("audit question outside complete contract", () => compileAuditReport({
+  plan: fullPlan,
+  discipline: "FUNCTIONALITY",
+  auditorSessionId: "AUDITOR-1",
+  workerSessionId: null,
+  reviewedQuestionIds: ["FR-OUTSIDE"],
+  evidenceSha256: SHA,
+}));
+hostileCase("material finding hidden as closed", () => compileAuditReport({
+  plan: fullPlan,
+  discipline: "FUNCTIONALITY",
+  auditorSessionId: "AUDITOR-1",
+  workerSessionId: null,
+  reviewedQuestionIds: ["FR-ENTRY"],
+  evidenceSha256: SHA,
+  findings: [{finding_id: "F-HIDDEN", discipline: "FUNCTIONALITY", severity: "MATERIAL", causal_root_id: "ROOT-HIDDEN", route: "CLOSED_NO_FINDING", question_ids: ["FR-ENTRY"], evidence_sha256: SHA, summary: "hidden material defect"}],
+}));
 hostileCase("rolling audit of active terminal candidate", () => compileRollingAudit({
   candidate: compileFirstPassCandidate({...candidateInput, candidate_id: "CANDIDATE-TERMINAL", terminal: true}),
   auditPlan: docPlan,
 }));
 hostileCase("pushed dirty first-pass checkpoint", () => compileFirstPassCandidate({...candidateInput, clean: false, pushed: true}));
+hostileCase("terminal first-pass checkpoint is not actually clean and pushed", () => compileFirstPassCandidate({...candidateInput, terminal: true, clean: false, pushed: false, quality_floor: {...candidateInput.quality_floor, clean_checkpoint: true, pushed_checkpoint: true}}));
+hostileCase("quality floor invents clean and pushed state", () => compileFirstPassCandidate({...candidateInput, quality_floor: {...candidateInput.quality_floor, clean_checkpoint: false}}));
+hostileCase("first-pass path omitted from justification", () => compileFirstPassCandidate({
+  ...candidateInput,
+  scope_justification: {...candidateInput.scope_justification, changed_paths: ["docs/other.md"]},
+}));
+hostileCase("Finalizer path omitted from justification", () => completeCampaignFinalizer({
+  finalizer,
+  candidate: fullCandidate,
+  finalCommit: "commit-mismatch",
+  finalTree: "tree-mismatch",
+  changedPaths: ["src/other.ts"],
+  rewriteAssessment,
+}));
 hostileCase("rebuild-required Finalizer closed as repair", () => completeCampaignFinalizer({
   finalizer,
   candidate: fullCandidate,

@@ -1,0 +1,116 @@
+{
+  "schema": "agentos.global_policy_state.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Durable, content-addressed policy variables that can be amended independently while preserving dependency impact, safe effective boundaries, and append-only history.",
+  "state": {
+    "required_fields": [
+      "schema",
+      "governance_version",
+      "status",
+      "project_id",
+      "policy_epoch",
+      "parent_policy_state_sha256",
+      "amendment_head_sha256",
+      "variables",
+      "dependency_graph",
+      "amendment_ledger",
+      "created_at_utc",
+      "updated_at_utc",
+      "policy_state_sha256"
+    ],
+    "rule": "Every state is self-digesting. A later state names its exact parent and amendment head; no snapshot overwrites history. The portable kernel remains prepared and inactive until explicit owner activation."
+  },
+  "variable_classes": {
+    "CONSTITUTIONAL": "Cannot be weakened by a project amendment; a governance-version change is required.",
+    "OWNER_MUTABLE": "May be changed by an owner-authorized amendment at its declared effective boundary.",
+    "DERIVED": "Computed from other variables and never directly amended.",
+    "CAMPAIGN_LOCAL": "Scoped to one admitted campaign and not a durable project preference.",
+    "EPHEMERAL": "Runtime observation only; it is not authority."
+  },
+  "change_gate": {
+    "questions": [
+      "Is the variable declared and owner-mutable?",
+      "Is the requested value valid and materially different?",
+      "What dependent variables, acceptance roots, agents, and proof must be recompiled?",
+      "At which safe boundary may the value become effective?",
+      "Has the exact amendment received authenticated owner approval?"
+    ],
+    "answers": [
+      "NO_CHANGE",
+      "COMPILE_AMENDMENT",
+      "PENDING_BOUNDARY",
+      "OWNER_ONLY"
+    ],
+    "rule": "A user request may be recorded at any time, but no derived controller silently changes until the amendment is content-addressed, approved, and effective."
+  },
+  "effective_boundaries": [
+    "IMMEDIATE_SAFE",
+    "NEXT_ASSIGNMENT",
+    "NEXT_CHECKPOINT",
+    "NEXT_CAMPAIGN",
+    "GOVERNANCE_VERSION",
+    "OWNER_AUTHENTICATED_APPROVAL"
+  ],
+  "declared_variables": [
+    "ACCEPTANCE.ROOTS",
+    "ACCEPTANCE.INDEPENDENT_AUDIT",
+    "ACCEPTANCE.NO_SELF_ACCEPTANCE",
+    "RECOVERY.INTERNAL_CHECKPOINTS",
+    "SAFETY.SECRET_RETENTION",
+    "CAMPAIGN.MODE",
+    "PROJECT.NORTH_STAR",
+    "PROJECT.PROVING_WORKFLOW",
+    "PROJECT.ASSURANCE_CLASS",
+    "MODEL.PROFILE",
+    "MODEL.ROLE.CAMPAIGN_ORCHESTRATOR",
+    "MODEL.ROLE.INDEPENDENT_AUDITOR",
+    "MODEL.ROLE.FEATURE_AGENT",
+    "MODEL.ROLE.PLATFORM_AGENT",
+    "MODEL.ROLE.AUDIT_WORKER",
+    "MODEL.ROLE.CAMPAIGN_FINALIZER",
+    "MODEL.ROLE.RUNTIME",
+    "REVIEW.USER_REVIEW_MODE",
+    "REVIEW.TRANSPORT",
+    "REVIEW.MEMORY_POSTURE",
+    "REVIEW.VOICE_RECOMMENDED",
+    "REVIEW.MODEL_SELECTION",
+    "REVIEW.APPROVAL_ROUTE",
+    "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES"
+  ],
+  "amendment": {
+    "controller": "control/global-policy-state.mjs",
+    "required_fields": [
+      "schema",
+      "amendment_id",
+      "project_id",
+      "requested_by",
+      "authority",
+      "reason",
+      "requested_at_utc",
+      "parent_policy_state_sha256",
+      "changes",
+      "classification",
+      "effective_boundary",
+      "affected_variable_ids",
+      "invalidation_roots",
+      "invalidated_question_ids",
+      "rotations_required",
+      "recompile_targets",
+      "rollback_state_sha256",
+      "approval_state",
+      "amendment_sha256"
+    ],
+    "approval_rule": "A conversational confirmation, a shared link, or an unverified Markdown statement cannot apply an amendment. Application requires an exact amendment digest and authenticated owner approval.",
+    "stale_rule": "An amendment whose parent policy digest is not the current state is rejected and must be rebased into a new candidate.",
+    "constitutional_rule": "Acceptance roots, independent audit, no self-acceptance, internal recovery, and secret prohibition cannot be disabled through project policy."
+  },
+  "portability": {
+    "model_values_are_classes": true,
+    "provider_identity_forbidden": true,
+    "credentials_forbidden": true,
+    "project_context_is_external": true,
+    "deterministic_sorting_required": true
+  }
+}

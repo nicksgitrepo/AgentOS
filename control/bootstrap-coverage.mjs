@@ -44,6 +44,8 @@ export const BOOTSTRAP_REQUIRED_OUTPUT_GROUPS = Object.freeze([
   "BOUNDARY_CONTRACT",
   "AUTHORITY_CORPUS",
   "MODEL_POLICY",
+  "GLOBAL_POLICY_STATE",
+  "OWNER_REVIEW",
   "PERSISTENT_RUNTIME",
   "FIRST_CAMPAIGN",
   "EXACT_CREATION_PLAN",
@@ -328,6 +330,21 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     owner_decision_required: true,
     unavailable_behavior: "FAIL_CLOSED_WITHOUT_AN_ELIGIBLE_MODEL_OR_FEASIBLE_BUDGET",
     reopen_triggers: ["completion_floor_changed", "budget_or_duty_cycle_changed", "model_capability_changed"],
+  }),
+  definition("GLOBAL_POLICY_STATE", "TRUST", {
+    dependency_output_ids: ["MODEL_POLICY", "BOUNDARY_CONTRACT", "PROJECT_LIFE_CONTRACT"],
+    compiled_field_paths: ["global_policy_state", "policy_epoch", "policy_state_sha256"],
+    safe_default: "COMPILE_DECLARED_POLICY_VARIABLES_WITH_RECOMMENDED_DEFAULTS_AND_PREPARED_STATUS",
+    unavailable_behavior: "DO_NOT_CHANGE_CONTROLLER_BEHAVIOR_WITH_SCATTERED_RUNTIME_FLAGS_OR_UNBOUND_POLICY",
+    reopen_triggers: ["policy_variable_changed", "policy_dependency_changed", "governance_version_changed"],
+  }),
+  definition("OWNER_REVIEW", "INTENT", {
+    question_ids: ["review.user_review_mode"],
+    dependency_output_ids: ["GLOBAL_POLICY_STATE", "FIRST_CAMPAIGN"],
+    compiled_field_paths: ["owner_review_policy", "user_review_mode"],
+    safe_default: "RECOMMENDED_FOR_SUBSTANTIAL_OR_AMBIGUOUS_CAMPAIGNS;_PRIVATE_MARKDOWN;PROJECT_ONLY_MEMORY",
+    unavailable_behavior: "CONTINUE_ONLY_WHEN_THE_CAMPAIGN_IS_DETERMINISTIC_AND_NO_ROUTE_OR_INTENT_CHANGE_NEEDS_OWNER_REVIEW",
+    reopen_triggers: ["review_mode_changed", "review_transport_changed", "memory_posture_changed", "campaign_intent_changed"],
   }),
   definition("PERSISTENT_RUNTIME", "RUNTIME", {
     question_ids: ["project.runtime"],
@@ -770,6 +787,24 @@ function compileRows(discovery, answers) {
 
   const modelDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "MODEL_POLICY");
   rows.push(ownerRow(modelDefinition, "project.model_economics", answers, "MODEL_POLICY_OWNER_INPUT"));
+
+  const policyDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "GLOBAL_POLICY_STATE");
+  rows.push(rowBase(policyDefinition, {
+    source_kind: "DERIVED_OUTPUT",
+    source_refs: ["MODEL_POLICY", "BOUNDARY_CONTRACT", "PROJECT_LIFE_CONTRACT"],
+    status: "DERIVED",
+    blocking: false,
+    reason: "DECLARED_CONTENT_ADDRESSED_POLICY_VARIABLES_DERIVED_WITH_DEPENDENCY_IMPACT",
+  }));
+
+  const reviewDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "OWNER_REVIEW");
+  rows.push(rowBase(reviewDefinition, {
+    source_kind: "PORTABLE_DEFAULT",
+    source_refs: ["REVIEW.USER_REVIEW_MODE", "PRIVATE_MARKDOWN", "PROJECT_ONLY_MEMORY"],
+    status: "DEFAULTED",
+    blocking: false,
+    reason: "OWNER_REVIEW_RECOMMENDED_FOR_SUBSTANTIAL_OR_AMBIGUOUS_CAMPAIGNS",
+  }));
 
   const runtimeDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "PERSISTENT_RUNTIME");
   rows.push(rowBase(runtimeDefinition, runtimeBound(answers["project.runtime"])

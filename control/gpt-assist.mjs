@@ -712,3 +712,20 @@ export function compileGptAssistNextCampaignHandoff(response, packet, handoff) {
   };
   return {...body, handoff_sha256: digest(body)};
 }
+
+// The legacy GPT_ASSIST status exchange remains available for campaign status.
+// The owner-facing planning route is canonicalized in its own controller so it
+// cannot accidentally inherit status-packet authority or successor semantics.
+export {
+  applyOwnerReviewApproval,
+  cancelOwnerReview,
+  compileOwnerApproval,
+  compileOwnerApprovalPacket,
+  compileOwnerReviewCandidate,
+  compileOwnerReviewPacket,
+  parseOwnerReviewReturnMarkdown,
+  renderOwnerReviewMarkdown,
+  validateOwnerApprovalPacket,
+  validateOwnerReviewCandidate,
+  validateOwnerReviewPacket,
+} from "./owner-review.mjs";

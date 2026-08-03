@@ -84,6 +84,18 @@
     "terminal_rule": "Only the terminal proposed checkpoint must settle every applicable discipline before finalization. Intermediate checkpoints may retain pending or deferred discipline entries.",
     "repair_rule": "An immediate first-pass repair creates a new checkpoint identity on the same logical lineage. A terminal checkpoint is never rewritten in place."
   },
+  "state_binding": {
+    "required_fields": ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"],
+    "rule": "Every lifecycle snapshot binds the exact policy epoch and complete acceptance contract used to admit its campaign. A same-campaign transition cannot change either identity without a new admitted campaign state."
+  },
+  "live_closure": {
+    "transition_receipts": [
+      "governance.live_deployment_receipt.v1",
+      "governance.independent_live_audit_receipt.v1",
+      "governance.accepted_live_closure_receipt.v1"
+    ],
+    "rule": "ACCEPTED_LIVE_PENDING_CLOSURE requires a content-addressed deployment receipt bound to the exact accepted root, Runtime session, deployed identity, and rollback identity. ACCEPTED_LIVE_CLOSED additionally requires a content-addressed live-audit receipt whose identity is the current independent campaign Auditor (and is not Runtime), plus a closure receipt bound to the same deployed candidate. A nonempty identity string alone is not closure proof."
+  },
   "finalizer": {
     "handoff": "TERMINAL_FIRST_PASS -> FIRST_PASS_TO_FINALIZER_HANDOFF -> FINALIZER_ACTIVE",
     "writer_rule": "The Feature Agent releases Product custody before the Finalizer receives a fresh exclusive writer lease. The Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded FINALIZER_TO_AUDITOR_HANDOFF.",

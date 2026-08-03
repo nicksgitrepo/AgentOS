@@ -1,0 +1,22 @@
+{
+  "schema": "governance.campaign_state_bridge.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Bridge the lifecycle and cascade state machines so a campaign cannot advance through contradictory policy, acceptance, or lineage snapshots.",
+  "required_fields": [
+    "schema",
+    "campaign_id",
+    "campaign_version",
+    "logical_lineage_id",
+    "policy_epoch",
+    "policy_state_sha256",
+    "acceptance_contract_sha256",
+    "lifecycle",
+    "cascade",
+    "serialization_rule",
+    "bridge_sha256"
+  ],
+  "serialization_rule": "ONE_SERIALIZED_STATE_TRANSITION",
+  "rule": "Both controllers must name the same campaign lineage, policy epoch/snapshot, complete acceptance contract, and exact state identities. A transition that changes one side without the other fails closed."
+}

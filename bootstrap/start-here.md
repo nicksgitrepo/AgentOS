@@ -60,6 +60,12 @@ The compact catalog covers:
   Policy;
 - a source-preservation archive, manifest, index, receipt, and exclusion note
   before any import build or refactor.
+- a content-addressed Global Policy State with independently amendable
+  variables, dependency invalidation, safe effective boundaries, and an
+  append-only amendment ledger;
+- a recommended `USER REVIEW CAMPAIGN` route for substantial or ambiguous work,
+  with project-only memory, optional Voice, host-catalog model recommendations,
+  and authenticated exact approval over one candidate digest.
 
 The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
 
@@ -73,6 +79,10 @@ The compiled plan must contain `PROJECT_DEFINITION`, `PROJECT_IMPORT`,
 `AUTHORITY_BOUNDARIES`, `BOUNDARY_CONTRACT`, `AUTHORITY_CORPUS`,
 `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and
 `EXACT_CREATION_PLAN`.
+
+It also records `GLOBAL_POLICY_STATE` and `OWNER_REVIEW` so later mode,
+model-class, North Star, delivery, or review changes can be compiled as exact
+amendments instead of silently changing scattered controller constants.
 
 It also carries the content-addressed `bootstrap_coverage`, project life,
 delivery target, and boundary contract results. The exact plan, typed Project
@@ -141,6 +151,21 @@ The current Auditor may clear a release for deployment and prepare a next-campai
 ## Optional GPT_ASSIST
 
 GPT_ASSIST is only a Markdown exchange. The Auditor binds one exact status packet and parses one canonical JSON response. ChatGPT may help with listed questions, research, scenarios, and comparisons, but cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+
+## User Review Campaign
+
+The recommended owner-facing planning route is `USER REVIEW CAMPAIGN`, machine
+type `PRE_CAMPAIGN_OWNER_REVIEW`. The Orchestrator mints a read-only packet from
+the current project, source commit/tree, policy epoch, and next-campaign
+candidate. Ordinary Chat or Voice walks the owner through six compact steps:
+orientation, intent, desired changes, campaign shape, model plan, and review
+summary. The return is one JSON payload and remains advisory.
+
+The Orchestrator classifies the return, compiles policy and context deltas,
+recompiles affected Function/Design/Security questions, and shows one exact
+approval packet. A conversational “yes” or shared link cannot activate it.
+Only authenticated exact approval admits the candidate; the review controller
+itself never writes Product or spawns Product agents.
 
 ## Activation boundary
 

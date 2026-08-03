@@ -25,6 +25,10 @@
     "INVALIDATED"
   ],
   "separation_rule": "The answer describes the observed result. The lifecycle describes whether that result is current and usable. Invalidation changes lifecycle without rewriting the historical answer.",
+  "policy_amendment_invalidation": {
+    "controller_function": "invalidateQuestionsFromPolicyAmendment",
+    "rule": "A content-addressed policy amendment supplies the exact invalidated question IDs. Only those questions and their dependent children become INVALIDATED; unrelated verified answers are reused."
+  },
   "root_statuses": [
     "PASS",
     "OPEN_REPAIR",

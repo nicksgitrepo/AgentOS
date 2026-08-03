@@ -81,6 +81,13 @@
     "pre_admission_rule": "The Auditor may produce only an orientation packet and next-campaign candidate. No successor Auditor, Feature Agent, Platform Agent, writer lease, or campaign-start disposition exists before accepted-live closure and explicit lifecycle admission.",
     "standard_article_promotion": "FORBIDDEN_BEFORE_ACCEPTED_LIVE_CLOSURE"
   },
+  "owner_review_campaign": {
+    "controller": "control/owner-review.mjs",
+    "contract": "schemas/owner-review.v1.json",
+    "type": "PRE_CAMPAIGN_OWNER_REVIEW",
+    "recommended_use": "Use ordinary Chat or Voice for substantial, ambiguous, UX-heavy, migration, architecture, or project-course planning before creating a Product campaign.",
+    "rule": "The owner review return is advisory. The Orchestrator compiles the exact candidate and policy/context deltas; only authenticated exact approval over the exact digest can admit the next campaign."
+  },
   "campaign_file": {
     "path": "06-gpt-assist-project-status.md",
     "conditional": "ONLY_WHEN_GPT_ASSIST_IS_ENABLED",

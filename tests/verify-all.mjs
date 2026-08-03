@@ -141,6 +141,10 @@ assert(deliveryProbes.prohibited.includes("deployment"));
 const kernel = JSON.parse(read("schemas/kernel.v1.json"));
 assert.equal(kernel.bootstrap.delivery_policy.controller, "control/delivery-policy.mjs");
 assert.equal(kernel.bootstrap.delivery_policy.probe_contract, "schemas/delivery-probes.v1.json");
+assert.equal(kernel.global_policy.controller, "control/global-policy-state.mjs");
+assert.equal(kernel.global_policy.contract, "schemas/global-policy-state.v1.json");
+assert.equal(kernel.owner_review.controller, "control/owner-review.mjs");
+assert.equal(kernel.owner_review.review_type, "PRE_CAMPAIGN_OWNER_REVIEW");
 
 const runtime = JSON.parse(read("schemas/browser-runtime-lifecycle.v1.json"));
 assert.equal(runtime.agent_lifecycle.persistent_roles.join(","), "RUNTIME");
@@ -174,6 +178,9 @@ for (const relativePath of [
   "tests/verify-dynamic-bootstrap.mjs",
   "tests/verify-browser-runtime-lifecycle.mjs",
   "tests/verify-gpt-assist.mjs",
+  "tests/verify-global-policy-state.mjs",
+  "tests/verify-owner-review.mjs",
+  "tests/verify-campaign-state-bridge.mjs",
   "tests/verify-portability.mjs",
 ]) run(relativePath);
 

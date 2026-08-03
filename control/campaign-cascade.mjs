@@ -2,6 +2,7 @@
 
 import crypto from "node:crypto";
 import {validateFinalizerRewriteAssessment} from "./cascade-economics.mjs";
+import {validateAcceptanceBinding} from "./campaign-acceptance-contract.mjs";
 
 export const CASCADE_STAGES = Object.freeze([
   "FIRST_PASS_BUILDING",
@@ -150,6 +151,26 @@ const QUALITY_KEYS = [
   "pushed_checkpoint", "incomplete_work", "evidence_sha256",
 ];
 
+const JUSTIFICATION_BASES = new Set([
+  "REQUIRED_ACCEPTANCE",
+  "HARD_RULE_OR_MATERIAL_RISK",
+  "OBSERVED_BLOCKER",
+  "OWNER_AUTHORIZATION",
+]);
+const JUSTIFICATION_KEYS = ["basis", "references", "summary", "owner_authorization_sha256", "changed_paths"];
+
+function validateImplementationJustification(justification, label) {
+  exactKeys(justification, JUSTIFICATION_KEYS, label);
+  assert(JUSTIFICATION_BASES.has(justification.basis), `${label} basis is invalid`);
+  sortedUniqueStrings(justification.references, `${label} references`);
+  requireString(justification.summary, `${label} summary`);
+  validatePathList(justification.changed_paths, `${label} changed paths`);
+  if (justification.owner_authorization_sha256 !== null) requireSha(justification.owner_authorization_sha256, `${label} owner authorization`);
+  if (justification.basis === "OWNER_AUTHORIZATION") {
+    requireSha(justification.owner_authorization_sha256, `${label} owner authorization`);
+  }
+}
+
 function validateQualityFloor(floor, terminal = false) {
   exactKeys(floor, QUALITY_KEYS, "first-pass quality floor");
   for (const field of QUALITY_KEYS.slice(0, 7)) assert(typeof floor[field] === "boolean", `quality floor ${field} must be boolean`);
@@ -163,6 +184,7 @@ function validateQualityFloor(floor, terminal = false) {
 
 const CHECKPOINT_KEYS = [
   "schema", "candidate_id", "campaign_id", "campaign_version", "logical_lineage_id",
+  "policy_epoch", "policy_snapshot_sha256", "acceptance_contract", "acceptance_contract_sha256", "scope_justification",
   "worktree_id", "branch", "commit", "tree", "remote_commit", "remote_tree",
   "clean", "pushed", "changed_paths", "changed_surfaces", "owner_role_id", "auditor_session_id",
   "checkpoint_kind", "terminal", "quality_floor", "created_at_utc", "candidate_sha256",
@@ -175,6 +197,12 @@ export function validateFirstPassCandidate(candidate) {
     requireString(candidate[field], `first-pass candidate ${field}`);
   }
   assert(CASCADE_ID.test(candidate.candidate_id), "first-pass candidate ID is invalid");
+  assert(Number.isSafeInteger(candidate.policy_epoch) && candidate.policy_epoch >= 1, "first-pass policy epoch is invalid");
+  requireSha(candidate.policy_snapshot_sha256, "first-pass policy snapshot");
+  requireSha(candidate.acceptance_contract_sha256, "first-pass acceptance contract digest");
+  validateAcceptanceBinding({candidate, contract: candidate.acceptance_contract});
+  validateImplementationJustification(candidate.scope_justification, "first-pass implementation scope");
+  assert(canonicalJson(candidate.scope_justification.changed_paths) === canonicalJson(candidate.changed_paths), "first-pass changed paths differ from justification");
   assert(IDENTIFIER.test(candidate.worktree_id), "first-pass worktree ID is invalid");
   assert(["SUBSTANTIAL_CHECKPOINT", "TERMINAL_FIRST_PASS"].includes(candidate.checkpoint_kind), "first-pass checkpoint kind is invalid");
   assert(typeof candidate.terminal === "boolean", "first-pass terminal flag is invalid");
@@ -184,6 +212,9 @@ export function validateFirstPassCandidate(candidate) {
     assert(candidate.clean === true, "pushed first-pass candidate is not clean");
     assert(candidate.commit === candidate.remote_commit && candidate.tree === candidate.remote_tree, "pushed first-pass candidate is not remote-equal");
   }
+  assert(candidate.quality_floor.clean_checkpoint === candidate.clean, "quality floor clean checkpoint disagrees with the actual checkpoint");
+  assert(candidate.quality_floor.pushed_checkpoint === candidate.pushed, "quality floor pushed checkpoint disagrees with the actual checkpoint");
+  if (candidate.terminal) assert(candidate.clean === true && candidate.pushed === true, "terminal first-pass candidate must be clean and pushed");
   validatePathList(candidate.changed_paths, "first-pass changed paths");
   sortedUniqueStrings(candidate.changed_surfaces, "first-pass changed surfaces");
   validateQualityFloor(candidate.quality_floor, candidate.terminal);
@@ -233,13 +264,17 @@ export function deriveApplicableDisciplines(changedSurfaces) {
   return result;
 }
 
-const AUDIT_PLAN_KEYS = ["schema", "candidate_id", "candidate_commit", "candidate_tree", "auditor_session_id", "terminal", "disciplines", "plan_sha256"];
+const AUDIT_PLAN_KEYS = ["schema", "candidate_id", "candidate_commit", "candidate_tree", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "required_question_ids", "auditor_session_id", "terminal", "disciplines", "plan_sha256"];
 const AUDIT_PLAN_DISCIPLINE_KEYS = ["discipline", "disposition", "applicability_evidence_sha256"];
 
 export function validateAuditPlan(plan) {
   exactKeys(plan, AUDIT_PLAN_KEYS, "cascade audit plan");
   assert(plan.schema === "governance.cascade_audit_plan.v1", "cascade audit plan schema mismatch");
   for (const field of ["candidate_id", "candidate_commit", "candidate_tree"]) requireString(plan[field], `audit plan ${field}`);
+  assert(Number.isSafeInteger(plan.policy_epoch) && plan.policy_epoch >= 1, "audit plan policy epoch is invalid");
+  requireSha(plan.policy_state_sha256, "audit plan policy state");
+  requireSha(plan.acceptance_contract_sha256, "audit plan acceptance contract");
+  validateQuestionIds(plan.required_question_ids, "audit plan required question IDs");
   requireString(plan.auditor_session_id, "audit plan Auditor session");
   assert(typeof plan.terminal === "boolean", "audit plan terminal flag is invalid");
   assert(Array.isArray(plan.disciplines) && plan.disciplines.length === AUDIT_DISCIPLINES.length, "audit plan must contain all four disciplines");
@@ -267,6 +302,7 @@ export function compileAuditPlan({candidate, auditorSessionId, terminal = false,
   const disciplines = AUDIT_DISCIPLINES.map((discipline) => {
     const explicitlySet = applicability[discipline];
     if (explicitlySet !== undefined) assert(typeof explicitlySet === "boolean" || explicitlySet === "DETERMINISTIC_ONLY", `audit applicability for ${discipline} must be boolean or DETERMINISTIC_ONLY`);
+    if (explicitlySet === false) assert(!applicable.has(discipline), `${discipline} is applicable from the changed surfaces and cannot be suppressed`);
     const deterministic = deterministicOnly.includes(discipline) || explicitlySet === "DETERMINISTIC_ONLY";
     const isApplicable = explicitlySet === undefined ? applicable.has(discipline) : explicitlySet === true || explicitlySet === "DETERMINISTIC_ONLY";
     assert(typeof isApplicable === "boolean", `audit applicability for ${discipline} must be boolean or DETERMINISTIC_ONLY`);
@@ -287,6 +323,10 @@ export function compileAuditPlan({candidate, auditorSessionId, terminal = false,
     candidate_id: candidate.candidate_id,
     candidate_commit: candidate.commit,
     candidate_tree: candidate.tree,
+    policy_epoch: candidate.policy_epoch,
+    policy_state_sha256: candidate.policy_snapshot_sha256,
+    acceptance_contract_sha256: candidate.acceptance_contract_sha256,
+    required_question_ids: [...candidate.acceptance_contract.required_question_ids],
     auditor_session_id: auditorSessionId,
     terminal,
     disciplines,
@@ -299,7 +339,21 @@ export function compileAuditPlan({candidate, auditorSessionId, terminal = false,
 }
 
 const FINDING_KEYS = ["finding_id", "discipline", "severity", "causal_root_id", "route", "question_ids", "evidence_sha256", "summary"];
-const AUDIT_REPORT_KEYS = ["schema", "report_id", "discipline", "candidate_id", "candidate_commit", "candidate_tree", "auditor_session_id", "worker_session_id", "read_only", "reviewed_question_ids", "failed_question_ids", "findings", "evidence_sha256", "settled", "report_sha256"];
+const COVERAGE_KEYS = ["inspected_surfaces", "excluded_paths", "unavailable_behavior", "scope_basis", "independent_of_builder_scope", "coverage_sha256"];
+const AUDIT_REPORT_KEYS = ["schema", "report_id", "discipline", "candidate_id", "candidate_commit", "candidate_tree", "auditor_session_id", "worker_session_id", "read_only", "reviewed_question_ids", "failed_question_ids", "findings", "coverage", "evidence_sha256", "settled", "report_sha256"];
+
+function validateAuditCoverage(coverage, label = "audit coverage") {
+  exactKeys(coverage, COVERAGE_KEYS, label);
+  sortedUniqueStrings(coverage.inspected_surfaces, `${label} inspected surfaces`);
+  validatePathList(coverage.excluded_paths, `${label} excluded paths`, {allowEmpty: true});
+  requireString(coverage.unavailable_behavior, `${label} unavailable behavior`);
+  assert(coverage.scope_basis === "INDEPENDENT_DOMAIN_WIDE", `${label} scope is constrained by builder interpretation`);
+  assert(coverage.independent_of_builder_scope === true, `${label} is not independent of builder scope`);
+  const body = structuredClone(coverage);
+  delete body.coverage_sha256;
+  requireSha(coverage.coverage_sha256, `${label} digest`);
+  assert(coverage.coverage_sha256 === cascadeDigest(body), `${label} digest is not content-addressed`);
+}
 
 function validateFinding(finding, expectedDiscipline, candidateCommit, candidateTree) {
   exactKeys(finding, FINDING_KEYS, "cascade finding");
@@ -316,6 +370,7 @@ function validateFinding(finding, expectedDiscipline, candidateCommit, candidate
   }
   if (finding.severity === "CATASTROPHIC") assert(["IMMEDIATE_FIRST_PASS_REPAIR", "OWNER_ONLY"].includes(finding.route), "catastrophic finding cannot wait for finalization");
   if (finding.severity === "OWNER_ONLY") assert(finding.route === "OWNER_ONLY", "owner-only finding must route to owner");
+  assert(finding.route !== "CLOSED_NO_FINDING", "a finding cannot be routed as closed-no-finding");
   if (finding.route === "FINALIZATION_QUEUE") assert(["NONCRITICAL", "MATERIAL"].includes(finding.severity), "only ordinary findings may enter finalization queue");
   assert(typeof candidateCommit === "string" && typeof candidateTree === "string", "finding candidate identity is unavailable");
 }
@@ -331,6 +386,7 @@ export function validateAuditReport(report, plan) {
   assert(report.candidate_id === plan.candidate_id && report.candidate_commit === plan.candidate_commit && report.candidate_tree === plan.candidate_tree, "audit report candidate identity mismatch");
   assert(report.auditor_session_id === plan.auditor_session_id, "audit report is bound to a different campaign Auditor");
   assert(report.worker_session_id === null || typeof report.worker_session_id === "string", "audit worker identity is invalid");
+  assert(report.worker_session_id === null || report.worker_session_id !== report.auditor_session_id, "audit worker cannot be the independent Auditor session");
   if (plan.terminal && planItem.disposition === "REQUIRED") {
     assert(report.worker_session_id === null || typeof report.worker_session_id === "string", "terminal audit worker identity is invalid");
   }
@@ -338,6 +394,11 @@ export function validateAuditReport(report, plan) {
   assert(report.read_only === true && report.settled === true, "audit report is not read-only and settled");
   validateQuestionIds(report.reviewed_question_ids, "audit reviewed question IDs", {allowEmpty: true});
   validateQuestionIds(report.failed_question_ids, "audit failed question IDs", {allowEmpty: true});
+  assert(report.reviewed_question_ids.every((id) => plan.required_question_ids.includes(id)), "audit report reviews a question outside the complete campaign contract");
+  assert(report.failed_question_ids.every((id) => plan.required_question_ids.includes(id)), "audit report fails a question outside the complete campaign contract");
+  if (plan.terminal && planItem.disposition === "REQUIRED") {
+    assert(report.reviewed_question_ids.length > 0, "terminal required audit lacks a reviewed question slice");
+  }
   assert(report.failed_question_ids.every((id) => report.reviewed_question_ids.includes(id)), "failed audit question is not reviewed");
   assert(Array.isArray(report.findings), "audit report findings are required");
   const findingIds = new Set();
@@ -346,13 +407,14 @@ export function validateAuditReport(report, plan) {
     assert(!findingIds.has(finding.finding_id), "audit finding IDs duplicate");
     findingIds.add(finding.finding_id);
   }
+  validateAuditCoverage(report.coverage);
   const body = structuredClone(report);
   delete body.report_sha256;
   assert(report.report_sha256 === cascadeDigest(body), "audit report digest is not content-addressed");
   return report;
 }
 
-export function compileAuditReport({plan, discipline, auditorSessionId, workerSessionId = null, reviewedQuestionIds = [], failedQuestionIds = [], findings = [], evidenceSha256}) {
+export function compileAuditReport({plan, discipline, auditorSessionId, workerSessionId = null, reviewedQuestionIds = [], failedQuestionIds = [], findings = [], coverage = null, evidenceSha256}) {
   validateAuditPlan(plan);
   requireString(auditorSessionId, "Auditor session");
   requireSha(evidenceSha256, "audit evidence");
@@ -369,10 +431,21 @@ export function compileAuditReport({plan, discipline, auditorSessionId, workerSe
     reviewed_question_ids: validateQuestionIds(reviewedQuestionIds, "reviewed question IDs", {allowEmpty: true}),
     failed_question_ids: validateQuestionIds(failedQuestionIds, "failed question IDs", {allowEmpty: true}),
     findings: structuredClone(findings),
+    coverage: coverage === null ? {
+      inspected_surfaces: [discipline],
+      excluded_paths: [],
+      unavailable_behavior: reviewedQuestionIds.length > 0 ? "The mapped question slice was inspected." : "No mapped question slice was supplied; deterministic or direct discipline coverage is recorded.",
+      scope_basis: "INDEPENDENT_DOMAIN_WIDE",
+      independent_of_builder_scope: true,
+      coverage_sha256: null,
+    } : structuredClone(coverage),
     evidence_sha256: evidenceSha256,
     settled: true,
     report_sha256: "",
   };
+  const coverageBody = structuredClone(report.coverage);
+  delete coverageBody.coverage_sha256;
+  report.coverage.coverage_sha256 = cascadeDigest(coverageBody);
   const body = structuredClone(report);
   delete body.report_sha256;
   report.report_sha256 = cascadeDigest(body);
@@ -522,7 +595,7 @@ const FINALIZER_KEYS = [
   "schema", "role", "session_id", "campaign_id", "campaign_version", "logical_lineage_id",
   "source_candidate_id", "source_commit", "source_tree", "source_worktree_id", "source_branch",
   "worktree_id", "branch", "base_commit", "base_tree", "fresh_worktree", "exclusive_writer",
-  "scope_finding_ids", "correction_batch_sha256", "model_policy_digest_sha256",
+  "scope_finding_ids", "change_justification", "correction_batch_sha256", "model_policy_digest_sha256",
   "intent_authority", "acceptance_authority", "deployment_authority", "self_acceptance",
   "status", "final_commit", "final_tree", "final_clean", "final_pushed", "changed_paths",
   "reframe_count", "repair_pass_count", "rewrite_assessment", "finalizer_sha256",
@@ -537,6 +610,11 @@ export function validateFinalizer(finalizer, candidate, {allowActive = true} = {
   assert(finalizer.worktree_id !== candidate.worktree_id && finalizer.fresh_worktree === true && finalizer.exclusive_writer === true, "Campaign Finalizer must have a fresh exclusive worktree");
   for (const field of ["intent_authority", "acceptance_authority", "deployment_authority", "self_acceptance"]) assert(finalizer[field] === false, `Campaign Finalizer cannot own ${field}`);
   sortedUniqueStrings(finalizer.scope_finding_ids, "Campaign Finalizer finding scope", {allowEmpty: true});
+  validateImplementationJustification(finalizer.change_justification, "Campaign Finalizer change scope");
+  if (finalizer.change_justification.basis === "OBSERVED_BLOCKER") {
+    assert(finalizer.scope_finding_ids.length > 0, "Finalizer blocker justification lacks finding scope");
+    assert(finalizer.scope_finding_ids.every((findingId) => finalizer.change_justification.references.includes(findingId)), "Finalizer finding scope is not justified");
+  }
   validatePathList(finalizer.changed_paths, "Campaign Finalizer changed paths", {allowEmpty: true});
   assert(Number.isSafeInteger(finalizer.reframe_count) && finalizer.reframe_count >= 0 && finalizer.reframe_count <= 1, "Campaign Finalizer reframe count exceeds one");
   assert(Number.isSafeInteger(finalizer.repair_pass_count) && finalizer.repair_pass_count >= 0 && finalizer.repair_pass_count <= 1, "Campaign Finalizer repair pass count exceeds one");
@@ -552,6 +630,7 @@ export function validateFinalizer(finalizer, candidate, {allowActive = true} = {
     assert(finalizer.rewrite_assessment !== null, "completed Campaign Finalizer lacks a rewrite assessment");
     validateFinalizerRewriteAssessment(finalizer.rewrite_assessment);
     assert(finalizer.rewrite_assessment.classification === "TARGETED_REPAIR", "Campaign Finalizer cannot close a rebuild-required pass as a repair");
+    assert(canonicalJson(finalizer.change_justification.changed_paths) === canonicalJson(finalizer.changed_paths), "completed Finalizer changed paths differ from justification");
   } else {
     assert(finalizer.final_commit === null && finalizer.final_tree === null && finalizer.final_clean === null && finalizer.final_pushed === null, "incomplete Campaign Finalizer carries final candidate identity");
     assert(finalizer.rewrite_assessment === null, "incomplete Campaign Finalizer carries a rewrite assessment");
@@ -562,15 +641,22 @@ export function validateFinalizer(finalizer, candidate, {allowActive = true} = {
   return finalizer;
 }
 
-export function openCampaignFinalizer({candidate, auditPlan, reconciliation, modelPolicyDigestSha256, sessionId, worktreeId, branch, scopeFindingIds = [], correctionBatchSha256}) {
+export function openCampaignFinalizer({candidate, auditPlan, reconciliation, modelPolicyDigestSha256, sessionId, worktreeId, branch, scopeFindingIds = [], changeJustification, correctionBatchSha256}) {
   validateFirstPassCandidate(candidate);
   assert(candidate.terminal === true, "Campaign Finalizer requires a terminal first-pass candidate");
   validateAuditPlan(auditPlan);
   assert(auditPlan.candidate_id === candidate.candidate_id && auditPlan.candidate_commit === candidate.commit && auditPlan.candidate_tree === candidate.tree, "Campaign Finalizer audit plan candidate mismatch");
+  assert(auditPlan.policy_epoch === candidate.policy_epoch && auditPlan.policy_state_sha256 === candidate.policy_snapshot_sha256 && auditPlan.acceptance_contract_sha256 === candidate.acceptance_contract_sha256, "Campaign Finalizer audit plan policy or acceptance mismatch");
+  assert(canonicalJson(auditPlan.required_question_ids) === canonicalJson(candidate.acceptance_contract.required_question_ids), "Campaign Finalizer audit plan question contract mismatch");
   validateAuditReconciliation(reconciliation, auditPlan);
   assert(reconciliation.immediate_first_pass_repairs.length === 0, "critical first-pass repairs must return to the first-pass owner before finalization");
   requireSha(modelPolicyDigestSha256, "Campaign Finalizer model policy");
   requireSha(correctionBatchSha256, "Campaign Finalizer correction batch");
+  validateImplementationJustification(changeJustification, "Campaign Finalizer change scope");
+  if (changeJustification.basis === "OBSERVED_BLOCKER") {
+    assert(scopeFindingIds.length > 0, "Finalizer blocker justification lacks finding scope");
+    assert(scopeFindingIds.every((findingId) => changeJustification.references.includes(findingId)), "Finalizer finding scope is not justified");
+  }
   const finalizer = {
     schema: "governance.campaign_finalizer.v1",
     role: "CAMPAIGN_FINALIZER",
@@ -590,6 +676,7 @@ export function openCampaignFinalizer({candidate, auditPlan, reconciliation, mod
     fresh_worktree: true,
     exclusive_writer: true,
     scope_finding_ids: sortedUniqueStrings(scopeFindingIds, "Campaign Finalizer finding scope", {allowEmpty: true}),
+    change_justification: structuredClone(changeJustification),
     correction_batch_sha256: correctionBatchSha256,
     model_policy_digest_sha256: modelPolicyDigestSha256,
     intent_authority: false,
@@ -633,6 +720,9 @@ export function completeCampaignFinalizer({finalizer, candidate, finalCommit, fi
     rewrite_assessment: structuredClone(rewriteAssessment),
     finalizer_sha256: "",
   };
+  if (completed.changed_paths.length > 0) {
+    assert(completed.change_justification.references.length > 0, "Finalizer changed paths lack a justification reference");
+  }
   const body = structuredClone(completed);
   delete body.finalizer_sha256;
   completed.finalizer_sha256 = cascadeDigest(body);
@@ -828,6 +918,8 @@ export function compileRollingAudit({candidate, auditPlan, auditReconciliation =
   assert(auditPlan.terminal === false && auditPlan.candidate_id === candidate.candidate_id
     && auditPlan.candidate_commit === candidate.commit && auditPlan.candidate_tree === candidate.tree,
   "rolling audit plan is not bound to its checkpoint");
+  assert(auditPlan.policy_epoch === candidate.policy_epoch && auditPlan.policy_state_sha256 === candidate.policy_snapshot_sha256 && auditPlan.acceptance_contract_sha256 === candidate.acceptance_contract_sha256, "rolling audit plan policy or acceptance mismatch");
+  assert(canonicalJson(auditPlan.required_question_ids) === canonicalJson(candidate.acceptance_contract.required_question_ids), "rolling audit plan question contract mismatch");
   assert(auditPlan.auditor_session_id === candidate.auditor_session_id, "rolling audit plan Auditor differs from its checkpoint Auditor");
   if (auditReconciliation !== null) {
     validateAuditReconciliation(auditReconciliation, auditPlan);
@@ -901,9 +993,29 @@ function validateCascadeAcceptance(acceptance) {
   if (acceptance.rc_ready) assert(acceptance.product_acceptance_sha256 !== "0".repeat(64), "cascade acceptance cannot use an empty Product proof digest");
 }
 
-const CASCADE_STATE_KEYS = ["schema", "governance_version", "campaign_id", "campaign_version", "mode", "stage", "logical_lineage_id", "first_pass", "checkpoint_ledger", "rolling_audits", "holds", "audit_plan", "audit_reconciliation", "finalizer", "delta_audit", "acceptance", "model_policy", "telemetry", "loop_control", "cascade_sha256"];
+const CASCADE_STATE_KEYS = ["schema", "governance_version", "campaign_id", "campaign_version", "mode", "stage", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "first_pass", "checkpoint_ledger", "rolling_audits", "holds", "audit_plan", "audit_reconciliation", "finalizer", "delta_audit", "acceptance", "model_policy", "telemetry", "loop_control", "next_campaign_ledger", "cascade_sha256"];
 const LOOP_KEYS = ["max_finalization_passes", "max_delta_repair_passes", "max_supervisor_reframes", "equivalent_retry_policy"];
 const TELEMETRY_KEYS = ["records", "evidence_reuse_count", "escaped_finding_count", "owner_interruptions"];
+const NEXT_CAMPAIGN_ENTRY_KEYS = ["entry_id", "category", "summary", "references", "status", "created_at_utc", "entry_sha256"];
+
+function validateNextCampaignLedger(ledger) {
+  assert(Array.isArray(ledger), "next-campaign ledger is required");
+  const ids = new Set();
+  for (const entry of ledger) {
+    exactKeys(entry, NEXT_CAMPAIGN_ENTRY_KEYS, "next-campaign ledger entry");
+    requireString(entry.entry_id, "next-campaign ledger entry ID");
+    assert(entry.category === "ADJACENT_IMPROVEMENT", "next-campaign ledger category is invalid");
+    requireString(entry.summary, "next-campaign ledger summary");
+    sortedUniqueStrings(entry.references, "next-campaign ledger references");
+    assert(entry.status === "DEFERRED_NEXT_CAMPAIGN", "next-campaign ledger status is invalid");
+    requireUtc(entry.created_at_utc, "next-campaign ledger time");
+    requireSha(entry.entry_sha256, "next-campaign ledger digest");
+    assert(!ids.has(entry.entry_id), "next-campaign ledger entry IDs duplicate");
+    ids.add(entry.entry_id);
+    assert(entry.entry_sha256 === cascadeDigest({...entry, entry_sha256: null}), "next-campaign ledger entry is not content-addressed");
+  }
+  return ledger;
+}
 
 function validateTelemetry(telemetry) {
   exactKeys(telemetry, TELEMETRY_KEYS, "cascade telemetry");
@@ -925,10 +1037,15 @@ export function validateCascadeState(state, options = {}) {
   exactKeys(state, CASCADE_STATE_KEYS, "campaign cascade state");
   assert(state.schema === "governance.campaign_cascade_state.v1" && state.governance_version === "2.1rc", "campaign cascade identity is invalid");
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) requireString(state[field], `cascade ${field}`);
+  assert(Number.isSafeInteger(state.policy_epoch) && state.policy_epoch >= 1, "cascade policy epoch is invalid");
+  requireSha(state.policy_state_sha256, "cascade policy snapshot");
+  requireSha(state.acceptance_contract_sha256, "cascade acceptance contract");
   assert(MODES.has(state.mode) && STAGES.has(state.stage), "campaign cascade mode or stage is invalid");
   validateFirstPassCandidate(state.first_pass);
   assert(state.first_pass.campaign_id === state.campaign_id && state.first_pass.campaign_version === state.campaign_version && state.first_pass.logical_lineage_id === state.logical_lineage_id, "cascade first-pass lineage mismatch");
+  assert(state.first_pass.policy_epoch === state.policy_epoch && state.first_pass.policy_snapshot_sha256 === state.policy_state_sha256 && state.first_pass.acceptance_contract_sha256 === state.acceptance_contract_sha256, "cascade policy or acceptance binding differs from first-pass candidate");
   validateCheckpointAuditLedger(state.checkpoint_ledger, state.first_pass);
+  validateNextCampaignLedger(state.next_campaign_ledger);
   assert(Array.isArray(state.rolling_audits), "rolling audits are required");
   let previousRollingCandidate = null;
   for (const entry of state.rolling_audits) {
@@ -949,6 +1066,10 @@ export function validateCascadeState(state, options = {}) {
   }
   if (state.audit_plan !== null) validateAuditPlan(state.audit_plan);
   if (state.audit_plan !== null) assert(state.audit_plan.auditor_session_id === state.first_pass.auditor_session_id, "cascade audit plan Auditor differs from the active checkpoint Auditor");
+  if (state.audit_plan !== null) {
+    assert(state.audit_plan.policy_epoch === state.policy_epoch && state.audit_plan.policy_state_sha256 === state.policy_state_sha256 && state.audit_plan.acceptance_contract_sha256 === state.acceptance_contract_sha256, "cascade audit plan policy or acceptance mismatch");
+    assert(canonicalJson(state.audit_plan.required_question_ids) === canonicalJson(state.first_pass.acceptance_contract.required_question_ids), "cascade audit plan question contract mismatch");
+  }
   if (state.audit_reconciliation !== null) {
     assert(state.audit_plan !== null, "cascade reconciliation lacks an audit plan");
     validateAuditReconciliation(state.audit_reconciliation, state.audit_plan);
@@ -1001,14 +1122,18 @@ export function validateCascadeState(state, options = {}) {
 
 export function validateAcceptedLiveCascadeBinding({cascade, acceptedLive, productAcceptance}) {
   validateCascadeState(cascade, {productAcceptance});
-  exactKeys(acceptedLive, ["status", "deployed_identity", "rollback_identity", "independent_audit_identity", "closure_receipt_sha256", "cascade_state_sha256"], "accepted-live cascade binding");
+  exactKeys(acceptedLive, ["status", "final_candidate_commit", "final_candidate_tree", "product_acceptance_sha256", "deployed_identity", "rollback_identity", "independent_audit_identity", "deployment_receipt_sha256", "independent_audit_receipt_sha256", "closure_receipt_sha256", "cascade_state_sha256"], "accepted-live cascade binding");
   assert(acceptedLive.status === "VERIFIED", "accepted-live cascade binding requires VERIFIED status");
-  for (const field of ["deployed_identity", "rollback_identity", "independent_audit_identity"]) requireString(acceptedLive[field], `accepted-live ${field}`);
-  for (const field of ["closure_receipt_sha256", "cascade_state_sha256"]) requireSha(acceptedLive[field], `accepted-live ${field}`);
+  requireSha(acceptedLive.product_acceptance_sha256, "accepted-live Product acceptance");
+  for (const field of ["final_candidate_commit", "final_candidate_tree", "deployed_identity", "rollback_identity", "independent_audit_identity"]) requireString(acceptedLive[field], `accepted-live ${field}`);
+  for (const field of ["deployment_receipt_sha256", "independent_audit_receipt_sha256", "closure_receipt_sha256", "cascade_state_sha256"]) requireSha(acceptedLive[field], `accepted-live ${field}`);
   assert(acceptedLive.cascade_state_sha256 === cascade.cascade_sha256, "accepted-live closure does not bind exact cascade state");
   assert(cascade.stage === "READY_FOR_ACCEPTANCE", "accepted-live closure consumes a cascade that is not ready");
   assert(cascade.acceptance.product_acceptance_sha256 === cascadeDigest(productAcceptance), "accepted-live cascade/Product proof mismatch");
+  assert(acceptedLive.product_acceptance_sha256 === cascade.acceptance.product_acceptance_sha256, "accepted-live closure does not bind Product acceptance");
   assert(cascade.acceptance.rc_ready === true && productAcceptance.rc_ready === true, "accepted-live closure lacks exact three-root acceptance");
+  assert(acceptedLive.final_candidate_commit === cascade.acceptance.final_candidate_commit && acceptedLive.final_candidate_tree === cascade.acceptance.final_candidate_tree, "accepted-live closure candidate does not match Product acceptance");
+  assert(acceptedLive.closure_receipt_sha256 === cascadeDigest({...acceptedLive, closure_receipt_sha256: null}), "accepted-live closure receipt is not bound to its exact identities");
   return true;
 }
 
@@ -1016,6 +1141,9 @@ export function applyCascadeTransition(previous, next) {
   validateCascadeState(previous);
   validateCascadeState(next);
   assert(previous.campaign_id === next.campaign_id && previous.campaign_version === next.campaign_version && previous.logical_lineage_id === next.logical_lineage_id, "cascade transition changed campaign lineage");
+  assert(previous.policy_epoch === next.policy_epoch && previous.policy_state_sha256 === next.policy_state_sha256 && previous.acceptance_contract_sha256 === next.acceptance_contract_sha256, "cascade transition changed policy or acceptance without a new admitted campaign");
+  assert(next.next_campaign_ledger.length >= previous.next_campaign_ledger.length, "cascade transition removed next-campaign ledger entries");
+  assert(canonicalJson(next.next_campaign_ledger.slice(0, previous.next_campaign_ledger.length)) === canonicalJson(previous.next_campaign_ledger), "cascade transition rewrote next-campaign ledger history");
   assert(next.cascade_sha256 !== previous.cascade_sha256, "cascade transition did not change state");
   const allowed = new Map([
     ["FIRST_PASS_BUILDING", new Set(["FIRST_PASS_BUILDING", "TERMINAL_PROPOSED"])],
@@ -1035,6 +1163,31 @@ export function applyCascadeTransition(previous, next) {
   }
   if (next.finalizer !== null && next.first_pass.terminal) assert(next.finalizer.source_commit === next.first_pass.commit && next.finalizer.source_tree === next.first_pass.tree, "cascade finalizer detached from first-pass candidate");
   return next;
+}
+
+export function recordNextCampaignLedgerItem(state, {entryId, summary, references, createdAtUtc}) {
+  validateCascadeState(state);
+  requireString(entryId, "next-campaign ledger entry ID");
+  requireString(summary, "next-campaign ledger summary");
+  sortedUniqueStrings(references, "next-campaign ledger references");
+  requireUtc(createdAtUtc, "next-campaign ledger time");
+  assert(!state.next_campaign_ledger.some((entry) => entry.entry_id === entryId), "next-campaign ledger entry already exists");
+  const entry = {
+    entry_id: entryId,
+    category: "ADJACENT_IMPROVEMENT",
+    summary,
+    references: [...references].sort(compareUtf8),
+    status: "DEFERRED_NEXT_CAMPAIGN",
+    created_at_utc: createdAtUtc,
+    entry_sha256: null,
+  };
+  entry.entry_sha256 = cascadeDigest({...entry, entry_sha256: null});
+  const next = structuredClone(state);
+  next.next_campaign_ledger.push(entry);
+  const body = structuredClone(next);
+  delete body.cascade_sha256;
+  next.cascade_sha256 = cascadeDigest(body);
+  return validateCascadeState(next);
 }
 
 export function recordCascadeTelemetry(telemetry, record) {
