@@ -157,6 +157,7 @@ for (const relativePath of [
   "tests/verify-campaign-controller.mjs",
   "tests/verify-campaign-cascade.mjs",
   "tests/verify-question-tree.mjs",
+  "tests/verify-readme.mjs",
   "tests/verify-bootstrap-coverage.mjs",
   "tests/verify-standards-registry.mjs",
   "tests/verify-normalization-policy.mjs",

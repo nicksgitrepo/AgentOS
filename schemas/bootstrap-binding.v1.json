@@ -4,6 +4,8 @@
   "release_candidate": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
   "normative": {
+    "user_readme": {"path": "README.md", "sha256": "c7f8921de88df384d8d17acf52f6e96e048a73f9a7b1ce9accb38b5c61c35274"},
+    "readme_verifier": {"path": "tests/verify-readme.mjs", "sha256": "f4a2684dc1703d6207a0fa0812caf81fa4efda88eb39d027c566d24f5fcb4743"},
     "bootstrap_entrypoint": {"path": "bootstrap/start-here.md", "sha256": "e8508ffc312e8a66510bf99c7df063ef0f65398534f8e1d4bbb7e0bdc53b616f"},
     "bootstrap_compiler": {"path": "control/bootstrap-compiler.mjs", "sha256": "b5a7fc705e6830ca2d712db3fc2aa2f79d2d2b1a8bd3227ac456812f880756a3"},
     "bootstrap_contract": {"path": "schemas/bootstrap-plan.v1.json", "sha256": "75f83ad5fe4dcb33979a4b99f0917969ffa88eca47eaf774d70dd3d51c595276"},
@@ -77,7 +79,7 @@
     "synthetic_context": {"path": "examples/project-context-fixture.v1.json", "sha256": "957f41aa6fa8276f40c3e58a6171a5cdd913d21ade0f17183f3d6a608e0b4311"},
     "extraction_manifest": {"path": "migrations/2.1rc-extraction-manifest.json", "sha256": "6c9b9eddb4055936dcc776e9d9fe0582af87cd157d0b2a50be999b966782a676"},
     "portability_verifier": {"path": "tests/verify-portability.mjs", "sha256": "8221b6e8ba19ca7a46b5e80b2fd9f1087c8f5a515ad1d800bd3e9ef6ec05197c"},
-    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "ca626f710685a42ca357f9f6b7dcf1108f87cc5d30e6dd74aff8e4326da58453"}
+    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "513602c563523e05a208ba4f35f5efe9083fc02acfe2966e9440bbf713ec2c5e"}
   },
   "compatibility_only": {
     "bootstrap_interview_alias": {"path": "control/bootstrap-interview.mjs", "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"},
