@@ -75,6 +75,12 @@ Catastrophic, wrong-direction, foundational, or critical safety/security finding
 
 When the Finalizer completes, the campaign root adopts its exact final commit and tree through a recorded custody handoff. Delta audit rechecks only failed, directly touched, dependent, and one small smoke set; unaffected evidence is reused by exact hash and environment binding. One targeted delta repair and one supervisor-selected reframe per causal root are the normal limits.
 
+Cascade economics compare the complete accepted-result cost with an equivalent
+direct accepted-result cost. A ratio at or below `0.75` is the minimum savings
+target, but savings remain `UNPROVEN` until at least three accepted observations
+exist. The Finalizer must emit an evidence-derived rewrite assessment; a pass
+classified `REBUILD_REQUIRED` cannot close as targeted repair.
+
 ## Runtime and next campaign
 
 The current Auditor may clear the release for deployment and produce a content-addressed next-campaign candidate. That event orients only the next Campaign Orchestrator. No next Auditor, Feature Agent, Platform Agent, Product writer, or campaign-start disposition exists before exact accepted-live closure and explicit next-campaign admission.

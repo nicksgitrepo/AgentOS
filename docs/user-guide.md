@@ -54,6 +54,14 @@ More restrictive rules win, and a true hold pauses only its dependent outcome.
 
 The compiled plan records safe defaults and honest unknowns. It does not recommend a model below the configured completion-reliability floor merely because it is inexpensive. `ECO_CONTINUOUS` represents a 168-hour week with up to twenty work slots; `STANDARD_WORKWEEK` represents 40 hours; `PERFORMANCE` prioritizes elapsed time; `CUSTOM` requires typed conditions. Recommendations minimize expected cost per accepted result, including retries and rework.
 
+For the adaptive campaign cascade, Bootstrap keeps economics honest by
+comparing the complete accepted-result cost with an equivalent direct result.
+Token rates and estimates are not savings proof. The cascade becomes the
+default for a task class only after at least three accepted observations show a
+ratio of `0.75` or lower. Finalizer rewrite signals distinguish targeted repair
+from a deliberate rebuild when the correction would reinterpret intent,
+architecture, contracts, or the load-bearing implementation.
+
 ## Product acceptance
 
 The Product engine has exactly three ordered roots:

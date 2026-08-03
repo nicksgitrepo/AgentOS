@@ -159,7 +159,29 @@
     ],
     "change_rule": "Every finalizer change must close a failed question, close a material finding, repair its shared causal root, remove a duplicate truth source, simplify with a concrete reliability/security/performance/maintenance consequence, or preserve behavior required for one of those outcomes.",
     "loop_rule": "One finalization pass and at most one targeted delta-repair pass are the normal limit. The same causal failure receives one materially different route or one supervisor-selected reframe; equivalent retries stop.",
-    "custody": "The Feature Agent releases Product custody before Finalizer admission. Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded handoff."
+    "custody": "The Feature Agent releases Product custody before Finalizer admission. Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded handoff.",
+    "rewrite_assessment": {
+      "required_fields": [
+        "relevant_hunks_replaced",
+        "relevant_hunks_total",
+        "files_substantially_rewritten",
+        "public_contracts_reinterpreted",
+        "architecture_changed",
+        "owner_intent_recompiled",
+        "tests_rebuilt",
+        "new_platform_seams_added",
+        "load_bearing_implementation_replaced",
+        "broad_repository_rediscovery_required",
+        "first_pass_behavior_preserved",
+        "same_task_class_low_survival",
+        "relevant_hunk_replacement_ratio",
+        "one_third_replacement_warning",
+        "rebuild_trigger_ids",
+        "classification",
+        "assessment_sha256"
+      ],
+      "rule": "The Finalizer must classify its completed pass from evidence-derived rewrite signals. A one-third hunk replacement is an early warning only; architecture change, owner-intent reinterpretation, load-bearing replacement, broad rediscovery, lost first-pass behavior, repeated low survival, or a changed public contract requires REBUILD_REQUIRED and cannot close as targeted repair."
+    }
   },
   "delta_rule": {
     "rerun": [
@@ -189,7 +211,20 @@
     "below_floor": "EXCLUDE",
     "no_eligible_model": "FAIL_CLOSED",
     "no_feasible_model_under_budget": "FAIL_CLOSED",
-    "calibration": "Compare expected accepted cost with observed accepted outcomes after three to five campaigns; do not silently lower the completion floor."
+    "calibration": "Compare expected accepted cost with observed accepted outcomes after three to five campaigns; do not silently lower the completion floor.",
+    "economics_policy": {
+      "minimum_savings_target_ratio": 0.75,
+      "minimum_observations_before_default": 3,
+      "comparison_basis": "EQUIVALENT_ACCEPTED_RESULT_COST",
+      "unproven_action": "DO_NOT_CLAIM_SAVINGS",
+      "default_rule": "KEEP_CASCADE_DEFAULT_ONLY_AFTER_THREE_ACCEPTED_OBSERVATIONS_AT_OR_BELOW_TARGET_WITHOUT_REBUILD_REQUIRED_FINALIZATION",
+      "required_metrics": ["accepted_result_cost", "audit_cost", "escaped_findings", "finalizer_rewrite_rate", "first_pass_survival", "repair_rounds"]
+    }
+  },
+  "economics_contract": {
+    "controller": "control/cascade-economics.mjs",
+    "schema": "schemas/cascade-economics.v1.json",
+    "rule": "A cascade is economically demonstrated only by an equivalent accepted-result cost comparison. Estimates remain UNPROVEN; the default target is a ratio at or below 0.75 after at least three accepted observations."
   },
   "telemetry": {
     "purpose": "Measure whether the cascade reduces expected cost and time without hiding escaped defects.",
@@ -198,9 +233,12 @@
       "audit_cost_by_discipline",
       "finalizer_cost",
       "finalizer_delta_cost",
+      "accepted_result_cost",
+      "cascade_efficiency_ratio",
       "wall_time",
       "first_pass_survival",
       "finalizer_rewrite_rate",
+      "repair_rounds",
       "audit_false_positive_rate",
       "evidence_reuse_rate",
       "escaped_finding_count",

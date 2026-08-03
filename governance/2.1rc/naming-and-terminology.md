@@ -22,6 +22,7 @@ The normative map is [schemas/naming-and-terminology.v1.json](../../schemas/nami
 - `Delivery Probe` is a bounded read-only observation; it never authenticates, spends, pushes, merges, deploys, or rolls back.
 - `Project Import` is the typed source-to-destination migration choice; `Source Preservation` is its pre-build provenance gate; `Normalization Policy` and `Standards Registry` are the corresponding deterministic contracts.
 - `Migration Campaign` is the first governed campaign that executes an authorized normalization, audit, repair, and reversible cutover.
+- `Cascade Economics` is the accepted-result cost comparison and task-class telemetry contract; `Finalizer Rewrite Assessment` distinguishes targeted repair from a deliberate rebuild.
 
 ## Cascade names
 
@@ -41,3 +42,7 @@ Their executable paths are `control/project-import.mjs`,
 `control/normalization-policy.mjs`, and `control/standards-registry.mjs`, with
 matching `schemas/*.v1.json` contracts. Full project normalization is a
 campaign, not a hidden Bootstrap micro-phase.
+
+The cascade economics vocabulary is `CASCADE_ECONOMICS` and
+`FINALIZER_REWRITE_ASSESSMENT`, implemented by
+`control/cascade-economics.mjs` and its matching schema and article.

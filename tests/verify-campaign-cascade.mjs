@@ -20,6 +20,7 @@ import {
   validateModelPolicy,
   validateRollingAudit,
 } from "../control/campaign-cascade.mjs";
+import {compileFinalizerRewriteAssessment} from "../control/cascade-economics.mjs";
 
 const SHA = "a".repeat(64);
 const candidateInput = {
@@ -99,7 +100,13 @@ assert(directAuditorReconciliation.reports.every((report) => report.worker_sessi
 const rollingAudit = compileRollingAudit({candidate, auditPlan: docPlan});
 validateRollingAudit(rollingAudit);
 const finalizer = openCampaignFinalizer({candidate: fullCandidate, auditPlan: fullPlan, reconciliation, modelPolicyDigestSha256: SHA, sessionId: "FINALIZER-1", worktreeId: "FINALIZER-WORKTREE", branch: "campaign/finalizer", correctionBatchSha256: SHA});
-const completed = completeCampaignFinalizer({finalizer, candidate: fullCandidate, finalCommit: "commit-final", finalTree: "tree-final", changedPaths: ["src/feature.ts"]});
+const rewriteAssessment = compileFinalizerRewriteAssessment({
+  relevant_hunks_replaced: 1, relevant_hunks_total: 10, files_substantially_rewritten: 0,
+  public_contracts_reinterpreted: false, architecture_changed: false, owner_intent_recompiled: false,
+  tests_rebuilt: false, new_platform_seams_added: false, load_bearing_implementation_replaced: false,
+  broad_repository_rediscovery_required: false, first_pass_behavior_preserved: true, same_task_class_low_survival: false,
+});
+const completed = completeCampaignFinalizer({finalizer, candidate: fullCandidate, finalCommit: "commit-final", finalTree: "tree-final", changedPaths: ["src/feature.ts"], rewriteAssessment});
 assert.equal(completed.status, "COMPLETE");
 
 const delta = compileDeltaAudit({baselineCommit: "commit-1", baselineTree: "tree-1", candidateCommit: "commit-final", candidateTree: "tree-final", allQuestionIds: ["FR-ENTRY", "FR-RESULT", "DB-SURFACE", "SEC-ACCESS"], previouslyFailedQuestionIds: ["FR-ENTRY"], directlyTouchedQuestionIds: ["FR-RESULT"], dependentQuestionIds: ["SEC-ACCESS"], smokeQuestionIds: ["DB-SURFACE"], causalRootIds: ["ROOT-CODE"], evidenceReuseSha256: SHA});
@@ -133,5 +140,18 @@ hostileCase("rolling audit of active terminal candidate", () => compileRollingAu
   auditPlan: docPlan,
 }));
 hostileCase("pushed dirty first-pass checkpoint", () => compileFirstPassCandidate({...candidateInput, clean: false, pushed: true}));
+hostileCase("rebuild-required Finalizer closed as repair", () => completeCampaignFinalizer({
+  finalizer,
+  candidate: fullCandidate,
+  finalCommit: "commit-rebuild",
+  finalTree: "tree-rebuild",
+  changedPaths: ["src/feature.ts"],
+  rewriteAssessment: compileFinalizerRewriteAssessment({
+    relevant_hunks_replaced: 4, relevant_hunks_total: 10, files_substantially_rewritten: 2,
+    public_contracts_reinterpreted: false, architecture_changed: true, owner_intent_recompiled: false,
+    tests_rebuilt: false, new_platform_seams_added: false, load_bearing_implementation_replaced: false,
+    broad_repository_rediscovery_required: false, first_pass_behavior_preserved: true, same_task_class_low_survival: false,
+  }),
+}));
 
 console.log(`PASS Governance 2.1rc campaign cascade (${hostile} hostile cases)`);

@@ -76,7 +76,8 @@
     "added typed project import modes with source-preservation archive, manifest, index, receipt, and explicit exclusion record",
     "added compatibility-first normalization precedence for directories, filenames, identifiers, routes, data contracts, events, and persisted identities",
     "added a version-pinned Standards Registry with explicit role, applicability, evidence, and non-weakening project-overlay boundary",
-    "bound full project normalization and four-lane import auditing to the first governed campaign rather than hidden Bootstrap implementation"
+    "bound full project normalization and four-lane import auditing to the first governed campaign rather than hidden Bootstrap implementation",
+    "added accepted-result cascade economics with a 0.75 savings target, minimum observation floor, task-class telemetry, and evidence-derived Finalizer rebuild classification"
   ],
   "activation": {
     "requires_explicit_owner_approval": true,

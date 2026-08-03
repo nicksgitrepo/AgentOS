@@ -20,6 +20,12 @@ Running Bootstrap as an agent uses the host’s agentic execution allowance. Use
 
 You explain what you want. Bootstrap inspects the project, preserves imported source before changing it, asks only what it cannot safely discover, and shows one exact plan. Economical agents build the first pass, independent auditors inspect it, a stronger Finalizer repairs the retained code, and persistent Runtime handles release and deployment.
 
+The cascade is measured by the cost of the complete accepted result, not by
+token prices alone. AgentOS keeps it as the default for a task class only after
+at least three accepted observations show a cascade-to-direct-result ratio of
+`0.75` or lower. If Finalizer work becomes a second implementation, the pass is
+classified as a rebuild rather than quietly called a repair.
+
 ## Main choices
 
 - **New project (`NEW_PROJECT`):** build a clean project from your intent.

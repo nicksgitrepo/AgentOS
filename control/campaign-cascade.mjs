@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import crypto from "node:crypto";
+import {validateFinalizerRewriteAssessment} from "./cascade-economics.mjs";
 
 export const CASCADE_STAGES = Object.freeze([
   "FIRST_PASS_BUILDING",
@@ -524,7 +525,7 @@ const FINALIZER_KEYS = [
   "scope_finding_ids", "correction_batch_sha256", "model_policy_digest_sha256",
   "intent_authority", "acceptance_authority", "deployment_authority", "self_acceptance",
   "status", "final_commit", "final_tree", "final_clean", "final_pushed", "changed_paths",
-  "reframe_count", "repair_pass_count", "finalizer_sha256",
+  "reframe_count", "repair_pass_count", "rewrite_assessment", "finalizer_sha256",
 ];
 
 export function validateFinalizer(finalizer, candidate, {allowActive = true} = {}) {
@@ -542,13 +543,18 @@ export function validateFinalizer(finalizer, candidate, {allowActive = true} = {
   assert(["ACTIVE", "COMPLETE"].includes(finalizer.status), "Campaign Finalizer status is invalid");
   if (finalizer.status === "ACTIVE" && allowActive) {
     assert(finalizer.final_commit === null && finalizer.final_tree === null && finalizer.final_clean === null && finalizer.final_pushed === null, "active Campaign Finalizer claims a completed candidate");
+    assert(finalizer.rewrite_assessment === null, "active Campaign Finalizer carries a completion assessment");
   }
   if (finalizer.status === "COMPLETE") {
     requireString(finalizer.final_commit, "Campaign Finalizer final commit");
     requireString(finalizer.final_tree, "Campaign Finalizer final tree");
     assert(finalizer.final_clean === true && finalizer.final_pushed === true, "completed Campaign Finalizer must be clean and pushed");
+    assert(finalizer.rewrite_assessment !== null, "completed Campaign Finalizer lacks a rewrite assessment");
+    validateFinalizerRewriteAssessment(finalizer.rewrite_assessment);
+    assert(finalizer.rewrite_assessment.classification === "TARGETED_REPAIR", "Campaign Finalizer cannot close a rebuild-required pass as a repair");
   } else {
     assert(finalizer.final_commit === null && finalizer.final_tree === null && finalizer.final_clean === null && finalizer.final_pushed === null, "incomplete Campaign Finalizer carries final candidate identity");
+    assert(finalizer.rewrite_assessment === null, "incomplete Campaign Finalizer carries a rewrite assessment");
   }
   const body = structuredClone(finalizer);
   delete body.finalizer_sha256;
@@ -598,6 +604,7 @@ export function openCampaignFinalizer({candidate, auditPlan, reconciliation, mod
     changed_paths: [],
     reframe_count: 0,
     repair_pass_count: 0,
+    rewrite_assessment: null,
     finalizer_sha256: "",
   };
   const body = structuredClone(finalizer);
@@ -607,10 +614,12 @@ export function openCampaignFinalizer({candidate, auditPlan, reconciliation, mod
   return finalizer;
 }
 
-export function completeCampaignFinalizer({finalizer, candidate, finalCommit, finalTree, changedPaths, repairPassCount = 0, reframeCount = 0}) {
+export function completeCampaignFinalizer({finalizer, candidate, finalCommit, finalTree, changedPaths, repairPassCount = 0, reframeCount = 0, rewriteAssessment}) {
   validateFinalizer(finalizer, candidate);
   requireString(finalCommit, "finalizer final commit");
   requireString(finalTree, "finalizer final tree");
+  validateFinalizerRewriteAssessment(rewriteAssessment);
+  assert(rewriteAssessment.classification === "TARGETED_REPAIR", "Campaign Finalizer completion requires a targeted-repair assessment");
   const completed = {
     ...structuredClone(finalizer),
     status: "COMPLETE",
@@ -621,6 +630,7 @@ export function completeCampaignFinalizer({finalizer, candidate, finalCommit, fi
     changed_paths: validatePathList(changedPaths, "finalizer changed paths", {allowEmpty: true}),
     repair_pass_count: repairPassCount,
     reframe_count: reframeCount,
+    rewrite_assessment: structuredClone(rewriteAssessment),
     finalizer_sha256: "",
   };
   const body = structuredClone(completed);
@@ -695,9 +705,18 @@ export function compileDeltaAudit({baselineCommit, baselineTree, candidateCommit
 
 const MODEL_POLICY_KEYS = ["schema", "profile", "completion_floor", "market_snapshot_sha256", "role_policies", "no_eligible_action", "calibration", "policy_sha256"];
 const ROLE_POLICY_KEYS = ["role", "selection_mode", "minimum_capability_floor", "budget_behavior", "fallback_behavior"];
+const ECONOMICS_POLICY_KEYS = ["minimum_savings_target_ratio", "minimum_observations_before_default", "comparison_basis", "unproven_action", "default_rule", "required_metrics"];
+const DEFAULT_ECONOMICS_POLICY = Object.freeze({
+  minimum_savings_target_ratio: 0.75,
+  minimum_observations_before_default: 3,
+  comparison_basis: "EQUIVALENT_ACCEPTED_RESULT_COST",
+  unproven_action: "DO_NOT_CLAIM_SAVINGS",
+  default_rule: "KEEP_CASCADE_DEFAULT_ONLY_AFTER_THREE_ACCEPTED_OBSERVATIONS_AT_OR_BELOW_TARGET_WITHOUT_REBUILD_REQUIRED_FINALIZATION",
+  required_metrics: ["accepted_result_cost", "audit_cost", "escaped_findings", "finalizer_rewrite_rate", "first_pass_survival", "repair_rounds"],
+});
 
 export function validateModelPolicy(policy) {
-  exactKeys(policy, MODEL_POLICY_KEYS, "cascade model policy");
+  exactKeys(policy, [...MODEL_POLICY_KEYS, "economics_policy"], "cascade model policy");
   assert(policy.schema === "governance.cascade_model_policy.v1", "cascade model policy schema mismatch");
   requireString(policy.profile, "model policy profile");
   assert(typeof policy.completion_floor === "number" && policy.completion_floor > 0 && policy.completion_floor <= 1, "model policy completion floor is invalid");
@@ -715,13 +734,20 @@ export function validateModelPolicy(policy) {
   requireRecord(policy.calibration, "model policy calibration");
   assert(Number.isSafeInteger(policy.calibration.minimum_campaigns_before_recalibration) && policy.calibration.minimum_campaigns_before_recalibration >= 3, "model calibration floor is invalid");
   assert(Array.isArray(policy.calibration.observations), "model calibration observations are required");
+  exactKeys(policy.economics_policy, ECONOMICS_POLICY_KEYS, "cascade economics policy");
+  assert(policy.economics_policy.minimum_savings_target_ratio === 0.75, "cascade economics savings target was weakened");
+  assert(Number.isSafeInteger(policy.economics_policy.minimum_observations_before_default) && policy.economics_policy.minimum_observations_before_default >= 3, "cascade economics observation floor is invalid");
+  assert(policy.economics_policy.comparison_basis === "EQUIVALENT_ACCEPTED_RESULT_COST", "cascade economics comparison basis is invalid");
+  assert(policy.economics_policy.unproven_action === "DO_NOT_CLAIM_SAVINGS", "cascade economics unproven action is invalid");
+  requireString(policy.economics_policy.default_rule, "cascade economics default rule");
+  assert(canonicalJson(policy.economics_policy.required_metrics) === canonicalJson(DEFAULT_ECONOMICS_POLICY.required_metrics), "cascade economics metric inventory is incomplete or reordered");
   const body = structuredClone(policy);
   delete body.policy_sha256;
   assert(policy.policy_sha256 === cascadeDigest(body), "model policy digest is not content-addressed");
   return policy;
 }
 
-export function compileModelPolicy({profile, completionFloor, marketSnapshotSha256 = null, rolePolicies, observations = []}) {
+export function compileModelPolicy({profile, completionFloor, marketSnapshotSha256 = null, rolePolicies, observations = [], economicsPolicy = DEFAULT_ECONOMICS_POLICY}) {
   const policy = {
     schema: "governance.cascade_model_policy.v1",
     profile,
@@ -733,6 +759,7 @@ export function compileModelPolicy({profile, completionFloor, marketSnapshotSha2
       minimum_campaigns_before_recalibration: 3,
       observations: structuredClone(observations),
     },
+    economics_policy: structuredClone(economicsPolicy),
     policy_sha256: "",
   };
   const body = structuredClone(policy);

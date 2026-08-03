@@ -55,6 +55,19 @@ The Finalizer receives the exact terminal proposed commit/tree in a fresh clean 
 
 On completion the Finalizer releases its writer lease and the campaign root adopts the exact final commit/tree through a recorded handoff. The finalizer never silently replaces the Product root or changes the campaign identity.
 
+The Finalizer also emits the bound rewrite assessment in
+[cascade-economics.md](cascade-economics.md). A one-third hunk replacement is
+only an early warning. Contract reinterpretation, architecture change, owner
+intent recompilation, load-bearing replacement, broad rediscovery, lost
+first-pass behavior, or repeated low rough-draft survival is
+`REBUILD_REQUIRED`; it cannot be closed as a targeted repair.
+
+The cascade is economically demonstrated only when its complete accepted-result
+cost is at or below 75% of an equivalent direct accepted-result cost. Token
+rates and estimates alone remain `UNPROVEN`. At least three accepted task-class
+observations are required before the cascade becomes the default for that task
+class.
+
 ## Delta proof
 
 Delta audit includes previously failed questions, directly touched questions, dependent descendants, and one small end-to-end smoke set. Unaffected accepted evidence is reused only when question-tree version, relevant hashes, build identity, and environment identity still match. A repair invalidates only dependent answers; it does not restart the whole question corpus or create a serial approval queue.

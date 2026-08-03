@@ -36,7 +36,9 @@
     "SOURCE_PRESERVATION": {"public_name": "Source Preservation", "meaning": "Deterministic archive, manifest, index, exclusion record, and receipt created before an imported project is built or refactored."},
     "NORMALIZATION_POLICY": {"public_name": "Normalization Policy", "meaning": "Compatibility-first rules for directories, filenames, identifiers, routes, data contracts, events, and project structure."},
     "STANDARDS_REGISTRY": {"public_name": "Standards Registry", "meaning": "Version-pinned, source-bound, applicability-scoped standards and typed project overlays."},
-    "MIGRATION_CAMPAIGN": {"public_name": "Migration Campaign", "meaning": "The first governed campaign that executes an authorized project normalization, audit, repair, and reversible cutover."}
+    "MIGRATION_CAMPAIGN": {"public_name": "Migration Campaign", "meaning": "The first governed campaign that executes an authorized project normalization, audit, repair, and reversible cutover."},
+    "CASCADE_ECONOMICS": {"public_name": "Cascade Economics", "meaning": "Accepted-result cost comparison and task-class telemetry for deciding whether the adaptive cascade remains economical."},
+    "FINALIZER_REWRITE_ASSESSMENT": {"public_name": "Finalizer Rewrite Assessment", "meaning": "Evidence-derived classification of a Finalizer pass as targeted repair or deliberate rebuild."}
   },
   "compatibility_aliases": {
     "guided-bootstrap": "bootstrap",
@@ -84,6 +86,9 @@
     "normalization_policy_controller": "control/normalization-policy.mjs",
     "normalization_policy_schema": "schemas/normalization-policy.v1.json",
     "standards_registry_controller": "control/standards-registry.mjs",
-    "standards_registry_schema": "schemas/standards-registry.v1.json"
+    "standards_registry_schema": "schemas/standards-registry.v1.json",
+    "cascade_economics_controller": "control/cascade-economics.mjs",
+    "cascade_economics_schema": "schemas/cascade-economics.v1.json",
+    "cascade_economics_article": "governance/2.1rc/cascade-economics.md"
   }
 }

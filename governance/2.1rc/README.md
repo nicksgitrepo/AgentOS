@@ -28,3 +28,8 @@ the compatibility-first [normalization-policy.md](normalization-policy.md) and
 version-pinned [standards-registry.md](standards-registry.md). Bootstrap
 preserves an imported source before any migration build; the first governed
 campaign performs the full normalization and four-lane audit.
+
+The adaptive cascade’s cost and Finalizer boundary are governed by
+[cascade-economics.md](cascade-economics.md). It compares complete accepted
+results, not token rates, and requires a 75% or better observed ratio before a
+task class is treated as economically demonstrated.
