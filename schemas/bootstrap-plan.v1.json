@@ -4,7 +4,7 @@
   "governance_version": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
   "purpose": "Compile discovery and the smallest material owner answers into one exact, reviewable, resumable Bootstrap creation plan.",
-  "question_rule": "Ask only the earliest unresolved field whose answer cannot be discovered, safely defaulted, or deferred without changing the first route, authority, proof, rollback, or owner boundary.",
+  "question_rule": "Ask only the earliest unresolved field whose answer cannot be discovered, safely defaulted, derived, or deferred without changing the first route, authority, proof, rollback, or owner boundary. The canonical output-gap matrix is the question planner's authority.",
   "required_output_groups": [
     "PROJECT_DEFINITION",
     "NORTH_STAR",
@@ -27,7 +27,7 @@
     "toctou": "Re-read discovery, source identities, destination containment, and plan digest immediately before each external side effect. A mismatch returns to planning without mutation."
   },
   "plan_identity": {
-    "required_fields": ["project_root", "discovery_mode", "discovery_digest_sha256", "answers_sha256", "plan_sha256"],
+    "required_fields": ["project_root", "discovery_mode", "discovery_digest_sha256", "answers_sha256", "required_output_groups", "bootstrap_coverage", "plan_sha256"],
     "rule": "The exact plan always binds the canonical project root, the discovery mode and digest used to compile it, and the imported source content and filesystem observation when a legacy corpus is selected. Before staging, Bootstrap re-observes the same root and refuses changed discovery, source bytes, or imported source identity."
   },
   "execution": {
@@ -43,6 +43,16 @@
     "contract": "schemas/delivery-policy.v1.json",
     "required_fields": ["delivery_policy", "delivery_probe_plan"],
     "binding_rule": "The delivery policy, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
+  },
+  "bootstrap_coverage": {
+    "controller": "control/bootstrap-coverage.mjs",
+    "contract": "schemas/bootstrap-coverage.v1.json",
+    "required_fields": ["schema", "discovery_digest_sha256", "answers_sha256", "outputs", "material_gaps", "coverage_sha256"],
+    "rule": "Every required setup obligation has one deterministic row with applicability, provenance, status, safe default, probe requirement, owner boundary, unavailable behavior, reopen triggers, dependencies, and exact compiled field paths. Material gaps block exact-plan compilation."
+  },
+  "exact_creation_plan_binding": {
+    "required_field": "exact_creation_plan.bootstrap_coverage_sha256",
+    "rule": "The exact creation plan must carry the exact Bootstrap coverage digest. A plan cannot be approved when coverage is pending or when its coverage digest differs."
   },
   "delivery_probe_gate": {
     "contract": "schemas/delivery-probes.v1.json",

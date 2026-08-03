@@ -27,7 +27,8 @@
     "NEXT_CAMPAIGN_CANDIDATE": {"public_name": "Next-Campaign Candidate", "meaning": "Content-addressed future-work packet consumed first by one orientation-only next Campaign Orchestrator."},
     "RUNTIME": {"public_name": "Runtime", "meaning": "Persistent exact integration, deployment, rollback, and live-operation identity."},
     "DELIVERY_POLICY": {"public_name": "Delivery Policy", "meaning": "Typed project-context contract for source-control, merge, CI-runner, hosting, deployment, rollback, provider, environment, and cost choices."},
-    "DELIVERY_PROBE": {"public_name": "Delivery Probe", "meaning": "Bounded secret-free read-only observation that never performs external delivery side effects."}
+    "DELIVERY_PROBE": {"public_name": "Delivery Probe", "meaning": "Bounded secret-free read-only observation that never performs external delivery side effects."},
+    "BOOTSTRAP_COVERAGE": {"public_name": "Bootstrap Coverage", "meaning": "Content-addressed output-gap matrix that records setup applicability, provenance, status, defaults, probes, boundaries, unavailable behavior, dependencies, and reopen triggers."}
   },
   "compatibility_aliases": {
     "guided-bootstrap": "bootstrap",
@@ -61,6 +62,8 @@
     "delivery_policy_controller": "control/delivery-policy.mjs",
     "delivery_policy_contract": "schemas/delivery-policy.v1.json",
     "delivery_probe_contract": "schemas/delivery-probes.v1.json",
+    "bootstrap_coverage_controller": "control/bootstrap-coverage.mjs",
+    "bootstrap_coverage_contract": "schemas/bootstrap-coverage.v1.json",
     "naming_migration": "migrations/bootstrap-naming.v1.json"
   }
 }

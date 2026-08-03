@@ -112,6 +112,13 @@ assert.equal(bootstrapPlan.approval.decision, "APPROVE_EXACT_PLAN");
 assert(bootstrapPlan.approval.toctou.includes("Re-read discovery") && bootstrapPlan.approval.toctou.includes("plan digest"));
 assert(bootstrapPlan.execution.legacy_gate.includes("legacy.zip") && bootstrapPlan.execution.legacy_gate.includes("before replacement corpus writes"));
 assert(bootstrapPlan.required_output_groups.includes("DELIVERY_POLICY"));
+assert.equal(bootstrapPlan.bootstrap_coverage.controller, "control/bootstrap-coverage.mjs");
+assert.equal(bootstrapPlan.bootstrap_coverage.contract, "schemas/bootstrap-coverage.v1.json");
+const bootstrapCoverage = JSON.parse(read("schemas/bootstrap-coverage.v1.json"));
+assert.equal(bootstrapCoverage.status, "PREPARED_NOT_ACTIVATED");
+assert(bootstrapCoverage.coverage_outputs.some((entry) => entry.output_id === "PERSISTENT_RUNTIME"));
+assert(bootstrapCoverage.coverage_outputs.some((entry) => entry.output_id === "DATA_AND_MIGRATION_POLICY"));
+assert(bootstrapCoverage.binding.readiness.includes("material_gaps"));
 const deliveryPolicy = JSON.parse(read("schemas/delivery-policy.v1.json"));
 assert.equal(deliveryPolicy.question.id, "project.delivery_policy");
 assert.equal(deliveryPolicy.deployment.authority, "RUNTIME_AFTER_CENTRAL_ACCEPTANCE");
@@ -137,6 +144,7 @@ for (const relativePath of [
   "tests/verify-campaign-controller.mjs",
   "tests/verify-campaign-cascade.mjs",
   "tests/verify-question-tree.mjs",
+  "tests/verify-bootstrap-coverage.mjs",
   "tests/verify-bootstrap-alignment.mjs",
   "tests/verify-delivery-policy.mjs",
   "tests/verify-guided-bootstrap.mjs",

@@ -3,6 +3,7 @@
 Canonical executable authorities:
 
 - `bootstrap-compiler.mjs` — discovery-backed exact setup plan and transaction;
+- `bootstrap-coverage.mjs` — deterministic setup output-gap inventory and material-question planner input;
 - `campaign-lifecycle.mjs` — custody, leases, holds, checkpoints, Runtime, and
   next-campaign orientation;
 - `campaign-cascade.mjs` — rolling applicable audits, Finalizer, and delta path;

@@ -24,6 +24,12 @@ import {
   validateDeliveryProbePlan,
   validateDeliveryProbeResults,
 } from "./delivery-policy.mjs";
+import {
+  BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
+  compileBootstrapCoverage,
+  coverageForQuestion,
+  validateBootstrapCoverage,
+} from "./bootstrap-coverage.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
@@ -127,6 +133,14 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     prompt: "Which operating conditions apply: continuous eco, standard workweek, performance-first, or typed custom conditions?",
     type: "JSON",
     output: "MODEL_POLICY",
+    required: true,
+  },
+  {
+    id: "project.runtime",
+    class: "OWNER_BOUNDARY",
+    prompt: "Which persistent Runtime session and environment should remain available across campaigns, and what capabilities may it use?",
+    type: "JSON",
+    output: "PERSISTENT_RUNTIME",
     required: true,
   },
 ]);
@@ -312,10 +326,6 @@ function validateFact(fact) {
 
 function factsFor(discovery, predicate) {
   return discovery.filter(predicate);
-}
-
-function hasFact(discovery, pattern) {
-  return discovery.some((fact) => pattern.test(fact.fact_id) && fact.status !== "CONFLICT");
 }
 
 function hasObservedFact(discovery, pattern) {
@@ -556,34 +566,38 @@ function validateAnswers(discovery, answers) {
     const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === id);
     if (!question && !["project.first_campaign", "project.runtime", "project.function_requirements", "security.baseline"].includes(id)) throw new Error(`unknown Bootstrap answer: ${id}`);
     if (question && question.type === "ENUM") assert(question.choices.includes(value), `${id} is outside its choices`);
-    if (question && question.type === "JSON") assert(value !== undefined, `${id} is missing`);
+    if (question && question.type === "JSON") requireRecord(value, `${id} answer`);
+    if (!question && ["project.first_campaign", "project.function_requirements", "security.baseline"].includes(id)) requireRecord(value, `${id} answer`);
   }
   if (normalized["bootstrap.discovery.mode"] !== undefined) assert(DISCOVERY_MODES.includes(normalized["bootstrap.discovery.mode"]), "discovery mode is invalid");
   assert(discovery.every((fact) => { validateFact(fact); return true; }), "discovery facts are invalid");
   return normalized;
 }
 
-function questionVisible(question, discovery) {
-  if (!question.askWhen) return true;
-  if (question.askWhen === "VISIBLE_SURFACE_OR_DESIGN_AUTHORITY") return hasObservedFact(discovery, /(?:ui|view|route|design|visual|browser)/iu);
-  if (question.askWhen === "CONFLICT_OR_MISSING_TECHNICAL_BASELINE") return discovery.length === 0 || discovery.some((fact) => fact.status === "CONFLICT" || fact.status === "UNKNOWN") || !hasFact(discovery, /(?:stack|framework|marker|language)/iu);
-  if (question.askWhen === "CONFLICT_OR_MISSING_DELIVERY_POLICY") return !hasFact(discovery, /^delivery\.policy\./u) || discovery.some((fact) => /^delivery\.policy\./u.test(fact.fact_id) && (fact.status === "CONFLICT" || fact.status === "UNKNOWN"));
-  return false;
-}
-
 export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
   const normalizedAnswers = validateAnswers(discovery, answers);
-  const visible = BOOTSTRAP_QUESTIONS.filter((question) => questionVisible(question, discovery));
-  const unresolved = visible.filter((question) => !Object.hasOwn(normalizedAnswers, question.id));
+  const coverage = compileBootstrapCoverage({discovery, answers: normalizedAnswers});
+  const visible = BOOTSTRAP_QUESTIONS.filter((question) => coverageForQuestion(coverage, question.id)
+    .some((row) => row.status !== "NOT_APPLICABLE_WITH_PROOF"));
+  const unresolved = visible.filter((question) => coverage.pending_question_ids.includes(question.id));
   return {
     schema: "agentos.bootstrap_question_plan.v1",
     governance_version: "2.1rc",
     discovery_digest_sha256: canonicalDigest(discovery),
-    required_output_groups: ["PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "FUNCTION_REQUIREMENTS", "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "AUTHORITY_CORPUS", "MODEL_POLICY", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN", "EXACT_CREATION_PLAN"],
+    answers_digest_sha256: canonicalDigest(normalizedAnswers),
+    required_output_groups: BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
+    coverage_sha256: coverage.coverage_sha256,
+    coverage,
     question_budget: {visible: visible.length, answered: visible.length - unresolved.length, unresolved: unresolved.length, recommended_maximum: 9},
-    questions: unresolved.map((question) => ({...question, choices: question.choices ?? null, discovered_facts: discovery.filter((fact) => fact.fact_id === question.id || fact.fact_id.startsWith(`${question.id}.`))})),
+    questions: unresolved.map((question) => ({
+      ...question,
+      choices: question.choices ?? null,
+      discovered_facts: discovery.filter((fact) => fact.fact_id === question.id || fact.fact_id.startsWith(`${question.id}.`)),
+      coverage_output_ids: coverageForQuestion(coverage, question.id).map((row) => row.output_id),
+      coverage_reasons: coverageForQuestion(coverage, question.id).filter((row) => row.blocking).map((row) => row.reason),
+    })),
     next: unresolved[0]?.id ?? null,
-    status: unresolved.length === 0 ? "READY_TO_COMPILE" : "QUESTION_PENDING",
+    status: coverage.status,
   };
 }
 
@@ -602,6 +616,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
   const normalizedAnswers = validateAnswers(discovery, answers);
   const questionPlan = planBootstrapQuestions({discovery, answers: normalizedAnswers});
   assert(questionPlan.status === "READY_TO_COMPILE", "Bootstrap still has unresolved material questions");
+  const bootstrapCoverage = questionPlan.coverage;
   const authorityCorpus = deriveAuthorityCorpus(normalizedAnswers["authority-corpus.source"]);
   const sourceIdentity = authorityCorpus.preservation === "NOT_REQUIRED"
     ? null
@@ -623,6 +638,8 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     discovery_mode: normalizedAnswers["bootstrap.discovery.mode"],
     discovery_digest_sha256: canonicalDigest(discovery),
     answers_sha256: canonicalDigest(normalizedAnswers),
+    required_output_groups: BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
+    bootstrap_coverage: bootstrapCoverage,
     project_definition: context,
     north_star: normalizedAnswers["project.north_star"],
     proving_workflow: normalizedAnswers["project.first_workflow"],
@@ -647,6 +664,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       },
       delivery_policy_sha256: null,
       delivery_probe_plan_sha256: null,
+      bootstrap_coverage_sha256: null,
       expected_writes: ["bootstrap.plan.json", "authority corpus roots", "typed project context", "delivery policy and probe bindings", "Bootstrap receipts"],
       side_effects: ["CREATE_OR_UPDATE_TYPED_PROJECT_CONTEXT", "CREATE_AUTHORITY_CORPUS", "CREATE_DESIGN_AUTHORITY", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
       prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
@@ -670,6 +688,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
   };
   output.exact_creation_plan.delivery_policy_sha256 = output.delivery_policy.policy_sha256;
   output.exact_creation_plan.delivery_probe_plan_sha256 = output.delivery_probe_plan.probe_plan_sha256;
+  output.exact_creation_plan.bootstrap_coverage_sha256 = output.bootstrap_coverage.coverage_sha256;
   const planBody = structuredClone(output);
   delete planBody.plan_sha256;
   output.plan_sha256 = canonicalDigest(planBody);
@@ -685,6 +704,14 @@ export function validateBootstrapPlan(plan) {
   requireSha(plan.answers_sha256, "Bootstrap answers digest");
   requireString(plan.project_root, "Bootstrap project root");
   assert(DISCOVERY_MODES.includes(plan.discovery_mode), "Bootstrap discovery mode is missing from the exact plan");
+  assert(Array.isArray(plan.required_output_groups)
+    && JSON.stringify(plan.required_output_groups) === JSON.stringify(BOOTSTRAP_REQUIRED_OUTPUT_GROUPS), "Bootstrap required output groups are invalid");
+  requireRecord(plan.bootstrap_coverage, "Bootstrap coverage");
+  validateBootstrapCoverage(plan.bootstrap_coverage);
+  assert(plan.bootstrap_coverage.status === "READY_TO_COMPILE"
+    && plan.bootstrap_coverage.discovery_digest_sha256 === plan.discovery_digest_sha256
+    && plan.bootstrap_coverage.answers_sha256 === plan.answers_sha256,
+  "Bootstrap coverage is not bound to the exact plan inputs");
   assert(Array.isArray(plan.question_slice) && JSON.stringify(plan.question_slice) === JSON.stringify(["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]), "Bootstrap question slice is not the exact three-root slice");
   requireRecord(plan.exact_creation_plan, "exact creation plan");
   requireRecord(plan.delivery_policy, "delivery policy");
@@ -699,6 +726,7 @@ export function validateBootstrapPlan(plan) {
   "exact creation plan delivery bindings do not match delivery policy");
   assert(plan.exact_creation_plan.delivery_policy_sha256 === plan.delivery_policy.policy_sha256, "exact creation plan is not bound to delivery policy");
   assert(plan.exact_creation_plan.delivery_probe_plan_sha256 === plan.delivery_probe_plan.probe_plan_sha256, "exact creation plan is not bound to delivery probes");
+  assert(plan.exact_creation_plan.bootstrap_coverage_sha256 === plan.bootstrap_coverage.coverage_sha256, "exact creation plan is not bound to Bootstrap coverage");
   requireRecord(plan.authority_corpus, "authority corpus plan");
   requireRecord(plan.model_policy, "model policy");
   requireRecord(plan.persistent_runtime, "Runtime plan");
@@ -755,6 +783,7 @@ function contextFromPlan(plan) {
     north_star: plan.north_star,
     proving_workflow: plan.proving_workflow,
     function_requirements: plan.function_requirements,
+    bootstrap_coverage: plan.bootstrap_coverage,
     technical_baseline: plan.technical_baseline,
     delivery_policy: plan.delivery_policy,
     delivery_probe_plan: plan.delivery_probe_plan,
@@ -788,8 +817,9 @@ function contextFromPlan(plan) {
         project_name: plan.project_definition.project_name,
         exact_context_digest: projectContext.exact_context_digest,
       },
+      bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
       bootstrap_output_groups: [
-      "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "FUNCTION_REQUIREMENTS",
+        "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "FUNCTION_REQUIREMENTS",
         "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES",
         "AUTHORITY_CORPUS", "MODEL_POLICY", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
         "EXACT_CREATION_PLAN",
@@ -1165,13 +1195,17 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   delete contextBody.exact_context_digest;
   assert(context.exact_context_digest === canonicalDigest(contextBody), "typed project context digest is invalid");
   assert(context.source_plan_sha256 === plan.plan_sha256, "typed project context is not bound to the exact plan");
+  requireRecord(context.bootstrap_coverage, "typed project context Bootstrap coverage");
+  validateBootstrapCoverage(context.bootstrap_coverage);
+  assert(context.bootstrap_coverage.coverage_sha256 === plan.bootstrap_coverage.coverage_sha256,
+  "typed project context Bootstrap coverage is not bound to the exact plan");
   const reportBody = {
     schema: "agentos.bootstrap_setup_audit.v1",
     auditor_session_id: auditorSessionId,
     bootstrap_session_id: bootstrapSessionId,
     plan_sha256: plan.plan_sha256,
     execution_state_sha256: executionState.state_sha256,
-    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "NO_SECRETS", "LEGACY_GATE", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "THREE_ROOT_SLICE"],
+    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "THREE_ROOT_SLICE"],
     status: "PASS",
   };
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};

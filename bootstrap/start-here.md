@@ -10,6 +10,7 @@ The binding at [schemas/bootstrap-binding.v1.json](../schemas/bootstrap-binding.
 
 ```text
 read-only discovery
+        -> deterministic output-gap coverage
         -> compact unresolved questions
         -> complete exact creation plan
         -> display plan and digests
@@ -21,6 +22,13 @@ read-only discovery
 ```
 
 Bootstrap may discover facts but cannot turn a discovery fact into owner intent. It asks only for material intent, protected boundary, or unresolved choice. It chooses safe configuration defaults when governance already supplies them and reports those defaults in the plan.
+
+The output-gap matrix is the canonical planning inventory. It records every
+creation, trust, data, delivery, recovery, proof, and activation obligation,
+including rows that resolve through discovery, a safe default, derivation, or an
+explicit unavailable state. It is not a second questionnaire. Only material
+rows with `OWNER_REQUIRED`, `DEPENDENCY_PENDING`, or `CONFLICT` create a user
+question or block exact-plan compilation.
 
 Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, CI/hosting/deployment markers, local Git state, and available local tools. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
 
@@ -44,6 +52,10 @@ The user should not have to answer questions that exact discovery or a safe gove
 ## Exact plan and approval
 
 The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
+
+It also carries the content-addressed `bootstrap_coverage` result. The exact
+plan, typed Project Context, delivery probes, and setup Auditor must bind that
+result to the exact discovery and normalized answers.
 
 The owner approves the exact displayed plan with:
 

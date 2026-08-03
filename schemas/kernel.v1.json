@@ -83,6 +83,11 @@
   "bootstrap": {
     "controller": "control/bootstrap-compiler.mjs",
     "contract": "schemas/bootstrap-plan.v1.json",
+    "coverage": {
+      "controller": "control/bootstrap-coverage.mjs",
+      "contract": "schemas/bootstrap-coverage.v1.json",
+      "rule": "One deterministic output-gap row covers every material creation, trust, data, delivery, recovery, proof, and activation obligation. Only material unresolved rows create questions or block exact-plan compilation."
+    },
     "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably.",
     "delivery_policy": {
       "controller": "control/delivery-policy.mjs",

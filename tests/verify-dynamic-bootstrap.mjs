@@ -33,6 +33,7 @@ const answers = {
     deployment: {route: "LOCAL", environment_ids: ["synthetic"], rollback_required: true, rollback_test: true},
   },
   "project.model_economics": {profile: "STANDARD_WORKWEEK", completion_floor: 0.8},
+  "project.runtime": {session_id: "RUNTIME-001", environment_identity: "ENV-001", capabilities: ["persistent-navigation"]},
 };
 const plan = dynamic.compileBootstrapPlan({discovery: discovery.facts, answers, projectRoot: root});
 assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");

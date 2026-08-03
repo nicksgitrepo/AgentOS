@@ -2,7 +2,7 @@
 
 Status: `PREPARED_NOT_ACTIVATED`
 
-The canonical setup machine authority is [control/bootstrap-compiler.mjs](../../control/bootstrap-compiler.mjs) with [control/bootstrap-discovery.mjs](../../control/bootstrap-discovery.mjs), [schemas/bootstrap-plan.v1.json](../../schemas/bootstrap-plan.v1.json), and [schemas/bootstrap-discovery.v1.json](../../schemas/bootstrap-discovery.v1.json). Older guided and dynamic paths are migration-only aliases.
+The canonical setup machine authority is [control/bootstrap-compiler.mjs](../../control/bootstrap-compiler.mjs) with [control/bootstrap-coverage.mjs](../../control/bootstrap-coverage.mjs), [control/bootstrap-discovery.mjs](../../control/bootstrap-discovery.mjs), [schemas/bootstrap-plan.v1.json](../../schemas/bootstrap-plan.v1.json), [schemas/bootstrap-coverage.v1.json](../../schemas/bootstrap-coverage.v1.json), and [schemas/bootstrap-discovery.v1.json](../../schemas/bootstrap-discovery.v1.json). Older guided and dynamic paths are migration-only aliases.
 
 ## Discovery
 
@@ -10,9 +10,9 @@ Bootstrap Discovery is secret-free, read-only, deterministic, and contained by t
 
 Facts are typed `OBSERVED_FACT`, `CANDIDATE_INTERPRETATION`, `CONFLICT`, or `UNKNOWN`. A fact can recommend an answer but cannot supply owner intent or select an import/refactor/create decision without an owner-bound plan. Delivery facts include source-control state, CI/hosting/deployment markers, and local tool availability; they never authorize a push, merge, provider login, spend, deployment, or rollback.
 
-## Question compiler
+## Coverage-driven question compiler
 
-The compact question catalog classifies each owner-facing question as exactly one of `DISCOVERY_PERMISSION`, `OWNER_INTENT`, `OWNER_BOUNDARY`, `MATERIAL_PREFERENCE`, or `CREATION_AUTHORIZATION`. Mechanical facts are discovered, not asked. Bootstrap asks only when discovery, accepted authority, a safe reversible default, or honest deferral cannot settle a material choice. The compiled question plan reports visible, answered, unresolved, and recommended maximum counts. It never expands into a whole-project questionnaire.
+The compact question catalog classifies each owner-facing question as exactly one of `DISCOVERY_PERMISSION`, `OWNER_INTENT`, `OWNER_BOUNDARY`, `MATERIAL_PREFERENCE`, or `CREATION_AUTHORIZATION`. The Bootstrap Coverage matrix is the authority for output completeness and question selection. It records every creation, trust, data, delivery, recovery, proof, and activation obligation, including obligations resolved by discovery, a portable default, derivation, or an explicit unavailable state. Mechanical facts are discovered, not asked. Bootstrap asks only when the matrix has a material `OWNER_REQUIRED`, `DEPENDENCY_PENDING`, or `CONFLICT` row that cannot be settled by existing owner input. Multiple rows may point to one compact question; coverage never expands into a whole-project questionnaire.
 
 ## Complete creation plan
 

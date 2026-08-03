@@ -13,6 +13,12 @@ AgentOS is a portable governance and orchestration kernel. It helps turn one cle
 
 Bootstrap then stages a resumable setup transaction. If an authority corpus is imported or refactored, it creates and verifies `legacy.zip`, its manifest, index, and receipt before writing the new corpus. A distinct setup Auditor verifies the exact plan, readback, context separation, security baseline, persistent Runtime binding, and the three-root acceptance slice.
 
+The plan also includes a deterministic Bootstrap coverage matrix. It shows
+which outputs were discovered, owner-confirmed, safely defaulted, derived,
+deferred, not applicable with proof, or still blocking. This lets Bootstrap
+cover data, recovery, delivery, proof, and activation obligations without
+asking one question for every field.
+
 ## What Bootstrap asks
 
 Discovery supplies repository shape, source markers, authority/design candidates, deployment markers, and available tools without reading secrets or changing the project. The compact question compiler asks about:
