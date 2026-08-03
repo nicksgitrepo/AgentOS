@@ -18,7 +18,11 @@ import {
   compileDeploymentReceipt,
   compileLivingCampaignEvent,
   compileLiveAuditReceipt,
+  compileRuntimeBinding,
+  compileRepositoryCheckpointProof,
   compileProductAcceptance,
+  compileNextCampaignCandidate,
+  compileNextCampaignLiveDelta,
   compilePlatformAgent,
   completeFinalizer,
   createLifecycleState,
@@ -40,6 +44,20 @@ import {
   validatePlatformAgent,
   writeStateCompareAndSwap,
 } from "./campaign-lifecycle.mjs";
+import {
+  compileCampaignPolicyProjection,
+  reconcileCampaignPolicy,
+  validateCampaignPolicyProjection,
+  validateCampaignPolicyReconciliation,
+} from "./campaign-policy-reconcile.mjs";
+import {
+  applySerializedCampaignTransition,
+  compileSerializedStateBridge,
+  stateOwnerTempRoot,
+  validateSerializedStateOwnerResult,
+  writeSerializedCampaignTransitionCompareAndSwap,
+} from "./campaign-state-owner.mjs";
+import {deriveChangedSurfacesFromPaths} from "./campaign-cascade.mjs";
 
 export {
   acquirePlatformLease,
@@ -56,7 +74,11 @@ export {
   compileDeploymentReceipt,
   compileLivingCampaignEvent,
   compileLiveAuditReceipt,
+  compileRuntimeBinding,
+  compileRepositoryCheckpointProof,
   compileProductAcceptance,
+  compileNextCampaignCandidate,
+  compileNextCampaignLiveDelta,
   compilePlatformAgent,
   completeFinalizer,
   createLifecycleState,
@@ -77,25 +99,21 @@ export {
   validateLivingCampaignLedger,
   validatePlatformAgent,
   writeStateCompareAndSwap,
+  compileCampaignPolicyProjection,
+  reconcileCampaignPolicy,
+  validateCampaignPolicyProjection,
+  validateCampaignPolicyReconciliation,
+  applySerializedCampaignTransition,
+  compileSerializedStateBridge,
+  stateOwnerTempRoot,
+  validateSerializedStateOwnerResult,
+  writeSerializedCampaignTransitionCompareAndSwap,
 };
 
 export {lifecycleDigest};
 
 export function deriveChangedSurfaces(changedPaths) {
-  if (!Array.isArray(changedPaths) || changedPaths.length === 0) throw new Error("changed paths must be nonempty");
-  const surfaces = new Set();
-  for (const value of changedPaths) {
-    if (typeof value !== "string" || value.length === 0 || value.startsWith("/") || value.includes("..")) {
-      throw new Error("changed path is unsafe");
-    }
-    if (/\b(?:ui|view|component|route|shell|navigation)\b/iu.test(value)) surfaces.add("UI");
-    if (/\b(?:auth|permission|policy|secret|credential|session)\b/iu.test(value)) surfaces.add("AUTHENTICATED_UI");
-    if (/\b(?:api|server|service|handler|controller)\b/iu.test(value)) surfaces.add("BACKEND_API");
-    if (/\b(?:migration|schema|database|rls|model)\b/iu.test(value)) surfaces.add("DATABASE_SCHEMA");
-    if (/\b(?:provider|integration|adapter|client)\b/iu.test(value)) surfaces.add("PROVIDER_INTEGRATION");
-    if (/\b(?:runtime|deploy|config|environment)\b/iu.test(value)) surfaces.add("RUNTIME_CONFIG");
-  }
-  return [...surfaces].sort((left, right) => Buffer.compare(Buffer.from(left), Buffer.from(right)));
+  return deriveChangedSurfacesFromPaths(changedPaths);
 }
 
 export function compileChangeManifest(root, checkpointId, ownerRoleId, changedPaths) {
@@ -186,7 +204,7 @@ function main() {
   }
   if (command === "heartbeat") {
     const payload = payloadPath ? JSON.parse(fs.readFileSync(payloadPath, "utf8")) : {};
-    process.stdout.write(`${canonicalJson(decideHeartbeatAction(state, payload.observed_at_utc, payload.now_utc))}\n`);
+    process.stdout.write(`${canonicalJson(decideHeartbeatAction(state, payload.observed_at_utc, payload.now_utc, payload.policy_state))}\n`);
     return;
   }
   throw new Error(`unknown campaign controller command: ${command}`);

@@ -17,13 +17,13 @@ The target records:
   explicit limitations;
 - an optional project-context adapter ID and its profiled capabilities.
 
-`MANAGED_SITE` is a first-class low-setup option. A project may bind the
-`CHATGPT_SITES` adapter for `PROTOTYPE` or `LIMITED_PRODUCT` use. That adapter
-selection does not provide an account, credential, quota, data guarantee,
+`MANAGED_SITE` is a first-class low-setup option. The portable kernel offers a
+generic profile for `PROTOTYPE` or `LIMITED_PRODUCT` use; a project may bind a
+concrete adapter outside the kernel. That adapter selection does not provide an account, credential, quota, data guarantee,
 authentication guarantee, production claim, or deployment authority. Those
 facts must remain project-context bindings with their own evidence.
 
-Prototype targets are owner-oriented or selected-user proving routes and use
+Prototype targets are owner-oriented or selected-user trial routes and use
 synthetic or explicitly admitted data. Limited products must name the
 supported scope, audience, operating envelope, data posture, and rollback
 identity. Standard production requires a matching Project Life Contract and

@@ -5,11 +5,14 @@ import {
   applyPolicyAmendment,
   compilePolicyAmendment,
   compilePolicyApproval,
+  getPolicyValue,
   MODEL_CLASSES,
   POLICY_CHANGE_CLASSES,
   validatePolicyAmendment,
   validatePolicyState,
 } from "./global-policy-state.mjs";
+import {writePolicyStateCompareAndSwap} from "./global-policy-store.mjs";
+import {writeProjectContextCompareAndSwap} from "./project-context-store.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40,64}$/u;
@@ -20,6 +23,7 @@ const MODEL_ROLES = Object.freeze([
   "CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR", "FEATURE_AGENT", "PLATFORM_AGENT",
   "AUDIT_WORKER", "CAMPAIGN_FINALIZER", "RUNTIME",
 ]);
+const QUESTION_ROOTS = Object.freeze(["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
 
 export const REVIEW_TYPE = "PRE_CAMPAIGN_OWNER_REVIEW";
 export const REVIEW_PHASES = Object.freeze([
@@ -39,6 +43,11 @@ export const REVIEW_CLASSIFICATIONS = Object.freeze([...POLICY_CHANGE_CLASSES]);
 export const CHANGE_BUCKETS = Object.freeze([
   "required", "desired_if_economical", "preserve", "remove", "defer", "non_goals",
 ]);
+const MODEL_GUIDANCE_ECONOMY = Object.freeze(["LOW", "MEDIUM", "HIGH"]);
+const MODEL_GUIDANCE_SPEED = Object.freeze(["SLOW", "MEDIUM", "FAST"]);
+const MODEL_GUIDANCE_DIFFICULTY = Object.freeze(["ROUTINE", "SUBSTANTIAL", "HIGH_CONSEQUENCE"]);
+const MODEL_GUIDANCE_FIT = Object.freeze(["GOOD", "CONDITIONAL", "INSUFFICIENT"]);
+const TASK_TIME_SENSITIVITY = Object.freeze(["LOW", "MEDIUM", "HIGH"]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -181,21 +190,39 @@ function validateCurrentProject(currentProject) {
   safeText(currentProject.current_recommendation, "current project recommendation");
 }
 
+function validateQuestionInventory(inventory) {
+  exactKeys(inventory, QUESTION_ROOTS, "owner review question inventory");
+  for (const root of QUESTION_ROOTS) {
+    validateTextArray(inventory[root], `owner review ${root} question inventory`);
+    assert(inventory[root].every((questionId) => questionId.startsWith({
+      FUNCTION_REQUIREMENTS: "FR-",
+      DESIGN_BIBLE: "DB-",
+      SECURITY: "SEC-",
+    }[root])), `owner review ${root} question inventory contains an ID from another root`);
+  }
+  assert(QUESTION_ROOTS.some((root) => inventory[root].length > 0), "owner review question inventory is empty");
+  return inventory;
+}
+
 function validateReviewScope(scope) {
   exactKeys(scope, ["may_change", "may_not_change", "protected_boundaries", "owner_only_decisions"], "owner review scope");
   for (const field of Object.keys(scope)) validateTextArray(scope[field], `owner review ${field}`);
 }
 
 function validateCampaignShape(shape) {
-  exactKeys(shape, ["owner_outcome", "proving_workflow", "proposed_features", "dependencies", "excluded_scope", "campaign_mode", "release_stop"], "owner review campaign shape");
-  for (const field of ["owner_outcome", "proving_workflow", "campaign_mode", "release_stop"]) safeText(shape[field], `campaign ${field}`);
+  exactKeys(shape, ["owner_outcome", "first_useful_workflow", "proposed_features", "dependencies", "excluded_scope", "campaign_mode", "release_stop", "task_profile"], "owner review campaign shape");
+  for (const field of ["owner_outcome", "first_useful_workflow", "campaign_mode", "release_stop"]) safeText(shape[field], `campaign ${field}`);
   for (const field of ["proposed_features", "dependencies", "excluded_scope"]) validateTextArray(shape[field], `campaign ${field}`);
+  exactKeys(shape.task_profile, ["difficulty", "time_sensitivity", "cost_sensitivity"], "owner review task profile");
+  assert(MODEL_GUIDANCE_DIFFICULTY.includes(shape.task_profile.difficulty), "owner review task difficulty is invalid");
+  assert(TASK_TIME_SENSITIVITY.includes(shape.task_profile.time_sensitivity), "owner review task time sensitivity is invalid");
+  assert(TASK_TIME_SENSITIVITY.includes(shape.task_profile.cost_sensitivity), "owner review task cost sensitivity is invalid");
 }
 
 function validateModelCandidate(candidate, label, {roleRequired = false} = {}) {
   const keys = roleRequired
-    ? ["role", "model_class", "available", "completion_floor", "meets_floor", "economics_sha256", "rationale", "recommended"]
-    : ["level", "model_class", "available", "completion_floor", "meets_floor", "economics_sha256", "rationale", "recommended"];
+    ? ["role", "model_class", "available", "completion_floor", "meets_floor", "economics_sha256", "rationale", "guidance", "recommended"]
+    : ["level", "model_class", "available", "completion_floor", "meets_floor", "economics_sha256", "rationale", "guidance", "recommended"];
   exactKeys(candidate, keys, label);
   if (roleRequired) assert(MODEL_ROLES.includes(candidate.role), `${label} role is invalid`);
   else assert(["MEDIUM", "HIGH", "EXTRA_HIGH", "PRO"].includes(candidate.level), `${label} review level is invalid`);
@@ -205,6 +232,12 @@ function validateModelCandidate(candidate, label, {roleRequired = false} = {}) {
   assert(candidate.meets_floor === true, `${label} is below its completion floor`);
   requireSha(candidate.economics_sha256, `${label} economics`);
   safeText(candidate.rationale, `${label} rationale`);
+  exactKeys(candidate.guidance, ["economy", "speed", "difficulty", "task_fit", "reason"], `${label} guidance`);
+  assert(MODEL_GUIDANCE_ECONOMY.includes(candidate.guidance.economy), `${label} guidance economy is invalid`);
+  assert(MODEL_GUIDANCE_SPEED.includes(candidate.guidance.speed), `${label} guidance speed is invalid`);
+  assert(MODEL_GUIDANCE_DIFFICULTY.includes(candidate.guidance.difficulty), `${label} guidance difficulty is invalid`);
+  assert(MODEL_GUIDANCE_FIT.includes(candidate.guidance.task_fit), `${label} guidance task fit is invalid`);
+  safeText(candidate.guidance.reason, `${label} guidance reason`);
   assert(typeof candidate.recommended === "boolean", `${label} recommendation flag is invalid`);
 }
 
@@ -242,20 +275,34 @@ function packetBody(packet) {
 
 export function validateOwnerReviewPacket(packet) {
   exactKeys(packet, [
-    "schema", "review", "source_binding", "current_project", "review_scope", "candidate_campaign", "model_candidates",
-    "review_phases", "memory_posture", "voice_recommended", "review_transport", "transport_binding", "return_contract", "packet_sha256",
+    "schema", "review", "source_binding", "current_project", "review_scope", "question_ids_by_root", "candidate_campaign", "model_candidates",
+    "review_phases", "memory_posture", "voice_recommended", "review_transport", "policy_binding", "transport_binding", "return_contract", "packet_sha256",
   ], "owner review packet");
   assert(packet.schema === "agentos.user_review_handoff.v1", "owner review packet schema mismatch");
   validateReviewEnvelope(packet.review);
   validateSourceBinding(packet.source_binding);
   validateCurrentProject(packet.current_project);
   validateReviewScope(packet.review_scope);
+  validateQuestionInventory(packet.question_ids_by_root);
   validateCampaignShape(packet.candidate_campaign);
   validateModelCandidates(packet.model_candidates);
   assert(JSON.stringify(packet.review_phases) === JSON.stringify(REVIEW_PHASES), "owner review phases are not the canonical six phases");
   assert(MEMORY_POSTURES.includes(packet.memory_posture), "owner review memory posture is invalid");
   assert(typeof packet.voice_recommended === "boolean", "owner review voice recommendation is invalid");
   assert(REVIEW_TRANSPORTS.includes(packet.review_transport), "owner review transport is invalid");
+  exactKeys(packet.policy_binding, ["policy_epoch", "policy_state_sha256", "transport", "memory_posture", "voice_recommended", "model_profile", "role_models", "binding_sha256"], "owner review policy binding");
+  assert(Number.isSafeInteger(packet.policy_binding.policy_epoch) && packet.policy_binding.policy_epoch >= 1, "owner review policy binding epoch is invalid");
+  requireSha(packet.policy_binding.policy_state_sha256, "owner review policy binding state");
+  assert(packet.policy_binding.policy_epoch === packet.source_binding.policy_epoch && packet.policy_binding.policy_state_sha256 === packet.source_binding.policy_state_sha256, "owner review policy binding differs from source binding");
+  assert(packet.policy_binding.transport === packet.review_transport && packet.policy_binding.memory_posture === packet.memory_posture && packet.policy_binding.voice_recommended === packet.voice_recommended, "owner review policy binding differs from packet settings");
+  assert(REVIEW_TRANSPORTS.includes(packet.policy_binding.transport) && MEMORY_POSTURES.includes(packet.policy_binding.memory_posture) && typeof packet.policy_binding.voice_recommended === "boolean", "owner review policy binding settings are invalid");
+  assert(MODEL_CLASSES.includes(packet.policy_binding.model_profile), "owner review policy model profile is invalid");
+  assert(Array.isArray(packet.policy_binding.role_models) && packet.policy_binding.role_models.length === MODEL_ROLES.length, "owner review policy role models are incomplete");
+  for (const roleModel of packet.policy_binding.role_models) {
+    exactKeys(roleModel, ["role", "model_class"], "owner review policy role model");
+    assert(MODEL_ROLES.includes(roleModel.role) && MODEL_CLASSES.includes(roleModel.model_class), "owner review policy role model is invalid");
+  }
+  assert(packet.policy_binding.binding_sha256 === ownerReviewDigest({...packet.policy_binding, binding_sha256: null}), "owner review policy binding digest mismatch");
   validateTransportBinding(packet.transport_binding, packet.review_transport);
   exactKeys(packet.return_contract, ["schema", "advisory_only", "approval_not_included", "one_json_payload"], "owner review return contract");
   assert(packet.return_contract.schema === "agentos.user_review_return.v1");
@@ -273,8 +320,10 @@ export function compileOwnerReviewPacket({
   sourceBinding,
   currentProject,
   reviewScope,
+  questionIdsByRoot,
   candidateCampaign,
   modelCandidates,
+  policyState,
   transport = "PRIVATE_MARKDOWN",
   memoryPosture = "PROJECT_ONLY",
   voiceRecommended = true,
@@ -284,6 +333,27 @@ export function compileOwnerReviewPacket({
   requireIdentifier(projectId, "owner review project ID");
   assert(REVIEW_TRANSPORTS.includes(transport), "owner review transport is invalid");
   assert(MEMORY_POSTURES.includes(memoryPosture), "owner review memory posture is invalid");
+  validatePolicyState(policyState);
+  validateQuestionInventory(questionIdsByRoot);
+  assert(getPolicyValue(policyState, "REVIEW.TRANSPORT") === transport, "owner review transport is not the current global policy value");
+  assert(getPolicyValue(policyState, "REVIEW.MEMORY_POSTURE") === memoryPosture, "owner review memory posture is not the current global policy value");
+  assert(getPolicyValue(policyState, "REVIEW.VOICE_RECOMMENDED") === voiceRecommended, "owner review voice setting is not the current global policy value");
+  const roleModels = MODEL_ROLES.map((role) => ({role, model_class: getPolicyValue(policyState, `MODEL.ROLE.${role}`)}));
+  const policyBinding = {
+    policy_epoch: policyState.policy_epoch,
+    policy_state_sha256: policyState.policy_state_sha256,
+    transport,
+    memory_posture: memoryPosture,
+    voice_recommended: voiceRecommended,
+    model_profile: getPolicyValue(policyState, "MODEL.PROFILE"),
+    role_models: roleModels,
+    binding_sha256: null,
+  };
+  policyBinding.binding_sha256 = ownerReviewDigest({...policyBinding, binding_sha256: null});
+  for (const roleModel of roleModels) {
+    const recommended = modelCandidates.campaign_role_candidates.find((candidate) => candidate.role === roleModel.role && candidate.recommended);
+    assert(recommended?.model_class === roleModel.model_class, `owner review recommendation for ${roleModel.role} differs from the current global policy`);
+  }
   const packet = {
     schema: "agentos.user_review_handoff.v1",
     review: {
@@ -296,12 +366,14 @@ export function compileOwnerReviewPacket({
     source_binding: structuredClone(sourceBinding),
     current_project: structuredClone(currentProject),
     review_scope: structuredClone(reviewScope),
+    question_ids_by_root: structuredClone(questionIdsByRoot),
     candidate_campaign: structuredClone(candidateCampaign),
     model_candidates: structuredClone(modelCandidates),
     review_phases: [...REVIEW_PHASES],
     memory_posture: memoryPosture,
     voice_recommended: voiceRecommended,
     review_transport: transport,
+    policy_binding: policyBinding,
     transport_binding: transportBinding ?? (transport === "PRIVATE_MARKDOWN" ? {
       kind: transport,
       handoff_locator: `${reviewId}.md`,
@@ -361,10 +433,14 @@ function validateReviewReturn(returnValue, packet) {
   for (const field of ["desired_outcome", "user_and_moment", "rationale"]) safeText(returnValue.intent[field], `owner review intent ${field}`);
   safeText(returnValue.intent.north_star_change_requested, "owner review North Star change", {nullable: true});
   validateChanges(returnValue.changes);
-  exactKeys(returnValue.campaign, ["proposed_boundary", "proving_workflow", "priorities", "deadline", "risk_posture"], "owner review campaign return");
-  for (const field of ["proposed_boundary", "proving_workflow", "risk_posture"]) safeText(returnValue.campaign[field]);
+  exactKeys(returnValue.campaign, ["proposed_boundary", "first_useful_workflow", "priorities", "deadline", "risk_posture", "task_profile"], "owner review campaign return");
+  for (const field of ["proposed_boundary", "first_useful_workflow", "risk_posture"]) safeText(returnValue.campaign[field]);
   validateTextArray(returnValue.campaign.priorities, "owner review campaign priorities");
   safeText(returnValue.campaign.deadline, "owner review deadline", {nullable: true});
+  exactKeys(returnValue.campaign.task_profile, ["difficulty", "time_sensitivity", "cost_sensitivity"], "owner review return task profile");
+  assert(MODEL_GUIDANCE_DIFFICULTY.includes(returnValue.campaign.task_profile.difficulty), "owner review return task difficulty is invalid");
+  assert(TASK_TIME_SENSITIVITY.includes(returnValue.campaign.task_profile.time_sensitivity), "owner review return task time sensitivity is invalid");
+  assert(TASK_TIME_SENSITIVITY.includes(returnValue.campaign.task_profile.cost_sensitivity), "owner review return task cost sensitivity is invalid");
   exactKeys(returnValue.model_preferences, ["cost_priority", "speed_priority", "quality_priority", "accepted_chat_level", "campaign_role_preferences"], "owner review model preferences");
   for (const field of ["cost_priority", "speed_priority", "quality_priority"]) assert(typeof returnValue.model_preferences[field] === "number" && returnValue.model_preferences[field] >= 0 && returnValue.model_preferences[field] <= 1, `owner review ${field} invalid`);
   if (returnValue.model_preferences.accepted_chat_level !== null) assert(["MEDIUM", "HIGH", "EXTRA_HIGH", "PRO"].includes(returnValue.model_preferences.accepted_chat_level), "owner review chat level invalid");
@@ -396,32 +472,185 @@ function validateReviewReturn(returnValue, packet) {
 
 export function renderOwnerReviewMarkdown(packet) {
   validateOwnerReviewPacket(packet);
+  const chat = recommendedChat(packet);
+  const friendlyLevel = {MEDIUM: "a quick, economical conversation", HIGH: "a deeper conversation", EXTRA_HIGH: "a very careful conversation", PRO: "the most capable available conversation"}[chat.level] ?? "a suitable conversation";
+  const friendlyModel = (modelClass) => ({
+    HOST_DEFAULT: "the host's normal choice", ECONOMICAL: "the economical choice", BALANCED: "a balanced choice",
+    PERFORMANCE: "a performance-focused choice", FRONTIER: "the strongest choice",
+  }[modelClass] ?? "the recommended choice");
+  const roleLabels = {
+    CAMPAIGN_ORCHESTRATOR: "overall coordinator", INDEPENDENT_AUDITOR: "independent checker", FEATURE_AGENT: "feature builder",
+    PLATFORM_AGENT: "shared technical helper", AUDIT_WORKER: "focused checker", CAMPAIGN_FINALIZER: "senior repairer", RUNTIME: "release and operations helper",
+  };
+  const recommendedRoles = recommendedRoleModels(packet)
+    .map(({role, model_class}) => `- ${roleLabels[role] ?? role}: ${friendlyModel(model_class)}`).join("\n");
+  const chatAlternatives = packet.model_candidates.chat_review_levels
+    .map((candidate) => `- ${candidate.level}: ${friendlyModel(candidate.model_class)} — ${candidate.guidance.reason} Cost ${candidate.guidance.economy.toLowerCase()}, speed ${candidate.guidance.speed.toLowerCase()}, fit for ${candidate.guidance.difficulty.toLowerCase().replaceAll("_", " ")} work.`)
+    .join("\n");
+  const roleAlternatives = MODEL_ROLES.map((role) => {
+    const label = roleLabels[role] ?? role;
+    const candidates = packet.model_candidates.campaign_role_candidates
+      .filter((candidate) => candidate.role === role)
+      .map((candidate) => `${friendlyModel(candidate.model_class)} — ${candidate.guidance.reason} Cost ${candidate.guidance.economy.toLowerCase()}, speed ${candidate.guidance.speed.toLowerCase()}, fit for ${candidate.guidance.difficulty.toLowerCase().replaceAll("_", " ")} work.`)
+      .join("; ");
+    return `- ${label}: ${candidates}`;
+  }).join("\n");
+  const list = (values) => values.length > 0 ? values.map((value) => `- ${value}`).join("\n") : "- None recorded";
   return [
-    "# AgentOS User Review Campaign",
+    "# Let's talk about the next useful step",
     "",
-    `Review: \`${packet.review.review_id}\``,
+    "This is a private planning conversation about what you want to do next. Nothing will be changed, published, merged, deployed, or spent because of this conversation.",
     "",
-    "This is an advisory, pre-campaign conversation. It may clarify intent and propose changes, but it cannot approve spending, publication, merging, deployment, deletion, or Product agent creation.",
+    "Talk naturally, as if you were explaining the project to a thoughtful teammate. Short answers are fine, and you can use voice if that is easier.",
     "",
-    "Use the six phases in order. Keep memory scoped to the project when available. Return exactly one JSON payload after the conversation; narrative outside that payload is not authority.",
+    "## What is true about the project right now",
     "",
-    "## Review packet",
+    packet.current_project.summary,
     "",
-    "```json",
-    JSON.stringify(packet, null, 2),
-    "```",
+    packet.current_project.north_star === null ? "The long-term direction has not been stated yet." : `The direction so far is: ${packet.current_project.north_star}`,
     "",
-    "## Return instruction",
+    `People involved: ${packet.current_project.users.join(", ")}.`,
     "",
-    "Discuss ORIENTATION, INTENT, DESIRED_CHANGES, CAMPAIGN_SHAPE, MODEL_PLAN, and REVIEW_SUMMARY. Do not claim that the project changed. Return the exact return contract to the AgentOS Orchestrator.",
+    "Already accepted:", list(packet.current_project.accepted_capabilities), "",
+    "Still uncertain or unfinished:", list([...packet.current_project.working_unaccepted, ...packet.current_project.known_flaws, ...packet.current_project.unavailable]), "",
+    "## Start with one question", "",
+    "What outcome would make the next step worthwhile?",
+    "",
+    "Answer this one first. The next short question will depend on what you say; you do not need to complete a checklist.",
+    "",
+    "The current suggested boundary is:", packet.candidate_campaign.owner_outcome, "",
+    "The smallest complete result currently suggested is:", packet.candidate_campaign.first_useful_workflow, "",
+    "## Model and time suggestion", "",
+    `For this conversation, ${friendlyLevel} is suggested. The campaign model suggestions are:`, recommendedRoles, "",
+    "Here are the available conversation levels so you can compare the tradeoff:", chatAlternatives, "",
+    "Here are the available role choices and how they trade cost, speed, and reasoning:", roleAlternatives, "",
+    `This task is currently described as ${packet.candidate_campaign.task_profile.difficulty.toLowerCase().replaceAll("_", " ")} work, with ${packet.candidate_campaign.task_profile.time_sensitivity.toLowerCase()} time sensitivity and ${packet.candidate_campaign.task_profile.cost_sensitivity.toLowerCase()} cost sensitivity.`, "",
+    "These are recommendations, not commitments. Tell me if you care most about saving cost, finishing quickly, or getting the strongest reasoning, and I will reflect that preference.",
+    "",
+    "## How to return the conversation", "",
+    "When we are finished, reply with a short note using plain-language headings such as `What I want`, `Who it helps`, `What should change`, `What should stay`, `What can wait`, `Model preference`, and `Anything unresolved`. Do not say that the project changed. AgentOS will turn the note into a bound candidate and show the owner the exact result for separate approval.",
+    "",
+    `Keep this conversation scoped to review ${packet.review.review_id}; project memory is helpful context, but it never outranks the current project and its boundaries.`,
     "",
   ].join("\n");
+}
+
+function markdownSection(markdown, names) {
+  const wanted = new Set(names.map((name) => name.trim().toLocaleLowerCase("en-US")));
+  const lines = markdown.replace(/\r\n?/gu, "\n").split("\n");
+  const heading = /^#{1,3}[ \t]+(.+?)[ \t]*$/u;
+  const start = lines.findIndex((line) => {
+    const match = line.match(heading);
+    return match !== null && wanted.has(match[1].trim().toLocaleLowerCase("en-US"));
+  });
+  if (start < 0) return "";
+  let end = lines.length;
+  for (let index = start + 1; index < lines.length; index += 1) {
+    if (heading.test(lines[index])) {
+      end = index;
+      break;
+    }
+  }
+  return lines.slice(start + 1, end).join("\n").trim();
+}
+
+function markdownItems(markdown, names) {
+  return markdownSection(markdown, names).split("\n")
+    .map((line) => line.replace(/^\s*(?:[-*+]\s+|\d+[.)]\s+)/u, "").trim())
+    .filter((line) => line.length > 0);
+}
+
+function markdownHasSection(markdown, names) {
+  const wanted = new Set(names.map((name) => name.trim().toLocaleLowerCase("en-US")));
+  const heading = /^#{1,3}[ \t]+(.+?)[ \t]*$/u;
+  return markdown.replace(/\r\n?/gu, "\n").split("\n").some((line) => {
+    const match = line.match(heading);
+    return match !== null && wanted.has(match[1].trim().toLocaleLowerCase("en-US"));
+  });
+}
+
+function normalizeOptionalItems(values) {
+  if (values.length === 1 && /^(?:none|nothing|no(?:ne)? yet|n\/a|not applicable)[.!]?$/iu.test(values[0])) return [];
+  return values;
+}
+
+function parseNaturalOwnerReviewReturn(markdown, packet) {
+  const outcomeNames = ["What I want", "Outcome", "Desired outcome"];
+  const userMomentNames = ["Who it helps", "Who this helps", "User and moment"];
+  const rationaleNames = ["Why", "Why now", "Reason"];
+  const changeNames = ["What should change", "What must change", "Required", "Must have"];
+  const modelNames = ["Model preference", "Cost, speed, and quality"];
+  const outcome = markdownSection(markdown, outcomeNames) || "Owner outcome was not supplied.";
+  const userMoment = markdownSection(markdown, userMomentNames) || "The intended user and moment were not supplied.";
+  const rationale = markdownSection(markdown, rationaleNames) || "The reason for the change was not supplied.";
+  const required = markdownItems(markdown, ["What should change", "What must change", "Required", "Must have"]);
+  const preserve = markdownItems(markdown, ["What should stay", "Preserve", "Keep"]);
+  const defer = markdownItems(markdown, ["What can wait", "Defer", "Later"]);
+  const nonGoals = markdownItems(markdown, ["What is out of bounds", "Non-goals", "Do not change"]);
+  const unresolved = normalizeOptionalItems(markdownItems(markdown, ["Anything unresolved", "Unresolved", "Open questions"]));
+  const modelText = markdownSection(markdown, modelNames);
+  const missing = [];
+  if (!markdownHasSection(markdown, outcomeNames)) missing.push("OWNER_REVIEW_MISSING_INTENT");
+  if (!markdownHasSection(markdown, userMomentNames)) missing.push("OWNER_REVIEW_MISSING_USER_MOMENT");
+  if (!markdownHasSection(markdown, rationaleNames)) missing.push("OWNER_REVIEW_MISSING_REASON");
+  if (!markdownHasSection(markdown, changeNames)) missing.push("OWNER_REVIEW_MISSING_CHANGE_SET");
+  if (!markdownHasSection(markdown, modelNames)) missing.push("OWNER_REVIEW_MISSING_MODEL_PREFERENCE");
+  if (!markdownHasSection(markdown, ["Current understanding", "Current summary", "What is true"])) missing.push("OWNER_REVIEW_MISSING_ORIENTATION_CONFIRMATION");
+  const preference = (pattern, fallback) => new RegExp(`\\b(?:${pattern})\\b`, "iu").test(modelText) ? 1 : fallback;
+  const levelMatch = modelText.match(/\b(MEDIUM|HIGH|EXTRA_HIGH|PRO)\b/iu);
+  const rolePreferences = [];
+  for (const role of MODEL_ROLES) {
+    const label = role.replaceAll("_", " ");
+    const match = modelText.match(new RegExp(`${label}[^\\n]*(HOST_DEFAULT|ECONOMICAL|BALANCED|PERFORMANCE|FRONTIER)`, "iu"));
+    if (match) rolePreferences.push({role, model_class: match[1].toUpperCase()});
+  }
+  rolePreferences.sort((left, right) => Buffer.compare(Buffer.from(left.role, "utf8"), Buffer.from(right.role, "utf8")));
+  const response = {
+    schema: "agentos.user_review_return.v1",
+    review_id: packet.review.review_id,
+    project_id: packet.review.project_id,
+    source_policy_epoch: packet.source_binding.policy_epoch,
+    source_policy_state_sha256: packet.source_binding.policy_state_sha256,
+    source_campaign_candidate_sha256: packet.source_binding.next_campaign_candidate_sha256,
+    orientation: {owner_confirmed_current_summary: !missing.includes("OWNER_REVIEW_MISSING_ORIENTATION_CONFIRMATION"), corrections: []},
+    intent: {desired_outcome: outcome, user_and_moment: userMoment, rationale, north_star_change_requested: null},
+    changes: {required, desired_if_economical: [], preserve, remove: [], defer, non_goals: nonGoals},
+    campaign: {
+      proposed_boundary: outcome,
+      first_useful_workflow: userMoment,
+      priorities: required.length > 0 ? required : [outcome],
+      deadline: null,
+      risk_posture: "Use the smallest reversible route within the stated boundaries.",
+      task_profile: structuredClone(packet.candidate_campaign.task_profile),
+    },
+    model_preferences: {
+      cost_priority: preference("cost", 0.5),
+      speed_priority: preference("speed", 0.5),
+      quality_priority: preference("quality|strongest|reasoning", 0.5),
+      accepted_chat_level: levelMatch ? levelMatch[1].toUpperCase() : null,
+      campaign_role_preferences: rolePreferences,
+    },
+    policy_changes: [],
+    owner_soft_confirmations: {
+      intent_confirmed: !missing.some((item) => ["OWNER_REVIEW_MISSING_INTENT", "OWNER_REVIEW_MISSING_USER_MOMENT", "OWNER_REVIEW_MISSING_REASON"].includes(item)),
+      change_set_confirmed: !missing.includes("OWNER_REVIEW_MISSING_CHANGE_SET"),
+      campaign_shape_confirmed: !missing.includes("OWNER_REVIEW_MISSING_USER_MOMENT"),
+      model_plan_confirmed: !missing.includes("OWNER_REVIEW_MISSING_MODEL_PREFERENCE"),
+    },
+    unresolved: [...new Set([...unresolved, ...missing])].sort((left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"))),
+    advisory_only: true,
+  };
+  response.source_markdown_sha256 = crypto.createHash("sha256").update(markdown, "utf8").digest("hex");
+  response.return_sha256 = ownerReviewDigest({...response, return_sha256: null});
+  validateReviewReturn(response, packet);
+  return response;
 }
 
 export function parseOwnerReviewReturnMarkdown(markdown, packet) {
   validateOwnerReviewPacket(packet);
   assert(typeof markdown === "string" && markdown.trim().length > 0, "owner review return Markdown must be nonempty");
   const matches = [...markdown.matchAll(/```json\s*([\s\S]*?)```/giu)];
+  if (matches.length === 0) return parseNaturalOwnerReviewReturn(markdown, packet);
   assert(matches.length === 1, "owner review return must contain exactly one JSON payload");
   const otherFences = markdown.replace(matches[0][0], "").match(/```/gu);
   assert(!otherFences, "owner review return contains another fenced payload");
@@ -447,7 +676,9 @@ function recommendedRoleModels(packet) {
 }
 
 function classifyReview(packet, response) {
-  if (response.unresolved.length > 0) return "OWNER_BOUNDARY";
+  if (response.unresolved.length > 0
+      || response.orientation.owner_confirmed_current_summary !== true
+      || Object.values(response.owner_soft_confirmations).some((confirmed) => confirmed !== true)) return "OWNER_BOUNDARY";
   if (response.intent.north_star_change_requested !== null) return "PROJECT_COURSE_CHANGE";
   if (response.campaign.proposed_boundary !== packet.candidate_campaign.owner_outcome) return "PROJECT_COURSE_CHANGE";
   if (response.changes.required.length === 0 && response.changes.desired_if_economical.length === 0
@@ -470,6 +701,27 @@ function candidateBody(candidate) {
   return body;
 }
 
+function validateProjectContextAmendment(amendment) {
+  if (amendment === null) return null;
+  exactKeys(amendment, ["schema", "project_id", "base_context_sha256", "changes", "reason", "authority", "amendment_sha256"], "project context amendment");
+  assert(amendment.schema === "agentos.project_context_amendment.v1", "project context amendment schema mismatch");
+  requireIdentifier(amendment.project_id, "project context amendment project ID");
+  requireSha(amendment.base_context_sha256, "project context amendment base context");
+  assert(Array.isArray(amendment.changes) && amendment.changes.length > 0, "project context amendment changes are required");
+  const fields = new Set();
+  for (const change of amendment.changes) {
+    exactKeys(change, ["field", "new_value"], "project context amendment change");
+    assert(["north_star", "first_useful_workflow"].includes(change.field) && !fields.has(change.field), "project context amendment field is invalid or duplicated");
+    fields.add(change.field);
+    safeText(change.new_value, `project context amendment ${change.field}`);
+  }
+  safeText(amendment.reason, "project context amendment reason");
+  assert(amendment.authority === "OWNER_INTENT", "project context amendment authority is invalid");
+  requireSha(amendment.amendment_sha256, "project context amendment digest");
+  assert(amendment.amendment_sha256 === ownerReviewDigest({...amendment, amendment_sha256: null}), "project context amendment digest mismatch");
+  return amendment;
+}
+
 export function compileOwnerReviewCandidate({packet, response, policyState, amendmentId = "OWNER-REVIEW-POLICY-AMENDMENT", nowUtc}) {
   validateOwnerReviewPacket(packet);
   validatePolicyState(policyState);
@@ -478,20 +730,45 @@ export function compileOwnerReviewCandidate({packet, response, policyState, amen
   validateRequestedModelPreferences(packet, response);
   requireUtc(nowUtc, "owner review candidate time");
   const classification = classifyReview(packet, response);
-  const policyAmendment = response.policy_changes.length === 0 ? null : compilePolicyAmendment({
+  const policyChanges = [...response.policy_changes];
+  if (response.intent.north_star_change_requested !== null) {
+    assert(!policyChanges.some((change) => change.variable_id === "PROJECT.NORTH_STAR"), "North Star must be represented by the owner intent field only");
+    policyChanges.push({variable_id: "PROJECT.NORTH_STAR", new_value: response.intent.north_star_change_requested});
+  }
+  policyChanges.sort((left, right) => Buffer.compare(Buffer.from(left.variable_id, "utf8"), Buffer.from(right.variable_id, "utf8")));
+  const policyAmendment = policyChanges.length === 0 ? null : compilePolicyAmendment({
     state: policyState,
     amendmentId,
-    changes: response.policy_changes,
+    changes: policyChanges,
     request: {
       requested_by: "OWNER",
-      authority: "OWNER_BOUNDARY",
-      reason: "Owner-reviewed policy change; apply only after exact admission approval.",
+      authority: response.intent.north_star_change_requested !== null ? "OWNER_INTENT" : "OWNER_BOUNDARY",
+      reason: response.intent.north_star_change_requested !== null
+        ? "Owner-reviewed North Star change; apply only after exact admission approval."
+        : "Owner-reviewed policy change; apply only after exact admission approval.",
       requested_at_utc: nowUtc,
       effective_boundary: classification === "CURRENT_CAMPAIGN_COMPATIBLE" ? "NEXT_CHECKPOINT" : "NEXT_CAMPAIGN",
       approval_state: "PENDING_EXACT_APPROVAL",
     },
+    questionIdsByRoot: packet.question_ids_by_root,
   });
   if (policyAmendment) validatePolicyAmendment(policyAmendment);
+  const projectContextChanges = response.intent.north_star_change_requested === null
+    ? []
+    : [{field: "north_star", new_value: response.intent.north_star_change_requested}];
+  const projectContextAmendment = projectContextChanges.length === 0 ? null : {
+    schema: "agentos.project_context_amendment.v1",
+    project_id: packet.review.project_id,
+    base_context_sha256: packet.source_binding.project_context_sha256,
+    changes: projectContextChanges,
+    reason: "Owner-reviewed project-course change; apply only after exact admission approval.",
+    authority: "OWNER_INTENT",
+    amendment_sha256: null,
+  };
+  if (projectContextAmendment !== null) {
+    projectContextAmendment.amendment_sha256 = ownerReviewDigest({...projectContextAmendment, amendment_sha256: null});
+    validateProjectContextAmendment(projectContextAmendment);
+  }
   const selectedChat = response.model_preferences.accepted_chat_level === null
     ? recommendedChat(packet).level : response.model_preferences.accepted_chat_level;
   const selectedByRole = new Map(recommendedRoleModels(packet).map((item) => [item.role, item.model_class]));
@@ -511,6 +788,9 @@ export function compileOwnerReviewCandidate({packet, response, policyState, amen
     source_binding: structuredClone(packet.source_binding),
     review_transport: packet.review_transport,
     transport_binding: structuredClone(packet.transport_binding),
+    orientation: structuredClone(response.orientation),
+    owner_soft_confirmations: structuredClone(response.owner_soft_confirmations),
+    unresolved: structuredClone(response.unresolved),
     classification,
     owner_intent: {
       desired_outcome: response.intent.desired_outcome,
@@ -531,11 +811,12 @@ export function compileOwnerReviewCandidate({packet, response, policyState, amen
     },
     policy_amendment: policyAmendment,
     policy_amendment_sha256: policyAmendment?.amendment_sha256 ?? null,
+    project_context_amendment: projectContextAmendment,
     canon_delta_sha256: ownerReviewDigest({intent: response.intent, changes: response.changes, campaign: response.campaign}),
     question_recompile_roots: questionRecompileRoots,
     protected_boundaries: structuredClone(packet.review_scope.protected_boundaries),
     excluded_scope: structuredClone(packet.candidate_campaign.excluded_scope),
-    candidate_status: "CANDIDATE_ONLY",
+    candidate_status: classification === "OWNER_BOUNDARY" ? "OWNER_REVIEW_HOLD" : "CANDIDATE_ONLY",
     active_campaign: false,
     product_writes_allowed: false,
     product_agent_spawns_allowed: false,
@@ -550,8 +831,8 @@ export function compileOwnerReviewCandidate({packet, response, policyState, amen
 
 export function validateOwnerReviewCandidate(candidate) {
   exactKeys(candidate, [
-    "schema", "review_id", "project_id", "source_binding", "review_transport", "transport_binding", "classification", "owner_intent", "change_set", "campaign_shape",
-    "model_plan", "policy_amendment", "policy_amendment_sha256", "canon_delta_sha256", "question_recompile_roots", "protected_boundaries",
+    "schema", "review_id", "project_id", "source_binding", "review_transport", "transport_binding", "orientation", "owner_soft_confirmations", "unresolved", "classification", "owner_intent", "change_set", "campaign_shape",
+    "model_plan", "policy_amendment", "policy_amendment_sha256", "project_context_amendment", "canon_delta_sha256", "question_recompile_roots", "protected_boundaries",
     "excluded_scope", "candidate_status", "active_campaign", "product_writes_allowed", "product_agent_spawns_allowed", "deployment_allowed",
     "requires_exact_owner_approval", "created_at_utc", "candidate_sha256",
   ], "owner review candidate");
@@ -561,6 +842,12 @@ export function validateOwnerReviewCandidate(candidate) {
   validateSourceBinding(candidate.source_binding);
   assert(REVIEW_TRANSPORTS.includes(candidate.review_transport), "owner review candidate transport is invalid");
   validateTransportBinding(candidate.transport_binding, candidate.review_transport);
+  exactKeys(candidate.orientation, ["owner_confirmed_current_summary", "corrections"], "owner review candidate orientation");
+  assert(typeof candidate.orientation.owner_confirmed_current_summary === "boolean", "owner review candidate orientation confirmation invalid");
+  validateTextArray(candidate.orientation.corrections, "owner review candidate orientation corrections");
+  exactKeys(candidate.owner_soft_confirmations, ["intent_confirmed", "change_set_confirmed", "campaign_shape_confirmed", "model_plan_confirmed"], "owner review candidate confirmations");
+  for (const confirmed of Object.values(candidate.owner_soft_confirmations)) assert(typeof confirmed === "boolean", "owner review candidate confirmation is invalid");
+  validateTextArray(candidate.unresolved, "owner review candidate unresolved items");
   assert(REVIEW_CLASSIFICATIONS.includes(candidate.classification), "owner review candidate classification invalid");
   exactKeys(candidate.owner_intent, ["desired_outcome", "user_and_moment", "rationale", "north_star_change_requested"], "owner review candidate intent");
   for (const field of ["desired_outcome", "user_and_moment", "rationale"]) safeText(candidate.owner_intent[field]);
@@ -568,12 +855,13 @@ export function validateOwnerReviewCandidate(candidate) {
   validateChanges(candidate.change_set);
   validateCampaignShape({
     owner_outcome: candidate.campaign_shape.proposed_boundary,
-    proving_workflow: candidate.campaign_shape.proving_workflow,
+    first_useful_workflow: candidate.campaign_shape.first_useful_workflow,
     proposed_features: candidate.change_set.required,
     dependencies: [],
     excluded_scope: candidate.excluded_scope,
     campaign_mode: "OWNER_REVIEW_CANDIDATE",
     release_stop: candidate.campaign_shape.risk_posture,
+    task_profile: candidate.campaign_shape.task_profile,
   });
   exactKeys(candidate.model_plan, ["chat_review_level", "campaign_role_preferences", "economics_snapshot_sha256", "host_catalog_sha256"], "owner review candidate model plan");
   assert(["MEDIUM", "HIGH", "EXTRA_HIGH", "PRO"].includes(candidate.model_plan.chat_review_level), "owner review candidate chat level invalid");
@@ -590,12 +878,25 @@ export function validateOwnerReviewCandidate(candidate) {
     validatePolicyAmendment(candidate.policy_amendment);
     assert(candidate.policy_amendment_sha256 === candidate.policy_amendment.amendment_sha256, "owner review policy amendment digest mismatch");
   } else assert(candidate.policy_amendment_sha256 === null, "owner review candidate has a missing policy amendment");
+  validateProjectContextAmendment(candidate.project_context_amendment);
+  if (candidate.project_context_amendment !== null) {
+    assert(candidate.project_context_amendment.project_id === candidate.project_id, "project context amendment project mismatch");
+    assert(candidate.project_context_amendment.base_context_sha256 === candidate.source_binding.project_context_sha256, "project context amendment base mismatch");
+  }
   requireSha(candidate.canon_delta_sha256, "owner review Canon delta");
   assert(candidate.question_recompile_roots.every((root) => ACCEPTANCE_ROOTS.includes(root)), "owner review question root is invalid");
   assert(JSON.stringify(candidate.question_recompile_roots) === JSON.stringify(ACCEPTANCE_ROOTS.slice().filter((root) => candidate.question_recompile_roots.includes(root))), "owner review question roots must retain acceptance order");
   validateTextArray(candidate.protected_boundaries, "owner review candidate protected boundaries");
   validateTextArray(candidate.excluded_scope, "owner review candidate excluded scope");
-  assert(candidate.candidate_status === "CANDIDATE_ONLY" && candidate.active_campaign === false && candidate.product_writes_allowed === false && candidate.product_agent_spawns_allowed === false && candidate.deployment_allowed === false && candidate.requires_exact_owner_approval === true, "owner review candidate crossed the pre-admission boundary");
+  assert(["CANDIDATE_ONLY", "OWNER_REVIEW_HOLD"].includes(candidate.candidate_status), "owner review candidate status is invalid");
+  if (candidate.candidate_status === "CANDIDATE_ONLY") {
+    assert(candidate.unresolved.length === 0 && candidate.orientation.owner_confirmed_current_summary === true
+      && Object.values(candidate.owner_soft_confirmations).every((confirmed) => confirmed === true),
+    "owner review candidate was admitted before the owner completed the conversation");
+  } else assert(candidate.unresolved.length > 0 || candidate.orientation.owner_confirmed_current_summary === false
+    || Object.values(candidate.owner_soft_confirmations).some((confirmed) => confirmed === false),
+  "owner review hold lacks an unresolved owner confirmation");
+  assert(candidate.active_campaign === false && candidate.product_writes_allowed === false && candidate.product_agent_spawns_allowed === false && candidate.deployment_allowed === false && candidate.requires_exact_owner_approval === true, "owner review candidate crossed the pre-admission boundary");
   requireUtc(candidate.created_at_utc, "owner review candidate time");
   requireSha(candidate.candidate_sha256, "owner review candidate digest");
   assert(candidate.candidate_sha256 === ownerReviewDigest(candidateBody(candidate)), "owner review candidate digest mismatch");
@@ -608,11 +909,20 @@ function approvalPacketBody(packet) {
   return body;
 }
 
-export function compileOwnerApprovalPacket({candidate, packet}) {
+export function compileOwnerApprovalPacket({candidate, packet, policyState}) {
   validateOwnerReviewPacket(packet);
   validateOwnerReviewCandidate(candidate);
+  validatePolicyState(policyState);
   assert(candidate.review_id === packet.review.review_id && candidate.project_id === packet.review.project_id, "approval packet identity mismatch");
+  assert(candidate.source_binding.policy_epoch === policyState.policy_epoch
+    && candidate.source_binding.policy_state_sha256 === policyState.policy_state_sha256,
+  "owner review approval packet policy state is stale");
   const sharedLink = packet.review_transport === "SHARED_LINK_ADVISORY";
+  const configuredRoute = getPolicyValue(policyState, "REVIEW.APPROVAL_ROUTE");
+  const candidateReady = candidate.candidate_status === "CANDIDATE_ONLY"
+    && candidate.unresolved.length === 0
+    && candidate.orientation.owner_confirmed_current_summary === true
+    && Object.values(candidate.owner_soft_confirmations).every((confirmed) => confirmed === true);
   const approvalPacket = {
     schema: "agentos.owner_review_approval_packet.v1",
     review_id: candidate.review_id,
@@ -626,8 +936,9 @@ export function compileOwnerApprovalPacket({candidate, packet}) {
     excluded_scope: structuredClone(candidate.excluded_scope),
     release_stop: candidate.campaign_shape.release_stop,
     approval_state: "PENDING_EXACT_APPROVAL",
-    approval_allowed: !sharedLink,
-    allowed_approval_routes: sharedLink ? [] : [...APPROVAL_ROUTES].sort((left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"))),
+    approval_allowed: !sharedLink && candidateReady,
+    configured_approval_route: sharedLink || !candidateReady ? null : configuredRoute,
+    allowed_approval_routes: sharedLink || !candidateReady ? [] : [configuredRoute],
     forbidden_routes: ["OWNER_CONVERSATIONAL_CONFIRMATION", "SHARED_LINK_ADVISORY"],
     activation_effect: "Admit the exact candidate to the Orchestrator; do not spawn or deploy from this packet.",
     approval_packet_sha256: null,
@@ -640,7 +951,7 @@ export function validateOwnerApprovalPacket(packet) {
   exactKeys(packet, [
     "schema", "review_id", "project_id", "source_policy_epoch", "source_policy_state_sha256", "candidate_sha256", "policy_amendment_sha256",
     "exact_candidate", "protected_boundaries", "excluded_scope", "release_stop", "approval_state", "approval_allowed", "allowed_approval_routes",
-    "forbidden_routes", "activation_effect", "approval_packet_sha256",
+    "configured_approval_route", "forbidden_routes", "activation_effect", "approval_packet_sha256",
   ], "owner review approval packet");
   assert(packet.schema === "agentos.owner_review_approval_packet.v1", "owner review approval packet schema mismatch");
   validateOwnerReviewCandidate(packet.exact_candidate);
@@ -658,6 +969,12 @@ export function validateOwnerApprovalPacket(packet) {
   assert(typeof packet.approval_allowed === "boolean", "approval packet allowance invalid");
   sortedStrings(packet.allowed_approval_routes, "approval packet routes", {allowEmpty: true});
   assert(packet.approval_allowed === (packet.allowed_approval_routes.length > 0), "approval packet route allowance is inconsistent");
+  if (packet.exact_candidate.candidate_status === "OWNER_REVIEW_HOLD") assert(packet.approval_allowed === false, "owner review hold cannot be approved");
+  if (packet.approval_allowed) {
+    assert(APPROVAL_ROUTES.includes(packet.configured_approval_route), "approval packet configured route is invalid");
+    assert(packet.allowed_approval_routes.length === 1 && packet.allowed_approval_routes[0] === packet.configured_approval_route,
+      "approval packet routes are not bound to the configured policy route");
+  } else assert(packet.configured_approval_route === null, "advisory approval packet carries an approval route");
   sortedStrings(packet.forbidden_routes, "approval packet forbidden routes");
   safeText(packet.activation_effect, "approval packet activation effect");
   requireSha(packet.approval_packet_sha256, "approval packet digest");
@@ -692,7 +1009,7 @@ export function compileOwnerApproval({approvalPacket, approvalState = "OWNER_AUT
   return approval;
 }
 
-export function applyOwnerReviewApproval({candidate, approvalPacket, approval, policyState, currentBoundary = "NEXT_CAMPAIGN"}) {
+export function applyOwnerReviewApproval({candidate, approvalPacket, approval, policyState, currentBoundary = "NEXT_CAMPAIGN", policyStatePath = null, projectContextPath = null}) {
   validateOwnerReviewCandidate(candidate);
   validateOwnerApprovalPacket(approvalPacket);
   validatePolicyState(policyState);
@@ -704,6 +1021,8 @@ export function applyOwnerReviewApproval({candidate, approvalPacket, approval, p
   assert(approval.review_id === candidate.review_id && approval.candidate_sha256 === candidate.candidate_sha256 && approval.approval_packet_sha256 === approvalPacket.approval_packet_sha256, "owner review approval targets a different candidate");
   assert(approvalPacket.exact_candidate.candidate_sha256 === candidate.candidate_sha256, "approval packet is not bound to candidate");
   assert(approvalPacket.approval_allowed === true && approvalPacket.allowed_approval_routes.includes(approval.approval_route), "owner review approval route is not allowed");
+  assert(approval.approval_route === getPolicyValue(policyState, "REVIEW.APPROVAL_ROUTE"),
+    "owner review approval route does not match the current global policy");
   requireUtc(approval.approved_at_utc, "owner review approval time");
   requireSha(approval.actor_digest_sha256, "owner review actor digest");
   requireSha(approval.approval_sha256, "owner review approval digest");
@@ -717,6 +1036,28 @@ export function applyOwnerReviewApproval({candidate, approvalPacket, approval, p
       actorDigestSha256: approval.actor_digest_sha256,
     });
     nextPolicyState = applyPolicyAmendment({state: policyState, amendment: candidate.policy_amendment, approval: policyApproval, currentBoundary});
+  }
+  let policyPersistence = null;
+  if (policyStatePath !== null) {
+    const persisted = writePolicyStateCompareAndSwap({
+      filePath: policyStatePath,
+      expectedPolicyStateSha256: policyState.policy_state_sha256,
+      nextState: nextPolicyState,
+    });
+    nextPolicyState = persisted.state;
+    policyPersistence = {
+      write_receipt_sha256: persisted.write_receipt_sha256,
+      policy_state_sha256: persisted.state.policy_state_sha256,
+    };
+  }
+  let projectContextPersistence = null;
+  if (projectContextPath !== null && candidate.project_context_amendment !== null) {
+    projectContextPersistence = writeProjectContextCompareAndSwap({
+      filePath: projectContextPath,
+      expectedContextSha256: candidate.project_context_amendment.base_context_sha256,
+      changes: candidate.project_context_amendment.changes,
+      amendmentSha256: candidate.project_context_amendment.amendment_sha256,
+    });
   }
   const admission = {
     schema: "agentos.owner_review_admission.v1",
@@ -737,7 +1078,7 @@ export function applyOwnerReviewApproval({candidate, approvalPacket, approval, p
     admission_sha256: null,
   };
   admission.admission_sha256 = ownerReviewDigest({...admission, admission_sha256: null});
-  return {policyState: nextPolicyState, admission};
+  return {policyState: nextPolicyState, policyPersistence, projectContextPersistence, projectContextAmendment: candidate.project_context_amendment, admission};
 }
 
 export function cancelOwnerReview({packet, reason, cancelledAtUtc}) {

@@ -6,19 +6,23 @@ AgentOS is a work-in-progress operating system for autonomous software-developme
 
 ## Start in three steps
 
-1. Open this AgentOS repository and the project you want to create or import in your coding-agent host.
+1. Find the absolute paths for this AgentOS checkout and the project you want to create or import. They may be separate directories.
 2. Start a fresh agent with the strongest economical coding model available. Do not choose a model below Bootstrap’s completion-reliability floor.
-3. Copy and paste this instruction:
+3. Replace `<AGENTOS_ROOT>` and `<PROJECT_ROOT>` in the instruction below with those exact paths, then copy and paste it:
 
 ```text
-Use this AgentOS repository only as the Bootstrap authority, not as the Product. Read bootstrap/start-here.md, verify the exact binding it names, and run Bootstrap against the project I give you. If the target project is unclear, ask only for its location. Begin with safe read-only discovery, ask one material question at a time, and make no consequential changes until I approve the exact creation plan.
+You are Bootstrap 2.1rc. AgentOS root: <AGENTOS_ROOT>. Project root: <PROJECT_ROOT>.
+Use the AgentOS root only as the Bootstrap authority, not as the Product. Read <AGENTOS_ROOT>/README.md, then <AGENTOS_ROOT>/bootstrap/start-here.md, verify <AGENTOS_ROOT>/schemas/bootstrap-binding.v1.json, and use the canonical controller at <AGENTOS_ROOT>/control/bootstrap-compiler.mjs.
+Run the first read-only Bootstrap invocation exactly:
+node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED
+Use the returned discovery and question plan, ask only one material question at a time, and do not write, spend, authenticate, publish, merge, or deploy until Bootstrap displays the exact creation plan and I approve it with APPROVE_EXACT_PLAN. If either path is missing or unclear, ask for that path before discovery.
 ```
 
 Running Bootstrap as an agent uses the host’s agentic execution allowance. Use ordinary Chat or a private handoff-file exchange when you want advice without repository execution; use a public Git handoff only when public source exchange is intentional. Provider APIs and unattended automation may have separate billing and credentials.
 
 ## AgentOS in one minute
 
-You explain what you want. Bootstrap inspects the project, preserves imported source before changing it, asks only what it cannot safely discover, and shows one exact plan. Economical agents build the first pass, independent auditors inspect it, a stronger Finalizer repairs the retained code, and persistent Runtime handles release and deployment.
+You explain what you want. Bootstrap inspects the project, preserves imported source before changing it, asks only what it cannot safely discover, and shows one clear plan. Economical agents build the first pass, independent checkers inspect it, a stronger Finalizer repairs the retained code, and persistent Runtime handles release and deployment.
 
 The cascade is measured by the cost of the complete accepted result, not by
 token prices alone. AgentOS keeps it as the default for a task class only after
@@ -60,7 +64,7 @@ AgentOS does not silently spend money, publish source, expose secrets, delete ac
 
 AgentOS keeps campaign behavior in a content-addressed Global Policy State. The
 owner can change declared variables such as campaign mode, role model class,
-North Star, proving workflow, review transport, memory posture, and heartbeat
+North Star, first useful workflow, review transport, memory posture, and heartbeat
 preference. Dependencies, invalidated question slices, safe effective
 boundaries, and required rotations are calculated and retained in an amendment
 ledger. Constitutional rules cannot be weakened by a project setting.
@@ -75,6 +79,7 @@ delete.
 ## Start-here and verification
 
 - Bootstrap entrypoint: [`bootstrap/start-here.md`](bootstrap/start-here.md)
+- Fresh-agent start contract: replace the two path placeholders in the instruction above, then run `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED` for the first read-only discovery and question plan.
 - Exact binding: [`schemas/bootstrap-binding.v1.json`](schemas/bootstrap-binding.v1.json)
 - User guide: [`docs/user-guide.md`](docs/user-guide.md)
 - Maintainer guide: [`docs/maintainer-guide.md`](docs/maintainer-guide.md)

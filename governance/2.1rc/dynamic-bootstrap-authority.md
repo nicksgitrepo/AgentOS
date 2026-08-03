@@ -19,8 +19,8 @@ The compact question catalog classifies each owner-facing question as exactly on
 Bootstrap compiles one content-addressed plan containing:
 
 - project definition and north star;
-- smallest proving workflow;
-- candidate Function Requirements compiled from the North Star and proving workflow;
+- smallest first useful workflow;
+- candidate Function Requirements compiled from the North Star and first useful workflow;
 - technical baseline, first-class delivery policy, and Design Bible;
 - typed Security standard and requirement identities;
 - authority boundaries and authority corpus roots/numbering;

@@ -9,6 +9,7 @@
       "schema",
       "governance_version",
       "status",
+      "time_basis",
       "project_id",
       "policy_epoch",
       "parent_policy_state_sha256",
@@ -20,8 +21,9 @@
       "updated_at_utc",
       "policy_state_sha256"
     ],
-    "rule": "Every state is self-digesting. A later state names its exact parent and amendment head; no snapshot overwrites history. The portable kernel remains prepared and inactive until explicit owner activation."
+    "rule": "Every state is self-digesting. A later state names its exact parent and amendment head; each ledger entry also preserves the amendment identity, authority, reason, old-state link, changed values, approval identity, and a recoverable record digest. `time_basis` distinguishes an observed UTC timestamp from the deterministic synthetic epoch used when Bootstrap must preserve repeatable plan hashes. No snapshot overwrites history. The portable kernel remains prepared and inactive until explicit owner activation."
   },
+  "time_basis_values": ["OBSERVED_UTC", "DETERMINISTIC_SYNTHETIC_EPOCH"],
   "variable_classes": {
     "CONSTITUTIONAL": "Cannot be weakened by a project amendment; a governance-version change is required.",
     "OWNER_MUTABLE": "May be changed by an owner-authorized amendment at its declared effective boundary.",
@@ -61,7 +63,7 @@
     "SAFETY.SECRET_RETENTION",
     "CAMPAIGN.MODE",
     "PROJECT.NORTH_STAR",
-    "PROJECT.PROVING_WORKFLOW",
+    "PROJECT.FIRST_USEFUL_WORKFLOW",
     "PROJECT.ASSURANCE_CLASS",
     "MODEL.PROFILE",
     "MODEL.ROLE.CAMPAIGN_ORCHESTRATOR",
@@ -105,6 +107,26 @@
     "approval_rule": "A conversational confirmation, a shared link, or an unverified Markdown statement cannot apply an amendment. Application requires an exact amendment digest and authenticated owner approval.",
     "stale_rule": "An amendment whose parent policy digest is not the current state is rejected and must be rebased into a new candidate.",
     "constitutional_rule": "Acceptance roots, independent audit, no self-acceptance, internal recovery, and secret prohibition cannot be disabled through project policy."
+  },
+  "amendment_ledger_entry": {
+    "required_fields": [
+      "amendment_id",
+      "project_id",
+      "parent_policy_state_sha256",
+      "amendment_sha256",
+      "approval_sha256",
+      "effective_boundary",
+      "requested_by",
+      "authority",
+      "reason",
+      "requested_at_utc",
+      "changes",
+      "approved_at_utc",
+      "actor_digest_sha256",
+      "policy_epoch",
+      "record_sha256"
+    ],
+    "rule": "The append-only ledger is inspectable without recovering an unrelated external object. Each record retains the exact requested values and approval metadata."
   },
   "portability": {
     "model_values_are_classes": true,

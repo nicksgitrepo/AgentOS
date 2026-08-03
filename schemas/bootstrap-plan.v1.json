@@ -12,7 +12,7 @@
     "NORMALIZATION_POLICY",
     "STANDARDS_REGISTRY",
     "NORTH_STAR",
-    "PROVING_WORKFLOW",
+    "FIRST_USEFUL_WORKFLOW",
     "PROJECT_LIFE_CONTRACT",
     "FUNCTION_REQUIREMENTS",
     "TECHNICAL_BASELINE",
@@ -32,7 +32,7 @@
   ],
   "approval": {
     "decision": "APPROVE_EXACT_PLAN",
-    "rule": "Bootstrap displays the complete plan and SHA-256 before approval. The approval receipt binds the exact plan digest, discovery digest, actor, time, and execution boundary. A generic PROCEED answer is insufficient.",
+    "rule": "Bootstrap displays the complete plan and SHA-256 before approval. The approval receipt binds the exact pre-approval plan body digest, discovery digest, actor, time, and execution boundary; changing the approved body invalidates the receipt even if a new outer plan digest is computed. A generic PROCEED answer is insufficient.",
     "toctou": "Re-read discovery, source identities, destination containment, and plan digest immediately before each external side effect. A mismatch returns to planning without mutation."
   },
   "plan_identity": {

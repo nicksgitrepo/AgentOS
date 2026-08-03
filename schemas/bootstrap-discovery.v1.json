@@ -7,8 +7,8 @@
   "permission": {
     "required_before_execution": true,
     "question_id": "bootstrap.discovery.mode",
-    "allowed_modes": ["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"],
-    "manual_mode": "Do not run discovery when the owner selects MANUAL."
+    "allowed_modes": ["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY"],
+    "manual_mode": "There is no executable manual discovery mode. Supply a project root and use owner questions for facts that safe discovery cannot answer."
   },
   "result": {
     "schema": "agentos.bootstrap_discovery_result.v1",

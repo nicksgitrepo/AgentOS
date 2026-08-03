@@ -19,6 +19,9 @@ assert.equal(sha256(readme), binding.normative.user_readme.sha256, "README bindi
 for (const required of [
   "2.1rc — PREPARED_NOT_ACTIVATED",
   "bootstrap/start-here.md",
+  "<AGENTOS_ROOT>",
+  "<PROJECT_ROOT>",
+  "control/bootstrap-compiler.mjs\" start \"<PROJECT_ROOT>\" RECOMMENDED",
   "schemas/bootstrap-binding.v1.json",
   "ADOPT_IN_PLACE",
   "CLEAN_COPY",
@@ -34,7 +37,7 @@ for (const required of [
   assert(readme.includes(required), `README is missing required user-facing content: ${required}`);
 }
 
-const startPrompt = "Use this AgentOS repository only as the Bootstrap authority, not as the Product. Read bootstrap/start-here.md, verify the exact binding it names, and run Bootstrap against the project I give you. If the target project is unclear, ask only for its location. Begin with safe read-only discovery, ask one material question at a time, and make no consequential changes until I approve the exact creation plan.";
+const startPrompt = "You are Bootstrap 2.1rc. AgentOS root: <AGENTOS_ROOT>. Project root: <PROJECT_ROOT>.";
 assert(readme.includes(startPrompt), "README is missing the canonical fresh-agent start instruction");
 
 const forbidden = [

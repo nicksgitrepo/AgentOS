@@ -17,6 +17,6 @@ declared and mutable?
 → apply a new policy epoch
 ```
 
-Changing a model class rotates only the affected role at the next safe assignment boundary. Changing the campaign mode, assurance class, North Star, or proving workflow recompiles the affected campaign and acceptance slices. Changing a constitutional rule is not a project preference; it requires a new governance version.
+Changing a model class rotates only the affected role at the next safe assignment boundary. Changing the campaign mode, assurance class, North Star, or first useful workflow recompiles the affected campaign and acceptance slices. Changing a constitutional rule is not a project preference; it requires a new governance version.
 
 The state remains `PREPARED_NOT_ACTIVATED`. Policy amendments can prepare a project candidate, but they cannot activate AgentOS, deploy a Product, authorize spending, or create a successor roster by themselves.

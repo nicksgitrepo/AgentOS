@@ -41,9 +41,11 @@ try {
   const state = compileGlobalPolicyState(input);
   const repeated = compileGlobalPolicyState(structuredClone(input));
   assert.equal(state.policy_state_sha256, repeated.policy_state_sha256);
+  assert.equal(state.time_basis, "OBSERVED_UTC");
   assert.equal(policyStateDigest(state), state.policy_state_sha256);
   assert.equal(getPolicyValue(state, "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES"), 30);
   validatePolicyState(state);
+  reject("invalid policy time basis", () => compileGlobalPolicyState({...input, timeBasis: "CLAIMED_CURRENT_TIME"}));
 
   const question = evaluatePolicyQuestion({
     state,

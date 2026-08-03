@@ -4,26 +4,28 @@ AgentOS is a portable governance and orchestration kernel. It helps turn one cle
 
 ## Start
 
-1. Place AgentOS in the intended project root or select a separate project-context root.
-2. Open [bootstrap/start-here.md](../bootstrap/start-here.md).
-3. Allow safe read-only discovery if you want Bootstrap to answer mechanical setup questions.
-4. Answer only unresolved intent, boundary, or preference questions.
-5. Review the complete creation plan and its digests.
-6. Approve exactly with `APPROVE_EXACT_PLAN` or revise the plan.
+1. Identify the absolute `AGENTOS_ROOT` and `PROJECT_ROOT`; they may be separate directories.
+2. Open [bootstrap/start-here.md](../bootstrap/start-here.md) and replace its path placeholders.
+3. Start a fresh agent above Bootstrap’s completion-reliability floor and run:
+   `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED`
+4. Allow safe read-only discovery to answer mechanical setup questions.
+5. Answer only unresolved intent, boundary, or preference questions.
+6. Review the complete creation plan and its integrity details.
+7. Approve exactly with `APPROVE_EXACT_PLAN` or revise the plan.
 
 Bootstrap then stages a resumable setup transaction. If an authority corpus is imported or refactored, it creates and verifies `legacy.zip`, its manifest, index, and receipt before writing the new corpus. A distinct setup Auditor verifies the exact plan, readback, context separation, security baseline, persistent Runtime binding, and the three-root acceptance slice.
 
 The plan also includes a deterministic Bootstrap coverage matrix. It shows
 which outputs were discovered, owner-confirmed, safely defaulted, derived,
-deferred, not applicable with proof, or still blocking. This lets Bootstrap
-cover data, recovery, delivery, proof, and activation obligations without
+deferred, not applicable with evidence, or still blocking. This lets Bootstrap
+cover data, recovery, delivery, evidence, and activation obligations without
 asking one question for every field.
 
 ## What Bootstrap asks
 
 Discovery supplies repository shape, source markers, authority/design candidates, deployment markers, and available tools without reading secrets or changing the project. The compact question compiler asks about:
 
-- the project’s users, north star, first proving workflow, and boundary;
+- the project’s users, north star, first useful workflow, and boundary;
 - the import mode when an existing project is detected: adopt in place, clean
   copy, normalize and audit, or reconstruct from intent;
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent limits;
@@ -56,7 +58,7 @@ The compiled plan records safe defaults and honest unknowns. It does not recomme
 
 For the adaptive campaign cascade, Bootstrap keeps economics honest by
 comparing the complete accepted-result cost with an equivalent direct result.
-Token rates and estimates are not savings proof. The cascade becomes the
+Token rates and estimates are not evidence of savings. The cascade becomes the
 default for a task class only after at least three accepted observations show a
 ratio of `0.75` or lower. Finalizer rewrite signals distinguish targeted repair
 from a deliberate rebuild when the correction would reinterpret intent,
@@ -70,7 +72,7 @@ The Product engine has exactly three ordered roots:
 2. `DESIGN_BIBLE`
 3. `SECURITY`
 
-Answers are `YES`, `NO`, `UNKNOWN`, `NOT_APPLICABLE`, and `EXCEPTION_REQUESTED`. Lifecycle is separate: `UNEVALUATED`, `EVIDENCE_PENDING`, `OPEN_REPAIR`, `VERIFIED`, and `INVALIDATED`. The smallest changed question slice is compiled; unaffected evidence is reused only when its exact hashes and environment still match. Code quality is an audit discipline, not a fourth root.
+Answers are `YES`, `NO`, `UNKNOWN`, `NOT_APPLICABLE`, and `EXCEPTION_REQUESTED`. Lifecycle is separate: `UNEVALUATED`, `EVIDENCE_PENDING`, `OPEN_REPAIR`, `VERIFIED`, and `INVALIDATED`. The smallest changed question slice is compiled; unaffected evidence is reused only when its exact hashes and environment still match. Code quality is a separate check, not a fourth acceptance root.
 
 ## Campaign path
 
@@ -91,9 +93,9 @@ Platform Agents are created only on first material need. Each is a campaign-loca
 
 The current Auditor may clear a release for deployment and produce a next-campaign candidate. That candidate orients only the next Campaign Orchestrator. No successor Auditor, Feature Agent, Platform Agent, Product writer, or campaign-start disposition exists before accepted-live closure and explicit next-campaign admission.
 
-## Optional GPT_ASSIST
+## Optional assistant handoff
 
-GPT_ASSIST is a Markdown exchange. The Auditor creates one exact, secret-free status packet and parses one canonical JSON response. ChatGPT can help with listed questions, research, scenarios, and comparisons. It cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+An assistant handoff is a Markdown exchange. The Auditor creates one exact, secret-free status packet and parses one canonical JSON response. A connected assistant can help with listed questions, research, scenarios, and comparisons. It cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
 
 ## Boundaries
 

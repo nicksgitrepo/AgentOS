@@ -1,0 +1,16 @@
+{
+  "schema": "governance.campaign_state_owner.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Canonical controller boundary for one serialized lifecycle and cascade transition.",
+  "required_result_fields": ["lifecycle", "cascade", "bridge"],
+  "rule": "The state owner validates complete current lifecycle and cascade states, applies the paired transitions, validates the resulting states, and emits a bridge whose compact identities reference both resulting state digests. A caller cannot advance only one state machine through the canonical controller. Persistence stages all replacement artifacts before the ordered replacement; a host that requires crash-atomic multi-file publication must place this writer behind a single-directory or external transaction owner.",
+  "persistence": {
+    "compare_and_swap": true,
+    "staged_replacement": true,
+    "multi_artifact_atomicity": "EXTERNAL_TRANSACTION_OWNER_REQUIRED",
+    "symlink_rejected": true,
+    "separate_artifacts": ["lifecycle", "cascade", "bridge"]
+  }
+}

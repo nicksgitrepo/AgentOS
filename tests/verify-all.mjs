@@ -16,6 +16,10 @@ const PORTABLE_FORBIDDEN = [
   new RegExp(["nicks", "git", "repo"].join(""), "iu"),
   new RegExp(["/", "Use", "rs", "/"].join(""), "u"),
   new RegExp(["chat", "gpt", "-conversation://"].join(""), "u"),
+  new RegExp(["Chat", "GPT"].join(""), "iu"),
+  new RegExp(["Open", "AI"].join(""), "iu"),
+  new RegExp(["Code", "x"].join(""), "iu"),
+  new RegExp(["CHAT", "GPT", "_SITES"].join(""), "u"),
   new RegExp(`${["A", "WS"].join("")}\\s+(?:account|region|resource)`, "iu"),
 ];
 const STALE_NORMATIVE_TERMS = [
@@ -26,6 +30,7 @@ const STALE_NORMATIVE_TERMS = [
   ["TERMINAL_HANDOFF", "_TO_RUNTIME"].join(""),
   ["NEXT_RELEASE_ORCHESTRATOR", "_AUTHORITY_UPDATE_AND_CAMPAIGN_START"].join(""),
 ];
+const compareUtf8 = (left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
 
 function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), "utf8");
@@ -36,7 +41,7 @@ function digest(bytes) {
 }
 
 function walk(directory, result = []) {
-  for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((left, right) => left.name.localeCompare(right.name))) {
+  for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((left, right) => compareUtf8(left.name, right.name))) {
     if (entry.name === ".git" || entry.name === "node_modules") continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) walk(absolute, result);
@@ -130,7 +135,7 @@ const lifeContract = JSON.parse(read("schemas/project-life-contract.v1.json"));
 assert.equal(lifeContract.question.id, "project.life_contract");
 assert.equal(lifeContract.defaults.maturity, "PRIVATE_PROTOTYPE");
 const targetContract = JSON.parse(read("schemas/delivery-target.v1.json"));
-assert.equal(targetContract.managed_site_option.adapter_id, "CHATGPT_SITES");
+assert.equal(targetContract.managed_site_option.adapter_id, "GENERIC_MANAGED_SITE");
 assert.deepEqual(targetContract.managed_site_option.supported_modes, ["PROTOTYPE", "LIMITED_PRODUCT"]);
 const boundaryContract = JSON.parse(read("schemas/boundary-contract.v1.json"));
 assert.deepEqual(boundaryContract.classes, ["CONSTITUTIONAL", "OWNER_SOVEREIGN", "DERIVED_OPERATING", "TEMPORARY_PROBE"]);
@@ -143,8 +148,17 @@ assert.equal(kernel.bootstrap.delivery_policy.controller, "control/delivery-poli
 assert.equal(kernel.bootstrap.delivery_policy.probe_contract, "schemas/delivery-probes.v1.json");
 assert.equal(kernel.global_policy.controller, "control/global-policy-state.mjs");
 assert.equal(kernel.global_policy.contract, "schemas/global-policy-state.v1.json");
+assert.equal(kernel.campaign_policy.contract, "schemas/campaign-policy-reconcile.v1.json");
+assert.equal(kernel.campaign_state_owner.controller, "control/campaign-state-owner.mjs");
+assert.equal(kernel.campaign_state_owner.contract, "schemas/campaign-state-owner.v1.json");
 assert.equal(kernel.owner_review.controller, "control/owner-review.mjs");
 assert.equal(kernel.owner_review.review_type, "PRE_CAMPAIGN_OWNER_REVIEW");
+assert.equal(kernel.bootstrap.start_contract, "schemas/bootstrap-start.v1.json");
+assert.equal(kernel.bootstrap.start_command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
+const bootstrapStart = JSON.parse(read("schemas/bootstrap-start.v1.json"));
+assert.equal(bootstrapStart.invocation.side_effects, "READ_ONLY_DISCOVERY_ONLY");
+assert.equal(bootstrapStart.invocation.command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
+assert(bootstrapStart.safety.next_step.includes("APPROVE_EXACT_PLAN"));
 
 const runtime = JSON.parse(read("schemas/browser-runtime-lifecycle.v1.json"));
 assert.equal(runtime.agent_lifecycle.persistent_roles.join(","), "RUNTIME");
@@ -159,9 +173,11 @@ const run = (relativePath) => {
 };
 for (const relativePath of [
   "tests/verify-campaign-controller.mjs",
+  "tests/verify-campaign-policy-reconcile.mjs",
   "tests/verify-campaign-cascade.mjs",
   "tests/verify-question-tree.mjs",
   "tests/verify-readme.mjs",
+  "tests/verify-bootstrap-start.mjs",
   "tests/verify-cascade-economics.mjs",
   "tests/verify-bootstrap-coverage.mjs",
   "tests/verify-standards-registry.mjs",
@@ -179,8 +195,11 @@ for (const relativePath of [
   "tests/verify-browser-runtime-lifecycle.mjs",
   "tests/verify-gpt-assist.mjs",
   "tests/verify-global-policy-state.mjs",
+  "tests/verify-global-policy-store.mjs",
+  "tests/verify-project-context-store.mjs",
   "tests/verify-owner-review.mjs",
   "tests/verify-campaign-state-bridge.mjs",
+  "tests/verify-campaign-state-owner.mjs",
   "tests/verify-portability.mjs",
 ]) run(relativePath);
 

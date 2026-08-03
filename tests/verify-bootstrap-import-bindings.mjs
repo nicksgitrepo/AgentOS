@@ -21,6 +21,7 @@ fs.mkdirSync(path.join(source, "src"), {recursive: true});
 fs.mkdirSync(destination);
 fs.writeFileSync(path.join(source, "package.json"), "{\"name\":\"synthetic\"}\n");
 fs.writeFileSync(path.join(source, "src", "main.js"), "export default true;\n");
+const workflow = JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8"));
 const discovery = discoverProject(destination, "RECOMMENDED").facts;
 const answers = {
   "bootstrap.discovery.mode": "RECOMMENDED",
@@ -59,6 +60,7 @@ const approved = approveBootstrapPlan(plan, {
 const executed = executeBootstrapPlan(approved, {
   bootstrapSessionId: "BOOTSTRAP-IMPORT-001",
   projectRoot: destination,
+  workflow,
   nowUtc: "2026-08-03T00:00:00.000Z",
 });
 const setupAudit = auditBootstrapSetup({
@@ -67,6 +69,7 @@ const setupAudit = auditBootstrapSetup({
   auditorSessionId: "AUDITOR-IMPORT-001",
   bootstrapSessionId: "BOOTSTRAP-IMPORT-001",
   stagingRoot: executed.staging_root,
+  workflow,
 });
 assert.equal(setupAudit.status, "PASS");
 assert(setupAudit.checks.includes("PROJECT_IMPORT_SOURCE_PRESERVATION"));
@@ -89,6 +92,7 @@ const adoptApproved = approveBootstrapPlan(adoptPlan, {
 const adoptExecuted = executeBootstrapPlan(adoptApproved, {
   bootstrapSessionId: "BOOTSTRAP-ADOPT-001",
   projectRoot: adoptRoot,
+  workflow,
   nowUtc: "2026-08-03T00:00:00.000Z",
 });
 const adoptAudit = auditBootstrapSetup({
@@ -97,6 +101,7 @@ const adoptAudit = auditBootstrapSetup({
   auditorSessionId: "AUDITOR-ADOPT-001",
   bootstrapSessionId: "BOOTSTRAP-ADOPT-001",
   stagingRoot: adoptExecuted.staging_root,
+  workflow,
 });
 assert.equal(adoptAudit.status, "PASS");
 assert(fs.existsSync(path.join(adoptRoot, ".agentos", "import", "source-preservation", "source-preservation.zip")));

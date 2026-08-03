@@ -318,8 +318,8 @@
         ],
         "handoff": "EVERY_ORCHESTRATOR_SNAPSHOT_AND_CHECKPOINT_HANDOFF_BINDS_EVENT_COUNT_AGGREGATE_LEDGER_DIGEST_PER_SESSION_WRITER_HEADS_AND_CURRENT_VIEW_SHA256; THE_RECIPIENT_PROVES_MONOTONIC_PREFIX_CONTINUITY_BEFORE_WORK",
         "platform_return_binding": "A_PLATFORM_RETURN_BINDS_THE_LOGICAL_CAPABILITY_ID_STABLE_WORKTREE_CURRENT_SUPERVISION_LEASE_ASSIGNMENT_AND_CONTENT_ADDRESSED_HANDOFF_RECEIPT",
-        "gpt_assist_mode": "The campaign state binds GPT_ASSIST or DIRECT_ONLY. Only GPT_ASSIST campaigns require and consume a successor GPT_ASSIST handoff digest; DIRECT_ONLY campaigns retain a null handoff.",
-        "gpt_assist_successor_binding": "A_GPT_ASSIST_HANDOFF_BINDS_THE_VALIDATED_CURRENT_ROSTER_AND_EXACT_HANDOFF_DIGEST; SUCCESSOR_ROSTER_RECEIPT_MUST_BE_NULL_UNTIL_LIFECYCLE_ADMISSION",
+        "assistant_exchange_mode": "The campaign state binds an optional assistant exchange or DIRECT_ONLY. Only enabled exchanges require and consume a successor handoff digest; DIRECT_ONLY campaigns retain a null handoff.",
+        "assistant_successor_binding": "AN_ASSISTANT_HANDOFF_BINDS_THE_VALIDATED_CURRENT_ROSTER_AND_EXACT_HANDOFF_DIGEST; SUCCESSOR_ROSTER_RECEIPT_MUST_BE_NULL_UNTIL_LIFECYCLE_ADMISSION",
         "parallelism": "PER_SESSION_CHAINS_AVOID_SHARED_NEXT_SEQUENCE_OR_FILE_CONTENTION; THE_ORCHESTRATOR_COMPILES_ONE_DETERMINISTIC_LEDGER_DIGEST_AND_SERIALIZES_PLATFORM_LEASES",
         "forbidden": [
           "rewriting or deleting a prior event",
@@ -1190,7 +1190,7 @@
     "technical_advice": "The supervisor may request one bounded technical recommendation from the reporting specialist or one fresh advisory agent. Advice transfers neither route authority nor Product custody.",
     "builder_feasibility_objection": "The builder may return one evidence-backed feasibility objection to the selected route. The supervisor confirms or replaces the route once; further disagreement holds only the dependent outcome.",
     "not_allowed": [
-      "the builder approving its own reframe or alternate route",
+      "the builder apvalidation its own reframe or alternate route",
       "the builder selecting a different supervisor",
       "renaming the same failed route as an alternative",
       "weakening acceptance or proof",

@@ -20,7 +20,7 @@ Agents return one compact completion or true-boundary packet. They do not narrat
 
 ## Bootstrap
 
-Bootstrap performs secret-free read-only discovery, asks only unresolved owner-intent or owner-boundary questions, and compiles one complete creation plan. The plan includes project context, north star, proving workflow, technical baseline, first-class delivery policy, Design Bible, typed Security baseline, authority boundaries, authority corpus, model policy, persistent Runtime, first campaign, exact file/root creation, rollback, and the exact three-root slice. Delivery policy covers source-control pushes, serialized merges, CI runner route, hosting/deployment route, provider and cost bindings, and exact rollback. It never authorizes external side effects during Bootstrap.
+Bootstrap performs secret-free read-only discovery, asks only unresolved owner-intent or owner-boundary questions, and compiles one complete creation plan. The plan includes project context, north star, first useful workflow, technical baseline, first-class delivery policy, Design Bible, typed Security baseline, authority boundaries, authority corpus, model policy, persistent Runtime, first campaign, exact file/root creation, rollback, and the exact three-root slice. Delivery policy covers source-control pushes, serialized merges, CI runner route, hosting/deployment route, provider and cost bindings, and exact rollback. It never authorizes external side effects during Bootstrap.
 
 The owner sees the canonical plan digest and must approve `APPROVE_EXACT_PLAN` against the same discovery digest. A stale digest, changed source, or changed plan is rejected. Execution is resumable and transactional. Imported authority is copied and verified as `legacy.zip` with manifest, index, and receipt before replacement writes. A distinct setup Auditor verifies readback, context separation, no secrets, Runtime binding, and the three-root slice. The plan also binds a Project Life Contract, Delivery Target, and Boundary Contract so maturity, target capability, and authority limits cannot drift apart.
 
@@ -42,7 +42,7 @@ Admission is ordered: Function pass, then Design pass, then Security pass, then 
 
 ## Campaign lifecycle
 
-The default campaign uses one cumulative worktree lineage. Every checkpoint binds the exact parent, commit, tree, worktree, clean/pushed proof, changed surfaces, and applicable audit state. Living state is append-only and compare-and-swap protected.
+The default campaign uses one cumulative worktree lineage. Every checkpoint binds the exact parent, commit, tree, worktree, clean/pushed observation, changed surfaces, and applicable audit state. Living state is append-only and compare-and-swap protected.
 
 The lifecycle is:
 
@@ -69,7 +69,7 @@ Runtime is the exception: one persistent Runtime identity remains continuously a
 
 ## Adaptive cascade
 
-Builders advance through immutable first-pass checkpoints while applicable read-only audit disciplines run concurrently. Intermediate audits may settle against earlier checkpoints while building continues. At terminalization, the four disciplines are `FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`, and `CODE_QUALITY_HYGIENE`; Security and hygiene are not automatically applicable when the changed surfaces do not require them.
+Builders advance through immutable first-pass checkpoints while applicable read-only audit lenses run concurrently. Intermediate audits may settle against earlier checkpoints while building continues. At terminalization, the four lenses are `FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`, and `CODE_QUALITY_HYGIENE`; Security and hygiene are not automatically applicable when the changed surfaces do not require them.
 
 Catastrophic, wrong-direction, foundational, or critical safety/security findings return immediately to the first-pass owner and hold only the dependent scope. Ordinary material findings are consolidated by causal root for one fresh Campaign Finalizer. The Finalizer receives a clean derived worktree, exclusive writer custody, the exact terminal checkpoint, and one correction batch. It cannot own intent, acceptance, deployment, exceptions, or self-acceptance.
 
@@ -87,9 +87,9 @@ The current Auditor may clear the release for deployment and produce a content-a
 
 Accepted-live closure binds the exact final candidate, all three Product roots, deployed and rollback identities, independent live audit, clean pushed worktrees, released custody, archived campaign instances, retained Runtime, reconciled roster, and closure receipt. Until every binding is present, the status is `ACCEPTED_LIVE_PENDING_CLOSURE`.
 
-## Optional GPT_ASSIST
+## Optional assistant exchange
 
-GPT_ASSIST is an optional Markdown exchange. The Auditor creates a secret-free status packet bound to the real source commit/tree, current campaign, roster, goal, evidence, findings, and exact questions. The response contains one canonical JSON payload; unparsed prose is rejected. GPT_ASSIST can help the owner reason, research, compare scenarios, and answer listed questions, but it cannot invent project truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+An assistant exchange is an optional Markdown handoff. The Auditor creates a secret-free status packet bound to the real source commit/tree, current campaign, roster, goal, evidence, findings, and exact questions. The response contains one canonical structured payload; unparsed prose is rejected. An external assistant can help the owner reason, research, compare scenarios, and answer listed questions, but it cannot invent project truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster. Provider-specific transports are typed project extensions and are not portable-kernel authority.
 
 ## Activation boundary
 

@@ -197,8 +197,8 @@ Active campaign files live under
 4. `03-audit-gaps.md`;
 5. `04-owner-questions.md`;
 6. `05-release-and-rollback.md`.
-7. `06-gpt-assist-project-status.md` only when the owner enabled
-   `GPT_ASSIST`.
+7. An optional assistant-exchange status packet only when the owner enabled
+   the typed assistant extension.
 
 The campaign tree is the recovery source for work in progress. Standard
 numbered articles remain the last accepted-live truth. At accepted-live

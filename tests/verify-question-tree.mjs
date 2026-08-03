@@ -126,6 +126,14 @@ assert.equal(ready.RC_READY, true);
 assert.deepEqual(ready.roots, {FUNCTION_REQUIREMENTS: "PASS", DESIGN_BIBLE: "PASS", SECURITY: "PASS"});
 assert(ready.question_states.every((state) => state.answer === "YES" && state.lifecycle === "VERIFIED"));
 
+const mismatchedEvidence = observation(tree.questions[0], "YES");
+mismatchedEvidence.evidence[0].commit_sha = "commit-002";
+assert.throws(() => evaluateQuestion(tree.questions[0], mismatchedEvidence), /result evidence.commit_sha does not match evaluation binding/u);
+
+const mismatchedApplicability = observation(tree.questions[0], "YES");
+mismatchedApplicability.applicability_evidence[0].environment_id = "ENV-002";
+assert.throws(() => evaluateQuestion(tree.questions[0], mismatchedApplicability), /applicability evidence.environment_id does not match evaluation binding/u);
+
 const bridged = compileProductAcceptanceProof({
   tree,
   observations: allYes,

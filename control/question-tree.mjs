@@ -119,6 +119,12 @@ function validateEvaluationBinding(binding, version) {
   assert(binding.question_tree_version === version, "evaluation binding tree version mismatch");
 }
 
+function validateEvidenceCandidateIdentity(item, binding, label) {
+  for (const field of ["commit_sha", "worktree_id", "build_identity", "environment_id", "question_tree_version"]) {
+    assert(item[field] === binding[field], `${label}.${field} does not match evaluation binding`);
+  }
+}
+
 function validateException(exception, evaluatedAtUtc, question) {
   exactKeys(exception, EXCEPTION_FIELDS, "authorized exception");
   for (const field of EXCEPTION_FIELDS) requireString(exception[field], `exception.${field}`);
@@ -309,7 +315,10 @@ function evaluateQuestionInternal(question, observation, version) {
   validateEvaluationBinding(observation.evaluation_binding, version);
   assert(typeof observation.applicable === "boolean", "applicability must be explicit");
   assert(Array.isArray(observation.applicability_evidence), "applicability evidence is required");
-  observation.applicability_evidence.forEach((item) => validateEvidence(item, version));
+  observation.applicability_evidence.forEach((item) => {
+    validateEvidence(item, version);
+    validateEvidenceCandidateIdentity(item, observation.evaluation_binding, "applicability evidence");
+  });
 
   if (observation.lifecycle === "INVALIDATED") {
     requireString(observation.invalidated_by, "invalidated_by");
@@ -328,7 +337,10 @@ function evaluateQuestionInternal(question, observation, version) {
   if (observation.answer === "YES") {
     assert(observation.lifecycle === "VERIFIED", "YES must be VERIFIED");
     assert(Array.isArray(observation.evidence), "YES requires evidence");
-    observation.evidence.forEach((item) => validateEvidence(item, version));
+    observation.evidence.forEach((item) => {
+      validateEvidence(item, version);
+      validateEvidenceCandidateIdentity(item, observation.evaluation_binding, "result evidence");
+    });
     const kinds = new Set(observation.evidence.map((item) => item.kind));
     question.required_evidence.forEach((kind) => assert(kinds.has(kind), `missing required evidence kind ${kind}`));
     return {question_id: question.question_id, answer: observation.answer, lifecycle: observation.lifecycle, action: "EVALUATE_DEPENDENT_CHILDREN", evaluation_binding: observation.evaluation_binding};
@@ -336,7 +348,10 @@ function evaluateQuestionInternal(question, observation, version) {
   if (observation.answer === "NO") {
     assert(observation.lifecycle === "OPEN_REPAIR", "NO must be OPEN_REPAIR");
     assert(Array.isArray(observation.evidence) && observation.evidence.length > 0, "NO requires observed evidence");
-    observation.evidence.forEach((item) => validateEvidence(item, version));
+    observation.evidence.forEach((item) => {
+      validateEvidence(item, version);
+      validateEvidenceCandidateIdentity(item, observation.evaluation_binding, "result evidence");
+    });
     if (observation.owner_blocker) {
       validateOwnerBlocker(observation.owner_blocker);
       return {question_id: question.question_id, answer: observation.answer, lifecycle: observation.lifecycle, action: "PAUSE_AFFECTED_SCOPE_CONTINUE_UNRELATED", owner_blocker: true, evaluation_binding: observation.evaluation_binding};

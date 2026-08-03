@@ -15,10 +15,10 @@ const prototypeLife = compileProjectLifeContract({answer: {
 const sitesPrototype = compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: prototypeLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "CHATGPT_SITES", mode: "PROTOTYPE"},
+  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "PROTOTYPE"},
 });
 assert.equal(sitesPrototype.family, "MANAGED_SITE");
-assert.equal(sitesPrototype.adapter_id, "CHATGPT_SITES");
+assert.equal(sitesPrototype.adapter_id, "GENERIC_MANAGED_SITE");
 assert.deepEqual(sitesPrototype.adapter_profile.supported_modes, ["PROTOTYPE", "LIMITED_PRODUCT"]);
 validateDeliveryTarget(sitesPrototype);
 
@@ -30,7 +30,7 @@ const limitedLife = compileProjectLifeContract({answer: {
 const sitesLimited = compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: limitedLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "CHATGPT_SITES", mode: "LIMITED_PRODUCT", audience: "SELECTED_USERS"},
+  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "LIMITED_PRODUCT", audience: "SELECTED_USERS"},
 });
 assert.equal(sitesLimited.mode, "LIMITED_PRODUCT");
 assert.equal(sitesLimited.production_claim, "LIMITED_PRODUCT");
@@ -38,17 +38,17 @@ assert.equal(sitesLimited.production_claim, "LIMITED_PRODUCT");
 assert.throws(() => compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: limitedLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "CHATGPT_SITES", mode: "STANDARD_PRODUCTION"},
+  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "STANDARD_PRODUCTION"},
 }), /does not support/u);
 assert.throws(() => compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: prototypeLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "CHATGPT_SITES", mode: "PROTOTYPE", data_posture: "NON_SENSITIVE_DURABLE"},
+  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "PROTOTYPE", data_posture: "NON_SENSITIVE_DURABLE"},
 }), /prototype delivery target/u);
 assert.throws(() => compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: prototypeLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "CHATGPT_SITES", mode: "LIMITED_PRODUCT"},
+  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "LIMITED_PRODUCT"},
 }), /exceeds the project life maturity/u);
 
 const tampered = structuredClone(sitesLimited);

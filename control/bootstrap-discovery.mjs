@@ -6,7 +6,7 @@ import process from "node:process";
 import {spawnSync} from "node:child_process";
 
 export const DISCOVERY_MODES = new Set([
-  "RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL",
+  "RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY",
 ]);
 
 const SAFE_ENVIRONMENT = {
@@ -77,6 +77,7 @@ function requireString(value, label) {
 
 function canonicalRoot(projectRoot) {
   requireString(projectRoot, "project root");
+  if (!path.isAbsolute(projectRoot)) throw new Error("project root must be an absolute path");
   const absolute = path.resolve(projectRoot);
   const stat = fs.lstatSync(absolute);
   if (stat.isSymbolicLink()) throw new Error("project root must not be a symbolic link");
@@ -195,7 +196,6 @@ function addPathFact(facts, root, factId, relativePath, sourceKind = "FILESYSTEM
 export function discoverProject(projectRoot, mode = "RECOMMENDED") {
   requireString(mode, "discovery mode");
   if (!DISCOVERY_MODES.has(mode)) throw new Error("discovery mode is invalid");
-  if (mode === "MANUAL") throw new Error("MANUAL mode disables Bootstrap Discovery");
   const root = canonicalRoot(projectRoot);
   const facts = [];
   const git = runLocal("git", ["rev-parse", "--show-toplevel"], root);
@@ -308,7 +308,7 @@ export function discoverProject(projectRoot, mode = "RECOMMENDED") {
 function main() {
   const [command, projectRoot, mode = "RECOMMENDED"] = process.argv.slice(2);
   if (command !== "discover" || !projectRoot) {
-    throw new Error("usage: bootstrap-discovery discover <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY|MANUAL]");
+    throw new Error("usage: bootstrap-discovery discover <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY]");
   }
   process.stdout.write(`${JSON.stringify(discoverProject(projectRoot, mode))}\n`);
 }

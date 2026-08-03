@@ -36,5 +36,5 @@
     "The Finalizer repairs confirmed failures at the owning boundary and rebuilds only when targeted repair cannot pass.",
     "The campaign stops when all required gates pass; adjacent improvements move to the next-campaign ledger."
   ],
-  "binding_rule": "A First-Pass Candidate must carry the exact contract object and digest, the policy epoch and snapshot digest, before it can enter audit or Finalizer custody."
+  "binding_rule": "A First-Pass Candidate must carry the exact contract object and digest, the policy epoch and snapshot digest, before it can enter audit or Finalizer custody. Each required question ID must use the prefix belonging to the root that contains it: FR-, DB-, or SEC-."
 }

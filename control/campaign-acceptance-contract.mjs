@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const ROOTS = Object.freeze(["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
+const ROOT_PREFIX = Object.freeze({FUNCTION_REQUIREMENTS: "FR-", DESIGN_BIBLE: "DB-", SECURITY: "SEC-"});
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -75,6 +76,7 @@ export function validateCampaignAcceptanceContract(contract) {
   for (const root of ROOTS) {
     const ids = contract.required_question_ids_by_root[root];
     sorted(ids, `${root} acceptance question IDs`);
+    assert(ids.every((questionId) => questionId.startsWith(ROOT_PREFIX[root])), `${root} contains a question from another acceptance root`);
     byRoot.push(...ids);
   }
   const derivedQuestionIds = [...byRoot].sort((left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8")));

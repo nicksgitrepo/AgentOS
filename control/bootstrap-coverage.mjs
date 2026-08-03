@@ -32,7 +32,7 @@ export const BOOTSTRAP_REQUIRED_OUTPUT_GROUPS = Object.freeze([
   "NORMALIZATION_POLICY",
   "STANDARDS_REGISTRY",
   "NORTH_STAR",
-  "PROVING_WORKFLOW",
+  "FIRST_USEFUL_WORKFLOW",
   "PROJECT_LIFE_CONTRACT",
   "FUNCTION_REQUIREMENTS",
   "TECHNICAL_BASELINE",
@@ -225,9 +225,9 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     unavailable_behavior: "HOLD_PROJECT_CREATION_UNTIL_OWNER_OUTCOME_IS_EXPLICIT",
     reopen_triggers: ["owner_outcome_changed", "primary_user_or_moment_changed"],
   }),
-  definition("PROVING_WORKFLOW", "INTENT", {
+  definition("FIRST_USEFUL_WORKFLOW", "INTENT", {
     question_ids: ["project.first_workflow"],
-    compiled_field_paths: ["proving_workflow", "first_campaign.proving_workflow"],
+    compiled_field_paths: ["first_useful_workflow", "first_campaign.first_useful_workflow"],
     owner_decision_required: true,
     unavailable_behavior: "HOLD_FIRST_CAMPAIGN_WITHOUT_A_SMALL_VERIFIABLE_WORKFLOW",
     reopen_triggers: ["success_condition_changed", "first_workflow_changed"],
@@ -354,17 +354,17 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     reopen_triggers: ["runtime_session_changed", "environment_identity_changed", "runtime_capabilities_changed"],
   }),
   definition("FUNCTION_REQUIREMENTS", "PRODUCT_PROOF", {
-    dependency_output_ids: ["NORTH_STAR", "PROVING_WORKFLOW"],
+    dependency_output_ids: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW"],
     compiled_field_paths: ["function_requirements"],
-    safe_default: "COMPILE_ONE_ATOMIC_CLAUSE_FROM_THE_FIRST_PROVING_WORKFLOW",
+    safe_default: "COMPILE_ONE_ATOMIC_CLAUSE_FROM_THE_FIRST_USEFUL_WORKFLOW",
     unavailable_behavior: "DO_NOT_CLAIM_FUNCTION_PASS_WITHOUT_A_BOUND_OWNER_OUTCOME_AND_SUCCESS_CONDITION",
-    reopen_triggers: ["north_star_changed", "proving_workflow_changed", "function_clause_changed"],
+    reopen_triggers: ["north_star_changed", "first_useful_workflow_changed", "function_clause_changed"],
   }),
   definition("FIRST_CAMPAIGN", "CAMPAIGN", {
-    dependency_output_ids: ["NORTH_STAR", "PROVING_WORKFLOW", "FUNCTION_REQUIREMENTS", "PERSISTENT_RUNTIME"],
+    dependency_output_ids: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "FUNCTION_REQUIREMENTS", "PERSISTENT_RUNTIME"],
     compiled_field_paths: ["first_campaign"],
-    safe_default: "ONE_MINIMAL_SYNTHETIC_CAMPAIGN_ROOT_FROM_THE_FIRST_PROVING_WORKFLOW",
-    unavailable_behavior: "DO_NOT_ADMIT_A_CAMPAIGN_WITHOUT_A_PERSISTENT_RUNTIME_AND_PROVING_WORKFLOW",
+    safe_default: "ONE_MINIMAL_SYNTHETIC_CAMPAIGN_ROOT_FROM_THE_FIRST_USEFUL_WORKFLOW",
+    unavailable_behavior: "DO_NOT_ADMIT_A_CAMPAIGN_WITHOUT_A_PERSISTENT_RUNTIME_AND_FIRST_USEFUL_WORKFLOW",
     reopen_triggers: ["first_campaign_scope_changed", "feature_roster_changed", "runtime_binding_changed"],
   }),
   definition("RECOVERY_AND_ROLLBACK", "RECOVERY", {
@@ -413,7 +413,7 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
   }),
   definition("EXACT_CREATION_PLAN", "CREATION", {
     dependency_output_ids: [
-      "DISCOVERY_PERMISSION", "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "PROVING_WORKFLOW", "AUTHORITY_BOUNDARIES",
+      "DISCOVERY_PERMISSION", "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "AUTHORITY_BOUNDARIES",
       "PROJECT_LIFE_CONTRACT", "AUTHORITY_CORPUS", "DESIGN_BIBLE", "SECURITY_BASELINE", "TECHNICAL_BASELINE", "DATA_AND_MIGRATION_POLICY",
       "AUTHENTICATION_AND_ACCESS", "DELIVERY_POLICY", "DELIVERY_TARGET", "DELIVERY_PROBES", "MODEL_POLICY", "PERSISTENT_RUNTIME",
       "FUNCTION_REQUIREMENTS", "FIRST_CAMPAIGN", "RECOVERY_AND_ROLLBACK", "OBSERVABILITY_AND_RETENTION",
@@ -564,7 +564,7 @@ function compileRows(discovery, answers) {
     blocking: false,
     reason: "VERSION_PINNED_PORTABLE_STANDARDS_REGISTRY_DEFAULTED;_PROJECT_OVERLAYS_REMAIN_STRICTLY_TYPED",
   }));
-  for (const outputId of ["NORTH_STAR", "PROVING_WORKFLOW"]) {
+  for (const outputId of ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW"]) {
     const definitionRecord = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === outputId);
     const answerId = definitionRecord.question_ids[0];
     rows.push(ownerRow(definitionRecord, answerId, answers, `${outputId}_OWNER_INPUT`));
@@ -830,31 +830,31 @@ function compileRows(discovery, answers) {
   rows.push(rowBase(functionDefinition, intentReady
     ? {
       source_kind: "DERIVED_OUTPUT",
-      source_refs: ["NORTH_STAR", "PROVING_WORKFLOW"],
+      source_refs: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW"],
       status: "DERIVED",
       blocking: false,
       reason: "ATOMIC_FUNCTION_CLAUSE_DERIVED_FROM_OWNER_INTENT",
     }
     : {
       source_kind: "DEPENDENCY",
-      source_refs: ["NORTH_STAR", "PROVING_WORKFLOW"],
+      source_refs: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW"],
       status: "DEPENDENCY_PENDING",
       blocking: true,
-      reason: "OWNER_INTENT_AND_PROVING_WORKFLOW_REQUIRED",
+      reason: "OWNER_INTENT_AND_FIRST_USEFUL_WORKFLOW_REQUIRED",
     }));
 
   const firstCampaignDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "FIRST_CAMPAIGN");
   rows.push(rowBase(firstCampaignDefinition, intentReady && runtimeBound(answers["project.runtime"])
     ? {
       source_kind: answerPresent(answers, "project.first_campaign") ? "OWNER_INPUT" : "DERIVED_OUTPUT",
-      source_refs: answerPresent(answers, "project.first_campaign") ? ["project.first_campaign"] : ["NORTH_STAR", "PROVING_WORKFLOW"],
+      source_refs: answerPresent(answers, "project.first_campaign") ? ["project.first_campaign"] : ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW"],
       status: answerPresent(answers, "project.first_campaign") ? "OWNER_CONFIRMED" : "DEFAULTED",
       blocking: false,
-      reason: answerPresent(answers, "project.first_campaign") ? "FIRST_CAMPAIGN_CONTEXT_BOUND" : "MINIMAL_CAMPAIGN_DERIVED_FROM_PROVING_WORKFLOW",
+      reason: answerPresent(answers, "project.first_campaign") ? "FIRST_CAMPAIGN_CONTEXT_BOUND" : "MINIMAL_CAMPAIGN_DERIVED_FROM_FIRST_USEFUL_WORKFLOW",
     }
     : {
       source_kind: "DEPENDENCY",
-      source_refs: ["NORTH_STAR", "PROVING_WORKFLOW", "PERSISTENT_RUNTIME"],
+      source_refs: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "PERSISTENT_RUNTIME"],
       status: "DEPENDENCY_PENDING",
       blocking: true,
       reason: "FIRST_CAMPAIGN_REQUIRES_INTENT_WORKFLOW_AND_RUNTIME",

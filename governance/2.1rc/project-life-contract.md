@@ -24,7 +24,7 @@ The contract records:
 - commercialization, portability, and retirement;
 - the production claim and explicit limitations.
 
-`PRIVATE_PROTOTYPE` means owner-oriented proving, synthetic or explicitly
+`PRIVATE_PROTOTYPE` means owner-oriented validation, synthetic or explicitly
 admitted data, no production claim, and campaign-bounded maintenance. A
 `LIMITED_PRODUCT` is a real working product with a named audience, supported
 scope, operating envelope, data posture, and rollback path. It is not silently

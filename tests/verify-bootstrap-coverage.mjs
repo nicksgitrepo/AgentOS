@@ -60,7 +60,9 @@ validateBootstrapCoverage(ready);
 const questionPlan = planBootstrapQuestions({discovery: [], answers: {}});
 assert.equal(questionPlan.status, "QUESTION_PENDING");
 assert(questionPlan.questions.every((question) => question.coverage_output_ids.length > 0));
-assert(questionPlan.questions.some((question) => question.id === "project.runtime"));
+assert.equal(questionPlan.questions[0]?.id, questionPlan.next);
+assert(questionPlan.coverage.pending_question_ids.includes("project.runtime"));
+assert.equal(questionPlan.question_budget.presented, Math.min(questionPlan.question_budget.unresolved, 1));
 assert(questionPlan.coverage_sha256 === questionPlan.coverage.coverage_sha256);
 
 const missingRow = structuredClone(ready);

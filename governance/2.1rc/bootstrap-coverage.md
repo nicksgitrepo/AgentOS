@@ -9,7 +9,7 @@ human question.
 
 The coverage inventory is broader than the creation-plan groups. It includes:
 
-- project boundary, owner intent, and the first proving workflow;
+- project boundary, owner intent, and the first useful workflow;
 - Project Life Contract maturity, assurance, audience, data, lifetime,
   maintenance, portability, commercialization, and retirement;
 - authority boundaries and the authority-corpus source decision;

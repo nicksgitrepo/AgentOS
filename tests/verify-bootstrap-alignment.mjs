@@ -16,6 +16,7 @@ import {
   planBootstrapQuestions,
   recommendModels,
   validateBootstrapPlan,
+  validateApprovedPlan,
 } from "../control/bootstrap-compiler.mjs";
 import {
   canonicalDigest,
@@ -62,7 +63,7 @@ const plan = compileBootstrapPlan({discovery, answers, projectRoot});
 validateBootstrapPlan(plan);
 assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");
 assert.deepEqual(plan.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
-for (const group of ["project_definition", "north_star", "proving_workflow", "technical_baseline", "delivery_policy", "delivery_probe_plan", "design_bible", "security_baseline", "authority_boundaries", "authority_corpus", "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan"]) assert(plan[group] !== undefined, `missing compiled group ${group}`);
+for (const group of ["project_definition", "north_star", "first_useful_workflow", "technical_baseline", "delivery_policy", "delivery_probe_plan", "design_bible", "security_baseline", "authority_boundaries", "authority_corpus", "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan"]) assert(plan[group] !== undefined, `missing compiled group ${group}`);
 assert.equal(plan.authority_corpus.numbering.bootstrap, "000");
 assert.equal(plan.authority_corpus.numbering.feature_block_size, 100);
 assert.equal(plan.model_policy.work_slots, 20);
@@ -89,6 +90,12 @@ const approved = approveBootstrapPlan(plan, {decision: PLAN_APPROVAL, planSha256
 assert.equal(approved.status, "APPROVED_EXACT_DIGEST");
 assert.notEqual(approved.plan_sha256, plan.plan_sha256);
 assert.equal(approved.approval_receipt.plan_sha256, plan.plan_sha256);
+assert.equal(approved.approval_receipt.approval_subject_sha256, plan.plan_sha256);
+const mutatedApprovedPlan = structuredClone(approved);
+mutatedApprovedPlan.model_policy.profile = "PERFORMANCE";
+delete mutatedApprovedPlan.plan_sha256;
+mutatedApprovedPlan.plan_sha256 = canonicalDigest(mutatedApprovedPlan);
+assert.throws(() => validateApprovedPlan(mutatedApprovedPlan), /changed after owner approval|approval subject/u);
 assert.throws(() => approveBootstrapPlan(plan, {decision: PLAN_APPROVAL, planSha256: "b".repeat(64), discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO}));
 
 const modelRecommendation = recommendModels({
@@ -112,6 +119,8 @@ const acceptedCostRecommendation = recommendModels({
 assert.equal(acceptedCostRecommendation.recommended.model, "slightly-costlier-but-reliable");
 assert(acceptedCostRecommendation.recommended.expected_completion_cost < 1.2);
 assert.throws(() => recommendModels({economics: {profile: "ECO", completion_floor: 0.9}, candidates: [{model: "weak", reasoning: "LOW", spawnable: true, estimated_success_probability: 0.5, estimated_attempts: 1, relative_unit_cost: 1}]}));
+assert.throws(() => recommendModels({economics: {profile: "ECO", completion_floor: 0.8}, candidates: [{model: "infinite", reasoning: "HIGH", spawnable: true, estimated_success_probability: 0.9, estimated_attempts: Number.POSITIVE_INFINITY, relative_unit_cost: 1}]}), /NO_ELIGIBLE_MODEL/u);
+assert.throws(() => recommendModels({economics: {profile: "ECO", completion_floor: 0.8}, candidates: [{model: "infinite-cost", reasoning: "HIGH", spawnable: true, estimated_success_probability: 0.9, estimated_attempts: 1, relative_unit_cost: Number.POSITIVE_INFINITY}]}), /NO_ELIGIBLE_MODEL/u);
 
 const deliveryProbeResults = runDeliveryProbes({projectRoot, policy: plan.delivery_policy, discovery, planSha256: plan.plan_sha256});
 validateDeliveryProbeResults(deliveryProbeResults, {planSha256: plan.plan_sha256, policySha256: plan.delivery_policy.policy_sha256, discoveryDigestSha256: plan.discovery_digest_sha256});
@@ -157,6 +166,11 @@ try {
   assert.equal(context.source_plan_sha256, approved.plan_sha256);
   assert.equal(context.bootstrap_coverage.coverage_sha256, approved.bootstrap_coverage.coverage_sha256);
   assert.equal(context.project_definition.project_name, plan.project_definition.project_name);
+  assert.equal(context.global_policy_state.policy_state_sha256, approved.global_policy_state.policy_state_sha256);
+  assert.equal(approved.global_policy_state.time_basis, "DETERMINISTIC_SYNTHETIC_EPOCH");
+  assert.equal(context.owner_review_policy.policy_state_sha256, approved.global_policy_state.policy_state_sha256);
+  assert(fs.existsSync(path.join(execution.staging_root, context.global_policy_state_path)));
+  assert(fs.existsSync(path.join(execution.staging_root, context.owner_review_policy_path)));
   assert.deepEqual(context.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
   const promoted = promoteBootstrapExecution({plan: approved, executionState: execution.state, setupAudit: audit, projectRoot, nowUtc: "2026-01-01T00:01:00.000Z"});
   assert.equal(promoted.state.phase, "PROMOTED");

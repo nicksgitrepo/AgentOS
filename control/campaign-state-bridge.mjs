@@ -4,6 +4,19 @@ import crypto from "node:crypto";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
+const STAGE_ALIGNMENT = Object.freeze({
+  BUILDING: new Set(["FIRST_PASS_BUILDING"]),
+  TERMINAL_PROPOSED: new Set(["TERMINAL_PROPOSED"]),
+  FIRST_PASS_REPAIR_REQUIRED: new Set(["FIRST_PASS_REPAIR_REQUIRED"]),
+  TERMINAL_SETTLED: new Set(["TERMINAL_SETTLED"]),
+  FINALIZER_ACTIVE: new Set(["FINALIZING"]),
+  FINALIZER_COMPLETE: new Set(["DELTA_REPAIR"]),
+  DELTA_AUDIT: new Set(["DELTA_REPAIR"]),
+  READY_FOR_ACCEPTANCE: new Set(["READY_FOR_ACCEPTANCE"]),
+  DEPLOYMENT_CLEARED: new Set(["READY_FOR_ACCEPTANCE"]),
+  ACCEPTED_LIVE_PENDING_CLOSURE: new Set(["READY_FOR_ACCEPTANCE"]),
+  ACCEPTED_LIVE_CLOSED: new Set(["READY_FOR_ACCEPTANCE"]),
+});
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -47,6 +60,11 @@ function validateBinding(binding, label) {
   requireSha(binding.state_sha256, `${label} state digest`);
 }
 
+function validateStageAlignment(lifecycleStage, cascadeStage) {
+  assert(STAGE_ALIGNMENT[lifecycleStage]?.has(cascadeStage),
+    `lifecycle stage ${lifecycleStage} is not aligned with cascade stage ${cascadeStage}`);
+}
+
 export function validateCampaignStateBridge(bridge) {
   const keys = ["schema", "campaign_id", "campaign_version", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "lifecycle", "cascade", "serialization_rule", "bridge_sha256"];
   requireRecord(bridge, "campaign state bridge");
@@ -62,6 +80,7 @@ export function validateCampaignStateBridge(bridge) {
     assert(source.campaign_id === bridge.campaign_id && source.campaign_version === bridge.campaign_version && source.logical_lineage_id === bridge.logical_lineage_id, "bridge campaign lineage differs from source");
     assert(source.policy_epoch === bridge.policy_epoch && source.policy_state_sha256 === bridge.policy_state_sha256 && source.acceptance_contract_sha256 === bridge.acceptance_contract_sha256, "bridge policy or acceptance identity differs from source");
   }
+  validateStageAlignment(bridge.lifecycle.stage, bridge.cascade.stage);
   assert(bridge.serialization_rule === "ONE_SERIALIZED_STATE_TRANSITION", "bridge serialization rule is invalid");
   requireSha(bridge.bridge_sha256, "campaign state bridge digest");
   assert(bridge.bridge_sha256 === bridgeDigest({...bridge, bridge_sha256: null}), "campaign state bridge digest mismatch");
@@ -73,6 +92,7 @@ export function compileCampaignStateBridge({lifecycle, cascade}) {
   validateBinding(cascade, "cascade bridge input");
   assert(lifecycle.campaign_id === cascade.campaign_id && lifecycle.campaign_version === cascade.campaign_version && lifecycle.logical_lineage_id === cascade.logical_lineage_id, "lifecycle and cascade campaign identity differs");
   assert(lifecycle.policy_epoch === cascade.policy_epoch && lifecycle.policy_state_sha256 === cascade.policy_state_sha256 && lifecycle.acceptance_contract_sha256 === cascade.acceptance_contract_sha256, "lifecycle and cascade policy identity differs");
+  validateStageAlignment(lifecycle.stage, cascade.stage);
   const bridge = {
     schema: "governance.campaign_state_bridge.v1",
     campaign_id: lifecycle.campaign_id,

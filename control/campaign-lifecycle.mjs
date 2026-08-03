@@ -3,6 +3,8 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import {verifyProductAcceptanceProof} from "./acceptance-bridge.mjs";
+import {getPolicyValue, validatePolicyState} from "./global-policy-state.mjs";
 
 export const LIFECYCLE_STAGES = Object.freeze([
   "BUILDING",
@@ -42,6 +44,9 @@ export const SUCCESSOR_STATUSES = Object.freeze([
   "LIVE_DELTA_RECEIVED",
   "CAMPAIGN_ADMITTED",
 ]);
+
+export const SUCCESSOR_CANDIDATE_SCHEMA = "governance.next_campaign_candidate.v1";
+export const SUCCESSOR_LIVE_DELTA_SCHEMA = "governance.next_campaign_live_delta.v1";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
@@ -125,6 +130,198 @@ export function lifecycleDigest(value) {
   return crypto.createHash("sha256").update(canonicalJson(value), "utf8").digest("hex");
 }
 
+function validateSuccessorCandidatePacket(packet, label, state, {kind = null, campaignId = null, campaignVersion = null} = {}) {
+  exactKeys(packet, [
+    "schema", "candidate_kind", "campaign_id", "campaign_version", "project_id", "source",
+    "owner_intent", "policy", "acceptance", "model_plan", "scope", "parent_candidate_sha256",
+    "live_delta_sha256", "candidate_sha256",
+  ], label);
+  assert(packet.schema === SUCCESSOR_CANDIDATE_SCHEMA, `${label} schema mismatch`);
+  assert(["PREDEPLOYMENT", "FINAL"].includes(packet.candidate_kind), `${label} kind is invalid`);
+  if (kind !== null) assert(packet.candidate_kind === kind, `${label} kind does not match its lifecycle boundary`);
+  for (const field of ["campaign_id", "campaign_version", "project_id"]) requireIdentifier(packet[field], `${label} ${field}`);
+  if (campaignId !== null) assert(packet.campaign_id === campaignId, `${label} campaign ID differs from its roster`);
+  if (campaignVersion !== null) assert(packet.campaign_version === campaignVersion, `${label} campaign version differs from its roster`);
+  exactKeys(packet.source, ["commit", "tree", "worktree_id"], `${label} source`);
+  for (const field of ["commit", "tree", "worktree_id"]) requireString(packet.source[field], `${label} source ${field}`);
+  exactKeys(packet.owner_intent, ["sha256", "summary_sha256"], `${label} owner intent`);
+  exactKeys(packet.policy, ["epoch", "state_sha256"], `${label} policy`);
+  exactKeys(packet.acceptance, ["contract_sha256", "question_tree_sha256"], `${label} acceptance`);
+  exactKeys(packet.model_plan, ["sha256", "roles_sha256"], `${label} model plan`);
+  exactKeys(packet.scope, ["sha256", "changed_paths"], `${label} scope`);
+  for (const [value, field] of [
+    [packet.owner_intent.sha256, "owner intent"],
+    [packet.owner_intent.summary_sha256, "owner intent summary"],
+    [packet.policy.state_sha256, "successor policy"],
+    [packet.acceptance.contract_sha256, "successor acceptance contract"],
+    [packet.acceptance.question_tree_sha256, "successor question tree"],
+    [packet.model_plan.sha256, "successor model plan"],
+    [packet.model_plan.roles_sha256, "successor model roles"],
+    [packet.scope.sha256, "successor scope"],
+  ]) requireSha(value, `${label} ${field}`);
+  assert(Number.isSafeInteger(packet.policy.epoch) && packet.policy.epoch >= 1, `${label} policy epoch is invalid`);
+  assert(packet.policy.epoch === state.policy_epoch && packet.policy.state_sha256 === state.policy_state_sha256,
+    `${label} policy is not bound to the current policy snapshot`);
+  assert(packet.acceptance.contract_sha256 === state.acceptance_contract_sha256,
+    `${label} acceptance contract is not bound to the current campaign contract`);
+  validatePathArray(packet.scope.changed_paths, `${label} changed paths`);
+  if (packet.parent_candidate_sha256 !== null) requireSha(packet.parent_candidate_sha256, `${label} parent candidate`);
+  if (packet.live_delta_sha256 !== null) requireSha(packet.live_delta_sha256, `${label} live delta`);
+  if (packet.candidate_kind === "PREDEPLOYMENT") {
+    assert(packet.parent_candidate_sha256 === null && packet.live_delta_sha256 === null,
+      `${label} predeployment candidate has final-only lineage`);
+  } else {
+    requireSha(packet.parent_candidate_sha256, `${label} final candidate parent`);
+    requireSha(packet.live_delta_sha256, `${label} final candidate live delta`);
+  }
+  requireSha(packet.candidate_sha256, `${label} digest`);
+  assert(packet.candidate_sha256 === lifecycleDigest({...packet, candidate_sha256: null}), `${label} digest is not content-addressed`);
+  return packet;
+}
+
+function validatePathArray(paths, label) {
+  assert(Array.isArray(paths) && paths.length > 0, `${label} must be nonempty`);
+  const sorted = [...paths].sort(compareUtf8);
+  assert(sorted.every((value) => typeof value === "string" && value.length > 0
+    && !value.startsWith("/") && !value.includes("\\")
+    && !value.split("/").includes("..")), `${label} contains an unsafe path`);
+  assert(new Set(sorted).size === sorted.length && canonicalJson(paths) === canonicalJson(sorted), `${label} must be unique and sorted`);
+}
+
+export function compileNextCampaignCandidate({
+  candidateKind = "PREDEPLOYMENT", campaignId, campaignVersion, projectId, sourceCommit, sourceTree, sourceWorktreeId,
+  ownerIntentSha256, ownerIntentSummarySha256, policyEpoch, policyStateSha256, acceptanceContractSha256,
+  questionTreeSha256, modelPlanSha256, modelRolesSha256, scopeSha256, changedPaths,
+  parentCandidateSha256 = null, liveDeltaSha256 = null, state,
+}) {
+  requireRecord(state, "successor source state");
+  const packet = {
+    schema: SUCCESSOR_CANDIDATE_SCHEMA,
+    candidate_kind: candidateKind,
+    campaign_id: campaignId,
+    campaign_version: campaignVersion,
+    project_id: projectId,
+    source: {commit: sourceCommit, tree: sourceTree, worktree_id: sourceWorktreeId},
+    owner_intent: {sha256: ownerIntentSha256, summary_sha256: ownerIntentSummarySha256},
+    policy: {epoch: policyEpoch, state_sha256: policyStateSha256},
+    acceptance: {contract_sha256: acceptanceContractSha256, question_tree_sha256: questionTreeSha256},
+    model_plan: {sha256: modelPlanSha256, roles_sha256: modelRolesSha256},
+    scope: {sha256: scopeSha256, changed_paths: [...changedPaths].sort(compareUtf8)},
+    parent_candidate_sha256: parentCandidateSha256,
+    live_delta_sha256: liveDeltaSha256,
+    candidate_sha256: null,
+  };
+  packet.candidate_sha256 = lifecycleDigest(packet);
+  return validateSuccessorCandidatePacket(packet, "next-campaign candidate", state, {
+    kind: candidateKind, campaignId, campaignVersion,
+  });
+}
+
+function validateSuccessorLiveDeltaPacket(packet, label, state, candidate) {
+  exactKeys(packet, [
+    "schema", "candidate_sha256", "campaign_id", "campaign_version", "environment_id", "observed_at_utc",
+    "changed_paths", "change_summary_sha256", "live_delta_sha256",
+  ], label);
+  assert(packet.schema === SUCCESSOR_LIVE_DELTA_SCHEMA, `${label} schema mismatch`);
+  requireSha(packet.candidate_sha256, `${label} candidate`);
+  assert(packet.candidate_sha256 === candidate.candidate_sha256, `${label} targets a different candidate`);
+  assert(packet.campaign_id === candidate.campaign_id && packet.campaign_version === candidate.campaign_version,
+    `${label} campaign identity differs from its candidate`);
+  for (const field of ["campaign_id", "campaign_version", "environment_id"]) requireIdentifier(packet[field], `${label} ${field}`);
+  requireUtc(packet.observed_at_utc, `${label} observation time`);
+  validatePathArray(packet.changed_paths, `${label} changed paths`);
+  requireSha(packet.change_summary_sha256, `${label} change summary`);
+  requireSha(packet.live_delta_sha256, `${label} digest`);
+  assert(packet.live_delta_sha256 === lifecycleDigest({...packet, live_delta_sha256: null}), `${label} digest is not content-addressed`);
+  return packet;
+}
+
+export function compileNextCampaignLiveDelta({candidate, environmentId, observedAtUtc, changedPaths, changeSummarySha256, state}) {
+  requireRecord(state, "successor source state");
+  validateSuccessorCandidatePacket(candidate, "live-delta candidate", state, {kind: "PREDEPLOYMENT"});
+  const packet = {
+    schema: SUCCESSOR_LIVE_DELTA_SCHEMA,
+    candidate_sha256: candidate.candidate_sha256,
+    campaign_id: candidate.campaign_id,
+    campaign_version: candidate.campaign_version,
+    environment_id: environmentId,
+    observed_at_utc: observedAtUtc,
+    changed_paths: [...changedPaths].sort(compareUtf8),
+    change_summary_sha256: changeSummarySha256,
+    live_delta_sha256: null,
+  };
+  packet.live_delta_sha256 = lifecycleDigest(packet);
+  return validateSuccessorLiveDeltaPacket(packet, "next-campaign live delta", state, candidate);
+}
+
+function runtimeContinuityDigest(runtime) {
+  return lifecycleDigest({
+    role_id: runtime.role_id,
+    runtime_identity: runtime.runtime_identity,
+    session_id: runtime.session_id,
+    state_identity: runtime.state_identity,
+    environment_id: runtime.environment_id,
+    capability_set_sha256: runtime.capability_set_sha256,
+    pinned: runtime.pinned,
+    persistent: runtime.persistent,
+    retention: runtime.retention,
+  });
+}
+
+function validateRuntimeBinding(runtime) {
+  exactKeys(runtime, ["role_id", "runtime_identity", "session_id", "state_identity", "deployed_identity", "rollback_identity", "environment_id", "capability_set_sha256", "pinned", "persistent", "retention", "continuity_receipt_sha256"], "Runtime binding");
+  assert(runtime.role_id === "RUNTIME", "Runtime role is invalid");
+  for (const field of ["runtime_identity", "session_id", "state_identity", "deployed_identity", "rollback_identity", "environment_id", "retention"]) requireString(runtime[field], `Runtime ${field}`);
+  requireSha(runtime.capability_set_sha256, "Runtime capability set");
+  assert(runtime.pinned === true && runtime.persistent === true && runtime.retention === "CROSS_CAMPAIGN", "Runtime is not persistent and pinned across campaigns");
+  requireSha(runtime.continuity_receipt_sha256, "Runtime continuity receipt");
+  assert(runtime.continuity_receipt_sha256 === runtimeContinuityDigest(runtime), "Runtime continuity receipt is not bound to its stable identity");
+  return runtime;
+}
+
+const REPOSITORY_PROOF_KEYS = ["schema", "worktree_id", "commit", "tree", "remote_commit", "remote_tree", "clean", "pushed", "observed_by_role", "observed_by_session", "observed_at_utc", "verification_method", "observation_sha256"];
+
+export function validateRepositoryCheckpointProof(proof, expected = {}) {
+  exactKeys(proof, REPOSITORY_PROOF_KEYS, "repository checkpoint proof");
+  assert(proof.schema === "governance.repository_checkpoint_proof.v1", "repository checkpoint proof schema mismatch");
+  for (const field of ["worktree_id", "commit", "tree", "remote_commit", "remote_tree", "observed_by_role", "observed_by_session", "verification_method"]) requireString(proof[field], `repository checkpoint proof ${field}`);
+  assert(["GIT_READBACK", "PROVIDER_READBACK", "ARTIFACT_READBACK"].includes(proof.verification_method), "repository checkpoint proof verification method is invalid");
+  assert(typeof proof.clean === "boolean" && typeof proof.pushed === "boolean", "repository checkpoint proof flags are invalid");
+  if (proof.pushed) assert(proof.clean === true && proof.commit === proof.remote_commit && proof.tree === proof.remote_tree, "pushed repository checkpoint proof is not clean and remote-equal");
+  requireUtc(proof.observed_at_utc, "repository checkpoint observation time");
+  requireSha(proof.observation_sha256, "repository checkpoint observation digest");
+  assert(proof.observation_sha256 === lifecycleDigest({...proof, observation_sha256: null}), "repository checkpoint proof is not content-addressed");
+  for (const [field, label] of [["worktree_id", "worktree"], ["commit", "commit"], ["tree", "tree"], ["remote_commit", "remote commit"], ["remote_tree", "remote tree"]]) {
+    if (expected[field] !== undefined) assert(proof[field] === expected[field], `repository checkpoint proof ${label} differs from expected identity`);
+  }
+  return proof;
+}
+
+export function compileRepositoryCheckpointProof({worktreeId, commit, tree, remoteCommit, remoteTree, clean, pushed, observedByRole, observedBySession, observedAtUtc, verificationMethod = "GIT_READBACK"}) {
+  const proof = {schema: "governance.repository_checkpoint_proof.v1", worktree_id: worktreeId, commit, tree, remote_commit: remoteCommit, remote_tree: remoteTree, clean, pushed, observed_by_role: observedByRole, observed_by_session: observedBySession, observed_at_utc: observedAtUtc, verification_method: verificationMethod, observation_sha256: null};
+  proof.observation_sha256 = lifecycleDigest({...proof, observation_sha256: null});
+  return validateRepositoryCheckpointProof(proof);
+}
+
+export function compileRuntimeBinding({runtimeIdentity, sessionId, stateIdentity, deployedIdentity, rollbackIdentity, environmentId, capabilitySetSha256}) {
+  const runtime = {
+    role_id: "RUNTIME",
+    runtime_identity: runtimeIdentity,
+    session_id: sessionId,
+    state_identity: stateIdentity,
+    deployed_identity: deployedIdentity,
+    rollback_identity: rollbackIdentity,
+    environment_id: environmentId,
+    capability_set_sha256: capabilitySetSha256,
+    pinned: true,
+    persistent: true,
+    retention: "CROSS_CAMPAIGN",
+    continuity_receipt_sha256: null,
+  };
+  runtime.continuity_receipt_sha256 = runtimeContinuityDigest(runtime);
+  return validateRuntimeBinding(runtime);
+}
+
 function sortedUniqueStrings(values, label, {allowEmpty = false} = {}) {
   assert(Array.isArray(values), `${label} must be an array`);
   if (!allowEmpty) assert(values.length > 0, `${label} must be nonempty`);
@@ -176,7 +373,7 @@ const CLOSURE_RECEIPT_KEYS = [
   "closed_at_utc", "closure_receipt_sha256",
 ];
 
-function validateDeploymentReceipt(receipt) {
+export function validateDeploymentReceipt(receipt) {
   exactKeys(receipt, DEPLOYMENT_RECEIPT_KEYS, "live deployment receipt");
   assert(receipt.schema === "governance.live_deployment_receipt.v1", "live deployment receipt schema mismatch");
   for (const field of ["final_candidate_commit", "final_candidate_tree", "deployed_identity", "rollback_identity", "runtime_session_id"]) requireString(receipt[field], `live deployment ${field}`);
@@ -201,7 +398,7 @@ export function compileDeploymentReceipt({finalCandidateCommit, finalCandidateTr
   return validateDeploymentReceipt(receipt);
 }
 
-function validateLiveAuditReceipt(receipt) {
+export function validateLiveAuditReceipt(receipt) {
   exactKeys(receipt, LIVE_AUDIT_RECEIPT_KEYS, "independent live audit receipt");
   assert(receipt.schema === "governance.independent_live_audit_receipt.v1", "independent live audit receipt schema mismatch");
   for (const field of ["final_candidate_commit", "final_candidate_tree", "deployed_identity", "independent_audit_identity"]) requireString(receipt[field], `live audit ${field}`);
@@ -225,7 +422,7 @@ export function compileLiveAuditReceipt({finalCandidateCommit, finalCandidateTre
   return validateLiveAuditReceipt(receipt);
 }
 
-function validateClosureReceipt(receipt) {
+export function validateClosureReceipt(receipt) {
   exactKeys(receipt, CLOSURE_RECEIPT_KEYS, "accepted-live closure receipt");
   assert(receipt.schema === "governance.accepted_live_closure_receipt.v1", "accepted-live closure receipt schema mismatch");
   for (const field of ["final_candidate_commit", "final_candidate_tree"]) requireString(receipt[field], `closure ${field}`);
@@ -280,13 +477,15 @@ function validateLiveTransitionEvidence(state) {
   }
 }
 
-const WORKTREE_KEYS = ["worktree_id", "branch", "base_commit", "current_commit", "base_tree", "current_tree", "clean", "pushed"];
+const WORKTREE_KEYS = ["worktree_id", "branch", "base_commit", "current_commit", "base_tree", "current_tree", "clean", "pushed", "checkpoint_proof"];
 
 function validatePlatformWorktree(worktree, label) {
   exactKeys(worktree, WORKTREE_KEYS, label);
   for (const field of WORKTREE_KEYS.slice(0, 6)) requireString(worktree[field], `${label} ${field}`);
   assert(typeof worktree.clean === "boolean" && typeof worktree.pushed === "boolean", `${label} flags are invalid`);
   if (worktree.pushed) assert(worktree.current_commit.length > 0 && worktree.current_tree.length > 0, `${label} pushed identity is missing`);
+  if (worktree.checkpoint_proof !== null) validateRepositoryCheckpointProof(worktree.checkpoint_proof, {worktree_id: worktree.worktree_id, commit: worktree.current_commit, tree: worktree.current_tree, remote_commit: worktree.current_commit, remote_tree: worktree.current_tree});
+  if (worktree.pushed) assert(worktree.checkpoint_proof !== null && worktree.checkpoint_proof.pushed === true, `${label} pushed state lacks a mechanical checkpoint proof`);
 }
 
 function validateSupervision(value, label) {
@@ -368,7 +567,7 @@ export function compilePlatformAgent({
     logical_agent_id: logicalAgentId,
     execution_session_id: executionSessionId,
     state,
-    platform_worktree: structuredClone(platformWorktree),
+    platform_worktree: {...structuredClone(platformWorktree), checkpoint_proof: platformWorktree.checkpoint_proof ?? null},
     supervision: null,
     request_queue: [],
     handoff_receipts: [],
@@ -424,17 +623,20 @@ export function startPlatformWork(agent) {
   return next;
 }
 
-export function markPlatformHandoffReady(agent, currentCommit, currentTree, clean = true, pushed = true) {
+export function markPlatformHandoffReady(agent, currentCommit, currentTree, repositoryProof) {
   validatePlatformAgent(agent);
   requireString(currentCommit, "Platform current commit");
   requireString(currentTree, "Platform current tree");
   assert(agent.state === "WORKING", "Platform Agent must be WORKING before handoff");
+  validateRepositoryCheckpointProof(repositoryProof, {worktree_id: agent.platform_worktree.worktree_id, commit: currentCommit, tree: currentTree, remote_commit: currentCommit, remote_tree: currentTree});
+  assert(repositoryProof.clean === true && repositoryProof.pushed === true, "Platform handoff requires a clean pushed repository proof");
   const next = structuredClone(agent);
   next.state = "HANDOFF_READY";
   next.platform_worktree.current_commit = currentCommit;
   next.platform_worktree.current_tree = currentTree;
-  next.platform_worktree.clean = clean;
-  next.platform_worktree.pushed = pushed;
+  next.platform_worktree.clean = repositoryProof.clean;
+  next.platform_worktree.pushed = repositoryProof.pushed;
+  next.platform_worktree.checkpoint_proof = structuredClone(repositoryProof);
   validatePlatformAgent(next);
   return next;
 }
@@ -561,26 +763,43 @@ export function validateCheckpointLedger(ledger) {
 }
 
 function validateHold(hold) {
-  exactKeys(hold, ["hold_id", "kind", "scope", "authority_boundary", "resume_condition", "owner_role_id", "created_at_utc"], "lifecycle hold");
+  exactKeys(hold, ["hold_id", "kind", "scope", "affected_outcome_ids", "blocked_stages", "authority_boundary", "resume_condition", "resume_condition_sha256", "safe_alternatives_evidence_sha256", "owner_role_id", "created_at_utc"], "lifecycle hold");
   requireIdentifier(hold.hold_id, "hold ID");
   assert(HOLD_KINDS.includes(hold.kind), "hold kind is invalid");
   for (const field of ["scope", "authority_boundary", "resume_condition", "owner_role_id"]) requireString(hold[field], `hold ${field}`);
+  sortedUniqueStrings(hold.affected_outcome_ids, "hold affected outcomes");
+  sortedUniqueStrings(hold.blocked_stages, "hold blocked stages");
+  assert(hold.blocked_stages.every((stage) => LIFECYCLE_STAGES.includes(stage)), "hold blocked stage is invalid");
+  requireSha(hold.resume_condition_sha256, "hold resume condition");
+  assert(hold.resume_condition_sha256 === lifecycleDigest({condition: hold.resume_condition}), "hold resume condition digest mismatch");
+  requireSha(hold.safe_alternatives_evidence_sha256, "hold safe alternatives evidence");
   requireUtc(hold.created_at_utc, "hold created_at_utc");
 }
 
 function validateFinalizer(finalizer, state) {
   if (finalizer === null) return;
-  exactKeys(finalizer, ["session_id", "worktree_id", "branch", "source_candidate_id", "source_commit", "source_tree", "lease_id", "goal_sha256", "status", "final_commit", "final_tree", "clean", "pushed", "scope_finding_ids", "repair_passes", "reframes", "finalizer_sha256"], "Campaign Finalizer");
+  exactKeys(finalizer, ["session_id", "worktree_id", "branch", "source_candidate_id", "source_commit", "source_tree", "lease_id", "goal_sha256", "status", "final_commit", "final_tree", "clean", "pushed", "repository_proof", "scope_finding_ids", "repair_passes", "reframes", "finalizer_sha256"], "Campaign Finalizer");
   for (const field of ["session_id", "worktree_id", "source_candidate_id", "source_commit", "source_tree", "lease_id", "status"]) requireIdentifier(finalizer[field], `Finalizer ${field}`);
   requireSha(finalizer.goal_sha256, "Finalizer goal");
   requireString(finalizer.branch, "Finalizer branch");
   assert(finalizer.source_candidate_id === state.checkpoint_ledger.active_candidate_id, "Finalizer source candidate is not the active terminal checkpoint");
+  const sourceCheckpoint = state.checkpoint_ledger.entries.find((entry) => entry.candidate_id === finalizer.source_candidate_id);
+  assert(sourceCheckpoint !== undefined && finalizer.worktree_id !== sourceCheckpoint.worktree_id, "Finalizer must use a fresh worktree");
+  const occupiedSessions = new Set([
+    state.roster.campaign_orchestrator.session_id,
+    state.roster.auditor.session_id,
+    ...state.roster.feature_agents.map((feature) => feature.session_id),
+    ...state.platform_pool.map((agent) => agent.execution_session_id),
+  ]);
+  assert(!occupiedSessions.has(finalizer.session_id), "Finalizer session collides with current campaign custody");
   assert(finalizer.status === "ACTIVE" || finalizer.status === "COMPLETE", "Finalizer status is invalid");
   if (finalizer.status === "ACTIVE") {
-    assert(finalizer.final_commit === null && finalizer.final_tree === null && finalizer.clean === null && finalizer.pushed === null, "active Finalizer carries final identity");
+    assert(finalizer.final_commit === null && finalizer.final_tree === null && finalizer.clean === null && finalizer.pushed === null && finalizer.repository_proof === null, "active Finalizer carries final identity");
   } else {
     for (const field of ["final_commit", "final_tree"]) requireString(finalizer[field], `Finalizer ${field}`);
     assert(finalizer.clean === true && finalizer.pushed === true, "complete Finalizer must be clean and pushed");
+    validateRepositoryCheckpointProof(finalizer.repository_proof, {worktree_id: finalizer.worktree_id, commit: finalizer.final_commit, tree: finalizer.final_tree, remote_commit: finalizer.final_commit, remote_tree: finalizer.final_tree});
+    assert(finalizer.repository_proof.clean === true && finalizer.repository_proof.pushed === true, "complete Finalizer lacks a clean pushed repository proof");
   }
   sortedUniqueStrings(finalizer.scope_finding_ids, "Finalizer finding scope", {allowEmpty: true});
   assert(Number.isSafeInteger(finalizer.repair_passes) && finalizer.repair_passes >= 0 && finalizer.repair_passes <= 1, "Finalizer repair pass limit exceeded");
@@ -596,8 +815,11 @@ function emptySuccessorOrientation() {
     status: "NONE",
     orchestrator_binding: null,
     predeployment_candidate_sha256: null,
+    predeployment_candidate: null,
     live_delta_sha256: null,
+    live_delta: null,
     final_candidate_sha256: null,
+    final_candidate: null,
     auditor_binding: null,
     feature_agent_bindings: [],
     platform_agent_bindings: [],
@@ -605,22 +827,70 @@ function emptySuccessorOrientation() {
   };
 }
 
+function validateSuccessorIdentity(identity, label, state) {
+  validateIdentity(identity, label);
+  assert(identity.campaign_id !== state.campaign_id || identity.campaign_version !== state.campaign_version,
+    `${label} reuses the current campaign identity`);
+  const occupiedSessions = new Set([
+    state.roster.campaign_orchestrator.session_id,
+    state.roster.auditor.session_id,
+    ...state.roster.feature_agents.map((feature) => feature.session_id),
+    ...state.platform_pool.map((agent) => agent.execution_session_id),
+  ]);
+  assert(!occupiedSessions.has(identity.session_id), `${label} reuses a completed campaign session`);
+  return identity;
+}
+
 function validateSuccessorOrientation(orientation, state) {
-  exactKeys(orientation, ["status", "orchestrator_binding", "predeployment_candidate_sha256", "live_delta_sha256", "final_candidate_sha256", "auditor_binding", "feature_agent_bindings", "platform_agent_bindings", "product_writer_lease"], "next-campaign orientation");
+  exactKeys(orientation, ["status", "orchestrator_binding", "predeployment_candidate_sha256", "predeployment_candidate", "live_delta_sha256", "live_delta", "final_candidate_sha256", "final_candidate", "auditor_binding", "feature_agent_bindings", "platform_agent_bindings", "product_writer_lease"], "next-campaign orientation");
   assert(SUCCESSOR_STATUSES.includes(orientation.status), "next-campaign orientation status is invalid");
-  for (const field of ["orchestrator_binding", "auditor_binding"]) {
-    if (orientation[field] !== null) validateIdentity(orientation[field], `next-campaign ${field}`);
-  }
+  if (orientation.orchestrator_binding !== null) validateSuccessorIdentity(orientation.orchestrator_binding, "next-campaign Orchestrator", state);
+  if (orientation.auditor_binding !== null) validateSuccessorIdentity(orientation.auditor_binding, "next-campaign Auditor", state);
   for (const field of ["predeployment_candidate_sha256", "live_delta_sha256", "final_candidate_sha256"]) {
     if (orientation[field] !== null) requireSha(orientation[field], `next-campaign ${field}`);
+  }
+  for (const [packet, digest, label] of [
+    [orientation.predeployment_candidate, orientation.predeployment_candidate_sha256, "predeployment candidate"],
+    [orientation.live_delta, orientation.live_delta_sha256, "live delta"],
+    [orientation.final_candidate, orientation.final_candidate_sha256, "final candidate"],
+  ]) {
+    assert((packet === null) === (digest === null), `${label} packet and digest must be present together`);
+    if (packet !== null) {
+      const packetDigest = packet.schema === SUCCESSOR_LIVE_DELTA_SCHEMA ? packet.live_delta_sha256 : packet.candidate_sha256;
+      assert(packetDigest === digest, `${label} packet digest mismatch`);
+    }
+  }
+  if (orientation.predeployment_candidate !== null) {
+    validateSuccessorCandidatePacket(orientation.predeployment_candidate, "oriented predeployment candidate", state, {
+      kind: "PREDEPLOYMENT",
+      campaignId: orientation.orchestrator_binding?.campaign_id ?? null,
+      campaignVersion: orientation.orchestrator_binding?.campaign_version ?? null,
+    });
+  }
+  if (orientation.live_delta !== null) {
+    validateSuccessorLiveDeltaPacket(orientation.live_delta, "oriented live delta", state, orientation.predeployment_candidate);
+  }
+  if (orientation.final_candidate !== null) {
+    validateSuccessorCandidatePacket(orientation.final_candidate, "admitted final candidate", state, {
+      kind: "FINAL",
+      campaignId: orientation.orchestrator_binding?.campaign_id ?? null,
+      campaignVersion: orientation.orchestrator_binding?.campaign_version ?? null,
+    });
+    assert(orientation.final_candidate.parent_candidate_sha256 === orientation.predeployment_candidate_sha256,
+      "final candidate does not name the oriented predeployment candidate");
+    assert(orientation.final_candidate.live_delta_sha256 === orientation.live_delta_sha256,
+      "final candidate does not name the recorded live delta");
   }
   assert(Array.isArray(orientation.feature_agent_bindings) && Array.isArray(orientation.platform_agent_bindings), "next-campaign roster bindings are invalid");
   assert(["NONE", "HELD_FOR_ADMISSION", "RELEASED"].includes(orientation.product_writer_lease), "next-campaign writer lease is invalid");
   if (orientation.status === "NONE") {
     assert(orientation.orchestrator_binding === null
       && orientation.predeployment_candidate_sha256 === null
+      && orientation.predeployment_candidate === null
       && orientation.live_delta_sha256 === null
+      && orientation.live_delta === null
       && orientation.final_candidate_sha256 === null
+      && orientation.final_candidate === null
       && orientation.auditor_binding === null
       && orientation.feature_agent_bindings.length === 0
       && orientation.platform_agent_bindings.length === 0
@@ -629,147 +899,112 @@ function validateSuccessorOrientation(orientation, state) {
   if (["ORCHESTRATOR_ORIENTED_HELD", "LIVE_DELTA_RECEIVED"].includes(orientation.status)) {
     assert(orientation.orchestrator_binding?.role_id === "CAMPAIGN_ORCHESTRATOR", "orientation must bind only the next Campaign Orchestrator");
     assert(orientation.orchestrator_binding.orientation_only === true, "oriented successor Orchestrator must be orientation-only");
-    assert(orientation.predeployment_candidate_sha256 !== null, "oriented successor lacks predeployment candidate");
+    assert(orientation.predeployment_candidate_sha256 !== null && orientation.predeployment_candidate !== null, "oriented successor lacks predeployment candidate");
     assert(orientation.auditor_binding === null && orientation.feature_agent_bindings.length === 0 && orientation.platform_agent_bindings.length === 0, "oriented successor has a speculative roster");
     assert(orientation.product_writer_lease === "NONE", "oriented successor holds Product custody");
   }
   if (orientation.status === "ORCHESTRATOR_ORIENTED_HELD") assert(orientation.live_delta_sha256 === null, "oriented successor has premature live delta");
-  if (orientation.status === "LIVE_DELTA_RECEIVED") assert(orientation.live_delta_sha256 !== null, "live-delta state lacks its delta digest");
+  if (orientation.status === "LIVE_DELTA_RECEIVED") assert(orientation.live_delta_sha256 !== null && orientation.live_delta !== null, "live-delta state lacks its delta packet");
   if (orientation.status === "CAMPAIGN_ADMITTED") {
     assert(orientation.orchestrator_binding?.role_id === "CAMPAIGN_ORCHESTRATOR", "admitted successor lacks Orchestrator");
+    assert(orientation.orchestrator_binding.orientation_only === false, "admitted successor Orchestrator remains orientation-only");
     assert(orientation.auditor_binding?.role_id === "INDEPENDENT_AUDITOR", "admitted successor lacks Auditor");
     assert(orientation.feature_agent_bindings.length > 0, "admitted successor lacks Feature Agents");
-    assert(orientation.final_candidate_sha256 !== null && orientation.product_writer_lease === "HELD_FOR_ADMISSION", "admitted successor lacks final candidate or writer lease");
+    assert(orientation.final_candidate_sha256 !== null && orientation.final_candidate !== null && orientation.product_writer_lease === "HELD_FOR_ADMISSION", "admitted successor lacks final candidate or writer lease");
     assert(state.stage === "ACCEPTED_LIVE_CLOSED", "successor roster may be admitted only after accepted-live closure");
-  }
-}
-
-const PRODUCT_ROOTS = ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"];
-const PRODUCT_ANSWERS = ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE", "EXCEPTION_REQUESTED"];
-const PRODUCT_LIFECYCLE = ["UNEVALUATED", "EVIDENCE_PENDING", "OPEN_REPAIR", "VERIFIED", "INVALIDATED"];
-
-function validateProductQuestionStates(states) {
-  assert(Array.isArray(states), "Product question states are required");
-  let previous = null;
-  const ids = new Set();
-  for (const state of states) {
-    exactKeys(state, ["question_id", "answer", "lifecycle"], "Product question state");
-    requireIdentifier(state.question_id, "Product question ID");
-    assert(/^(?:FR|DB|SEC)-/u.test(state.question_id), "Product question state is outside the three roots");
-    assert(PRODUCT_ANSWERS.includes(state.answer), "Product question answer is invalid");
-    assert(PRODUCT_LIFECYCLE.includes(state.lifecycle), "Product question lifecycle is invalid");
-    assert(!ids.has(state.question_id), "Product question states contain duplicates");
-    ids.add(state.question_id);
-    if (previous !== null) assert(compareUtf8(previous, state.question_id) < 0, "Product question states must be UTF-8 sorted");
-    previous = state.question_id;
-  }
-  return states;
-}
-
-function validateDerivedQuestionIds(values, label) {
-  sortedUniqueStrings(values, label, {allowEmpty: true});
-  assert(values.every((value) => /^(?:FR|DB|SEC)-/u.test(value)), `${label} contains a question outside the three roots`);
-}
-
-function validateAcceptance(acceptance) {
-  exactKeys(acceptance, [
-    "question_tree_sha256", "observations_sha256", "question_states", "open_question_ids",
-    "invalidated_question_ids", "authorized_exception_ids", "root_non_applicability", "roots", "rc_ready",
-    "final_candidate_commit", "final_candidate_tree", "auditor_session_id", "product_receipt_sha256",
-  ], "Product acceptance");
-  requireSha(acceptance.question_tree_sha256, "Product question tree");
-  requireSha(acceptance.observations_sha256, "Product observations");
-  const states = validateProductQuestionStates(acceptance.question_states);
-  validateDerivedQuestionIds(acceptance.open_question_ids, "open Product questions");
-  validateDerivedQuestionIds(acceptance.invalidated_question_ids, "invalidated Product questions");
-  validateDerivedQuestionIds(acceptance.authorized_exception_ids, "authorized Product exceptions");
-  exactKeys(acceptance.root_non_applicability, PRODUCT_ROOTS, "Product root non-applicability");
-  for (const root of PRODUCT_ROOTS) {
-    if (acceptance.root_non_applicability[root] !== null) requireSha(acceptance.root_non_applicability[root], `${root} non-applicability proof`);
-  }
-  const open = states.filter((state) => state.lifecycle !== "VERIFIED").map((state) => state.question_id).sort(compareUtf8);
-  const invalidated = states.filter((state) => state.lifecycle === "INVALIDATED").map((state) => state.question_id).sort(compareUtf8);
-  const exceptions = states.filter((state) => state.answer === "EXCEPTION_REQUESTED" && state.lifecycle === "VERIFIED").map((state) => state.question_id).sort(compareUtf8);
-  assert(canonicalJson(acceptance.open_question_ids) === canonicalJson(open), "open Product question inventory is not derived");
-  assert(canonicalJson(acceptance.invalidated_question_ids) === canonicalJson(invalidated), "invalidated Product question inventory is not derived");
-  assert(canonicalJson(acceptance.authorized_exception_ids) === canonicalJson(exceptions), "authorized Product exception inventory is not derived");
-  exactKeys(acceptance.roots, PRODUCT_ROOTS, "Product acceptance roots");
-  for (const root of PRODUCT_ROOTS) assert(["PASS", "OPEN_REPAIR", "UNKNOWN"].includes(acceptance.roots[root]), `Product root ${root} is invalid`);
-  const derivedRoots = Object.fromEntries(PRODUCT_ROOTS.map((root) => {
-    const prefix = root === "FUNCTION_REQUIREMENTS" ? "FR-" : root === "DESIGN_BIBLE" ? "DB-" : "SEC-";
-    const rootStates = states.filter((state) => state.question_id.startsWith(prefix));
-    if (rootStates.length === 0) {
-      assert(acceptance.root_non_applicability[root] !== null, `${root} lacks an active question or non-applicability proof`);
-      return [root, "PASS"];
+    const bindings = [orientation.orchestrator_binding, orientation.auditor_binding, ...orientation.feature_agent_bindings, ...orientation.platform_agent_bindings];
+    const campaignKey = `${orientation.orchestrator_binding.campaign_id}\u0000${orientation.orchestrator_binding.campaign_version}`;
+    const sessions = new Set();
+    const roles = new Set();
+    for (const binding of bindings) {
+      validateSuccessorIdentity(binding, "admitted successor identity", state);
+      assert(`${binding.campaign_id}\u0000${binding.campaign_version}` === campaignKey, "admitted successor roster mixes campaign identities");
+      assert(!sessions.has(binding.session_id), "admitted successor roster reuses a session");
+      sessions.add(binding.session_id);
     }
-    assert(acceptance.root_non_applicability[root] === null, `${root} has both active questions and non-applicability proof`);
-    if (rootStates.some((state) => state.lifecycle === "OPEN_REPAIR")) return [root, "OPEN_REPAIR"];
-    if (rootStates.some((state) => state.lifecycle !== "VERIFIED")) return [root, "UNKNOWN"];
-    return [root, "PASS"];
-  }));
-  assert(canonicalJson(acceptance.roots) === canonicalJson(derivedRoots), "Product root status is not derived from question states");
-  const rootsPass = PRODUCT_ROOTS.every((root) => acceptance.roots[root] === "PASS");
-  assert(typeof acceptance.rc_ready === "boolean" && acceptance.rc_ready === (rootsPass && open.length === 0 && invalidated.length === 0), "RC_READY is not the exact three-root conjunction");
+    assert(!roles.has(orientation.orchestrator_binding.role_id), "admitted successor roster has duplicate roles");
+    roles.add(orientation.orchestrator_binding.role_id);
+    assert(!roles.has(orientation.auditor_binding.role_id), "admitted successor roster has duplicate roles");
+    roles.add(orientation.auditor_binding.role_id);
+    for (const binding of orientation.feature_agent_bindings) {
+      assert(binding.role_id.startsWith("FEATURE_AGENT:") && binding.orientation_only === false, "admitted successor Feature Agent binding is invalid");
+      assert(!roles.has(binding.role_id), "admitted successor Feature Agent role is duplicated");
+      roles.add(binding.role_id);
+    }
+    for (const binding of orientation.platform_agent_bindings) {
+      assert(binding.role_id.startsWith("PLATFORM_AGENT:") && binding.orientation_only === false, "admitted successor Platform Agent binding is invalid");
+      assert(!roles.has(binding.role_id), "admitted successor Platform Agent role is duplicated");
+      roles.add(binding.role_id);
+    }
+  }
+}
+
+function validateAcceptance(acceptance, state) {
+  exactKeys(acceptance, [
+    "schema", "proof", "product_acceptance", "final_candidate_commit", "final_candidate_tree", "product_receipt_sha256",
+  ], "Product acceptance");
+  assert(acceptance.schema === "governance.lifecycle_product_acceptance.v1", "Product acceptance schema mismatch");
+  requireRecord(acceptance.proof, "Product acceptance proof");
+  requireRecord(acceptance.product_acceptance, "compiled Product acceptance");
+  const rebuilt = verifyProductAcceptanceProof(acceptance.product_acceptance, acceptance.proof, state.campaign_id);
+  assert(acceptance.product_acceptance.acceptance_receipt_sha256 === rebuilt.product_acceptance.acceptance_receipt_sha256,
+    "lifecycle Product acceptance is not bound to the executable question-tree result");
   requireString(acceptance.final_candidate_commit, "accepted final commit");
   requireString(acceptance.final_candidate_tree, "accepted final tree");
-  requireString(acceptance.auditor_session_id, "acceptance Auditor");
+  assert(acceptance.product_acceptance.auditor_session_id === acceptance.proof.auditor_attestation.auditor_session_id,
+    "Product acceptance Auditor is not bound to its attestation");
   requireSha(acceptance.product_receipt_sha256, "Product acceptance receipt");
   const body = structuredClone(acceptance);
   delete body.product_receipt_sha256;
   assert(acceptance.product_receipt_sha256 === lifecycleDigest(body), "Product acceptance receipt is not content-addressed");
 }
 
-export function compileProductAcceptance({
-  questionTreeSha256,
-  observationsSha256,
-  questionStates = [],
-  rootNonApplicability = {FUNCTION_REQUIREMENTS: null, DESIGN_BIBLE: null, SECURITY: null},
-  roots,
-  finalCandidateCommit,
-  finalCandidateTree,
-  auditorSessionId,
-}) {
+export function compileProductAcceptance({proof, finalCandidateCommit, finalCandidateTree}) {
+  requireRecord(proof, "Product acceptance proof");
+  const proofBody = proof.proof ?? proof;
+  const productAcceptance = proof.product_acceptance ?? proof.productAcceptance;
+  requireRecord(proofBody, "Product acceptance proof body");
+  requireRecord(proofBody.tree, "Product acceptance question tree");
+  const expected = verifyProductAcceptanceProof(productAcceptance, proofBody, proofBody.tree.campaign_id);
   const acceptance = {
-    question_tree_sha256: questionTreeSha256,
-    observations_sha256: observationsSha256,
-    question_states: structuredClone(questionStates).sort((left, right) => compareUtf8(left.question_id, right.question_id)),
-    open_question_ids: [],
-    invalidated_question_ids: [],
-    authorized_exception_ids: [],
-    root_non_applicability: structuredClone(rootNonApplicability),
-    roots: structuredClone(roots),
-    rc_ready: false,
+    schema: "governance.lifecycle_product_acceptance.v1",
+    proof: structuredClone(proofBody),
+    product_acceptance: structuredClone(productAcceptance ?? expected.product_acceptance),
     final_candidate_commit: finalCandidateCommit,
     final_candidate_tree: finalCandidateTree,
-    auditor_session_id: auditorSessionId,
     product_receipt_sha256: "",
   };
-  const states = validateProductQuestionStates(acceptance.question_states);
-  acceptance.open_question_ids = states.filter((state) => state.lifecycle !== "VERIFIED").map((state) => state.question_id).sort(compareUtf8);
-  acceptance.invalidated_question_ids = states.filter((state) => state.lifecycle === "INVALIDATED").map((state) => state.question_id).sort(compareUtf8);
-  acceptance.authorized_exception_ids = states.filter((state) => state.answer === "EXCEPTION_REQUESTED" && state.lifecycle === "VERIFIED").map((state) => state.question_id).sort(compareUtf8);
-  acceptance.rc_ready = PRODUCT_ROOTS.every((root) => roots[root] === "PASS")
-    && acceptance.open_question_ids.length === 0 && acceptance.invalidated_question_ids.length === 0;
   const body = structuredClone(acceptance);
   delete body.product_receipt_sha256;
   acceptance.product_receipt_sha256 = lifecycleDigest(body);
-  validateAcceptance(acceptance);
+  validateAcceptance(acceptance, {campaign_id: proofBody.tree.campaign_id});
   return acceptance;
 }
 
-function validateRoster(roster) {
+function validateRoster(roster, state) {
   exactKeys(roster, ["campaign_orchestrator", "auditor", "feature_agents"], "campaign roster");
   validateIdentity(roster.campaign_orchestrator, "campaign Orchestrator");
   validateIdentity(roster.auditor, "campaign Auditor");
   assert(roster.campaign_orchestrator.role_id === "CAMPAIGN_ORCHESTRATOR" && roster.auditor.role_id === "INDEPENDENT_AUDITOR", "campaign roster roles are invalid");
   assert(Array.isArray(roster.feature_agents) && roster.feature_agents.length > 0, "campaign Feature roster is empty");
   const sessions = new Set([roster.campaign_orchestrator.session_id, roster.auditor.session_id]);
+  const roles = new Set([roster.campaign_orchestrator.role_id, roster.auditor.role_id]);
+  for (const identity of [roster.campaign_orchestrator, roster.auditor]) {
+    assert(identity.campaign_id === state.campaign_id && identity.campaign_version === state.campaign_version, "campaign roster identity is bound to a different campaign");
+    assert(identity.orientation_only === false, "active campaign roster cannot contain an orientation-only identity");
+  }
   for (const feature of roster.feature_agents) {
     validateIdentity(feature, "campaign Feature Agent");
     assert(feature.role_id.startsWith("FEATURE_AGENT:"), "campaign Feature Agent role is invalid");
     assert(!sessions.has(feature.session_id), "campaign roster session is reused");
+    assert(!roles.has(feature.role_id), "campaign roster role is reused");
+    assert(feature.campaign_id === state.campaign_id && feature.campaign_version === state.campaign_version, "campaign Feature Agent is bound to a different campaign");
+    assert(feature.orientation_only === false, "active campaign Feature Agent cannot be orientation-only");
     sessions.add(feature.session_id);
+    roles.add(feature.role_id);
   }
+  for (const agent of state.platform_pool) assert(!sessions.has(agent.execution_session_id), "Platform Agent execution session collides with the campaign roster");
+  return sessions;
 }
 
 function validateLivingLedgerBinding(binding) {
@@ -800,10 +1035,12 @@ function validateTransitionJournal(journal, currentStage) {
     if (index === 0) {
       assert(entry.from_state_sha256 === null && entry.from_stage === null && entry.event_type === "GENESIS",
         "lifecycle transition journal has invalid genesis");
+      assert(entry.to_stage === "BUILDING", "lifecycle genesis must begin at BUILDING");
     } else {
       const previous = journal[index - 1];
       assert(entry.from_state_sha256 !== null && entry.from_stage === previous.to_stage,
         "lifecycle transition journal parent is not bound to the previous stage");
+      assert(ALLOWED_TRANSITIONS[previous.to_stage]?.has(entry.to_stage), "lifecycle transition journal contains an illegal stage edge");
     }
     const body = structuredClone(entry);
     delete body.event_sha256;
@@ -874,12 +1111,20 @@ export function validateLifecycleState(state) {
   }
   if (state.stage === "FIRST_PASS_REPAIR_REQUIRED") assert(activeCheckpoint.status === "REPAIR_REQUIRED", "repair-required stage lacks a repair checkpoint");
   validateFinalizer(state.finalizer, state);
-  validateAcceptance(state.acceptance);
-  exactKeys(state.runtime, ["session_id", "state_identity", "deployed_identity", "rollback_identity"], "Runtime binding");
-  for (const field of ["session_id", "state_identity", "deployed_identity", "rollback_identity"]) requireString(state.runtime[field], `Runtime ${field}`);
+  validateAcceptance(state.acceptance, state);
+  validateRuntimeBinding(state.runtime);
   if (["ACCEPTED_LIVE_PENDING_CLOSURE", "ACCEPTED_LIVE_CLOSED"].includes(state.stage)) validateLiveTransitionEvidence(state);
-  validateRoster(state.roster);
-  assert(state.acceptance.auditor_session_id === state.roster.auditor.session_id || state.stage === "BUILDING" || state.stage === "TERMINAL_PROPOSED" || state.stage === "FIRST_PASS_REPAIR_REQUIRED" || state.stage === "TERMINAL_SETTLED" || state.stage === "FINALIZER_ACTIVE" || state.stage === "FINALIZER_COMPLETE" || state.stage === "DELTA_AUDIT",
+  const rosterSessions = validateRoster(state.roster, state);
+  if (state.active_writer !== null) {
+    if (state.active_writer.kind === "FEATURE_AGENT") {
+      const feature = state.roster.feature_agents.find((item) => item.session_id === state.active_writer.session_id);
+      assert(feature?.role_id === state.active_writer.role_id, "active Feature writer is not the current roster owner");
+    } else {
+      assert(state.finalizer?.session_id === state.active_writer.session_id && state.active_writer.role_id === "CAMPAIGN_FINALIZER", "active Finalizer writer is not the admitted Finalizer");
+    }
+    assert(rosterSessions.has(state.active_writer.session_id) || state.active_writer.kind === "CAMPAIGN_FINALIZER", "active writer session is not bound to the current campaign");
+  }
+  assert(state.acceptance.product_acceptance.auditor_session_id === state.roster.auditor.session_id || state.stage === "BUILDING" || state.stage === "TERMINAL_PROPOSED" || state.stage === "FIRST_PASS_REPAIR_REQUIRED" || state.stage === "TERMINAL_SETTLED" || state.stage === "FINALIZER_ACTIVE" || state.stage === "FINALIZER_COMPLETE" || state.stage === "DELTA_AUDIT",
     "Product acceptance Auditor is not the current campaign Auditor");
   const featureBindings = new Map(state.roster.feature_agents.map((feature) => [feature.session_id, feature.role_id]));
   for (const agent of state.platform_pool) {
@@ -893,7 +1138,7 @@ export function validateLifecycleState(state) {
   if (state.stage === "FINALIZER_ACTIVE") assert(state.finalizer?.status === "ACTIVE" && state.active_writer?.kind === "CAMPAIGN_FINALIZER", "Finalizer custody is not active");
   if (state.stage === "FINALIZER_COMPLETE") assert(state.finalizer?.status === "COMPLETE" && state.active_writer === null, "completed Finalizer still holds Product custody");
   if (["READY_FOR_ACCEPTANCE", "DEPLOYMENT_CLEARED", "ACCEPTED_LIVE_PENDING_CLOSURE", "ACCEPTED_LIVE_CLOSED"].includes(state.stage)) {
-    assert(state.acceptance.rc_ready === true, `${state.stage} lacks all three Product roots`);
+    assert(state.acceptance.product_acceptance.rc_ready === true, `${state.stage} lacks all three Product roots`);
     assert(state.acceptance.final_candidate_commit === state.root.commit && state.acceptance.final_candidate_tree === state.root.tree,
       `${state.stage} Product acceptance is not bound to the campaign root`);
     assert(state.root.clean === true && state.root.pushed === true && state.root.commit === state.root.remote_commit && state.root.tree === state.root.remote_tree,
@@ -909,6 +1154,7 @@ export function validateLifecycleState(state) {
 export function sealLifecycleState(state) {
   const next = structuredClone(state);
   if (!Array.isArray(next.transition_journal) || next.transition_journal.length === 0) {
+    assert(next.stage === "BUILDING", "a new lifecycle state must begin at BUILDING");
     const genesisBody = {
       sequence: 0,
       from_state_sha256: null,
@@ -931,6 +1177,7 @@ export function sealLifecycleState(state) {
 
 export function createLifecycleState(input) {
   requireRecord(input, "campaign lifecycle input");
+  assert(input.stage === undefined || input.stage === "BUILDING" || (Array.isArray(input.transition_journal) && input.transition_journal.length > 0), "lifecycle creation cannot skip the BUILDING genesis");
   const firstCheckpoint = input.checkpoint_ledger ?? compileCheckpointLedger([compileCheckpoint(input.first_checkpoint)], input.first_checkpoint.candidate_id);
   const state = {
     schema: "governance.campaign_lifecycle_state.v1",
@@ -954,7 +1201,7 @@ export function createLifecycleState(input) {
     roster: structuredClone(input.roster),
     successor_orientation: structuredClone(input.successor_orientation ?? emptySuccessorOrientation()),
     living_ledger: structuredClone(input.living_ledger),
-    transition_journal: [],
+    transition_journal: structuredClone(input.transition_journal ?? []),
     state_sha256: "",
   };
   return sealLifecycleState(state);
@@ -963,6 +1210,7 @@ export function createLifecycleState(input) {
 function assertLineage(previous, next) {
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) assert(previous[field] === next[field], `lifecycle transition changed ${field}`);
   for (const field of ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"]) assert(previous[field] === next[field], `lifecycle transition changed ${field} without a policy or acceptance rebind`);
+  for (const field of ["role_id", "runtime_identity", "session_id", "state_identity", "environment_id", "capability_set_sha256", "pinned", "persistent", "retention", "continuity_receipt_sha256"]) assert(previous.runtime[field] === next.runtime[field], `lifecycle transition changed persistent Runtime ${field}`);
 }
 
 export function applyLifecycleTransition(previous, next, event = {}) {
@@ -972,6 +1220,19 @@ export function applyLifecycleTransition(previous, next, event = {}) {
   assert(canonicalJson(candidate.transition_journal) === canonicalJson(previous.transition_journal),
     "lifecycle transition must append to the current journal");
   assert(ALLOWED_TRANSITIONS[previous.stage]?.has(candidate.stage), `illegal lifecycle transition ${previous.stage} -> ${candidate.stage}`);
+  const custodyView = (state) => ({active_writer: state.active_writer, platform_pool: state.platform_pool, roster: state.roster});
+  const custodyChanged = canonicalJson(custodyView(previous)) !== canonicalJson(custodyView(candidate));
+  if (custodyChanged) {
+    assert(candidate.stage === previous.stage || ["FINALIZER_ADMISSION", "FINALIZER_COMPLETION", "NEXT_CAMPAIGN_ADMITTED"].includes(event.type), "custody changed without a stage-boundary operation");
+    requireSha(event.payload.before_custody_sha256, "custody transition before digest");
+    requireSha(event.payload.after_custody_sha256, "custody transition after digest");
+    assert(event.payload.before_custody_sha256 === lifecycleDigest(custodyView(previous)), "custody transition before digest mismatch");
+    assert(event.payload.after_custody_sha256 === lifecycleDigest(custodyView(candidate)), "custody transition after digest mismatch");
+  }
+  for (const hold of previous.holds) {
+    assert(!hold.blocked_stages.includes(candidate.stage), `lifecycle transition enters a stage blocked by hold ${hold.hold_id}`);
+    if (event.payload?.outcome_id !== undefined) assert(!hold.affected_outcome_ids.includes(event.payload.outcome_id), `lifecycle transition advances an outcome blocked by hold ${hold.hold_id}`);
+  }
   requireString(event.type ?? "LIFECYCLE_TRANSITION", "lifecycle event type");
   if (previous.stage === "TERMINAL_PROPOSED" && candidate.stage === "FIRST_PASS_REPAIR_REQUIRED") {
     const checkpoint = candidate.checkpoint_ledger.entries.find((entry) => entry.candidate_id === candidate.checkpoint_ledger.active_candidate_id);
@@ -1031,21 +1292,29 @@ export function handoffToFinalizer(state, finalizer, atUtc = new Date().toISOStr
   return applyLifecycleTransition(state, next, {
     type: "FINALIZER_ADMISSION",
     at_utc: atUtc,
-    payload: {finalizer_session_id: finalizer.session_id, source_candidate_id: finalizer.source_candidate_id},
+    payload: {
+      finalizer_session_id: finalizer.session_id,
+      source_candidate_id: finalizer.source_candidate_id,
+      before_custody_sha256: lifecycleDigest({active_writer: state.active_writer, platform_pool: state.platform_pool, roster: state.roster}),
+      after_custody_sha256: lifecycleDigest({active_writer: next.active_writer, platform_pool: next.platform_pool, roster: next.roster}),
+    },
   });
 }
 
-export function completeFinalizer(state, finalCommit, finalTree, atUtc = new Date().toISOString()) {
+export function completeFinalizer(state, finalCommit, finalTree, repositoryProof, atUtc = new Date().toISOString()) {
   validateLifecycleState(state);
   assert(state.stage === "FINALIZER_ACTIVE", "Finalizer completion requires active Finalizer custody");
   requireIdentifier(finalCommit, "Finalizer final commit");
   requireIdentifier(finalTree, "Finalizer final tree");
+  validateRepositoryCheckpointProof(repositoryProof, {worktree_id: state.finalizer.worktree_id, commit: finalCommit, tree: finalTree, remote_commit: finalCommit, remote_tree: finalTree});
+  assert(repositoryProof.clean === true && repositoryProof.pushed === true, "Finalizer completion requires a clean pushed repository proof");
   const next = structuredClone(state);
   next.finalizer.status = "COMPLETE";
   next.finalizer.final_commit = finalCommit;
   next.finalizer.final_tree = finalTree;
   next.finalizer.clean = true;
   next.finalizer.pushed = true;
+  next.finalizer.repository_proof = structuredClone(repositoryProof);
   const body = structuredClone(next.finalizer);
   delete body.finalizer_sha256;
   next.finalizer.finalizer_sha256 = lifecycleDigest(body);
@@ -1054,7 +1323,12 @@ export function completeFinalizer(state, finalCommit, finalTree, atUtc = new Dat
   return applyLifecycleTransition(state, next, {
     type: "FINALIZER_COMPLETION",
     at_utc: atUtc,
-    payload: {final_commit: finalCommit, final_tree: finalTree},
+    payload: {
+      final_commit: finalCommit,
+      final_tree: finalTree,
+      before_custody_sha256: lifecycleDigest({active_writer: state.active_writer, platform_pool: state.platform_pool, roster: state.roster}),
+      after_custody_sha256: lifecycleDigest({active_writer: next.active_writer, platform_pool: next.platform_pool, roster: next.roster}),
+    },
   });
 }
 
@@ -1094,8 +1368,17 @@ export function setHold(state, hold) {
 export function clearHold(state, holdId, evidenceSha256) {
   validateLifecycleState(state);
   requireIdentifier(holdId, "hold ID");
-  requireSha(evidenceSha256, "hold resolution evidence");
+  exactKeys(evidenceSha256, ["condition_sha256", "affected_outcome_ids", "evidence_sha256", "resolved_at_utc"], "hold resolution");
+  requireSha(evidenceSha256.condition_sha256, "hold resolution condition");
+  sortedUniqueStrings(evidenceSha256.affected_outcome_ids, "hold resolution outcomes");
+  requireSha(evidenceSha256.evidence_sha256, "hold resolution evidence");
+  requireUtc(evidenceSha256.resolved_at_utc, "hold resolution time");
   const next = structuredClone(state);
+  const hold = next.holds.find((item) => item.hold_id === holdId);
+  assert(hold !== undefined, "hold is not active");
+  assert(evidenceSha256.condition_sha256 === hold.resume_condition_sha256, "hold resolution does not satisfy the recorded resume condition");
+  assert(canonicalJson(evidenceSha256.affected_outcome_ids) === canonicalJson(hold.affected_outcome_ids), "hold resolution outcome scope differs");
+  assert(evidenceSha256.evidence_sha256 === lifecycleDigest({...evidenceSha256, evidence_sha256: null}), "hold resolution evidence is not content-addressed");
   const before = next.holds.length;
   next.holds = next.holds.filter((hold) => hold.hold_id !== holdId);
   assert(next.holds.length === before - 1, "hold is not active");
@@ -1105,68 +1388,82 @@ export function clearHold(state, holdId, evidenceSha256) {
   });
 }
 
-export function orientNextCampaignOrchestrator(state, binding, predeploymentCandidateSha256) {
+export function orientNextCampaignOrchestrator(state, binding, predeploymentCandidate) {
   validateLifecycleState(state);
   assert(["READY_FOR_ACCEPTANCE", "DEPLOYMENT_CLEARED"].includes(state.stage), "next Orchestrator orientation requires release clearance");
-  validateIdentity(binding, "next Campaign Orchestrator");
+  validateSuccessorIdentity(binding, "next Campaign Orchestrator", state);
   assert(binding.role_id === "CAMPAIGN_ORCHESTRATOR" && binding.orientation_only === true, "successor orientation must be Orchestrator-only");
-  requireSha(predeploymentCandidateSha256, "predeployment candidate digest");
+  validateSuccessorCandidatePacket(predeploymentCandidate, "predeployment candidate", state, {
+    kind: "PREDEPLOYMENT", campaignId: binding.campaign_id, campaignVersion: binding.campaign_version,
+  });
   assert(state.successor_orientation.status === "NONE", "next Orchestrator is already oriented");
   const next = structuredClone(state);
   next.successor_orientation = {
     ...emptySuccessorOrientation(),
     status: "ORCHESTRATOR_ORIENTED_HELD",
     orchestrator_binding: structuredClone(binding),
-    predeployment_candidate_sha256: predeploymentCandidateSha256,
+    predeployment_candidate_sha256: predeploymentCandidate.candidate_sha256,
+    predeployment_candidate: structuredClone(predeploymentCandidate),
   };
   return applyLifecycleTransition(state, next, {
     type: "NEXT_ORCHESTRATOR_ORIENTED",
-    payload: {orchestrator_session_id: binding.session_id, predeployment_candidate_sha256: predeploymentCandidateSha256},
+    payload: {orchestrator_session_id: binding.session_id, predeployment_candidate_sha256: predeploymentCandidate.candidate_sha256},
   });
 }
 
-export function recordLiveDelta(state, orchestratorSessionId, liveDeltaSha256) {
+export function recordLiveDelta(state, orchestratorSessionId, liveDelta) {
   validateLifecycleState(state);
   requireIdentifier(orchestratorSessionId, "oriented Orchestrator session");
-  requireSha(liveDeltaSha256, "live delta digest");
   assert(state.stage === "ACCEPTED_LIVE_PENDING_CLOSURE", "live delta requires accepted-live pending closure");
   assert(state.successor_orientation.status === "ORCHESTRATOR_ORIENTED_HELD", "live delta has no oriented successor");
   assert(state.successor_orientation.orchestrator_binding.session_id === orchestratorSessionId, "live delta is bound to the wrong Orchestrator");
+  validateSuccessorLiveDeltaPacket(liveDelta, "live delta", state, state.successor_orientation.predeployment_candidate);
   const next = structuredClone(state);
   next.successor_orientation.status = "LIVE_DELTA_RECEIVED";
-  next.successor_orientation.live_delta_sha256 = liveDeltaSha256;
+  next.successor_orientation.live_delta_sha256 = liveDelta.live_delta_sha256;
+  next.successor_orientation.live_delta = structuredClone(liveDelta);
   return applyLifecycleTransition(state, next, {
     type: "NEXT_ORCHESTRATOR_LIVE_DELTA_RECEIVED",
-    payload: {orchestrator_session_id: orchestratorSessionId, live_delta_sha256: liveDeltaSha256},
+    payload: {orchestrator_session_id: orchestratorSessionId, live_delta_sha256: liveDelta.live_delta_sha256},
   });
 }
 
-export function admitNextCampaign(state, {finalCandidateSha256, auditorBinding, featureAgentBindings, platformAgentBindings = []}) {
+export function admitNextCampaign(state, {finalCandidate, auditorBinding, featureAgentBindings, platformAgentBindings = []}) {
   validateLifecycleState(state);
   assert(state.stage === "ACCEPTED_LIVE_CLOSED", "next campaign admission requires accepted-live closure");
   assert(state.successor_orientation.status === "LIVE_DELTA_RECEIVED", "next campaign admission requires the live delta");
-  requireSha(finalCandidateSha256, "next campaign final candidate");
-  validateIdentity(auditorBinding, "next campaign Auditor");
+  validateSuccessorCandidatePacket(finalCandidate, "final next-campaign candidate", state, {
+    kind: "FINAL",
+    campaignId: state.successor_orientation.orchestrator_binding.campaign_id,
+    campaignVersion: state.successor_orientation.orchestrator_binding.campaign_version,
+  });
+  assert(finalCandidate.parent_candidate_sha256 === state.successor_orientation.predeployment_candidate_sha256,
+    "final next-campaign candidate does not name the predeployment candidate");
+  assert(finalCandidate.live_delta_sha256 === state.successor_orientation.live_delta_sha256,
+    "final next-campaign candidate does not name the live delta");
+  validateSuccessorIdentity(auditorBinding, "next campaign Auditor", state);
   assert(auditorBinding.role_id === "INDEPENDENT_AUDITOR" && auditorBinding.orientation_only === false, "next campaign Auditor binding is invalid");
   assert(Array.isArray(featureAgentBindings) && featureAgentBindings.length > 0, "next campaign Feature roster is empty");
   for (const binding of featureAgentBindings) {
-    validateIdentity(binding, "next Feature Agent");
+    validateSuccessorIdentity(binding, "next Feature Agent", state);
     assert(binding.role_id.startsWith("FEATURE_AGENT:") && binding.orientation_only === false, "next Feature Agent binding is invalid");
   }
   for (const binding of platformAgentBindings) {
-    validateIdentity(binding, "next Platform Agent");
+    validateSuccessorIdentity(binding, "next Platform Agent", state);
     assert(binding.role_id.startsWith("PLATFORM_AGENT:") && binding.orientation_only === false, "next Platform Agent binding is invalid");
   }
   const next = structuredClone(state);
   next.successor_orientation.status = "CAMPAIGN_ADMITTED";
-  next.successor_orientation.final_candidate_sha256 = finalCandidateSha256;
+  next.successor_orientation.orchestrator_binding.orientation_only = false;
+  next.successor_orientation.final_candidate_sha256 = finalCandidate.candidate_sha256;
+  next.successor_orientation.final_candidate = structuredClone(finalCandidate);
   next.successor_orientation.auditor_binding = structuredClone(auditorBinding);
   next.successor_orientation.feature_agent_bindings = structuredClone(featureAgentBindings);
   next.successor_orientation.platform_agent_bindings = structuredClone(platformAgentBindings);
   next.successor_orientation.product_writer_lease = "HELD_FOR_ADMISSION";
   return applyLifecycleTransition(state, next, {
     type: "NEXT_CAMPAIGN_ADMITTED",
-    payload: {final_candidate_sha256: finalCandidateSha256, feature_count: featureAgentBindings.length, platform_count: platformAgentBindings.length},
+    payload: {final_candidate_sha256: finalCandidate.candidate_sha256, feature_count: featureAgentBindings.length, platform_count: platformAgentBindings.length},
   });
 }
 
@@ -1316,16 +1613,20 @@ export function writeStateCompareAndSwap(targetPath, expectedBytes, nextState) {
   return nextState.state_sha256;
 }
 
-export function decideHeartbeatAction(state, observedAtUtc, nowUtc) {
+export function decideHeartbeatAction(state, observedAtUtc, nowUtc, policyState) {
   validateLifecycleState(state);
+  validatePolicyState(policyState);
+  assert(policyState.policy_epoch === state.policy_epoch && policyState.policy_state_sha256 === state.policy_state_sha256,
+    "heartbeat policy state is not the lifecycle state policy snapshot");
   requireUtc(observedAtUtc, "last heartbeat");
   requireUtc(nowUtc, "current heartbeat");
+  const intervalMinutes = getPolicyValue(policyState, "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES");
   const ageMinutes = (Date.parse(nowUtc) - Date.parse(observedAtUtc)) / 60_000;
   assert(ageMinutes >= 0, "heartbeat time moves backward");
   return {
-    action: ageMinutes >= 15 ? "RECONCILE" : "NO_ACTION",
+    action: ageMinutes >= intervalMinutes ? "RECONCILE" : "NO_ACTION",
     age_minutes: ageMinutes,
-    interval_minutes: 15,
+    interval_minutes: intervalMinutes,
     unaffected_work_continues: true,
     hold_count: state.holds.length,
   };

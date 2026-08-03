@@ -26,5 +26,7 @@ function hostile(operation) {
 }
 hostile(() => compileCampaignStateBridge({lifecycle, cascade: {...cascade, policy_epoch: 2}}));
 hostile(() => compileCampaignStateBridge({lifecycle, cascade: {...cascade, acceptance_contract_sha256: "2".repeat(64)}}));
+hostile(() => compileCampaignStateBridge({lifecycle: {...lifecycle, stage: "READY_FOR_ACCEPTANCE"}, cascade}));
+hostile(() => compileCampaignStateBridge({lifecycle, cascade: {...cascade, stage: "READY_FOR_ACCEPTANCE"}}));
 hostile(() => validateCampaignStateBridge({...bridge, bridge_sha256: "0".repeat(64)}));
 console.log(`PASS AgentOS campaign state bridge (${hostiles} hostile cases)`);

@@ -14,7 +14,7 @@ export const DELIVERY_TARGET_PRODUCTION_CLAIMS = Object.freeze(["PROTOTYPE_ONLY"
 // The profile only constrains the supported maturity modes; capabilities and
 // account bindings remain typed project facts.
 export const MANAGED_SITE_ADAPTER_PROFILES = Object.freeze({
-  CHATGPT_SITES: Object.freeze({
+  GENERIC_MANAGED_SITE: Object.freeze({
     family: "MANAGED_SITE",
     supported_modes: Object.freeze(["PROTOTYPE", "LIMITED_PRODUCT"]),
     source: "PORTABLE_TARGET_PROFILE",
@@ -172,8 +172,8 @@ export function compileDeliveryTarget({answer = undefined, route = "PROJECT_DEFI
       selected_from: answer === undefined ? "ROUTE_AND_PROJECT_LIFE_CONTRACT" : "OWNER_INPUT",
       managed_site_option: {
         family: "MANAGED_SITE",
-        adapter_id: "CHATGPT_SITES",
-        supported_modes: [...MANAGED_SITE_ADAPTER_PROFILES.CHATGPT_SITES.supported_modes],
+        adapter_id: "GENERIC_MANAGED_SITE",
+        supported_modes: [...MANAGED_SITE_ADAPTER_PROFILES.GENERIC_MANAGED_SITE.supported_modes],
         reason: "A_managed_site_can_reduce_setup_for_a_prototype_or_explicitly_limited_product;_it_does_not_imply_production_capability_or_provider_authority",
         confidence: "CANDIDATE_ONLY",
       },
@@ -213,12 +213,12 @@ export function validateDeliveryTarget(target) {
   assert(Array.isArray(target.capability_ids) && target.capability_ids.every((value) => typeof value === "string"), "delivery target capability IDs are invalid");
   requireRecord(target.recommendation, "delivery target recommendation");
   assert(target.recommendation.managed_site_option?.family === "MANAGED_SITE"
-    && target.recommendation.managed_site_option?.adapter_id === "CHATGPT_SITES"
+    && target.recommendation.managed_site_option?.adapter_id === "GENERIC_MANAGED_SITE"
     && JSON.stringify(target.recommendation.managed_site_option?.supported_modes) === JSON.stringify(["PROTOTYPE", "LIMITED_PRODUCT"]), "managed site recommendation is missing or weakened");
   requireString(target.recommendation.rule, "delivery target recommendation rule");
-  if (target.adapter_id === "CHATGPT_SITES") {
-    assert(target.family === "MANAGED_SITE", "ChatGPT Sites adapter is not a managed site target");
-    assert(["PROTOTYPE", "LIMITED_PRODUCT"].includes(target.mode), "ChatGPT Sites adapter mode is outside its profiled support");
+  if (target.adapter_id === "GENERIC_MANAGED_SITE") {
+    assert(target.family === "MANAGED_SITE", "generic managed-site adapter is not a managed site target");
+    assert(["PROTOTYPE", "LIMITED_PRODUCT"].includes(target.mode), "generic managed-site adapter mode is outside its profiled support");
   }
   if (target.mode === "PROTOTYPE") assert(target.data_posture === "NONE_OR_SYNTHETIC", "prototype target data posture is unsafe");
   const body = structuredClone(target);

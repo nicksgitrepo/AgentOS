@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {
   applyCorpusPlan,
   canonicalCompactJson,
@@ -54,8 +55,9 @@ import {
   policyStateDigest,
   validatePolicyState,
 } from "./global-policy-state.mjs";
+import {writePolicyStateCompareAndSwap} from "./global-policy-store.mjs";
 
-export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"]);
+export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
 export const PLAN_APPROVAL = "APPROVE_EXACT_PLAN";
 export const EXECUTION_PHASES = Object.freeze(["PLANNED", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"]);
@@ -97,7 +99,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     class: "OWNER_INTENT",
     prompt: "What is the smallest real workflow that proves the project is useful, and what does working mean?",
     type: "JSON",
-    output: "PROVING_WORKFLOW",
+    output: "FIRST_USEFUL_WORKFLOW",
     required: true,
   },
   {
@@ -199,6 +201,11 @@ function requireRecord(value, label) {
   assert(isRecord(value), `${label} must be an object`);
 }
 
+function exactKeys(value, expected, label) {
+  requireRecord(value, label);
+  assert(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...expected].sort()), `${label} fields mismatch`);
+}
+
 function requireString(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
 }
@@ -297,10 +304,10 @@ export function recommendModels({economics: inputEconomics, candidates, role = n
       requireRecord(candidate, `model candidate ${index}`);
       for (const field of ["model", "reasoning"]) requireString(candidate[field], `model candidate ${field}`);
       assert(candidate.spawnable === true, "NOT_SPAWNABLE");
-      for (const field of ["estimated_success_probability", "estimated_attempts", "relative_unit_cost"]) assert(typeof candidate[field] === "number" && candidate[field] > 0, `${field.toUpperCase()}_INVALID`);
+      for (const field of ["estimated_success_probability", "estimated_attempts", "relative_unit_cost"]) assert(typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] > 0, `${field.toUpperCase()}_INVALID`);
       assert(candidate.estimated_success_probability <= 1, "SUCCESS_PROBABILITY_INVALID");
       for (const field of ["relative_unit_cost_low", "relative_unit_cost_high"]) {
-        if (candidate[field] !== undefined) assert(typeof candidate[field] === "number" && candidate[field] > 0, `${field.toUpperCase()}_INVALID`);
+        if (candidate[field] !== undefined) assert(typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] > 0, `${field.toUpperCase()}_INVALID`);
       }
       for (const field of ["supervisor_cost", "repair_cost", "integration_cost"]) {
         if (candidate[field] !== undefined) assert(typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] >= 0, `${field.toUpperCase()}_INVALID`);
@@ -415,16 +422,16 @@ function deriveFunctionRequirements(answers) {
   const clauses = Array.isArray(explicit) && explicit.length > 0
     ? explicit
     : [{
-      question_id: "FR-001-FIRST-PROVING-WORKFLOW",
-      proposition: `Can the project complete the owner-defined proving workflow (${workflow?.name ?? "the first workflow"}) with the stated success condition?`,
-      source: "NORTH_STAR_AND_PROVING_WORKFLOW",
+      question_id: "FR-001-FIRST-USEFUL-WORKFLOW",
+      proposition: `Can the project complete the owner-defined first useful workflow (${workflow?.name ?? "the first workflow"}) with the stated success condition?`,
+      source: "NORTH_STAR_AND_FIRST_USEFUL_WORKFLOW",
       owner_outcome: northStar,
       evidence: ["real_workflow_result", "accepted_result_receipt"],
       status: "CANDIDATE_FOR_CAMPAIGN_COMPILATION",
     }];
   return {
     status: "CANDIDATE_FOR_CAMPAIGN_COMPILATION",
-    source: "OWNER_NORTH_STAR_AND_PROVING_WORKFLOW",
+    source: "OWNER_NORTH_STAR_AND_FIRST_USEFUL_WORKFLOW",
     clauses,
     exact_root: "FUNCTION_REQUIREMENTS",
   };
@@ -559,7 +566,7 @@ function deriveFirstCampaign(discovery, answers) {
   return {
     status: answers?.["project.first_campaign"] ? "COMPILED" : "MINIMAL_EMPTY_SYNTHETIC_CAMPAIGN",
     owner_outcome: answers?.["project.north_star"] ?? null,
-    proving_workflow: answers?.["project.first_workflow"] ?? null,
+    first_useful_workflow: answers?.["project.first_workflow"] ?? null,
     features: roster,
     excluded_features: answers?.["project.first_campaign"]?.excluded_features ?? [],
     dependency_graph: answers?.["project.first_campaign"]?.dependency_graph ?? [],
@@ -630,8 +637,15 @@ export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
     required_output_groups: BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
     coverage_sha256: coverage.coverage_sha256,
     coverage,
-    question_budget: {visible: visible.length, answered: visible.length - unresolved.length, unresolved: unresolved.length, recommended_maximum: 9},
-    questions: unresolved.map((question) => ({
+    question_budget: {
+      visible: visible.length,
+      answered: visible.length - unresolved.length,
+      unresolved: unresolved.length,
+      presented: Math.min(unresolved.length, 1),
+      remaining_after_presented: Math.max(unresolved.length - 1, 0),
+      recommended_maximum: 1,
+    },
+    questions: unresolved.slice(0, 1).map((question) => ({
       ...question,
       choices: question.choices ?? null,
       discovered_facts: discovery.filter((fact) => fact.fact_id === question.id || fact.fact_id.startsWith(`${question.id}.`)),
@@ -722,10 +736,11 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     projectId: context.project_name,
     values: {
       "PROJECT.NORTH_STAR": JSON.stringify(normalizedAnswers["project.north_star"]),
-      "PROJECT.PROVING_WORKFLOW": JSON.stringify(normalizedAnswers["project.first_workflow"]),
+      "PROJECT.FIRST_USEFUL_WORKFLOW": JSON.stringify(normalizedAnswers["project.first_workflow"]),
       "MODEL.PROFILE": modelClass,
     },
     nowUtc: "1970-01-01T00:00:00.000Z",
+    timeBasis: "DETERMINISTIC_SYNTHETIC_EPOCH",
   });
   const ownerReviewPolicy = {
     schema: "agentos.owner_review_policy.v1",
@@ -750,7 +765,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     bootstrap_coverage: bootstrapCoverage,
     project_definition: context,
     north_star: normalizedAnswers["project.north_star"],
-    proving_workflow: normalizedAnswers["project.first_workflow"],
+    first_useful_workflow: normalizedAnswers["project.first_workflow"],
     project_life_contract: projectLifeContract,
     function_requirements: deriveFunctionRequirements(normalizedAnswers),
     technical_baseline: technicalBaseline,
@@ -917,6 +932,7 @@ export function approveBootstrapPlan(plan, {decision, planSha256, discoveryDiges
     schema: "agentos.bootstrap_approval_receipt.v1",
     decision,
     plan_sha256: planSha256,
+    approval_subject_sha256: canonicalDigest(bootstrapApprovalSubject(plan)),
     discovery_digest_sha256: discoveryDigestSha256,
     actor,
     approved_at_utc: approvedAtUtc,
@@ -929,12 +945,32 @@ export function approveBootstrapPlan(plan, {decision, planSha256, discoveryDiges
   return approvedPlan;
 }
 
-function validateApprovedPlan(plan) {
+function bootstrapApprovalSubject(plan) {
+  const body = structuredClone(plan);
+  delete body.plan_sha256;
+  delete body.approval_receipt;
+  body.status = "AWAITING_EXACT_OWNER_APPROVAL";
+  return body;
+}
+
+export function validateApprovedPlan(plan) {
   validateBootstrapPlan(plan);
   assert(plan.status === "APPROVED_EXACT_DIGEST" && isRecord(plan.approval_receipt), "approved plan lacks approval receipt");
   const receipt = plan.approval_receipt;
+  exactKeys(receipt, [
+    "schema", "decision", "plan_sha256", "approval_subject_sha256", "discovery_digest_sha256", "actor", "approved_at_utc", "receipt_sha256",
+  ], "Bootstrap approval receipt");
+  assert(receipt.schema === "agentos.bootstrap_approval_receipt.v1", "Bootstrap approval receipt schema mismatch");
+  assert(receipt.decision === PLAN_APPROVAL, "Bootstrap approval receipt decision is invalid");
+  requireSha(receipt.plan_sha256, "approval receipt plan digest");
+  requireSha(receipt.approval_subject_sha256, "approval receipt approval subject digest");
+  requireSha(receipt.discovery_digest_sha256, "approval receipt discovery digest");
+  requireId(receipt.actor, "approval receipt actor");
+  requireUtc(receipt.approved_at_utc, "approval receipt time");
   requireSha(receipt.receipt_sha256, "approval receipt digest");
   assert(receipt.plan_sha256 !== plan.plan_sha256, "approval receipt must bind the pre-approval plan digest");
+  assert(receipt.plan_sha256 === receipt.approval_subject_sha256, "approval receipt plan digest is not the exact approval subject");
+  assert(receipt.approval_subject_sha256 === canonicalDigest(bootstrapApprovalSubject(plan)), "approved Bootstrap plan changed after owner approval");
   const body = structuredClone(receipt);
   delete body.receipt_sha256;
   assert(receipt.receipt_sha256 === canonicalDigest(body), "approval receipt is not content-addressed");
@@ -942,6 +978,8 @@ function validateApprovedPlan(plan) {
 
 function contextFromPlan(plan) {
   const roots = plan.authority_corpus.roots;
+  const globalPolicyStatePath = `${roots.project_context_root}/global-policy-state.json`;
+  const ownerReviewPolicyPath = `${roots.project_context_root}/owner-review-policy.json`;
   const projectContextBody = {
     schema: "agentos.project_context_binding.v1",
     version: 1,
@@ -950,7 +988,7 @@ function contextFromPlan(plan) {
     source_plan_sha256: plan.plan_sha256,
     project_definition: plan.project_definition,
     north_star: plan.north_star,
-    proving_workflow: plan.proving_workflow,
+    first_useful_workflow: plan.first_useful_workflow,
     project_life_contract: plan.project_life_contract,
     function_requirements: plan.function_requirements,
     bootstrap_coverage: plan.bootstrap_coverage,
@@ -967,6 +1005,10 @@ function contextFromPlan(plan) {
     normalization_policy: plan.normalization_policy,
     project_import: plan.project_import,
     model_policy: plan.model_policy,
+    global_policy_state: plan.global_policy_state,
+    owner_review_policy: plan.owner_review_policy,
+    global_policy_state_path: globalPolicyStatePath,
+    owner_review_policy_path: ownerReviewPolicyPath,
     persistent_runtime: plan.persistent_runtime,
     first_campaign: plan.first_campaign,
     exact_creation_plan: plan.exact_creation_plan,
@@ -995,9 +1037,11 @@ function contextFromPlan(plan) {
       bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
       standards_registry_sha256: plan.standards_registry.registry_sha256,
       normalization_sha256: plan.normalization_policy.normalization_sha256,
+      global_policy_state_sha256: plan.global_policy_state.policy_state_sha256,
+      owner_review_policy_sha256: canonicalDigest(plan.owner_review_policy),
       project_import_sha256: plan.project_import?.plan_sha256 ?? null,
       bootstrap_output_groups: [
-        "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "PROVING_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
+        "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
         "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
         "AUTHORITY_CORPUS", "MODEL_POLICY", "GLOBAL_POLICY_STATE", "OWNER_REVIEW", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
         "EXACT_CREATION_PLAN",
@@ -1161,6 +1205,7 @@ export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot,
 
 export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, legacySourceRoot = null, workflow, nowUtc}) {
   validateApprovedPlan(plan);
+  assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap execution requires the exact authority-corpus workflow");
   requireId(bootstrapSessionId, "Bootstrap session ID");
   requireUtc(nowUtc, "Bootstrap execution time");
   const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot);
@@ -1212,7 +1257,15 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
   const projectContextBytes = Buffer.from(`${canonicalCompactJson(context.project_context)}\n`, "utf8");
   writeCanonicalFile(projectContextPath, projectContextBytes);
   assert(fs.readFileSync(projectContextPath).equals(projectContextBytes), "typed project context staging readback differs");
-  const corpusResult = workflow ? applyCorpusPlan(stagingRoot, context, workflow) : null;
+  const globalPolicyPath = assertContained(stagingRoot, context.project_context.global_policy_state_path, "global policy state artifact");
+  writePolicyStateCompareAndSwap({
+    filePath: globalPolicyPath,
+    expectedPolicyStateSha256: null,
+    nextState: context.project_context.global_policy_state,
+  });
+  const ownerReviewPolicyPath = assertContained(stagingRoot, context.project_context.owner_review_policy_path, "owner review policy artifact");
+  writeCanonicalFile(ownerReviewPolicyPath, Buffer.from(`${canonicalCompactJson(context.project_context.owner_review_policy)}\n`, "utf8"));
+  const corpusResult = applyCorpusPlan(stagingRoot, context, workflow);
   if (corpusResult) state.authority_index_sha256 = corpusResult.index_sha256;
   const planBytes = Buffer.from(`${canonicalCompactJson(plan)}\n`, "utf8");
   writeCanonicalFile(path.join(stagingRoot, "bootstrap.plan.json"), planBytes);
@@ -1343,8 +1396,9 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
   return {state: nextState, receipt, resumed: false};
 }
 
-export function auditBootstrapSetup({plan, executionState, auditorSessionId, bootstrapSessionId, stagingRoot, workflow = null}) {
+export function auditBootstrapSetup({plan, executionState, auditorSessionId, bootstrapSessionId, stagingRoot, workflow}) {
   validateApprovedPlan(plan);
+  assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap setup audit requires the exact authority-corpus workflow");
   requireId(auditorSessionId, "setup Auditor session");
   requireId(bootstrapSessionId, "Bootstrap session");
   assert(auditorSessionId !== bootstrapSessionId, "setup Auditor must be independent from Bootstrap");
@@ -1391,11 +1445,9 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
       && receipt.excluded_paths >= 0,
     "setup Auditor could not verify project source preservation");
   }
-  if (workflow) {
-    const context = contextFromPlan(plan);
-    const corpus = compileCorpusPlan(context, workflow);
-    assert(corpus.plan_sha256.length === 64, "setup Auditor did not compile authority corpus");
-  }
+  const expectedContext = contextFromPlan(plan);
+  const corpus = compileCorpusPlan(expectedContext, workflow);
+  assert(corpus.plan_sha256.length === 64, "setup Auditor did not compile authority corpus");
   const contextPath = assertContained(
     root,
     `${plan.authority_corpus.roots.project_context_root}/project-context.json`,
@@ -1411,6 +1463,15 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   validateBootstrapCoverage(context.bootstrap_coverage);
   assert(context.bootstrap_coverage.coverage_sha256 === plan.bootstrap_coverage.coverage_sha256,
   "typed project context Bootstrap coverage is not bound to the exact plan");
+  const policyPath = assertContained(root, context.global_policy_state_path, "global policy state readback");
+  const persistedPolicy = JSON.parse(fs.readFileSync(policyPath, "utf8"));
+  validatePolicyState(persistedPolicy);
+  assert(persistedPolicy.policy_state_sha256 === plan.global_policy_state.policy_state_sha256,
+    "persisted global policy state is not bound to the exact plan");
+  const ownerPolicyPath = assertContained(root, context.owner_review_policy_path, "owner review policy readback");
+  const persistedOwnerPolicy = JSON.parse(fs.readFileSync(ownerPolicyPath, "utf8"));
+  assert(canonicalDigest(persistedOwnerPolicy) === canonicalDigest(plan.owner_review_policy),
+    "persisted owner review policy is not bound to the exact plan");
   const reportBody = {
     schema: "agentos.bootstrap_setup_audit.v1",
     auditor_session_id: auditorSessionId,
@@ -1423,6 +1484,53 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  process.stdout.write("bootstrap compiler loaded\n");
+function bootstrapStartResult({discovery, questionPlan}) {
+  const agentosRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const body = {
+    schema: "agentos.bootstrap_start_result.v1",
+    version: 1,
+    governance_version: "2.1rc",
+    status: "READ_ONLY_DISCOVERY_COMPLETE",
+    canonical_controller: "control/bootstrap-compiler.mjs",
+    agentos_root: agentosRoot,
+    project_root: discovery.project_root,
+    initial_answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
+    discovery,
+    question_plan: questionPlan,
+    next_action: questionPlan.next === null
+      ? "COMPILE_AND_DISPLAY_THE_EXACT_CREATION_PLAN"
+      : "ASK_ONLY_THE_NEXT_MATERIAL_BOOTSTRAP_QUESTION",
+  };
+  return {...body, start_sha256: canonicalDigest(body)};
+}
+
+function runBootstrapStartCommand() {
+  const [command, projectRoot, mode = "RECOMMENDED", ...extra] = process.argv.slice(2);
+  if (command !== "start" || !projectRoot || extra.length > 0) {
+    throw new Error("usage: bootstrap-compiler start <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY]");
+  }
+  const discovery = discoverProject(projectRoot, mode);
+  const questionPlan = planBootstrapQuestions({
+    discovery: discovery.facts,
+    answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
+  });
+  process.stdout.write(`${canonicalCompactJson(bootstrapStartResult({discovery, questionPlan}))}\n`);
+}
+
+let invokedPath = null;
+if (process.argv[1]) {
+  try {
+    invokedPath = fs.realpathSync.native(path.resolve(process.argv[1]));
+  } catch {
+    invokedPath = null;
+  }
+}
+const modulePath = fs.realpathSync.native(fileURLToPath(import.meta.url));
+if (invokedPath === modulePath) {
+  try {
+    runBootstrapStartCommand();
+  } catch (error) {
+    process.stderr.write(`${error.message}\n`);
+    process.exitCode = 1;
+  }
 }

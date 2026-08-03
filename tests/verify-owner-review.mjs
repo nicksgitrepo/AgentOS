@@ -22,6 +22,11 @@ const COMMIT = "c".repeat(40);
 const TREE = "d".repeat(40);
 const failures = [];
 let hostiles = 0;
+const questionIdsByRoot = {
+  FUNCTION_REQUIREMENTS: ["FR-ENTRY-001"],
+  DESIGN_BIBLE: ["DB-SURFACE-001"],
+  SECURITY: ["SEC-ACCESS-001"],
+};
 
 function reject(label, operation) {
   try {
@@ -33,6 +38,7 @@ function reject(label, operation) {
 }
 
 function allModelCandidates() {
+  const guidance = (economy, speed, difficulty, task_fit, reason) => ({economy, speed, difficulty, task_fit, reason});
   const levels = ["MEDIUM", "HIGH", "EXTRA_HIGH", "PRO"].map((level) => ({
     level,
     model_class: level === "PRO" ? "FRONTIER" : level === "HIGH" ? "PERFORMANCE" : "BALANCED",
@@ -41,18 +47,18 @@ function allModelCandidates() {
     meets_floor: true,
     economics_sha256: SHA,
     rationale: `The ${level} review level is available in the host catalog.`,
+    guidance: level === "MEDIUM"
+      ? guidance("LOW", "FAST", "ROUTINE", "CONDITIONAL", "Best for routine work when speed and economy matter.")
+      : level === "HIGH"
+        ? guidance("MEDIUM", "MEDIUM", "SUBSTANTIAL", "GOOD", "Balances cost, speed, and careful reasoning for substantial work.")
+        : guidance("HIGH", "SLOW", "HIGH_CONSEQUENCE", "GOOD", "Reserved for difficult or high-consequence work where stronger reasoning matters."),
     recommended: level === "HIGH",
   }));
-  const roles = ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR", "FEATURE_AGENT", "PLATFORM_AGENT", "AUDIT_WORKER", "CAMPAIGN_FINALIZER", "RUNTIME"].map((role) => ({
-    role,
-    model_class: role === "FEATURE_AGENT" ? "ECONOMICAL" : role === "INDEPENDENT_AUDITOR" ? "PERFORMANCE" : "BALANCED",
-    available: true,
-    completion_floor: 0.8,
-    meets_floor: true,
-    economics_sha256: SHA,
-    rationale: `The host catalog supports the ${role} role.`,
-    recommended: true,
-  }));
+  const roles = ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR", "FEATURE_AGENT", "PLATFORM_AGENT", "AUDIT_WORKER", "CAMPAIGN_FINALIZER", "RUNTIME"].flatMap((role) => {
+    const policyClass = role === "RUNTIME" ? "HOST_DEFAULT" : "BALANCED";
+    const candidate = (model_class, recommended) => ({role, model_class, available: true, completion_floor: 0.8, meets_floor: true, economics_sha256: SHA, rationale: `The host catalog supports the ${role} role.`, guidance: guidance(model_class === "ECONOMICAL" ? "LOW" : "MEDIUM", model_class === "FRONTIER" ? "SLOW" : "MEDIUM", model_class === "FRONTIER" ? "HIGH_CONSEQUENCE" : "SUBSTANTIAL", "GOOD", `The host catalog supports the ${model_class} route for this role.`), recommended});
+    return role === "FEATURE_AGENT" ? [candidate(policyClass, true), candidate("ECONOMICAL", false)] : [candidate(policyClass, true)];
+  });
   return {chat_review_levels: levels, campaign_role_candidates: roles, economics_snapshot_sha256: SHA, host_catalog_sha256: SHA};
 }
 
@@ -71,11 +77,11 @@ function returnPayload(packet) {
     intent: {
       desired_outcome: "Prove the primary workflow with a clear, reversible first result.",
       user_and_moment: "A project owner needs one useful workflow they can trust.",
-      rationale: "A complete small proving workflow gives the next campaign an honest stopping point.",
+      rationale: "A complete small first useful workflow gives the next campaign an honest stopping point.",
       north_star_change_requested: null,
     },
     changes: {
-      required: ["Implement the primary proving workflow."],
+      required: ["Implement the primary first useful workflow."],
       desired_if_economical: ["Add a concise success summary."],
       preserve: ["Keep the existing accepted project boundary."],
       remove: [],
@@ -84,10 +90,11 @@ function returnPayload(packet) {
     },
     campaign: {
       proposed_boundary: packet.candidate_campaign.owner_outcome,
-      proving_workflow: packet.candidate_campaign.proving_workflow,
+      first_useful_workflow: packet.candidate_campaign.first_useful_workflow,
       priorities: ["Complete the primary workflow."],
       deadline: null,
       risk_posture: "Use the standard reversible route.",
+      task_profile: {difficulty: "SUBSTANTIAL", time_sensitivity: "MEDIUM", cost_sensitivity: "MEDIUM"},
     },
     model_preferences: {
       cost_priority: 0.8,
@@ -124,6 +131,8 @@ try {
       current_campaign_id: null,
       next_campaign_candidate_sha256: null,
     },
+    policyState,
+    questionIdsByRoot,
     currentProject: {
       summary: "A synthetic project with one accepted baseline.",
       north_star: "Prove one useful workflow.",
@@ -133,7 +142,7 @@ try {
       unavailable: [],
       known_flaws: [],
       deferred: ["unrelated polish"],
-      current_recommendation: "Use one small proving workflow.",
+      current_recommendation: "Use one small first useful workflow.",
     },
     reviewScope: {
       may_change: ["next campaign intent"],
@@ -143,22 +152,60 @@ try {
     },
     candidateCampaign: {
       owner_outcome: "Prove the primary workflow.",
-      proving_workflow: "Owner completes the primary workflow and sees truthful result.",
+      first_useful_workflow: "Owner completes the primary workflow and sees truthful result.",
       proposed_features: ["primary workflow"],
       dependencies: [],
       excluded_scope: ["unrelated polish"],
       campaign_mode: "STANDARD_SUBSTANTIAL",
       release_stop: "Stop when the workflow and three roots pass.",
+      task_profile: {difficulty: "SUBSTANTIAL", time_sensitivity: "MEDIUM", cost_sensitivity: "MEDIUM"},
     },
-    modelCandidates: allModelCandidates(),
+      modelCandidates: allModelCandidates(),
+      policyState,
     transport: "PRIVATE_MARKDOWN",
     memoryPosture: "PROJECT_ONLY",
     voiceRecommended: true,
   });
   validateOwnerReviewPacket(packet);
   const renderedPacket = renderOwnerReviewMarkdown(packet);
-  assert(renderedPacket.includes("PRE_CAMPAIGN_OWNER_REVIEW"));
-  assert.equal((renderedPacket.match(/```json/gu) || []).length, 1);
+  assert(renderedPacket.includes("Let's talk about the next useful step"));
+  assert(!renderedPacket.includes("PRE_CAMPAIGN_OWNER_REVIEW"));
+  assert(!renderedPacket.includes("source_binding"));
+  assert.equal((renderedPacket.match(/```json/gu) || []).length, 0);
+
+  const conversationalReturn = parseOwnerReviewReturnMarkdown([
+    "## What I want",
+    "A small, useful improvement for the next campaign.",
+    "",
+    "## Who it helps",
+    "The owner during the daily workflow.",
+    "",
+    "## What should change",
+    "- Make the main workflow easier to finish.",
+    "",
+    "## What should stay",
+    "- Keep the current project structure.",
+    "",
+    "## What can wait",
+    "- Extra polish.",
+    "",
+    "## Model preference",
+    "Use a balanced choice with HIGH reasoning.",
+    "",
+    "## Anything unresolved",
+    "- None yet.",
+  ].join("\n"), packet);
+  assert.equal(conversationalReturn.advisory_only, true);
+  assert.equal(conversationalReturn.changes.required.length, 1);
+
+  const incompleteReturn = parseOwnerReviewReturnMarkdown("# A quick note\n\nI will think about this later.", packet);
+  assert(incompleteReturn.unresolved.length >= 1, "an incomplete natural return must preserve its missing material answers");
+  const incompleteCandidate = compileOwnerReviewCandidate({packet, response: incompleteReturn, policyState, nowUtc: LATER});
+  assert.equal(incompleteCandidate.candidate_status, "OWNER_REVIEW_HOLD");
+  reject("incomplete natural review return receives exact approval", () => {
+    const incompleteApprovalPacket = compileOwnerApprovalPacket({candidate: incompleteCandidate, packet, policyState});
+    compileOwnerApproval({approvalPacket: incompleteApprovalPacket, approvedAtUtc: LATER, actorDigestSha256: SHA});
+  });
 
   const payload = returnPayload(packet);
   const markdown = [
@@ -177,7 +224,7 @@ try {
   assert(candidate.policy_amendment_sha256);
   assert.equal(candidate.model_plan.campaign_role_preferences.find((item) => item.role === "FEATURE_AGENT").model_class, "ECONOMICAL");
 
-  const approvalPacket = compileOwnerApprovalPacket({candidate, packet});
+  const approvalPacket = compileOwnerApprovalPacket({candidate, packet, policyState});
   assert.equal(approvalPacket.approval_state, "PENDING_EXACT_APPROVAL");
   assert.equal(approvalPacket.approval_allowed, true);
   const approval = compileOwnerApproval({
@@ -216,14 +263,16 @@ try {
       sourceBinding: packet.source_binding,
       currentProject: packet.current_project,
       reviewScope: packet.review_scope,
+      questionIdsByRoot,
       candidateCampaign: packet.candidate_campaign,
       modelCandidates: packet.model_candidates,
+      policyState,
       transport: "SHARED_LINK_ADVISORY",
     });
     const sharedPayload = returnPayload(sharedPacket);
     const sharedReturn = parseOwnerReviewReturnMarkdown(`\n\n\`\`\`json\n${JSON.stringify(sharedPayload)}\n\`\`\``, sharedPacket);
     const sharedCandidate = compileOwnerReviewCandidate({packet: sharedPacket, response: sharedReturn, policyState, nowUtc: LATER});
-    const sharedApprovalPacket = compileOwnerApprovalPacket({candidate: sharedCandidate, packet: sharedPacket});
+    const sharedApprovalPacket = compileOwnerApprovalPacket({candidate: sharedCandidate, packet: sharedPacket, policyState});
     compileOwnerApproval({approvalPacket: sharedApprovalPacket, approvedAtUtc: LATER, actorDigestSha256: SHA});
   });
   reject("conversational confirmation", () => compileOwnerApproval({approvalPacket, approvalState: "OWNER_STATED_EXACT_APPROVAL", approvedAtUtc: LATER, actorDigestSha256: SHA}));
@@ -234,6 +283,7 @@ try {
     compileOwnerReviewPacket({
       reviewId: "REVIEW-UNAVAILABLE", projectId: "synthetic-project", createdAtUtc: NOW, expiresAtUtc: "2026-01-09T00:00:00.000Z",
       sourceBinding: packet.source_binding, currentProject: packet.current_project, reviewScope: packet.review_scope,
+      questionIdsByRoot,
       candidateCampaign: packet.candidate_campaign, modelCandidates: models,
     });
   });
@@ -243,6 +293,7 @@ try {
     compileOwnerReviewPacket({
       reviewId: "REVIEW-BELOW-FLOOR", projectId: "synthetic-project", createdAtUtc: NOW, expiresAtUtc: "2026-01-09T00:00:00.000Z",
       sourceBinding: packet.source_binding, currentProject: packet.current_project, reviewScope: packet.review_scope,
+      questionIdsByRoot,
       candidateCampaign: packet.candidate_campaign, modelCandidates: models,
     });
   });
@@ -259,6 +310,7 @@ try {
   reject("private Git transport without exact commit/tree", () => compileOwnerReviewPacket({
     reviewId: "REVIEW-GIT", projectId: "synthetic-project", createdAtUtc: NOW, expiresAtUtc: "2026-01-09T00:00:00.000Z",
     sourceBinding: packet.source_binding, currentProject: packet.current_project, reviewScope: packet.review_scope,
+    questionIdsByRoot,
     candidateCampaign: packet.candidate_campaign, modelCandidates: packet.model_candidates, transport: "PRIVATE_GIT",
     transportBinding: {
       kind: "PRIVATE_GIT", handoff_locator: "review.json", return_locator: "return.json", repository_digest_sha256: SHA,

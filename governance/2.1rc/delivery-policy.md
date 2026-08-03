@@ -24,8 +24,8 @@ an admitted policy. The answer covers the material choices together:
 Delivery Policy contains a separate `Delivery Target`. It records the intended
 Product family and maturity mode rather than hiding that decision inside a
 hosting route. `MANAGED_SITE` is available for `PROTOTYPE` and
-`LIMITED_PRODUCT` outcomes; a project may bind the `CHATGPT_SITES` adapter in
-typed context. That adapter ID never supplies an account, credential, quota,
+`LIMITED_PRODUCT` outcomes; a project may bind a concrete managed-site adapter
+in typed context. That adapter ID never supplies an account, credential, quota,
 data guarantee, production claim, or deployment authority.
 
 Discovery can inspect repository shape, delivery markers, local Git readback,

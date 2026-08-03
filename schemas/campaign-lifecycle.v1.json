@@ -88,6 +88,44 @@
     "required_fields": ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"],
     "rule": "Every lifecycle snapshot binds the exact policy epoch and complete acceptance contract used to admit its campaign. A same-campaign transition cannot change either identity without a new admitted campaign state."
   },
+  "runtime_binding": {
+    "required_fields": [
+      "role_id",
+      "runtime_identity",
+      "session_id",
+      "state_identity",
+      "deployed_identity",
+      "rollback_identity",
+      "environment_id",
+      "capability_set_sha256",
+      "pinned",
+      "persistent",
+      "retention",
+      "continuity_receipt_sha256"
+    ],
+    "rule": "Runtime is one pinned, persistent RUNTIME identity retained across campaigns. The continuity receipt binds its stable identity, environment, capabilities, and retention posture. Deployment evidence must still come from an admitted Runtime/readback adapter."
+  },
+  "repository_checkpoint_proof": {
+    "required_fields": [
+      "schema",
+      "worktree_id",
+      "commit",
+      "tree",
+      "remote_commit",
+      "remote_tree",
+      "clean",
+      "pushed",
+      "observed_by_role",
+      "observed_by_session",
+      "observed_at_utc",
+      "verification_method",
+      "observation_sha256"
+    ],
+    "rule": "A checkpoint proof binds one worktree, local and remote identities, clean/pushed flags, observer, time, and observation digest. The controller accepts only the declared readback method; a host/provider adapter must supply the observation rather than a caller merely asserting it."
+  },
+  "roster": {
+    "rule": "Every current Orchestrator, Auditor, and Feature Agent identity binds the current campaign ID/version, is active rather than orientation-only, and has a unique session and role. Platform execution sessions cannot collide with roster sessions, and the active writer must resolve to the current Feature Agent or admitted Finalizer custody."
+  },
   "live_closure": {
     "transition_receipts": [
       "governance.live_deployment_receipt.v1",
@@ -104,24 +142,44 @@
   },
   "successor_orientation": {
     "statuses": ["NONE", "ORCHESTRATOR_ORIENTED_HELD", "LIVE_DELTA_RECEIVED", "CAMPAIGN_ADMITTED"],
-    "rule": "Release clearance spawns only the next-campaign Orchestrator in orientation-only custody. No next Auditor, Feature Agent, Platform Agent, or Product writer lease exists before the current campaign reaches accepted-live closure and the next campaign is explicitly admitted.",
+    "rule": "Release clearance spawns only the next-campaign Orchestrator in orientation-only custody. No next Auditor, Feature Agent, Platform Agent, or Product writer lease exists before the current campaign reaches accepted-live closure and the next campaign is explicitly admitted. Admission binds one new campaign identity across the successor roster, rejects completed current-campaign sessions, and converts the oriented Orchestrator to active campaign custody. Candidate, live-delta, and final-candidate packets are typed, content-addressed, bound to the current policy and acceptance contract, and validated at the owning transition; an opaque digest cannot satisfy admission.",
     "required_fields": [
       "status",
       "orchestrator_binding",
       "predeployment_candidate_sha256",
+      "predeployment_candidate",
       "live_delta_sha256",
+      "live_delta",
       "final_candidate_sha256",
+      "final_candidate",
       "auditor_binding",
       "feature_agent_bindings",
       "platform_agent_bindings",
       "product_writer_lease"
-    ]
+    ],
+    "candidate_contract": {
+      "schema": "governance.next_campaign_candidate.v1",
+      "required_fields": [
+        "schema", "candidate_kind", "campaign_id", "campaign_version", "project_id", "source",
+        "owner_intent", "policy", "acceptance", "model_plan", "scope", "parent_candidate_sha256",
+        "live_delta_sha256", "candidate_sha256"
+      ],
+      "rule": "PREDEPLOYMENT packets have no parent or live delta. FINAL packets reference the exact predeployment candidate and live delta. Both packet kinds carry source, intent, policy, acceptance, model, and scope references and are validated against the current lifecycle state."
+    },
+    "live_delta_contract": {
+      "schema": "governance.next_campaign_live_delta.v1",
+      "required_fields": [
+        "schema", "candidate_sha256", "campaign_id", "campaign_version", "environment_id", "observed_at_utc",
+        "changed_paths", "change_summary_sha256", "live_delta_sha256"
+      ],
+      "rule": "A live delta names the exact predeployment candidate and successor campaign identity. Its content-addressed digest is required before final-candidate admission."
+    }
   },
   "acceptance": {
     "ordered_roots": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
     "rule": "The Product acceptance engine has exactly three roots. Code quality is an audit discipline only; a material hygiene finding must identify a concrete consequence in one of the three roots or be classified NONBLOCKING_HYGIENE.",
-    "required_fields": ["question_tree_sha256", "observations_sha256", "question_states", "open_question_ids", "invalidated_question_ids", "authorized_exception_ids", "root_non_applicability", "roots", "rc_ready", "final_candidate_commit", "final_candidate_tree", "auditor_session_id", "product_receipt_sha256"],
-    "closure": "Deployment clearance requires a content-addressed Product acceptance receipt whose exact question tree, current question states, derived open/invalidated/exception inventories, final candidate identity, three PASS roots, and independent Auditor identity bind to the campaign root."
+    "required_fields": ["schema", "proof", "product_acceptance", "final_candidate_commit", "final_candidate_tree", "product_receipt_sha256"],
+    "closure": "Deployment clearance requires the executable question-tree proof and compiled Product acceptance receipt. The proof binds the exact question tree, observations, evidence/evaluation identities, derived three-root result, final candidate identity, and independent Auditor attestation; lifecycle validation must call the canonical acceptance bridge rather than accept a parallel digest-shaped state."
   },
   "heartbeat": {
     "interval_minutes": 15,

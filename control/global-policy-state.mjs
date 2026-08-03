@@ -41,6 +41,8 @@ export const MODEL_CLASSES = Object.freeze([
   "FRONTIER",
 ]);
 
+export const POLICY_TIME_BASES = Object.freeze(["OBSERVED_UTC", "DETERMINISTIC_SYNTHETIC_EPOCH"]);
+
 const MODEL_ROLES = [
   "CAMPAIGN_ORCHESTRATOR",
   "INDEPENDENT_AUDITOR",
@@ -53,6 +55,7 @@ const MODEL_ROLES = [
 
 const sorted = (values) => [...values].sort((left, right) =>
   Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8")));
+const compareUtf8 = (left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
 
 function isRecord(value) {
   return value && typeof value === "object" && !Array.isArray(value);
@@ -205,7 +208,7 @@ const DEFINITIONS = [
     description: "The owner-confirmed durable outcome that orients Product decisions.",
   }),
   variable({
-    variable_id: "PROJECT.PROVING_WORKFLOW", class: "OWNER_MUTABLE", type: "TEXT", default_value: null,
+    variable_id: "PROJECT.FIRST_USEFUL_WORKFLOW", class: "OWNER_MUTABLE", type: "TEXT", default_value: null,
     authority: "OWNER_INTENT", mutability: "OWNER", effective_boundary: "NEXT_CAMPAIGN",
     invalidation_roots: ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"], recompile_targets: ["CAMPAIGN_ACCEPTANCE", "EVIDENCE_PLAN"], change_class: "NEXT_CAMPAIGN",
     description: "The smallest complete user workflow that must work before the campaign stops.",
@@ -273,7 +276,7 @@ const DEFINITIONS = [
 ];
 
 export const POLICY_VARIABLES = Object.freeze(Object.fromEntries(
-  DEFINITIONS.sort((left, right) => left.variable_id.localeCompare(right.variable_id)).map((definition) => [definition.variable_id, definition]),
+  DEFINITIONS.sort((left, right) => compareUtf8(left.variable_id, right.variable_id)).map((definition) => [definition.variable_id, definition]),
 ));
 
 const BOUNDARY_RANK = new Map(EFFECTIVE_BOUNDARIES.map((value, index) => [value, index]));
@@ -365,23 +368,25 @@ export function policyStateDigest(state) {
   return policyDigest(stateBody(state));
 }
 
-export function compileGlobalPolicyState({projectId, values = {}, nowUtc}) {
+export function compileGlobalPolicyState({projectId, values = {}, nowUtc, timeBasis = "OBSERVED_UTC"}) {
   requireString(projectId, "policy project ID");
   requireUtc(nowUtc, "policy state time");
+  assert(POLICY_TIME_BASES.includes(timeBasis), "policy state time basis is invalid");
   requireRecord(values, "policy values");
   const unknown = Object.keys(values).filter((key) => !POLICY_VARIABLES[key]);
   assert(unknown.length === 0, `unknown policy values: ${unknown.join(", ")}`);
-  const variables = Object.keys(POLICY_VARIABLES).sort((left, right) => left.localeCompare(right)).map((variableId) => {
+  const variables = Object.keys(POLICY_VARIABLES).sort(compareUtf8).map((variableId) => {
     const definitionValue = definition(variableId);
     const currentValue = Object.hasOwn(values, variableId) ? values[variableId] : definitionValue.default_value;
     return variableRecord(definitionValue, currentValue);
   });
   const dependencyGraph = variables.flatMap((item) => item.dependencies.map((dependsOn) => ({variable_id: item.variable_id, depends_on: dependsOn})))
-    .sort((left, right) => `${left.variable_id}\u0000${left.depends_on}`.localeCompare(`${right.variable_id}\u0000${right.depends_on}`));
+    .sort((left, right) => compareUtf8(`${left.variable_id}\u0000${left.depends_on}`, `${right.variable_id}\u0000${right.depends_on}`));
   const state = {
     schema: "agentos.global_policy_state.v1",
     governance_version: "2.1rc",
     status: "PREPARED_NOT_ACTIVATED",
+    time_basis: timeBasis,
     project_id: projectId,
     policy_epoch: 1,
     parent_policy_state_sha256: null,
@@ -400,13 +405,14 @@ export function compileGlobalPolicyState({projectId, values = {}, nowUtc}) {
 
 export function validatePolicyState(state) {
   const expectedKeys = [
-    "schema", "governance_version", "status", "project_id", "policy_epoch", "parent_policy_state_sha256", "amendment_head_sha256",
+    "schema", "governance_version", "status", "time_basis", "project_id", "policy_epoch", "parent_policy_state_sha256", "amendment_head_sha256",
     "variables", "dependency_graph", "amendment_ledger", "created_at_utc", "updated_at_utc", "policy_state_sha256",
   ];
   requireRecord(state, "global policy state");
   assert(JSON.stringify(Object.keys(state).sort()) === JSON.stringify(expectedKeys.sort()), "global policy state fields mismatch");
   assert(state.schema === "agentos.global_policy_state.v1" && state.governance_version === "2.1rc", "global policy state identity mismatch");
   assert(state.status === "PREPARED_NOT_ACTIVATED", "global policy state cannot activate AgentOS");
+  assert(POLICY_TIME_BASES.includes(state.time_basis), "policy state time basis is invalid");
   requireString(state.project_id, "policy project ID");
   assert(Number.isSafeInteger(state.policy_epoch) && state.policy_epoch >= 1, "policy epoch invalid");
   if (state.parent_policy_state_sha256 !== null) requireSha(state.parent_policy_state_sha256, "parent policy state");
@@ -420,7 +426,7 @@ export function validatePolicyState(state) {
   state.variables.forEach(validateVariableRecord);
   assert(Array.isArray(state.dependency_graph), "policy dependency graph is required");
   const expectedGraph = state.variables.flatMap((item) => item.dependencies.map((dependsOn) => ({variable_id: item.variable_id, depends_on: dependsOn})))
-    .sort((left, right) => `${left.variable_id}\u0000${left.depends_on}`.localeCompare(`${right.variable_id}\u0000${right.depends_on}`));
+    .sort((left, right) => compareUtf8(`${left.variable_id}\u0000${left.depends_on}`, `${right.variable_id}\u0000${right.depends_on}`));
   assert(JSON.stringify(state.dependency_graph) === JSON.stringify(expectedGraph), "policy dependency graph is not declared deterministically");
   for (const edge of state.dependency_graph) {
     assert(isRecord(edge) && typeof edge.variable_id === "string" && typeof edge.depends_on === "string", "policy dependency edge is invalid");
@@ -428,11 +434,32 @@ export function validatePolicyState(state) {
   }
   assert(Array.isArray(state.amendment_ledger), "policy amendment ledger is required");
   state.amendment_ledger.forEach((entry, index) => {
-    assert(isRecord(entry) && JSON.stringify(Object.keys(entry).sort()) === JSON.stringify(["amendment_sha256", "approval_sha256", "effective_boundary", "policy_epoch"].sort()), "policy ledger entry fields mismatch");
+    const ledgerKeys = [
+      "amendment_id", "project_id", "parent_policy_state_sha256", "amendment_sha256", "approval_sha256", "effective_boundary",
+      "requested_by", "authority", "reason", "requested_at_utc", "changes", "approved_at_utc", "actor_digest_sha256", "policy_epoch", "record_sha256",
+    ];
+    assert(isRecord(entry) && JSON.stringify(Object.keys(entry).sort()) === JSON.stringify(ledgerKeys.sort()), "policy ledger entry fields mismatch");
+    requireString(entry.amendment_id, "policy ledger amendment ID");
+    assert(entry.project_id === state.project_id, "policy ledger project differs from state");
+    requireSha(entry.parent_policy_state_sha256, "policy ledger parent state");
     requireSha(entry.amendment_sha256, "policy ledger amendment");
     requireSha(entry.approval_sha256, "policy ledger approval");
+    assert(["OWNER", "ORCHESTRATOR"].includes(entry.requested_by), "policy ledger requester is invalid");
+    assert(["OWNER_INTENT", "OWNER_BOUNDARY", "GOVERNANCE"].includes(entry.authority), "policy ledger authority is invalid");
+    secretFree(entry.reason, "policy ledger reason");
+    requireUtc(entry.requested_at_utc, "policy ledger request time");
+    assert(Array.isArray(entry.changes) && entry.changes.length > 0, "policy ledger changes are missing");
+    entry.changes.forEach((change) => {
+      assert(isRecord(change) && JSON.stringify(Object.keys(change).sort()) === JSON.stringify(["new_value", "variable_id"].sort()), "policy ledger change fields mismatch");
+      const definitionValue = definition(change.variable_id);
+      validateValue(definitionValue, change.new_value, `policy ledger ${change.variable_id}`);
+    });
+    requireUtc(entry.approved_at_utc, "policy ledger approval time");
+    requireSha(entry.actor_digest_sha256, "policy ledger actor");
     assert(Number.isSafeInteger(entry.policy_epoch) && entry.policy_epoch === index + 2, "policy ledger epoch is not append-only");
     assert(EFFECTIVE_BOUNDARIES.includes(entry.effective_boundary), "policy ledger boundary invalid");
+    requireSha(entry.record_sha256, "policy ledger record digest");
+    assert(entry.record_sha256 === policyDigest({...entry, record_sha256: null}), "policy ledger record is not content-addressed");
   });
   if (state.policy_epoch === 1) {
     assert(state.parent_policy_state_sha256 === null && state.amendment_head_sha256 === null && state.amendment_ledger.length === 0, "initial policy state has amendment history");
@@ -564,7 +591,7 @@ export function compilePolicyAmendment({state, amendmentId, changes, request, qu
     const minimumBoundary = BOUNDARY_RANK.get(definitionValue.effective_boundary);
     assert(BOUNDARY_RANK.get(request.effective_boundary) >= minimumBoundary, `${change.variable_id} cannot take effect before ${definitionValue.effective_boundary}`);
     return {variable_id: change.variable_id, new_value: clone(change.new_value)};
-  }).sort((left, right) => left.variable_id.localeCompare(right.variable_id));
+  }).sort((left, right) => compareUtf8(left.variable_id, right.variable_id));
   const changedIds = normalizedChanges.map((change) => change.variable_id);
   const affected = dependentsOf(changedIds);
   const affectedDefinitions = affected.map((variableId) => definition(variableId));
@@ -644,11 +671,23 @@ export function applyPolicyAmendment({state, amendment, approval, currentBoundar
     ? variableRecord(definition(record.variable_id), changes.get(record.variable_id), nextEpoch)
     : clone(record));
   const ledgerEntry = {
+    amendment_id: amendment.amendment_id,
+    project_id: state.project_id,
+    parent_policy_state_sha256: state.policy_state_sha256,
     amendment_sha256: amendment.amendment_sha256,
     approval_sha256: approval.approval_sha256,
     policy_epoch: nextEpoch,
     effective_boundary: amendment.effective_boundary,
+    requested_by: amendment.requested_by,
+    authority: amendment.authority,
+    reason: amendment.reason,
+    requested_at_utc: amendment.requested_at_utc,
+    changes: clone(amendment.changes),
+    approved_at_utc: approval.approved_at_utc,
+    actor_digest_sha256: approval.actor_digest_sha256,
+    record_sha256: null,
   };
+  ledgerEntry.record_sha256 = policyDigest({...ledgerEntry, record_sha256: null});
   const next = {
     ...clone(state),
     policy_epoch: nextEpoch,

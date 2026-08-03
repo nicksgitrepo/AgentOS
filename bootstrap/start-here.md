@@ -6,6 +6,32 @@ AgentOS is a portable setup and campaign-governance kernel. It contains no real 
 
 The binding at [schemas/bootstrap-binding.v1.json](../schemas/bootstrap-binding.v1.json) is the exact digest inventory. Verify it before consequential setup.
 
+## Fresh-agent start contract
+
+Before starting a fresh agent, replace these placeholders with absolute paths;
+do not leave them literal:
+
+```text
+AGENTOS_ROOT = <absolute path to this AgentOS checkout>
+PROJECT_ROOT = <absolute path to the project to create or import>
+```
+
+The agent must read the AgentOS `README.md` and this file, verify the binding,
+and use the canonical controller. The first invocation is read-only and must
+be run with both roots bound:
+
+```text
+node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED
+```
+
+That command returns a content-addressed discovery result and the current
+output-gap question plan. It does not write the project, authenticate, spend,
+publish, merge, deploy, or create a campaign. The agent continues from that
+returned plan through the exported functions in
+`control/bootstrap-compiler.mjs`; compatibility entrypoints are not substitutes
+for the canonical controller. If either root is missing, ambiguous, not a real
+directory, or changes after discovery, Bootstrap stops and asks for correction.
+
 ## Bootstrap path
 
 ```text
@@ -24,7 +50,7 @@ read-only discovery
 Bootstrap may discover facts but cannot turn a discovery fact into owner intent. It asks only for material intent, protected boundary, or unresolved choice. It chooses safe configuration defaults when governance already supplies them and reports those defaults in the plan.
 
 The output-gap matrix is the canonical planning inventory. It records every
-creation, trust, data, delivery, recovery, proof, and activation obligation,
+creation, trust, data, delivery, recovery, evidence, and activation obligation,
 including rows that resolve through discovery, a safe default, derivation, or an
 explicit unavailable state. It is not a second questionnaire. Only material
 rows with `OWNER_REQUIRED`, `DEPENDENCY_PENDING`, or `CONFLICT` create a user
@@ -37,7 +63,7 @@ Discovery is secret-free, read-only, root-contained, and deterministic. It may i
 The compact catalog covers:
 
 - project identity, boundary, users, outcome, and non-goals;
-- the north-star intent and smallest proving workflow;
+- the north-star intent and smallest complete workflow;
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent boundaries;
 - authority-corpus source and legacy preservation;
 - design authority and required user/device/state coverage when visible surfaces exist;
@@ -69,23 +95,20 @@ The compact catalog covers:
 
 The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
 
-## Exact plan and approval
+## Creation plan and approval
 
-The compiled plan must contain `PROJECT_DEFINITION`, `PROJECT_IMPORT`,
-`SOURCE_PRESERVATION`, `NORMALIZATION_POLICY`, `STANDARDS_REGISTRY`,
-`NORTH_STAR`, `PROVING_WORKFLOW`, `PROJECT_LIFE_CONTRACT`,
-`FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`,
-`DELIVERY_TARGET`, `DESIGN_BIBLE`, `SECURITY_BASELINE`,
-`AUTHORITY_BOUNDARIES`, `BOUNDARY_CONTRACT`, `AUTHORITY_CORPUS`,
-`MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and
-`EXACT_CREATION_PLAN`.
+The compiled plan covers the project outcome and first useful workflow,
+import and source preservation, normalization and standards, product
+requirements, design and security, delivery, boundaries, models, persistent
+Runtime, and the first campaign. Those are stored as typed machine fields;
+the owner-facing summary uses ordinary language.
 
 It also records `GLOBAL_POLICY_STATE` and `OWNER_REVIEW` so later mode,
 model-class, North Star, delivery, or review changes can be compiled as exact
 amendments instead of silently changing scattered controller constants.
 
 It also carries the content-addressed `bootstrap_coverage`, project life,
-delivery target, and boundary contract results. The exact plan, typed Project
+delivery target, and boundary contract results. The complete creation plan, typed Project
 Context, delivery probes, and setup Auditor must bind those results to the exact
 discovery and normalized answers.
 
@@ -97,7 +120,7 @@ APPROVE_EXACT_PLAN
 
 Approval binds both the plan digest and the discovery digest. A changed plan, changed discovery, changed source observation, or mismatched digest is rejected. Generic `PROCEED` is not a valid setup decision.
 
-Execution is resumable and transactional. It stages under the admitted project root, verifies readback, seals state, and promotes only after the independent setup Auditor proves exact plan identity, approval, context separation, no secrets, Runtime binding, authority-corpus output, and the three-root slice. Re-running an exact sealed plan is idempotent; a different plan cannot overwrite it.
+Execution is resumable and transactional. It stages under the admitted project root, verifies readback, seals state, and promotes only after the independent setup Auditor confirms the selected plan, context separation, no secrets, Runtime binding, authority-corpus output, and the three-root slice. Re-running a sealed plan is idempotent; a different plan cannot overwrite it.
 
 ## Legacy preservation
 
@@ -148,18 +171,18 @@ Bootstrap remains separate from Product execution. After setup is independently 
 
 The current Auditor may clear a release for deployment and prepare a next-campaign candidate. That candidate creates only an orientation-only next Campaign Orchestrator. No next Auditor, Feature Agent, Platform Agent, Product writer, or campaign start exists before accepted-live closure and explicit admission.
 
-## Optional GPT_ASSIST
+## Optional assistant handoff
 
-GPT_ASSIST is only a Markdown exchange. The Auditor binds one exact status packet and parses one canonical JSON response. ChatGPT may help with listed questions, research, scenarios, and comparisons, but cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+An assistant handoff is only a Markdown exchange. The Auditor binds one exact status packet and parses one canonical JSON response. A connected assistant may help with listed questions, research, scenarios, and comparisons, but cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
 
 ## User Review Campaign
 
 The recommended owner-facing planning route is `USER REVIEW CAMPAIGN`, machine
 type `PRE_CAMPAIGN_OWNER_REVIEW`. The Orchestrator mints a read-only packet from
 the current project, source commit/tree, policy epoch, and next-campaign
-candidate. Ordinary Chat or Voice walks the owner through six compact steps:
-orientation, intent, desired changes, campaign shape, model plan, and review
-summary. The return is one JSON payload and remains advisory.
+candidate. Ordinary Chat or Voice asks short natural questions one at a time;
+the next question depends on the owner’s answer. The owner may return a plain
+Markdown note or one structured payload, and the result remains advisory.
 
 The Orchestrator classifies the return, compiles policy and context deltas,
 recompiles affected Function/Design/Security questions, and shows one exact

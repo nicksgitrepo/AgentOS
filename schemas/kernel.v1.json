@@ -85,6 +85,16 @@
     "contract": "schemas/global-policy-state.v1.json",
     "rule": "Declared policy variables are independently addressable, content-addressed, dependency-aware, and amended through exact owner approval. Constitutional rules cannot be weakened by a project amendment."
   },
+  "campaign_policy": {
+    "controller": "control/campaign-policy-reconcile.mjs",
+    "contract": "schemas/campaign-policy-reconcile.v1.json",
+    "rule": "Every approved mutable policy change compiles a current campaign projection and an explicit rotation, invalidation, recompile, and assignment action set at its declared boundary."
+  },
+  "campaign_state_owner": {
+    "controller": "control/campaign-state-owner.mjs",
+    "contract": "schemas/campaign-state-owner.v1.json",
+    "rule": "The canonical campaign transition owns lifecycle and cascade mutation together, validates one aligned bridge before and after the transition, and emits one serialized state result. Low-level validators are not an alternate admission path."
+  },
   "owner_review": {
     "controller": "control/owner-review.mjs",
     "contract": "schemas/owner-review.v1.json",
@@ -94,10 +104,13 @@
   "bootstrap": {
     "controller": "control/bootstrap-compiler.mjs",
     "contract": "schemas/bootstrap-plan.v1.json",
+    "start_contract": "schemas/bootstrap-start.v1.json",
+    "start_command": "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED",
+    "start_rule": "A fresh agent binds both exact roots and runs the read-only start command before asking questions or creating setup state.",
     "coverage": {
       "controller": "control/bootstrap-coverage.mjs",
       "contract": "schemas/bootstrap-coverage.v1.json",
-      "rule": "One deterministic output-gap row covers every material creation, trust, data, delivery, recovery, proof, and activation obligation. Only material unresolved rows create questions or block exact-plan compilation."
+      "rule": "One deterministic output-gap row covers every material creation, trust, data, delivery, recovery, evidence, and activation obligation. Only material unresolved rows create questions or block exact-plan compilation."
     },
     "project_life_contract": {
       "controller": "control/project-life-contract.mjs",
@@ -162,10 +175,8 @@
     "scope": "A genuine hold pauses only its dependent outcome; unaffected work continues.",
     "ledger": "Living campaign state is append-only, content-addressed, compare-and-swap protected, and carried with the worktree."
   },
-  "optional_gpt_assist": {
-    "controller": "control/gpt-assist.mjs",
-    "contract": "schemas/gpt-assist.v1.json",
-    "rule": "GPT_ASSIST is an optional Markdown exchange. The Auditor binds exact source and chronology; ChatGPT cannot invent truth, write authority, change custody, or create a successor roster."
+  "optional_assistant_exchange": {
+    "rule": "An assistant exchange is optional and advisory. Its transport, provider, model, and storage are supplied by typed project context. The Auditor binds exact source and chronology; an assistant cannot invent truth, write authority, change custody, or create a successor roster."
   },
   "portable_authority_format": {
     "controller": "control/authority-corpus.mjs",

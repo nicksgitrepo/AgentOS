@@ -15,6 +15,11 @@
   ],
   "packet": {
     "controller": "control/owner-review.mjs",
+    "question_inventory": {
+      "field": "question_ids_by_root",
+      "roots": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+      "rule": "The packet carries the current typed question inventory. Policy and North Star changes use it to compile exact invalidated question IDs; root names alone are not sufficient."
+    },
     "transport_binding_fields": [
       "kind",
       "handoff_locator",
@@ -38,10 +43,16 @@
     ],
     "rule": "The packet is read-only and content-addressed. It names what the conversation may clarify and what it may not change. The selected transport binds its handoff/return identity, while a shared link remains advisory. Project memory is continuity context only and never overrides the current exact packet."
   },
+  "campaign_shape": {
+    "required_fields": ["owner_outcome", "first_useful_workflow", "proposed_features", "dependencies", "excluded_scope", "campaign_mode", "release_stop", "task_profile"],
+    "task_profile_fields": ["difficulty", "time_sensitivity", "cost_sensitivity"],
+    "rule": "The task profile is explicit so each available review level can explain its economy, speed, and difficulty fit for this specific proposed campaign."
+  },
   "model_plan": {
     "chat_levels": ["MEDIUM", "HIGH", "EXTRA_HIGH", "PRO"],
     "agent_model_values": ["HOST_DEFAULT", "ECONOMICAL", "BALANCED", "PERFORMANCE", "FRONTIER"],
-    "floor_rule": "An unavailable or below-floor model is not a valid recommendation. The Orchestrator chooses from the admitted host catalog and records economics and completion evidence."
+    "guidance_fields": ["economy", "speed", "difficulty", "task_fit", "reason"],
+    "floor_rule": "Every level and role candidate carries structured economy, speed, difficulty-fit, and reason guidance. An unavailable or below-floor model is not a valid recommendation. The Orchestrator chooses from the admitted host catalog and records economics and completion evidence."
   },
   "transports": {
     "PRIVATE_MARKDOWN": "Recommended. The user returns one exact JSON payload through a private file exchange.",

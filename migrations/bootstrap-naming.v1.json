@@ -17,7 +17,12 @@
     "setup.interaction_mode": "bootstrap.discovery.mode",
     "project.non_goals": "project.protected_boundaries",
     "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode",
-    "project.technical_constraints": "project.technical_baseline"
+    "project.technical_constraints": "project.technical_baseline",
+    "project.proving_workflow": "project.first_useful_workflow"
+  },
+  "field_aliases": {
+    "PROVING_WORKFLOW": "FIRST_USEFUL_WORKFLOW",
+    "proving_workflow": "first_useful_workflow"
   },
   "model_profile_aliases": {
     "ECO": "ECO_CONTINUOUS",

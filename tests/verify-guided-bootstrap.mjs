@@ -22,6 +22,7 @@ const DIGEST = "a".repeat(64);
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-guided-"));
 const source = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-legacy-"));
 fs.writeFileSync(path.join(source, "legacy.md"), "legacy authority\n");
+const workflow = JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8"));
 
 const answers = {
   "bootstrap.discovery.mode": "RECOMMENDED",
@@ -51,7 +52,7 @@ const discovery = discoverProject(root, "RECOMMENDED").facts;
 const plan = compileBootstrapPlan({discovery, answers, projectRoot: root});
 validateBootstrapPlan(plan);
 for (const group of [
-  "project_definition", "north_star", "proving_workflow", "technical_baseline",
+  "project_definition", "north_star", "first_useful_workflow", "technical_baseline",
   "design_bible", "security_baseline", "authority_boundaries", "authority_corpus",
   "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan", "delivery_policy", "delivery_probe_plan",
 ]) assert(Object.hasOwn(plan, group), `missing compiled group ${group}`);
@@ -78,6 +79,12 @@ assert.equal(approved.status, "APPROVED_EXACT_DIGEST");
 assert.equal(approved.approval_receipt.plan_sha256, plan.plan_sha256);
 assert.notEqual(approved.plan_sha256, plan.plan_sha256, "approval must create a new content-addressed plan identity");
 
+assert.throws(() => executeBootstrapPlan(approved, {
+  bootstrapSessionId: "BOOTSTRAP-NO-WORKFLOW",
+  projectRoot: root,
+  nowUtc: "2026-08-03T00:01:30.000Z",
+}), /authority-corpus workflow/u);
+
 const execution = createBootstrapExecution(approved, {
   bootstrapSessionId: "BOOTSTRAP-001",
   projectRoot: root,
@@ -86,7 +93,7 @@ const execution = createBootstrapExecution(approved, {
 const result = executeBootstrapPlan(approved, {
   bootstrapSessionId: "BOOTSTRAP-001",
   projectRoot: root,
-  workflow: null,
+  workflow,
   nowUtc: "2026-08-03T00:02:00.000Z",
 });
 assert.equal(result.state.phase, "SEALED");
@@ -97,6 +104,7 @@ const setupAudit = auditBootstrapSetup({
   auditorSessionId: "AUDITOR-001",
   bootstrapSessionId: "BOOTSTRAP-001",
   stagingRoot: result.staging_root,
+  workflow,
 });
 assert.equal(setupAudit.status, "PASS");
 const promoted = promoteBootstrapExecution({plan: approved, executionState: result.state, setupAudit, projectRoot: root, nowUtc: "2026-08-03T00:03:00.000Z"});
@@ -108,6 +116,7 @@ assert.throws(() => auditBootstrapSetup({
   auditorSessionId: "BOOTSTRAP-001",
   bootstrapSessionId: "BOOTSTRAP-001",
   stagingRoot: result.staging_root,
+  workflow,
 }), /independent/);
 assert.equal(execution.phase, "APPROVED");
 
@@ -127,7 +136,7 @@ const imported = executeBootstrapPlan(importedApproved, {
   bootstrapSessionId: "BOOTSTRAP-002",
   projectRoot: root,
   legacySourceRoot: source,
-  workflow: null,
+  workflow,
   nowUtc: "2026-08-03T00:04:00.000Z",
 });
 assert.equal(imported.state.phase, "SEALED");
