@@ -83,7 +83,13 @@
   "bootstrap": {
     "controller": "control/bootstrap-compiler.mjs",
     "contract": "schemas/bootstrap-plan.v1.json",
-    "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably."
+    "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably.",
+    "delivery_policy": {
+      "controller": "control/delivery-policy.mjs",
+      "contract": "schemas/delivery-policy.v1.json",
+      "probe_contract": "schemas/delivery-probes.v1.json",
+      "rule": "Push, merge, CI-runner, hosting, deployment, rollback, provider, environment, and cost choices are typed project context. Bootstrap recommends route classes and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
+    }
   },
   "platform_pool": {
     "rule": "One campaign-local logical Platform Agent per materially used capability has one stable worktree and sequential supervision leases passed between Feature Agents. A second simultaneous supervisor is invalid.",

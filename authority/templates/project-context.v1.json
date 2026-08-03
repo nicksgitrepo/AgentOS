@@ -10,6 +10,7 @@
       "PROVING_WORKFLOW",
       "FUNCTION_REQUIREMENTS",
       "TECHNICAL_BASELINE",
+      "DELIVERY_POLICY",
       "DESIGN_BIBLE",
       "SECURITY_BASELINE",
       "AUTHORITY_BOUNDARIES",
@@ -105,6 +106,14 @@
       "evidence_library_active_window_days",
       "evidence_library_loose_compaction_policy"
     ],
+    "delivery_policy": [
+      "source_control",
+      "merge",
+      "ci_runner",
+      "deployment",
+      "rollback",
+      "cost_boundaries"
+    ],
     "protected_boundaries": [
       "safety_and_law",
       "security_privacy_and_tenancy",
@@ -139,6 +148,7 @@
     "digest_rule": "project_identity.exact_context_digest is lowercase SHA-256 of the UTF-8 compact canonical JSON for portable_template_instance after omitting exact_context_digest itself. Canonical JSON recursively orders object keys by unsigned UTF-8 byte order, preserves array order, and contains no insignificant whitespace.",
     "repository_rule": "repositories is a nonempty array of typed records. Every repository_id is unique; every remote, default_branch, ownership value, and protected_paths member is a nonempty string.",
     "capability_rule": "enabled_baseline_capability_ids contains every exact portable baseline capability ID once. typed_project_capability_extensions is an array whose members conform to extension_schema.",
+    "delivery_policy_rule": "delivery_policy is the single source for push, merge, runner, hosting/deployment, rollback, provider, environment, and delivery-cost choices. Release fields may reference its exact digest but cannot create a competing policy.",
     "interval_rule": "Every operational interval is a positive finite integer number of minutes.",
     "extension_rule": "Additional project fields are permitted only outside portable_template_instance or through typed_project_capability_extensions; they cannot shadow or weaken a required portable field."
   },

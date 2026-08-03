@@ -11,6 +11,12 @@ discover -> plan -> display exact digests -> APPROVE_EXACT_PLAN
         -> stage -> read back -> independent setup audit -> seal/promote
 ```
 
+The delivery-policy controller keeps pushes, serialized merges, CI runner
+routes, hosting/deployment bindings, rollback identity, and cost ceilings in
+typed project context. Its probes are local read-only observations only;
+remote authentication, pushes, merges, spending, previews, deployment, and
+rollback remain owner-boundary operations.
+
 The setup Auditor must use a distinct session. Imported authority must have a verified `legacy.zip` before replacement writes. Generic `PROCEED` is not a valid approval.
 
 At campaign runtime, `control/campaign-lifecycle.mjs` owns leases, custody, checkpoints, holds, append-only state, Runtime continuity, and next-campaign orientation. `control/campaign-cascade.mjs` owns applicable rolling audits, terminal settlement, Finalizer handoff, and delta scope. `control/question-tree.mjs` owns the exact three-root answer/lifecycle engine.

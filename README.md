@@ -6,7 +6,7 @@ This repository is the standalone home of the `2.1rc` generation. It is intentio
 
 ## Repository layout
 
-- `bootstrap/` — user-guided environment discovery and configuration entrypoint.
+- `bootstrap/` — user-guided environment discovery and configuration entrypoint, including delivery-policy decisions.
 - `governance/2.1rc/` — normative portable governance for this release candidate.
 - `authority/templates/` — project authority-corpus and context templates.
 - `control/` — executable controllers, compilers, and maintainers.
@@ -35,6 +35,10 @@ The first command checks the whole package for portability, syntax, path
 containment, deterministic empty-project creation, context separation,
 extension boundaries, and symlink refusal. The second runs the complete
 positive and hostile governance suite.
+
+Bootstrap delivery policy is provider-neutral in the kernel. A consuming
+project supplies its push, merge, CI-runner, hosting, deployment, rollback,
+provider, environment, and cost bindings through typed project context.
 
 Extraction provenance and the activation hold are recorded in
 `migrations/2.1rc-extraction-manifest.json`.

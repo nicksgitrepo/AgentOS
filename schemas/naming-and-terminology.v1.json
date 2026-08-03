@@ -25,7 +25,9 @@
     "FIRST_PASS_CANDIDATE": {"public_name": "First-Pass Candidate", "meaning": "Immutable coherent checkpoint produced before Finalizer custody."},
     "CAMPAIGN_FINALIZER": {"public_name": "Campaign Finalizer", "meaning": "Fresh exclusive-writer correction owner for one consolidated causal batch."},
     "NEXT_CAMPAIGN_CANDIDATE": {"public_name": "Next-Campaign Candidate", "meaning": "Content-addressed future-work packet consumed first by one orientation-only next Campaign Orchestrator."},
-    "RUNTIME": {"public_name": "Runtime", "meaning": "Persistent exact integration, deployment, rollback, and live-operation identity."}
+    "RUNTIME": {"public_name": "Runtime", "meaning": "Persistent exact integration, deployment, rollback, and live-operation identity."},
+    "DELIVERY_POLICY": {"public_name": "Delivery Policy", "meaning": "Typed project-context contract for source-control, merge, CI-runner, hosting, deployment, rollback, provider, environment, and cost choices."},
+    "DELIVERY_PROBE": {"public_name": "Delivery Probe", "meaning": "Bounded secret-free read-only observation that never performs external delivery side effects."}
   },
   "compatibility_aliases": {
     "guided-bootstrap": "bootstrap",
@@ -43,7 +45,8 @@
     "ECO": "ECO_CONTINUOUS",
     "ECONOMICAL": "ECO_CONTINUOUS",
     "setup.interaction_mode": "bootstrap.discovery.mode",
-    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode"
+    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode",
+    "project.technical_constraints": "project.technical_baseline"
   },
   "canonical_paths": {
     "bootstrap_controller": "control/bootstrap-compiler.mjs",
@@ -55,6 +58,9 @@
     "campaign_cascade_controller": "control/campaign-cascade.mjs",
     "question_tree_controller": "control/question-tree.mjs",
     "gpt_assist_controller": "control/gpt-assist.mjs",
+    "delivery_policy_controller": "control/delivery-policy.mjs",
+    "delivery_policy_contract": "schemas/delivery-policy.v1.json",
+    "delivery_probe_contract": "schemas/delivery-probes.v1.json",
     "naming_migration": "migrations/bootstrap-naming.v1.json"
   }
 }

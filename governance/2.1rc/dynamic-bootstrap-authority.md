@@ -8,7 +8,7 @@ The canonical setup machine authority is [control/bootstrap-compiler.mjs](../../
 
 Bootstrap Discovery is secret-free, read-only, deterministic, and contained by the admitted project root. It observes repository topology, credential-free remote shape, authority/design candidates, project markers, deployment markers, and available local tools. It rejects inherited parent repositories, unsafe paths, symlinks, credential-bearing remotes, query/fragment secret material, and any operation that authenticates, spends, publishes, deploys, deletes, or mutates.
 
-Facts are typed `OBSERVED_FACT`, `CANDIDATE_INTERPRETATION`, `CONFLICT`, or `UNKNOWN`. A fact can recommend an answer but cannot supply owner intent or select an import/refactor/create decision without an owner-bound plan.
+Facts are typed `OBSERVED_FACT`, `CANDIDATE_INTERPRETATION`, `CONFLICT`, or `UNKNOWN`. A fact can recommend an answer but cannot supply owner intent or select an import/refactor/create decision without an owner-bound plan. Delivery facts include source-control state, CI/hosting/deployment markers, and local tool availability; they never authorize a push, merge, provider login, spend, deployment, or rollback.
 
 ## Question compiler
 
@@ -21,7 +21,7 @@ Bootstrap compiles one content-addressed plan containing:
 - project definition and north star;
 - smallest proving workflow;
 - candidate Function Requirements compiled from the North Star and proving workflow;
-- technical baseline and Design Bible;
+- technical baseline, first-class delivery policy, and Design Bible;
 - typed Security standard and requirement identities;
 - authority boundaries and authority corpus roots/numbering;
 - model economics and completion floor;
@@ -34,7 +34,7 @@ The plan digest excludes only its digest field. Approval requires `APPROVE_EXACT
 
 ## Transaction and audit
 
-Execution is resumable and staged inside the project root. Imported or refactored authority must first be sealed as `legacy.zip`, with manifest, index, receipt, source observation, and exact readback. Replacement writes begin only after that gate. The plan is read back from staging before the state becomes `SEALED`.
+Execution is resumable and staged inside the project root. Approved plans run the bound local delivery probes before setup writes continue; their result is staged as `delivery.probe.results.json`. Imported or refactored authority must first be sealed as `legacy.zip`, with manifest, index, receipt, source observation, and exact readback. Replacement writes begin only after that gate. The plan is read back from staging before the state becomes `SEALED`.
 
 A distinct setup Auditor verifies plan and approval identity, TOCTOU readback, project-context separation, no secrets, legacy gate, corpus output, Runtime binding, and the three-root slice. Setup output is not Product work and does not activate a campaign.
 

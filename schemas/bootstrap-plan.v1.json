@@ -11,6 +11,7 @@
     "PROVING_WORKFLOW",
     "FUNCTION_REQUIREMENTS",
     "TECHNICAL_BASELINE",
+    "DELIVERY_POLICY",
     "DESIGN_BIBLE",
     "SECURITY_BASELINE",
     "AUTHORITY_BOUNDARIES",
@@ -37,6 +38,16 @@
   "security_baseline": {
     "required": ["standard_identity", "version", "standard_sha256", "requirement_ids"],
     "rule": "The security standard identity, version, requirement IDs, and their digest are explicit and content-addressed."
+  },
+  "delivery_policy": {
+    "contract": "schemas/delivery-policy.v1.json",
+    "required_fields": ["delivery_policy", "delivery_probe_plan"],
+    "binding_rule": "The delivery policy, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
+  },
+  "delivery_probe_gate": {
+    "contract": "schemas/delivery-probes.v1.json",
+    "staged_result": "delivery.probe.results.json",
+    "rule": "Execution runs the five-probe read-only plan before setup writes continue. The result is bound to the approved plan digest, delivery-policy digest, discovery digest, and canonical project root; owner-boundary probes remain NOT_RUN_OWNER_BOUNDARY."
   },
   "extension_boundary": "Project-specific context can fill typed fields and add stricter clauses, but cannot remove required output groups, weaken lifecycle, change acceptance roots, or replace the portable kernel."
 }

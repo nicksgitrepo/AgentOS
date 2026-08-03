@@ -26,7 +26,12 @@ const answers = {
   "project.protected_boundaries": {owner_only: ["destructive changes"]},
   "authority-corpus.source": {operation: "CREATE_NEW"},
   "project.design": {page_families: [], templates: [], protected_surfaces: []},
-  "project.technical_constraints": {testing: "deterministic"},
+  "project.technical_baseline": {testing: "deterministic"},
+  "project.delivery_policy": {
+    priority: "BALANCED",
+    ci_runner: {route: "LOCAL", weekly_minutes_budget: 120},
+    deployment: {route: "LOCAL", environment_ids: ["synthetic"], rollback_required: true, rollback_test: true},
+  },
   "project.model_economics": {profile: "STANDARD_WORKWEEK", completion_floor: 0.8},
 };
 const plan = dynamic.compileBootstrapPlan({discovery: discovery.facts, answers, projectRoot: root});

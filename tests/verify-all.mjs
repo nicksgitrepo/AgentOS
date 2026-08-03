@@ -111,6 +111,16 @@ const bootstrapPlan = JSON.parse(read("schemas/bootstrap-plan.v1.json"));
 assert.equal(bootstrapPlan.approval.decision, "APPROVE_EXACT_PLAN");
 assert(bootstrapPlan.approval.toctou.includes("Re-read discovery") && bootstrapPlan.approval.toctou.includes("plan digest"));
 assert(bootstrapPlan.execution.legacy_gate.includes("legacy.zip") && bootstrapPlan.execution.legacy_gate.includes("before replacement corpus writes"));
+assert(bootstrapPlan.required_output_groups.includes("DELIVERY_POLICY"));
+const deliveryPolicy = JSON.parse(read("schemas/delivery-policy.v1.json"));
+assert.equal(deliveryPolicy.question.id, "project.delivery_policy");
+assert.equal(deliveryPolicy.deployment.authority, "RUNTIME_AFTER_CENTRAL_ACCEPTANCE");
+const deliveryProbes = JSON.parse(read("schemas/delivery-probes.v1.json"));
+assert.equal(deliveryProbes.safe_effects.network_attempted, false);
+assert(deliveryProbes.prohibited.includes("deployment"));
+const kernel = JSON.parse(read("schemas/kernel.v1.json"));
+assert.equal(kernel.bootstrap.delivery_policy.controller, "control/delivery-policy.mjs");
+assert.equal(kernel.bootstrap.delivery_policy.probe_contract, "schemas/delivery-probes.v1.json");
 
 const runtime = JSON.parse(read("schemas/browser-runtime-lifecycle.v1.json"));
 assert.equal(runtime.agent_lifecycle.persistent_roles.join(","), "RUNTIME");
@@ -128,6 +138,7 @@ for (const relativePath of [
   "tests/verify-campaign-cascade.mjs",
   "tests/verify-question-tree.mjs",
   "tests/verify-bootstrap-alignment.mjs",
+  "tests/verify-delivery-policy.mjs",
   "tests/verify-guided-bootstrap.mjs",
   "tests/verify-dynamic-bootstrap.mjs",
   "tests/verify-browser-runtime-lifecycle.mjs",

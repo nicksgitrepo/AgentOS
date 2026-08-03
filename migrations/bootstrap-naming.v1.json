@@ -16,7 +16,8 @@
   "question_aliases": {
     "setup.interaction_mode": "bootstrap.discovery.mode",
     "project.non_goals": "project.protected_boundaries",
-    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode"
+    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode",
+    "project.technical_constraints": "project.technical_baseline"
   },
   "model_profile_aliases": {
     "ECO": "ECO_CONTINUOUS",

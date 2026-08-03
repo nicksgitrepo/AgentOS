@@ -44,6 +44,21 @@ const DEPLOYMENT_MARKERS = [
   "deployment", "deploy", "infra", "Dockerfile", "docker-compose.yml", "compose.yml",
 ];
 
+const DELIVERY_MARKERS = [
+  ["ci", ".github/workflows"],
+  ["ci", ".gitlab-ci.yml"],
+  ["ci", ".circleci"],
+  ["ci", "Jenkinsfile"],
+  ["ci", "buildkite.yml"],
+  ["ci", "azure-pipelines.yml"],
+  ["hosting", "wrangler.toml"],
+  ["hosting", "vercel.json"],
+  ["hosting", "netlify.toml"],
+  ["hosting", "fly.toml"],
+  ["hosting", "serverless.yml"],
+  ["policy", ".agentos/delivery-policy.json"],
+];
+
 export const EPISTEMIC_CLASSES = Object.freeze([
   "OBSERVED",
   "OWNER_CONFIRMED",
@@ -212,6 +227,24 @@ export function discoverProject(projectRoot, mode = "RECOMMENDED") {
     } else {
       addFact(facts, "UNKNOWN", "repositories.origin", undefined, "GIT", ".git/config", "UNKNOWN", "ORIGIN_NOT_CONFIGURED");
     }
+    const branch = runLocal("git", ["branch", "--show-current"], root);
+    if (branch.exit_code === 0 && branch.stdout.length > 0) {
+      addFact(facts, "OBSERVED_FACT", "delivery.source_control.current_branch", branch.stdout, "GIT", ".git/HEAD");
+    } else {
+      addFact(facts, "UNKNOWN", "delivery.source_control.current_branch", undefined, "GIT", ".git/HEAD", "UNKNOWN", "DETACHED_OR_UNAVAILABLE");
+    }
+    const head = runLocal("git", ["rev-parse", "HEAD"], root);
+    if (head.exit_code === 0 && /^[0-9a-f]{40}$/u.test(head.stdout)) {
+      addFact(facts, "OBSERVED_FACT", "delivery.source_control.head", head.stdout, "GIT", ".git/HEAD");
+    } else {
+      addFact(facts, "UNKNOWN", "delivery.source_control.head", undefined, "GIT", ".git/HEAD", "UNKNOWN", "HEAD_UNAVAILABLE");
+    }
+    const status = runLocal("git", ["status", "--porcelain=v1"], root);
+    if (status.exit_code === 0) {
+      addFact(facts, "OBSERVED_FACT", "delivery.source_control.worktree_clean", status.stdout.length === 0, "GIT", root);
+    } else {
+      addFact(facts, "UNKNOWN", "delivery.source_control.worktree_clean", undefined, "GIT", root, "UNKNOWN", "STATUS_UNAVAILABLE");
+    }
   }
 
   for (const relativePath of AUTHORITY_CANDIDATES) {
@@ -235,6 +268,9 @@ export function discoverProject(projectRoot, mode = "RECOMMENDED") {
         `delivery.marker.${relativePath}`, inspected.type, "FILESYSTEM", relativePath, inspected.type === "FILE" ? "OBSERVED" : "CONFLICT",
         inspected.type === "FILE" ? null : "UNSAFE_DEPLOYMENT_MARKER");
     }
+  }
+  for (const [kind, relativePath] of DELIVERY_MARKERS) {
+    addPathFact(facts, root, `delivery.marker.${kind}.${relativePath}`, relativePath);
   }
 
   for (const [toolId, command] of TOOL_NAMES) {

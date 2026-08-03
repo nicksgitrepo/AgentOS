@@ -55,7 +55,7 @@
       "filesystem shape and regular-file markers",
       "local Git repository identity and origin shape",
       "installed local tool metadata without invoking provider authentication",
-      "authority, design, stack, and delivery marker presence"
+      "authority, design, stack, CI, hosting, deployment, source-control, and delivery-policy marker presence"
     ],
     "forbidden": [
       "provider login or auth-status commands",

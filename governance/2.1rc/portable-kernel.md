@@ -20,7 +20,7 @@ Agents return one compact completion or true-boundary packet. They do not narrat
 
 ## Bootstrap
 
-Bootstrap performs secret-free read-only discovery, asks only unresolved owner-intent or owner-boundary questions, and compiles one complete creation plan. The plan includes project context, north star, proving workflow, technical baseline, Design Bible, typed Security baseline, authority boundaries, authority corpus, model policy, persistent Runtime, first campaign, exact file/root creation, rollback, and the exact three-root slice.
+Bootstrap performs secret-free read-only discovery, asks only unresolved owner-intent or owner-boundary questions, and compiles one complete creation plan. The plan includes project context, north star, proving workflow, technical baseline, first-class delivery policy, Design Bible, typed Security baseline, authority boundaries, authority corpus, model policy, persistent Runtime, first campaign, exact file/root creation, rollback, and the exact three-root slice. Delivery policy covers source-control pushes, serialized merges, CI runner route, hosting/deployment route, provider and cost bindings, and exact rollback. It never authorizes external side effects during Bootstrap.
 
 The owner sees the canonical plan digest and must approve `APPROVE_EXACT_PLAN` against the same discovery digest. A stale digest, changed source, or changed plan is rejected. Execution is resumable and transactional. Imported authority is copied and verified as `legacy.zip` with manifest, index, and receipt before replacement writes. A distinct setup Auditor verifies readback, context separation, no secrets, Runtime binding, and the three-root slice.
 

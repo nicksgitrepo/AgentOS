@@ -30,7 +30,14 @@ const answers = {
   "project.boundary": {project_name: "Synthetic Project", repositories: [], branches: []},
   "project.protected_boundaries": {owner_only: ["unapproved spending", "destructive changes"]},
   "authority-corpus.source": {operation: "CREATE_NEW"},
-  "project.technical_constraints": {testing: "deterministic", deployment: "not yet configured"},
+  "project.technical_baseline": {testing: "deterministic"},
+  "project.delivery_policy": {
+    priority: "BALANCED",
+    source_control: {push_mode: "CHECKPOINTS_REMOTE_EQUAL"},
+    merge: {authority: "CENTRAL_SERIALIZED"},
+    ci_runner: {route: "LOCAL", weekly_minutes_budget: 120},
+    deployment: {route: "LOCAL", environment_ids: ["synthetic"], rollback_required: true, rollback_test: true},
+  },
   "project.model_economics": {profile: "ECO_CONTINUOUS", completion_floor: 0.8, market_snapshot_sha256: DIGEST},
   "project.runtime": {session_id: "RUNTIME-001", environment_identity: "ENV-001", capabilities: ["persistent-navigation"]},
   "security.baseline": {standard_identity: "PROJECT_SECURITY_STANDARD", version: "1", clauses: ["SEC-001"]},
@@ -46,7 +53,7 @@ validateBootstrapPlan(plan);
 for (const group of [
   "project_definition", "north_star", "proving_workflow", "technical_baseline",
   "design_bible", "security_baseline", "authority_boundaries", "authority_corpus",
-  "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan",
+  "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan", "delivery_policy", "delivery_probe_plan",
 ]) assert(Object.hasOwn(plan, group), `missing compiled group ${group}`);
 assert.equal(plan.persistent_runtime.persistent, true);
 assert.equal(plan.persistent_runtime.never_despawn_between_campaigns, true);

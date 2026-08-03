@@ -20,7 +20,8 @@ Discovery supplies repository shape, source markers, authority/design candidates
 - the project’s users, north star, first proving workflow, and boundary;
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent limits;
 - authority-corpus import/refactor/create choice;
-- Design Bible and technical constraints only when applicable or unresolved;
+- Design Bible and stack/testing/authentication/data constraints only when applicable or unresolved;
+- one delivery-policy decision covering pushes, merges, CI runners, hosting/deployment, rollback, provider binding, and delivery cost;
 - typed security standard and requirement identities;
 - model economics and operating conditions;
 - persistent Runtime and first-campaign context.

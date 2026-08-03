@@ -14,6 +14,7 @@ read-only discovery
         -> complete exact creation plan
         -> display plan and digests
         -> APPROVE_EXACT_PLAN
+        -> run bound local delivery probes
         -> resumable staging transaction
         -> independent setup audit
         -> sealed project context and authority corpus
@@ -21,7 +22,7 @@ read-only discovery
 
 Bootstrap may discover facts but cannot turn a discovery fact into owner intent. It asks only for material intent, protected boundary, or unresolved choice. It chooses safe configuration defaults when governance already supplies them and reports those defaults in the plan.
 
-Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, deployment markers, and available local tools. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
+Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, CI/hosting/deployment markers, local Git state, and available local tools. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
 
 ## Questions
 
@@ -32,7 +33,8 @@ The compact catalog covers:
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent boundaries;
 - authority-corpus source and legacy preservation;
 - design authority and required user/device/state coverage when visible surfaces exist;
-- technical constraints, testing, authentication, deployment, and rollback where discovery cannot establish them;
+- stack, testing, authentication, data, and observability requirements;
+- delivery policy: pushes, serialized merges, CI runner route, hosting/deployment route, rollback, provider binding, and cost boundaries;
 - security standard identity and atomic requirement IDs;
 - model economics and operating conditions;
 - persistent Runtime binding and the first campaign context.
@@ -41,7 +43,7 @@ The user should not have to answer questions that exact discovery or a safe gove
 
 ## Exact plan and approval
 
-The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
+The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
 
 The owner approves the exact displayed plan with:
 
