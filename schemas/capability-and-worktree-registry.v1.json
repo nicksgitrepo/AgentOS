@@ -280,6 +280,12 @@
   },
   "portable_campaign_controller": {
     "schema": "governance.portable_campaign_state.v1",
+    "cascade_state": {
+      "schema": "governance.campaign_cascade_state.v1",
+      "required": true,
+      "controller": "control/campaign-cascade.mjs",
+      "rule": "Every campaign snapshot carries the exact first-pass, four-lens audit, finalizer, delta, model-policy, and loop-control state."
+    },
     "authority_writer": {
       "role": "GLOBAL_ORCHESTRATOR",
       "rule": "Agents never write canonical authority directly. Each admitted agent may append only its own typed content-addressed event file inside the cumulative campaign root. The Campaign Orchestrator owns topology, compiled active-campaign snapshots, standard-article promotion, supersession, and recovery reconciliation.",
@@ -349,7 +355,7 @@
       "handoff_identity": "Checkpoint ID, root, branch, local and remote commit/tree, released lease, source owner/goal, recipient owner/goal, and accepted transition must agree mechanically. The immediate next snapshot must preserve the clean pushed remote-equal checkpoint, activate that exact recipient, and issue a fresh lease on the same root; terminal handoff must enter Runtime/release state.",
       "new_dependency": "The admitted dependency graph and cumulative root identity are immutable after campaign open. A newly discovered local prerequisite is solved inside the current owner or by an on-demand Platform Agent; a genuinely new cross-feature dependency is recorded for the next campaign or triggers one explicit owner-visible campaign replacement without rewriting accepted checkpoints.",
       "cycle": "Collapse a dependency cycle into one Global-Orchestrator-owned shared-contract checkpoint with one primary writer, then resume the ordered feature chain.",
-      "final": "The terminal cumulative root transfers once to Runtime for integration, artifact mint, deployment, rollback readback, live audit, and closure."
+      "final": "The terminal cumulative root transfers once to Runtime only after the terminal First-Pass Candidate has settled all four audit lenses, the Campaign Finalizer and any delta audit are complete, and the three acceptance roots are RC_READY; Runtime then performs integration, artifact mint, deployment, rollback readback, live audit, and closure."
     },
     "agent_lifecycle": {
       "persistent": [
@@ -362,6 +368,7 @@
         "pin every created Orchestrator, Auditor, and Feature Agent immediately",
         "record exact role, session, predecessor session, model, governance, campaign, and evidence-library identities"
       ],
+      "campaign_finalizer": "For a substantial or foundational campaign, create one fresh pinned Campaign Finalizer only after the terminal First-Pass Candidate and consolidated four-lens audit are sealed. Bind its session and model-policy digest to a fresh exclusive worktree based on the exact first-pass commit and tree.",
       "platform_agents": "Spawn and pin one Platform Agent only on demand when a Feature Orchestrator identifies an exact material seam. Bind it to one campaign, feature, capability, worktree, proof scope, and direct supervisor. Reuse it only for that same feature during that campaign; do not pre-spawn a platform wave, share it across features, or reuse it after the feature/campaign boundary.",
       "archive": "Completed campaign agents are archived and never deleted. Their session IDs remain optional provenance; compact handoffs and Git/evidence identities remain sufficient without chat access.",
       "depin_precondition": [
@@ -374,7 +381,7 @@
       "freshness_binding": "Every admitted dependency owner maps to a fresh pinned Feature Orchestrator for that campaign, and the active goal maps to exactly one such session even when archived predecessors remain recorded. Orchestrator, Auditor, and Feature spawn reasons are FRESH_CAMPAIGN and exact display names bind one-word role, campaign version, and governance version. A material Platform Agent is ON_DEMAND, feature-exclusive, and reusable only inside its bound campaign/feature capsule. Auditor and Runtime state objects bind sessions of the matching pinned role kind. Successor continuity binds an exact candidate packet digest; successor sessions remain absent until a distinct later campaign admission."
     },
     "auditor": {
-      "during_campaign": "Audit substantial pushed checkpoint deltas asynchronously. Accept, return one material correction, record an owner-intent question, or raise a higher-authority emergency. Do not interrupt ordinary fixes, demand perfection, or take Product custody.",
+      "during_campaign": "Audit substantial pushed checkpoint deltas asynchronously through the Functionality, Design/UI/Shell/Navigation, Security, and Code Quality/Hygiene lenses. At terminal first pass, settle all four exactly once. Accept, return one material correction, record an owner-intent question, or raise a higher-authority emergency. Do not interrupt ordinary fixes, demand perfection, or take Product custody.",
       "next_campaign": "Before depinning, deduplicate source, checkpoint, and exact-live findings by causal root; preserve owner answers; build one dependency graph and ordered next-campaign candidate; send it to the Campaign Orchestrator.",
       "cannot": [
         "activate its proposed campaign",
@@ -615,6 +622,32 @@
       ],
       "handoff_in": "exact accepted source/artifact identity and later exact deployed identity",
       "handoff_out": "ordinary feature findings to the matching Feature Orchestrator backlog; shared findings to Campaign Orchestrator; emergencies immediately to higher authority"
+    },
+    {
+      "role_id": "CAMPAIGN_FINALIZER",
+      "lifecycle": "fresh on-demand campaign instance created only after terminal first-pass audit settlement; archived after final candidate handoff",
+      "owns": [
+        "consolidated audit correction batch",
+        "cross-cutting repair of shared causal roots",
+        "bounded simplification with a concrete reliability, security, performance, or maintenance consequence",
+        "final proof preparation and delta-audit handoff"
+      ],
+      "does_not_own": [
+        "owner intent",
+        "Product acceptance authority",
+        "deployment or rollback custody",
+        "security exceptions",
+        "self-acceptance",
+        "greenfield rewrite or unrelated scope"
+      ],
+      "writer_authority": "exclusive writer in one fresh worktree derived from the exact terminal First-Pass Candidate; no other Product writer may enter that worktree",
+      "may_create": [
+        "one bounded correction batch",
+        "one final candidate checkpoint",
+        "one targeted delta-repair packet"
+      ],
+      "handoff_in": "terminal First-Pass Candidate, reconciled four-lens audit, and content-addressed model policy",
+      "handoff_out": "exact final candidate and delta-only proof to the Auditor and Campaign Orchestrator"
     },
     {
       "role_id": "GLOBAL_RUNTIME",
@@ -1280,8 +1313,11 @@
       "Create one campaign-open record; spawn and pin one fresh campaign-scoped Orchestrator, one fresh Auditor, and the admitted fresh Feature Agents using the exact `<Role> <CampaignVersion> 2.1rc` name; activate only the first feature owner in the root or each exceptionally admitted lane.",
       "Allow Feature Orchestrators to run Blueprint and Build autonomously under the portable workflow.",
       "Monitor concrete checkpoint progress at the configured interval while active, repair safe broken chains without creating extra goals, roots, or approval loops, and suspend both the same goal and its progress timer only for one exact true blocker.",
-      "At each substantial pushed checkpoint, classify changed surfaces, create and pin only the required read-only seam reviewers, run them in parallel while safe root progress continues, and queue material corrections for the originating Feature Agent at the next stable handoff.",
-      "At a coherent end-to-end milestone, accept the terminal cumulative checkpoint rather than merging individual feature checkpoints to the shared default branch.",
+      "At each substantial pushed checkpoint, compile a checkpoint-bound First-Pass Candidate identity, classify changed surfaces, create and pin only the required read-only audit workers, and run the applicable four audit disciplines in parallel while safe root progress continues.",
+      "At the terminal cumulative checkpoint, require the FIRST_PASS_CANDIDATE quality floor and settle Functionality, Design/UI/Shell/Navigation, Security, and Code Quality/Hygiene exactly once; immediate critical, wrong-direction, foundational-dependency, or safety/security findings return to the first-pass owner.",
+      "For a standard or foundational campaign, create one fresh Campaign Finalizer in a clean derived worktree from the exact terminal first-pass commit/tree. Give it one consolidated causal correction batch and no intent, acceptance, deployment, exception, or self-acceptance authority.",
+      "After finalizer completion, compile one delta-only audit from failed, directly touched, dependent, and small smoke questions; reuse unaffected evidence and permit at most one targeted repair pass plus one supervisor-selected reframe per causal root.",
+      "At a coherent end-to-end milestone, accept the exact finalizer candidate only when the three ordered Product roots are RC_READY rather than merging individual feature checkpoints to the shared default branch.",
       "At terminal handoff to Runtime, require the current Auditor to submit the next-campaign candidate, then create and pin the fresh next-campaign Orchestrator, Auditor, and Feature Agents for orientation only; hold their Product writer lease until the current release is accepted live.",
       "Converge exact terminal commits once through the Runtime after Campaign Orchestrator semantic decisions.",
       "Mint and deploy the exact integrated milestone once, audit exact live identity, route ordinary findings to the next-cycle backlog, and close."

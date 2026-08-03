@@ -4,7 +4,7 @@ Status: `RELEASE CANDIDATE — PORTABLE, NOT ACTIVATED`
 
 Machine authority:
 `schemas/capability-and-worktree-registry.v1.json`, SHA-256
-`a3e6484321046dab625ddb760bbd8db36cda502afe8884e0111e83c32a64c220`.
+`6854a0633414c8ff7531176d69bd970f3888885aa9926aa2b7be0cfc27331324`.
 
 That registry is normative for operational transitions. This article explains
 intent and usage; it cannot create an unrepresented role, custody transfer,
@@ -46,6 +46,35 @@ Security question trees in parallel with the moving cumulative root. `NO` and
 handoffs; they do not create a serial approval queue. A critical safety or
 security finding freezes only its affected surface unless exact evidence
 proves that the impact is global.
+
+### Adaptive first-pass and finalization cascade
+
+For substantial work, the moving root is one logical Product lineage even when
+physical worktrees are isolated. First-pass Feature and Platform Agents create
+immutable substantial checkpoints. Each checkpoint can receive the applicable
+read-only audit lenses in parallel. The terminal checkpoint is named
+`FIRST_PASS_CANDIDATE` and must meet the quality floor: intended path present,
+affected checks passing, coherent interfaces, disclosed critical defects, safe
+operations, clean pushed state, and an honest incomplete-work list.
+
+The terminal Auditor settles `FUNCTIONALITY`,
+`DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`, and `CODE_QUALITY_HYGIENE` exactly
+once. Catastrophic, wrong-direction, foundational-dependency, or critical
+safety/security findings return immediately to the first-pass owner. Ordinary
+findings are deduplicated by causal root and routed to one fresh
+`CAMPAIGN_FINALIZER`.
+
+The Campaign Finalizer receives only the exact terminal candidate commit/tree,
+one fresh clean derived worktree, exclusive writer custody, and one
+content-addressed correction batch. It may repair cross-cutting causes or
+simplify only with a concrete reliability, security, performance, or
+maintenance consequence. It cannot change intent, grant exceptions, decide
+acceptance, deploy, or self-accept. After it pushes a final candidate, the
+Auditor runs a delta audit limited to failed, directly touched, dependent, and
+one small smoke set. Unaffected question evidence is reused. One finalization
+pass and at most one targeted delta-repair pass are normal; one
+supervisor-selected reframe is allowed for a causal root, then equivalent
+retries stop.
 
 Feature Orchestrators use the exact admitted authority context to understand outcome,
 domain ownership, protected boundaries, contracts, and unavailable behavior.

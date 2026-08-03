@@ -5,6 +5,10 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import {verifyProductAcceptanceProof} from "./acceptance-bridge.mjs";
+import {
+  validateAcceptedLiveCascadeBinding,
+  validateCascadeState,
+} from "./campaign-cascade.mjs";
 
 const CAMPAIGN_STATUSES = new Set([
   "OPEN", "TRUE_BLOCKER_SUSPENDED", "MERGED_NOT_ACCEPTED_LIVE",
@@ -12,7 +16,7 @@ const CAMPAIGN_STATUSES = new Set([
 ]);
 const AGENT_KINDS = new Set([
   "GLOBAL_ORCHESTRATOR", "GLOBAL_RUNTIME", "INDEPENDENT_AUDITOR",
-  "FEATURE_AGENT", "PLATFORM_AGENT", "AUDIT_WORKER",
+  "FEATURE_AGENT", "PLATFORM_AGENT", "AUDIT_WORKER", "CAMPAIGN_FINALIZER",
 ]);
 const TRUE_BLOCKER_CLASSES = new Set([
   "NEW_OR_INCREASED_UNAPPROVED_COST",
@@ -886,6 +890,14 @@ function validateAgent(agent, campaignId, campaignVersion) {
       && agent.spawn_reason !== "FRESH_CAMPAIGN") {
     throw new Error("campaign Orchestrator, Auditor, and Feature Agents must be fresh");
   }
+  if (agent.kind === "CAMPAIGN_FINALIZER") {
+    if (!agent.spawn_reason.includes("ON_DEMAND_FINALIZATION")) {
+      throw new Error("Campaign Finalizer must be created on demand after terminal first pass");
+    }
+    if (agent.material_seam !== null) {
+      throw new Error("Campaign Finalizer cannot claim a platform seam");
+    }
+  }
   if (["PLATFORM_AGENT", "AUDIT_WORKER"].includes(agent.kind)) {
     requireString(agent.spawn_reason, "platform agent spawn_reason");
     requireString(agent.material_seam, "platform agent material_seam");
@@ -1266,7 +1278,7 @@ export function validateCampaignState(state, options = {}) {
     "active_campaign_article", "topology", "dependency_nodes", "dependency_order",
     "root", "active_goal", "lease", "checkpoint_handoff", "agents", "auditor",
     "runtime", "accepted_live", "last_progress", "open_owner_questions", "blocker",
-    "next_action", "standard_promotion", "successor_wave", "living_record",
+    "next_action", "standard_promotion", "successor_wave", "living_record", "cascade",
     "product_acceptance",
   ], "campaign state");
   if (state.schema !== "governance.portable_campaign_state.v1") {
@@ -1401,6 +1413,36 @@ export function validateCampaignState(state, options = {}) {
     state,
     options.product_acceptance_proof ?? null,
   );
+  validateCascadeState(state.cascade, {productAcceptance: state.product_acceptance});
+  if (state.cascade.audit_reconciliation !== null) {
+    for (const report of state.cascade.audit_reconciliation.reports) {
+      if (report.auditor_session_id !== state.auditor.session_id) {
+        throw new Error("cascade audit report is bound to a different Auditor session");
+      }
+      const auditWorker = state.agents.find((agent) =>
+        agent.kind === "AUDIT_WORKER"
+        && agent.session_id === report.worker_session_id
+        && agent.campaign_id === state.campaign_id
+        && agent.campaign_version === state.campaign_version
+        && agent.material_seam === report.discipline
+        && agent.spawn_reason.includes("ON_DEMAND")
+        && ["CAMPAIGN_ACTIVE", "ARCHIVED_UNPINNED", "REPLACED_UNPINNED"].includes(agent.state));
+      if (!auditWorker) {
+        throw new Error("cascade audit report is not bound to a real campaign audit worker");
+      }
+    }
+  }
+  if (state.cascade.finalizer !== null) {
+    const finalizerAgent = state.agents.find((agent) =>
+      agent.kind === "CAMPAIGN_FINALIZER"
+      && agent.session_id === state.cascade.finalizer.session_id
+      && agent.campaign_id === state.campaign_id
+      && agent.campaign_version === state.campaign_version
+      && agent.pinned === true);
+    if (!finalizerAgent) {
+      throw new Error("cascade Finalizer is not bound to the real pinned campaign roster");
+    }
+  }
 
   exactKeys(state.auditor, [
     "session_id", "pinned", "findings_state", "intent_questions_state",
@@ -1426,10 +1468,17 @@ export function validateCampaignState(state, options = {}) {
     && agent.pinned);
   if (!runtimeAgent) throw new Error("Runtime state must bind the pinned Runtime");
 
-  exactKeys(state.accepted_live, [
-    "status", "deployed_identity", "rollback_identity",
-    "independent_audit_identity", "closure_receipt_sha256",
-  ], "accepted live");
+  const acceptedLiveKeys = state.accepted_live.status === "VERIFIED"
+    ? [
+      "status", "deployed_identity", "rollback_identity",
+      "independent_audit_identity", "closure_receipt_sha256",
+      "cascade_state_sha256",
+    ]
+    : [
+      "status", "deployed_identity", "rollback_identity",
+      "independent_audit_identity", "closure_receipt_sha256",
+    ];
+  exactKeys(state.accepted_live, acceptedLiveKeys, "accepted live");
   exactKeys(state.last_progress, ["at", "kind", "identity"], "last progress");
   requireIso(state.last_progress.at, "last progress at");
   requireString(state.last_progress.kind, "last progress kind");
@@ -1475,8 +1524,24 @@ export function validateCampaignState(state, options = {}) {
     if (!state.product_acceptance.rc_ready) {
       throw new Error("accepted-live closure requires all three Product-acceptance roots");
     }
+    const cascadeFinalCommit = state.cascade.finalizer?.final_commit ?? state.cascade.first_pass.commit;
+    const cascadeFinalTree = state.cascade.finalizer?.final_tree ?? state.cascade.first_pass.tree;
+    if (state.cascade.stage !== "READY_FOR_ACCEPTANCE"
+        || state.cascade.acceptance.final_candidate_commit !== cascadeFinalCommit
+        || state.cascade.acceptance.final_candidate_tree !== cascadeFinalTree
+        || state.root.commit !== cascadeFinalCommit
+        || state.root.tree !== cascadeFinalTree
+        || state.root.remote_commit !== cascadeFinalCommit
+        || state.root.remote_tree !== cascadeFinalTree) {
+      throw new Error("accepted-live closure does not bind the exact final cascade candidate");
+    }
     requireString(state.accepted_live.independent_audit_identity, "independent audit identity");
     requireSha(state.accepted_live.closure_receipt_sha256, "closure receipt");
+    validateAcceptedLiveCascadeBinding({
+      cascade: state.cascade,
+      acceptedLive: state.accepted_live,
+      productAcceptance: state.product_acceptance,
+    });
   } else if (state.accepted_live.status !== "PENDING") {
     throw new Error("accepted-live state cannot verify before closure");
   }

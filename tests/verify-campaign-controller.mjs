@@ -28,6 +28,18 @@ import {
   compileQuestionTree,
   sha256 as questionTreeSha256,
 } from "../control/question-tree.mjs";
+import {
+  AUDIT_DISCIPLINES,
+  cascadeDigest,
+  compileAuditPlan,
+  compileAuditReport,
+  compileDeltaAudit,
+  compileFirstPassCandidate,
+  compileModelPolicy,
+  completeCampaignFinalizer,
+  openCampaignFinalizer,
+  reconcileAuditFindings,
+} from "../control/campaign-cascade.mjs";
 
 const sha = "a".repeat(64);
 const validState = {
@@ -347,7 +359,214 @@ function resealAcceptance(state) {
 Object.assign(validState.product_acceptance, openAcceptanceProof.product_acceptance);
 
 resealAcceptance(validState);
+const cascadeRolePolicies = [
+  "CAMPAIGN_ORCHESTRATOR",
+  "INDEPENDENT_AUDITOR",
+  "FEATURE_AGENT",
+  "PLATFORM_AGENT",
+  "AUDIT_WORKER",
+  "CAMPAIGN_FINALIZER",
+  "RUNTIME",
+].map((role) => ({
+  role,
+  selection_mode: "EXTERNAL_SNAPSHOT_ROLE_MATCH",
+  minimum_capability_floor: "COMPLETION_FLOOR_AND_REQUIRED_TOOLS",
+  budget_behavior: "EXPECTED_ACCEPTED_COST_WITH_REWORK",
+  fallback_behavior: "FAIL_CLOSED_NO_ELIGIBLE_MODEL",
+}));
+const fixtureCascadeModelPolicy = compileModelPolicy({
+  profile: "ECO_CONTINUOUS",
+  completionFloor: 0.75,
+  marketSnapshotSha256: sha,
+  rolePolicies: cascadeRolePolicies,
+});
+const fixtureCascadeFirstPass = compileFirstPassCandidate({
+  candidate_id: "CANDIDATE-001",
+  campaign_id: "campaign-001",
+  campaign_version: "001",
+  logical_lineage_id: "lineage-001",
+  worktree_id: "root-001",
+  branch: "campaign/campaign-001",
+  commit: "commit-001",
+  tree: "tree-001",
+  remote_commit: "commit-001",
+  remote_tree: "tree-001",
+  clean: false,
+  pushed: false,
+  changed_paths: ["src/fixture.ts"],
+  changed_surfaces: ["UI"],
+  owner_role_id: "feature-x",
+  terminal: false,
+  created_at_utc: "2026-01-01T00:00:00.000Z",
+  quality_floor: {
+    intended_path_present: true,
+    affected_checks_pass: true,
+    interfaces_coherent: true,
+    critical_defect_disclosed: true,
+    safe_operations: true,
+    clean_checkpoint: false,
+    pushed_checkpoint: false,
+    incomplete_work: ["fixture campaign remains active"],
+    evidence_sha256: sha,
+  },
+});
+const fixtureCascade = {
+  schema: "governance.campaign_cascade_state.v1",
+  governance_version: "2.1rc",
+  campaign_id: "campaign-001",
+  campaign_version: "001",
+  mode: "STANDARD_SUBSTANTIAL",
+  stage: "FIRST_PASS_BUILDING",
+  logical_lineage_id: "lineage-001",
+  first_pass: fixtureCascadeFirstPass,
+  audit_plan: null,
+  audit_reconciliation: null,
+  finalizer: null,
+  delta_audit: null,
+  acceptance: {
+    product_acceptance_sha256: cascadeDigest(validState.product_acceptance),
+    question_tree_sha256: validState.product_acceptance.question_tree_sha256,
+    final_candidate_commit: "commit-001",
+    final_candidate_tree: "tree-001",
+    roots: structuredClone(validState.product_acceptance.roots),
+    rc_ready: false,
+    auditor_session_id: "session-auditor-new",
+  },
+  model_policy: fixtureCascadeModelPolicy,
+  telemetry: {
+    records: [],
+    evidence_reuse_count: 0,
+    escaped_finding_count: 0,
+    owner_interruptions: 0,
+  },
+  loop_control: {
+    max_finalization_passes: 1,
+    max_delta_repair_passes: 1,
+    max_supervisor_reframes: 1,
+    equivalent_retry_policy: "STOP_AND_CLASSIFY_AFTER_ONE_REFRAME",
+  },
+  cascade_sha256: "",
+};
+delete fixtureCascade.cascade_sha256;
+fixtureCascade.cascade_sha256 = cascadeDigest(fixtureCascade);
+validState.cascade = fixtureCascade;
 const clone = () => structuredClone(validState);
+
+function compileTerminalCascade(productAcceptance) {
+  const terminalCandidate = compileFirstPassCandidate({
+    candidate_id: "CANDIDATE-001",
+    campaign_id: "campaign-001",
+    campaign_version: "001",
+    logical_lineage_id: "lineage-001",
+    worktree_id: "root-001",
+    branch: "campaign/campaign-001",
+    commit: "commit-draft",
+    tree: "tree-draft",
+    remote_commit: "commit-draft",
+    remote_tree: "tree-draft",
+    clean: true,
+    pushed: true,
+    changed_paths: ["src/fixture.ts"],
+    changed_surfaces: ["UI"],
+    owner_role_id: "feature-y",
+    terminal: true,
+    created_at_utc: "2026-01-01T00:14:00.000Z",
+    quality_floor: {
+      intended_path_present: true,
+      affected_checks_pass: true,
+      interfaces_coherent: true,
+      critical_defect_disclosed: true,
+      safe_operations: true,
+      clean_checkpoint: true,
+      pushed_checkpoint: true,
+      incomplete_work: [],
+      evidence_sha256: sha,
+    },
+  });
+  const plan = compileAuditPlan({candidate: terminalCandidate, terminal: true});
+  const reports = AUDIT_DISCIPLINES.map((discipline) => compileAuditReport({
+    plan,
+    discipline,
+    auditorSessionId: "session-auditor-new",
+    workerSessionId: `worker-${discipline}`,
+    reviewedQuestionIds: [`${discipline === "FUNCTIONALITY" ? "FR" : discipline === "DESIGN_UI_SHELL_NAVIGATION" ? "DB" : "SEC"}-TERMINAL-001`],
+    failedQuestionIds: [],
+    findings: [],
+    evidenceSha256: sha,
+  }));
+  const reconciliation = reconcileAuditFindings({plan, reports, terminal: true});
+  const finalizer = openCampaignFinalizer({
+    candidate: terminalCandidate,
+    auditPlan: plan,
+    reconciliation,
+    modelPolicyDigestSha256: fixtureCascadeModelPolicy.policy_sha256,
+    sessionId: "session-finalizer",
+    worktreeId: "finalizer-worktree",
+    branch: "campaign/campaign-001-finalizer",
+    scopeFindingIds: [],
+    correctionBatchSha256: sha,
+  });
+  const completedFinalizer = completeCampaignFinalizer({
+    finalizer,
+    candidate: terminalCandidate,
+    finalCommit: "commit-001",
+    finalTree: "tree-001",
+    changedPaths: ["src/fixture.ts"],
+  });
+  const delta = compileDeltaAudit({
+    baselineCommit: terminalCandidate.commit,
+    baselineTree: terminalCandidate.tree,
+    candidateCommit: completedFinalizer.final_commit,
+    candidateTree: completedFinalizer.final_tree,
+    allQuestionIds: ["FR-TERMINAL-001", "DB-TERMINAL-001", "SEC-TERMINAL-001", "SEC-TERMINAL-002"],
+    previouslyFailedQuestionIds: ["FR-TERMINAL-001"],
+    directlyTouchedQuestionIds: ["DB-TERMINAL-001"],
+    dependentQuestionIds: [],
+    smokeQuestionIds: ["SEC-TERMINAL-001"],
+    causalRootIds: ["CAUSE-TERMINAL"],
+    evidenceReuseSha256: sha,
+  });
+  const cascade = {
+    schema: "governance.campaign_cascade_state.v1",
+    governance_version: "2.1rc",
+    campaign_id: "campaign-001",
+    campaign_version: "001",
+    mode: "STANDARD_SUBSTANTIAL",
+    stage: "READY_FOR_ACCEPTANCE",
+    logical_lineage_id: "lineage-001",
+    first_pass: terminalCandidate,
+    audit_plan: plan,
+    audit_reconciliation: reconciliation,
+    finalizer: completedFinalizer,
+    delta_audit: delta,
+    acceptance: {
+      product_acceptance_sha256: cascadeDigest(productAcceptance),
+      question_tree_sha256: productAcceptance.question_tree_sha256,
+      final_candidate_commit: completedFinalizer.final_commit,
+      final_candidate_tree: completedFinalizer.final_tree,
+      roots: structuredClone(productAcceptance.roots),
+      rc_ready: productAcceptance.rc_ready,
+      auditor_session_id: "session-auditor-new",
+    },
+    model_policy: fixtureCascadeModelPolicy,
+    telemetry: {
+      records: [],
+      evidence_reuse_count: 1,
+      escaped_finding_count: 0,
+      owner_interruptions: 0,
+    },
+    loop_control: {
+      max_finalization_passes: 1,
+      max_delta_repair_passes: 1,
+      max_supervisor_reframes: 1,
+      equivalent_retry_policy: "STOP_AND_CLASSIFY_AFTER_ONE_REFRAME",
+    },
+    cascade_sha256: "",
+  };
+  delete cascade.cascade_sha256;
+  cascade.cascade_sha256 = cascadeDigest(cascade);
+  return cascade;
+}
 let hostileRejected = 0;
 const failures = [];
 const rejectState = (label, mutate) => {
@@ -1094,6 +1313,37 @@ terminalClosed.product_acceptance = {
   ...acceptedAcceptanceProof.product_acceptance,
 };
 resealAcceptance(terminalClosed);
+terminalClosed.cascade = compileTerminalCascade(terminalClosed.product_acceptance);
+for (const report of terminalClosed.cascade.audit_reconciliation.reports) {
+  terminalClosed.agents.push({
+    role_id: report.discipline,
+    kind: "AUDIT_WORKER",
+    session_id: report.worker_session_id,
+    predecessor_session_id: null,
+    campaign_id: "campaign-001",
+    campaign_version: "001",
+    governance_version: "2.1rc",
+    display_name: `${report.discipline} 001 2.1rc`,
+    pinned: false,
+    state: "ARCHIVED_UNPINNED",
+    spawn_reason: "ON_DEMAND_TERMINAL_AUDIT",
+    material_seam: report.discipline,
+  });
+}
+terminalClosed.agents.push({
+  role_id: "campaign-finalizer",
+  kind: "CAMPAIGN_FINALIZER",
+  session_id: "session-finalizer",
+  predecessor_session_id: null,
+  campaign_id: "campaign-001",
+  campaign_version: "001",
+  governance_version: "2.1rc",
+  display_name: "campaign-finalizer 001 2.1rc",
+  pinned: true,
+  state: "CAMPAIGN_ACTIVE",
+  spawn_reason: "ON_DEMAND_FINALIZATION",
+  material_seam: null,
+});
 terminalClosed.checkpoint_handoff = {
   kind: "TERMINAL_TO_RUNTIME",
   checkpoint_id: "checkpoint-y",
@@ -1118,6 +1368,7 @@ terminalClosed.accepted_live = {
   rollback_identity: "rollback-previous",
   independent_audit_identity: "audit-state-001",
   closure_receipt_sha256: sha,
+  cascade_state_sha256: terminalClosed.cascade.cascade_sha256,
 };
 terminalClosed.auditor.next_campaign_candidate = "RECORDED_FOR_ORCHESTRATOR";
 terminalClosed.standard_promotion.status = "APPLIED";
@@ -1137,6 +1388,16 @@ bindLivingRecord(terminalClosed, livingEvents, acceptedAcceptanceProof.proof);
 validateCampaignState(terminalClosed, {
   product_acceptance_proof: acceptedAcceptanceProof.proof,
 });
+try {
+  const missingCascadeWorker = structuredClone(terminalClosed);
+  missingCascadeWorker.agents = missingCascadeWorker.agents.filter((agent) => agent.kind !== "AUDIT_WORKER");
+  validateCampaignState(missingCascadeWorker, {
+    product_acceptance_proof: acceptedAcceptanceProof.proof,
+  });
+  failures.push("cascade accepted without its real audit-worker roster");
+} catch {
+  hostileRejected += 1;
+}
 
 const terminalOriented = structuredClone(terminalClosed);
 terminalOriented.status = "MERGED_NOT_ACCEPTED_LIVE";

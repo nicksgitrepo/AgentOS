@@ -160,6 +160,76 @@ expect(recommendation.recommended.model === "reliable-efficient",
   "eco recommendation did not minimize expected completion cost");
 expect(recommendation.excluded.some((entry) => entry.reason === "BELOW_COMPLETION_FLOOR"),
   "below-floor model was not excluded");
+const roleRecommendation = recommendModels({
+  role: "CAMPAIGN_FINALIZER",
+  economics: {
+    profile: "ECO_CONTINUOUS",
+    completion_floor: 0.8,
+    max_expected_cost: 10,
+  },
+  requirements: {
+    required_context_window: 100,
+    required_tools: ["shell", "git"],
+    minimum_reasoning: "HIGH",
+  },
+  candidates: [
+    {
+      model: "too-small",
+      reasoning: "HIGH",
+      spawnable: true,
+      context_window: 32,
+      tools: ["shell", "git"],
+      estimated_success_probability: 0.99,
+      estimated_attempts: 1,
+      relative_unit_cost: 1,
+    },
+    {
+      model: "finalizer-feasible",
+      reasoning: "HIGH",
+      spawnable: true,
+      context_window: 128,
+      tools: ["shell", "git"],
+      estimated_success_probability: 0.9,
+      estimated_attempts: 1.1,
+      relative_unit_cost: 4,
+      supervisor_cost: 0.5,
+      repair_cost: 0.5,
+      integration_cost: 0.5,
+      estimated_wall_hours: 4,
+    },
+  ],
+});
+expect(roleRecommendation.role === "CAMPAIGN_FINALIZER"
+  && roleRecommendation.recommended.model === "finalizer-feasible"
+  && roleRecommendation.recommended.expected_completion_cost_range.expected === 5.9
+  && roleRecommendation.pareto_frontier.includes("finalizer-feasible"),
+"role-specific model policy did not bind capability floors and accepted-cost economics");
+expectRejected("no eligible model after capability gates", () => recommendModels({
+  role: "CAMPAIGN_FINALIZER",
+  economics: {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
+  requirements: {required_context_window: 999},
+  candidates: [{
+    model: "ineligible",
+    reasoning: "HIGH",
+    spawnable: true,
+    context_window: 128,
+    estimated_success_probability: 0.99,
+    estimated_attempts: 1,
+    relative_unit_cost: 1,
+  }],
+}));
+expectRejected("unknown model recommendation role", () => recommendModels({
+  role: "UNREGISTERED_ROLE",
+  economics: {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
+  candidates: [{
+    model: "eligible-but-unbound",
+    reasoning: "HIGH",
+    spawnable: true,
+    estimated_success_probability: 0.99,
+    estimated_attempts: 1,
+    relative_unit_cost: 1,
+  }],
+}));
 
 const answers = {
   "bootstrap.discovery.mode": "RECOMMENDED",

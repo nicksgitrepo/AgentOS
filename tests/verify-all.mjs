@@ -73,6 +73,10 @@ const questionTree = readJson(binding.question_tree.registry_path);
 const questionTreeArticle = readText(binding.question_tree.article_path);
 const questionTreeControllerSource = readText(binding.question_tree.controller_path);
 const questionTreeVerifierSource = readText(binding.question_tree.verifier_path);
+const campaignCascade = readJson(binding.campaign_cascade.registry_path);
+const campaignCascadeArticle = readText(binding.campaign_cascade.article_path);
+const campaignCascadeControllerSource = readText(binding.campaign_cascade.controller_path);
+const campaignCascadeVerifierSource = readText(binding.campaign_cascade.verifier_path);
 const portableAuthorityFormat = readText(binding.portable_authority_format.path);
 const portabilityVerifierSource = readText(binding.portability_verifier.path);
 
@@ -434,6 +438,22 @@ requireExactFile({
   path: binding.question_tree.verifier_path,
   sha256: binding.question_tree.verifier_sha256,
 }, "question-tree verifier");
+requireExactFile({
+  path: binding.campaign_cascade.article_path,
+  sha256: binding.campaign_cascade.article_sha256,
+}, "campaign-cascade article");
+requireExactFile({
+  path: binding.campaign_cascade.registry_path,
+  sha256: binding.campaign_cascade.registry_sha256,
+}, "campaign-cascade registry");
+requireExactFile({
+  path: binding.campaign_cascade.controller_path,
+  sha256: binding.campaign_cascade.controller_sha256,
+}, "campaign-cascade controller");
+requireExactFile({
+  path: binding.campaign_cascade.verifier_path,
+  sha256: binding.campaign_cascade.verifier_sha256,
+}, "campaign-cascade verifier");
 requireExactFile(binding.portable_authority_format, "portable authority format");
 requireExactFile(binding.portability_verifier, "portability verifier");
 requireEmbeddedDigest(
@@ -447,6 +467,12 @@ requireEmbeddedDigest(
   binding.portable_workflow.registry_path,
   binding.portable_workflow.registry_sha256,
   "workflow article",
+);
+requireEmbeddedDigest(
+  campaignCascadeArticle,
+  binding.campaign_cascade.registry_path,
+  binding.campaign_cascade.registry_sha256,
+  "campaign-cascade article",
 );
 const expectedBoundPayloadPaths = [
   binding.bootstrap.path,
@@ -491,17 +517,28 @@ const expectedBoundPayloadPaths = [
   binding.question_tree.registry_path,
   binding.question_tree.controller_path,
   binding.question_tree.verifier_path,
+  binding.campaign_cascade.article_path,
+  binding.campaign_cascade.registry_path,
+  binding.campaign_cascade.controller_path,
+  binding.campaign_cascade.verifier_path,
   binding.portable_authority_format.path,
   binding.portability_verifier.path,
 ];
 requireCondition(
-  expectedBoundPayloadPaths.length === 44
-    && new Set(expectedBoundPayloadPaths).size === 44,
+  expectedBoundPayloadPaths.length === 48
+    && new Set(expectedBoundPayloadPaths).size === 48,
   "portable payload inventory is not exact",
 );
 
 requireCondition(kernel.schema === "governance.portable_kernel.v1", "wrong portable-kernel schema");
 requireCondition(kernel.release_candidate === "2.1rc", "kernel is not 2.1rc");
+requireCondition(
+  kernel.campaign_cascade.first_pass_candidate === "FIRST_PASS_CANDIDATE"
+    && kernel.campaign_cascade.finalizer === "CAMPAIGN_FINALIZER"
+    && kernel.campaign_cascade.loop_limits.finalization_passes === 1
+    && kernel.campaign_cascade.loop_limits.targeted_delta_repair_passes === 1,
+  "portable kernel lacks the bounded campaign cascade",
+);
 requireCondition(workflow.schema === "governance.portable_capability_worktree_registry.v1", "wrong workflow schema");
 requireCondition(workflow.release_candidate === "2.1rc", "workflow is not 2.1rc");
 requireCondition(context.schema === "governance.project_context_fixture.v1", "wrong project-context fixture schema");
@@ -601,6 +638,23 @@ requireCondition(
   "naming and terminology authority is incomplete",
 );
 requireCondition(
+  campaignCascade.schema === "governance.campaign_cascade_contract.v1"
+    && campaignCascade.status === "PREPARED_NOT_ACTIVATED"
+    && campaignCascade.audit_disciplines.join(",")
+      === "FUNCTIONALITY,DESIGN_UI_SHELL_NAVIGATION,SECURITY,CODE_QUALITY_HYGIENE"
+    && campaignCascade.finalizer.role === "CAMPAIGN_FINALIZER"
+    && campaignCascade.finalizer.worktree.includes("Fresh clean derived worktree")
+    && campaignCascade.delta_rule.rerun.includes("previously failed questions")
+    && campaignCascade.model_policy.no_eligible_model === "FAIL_CLOSED"
+    && campaignCascade.model_policy.no_feasible_model_under_budget === "FAIL_CLOSED"
+    && campaignCascadeControllerSource.includes("validateAcceptedLiveCascadeBinding")
+    && campaignCascadeControllerSource.includes("compileDeltaAudit")
+    && campaignCascadeVerifierSource.includes("hostile")
+    && normalizeText(campaignCascadeArticle).includes("FIRST_PASS_CANDIDATE")
+    && normalizeText(campaignCascadeArticle).includes("CAMPAIGN_FINALIZER"),
+  "campaign cascade authority is incomplete",
+);
+requireCondition(
   bootstrapInterview.schema === "agentos.bootstrap_interview_contract.v1"
     && bootstrapInterview.status === "PREPARED_NOT_ACTIVATED"
     && bootstrapInterview.discovery_permission.question_id === "bootstrap.discovery.mode"
@@ -608,8 +662,15 @@ requireCondition(
     && bootstrapInterview.legacy_preservation.required_before_build === true
     && bootstrapInterview.model_profiles.ECO_CONTINUOUS.work_slots === 20
     && bootstrapInterview.model_profiles.STANDARD_WORKWEEK.window_hours === 40
+    && bootstrapInterview.model_policy.roles.includes("CAMPAIGN_FINALIZER")
+    && bootstrapInterview.model_policy.candidate_gates.includes("context_window")
+    && bootstrapInterview.model_policy.no_eligible_model === "FAIL_CLOSED_NO_ELIGIBLE_MODEL"
+    && bootstrapInterview.model_policy.no_feasible_model_under_budget
+      === "FAIL_CLOSED_NO_FEASIBLE_MODEL_UNDER_BUDGET"
     && bootstrapInterviewControllerSource.includes("planBootstrapInterview")
     && bootstrapInterviewControllerSource.includes("BELOW_COMPLETION_FLOOR")
+    && bootstrapInterviewControllerSource.includes("expected_completion_cost_range")
+    && bootstrapInterviewControllerSource.includes("NO_ELIGIBLE_MODEL")
     && bootstrapDiscoveryControllerSource.includes("discoverProject"),
   "Bootstrap Interview authority is incomplete",
 );
@@ -1115,6 +1176,7 @@ const expectedRoles = [
   "FEATURE_LEAD",
   "PLATFORM_AGENT",
   "INDEPENDENT_AUDITOR",
+  "CAMPAIGN_FINALIZER",
   "GLOBAL_RUNTIME",
 ];
 const expectedAuthorityRootVariables = [
@@ -2579,6 +2641,16 @@ requireCondition(
   `question-tree verifier failed: ${
     questionTreeVerifier.stderr || questionTreeVerifier.stdout
   }`,
+);
+const campaignCascadeVerifier = spawnSync(
+  process.execPath,
+  [path.join(root, binding.campaign_cascade.verifier_path)],
+  {cwd: root, encoding: "utf8"},
+);
+requireCondition(
+  campaignCascadeVerifier.status === 0
+    && campaignCascadeVerifier.stdout.includes("PASS Governance 2.1rc campaign cascade"),
+  `campaign cascade verifier failed: ${campaignCascadeVerifier.stderr || campaignCascadeVerifier.stdout}`,
 );
 const portabilityVerifier = spawnSync(
   process.execPath,

@@ -28,7 +28,9 @@
     "FEATURE_LEAD": "FEATURE_ORCHESTRATOR"
   },
   "campaign_aliases": {
-    "successor_wave": "next_campaign_candidate"
+    "successor_wave": "next_campaign_candidate",
+    "rough_draft": "FIRST_PASS_CANDIDATE",
+    "finalizer": "CAMPAIGN_FINALIZER"
   },
   "retention": {
     "accepted_ids": "Immutable",

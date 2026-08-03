@@ -62,6 +62,25 @@
     "LIVE_AUDIT",
     "IMPROVE"
   ],
+  "campaign_cascade": {
+    "controller": "control/campaign-cascade.mjs",
+    "first_pass_candidate": "FIRST_PASS_CANDIDATE",
+    "audit_disciplines": [
+      "FUNCTIONALITY",
+      "DESIGN_UI_SHELL_NAVIGATION",
+      "SECURITY",
+      "CODE_QUALITY_HYGIENE"
+    ],
+    "finalizer": "CAMPAIGN_FINALIZER",
+    "lineage": "one logical Product lineage with immutable exact commit/tree checkpoints and isolated physical worktrees",
+    "delta_rule": "failed, directly touched, dependent, and one small smoke set; reuse unaffected evidence",
+    "loop_limits": {
+      "finalization_passes": 1,
+      "targeted_delta_repair_passes": 1,
+      "supervisor_reframes_per_causal_root": 1
+    },
+    "accepted_live_binding": "cascade state, final candidate, three-root Product acceptance, deployment, rollback, independent audit, and closure receipt"
+  },
   "failure_classes": [
     {
       "id": "INTRODUCED_REGRESSION",

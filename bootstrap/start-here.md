@@ -114,7 +114,27 @@ means up to twenty work slots across a 24/7 week; `STANDARD_WORKWEEK` means a
 normal 40-hour week; `PERFORMANCE` prioritizes elapsed time; and `CUSTOM`
 accepts typed conditions. Recommendations minimize expected cost per accepted
 result, including retries, rework, coordination, and failure risk—not token
-price alone. Governance never hardcodes a model name.
+price alone. Capability gates include context, required tools, reasoning,
+privacy, deadline, and role. If no candidate is eligible or feasible under the
+budget, Bootstrap fails closed. Governance never hardcodes a model name.
+
+## Substantial campaign cascade
+
+The canonical machine state is `FIRST_PASS_CANDIDATE`, not “rough draft.” A
+substantial campaign moves one logical Product lineage through immutable
+checkpoints, runs the applicable read-only lenses in parallel, and settles the
+four terminal disciplines: `FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`,
+`SECURITY`, and `CODE_QUALITY_HYGIENE`. Catastrophic, wrong-direction,
+foundational, or critical security/safety findings return to the first-pass
+owner.
+
+The `CAMPAIGN_FINALIZER` is created only after terminal first-pass settlement.
+It receives a fresh exclusive worktree based on the exact terminal checkpoint
+and one consolidated causal correction batch. It has no intent, acceptance,
+deployment, exception, or self-acceptance authority. After finalization, only
+failed, touched, dependent, and a small smoke set are retested; unaffected
+evidence is reused. One finalization pass and at most one targeted repair pass
+are normal, with one supervisor-selected reframe per causal root.
 
 ## Portable authority numbering
 

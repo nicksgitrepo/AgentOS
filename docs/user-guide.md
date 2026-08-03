@@ -7,7 +7,10 @@ self-documenting agent workspace. Its Bootstrap creates or aligns the project
 authority corpus, Design Bible, and feature intent, records changeable preferences, builds deterministic development
 campaigns, passes one cumulative worktree through the required Feature Agents,
 creates Platform Agents only when needed, audits changes as they move, and
-hands the completed milestone to Runtime for merge and deployment.
+hands the completed, finalizer-verified milestone to Runtime for merge and
+deployment. For substantial work, the canonical path is: first-pass build,
+four-lens audit, one bounded Campaign Finalizer, delta-only retest, then the
+three ordered acceptance roots.
 
 The governance package is project-agnostic. Your project’s identity, goals,
 features, providers, design language, and deployment rules live in the authority corpus
@@ -79,7 +82,10 @@ economical. Candidates below the completion floor are excluded even when
 cheap. Light high-reasoning models are preferred for bounded building;
 Orchestrators and Feature Agents move to stronger models near the best-value
 point when coordination complexity justifies it. Model names are discovered,
-not embedded in governance.
+not embedded in governance. The policy also checks context, tools, reasoning,
+privacy, deadline, and expected accepted cost including supervision, repair,
+and integration. If no model clears the floor or budget, Bootstrap fails closed
+instead of recommending a likely-to-fail cheap option.
 
 ## Optional Markdown exchange during setup
 
@@ -170,6 +176,28 @@ stage goal, commits and pushes a clean checkpoint, and hands the same root to
 the next Feature Agent. Platform Agents are created only for database/RLS,
 backend/API, UI/UX, shell/navigation, accessibility, security, integration,
 runtime, recovery, or another material seam actually touched.
+
+For a substantial campaign, the checkpoint cascade is:
+
+```text
+first-pass Feature / Platform build
+    -> immutable FIRST_PASS_CANDIDATE
+    -> Functionality + Design/UI/Shell/Navigation + Security + Code Quality/Hygiene
+    -> fresh Campaign Finalizer on the exact candidate
+    -> one correction batch
+    -> delta-only audit and at most one targeted repair pass
+    -> FUNCTION_REQUIREMENTS -> DESIGN_BIBLE -> SECURITY -> RC_READY
+    -> Runtime integration, deployment, and live audit
+```
+
+The first-pass candidate must have a coherent intended path, passing affected
+checks, coherent interfaces, disclosed critical defects, safe operations, and
+a clean pushed checkpoint. Catastrophic, wrong-direction, foundational, or
+critical safety/security findings return immediately to the first-pass owner.
+The Campaign Finalizer receives only consolidated ordinary findings in a
+fresh exclusive worktree. It cannot change intent, grant exceptions, accept
+itself, merge, or deploy. Unaffected question evidence is reused during delta
+audits; the complete question corpus is not restarted ceremonially.
 
 The campaign is also a living record inside that worktree. Each admitted
 agent appends only its own short event file in an independent session stream.

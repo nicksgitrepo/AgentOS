@@ -31,6 +31,23 @@ The user-facing term **Next-Campaign Candidate** replaces the legacy
 creates a successor session, lease, or Product writer before a separate
 campaign admission.
 
+The build cascade uses two canonical names. `FIRST_PASS_CANDIDATE` is the
+terminal, coherent checkpoint produced by the first-pass builders. It replaces
+ambiguous labels such as “rough draft” in machine state. `CAMPAIGN_FINALIZER`
+is the fresh, stronger finalization role that receives that exact checkpoint
+and the consolidated audit findings. It does not own intent, acceptance,
+deployment, security exceptions, or self-acceptance.
+
+The complete operating path is the **Campaign Cascade**. A **First-Pass
+Builder** is the capability-selected Feature or Platform Agent advancing the
+cumulative root toward its terminal First-Pass Candidate. These names describe
+behavior and custody, not a provider, model, or project-specific implementation.
+
+The four audit lenses are named `FUNCTIONALITY`,
+`DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`, and `CODE_QUALITY_HYGIENE`. A
+terminal candidate settles all four exactly once; an intermediate checkpoint
+may defer an unaffected lens until terminal settlement.
+
 ## Naming value test
 
 When a rename is proposed, keep it only if it reduces ambiguity, makes a

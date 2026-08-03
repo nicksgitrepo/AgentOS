@@ -53,6 +53,22 @@
       "public_name": "Auditor",
       "meaning": "An independent read-only verifier; audit workers are optional children, not a standing review wave."
     },
+    "CAMPAIGN_CASCADE": {
+      "public_name": "Campaign Cascade",
+      "meaning": "The adaptive first-pass, four-discipline audit, finalization, delta-repair, and exact acceptance path for one logical campaign lineage."
+    },
+    "FIRST_PASS_BUILDER": {
+      "public_name": "First-Pass Builder",
+      "meaning": "A capability-selected Feature or Platform Agent that advances the cumulative campaign root toward its terminal First-Pass Candidate."
+    },
+    "FIRST_PASS_CANDIDATE": {
+      "public_name": "First-Pass Candidate",
+      "meaning": "The first coherent, committed, pushed Product checkpoint produced by the build cascade before finalization."
+    },
+    "CAMPAIGN_FINALIZER": {
+      "public_name": "Campaign Finalizer",
+      "meaning": "A fresh, stronger, exclusive-writer repair agent that inherits one exact terminal First-Pass Candidate and consolidated findings."
+    },
     "NEXT_CAMPAIGN_CANDIDATE": {
       "public_name": "Next-Campaign Candidate",
       "meaning": "A durable, content-addressed packet for a separately admitted future campaign; it creates no successor session or lease by itself."
@@ -79,7 +95,9 @@
     "setup.interaction_mode": "bootstrap.discovery.mode",
     "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode",
     "authority_corpus": "authority-corpus",
-    "project_context": "project-context"
+    "project_context": "project-context",
+    "rough_draft": "first_pass_candidate",
+    "finalizer": "campaign_finalizer"
   },
   "canonical_paths": {
     "bootstrap_interview_controller": "control/bootstrap-interview.mjs",
@@ -88,6 +106,8 @@
     "legacy_preservation_controller": "control/legacy-preservation.mjs",
     "bootstrap_interview_contract": "schemas/bootstrap-interview.v1.json",
     "legacy_preservation_contract": "schemas/legacy-preservation.v1.json",
-    "migration_manifest": "migrations/bootstrap-naming.v1.json"
+    "migration_manifest": "migrations/bootstrap-naming.v1.json",
+    "campaign_cascade_contract": "schemas/campaign-cascade.v1.json",
+    "campaign_cascade_controller": "control/campaign-cascade.mjs"
   }
 }

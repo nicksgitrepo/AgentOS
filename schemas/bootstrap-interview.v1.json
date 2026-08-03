@@ -146,6 +146,33 @@
       "objective": "use only the explicitly supplied typed constraints"
     }
   },
+  "model_policy": {
+    "roles": [
+      "CAMPAIGN_ORCHESTRATOR",
+      "INDEPENDENT_AUDITOR",
+      "FEATURE_AGENT",
+      "PLATFORM_AGENT",
+      "AUDIT_WORKER",
+      "CAMPAIGN_FINALIZER",
+      "RUNTIME"
+    ],
+    "candidate_gates": [
+      "spawnability",
+      "context_window",
+      "required_tools",
+      "reasoning_floor",
+      "privacy_posture",
+      "deadline",
+      "completion_reliability_floor"
+    ],
+    "expected_cost": "attempt_cost_times_expected_attempts_plus_supervision_plus_repair_plus_integration",
+    "selection": "Prefer a Pareto-feasible candidate for the role and workload; ECO minimizes expected accepted cost, PERFORMANCE minimizes elapsed time after the floor, and CUSTOM obeys typed constraints.",
+    "below_floor": "EXCLUDE",
+    "no_eligible_model": "FAIL_CLOSED_NO_ELIGIBLE_MODEL",
+    "no_feasible_model_under_budget": "FAIL_CLOSED_NO_FEASIBLE_MODEL_UNDER_BUDGET",
+    "market_data": "Current model facts remain an external Bootstrap input and are never embedded in portable governance.",
+    "calibration": "Recalibrate after three to five observed campaigns using accepted outcomes, rework, evidence reuse, escaped findings, and owner interruptions."
+  },
   "legacy_preservation": {
     "required_before_build": true,
     "artifacts": ["legacy.zip", "legacy.manifest.json", "legacy.index.jsonl", "legacy.receipt.json"],

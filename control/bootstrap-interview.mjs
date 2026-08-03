@@ -42,6 +42,15 @@ export const MODEL_PROFILES = {
     objective: "USE_TYPED_CUSTOM_CONDITIONS",
   },
 };
+export const MODEL_POLICY_ROLES = Object.freeze([
+  "CAMPAIGN_ORCHESTRATOR",
+  "INDEPENDENT_AUDITOR",
+  "FEATURE_AGENT",
+  "PLATFORM_AGENT",
+  "AUDIT_WORKER",
+  "CAMPAIGN_FINALIZER",
+  "RUNTIME",
+]);
 const MODEL_PROFILE_ALIASES = new Map([
   ["ECO", "ECO_CONTINUOUS"],
   ["ECONOMICAL", "ECO_CONTINUOUS"],
@@ -227,6 +236,8 @@ export function compileModelEconomics(input) {
     profile_alias: input.profile === profile ? null : input.profile,
     completion_floor: input.completion_floor ?? 0.75,
     custom_conditions: input.custom_conditions ?? null,
+    max_expected_cost: input.max_expected_cost ?? null,
+    deadline_hours: input.deadline_hours ?? null,
   };
   if (typeof result.completion_floor !== "number"
       || !Number.isFinite(result.completion_floor)
@@ -240,6 +251,18 @@ export function compileModelEconomics(input) {
     }
   } else if (result.custom_conditions !== null) {
     throw new Error("non-custom model profiles cannot carry custom conditions");
+  }
+  if (result.max_expected_cost !== null
+      && (typeof result.max_expected_cost !== "number"
+        || !Number.isFinite(result.max_expected_cost)
+        || result.max_expected_cost <= 0)) {
+    throw new Error("max_expected_cost must be a positive number when supplied");
+  }
+  if (result.deadline_hours !== null
+      && (typeof result.deadline_hours !== "number"
+        || !Number.isFinite(result.deadline_hours)
+        || result.deadline_hours <= 0)) {
+    throw new Error("deadline_hours must be a positive number when supplied");
   }
   secretFree(result, "model economics");
   return result;
@@ -256,12 +279,99 @@ function validateCandidate(candidate, index) {
   if (candidate.estimated_success_probability > 1) {
     throw new Error("candidate success probability cannot exceed one");
   }
+  for (const field of [
+    "context_window", "estimated_wall_hours", "supervisor_cost", "repair_cost",
+    "integration_cost", "relative_unit_cost_low", "relative_unit_cost_high",
+  ]) {
+    if (candidate[field] !== undefined
+        && (typeof candidate[field] !== "number" || !Number.isFinite(candidate[field]) || candidate[field] < 0)) {
+      throw new Error(`candidate ${field} is invalid`);
+    }
+  }
+  if (candidate.tools !== undefined) {
+    if (!Array.isArray(candidate.tools) || !candidate.tools.every((tool) => typeof tool === "string")) {
+      throw new Error("candidate tools are invalid");
+    }
+  }
+  if (candidate.privacy_posture !== undefined) {
+    requireString(candidate.privacy_posture, "candidate privacy posture");
+  }
   secretFree(candidate, `model candidate ${index}`);
+}
+
+const REASONING_ORDER = new Map([
+  ["LOW", 1],
+  ["MEDIUM", 2],
+  ["HIGH", 3],
+  ["HIGHEST", 4],
+]);
+
+function capabilityFailure(candidate, requirements = {}) {
+  if (requirements.required_context_window !== undefined
+      && (candidate.context_window ?? 0) < requirements.required_context_window) {
+    return "CONTEXT_WINDOW_FLOOR";
+  }
+  if (Array.isArray(requirements.required_tools)
+      && !requirements.required_tools.every((tool) => (candidate.tools ?? []).includes(tool))) {
+    return "REQUIRED_TOOL_UNAVAILABLE";
+  }
+  if (requirements.minimum_reasoning !== undefined
+      && (REASONING_ORDER.get(candidate.reasoning.toUpperCase()) ?? 0)
+        < (REASONING_ORDER.get(String(requirements.minimum_reasoning).toUpperCase()) ?? Infinity)) {
+    return "REASONING_FLOOR";
+  }
+  if (requirements.required_privacy_posture !== undefined
+      && candidate.privacy_posture !== requirements.required_privacy_posture) {
+    return "PRIVACY_POSTURE_MISMATCH";
+  }
+  return null;
+}
+
+function expectedCostRange(candidate) {
+  const expectedOverhead = (candidate.supervisor_cost ?? 0)
+    + (candidate.repair_cost ?? 0) + (candidate.integration_cost ?? 0);
+  const attemptCost = candidate.estimated_attempts * candidate.relative_unit_cost;
+  const lowUnit = candidate.relative_unit_cost_low ?? candidate.relative_unit_cost;
+  const highUnit = candidate.relative_unit_cost_high ?? candidate.relative_unit_cost;
+  return {
+    low: candidate.estimated_attempts * lowUnit + expectedOverhead,
+    expected: attemptCost + expectedOverhead,
+    high: candidate.estimated_attempts * highUnit + expectedOverhead,
+  };
+}
+
+function isDominated(candidate, candidates) {
+  return candidates.some((other) => other !== candidate
+    && other.expected_completion_cost <= candidate.expected_completion_cost
+    && other.estimated_success_probability >= candidate.estimated_success_probability
+    && (other.estimated_wall_hours ?? Infinity) <= (candidate.estimated_wall_hours ?? Infinity)
+    && (other.expected_completion_cost < candidate.expected_completion_cost
+      || other.estimated_success_probability > candidate.estimated_success_probability
+      || (other.estimated_wall_hours ?? Infinity) < (candidate.estimated_wall_hours ?? Infinity)));
 }
 
 export function recommendModels(input) {
   requireRecord(input, "model recommendation input");
   const economics = compileModelEconomics(input.economics);
+  if (input.role !== undefined && input.role !== null) {
+    requireString(input.role, "model recommendation role");
+    if (!MODEL_POLICY_ROLES.includes(input.role)) throw new Error("model recommendation role is unknown");
+  }
+  const requirements = input.requirements ?? {};
+  requireRecord(requirements, "model capability requirements");
+  if (requirements.required_context_window !== undefined
+      && (typeof requirements.required_context_window !== "number"
+        || !Number.isFinite(requirements.required_context_window)
+        || requirements.required_context_window <= 0)) {
+    throw new Error("required_context_window is invalid");
+  }
+  if (requirements.required_tools !== undefined
+      && (!Array.isArray(requirements.required_tools)
+        || !requirements.required_tools.every((tool) => typeof tool === "string"))) {
+    throw new Error("required_tools is invalid");
+  }
+  if (requirements.minimum_reasoning !== undefined) requireString(requirements.minimum_reasoning, "minimum reasoning");
+  if (requirements.required_privacy_posture !== undefined) requireString(requirements.required_privacy_posture, "required privacy posture");
   if (!Array.isArray(input.candidates) || input.candidates.length === 0) {
     throw new Error("model candidates must be nonempty");
   }
@@ -274,9 +384,22 @@ export function recommendModels(input) {
         excluded.push({model: candidate.model, reasoning: candidate.reasoning, reason: "BELOW_COMPLETION_FLOOR"});
         continue;
       }
+      const capabilityReason = capabilityFailure(candidate, requirements);
+      if (capabilityReason) {
+        excluded.push({model: candidate.model, reasoning: candidate.reasoning, reason: capabilityReason});
+        continue;
+      }
+      if (economics.deadline_hours !== null
+          && candidate.estimated_wall_hours !== undefined
+          && candidate.estimated_wall_hours > economics.deadline_hours) {
+        excluded.push({model: candidate.model, reasoning: candidate.reasoning, reason: "DEADLINE_UNMET"});
+        continue;
+      }
+      const expectedCostRangeValue = expectedCostRange(candidate);
       eligible.push({
         ...candidate,
-        expected_completion_cost: candidate.estimated_attempts * candidate.relative_unit_cost,
+        expected_completion_cost: expectedCostRangeValue.expected,
+        expected_completion_cost_range: expectedCostRangeValue,
       });
     } catch (error) {
       excluded.push({
@@ -286,7 +409,15 @@ export function recommendModels(input) {
       });
     }
   }
-  if (eligible.length === 0) throw new Error("no spawnable model meets the completion floor");
+  if (eligible.length === 0) throw new Error("NO_ELIGIBLE_MODEL");
+  if (economics.max_expected_cost !== null) {
+    const overBudget = eligible.filter((candidate) => candidate.expected_completion_cost > economics.max_expected_cost);
+    if (overBudget.length === eligible.length) throw new Error("NO_FEASIBLE_MODEL_UNDER_BUDGET");
+    for (const candidate of overBudget) {
+      excluded.push({model: candidate.model, reasoning: candidate.reasoning, reason: "OVER_EXPECTED_COST_BUDGET"});
+    }
+    eligible.splice(0, eligible.length, ...eligible.filter((candidate) => candidate.expected_completion_cost <= economics.max_expected_cost));
+  }
   eligible.sort((left, right) => {
     if (economics.profile === "PERFORMANCE") {
       return right.estimated_success_probability - left.estimated_success_probability
@@ -300,11 +431,16 @@ export function recommendModels(input) {
       || compareUtf8(left.model, right.model)
       || compareUtf8(left.reasoning, right.reasoning);
   });
+  const paretoFrontier = eligible.filter((candidate) => !isDominated(candidate, eligible));
   return {
     schema: "agentos.model_recommendation.v1",
     profile: economics,
+    role: input.role ?? null,
+    requirements,
     recommended: eligible[0],
     eligible,
+    pareto_frontier: paretoFrontier.map((candidate) => candidate.model).sort(compareUtf8),
+    dominated: eligible.filter((candidate) => isDominated(candidate, eligible)).map((candidate) => candidate.model).sort(compareUtf8),
     excluded: excluded.sort((left, right) => compareUtf8(
       `${left.model}\0${left.reasoning}`,
       `${right.model}\0${right.reasoning}`,

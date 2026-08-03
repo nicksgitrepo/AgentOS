@@ -30,6 +30,16 @@ registration, leases, routing, custody, and health monitoring remain
 Orchestrator control-plane responsibilities; they are not additional
 Product-acceptance roots.
 
+For a substantial campaign, the question proof is consumed by the portable
+campaign cascade. The terminal `FIRST_PASS_CANDIDATE` must settle the four
+read-only audit disciplines before a fresh `CAMPAIGN_FINALIZER` may receive
+ordinary material findings. The finalizer cannot self-accept. Only the exact
+delta invalidation set—failed, directly touched, dependent, and one small
+smoke set—may be reevaluated; unaffected question evidence is reused. The
+accepted-live closure binds the exact three-root proof to the finalizer's
+final commit/tree and the deployment, rollback, independent-audit, and closure
+identities.
+
 Security evidence collection runs in parallel from the start. Security is the final admission root, and credible critical safety or security evidence may immediately freeze its affected surface. Unrelated work continues unless evidence proves global impact.
 
 ## Atomic case law

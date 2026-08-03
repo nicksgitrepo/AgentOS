@@ -4,7 +4,7 @@ Status: `RELEASE CANDIDATE — PREPARED, NOT GLOBALLY ADOPTED`
 
 The exact machine authority is
 `schemas/kernel.v1.json`, SHA-256
-`52850f96846bd0e2819c26868072a1ae363eada92da02578fdbf2bc6f23ec5f5`.
+`707d94fdf9600176dc2cacf617b47d79b2f101bbafdc2fe37d4a570bdf008ebc`.
 
 ## 1. Purpose
 
@@ -637,6 +637,27 @@ sessions are archived and never deleted. Platform Agents remain pinned through
 same-feature returns and are unpinned only at their feature/campaign boundary;
 other completed sessions are unpinned only after compact handoff/evidence state
 and the candidate packet are durably recorded.
+
+For a substantial campaign, the single logical root follows the adaptive
+cascade defined by `governance/2.1rc/campaign-cascade.md`: first-pass builders
+produce an immutable `FIRST_PASS_CANDIDATE`; the Auditor settles the four
+read-only lenses `FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`,
+and `CODE_QUALITY_HYGIENE`; and a fresh `CAMPAIGN_FINALIZER` receives the exact
+terminal candidate plus one causal correction batch. Catastrophic,
+wrong-direction, foundational, or critical security/safety findings return to
+the first-pass owner immediately. Ordinary material findings are not a
+chatty approval queue, but they remain open until finalization and delta proof
+close them. Only the affected questions are invalidated; accepted evidence
+outside that dependency graph is reused.
+
+The finalizer has exclusive writer custody only in its fresh derived worktree.
+It cannot own intent, acceptance, deployment, exceptions, or self-acceptance.
+One finalization pass and at most one targeted delta-repair pass are normal;
+one supervisor-selected reframe is allowed per causal root, after which
+equivalent retries stop and the failure is classified. `RC_READY` remains the
+ordered `FUNCTION_REQUIREMENTS → DESIGN_BIBLE → SECURITY` conjunction, and
+accepted-live closure binds its exact cascade state and final candidate to the
+same deployment, rollback, independent audit, and closure receipt.
 
 A new machine must be able to resume from the exact governance Git object,
 project context, last pushed campaign snapshot, repository remotes and
