@@ -114,6 +114,9 @@ assert(bootstrapPlan.execution.legacy_gate.includes("legacy.zip") && bootstrapPl
 assert(bootstrapPlan.required_output_groups.includes("DELIVERY_POLICY"));
 assert.equal(bootstrapPlan.bootstrap_coverage.controller, "control/bootstrap-coverage.mjs");
 assert.equal(bootstrapPlan.bootstrap_coverage.contract, "schemas/bootstrap-coverage.v1.json");
+assert.equal(bootstrapPlan.project_life_contract.controller, "control/project-life-contract.mjs");
+assert.equal(bootstrapPlan.boundary_contract.controller, "control/boundary-contract.mjs");
+assert.equal(bootstrapPlan.delivery_target.controller, "control/delivery-target.mjs");
 const bootstrapCoverage = JSON.parse(read("schemas/bootstrap-coverage.v1.json"));
 assert.equal(bootstrapCoverage.status, "PREPARED_NOT_ACTIVATED");
 assert(bootstrapCoverage.coverage_outputs.some((entry) => entry.output_id === "PERSISTENT_RUNTIME"));
@@ -122,6 +125,16 @@ assert(bootstrapCoverage.binding.readiness.includes("material_gaps"));
 const deliveryPolicy = JSON.parse(read("schemas/delivery-policy.v1.json"));
 assert.equal(deliveryPolicy.question.id, "project.delivery_policy");
 assert.equal(deliveryPolicy.deployment.authority, "RUNTIME_AFTER_CENTRAL_ACCEPTANCE");
+assert.equal(deliveryPolicy.delivery_target.contract, "schemas/delivery-target.v1.json");
+const lifeContract = JSON.parse(read("schemas/project-life-contract.v1.json"));
+assert.equal(lifeContract.question.id, "project.life_contract");
+assert.equal(lifeContract.defaults.maturity, "PRIVATE_PROTOTYPE");
+const targetContract = JSON.parse(read("schemas/delivery-target.v1.json"));
+assert.equal(targetContract.managed_site_option.adapter_id, "CHATGPT_SITES");
+assert.deepEqual(targetContract.managed_site_option.supported_modes, ["PROTOTYPE", "LIMITED_PRODUCT"]);
+const boundaryContract = JSON.parse(read("schemas/boundary-contract.v1.json"));
+assert.deepEqual(boundaryContract.classes, ["CONSTITUTIONAL", "OWNER_SOVEREIGN", "DERIVED_OPERATING", "TEMPORARY_PROBE"]);
+assert(boundaryContract.conflict_rule.includes("more restrictive") || boundaryContract.conflict_rule.includes("more restrictive".toUpperCase()));
 const deliveryProbes = JSON.parse(read("schemas/delivery-probes.v1.json"));
 assert.equal(deliveryProbes.safe_effects.network_attempted, false);
 assert(deliveryProbes.prohibited.includes("deployment"));
@@ -145,6 +158,10 @@ for (const relativePath of [
   "tests/verify-campaign-cascade.mjs",
   "tests/verify-question-tree.mjs",
   "tests/verify-bootstrap-coverage.mjs",
+  "tests/verify-bootstrap-contract-bindings.mjs",
+  "tests/verify-project-life-contract.mjs",
+  "tests/verify-delivery-target.mjs",
+  "tests/verify-boundary-contract.mjs",
   "tests/verify-bootstrap-alignment.mjs",
   "tests/verify-delivery-policy.mjs",
   "tests/verify-guided-bootstrap.mjs",

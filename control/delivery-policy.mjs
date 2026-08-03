@@ -4,6 +4,8 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
+import {compileProjectLifeContract} from "./project-life-contract.mjs";
+import {compileDeliveryTarget, validateDeliveryTarget} from "./delivery-target.mjs";
 
 export const DELIVERY_POLICY_SCHEMA = "agentos.delivery_policy.v1";
 export const DELIVERY_PROBE_PLAN_SCHEMA = "agentos.delivery_probe_plan.v1";
@@ -171,7 +173,7 @@ export function validateDeliveryPolicy(policy) {
   requireRecord(policy, "delivery policy");
   assert(policy.schema === DELIVERY_POLICY_SCHEMA && policy.version === 1, "delivery policy identity is invalid");
   assert(["COMPILED_OWNER_BOUND", "COMPILED_WITH_PROJECT_BINDING_GAPS"].includes(policy.status), "delivery policy status is invalid");
-  for (const field of ["preferences", "source_control", "merge", "ci_runner", "deployment", "rollback", "cost_boundaries", "recommendation"]) requireRecord(policy[field], `delivery policy ${field}`);
+  for (const field of ["preferences", "source_control", "merge", "ci_runner", "deployment", "delivery_target", "rollback", "cost_boundaries", "recommendation"]) requireRecord(policy[field], `delivery policy ${field}`);
   assert(DELIVERY_PRIORITIES.includes(policy.preferences.priority), "delivery policy priority is invalid");
   assert(PUSH_MODES.includes(policy.source_control.push_mode), "delivery policy push mode is invalid");
   assert(PREVIEW_MODES.includes(policy.source_control.preview_on_push), "delivery policy push preview mode is invalid");
@@ -194,6 +196,7 @@ export function validateDeliveryPolicy(policy) {
   assert(policy.deployment.authority === "RUNTIME_AFTER_CENTRAL_ACCEPTANCE", "delivery policy deployment authority is invalid");
   assert(policy.deployment.artifact_identity === "COMMIT_TREE_BUILD_ARTIFACT", "delivery policy artifact identity is invalid");
   assert(PREVIEW_MODES.includes(policy.deployment.preview), "delivery policy deployment preview mode is invalid");
+  validateDeliveryTarget(policy.delivery_target);
   assert(policy.rollback.required === true && policy.rollback.test_required === true, "delivery policy rollback cannot be weakened");
   assert(policy.rollback.identity === "EXACT_LAST_ACCEPTED_DEPLOYMENT", "delivery policy rollback identity is invalid");
   assert(policy.rollback.authority === "RUNTIME_WITH_OWNER_BOUNDARY", "delivery policy rollback authority is invalid");
@@ -210,18 +213,19 @@ export function validateDeliveryPolicy(policy) {
   return policy;
 }
 
-export function compileDeliveryPolicy({discovery = [], answer = undefined} = {}) {
+export function compileDeliveryPolicy({discovery = [], answer = undefined, projectLifeContract = null} = {}) {
   assert(Array.isArray(discovery), "delivery discovery must be an array");
   if (answer !== undefined) requireRecord(answer, "delivery policy answer");
   if (answer !== undefined) secretFree(answer, "delivery policy answer");
   const input = answer ?? {};
-  rejectUnknown(input, ["priority", "available_runner_routes", "available_deployment_routes", "source_control", "merge", "ci_runner", "runner", "deployment", "cost_boundaries"], "delivery policy answer");
+  rejectUnknown(input, ["priority", "available_runner_routes", "available_deployment_routes", "source_control", "merge", "ci_runner", "runner", "deployment", "delivery_target", "cost_boundaries"], "delivery policy answer");
   const priority = enumValue(input.priority, DELIVERY_PRIORITIES, "delivery policy priority", "BALANCED");
   const sourceControlInput = input.source_control ?? {};
   const mergeInput = input.merge ?? {};
   const runnerInput = input.ci_runner ?? input.runner ?? {};
   const deploymentInput = input.deployment ?? {};
   const costInput = input.cost_boundaries ?? {};
+  const lifeContract = projectLifeContract ?? compileProjectLifeContract({discovery, deliveryAnswer: answer});
   for (const [record, allowed, label] of [
     [sourceControlInput, ["push_mode", "branch_namespace", "preview_on_push", "temporary_branch_retention"], "source_control answer"],
     [mergeInput, ["authority", "gate", "auto_merge", "method"], "merge answer"],
@@ -290,6 +294,7 @@ export function compileDeliveryPolicy({discovery = [], answer = undefined} = {})
       artifact_identity: "COMMIT_TREE_BUILD_ARTIFACT",
       preview: enumValue(deploymentInput.preview, PREVIEW_MODES, "deployment.preview", "NOT_ASSUMED"),
     },
+    delivery_target: compileDeliveryTarget({answer: input.delivery_target, route: deploymentRoute, projectLifeContract: lifeContract}),
     rollback: {
       required: deploymentInput.rollback_required ?? true,
       identity: "EXACT_LAST_ACCEPTED_DEPLOYMENT",

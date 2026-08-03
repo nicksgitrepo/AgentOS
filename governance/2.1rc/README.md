@@ -12,3 +12,13 @@ Bootstrap coverage is governed by [bootstrap-coverage.md](bootstrap-coverage.md)
 and compiled by `control/bootstrap-coverage.mjs`. The coverage matrix is the
 single authority for output completeness and question selection; it does not
 activate governance or bind a Product campaign.
+
+Bootstrap also compiles three related contracts:
+
+- [project-life-contract.md](project-life-contract.md) keeps maturity, audience,
+  data, lifetime, maintenance, and retirement explicit;
+- [delivery-target.md](delivery-target.md) separates the intended Product
+  target from transport mechanics and supports managed-site prototype and
+  limited-product routes;
+- [boundary-contract.md](boundary-contract.md) makes constitutional,
+  owner-sovereign, derived, and probe boundaries enforceable.

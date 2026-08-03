@@ -88,12 +88,23 @@
       "contract": "schemas/bootstrap-coverage.v1.json",
       "rule": "One deterministic output-gap row covers every material creation, trust, data, delivery, recovery, proof, and activation obligation. Only material unresolved rows create questions or block exact-plan compilation."
     },
+    "project_life_contract": {
+      "controller": "control/project-life-contract.mjs",
+      "contract": "schemas/project-life-contract.v1.json",
+      "rule": "Maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement are compact typed project context."
+    },
+    "boundary_contract": {
+      "controller": "control/boundary-contract.mjs",
+      "contract": "schemas/boundary-contract.v1.json",
+      "rule": "Constitutional, owner-sovereign, derived-operating, and temporary-probe boundaries are explicit; more restrictive boundaries win."
+    },
     "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably.",
     "delivery_policy": {
       "controller": "control/delivery-policy.mjs",
       "contract": "schemas/delivery-policy.v1.json",
       "probe_contract": "schemas/delivery-probes.v1.json",
-      "rule": "Push, merge, CI-runner, hosting, deployment, rollback, provider, environment, and cost choices are typed project context. Bootstrap recommends route classes and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
+      "target_contract": "schemas/delivery-target.v1.json",
+      "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, and cost choices are typed project context. Bootstrap recommends route classes and target profiles and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
     }
   },
   "platform_pool": {

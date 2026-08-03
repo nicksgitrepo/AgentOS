@@ -9,12 +9,15 @@
     "PROJECT_DEFINITION",
     "NORTH_STAR",
     "PROVING_WORKFLOW",
+    "PROJECT_LIFE_CONTRACT",
     "FUNCTION_REQUIREMENTS",
     "TECHNICAL_BASELINE",
     "DELIVERY_POLICY",
+    "DELIVERY_TARGET",
     "DESIGN_BIBLE",
     "SECURITY_BASELINE",
     "AUTHORITY_BOUNDARIES",
+    "BOUNDARY_CONTRACT",
     "AUTHORITY_CORPUS",
     "MODEL_POLICY",
     "PERSISTENT_RUNTIME",
@@ -41,8 +44,23 @@
   },
   "delivery_policy": {
     "contract": "schemas/delivery-policy.v1.json",
-    "required_fields": ["delivery_policy", "delivery_probe_plan"],
-    "binding_rule": "The delivery policy, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
+    "required_fields": ["delivery_policy", "delivery_target", "delivery_probe_plan"],
+    "binding_rule": "The delivery policy, explicit delivery target, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
+  },
+  "project_life_contract": {
+    "controller": "control/project-life-contract.mjs",
+    "contract": "schemas/project-life-contract.v1.json",
+    "rule": "Maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement are one compact owner-intent contract. A private-prototype default is allowed only when no material route, audience, data, or lifetime signal exists."
+  },
+  "boundary_contract": {
+    "controller": "control/boundary-contract.mjs",
+    "contract": "schemas/boundary-contract.v1.json",
+    "rule": "Constitutional, owner-sovereign, derived-operating, and temporary-probe boundaries are explicit. More restrictive boundaries win; project extensions cannot weaken the portable kernel or owner authority."
+  },
+  "delivery_target": {
+    "controller": "control/delivery-target.mjs",
+    "contract": "schemas/delivery-target.v1.json",
+    "rule": "A target family, maturity mode, audience, data posture, authentication route, limitations, and optional project-bound adapter are content-addressed. Managed-site prototype and limited-product routes are available without implying production capability."
   },
   "bootstrap_coverage": {
     "controller": "control/bootstrap-coverage.mjs",
@@ -51,8 +69,8 @@
     "rule": "Every required setup obligation has one deterministic row with applicability, provenance, status, safe default, probe requirement, owner boundary, unavailable behavior, reopen triggers, dependencies, and exact compiled field paths. Material gaps block exact-plan compilation."
   },
   "exact_creation_plan_binding": {
-    "required_field": "exact_creation_plan.bootstrap_coverage_sha256",
-    "rule": "The exact creation plan must carry the exact Bootstrap coverage digest. A plan cannot be approved when coverage is pending or when its coverage digest differs."
+    "required_fields": ["exact_creation_plan.bootstrap_coverage_sha256", "exact_creation_plan.project_life_contract_sha256", "exact_creation_plan.delivery_target_sha256", "exact_creation_plan.boundary_contract_sha256"],
+    "rule": "The exact creation plan must carry the exact coverage, life-contract, delivery-target, and boundary-contract digests. A plan cannot be approved when any required contract is pending or differs."
   },
   "delivery_probe_gate": {
     "contract": "schemas/delivery-probes.v1.json",

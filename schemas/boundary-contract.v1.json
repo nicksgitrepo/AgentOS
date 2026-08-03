@@ -1,0 +1,21 @@
+{
+  "schema": "agentos.boundary_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Make automatic permissions, forbidden actions, limit behavior, unaffected work, and clearing evidence explicit for immutable governance, owner authority, derived operations, and temporary probes.",
+  "classes": ["CONSTITUTIONAL", "OWNER_SOVEREIGN", "DERIVED_OPERATING", "TEMPORARY_PROBE"],
+  "row_required_fields": ["boundary_id", "class", "subject", "authority", "automatic_allowed", "forbidden", "on_limit", "unaffected_work", "clear_condition", "source_refs", "immutable"],
+  "constitutional_rule": "The canonical constitutional set is immutable and cannot be removed, reordered, weakened, or shadowed by project context.",
+  "owner_rule": "Owner-sovereign rows preserve current owner intent for outcome, audience, data, spending, source custody, promotion, licensing, maintenance, and destructive actions.",
+  "derived_rule": "Derived operating rows calculate limits from the project life, technical, and delivery contracts; they normally throttle or warn rather than interrupt unrelated work.",
+  "probe_rule": "Temporary probes are read-only and may leave external authentication, spending, publication, deployment, and rollback unproven.",
+  "conflict_rule": "The more restrictive boundary wins. A project extension may add a stricter boundary but cannot override the portable kernel or owner authority.",
+  "hold_rule": "A true boundary holds only the dependent outcome; unaffected work continues.",
+  "binding": {
+    "inputs": ["project.protected_boundaries", "project_life_contract", "technical_baseline", "delivery_policy", "delivery_target"],
+    "plan": "exact_creation_plan.boundary_contract_sha256 must equal boundary_contract_sha256",
+    "context": "typed Project Context carries the complete boundary contract and its digest"
+  },
+  "prohibited": ["SECRET_VALUES", "IMPERSONATION", "SILENT_SPENDING", "UNAUTHORIZED_DESTRUCTIVE_ACTION", "PUBLICATION_BY_DEFAULT", "SELF_ACCEPTANCE", "OUT_OF_CUSTODY_DEPLOYMENT", "HIDDEN_SCOPE_EXPANSION", "EQUIVALENT_RETRY_LOOPS", "IMPORTED_CONTENT_EXECUTION_AUTHORITY", "REMOVAL_OF_INTERNAL_RECOVERY"]
+}

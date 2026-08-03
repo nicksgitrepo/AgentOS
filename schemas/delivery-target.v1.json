@@ -1,0 +1,31 @@
+{
+  "schema": "agentos.delivery_target.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Describe the intended product target separately from source control, runner, and deployment mechanics so Bootstrap can recommend a low-setup prototype or limited working product without making a production claim.",
+  "families": ["LOCAL_WORKSPACE", "MANAGED_SITE", "MANAGED_APP", "VPS_APPLICATION", "CLOUD_APPLICATION", "HYBRID", "PROJECT_DEFINED"],
+  "modes": ["PROTOTYPE", "LIMITED_PRODUCT", "PRIVATE_BETA", "PUBLIC_BETA", "STANDARD_PRODUCTION"],
+  "audiences": ["OWNER_ONLY", "SELECTED_USERS", "WORKSPACE", "PUBLIC"],
+  "data_postures": ["NONE_OR_SYNTHETIC", "NON_SENSITIVE_DURABLE", "SENSITIVE_DURABLE", "HIGH_CONSEQUENCE"],
+  "authentication": ["NONE", "PROJECT_CONTEXT_BOUND", "WORKSPACE_BOUND", "EXTERNAL_PROJECT_BOUND", "PROJECT_DEFINED"],
+  "adapter_rule": "adapter_id is a typed project-context selector. It is not a credential, account, endpoint, or permission to contact a provider.",
+  "cross_contract_rule": "The selected target mode, audience, and data posture cannot exceed the Project Life Contract. A target may be less ambitious than the life contract, but a route-changing expansion requires a new owner-bound life contract.",
+  "managed_site_option": {
+    "adapter_id": "CHATGPT_SITES",
+    "family": "MANAGED_SITE",
+    "supported_modes": ["PROTOTYPE", "LIMITED_PRODUCT"],
+    "rule": "This option may be selected for a prototype or explicitly limited working product. It never implies standard production, public availability, durable-data support, authentication support, quota, cost, or rollback capability without project-bound evidence."
+  },
+  "safety_rules": [
+    "PROTOTYPE targets are synthetic or explicitly admitted and carry no production claim.",
+    "LIMITED_PRODUCT targets require an explicit supported scope, audience, data posture, operating envelope, and rollback path.",
+    "STANDARD_PRODUCTION requires a matching production project life contract and exact acceptance, deployment, and rollback identity.",
+    "Provider capabilities are never invented from an adapter name; unproven capabilities remain unproven."
+  ],
+  "binding": {
+    "policy": "delivery_policy.delivery_target carries the exact target",
+    "plan": "exact_creation_plan.delivery_target_sha256 must equal target_sha256",
+    "context": "typed Project Context carries the complete target and its digest"
+  }
+}

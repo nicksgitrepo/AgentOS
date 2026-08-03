@@ -10,11 +10,17 @@ human question.
 The coverage inventory is broader than the creation-plan groups. It includes:
 
 - project boundary, owner intent, and the first proving workflow;
+- Project Life Contract maturity, assurance, audience, data, lifetime,
+  maintenance, portability, commercialization, and retirement;
 - authority boundaries and the authority-corpus source decision;
 - technical, data/migration, and authentication/access context;
 - Design Bible applicability and live-proof limits;
 - push, merge, runner, deployment, rollback, provider, environment, and cost
   policy;
+- the explicit Delivery Target, including managed-site prototype and limited-
+  product options;
+- the derived Boundary Contract with constitutional, owner-sovereign,
+  derived-operating, and temporary-probe rows;
 - delivery probes and their exact plan bindings;
 - model economics and the persistent Runtime binding;
 - function requirements and the minimal first campaign;

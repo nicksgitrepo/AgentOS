@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import crypto from "node:crypto";
+import {projectLifeContractNeedsOwner} from "./project-life-contract.mjs";
 
 export const BOOTSTRAP_COVERAGE_SCHEMA = "agentos.bootstrap_coverage.v1";
 export const BOOTSTRAP_COVERAGE_STATUSES = Object.freeze([
@@ -28,12 +29,15 @@ export const BOOTSTRAP_REQUIRED_OUTPUT_GROUPS = Object.freeze([
   "PROJECT_DEFINITION",
   "NORTH_STAR",
   "PROVING_WORKFLOW",
+  "PROJECT_LIFE_CONTRACT",
   "FUNCTION_REQUIREMENTS",
   "TECHNICAL_BASELINE",
   "DELIVERY_POLICY",
+  "DELIVERY_TARGET",
   "DESIGN_BIBLE",
   "SECURITY_BASELINE",
   "AUTHORITY_BOUNDARIES",
+  "BOUNDARY_CONTRACT",
   "AUTHORITY_CORPUS",
   "MODEL_POLICY",
   "PERSISTENT_RUNTIME",
@@ -191,6 +195,14 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     unavailable_behavior: "HOLD_FIRST_CAMPAIGN_WITHOUT_A_SMALL_VERIFIABLE_WORKFLOW",
     reopen_triggers: ["success_condition_changed", "first_workflow_changed"],
   }),
+  definition("PROJECT_LIFE_CONTRACT", "INTENT", {
+    applicability: "REQUIRED",
+    question_ids: ["project.life_contract"],
+    compiled_field_paths: ["project_life_contract"],
+    safe_default: "PRIVATE_PROTOTYPE_OWNER_ONLY_SYNTHETIC_OR_EXPLICIT_DATA_CAMPAIGN_BOUNDED",
+    unavailable_behavior: "DEFAULT_TO_PRIVATE_PROTOTYPE_ONLY_WHEN_NO_ROUTE_DATA_AUDIENCE_OR_LIFETIME_SIGNAL_EXISTS",
+    reopen_triggers: ["maturity_changed", "audience_changed", "data_posture_changed", "expected_lifetime_changed", "maintenance_posture_changed"],
+  }),
   definition("AUTHORITY_BOUNDARIES", "TRUST", {
     question_ids: ["project.protected_boundaries"],
     compiled_field_paths: ["authority_boundaries", "exact_creation_plan.prohibited_actions"],
@@ -252,6 +264,20 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     owner_decision_required: true,
     unavailable_behavior: "DO_NOT_PUSH_MERGE_AUTHENTICATE_SPEND_PREVIEW_DEPLOY_OR_ROLL_BACK",
     reopen_triggers: ["provider_or_environment_changed", "runner_route_changed", "deployment_or_rollback_changed", "cost_boundary_changed"],
+  }),
+  definition("DELIVERY_TARGET", "DELIVERY", {
+    dependency_output_ids: ["DELIVERY_POLICY", "PROJECT_LIFE_CONTRACT"],
+    compiled_field_paths: ["delivery_target", "delivery_policy.delivery_target"],
+    safe_default: "DERIVE_TARGET_FAMILY_AND_PROTOTYPE_MODE_FROM_ROUTE_AND_PROJECT_LIFE_CONTRACT",
+    unavailable_behavior: "DO_NOT_CLAIM_A_PROTOTYPE_LIMITED_PRODUCT_OR_PRODUCTION_TARGET_WITHOUT_EXPLICIT_MODE_AND_CAPABILITY_BOUNDARIES",
+    reopen_triggers: ["delivery_target_changed", "adapter_capability_changed", "maturity_changed", "audience_or_data_posture_changed"],
+  }),
+  definition("BOUNDARY_CONTRACT", "TRUST", {
+    dependency_output_ids: ["AUTHORITY_BOUNDARIES", "PROJECT_LIFE_CONTRACT", "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET"],
+    compiled_field_paths: ["boundary_contract"],
+    safe_default: "IMMUTABLE_CONSTITUTIONAL_RULES_PLUS_OWNER_DERIVED_AND_PROBE_BOUNDARIES",
+    unavailable_behavior: "FAIL_CLOSED_ON_PROTECTED_ACTIONS_AND_RETAIN_UNAFFECTED_WORK_WITHOUT_GUESSING_AUTHORITY",
+    reopen_triggers: ["owner_boundary_changed", "life_contract_changed", "delivery_policy_changed", "technical_baseline_changed"],
   }),
   definition("DELIVERY_PROBES", "DELIVERY", {
     dependency_output_ids: ["DELIVERY_POLICY", "PROJECT_DEFINITION"],
@@ -336,10 +362,10 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
   definition("EXACT_CREATION_PLAN", "CREATION", {
     dependency_output_ids: [
       "DISCOVERY_PERMISSION", "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "AUTHORITY_BOUNDARIES",
-      "AUTHORITY_CORPUS", "DESIGN_BIBLE", "SECURITY_BASELINE", "TECHNICAL_BASELINE", "DATA_AND_MIGRATION_POLICY",
-      "AUTHENTICATION_AND_ACCESS", "DELIVERY_POLICY", "DELIVERY_PROBES", "MODEL_POLICY", "PERSISTENT_RUNTIME",
+      "PROJECT_LIFE_CONTRACT", "AUTHORITY_CORPUS", "DESIGN_BIBLE", "SECURITY_BASELINE", "TECHNICAL_BASELINE", "DATA_AND_MIGRATION_POLICY",
+      "AUTHENTICATION_AND_ACCESS", "DELIVERY_POLICY", "DELIVERY_TARGET", "DELIVERY_PROBES", "MODEL_POLICY", "PERSISTENT_RUNTIME",
       "FUNCTION_REQUIREMENTS", "FIRST_CAMPAIGN", "RECOVERY_AND_ROLLBACK", "OBSERVABILITY_AND_RETENTION",
-      "LEGACY_PRESERVATION", "BOOTSTRAP_PROOF", "PROJECT_CONTEXT_SEPARATION", "ACTIVATION_BOUNDARY",
+      "LEGACY_PRESERVATION", "BOUNDARY_CONTRACT", "BOOTSTRAP_PROOF", "PROJECT_CONTEXT_SEPARATION", "ACTIVATION_BOUNDARY",
     ],
     compiled_field_paths: ["exact_creation_plan", "plan_sha256"],
     safe_default: "NO_SAFE_DEFAULT; DERIVE_ONLY_AFTER_ALL_MATERIAL_GAPS_CLOSE",
@@ -397,11 +423,37 @@ function compileRows(discovery, answers) {
   const discoveryDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DISCOVERY_PERMISSION");
   rows.push(ownerRow(discoveryDefinition, "bootstrap.discovery.mode", answers, "DISCOVERY_PERMISSION_OWNER_INPUT"));
 
-  for (const outputId of ["PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "AUTHORITY_BOUNDARIES", "AUTHORITY_CORPUS"]) {
+  for (const outputId of ["PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW"]) {
     const definitionRecord = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === outputId);
     const answerId = definitionRecord.question_ids[0];
     rows.push(ownerRow(definitionRecord, answerId, answers, `${outputId}_OWNER_INPUT`));
   }
+  const lifeDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "PROJECT_LIFE_CONTRACT");
+  if (answerPresent(answers, "project.life_contract")) {
+    rows.push(ownerRow(lifeDefinition, "project.life_contract", answers, "PROJECT_LIFE_CONTRACT_OWNER_INPUT"));
+  } else if (projectLifeContractNeedsOwner({answer: undefined, discovery, deliveryAnswer, technicalAnswer})) {
+    rows.push(rowBase(lifeDefinition, {
+      source_kind: "UNRESOLVED_OWNER_BOUNDARY",
+      source_refs: ["project.life_contract", ...factIds(discovery, /(?:public|production|beta|hosting|deployment|database|storage|migration|auth|identity|domain|persistent)/iu)],
+      discovery_inputs: factIds(discovery, /(?:public|production|beta|hosting|deployment|database|storage|migration|auth|identity|domain|persistent)/iu),
+      status: "OWNER_REQUIRED",
+      blocking: true,
+      reason: "PROJECT_LIFE_CONTRACT_REQUIRED_FOR_MATERIAL_MATURITY_AUDIENCE_DATA_OR_LIFETIME_SIGNAL",
+      owner_decision_required: true,
+    }));
+  } else {
+    rows.push(rowBase(lifeDefinition, {
+      source_kind: "PORTABLE_DEFAULT",
+      source_refs: ["PRIVATE_PROTOTYPE_SAFE_DEFAULT"],
+      status: "DEFAULTED",
+      blocking: false,
+      reason: "NO_MATERIAL_LIFE_CONTRACT_SIGNAL;_PRIVATE_PROTOTYPE_DEFAULTED",
+    }));
+  }
+  const authorityDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "AUTHORITY_BOUNDARIES");
+  rows.push(ownerRow(authorityDefinition, "project.protected_boundaries", answers, "AUTHORITY_BOUNDARIES_OWNER_INPUT"));
+  const authorityCorpusDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "AUTHORITY_CORPUS");
+  rows.push(ownerRow(authorityCorpusDefinition, "authority-corpus.source", answers, "AUTHORITY_CORPUS_OWNER_INPUT"));
   const authorityRow = rows.find((row) => row.output_id === "AUTHORITY_CORPUS");
   if (authorityRow && answerPresent(answers, "authority-corpus.source")) {
     const operation = authorityAnswer?.operation;
@@ -530,6 +582,50 @@ function compileRows(discovery, answers) {
     reason: deliveryGaps.length === 0 ? "DELIVERY_POLICY_BOUND" : deliveryGaps.join("+"),
     owner_decision_required: true,
   }));
+
+  const lifeRow = rows.find((row) => row.output_id === "PROJECT_LIFE_CONTRACT");
+  const technicalRow = rows.find((row) => row.output_id === "TECHNICAL_BASELINE");
+  const authorityBoundariesRow = rows.find((row) => row.output_id === "AUTHORITY_BOUNDARIES");
+  const targetDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DELIVERY_TARGET");
+  const targetReady = deliveryGaps.length === 0 && lifeRow?.blocking === false;
+  const targetAnswerPresent = isRecord(deliveryAnswer) && answerPresent(deliveryAnswer, "delivery_target");
+  rows.push(rowBase(targetDefinition, targetReady
+    ? {
+      source_kind: targetAnswerPresent ? "OWNER_INPUT" : "DERIVED_OUTPUT",
+      source_refs: targetAnswerPresent ? ["project.delivery_policy.delivery_target"] : ["DELIVERY_POLICY", "PROJECT_LIFE_CONTRACT"],
+      status: targetAnswerPresent ? "OWNER_CONFIRMED" : "DERIVED",
+      blocking: false,
+      reason: targetAnswerPresent ? "DELIVERY_TARGET_BOUND_FROM_OWNER_INPUT" : "DELIVERY_TARGET_DERIVED_FROM_ROUTE_AND_LIFE_CONTRACT",
+      owner_decision_required: targetAnswerPresent,
+    }
+    : {
+      source_kind: "DEPENDENCY",
+      source_refs: ["DELIVERY_POLICY", "PROJECT_LIFE_CONTRACT"],
+      status: "DEPENDENCY_PENDING",
+      blocking: true,
+      reason: "DELIVERY_POLICY_AND_PROJECT_LIFE_CONTRACT_REQUIRED_BEFORE_TARGET_COMPILATION",
+    }));
+
+  const boundaryDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "BOUNDARY_CONTRACT");
+  const boundaryReady = authorityBoundariesRow?.blocking === false
+    && lifeRow?.blocking === false
+    && technicalRow?.blocking === false
+    && deliveryGaps.length === 0;
+  rows.push(rowBase(boundaryDefinition, boundaryReady
+    ? {
+      source_kind: "DERIVED_OUTPUT",
+      source_refs: ["AUTHORITY_BOUNDARIES", "PROJECT_LIFE_CONTRACT", "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET"],
+      status: "DERIVED",
+      blocking: false,
+      reason: "BOUNDARY_CONTRACT_DERIVED_WITH_IMMUTABLE_CONSTITUTIONAL_RULES_AND_TYPED_OWNER_LIMITS",
+    }
+    : {
+      source_kind: "DEPENDENCY",
+      source_refs: ["AUTHORITY_BOUNDARIES", "PROJECT_LIFE_CONTRACT", "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET"],
+      status: "DEPENDENCY_PENDING",
+      blocking: true,
+      reason: "BOUNDARY_CONTRACT_DEPENDENCIES_REMAIN_UNBOUND",
+    }));
 
   const probeDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DELIVERY_PROBES");
   rows.push(rowBase(probeDefinition, deliveryGaps.length === 0

@@ -21,6 +21,13 @@ an admitted policy. The answer covers the material choices together:
   owner spending boundaries apply;
 - how exact deployment and rollback identities are retained.
 
+Delivery Policy contains a separate `Delivery Target`. It records the intended
+Product family and maturity mode rather than hiding that decision inside a
+hosting route. `MANAGED_SITE` is available for `PROTOTYPE` and
+`LIMITED_PRODUCT` outcomes; a project may bind the `CHATGPT_SITES` adapter in
+typed context. That adapter ID never supplies an account, credential, quota,
+data guarantee, production claim, or deployment authority.
+
 Discovery can inspect repository shape, delivery markers, local Git readback,
 and installed tool presence. It cannot infer owner preference, authenticate,
 read credentials, contact a provider, spend, push, merge, create a preview,

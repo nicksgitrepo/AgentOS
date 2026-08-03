@@ -6,6 +6,9 @@ Keep one canonical implementation for each authority:
 
 - Bootstrap: `control/bootstrap-compiler.mjs`;
 - Bootstrap coverage: `control/bootstrap-coverage.mjs`;
+- Project Life Contract: `control/project-life-contract.mjs`;
+- Delivery Target: `control/delivery-target.mjs`;
+- Boundary Contract: `control/boundary-contract.mjs`;
 - lifecycle and custody: `control/campaign-lifecycle.mjs`;
 - cascade: `control/campaign-cascade.mjs`;
 - acceptance: `control/question-tree.mjs`;

@@ -32,6 +32,18 @@ Discovery supplies repository shape, source markers, authority/design candidates
 - model economics and operating conditions;
 - persistent Runtime and first-campaign context.
 
+Bootstrap also compiles a Project Life Contract and Delivery Target. Together
+they answer how real the first outcome needs to be, who may use it, what data it
+may hold, how long it should live, and whether the route is a local workspace,
+managed site, managed app, VPS, cloud, hybrid, or project-defined target. A
+managed-site prototype or limited working product is available without making
+a production claim.
+
+The existing protected-boundary answer becomes an enforceable Boundary
+Contract. It separates immutable constitutional protections, owner-sovereign
+decisions, derived operating limits, and temporary read-only probe boundaries.
+More restrictive rules win, and a true hold pauses only its dependent outcome.
+
 The compiled plan records safe defaults and honest unknowns. It does not recommend a model below the configured completion-reliability floor merely because it is inexpensive. `ECO_CONTINUOUS` represents a 168-hour week with up to twenty work slots; `STANDARD_WORKWEEK` represents 40 hours; `PERFORMANCE` prioritizes elapsed time; `CUSTOM` requires typed conditions. Recommendations minimize expected cost per accepted result, including retries and rework.
 
 ## Product acceptance

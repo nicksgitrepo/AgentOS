@@ -6,7 +6,7 @@ This repository is the standalone home of the `2.1rc` generation. It is intentio
 
 ## Repository layout
 
-- `bootstrap/` — user-guided environment discovery and configuration entrypoint, including delivery-policy decisions.
+- `bootstrap/` — user-guided environment discovery and configuration entrypoint, including life, target, boundary, and delivery-policy decisions.
 - `governance/2.1rc/` — normative portable governance for this release candidate.
 - `authority/templates/` — project authority-corpus and context templates.
 - `control/` — executable controllers, compilers, and maintainers.
@@ -39,6 +39,11 @@ positive and hostile governance suite.
 Bootstrap delivery policy is provider-neutral in the kernel. A consuming
 project supplies its push, merge, CI-runner, hosting, deployment, rollback,
 provider, environment, and cost bindings through typed project context.
+
+Bootstrap also separates the Project Life Contract, Delivery Target, and
+Boundary Contract. This allows a managed-site prototype or limited working
+Product to be selected without making a production claim, while keeping
+provider capabilities, account authority, and owner-only boundaries explicit.
 
 Extraction provenance and the activation hold are recorded in
 `migrations/2.1rc-extraction-manifest.json`.

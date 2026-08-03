@@ -8,12 +8,15 @@
       "PROJECT_DEFINITION",
       "NORTH_STAR",
       "PROVING_WORKFLOW",
+      "PROJECT_LIFE_CONTRACT",
       "FUNCTION_REQUIREMENTS",
       "TECHNICAL_BASELINE",
       "DELIVERY_POLICY",
+      "DELIVERY_TARGET",
       "DESIGN_BIBLE",
       "SECURITY_BASELINE",
       "AUTHORITY_BOUNDARIES",
+      "BOUNDARY_CONTRACT",
       "AUTHORITY_CORPUS",
       "MODEL_POLICY",
       "PERSISTENT_RUNTIME",
@@ -114,6 +117,35 @@
       "rollback",
       "cost_boundaries"
     ],
+    "project_life_contract": [
+      "maturity",
+      "assurance_class",
+      "audience",
+      "data_posture",
+      "expected_lifetime",
+      "maintenance_posture",
+      "portability",
+      "retirement"
+    ],
+    "delivery_target": [
+      "family",
+      "adapter_id",
+      "mode",
+      "audience",
+      "data_posture",
+      "authentication",
+      "limitations",
+      "target_sha256"
+    ],
+    "boundary_contract": [
+      "constitutional",
+      "owner_sovereign",
+      "derived_operating",
+      "temporary_probes",
+      "conflict_rule",
+      "hold_rule",
+      "boundary_contract_sha256"
+    ],
     "bootstrap_coverage": [
       "schema",
       "discovery_digest_sha256",
@@ -157,6 +189,9 @@
     "repository_rule": "repositories is a nonempty array of typed records. Every repository_id is unique; every remote, default_branch, ownership value, and protected_paths member is a nonempty string.",
     "capability_rule": "enabled_baseline_capability_ids contains every exact portable baseline capability ID once. typed_project_capability_extensions is an array whose members conform to extension_schema.",
     "delivery_policy_rule": "delivery_policy is the single source for push, merge, runner, hosting/deployment, rollback, provider, environment, and delivery-cost choices. Release fields may reference its exact digest but cannot create a competing policy.",
+    "delivery_target_rule": "delivery_policy.delivery_target is the single target description. It keeps product maturity, audience, data posture, authentication, limitations, and optional adapter separate from transport mechanics. A target adapter never supplies account authority or invented provider capability.",
+    "project_life_rule": "project_life_contract is the single compact description of maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement. The private-prototype default is safe only when no material signal requires owner intent.",
+    "boundary_contract_rule": "boundary_contract is the single enforceable boundary set. Constitutional rules are immutable; owner, derived, and probe boundaries may be extended only more restrictively.",
     "bootstrap_coverage_rule": "bootstrap_coverage is the single output-gap inventory for setup readiness. It may be extended with stricter project rows but cannot omit, weaken, or reinterpret portable rows.",
     "interval_rule": "Every operational interval is a positive finite integer number of minutes.",
     "extension_rule": "Additional project fields are permitted only outside portable_template_instance or through typed_project_capability_extensions; they cannot shadow or weaken a required portable field."
@@ -189,6 +224,7 @@
       "ambiguous repository or owner",
       "unbounded writer or migration namespace",
       "missing progress, supervisor, or lease-recovery interval",
+      "missing life, target, or boundary contract binding",
       "capability extension without one owner and handoff",
       "project context that weakens or overrides the portable kernel"
     ],

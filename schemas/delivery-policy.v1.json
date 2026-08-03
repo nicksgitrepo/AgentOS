@@ -3,11 +3,11 @@
   "version": 1,
   "governance_version": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
-  "purpose": "Keep source-control, merge, CI-runner, hosting, deployment, rollback, provider-binding, and delivery-cost choices explicit in typed project context instead of hiding them in the portable kernel.",
+  "purpose": "Keep source-control, merge, CI-runner, product-target, hosting, deployment, rollback, provider-binding, and delivery-cost choices explicit in typed project context instead of hiding them in the portable kernel.",
   "question": {
     "id": "project.delivery_policy",
     "class": "MATERIAL_PREFERENCE",
-    "rule": "Ask one compact structured question when exact discovery does not provide an admitted delivery policy. Discovery may recommend route classes but cannot choose owner intent, authenticate, spend, push, merge, deploy, or select a provider account."
+    "rule": "Ask one compact structured question when exact discovery does not provide an admitted delivery policy. The question may include the product target family and maturity mode. Discovery may recommend route classes but cannot choose owner intent, authenticate, spend, push, merge, deploy, or select a provider account."
   },
   "routes": {
     "runner": ["HOSTED", "VPS", "LOCAL", "HYBRID", "PROJECT_DEFINED"],
@@ -39,6 +39,11 @@
     "authority": "RUNTIME_AFTER_CENTRAL_ACCEPTANCE",
     "artifact_identity": "COMMIT_TREE_BUILD_ARTIFACT",
     "rule": "Bootstrap does not publish, deploy, create previews, or contact a hosting provider."
+  },
+  "delivery_target": {
+    "contract": "schemas/delivery-target.v1.json",
+    "field": "delivery_policy.delivery_target",
+    "rule": "Keep the product target separate from transport mechanics. A managed-site target can be PROTOTYPE or LIMITED_PRODUCT without a production claim. The optional adapter ID is project-context data and never supplies account authority or unproven capabilities."
   },
   "rollback": {
     "required": true,

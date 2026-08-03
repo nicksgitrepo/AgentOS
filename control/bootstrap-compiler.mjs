@@ -30,6 +30,15 @@ import {
   coverageForQuestion,
   validateBootstrapCoverage,
 } from "./bootstrap-coverage.mjs";
+import {
+  compileProjectLifeContract,
+  validateProjectLifeContract,
+} from "./project-life-contract.mjs";
+import {
+  compileBoundaryContract,
+  validateBoundaryContract,
+} from "./boundary-contract.mjs";
+import {validateDeliveryTarget, validateDeliveryTargetAgainstLife} from "./delivery-target.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
@@ -75,6 +84,15 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     type: "JSON",
     output: "PROVING_WORKFLOW",
     required: true,
+  },
+  {
+    id: "project.life_contract",
+    class: "OWNER_INTENT",
+    prompt: "How real should this project be for its first users: a prototype, a limited working product, a beta, or production; who may use it, what data may it hold, and how long should it live?",
+    type: "JSON",
+    output: "PROJECT_LIFE_CONTRACT",
+    required: false,
+    askWhen: "MATURITY_AUDIENCE_DATA_LIFETIME_OR_MAINTENANCE_SIGNAL",
   },
   {
     id: "project.boundary",
@@ -617,6 +635,24 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
   const questionPlan = planBootstrapQuestions({discovery, answers: normalizedAnswers});
   assert(questionPlan.status === "READY_TO_COMPILE", "Bootstrap still has unresolved material questions");
   const bootstrapCoverage = questionPlan.coverage;
+  const projectLifeContract = compileProjectLifeContract({
+    answer: normalizedAnswers["project.life_contract"],
+    discovery,
+    deliveryAnswer: normalizedAnswers["project.delivery_policy"],
+  });
+  const technicalBaseline = deriveTechnicalBaseline(discovery, normalizedAnswers["project.technical_baseline"]);
+  const deliveryPolicy = compileDeliveryPolicy({
+    discovery,
+    answer: normalizedAnswers["project.delivery_policy"],
+    projectLifeContract,
+  });
+  const boundaryContract = compileBoundaryContract({
+    ownerBoundaries: normalizedAnswers["project.protected_boundaries"],
+    projectLifeContract,
+    deliveryPolicy,
+    technicalBaseline,
+    discovery,
+  });
   const authorityCorpus = deriveAuthorityCorpus(normalizedAnswers["authority-corpus.source"]);
   const sourceIdentity = authorityCorpus.preservation === "NOT_REQUIRED"
     ? null
@@ -643,9 +679,12 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     project_definition: context,
     north_star: normalizedAnswers["project.north_star"],
     proving_workflow: normalizedAnswers["project.first_workflow"],
+    project_life_contract: projectLifeContract,
     function_requirements: deriveFunctionRequirements(normalizedAnswers),
-    technical_baseline: deriveTechnicalBaseline(discovery, normalizedAnswers["project.technical_baseline"]),
-    delivery_policy: compileDeliveryPolicy({discovery, answer: normalizedAnswers["project.delivery_policy"]}),
+    technical_baseline: technicalBaseline,
+    delivery_policy: deliveryPolicy,
+    delivery_target: deliveryPolicy.delivery_target,
+    boundary_contract: boundaryContract,
     design_bible: deriveDesignBible(discovery, normalizedAnswers["project.design"]),
     security_baseline: deriveSecurityBaseline(discovery, normalizedAnswers["security.baseline"]),
     authority_boundaries: normalizedAnswers["project.protected_boundaries"],
@@ -661,10 +700,16 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
         runner_provider_id: null,
         deployment_provider_id: null,
         environment_ids: [],
+        target_family: null,
+        target_adapter_id: null,
+        target_mode: null,
       },
       delivery_policy_sha256: null,
+      delivery_target_sha256: null,
       delivery_probe_plan_sha256: null,
       bootstrap_coverage_sha256: null,
+      project_life_contract_sha256: projectLifeContract.life_contract_sha256,
+      boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
       expected_writes: ["bootstrap.plan.json", "authority corpus roots", "typed project context", "delivery policy and probe bindings", "Bootstrap receipts"],
       side_effects: ["CREATE_OR_UPDATE_TYPED_PROJECT_CONTEXT", "CREATE_AUTHORITY_CORPUS", "CREATE_DESIGN_AUTHORITY", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
       prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
@@ -685,8 +730,12 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     runner_provider_id: output.delivery_policy.ci_runner.provider_id,
     deployment_provider_id: output.delivery_policy.deployment.provider_id,
     environment_ids: output.delivery_policy.deployment.environment_ids,
+    target_family: output.delivery_target.family,
+    target_adapter_id: output.delivery_target.adapter_id,
+    target_mode: output.delivery_target.mode,
   };
   output.exact_creation_plan.delivery_policy_sha256 = output.delivery_policy.policy_sha256;
+  output.exact_creation_plan.delivery_target_sha256 = output.delivery_target.target_sha256;
   output.exact_creation_plan.delivery_probe_plan_sha256 = output.delivery_probe_plan.probe_plan_sha256;
   output.exact_creation_plan.bootstrap_coverage_sha256 = output.bootstrap_coverage.coverage_sha256;
   const planBody = structuredClone(output);
@@ -714,17 +763,31 @@ export function validateBootstrapPlan(plan) {
   "Bootstrap coverage is not bound to the exact plan inputs");
   assert(Array.isArray(plan.question_slice) && JSON.stringify(plan.question_slice) === JSON.stringify(["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]), "Bootstrap question slice is not the exact three-root slice");
   requireRecord(plan.exact_creation_plan, "exact creation plan");
+  requireRecord(plan.project_life_contract, "project life contract");
+  validateProjectLifeContract(plan.project_life_contract);
   requireRecord(plan.delivery_policy, "delivery policy");
   validateDeliveryPolicy(plan.delivery_policy);
+  requireRecord(plan.delivery_target, "delivery target");
+  validateDeliveryTarget(plan.delivery_target);
+  validateDeliveryTargetAgainstLife(plan.delivery_target, plan.project_life_contract);
+  assert(plan.delivery_policy.delivery_target.target_sha256 === plan.delivery_target.target_sha256, "delivery policy and plan delivery target differ");
+  requireRecord(plan.boundary_contract, "boundary contract");
+  validateBoundaryContract(plan.boundary_contract);
   requireRecord(plan.delivery_probe_plan, "delivery probe plan");
   validateDeliveryProbePlan(plan.delivery_probe_plan);
   assert(plan.delivery_probe_plan.policy_sha256 === plan.delivery_policy.policy_sha256, "delivery probe plan is not bound to delivery policy");
   assert(plan.delivery_probe_plan.discovery_digest_sha256 === plan.discovery_digest_sha256, "delivery probe plan is not bound to Bootstrap discovery");
   assert(plan.exact_creation_plan.delivery_bindings?.runner_provider_id === plan.delivery_policy.ci_runner.provider_id
     && plan.exact_creation_plan.delivery_bindings?.deployment_provider_id === plan.delivery_policy.deployment.provider_id
-    && JSON.stringify(plan.exact_creation_plan.delivery_bindings?.environment_ids) === JSON.stringify(plan.delivery_policy.deployment.environment_ids),
+    && JSON.stringify(plan.exact_creation_plan.delivery_bindings?.environment_ids) === JSON.stringify(plan.delivery_policy.deployment.environment_ids)
+    && plan.exact_creation_plan.delivery_bindings?.target_family === plan.delivery_target.family
+    && plan.exact_creation_plan.delivery_bindings?.target_adapter_id === plan.delivery_target.adapter_id
+    && plan.exact_creation_plan.delivery_bindings?.target_mode === plan.delivery_target.mode,
   "exact creation plan delivery bindings do not match delivery policy");
   assert(plan.exact_creation_plan.delivery_policy_sha256 === plan.delivery_policy.policy_sha256, "exact creation plan is not bound to delivery policy");
+  assert(plan.exact_creation_plan.delivery_target_sha256 === plan.delivery_target.target_sha256, "exact creation plan is not bound to delivery target");
+  assert(plan.exact_creation_plan.project_life_contract_sha256 === plan.project_life_contract.life_contract_sha256, "exact creation plan is not bound to project life contract");
+  assert(plan.exact_creation_plan.boundary_contract_sha256 === plan.boundary_contract.boundary_contract_sha256, "exact creation plan is not bound to boundary contract");
   assert(plan.exact_creation_plan.delivery_probe_plan_sha256 === plan.delivery_probe_plan.probe_plan_sha256, "exact creation plan is not bound to delivery probes");
   assert(plan.exact_creation_plan.bootstrap_coverage_sha256 === plan.bootstrap_coverage.coverage_sha256, "exact creation plan is not bound to Bootstrap coverage");
   requireRecord(plan.authority_corpus, "authority corpus plan");
@@ -782,10 +845,13 @@ function contextFromPlan(plan) {
     project_definition: plan.project_definition,
     north_star: plan.north_star,
     proving_workflow: plan.proving_workflow,
+    project_life_contract: plan.project_life_contract,
     function_requirements: plan.function_requirements,
     bootstrap_coverage: plan.bootstrap_coverage,
     technical_baseline: plan.technical_baseline,
     delivery_policy: plan.delivery_policy,
+    delivery_target: plan.delivery_target,
+    boundary_contract: plan.boundary_contract,
     delivery_probe_plan: plan.delivery_probe_plan,
     design_bible: plan.design_bible,
     security_baseline: plan.security_baseline,
@@ -819,11 +885,14 @@ function contextFromPlan(plan) {
       },
       bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
       bootstrap_output_groups: [
-        "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "FUNCTION_REQUIREMENTS",
-        "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES",
+        "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
+        "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
         "AUTHORITY_CORPUS", "MODEL_POLICY", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
         "EXACT_CREATION_PLAN",
       ],
+      project_life_contract_sha256: plan.project_life_contract.life_contract_sha256,
+      delivery_target_sha256: plan.delivery_target.target_sha256,
+      boundary_contract_sha256: plan.boundary_contract.boundary_contract_sha256,
     },
   };
 }

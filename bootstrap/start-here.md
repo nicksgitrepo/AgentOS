@@ -46,16 +46,24 @@ The compact catalog covers:
 - security standard identity and atomic requirement IDs;
 - model economics and operating conditions;
 - persistent Runtime binding and the first campaign context.
+- project life: whether the first outcome is a prototype, limited working
+  product, beta, or production, plus audience, data posture, lifetime,
+  maintenance, and retirement when those choices materially affect the route;
+- delivery target: local, managed site, managed app, VPS, cloud, hybrid, or a
+  project-defined target, with explicit limitations;
+- one enforceable boundary contract derived from constitutional rules, owner
+  boundaries, delivery/life limits, and read-only probe prohibitions.
 
 The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
 
 ## Exact plan and approval
 
-The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
+The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `PROJECT_LIFE_CONTRACT`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`, `DELIVERY_TARGET`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `BOUNDARY_CONTRACT`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
 
-It also carries the content-addressed `bootstrap_coverage` result. The exact
-plan, typed Project Context, delivery probes, and setup Auditor must bind that
-result to the exact discovery and normalized answers.
+It also carries the content-addressed `bootstrap_coverage`, project life,
+delivery target, and boundary contract results. The exact plan, typed Project
+Context, delivery probes, and setup Auditor must bind those results to the exact
+discovery and normalized answers.
 
 The owner approves the exact displayed plan with:
 
@@ -85,6 +93,10 @@ The archive preserves exact source bytes and records source repository/commit/tr
 Creation is project-context driven and produces the canonical roots: project context, goals, Design Authority, features, platform capabilities, campaigns, decisions, cases, evidence indexes, archive, and an evidence library. Root variables and article numbering come from [governance/2.1rc/portable-authority-corpus-format.md](../governance/2.1rc/portable-authority-corpus-format.md). Imported accepted article IDs are preserved; new feature blocks are allocated by unsigned UTF-8 order and never renumbered.
 
 Project-specific extensions may add facts or stricter constraints, but cannot weaken or rewrite the portable kernel. A clean synthetic project must compile without product-specific context.
+
+The default target can remain a private prototype. A managed-site target may be
+selected for a prototype or an explicitly limited working product; the target
+never invents provider capabilities or grants deployment authority.
 
 ## Model economics
 

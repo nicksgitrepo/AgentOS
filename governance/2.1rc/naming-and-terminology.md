@@ -16,6 +16,9 @@ The normative map is [schemas/naming-and-terminology.v1.json](../../schemas/nami
 - `Runtime` is the persistent integration, deployment, rollback, and live-operation identity.
 - `Next-Campaign Candidate` is an orientation packet only. It does not create a successor roster or Product writer.
 - `Delivery Policy` is the typed project-context contract for pushes, merges, CI runners, hosting, deployment, rollback, providers, environments, and cost boundaries.
+- `Project Life Contract` is the compact owner-intent contract for maturity, assurance, audience, data, lifetime, maintenance, portability, commercialization, and retirement.
+- `Delivery Target` is the intended Product target and maturity mode, separate from source-control and transport mechanics.
+- `Boundary Contract` is the executable set of constitutional, owner-sovereign, derived-operating, and temporary-probe limits.
 - `Delivery Probe` is a bounded read-only observation; it never authenticates, spends, pushes, merges, deploys, or rolls back.
 
 ## Cascade names
