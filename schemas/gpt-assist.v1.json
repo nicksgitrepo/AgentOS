@@ -68,11 +68,11 @@
       "work_in_progress_authority_update_candidate_sha256",
       "next_release_id",
       "current_campaign_roster_receipt_sha256",
-      "successor_campaign_roster_receipt_sha256",
+      "successor_campaign_roster_receipt_sha256_or_null_until_admission",
       "current_authority_snapshot_sha256_equals_current_roster_campaign_state_sha256",
-      "next_campaign_sha256_equals_successor_roster_campaign_state_sha256",
-      "fresh_pinned_next_release_orchestrator_identity",
-      "handoff_sha256_consumed_by_next_campaign_transition"
+      "next_campaign_sha256_equals_successor_roster_campaign_state_sha256_when_a_successor_roster_exists",
+      "candidate_packet_has_no_successor_session_or_product_lease_before_admission",
+      "handoff_sha256_consumed_by_later_next_campaign_transition"
     ],
     "auditor_writes_authority": false,
     "response_import": "THE RESPONSE MARKDOWN CONTAINS EXACTLY ONE CANONICAL JSON PAYLOAD AND NO UNPARSED AUTHORITATIVE PROSE; THE SOURCE AUDITOR PARSES THAT PAYLOAD DIRECTLY AND MAY NOT SUPPLY A PARALLEL EXTRACTION OBJECT",

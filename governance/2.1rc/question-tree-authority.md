@@ -56,7 +56,7 @@ elif an exact authorized exception applies:
 elif resolution crosses a true owner boundary:
     pause only the affected scope and return one precise blocker
 else:
-    fail closed and route internally to the Global Orchestrator
+    fail closed and route internally to the Campaign Orchestrator
 ```
 
 `UNKNOWN` means acquire evidence. `NO` means repair when repair is delegated. `NOT_APPLICABLE_WITH_PROOF` requires evidence that applicability is false. `EXCEPTION_REQUESTED` never passes. Confidence scores, weighted aggregation, “mostly compliant,” and agent-believed pass claims are forbidden.
@@ -67,7 +67,7 @@ The Auditor compiles and evaluates applicable questions continuously and read-on
 
 Auditor-created seam workers use the distinct `AUDIT_WORKER` kind. They are fresh, pinned, on-demand, and read-only; they answer exact question IDs and cannot implement, redefine the governing clause, or grant an exception. Platform Agents remain builders.
 
-Feature and Platform Agents solve ordinary defects inside their custody and return evidence, not narration. The Global Orchestrator owns the compiled tree, dependency ordering, repair routing, selective invalidation, and true owner blockers. Runtime executes integration, deployment, rollback, and runtime evidence actions only.
+Feature and Platform Agents solve ordinary defects inside their custody and return evidence, not narration. The Campaign Orchestrator owns the compiled tree, dependency ordering, repair routing, selective invalidation, and true owner blockers. Runtime executes integration, deployment, rollback, and runtime evidence actions only.
 
 The Auditor is not a per-change approval queue. Findings accumulate against the moving cumulative root. At a coherent handoff, the responsible Feature Agent receives the deduplicated affected questions, repairs them under the same goal, and continues.
 

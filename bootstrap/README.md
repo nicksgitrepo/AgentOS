@@ -1,3 +1,4 @@
 # Bootstrap
 
-Portable entrypoints for discovery, guided configuration, import, refactor, creation, and launch-readiness.
+Portable entrypoints for Bootstrap Discovery, the Bootstrap Interview, import,
+refactor, creation, and launch-readiness.

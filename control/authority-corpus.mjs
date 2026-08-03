@@ -451,7 +451,7 @@ export function renderDraftPage(page, plan) {
     "",
     "# Owner and next",
     "",
-    "Global Orchestrator routes ownership after context admission.",
+    "Campaign Orchestrator routes ownership after context admission.",
     "",
   ].join("\n");
 }

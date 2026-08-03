@@ -1,7 +1,9 @@
 {
   "schema": "governance.guided_bootstrap_contract.v1",
   "version": 1,
-  "status": "PREPARED_NOT_ACTIVATED",
+  "status": "RETAINED_COMPATIBILITY_ONLY",
+  "canonical_contract": "schemas/bootstrap-interview.v1.json",
+  "compatibility_alias": "bootstrap-interview",
   "sole_writer": "BOOTSTRAP",
   "first_question": {
     "id": "setup.interaction_mode",

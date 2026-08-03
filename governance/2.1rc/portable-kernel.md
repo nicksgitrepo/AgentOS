@@ -4,7 +4,7 @@ Status: `RELEASE CANDIDATE — PREPARED, NOT GLOBALLY ADOPTED`
 
 The exact machine authority is
 `schemas/kernel.v1.json`, SHA-256
-`450bc41a79b1177a229a2563761378bb17f155bd13254b5246181b7fa265bae3`.
+`52850f96846bd0e2819c26868072a1ae363eada92da02578fdbf2bc6f23ec5f5`.
 
 ## 1. Purpose
 
@@ -31,6 +31,26 @@ governed executable task
 
 The context binding may add stricter safety, law, security, privacy, data,
 domain, design, and release authority. It may not weaken the kernel.
+
+## 1.1 Mission and north star
+
+Governance 2.1rc exists to turn one clear expression of owner intent into
+working, verified, deployable software with the least necessary owner
+attention, agent conversation, coordination delay, compute, and repeated work.
+
+Choose the greatest verified forward Product progress with the least necessary
+owner interruption and coordination while preserving intent, truth, Design
+Bible, security, authority, reversibility, and recovery. Every governance
+action must advance verified Product progress, answer an applicable acceptance
+question with trustworthy evidence, repair a materially distinct causal
+failure, preserve safe custody/continuity/recoverability, or resolve a genuine
+authority boundary. Otherwise it is governance waste.
+
+One causal root gets one repair route. Retry only when the causal model, route,
+evidence, or material assumption changes; one direct supervisor may select one
+reframe. A blocked outcome pauses only its dependent scope, while unaffected
+work, evidence, preparation, and auditing continue. Owner interruption is
+reserved for a genuine authority boundary.
 
 ## 2. Authority-corpus enforcement
 
@@ -125,8 +145,8 @@ events. Its gate register separates builder progress
 Product gates. Builders attach progress and evidence but cannot self-verify
 or weaken gate intent.
 
-Detailed output from all Feature Leads, Platform Agents, the Global
-Orchestrator, Independent Auditor, and Global Runtime belongs to one active
+Detailed output from all Feature Orchestrators, Platform Agents, the Global
+Orchestrator, Independent Auditor, and Runtime belongs to one active
 release dossier outside the living authority pages. Test output, screenshots,
 research, packets, receipts, deployment, audit, and rollback evidence are
 referenced by digest rather than copied into handoffs.
@@ -170,7 +190,7 @@ custody.
 
 ### 2.3 Semi-scripted context elicitation and blockers
 
-For project goals, design systems, and new features, the Global Orchestrator
+For project goals, design systems, and new features, the Campaign Orchestrator
 runs a `SEMI_SCRIPTED_DRILL_ME` dialogue:
 
 ```text
@@ -212,7 +232,7 @@ create a new phase for context gathering.
 Specialists default to `WORK_SILENTLY_TO_DONE`.
 
 Inside an exact capsule, authority boundary, lease, and substantial batch, a
-Feature Lead or Platform Agent investigates, tries safe alternatives,
+Feature Orchestrator or Platform Agent investigates, tries safe alternatives,
 implements, verifies, and corrects ordinary technical puzzles autonomously.
 Syntax, compilation, typing, test, API-shape, library, refactor, integration,
 and toolchain problems are work—not escalation—while a reversible in-scope
@@ -345,9 +365,9 @@ acceptance boundary. The builder fixes that inside current custody.
 
 The building or executing agent must preserve and report the failure unchanged.
 It must not approve its own reframe. The direct supervising agent owns the
-reframe: a Platform Agent reports to its Feature Lead; a Feature Lead and
-Global Runtime report to the Global Orchestrator; an Auditor reports findings
-to the Global Orchestrator for routing without surrendering audit
+reframe: a Platform Agent reports to its Feature Orchestrator; a Feature Orchestrator and
+Runtime report to the Campaign Orchestrator; an Auditor reports findings
+to the Campaign Orchestrator for routing without surrendering audit
 independence.
 
 The supervisor:
@@ -582,7 +602,7 @@ revalidates exact identity and clean state before action.
 ## 16. Portable campaign control
 
 Governance 2.1rc treats the authority corpus as portable recovery state, not
-as narration. The Global Orchestrator is its sole writer. Agents return one
+as narration. The Campaign Orchestrator is its sole writer. Agents return one
 compact event or true-blocker packet; detailed evidence is indexed
 mechanically outside living authority pages.
 
@@ -594,23 +614,29 @@ interval. It writes only when material state changed or recovery occurred.
 
 Campaign execution defaults to one cumulative root ordered by a deterministic
 dependency graph. Feature goals close only on clean pushed checkpoint, lease
-release, and exact handoff. Platform Agents are fresh, pinned, and on demand;
-they are never pre-spawned as an unused wave. The Auditor audits substantial
-checkpoints asynchronously and, before depinning, produces one deduplicated
-dependency-ordered next-campaign candidate for Orchestrator admission.
+release, and exact handoff. Platform Agents are feature-exclusive, campaign-
+local, pinned, and on demand; one remains available for same-feature returns
+until its feature/campaign boundary. They are never pre-spawned as an unused
+wave or shared across features. The Auditor audits substantial checkpoints
+asynchronously and, before depinning, produces one deduplicated
+dependency-ordered next-campaign candidate packet for later Orchestrator
+admission.
 
 The machine controller binds each checkpoint and handoff to exact local and
 remote root identity, lease, source goal, and compiled recipient. It compares
 task/session, dependency/checkpoint, Git, Runtime/deployment/rollback, and
 Auditor reality at every progress interval. Authority transitions require the
 admitted pinned Orchestrator session; accepted-live promotion requires exact
-deployment, rollback, independent-audit, closure-receipt, and successor
-continuity identities.
+deployment, rollback, independent-audit, closure-receipt, and candidate-packet
+continuity identities. A successor session, lease, or Product writer does not
+exist until a distinct next campaign is admitted.
 
-Global Orchestrator and Global Runtime persist. Campaign Auditor, Feature
+Campaign Orchestrator and Runtime persist. Campaign Auditor, Feature
 Agents, and demanded Platform Agents are pinned when created. Completed
-sessions are archived and never deleted. They are unpinned only after compact
-handoff/evidence state and next-campaign continuity are durably recorded.
+sessions are archived and never deleted. Platform Agents remain pinned through
+same-feature returns and are unpinned only at their feature/campaign boundary;
+other completed sessions are unpinned only after compact handoff/evidence state
+and the candidate packet are durably recorded.
 
 A new machine must be able to resume from the exact governance Git object,
 project context, last pushed campaign snapshot, repository remotes and

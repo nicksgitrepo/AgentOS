@@ -4,13 +4,13 @@ Status: `RELEASE CANDIDATE — PORTABLE, NOT ACTIVATED`
 
 Machine authority:
 `schemas/capability-and-worktree-registry.v1.json`, SHA-256
-`d032e64c01e07b855cf7e3509071cd8ee92ad5d0f103f80d52264160a9ab96a5`.
+`a3e6484321046dab625ddb760bbd8db36cda502afe8884e0111e83c32a64c220`.
 
 That registry is normative for operational transitions. This article explains
 intent and usage; it cannot create an unrepresented role, custody transfer,
 state transition, or exception.
 
-This article defines how a Global Orchestrator turns accepted governance and
+This article defines how a Campaign Orchestrator turns accepted governance and
 project authority context into one cumulative single-root development
 campaign. Governance 2.1rc activates one Product lane only. Multi-lane
 predicates are retained as later design material, not executable authority.
@@ -19,25 +19,25 @@ It is project-agnostic.
 ## 1. Operating model
 
 ```text
-Global Orchestrator
+Campaign Orchestrator
   compiles governance + project context + backlog + dependencies
         ↓
 one or more cumulative feature lanes
         ↓
-Feature Lead owns each active lane checkpoint
+Feature Orchestrator owns each active lane checkpoint
         ↓
 fresh platform agents advise or receive bounded writer subleases
         ↓
-Feature Lead integrates, proves, commits, pushes, and hands off
+Feature Orchestrator integrates, proves, commits, pushes, and hands off
         ↓
-Global Runtime converges accepted terminal lanes and deploys
+Runtime converges accepted terminal lanes and deploys
         ↓
 Independent Auditor inspects the exact live identity
         ↓
-Global Orchestrator closes and opens the next-cycle backlog
+Campaign Orchestrator closes and opens the next-cycle backlog
 ```
 
-The Global Orchestrator supplies structure, ownership, custody, conflict
+The Campaign Orchestrator supplies structure, ownership, custody, conflict
 decisions, and release admission. It does not manage routine implementation.
 
 The Auditor evaluates the executable Function Requirements, Design Bible, and
@@ -47,7 +47,7 @@ handoffs; they do not create a serial approval queue. A critical safety or
 security finding freezes only its affected surface unless exact evidence
 proves that the impact is global.
 
-Feature Leads use the exact admitted authority context to understand outcome,
+Feature Orchestrators use the exact admitted authority context to understand outcome,
 domain ownership, protected boundaries, contracts, and unavailable behavior.
 They inspect source and runtime to determine current reality.
 
@@ -77,15 +77,15 @@ unsigned UTF-8 byte ordering rather than locale or filesystem order. Plan and
 context identities hash compact canonical JSON so the same admitted inputs
 produce the same bytes across supported hosts.
 
-The Global Orchestrator owns deterministic tree planning, context routing, and
-index maintenance—not every page's truth. Feature Leads own their compact
+The Campaign Orchestrator owns deterministic tree planning, context routing, and
+index maintenance—not every page's truth. Feature Orchestrators own their compact
 feature overview plus intent/current-state/build-log/contract/decision/handoff
 updates. Platform
 Agents return scoped pseudocode, contextual comments, implementation notes,
 proof, and compact capability-overview updates for their seam. The Auditor
 defines and verifies intended-Product gates; builders may update progress and
 attach evidence but cannot self-verify or weaken gate intent. The Auditor and
-Global Runtime return
+Runtime return
 evidence that updates current reality without taking page ownership.
 
 ```text
@@ -177,7 +177,7 @@ condition. Only a real owner-only class interrupts the owner.
 
 ## 2. Global roles
 
-### Global Orchestrator
+### Campaign Orchestrator
 
 Owns:
 
@@ -198,7 +198,7 @@ Owns:
 Does not own routine Product implementation, feature stage progression,
 independent audit, deployment execution, or another owner's truth.
 
-### Feature Lead
+### Feature Orchestrator
 
 Owns:
 
@@ -211,13 +211,16 @@ Owns:
 - feature intent, current-state, append-only build-log, decision, contract,
   and handoff context.
 
-A Feature Lead does not deploy, self-audit, rewrite another feature's truth,
+A Feature Orchestrator does not deploy, self-audit, rewrite another feature's truth,
 allocate shared migrations, or retain custody after handoff.
 
 ### Platform Agent
 
-A platform agent is fresh, feature-bound, capability-bound, nonpersistent,
-and never reused after archive.
+A Platform Agent is created on demand for one feature-exclusive, campaign-local
+capability seam. It is not a standing specialist pool and it is not shared
+across features. The same Feature Orchestrator may reuse the pinned session
+and worktree for later material batches in that feature until the campaign
+boundary; a returned checkpoint is not an archive or a cross-feature lease.
 
 It receives one exact capsule:
 
@@ -234,7 +237,7 @@ It receives one exact capsule:
 - return and archive condition.
 
 It advises or implements one material platform seam and returns directly to
-the Feature Lead. Its return includes compact pseudocode and contextual
+the Feature Orchestrator. Its return includes compact pseudocode and contextual
 comments for its exact seam when material. It does not redefine feature
 intent, promote comments to authority, or own the campaign.
 
@@ -259,9 +262,9 @@ from ordinary backlog.
 The Auditor owns no Product writes, repair worktree, deployment, or
 self-acceptance.
 
-### Global Runtime
+### Runtime
 
-Global Runtime is the exclusive mechanical integration and release operator.
+Runtime is the exclusive mechanical integration and release operator.
 It applies accepted commits in the exact semantic order supplied by the Global
 Orchestrator, builds or rebinds artifacts, verifies environment and rollback,
 deploys, and returns exact runtime receipts.
@@ -270,7 +273,7 @@ It never invents Product intent or resolves semantic conflicts.
 
 ## 3. Generic web-platform capability catalog
 
-Every Feature Lead considers each capability and returns one classification:
+Every Feature Orchestrator considers each capability and returns one classification:
 
 - `MATERIAL_ADVISORY`
 - `MATERIAL_WRITER`
@@ -312,13 +315,13 @@ kernel authority/failure/proof/handoff law.
 
 ### Option A — Feature-root implementation
 
-Use when the Feature Lead can implement the seam directly inside its admitted
+Use when the Feature Orchestrator can implement the seam directly inside its admitted
 scope.
 
 - one root;
 - one writer;
 - platform agents may advise;
-- Feature Lead commits and pushes.
+- Feature Orchestrator commits and pushes.
 
 This is the default and simplest route.
 
@@ -330,19 +333,19 @@ edit is necessary.
 - no platform worktree;
 - no writer custody;
 - fresh agent reads exact source and authority context;
-- one bounded packet returns to Feature Lead;
+- one bounded packet returns to Feature Orchestrator;
 - agent archives.
 
 ### Option C — Same-root platform sublease
 
 Use when one platform agent must edit exact paths in the feature root.
 
-1. Feature Lead pauses writes.
+1. Feature Orchestrator pauses writes.
 2. Exact root, base, allowlist, sublease, proof, and expiry are recorded.
 3. Platform agent becomes the sole writer.
 4. Agent edits, proves, commits, pushes, and returns a clean handoff.
 5. Sublease closes.
-6. Feature Lead revalidates and resumes custody.
+6. Feature Orchestrator revalidates and resumes custody.
 
 Two writers may never hold the same root simultaneously.
 
@@ -356,16 +359,16 @@ from isolation.
 - feature root continues only if there is no dependency on unfinished child
   work;
 - agent returns commit/tree and integration manifest;
-- Feature Lead classifies overlap and integrates.
+- Feature Orchestrator classifies overlap and integrates.
 
-The child agent does not become a second Feature Lead.
+The child agent does not become a second Feature Orchestrator.
 
 ### Option E — Shared-contract primary worktree
 
 Use when multiple features need one shared contract, schema, migration,
 generated output, or configuration surface.
 
-- Global Orchestrator selects one primary owner;
+- Campaign Orchestrator selects one primary owner;
 - competing writers are frozen;
 - migrations and namespaces are allocated once;
 - consumers provide exact requirements;
@@ -385,12 +388,12 @@ Use only for independent source, artifact, or exact-live inspection.
 
 Use only after accepted terminal feature or lane checkpoints.
 
-- one serialized writer: Global Runtime;
+- one serialized writer: Runtime;
 - exact accepted commit order;
-- semantic decisions supplied by Global Orchestrator;
+- semantic decisions supplied by Campaign Orchestrator;
 - artifact, deployment, rollback, and live identity mechanically proven.
 
-Every Feature Lead and Platform Agent receives one compact context capsule,
+Every Feature Orchestrator and Platform Agent receives one compact context capsule,
 not an indiscriminate authority-corpus dump. It binds governance and project-context
 identity, outcome, non-goals, authority, ownership, current source/runtime
 reality, contracts, dependencies, protected surfaces, unavailable behavior,
@@ -405,7 +408,7 @@ goal completion as stage completion.
 
 ## 5. Campaign compiler
 
-The Global Orchestrator compiles:
+The Campaign Orchestrator compiles:
 
 - exact portable kernel;
 - exact project-context binding;
@@ -447,8 +450,8 @@ The compiler chooses exactly one cumulative campaign root. For a project with
 multiple repositories, the campaign root contains one cumulative worktree per
 repository; those repository worktrees travel together as one custody unit.
 
-The root passes sequentially through the ordered Feature Leads. Exactly one
-Feature Lead or admitted same-root platform sublease writes at a time. Each
+The root passes sequentially through the ordered Feature Orchestrators. Exactly one
+Feature Orchestrator or admitted same-root platform sublease writes at a time. Each
 feature completes one substantial usable batch, runs affected stable proof,
 commits and pushes an immutable checkpoint, closes its lease, and transfers
 the same clean root to the next exact owner. Prior accepted work is inherited
@@ -456,8 +459,8 @@ and is not replanned or reimplemented.
 
 Feature checkpoints are not merged individually to the shared default branch.
 After a coherent milestone—normally an end-to-end user outcome across related
-features rather than a file or task count—the Global Orchestrator accepts the
-terminal cumulative checkpoint. Global Runtime then performs one serialized
+features rather than a file or task count—the Campaign Orchestrator accepts the
+terminal cumulative checkpoint. Runtime then performs one serialized
 integration, artifact mint, deployment, rollback binding, live handoff, and
 closure transaction.
 
@@ -482,7 +485,7 @@ retained design predicates are:
 These predicates do not grant a second writer root in 2.1rc.
 
 Within the single root, future unstarted feature order may change only at an
-immutable pushed checkpoint with no active writer. The Global Orchestrator
+immutable pushed checkpoint with no active writer. The Campaign Orchestrator
 recomputes dependencies, preserves history and rollback, and may reorder
 future owners. It may not move accepted checkpoints, change an active owner
 behind its lease, create another writer root, or use reordering to bypass a
@@ -493,7 +496,7 @@ failed stage.
 The campaign root binds:
 
 - lane identity;
-- ordered Feature Leads;
+- ordered Feature Orchestrators;
 - exact repository roots and branches;
 - starting commits and trees;
 - exclusive lease;
@@ -547,24 +550,26 @@ CAMPAIGN_ADMITTED
 
 ### Blueprint
 
-Feature Lead frames the intended outcome, inspects current reality, classifies
+Feature Orchestrator frames the intended outcome, inspects current reality, classifies
 contracts/dependencies, chooses the smallest reversible substantial batch,
 and identifies material platform seams.
 
 ### On-demand Platform Agents
 
-Create a fresh Platform Agent only when a Feature Agent identifies an exact
-material capability seam. Pin it immediately. Use advisory, same-root
-sublease, isolated child, or shared-primary mode. Do not pre-spawn a platform
-wave, reuse a completed platform session, or keep an unused specialist
-running. Archive the agent after its exact handoff, but never delete its
+Create and pin one Platform Agent only when a Feature Orchestrator identifies
+an exact material capability seam. Bind it to the campaign, feature,
+capability, worktree, writable/proof scope, and direct supervisor. Use
+advisory, same-root sublease, isolated child, or shared-primary mode. Do not
+pre-spawn a platform wave, create a future campaign wave, share the session
+with another feature, or archive it between same-feature returns. Archive and
+unpin it only when its feature or campaign scope closes, and never delete its
 session identity.
 
 ### Build
 
-Feature Lead implements substantial batches, integrates platform returns,
+Feature Orchestrator implements substantial batches, integrates platform returns,
 runs affected proof, reports its own materially distinct failures to the
-Global Orchestrator for reframing, supervises Platform Agent failure reframes,
+Campaign Orchestrator for reframing, supervises Platform Agent failure reframes,
 builds the production artifact, commits, pushes, and maintains one cumulative
 manifest.
 
@@ -645,19 +650,19 @@ checkpoint or substitute a caller-declared surface.
 
 ### Global integration and launch
 
-Global Orchestrator resolves shared semantics and gives exact custody to
-Global Runtime. Runtime integrates, builds, deploys, and returns the exact live
+Campaign Orchestrator resolves shared semantics and gives exact custody to
+Runtime. Runtime integrates, builds, deploys, and returns the exact live
 identity.
 
 ### Live audit and closure
 
 Auditor inspects exact live identity. Ordinary findings enter the next-cycle
-backlog. Emergencies route immediately. Global Orchestrator verifies closure,
+backlog. Emergencies route immediately. Campaign Orchestrator verifies closure,
 archives temporary agents, releases worktrees/leases, and retains the backlog.
 
 ## 10. Autonomous progression
 
-The Global Orchestrator may autonomously:
+The Campaign Orchestrator may autonomously:
 
 - choose topology and lane count;
 - assign feature order and leases;
@@ -668,7 +673,7 @@ The Global Orchestrator may autonomously:
 - continue unaffected lanes around dependencies;
 - issue convergence and deployment custody.
 
-Feature Leads may autonomously progress in-scope stages when `DONE WHEN` is
+Feature Orchestrators may autonomously progress in-scope stages when `DONE WHEN` is
 satisfied. Every host goal is bound to one exact goal-system identity,
 instruction SHA-256, DONE-WHEN SHA-256, start time, and completion receipt;
 prose status alone cannot create, change, or close it.
@@ -711,11 +716,11 @@ Convergence requires:
 
 - every lane has a clean pushed terminal checkpoint;
 - cross-lane contracts and consumer impacts are exact;
-- semantic conflicts have Global Orchestrator decisions;
+- semantic conflicts have Campaign Orchestrator decisions;
 - rollback is exact;
 - ordinary next-cycle backlog is preserved.
 
-Global Runtime starts from accepted current main and applies terminal lane
+Runtime starts from accepted current main and applies terminal lane
 commits in the compiled order. A disposable rehearsal may test mechanics but
 cannot decide semantics.
 
@@ -724,7 +729,7 @@ identity, rollback, live audit, and accepted-live closure.
 
 ## 13. Portable campaign controller and authority recovery
 
-The Global Orchestrator is the sole canonical authority-corpus and compiled
+The Campaign Orchestrator is the sole canonical authority-corpus and compiled
 campaign-view writer. The campaign itself is a living record carried inside
 the cumulative worktree:
 
@@ -767,7 +772,7 @@ prerequisite chain `X -> Z -> Y` passes the same cumulative root from X to Z
 to Y. A phase goal closes only after a clean remote-equal pushed checkpoint,
 released lease, and accepted same-root handoff whose checkpoint, branch,
 commit, tree, lease, source owner/goal, and next compiled owner/goal agree.
-The terminal form must name Global Runtime. A newly discovered prerequisite
+The terminal form must name Runtime. A newly discovered prerequisite
 changes only the unstarted tail at a pushed checkpoint. A cycle becomes one
 Orchestrator-owned shared-contract checkpoint with one primary writer.
 The immediate next snapshot must preserve the handoff's clean pushed
@@ -783,38 +788,34 @@ active goal, dependency, material seam, and content-addressed evidence. These
 bindings let a new agent continue from the last known campaign point without
 requiring prior chat.
 
-Global Runtime is the only persistent cross-campaign agent. Each campaign gets
-a fresh pinned campaign-scoped Orchestrator, fresh pinned Auditor, and fresh
-pinned Feature Agents from the latest admitted governance and model-class
-policy. Their display names are exactly `<OneWordRole> <CampaignVersion>
-<GovernanceVersion>`; for this release candidate the last token is `2.1rc`.
-Runtime is `Runtime Persistent 2.1rc`. Platform Agents are created and pinned
-only on demand. Completed sessions are archived and unpinned, never deleted
+Runtime is the only persistent cross-campaign agent. Each admitted
+campaign gets a fresh pinned campaign-scoped Campaign Orchestrator, fresh
+pinned Auditor, and fresh pinned Feature Orchestrators from the latest
+admitted governance and model-class policy. Their display names are exactly
+`<OneWordRole> <CampaignVersion> <GovernanceVersion>`; for this release
+candidate the last token is `2.1rc`. Runtime is `Runtime Persistent 2.1rc`.
+Platform Agents are created and pinned only on demand, remain feature-exclusive
+through same-feature returns, and are archived only at the feature/campaign
+boundary. Completed campaign sessions are archived and unpinned, never deleted
 or reused as the next campaign's execution identity.
-The current roster contains exactly one pinned campaign Orchestrator, one
-pinned Auditor, one pinned persistent Runtime, and one pinned fresh Feature
-Agent for each dependency owner. Successor Orchestrator, Auditor, and Feature
-roles and sessions are pairwise distinct and disjoint from the closing roster.
+The current roster contains exactly one pinned Campaign Orchestrator, one
+pinned Auditor, one pinned persistent Runtime, and one pinned Feature
+Orchestrator for each dependency owner. A material Platform Agent appears only
+after its feature records the seam. A successor packet may name the next
+campaign's intended roles, but successor sessions and leases do not exist
+until that campaign is separately admitted.
 
 Before terminal handoff to Runtime, the current Auditor deduplicates findings
-and owner questions into one ordered next-campaign candidate. At that Runtime
-handoff, a fresh next-campaign Orchestrator is created and pinned, receives
-the candidate, and creates and pins its fresh Auditor and Feature Agents. The
-successor wave may load governance, inspect project context, and prepare
-Blueprints, but its Product writer lease remains held until the current
-release is accepted live. The closing Auditor remains pinned through the
-current exact-live audit. Only after accepted-live closure are the closing
-Auditor and Orchestrator archived and unpinned and the successor Product
-lease released.
-Every dependency owner must map to one fresh pinned Feature Agent, and the
-Auditor must also be fresh. Successor continuity uses exact campaign,
-candidate-digest, Auditor-session, and Feature-session identities, or one
-explicit content-addressed `NO_NEXT_CAMPAIGN_REQUIRED` disposition.
-Auditor and Runtime state must bind the matching pinned role kind; the
-successor roster must name a different campaign and fresh pinned sessions
-disjoint from the completed campaign.
-The active goal binds exactly one fresh pinned Feature Agent even while
-archived predecessor sessions remain in history.
+and owner questions into one ordered next-campaign candidate. That handoff
+records a durable candidate packet only. The next campaign is not spawned,
+pinned, leased, or given Product custody until the Orchestrator admits it as a
+new campaign. The closing Auditor remains pinned through the current exact-live
+audit, and closing sessions are archived only after accepted-live closure.
+Every admitted dependency owner maps to one fresh pinned Feature Orchestrator,
+and the Auditor and Campaign Orchestrator are fresh for that admitted campaign.
+Successor continuity uses the candidate digest and a later admission record,
+not a speculative roster. The active goal binds exactly one pinned Feature
+Orchestrator even while archived predecessor sessions remain in history.
 
 The recovery source is the last pushed campaign snapshot, exact Git remotes
 and commits, compact handoffs, project context, Runtime identities, and
@@ -889,10 +890,11 @@ Reject:
 - two writers in one lane;
 - feature owner editing another active root;
 - platform agent redefining feature intent;
-- reused completed platform agent;
+- Platform Agent shared across features or reused after its feature/campaign boundary;
+- speculative successor Orchestrator, Auditor, Feature, or Product-writer wave;
 - Auditor Product edits or self-acceptance;
 - Runtime semantic decisions;
-- Global Orchestrator routine implementation management;
+- Campaign Orchestrator routine implementation management;
 - multi-lane activation before ownership/dependency classification;
 - consumer use of an uncheckpointed producer;
 - prior lane topology reused without recompilation;

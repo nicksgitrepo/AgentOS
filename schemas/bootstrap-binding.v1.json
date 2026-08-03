@@ -5,23 +5,23 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "bootstrap": {
     "path": "bootstrap/start-here.md",
-    "sha256": "8b4b39620bd577033ad62578749ad520e9562f52d77b6c2fdb1637f953768bea"
+    "sha256": "7b02a6c727e9639480bd17ed634eb44c60abde20670ec5e6f6c5b09be2e887ac"
   },
   "user_readme": {
     "path": "docs/user-guide.md",
-    "sha256": "28d02fb537c287f4d49cc7e034cb26dee605497c636ee284f3f4d79491231ceb"
+    "sha256": "fdf62d9ec1200e28c23a3ffe5fbb2222b1e560734e91d9bf466855ffe89d3a37"
   },
   "portable_kernel": {
     "article_path": "governance/2.1rc/portable-kernel.md",
-    "article_sha256": "c6054405229766bdadc9ac44b57ce02b34ba969bdfa58ca1841b034ffbc8fbda",
+    "article_sha256": "7499669a65e7460c98797ec9d152a42e841badc06412aaffaca8af5dcd79400c",
     "registry_path": "schemas/kernel.v1.json",
-    "registry_sha256": "450bc41a79b1177a229a2563761378bb17f155bd13254b5246181b7fa265bae3"
+    "registry_sha256": "52850f96846bd0e2819c26868072a1ae363eada92da02578fdbf2bc6f23ec5f5"
   },
   "portable_workflow": {
     "article_path": "governance/2.1rc/feature-platform-workflow.md",
-    "article_sha256": "d32e951a56b4e9c9b774e94f71ebd006868b88c64f1abc225b6d1e947da9dcfa",
+    "article_sha256": "5fb15450c5868c027cc035836bfcc6f2631517eeab06bf1f86dfd38b425b888a",
     "registry_path": "schemas/capability-and-worktree-registry.v1.json",
-    "registry_sha256": "d032e64c01e07b855cf7e3509071cd8ee92ad5d0f103f80d52264160a9ab96a5"
+    "registry_sha256": "a3e6484321046dab625ddb760bbd8db36cda502afe8884e0111e83c32a64c220"
   },
   "project_context_template": {
     "path": "authority/templates/project-context.v1.json",
@@ -33,15 +33,15 @@
   },
   "authority_corpus_compiler": {
     "path": "control/authority-corpus.mjs",
-    "sha256": "a305e224c661d10484d9b0cd728975811225eeac5d257e6c755da66b7f9637ab"
+    "sha256": "aab5193fe91887de0d4ed9dc77173a2427eaa7f6c0aa46f41db71d40ac6824b9"
   },
   "evidence_library_compiler": {
     "path": "control/evidence-library.mjs",
-    "sha256": "2a69ef95e06ff276f372da4da0eb48f0dda77e960e3c485e4da5c3733b7d03bb"
+    "sha256": "76c2b4df13597c78bad3a5d36a972b6bf8274401b4d6627eeeac353b2a110617"
   },
   "campaign_controller": {
     "path": "control/campaign-controller.mjs",
-    "sha256": "4d9f11241148328ce90d73e02091bff3a6885487f2a95b53898e6a767c0b6ffd"
+    "sha256": "741019c162ec8418c35aaf4a432e6f6601cad40cd3e9f899b84e1473395126f7"
   },
   "acceptance_bridge": {
     "path": "control/acceptance-bridge.mjs",
@@ -49,7 +49,7 @@
   },
   "campaign_controller_verifier": {
     "path": "tests/verify-campaign-controller.mjs",
-    "sha256": "46a5009fce221a85ae8204faaff10464f27bb716bae04748c7e8c5b17841e508"
+    "sha256": "ac44b7d18d6db813ffcf536ff971fd975bb822aa1dffaede2d8e3820f3f54b2d"
   },
   "browser_runtime_lifecycle": {
     "path": "schemas/browser-runtime-lifecycle.v1.json",
@@ -61,7 +61,7 @@
   },
   "dynamic_bootstrap": {
     "article_path": "governance/2.1rc/dynamic-bootstrap-authority.md",
-    "article_sha256": "578a4c7704cba396a2cfd1b9b43143938145e7decc21b0e34c0ae6d3528027a9",
+    "article_sha256": "6d2ea81fd6925f91701e5c6ddb4c68f7bdc95979f73d070d42c878005501e69a",
     "registry_path": "schemas/dynamic-bootstrap.v1.json",
     "registry_sha256": "5c4b9087e173e81a45ee61550e6e08aec30b543426644e30192b2f7df929fdfa"
   },
@@ -73,9 +73,43 @@
     "path": "tests/verify-dynamic-bootstrap.mjs",
     "sha256": "4132d06271215158dd843fd8ca1398f3f482c65081ff8c55e6936b6964382d2f"
   },
+  "naming_and_terminology": {
+    "article_path": "governance/2.1rc/naming-and-terminology.md",
+    "article_sha256": "eb276164c254ae4e0a65988793c66109644e30eb90e5a517224b43d2cc82ab2b",
+    "registry_path": "schemas/naming-and-terminology.v1.json",
+    "registry_sha256": "c91df4ccd6693e1fc5c398ff4ff2e2ef51fc802760c785cecd0c04217f7e0665"
+  },
+  "bootstrap_interview": {
+    "registry_path": "schemas/bootstrap-interview.v1.json",
+    "registry_sha256": "ac1f355a4d04f5f518596fc60da03cd59f052c4d7e361353bfb364d91f9359ef",
+    "controller_path": "control/bootstrap-interview.mjs",
+    "controller_sha256": "d565685b03e02113c9c72a180a0135d37f39f6035a3ef8538b6c47df8cd5b6cd"
+  },
+  "bootstrap_discovery": {
+    "registry_path": "schemas/bootstrap-discovery.v1.json",
+    "registry_sha256": "041f917d5c220298ec6e5491710623644d4f509aeafe9f40b94744b506fb36bd",
+    "controller_path": "control/bootstrap-discovery.mjs",
+    "controller_sha256": "e66a6bb845ed95d25ff3e2176f3a6c03888656a8c305f58a257f3ff2b12a8521"
+  },
+  "legacy_preservation": {
+    "registry_path": "schemas/legacy-preservation.v1.json",
+    "registry_sha256": "410a207a32e5a2fc79848bc47303315c14b59525a04ea3551d192fef5897ebed",
+    "controller_path": "control/legacy-preservation.mjs",
+    "controller_sha256": "37d77b132128be7a7a2689cda5c88bd16854c612f78a0e3d11c9abd7600da8b3",
+    "zip_controller_path": "control/deterministic-zip.mjs",
+    "zip_controller_sha256": "9bf90b4648740bcc86ea8d8e52ad98654d4be1e1017c2f2a2bdd5ddad44b9398"
+  },
+  "bootstrap_naming_migration": {
+    "path": "migrations/bootstrap-naming.v1.json",
+    "sha256": "158c155c87389dab915a09758b94858084a90a7253098d859f5d8430ba6d69a6"
+  },
+  "bootstrap_alignment_verifier": {
+    "path": "tests/verify-bootstrap-alignment.mjs",
+    "sha256": "da5f18734979f411002f426483d00964c7b4f3e36b918c742d85af765b7ff07c"
+  },
   "guided_bootstrap": {
     "registry_path": "schemas/guided-bootstrap.v1.json",
-    "registry_sha256": "4274f7bda585d097486a7f60646bfa9697bd45bf3db34e06a08659a317b53609",
+    "registry_sha256": "a4fe7dcb4bbc0e6ca3de6873f2182d17fefa7cc9d05321ff88a125cb6392227d",
     "controller_path": "control/guided-bootstrap.mjs",
     "controller_sha256": "8137c34ab5e4d41c0a5a7553ffd5805b17e5975f75497217ad40c7b2b4cf25f9",
     "verifier_path": "tests/verify-guided-bootstrap.mjs",
@@ -83,19 +117,19 @@
   },
   "gpt_assist": {
     "article_path": "governance/2.1rc/gpt-assist-authority.md",
-    "article_sha256": "6252401f054141cbf68657cc636a2c2870bda6b7e7c771adb0f42079017f7ccb",
+    "article_sha256": "1c622ea5175783afb08d15ea2d78ec39cb7acbd37f68672664578a8761d667cf",
     "registry_path": "schemas/gpt-assist.v1.json",
-    "registry_sha256": "31da10edd5484125c102543db04bd33d29025f865378866e9c3e13e9108efbb6",
+    "registry_sha256": "205dd71fc7574892719e68b5d6516eaafe34f660294210f5b8c5ee7af1596526",
     "controller_path": "control/gpt-assist.mjs",
-    "controller_sha256": "9094c53723d9247bed59f5522d75f1f19b79ab07c65212a479f9ab65288eeca9",
+    "controller_sha256": "e85320fae8432cdc23e0f10f6f70921b718db3b33189e0be456fceecf4c0b30d",
     "verifier_path": "tests/verify-gpt-assist.mjs",
-    "verifier_sha256": "36a377f8e7b8e5563ae3e58884632d5f3499c9e5344527225483d26a8e18d9a4"
+    "verifier_sha256": "b69a0b294bbd5cb9c67d1c9a90f0b4d6407a31d1abb497b1f32ec8e02be14f37"
   },
   "question_tree": {
     "article_path": "governance/2.1rc/question-tree-authority.md",
-    "article_sha256": "dd262a8db99b70460789da073b914dc00a89bf2af1e7887b0ccc23f6890dc6ee",
+    "article_sha256": "53a54ff9559e1e20fd8d5f3eba33ca7b8fa4c0098565fb78179f1fffb8329abf",
     "registry_path": "schemas/question-tree.v1.json",
-    "registry_sha256": "6810c4c7e4ef28669e4aa892b961a5b790d39e5c973c5f05210b1d2bbcb6510c",
+    "registry_sha256": "15f6ae64282f30428f4f69e857c8e4d842a697f1973cb5c9874706c4dd1dc0e4",
     "controller_path": "control/question-tree.mjs",
     "controller_sha256": "6ae6ec8f9a05479c6810048d3416e1c949eda93492059fad253e4e74669d2e0d",
     "verifier_path": "tests/verify-question-tree.mjs",
@@ -134,7 +168,12 @@
     "guided_bootstrap_and_first_campaign_launch",
     "portable_authority_format",
     "gpt_assist_campaign_context",
-    "executable_question_tree_acceptance"
+    "executable_question_tree_acceptance",
+    "naming_and_terminology",
+    "bootstrap_interview_discovery_first",
+    "legacy_preservation_before_build",
+    "governance_value_and_causality",
+    "candidate_only_successor_handoff"
   ],
   "retained_2_0rc_laws": [
     "single_goal",

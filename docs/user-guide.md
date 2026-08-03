@@ -19,8 +19,9 @@ created during setup.
    exist.
 2. Put this Governance 2.1rc package in that folder. If you already have a
    authority corpus, put it in or below the same project root, or be ready to give
-   Bootstrap its path. Bootstrap preserves external sources and writes only
-   into the admitted project destination after an explicit choice.
+   Bootstrap its path. Bootstrap creates and verifies a `legacy.zip` snapshot
+   and companion manifest, index, and receipt before it writes a replacement
+   authority corpus.
 3. Start a capable general agent with the project folder as its working
    directory.
 4. Give it the start instruction below.
@@ -33,11 +34,11 @@ Copy this exactly:
 > current working directory as the project root. Open and follow
 > `bootstrap/start-here.md` from this directory and verify
 > its exact machine binding before consequential work. Rename this task
-> `Bootstrap 2.1rc` and pin it if the host supports task pinning. Do read-only
-> discovery only inside the project root, then ask me exactly one unresolved
-> material setup question at a time. My first question must be whether I want
-> the optional ChatGPT-guided flow or to work with Bootstrap directly. Persist each answer through the governed
-> Bootstrap state transition. Do not infer import, refactor, creation,
+> `Bootstrap 2.1rc` and pin it if the host supports task pinning. Ask me first
+> whether Bootstrap may perform safe read-only discovery. If I permit it, run
+> only the canonical Bootstrap Discovery inside the project root, then ask me
+> exactly one unresolved material setup question at a time. Persist each
+> answer through the Bootstrap Interview and governed state transition. Do not infer import, refactor, creation,
 > publication, provider, deployment, retention, model, or cost choices.
 > Bootstrap itself must create or align the authority corpus, Design Bible, and feature
 > intent. Create only one fresh read-only setup Auditor after those outputs are
@@ -51,39 +52,39 @@ Copy this exactly:
 Bootstrap discovers what it safely can, then asks one question at a time. The
 questions cover:
 
-- import, refactor, or creation of the authority corpus;
-- project name and goals;
-- local-only or version-controlled work;
-- repository providers, visibility, merge policy, and release policy;
-- one or more hosting, cloud, routing, database, or API providers;
-- deployment enablement and target type;
-- provider authentication readiness;
-- authority and evidence paths;
-- evidence active-window retention;
-- Orchestrator and specialist model policies;
-- task pinning and session archival;
-- single-root or explicitly justified multi-lane campaigns;
-- progress-check interval;
-- ongoing campaign assistance: `GPT_ASSIST` or `DIRECT_ONLY`;
-- import, refactor, creation, or explicit deferral of the Design Bible.
+- project boundary and north-star outcome;
+- first proving workflow and delivery boundary;
+- protected and true-blocker boundaries;
+- authority-corpus source, including legacy preservation;
+- only unresolved Design Bible or technology constraints;
+- model economics and the completion-reliability floor;
+- a final compiled-plan confirmation.
+
+Source, stack, provider, testing, authentication, deployment, and retention
+facts are discovered or given safe defaults whenever they do not change the
+first route. They are not repeated as a whole-tree questionnaire.
 
 Every preference remains changeable. Changes have an effective boundary such
 as immediate, next handoff, next campaign, migration required, or owner
 confirmation.
 
 Model recommendations use current available models. Recommended means only as
-strong as needed to deliver the intended project reliably. Eco minimizes
+strong as needed to deliver the intended project reliably. `ECO_CONTINUOUS`
+represents a 24/7 week with up to twenty work slots; `STANDARD_WORKWEEK`
+represents 40 hours; `PERFORMANCE` minimizes elapsed time; and `CUSTOM` uses
+typed conditions. Eco minimizes
 expected total completion cost, including retries and rework, so a model that
 costs one-fifth per attempt but needs twenty times as many attempts is not
-economical. Light high-reasoning models are preferred for bounded building;
+economical. Candidates below the completion floor are excluded even when
+cheap. Light high-reasoning models are preferred for bounded building;
 Orchestrators and Feature Agents move to stronger models near the best-value
 point when coordination complexity justifies it. Model names are discovered,
 not embedded in governance.
 
-## Optional ChatGPT-guided setup
+## Optional Markdown exchange during setup
 
-In ChatGPT-guided mode, Bootstrap performs discovery and emits one phase at a
-time as a plain Markdown prompt plus canonical JSON manifest. Give both to ChatGPT. ChatGPT
+Bootstrap can emit one compact question package at a time as a plain Markdown
+prompt plus canonical JSON manifest. Give both to ChatGPT if desired. ChatGPT
 asks one question and waits for one response, may use scenarios, comparisons,
 and edge cases only where they can change the route, and returns the completed
 Markdown prompt plus response JSON. Bootstrap accepts only schema-valid JSON bound to the
@@ -104,7 +105,7 @@ setup Auditor performs the final independent inspection.
 
 ## Optional GPT_ASSIST during campaigns
 
-`GPT_ASSIST` is separate from ChatGPT-guided setup. When enabled, the current
+`GPT_ASSIST` is separate from the Bootstrap Interview. When enabled, the current
 Auditor produces one compact `06-gpt-assist-project-status.md` containing
 verified status, open findings, missing context, decisions, and only the
 material questions the Auditor actually needs answered.
@@ -122,7 +123,7 @@ Give that Markdown file to ChatGPT. ChatGPT must:
 Return the response Markdown to the same Auditor. The Auditor uses the
 owner-confirmed answers to finish or correct the next-campaign candidate, then
 hands that candidate and a proposed work-in-progress authority corpus update to the fresh
-next-release Orchestrator. The Auditor never writes the authority corpus. The new
+next Campaign Orchestrator. The Auditor never writes the authority corpus. The new
 Orchestrator validates the handoff, updates the campaign authority corpus, and begins the
 next release. Standard numbered articles remain the last accepted-live truth
 until accepted-live closure.

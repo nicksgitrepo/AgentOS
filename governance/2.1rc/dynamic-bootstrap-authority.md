@@ -1,6 +1,6 @@
 # 1236 — V1 Governance 2.1rc Dynamic Bootstrap Configurator Authority
 
-Status: `RELEASE CANDIDATE — PORTABLE, NOT ACTIVATED`
+Status: `RETAINED COMPATIBILITY AUTHORITY — NOT ACTIVATED`
 
 ## 1. Purpose
 
@@ -21,12 +21,15 @@ Machine authority:
 - `schemas/guided-bootstrap.v1.json`
 - `control/guided-bootstrap.mjs`
 - `tests/verify-guided-bootstrap.mjs`
+- canonical setup: `schemas/bootstrap-interview.v1.json` and
+  `control/bootstrap-interview.mjs`
+- canonical discovery alias: `control/bootstrap-discovery.mjs`
 
 `control/dynamic-bootstrap.mjs` and its verifier are retained
 only as a compatibility engine for earlier discovery, preference-history, and
 snapshot records. Its former temporary-worker execution path is not setup
-authority. New 2.1rc setup must use the guided controller above, even when the
-user selects direct interaction.
+authority. New 2.1rc setup uses the Bootstrap Interview and Bootstrap
+Discovery; old guided/dynamic state is imported through the migration aliases.
 
 ## 2. Startup and discovery
 
@@ -169,12 +172,13 @@ local-content manifest whose files are read back. Self-declared paths,
 commits, trees, or digests are not completion evidence. It never spawns authority corpus,
 Design Bible, or intent workers.
 
-The user chooses `DIRECT` or `CHATGPT_GUIDED` in the first interaction.
-ChatGPT-guided mode exchanges a plain Markdown prompt plus canonical JSON manifest for
-each phase. ChatGPT may help elicit scenarios, comparisons, and edge cases,
-but it has no repository, provider, authority, goal, or custody rights.
-Bootstrap accepts only schema-valid answers bound to the exact package and
-remains the actor that performs every write.
+The canonical first interaction is discovery permission: `RECOMMENDED`,
+`GUIDED`, `EXPERT`, `LOCAL_ONLY`, or `MANUAL`. An optional Markdown exchange
+may carry a compact Bootstrap Interview package to ChatGPT. ChatGPT may help
+elicit scenarios, comparisons, and edge cases, but it has no repository,
+provider, authority, goal, or custody rights. Bootstrap accepts only
+schema-valid answers bound to the exact package and remains the actor that
+performs every write.
 
 Bootstrap separately asks the typed preference
 `workflow.gpt_assist_mode = GPT_ASSIST | DIRECT_ONLY`. `GPT_ASSIST` governs
@@ -183,9 +187,9 @@ material-question Markdown. ChatGPT asks only those listed questions one at a
 time, invents no project truth, and stops when every question is answered or
 explicitly deferred. Its bound response Markdown returns to the Auditor. The
 Auditor uses confirmed answers to complete the next-campaign candidate and
-hands that candidate plus a work-in-progress authority corpus-update candidate to the
-fresh next-release Orchestrator. The Auditor remains read-only; the
-next-release Orchestrator is the sole authority corpus writer and begins the next release.
+hands that candidate plus a work-in-progress authority corpus-update candidate to a
+later admitted next Campaign Orchestrator. The Auditor remains read-only; no
+successor session or Product lease exists before that admission.
 Standard articles remain last accepted-live truth until closure.
 
 The authority corpus uses stable half-open article blocks: `000` Bootstrap,

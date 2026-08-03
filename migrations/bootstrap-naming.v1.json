@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.bootstrap_naming_migration.v1",
+  "version": 1,
+  "from_governance_version": "2.1rc-extraction",
+  "to_governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "rule": "Normalize compatibility aliases before validation; never rewrite accepted history or change a project-specific authority object in place.",
+  "controller_aliases": {
+    "control/guided-bootstrap.mjs": "control/bootstrap-interview.mjs",
+    "control/dynamic-bootstrap.mjs": "control/bootstrap-discovery.mjs"
+  },
+  "schema_aliases": {
+    "schemas/guided-bootstrap.v1.json": "schemas/bootstrap-interview.v1.json",
+    "schemas/dynamic-bootstrap.v1.json": "schemas/bootstrap-discovery.v1.json"
+  },
+  "question_aliases": {
+    "setup.interaction_mode": "bootstrap.discovery.mode",
+    "project.non_goals": "project.protected_boundaries",
+    "workflow.gpt_assist_mode": "workflow.assistant_exchange_mode"
+  },
+  "model_profile_aliases": {
+    "ECO": "ECO_CONTINUOUS",
+    "ECONOMICAL": "ECO_CONTINUOUS",
+    "USER_CUSTOM": "CUSTOM"
+  },
+  "role_aliases": {
+    "GLOBAL_ORCHESTRATOR": "CAMPAIGN_ORCHESTRATOR",
+    "FEATURE_LEAD": "FEATURE_ORCHESTRATOR"
+  },
+  "campaign_aliases": {
+    "successor_wave": "next_campaign_candidate"
+  },
+  "retention": {
+    "accepted_ids": "Immutable",
+    "old_names": "Read-compatible until a later major generation explicitly removes them",
+    "project_context": "Never copied into the portable kernel"
+  }
+}

@@ -52,6 +52,16 @@ const dynamicBootstrapArticle = readText(binding.dynamic_bootstrap.article_path)
 const dynamicBootstrap = readJson(binding.dynamic_bootstrap.registry_path);
 const dynamicBootstrapControllerSource = readText(binding.dynamic_bootstrap_controller.path);
 const dynamicBootstrapVerifierSource = readText(binding.dynamic_bootstrap_verifier.path);
+const namingArticle = readText(binding.naming_and_terminology.article_path);
+const namingRegistry = readJson(binding.naming_and_terminology.registry_path);
+const bootstrapInterview = readJson(binding.bootstrap_interview.registry_path);
+const bootstrapInterviewControllerSource = readText(binding.bootstrap_interview.controller_path);
+const bootstrapDiscovery = readJson(binding.bootstrap_discovery.registry_path);
+const bootstrapDiscoveryControllerSource = readText(binding.bootstrap_discovery.controller_path);
+const legacyPreservation = readJson(binding.legacy_preservation.registry_path);
+const legacyPreservationControllerSource = readText(binding.legacy_preservation.controller_path);
+const deterministicZipControllerSource = readText(binding.legacy_preservation.zip_controller_path);
+const bootstrapNamingMigration = readJson(binding.bootstrap_naming_migration.path);
 const guidedBootstrap = readJson(binding.guided_bootstrap.registry_path);
 const guidedBootstrapControllerSource = readText(binding.guided_bootstrap.controller_path);
 const guidedBootstrapVerifierSource = readText(binding.guided_bootstrap.verifier_path);
@@ -343,6 +353,44 @@ requireExactFile({
 requireExactFile(binding.dynamic_bootstrap_controller, "dynamic Bootstrap controller");
 requireExactFile(binding.dynamic_bootstrap_verifier, "dynamic Bootstrap verifier");
 requireExactFile({
+  path: binding.naming_and_terminology.article_path,
+  sha256: binding.naming_and_terminology.article_sha256,
+}, "naming article");
+requireExactFile({
+  path: binding.naming_and_terminology.registry_path,
+  sha256: binding.naming_and_terminology.registry_sha256,
+}, "naming registry");
+requireExactFile({
+  path: binding.bootstrap_interview.registry_path,
+  sha256: binding.bootstrap_interview.registry_sha256,
+}, "Bootstrap Interview registry");
+requireExactFile({
+  path: binding.bootstrap_interview.controller_path,
+  sha256: binding.bootstrap_interview.controller_sha256,
+}, "Bootstrap Interview controller");
+requireExactFile({
+  path: binding.bootstrap_discovery.registry_path,
+  sha256: binding.bootstrap_discovery.registry_sha256,
+}, "Bootstrap Discovery registry");
+requireExactFile({
+  path: binding.bootstrap_discovery.controller_path,
+  sha256: binding.bootstrap_discovery.controller_sha256,
+}, "Bootstrap Discovery controller");
+requireExactFile({
+  path: binding.legacy_preservation.registry_path,
+  sha256: binding.legacy_preservation.registry_sha256,
+}, "legacy-preservation registry");
+requireExactFile({
+  path: binding.legacy_preservation.controller_path,
+  sha256: binding.legacy_preservation.controller_sha256,
+}, "legacy-preservation controller");
+requireExactFile({
+  path: binding.legacy_preservation.zip_controller_path,
+  sha256: binding.legacy_preservation.zip_controller_sha256,
+}, "deterministic ZIP controller");
+requireExactFile(binding.bootstrap_naming_migration, "Bootstrap naming migration");
+requireExactFile(binding.bootstrap_alignment_verifier, "Bootstrap alignment verifier");
+requireExactFile({
   path: binding.guided_bootstrap.registry_path,
   sha256: binding.guided_bootstrap.registry_sha256,
 }, "guided Bootstrap registry");
@@ -421,6 +469,17 @@ const expectedBoundPayloadPaths = [
   binding.dynamic_bootstrap.registry_path,
   binding.dynamic_bootstrap_controller.path,
   binding.dynamic_bootstrap_verifier.path,
+  binding.naming_and_terminology.article_path,
+  binding.naming_and_terminology.registry_path,
+  binding.bootstrap_interview.registry_path,
+  binding.bootstrap_interview.controller_path,
+  binding.bootstrap_discovery.registry_path,
+  binding.bootstrap_discovery.controller_path,
+  binding.legacy_preservation.registry_path,
+  binding.legacy_preservation.controller_path,
+  binding.legacy_preservation.zip_controller_path,
+  binding.bootstrap_naming_migration.path,
+  binding.bootstrap_alignment_verifier.path,
   binding.guided_bootstrap.registry_path,
   binding.guided_bootstrap.controller_path,
   binding.guided_bootstrap.verifier_path,
@@ -436,8 +495,8 @@ const expectedBoundPayloadPaths = [
   binding.portability_verifier.path,
 ];
 requireCondition(
-  expectedBoundPayloadPaths.length === 33
-    && new Set(expectedBoundPayloadPaths).size === 33,
+  expectedBoundPayloadPaths.length === 44
+    && new Set(expectedBoundPayloadPaths).size === 44,
   "portable payload inventory is not exact",
 );
 
@@ -480,7 +539,8 @@ requireCondition(
 );
 requireCondition(
   guidedBootstrap.schema === "governance.guided_bootstrap_contract.v1"
-    && guidedBootstrap.status === "PREPARED_NOT_ACTIVATED"
+    && guidedBootstrap.status === "RETAINED_COMPATIBILITY_ONLY"
+    && guidedBootstrap.canonical_contract === "schemas/bootstrap-interview.v1.json"
     && guidedBootstrap.sole_writer === "BOOTSTRAP"
     && guidedBootstrap.first_question.prompt
       === "Do you want to use ChatGPT (recommended), or work with Bootstrap directly?"
@@ -523,6 +583,63 @@ requireCondition(
   "guided Bootstrap authority is incomplete",
 );
 requireCondition(
+  namingRegistry.schema === "agentos.naming_and_terminology.v1"
+    && namingRegistry.status === "PREPARED_NOT_ACTIVATED"
+    && namingRegistry.compatibility_aliases["guided-bootstrap"] === "bootstrap-interview"
+    && namingRegistry.compatibility_aliases["dynamic-bootstrap"] === "bootstrap-discovery"
+    && namingRegistry.compatibility_aliases.ECO === "ECO_CONTINUOUS"
+    && namingRegistry.compatibility_aliases.successor_wave === "next_campaign_candidate"
+    && namingRegistry.canonical_paths.bootstrap_discovery_contract
+      === "schemas/bootstrap-discovery.v1.json"
+    && normalizeText(namingArticle).includes("one canonical name")
+    && normalizeText(namingArticle).includes("Next-Campaign Candidate")
+    && normalizeText(namingArticle).includes("compatibility aliases")
+    && bootstrapNamingMigration.schema === "agentos.bootstrap_naming_migration.v1"
+    && bootstrapNamingMigration.campaign_aliases.successor_wave
+      === "next_campaign_candidate"
+    && bootstrapNamingMigration.status === "PREPARED_NOT_ACTIVATED",
+  "naming and terminology authority is incomplete",
+);
+requireCondition(
+  bootstrapInterview.schema === "agentos.bootstrap_interview_contract.v1"
+    && bootstrapInterview.status === "PREPARED_NOT_ACTIVATED"
+    && bootstrapInterview.discovery_permission.question_id === "bootstrap.discovery.mode"
+    && bootstrapInterview.discovery_permission.recommended === "RECOMMENDED"
+    && bootstrapInterview.legacy_preservation.required_before_build === true
+    && bootstrapInterview.model_profiles.ECO_CONTINUOUS.work_slots === 20
+    && bootstrapInterview.model_profiles.STANDARD_WORKWEEK.window_hours === 40
+    && bootstrapInterviewControllerSource.includes("planBootstrapInterview")
+    && bootstrapInterviewControllerSource.includes("BELOW_COMPLETION_FLOOR")
+    && bootstrapDiscoveryControllerSource.includes("discoverProject"),
+  "Bootstrap Interview authority is incomplete",
+);
+requireCondition(
+  bootstrapDiscovery.schema === "agentos.bootstrap_discovery_contract.v1"
+    && bootstrapDiscovery.status === "PREPARED_NOT_ACTIVATED"
+    && bootstrapDiscovery.permission.required_before_execution === true
+    && bootstrapDiscovery.result.schema === "agentos.bootstrap_discovery_result.v1"
+    && bootstrapDiscovery.fact_states.includes("OBSERVED_FACT")
+    && bootstrapDiscovery.fact_states.includes("CANDIDATE_INTERPRETATION")
+    && bootstrapDiscovery.fact_states.includes("CONFLICT")
+    && bootstrapDiscovery.fact_states.includes("UNKNOWN")
+    && bootstrapDiscovery.operations.authentication_attempted === false
+    && bootstrapDiscovery.inspection.forbidden.includes("provider login or auth-status commands")
+    && bootstrapDiscoveryControllerSource.includes("authentication_attempted: false")
+    && !bootstrapDiscoveryControllerSource.includes("auth\", \"status\""),
+  "Bootstrap Discovery authority is incomplete",
+);
+requireCondition(
+  legacyPreservation.schema === "agentos.legacy_preservation_contract.v1"
+    && legacyPreservation.status === "PREPARED_NOT_ACTIVATED"
+    && legacyPreservation.artifacts.archive === "legacy.zip"
+    && legacyPreservation.artifacts.manifest === "legacy.manifest.json"
+    && legacyPreservation.rejection.some((item) => item.includes("symbolic links"))
+    && legacyPreservationControllerSource.includes("preserved_before_build")
+    && legacyPreservationControllerSource.includes("parseStoredZip")
+    && deterministicZipControllerSource.includes("buildStoredZip"),
+  "legacy-preservation authority is incomplete",
+);
+requireCondition(
   gptAssist.schema === "governance.gpt_assist_authority.v1"
     && gptAssist.status === "PREPARED_NOT_ACTIVATED"
     && gptAssist.bootstrap_preference.question_id === "workflow.gpt_assist_mode"
@@ -540,7 +657,7 @@ requireCondition(
     && gptAssist.next_campaign_handoff.standard_article_promotion
       === "FORBIDDEN_BEFORE_ACCEPTED_LIVE_CLOSURE"
     && normalizeText(gptAssistArticle).includes("The Auditor remains read-only")
-    && normalizeText(gptAssistArticle).includes("next-release Orchestrator")
+    && normalizeText(gptAssistArticle).includes("next Campaign Orchestrator")
     && gptAssistControllerSource.includes("compileGptAssistStatus")
     && gptAssistControllerSource.includes("compileGptAssistResponseImport")
     && gptAssistControllerSource.includes("verifyGptAssistSourceGit")
@@ -637,6 +754,7 @@ const requiredLaws = [
   "compact_context_and_evidence_library",
   "portable_campaign_control_and_recovery",
   "context_elicitation_and_blockers",
+  "governance_value_and_causality",
   "dynamic_bootstrap_configurator",
   "portable_authority_format",
   "gpt_assist_campaign_context",
@@ -695,6 +813,15 @@ requireCondition(
   "context elicitation or blocker law changed",
 );
 requireCondition(
+  kernel.mission.includes("least necessary owner attention")
+    && kernel.north_star_rule.includes("greatest verified forward")
+    && kernel.governance_value_test.includes("ADVANCE_VERIFIED_PRODUCT_PROGRESS")
+    && kernel.laws.governance_value_and_causality.repair.includes("One causal root")
+    && kernel.laws.governance_value_and_causality.continuity.includes("dependent scope")
+    && kernel.laws.governance_value_and_causality.owner_boundary.includes("Ordinary tests"),
+  "mission, governance value, or causal autonomy law changed",
+);
+requireCondition(
   kernel.laws.dynamic_bootstrap_configurator.rule.includes("discovers")
     && kernel.laws.dynamic_bootstrap_configurator.rule.includes("one unresolved material question")
     && kernel.laws.dynamic_bootstrap_configurator.rule.includes("inherited parent repositories")
@@ -720,7 +847,7 @@ requireCondition(
     && kernel.laws.gpt_assist_campaign_context.authority
       .includes("canonical JSON payload")
     && kernel.laws.gpt_assist_campaign_context.authority
-      .includes("next-release Global Orchestrator")
+      .includes("next Campaign Orchestrator")
     && kernel.laws.gpt_assist_campaign_context.authority
       .includes("accepted-live only")
     && kernel.laws.gpt_assist_campaign_context.portability
@@ -1543,7 +1670,7 @@ try {
   fs.rmSync(evidenceLibraryRoot, {recursive: true, force: true});
 }
 requireCondition(
-  evidenceLibraryCompilerSource.includes("deterministic UTF-8 stored data")
+  deterministicZipControllerSource.includes("deterministic UTF-8 stored data")
     && evidenceLibraryCompilerSource.includes("PRESERVED_UNTIL_CALLER_MECHANICALLY_CONFIRMS_ARCHIVE"),
   "release evidence compiler source boundary changed",
 );
@@ -1587,7 +1714,7 @@ const expectedMultiLanePredicates = [
   "each lane has an exact disjoint primary ownership boundary",
   "shared contracts have explicit producer and consumer versions",
   "one exclusive writer lease per lane can be guaranteed",
-  "a finite Global Runtime convergence order can be compiled",
+  "a finite Runtime convergence order can be compiled",
   "measured or source-backed expected parallelism materially reduces milestone time relative to one cumulative root",
   "bounded reconciliation, migration, rollback, and proof cost is lower than the expected parallelism benefit",
 ];
@@ -1635,7 +1762,7 @@ requireCondition(
 );
 requireCondition(
   workflow.campaign_compiler.autonomy.global_orchestrator_must_not.some((rule) => rule.includes("require approval")),
-  "Global Orchestrator can become a routine stage gate",
+  "Campaign Orchestrator can become a routine stage gate",
 );
 requireCondition(
   workflow.failure_reframe_workflow.owner.includes("direct supervising agent"),
@@ -1901,7 +2028,7 @@ const hostileMutations = [
   }],
   ["allow Auditor authority writes", (draft) => {
     draft.laws.portable_campaign_control_and_recovery.rule =
-      "The Global Orchestrator and Auditor write the authority corpus.";
+      "The Campaign Orchestrator and Auditor write the authority corpus.";
   }],
   ["promote merged work before accepted live", (draft) => {
     draft.laws.portable_campaign_control_and_recovery.authority_layers =
@@ -1989,7 +2116,7 @@ function validatesKernel(draft) {
   if (!laws.gpt_assist_campaign_context.interaction.includes("adds no questionnaire")) return false;
   if (!laws.gpt_assist_campaign_context.interaction.includes("stops when every listed material question")) return false;
   if (!laws.gpt_assist_campaign_context.authority.includes("next-campaign candidate")) return false;
-  if (!laws.gpt_assist_campaign_context.authority.includes("next-release Global Orchestrator")) return false;
+  if (!laws.gpt_assist_campaign_context.authority.includes("next Campaign Orchestrator")) return false;
   if (!laws.gpt_assist_campaign_context.authority.includes("accepted-live only")) return false;
   if (!laws.gpt_assist_campaign_context.portability.includes("without private chat history")) return false;
   if (!laws.execution_autonomy_and_communication.rule.includes("technical puzzles autonomously")) return false;
@@ -2330,7 +2457,7 @@ function validatesWorkflow(draft) {
   if (!controller.agent_lifecycle.platform_agents.includes("only on demand")) return false;
   if (controller.agent_lifecycle.depin_precondition.length !== 5) return false;
   if (controller.agent_lifecycle.persistent.join(",") !== "GLOBAL_RUNTIME") return false;
-  if (!controller.agent_lifecycle.campaign_start[0].includes("campaign-scoped Global Orchestrator")) return false;
+  if (!controller.agent_lifecycle.campaign_start[0].includes("campaign-scoped Campaign Orchestrator")) return false;
   if (controller.true_blocker.classes.includes("FAILING_TEST")) return false;
   if (!controller.true_blocker.effect.includes("SUSPENDED_TRUE_BLOCKER")) return false;
   if (!controller.recovery.fresh_machine.includes("Old chat access is optional")) return false;
@@ -2403,6 +2530,18 @@ requireCondition(
     && dynamicBootstrapVerifier.stdout.includes("PASS Governance 2.1rc dynamic Bootstrap"),
   `dynamic Bootstrap verifier failed: ${
     dynamicBootstrapVerifier.stderr || dynamicBootstrapVerifier.stdout
+  }`,
+);
+const bootstrapAlignmentVerifier = spawnSync(
+  process.execPath,
+  [path.join(root, binding.bootstrap_alignment_verifier.path)],
+  {cwd: root, encoding: "utf8"},
+);
+requireCondition(
+  bootstrapAlignmentVerifier.status === 0
+    && bootstrapAlignmentVerifier.stdout.includes("PASS AgentOS Bootstrap alignment"),
+  `Bootstrap alignment verifier failed: ${
+    bootstrapAlignmentVerifier.stderr || bootstrapAlignmentVerifier.stdout
   }`,
 );
 const guidedBootstrapVerifier = spawnSync(

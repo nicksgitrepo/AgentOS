@@ -19,11 +19,12 @@ hash table.
 2. Name the current task `Bootstrap 2.1rc`.
 3. Pin the task when the host supports pinning.
 4. Read the exact bootstrap binding and verify every bound file.
-5. Run read-only environment discovery inside the project root.
-6. Resume an existing valid Bootstrap state or create a new one.
-7. Ask exactly one unresolved material question at a time.
+5. Resume an existing valid Bootstrap state or create a new one.
+6. Ask the Bootstrap Interview's first question before any discovery or technical setup details.
+7. If the owner permits discovery, run `control/bootstrap-discovery.mjs discover <project-root> <mode>`
+   and import its typed, secret-free observations.
 8. Persist every answer through the Bootstrap controller.
-9. In direct mode, continue the same Bootstrap task. In ChatGPT-guided mode,
+9. In direct mode, continue the same Bootstrap task. In the optional Markdown exchange,
    export the exact phase Markdown prompt plus its canonical JSON manifest and import only
    a schema-valid response bound to that package.
 10. Bootstrap itself imports, aligns/refactors, or creates the authority corpus, Design
@@ -59,41 +60,61 @@ sole setup writer.
 
 ## First interaction
 
-After secret-safe read-only discovery, the first question is exactly:
+Before any discovery, the first question is exactly:
 
-> Do you want to use ChatGPT (recommended), or work with Bootstrap directly?
+> May Bootstrap perform safe read-only discovery of this project so it can answer technical setup questions for you?
 
-`DIRECT` keeps the one-question flow in Bootstrap. `CHATGPT_GUIDED` creates
-one phase package at a time for Foundation, authority corpus, Design Bible, and Intent.
-Each package contains a plain Markdown prompt that names its canonical JSON
-manifest identity. The Markdown is deliberately simple: instructions,
-questions, discovery guesses, and a point to riff from. ChatGPT is an optional
-discovery and elicitation partner only: it
-has no repository, provider, authority, goal, or custody rights.
+The recommended answer is `RECOMMENDED`: Bootstrap may then inspect source,
+configuration shape, documentation, tests, and available local tool metadata
+read-only, then ask only material owner questions. The other setup depths are
+`GUIDED`, `EXPERT`, `LOCAL_ONLY`, and `MANUAL`; `MANUAL` runs no discovery.
+Discovery never modifies, authenticates, requests secrets, spends money,
+publishes, deploys, or deletes.
+Detected facts are labelled `OBSERVED_FACT`, `CANDIDATE_INTERPRETATION`,
+`CONFLICT`, or `UNKNOWN`; they never become owner intent automatically.
 
-This initial `CHATGPT_GUIDED` choice is separate from
-`workflow.gpt_assist_mode`. The latter controls ongoing campaigns:
+The optional ChatGPT exchange is a transport for Bootstrap Interview prompts,
+not a setup mode or authority. It may receive a compact Markdown prompt and
+canonical JSON package, but it has no repository, provider, authority, goal, or
+custody rights.
+
+Bootstrap asks roughly six to nine compact owner questions: project boundary,
+north-star outcome, first proving workflow, delivery boundary, protected and
+true-blocker boundaries, authority-corpus source, any unresolved design or
+technology constraint, and model economics. It skips questions answered by
+discovery or a safe default and stops when the first route is sufficient.
+
+For an imported authority corpus, Bootstrap must first create and verify an
+immutable `legacy.zip`, `legacy.manifest.json`, `legacy.index.jsonl`, and
+`legacy.receipt.json` at the new authority-corpus root. Only after that receipt
+is sealed may it build or rewrite the new corpus. The legacy archive is a
+lookup source, not current authority.
+
+The optional Markdown exchange is separate from `workflow.gpt_assist_mode`.
+The latter controls ongoing campaigns:
 
 - `GPT_ASSIST`: the Auditor emits one compact status/question Markdown; ChatGPT
   asks only its listed questions one at a time, stops when they are answered
   or deferred, and returns one bound response Markdown; the Auditor then
-  corrects the next-campaign candidate and hands it plus an authority-corpus update
-  candidate to the fresh next-release Orchestrator.
+  corrects the next-campaign candidate packet. A later admitted next-release
+  Orchestrator consumes that packet; no successor session is created at this
+  handoff.
 - `DIRECT_ONLY`: owner context is collected through the configured direct
   project workflow without a ChatGPT handoff.
 
-In both modes the Auditor is read-only, the next-release Orchestrator is the
-only work-in-progress authority corpus writer, and standard articles remain the last
-accepted-live release until accepted-live closure.
+In both modes the Auditor is read-only. The next Campaign Orchestrator becomes
+the work-in-progress authority-corpus writer only after a distinct campaign is
+admitted, and standard articles remain the last accepted-live release until
+accepted-live closure.
 
 Foundation model recommendations use current host spawnability plus an
-optional current comparison source. `RECOMMENDED` means the least expensive
-model strong enough to reach project intent reliably. `ECO` minimizes expected
-total completion cost, including retries, rework, coordination, and failure
-risk—not token price alone. It prefers light high-reasoning builders where
-that remains cheaper, and promotes Orchestrators and Feature Agents near the
-value knee when stronger reasoning lowers total cost. Governance never
-hardcodes a model name.
+optional current comparison source. A candidate below the configured
+completion-reliability floor is excluded, even when it is cheap. `ECO_CONTINUOUS`
+means up to twenty work slots across a 24/7 week; `STANDARD_WORKWEEK` means a
+normal 40-hour week; `PERFORMANCE` prioritizes elapsed time; and `CUSTOM`
+accepts typed conditions. Recommendations minimize expected cost per accepted
+result, including retries, rework, coordination, and failure risk—not token
+price alone. Governance never hardcodes a model name.
 
 ## Portable authority numbering
 
@@ -221,7 +242,7 @@ complete its setup goal, and unpin itself.
 
 ## Campaign operation
 
-After setup, the Global Orchestrator compiles one deterministic dependency
+After setup, the Campaign Orchestrator compiles one deterministic dependency
 order. A single cumulative campaign root is the default. Multi-lane execution
 requires explicit evidence that the lanes are genuinely independent.
 

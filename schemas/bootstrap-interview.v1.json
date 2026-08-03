@@ -1,0 +1,156 @@
+{
+  "schema": "agentos.bootstrap_interview_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Ask only the owner questions that discovery and safe defaults cannot answer without changing the first route.",
+  "discovery_contract": "schemas/bootstrap-discovery.v1.json",
+  "discovery_permission": {
+    "question_id": "bootstrap.discovery.mode",
+    "prompt": "May Bootstrap perform safe read-only discovery of this project so it can answer technical setup questions for you?",
+    "recommended": "RECOMMENDED",
+    "choices": [
+      "RECOMMENDED",
+      "GUIDED",
+      "EXPERT",
+      "LOCAL_ONLY",
+      "MANUAL"
+    ],
+    "disclosure": [
+      "Discovery reads source, configuration shape, documentation, and available tool metadata only.",
+      "Discovery does not modify files, request secrets, authenticate, spend money, publish, deploy, or delete.",
+      "Detected facts are labelled and never become owner intent without confirmation."
+    ]
+  },
+  "question_classes": [
+    "OWNER_INTENT",
+    "OWNER_BOUNDARY",
+    "MECHANICAL_FACT",
+    "SAFE_CONFIGURATION"
+  ],
+  "discovery_fact_states": [
+    "OBSERVED_FACT",
+    "CANDIDATE_INTERPRETATION",
+    "CONFLICT",
+    "UNKNOWN"
+  ],
+  "selection_law": {
+    "order": "Ask the earliest unresolved owner-intent or owner-boundary question that can materially change outcome, authority, route, proof, rollback, or unavailable behavior.",
+    "discovery": "Resolve mechanical facts from secret-free discovery and show candidate interpretations only when they need confirmation.",
+    "defaults": "Use safe configuration defaults when they do not change the first route; record the choice and allow later revision.",
+    "sufficiency": "Stop after the smallest set of answers that makes the first bounded route honest and reversible; defer non-route-changing preferences."
+  },
+  "questions": [
+    {
+      "id": "bootstrap.discovery.mode",
+      "class": "OWNER_BOUNDARY",
+      "type": "ENUM",
+      "choices": ["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"],
+      "required": true
+    },
+    {
+      "id": "project.boundary",
+      "class": "OWNER_BOUNDARY",
+      "type": "JSON",
+      "prompt": "Which repositories, documents, data sources, environments, and external systems belong inside the project boundary?",
+      "required": true
+    },
+    {
+      "id": "project.north_star",
+      "class": "OWNER_INTENT",
+      "type": "JSON",
+      "prompt": "Who is this for, what recurring moment matters, and what should be better after the project works?",
+      "required": true
+    },
+    {
+      "id": "project.first_workflow",
+      "class": "OWNER_INTENT",
+      "type": "JSON",
+      "prompt": "What is the first user workflow that should prove the project is useful, and what does working mean?",
+      "required": true
+    },
+    {
+      "id": "project.delivery_boundary",
+      "class": "OWNER_BOUNDARY",
+      "type": "ENUM",
+      "choices": ["WORKING_PROTOTYPE", "DEVELOPMENT_READY", "STAGING_CANDIDATE", "PRODUCTION_RELEASE", "CUSTOM"],
+      "required": true
+    },
+    {
+      "id": "project.protected_boundaries",
+      "class": "OWNER_BOUNDARY",
+      "type": "JSON",
+      "prompt": "Which safety, legal, privacy, data-loss, spending, authentication, irreversible-action, or intent boundaries must remain owner-controlled?",
+      "required": true
+    },
+    {
+      "id": "authority-corpus.source",
+      "class": "OWNER_BOUNDARY",
+      "type": "JSON",
+      "prompt": "Should Bootstrap import, align, or create the authority corpus, and is there an existing source to preserve?",
+      "required": true
+    },
+    {
+      "id": "project.delivery_constraints",
+      "class": "OWNER_BOUNDARY",
+      "type": "JSON",
+      "prompt": "Discovery found the current stack and delivery shape. Are any material technologies, providers, deployment targets, or authentication routes required or forbidden?",
+      "required": false,
+      "ask_when": "DISCOVERY_MISSING_OR_CONFLICTING_OR_NEW_PROJECT"
+    },
+    {
+      "id": "project.design_posture",
+      "class": "OWNER_INTENT",
+      "type": "JSON",
+      "prompt": "What design context and user conditions matter—such as device, field, offline, accessibility, or protected visual surfaces—and what should the Design Bible optimize for?",
+      "required": false,
+      "ask_when": "VISIBLE_SURFACE_OR_DESIGN_AUTHORITY_PRESENT"
+    },
+    {
+      "id": "project.model_economics",
+      "class": "SAFE_CONFIGURATION",
+      "type": "JSON",
+      "prompt": "Which operating economics describe this project: continuous eco, a standard workweek, performance-first, or custom conditions?",
+      "required": true
+    },
+    {
+      "id": "bootstrap.confirmation",
+      "class": "OWNER_BOUNDARY",
+      "type": "ENUM",
+      "choices": ["PROCEED", "CORRECT_ONE_ITEM", "RETURN_TO_GUIDED_SETUP", "CANCEL"],
+      "required": true
+    }
+  ],
+  "owner_question_budget": {
+    "recommended_minimum": 6,
+    "recommended_maximum": 9,
+    "rule": "Conditional questions do not appear when exact discovery resolves them or the surface is not applicable."
+  },
+  "model_profiles": {
+    "ECO_CONTINUOUS": {
+      "window_hours": 168,
+      "work_slots": 20,
+      "objective": "minimize expected cost per accepted result while meeting the completion floor"
+    },
+    "STANDARD_WORKWEEK": {
+      "window_hours": 40,
+      "work_slots": 1,
+      "objective": "minimize expected cost per accepted result within a normal workweek"
+    },
+    "PERFORMANCE": {
+      "window_hours": 40,
+      "work_slots": 1,
+      "objective": "minimize elapsed time after meeting the completion floor"
+    },
+    "CUSTOM": {
+      "objective": "use only the explicitly supplied typed constraints"
+    }
+  },
+  "legacy_preservation": {
+    "required_before_build": true,
+    "artifacts": ["legacy.zip", "legacy.manifest.json", "legacy.index.jsonl", "legacy.receipt.json"],
+    "source_order": "inspect -> archive -> manifest/index/receipt verification -> build or write the new authority corpus",
+    "unsafe_objects": "reject symbolic links, sockets, devices, and other non-regular filesystem entries",
+    "exclusions": "record every excluded path and reason; do not silently discard unfamiliar files"
+  }
+}

@@ -868,7 +868,7 @@ function validateAgent(agent, campaignId, campaignVersion) {
     if (agent.display_name !== "Runtime Persistent 2.1rc"
         || agent.spawn_reason !== "PERSISTENT"
         || agent.campaign_version !== "PERSISTENT") {
-      throw new Error("Global Runtime must be the one persistent named agent");
+      throw new Error("Runtime must be the one persistent named agent");
     }
   } else if (!CAMPAIGN_AGENT_NAME.test(agent.display_name)
       || agent.display_name !== `${agent.role_id} ${agent.campaign_version} 2.1rc`
@@ -983,7 +983,7 @@ function validateCheckpointHandoff(state, order, nodesById) {
     if (handoff.kind !== "TERMINAL_TO_RUNTIME"
         || handoff.to_owner_role_id !== "GLOBAL_RUNTIME"
         || handoff.to_goal_id !== "RUNTIME_INTEGRATION_AND_DEPLOYMENT") {
-      throw new Error("terminal checkpoint must hand the root to Global Runtime");
+      throw new Error("terminal checkpoint must hand the root to Runtime");
     }
     if (!state.product_acceptance.rc_ready) {
       throw new Error("terminal Runtime handoff requires all three Product-acceptance roots");
@@ -1112,10 +1112,6 @@ function validateSuccessorWave(state, currentSessionIds) {
     "successor_feature_agent_bindings", "product_writer_lease_status",
   ], "successor wave");
   if (state.successor_wave.status === "PENDING") {
-    if (state.active_goal.status === "COMPLETE"
-        && state.checkpoint_handoff?.kind === "TERMINAL_TO_RUNTIME") {
-      throw new Error("terminal Runtime handoff must create the oriented successor wave");
-    }
     if (state.successor_wave.disposition_identity !== null
         || state.successor_wave.candidate_digest_sha256 !== null
         || state.successor_wave.gpt_assist_handoff_sha256 !== null
@@ -1126,6 +1122,25 @@ function validateSuccessorWave(state, currentSessionIds) {
         || state.successor_wave.successor_feature_agent_bindings.length !== 0
         || state.successor_wave.product_writer_lease_status !== "NOT_CREATED") {
       throw new Error("pending successor wave contains invented identity");
+    }
+    return;
+  }
+  if (state.successor_wave.status === "CANDIDATE_RECORDED") {
+    if (state.successor_wave.disposition_identity !== "NEXT_CAMPAIGN_CANDIDATE"
+        || !SHA256.test(state.successor_wave.candidate_digest_sha256)
+        || state.successor_wave.successor_campaign_id !== null
+        || state.successor_wave.successor_campaign_version !== null
+        || state.successor_wave.successor_orchestrator_binding !== null
+        || state.successor_wave.successor_auditor_binding !== null
+        || state.successor_wave.successor_feature_agent_bindings.length !== 0
+        || state.successor_wave.product_writer_lease_status !== "NOT_CREATED"
+        || !["MERGED_NOT_ACCEPTED_LIVE", "ACCEPTED_LIVE_CLOSED"].includes(state.status)) {
+      throw new Error("candidate-only successor record contains a speculative roster or invalid status");
+    }
+    if (state.gpt_assist_mode === "GPT_ASSIST") {
+      requireSha(state.successor_wave.gpt_assist_handoff_sha256, "GPT_ASSIST candidate handoff");
+    } else if (state.successor_wave.gpt_assist_handoff_sha256 !== null) {
+      throw new Error("DIRECT_ONLY candidate cannot claim a GPT_ASSIST handoff");
     }
     return;
   }
@@ -1275,7 +1290,7 @@ export function validateCampaignState(state, options = {}) {
     throw new Error("GPT_ASSIST mode is invalid");
   }
   if (state.authority_writer_role !== "GLOBAL_ORCHESTRATOR") {
-    throw new Error("only the Global Orchestrator may write authority");
+    throw new Error("only the Campaign Orchestrator may write authority");
   }
   exactKeys(state.standard_authority, ["release_identity", "meaning"], "standard authority");
   requireString(state.standard_authority.release_identity, "standard release identity");
@@ -1409,7 +1424,7 @@ export function validateCampaignState(state, options = {}) {
     agent.kind === "GLOBAL_RUNTIME"
     && agent.session_id === state.runtime.session_id
     && agent.pinned);
-  if (!runtimeAgent) throw new Error("Runtime state must bind the pinned Global Runtime");
+  if (!runtimeAgent) throw new Error("Runtime state must bind the pinned Runtime");
 
   exactKeys(state.accepted_live, [
     "status", "deployed_identity", "rollback_identity",
@@ -1485,7 +1500,7 @@ export function applyCampaignTransition(previous, next, actor, livingProof) {
   });
   exactKeys(actor, ["role", "session_id"], "transition actor");
   if (actor.role !== "GLOBAL_ORCHESTRATOR") {
-    throw new Error("only the Global Orchestrator may apply authority transitions");
+    throw new Error("only the Campaign Orchestrator may apply authority transitions");
   }
   const admittedActor = previous.agents.find((agent) =>
     agent.kind === "GLOBAL_ORCHESTRATOR" && agent.session_id === actor.session_id && agent.pinned);

@@ -1215,6 +1215,23 @@ bindLivingRecord(terminalOriented, livingEvents, acceptedAcceptanceProof.proof);
 validateCampaignState(terminalOriented, {
   product_acceptance_proof: acceptedAcceptanceProof.proof,
 });
+const candidateOnly = structuredClone(terminalOriented);
+candidateOnly.successor_wave = {
+  status: "CANDIDATE_RECORDED",
+  disposition_identity: "NEXT_CAMPAIGN_CANDIDATE",
+  candidate_digest_sha256: sha,
+  gpt_assist_handoff_sha256: "9".repeat(64),
+  successor_campaign_id: null,
+  successor_campaign_version: null,
+  successor_orchestrator_binding: null,
+  successor_auditor_binding: null,
+  successor_feature_agent_bindings: [],
+  product_writer_lease_status: "NOT_CREATED",
+};
+bindLivingRecord(candidateOnly, livingEvents, acceptedAcceptanceProof.proof);
+validateCampaignState(candidateOnly, {
+  product_acceptance_proof: acceptedAcceptanceProof.proof,
+});
 const directOnly = structuredClone(terminalOriented);
 directOnly.gpt_assist_mode = "DIRECT_ONLY";
 directOnly.successor_wave.gpt_assist_handoff_sha256 = null;
@@ -1273,9 +1290,6 @@ try {
   hostileRejected += 1;
 }
 for (const [label, mutate] of [
-  ["terminal Runtime handoff omits successor orientation", (d) => {
-    d.successor_wave = structuredClone(validState.successor_wave);
-  }],
   ["successor Product lease opens before accepted live", (d) => {
     d.successor_wave.product_writer_lease_status = "RELEASED_AFTER_ACCEPTED_LIVE";
   }],
@@ -1302,6 +1316,26 @@ for (const [label, mutate] of [
   try {
     validateCampaignState(draft);
     failures.push(`hostile successor orientation accepted: ${label}`);
+  } catch {
+    hostileRejected += 1;
+  }
+}
+for (const [label, mutate] of [
+  ["candidate packet invents a successor campaign", (d) => {
+    d.successor_wave.successor_campaign_id = "campaign-002";
+  }],
+  ["candidate packet opens a Product writer lease", (d) => {
+    d.successor_wave.product_writer_lease_status = "HELD_PENDING_ACCEPTED_LIVE";
+  }],
+  ["candidate packet omits the GPT_ASSIST handoff", (d) => {
+    d.successor_wave.gpt_assist_handoff_sha256 = null;
+  }],
+]) {
+  const draft = structuredClone(candidateOnly);
+  mutate(draft);
+  try {
+    validateCampaignState(draft);
+    failures.push(`hostile candidate-only successor accepted: ${label}`);
   } catch {
     hostileRejected += 1;
   }

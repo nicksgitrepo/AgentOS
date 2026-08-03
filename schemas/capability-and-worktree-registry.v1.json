@@ -137,7 +137,7 @@
       "project-specific security, privacy, data, and release overlays",
       "exact changed surfaces and dependency topology"
     ],
-    "routing": "The Auditor evaluates in parallel; the Global Orchestrator owns compiled state and routes NO or UNKNOWN to the exact Feature or Platform owner without serial approval.",
+    "routing": "The Auditor evaluates in parallel; the Campaign Orchestrator owns compiled state and routes NO or UNKNOWN to the exact Feature or Platform owner without serial approval.",
     "critical_freeze": "Credible critical safety or security evidence freezes the affected writable surface immediately. Unrelated work continues unless evidence proves global impact.",
     "compact_exchange": "Repair packets contain only failing question IDs, observed evidence, bounded writable scope, repair owner, and evidence required for pass.",
     "acceptance_receipt": "The Product-acceptance receipt is the SHA-256 of the exact acceptance result after omitting its receipt field; roots, open questions, Auditor identity, timing, and freeze state cannot be changed without a new receipt.",
@@ -198,7 +198,7 @@
   "context_elicitation": {
     "owner": "GLOBAL_ORCHESTRATOR",
     "mode": "SEMI_SCRIPTED_DRILL_ME",
-    "rule": "The Global Orchestrator asks one material question at a time, incorporates the answer, inspects admitted authority and source for discoverable facts, and continues only until the context is reasonably sufficient to compile a truthful runnable route.",
+    "rule": "The Campaign Orchestrator asks one material question at a time, incorporates the answer, inspects admitted authority and source for discoverable facts, and continues only until the context is reasonably sufficient to compile a truthful runnable route.",
     "subject_scripts": {
       "PROJECT_GOALS": [
         "What observable outcome should this project create, for whom, and why now?",
@@ -274,7 +274,7 @@
       "unaffected_work",
       "resume_condition"
     ],
-    "routing": "Discoverable source/context gaps stay with the Global Orchestrator or owning specialist; cross-owner conflicts route to the Global Orchestrator; only a named portable owner-only class reaches the owner.",
+    "routing": "Discoverable source/context gaps stay with the Campaign Orchestrator or owning specialist; cross-owner conflicts route to the Campaign Orchestrator; only a named portable owner-only class reaches the owner.",
     "continuity": "A blocker holds only the dependent outcome. The compiler continues all unaffected feature, lane, authority-corpus, and evidence work.",
     "closure": "Close only when the exact answer or evidence is bound and the affected pages, indexes, capsules, and compiler inputs are refreshed."
   },
@@ -282,12 +282,12 @@
     "schema": "governance.portable_campaign_state.v1",
     "authority_writer": {
       "role": "GLOBAL_ORCHESTRATOR",
-      "rule": "Agents never write canonical authority directly. Each admitted agent may append only its own typed content-addressed event file inside the cumulative campaign root. The Global Orchestrator owns topology, compiled active-campaign snapshots, standard-article promotion, supersession, and recovery reconciliation.",
+      "rule": "Agents never write canonical authority directly. Each admitted agent may append only its own typed content-addressed event file inside the cumulative campaign root. The Campaign Orchestrator owns topology, compiled active-campaign snapshots, standard-article promotion, supersession, and recovery reconciliation.",
       "standard_articles": "LAST_ACCEPTED_LIVE_RELEASE_ONLY",
       "active_campaign_article": "WORK_IN_PROGRESS_ONLY",
       "promotion_trigger": "ACCEPTED_LIVE_CLOSED",
       "merge_without_live": "MERGED_NOT_ACCEPTED_LIVE",
-      "apply_boundary": "Every authority transition and compiled current view is applied by an admitted pinned Global Orchestrator session against the prior exact snapshot sequence, aggregate ledger digest, and per-session writer heads. A state field that merely names the Orchestrator is not writer proof.",
+      "apply_boundary": "Every authority transition and compiled current view is applied by an admitted pinned Campaign Orchestrator session against the prior exact snapshot sequence, aggregate ledger digest, and per-session writer heads. A state field that merely names the Orchestrator is not writer proof.",
       "living_campaign": {
         "events_root": "campaigns/<campaign-id>/events/<writer-session-digest>/",
         "compiled_view": "campaigns/<campaign-id>/current.md",
@@ -345,37 +345,37 @@
     "dependency_execution": {
       "compile": "Build a directed dependency graph and deterministic topological order. X then Z then Y means the same cumulative root is leased to X, checkpointed and handed to Z, then checkpointed and handed to Y.",
       "default_root": "SINGLE_CUMULATIVE_ROOT",
-      "goal_rule": "One substantial feature phase equals one host macro goal bound to an exact goal-system ID, stage, owner, instruction SHA-256, DONE-WHEN SHA-256, start time, and completion-receipt SHA-256. The goal closes only after a clean remote-equal pushed checkpoint, lease release, and accepted identity-bound same-root handoff to the next compiled dependency owner or terminal Global Runtime.",
+      "goal_rule": "One substantial feature phase equals one host macro goal bound to an exact goal-system ID, stage, owner, instruction SHA-256, DONE-WHEN SHA-256, start time, and completion-receipt SHA-256. The goal closes only after a clean remote-equal pushed checkpoint, lease release, and accepted identity-bound same-root handoff to the next compiled dependency owner or terminal Runtime.",
       "handoff_identity": "Checkpoint ID, root, branch, local and remote commit/tree, released lease, source owner/goal, recipient owner/goal, and accepted transition must agree mechanically. The immediate next snapshot must preserve the clean pushed remote-equal checkpoint, activate that exact recipient, and issue a fresh lease on the same root; terminal handoff must enter Runtime/release state.",
       "new_dependency": "The admitted dependency graph and cumulative root identity are immutable after campaign open. A newly discovered local prerequisite is solved inside the current owner or by an on-demand Platform Agent; a genuinely new cross-feature dependency is recorded for the next campaign or triggers one explicit owner-visible campaign replacement without rewriting accepted checkpoints.",
       "cycle": "Collapse a dependency cycle into one Global-Orchestrator-owned shared-contract checkpoint with one primary writer, then resume the ordered feature chain.",
-      "final": "The terminal cumulative root transfers once to Global Runtime for integration, artifact mint, deployment, rollback readback, live audit, and closure."
+      "final": "The terminal cumulative root transfers once to Runtime for integration, artifact mint, deployment, rollback readback, live audit, and closure."
     },
     "agent_lifecycle": {
       "persistent": [
         "GLOBAL_RUNTIME"
       ],
       "campaign_start": [
-        "spawn one fresh campaign-scoped Global Orchestrator from the latest admitted governance and admitted high-return orchestration model",
+        "spawn one fresh campaign-scoped Campaign Orchestrator from the latest admitted governance and admitted high-return orchestration model",
         "spawn one fresh Independent Auditor from the latest admitted governance and strongest admitted light-model class",
         "spawn fresh Feature Agents for the admitted campaign roster",
         "pin every created Orchestrator, Auditor, and Feature Agent immediately",
         "record exact role, session, predecessor session, model, governance, campaign, and evidence-library identities"
       ],
-      "platform_agents": "Spawn a fresh Platform Agent only on demand when a Feature Agent identifies an exact material seam. Pin it immediately. Do not pre-spawn a platform wave and do not reuse a completed platform session.",
+      "platform_agents": "Spawn and pin one Platform Agent only on demand when a Feature Orchestrator identifies an exact material seam. Bind it to one campaign, feature, capability, worktree, proof scope, and direct supervisor. Reuse it only for that same feature during that campaign; do not pre-spawn a platform wave, share it across features, or reuse it after the feature/campaign boundary.",
       "archive": "Completed campaign agents are archived and never deleted. Their session IDs remain optional provenance; compact handoffs and Git/evidence identities remain sufficient without chat access.",
       "depin_precondition": [
         "current Auditor recorded one deduplicated dependency-ordered next-campaign candidate or NO_NEXT_CAMPAIGN_REQUIRED before terminal Runtime handoff",
-        "fresh successor Orchestrator, Auditor, and Feature Agents are created and pinned for orientation at terminal Runtime handoff when another campaign is admitted",
-        "successor Product writer lease remains held until predecessor accepted-live closure",
+        "next-campaign candidate packet is recorded at terminal Runtime handoff",
+        "successor Orchestrator, Auditor, Feature Agents, and Product writer leases are not created until a distinct next campaign is admitted",
         "closing Auditor remains pinned through exact-live audit",
         "all final session IDs, checkpoints, open owner questions, and evidence-library pointers are recorded"
       ],
-      "freshness_binding": "Every dependency owner maps to a fresh pinned Feature Agent for the campaign, and the active goal maps to exactly one such session even when archived predecessors remain recorded. Orchestrator, Auditor, and Feature spawn reasons are FRESH_CAMPAIGN and exact display names bind one-word role, campaign version, and governance version. Auditor and Runtime state objects bind sessions of the matching pinned role kind. Successor continuity binds an exact candidate digest and either a different successor campaign with pinned FRESH_CAMPAIGN Orchestrator/Auditor/Feature records whose sessions are disjoint from the current roster, or an exact NO_NEXT_CAMPAIGN_REQUIRED disposition."
+      "freshness_binding": "Every admitted dependency owner maps to a fresh pinned Feature Orchestrator for that campaign, and the active goal maps to exactly one such session even when archived predecessors remain recorded. Orchestrator, Auditor, and Feature spawn reasons are FRESH_CAMPAIGN and exact display names bind one-word role, campaign version, and governance version. A material Platform Agent is ON_DEMAND, feature-exclusive, and reusable only inside its bound campaign/feature capsule. Auditor and Runtime state objects bind sessions of the matching pinned role kind. Successor continuity binds an exact candidate packet digest; successor sessions remain absent until a distinct later campaign admission."
     },
     "auditor": {
       "during_campaign": "Audit substantial pushed checkpoint deltas asynchronously. Accept, return one material correction, record an owner-intent question, or raise a higher-authority emergency. Do not interrupt ordinary fixes, demand perfection, or take Product custody.",
-      "next_campaign": "Before depinning, deduplicate source, checkpoint, and exact-live findings by causal root; preserve owner answers; build one dependency graph and ordered next-campaign candidate; send it to the Global Orchestrator.",
+      "next_campaign": "Before depinning, deduplicate source, checkpoint, and exact-live findings by causal root; preserve owner answers; build one dependency graph and ordered next-campaign candidate; send it to the Campaign Orchestrator.",
       "cannot": [
         "activate its proposed campaign",
         "assign Product leases",
@@ -456,7 +456,7 @@
   },
   "specialist_execution_autonomy": {
     "default_posture": "WORK_SILENTLY_TO_DONE",
-    "rule": "A Feature Lead or Platform Agent executes the full bounded batch, solves ordinary technical puzzles, and uses safe reversible alternatives without requesting routine permission.",
+    "rule": "A Feature Orchestrator or Platform Agent executes the full bounded batch, solves ordinary technical puzzles, and uses safe reversible alternatives without requesting routine permission.",
     "allowed_local_actions": [
       "inspect admitted authority, source, contracts, tests, and tool output",
       "choose among equivalent in-scope implementation details",
@@ -554,18 +554,18 @@
         "READY_FOR_GLOBAL_INTEGRATION handoff"
       ],
       "handoff_in": "campaign admission or prior immutable feature checkpoint",
-      "handoff_out": "next feature owner in a cumulative stream, Global Orchestrator for shared conflict/integration, Auditor after exact deployment only"
+      "handoff_out": "next feature owner in a cumulative stream, Campaign Orchestrator for shared conflict/integration, Auditor after exact deployment only"
     },
     {
       "role_id": "PLATFORM_AGENT",
-      "lifecycle": "fresh, feature-bound, nonpersistent, never reused after archive",
+      "lifecycle": "on-demand, feature-exclusive, campaign-local, reusable for same-feature returns, archived at the feature/campaign boundary",
       "owns": [
         "one named platform capability seam",
         "source-backed advisory or bounded implementation within its capsule",
         "autonomous resolution of ordinary technical puzzles inside its capsule",
         "capability pseudocode and contextual implementation notes for its exact seam",
         "capability-specific hostile proof",
-        "exact return packet to Feature Lead"
+        "exact return packet to Feature Orchestrator"
       ],
       "does_not_own": [
         "feature intent",
@@ -584,8 +584,8 @@
         "hostile and affected checks",
         "handoff receipt"
       ],
-      "handoff_in": "feature/checkpoint/capability capsule from Feature Lead",
-      "handoff_out": "directly to the Feature Lead; shared-authority blocker may be copied to Global Orchestrator without transferring feature custody"
+      "handoff_in": "feature/checkpoint/capability capsule from Feature Orchestrator",
+      "handoff_out": "directly to the Feature Orchestrator; shared-authority blocker may be copied to Campaign Orchestrator without transferring feature custody"
     },
     {
       "role_id": "INDEPENDENT_AUDITOR",
@@ -614,7 +614,7 @@
         "live-audit disposition"
       ],
       "handoff_in": "exact accepted source/artifact identity and later exact deployed identity",
-      "handoff_out": "ordinary feature findings to the matching Feature Lead backlog; shared findings to Global Orchestrator; emergencies immediately to higher authority"
+      "handoff_out": "ordinary feature findings to the matching Feature Orchestrator backlog; shared findings to Campaign Orchestrator; emergencies immediately to higher authority"
     },
     {
       "role_id": "GLOBAL_RUNTIME",
@@ -642,8 +642,8 @@
         "deployment and rollback receipts",
         "runtime blocker"
       ],
-      "handoff_in": "Global Orchestrator exact integration/deployment custody",
-      "handoff_out": "LIVE_DRAFT_AWAITING_AUDIT or exact mechanical blocker to Global Orchestrator"
+      "handoff_in": "Campaign Orchestrator exact integration/deployment custody",
+      "handoff_out": "LIVE_DRAFT_AWAITING_AUDIT or exact mechanical blocker to Campaign Orchestrator"
     }
   ],
   "generic_web_capabilities": [
@@ -907,7 +907,7 @@
       "owner": "FEATURE_LEAD",
       "use_when": "normal feature blueprint and build",
       "writers": 1,
-      "rule": "Feature Lead is the exclusive writer except during an explicit sublease.",
+      "rule": "Feature Orchestrator is the exclusive writer except during an explicit sublease.",
       "handoff": "immutable feature checkpoint"
     },
     {
@@ -921,9 +921,9 @@
     {
       "mode_id": "PLATFORM_SAME_ROOT_SUBLEASE",
       "owner": "PLATFORM_AGENT",
-      "use_when": "one platform seam must edit the feature root and the Feature Lead can pause writes",
+      "use_when": "one platform seam must edit the feature root and the Feature Orchestrator can pause writes",
       "writers": 1,
-      "rule": "Feature Lead temporarily releases writer custody; agent receives exact paths, base, goal, proof, and expiry; custody returns after clean pushed handoff.",
+      "rule": "Feature Orchestrator temporarily releases writer custody; agent receives exact paths, base, goal, proof, and expiry; custody returns after clean pushed handoff.",
       "handoff": "sublease close receipt and exact commit"
     },
     {
@@ -931,7 +931,7 @@
       "owner": "PLATFORM_AGENT",
       "use_when": "material seam is independently committable or requires isolation",
       "writers": 1,
-      "rule": "Fresh child worktree starts from the exact feature checkpoint. Feature Lead integrates the returned commit after overlap classification.",
+      "rule": "Fresh child worktree starts from the exact feature checkpoint. Feature Orchestrator integrates the returned commit after overlap classification.",
       "handoff": "isolated commit/tree plus integration manifest"
     },
     {
@@ -939,7 +939,7 @@
       "owner": "GLOBAL_ORCHESTRATOR_SELECTED_PRIMARY",
       "use_when": "multiple features require one shared contract, schema, migration, or generated surface",
       "writers": 1,
-      "rule": "Global Orchestrator selects one primary owner, allocates migrations/resources, and freezes competing writers. Consumers provide requirements and later rebind.",
+      "rule": "Campaign Orchestrator selects one primary owner, allocates migrations/resources, and freezes competing writers. Consumers provide requirements and later rebind.",
       "handoff": "versioned shared-contract checkpoint"
     },
     {
@@ -982,8 +982,8 @@
       "return_route",
       "archive_condition"
     ],
-    "freshness": "A platform agent is fresh for one feature/checkpoint/capability capsule and is archived after return.",
-    "reuse_forbidden": "A completed platform agent is never reused for a later feature, checkpoint, repair generation, or audit.",
+    "freshness": "A Platform Agent is fresh for one campaign/feature/capability capsule and remains available for same-feature checkpoints until that capsule closes.",
+    "reuse_forbidden": "A Platform Agent is never reused after its feature/campaign/repair boundary; it may be reused only by the same Feature Orchestrator inside that bound capsule and is never shared with another feature.",
     "model_policy": "Project context selects the model and reasoning posture; the portable registry requires freshness and exact binding, not a provider-specific model."
   },
   "context_capsule": {
@@ -1246,14 +1246,14 @@
   "selection_algorithm": [
     "If no material seam exists, return NO_MATERIAL_SEAM and create no platform agent.",
     "If expertise is needed but no Product edit is needed, use PLATFORM_ADVISORY_NO_WORKTREE.",
-    "If one capability must edit exact paths and the Feature Lead can pause, use PLATFORM_SAME_ROOT_SUBLEASE.",
+    "If one capability must edit exact paths and the Feature Orchestrator can pause, use PLATFORM_SAME_ROOT_SUBLEASE.",
     "If the seam is independently committable or needs isolation, use PLATFORM_ISOLATED_CHILD_WORKTREE.",
     "If multiple features contend for one contract/schema/migration/generated surface, route to SHARED_CONTRACT_PRIMARY_WORKTREE.",
     "If independent acceptance is required, use AUDIT_EVIDENCE_ROOT after exact candidate or deployment identity exists.",
     "If integration, artifact, deployment, or rollback execution is required, only GLOBAL_INTEGRATION_RELEASE_WORKTREE may write."
   ],
   "campaign_compiler": {
-    "purpose": "Allow the Global Orchestrator to compile accepted governance and project authority context into one cumulative single-root development campaign by default, with multi-lane execution admitted only by an explicit evidence-backed exception.",
+    "purpose": "Allow the Campaign Orchestrator to compile accepted governance and project authority context into one cumulative single-root development campaign by default, with multi-lane execution admitted only by an explicit evidence-backed exception.",
     "required_inputs": [
       "exact portable-kernel identity",
       "exact project-context identity",
@@ -1278,18 +1278,18 @@
       "Order features cumulatively inside the one admitted root.",
       "Allocate one campaign root, branch namespace, exclusive lease, migration range, contract namespace, and rollback baseline.",
       "Create one campaign-open record; spawn and pin one fresh campaign-scoped Orchestrator, one fresh Auditor, and the admitted fresh Feature Agents using the exact `<Role> <CampaignVersion> 2.1rc` name; activate only the first feature owner in the root or each exceptionally admitted lane.",
-      "Allow Feature Leads to run Blueprint and Build autonomously under the portable workflow.",
+      "Allow Feature Orchestrators to run Blueprint and Build autonomously under the portable workflow.",
       "Monitor concrete checkpoint progress at the configured interval while active, repair safe broken chains without creating extra goals, roots, or approval loops, and suspend both the same goal and its progress timer only for one exact true blocker.",
       "At each substantial pushed checkpoint, classify changed surfaces, create and pin only the required read-only seam reviewers, run them in parallel while safe root progress continues, and queue material corrections for the originating Feature Agent at the next stable handoff.",
       "At a coherent end-to-end milestone, accept the terminal cumulative checkpoint rather than merging individual feature checkpoints to the shared default branch.",
-      "At terminal handoff to Global Runtime, require the current Auditor to submit the next-campaign candidate, then create and pin the fresh next-campaign Orchestrator, Auditor, and Feature Agents for orientation only; hold their Product writer lease until the current release is accepted live.",
-      "Converge exact terminal commits once through the Global Runtime after Global Orchestrator semantic decisions.",
+      "At terminal handoff to Runtime, require the current Auditor to submit the next-campaign candidate, then create and pin the fresh next-campaign Orchestrator, Auditor, and Feature Agents for orientation only; hold their Product writer lease until the current release is accepted live.",
+      "Converge exact terminal commits once through the Runtime after Campaign Orchestrator semantic decisions.",
       "Mint and deploy the exact integrated milestone once, audit exact live identity, route ordinary findings to the next-cycle backlog, and close."
     ],
     "topology_selection": {
       "SINGLE_LANE": {
         "admission": "default; no exception proof is required",
-        "shape": "One cumulative campaign root passes sequentially through causally ordered Feature Leads. For multiple repositories, one cumulative worktree per repository travels together as one custody unit.",
+        "shape": "One cumulative campaign root passes sequentially through causally ordered Feature Orchestrators. For multiple repositories, one cumulative worktree per repository travels together as one custody unit.",
         "checkpoint_rule": "Each feature completes one substantial usable batch, runs affected stable proof, commits and pushes an immutable checkpoint, closes its lease, and transfers the same clean root to the next exact owner.",
         "integration_rule": "Feature checkpoints are not individually merged to the shared default branch. One terminal cumulative checkpoint is integrated, minted, and deployed at the coherent milestone.",
         "benefit": "Simplest custody, integration, rollback, and conflict surface."
@@ -1301,11 +1301,11 @@
           "each lane has an exact disjoint primary ownership boundary",
           "shared contracts have explicit producer and consumer versions",
           "one exclusive writer lease per lane can be guaranteed",
-          "a finite Global Runtime convergence order can be compiled",
+          "a finite Runtime convergence order can be compiled",
           "measured or source-backed expected parallelism materially reduces milestone time relative to one cumulative root",
           "bounded reconciliation, migration, rollback, and proof cost is lower than the expected parallelism benefit"
         ],
-        "shape": "Two or more cumulative roots progress in parallel; each root passes sequentially through its assigned Feature Leads and ends in one immutable terminal checkpoint.",
+        "shape": "Two or more cumulative roots progress in parallel; each root passes sequentially through its assigned Feature Orchestrators and ends in one immutable terminal checkpoint.",
         "benefit": "Parallel Product progress without multiple owners writing the same truth."
       },
       "lane_count_rule": "Governance 2.1rc activates exactly one cumulative root. The retained MULTI_LANE_CASCADE predicates may inform a later implementation but cannot mint a second writer root.",
@@ -1320,7 +1320,7 @@
         "run cumulative affected verification and production artifact build",
         "perform one serialized integration to the admitted shared branch",
         "mint exact immutable release artifacts",
-        "deploy through the exclusive Global Runtime",
+        "deploy through the exclusive Runtime",
         "audit the exact live identity",
         "close or open one grouped next-cycle repair"
       ],
@@ -1366,7 +1366,7 @@
         "current_owner_stage_goal_and_next_action"
       ],
       "cumulative_rule": "Each feature starts from the prior immutable campaign checkpoint and may not restart, fork an unadmitted root, erase earlier accepted work, or hand off an unpushed dirty worktree.",
-      "writer_rule": "Exactly one Feature Lead or admitted platform sublease holds writer custody for a lane at a time.",
+      "writer_rule": "Exactly one Feature Orchestrator or admitted platform sublease holds writer custody for a lane at a time.",
       "handoff_rule": "A feature checkpoint closes its lease and transfers the same cumulative campaign root to the next exact owner.",
       "merge_rule": "Intermediate feature checkpoints remain on the cumulative campaign branch and are not merged individually to the shared default branch."
     },
@@ -1384,7 +1384,7 @@
       ],
       "rule": "Cross-lane sharing occurs through versioned immutable contracts, never cherry-picks, copied diffs, foreign-worktree edits, or narrative assumptions.",
       "consumer_hold": "A consumer preserves explicit unavailable behavior until the exact producer checkpoint exists.",
-      "conflict": "Global Orchestrator chooses one primary owner and exact semantic outcome; Global Runtime performs only the mechanical convergence."
+      "conflict": "Campaign Orchestrator chooses one primary owner and exact semantic outcome; Runtime performs only the mechanical convergence."
     },
       "autonomy": {
       "global_orchestrator_may": [
@@ -1395,7 +1395,7 @@
         "admit safe reversible broken-chain recovery",
         "activate the next owner after an exact accepted checkpoint",
         "continue unaffected lanes around a dependent blocker",
-        "issue Global Runtime convergence and deployment custody after acceptance"
+        "issue Runtime convergence and deployment custody after acceptance"
       ],
       "global_orchestrator_must_not": [
         "manage routine feature implementation",
@@ -1408,7 +1408,7 @@
         "let Auditor implement findings"
       ],
       "owner_escalation": "Only an exact portable true-blocker class with exhausted safe alternatives interrupts the owner. The campaign-scoped Orchestrator records TRUE_BLOCKER_SUSPENDED, suspends the same macro goal and configured progress timer, keeps one resolution watcher, and resumes the same goal only after mechanical resolution.",
-      "agent_context_rule": "Every Feature Lead and platform agent receives one exact context capsule: the admitted governance identity plus only the project-context and task-specific authority objects relevant to its feature/capability. The agent uses the authority corpus for intent, ownership, boundaries, contracts, and failure law, then inspects source/runtime for current reality."
+      "agent_context_rule": "Every Feature Orchestrator and platform agent receives one exact context capsule: the admitted governance identity plus only the project-context and task-specific authority objects relevant to its feature/capability. The agent uses the authority corpus for intent, ownership, boundaries, contracts, and failure law, then inspects source/runtime for current reality."
     },
     "progress_control": {
       "concrete_progress": [
@@ -1432,31 +1432,31 @@
       "preconditions": [
         "every lane has one clean pushed terminal checkpoint",
         "cross-lane contracts and consumer impacts are exact",
-        "shared semantic conflicts have Global Orchestrator decisions",
+        "shared semantic conflicts have Campaign Orchestrator decisions",
         "rollback baseline is exact",
         "ordinary next-cycle backlog is preserved"
       ],
-      "runtime_order": "Global Runtime starts from the accepted current main and applies terminal lane commits in the exact compiled order.",
+      "runtime_order": "Runtime starts from the accepted current main and applies terminal lane commits in the exact compiled order.",
       "rehearsal": "A disposable no-push rehearsal may test mechanical ordering; it cannot decide Product semantics or replace final integration proof.",
       "result": "One canonical integrated commit, exact artifacts, deployment identity, rollback, and live-audit baseline."
     }
   },
   "hostile_boundaries": [
-    "Feature Lead silently edits another feature root.",
+    "Feature Orchestrator silently edits another feature root.",
     "Two writers hold one feature root simultaneously.",
     "Platform agent redefines feature intent or owner-only policy.",
     "Completed platform agent is reused.",
     "Advisory agent claims implementation or readiness.",
     "Auditor edits Product or closes its own finding.",
-    "Global Orchestrator becomes routine implementation manager.",
-    "Global Runtime resolves semantic Product conflicts.",
+    "Campaign Orchestrator becomes routine implementation manager.",
+    "Runtime resolves semantic Product conflicts.",
     "Route visibility, UI label, document, fixture, or local state is treated as authority.",
     "Deployment is blocked by an ordinary Product finding.",
     "Worktree handoff occurs without pushed commit, clean state, exact manifest, and custody release.",
     "A multi-lane campaign is selected before path, contract, migration, and writer ownership are classified.",
     "A consumer reads another lane's uncheckpointed Product bytes.",
     "A prior campaign's lane count or order is reused without recompiling current dependencies.",
-    "The Global Orchestrator asks the owner or Central for routine in-scope stage progression.",
+    "The Campaign Orchestrator asks the owner or Central for routine in-scope stage progression.",
     "An agent receives generic governance without the exact project authority context, or receives project context without the exact kernel.",
     "An agent retries a failed mechanism without reframing the protected outcome or filling material context gaps.",
     "An alternate route bypasses authority, proof, tenancy, security, privacy, safety, durable data, rollback, or owner boundaries.",

@@ -238,7 +238,7 @@
     "elif_exception_requested": "Route to the named granting authority; do not pass.",
     "elif_authorized_exception": "Validate scope, identity, expiry, compensating control, and re-evaluation trigger.",
     "elif_owner_boundary": "Return one precise blocker and continue unaffected work.",
-    "else": "Fail closed and route internally to the Global Orchestrator.",
+    "else": "Fail closed and route internally to the Campaign Orchestrator.",
     "exceptions": {
       "transient_tool_or_runtime_failure": "Retry, use a safe fallback, or reassign; never convert failure into PASS.",
       "critical_security_or_safety_finding": "Freeze only the affected surface immediately; freeze unrelated work only when evidence proves global impact."
@@ -327,7 +327,7 @@
     "rule": "Agents exchange failing question IDs and bounded repair evidence, not compliance narration or repeated receipt inventories."
   },
   "minimum_live_rc": {
-    "scope": "One real campaign, one cumulative root, one Feature Agent, on-demand Platform Agents, one parallel Auditor, one Global Orchestrator, and one Global Runtime.",
+    "scope": "One real campaign, one cumulative root, one Feature Agent, on-demand Platform Agents, one parallel Auditor, one Campaign Orchestrator, and one Runtime.",
     "required_demonstrations": [
       "compile project intent into atomic function questions",
       "compile applicable design clauses into atomic design questions",

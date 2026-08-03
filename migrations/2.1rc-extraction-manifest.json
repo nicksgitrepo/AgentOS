@@ -13,7 +13,9 @@
   "target": {
     "repository_role": "STANDALONE_PORTABLE_GOVERNANCE_REPOSITORY",
     "base_commit": "6cad8d8309b6e30165a79081ed60041a5913815f",
-    "branch": "agent/extract-2.1rc"
+    "branch": "agent/bootstrap-alignment-naming",
+    "extraction_commit": "b0323a2adf6e79e2ffddf4d4e0292f8f8b4edd21",
+    "extraction_tree": "9df52134f7da75f21dbdc2a611b1ccc493a0f679"
   },
   "portable_mapping": [
     ["bootstrap entrypoint", "bootstrap/start-here.md"],
@@ -58,6 +60,15 @@
     "made DIRECT_ONLY successor waves omit GPT_ASSIST handoffs",
     "rejected final current-view symlinks and content-unbound Product-acceptance receipts",
     "bound RC_READY to a recomputed question-tree proof and Auditor attestation"
+  ],
+  "alignment_repairs": [
+    "introduced canonical Bootstrap Interview and Bootstrap Discovery names with read-compatible aliases",
+    "replaced the ChatGPT/direct opener with discovery permission and compact owner-question selection",
+    "added ECO_CONTINUOUS, STANDARD_WORKWEEK, PERFORMANCE, and CUSTOM economics profiles with a completion floor",
+    "added deterministic legacy.zip preservation with manifest, index, receipt, and symlink/unsafe-object rejection",
+    "added mission, north-star, governance-value, causal-repair, and dependent-scope continuity laws",
+    "made terminal successor handoff candidate-only until a distinct next campaign is admitted",
+    "kept Platform Agents feature-exclusive and reusable only inside the bound campaign/feature capsule"
   ],
   "activation": {
     "requires_explicit_owner_approval": true,

@@ -1,0 +1,60 @@
+{
+  "schema": "agentos.bootstrap_discovery_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Collect only secret-free, read-only project facts before the Bootstrap Interview; discovery never answers owner intent or mutates external state.",
+  "permission": {
+    "required_before_execution": true,
+    "question_id": "bootstrap.discovery.mode",
+    "allowed_modes": ["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"],
+    "manual_mode": "Do not run discovery when the owner selects MANUAL."
+  },
+  "result": {
+    "schema": "agentos.bootstrap_discovery_result.v1",
+    "status": "READ_ONLY_OBSERVATION",
+    "required_fields": [
+      "schema", "version", "status", "discovery_mode", "project_root",
+      "operations", "facts", "rejected_operations"
+    ]
+  },
+  "fact_states": [
+    "OBSERVED_FACT",
+    "CANDIDATE_INTERPRETATION",
+    "CONFLICT",
+    "UNKNOWN"
+  ],
+  "fact_contract": {
+    "required_fields": [
+      "fact_id", "status", "source_kind", "source_locator", "confidence", "secret_free"
+    ],
+    "value_rule": "Values are limited to typed, secret-free observations; an observed fact never becomes owner intent without confirmation.",
+    "conflict_rule": "Conflicts and unknowns are surfaced for the Interview; Bootstrap may not silently choose between them."
+  },
+  "operations": {
+    "read_only": true,
+    "secrets_requested": false,
+    "authentication_attempted": false,
+    "spending_attempted": false,
+    "publication_attempted": false,
+    "deployment_attempted": false,
+    "deletion_attempted": false
+  },
+  "inspection": {
+    "allowed": [
+      "project-root containment",
+      "filesystem shape and regular-file markers",
+      "local Git repository identity and origin shape",
+      "installed local tool metadata without invoking provider authentication",
+      "authority, design, stack, and delivery marker presence"
+    ],
+    "forbidden": [
+      "provider login or auth-status commands",
+      "secret or credential reads",
+      "network calls",
+      "file writes",
+      "publishing, deployment, deletion, or spending"
+    ],
+    "unsafe_filesystem_objects": "Report symlinks and non-regular objects as CONFLICT; never follow them."
+  }
+}

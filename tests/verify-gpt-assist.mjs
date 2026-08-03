@@ -244,6 +244,17 @@ try {
       || handoff.next_orchestrator_writes_campaign_authority !== true) {
     failures.push("GPT_ASSIST next-campaign handoff crosses its authority boundary");
   }
+  const candidateOnlyHandoff = compileGptAssistNextCampaignHandoff(
+    response,
+    packet,
+    {...handoffInput, successor_roster_receipt: null},
+  );
+  if (candidateOnlyHandoff.disposition !== "NEXT_CAMPAIGN_CANDIDATE_RECORDED"
+      || candidateOnlyHandoff.candidate_only !== true
+      || candidateOnlyHandoff.successor_roster_created !== false
+      || candidateOnlyHandoff.next_orchestrator_writes_campaign_authority !== false) {
+    failures.push("GPT_ASSIST candidate-only handoff created successor authority");
+  }
 
   reject("GPT_ASSIST is disabled", () =>
     compileGptAssistStatus({...input, mode: "DIRECT_ONLY"}, gitRoot));
