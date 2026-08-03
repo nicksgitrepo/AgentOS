@@ -31,7 +31,12 @@
     "DELIVERY_TARGET": {"public_name": "Delivery Target", "meaning": "Intended Product target family and maturity mode, separate from transport mechanics."},
     "BOUNDARY_CONTRACT": {"public_name": "Boundary Contract", "meaning": "Executable constitutional, owner-sovereign, derived-operating, and temporary-probe limits."},
     "DELIVERY_PROBE": {"public_name": "Delivery Probe", "meaning": "Bounded secret-free read-only observation that never performs external delivery side effects."},
-    "BOOTSTRAP_COVERAGE": {"public_name": "Bootstrap Coverage", "meaning": "Content-addressed output-gap matrix that records setup applicability, provenance, status, defaults, probes, boundaries, unavailable behavior, dependencies, and reopen triggers."}
+    "BOOTSTRAP_COVERAGE": {"public_name": "Bootstrap Coverage", "meaning": "Content-addressed output-gap matrix that records setup applicability, provenance, status, defaults, probes, boundaries, unavailable behavior, dependencies, and reopen triggers."},
+    "PROJECT_IMPORT": {"public_name": "Project Import", "meaning": "Typed source-preserving choice to adopt, copy, normalize and audit, or reconstruct an existing project."},
+    "SOURCE_PRESERVATION": {"public_name": "Source Preservation", "meaning": "Deterministic archive, manifest, index, exclusion record, and receipt created before an imported project is built or refactored."},
+    "NORMALIZATION_POLICY": {"public_name": "Normalization Policy", "meaning": "Compatibility-first rules for directories, filenames, identifiers, routes, data contracts, events, and project structure."},
+    "STANDARDS_REGISTRY": {"public_name": "Standards Registry", "meaning": "Version-pinned, source-bound, applicability-scoped standards and typed project overlays."},
+    "MIGRATION_CAMPAIGN": {"public_name": "Migration Campaign", "meaning": "The first governed campaign that executes an authorized project normalization, audit, repair, and reversible cutover."}
   },
   "compatibility_aliases": {
     "guided-bootstrap": "bootstrap",
@@ -73,6 +78,12 @@
     "delivery_probe_contract": "schemas/delivery-probes.v1.json",
     "bootstrap_coverage_controller": "control/bootstrap-coverage.mjs",
     "bootstrap_coverage_contract": "schemas/bootstrap-coverage.v1.json",
-    "naming_migration": "migrations/bootstrap-naming.v1.json"
+    "naming_migration": "migrations/bootstrap-naming.v1.json",
+    "project_import_controller": "control/project-import.mjs",
+    "project_import_schema": "schemas/project-import.v1.json",
+    "normalization_policy_controller": "control/normalization-policy.mjs",
+    "normalization_policy_schema": "schemas/normalization-policy.v1.json",
+    "standards_registry_controller": "control/standards-registry.mjs",
+    "standards_registry_schema": "schemas/standards-registry.v1.json"
   }
 }

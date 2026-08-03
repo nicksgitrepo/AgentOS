@@ -27,6 +27,10 @@ export const BOOTSTRAP_COVERAGE_SOURCE_KINDS = Object.freeze([
 
 export const BOOTSTRAP_REQUIRED_OUTPUT_GROUPS = Object.freeze([
   "PROJECT_DEFINITION",
+  "PROJECT_IMPORT",
+  "SOURCE_PRESERVATION",
+  "NORMALIZATION_POLICY",
+  "STANDARDS_REGISTRY",
   "NORTH_STAR",
   "PROVING_WORKFLOW",
   "PROJECT_LIFE_CONTRACT",
@@ -180,6 +184,37 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     owner_decision_required: true,
     unavailable_behavior: "HOLD_PROJECT_CREATION_WITHOUT_WRITING_OR_BINDING_EXTERNAL_RESOURCES",
     reopen_triggers: ["repository_scope_changed", "ownership_changed", "boundary_changed"],
+  }),
+  definition("PROJECT_IMPORT", "CREATION", {
+    applicability: "CONDITIONAL",
+    question_ids: ["project.import"],
+    dependency_output_ids: ["PROJECT_DEFINITION"],
+    compiled_field_paths: ["project_import", "exact_creation_plan.project_import_sha256"],
+    safe_default: "NOT_APPLICABLE_WITH_PROOF_WHEN_NO_EXISTING_PROJECT_SIGNAL;_OTHERWISE_ASK_ONE_TYPED_IMPORT_MODE",
+    unavailable_behavior: "DO_NOT_COPY_OR_REFACTOR_AN_EXISTING_PROJECT_WITHOUT_AN_EXPLICIT_MODE_AND_SEPARATE_SOURCE_DESTINATION",
+    reopen_triggers: ["source_root_changed", "destination_root_changed", "import_mode_changed", "existing_project_marker_added"],
+  }),
+  definition("SOURCE_PRESERVATION", "RECOVERY", {
+    applicability: "CONDITIONAL",
+    dependency_output_ids: ["PROJECT_IMPORT"],
+    compiled_field_paths: ["project_import.preservation", "exact_creation_plan.source_preservation_sha256"],
+    safe_default: "NOT_APPLICABLE_WITH_PROOF_WITHOUT_PROJECT_IMPORT;_OTHERWISE_ARCHIVE_SOURCE_BEFORE_MIGRATION",
+    probe_required: true,
+    unavailable_behavior: "DO_NOT_BUILD_OR_REFACTOR_AN_IMPORTED_PROJECT_BEFORE_SOURCE_PRESERVATION_AND_EXCLUSION_RECORD_VERIFICATION",
+    reopen_triggers: ["source_bytes_changed", "source_exclusions_changed", "preservation_root_changed"],
+  }),
+  definition("NORMALIZATION_POLICY", "CREATION", {
+    dependency_output_ids: ["PROJECT_IMPORT"],
+    compiled_field_paths: ["normalization_policy", "exact_creation_plan.normalization_sha256"],
+    safe_default: "COMPILE_COMPATIBILITY_FIRST_INTERNAL_NAMING_FALLBACKS;_FULL_REFACTOR_ONLY_IN_THE_FIRST_GOVERNED_CAMPAIGN",
+    unavailable_behavior: "DO_NOT_RENAME_PROJECT_SURFACES_WITHOUT_TYPED_PRECEDENCE_AND_EXTERNAL_COMPATIBILITY_RULES",
+    reopen_triggers: ["import_mode_changed", "framework_convention_changed", "accepted_glossary_changed", "external_contract_discovered"],
+  }),
+  definition("STANDARDS_REGISTRY", "TRUST", {
+    compiled_field_paths: ["standards_registry", "exact_creation_plan.standards_registry_sha256"],
+    safe_default: "USE_VERSION_PINNED_PORTABLE_BASELINE_AND_TYPED_PROJECT_OVERLAYS_ONLY",
+    unavailable_behavior: "FAIL_CLOSED_WITHOUT_PINNED_STANDARD_IDENTITY_SOURCE_APPLICABILITY_AND_EVIDENCE_RULE",
+    reopen_triggers: ["standard_version_changed", "standard_source_changed", "project_overlay_added", "baseline_coverage_changed"],
   }),
   definition("NORTH_STAR", "INTENT", {
     question_ids: ["project.north_star"],
@@ -361,7 +396,7 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
   }),
   definition("EXACT_CREATION_PLAN", "CREATION", {
     dependency_output_ids: [
-      "DISCOVERY_PERMISSION", "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "AUTHORITY_BOUNDARIES",
+      "DISCOVERY_PERMISSION", "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "PROVING_WORKFLOW", "AUTHORITY_BOUNDARIES",
       "PROJECT_LIFE_CONTRACT", "AUTHORITY_CORPUS", "DESIGN_BIBLE", "SECURITY_BASELINE", "TECHNICAL_BASELINE", "DATA_AND_MIGRATION_POLICY",
       "AUTHENTICATION_AND_ACCESS", "DELIVERY_POLICY", "DELIVERY_TARGET", "DELIVERY_PROBES", "MODEL_POLICY", "PERSISTENT_RUNTIME",
       "FUNCTION_REQUIREMENTS", "FIRST_CAMPAIGN", "RECOVERY_AND_ROLLBACK", "OBSERVABILITY_AND_RETENTION",
@@ -409,6 +444,20 @@ function ownerRow(definitionRecord, answerId, answers, reason, gaps = []) {
   });
 }
 
+function projectImportSignal(discovery) {
+  return hasSignal(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u);
+}
+
+function projectImportGaps(answer) {
+  if (!isRecord(answer)) return ["PROJECT_IMPORT_OWNER_INPUT"];
+  const mode = answer.mode;
+  const gaps = [];
+  if (!["ADOPT_IN_PLACE", "CLEAN_COPY", "NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(mode)) gaps.push("PROJECT_IMPORT_MODE");
+  if (typeof answer.source_root !== "string" || answer.source_root.trim().length === 0) gaps.push("PROJECT_IMPORT_SOURCE_ROOT");
+  if (mode !== "ADOPT_IN_PLACE" && (typeof answer.destination_root !== "string" || answer.destination_root.trim().length === 0)) gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
+  return gaps;
+}
+
 function compileRows(discovery, answers) {
   const technicalAnswer = answers["project.technical_baseline"];
   const deliveryAnswer = answers["project.delivery_policy"];
@@ -423,7 +472,82 @@ function compileRows(discovery, answers) {
   const discoveryDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DISCOVERY_PERMISSION");
   rows.push(ownerRow(discoveryDefinition, "bootstrap.discovery.mode", answers, "DISCOVERY_PERMISSION_OWNER_INPUT"));
 
-  for (const outputId of ["PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW"]) {
+  for (const outputId of ["PROJECT_DEFINITION"]) {
+    const definitionRecord = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === outputId);
+    const answerId = definitionRecord.question_ids[0];
+    rows.push(ownerRow(definitionRecord, answerId, answers, `${outputId}_OWNER_INPUT`));
+  }
+  const importDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "PROJECT_IMPORT");
+  const importAnswer = answers["project.import"];
+  const importSignal = projectImportSignal(discovery) || answerPresent(answers, "project.import");
+  const importGaps = projectImportGaps(importAnswer);
+  rows.push(rowBase(importDefinition, importSignal
+    ? {
+      source_kind: answerPresent(answers, "project.import") ? "OWNER_INPUT" : "UNRESOLVED_OWNER_BOUNDARY",
+      source_refs: ["project.import"],
+      discovery_inputs: factIds(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u),
+      status: importGaps.length === 0 ? "OWNER_CONFIRMED" : "OWNER_REQUIRED",
+      blocking: importGaps.length > 0,
+      reason: importGaps.length === 0 ? "PROJECT_IMPORT_MODE_AND_SEPARATE_SOURCE_CONTEXT_BOUND" : importGaps.join("+"),
+      owner_decision_required: true,
+    }
+    : {
+      source_kind: "NOT_APPLICABLE_PROOF",
+      source_refs: ["NO_EXISTING_PROJECT_SIGNAL"],
+      status: "NOT_APPLICABLE_WITH_PROOF",
+      blocking: false,
+      reason: "NO_EXISTING_PROJECT_MARKER_OR_AUTHORITY_SIGNAL_REQUIRES_IMPORT_MODE",
+    }));
+  const importRow = rows.find((row) => row.output_id === "PROJECT_IMPORT");
+  const preservationDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "SOURCE_PRESERVATION");
+  rows.push(rowBase(preservationDefinition, !importSignal
+    ? {
+      source_kind: "NOT_APPLICABLE_PROOF",
+      source_refs: ["PROJECT_IMPORT_NOT_APPLICABLE"],
+      status: "NOT_APPLICABLE_WITH_PROOF",
+      blocking: false,
+      reason: "NO_PROJECT_IMPORT_MEANS_NO_SOURCE_MIGRATION_ARCHIVE",
+    }
+    : importRow?.blocking === false
+      ? {
+        source_kind: "DERIVED_OUTPUT",
+        source_refs: ["PROJECT_IMPORT"],
+        status: "DERIVED",
+        blocking: false,
+        reason: "SOURCE_PRESERVATION_REQUIRED_BEFORE_ANY_IMPORT_BUILD_OR_REFACTOR",
+      }
+      : {
+        source_kind: "DEPENDENCY",
+        source_refs: ["PROJECT_IMPORT"],
+        status: "DEPENDENCY_PENDING",
+        blocking: true,
+        reason: "PROJECT_IMPORT_MODE_AND_SOURCE_ROOT_REQUIRED_BEFORE_SOURCE_PRESERVATION",
+      }));
+  const normalizationDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "NORMALIZATION_POLICY");
+  rows.push(rowBase(normalizationDefinition, importRow?.blocking === false
+    ? {
+      source_kind: importSignal ? "DERIVED_OUTPUT" : "PORTABLE_DEFAULT",
+      source_refs: importSignal ? ["PROJECT_IMPORT"] : ["AGENTOS_NAMING_NORMALIZATION_V1"],
+      status: importSignal ? "DERIVED" : "DEFAULTED",
+      blocking: false,
+      reason: importSignal ? "COMPATIBILITY_FIRST_NORMALIZATION_POLICY_DERIVED_FROM_IMPORT_MODE" : "INTERNAL_AND_NEW_SURFACE_NORMALIZATION_DEFAULTED",
+    }
+    : {
+      source_kind: "DEPENDENCY",
+      source_refs: ["PROJECT_IMPORT"],
+      status: "DEPENDENCY_PENDING",
+      blocking: true,
+      reason: "NORMALIZATION_POLICY_WAITS_FOR_PROJECT_IMPORT_MODE",
+    }));
+  const standardsDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "STANDARDS_REGISTRY");
+  rows.push(rowBase(standardsDefinition, {
+    source_kind: "PORTABLE_DEFAULT",
+    source_refs: ["schemas/standards-registry.v1.json", "VERSION_PINNED_PORTABLE_STANDARDS"],
+    status: "DEFAULTED",
+    blocking: false,
+    reason: "VERSION_PINNED_PORTABLE_STANDARDS_REGISTRY_DEFAULTED;_PROJECT_OVERLAYS_REMAIN_STRICTLY_TYPED",
+  }));
+  for (const outputId of ["NORTH_STAR", "PROVING_WORKFLOW"]) {
     const definitionRecord = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === outputId);
     const answerId = definitionRecord.question_ids[0];
     rows.push(ownerRow(definitionRecord, answerId, answers, `${outputId}_OWNER_INPUT`));

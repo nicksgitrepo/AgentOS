@@ -39,6 +39,15 @@ import {
   validateBoundaryContract,
 } from "./boundary-contract.mjs";
 import {validateDeliveryTarget, validateDeliveryTargetAgainstLife} from "./delivery-target.mjs";
+import {compileStandardsRegistry, validateStandardsRegistry} from "./standards-registry.mjs";
+import {compileNormalizationPolicy, validateNormalizationPolicy} from "./normalization-policy.mjs";
+import {
+  compileProjectImportPlan,
+  inspectProjectSource,
+  preserveProjectSource,
+  validateProjectImportPlan,
+  verifySourcePreservation,
+} from "./project-import.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY", "MANUAL"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
@@ -101,6 +110,15 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     type: "JSON",
     output: "PROJECT_DEFINITION",
     required: true,
+  },
+  {
+    id: "project.import",
+    class: "CREATION_AUTHORIZATION",
+    prompt: "How much should AgentOS change while importing this existing project: use it as-is, make a clean copy, normalize and audit it, or reconstruct it from intent?",
+    type: "JSON",
+    output: "PROJECT_IMPORT",
+    required: false,
+    askWhen: "EXISTING_PROJECT_SIGNAL_OR_EXPLICIT_IMPORT",
   },
   {
     id: "project.protected_boundaries",
@@ -481,7 +499,7 @@ function deriveAuthorityCorpus(answer) {
       first_feature_start: 200,
       allocation: "IMMUTABLE_NO_RENUMBER_UNSIGNED_UTF8_ORDER",
     },
-    article_taxonomy: ["PROJECT_CONTEXT", "NORTH_STAR", "DESIGN_BIBLE", "FEATURE", "PLATFORM_CAPABILITY", "CAMPAIGN", "DECISION", "CASE", "EVIDENCE_INDEX", "RELEASE_SUMMARY", "HANDOFF", "ARCHIVE_INDEX"],
+    article_taxonomy: ["PROJECT_CONTEXT", "NORTH_STAR", "DESIGN_BIBLE", "PROJECT_IMPORT", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "SOURCE_PRESERVATION", "FEATURE", "PLATFORM_CAPABILITY", "CAMPAIGN", "MIGRATION_CAMPAIGN", "DECISION", "CASE", "EVIDENCE_INDEX", "RELEASE_SUMMARY", "HANDOFF", "ARCHIVE_INDEX"],
   };
 }
 
@@ -658,6 +676,30 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     ? null
     : inspectLegacySource(authorityCorpus.source_root);
   const authorityCorpusPlan = {...authorityCorpus, source_identity: sourceIdentity};
+  const importAnswer = normalizedAnswers["project.import"];
+  const importMode = importAnswer?.mode ?? null;
+  const standardsRegistry = compileStandardsRegistry({
+    overlays: importAnswer?.standards_overlays ?? [],
+    requiredStandardIds: importAnswer?.required_standard_ids ?? [],
+  });
+  const normalizationPolicy = compileNormalizationPolicy({
+    importMode,
+    projectGlossary: importAnswer?.project_glossary ?? [],
+    frameworkConventions: importAnswer?.framework_conventions ?? {},
+    protectedContracts: importAnswer?.protected_contracts ?? [],
+    additionalRules: importAnswer?.additional_normalization_rules ?? {},
+  });
+  const projectImport = importAnswer
+    ? compileProjectImportPlan({
+      mode: importMode,
+      sourceRoot: importAnswer.source_root,
+      destinationRoot: importAnswer.destination_root ?? null,
+      discoveryFacts: discovery,
+      standardsRegistry,
+      normalizationPolicy,
+      sourcePreservationRoot: importAnswer.source_preservation_root ?? null,
+    })
+    : null;
   const context = {
     project_name: normalizedAnswers["project.boundary"]?.project_name ?? "UNNAMED_PROJECT_CONTEXT",
     project_boundary: normalizedAnswers["project.boundary"],
@@ -689,6 +731,9 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     security_baseline: deriveSecurityBaseline(discovery, normalizedAnswers["security.baseline"]),
     authority_boundaries: normalizedAnswers["project.protected_boundaries"],
     authority_corpus: authorityCorpusPlan,
+    standards_registry: standardsRegistry,
+    normalization_policy: normalizationPolicy,
+    project_import: projectImport,
     model_policy: deriveModelPolicy(normalizedAnswers["project.model_economics"]),
     persistent_runtime: deriveRuntime(normalizedAnswers["project.runtime"]),
     first_campaign: deriveFirstCampaign(discovery, normalizedAnswers),
@@ -708,9 +753,13 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       delivery_target_sha256: null,
       delivery_probe_plan_sha256: null,
       bootstrap_coverage_sha256: null,
+      standards_registry_sha256: standardsRegistry.registry_sha256,
+      normalization_sha256: normalizationPolicy.normalization_sha256,
+      project_import_sha256: projectImport?.plan_sha256 ?? null,
+      source_preservation_sha256: projectImport?.source_identity?.source_content_sha256 ?? null,
       project_life_contract_sha256: projectLifeContract.life_contract_sha256,
       boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
-      expected_writes: ["bootstrap.plan.json", "authority corpus roots", "typed project context", "delivery policy and probe bindings", "Bootstrap receipts"],
+      expected_writes: ["bootstrap.plan.json", "authority corpus roots", "typed project context", "delivery policy and probe bindings", "Bootstrap receipts", "source-preservation artifacts when PROJECT_IMPORT applies"],
       side_effects: ["CREATE_OR_UPDATE_TYPED_PROJECT_CONTEXT", "CREATE_AUTHORITY_CORPUS", "CREATE_DESIGN_AUTHORITY", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
       prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
       rollback: "PRESERVE_STAGING_AND_LEGACY_RECEIPTS; PROMOTE_ONLY_AFTER_READBACK",
@@ -791,6 +840,23 @@ export function validateBootstrapPlan(plan) {
   assert(plan.exact_creation_plan.delivery_probe_plan_sha256 === plan.delivery_probe_plan.probe_plan_sha256, "exact creation plan is not bound to delivery probes");
   assert(plan.exact_creation_plan.bootstrap_coverage_sha256 === plan.bootstrap_coverage.coverage_sha256, "exact creation plan is not bound to Bootstrap coverage");
   requireRecord(plan.authority_corpus, "authority corpus plan");
+  requireRecord(plan.standards_registry, "standards registry");
+  validateStandardsRegistry(plan.standards_registry);
+  requireRecord(plan.normalization_policy, "normalization policy");
+  validateNormalizationPolicy(plan.normalization_policy);
+  if (plan.project_import === null) {
+    assert(plan.normalization_policy.import_mode === null, "normalization policy carries an import mode without a project import plan");
+    assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null, "exact plan carries an unbound project import identity");
+  } else {
+    requireRecord(plan.project_import, "project import plan");
+    validateProjectImportPlan(plan.project_import);
+    assert(plan.project_import.standards_registry_sha256 === plan.standards_registry.registry_sha256, "project import is not bound to the standards registry");
+    assert(plan.project_import.normalization_sha256 === plan.normalization_policy.normalization_sha256, "project import is not bound to the normalization policy");
+    assert(plan.exact_creation_plan.project_import_sha256 === plan.project_import.plan_sha256, "exact creation plan is not bound to project import");
+    assert(plan.exact_creation_plan.source_preservation_sha256 === plan.project_import.source_identity.source_content_sha256, "exact creation plan is not bound to source preservation identity");
+  }
+  assert(plan.exact_creation_plan.standards_registry_sha256 === plan.standards_registry.registry_sha256, "exact creation plan is not bound to standards registry");
+  assert(plan.exact_creation_plan.normalization_sha256 === plan.normalization_policy.normalization_sha256, "exact creation plan is not bound to normalization policy");
   requireRecord(plan.model_policy, "model policy");
   requireRecord(plan.persistent_runtime, "Runtime plan");
   const body = structuredClone(plan);
@@ -857,6 +923,9 @@ function contextFromPlan(plan) {
     security_baseline: plan.security_baseline,
     authority_boundaries: plan.authority_boundaries,
     authority_corpus: plan.authority_corpus,
+    standards_registry: plan.standards_registry,
+    normalization_policy: plan.normalization_policy,
+    project_import: plan.project_import,
     model_policy: plan.model_policy,
     persistent_runtime: plan.persistent_runtime,
     first_campaign: plan.first_campaign,
@@ -884,8 +953,11 @@ function contextFromPlan(plan) {
         exact_context_digest: projectContext.exact_context_digest,
       },
       bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
+      standards_registry_sha256: plan.standards_registry.registry_sha256,
+      normalization_sha256: plan.normalization_policy.normalization_sha256,
+      project_import_sha256: plan.project_import?.plan_sha256 ?? null,
       bootstrap_output_groups: [
-        "PROJECT_DEFINITION", "NORTH_STAR", "PROVING_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
+        "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "PROVING_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
         "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
         "AUTHORITY_CORPUS", "MODEL_POLICY", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
         "EXACT_CREATION_PLAN",
@@ -1007,6 +1079,12 @@ function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot) {
       && observedSource.source_observation_sha256 === plan.authority_corpus.source_identity.source_observation_sha256,
     "legacy source contents changed after exact-plan approval");
   }
+  if (plan.project_import !== null) {
+    const observedImportSource = inspectProjectSource(plan.project_import.source_root);
+    assert(observedImportSource.source_content_sha256 === plan.project_import.source_identity.source_content_sha256
+      && observedImportSource.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
+    "project import source contents changed after exact-plan approval");
+  }
   return {root, discovery: observedDiscovery.facts};
 }
 
@@ -1068,6 +1146,20 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
     const legacy = preserveLegacyCorpus(source, destination, nowUtc);
     state.legacy_receipt_sha256 = legacy.receipt.receipt_sha256;
     verifyLegacyPreservation(destination);
+  }
+  if (plan.project_import !== null) {
+    const source = fs.realpathSync.native(path.resolve(plan.project_import.source_root));
+    const adoptIntoCurrentRoot = plan.project_import.mode === "ADOPT_IN_PLACE"
+      && (source === root || source.startsWith(`${root}${path.sep}`));
+    if (!adoptIntoCurrentRoot) assert(source !== root && !source.startsWith(`${root}${path.sep}`), "project import source must be outside the destination project root");
+    const destination = adoptIntoCurrentRoot
+      ? assertContained(root, ".agentos/import/source-preservation", "project import preservation destination")
+      : assertContained(stagingRoot, ".agentos/import/source-preservation", "project import preservation destination");
+    const preserved = preserveProjectSource(source, destination, nowUtc, {allowDestinationInsideSource: adoptIntoCurrentRoot && destination.startsWith(`${source}${path.sep}`)});
+    assert(preserved.receipt.source_content_sha256 === plan.project_import.source_identity.source_content_sha256
+      && preserved.receipt.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
+    "project import preservation is not bound to the exact source identity");
+    verifySourcePreservation(destination);
   }
   const destination = assertContained(stagingRoot, plan.authority_corpus.roots.authority_root, "authority root");
   fs.mkdirSync(destination, {recursive: true});
@@ -1248,6 +1340,17 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
     const receipt = verifyLegacyPreservation(legacyRoot);
     assert(receipt.status === "VERIFIED_EXACT", "setup Auditor could not verify legacy archive");
   }
+  if (plan.project_import !== null) {
+    const importRoot = plan.project_import.mode === "ADOPT_IN_PLACE"
+      && (plan.project_import.source_root === executionState.project_root || plan.project_import.source_root.startsWith(`${executionState.project_root}${path.sep}`))
+      ? assertContained(executionState.project_root, ".agentos/import/source-preservation", "project import preservation readback root")
+      : assertContained(root, ".agentos/import/source-preservation", "project import preservation readback root");
+    const receipt = verifySourcePreservation(importRoot);
+    assert(receipt.status === "VERIFIED_EXACT"
+      && receipt.manifest_sha256.length === 64
+      && receipt.excluded_paths >= 0,
+    "setup Auditor could not verify project source preservation");
+  }
   if (workflow) {
     const context = contextFromPlan(plan);
     const corpus = compileCorpusPlan(context, workflow);
@@ -1274,7 +1377,7 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
     bootstrap_session_id: bootstrapSessionId,
     plan_sha256: plan.plan_sha256,
     execution_state_sha256: executionState.state_sha256,
-    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "THREE_ROOT_SLICE"],
+    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "PROJECT_IMPORT_SOURCE_PRESERVATION", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "THREE_ROOT_SLICE"],
     status: "PASS",
   };
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};

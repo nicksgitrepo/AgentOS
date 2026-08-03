@@ -20,6 +20,8 @@ The normative map is [schemas/naming-and-terminology.v1.json](../../schemas/nami
 - `Delivery Target` is the intended Product target and maturity mode, separate from source-control and transport mechanics.
 - `Boundary Contract` is the executable set of constitutional, owner-sovereign, derived-operating, and temporary-probe limits.
 - `Delivery Probe` is a bounded read-only observation; it never authenticates, spends, pushes, merges, deploys, or rolls back.
+- `Project Import` is the typed source-to-destination migration choice; `Source Preservation` is its pre-build provenance gate; `Normalization Policy` and `Standards Registry` are the corresponding deterministic contracts.
+- `Migration Campaign` is the first governed campaign that executes an authorized normalization, audit, repair, and reversible cutover.
 
 ## Cascade names
 
@@ -32,3 +34,10 @@ The acceptance roots remain exactly `FUNCTION_REQUIREMENTS`, `DESIGN_BIBLE`, and
 Older names normalize before validation and never rewrite accepted history. `FEATURE_LEAD` and `FEATURE_ORCHESTRATOR` normalize to `FEATURE_AGENT`; `successor_wave` normalizes to `next_campaign_candidate`; `rough_draft` normalizes to `first_pass_candidate`. Compatibility entrypoints do not own setup state, campaign state, custody, or successor creation.
 
 Keep a rename only when it removes ambiguity, makes a boundary more honest, prevents a collision, or improves long-term migration. Project, provider, repository, domain, deployment, and owner identities remain context data.
+
+The canonical migration vocabulary is `PROJECT_IMPORT`,
+`SOURCE_PRESERVATION`, `NORMALIZATION_POLICY`, and `STANDARDS_REGISTRY`.
+Their executable paths are `control/project-import.mjs`,
+`control/normalization-policy.mjs`, and `control/standards-registry.mjs`, with
+matching `schemas/*.v1.json` contracts. Full project normalization is a
+campaign, not a hidden Bootstrap micro-phase.

@@ -23,6 +23,7 @@ const answers = {
   "project.north_star": {users: ["operator"], moment: "complete workflow", outcome: "truthful result"},
   "project.first_workflow": {name: "synthetic", done_when: ["result exists"]},
   "project.boundary": {project_name: "Synthetic", repositories: [], branches: []},
+  "project.import": {mode: "ADOPT_IN_PLACE", source_root: root},
   "project.protected_boundaries": {owner_only: ["destructive changes"]},
   "authority-corpus.source": {operation: "CREATE_NEW"},
   "project.design": {page_families: [], templates: [], protected_surfaces: []},

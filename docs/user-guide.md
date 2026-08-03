@@ -24,6 +24,8 @@ asking one question for every field.
 Discovery supplies repository shape, source markers, authority/design candidates, deployment markers, and available tools without reading secrets or changing the project. The compact question compiler asks about:
 
 - the project’s users, north star, first proving workflow, and boundary;
+- the import mode when an existing project is detected: adopt in place, clean
+  copy, normalize and audit, or reconstruct from intent;
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent limits;
 - authority-corpus import/refactor/create choice;
 - Design Bible and stack/testing/authentication/data constraints only when applicable or unresolved;
@@ -38,6 +40,12 @@ may hold, how long it should live, and whether the route is a local workspace,
 managed site, managed app, VPS, cloud, hybrid, or project-defined target. A
 managed-site prototype or limited working product is available without making
 a production claim.
+
+For imported projects, Bootstrap records a deterministic Standards Registry and
+Normalization Policy. It preserves the source before any migration build with
+an archive, manifest, index, receipt, and explicit exclusion note. A full
+normalization and four-lane audit is the first governed campaign, so setup does
+not become an unbounded hidden implementation.
 
 The existing protected-boundary answer becomes an enforceable Boundary
 Contract. It separates immutable constitutional protections, owner-sovereign

@@ -53,12 +53,26 @@ The compact catalog covers:
   project-defined target, with explicit limitations;
 - one enforceable boundary contract derived from constitutional rules, owner
   boundaries, delivery/life limits, and read-only probe prohibitions.
+- one project-import decision when discovery finds an existing project, with
+  `ADOPT_IN_PLACE`, `CLEAN_COPY`, `NORMALIZE_AND_AUDIT`, and
+  `RECONSTRUCT_FROM_INTENT` modes;
+- a version-pinned Standards Registry and compatibility-first Normalization
+  Policy;
+- a source-preservation archive, manifest, index, receipt, and exclusion note
+  before any import build or refactor.
 
 The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
 
 ## Exact plan and approval
 
-The compiled plan must contain `PROJECT_DEFINITION`, `NORTH_STAR`, `PROVING_WORKFLOW`, `PROJECT_LIFE_CONTRACT`, `FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`, `DELIVERY_TARGET`, `DESIGN_BIBLE`, `SECURITY_BASELINE`, `AUTHORITY_BOUNDARIES`, `BOUNDARY_CONTRACT`, `AUTHORITY_CORPUS`, `MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and `EXACT_CREATION_PLAN`.
+The compiled plan must contain `PROJECT_DEFINITION`, `PROJECT_IMPORT`,
+`SOURCE_PRESERVATION`, `NORMALIZATION_POLICY`, `STANDARDS_REGISTRY`,
+`NORTH_STAR`, `PROVING_WORKFLOW`, `PROJECT_LIFE_CONTRACT`,
+`FUNCTION_REQUIREMENTS`, `TECHNICAL_BASELINE`, `DELIVERY_POLICY`,
+`DELIVERY_TARGET`, `DESIGN_BIBLE`, `SECURITY_BASELINE`,
+`AUTHORITY_BOUNDARIES`, `BOUNDARY_CONTRACT`, `AUTHORITY_CORPUS`,
+`MODEL_POLICY`, `PERSISTENT_RUNTIME`, `FIRST_CAMPAIGN`, and
+`EXACT_CREATION_PLAN`.
 
 It also carries the content-addressed `bootstrap_coverage`, project life,
 delivery target, and boundary contract results. The exact plan, typed Project
@@ -87,6 +101,12 @@ legacy.receipt.json
 ```
 
 The archive preserves exact source bytes and records source repository/commit/tree or an explicit non-Git observation, dirty/untracked state, exclusions, entry hashes, and readback. The source is rechecked before replacement writes. The archive is historical lookup, never current authority.
+
+When a whole project is imported, the separate source-preservation controller
+creates `source-preservation.zip`, its manifest, index, receipt, and
+`import-exclusions.md` before the first migration build. This archive is source
+provenance, not current authority. Normalize and audit work runs as the first
+governed campaign in a separate destination.
 
 ## Authority corpus
 

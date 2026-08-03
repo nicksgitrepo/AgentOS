@@ -28,6 +28,12 @@ The coverage inventory is broader than the creation-plan groups. It includes:
 - Bootstrap proof, typed project-context separation, and the activation boundary;
 - the exact creation plan itself.
 
+For an existing project, the matrix adds one compact `PROJECT_IMPORT` decision
+and derives `SOURCE_PRESERVATION`, `NORMALIZATION_POLICY`, and
+`STANDARDS_REGISTRY`. Source preservation is mandatory before an import build
+or refactor. The full migration stays in the first governed campaign; Bootstrap
+does not turn setup into an unbounded refactor.
+
 Each row records its applicability, provenance references, discovery inputs,
 coverage status, safe default, probe requirement, owner-decision boundary,
 unavailable behavior, reopen triggers, dependencies, compiled field paths, and

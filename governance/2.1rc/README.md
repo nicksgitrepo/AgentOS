@@ -22,3 +22,9 @@ Bootstrap also compiles three related contracts:
   limited-product routes;
 - [boundary-contract.md](boundary-contract.md) makes constitutional,
   owner-sovereign, derived, and probe boundaries enforceable.
+
+Project migration is governed by [project-import.md](project-import.md), with
+the compatibility-first [normalization-policy.md](normalization-policy.md) and
+version-pinned [standards-registry.md](standards-registry.md). Bootstrap
+preserves an imported source before any migration build; the first governed
+campaign performs the full normalization and four-lane audit.

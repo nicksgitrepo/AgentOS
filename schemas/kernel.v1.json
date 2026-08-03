@@ -98,6 +98,21 @@
       "contract": "schemas/boundary-contract.v1.json",
       "rule": "Constitutional, owner-sovereign, derived-operating, and temporary-probe boundaries are explicit; more restrictive boundaries win."
     },
+    "project_import": {
+      "controller": "control/project-import.mjs",
+      "contract": "schemas/project-import.v1.json",
+      "rule": "A source-preserving import selects exactly one mode. Normalize and reconstruct modes run the full migration and four-lane audit as the first governed campaign; Bootstrap only authorizes and seals the inputs."
+    },
+    "normalization_policy": {
+      "controller": "control/normalization-policy.mjs",
+      "contract": "schemas/normalization-policy.v1.json",
+      "rule": "External and persisted compatibility outranks language, framework, glossary, and AgentOS fallback naming."
+    },
+    "standards_registry": {
+      "controller": "control/standards-registry.mjs",
+      "contract": "schemas/standards-registry.v1.json",
+      "rule": "Standards have explicit version, source, applicability, role, requirement identity, and evidence; project extensions can only be stricter."
+    },
     "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably.",
     "delivery_policy": {
       "controller": "control/delivery-policy.mjs",

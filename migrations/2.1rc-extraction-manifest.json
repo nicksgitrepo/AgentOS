@@ -72,7 +72,11 @@
     "added a deterministic Bootstrap Coverage output-gap matrix for creation, trust, data, delivery, recovery, proof, and activation obligations",
     "added one compact Project Life Contract so maturity, audience, data posture, lifetime, maintenance, portability, and retirement are explicit before infrastructure selection",
     "split Delivery Target from transport mechanics and added a profiled managed-site prototype and limited-product option without provider-account authority",
-    "added a content-addressed Boundary Contract with immutable constitutional, owner-sovereign, derived-operating, and temporary-probe classes"
+    "added a content-addressed Boundary Contract with immutable constitutional, owner-sovereign, derived-operating, and temporary-probe classes",
+    "added typed project import modes with source-preservation archive, manifest, index, receipt, and explicit exclusion record",
+    "added compatibility-first normalization precedence for directories, filenames, identifiers, routes, data contracts, events, and persisted identities",
+    "added a version-pinned Standards Registry with explicit role, applicability, evidence, and non-weakening project-overlay boundary",
+    "bound full project normalization and four-lane import auditing to the first governed campaign rather than hidden Bootstrap implementation"
   ],
   "activation": {
     "requires_explicit_owner_approval": true,

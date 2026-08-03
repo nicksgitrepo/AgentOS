@@ -51,6 +51,10 @@
   ],
   "required_output_groups": [
     "PROJECT_DEFINITION",
+    "PROJECT_IMPORT",
+    "SOURCE_PRESERVATION",
+    "NORMALIZATION_POLICY",
+    "STANDARDS_REGISTRY",
     "NORTH_STAR",
     "PROVING_WORKFLOW",
     "PROJECT_LIFE_CONTRACT",
@@ -71,6 +75,10 @@
   "coverage_outputs": [
     {"output_id": "DISCOVERY_PERMISSION", "category": "TRUST", "question_ids": ["bootstrap.discovery.mode"]},
     {"output_id": "PROJECT_DEFINITION", "category": "CREATION", "question_ids": ["project.boundary"]},
+    {"output_id": "PROJECT_IMPORT", "category": "CREATION", "question_ids": ["project.import"], "applicability": "CONDITIONAL"},
+    {"output_id": "SOURCE_PRESERVATION", "category": "RECOVERY", "question_ids": [], "applicability": "CONDITIONAL"},
+    {"output_id": "NORMALIZATION_POLICY", "category": "CREATION", "question_ids": []},
+    {"output_id": "STANDARDS_REGISTRY", "category": "TRUST", "question_ids": []},
     {"output_id": "NORTH_STAR", "category": "INTENT", "question_ids": ["project.north_star"]},
     {"output_id": "PROVING_WORKFLOW", "category": "INTENT", "question_ids": ["project.first_workflow"]},
     {"output_id": "PROJECT_LIFE_CONTRACT", "category": "INTENT", "question_ids": ["project.life_contract"]},

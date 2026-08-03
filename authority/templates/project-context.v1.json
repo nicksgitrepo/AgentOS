@@ -6,6 +6,10 @@
     "contract": "schemas/bootstrap-plan.v1.json",
     "required_groups": [
       "PROJECT_DEFINITION",
+      "PROJECT_IMPORT",
+      "SOURCE_PRESERVATION",
+      "NORMALIZATION_POLICY",
+      "STANDARDS_REGISTRY",
       "NORTH_STAR",
       "PROVING_WORKFLOW",
       "PROJECT_LIFE_CONTRACT",
@@ -146,6 +150,31 @@
       "hold_rule",
       "boundary_contract_sha256"
     ],
+    "project_import": [
+      "mode",
+      "source_root",
+      "destination_root",
+      "source_identity",
+      "preservation",
+      "phases",
+      "audit",
+      "cutover",
+      "rollback",
+      "plan_sha256"
+    ],
+    "normalization_policy": [
+      "scope",
+      "precedence",
+      "rules",
+      "rename_dispositions",
+      "normalization_sha256"
+    ],
+    "standards_registry": [
+      "standards",
+      "required_standard_ids",
+      "overlay_ids",
+      "registry_sha256"
+    ],
     "bootstrap_coverage": [
       "schema",
       "discovery_digest_sha256",
@@ -192,6 +221,9 @@
     "delivery_target_rule": "delivery_policy.delivery_target is the single target description. It keeps product maturity, audience, data posture, authentication, limitations, and optional adapter separate from transport mechanics. A target adapter never supplies account authority or invented provider capability.",
     "project_life_rule": "project_life_contract is the single compact description of maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement. The private-prototype default is safe only when no material signal requires owner intent.",
     "boundary_contract_rule": "boundary_contract is the single enforceable boundary set. Constitutional rules are immutable; owner, derived, and probe boundaries may be extended only more restrictively.",
+    "project_import_rule": "project_import is the single typed source-to-destination migration plan. It preserves the source before build, selects one import mode, schedules the canonical four audit disciplines, and keeps cutover reversible.",
+    "normalization_policy_rule": "normalization_policy is the single naming and structure policy. External, persisted, and public contracts outrank official language/framework conventions, the project glossary, and AgentOS fallback rules.",
+    "standards_registry_rule": "standards_registry is the single version-pinned standards inventory. Project overlays may add typed requirements but cannot remove or weaken portable standards.",
     "bootstrap_coverage_rule": "bootstrap_coverage is the single output-gap inventory for setup readiness. It may be extended with stricter project rows but cannot omit, weaken, or reinterpret portable rows.",
     "interval_rule": "Every operational interval is a positive finite integer number of minutes.",
     "extension_rule": "Additional project fields are permitted only outside portable_template_instance or through typed_project_capability_extensions; they cannot shadow or weaken a required portable field."
