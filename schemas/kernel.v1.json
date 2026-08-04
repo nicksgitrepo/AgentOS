@@ -130,6 +130,7 @@
       "controller": "control/control-plane-root.mjs",
       "contract": "schemas/control-plane-root.v1.json",
       "default_mode": "EXTERNAL_DEFAULT",
+      "storage_backends": ["LOCAL", "GIT", "HYBRID"],
       "rule": "AgentOS authority, conversations, controller state, campaign state, evidence, handoffs, and source-preservation records stay outside the product root by default. In-project storage requires an explicit opt-in binding.",
       "product_root_rule": "The product root is the user's source and delivery space, not AgentOS's default state directory."
     },

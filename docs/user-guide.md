@@ -11,9 +11,10 @@ private conversations, authority, controller and campaign state, evidence,
 handoffs, and source-preservation records.
 
 Bootstrap chooses a separate sibling control folder by default. An owner can
-select another external folder, or explicitly opt into storing the control
-plane inside the Product repository. The public repository never receives
-runtime state or private handoffs.
+select another external folder, store the AgentOS home in its own Git
+repository, use local-only storage, or use a hybrid. The public repository
+never receives runtime state or private handoffs. Storing the control plane
+inside the Product repository is an explicit opt-in.
 
 ## Start
 

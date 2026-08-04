@@ -128,6 +128,8 @@ const controlPlane = JSON.parse(read("schemas/control-plane-root.v1.json"));
 assert.equal(controlPlane.controller, "control/control-plane-root.mjs");
 assert.equal(controlPlane.modes.EXTERNAL_DEFAULT.includes("separate sibling"), true);
 assert.equal(controlPlane.modes.IN_PROJECT_OPT_IN.includes("explicitly"), true);
+assert.deepEqual(Object.keys(controlPlane.storage_backends), ["LOCAL", "GIT", "HYBRID"]);
+assert.equal(controlPlane.home_policy.repository_role, "AGENTOS_DEVELOPER_HOME");
 const bootstrapCoverage = JSON.parse(read("schemas/bootstrap-coverage.v1.json"));
 assert.equal(bootstrapCoverage.status, "PREPARED_NOT_ACTIVATED");
 assert(bootstrapCoverage.coverage_outputs.some((entry) => entry.output_id === "PERSISTENT_RUNTIME"));
@@ -168,6 +170,7 @@ assert.equal(kernel.agentos_controller_initialization.state_path, "agentos/contr
 assert.equal(kernel.agentos_controller_initialization.storage_rule.includes("control-plane root"), true);
 assert.equal(kernel.control_plane.controller, "control/control-plane-root.mjs");
 assert.equal(kernel.control_plane.default_mode, "EXTERNAL_DEFAULT");
+assert.deepEqual(kernel.control_plane.storage_backends, ["LOCAL", "GIT", "HYBRID"]);
 assert.equal(kernel.bootstrap.start_contract, "schemas/bootstrap-start.v1.json");
 assert.equal(kernel.bootstrap.start_command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
 const bootstrapStart = JSON.parse(read("schemas/bootstrap-start.v1.json"));

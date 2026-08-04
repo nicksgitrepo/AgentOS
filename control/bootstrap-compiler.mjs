@@ -53,6 +53,7 @@ import {
   relativeControlPlanePath,
   resolveControlPlaneRoot,
   validateControlPlaneBinding,
+  validateControlPlaneStorage,
 } from "./control-plane-root.mjs";
 import {
   compileGlobalPolicyState,
@@ -731,10 +732,10 @@ export function validateBootstrapAnswer(questionId, value, discovery = []) {
   return question;
 }
 
-export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot = null, controlPlaneRoot = null, controlPlaneMode = null} = {}) {
+export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot = null, controlPlaneRoot = null, controlPlaneMode = null, controlPlaneStorage = "LOCAL"} = {}) {
   assert(projectRoot !== null, "Bootstrap plan requires an exact project root");
   const resolvedProjectRoot = fs.realpathSync.native(path.resolve(projectRoot));
-  const controlPlane = resolveControlPlaneRoot({projectRoot: resolvedProjectRoot, controlPlaneRoot, controlPlaneMode});
+  const controlPlane = resolveControlPlaneRoot({projectRoot: resolvedProjectRoot, controlPlaneRoot, controlPlaneMode, storageBackend: controlPlaneStorage});
   const normalizedAnswers = validateAnswers(discovery, answers);
   const questionPlan = planBootstrapQuestions({discovery, answers: normalizedAnswers});
   assert(questionPlan.status === "READY_TO_COMPILE", "Bootstrap still has unresolved material questions");
@@ -1061,6 +1062,7 @@ function contextFromPlan(plan) {
     source_plan_sha256: plan.plan_sha256,
     control_plane_root: plan.control_plane_root,
     control_plane: plan.control_plane,
+    agentos_home: plan.control_plane.home_policy,
     project_definition: plan.project_definition,
     north_star: plan.north_star,
     first_useful_workflow: plan.first_useful_workflow,
@@ -1199,6 +1201,7 @@ function revalidateControlPlane(plan, projectRoot, controlPlaneRoot = null) {
     projectRoot,
     controlPlaneRoot: controlPlaneRoot ?? plan.control_plane_root,
     controlPlaneMode: plan.control_plane.mode,
+    storageBackend: plan.control_plane.storage_backend,
   });
   assert(resolved.binding.binding_sha256 === plan.control_plane.binding_sha256, "Bootstrap control-plane binding changed after exact-plan approval");
   assert(resolved.control_plane_root === plan.control_plane_root, "Bootstrap control-plane root changed after exact-plan approval");
@@ -1377,6 +1380,7 @@ export function executeBootstrapPlan(plan, {
   assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
   const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, controlPlaneRoot: controlRoot, legacySourceRoot, nowUtc});
   fs.mkdirSync(controlRoot, {recursive: true});
+  validateControlPlaneStorage(controlRoot, plan.control_plane.storage_backend);
   const stagingRoot = fs.mkdtempSync(path.join(controlRoot, ".agentos-bootstrap-stage-"));
   state.phase = "STAGING";
   state.staging_root = path.relative(controlRoot, stagingRoot);

@@ -51,9 +51,10 @@ read-only discovery
 ```
 
 The `PROJECT_ROOT` is the user’s source and delivery space. Bootstrap reads it
-for discovery and safe local probes. The `CONTROL_PLANE_ROOT` stores AgentOS
-authority, conversations, controller state, campaign state, evidence,
-handoffs, and source-preservation records. By default it is a separate sibling
+for discovery and safe local probes. The `CONTROL_PLANE_ROOT` is the AgentOS
+home: it stores AgentOS authority, conversations, controller state, campaign
+state, evidence, handoffs, and source-preservation records. The owner may use
+`LOCAL`, `GIT`, or `HYBRID` storage. By default it is a separate sibling
 folder. A control plane inside the project requires an explicit
 `IN_PROJECT_OPT_IN` decision.
 

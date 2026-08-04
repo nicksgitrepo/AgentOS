@@ -18,7 +18,9 @@ Canonical executable authorities:
   preservation and corpus/evidence utilities.
 
 Bootstrap writes AgentOS state to the bound control plane, not to the Product
-root by default. The Product root remains a project input/output boundary.
+root by default. The control plane is the AgentOS developer home and may use
+local, Git, or hybrid storage. The Product root remains a project input/output
+boundary.
 
 `bootstrap-interview.mjs`, `guided-bootstrap.mjs`, and `dynamic-bootstrap.mjs`
 are migration-only compatibility aliases. They cannot create setup state,

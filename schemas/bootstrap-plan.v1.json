@@ -70,6 +70,12 @@
     "contract": "schemas/project-import.v1.json",
     "rule": "Adopt in place, clean copy, normalize and audit, and reconstruct from intent are distinct typed modes. Preservation artifacts follow the bound control-plane storage mode; the source remains untouched until an exact reversible cutover."
   },
+  "control_plane": {
+    "controller": "control/control-plane-root.mjs",
+    "contract": "schemas/control-plane-root.v1.json",
+    "storage_backends": ["LOCAL", "GIT", "HYBRID"],
+    "rule": "The AgentOS home is separate from the Product by default and contains the wiki, governance, tooling, agent notes, conversations, handoffs, campaign state, evidence, and source preservation. The Product repository remains release-clean."
+  },
   "normalization_policy": {
     "controller": "control/normalization-policy.mjs",
     "contract": "schemas/normalization-policy.v1.json",

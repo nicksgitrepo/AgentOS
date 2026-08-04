@@ -10,6 +10,7 @@ export const CONTROL_PLANE_MODES = Object.freeze([
   "EXTERNAL_EXPLICIT",
   "IN_PROJECT_OPT_IN",
 ]);
+export const CONTROL_PLANE_STORAGE_BACKENDS = Object.freeze(["LOCAL", "GIT", "HYBRID"]);
 export const CONTROL_PLANE_ARTIFACT_GROUPS = Object.freeze([
   "AUTHORITY_CORPUS",
   "PROJECT_CONTEXT",
@@ -20,6 +21,13 @@ export const CONTROL_PLANE_ARTIFACT_GROUPS = Object.freeze([
   "HANDOFFS",
   "SOURCE_PRESERVATION",
 ]);
+export const CONTROL_PLANE_HOME_POLICY = Object.freeze({
+  repository_role: "AGENTOS_DEVELOPER_HOME",
+  agentos_content: Object.freeze(["WIKI", "GOVERNANCE", "TOOLING", "AGENT_NOTES", "CONVERSATIONS", "HANDOFFS", "CAMPAIGN_STATE", "EVIDENCE"]),
+  product_release_rule: "PRODUCT_REPOSITORIES_STAY_RELEASE_CLEAN_AND_CONTAIN_ONLY_DOCUMENTATION_BUILD_AND_RUNTIME_MATERIAL",
+  private_work_rule: "WORK_REPOSITORIES_AND_SCRATCH_WORKTREES_STAY_PRIVATE_OR_LOCAL_AND_NEVER_BECOME_PUBLIC_RELEASE_REPOSITORIES",
+  storage_rule: "OWNER_MAY_USE_LOCAL_GIT_OR_HYBRID_STORAGE_FOR_THE_AGENTOS_DEVELOPER_HOME",
+});
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const compareUtf8 = (left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
@@ -94,19 +102,21 @@ function validateStaticBinding(binding, {projectRoot = null, controlPlaneRoot = 
   requireRecord(binding, "control-plane binding");
   const expectedKeys = [
     "schema", "version", "mode", "storage_scope", "project_root", "control_plane_root",
-    "default_resolution", "artifact_groups", "source_preservation", "binding_sha256",
+    "storage_backend", "default_resolution", "artifact_groups", "home_policy", "source_preservation", "binding_sha256",
   ].sort(compareUtf8);
   const actualKeys = Object.keys(binding).sort(compareUtf8);
   assert(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), "control-plane binding fields mismatch");
   assert(binding.schema === CONTROL_PLANE_SCHEMA && binding.version === 1, "control-plane binding identity is invalid");
   assert(CONTROL_PLANE_MODES.includes(binding.mode), "control-plane mode is invalid");
   assert(["EXTERNAL", "PROJECT_ROOT"].includes(binding.storage_scope), "control-plane storage scope is invalid");
+  assert(CONTROL_PLANE_STORAGE_BACKENDS.includes(binding.storage_backend), "control-plane storage backend is invalid");
   requireString(binding.project_root, "control-plane project root");
   requireString(binding.control_plane_root, "control-plane root");
   assert(path.isAbsolute(binding.project_root) && path.isAbsolute(binding.control_plane_root), "control-plane roots must be absolute");
   assert(Array.isArray(binding.artifact_groups)
     && JSON.stringify(binding.artifact_groups) === JSON.stringify([...CONTROL_PLANE_ARTIFACT_GROUPS]),
   "control-plane artifact groups are invalid");
+  assert(JSON.stringify(binding.home_policy) === JSON.stringify(CONTROL_PLANE_HOME_POLICY), "control-plane home policy is invalid");
   requireString(binding.default_resolution, "control-plane default resolution");
   requireString(binding.source_preservation, "control-plane source preservation rule");
   assert(SHA256.test(binding.binding_sha256), "control-plane binding digest is invalid");
@@ -130,9 +140,20 @@ export function validateControlPlaneBinding(binding, options = {}) {
   return validateStaticBinding(binding, options);
 }
 
-export function resolveControlPlaneRoot({projectRoot, controlPlaneRoot = null, controlPlaneMode = null} = {}) {
+export function validateControlPlaneStorage(controlPlaneRoot, storageBackend) {
+  requireString(controlPlaneRoot, "control-plane root");
+  assert(CONTROL_PLANE_STORAGE_BACKENDS.includes(storageBackend), "control-plane storage backend is invalid");
+  const root = canonicalExistingDirectory(controlPlaneRoot, "control-plane root");
+  if (["GIT", "HYBRID"].includes(storageBackend)) {
+    assert(fs.existsSync(path.join(root, ".git")), `${storageBackend} control plane requires a Git repository`);
+  }
+  return {control_plane_root: root, storage_backend: storageBackend, status: "READY"};
+}
+
+export function resolveControlPlaneRoot({projectRoot, controlPlaneRoot = null, controlPlaneMode = null, storageBackend = "LOCAL"} = {}) {
   const project = canonicalExistingDirectory(projectRoot, "project root");
   if (controlPlaneRoot !== null) assert(path.isAbsolute(controlPlaneRoot), "explicit control-plane root must be absolute");
+  assert(CONTROL_PLANE_STORAGE_BACKENDS.includes(storageBackend), "control-plane storage backend is invalid");
   const mode = controlPlaneMode ?? (controlPlaneRoot === null ? "EXTERNAL_DEFAULT" : "EXTERNAL_EXPLICIT");
   assert(CONTROL_PLANE_MODES.includes(mode), "control-plane mode is invalid");
   if (mode === "IN_PROJECT_OPT_IN") {
@@ -147,6 +168,7 @@ export function resolveControlPlaneRoot({projectRoot, controlPlaneRoot = null, c
   } else {
     assert(!pathsOverlap(project, control), "external control plane must be separate from the project root");
   }
+  if (fs.existsSync(control)) validateControlPlaneStorage(control, storageBackend);
   const body = {
     schema: CONTROL_PLANE_SCHEMA,
     version: 1,
@@ -154,8 +176,10 @@ export function resolveControlPlaneRoot({projectRoot, controlPlaneRoot = null, c
     storage_scope: mode === "IN_PROJECT_OPT_IN" ? "PROJECT_ROOT" : "EXTERNAL",
     project_root: project,
     control_plane_root: control,
+    storage_backend: storageBackend,
     default_resolution: mode === "EXTERNAL_DEFAULT" ? "PROJECT_SIBLING_WITH_AGENTOS_CONTROL_PLANE_SUFFIX" : "OWNER_SELECTED_ROOT",
     artifact_groups: [...CONTROL_PLANE_ARTIFACT_GROUPS],
+    home_policy: structuredClone(CONTROL_PLANE_HOME_POLICY),
     source_preservation: mode === "IN_PROJECT_OPT_IN"
       ? "PROJECT_ROOT_STORAGE_ALLOWED_ONLY_AFTER_EXPLICIT_CONTROL_PLANE_OPT_IN"
       : "SOURCE_PRESERVATION_STAYS_OUTSIDE_PROJECT_ROOT",

@@ -6,6 +6,11 @@
   "controller": "control/control-plane-root.mjs",
   "result": "agentos.control_plane_root.v1",
   "purpose": "Keep AgentOS authority, conversations, controller state, campaign state, evidence, handoffs, and source-preservation records outside a user project by default.",
+  "storage_backends": {
+    "LOCAL": "Keep the AgentOS home on the local machine without requiring Git.",
+    "GIT": "Keep the AgentOS home as its own Git repository.",
+    "HYBRID": "Keep durable AgentOS material in its own Git repository and retain explicitly local-only working material outside the release-facing subset."
+  },
   "modes": {
     "EXTERNAL_DEFAULT": "Use a separate sibling control folder derived from the project folder.",
     "EXTERNAL_EXPLICIT": "Use a separate owner-selected folder outside the project folder.",
@@ -21,6 +26,13 @@
     "HANDOFFS",
     "SOURCE_PRESERVATION"
   ],
+  "home_policy": {
+    "repository_role": "AGENTOS_DEVELOPER_HOME",
+    "agentos_content": ["WIKI", "GOVERNANCE", "TOOLING", "AGENT_NOTES", "CONVERSATIONS", "HANDOFFS", "CAMPAIGN_STATE", "EVIDENCE"],
+    "product_release_rule": "PRODUCT_REPOSITORIES_STAY_RELEASE_CLEAN_AND_CONTAIN_ONLY_DOCUMENTATION_BUILD_AND_RUNTIME_MATERIAL",
+    "private_work_rule": "WORK_REPOSITORIES_AND_SCRATCH_WORKTREES_STAY_PRIVATE_OR_LOCAL_AND_NEVER_BECOME_PUBLIC_RELEASE_REPOSITORIES",
+    "storage_rule": "OWNER_MAY_USE_LOCAL_GIT_OR_HYBRID_STORAGE_FOR_THE_AGENTOS_DEVELOPER_HOME"
+  },
   "default_rule": "The product folder is source and delivery space. The control plane is separate state and authority space. Bootstrap must not create AgentOS control artifacts in the product folder unless IN_PROJECT_OPT_IN is explicitly bound.",
   "boundary_rule": "External control planes may not overlap the project root. In-project control planes must be contained by the project root and must carry the explicit opt-in mode.",
   "binding_rule": "The project root, control-plane root, mode, storage scope, artifact groups, and source-preservation rule are content-addressed together and rechecked before writes.",

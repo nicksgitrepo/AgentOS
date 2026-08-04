@@ -12,14 +12,23 @@ AgentOS uses three different spaces:
 - **Product repository:** the user’s application or other project source.
 - **AgentOS control plane:** private conversations, authority, controller state, campaign state, evidence, handoffs, and source-preservation records.
 
-Bootstrap keeps the control plane in a separate sibling folder by default. An
-owner may choose a different external folder. Storing it inside the Product
-repository is an explicit opt-in, not the default.
+Bootstrap keeps the AgentOS home/control plane separate from the Product by
+default. The owner may keep it locally, in its own Git repository, or as a
+hybrid with Git-backed durable material and local-only working material.
+Storing it inside the Product repository is an explicit opt-in, not the
+default.
 
 The public repository must never contain secrets, private paths, private
 conversations, owner handoffs, credentials, or runtime state from another
 project. A clean public distribution is prepared from the development copy
 only after the portability and hostile-boundary checks pass.
+
+As a maintainer-only development arrangement, AgentOS may use three separate
+repository roles:
+a baseline/source repository, an active development repository, and a sterile
+release repository. This does not prescribe a three-repository layout for a
+consuming Product. Only the sterile release repository is a publication
+candidate. See [repository roles](docs/repository-roles.md).
 
 ## Start in three steps
 
@@ -100,6 +109,7 @@ delete.
 - Fresh-agent start contract: replace the two path placeholders in the instruction above, then run `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED` for the first read-only discovery and question plan. The result includes the separately bound control-plane root.
 - Exact binding: [`schemas/bootstrap-binding.v1.json`](schemas/bootstrap-binding.v1.json)
 - User guide: [`docs/user-guide.md`](docs/user-guide.md)
+- Repository roles: [`docs/repository-roles.md`](docs/repository-roles.md)
 - Maintainer guide: [`docs/maintainer-guide.md`](docs/maintainer-guide.md)
 
 From the repository root:

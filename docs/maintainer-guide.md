@@ -34,4 +34,9 @@ contracts, documentation, tests, and synthetic examples. A consuming Product
 repository and its AgentOS control plane are separate roots and are never
 copied into this distribution.
 
+The maintainer layout is three-repository work: a baseline/source repository,
+an active development repository, and a sterile release repository. Only the
+sterile release repository is a public publication candidate. Product release
+repositories and private work repositories remain outside that chain.
+
 Before handoff, run `node tests/verify-portability.mjs`, `node tests/verify-all.mjs`, and each focused verifier. Never add credentials, real project paths, deployment receipts, release evidence, or product-specific policy.

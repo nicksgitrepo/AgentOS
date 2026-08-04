@@ -46,6 +46,8 @@ const plan = compileBootstrapPlan({discovery, answers, projectRoot});
 validateBootstrapPlan(plan);
 assert.equal(plan.control_plane.mode, "EXTERNAL_DEFAULT");
 assert.equal(plan.control_plane.storage_scope, "EXTERNAL");
+assert.equal(plan.control_plane.storage_backend, "LOCAL");
+assert.equal(plan.control_plane.home_policy.repository_role, "AGENTOS_DEVELOPER_HOME");
 assert.notEqual(plan.control_plane_root, plan.project_root);
 assert(plan.control_plane_root.startsWith(`${path.dirname(plan.project_root)}${path.sep}`));
 assert(plan.control_plane_root.endsWith(".agentos-control-plane"));
@@ -118,6 +120,21 @@ const optedIn = resolveControlPlaneRoot({
 });
 assert.equal(optedIn.binding.mode, "IN_PROJECT_OPT_IN");
 assert.equal(optedIn.binding.storage_scope, "PROJECT_ROOT");
+
+const gitHome = path.join(parent, "agentos-git-home");
+fs.mkdirSync(path.join(gitHome, ".git"), {recursive: true});
+const gitBinding = resolveControlPlaneRoot({
+  projectRoot,
+  controlPlaneRoot: gitHome,
+  storageBackend: "GIT",
+});
+assert.equal(gitBinding.binding.storage_backend, "GIT");
+const hybridBinding = resolveControlPlaneRoot({
+  projectRoot,
+  controlPlaneRoot: gitHome,
+  storageBackend: "HYBRID",
+});
+assert.equal(hybridBinding.binding.storage_backend, "HYBRID");
 
 fs.rmSync(parent, {recursive: true, force: true});
 console.log("PASS AgentOS control-plane boundary (external default, clean Product root, promotion containment, and explicit in-project opt-in)");
