@@ -224,7 +224,7 @@ assert.throws(() => evaluateGovernanceDecisionTree({tree, answers: numeric}), /e
 
 const generic = yesAnswers();
 generic["G-FUNCTIONALITY-ROOT"].evidence.source_commit.check_id = "PLACEHOLDER";
-assert.throws(() => evaluateGovernanceDecisionTree({tree, answers: generic}), /evidence record|fields mismatch|source commit|exactly the declared evidence/u);
+assert.throws(() => evaluateGovernanceDecisionTree({tree, answers: generic}), /evidence record|fields mismatch|source commit|exactly the declared evidence|generic evidence/u);
 
 const stale = yesAnswers();
 stale["G-FUNCTIONALITY-ROOT"].evidence.source_commit.source_commit = "3".repeat(40);
