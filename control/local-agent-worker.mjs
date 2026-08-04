@@ -1161,6 +1161,184 @@ function applyOwnerFeedbackExecutionBoundaryRepair(worktreePath, feedbackId) {
   };
 }
 
+function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
+  const runnerPath = path.join(worktreePath, "control/check-runner.mjs");
+  const workerPath = path.join(worktreePath, "control/local-agent-worker.mjs");
+  const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
+  const verifierPath = path.join(worktreePath, "tests/verify-owner-feedback-check-repair.mjs");
+  const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
+  assert(fs.existsSync(workerPath) && fs.existsSync(adapterPath) && fs.existsSync(backlogPath), "owner feedback check-repair inputs are unavailable");
+  assert(!fs.existsSync(runnerPath), "owner feedback check-repair runner was already applied");
+
+  const runnerSource = [
+    "#!/usr/bin/env node",
+    "",
+    "import crypto from \"node:crypto\";",
+    "import fs from \"node:fs\";",
+    "import path from \"node:path\";",
+    "import {execFileSync} from \"node:child_process\";",
+    "",
+    "const SHA256 = /^[0-9a-f]{64}$/u;",
+    "const GIT_OBJECT = /^[0-9a-f]{40}$/u;",
+    "const ISO_UTC = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$/u;",
+    "",
+    "function assert(condition, message) { if (!condition) throw new Error(message); }",
+    "function canonicalize(value) { if (Array.isArray(value)) return value.map(canonicalize); if (value && typeof value === \"object\") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalize(value[key])])); return value; }",
+    "function digestWithout(value, field) { const body = structuredClone(value); body[field] = null; return crypto.createHash(\"sha256\").update(JSON.stringify(canonicalize(body)), \"utf8\").digest(\"hex\"); }",
+    "function requireString(value, label) { assert(typeof value === \"string\" && value.length > 0, `${label} is required`); }",
+    "function requireSha(value, label) { assert(typeof value === \"string\" && SHA256.test(value), `${label} must be a SHA-256`); }",
+    "function requireGitObject(value, label) { assert(typeof value === \"string\" && GIT_OBJECT.test(value), `${label} must be a Git object`); }",
+    "function requireUtc(value, label) { assert(typeof value === \"string\" && ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`); }",
+    "",
+    "export function validateCheckFailureReceipt(receipt) {",
+    "  const keys = [\"schema\", \"version\", \"status\", \"task_id\", \"role\", \"source_commit\", \"source_tree\", \"check_index\", \"command\", \"exit_code\", \"signal\", \"stdout\", \"stderr\", \"observed_at_utc\", \"failure_sha256\"];",
+    "  assert(JSON.stringify(Object.keys(receipt).sort()) === JSON.stringify([...keys].sort()), \"check failure receipt fields mismatch\");",
+    "  assert(receipt.schema === \"agentos.local_check_failure_receipt.v1\" && receipt.version === 1 && receipt.status === \"FAILED\", \"check failure receipt identity is invalid\");",
+    "  requireString(receipt.task_id, \"check failure task ID\");",
+    "  requireString(receipt.role, \"check failure role\");",
+    "  requireGitObject(receipt.source_commit, \"check failure source commit\");",
+    "  requireGitObject(receipt.source_tree, \"check failure source tree\");",
+    "  assert(Number.isSafeInteger(receipt.check_index) && receipt.check_index >= 0, \"check failure index is invalid\");",
+    "  requireString(receipt.command, \"check failure command\");",
+    "  assert(receipt.exit_code === null || (Number.isSafeInteger(receipt.exit_code) && receipt.exit_code !== 0), \"check failure exit code is invalid\");",
+    "  assert(receipt.signal === null || typeof receipt.signal === \"string\", \"check failure signal is invalid\");",
+    "  assert(typeof receipt.stdout === \"string\" && typeof receipt.stderr === \"string\", \"check failure output is invalid\");",
+    "  requireUtc(receipt.observed_at_utc, \"check failure time\");",
+    "  requireSha(receipt.failure_sha256, \"check failure digest\");",
+    "  assert(receipt.failure_sha256 === digestWithout(receipt, \"failure_sha256\"), \"check failure digest mismatch\");",
+    "  return receipt;",
+    "}",
+    "",
+    "export function compileCheckFailureReceipt({taskId, role, sourceCommit, sourceTree, checkIndex, command, error, observedAtUtc = new Date().toISOString()}) {",
+    "  const receipt = {schema: \"agentos.local_check_failure_receipt.v1\", version: 1, status: \"FAILED\", task_id: taskId, role, source_commit: sourceCommit, source_tree: sourceTree, check_index: checkIndex, command, exit_code: Number.isSafeInteger(error?.status) ? error.status : null, signal: error?.signal ?? null, stdout: typeof error?.stdout === \"string\" ? error.stdout : String(error?.stdout ?? \"\"), stderr: typeof error?.stderr === \"string\" ? error.stderr : String(error?.stderr ?? \"\"), observed_at_utc: observedAtUtc, failure_sha256: null};",
+    "  receipt.failure_sha256 = digestWithout(receipt, \"failure_sha256\");",
+    "  return validateCheckFailureReceipt(receipt);",
+    "}",
+    "",
+    "function writeReceipt(target, receipt) {",
+    "  fs.mkdirSync(path.dirname(target), {recursive: true});",
+    "  if (fs.existsSync(target)) { assert(!fs.lstatSync(target).isSymbolicLink(), \"check failure receipt may not be a symlink\"); assert(fs.readFileSync(target, \"utf8\") === `${JSON.stringify(receipt)}\\n`, \"check failure receipt changed\"); return; }",
+    "  const temporary = `${target}.${process.pid}.stage`;",
+    "  try { fs.writeFileSync(temporary, `${JSON.stringify(receipt)}\\n`, {flag: \"wx\", mode: 0o600}); fs.renameSync(temporary, target); } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }",
+    "}",
+    "",
+    "export function runChecksWithEvidence({worktreePath, checks, evidenceRoot, taskId, role, sourceCommit, sourceTree}) {",
+    "  assert(fs.existsSync(worktreePath) && fs.statSync(worktreePath).isDirectory(), \"check worktree is unavailable\");",
+    "  assert(Array.isArray(checks) && checks.length > 0 && checks.every((check) => typeof check === \"string\" && check.length > 0), \"check list is invalid\");",
+    "  requireString(evidenceRoot, \"check evidence root\"); requireString(taskId, \"check task ID\"); requireString(role, \"check role\"); requireGitObject(sourceCommit, \"check source commit\"); requireGitObject(sourceTree, \"check source tree\");",
+    "  for (let checkIndex = 0; checkIndex < checks.length; checkIndex += 1) {",
+    "    const command = checks[checkIndex]; const [program, ...args] = command.split(\" \");",
+    "    try { execFileSync(program === \"node\" ? process.execPath : program, args, {cwd: worktreePath, encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]}); }",
+    "    catch (error) { const receipt = compileCheckFailureReceipt({taskId, role, sourceCommit, sourceTree, checkIndex, command, error}); const safeTaskId = taskId.replace(/[^A-Za-z0-9._-]/gu, \"_\"); writeReceipt(path.join(evidenceRoot, `${safeTaskId}-${String(checkIndex).padStart(3, \"0\")}-${receipt.failure_sha256}.json`), receipt); throw error; }",
+    "  }",
+    "  return checks;",
+    "}",
+    "",
+  ].join("\n");
+  writeFileAtomic(runnerPath, runnerSource);
+
+  let workerSource = fs.readFileSync(workerPath, "utf8");
+  const workerImportMarker = 'import {pathToFileURL} from "node:url";';
+  assert(workerSource.includes(workerImportMarker), "worker URL import is unavailable");
+  workerSource = workerSource.replace(workerImportMarker, `${workerImportMarker}\nimport {runChecksWithEvidence} from "./check-runner.mjs";`);
+  const workerChecksMarker = [
+    "function runChecks(worktreePath, checks) {",
+    "  for (const check of checks) {",
+    "    const [program, ...args] = check.split(\" \");",
+    "    execFileSync(program === \"node\" ? process.execPath : program, args, {cwd: worktreePath, encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]});",
+    "  }",
+    "  return checks;",
+    "}",
+  ].join("\n");
+  assert(workerSource.includes(workerChecksMarker), "worker check runner is unavailable");
+  workerSource = workerSource.replace(workerChecksMarker, "function runChecks(worktreePath, checks) {\n  return runChecksWithEvidence({worktreePath, checks, evidenceRoot: path.join(worktreePath, \"control/check-failure-receipts\"), taskId, role, sourceCommit, sourceTree});\n}");
+  writeFileAtomic(workerPath, workerSource);
+
+  let adapterSource = fs.readFileSync(adapterPath, "utf8");
+  const adapterImportMarker = 'import {pathToFileURL} from "node:url";';
+  assert(adapterSource.includes(adapterImportMarker), "adapter URL import is unavailable");
+  adapterSource = adapterSource.replace(adapterImportMarker, `${adapterImportMarker}\nimport {runChecksWithEvidence} from "./check-runner.mjs";`);
+  const adapterChecksMarker = [
+    "function runChecks(worktreePath, checks) {",
+    "  for (const check of checks) {",
+    "    const [program, ...args] = check.split(\" \");",
+    "    execFileSync(program === \"node\" ? process.execPath : program, args, {cwd: worktreePath, encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]});",
+    "  }",
+    "  return checks;",
+    "}",
+  ].join("\n");
+  assert(adapterSource.includes(adapterChecksMarker), "adapter check runner is unavailable");
+  adapterSource = adapterSource.replace(adapterChecksMarker, "function runChecks(worktreePath, checks) {\n  const sourceCommit = git(worktreePath, [\"rev-parse\", \"HEAD\"]);\n  const sourceTree = git(worktreePath, [\"rev-parse\", \"HEAD^{tree}\"]);\n  return runChecksWithEvidence({worktreePath, checks, evidenceRoot: path.join(worktreePath, \"control/check-failure-receipts\"), taskId: \"CONTROLLER-RECHECK\", role: \"AGENTOS_CONTROLLER\", sourceCommit, sourceTree});\n}");
+  const campaignProgressChecksMarker = [
+    "function runCampaignProgressChecks(worktreePath) {",
+    "  const checks = [",
+    "    \"node --check control/governance-decision-tree.mjs\",",
+    "    \"node tests/verify-governance-decision-tree.mjs\",",
+    "    \"node --check control/controller-supervisor.mjs\",",
+    "    \"node tests/verify-controller-supervisor.mjs\",",
+    "  ];",
+    "  for (const check of checks) {",
+    "    const [program, ...args] = check.split(\" \");",
+    "    execFileSync(program === \"node\" ? process.execPath : program, args, {cwd: worktreePath, encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]});",
+    "  }",
+    "  return checks;",
+    "}",
+  ].join("\n");
+  assert(adapterSource.includes(campaignProgressChecksMarker), "campaign progress check runner is unavailable");
+  adapterSource = adapterSource.replace(campaignProgressChecksMarker, [
+    "function runCampaignProgressChecks(worktreePath) {",
+    "  return runChecks(worktreePath, [",
+    "    \"node --check control/governance-decision-tree.mjs\",",
+    "    \"node tests/verify-governance-decision-tree.mjs\",",
+    "    \"node --check control/controller-supervisor.mjs\",",
+    "    \"node tests/verify-controller-supervisor.mjs\",",
+    "  ]);",
+    "}",
+  ].join("\n"));
+  writeFileAtomic(adapterPath, adapterSource);
+
+  const verifierSource = [
+    "#!/usr/bin/env node",
+    "",
+    "import assert from \"node:assert/strict\";",
+    "import fs from \"node:fs\";",
+    "import os from \"node:os\";",
+    "import path from \"node:path\";",
+    "import {compileCheckFailureReceipt, runChecksWithEvidence, validateCheckFailureReceipt} from \"../control/check-runner.mjs\";",
+    "",
+    "const root = fs.mkdtempSync(path.join(os.tmpdir(), \"agentos-check-repair-\"));",
+    "try {",
+    "  const receipt = compileCheckFailureReceipt({taskId: \"TASK-CHECK-1\", role: \"FEATURE_AGENT\", sourceCommit: \"a\".repeat(40), sourceTree: \"b\".repeat(40), checkIndex: 0, command: \"node -e failure\", error: {status: 7, signal: null, stdout: \"out\", stderr: \"err\"}, observedAtUtc: \"2026-08-04T12:00:00.000Z\"});",
+    "  assert.doesNotThrow(() => validateCheckFailureReceipt(receipt));",
+    "  assert.equal(receipt.exit_code, 7);",
+    "  assert.equal(receipt.stdout, \"out\");",
+    "  assert.equal(receipt.stderr, \"err\");",
+    "  assert.throws(() => runChecksWithEvidence({worktreePath: root, evidenceRoot: path.join(root, \"evidence\"), taskId: \"TASK-CHECK-2\", role: \"FEATURE_AGENT\", sourceCommit: \"c\".repeat(40), sourceTree: \"d\".repeat(40), checks: [\"node -e process.stdout.write('CHECK_STDOUT');process.stderr.write('CHECK_STDERR');process.exit(7)\"]}), /Command failed/u);",
+    "  const files = fs.readdirSync(path.join(root, \"evidence\"));",
+    "  assert.equal(files.length, 1);",
+    "  const retained = JSON.parse(fs.readFileSync(path.join(root, \"evidence\", files[0]), \"utf8\"));",
+    "  assert.equal(retained.status, \"FAILED\");",
+    "  assert.equal(retained.exit_code, 7);",
+    "  assert.match(retained.stdout, /CHECK_STDOUT/u);",
+    "  assert.match(retained.stderr, /CHECK_STDERR/u);",
+    "  assert.doesNotThrow(() => validateCheckFailureReceipt(retained));",
+    "  console.log(\"PASS failed checks retain exact command, output, source identity, and digest before handoff failure\");",
+    "} finally { fs.rmSync(root, {recursive: true, force: true}); }",
+  ].join("\n") + "\n";
+  writeFileAtomic(verifierPath, verifierSource);
+
+  const backlogSource = fs.readFileSync(backlogPath, "utf8");
+  const backlogLines = backlogSource.split(/\r?\n/u);
+  const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith("| `" + feedbackId + "` |") && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+  assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  writeFileAtomic(backlogPath, backlogLines.join("\n"));
+  return {
+    changedByRepair: ["control/check-runner.mjs", "control/local-agent-worker.mjs", "control/local-self-development-supervisor-adapter.mjs", "docs/owner-feedback-backlog.md", "tests/verify-owner-feedback-check-repair.mjs"],
+    artifactName: "control/owner-feedback-check-repair-receipt.mjs",
+  };
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -1361,7 +1539,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
+        && ["control/check-runner.mjs", "control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
       assert(taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath))
         : ownerFeedbackCodeChanged
@@ -1577,6 +1755,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     else if (feedbackId === "FEEDBACK-004") repair = applyOwnerFeedbackProgressRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-005") repair = applyOwnerFeedbackContinuationRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-006") repair = applyOwnerFeedbackExecutionBoundaryRepair(worktreePath, feedbackId);
+    else if (feedbackId === "FEEDBACK-007") repair = applyOwnerFeedbackCheckRepair(worktreePath, feedbackId);
     else throw new Error(`owner feedback ${feedbackId} requires its own repair recipe`);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
@@ -1589,6 +1768,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       "node tests/verify-owner-feedback-progress.mjs",
       "node tests/verify-owner-feedback-continuation.mjs",
       "node tests/verify-owner-feedback-execution-boundary.mjs",
+      "node tests/verify-owner-feedback-check-repair.mjs",
       "node tests/verify-owner-feedback-backlog.mjs",
       "node tests/verify-all.mjs",
     ]);
@@ -1617,7 +1797,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-digest.mjs"))
       || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-progress.mjs"))
       || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-continuation.mjs"))
-      || (changedPaths.includes("control/local-campaign-admission.mjs") && changedPaths.includes("tests/verify-owner-feedback-execution-boundary.mjs"));
+      || (changedPaths.includes("control/local-campaign-admission.mjs") && changedPaths.includes("tests/verify-owner-feedback-execution-boundary.mjs"))
+      || (changedPaths.includes("control/check-runner.mjs") && changedPaths.includes("tests/verify-owner-feedback-check-repair.mjs"));
     assert(changedOwnerFeedbackCode, "Feature Agent owner feedback repair changed neither the requested code nor its focused test");
     buildStatus = "COMPLETED";
     product = {
