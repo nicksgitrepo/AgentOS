@@ -470,7 +470,7 @@
     },
     "owner_review_controller": {
       "path": "control/owner-review.mjs",
-      "sha256": "8e6be40197bad7b82a2f3911f103832d9a970e0ae1b2fb99b4bf2d888459bee9"
+      "sha256": "524d685f6b118f24fe39f21fbe49e6d6c96534510e6afb6ebe302295f3d58952"
     },
     "owner_review_contract": {
       "path": "schemas/owner-review.v1.json",
@@ -482,7 +482,7 @@
     },
     "owner_review_verifier": {
       "path": "tests/verify-owner-review.mjs",
-      "sha256": "54a1f9616ec5b1aa295ec47185420a4dd8adbd411c7d4e625460a93a4e426a53"
+      "sha256": "65c338e93cc458d5d0d96e314e726e280bd70c34e27176b67b4ed3063720388d"
     },
     "runtime_lifecycle_contract": {
       "path": "schemas/browser-runtime-lifecycle.v1.json",

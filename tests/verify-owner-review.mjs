@@ -178,9 +178,12 @@ try {
   assert(!renderedPacket.includes("For the build itself, the current recommendation is"));
   assert(!renderedPacket.includes("The role recommendations are:"));
   assert(!renderedPacket.includes("This task is currently described as"));
-  assert(renderedPacket.includes("they are examples, not a fixed script"));
+  assert(renderedPacket.includes("one short question at a time"));
+  assert(renderedPacket.includes("If I give you a few choices, reply with one number."));
+  assert(!renderedPacket.includes("What would you love this to make easier?"));
+  assert(!renderedPacket.includes("they are examples, not a fixed script"));
   assert(renderedPacket.includes("plain everyday language"));
-  assert(renderedPacket.includes("Reply with one number"));
+  assert(renderedPacket.includes("If I give you a few choices, reply with one number."));
   assert(renderedPacket.includes("y/yes or n/no"));
   assert(renderedPacket.includes("skip or unanswered"));
   assert(renderedPacket.includes("A number or letter only counts"));

@@ -31,6 +31,8 @@ const FORBIDDEN_REVIEW_OUTPUT = [
   "This task is currently described as",
   "technical governance terms",
   "exact result for separate approval",
+  "Use only the prompts that are needed; they are examples, not a fixed script:",
+  "What would you love this to make easier?",
 ];
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-owner-conversation-surface-"));
