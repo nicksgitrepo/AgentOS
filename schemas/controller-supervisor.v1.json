@@ -5,6 +5,12 @@
   "role": "AGENTOS_CONTROLLER",
   "scope": "PROJECT_PERSISTENT_CONTROL_PLANE",
   "purpose": "Wake the project-persistent Controller from typed campaign observations, mint one bounded goal, and route safe work without an outside prompt.",
+  "autonomous_task_selection": {
+    "controller": "control/controller-supervisor.mjs",
+    "rule": "When a project adapter supplies an ordered typed task queue, the Controller selects the first open safe task by priority and stable ID; it never requires an outside task name.",
+    "boundary_rule": "Hard boundaries stop first, soft boundaries go to Orchestrator review, repair puzzles route through campaign custody, and an empty queue on an active campaign triggers liveness reconciliation and safe next-task minting.",
+    "task_fields": ["task_id", "status", "priority", "summary", "scope", "owner_decision_required"]
+  },
   "observation": {
     "schema": "agentos.controller_supervisor_observation.v1",
     "source_rule": "The observation is compiled from current control-plane records, exact source identity, active campaign state, handoffs, findings, and permission boundaries.",

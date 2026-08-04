@@ -21,8 +21,11 @@ import {
 } from "./local-agent-runtime.mjs";
 import {
   compileSupervisorObservation,
+  selectAutonomousNextTask,
   supervisorDigest,
 } from "./controller-supervisor.mjs";
+
+const AUTONOMOUS_TASK_QUEUE_FILE = "autonomous-supervisor-task-queue.json";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -94,6 +97,59 @@ function readAddressed(root, name, field) {
   requireSha(record[field], `${name} ${field}`);
   assert(record[field] === digestWithout(record, field), `${name} is not content-addressed`);
   return record;
+}
+
+function validateAutonomousTaskQueue(queue, campaignId, campaignVersion) {
+  assert(queue?.schema === "agentos.controller_autonomous_task_queue.v1" && queue.version === 1, "autonomous Controller task queue identity is invalid");
+  assert(queue.campaign_id === campaignId && queue.campaign_version === campaignVersion, "autonomous Controller task queue campaign differs");
+  requireSha(queue.queue_sha256, "autonomous Controller task queue digest");
+  assert(queue.queue_sha256 === digestWithout(queue, "queue_sha256"), "autonomous Controller task queue digest mismatch");
+  assert(Array.isArray(queue.tasks), "autonomous Controller task queue tasks are required");
+  for (const task of queue.tasks) {
+    assert(task && typeof task === "object" && !Array.isArray(task), "autonomous Controller task is invalid");
+    assert(typeof task.task_id === "string" && /^[A-Z][A-Z0-9._:-]*$/u.test(task.task_id), "autonomous Controller task ID is invalid");
+    assert(["OPEN", "IN_PROGRESS", "COMPLETED", "HELD"].includes(task.status), "autonomous Controller task status is invalid");
+    assert(Number.isSafeInteger(task.priority) && task.priority >= 0, "autonomous Controller task priority is invalid");
+    assert(typeof task.summary === "string" && task.summary.trim().length > 0, "autonomous Controller task summary is invalid");
+    assert(Array.isArray(task.scope) && task.scope.every((value) => typeof value === "string"), "autonomous Controller task scope is invalid");
+    assert(typeof task.owner_decision_required === "boolean", "autonomous Controller task owner-decision flag is invalid");
+  }
+  const ordered = [...queue.tasks].sort((left, right) => left.priority - right.priority || left.task_id.localeCompare(right.task_id));
+  assert(JSON.stringify(queue.tasks) === JSON.stringify(ordered), "autonomous Controller tasks are not ordered");
+  assert(new Set(queue.tasks.map((task) => task.task_id)).size === queue.tasks.length, "autonomous Controller task IDs are duplicated");
+  return queue;
+}
+
+function readAutonomousTaskQueue(campaignRoot, campaignId, campaignVersion) {
+  const queue = readAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, "queue_sha256");
+  return queue === null ? null : validateAutonomousTaskQueue(queue, campaignId, campaignVersion);
+}
+
+function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree}) {
+  const existing = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+  if (existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree) return existing;
+  if (existing !== null) {
+    writeAddressed(campaignRoot, `autonomous-supervisor-task-queues/${existing.queue_sha256}.json`, existing, "queue_sha256");
+  }
+  const queue = {
+    schema: "agentos.controller_autonomous_task_queue.v1",
+    version: 1,
+    campaign_id: handoff.campaign_id,
+    campaign_version: handoff.campaign_version,
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    generated_reason: "ACTIVE_CAMPAIGN_HAS_NO_OPEN_NEXT_TASK",
+    tasks: [{
+      task_id: `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`,
+      status: "OPEN",
+      priority: 0,
+      summary: "Inspect the active campaign handoff, worker receipts, retained failures, acceptance state, and next safe control-plane action.",
+      scope: ["ACTIVE_CAMPAIGN_HANDOFF", "CONTROLLER_STATE", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    }],
+    queue_sha256: null,
+  };
+  return writeAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, queue, "queue_sha256");
 }
 
 function writeMutableAddressed(root, name, value, field, expectedDigest = null) {
@@ -339,6 +395,30 @@ function ownerConversationSurfaceFinding(repositoryRoot) {
   };
 }
 
+function autonomousTaskFinding({campaignRoot, handoff, activation, findings, activeCampaign}) {
+  const queue = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+  if (queue === null) return null;
+  const permissions = permissionsFrom(handoff, activation);
+  const boundary = {
+    hard_stop: handoff.owner_decision_required === true,
+    soft_review: handoff.scope_changed === true,
+    owner_decision_required: handoff.owner_decision_required === true,
+    scope_changed: handoff.scope_changed === true,
+    ...permissions,
+  };
+  const selection = selectAutonomousNextTask({tasks: queue.tasks, boundary, findings, activeCampaign});
+  if (selection.action !== "ROUTE_REPAIRABLE_PUZZLE" || selection.task_id === null) return null;
+  const task = queue.tasks.find((candidate) => candidate.task_id === selection.task_id);
+  if (task === undefined) throw new Error("autonomous Controller selected a task missing from its queue");
+  return {
+    finding_id: `F-AUTONOMOUS-TASK-${task.task_id}`,
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_NEXT_REQUIRED_BEHAVIOR",
+    summary: task.summary,
+    source_sha256: queue.queue_sha256,
+  };
+}
+
 function durableSessionTestFinding(campaignRoot) {
   const tick = readOptional(campaignRoot, "supervisor/tick.json");
   const routeError = typeof tick?.route_error === "string" ? tick.route_error : "";
@@ -400,6 +480,20 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
   if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
   if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
+  for (const check of checks) {
+    const [program, ...args] = check.split(" ");
+    execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+  }
+  return checks;
+}
+
+function runControllerWorkflowAuditChecks(worktreePath) {
+  const checks = [
+    ...runControllerChecks(worktreePath),
+    "node tests/verify-owner-conversation-surface.mjs",
+    "node tests/verify-owner-review.mjs",
+    "node tests/verify-bootstrap-delivery-finish.mjs",
+  ];
   for (const check of checks) {
     const [program, ...args] = check.split(" ");
     execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
@@ -582,6 +676,14 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: durableSessionFinding.source_sha256,
       });
     }
+    const autonomousFinding = autonomousTaskFinding({
+      campaignRoot,
+      handoff,
+      activation,
+      findings,
+      activeCampaign: handoff.campaign_active === true,
+    });
+    if (autonomousFinding !== null) findings.push(autonomousFinding);
     findings.sort((left, right) => left.finding_id.localeCompare(right.finding_id));
     const ownerDecisionRequired = handoff.owner_decision_required === true;
     return compileSupervisorObservation({
@@ -863,6 +965,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
     const existingSessions = sessionEntries(campaignRoot, handoff);
+    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree});
     const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
       .filter(({record}) => record.status === "FAILED")
       .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256);
@@ -873,6 +976,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_tree: sourceTree,
         discovered_session_count: existingSessions.length,
         stale_session_count: Math.max(0, existingSessions.length - 3),
+        autonomous_task_queue_sha256: taskQueue.queue_sha256,
         retained_failure_rcas: retainedFailureRcas.sort(),
         supervised_sessions: existingSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
         protected_boundaries: permissions,
@@ -983,6 +1087,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       source_tree: sourceTree,
       discovered_session_count: existingSessions.length,
       stale_session_count: Math.max(0, existingSessions.length - 3),
+      autonomous_task_queue_sha256: taskQueue.queue_sha256,
       controller_recheck_sha256: controllerRecheck.record_sha256,
       task_record_path: taskRecordPath,
       readback_record_paths: [orchestratorRecordPath, featureRecordPath, auditorRecordPath, controllerRecordPath].sort(),
@@ -994,7 +1099,85 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     };
   }
 
+  async function routeAutonomousWorkflowTask(goal) {
+    const handoff = readCurrentHandoff(campaignRoot, handoffPath);
+    const activation = readOptional(campaignRoot, "activation.json");
+    const candidate = readJson(path.join(campaignRoot, "candidate.json"));
+    const permissions = permissionsFrom(handoff, activation);
+    assert(permissions.local_development_writes_allowed && permissions.local_worker_agent_spawns_allowed, "autonomous Controller task lacks local development authorization");
+    assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "autonomous Controller task cannot enter Product custody");
+    assert(!permissions.external_deployment_allowed && !permissions.external_release_allowed && !permissions.external_publication_allowed && !permissions.external_push_allowed && !permissions.external_merge_allowed, "autonomous Controller task cannot perform external actions");
+    const taskFindingId = goal.finding_ids.find((findingId) => findingId.startsWith("F-AUTONOMOUS-TASK-"));
+    assert(taskFindingId !== undefined, "autonomous Controller workflow goal lacks its selected task");
+    const taskId = taskFindingId.slice("F-AUTONOMOUS-TASK-".length);
+    const queue = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+    assert(queue !== null, "autonomous Controller task queue disappeared before routing");
+    const task = queue.tasks.find((candidateTask) => candidateTask.task_id === taskId);
+    assert(task !== undefined && task.status === "OPEN", "autonomous Controller selected task is not open");
+    const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
+    const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    assert(queue.source_commit === sourceCommit && queue.source_tree === sourceTree, "autonomous Controller task queue is stale for the current source");
+    const checks = runControllerWorkflowAuditChecks(repositoryRoot);
+    const controllerState = readOptional(campaignRoot, "controller-state.json");
+    const audit = writeAddressed(campaignRoot, `autonomous-supervisor-workflow-audits/${taskId}.json`, {
+      schema: "agentos.controller_autonomous_workflow_audit.v1",
+      version: 1,
+      status: "PASS",
+      controller_role: "AGENTOS_CONTROLLER",
+      controller_display_name: "AgentOS Controller",
+      project_id: goal.project_id,
+      campaign_id: goal.campaign_id,
+      campaign_version: goal.campaign_version,
+      task_id: taskId,
+      goal_id: goal.goal_id,
+      goal_sha256: goal.goal_sha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      checks,
+      active_campaign: handoff.campaign_active === true,
+      controller_state_sha256: controllerState?.state_sha256 ?? null,
+      next_action: "Controller will continue observing the active campaign and choose the next safe control-plane action without an outside prompt.",
+      external_actions_attempted: false,
+      audit_sha256: null,
+    }, "audit_sha256");
+    const updatedQueue = structuredClone(queue);
+    updatedQueue.tasks = updatedQueue.tasks.map((candidateTask) => candidateTask.task_id === taskId
+      ? {...candidateTask, status: "COMPLETED"}
+      : candidateTask);
+    const queueReadback = writeMutableAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, updatedQueue, "queue_sha256", queue.queue_sha256);
+    const priorPointer = readAddressed(campaignRoot, "autonomous-supervisor-current-handoff.json", "pointer_sha256");
+    const transitionedHandoff = compileSupervisorHandoff({
+      previous: handoff,
+      goal,
+      status: "SUPERVISOR_AUTONOMOUS_TASK_COMPLETED",
+      sourceCommit,
+      sourceTree,
+      nextAction: "The Controller completed its self-directed workflow audit; it will continue observing and choose the next safe action automatically.",
+      permissions,
+      repair: handoff.repair ?? null,
+      finalizer: handoff.finalizer ?? null,
+      lifecycleResolutionSha256: handoff.lifecycle_resolution_sha256 ?? null,
+      supervisedSessions: handoff.supervised_sessions ?? [],
+      preservedFailureRcas: handoff.preserved_failure_rcas ?? [],
+    });
+    const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
+    return {
+      status: "AUTONOMOUS_WORKFLOW_AUDIT_COMPLETED",
+      task_id: taskId,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      audit_sha256: audit.audit_sha256,
+      audit_path: `autonomous-supervisor-workflow-audits/${taskId}.json`,
+      task_queue_sha256: queueReadback.queue_sha256,
+      handoff_path: `autonomous-supervisor-handoffs/${transitioned.handoff.goal_id}.json`,
+      current_handoff_pointer_sha256: transitioned.pointer.pointer_sha256,
+      protected_boundaries: permissions,
+      candidate_sha256: candidate.candidate_sha256,
+    };
+  }
+
   async function route(goal) {
+    if (goal.action === "ROUTE_REPAIRABLE_PUZZLE" && goal.finding_ids.some((findingId) => findingId.startsWith("F-AUTONOMOUS-TASK-"))) return routeAutonomousWorkflowTask(goal);
     if (goal.action === "ROUTE_REPAIRABLE_PUZZLE") return routeRepair(goal);
     if (goal.action === "RECONCILE_LIVENESS") return routeLiveness(goal);
     if (goal.action === "REVIEW_SOFT_BOUNDARY") return {

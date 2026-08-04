@@ -430,7 +430,7 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "de51ae77142575b3352a121fd94000312b62ddacc37e982fa3a7fa47c3615fcb"
+      "sha256": "b43f5d9e89f123c07c037fd42b7a726840bf5afd43557483f43af69d62c92f0a"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
@@ -438,11 +438,11 @@
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
-      "sha256": "39b4dab683858495b6d3512623dbcc32656cdd168753edca7e1113f64bb11c81"
+      "sha256": "5d77b011cd0352d7acab1a9c4a3f8c8fa89c5a0ef776dabbea3ba79e5ea16fed"
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "5e509556ca6075016f90301292781b405b8b7df3dd6a782e9b1340d4dfaf6df1"
+      "sha256": "679d1d7d9761b9c2992b73e14de4fa7dc4fb8057889447602628da614ead968b"
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",

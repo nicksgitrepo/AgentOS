@@ -41,6 +41,7 @@ const FINDING_STATUSES = Object.freeze([
   "OPEN_REVIEW_REQUIRED",
   "RESOLVED",
 ]);
+const AUTONOMOUS_TASK_STATUSES = Object.freeze(["OPEN", "IN_PROGRESS", "COMPLETED", "HELD"]);
 
 const compareUtf8 = (left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
 
@@ -177,6 +178,63 @@ function validateFindingList(findings) {
     ids.add(finding.finding_id);
   }
   return findings;
+}
+
+function validateAutonomousTask(task) {
+  const keys = ["task_id", "status", "priority", "summary", "scope", "owner_decision_required"];
+  exactKeys(task, keys, "autonomous Controller task");
+  requireIdentifier(task.task_id, "autonomous Controller task ID");
+  assert(AUTONOMOUS_TASK_STATUSES.includes(task.status), "autonomous Controller task status is invalid");
+  assert(Number.isSafeInteger(task.priority) && task.priority >= 0, "autonomous Controller task priority is invalid");
+  requireString(task.summary, "autonomous Controller task summary");
+  sortedUnique(task.scope, "autonomous Controller task scope", {allowEmpty: true});
+  assert(typeof task.owner_decision_required === "boolean", "autonomous Controller task owner-decision flag is invalid");
+  return task;
+}
+
+function validateAutonomousTaskList(tasks) {
+  assert(Array.isArray(tasks), "autonomous Controller tasks are required");
+  const ordered = [...tasks].sort((left, right) => left.priority - right.priority || compareUtf8(left.task_id, right.task_id));
+  assert(JSON.stringify(tasks) === JSON.stringify(ordered), "autonomous Controller tasks must be sorted by priority and ID");
+  const ids = new Set();
+  for (const task of tasks) {
+    validateAutonomousTask(task);
+    assert(!ids.has(task.task_id), "autonomous Controller task IDs must be unique");
+    ids.add(task.task_id);
+  }
+  return tasks;
+}
+
+/*
+ * Choose the next bounded control-plane task without asking an outside
+ * operator to name it.  Project adapters provide typed task candidates; this
+ * function only chooses among them and never grants a new permission.
+ */
+export function selectAutonomousNextTask({tasks = [], boundary, findings = [], activeCampaign}) {
+  validateBoundary(boundary);
+  validateFindingList(findings);
+  validateAutonomousTaskList(tasks);
+  assert(typeof activeCampaign === "boolean", "autonomous Controller active-campaign flag is invalid");
+  const hardFinding = hasOpenFinding(findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"]);
+  const softFinding = hasOpenFinding(findings, ["SOFT_BOUNDARY"]);
+  if (boundary.hard_stop || boundary.owner_decision_required || hardFinding) {
+    return {action: "STOP_HARD_BOUNDARY", task_id: null, reason: "A hard boundary or protected finding must stop dependent work."};
+  }
+  if (boundary.soft_review || boundary.scope_changed || softFinding) {
+    return {action: "REVIEW_SOFT_BOUNDARY", task_id: null, reason: "A changed scope or soft boundary requires Orchestrator review."};
+  }
+  if (hasOpenFinding(findings, ["REPAIRABLE_ENGINEERING_PUZZLE"])) {
+    return {action: "ROUTE_REPAIRABLE_PUZZLE", task_id: null, reason: "An open repair puzzle is already the next bounded task."};
+  }
+  const nextTask = tasks.find((task) => task.status === "OPEN");
+  if (nextTask !== undefined) {
+    if (nextTask.owner_decision_required) {
+      return {action: "STOP_HARD_BOUNDARY", task_id: nextTask.task_id, reason: "The next task requires an owner decision before it can continue."};
+    }
+    return {action: "ROUTE_REPAIRABLE_PUZZLE", task_id: nextTask.task_id, reason: nextTask.summary};
+  }
+  if (activeCampaign) return {action: "RECONCILE_LIVENESS", task_id: null, reason: "No queued task is open; reconcile the active campaign and mint the next safe task if needed."};
+  return {action: "WAIT_FOR_AUTHORIZED_WORK", task_id: null, reason: "There is no active campaign or authorized queued task."};
 }
 
 export function validateSupervisorObservation(observation) {

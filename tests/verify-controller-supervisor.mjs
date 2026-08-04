@@ -9,6 +9,7 @@ import {
   compileSupervisorObservation,
   deriveSupervisorAction,
   readSupervisorRecord,
+  selectAutonomousNextTask,
   runSupervisorIteration,
   validateSupervisorGoal,
   validateSupervisorObservation,
@@ -128,6 +129,41 @@ const liveness = observation({findings: []});
 assert.equal(deriveSupervisorAction(liveness), "RECONCILE_LIVENESS");
 const idle = observation({activeCampaign: false});
 assert.equal(deriveSupervisorAction(idle), "WAIT_FOR_AUTHORIZED_WORK");
+
+const autonomousTasks = [
+  {
+    task_id: "CONTROLLER-TASK-SECOND",
+    status: "OPEN",
+    priority: 2,
+    summary: "Second safe task.",
+    scope: ["CONTROL_PLANE"],
+    owner_decision_required: false,
+  },
+  {
+    task_id: "CONTROLLER-TASK-FIRST",
+    status: "OPEN",
+    priority: 1,
+    summary: "First safe task.",
+    scope: ["CONTROL_PLANE"],
+    owner_decision_required: false,
+  },
+].sort((left, right) => left.priority - right.priority || left.task_id.localeCompare(right.task_id));
+assert.deepEqual(selectAutonomousNextTask({tasks: autonomousTasks, boundary: boundary(), findings: [], activeCampaign: true}), {
+  action: "ROUTE_REPAIRABLE_PUZZLE",
+  task_id: "CONTROLLER-TASK-FIRST",
+  reason: "First safe task.",
+});
+assert.equal(selectAutonomousNextTask({tasks: autonomousTasks, boundary: boundary({soft_review: true, scope_changed: true}), findings: [], activeCampaign: true}).action, "REVIEW_SOFT_BOUNDARY");
+assert.equal(selectAutonomousNextTask({tasks: autonomousTasks, boundary: boundary({soft_review: true, scope_changed: true}), findings: [{
+  finding_id: "F-HARD-SECURITY-2",
+  classification: "HARD_SECURITY_BOUNDARY",
+  status: "OPEN_REPAIR_REQUIRED",
+  summary: "Hard security boundary.",
+  source_sha256: sourceSha256,
+}], activeCampaign: true}).action, "STOP_HARD_BOUNDARY");
+assert.equal(selectAutonomousNextTask({tasks: [], boundary: boundary(), findings: [], activeCampaign: true}).action, "RECONCILE_LIVENESS");
+assert.equal(selectAutonomousNextTask({tasks: [], boundary: boundary(), findings: [], activeCampaign: false}).action, "WAIT_FOR_AUTHORIZED_WORK");
+assert.equal(selectAutonomousNextTask({tasks: [{...autonomousTasks[0], task_id: "CONTROLLER-TASK-OWNER", owner_decision_required: true}], boundary: boundary(), findings: [], activeCampaign: true}).action, "STOP_HARD_BOUNDARY");
 
 const tampered = structuredClone(puzzle);
 tampered.next_action = "invent Product work";
