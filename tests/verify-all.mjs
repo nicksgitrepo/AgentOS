@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {isRetainedFailedAttempt} from "../control/retained-failed-worktree.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HEX64 = /^[0-9a-f]{64}$/u;
@@ -44,7 +45,10 @@ function walk(directory, result = []) {
   for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((left, right) => compareUtf8(left.name, right.name))) {
     if (entry.name === ".git" || entry.name === "node_modules") continue;
     const absolute = path.join(directory, entry.name);
-    if (entry.isDirectory()) walk(absolute, result);
+    if (entry.isDirectory()) {
+      if (isRetainedFailedAttempt(absolute, root)) continue;
+      walk(absolute, result);
+    }
     else if (entry.isFile()) result.push(absolute);
   }
   return result;
@@ -248,6 +252,7 @@ for (const relativePath of [
   "tests/verify-continuous-audit-sentinel.mjs",
   "tests/verify-repository-readback.mjs",
   "tests/verify-portability.mjs",
+  "tests/verify-retained-failed-worktree.mjs",
   "tests/verify-control-plane-root.mjs",
 ]) run(relativePath);
 

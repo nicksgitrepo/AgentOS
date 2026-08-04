@@ -129,8 +129,10 @@
     "project_context_template": {"path": "authority/templates/project-context.v1.json", "sha256": "1e9751fe4d1a7114b126d100ea2d9c9961bf79835251e69f09cd7a7f94466185"},
     "synthetic_context": {"path": "examples/project-context-fixture.v1.json", "sha256": "957f41aa6fa8276f40c3e58a6171a5cdd913d21ade0f17183f3d6a608e0b4311"},
     "extraction_manifest": {"path": "migrations/2.1rc-extraction-manifest.json", "sha256": "c394e176bbfe37cbf08b64f54ee8da175ddd2e7985f4016d533785e66aecaff9"},
-    "portability_verifier": {"path": "tests/verify-portability.mjs", "sha256": "8221b6e8ba19ca7a46b5e80b2fd9f1087c8f5a515ad1d800bd3e9ef6ec05197c"},
-    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "dde884bef425477566436a3376afb2d8a7d90982c8a86fd170808dffd0c0d31c"}
+    "portability_verifier": {"path": "tests/verify-portability.mjs", "sha256": "d3f8a009cecbc7aede02ebe7e5ddbdb626328eb4857c4bfbb2802ebe6b9ba02b"},
+    "retained_failed_worktree_controller": {"path": "control/retained-failed-worktree.mjs", "sha256": "fcf8d33a87ba32506f4d3f0e6540904a47d4aa42173d0d209518c5d0692a93a5"},
+    "retained_failed_worktree_verifier": {"path": "tests/verify-retained-failed-worktree.mjs", "sha256": "0b0879bdcf03aa3232a1be286f91872cce141d18eb9296bfb91ec449e1405e7a"},
+    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "3e6d08bb6f2c3b49b4f30dc3d856cd1b9548628b95cb6a473d40f6b4867e7521"}
   },
   "compatibility_only": {
     "bootstrap_interview_alias": {"path": "control/bootstrap-interview.mjs", "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"},
