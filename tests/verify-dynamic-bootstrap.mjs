@@ -33,6 +33,7 @@ const answers = {
     ci_runner: {route: "LOCAL", weekly_minutes_budget: 120},
     deployment: {route: "LOCAL", environment_ids: ["synthetic"], rollback_required: true, rollback_test: true},
   },
+  "project.delivery_finish": "REVIEW",
   "project.model_economics": {profile: "STANDARD_WORKWEEK", completion_floor: 0.8},
   "project.runtime": {session_id: "RUNTIME-001", environment_identity: "ENV-001", capabilities: ["persistent-navigation"]},
 };

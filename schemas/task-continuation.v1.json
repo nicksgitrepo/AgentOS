@@ -4,6 +4,12 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "controller": "control/task-continuation.mjs",
   "purpose": "Select and start exactly one owner-authorized control-plane task from a completed inactive handoff without activating the campaign.",
+  "role_display": {
+    "machine_role": "AGENTOS_CONTROLLER",
+    "public_name": "AgentOS Controller",
+    "task_title_rule": "Continuation task metadata and start/completion handoffs use an AgentOS Controller title; Bootstrap is not an ongoing task role.",
+    "history_rule": "Accepted v1 records from before the display guard remain readable; newly compiled records carry the canonical role fields."
+  },
   "selection": {
     "rule": "The selected task ID must match exactly one validated CONTROL_PLANE_ONLY candidate.",
     "ambiguous_or_missing": "Reject and leave the parent handoff unchanged."

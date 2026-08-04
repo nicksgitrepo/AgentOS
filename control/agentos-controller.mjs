@@ -19,6 +19,7 @@ import {
 } from "./campaign-policy-reconcile.mjs";
 import {reconcilePolicyAtCampaignBoundary} from "./campaign-state-owner.mjs";
 import {validatePolicyAmendment, validatePolicyState} from "./global-policy-state.mjs";
+import {AGENTOS_CONTROLLER_DISPLAY_NAME, AGENTOS_CONTROLLER_ROLE, validateControllerRoleDisplay} from "./controller-role-display.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -400,14 +401,18 @@ function validateJudgment(judgment) {
 export function validateAgentOSControllerState(state) {
   const keys = [
     "schema", "version", "status", "operational_status", "logical_controller_id", "project_id", "current_session_id",
-    "controller_agent", "controller_runtime_readback", "policy_state", "policy_epoch", "policy_state_sha256", "active_campaign_id", "active_campaign",
+    "controller_agent", "controller_runtime_readback", "controller_role", "controller_display_name", "policy_state", "policy_epoch", "policy_state_sha256", "active_campaign_id", "active_campaign",
     "campaign_queue", "runtime_id", "event_cursor", "event_ledger_head_sha256", "last_reconciliation_at", "reconciliation_interval_minutes",
     "pending_owner_boundaries", "pending_judgments", "action_receipts", "last_closed_campaign_id", "state_sha256",
   ];
-  exactKeys(state, keys, "AgentOS Controller state");
+  const legacyKeys = keys.filter((key) => !["controller_role", "controller_display_name"].includes(key));
+  const actualKeys = JSON.stringify(Object.keys(state).sort(compareUtf8));
+  const hasRoleDisplay = actualKeys === JSON.stringify(keys.sort(compareUtf8));
+  assert(hasRoleDisplay || actualKeys === JSON.stringify(legacyKeys.sort(compareUtf8)), "AgentOS Controller state fields mismatch");
   assert(state.schema === CONTROLLER_SCHEMA && state.version === 1, "AgentOS Controller state identity is invalid");
   assert(state.status === "PREPARED_NOT_ACTIVATED", "AgentOS Controller cannot activate AgentOS");
   assert(OPERATIONAL_STATUSES.includes(state.operational_status), "AgentOS Controller operational status is invalid");
+  if (hasRoleDisplay) validateControllerRoleDisplay({controllerRole: state.controller_role, controllerDisplayName: state.controller_display_name}, {label: "AgentOS Controller state role"});
   requireIdentifier(state.logical_controller_id, "logical controller ID");
   requireString(state.project_id, "controller project ID");
   requireString(state.current_session_id, "controller session ID");
@@ -462,6 +467,8 @@ export function compileAgentOSControllerState({
     current_session_id: currentSessionId,
     controller_agent: compileControllerAgentBinding({projectId, logicalControllerId, sessionId: currentSessionId, policyEpoch: policyState.policy_epoch, policyStateSha256: policyState.policy_state_sha256, observedAtUtc: nowUtc}),
     controller_runtime_readback: structuredClone(controllerRuntimeReadback),
+    controller_role: AGENTOS_CONTROLLER_ROLE,
+    controller_display_name: AGENTOS_CONTROLLER_DISPLAY_NAME,
     policy_state: structuredClone(policyState),
     policy_epoch: policyState.policy_epoch,
     policy_state_sha256: policyState.policy_state_sha256,

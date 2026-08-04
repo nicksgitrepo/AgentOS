@@ -56,6 +56,7 @@ const answers = {
     ci_runner: {route: "LOCAL", weekly_minutes_budget: 100},
     deployment: {route: "LOCAL", environment_ids: ["synthetic"]},
   },
+  "project.delivery_finish": "REVIEW",
   "project.model_economics": {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
   "project.runtime": {session_id: "RUNTIME-IMPORT", environment_identity: "ENV-IMPORT", capabilities: ["filesystem"]},
 };

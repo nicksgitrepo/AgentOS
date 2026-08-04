@@ -218,6 +218,29 @@ only for that question. Truly yes/no questions accept `y`, `yes`, `n`, or `no`;
 an optional boolean can accept `skip` or `unanswered`. A number or letter without
 its matching question remains unresolved. It plays the plan back in plain
 language before the owner returns it.
+
+When the only missing lasting choice is what to do when the work is ready, the
+owner sees one short question:
+
+```text
+When we're ready, what should I do with it?
+1. Leave it ready for review
+2. Save it safely for later
+3. Share the saved work
+4. Make it part of the main version
+5. Put it live
+6. Release or share it
+```
+
+The owner may reply with the matching number. The system keeps the delivery
+details in the background. A later choice includes earlier safe steps only when
+the project’s support and checks are actually present; if not, only that later
+outcome waits. No credentials or permissions are guessed.
+
+The owner-facing question contains no machine fields, internal labels, or
+campaign language. The selected finish is retained in the typed Project Context,
+the exact Bootstrap plan, and the campaign design so later work cannot use a
+different design.
 The owner may return a plain Markdown note or one structured payload, and the
 result remains advisory.
 

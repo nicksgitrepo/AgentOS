@@ -56,7 +56,9 @@ Discovery supplies repository shape, source markers, authority/design candidates
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent limits;
 - authority-corpus import/refactor/create choice;
 - Design Bible and stack/testing/authentication/data constraints only when applicable or unresolved;
-- one delivery-policy decision covering pushes, merges, CI runners, hosting/deployment, rollback, provider binding, and delivery cost;
+- one short finish choice: “When we're ready, what should I do with it?” with
+  plain numbered choices from review through release; the delivery details stay
+  behind the conversation and are compiled from typed context;
 - typed security standard and requirement identities;
 - model economics and operating conditions;
 - persistent Runtime and first-campaign context.
@@ -67,6 +69,11 @@ may hold, how long it should live, and whether the route is a local workspace,
 managed site, managed app, VPS, cloud, hybrid, or project-defined target. A
 managed-site prototype or limited working product is available without making
 a production claim.
+
+The finish choice is not a technical permission slip. A later choice includes
+earlier safe steps only when the project’s route, support, evidence, and boundary
+checks are present. If one is missing, only that dependent outcome waits; the
+system never guesses credentials or silently chooses a finish.
 
 For imported projects, Bootstrap records a deterministic Standards Registry and
 Normalization Policy. It preserves the source before any migration build with

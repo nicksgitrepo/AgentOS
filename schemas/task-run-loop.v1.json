@@ -4,6 +4,12 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "controller": "control/task-run-loop.mjs",
   "purpose": "Repeat one safe control-plane iteration from a continuation-ready task without requiring a new manual message.",
+  "role_display": {
+    "machine_role": "AGENTOS_CONTROLLER",
+    "public_name": "AgentOS Controller",
+    "task_title_rule": "Queued task metadata and run-loop reconciliation identify the AgentOS Controller; generic Bootstrap titles are rejected.",
+    "history_rule": "Accepted v1 queue and reconciliation records from before the display guard remain readable; newly compiled records carry the canonical role fields."
+  },
   "iteration": {
     "rule": "Consume exactly one validated inactive task, require its inactive start handoff, record its execution and reconciliation, and queue exactly one validated next candidate.",
     "selection": "The next candidate must be selected from the supplied catalog by an exact task ID; missing, duplicate, current-task, or unsafe candidates fail closed.",

@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {campaignIdentityBindingDigest} from "./campaign-controller.mjs";
 import {AUDIT_DISCIPLINES} from "./campaign-cascade.mjs";
+import {AGENTOS_CONTROLLER_DISPLAY_NAME, AGENTOS_CONTROLLER_ROLE, controllerDisplayTitle, validateControllerRoleDisplay} from "./controller-role-display.mjs";
 
 export const CONTINUATION_TASK_SCHEMA = "agentos.control_plane_continuation_task.v1";
 export const CONTINUATION_HANDOFF_SCHEMA = "agentos.control_plane_continuation_handoff.v1";
@@ -23,16 +24,31 @@ const INACTIVE_BOUNDARY_KEYS = [
   "campaign_identity_changes_allowed", "release_candidate_activation_allowed",
 ];
 const TASK_CANDIDATE_KEYS = [
+  "task_id", "controller_role", "controller_display_name", "display_title", "version", "goal", "scope", "change_set", "excluded_scope", "checks", "stop_conditions", "undo",
+  "start_boundary", "boundary",
+];
+const LEGACY_TASK_CANDIDATE_KEYS = [
   "task_id", "version", "goal", "scope", "change_set", "excluded_scope", "checks", "stop_conditions", "undo",
   "start_boundary", "boundary",
 ];
 const TASK_KEYS = [
+  "schema", "version", "status", "task_id", "controller_role", "controller_display_name", "display_title", "project_id", "campaign_id", "campaign_version",
+  "canonical_campaign_identity", "parent_handoff_sha256", "parent_reconciliation_sha256", "source_commit", "source_tree",
+  "policy_epoch", "policy_state_sha256", "authorization_status", "authorization_route", "goal", "scope", "change_set",
+  "excluded_scope", "checks", "stop_conditions", "undo", "start_boundary", "boundary", "started_at_utc", "task_sha256",
+];
+const LEGACY_TASK_KEYS = [
   "schema", "version", "status", "task_id", "project_id", "campaign_id", "campaign_version",
   "canonical_campaign_identity", "parent_handoff_sha256", "parent_reconciliation_sha256", "source_commit", "source_tree",
   "policy_epoch", "policy_state_sha256", "authorization_status", "authorization_route", "goal", "scope", "change_set",
   "excluded_scope", "checks", "stop_conditions", "undo", "start_boundary", "boundary", "started_at_utc", "task_sha256",
 ];
 const HANDOFF_KEYS = [
+  "schema", "version", "status", "phase", "task_sha256", "controller_role", "controller_display_name", "display_title", "parent_handoff_sha256", "parent_reconciliation_sha256",
+  "task", "campaign_binding", "source_checkpoint", "boundary", "audit_reports", "audit_reconciliation", "findings",
+  "next_action", "stop_conditions", "undo", "recorded_at_utc", "handoff_sha256",
+];
+const LEGACY_HANDOFF_KEYS = [
   "schema", "version", "status", "phase", "task_sha256", "parent_handoff_sha256", "parent_reconciliation_sha256",
   "task", "campaign_binding", "source_checkpoint", "boundary", "audit_reports", "audit_reconciliation", "findings",
   "next_action", "stop_conditions", "undo", "recorded_at_utc", "handoff_sha256",
@@ -70,6 +86,14 @@ function exactKeys(value, keys, label) {
   const actual = Object.keys(value).sort();
   const expected = [...keys].sort();
   assert(JSON.stringify(actual) === JSON.stringify(expected), `${label} fields mismatch`);
+}
+
+function exactKeysWithLegacy(value, keys, legacyKeys, label) {
+  requireRecord(value, label);
+  const actual = JSON.stringify(Object.keys(value).sort());
+  if (actual === JSON.stringify([...legacyKeys].sort())) return false;
+  assert(actual === JSON.stringify([...keys].sort()), `${label} fields mismatch`);
+  return true;
 }
 
 function requireString(value, label, {allowEmpty = false} = {}) {
@@ -145,8 +169,9 @@ function validatePriorHandoffBoundary(boundary) {
 }
 
 function validateTaskCandidate(candidate) {
-  exactKeys(candidate, TASK_CANDIDATE_KEYS, "continuation task candidate");
+  const hasRoleDisplay = exactKeysWithLegacy(candidate, TASK_CANDIDATE_KEYS, LEGACY_TASK_CANDIDATE_KEYS, "continuation task candidate");
   requireIdentifier(candidate.task_id, "continuation task ID");
+  if (hasRoleDisplay) validateControllerRoleDisplay({controllerRole: candidate.controller_role, controllerDisplayName: candidate.controller_display_name, displayTitle: candidate.display_title}, {taskId: candidate.task_id, label: "continuation task display"});
   assert(Number.isSafeInteger(candidate.version) && candidate.version === 1, "continuation task version is invalid");
   requireString(candidate.goal, "continuation task goal");
   assert(candidate.scope === "CONTROL_PLANE_ONLY", "continuation task scope is not control-plane-only");
@@ -161,10 +186,11 @@ function validateTaskCandidate(candidate) {
 }
 
 export function validateContinuationTask(task) {
-  exactKeys(task, TASK_KEYS, "continuation task");
+  const hasRoleDisplay = exactKeysWithLegacy(task, TASK_KEYS, LEGACY_TASK_KEYS, "continuation task");
   assert(task.schema === CONTINUATION_TASK_SCHEMA && task.version === 1, "continuation task identity is invalid");
   assert(task.status === CONTINUATION_TASK_STATUS, "continuation task is not inactive in-progress");
   for (const field of ["task_id", "project_id", "campaign_id", "campaign_version"]) requireIdentifier(task[field], `continuation ${field}`);
+  if (hasRoleDisplay) validateControllerRoleDisplay({controllerRole: task.controller_role, controllerDisplayName: task.controller_display_name, displayTitle: task.display_title}, {taskId: task.task_id, label: "continuation task display"});
   assert(task.canonical_campaign_identity === "CONTROLLER_CANDIDATE", "continuation task canonical identity is invalid");
   for (const field of ["parent_handoff_sha256", "parent_reconciliation_sha256", "policy_state_sha256", "task_sha256"]) requireSha(task[field], `continuation task ${field}`);
   requireGitObject(task.source_commit, "continuation task source commit");
@@ -316,6 +342,9 @@ export function validateContinuationContext({completedHandoff, parentReconciliat
   validateContinuationReconciliation(parentReconciliation, completedHandoff);
   const policy = continuationPolicy({completedHandoff, parentReconciliation});
   requireRecord(currentStatus, "continuation current status");
+  if (currentStatus.controller_role !== undefined || currentStatus.controller_display_name !== undefined) {
+    validateControllerRoleDisplay({controllerRole: currentStatus.controller_role, controllerDisplayName: currentStatus.controller_display_name}, {label: "continuation current status role"});
+  }
   assert(currentStatus.active_campaign === false && currentStatus.controller_status === "PREPARED_NOT_ACTIVATED", "continuation current status crossed activation");
   assert(currentStatus.current_reconciliation_sha256 === parentReconciliation.reconciliation_sha256, "continuation current status points to a stale reconciliation");
   assert(currentStatus.current_commit === completedHandoff.campaign_binding.source_commit && currentStatus.current_tree === completedHandoff.campaign_binding.source_tree, "continuation current campaign source differs");
@@ -352,6 +381,9 @@ export function compileContinuationTask({candidate, completedHandoff, parentReco
     version: 1,
     status: CONTINUATION_TASK_STATUS,
     task_id: candidate.task_id,
+    controller_role: AGENTOS_CONTROLLER_ROLE,
+    controller_display_name: AGENTOS_CONTROLLER_DISPLAY_NAME,
+    display_title: controllerDisplayTitle(candidate.task_id),
     project_id: completedHandoff.campaign_binding.project_id,
     campaign_id: completedHandoff.campaign_binding.campaign_id,
     campaign_version: completedHandoff.campaign_binding.campaign_version,
@@ -398,6 +430,9 @@ export function compileContinuationHandoff({task, completedHandoff, parentReconc
     status: phase === "START" ? CONTINUATION_START_HANDOFF_STATUS : CONTINUATION_COMPLETION_HANDOFF_STATUS,
     phase,
     task_sha256: task.task_sha256,
+    controller_role: task.controller_role,
+    controller_display_name: task.controller_display_name,
+    display_title: task.display_title,
     parent_handoff_sha256: completedHandoff.handoff_sha256,
     parent_reconciliation_sha256: parentReconciliation.reconciliation_sha256,
     task: structuredClone(task),
@@ -408,8 +443,8 @@ export function compileContinuationHandoff({task, completedHandoff, parentReconc
     audit_reconciliation: structuredClone(auditReconciliation),
     findings: [],
     next_action: phase === "START"
-      ? "Run only the selected control-plane task; do not activate the campaign or spawn Product agents."
-      : "Review the exact completed continuation handoff; keep the campaign inactive until a separate start boundary is authorized.",
+      ? "AgentOS Controller will run only the selected control-plane task; keep the campaign inactive and do not spawn Product agents."
+      : "Review the exact completed AgentOS Controller handoff; keep the campaign inactive until a separate start boundary is authorized.",
     stop_conditions: structuredClone(task.stop_conditions),
     undo: structuredClone(task.undo),
     recorded_at_utc: recordedAtUtc,
@@ -420,12 +455,19 @@ export function compileContinuationHandoff({task, completedHandoff, parentReconc
 }
 
 export function validateContinuationHandoff(handoff) {
-  exactKeys(handoff, HANDOFF_KEYS, "continuation handoff");
+  const hasRoleDisplay = exactKeysWithLegacy(handoff, HANDOFF_KEYS, LEGACY_HANDOFF_KEYS, "continuation handoff");
   assert(handoff.schema === CONTINUATION_HANDOFF_SCHEMA && handoff.version === 1, "continuation handoff identity is invalid");
   assert([CONTINUATION_START_HANDOFF_STATUS, CONTINUATION_COMPLETION_HANDOFF_STATUS].includes(handoff.status), "continuation handoff status is invalid");
   assert(handoff.phase === "START" ? handoff.status === CONTINUATION_START_HANDOFF_STATUS : handoff.status === CONTINUATION_COMPLETION_HANDOFF_STATUS, "continuation handoff phase/status differs");
   validateContinuationTask(handoff.task);
   assert(handoff.task_sha256 === handoff.task.task_sha256, "continuation handoff task differs");
+  if (hasRoleDisplay) {
+    validateControllerRoleDisplay({controllerRole: handoff.controller_role, controllerDisplayName: handoff.controller_display_name, displayTitle: handoff.display_title}, {taskId: handoff.task.task_id, label: "continuation handoff display"});
+    assert(handoff.controller_role === handoff.task.controller_role
+      && handoff.controller_display_name === handoff.task.controller_display_name
+      && handoff.display_title === handoff.task.display_title,
+    "continuation handoff display differs from task");
+  }
   assert(handoff.parent_handoff_sha256 === handoff.task.parent_handoff_sha256 && handoff.parent_reconciliation_sha256 === handoff.task.parent_reconciliation_sha256, "continuation handoff parent differs");
   requireRecord(handoff.campaign_binding, "continuation handoff campaign binding");
   assert(handoff.campaign_binding.canonical_campaign_identity === "CONTROLLER_CANDIDATE"

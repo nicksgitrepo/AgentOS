@@ -144,6 +144,10 @@ assert(bootstrapCoverage.coverage_outputs.some((entry) => entry.output_id === "D
 assert(bootstrapCoverage.binding.readiness.includes("material_gaps"));
 const deliveryPolicy = JSON.parse(read("schemas/delivery-policy.v1.json"));
 assert.equal(deliveryPolicy.question.id, "project.delivery_policy");
+assert.equal(deliveryPolicy.finish.question_id, "project.delivery_finish");
+assert.equal(deliveryPolicy.finish.owner_prompt, "When we're ready, what should I do with it?");
+assert.equal(deliveryPolicy.finish.options.length, 6);
+assert(deliveryPolicy.finish.rule.includes("No finish is silently assumed"));
 assert.equal(deliveryPolicy.deployment.authority, "RUNTIME_AFTER_CENTRAL_ACCEPTANCE");
 assert.equal(deliveryPolicy.delivery_target.contract, "schemas/delivery-target.v1.json");
 const lifeContract = JSON.parse(read("schemas/project-life-contract.v1.json"));
@@ -215,6 +219,7 @@ for (const relativePath of [
   "tests/verify-bootstrap-start.mjs",
   "tests/verify-cascade-economics.mjs",
   "tests/verify-bootstrap-coverage.mjs",
+  "tests/verify-bootstrap-delivery-finish.mjs",
   "tests/verify-standards-registry.mjs",
   "tests/verify-normalization-policy.mjs",
   "tests/verify-project-import.mjs",

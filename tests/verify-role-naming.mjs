@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {compileControllerRoleDisplay, controllerDisplayTitle, validateControllerRoleDisplay} from "../control/controller-role-display.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const readJson = (relativePath) => JSON.parse(fs.readFileSync(path.join(root, relativePath), "utf8"));
@@ -30,6 +31,14 @@ function validateOngoingControllerRole(binding) {
 
 validateOngoingControllerRole(controller);
 assert.throws(() => validateOngoingControllerRole({...controller, name: "BOOTSTRAP"}), /AGENTOS_CONTROLLER/u);
+const taskDisplay = compileControllerRoleDisplay({taskId: "TASK-CONTROLLER-ROLE-DISPLAY"});
+assert.equal(taskDisplay.controllerRole, "AGENTOS_CONTROLLER");
+assert.equal(taskDisplay.controllerDisplayName, "AgentOS Controller");
+assert.equal(taskDisplay.displayTitle, "AgentOS Controller — TASK-CONTROLLER-ROLE-DISPLAY");
+assert.equal(controllerDisplayTitle("TASK-CONTROLLER-ROLE-DISPLAY"), taskDisplay.displayTitle);
+assert.throws(() => validateControllerRoleDisplay({controllerRole: "BOOTSTRAP", controllerDisplayName: "Bootstrap", displayTitle: "Start AgentOS safe build task"}, {taskId: "TASK-CONTROLLER-ROLE-DISPLAY"}), /AGENTOS_CONTROLLER/u);
+assert.throws(() => validateControllerRoleDisplay({controllerRole: "AGENTOS_CONTROLLER", controllerDisplayName: "AgentOS Controller", displayTitle: "Start AgentOS safe build task"}, {taskId: "TASK-CONTROLLER-ROLE-DISPLAY"}), /title/u);
+assert.throws(() => validateControllerRoleDisplay({controllerRole: "AGENTOS_CONTROLLER", controllerDisplayName: "AgentOS Controller", displayTitle: "Bootstrap — TASK-CONTROLLER-ROLE-DISPLAY"}, {taskId: "TASK-CONTROLLER-ROLE-DISPLAY"}), /Bootstrap/u);
 assert(readme.includes("You are Bootstrap 2.1rc."));
 assert(readme.includes("After\nsetup, the ongoing project-persistent role is **AgentOS Controller**\n`AGENTOS_CONTROLLER`. It owns the control-plane conversation"));
 assert(readme.includes("Bootstrap does not continue as that role."));

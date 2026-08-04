@@ -65,6 +65,7 @@ const answers = {
     deployment: {route: "LOCAL", environment_ids: ["synthetic"], trigger: "EXACT_ACCEPTED_COMMIT", rollback_required: true, rollback_test: true},
     cost_boundaries: {weekly_runner_minutes: 120, monthly_spend_ceiling: 0, currency: "USD"},
   },
+  "project.delivery_finish": "REVIEW",
   "project.model_economics": {profile: "ECO", completion_floor: 0.8},
   "project.runtime": {session_id: "RUNTIME-1", environment_identity: "SYNTHETIC_ENV", capabilities: ["filesystem", "git"]},
 };

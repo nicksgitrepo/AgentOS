@@ -5,6 +5,12 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "name": "AGENTOS_CONTROLLER",
   "scope": "PROJECT_PERSISTENT",
+  "role_display": {
+    "machine_role": "AGENTOS_CONTROLLER",
+    "public_name": "AgentOS Controller",
+    "ongoing_rule": "Current status and control-plane records identify the persistent role as AgentOS Controller; Bootstrap is reserved for first-run discovery and setup.",
+    "history_rule": "Older accepted Controller state may omit the display fields and remains readable; newly compiled state always writes them."
+  },
   "storage_scope": "CONTROL_PLANE_PERSISTENT",
   "storage_rule": "Controller state is stored under the bound control-plane root and is never written into the product root by default. An in-project control plane requires an explicit owner opt-in.",
   "purpose": "A persistent project-level control plane that starts and reconciles campaigns while keeping deterministic state transitions separate from judgment.",

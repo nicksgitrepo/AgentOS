@@ -60,6 +60,10 @@ build the first pass, independent checkers inspect it, a stronger Finalizer
 repairs the retained code, and persistent Runtime handles release and
 deployment.
 
+The owner-facing flow stays conversational: when a real finish choice is needed,
+it asks, “When we're ready, what should I do with it?” and shows simple numbered
+choices while keeping the delivery details and campaign design behind the scenes.
+
 The cascade is measured by the cost of the complete accepted result, not by
 token prices alone. AgentOS keeps it as the default for a task class only after
 at least three accepted observations show a cascade-to-direct-result ratio of

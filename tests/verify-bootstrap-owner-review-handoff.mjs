@@ -28,6 +28,7 @@ const answers = {
   "project.function_requirements": {required: ["complete one useful workflow"], excluded: ["unrelated polish"]},
   "security.baseline": {data_classes: ["non-sensitive synthetic"], authentication: "owner-only", protected_actions: ["publication"]},
   "project.delivery_policy": {source_control: {push_mode: "CHECKPOINTS_REMOTE_EQUAL"}, ci_runner: {route: "LOCAL", weekly_minutes_budget: 120}, deployment: {route: "LOCAL", environment_ids: ["synthetic"]}},
+  "project.delivery_finish": "REVIEW",
   "project.model_economics": {profile: "ECO", completion_floor: 0.8},
   "project.runtime": {session_id: "RUNTIME-REVIEW", environment_identity: "ENV-REVIEW", capabilities: ["filesystem"]},
 };

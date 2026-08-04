@@ -20,6 +20,7 @@ import {discoverProject, EPISTEMIC_CLASSES} from "./bootstrap-discovery.mjs";
 import {
   compileDeliveryPolicy,
   createDeliveryProbePlan,
+  DELIVERY_FINISH_OPTIONS,
   runDeliveryProbes,
   validateDeliveryPolicy,
   validateDeliveryProbePlan,
@@ -104,6 +105,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     prompt: "May Bootstrap perform safe read-only discovery so it can answer technical setup questions for you?",
     type: "ENUM",
     choices: DISCOVERY_MODES,
+    owner_choices: ["Recommended read-only discovery", "Guided discovery", "Expert discovery", "Local-only discovery"],
     recommended: "RECOMMENDED",
     required: true,
   },
@@ -191,6 +193,18 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     output: "DELIVERY_POLICY",
     required: true,
     askWhen: "CONFLICT_OR_MISSING_DELIVERY_POLICY",
+    owner_visible: false,
+  },
+  {
+    id: "project.delivery_finish",
+    class: "OWNER_BOUNDARY",
+    prompt: "When we're ready, what should I do with it?",
+    type: "ENUM",
+    choices: DELIVERY_FINISH_OPTIONS.map((option) => option.value),
+    owner_choices: DELIVERY_FINISH_OPTIONS.map((option) => option.label),
+    output: "DELIVERY_POLICY",
+    required: true,
+    askWhen: "ALWAYS_OWNER_CHOICE",
   },
   {
     id: "project.model_economics",
@@ -671,6 +685,10 @@ function normalizeAnswers(answers) {
       delete normalized[legacyId];
     }
   }
+  for (const [id, value] of Object.entries(normalized)) {
+    const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === id);
+    if (question?.type === "ENUM") normalized[id] = normalizeBootstrapChoiceReply(id, value);
+  }
   return normalized;
 }
 
@@ -710,12 +728,21 @@ export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
       remaining_after_presented: Math.max(unresolved.length - 1, 0),
       recommended_maximum: 1,
     },
-    questions: unresolved.slice(0, 1).map((question) => ({
-      ...question,
-      choices: question.choices ?? null,
-      discovered_facts: discovery.filter((fact) => fact.fact_id === question.id || fact.fact_id.startsWith(`${question.id}.`)),
-      coverage_output_ids: coverageForQuestion(coverage, question.id).map((row) => row.output_id),
-      coverage_reasons: coverageForQuestion(coverage, question.id).filter((row) => row.blocking).map((row) => row.reason),
+    questions: unresolved.slice(0, 1).map((question) => {
+      const {choices: internalChoices, owner_choices: ownerChoices, ...ownerQuestion} = question;
+      return {
+        ...ownerQuestion,
+        choices: ownerChoices ?? internalChoices ?? null,
+        discovered_facts: discovery.filter((fact) => fact.fact_id === question.id || fact.fact_id.startsWith(`${question.id}.`)),
+        coverage_output_ids: coverageForQuestion(coverage, question.id).map((row) => row.output_id),
+        coverage_reasons: coverageForQuestion(coverage, question.id).filter((row) => row.blocking).map((row) => row.reason),
+      };
+    }),
+    owner_questions: unresolved.slice(0, 1).map((question) => ({
+      prompt: question.prompt,
+      choices: question.owner_choices ?? null,
+      reply_guidance: question.owner_choices === undefined ? "Reply in your own words." : "Reply with one number.",
+      optional: question.required !== true,
     })),
     next: unresolved[0]?.id ?? null,
     status: coverage.status,
@@ -724,11 +751,37 @@ export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
 
 export const planBootstrapInterview = planBootstrapQuestions;
 
+export function normalizeBootstrapChoiceReply(questionId, reply) {
+  const normalizedQuestionId = ANSWER_ALIASES[questionId] ?? questionId;
+  const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === normalizedQuestionId);
+  if (!question || question.type !== "ENUM") throw new Error(`choice reply requires a matching enum question: ${questionId}`);
+  const values = question.choices;
+  const labels = question.owner_choices ?? values;
+  const numericReply = typeof reply === "number" && Number.isSafeInteger(reply)
+    ? reply
+    : typeof reply === "string" && /^\d+$/u.test(reply.trim())
+      ? Number(reply.trim())
+      : null;
+  if (numericReply !== null) {
+    if (numericReply < 1 || numericReply > values.length) throw new Error(`choice number is outside the matching question choices: ${questionId}`);
+    return values[numericReply - 1];
+  }
+  if (typeof reply !== "string") throw new Error(`choice reply is not understood for the matching question: ${questionId}`);
+  const normalizedReply = reply.trim().toLocaleLowerCase();
+  const matches = [];
+  for (let index = 0; index < values.length; index += 1) {
+    if (values[index].toLocaleLowerCase() === normalizedReply || labels[index].toLocaleLowerCase() === normalizedReply) matches.push(values[index]);
+  }
+  if (matches.length !== 1) throw new Error(`choice reply is ambiguous or unknown for the matching question: ${questionId}`);
+  return matches[0];
+}
+
 export function validateBootstrapAnswer(questionId, value, discovery = []) {
   const normalizedQuestionId = ANSWER_ALIASES[questionId] ?? questionId;
-  validateAnswers(discovery, {[normalizedQuestionId]: value});
   const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === normalizedQuestionId);
   if (!question) throw new Error(`unknown Bootstrap question: ${questionId}`);
+  const normalizedValue = question.type === "ENUM" ? normalizeBootstrapChoiceReply(normalizedQuestionId, value) : value;
+  validateAnswers(discovery, {[normalizedQuestionId]: normalizedValue});
   return question;
 }
 
@@ -740,15 +793,21 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
   const questionPlan = planBootstrapQuestions({discovery, answers: normalizedAnswers});
   assert(questionPlan.status === "READY_TO_COMPILE", "Bootstrap still has unresolved material questions");
   const bootstrapCoverage = questionPlan.coverage;
+  const rawDeliveryAnswer = normalizedAnswers["project.delivery_policy"];
+  const finishAnswer = normalizedAnswers["project.delivery_finish"];
+  if (rawDeliveryAnswer?.finish !== undefined && rawDeliveryAnswer.finish !== finishAnswer) throw new Error("delivery finish answer differs between the owner choice and typed policy");
+  const deliveryPolicyAnswer = rawDeliveryAnswer === undefined
+    ? (finishAnswer === undefined ? undefined : {finish: finishAnswer})
+    : {...rawDeliveryAnswer, ...(finishAnswer === undefined ? {} : {finish: finishAnswer})};
   const projectLifeContract = compileProjectLifeContract({
     answer: normalizedAnswers["project.life_contract"],
     discovery,
-    deliveryAnswer: normalizedAnswers["project.delivery_policy"],
+    deliveryAnswer: deliveryPolicyAnswer,
   });
   const technicalBaseline = deriveTechnicalBaseline(discovery, normalizedAnswers["project.technical_baseline"]);
   const deliveryPolicy = compileDeliveryPolicy({
     discovery,
-    answer: normalizedAnswers["project.delivery_policy"],
+    answer: deliveryPolicyAnswer,
     projectLifeContract,
   });
   const boundaryContract = compileBoundaryContract({
@@ -866,7 +925,9 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
         target_family: null,
         target_adapter_id: null,
         target_mode: null,
+        finish: null,
       },
+      campaign_design_sha256: null,
       delivery_policy_sha256: null,
       delivery_target_sha256: null,
       delivery_probe_plan_sha256: null,
@@ -902,7 +963,17 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     target_family: output.delivery_target.family,
     target_adapter_id: output.delivery_target.adapter_id,
     target_mode: output.delivery_target.mode,
+    finish: output.delivery_policy.finish.selected,
   };
+  output.first_campaign = {
+    ...output.first_campaign,
+    delivery_finish: output.delivery_policy.finish.selected,
+    design_bible_sha256: canonicalDigest(output.design_bible),
+  };
+  output.exact_creation_plan.campaign_design_sha256 = canonicalDigest({
+    design_bible: output.design_bible,
+    first_campaign: output.first_campaign,
+  });
   output.exact_creation_plan.delivery_policy_sha256 = output.delivery_policy.policy_sha256;
   output.exact_creation_plan.delivery_target_sha256 = output.delivery_target.target_sha256;
   output.exact_creation_plan.delivery_probe_plan_sha256 = output.delivery_probe_plan.probe_plan_sha256;
@@ -955,13 +1026,21 @@ export function validateBootstrapPlan(plan) {
   validateDeliveryProbePlan(plan.delivery_probe_plan);
   assert(plan.delivery_probe_plan.policy_sha256 === plan.delivery_policy.policy_sha256, "delivery probe plan is not bound to delivery policy");
   assert(plan.delivery_probe_plan.discovery_digest_sha256 === plan.discovery_digest_sha256, "delivery probe plan is not bound to Bootstrap discovery");
+  assert(plan.first_campaign.delivery_finish === plan.delivery_policy.finish.selected, "campaign design delivery finish differs from delivery policy");
+  assert(plan.first_campaign.design_bible_sha256 === canonicalDigest(plan.design_bible), "campaign design is not bound to the Design Bible");
+  assert(plan.exact_creation_plan.campaign_design_sha256 === canonicalDigest({
+    design_bible: plan.design_bible,
+    first_campaign: plan.first_campaign,
+  }), "campaign design is not bound to the exact Bootstrap plan");
   assert(plan.exact_creation_plan.delivery_bindings?.runner_provider_id === plan.delivery_policy.ci_runner.provider_id
     && plan.exact_creation_plan.delivery_bindings?.deployment_provider_id === plan.delivery_policy.deployment.provider_id
     && JSON.stringify(plan.exact_creation_plan.delivery_bindings?.environment_ids) === JSON.stringify(plan.delivery_policy.deployment.environment_ids)
     && plan.exact_creation_plan.delivery_bindings?.target_family === plan.delivery_target.family
     && plan.exact_creation_plan.delivery_bindings?.target_adapter_id === plan.delivery_target.adapter_id
-    && plan.exact_creation_plan.delivery_bindings?.target_mode === plan.delivery_target.mode,
+    && plan.exact_creation_plan.delivery_bindings?.target_mode === plan.delivery_target.mode
+    && plan.exact_creation_plan.delivery_bindings?.finish === plan.delivery_policy.finish.selected,
   "exact creation plan delivery bindings do not match delivery policy");
+  assert(plan.delivery_policy.finish.selected !== null, "Bootstrap exact plan has no owner-selected delivery finish");
   assert(plan.exact_creation_plan.delivery_policy_sha256 === plan.delivery_policy.policy_sha256, "exact creation plan is not bound to delivery policy");
   assert(plan.exact_creation_plan.delivery_target_sha256 === plan.delivery_target.target_sha256, "exact creation plan is not bound to delivery target");
   assert(plan.exact_creation_plan.project_life_contract_sha256 === plan.project_life_contract.life_contract_sha256, "exact creation plan is not bound to project life contract");

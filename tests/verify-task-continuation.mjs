@@ -274,6 +274,8 @@ parentReconciliation.reconciliation_sha256 = continuationDigest({...parentReconc
 const currentStatus = {
   active_campaign: false,
   controller_status: "PREPARED_NOT_ACTIVATED",
+  controller_role: "AGENTOS_CONTROLLER",
+  controller_display_name: "AgentOS Controller",
   current_reconciliation_sha256: parentReconciliation.reconciliation_sha256,
   current_commit: COMMIT,
   current_tree: TREE,
@@ -287,6 +289,9 @@ const currentStatus = {
 
 const taskCandidate = {
   task_id: "TASK-CONTINUATION-1",
+  controller_role: "AGENTOS_CONTROLLER",
+  controller_display_name: "AgentOS Controller",
+  display_title: "AgentOS Controller — TASK-CONTINUATION-1",
   version: 1,
   goal: "Exercise one safe control-plane continuation task.",
   scope: "CONTROL_PLANE_ONLY",

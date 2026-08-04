@@ -7,8 +7,21 @@ not hidden technical trivia and not portable provider authority.
 
 ## One compact owner decision
 
-Bootstrap asks `project.delivery_policy` when exact discovery does not provide
-an admitted policy. The answer covers the material choices together:
+Bootstrap keeps the delivery mechanics behind the owner conversation. It may
+compile `project.delivery_policy` from safe defaults, discovery, and typed
+project facts. The owner sees one short choice:
+
+```text
+When we're ready, what should I do with it?
+1. Leave it ready for review
+2. Save it safely for later
+3. Share the saved work
+4. Make it part of the main version
+5. Put it live
+6. Release or share it
+```
+
+The typed policy carries the material choices together:
 
 - how local commits and substantial checkpoints are pushed;
 - who owns serialized merge and branch protection;
@@ -76,6 +89,12 @@ creation, deployment, and rollback are `NOT_RUN_OWNER_BOUNDARY`. Results are
 bound to the exact Bootstrap plan SHA-256, delivery-policy digest, discovery
 digest, and canonical project root. Raw command output is reduced to
 secret-free typed observations and digests.
+
+The selected finish is part of the Delivery Policy, exact Bootstrap plan, and
+campaign design. A later finish includes safe earlier steps only when each
+project route, adapter, evidence, and boundary check is present; a missing
+binding holds only that dependent outcome. No owner choice supplies credentials
+or bypasses readbacks.
 
 Project extensions may add stricter delivery requirements and provider facts,
 but cannot weaken clean checkpoint custody, serialized merge authority,

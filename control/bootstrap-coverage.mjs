@@ -124,11 +124,12 @@ function hasAuthenticationAnswer(answer) {
   return answerHasValue(answer, ["authentication", "auth", "identity", "authorization"]);
 }
 
-function deliveryAnswerGaps(answer) {
-  if (!isRecord(answer)) return ["DELIVERY_POLICY_OWNER_INPUT"];
+function deliveryAnswerGaps(answer, finishAnswer = undefined) {
+  if (!isRecord(answer)) return ["DELIVERY_POLICY_OWNER_INPUT", ...(finishAnswer === undefined ? ["DELIVERY_FINISH_OWNER_CHOICE"] : [])];
   const runner = answer.ci_runner ?? answer.runner ?? {};
   const deployment = answer.deployment ?? {};
   const cost = answer.cost_boundaries ?? {};
+  const finish = answer.finish ?? finishAnswer;
   const runnerRoute = runner.route ?? runner.runner_route;
   const deploymentRoute = deployment.route ?? deployment.hosting_route;
   const gaps = [];
@@ -138,6 +139,7 @@ function deliveryAnswerGaps(answer) {
   if (["MANAGED", "VPS"].includes(deploymentRoute) && !deployment.provider_id) gaps.push("DEPLOYMENT_PROVIDER_BINDING");
   if (!Array.isArray(deployment.environment_ids) || deployment.environment_ids.length === 0) gaps.push("DEPLOYMENT_ENVIRONMENT_BINDING");
   if ((runner.weekly_minutes_budget ?? cost.weekly_runner_minutes) === undefined) gaps.push("RUNNER_MINUTES_BOUNDARY");
+  if (finish === undefined || finish === null) gaps.push("DELIVERY_FINISH_OWNER_CHOICE");
   return gaps;
 }
 
@@ -294,7 +296,7 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     reopen_triggers: ["authentication_marker_added", "protected_route_added", "identity_boundary_changed"],
   }),
   definition("DELIVERY_POLICY", "DELIVERY", {
-    question_ids: ["project.delivery_policy"],
+    question_ids: ["project.delivery_finish"],
     compiled_field_paths: ["delivery_policy", "exact_creation_plan.delivery_bindings"],
     safe_default: "CHECKPOINTS_REMOTE_EQUAL_CENTRAL_MERGE_RUNTIME_DEPLOYMENT_ROLLBACK_REQUIRED",
     probe_required: true,
@@ -478,6 +480,7 @@ function projectImportGaps(answer) {
 function compileRows(discovery, answers) {
   const technicalAnswer = answers["project.technical_baseline"];
   const deliveryAnswer = answers["project.delivery_policy"];
+  const deliveryFinishAnswer = answers["project.delivery_finish"];
   const authorityAnswer = answers["authority-corpus.source"];
   const visibleSurface = hasSignal(discovery, /(?:ui|view|route|design|visual|browser)/iu);
   const technicalConflict = hasConflict(discovery, /^(?:project\.marker\.|stack\.)/u);
@@ -713,14 +716,16 @@ function compileRows(discovery, answers) {
     }));
 
   const deliveryDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DELIVERY_POLICY");
-  const deliveryGaps = deliveryAnswerGaps(deliveryAnswer);
+  const deliveryGaps = deliveryAnswerGaps(deliveryAnswer, deliveryFinishAnswer);
+  const deliveryOwnerGap = deliveryGaps.includes("DELIVERY_FINISH_OWNER_CHOICE");
+  const deliveryDependentGaps = deliveryGaps.filter((gap) => gap !== "DELIVERY_FINISH_OWNER_CHOICE");
   rows.push(rowBase(deliveryDefinition, {
-    source_kind: answerPresent(answers, "project.delivery_policy") ? "OWNER_INPUT" : "UNRESOLVED_OWNER_BOUNDARY",
-    source_refs: ["project.delivery_policy"],
+    source_kind: answerPresent(answers, "project.delivery_policy") || answerPresent(answers, "project.delivery_finish") ? "OWNER_INPUT" : "UNRESOLVED_OWNER_BOUNDARY",
+    source_refs: ["project.delivery_policy", "project.delivery_finish"],
     discovery_inputs: factIds(discovery, /^(?:delivery\.|repositories\.|tool\.)/u),
-    status: deliveryGaps.length === 0 ? "OWNER_CONFIRMED" : "OWNER_REQUIRED",
-    blocking: deliveryGaps.length > 0,
-    reason: deliveryGaps.length === 0 ? "DELIVERY_POLICY_BOUND" : deliveryGaps.join("+"),
+    status: deliveryOwnerGap ? "OWNER_REQUIRED" : deliveryDependentGaps.length === 0 ? "OWNER_CONFIRMED" : "DEFERRED_NONBLOCKING",
+    blocking: deliveryOwnerGap,
+    reason: deliveryOwnerGap ? "DELIVERY_FINISH_OWNER_CHOICE" : deliveryDependentGaps.length === 0 ? "DELIVERY_POLICY_BOUND" : `DELIVERY_FINISH_BOUND_WITH_DEPENDENT_GAPS:${deliveryDependentGaps.join("+")}`,
     owner_decision_required: true,
   }));
 
@@ -728,7 +733,7 @@ function compileRows(discovery, answers) {
   const technicalRow = rows.find((row) => row.output_id === "TECHNICAL_BASELINE");
   const authorityBoundariesRow = rows.find((row) => row.output_id === "AUTHORITY_BOUNDARIES");
   const targetDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DELIVERY_TARGET");
-  const targetReady = deliveryGaps.length === 0 && lifeRow?.blocking === false;
+  const targetReady = !deliveryOwnerGap && lifeRow?.blocking === false;
   const targetAnswerPresent = isRecord(deliveryAnswer) && answerPresent(deliveryAnswer, "delivery_target");
   rows.push(rowBase(targetDefinition, targetReady
     ? {
@@ -751,7 +756,7 @@ function compileRows(discovery, answers) {
   const boundaryReady = authorityBoundariesRow?.blocking === false
     && lifeRow?.blocking === false
     && technicalRow?.blocking === false
-    && deliveryGaps.length === 0;
+    && !deliveryOwnerGap;
   rows.push(rowBase(boundaryDefinition, boundaryReady
     ? {
       source_kind: "DERIVED_OUTPUT",
@@ -769,7 +774,7 @@ function compileRows(discovery, answers) {
     }));
 
   const probeDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DELIVERY_PROBES");
-  rows.push(rowBase(probeDefinition, deliveryGaps.length === 0
+  rows.push(rowBase(probeDefinition, !deliveryOwnerGap
     ? {
       source_kind: "DERIVED_OUTPUT",
       source_refs: ["DELIVERY_POLICY", "PROJECT_DEFINITION"],
@@ -861,7 +866,7 @@ function compileRows(discovery, answers) {
     }));
 
   const recoveryDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "RECOVERY_AND_ROLLBACK");
-  rows.push(rowBase(recoveryDefinition, deliveryGaps.length === 0 && runtimeBound(answers["project.runtime"])
+  rows.push(rowBase(recoveryDefinition, !deliveryOwnerGap && runtimeBound(answers["project.runtime"])
     ? {
       source_kind: "DERIVED_OUTPUT",
       source_refs: ["DELIVERY_POLICY", "PERSISTENT_RUNTIME"],

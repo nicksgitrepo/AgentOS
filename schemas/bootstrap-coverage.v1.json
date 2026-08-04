@@ -91,7 +91,7 @@
     {"output_id": "TECHNICAL_BASELINE", "category": "CREATION", "question_ids": ["project.technical_baseline"]},
     {"output_id": "DATA_AND_MIGRATION_POLICY", "category": "DATA", "question_ids": ["project.technical_baseline"], "applicability": "CONDITIONAL"},
     {"output_id": "AUTHENTICATION_AND_ACCESS", "category": "TRUST", "question_ids": ["project.technical_baseline"], "applicability": "CONDITIONAL"},
-    {"output_id": "DELIVERY_POLICY", "category": "DELIVERY", "question_ids": ["project.delivery_policy"]},
+    {"output_id": "DELIVERY_POLICY", "category": "DELIVERY", "question_ids": ["project.delivery_finish"]},
     {"output_id": "DELIVERY_TARGET", "category": "DELIVERY", "question_ids": []},
     {"output_id": "BOUNDARY_CONTRACT", "category": "TRUST", "question_ids": []},
     {"output_id": "DELIVERY_PROBES", "category": "DELIVERY", "question_ids": []},
@@ -114,7 +114,7 @@
     "answers": "coverage.answers_sha256 must equal the canonical normalized Bootstrap answers digest",
     "plan": "exact_creation_plan.bootstrap_coverage_sha256 must equal coverage.coverage_sha256",
     "context": "typed project context carries the complete coverage result and its digest",
-    "readiness": "READY_TO_COMPILE is valid only when material_gaps is empty; a partial or merely absent row cannot be approved"
+    "readiness": "READY_TO_COMPILE is valid only when material_gaps is empty; a partial or merely absent owner decision cannot be approved. Technical delivery bindings may remain deferred when they affect only a later finish."
   },
   "extension_boundary": "Project-specific extensions may add stricter rows and facts, but cannot remove a portable output, change blocking semantics, weaken unavailable behavior, or replace the canonical controller."
 }

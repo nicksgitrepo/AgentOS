@@ -25,6 +25,7 @@ try {
       deployment: {route: "MANAGED", provider_id: "managed", environment_ids: ["synthetic"]},
       delivery_target: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "LIMITED_PRODUCT", audience: "SELECTED_USERS"},
     },
+    "project.delivery_finish": "REVIEW",
     "project.model_economics": {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
     "project.runtime": {session_id: "RUNTIME-BOUND", environment_identity: "SYNTHETIC-BOUND", capabilities: ["filesystem"]},
   };

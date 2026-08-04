@@ -58,6 +58,7 @@ const answers = {
     ci_runner: {route: "LOCAL", weekly_minutes_budget: 120},
     deployment: {route: "LOCAL", environment_ids: ["synthetic"], rollback_required: true, rollback_test: true},
   },
+  "project.delivery_finish": "REVIEW",
   "project.model_economics": {profile: "ECO_CONTINUOUS", completion_floor: 0.8, market_snapshot_sha256: DIGEST},
   "project.runtime": {session_id: "RUNTIME-001", environment_identity: "ENV-001", capabilities: ["persistent-navigation"]},
   "security.baseline": {standard_identity: "PROJECT_SECURITY_STANDARD", version: "1", clauses: ["SEC-001"]},

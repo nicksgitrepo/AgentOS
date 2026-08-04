@@ -14,6 +14,15 @@ export const DELIVERY_PROBE_RESULTS_SCHEMA = "agentos.delivery_probe_results.v1"
 export const RUNNER_ROUTES = Object.freeze(["HOSTED", "VPS", "LOCAL", "HYBRID", "PROJECT_DEFINED"]);
 export const DEPLOYMENT_ROUTES = Object.freeze(["MANAGED", "VPS", "LOCAL", "HYBRID", "PROJECT_DEFINED"]);
 export const DELIVERY_PRIORITIES = Object.freeze(["COST", "BALANCED", "SPEED", "RELIABILITY"]);
+export const DELIVERY_FINISH_OPTIONS = Object.freeze([
+  Object.freeze({value: "REVIEW", label: "Leave it ready for review"}),
+  Object.freeze({value: "BRANCH", label: "Save it safely for later"}),
+  Object.freeze({value: "PUSH", label: "Share the saved work"}),
+  Object.freeze({value: "MERGE", label: "Make it part of the main version"}),
+  Object.freeze({value: "DEPLOY", label: "Put it live"}),
+  Object.freeze({value: "RELEASE", label: "Release or share it"}),
+]);
+export const DELIVERY_FINISHES = Object.freeze(DELIVERY_FINISH_OPTIONS.map((option) => option.value));
 export const PROBE_STATUSES = Object.freeze(["PASS", "CONFLICT", "NOT_RUN_OWNER_BOUNDARY", "UNAVAILABLE", "UNPROVEN"]);
 const SAFE_PROBE_OPERATIONS = Object.freeze(["LOCAL_GIT_READBACK", "LOCAL_MARKER_READBACK", "LOCAL_TOOL_AVAILABILITY_READBACK"]);
 const PROHIBITED_PROBE_OPERATIONS = Object.freeze(["AUTHENTICATION", "NETWORK", "PUSH", "MERGE", "SPENDING", "DEPLOYMENT", "ROLLBACK", "FILE_WRITES", "DELETION"]);
@@ -28,6 +37,16 @@ const MERGE_METHODS = Object.freeze(["MERGE_COMMIT", "SQUASH", "REBASE", "PROJEC
 const DEPLOYMENT_TRIGGERS = Object.freeze(["EXACT_ACCEPTED_COMMIT", "PROJECT_DEFINED"]);
 const COST_APPROVALS = Object.freeze(["OWNER_ONLY_ABOVE_BOUNDARY", "PROJECT_DEFINED"]);
 const LIMIT_ACTIONS = Object.freeze(["PAUSE_NEW_LOW_PRIORITY_WORK", "FAIL_CLOSED", "PROJECT_DEFINED"]);
+const DELIVERY_FINISH_STEPS = Object.freeze({
+  REVIEW: ["PREPARE", "CHECK", "AUDIT", "HANDOFF"],
+  BRANCH: ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH"],
+  PUSH: ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH", "PUSH"],
+  MERGE: ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH", "PUSH", "MERGE"],
+  DEPLOY: ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH", "PUSH", "MERGE", "DEPLOY"],
+  RELEASE: ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH", "PUSH", "MERGE", "DEPLOY", "RELEASE"],
+});
+const DELIVERY_FINISH_PREREQUISITE_RULE = "A_LATER_FINISH_INCLUDES_SAFE_EARLIER_STEPS_ONLY_WHEN_PROJECT_POLICY_AND_EXACT_ADAPTER_SUPPORT_EACH_STEP";
+const DELIVERY_FINISH_PROTECTED_ACTION_RULE = "A_FINISH_CHOICE_NEVER_GRANTS_CREDENTIALS_OR_BYPASSES_EXACT_ROUTE_ADAPTER_EVIDENCE_OR_BOUNDARY_READBACKS";
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 const SAFE_PROVIDER_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 const SAFE_BRANCH_TEMPLATE = /^[A-Za-z0-9._{}:/*-]+$/u;
@@ -169,11 +188,24 @@ function recommendationForRoute({selected, routeType, priority, available}) {
   };
 }
 
+function validateDeliveryFinish(finish) {
+  requireRecord(finish, "delivery policy finish");
+  assert(finish.selected === null || DELIVERY_FINISHES.includes(finish.selected), "delivery policy finish selection is invalid");
+  assert(typeof finish.owner_choice_required === "boolean" && finish.owner_choice_required === (finish.selected === null), "delivery policy finish owner-choice state is invalid");
+  assert(finish.selection_source === (finish.selected === null ? "OWNER_REQUIRED" : "OWNER_INPUT"), "delivery policy finish selection source is invalid");
+  assert(Array.isArray(finish.included_steps), "delivery policy finish steps are invalid");
+  const expectedSteps = finish.selected === null ? [] : DELIVERY_FINISH_STEPS[finish.selected];
+  assert(JSON.stringify(finish.included_steps) === JSON.stringify(expectedSteps), "delivery policy finish steps do not match the selected finish");
+  assert(finish.prerequisite_rule === DELIVERY_FINISH_PREREQUISITE_RULE, "delivery policy finish prerequisite rule is weakened");
+  assert(finish.protected_action_rule === DELIVERY_FINISH_PROTECTED_ACTION_RULE, "delivery policy finish boundary rule is weakened");
+}
+
 export function validateDeliveryPolicy(policy) {
   requireRecord(policy, "delivery policy");
   assert(policy.schema === DELIVERY_POLICY_SCHEMA && policy.version === 1, "delivery policy identity is invalid");
   assert(["COMPILED_OWNER_BOUND", "COMPILED_WITH_PROJECT_BINDING_GAPS"].includes(policy.status), "delivery policy status is invalid");
   for (const field of ["preferences", "source_control", "merge", "ci_runner", "deployment", "delivery_target", "rollback", "cost_boundaries", "recommendation"]) requireRecord(policy[field], `delivery policy ${field}`);
+  validateDeliveryFinish(policy.finish);
   assert(DELIVERY_PRIORITIES.includes(policy.preferences.priority), "delivery policy priority is invalid");
   assert(PUSH_MODES.includes(policy.source_control.push_mode), "delivery policy push mode is invalid");
   assert(PREVIEW_MODES.includes(policy.source_control.preview_on_push), "delivery policy push preview mode is invalid");
@@ -218,13 +250,16 @@ export function compileDeliveryPolicy({discovery = [], answer = undefined, proje
   if (answer !== undefined) requireRecord(answer, "delivery policy answer");
   if (answer !== undefined) secretFree(answer, "delivery policy answer");
   const input = answer ?? {};
-  rejectUnknown(input, ["priority", "available_runner_routes", "available_deployment_routes", "source_control", "merge", "ci_runner", "runner", "deployment", "delivery_target", "cost_boundaries"], "delivery policy answer");
+  rejectUnknown(input, ["priority", "available_runner_routes", "available_deployment_routes", "source_control", "merge", "ci_runner", "runner", "deployment", "delivery_target", "cost_boundaries", "finish"], "delivery policy answer");
   const priority = enumValue(input.priority, DELIVERY_PRIORITIES, "delivery policy priority", "BALANCED");
   const sourceControlInput = input.source_control ?? {};
   const mergeInput = input.merge ?? {};
   const runnerInput = input.ci_runner ?? input.runner ?? {};
   const deploymentInput = input.deployment ?? {};
   const costInput = input.cost_boundaries ?? {};
+  const finishSelection = input.finish === undefined || input.finish === null
+    ? null
+    : enumValue(input.finish, DELIVERY_FINISHES, "delivery finish", null);
   const lifeContract = projectLifeContract ?? compileProjectLifeContract({discovery, deliveryAnswer: answer});
   for (const [record, allowed, label] of [
     [sourceControlInput, ["push_mode", "branch_namespace", "preview_on_push", "temporary_branch_retention"], "source_control answer"],
@@ -256,11 +291,19 @@ export function compileDeliveryPolicy({discovery = [], answer = undefined, proje
   const policy = {
     schema: DELIVERY_POLICY_SCHEMA,
     version: 1,
-    status: runnerRoute === "PROJECT_DEFINED" || deploymentRoute === "PROJECT_DEFINED" || (deploymentRoute !== "LOCAL" && deploymentProvider === null) || environmentIds.length === 0
+    status: finishSelection === null || runnerRoute === "PROJECT_DEFINED" || deploymentRoute === "PROJECT_DEFINED" || (deploymentRoute !== "LOCAL" && deploymentProvider === null) || environmentIds.length === 0
       ? "COMPILED_WITH_PROJECT_BINDING_GAPS"
       : "COMPILED_OWNER_BOUND",
     source: answer === undefined ? "PORTABLE_SAFE_DEFAULTS" : "OWNER_INPUT_WITH_SAFE_DEFAULTS",
     preferences: {priority},
+    finish: {
+      selected: finishSelection,
+      owner_choice_required: finishSelection === null,
+      selection_source: finishSelection === null ? "OWNER_REQUIRED" : "OWNER_INPUT",
+      included_steps: finishSelection === null ? [] : [...DELIVERY_FINISH_STEPS[finishSelection]],
+      prerequisite_rule: DELIVERY_FINISH_PREREQUISITE_RULE,
+      protected_action_rule: DELIVERY_FINISH_PROTECTED_ACTION_RULE,
+    },
     source_control: {
       push_mode: pushMode,
       checkpoint_rule: "CLEAN_PUSHED_REMOTE_EQUAL_BEFORE_AUDIT_OR_HANDOFF",
@@ -321,6 +364,7 @@ export function compileDeliveryPolicy({discovery = [], answer = undefined, proje
       ...((deploymentRoute === "MANAGED" || deploymentRoute === "VPS") && deploymentProvider === null ? ["DEPLOYMENT_PROVIDER_BINDING"] : []),
       ...(environmentIds.length === 0 ? ["DEPLOYMENT_ENVIRONMENT_BINDING"] : []),
       ...(weeklyRunnerMinutes === null ? ["RUNNER_MINUTES_BOUNDARY"] : []),
+      ...(finishSelection === null ? ["DELIVERY_FINISH_OWNER_CHOICE"] : []),
     ],
     discovery_inputs: discovery.filter((fact) => typeof fact?.fact_id === "string" && (fact.fact_id.startsWith("delivery.") || fact.fact_id.startsWith("tool.") || fact.fact_id.startsWith("repositories.")))
       .map((fact) => fact.fact_id).sort(compareUtf8),

@@ -60,6 +60,7 @@ const answer = {
     approval: "OWNER_ONLY_ABOVE_BOUNDARY",
     on_limit: "PAUSE_NEW_LOW_PRIORITY_WORK",
   },
+  finish: "DEPLOY",
 };
 
 const policy = compileDeliveryPolicy({discovery, answer});
@@ -72,6 +73,7 @@ const reorderedPolicy = compileDeliveryPolicy({discovery: structuredClone(discov
   available_deployment_routes: answer.available_deployment_routes,
   available_runner_routes: answer.available_runner_routes,
   priority: answer.priority,
+  finish: answer.finish,
 }});
 validateDeliveryPolicy(policy);
 validateDeliveryPolicy(reorderedPolicy);
@@ -82,11 +84,15 @@ assert.equal(policy.source_control.checkpoint_rule, "CLEAN_PUSHED_REMOTE_EQUAL_B
 assert.equal(policy.merge.auto_merge, "DISABLED_BY_DEFAULT");
 assert.equal(policy.deployment.authority, "RUNTIME_AFTER_CENTRAL_ACCEPTANCE");
 assert.equal(policy.rollback.identity, "EXACT_LAST_ACCEPTED_DEPLOYMENT");
+assert.equal(policy.finish.selected, "DEPLOY");
+assert.deepEqual(policy.finish.included_steps, ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH", "PUSH", "MERGE", "DEPLOY"]);
+assert(policy.finish.protected_action_rule.includes("EXACT_ROUTE"));
 
 const defaultPolicy = compileDeliveryPolicy({discovery: []});
 assert.equal(defaultPolicy.status, "COMPILED_WITH_PROJECT_BINDING_GAPS");
 assert(defaultPolicy.unresolved.includes("CI_RUNNER_ROUTE"));
 assert(defaultPolicy.unresolved.includes("DEPLOYMENT_ROUTE"));
+assert(defaultPolicy.unresolved.includes("DELIVERY_FINISH_OWNER_CHOICE"));
 assert.equal(defaultPolicy.source_control.push_mode, "CHECKPOINTS_REMOTE_EQUAL");
 assert.equal(defaultPolicy.rollback.test_required, true);
 
@@ -130,12 +136,19 @@ try {
 assert.throws(() => compileDeliveryPolicy({discovery, answer: {...answer, deployment: {...answer.deployment, provider_id: "https://provider.invalid"}}}), /provider_id/u);
 assert.throws(() => compileDeliveryPolicy({discovery, answer: {...answer, source_control: {...answer.source_control, branch_namespace: "../outside"}}}), /branch_namespace/u);
 assert.throws(() => compileDeliveryPolicy({discovery, answer: {...answer, ci_runner: {...answer.ci_runner, provider_id: "api_key=material"}}}), /secret material|provider_id/u);
+assert.throws(() => compileDeliveryPolicy({discovery, answer: {...answer, finish: "RELEASE_NOW"}}), /delivery finish/u);
 
 const weakened = structuredClone(policy);
 weakened.deployment.authority = "OWNER_DIRECT";
 delete weakened.policy_sha256;
 weakened.policy_sha256 = canonicalDigest(weakened);
 assert.throws(() => validateDeliveryPolicy(weakened), /deployment authority/u);
+
+const mismatchedFinish = structuredClone(policy);
+mismatchedFinish.finish.selected = "MERGE";
+delete mismatchedFinish.policy_sha256;
+mismatchedFinish.policy_sha256 = canonicalDigest(mismatchedFinish);
+assert.throws(() => validateDeliveryPolicy(mismatchedFinish), /finish steps do not match/u);
 
 const tamperedProbePlan = structuredClone(probePlan);
 tamperedProbePlan.probes[0].expected_effects.network = true;

@@ -69,6 +69,8 @@ let state = compileAgentOSControllerState({
 validateAgentOSControllerState(state);
 assert.equal(state.operational_status, "IDLE");
 assert.equal(state.reconciliation_interval_minutes, 30);
+assert.equal(state.controller_role, "AGENTOS_CONTROLLER");
+assert.equal(state.controller_display_name, "AgentOS Controller");
 
 function readback({operation, action_id, controller_state, event, details = {}, externalIdentity = `EXT-${operation.toUpperCase()}`}) {
   return compileControllerAdapterReadback({

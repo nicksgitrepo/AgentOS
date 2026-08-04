@@ -9,6 +9,7 @@ import {
   validateContinuationHandoff,
   validateContinuationTask,
 } from "./task-continuation.mjs";
+import {AGENTOS_CONTROLLER_DISPLAY_NAME, AGENTOS_CONTROLLER_ROLE, controllerDisplayTitle, validateControllerRoleDisplay} from "./controller-role-display.mjs";
 
 export const TASK_EXECUTION_READBACK_SCHEMA = "agentos.control_plane_task_execution_readback.v1";
 export const TASK_RUN_RECONCILIATION_SCHEMA = "agentos.control_plane_task_run_reconciliation.v1";
@@ -25,12 +26,24 @@ const EXECUTION_KEYS = [
 ];
 const RECONCILIATION_KEYS = [
   "schema", "version", "status", "iteration", "task_sha256", "parent_handoff_sha256", "parent_reconciliation_sha256",
+  "project_id", "campaign_id", "campaign_version", "canonical_campaign_identity", "controller_role", "controller_display_name", "display_title", "policy_epoch", "policy_state_sha256",
+  "source_commit", "source_tree", "execution_sha256", "active_campaign", "product_writes_allowed", "product_agent_spawns_allowed",
+  "deployment_allowed", "publication_allowed", "push_allowed", "merge_allowed", "sterile_copy_changed", "next_task_candidate_sha256",
+  "findings", "reconciled_at_utc", "reconciliation_sha256",
+];
+const LEGACY_RECONCILIATION_KEYS = [
+  "schema", "version", "status", "iteration", "task_sha256", "parent_handoff_sha256", "parent_reconciliation_sha256",
   "project_id", "campaign_id", "campaign_version", "canonical_campaign_identity", "policy_epoch", "policy_state_sha256",
   "source_commit", "source_tree", "execution_sha256", "active_campaign", "product_writes_allowed", "product_agent_spawns_allowed",
   "deployment_allowed", "publication_allowed", "push_allowed", "merge_allowed", "sterile_copy_changed", "next_task_candidate_sha256",
   "findings", "reconciled_at_utc", "reconciliation_sha256",
 ];
 const QUEUED_KEYS = [
+  "schema", "version", "status", "task_id", "project_id", "campaign_id", "campaign_version", "canonical_campaign_identity", "controller_role", "controller_display_name", "display_title",
+  "parent_task_sha256", "parent_run_reconciliation_sha256", "task_candidate", "task_candidate_sha256", "policy_epoch",
+  "policy_state_sha256", "boundary", "queued_at_utc", "queued_task_sha256",
+];
+const LEGACY_QUEUED_KEYS = [
   "schema", "version", "status", "task_id", "project_id", "campaign_id", "campaign_version", "canonical_campaign_identity",
   "parent_task_sha256", "parent_run_reconciliation_sha256", "task_candidate", "task_candidate_sha256", "policy_epoch",
   "policy_state_sha256", "boundary", "queued_at_utc", "queued_task_sha256",
@@ -56,6 +69,14 @@ function requireRecord(value, label) {
 function exactKeys(value, keys, label) {
   requireRecord(value, label);
   assert(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...keys].sort()), `${label} fields mismatch`);
+}
+
+function exactKeysWithLegacy(value, keys, legacyKeys, label) {
+  requireRecord(value, label);
+  const actual = JSON.stringify(Object.keys(value).sort());
+  if (actual === JSON.stringify([...legacyKeys].sort())) return false;
+  assert(actual === JSON.stringify([...keys].sort()), `${label} fields mismatch`);
+  return true;
 }
 
 function requireString(value, label, {allowEmpty = false} = {}) {
@@ -134,13 +155,14 @@ export function validateTaskExecutionReadback(readback, task = null) {
 }
 
 export function validateTaskRunReconciliation(reconciliation) {
-  exactKeys(reconciliation, RECONCILIATION_KEYS, "task run reconciliation");
+  const hasRoleDisplay = exactKeysWithLegacy(reconciliation, RECONCILIATION_KEYS, LEGACY_RECONCILIATION_KEYS, "task run reconciliation");
   assert(reconciliation.schema === TASK_RUN_RECONCILIATION_SCHEMA && reconciliation.version === 1, "task run reconciliation identity is invalid");
   assert(reconciliation.status === "RECONCILED_INACTIVE", "task run reconciliation is not inactive");
   assert(Number.isSafeInteger(reconciliation.iteration) && reconciliation.iteration >= 1, "task run iteration is invalid");
   for (const field of ["task_sha256", "parent_handoff_sha256", "parent_reconciliation_sha256", "policy_state_sha256", "execution_sha256", "next_task_candidate_sha256", "reconciliation_sha256"]) requireSha(reconciliation[field], `task run ${field}`);
   for (const field of ["project_id", "campaign_id", "campaign_version"]) requireIdentifier(reconciliation[field], `task run ${field}`);
   assert(reconciliation.canonical_campaign_identity === "CONTROLLER_CANDIDATE", "task run canonical identity is invalid");
+  if (hasRoleDisplay) validateControllerRoleDisplay({controllerRole: reconciliation.controller_role, controllerDisplayName: reconciliation.controller_display_name, displayTitle: reconciliation.display_title}, {label: "task run reconciliation display"});
   assert(Number.isSafeInteger(reconciliation.policy_epoch) && reconciliation.policy_epoch >= 1, "task run policy epoch is invalid");
   requireGitObject(reconciliation.source_commit, "task run source commit");
   requireGitObject(reconciliation.source_tree, "task run source tree");
@@ -152,10 +174,17 @@ export function validateTaskRunReconciliation(reconciliation) {
 }
 
 export function validateQueuedTask(queued) {
-  exactKeys(queued, QUEUED_KEYS, "queued continuation task");
+  const hasRoleDisplay = exactKeysWithLegacy(queued, QUEUED_KEYS, LEGACY_QUEUED_KEYS, "queued continuation task");
   assert(queued.schema === QUEUED_TASK_SCHEMA && queued.version === 1 && queued.status === "QUEUED_INACTIVE", "queued continuation task identity is invalid");
   for (const field of ["task_id", "project_id", "campaign_id", "campaign_version"]) requireIdentifier(queued[field], `queued task ${field}`);
   assert(queued.canonical_campaign_identity === "CONTROLLER_CANDIDATE", "queued task canonical identity is invalid");
+  if (hasRoleDisplay) {
+    validateControllerRoleDisplay({controllerRole: queued.controller_role, controllerDisplayName: queued.controller_display_name, displayTitle: queued.display_title}, {taskId: queued.task_id, label: "queued task display"});
+    assert(queued.controller_role === queued.task_candidate.controller_role
+      && queued.controller_display_name === queued.task_candidate.controller_display_name
+      && queued.display_title === queued.task_candidate.display_title,
+    "queued task display differs from its candidate");
+  }
   requireSha(queued.parent_task_sha256, "queued task parent");
   requireSha(queued.parent_run_reconciliation_sha256, "queued task run reconciliation");
   selectContinuationTask({availableTasks: [queued.task_candidate], selectedTaskId: queued.task_id});
@@ -177,6 +206,9 @@ export function prepareQueuedContinuationTask({queuedTask, parentHandoff, curren
   assert(parentHandoff.phase === "COMPLETION" && parentHandoff.status === "COMPLETED_INACTIVE", "queued continuation requires a completed inactive parent handoff");
   requireRecord(currentStatus, "queued continuation current status");
   assert(currentStatus.active_campaign === false && currentStatus.controller_status === "PREPARED_NOT_ACTIVATED", "queued continuation current status crossed activation");
+  if (currentStatus.controller_role !== undefined || currentStatus.controller_display_name !== undefined) {
+    validateControllerRoleDisplay({controllerRole: currentStatus.controller_role, controllerDisplayName: currentStatus.controller_display_name}, {label: "queued continuation current status role"});
+  }
   assert(currentStatus.current_reconciliation_sha256 === queuedTask.parent_run_reconciliation_sha256, "queued continuation parent reconciliation is stale");
   assert(currentStatus.continuation_completion_handoff_sha256 === parentHandoff.handoff_sha256, "queued continuation parent handoff is stale");
   assert(queuedTask.parent_task_sha256 === parentHandoff.task_sha256, "queued continuation parent task differs");
@@ -214,6 +246,9 @@ export function prepareQueuedContinuationTask({queuedTask, parentHandoff, curren
     version: 1,
     status: "IN_PROGRESS_INACTIVE",
     task_id: candidate.task_id,
+    controller_role: AGENTOS_CONTROLLER_ROLE,
+    controller_display_name: AGENTOS_CONTROLLER_DISPLAY_NAME,
+    display_title: controllerDisplayTitle(candidate.task_id),
     project_id: queuedTask.project_id,
     campaign_id: queuedTask.campaign_id,
     campaign_version: queuedTask.campaign_version,
@@ -246,6 +281,9 @@ export function prepareQueuedContinuationTask({queuedTask, parentHandoff, curren
     status: "STARTED_INACTIVE",
     phase: "START",
     task_sha256: task.task_sha256,
+    controller_role: task.controller_role,
+    controller_display_name: task.controller_display_name,
+    display_title: task.display_title,
     parent_handoff_sha256: parentHandoff.handoff_sha256,
     parent_reconciliation_sha256: queuedTask.parent_run_reconciliation_sha256,
     task: structuredClone(task),
@@ -255,7 +293,7 @@ export function prepareQueuedContinuationTask({queuedTask, parentHandoff, curren
     audit_reports: [],
     audit_reconciliation: null,
     findings: [],
-    next_action: "Run only the queued control-plane task as the AgentOS Controller; keep the campaign inactive.",
+    next_action: "AgentOS Controller will run only the queued control-plane task; keep the campaign inactive.",
     stop_conditions: structuredClone(candidate.stop_conditions),
     undo: structuredClone(candidate.undo),
     recorded_at_utc: startedAtUtc,
@@ -272,6 +310,9 @@ export function runSafeControlPlaneTaskLoop({readyTask, readyHandoff, currentSta
   assert(readyHandoff.phase === "START" && readyHandoff.status === "STARTED_INACTIVE", "run loop requires a continuation-ready start handoff");
   assert(readyHandoff.task_sha256 === readyTask.task_sha256, "run loop task and start handoff differ");
   assert(currentStatus.active_campaign === false && currentStatus.controller_status === "PREPARED_NOT_ACTIVATED", "run loop current status crossed activation");
+  if (currentStatus.controller_role !== undefined || currentStatus.controller_display_name !== undefined) {
+    validateControllerRoleDisplay({controllerRole: currentStatus.controller_role, controllerDisplayName: currentStatus.controller_display_name}, {label: "run loop current status role"});
+  }
   assert(currentStatus.current_reconciliation_sha256 === readyTask.parent_reconciliation_sha256, "run loop parent reconciliation is stale");
   assert(currentStatus.continuation_completion_handoff_sha256 === readyTask.parent_handoff_sha256, "run loop parent handoff is stale");
   assert(Number.isSafeInteger(iteration) && iteration >= 1, "run loop iteration is invalid");
@@ -295,6 +336,9 @@ export function runSafeControlPlaneTaskLoop({readyTask, readyHandoff, currentSta
     campaign_id: readyTask.campaign_id,
     campaign_version: readyTask.campaign_version,
     canonical_campaign_identity: "CONTROLLER_CANDIDATE",
+    controller_role: readyTask.controller_role,
+    controller_display_name: readyTask.controller_display_name,
+    display_title: readyTask.display_title,
     policy_epoch: readyTask.policy_epoch,
     policy_state_sha256: readyTask.policy_state_sha256,
     source_commit: readyTask.source_commit,
@@ -324,6 +368,9 @@ export function runSafeControlPlaneTaskLoop({readyTask, readyHandoff, currentSta
     campaign_id: readyTask.campaign_id,
     campaign_version: readyTask.campaign_version,
     canonical_campaign_identity: "CONTROLLER_CANDIDATE",
+    controller_role: candidate.controller_role,
+    controller_display_name: candidate.controller_display_name,
+    display_title: candidate.display_title,
     parent_task_sha256: readyTask.task_sha256,
     parent_run_reconciliation_sha256: reconciliation.reconciliation_sha256,
     task_candidate: candidate,

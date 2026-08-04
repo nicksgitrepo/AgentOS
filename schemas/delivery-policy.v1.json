@@ -7,7 +7,21 @@
   "question": {
     "id": "project.delivery_policy",
     "class": "MATERIAL_PREFERENCE",
-    "rule": "Ask one compact structured question when exact discovery does not provide an admitted delivery policy. The question may include the product target family and maturity mode. Discovery may recommend route classes but cannot choose owner intent, authenticate, spend, push, merge, deploy, or select a provider account."
+    "rule": "Keep delivery mechanics behind the conversation and compile them into typed project context from safe defaults, discovery, and supplied project facts. Ask the owner only one casual choice for what should happen when the work is ready. Discovery may recommend route classes but cannot choose owner intent, authenticate, spend, push, merge, deploy, or select a provider account."
+  },
+  "finish": {
+    "question_id": "project.delivery_finish",
+    "owner_prompt": "When we're ready, what should I do with it?",
+    "reply_guidance": "Reply with one number from the choices shown.",
+    "options": [
+      {"value": "REVIEW", "label": "Leave it ready for review"},
+      {"value": "BRANCH", "label": "Save it safely for later"},
+      {"value": "PUSH", "label": "Share the saved work"},
+      {"value": "MERGE", "label": "Make it part of the main version"},
+      {"value": "DEPLOY", "label": "Put it live"},
+      {"value": "RELEASE", "label": "Release or share it"}
+    ],
+    "rule": "The owner chooses the intended finish during Bootstrap. No finish is silently assumed. A later finish includes safe earlier steps only when the typed project policy and exact adapters support each step."
   },
   "routes": {
     "runner": ["HOSTED", "VPS", "LOCAL", "HYBRID", "PROJECT_DEFINED"],
@@ -63,5 +77,6 @@
     "binding": ["exact_bootstrap_plan_sha256", "delivery_policy_sha256", "discovery_digest_sha256", "canonical_project_root"],
     "result_rule": "Each result records PASS, CONFLICT, NOT_RUN_OWNER_BOUNDARY, UNAVAILABLE, or UNPROVEN. Raw output is reduced to secret-free digests and typed observations."
   },
+  "protected_action_rule": "A selected finish is not permission to guess credentials or bypass exact route, adapter, evidence, boundary, or readback checks; a missing check stops only the dependent outcome.",
   "extension_boundary": "Project-specific delivery fields may add stricter constraints and provider bindings, but cannot weaken clean checkpoint custody, serialized merge authority, Runtime deployment authority, exact rollback identity, or probe prohibitions."
 }

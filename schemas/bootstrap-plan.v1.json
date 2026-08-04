@@ -53,7 +53,7 @@
   "delivery_policy": {
     "contract": "schemas/delivery-policy.v1.json",
     "required_fields": ["delivery_policy", "delivery_target", "delivery_probe_plan"],
-    "binding_rule": "The delivery policy, explicit delivery target, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
+    "binding_rule": "The delivery policy, owner-selected finish, explicit delivery target, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
   },
   "project_life_contract": {
     "controller": "control/project-life-contract.mjs",
@@ -98,8 +98,8 @@
     "rule": "Every required setup obligation has one deterministic row with applicability, provenance, status, safe default, probe requirement, owner boundary, unavailable behavior, reopen triggers, dependencies, and exact compiled field paths. Material gaps block exact-plan compilation."
   },
   "exact_creation_plan_binding": {
-    "required_fields": ["exact_creation_plan.bootstrap_coverage_sha256", "exact_creation_plan.project_life_contract_sha256", "exact_creation_plan.delivery_target_sha256", "exact_creation_plan.boundary_contract_sha256", "exact_creation_plan.standards_registry_sha256", "exact_creation_plan.normalization_sha256", "exact_creation_plan.project_import_sha256", "exact_creation_plan.global_policy_state_sha256", "exact_creation_plan.owner_review_policy_sha256"],
-    "rule": "The exact creation plan must carry the exact coverage, life-contract, delivery-target, boundary, standards, normalization, project-import, global-policy, and owner-review digests. A plan cannot be approved when any required contract is pending or differs."
+    "required_fields": ["exact_creation_plan.bootstrap_coverage_sha256", "exact_creation_plan.project_life_contract_sha256", "exact_creation_plan.delivery_target_sha256", "exact_creation_plan.boundary_contract_sha256", "exact_creation_plan.standards_registry_sha256", "exact_creation_plan.normalization_sha256", "exact_creation_plan.project_import_sha256", "exact_creation_plan.global_policy_state_sha256", "exact_creation_plan.owner_review_policy_sha256", "exact_creation_plan.campaign_design_sha256"],
+    "rule": "The exact creation plan must carry the exact coverage, life-contract, delivery-target, boundary, standards, normalization, project-import, global-policy, owner-review, and campaign-design digests. The campaign design includes the owner-selected finish and the compiled Design Bible binding. A plan cannot be approved when any required contract is pending or differs."
   },
   "delivery_probe_gate": {
     "contract": "schemas/delivery-probes.v1.json",

@@ -56,6 +56,9 @@ const boundary = () => ({
 
 const candidate = (taskId) => ({
   task_id: taskId,
+  controller_role: "AGENTOS_CONTROLLER",
+  controller_display_name: "AgentOS Controller",
+  display_title: `AgentOS Controller — ${taskId}`,
   version: 1,
   goal: "Run one further bounded control-plane readback iteration.",
   scope: "CONTROL_PLANE_ONLY",
@@ -73,6 +76,9 @@ const task = {
   version: 1,
   status: "IN_PROGRESS_INACTIVE",
   task_id: "TASK-CONTROLLER-RUN-LOOP-TEST",
+  controller_role: "AGENTOS_CONTROLLER",
+  controller_display_name: "AgentOS Controller",
+  display_title: "AgentOS Controller — TASK-CONTROLLER-RUN-LOOP-TEST",
   project_id: "PROJECT-PORTABLE",
   campaign_id: "CAMPAIGN-CONTROL-PLANE-TEST",
   campaign_version: "v1",
@@ -105,6 +111,9 @@ const startHandoff = {
   status: "STARTED_INACTIVE",
   phase: "START",
   task_sha256: task.task_sha256,
+  controller_role: task.controller_role,
+  controller_display_name: task.controller_display_name,
+  display_title: task.display_title,
   parent_handoff_sha256: task.parent_handoff_sha256,
   parent_reconciliation_sha256: task.parent_reconciliation_sha256,
   task: structuredClone(task),
@@ -133,6 +142,8 @@ validateContinuationHandoff(startHandoff);
 const currentStatus = {
   active_campaign: false,
   controller_status: "PREPARED_NOT_ACTIVATED",
+  controller_role: "AGENTOS_CONTROLLER",
+  controller_display_name: "AgentOS Controller",
   current_reconciliation_sha256: PARENT_RECONCILIATION,
   continuation_completion_handoff_sha256: PARENT_HANDOFF,
 };
