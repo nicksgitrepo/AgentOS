@@ -363,8 +363,14 @@ export function applyGovernanceEvidenceRepair({worktreePath}) {
   governance = replaceOnce(governance, "validateEvidence(answer.recheck.evidence, recheckGate.evidence_requirements, `${gate.gate_id} re-check evidence`);", "validateEvidence(answer.recheck.evidence, recheckGate.evidence_requirements, gate.gate_id + \" re-check evidence\", answers._tree);", "re-check evidence validation");
 
   let worker = fs.readFileSync(workerPath, "utf8");
-  worker = replaceOnce(worker, "const task = args.task;\n", "const task = args.task;\nconst taskId = args.task_id ?? \"INITIAL\";\nconst taskKind = args.task_kind ?? \"INITIAL\";\nconst evidenceWorktree = args.evidence_worktree ? path.resolve(args.evidence_worktree) : null;\n", "worker repair task context");
-  worker = replaceOnce(worker, 'import {execFileSync} from "node:child_process";\n', 'import {execFileSync} from "node:child_process";\nimport {collectGovernanceGateEvidence} from "./governance-evidence.mjs";\n', "worker evidence import");
+  const workerTaskContext = [
+    'const taskId = args.task_id ?? "INITIAL";\n',
+    'const taskKind = args.task_kind ?? "INITIAL";\n',
+    'const evidenceWorktree = args.evidence_worktree ? path.resolve(args.evidence_worktree) : null;\n',
+  ].filter((declaration) => !worker.includes(declaration)).join("");
+  if (workerTaskContext.length > 0) worker = replaceOnce(worker, "const task = args.task;\n", "const task = args.task;\n" + workerTaskContext, "worker repair task context");
+  const evidenceImport = 'import {collectGovernanceGateEvidence} from "./governance-evidence.mjs";\n';
+  if (!worker.includes(evidenceImport)) worker = replaceOnce(worker, 'import {execFileSync} from "node:child_process";\n', 'import {execFileSync} from "node:child_process";\n' + evidenceImport, "worker evidence import");
   worker = replaceOnce(worker, "const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, `${gate.gate_id}:${key}`]));", "const gateEvidence = collectGovernanceGateEvidence({worktreePath, tree: decisionTree});\n  const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, gateEvidence[gate.gate_id + \":\" + key]]));", "placeholder evidence branch");
   worker = replaceOnce(worker, "    gate_evaluation: gateEvaluation,", "    gate_evidence: gateEvidence,\n    gate_answers: gateAnswers,\n    gate_evaluation: gateEvaluation,", "gate evidence artifact");
   const auditorBranchStart = worker.indexOf('} else if (role === "INDEPENDENT_AUDITOR") {');
