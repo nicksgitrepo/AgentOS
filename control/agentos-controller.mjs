@@ -34,6 +34,7 @@ const EVENT_TYPES = Object.freeze([
   "BOOTSTRAP_REQUESTED",
   "BOOTSTRAP_PROMOTED",
   "USER_REVIEW_RETURNED",
+  "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
   "CAMPAIGN_APPROVED",
   "AGENT_STALLED",
   "POLICY_AMENDMENT",
@@ -48,6 +49,7 @@ const OPERATION_NAMES = Object.freeze([
   "runBootstrap",
   "bindPersistentRuntime",
   "reconcileUserReview",
+  "admitLocalSelfDevelopment",
   "spawnCampaignOrchestrator",
   "spawnIndependentAuditor",
   "spawnFeatureAgents",
@@ -557,6 +559,33 @@ function requireDetails(readback, fields, label) {
   return readback.details;
 }
 
+function validateLocalAuthorizationEnvelope(authorization) {
+  exactKeys(authorization, [
+    "schema", "version", "status", "source", "owner_decision", "campaign_id", "campaign_version", "source_commit", "source_tree",
+    "parent_audit_packet_sha256", "parent_audit_addendum_sha256", "owner_intent_sha256", "decision_tree_requirement_sha256",
+    "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "model_plan_sha256", "scope_sha256", "permissions",
+    "worker_roles", "stop_conditions", "authorization_sha256",
+  ], "local self-development authorization event");
+  assert(authorization.schema === "agentos.local_development_authorization.v1" && authorization.version === 1 && authorization.status === "AUTHORIZED", "local self-development authorization is invalid");
+  assert(authorization.source === "OWNER_EXISTING_CONSENT", "local self-development authorization is not current owner consent");
+  requireSha(authorization.authorization_sha256, "local self-development authorization digest");
+  assert(authorization.authorization_sha256 === digestWithout(authorization, "authorization_sha256"), "local self-development authorization digest mismatch");
+  assert(authorization.permissions.local_development_writes_allowed === true && authorization.permissions.local_worker_agent_spawns_allowed === true, "local self-development permissions are not enabled");
+  for (const field of ["product_writes_allowed", "product_agent_spawns_allowed", "external_deployment_allowed", "external_release_allowed", "external_publication_allowed", "external_push_allowed", "external_merge_allowed", "secrets_allowed", "destructive_work_allowed"]) assert(authorization.permissions[field] === false, `local self-development authorization crosses ${field}`);
+  return authorization;
+}
+
+function validateLocalAdmissionEnvelope(admission, candidate, authorization) {
+  requireRecord(admission, "local self-development admission");
+  assert(admission.schema === "agentos.local_campaign_admission.v1" && admission.version === 1 && admission.status === "CAMPAIGN_ADMITTED", "local self-development admission is invalid");
+  assert(admission.active_campaign === false && admission.next_event === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED", "local self-development admission crossed its start boundary");
+  assert(admission.campaign_id === candidate.campaign_id && admission.campaign_version === candidate.campaign_version, "local self-development admission campaign differs");
+  assert(admission.controller_candidate_sha256 === candidate.candidate_sha256 && admission.authorization_sha256 === authorization.authorization_sha256, "local self-development admission identity differs");
+  requireSha(admission.admission_sha256, "local self-development admission digest");
+  assert(admission.admission_sha256 === digestWithout(admission, "admission_sha256"), "local self-development admission digest mismatch");
+  return admission;
+}
+
 function policyAmendmentNeedsControllerRotation(amendment) {
   return amendment.affected_variable_ids.includes("MODEL.PROFILE") || amendment.affected_variable_ids.some((id) => id.startsWith("MODEL.ROLE."));
 }
@@ -683,9 +712,42 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       next = updateState(next, {operational_status: "OWNER_REVIEW_PENDING", campaign_queue: queueCandidate(next, details.candidate, event.occurred_at_utc)});
       break;
     }
+    case "LOCAL_SELF_DEVELOPMENT_AUTHORIZED": {
+      assert(state.active_campaign === null, "local self-development admission cannot replace an active campaign");
+      assert(state.runtime_id !== null, "persistent Runtime is required before local self-development admission");
+      const candidate = payload.candidate;
+      validateControllerCampaignCandidate(candidate);
+      assert(candidate.project_id === state.project_id && candidate.policy_epoch === state.policy_epoch && candidate.policy_state_sha256 === state.policy_state_sha256, "local self-development candidate is stale");
+      const authorization = validateLocalAuthorizationEnvelope(payload.authorization);
+      assert(authorization.campaign_id === candidate.campaign_id && authorization.campaign_version === candidate.campaign_version, "local self-development authorization campaign differs");
+      assert(authorization.source_commit === candidate.source_commit && authorization.source_tree === candidate.source_tree, "local self-development authorization source differs");
+      assert(authorization.policy_epoch === candidate.policy_epoch && authorization.policy_state_sha256 === candidate.policy_state_sha256, "local self-development authorization policy differs");
+      assert(authorization.owner_intent_sha256 === candidate.owner_intent_sha256 && authorization.acceptance_contract_sha256 === candidate.acceptance_contract_sha256, "local self-development authorization intent differs");
+      const admission = validateLocalAdmissionEnvelope(payload.admission, candidate, authorization);
+      const identityBinding = payload.identity_binding;
+      requireRecord(identityBinding, "local self-development identity binding");
+      requireSha(identityBinding.binding_sha256, "local self-development identity binding digest");
+      const admissionReadback = add("admitLocalSelfDevelopment", {authorization, admission, candidate, identity_binding: identityBinding});
+      const admissionDetails = requireDetails(admissionReadback, ["status", "admission_sha256", "authorization_sha256", "candidate_sha256", "identity_binding_sha256"], "local self-development admission");
+      assert(admissionDetails.status === "CAMPAIGN_ADMITTED" && admissionDetails.admission_sha256 === admission.admission_sha256 && admissionDetails.authorization_sha256 === authorization.authorization_sha256 && admissionDetails.candidate_sha256 === candidate.candidate_sha256 && admissionDetails.identity_binding_sha256 === identityBinding.binding_sha256, "local self-development admission readback differs");
+      const orchestratorReadback = add("spawnCampaignOrchestrator", payload);
+      // Feature custody must exist before the Auditor reports on the changed tree.
+      const featureReadback = add("spawnFeatureAgents", payload);
+      const auditorReadback = add("spawnIndependentAuditor", payload);
+      const orchestrator = requireDetails(orchestratorReadback, ["session_id", "worker_readback"], "local Campaign Orchestrator spawn").session_id;
+      const auditor = requireDetails(auditorReadback, ["session_id", "worker_readback"], "local Independent Auditor spawn").session_id;
+      const featureDetails = requireDetails(featureReadback, ["feature_agent_session_ids", "worker_readbacks"], "local Feature Agent spawn");
+      const features = featureDetails.feature_agent_session_ids;
+      sortedUnique(features, "local Feature Agent spawn sessions");
+      assert(features.length > 0 && !features.includes(orchestrator) && !features.includes(auditor), "local campaign worker sessions are not independent");
+      const activeCampaign = makeActiveCampaign({state: next, candidate, orchestrator, auditor, features, stage: "BUILDING_AND_AUDITING"});
+      next = updateState(next, {operational_status: "CAMPAIGN_ACTIVE", active_campaign_id: candidate.campaign_id, active_campaign: activeCampaign, campaign_queue: markQueueActive(queueCandidate(next, candidate, event.occurred_at_utc), candidate.campaign_id, event.occurred_at_utc)});
+      break;
+    }
     case "CAMPAIGN_APPROVED": {
       assert(state.active_campaign === null, "a campaign is already active");
       assert(state.runtime_id !== null, "persistent Runtime is required before campaign admission");
+      assert(payload.authorization === undefined && payload.admission === undefined, "local self-development must use LOCAL_SELF_DEVELOPMENT_AUTHORIZED");
       const candidate = payload.candidate;
       validateControllerCampaignCandidate(candidate);
       assert(candidate.project_id === state.project_id && candidate.policy_epoch === state.policy_epoch && candidate.policy_state_sha256 === state.policy_state_sha256, "approved campaign candidate is stale");
