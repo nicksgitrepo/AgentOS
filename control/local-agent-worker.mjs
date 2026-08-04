@@ -156,7 +156,17 @@ let buildTree = null;
 let changedPaths = [];
 let focusedChecks = [];
 
-if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_ORCHESTRATE") {
+if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
+  artifactName = "controller-supervisor-liveness-plan.json";
+  focusedChecks = runControllerSupervisorChecks(worktreePath);
+  product = {
+    ...base,
+    custody_status: "CAMPAIGN_ORCHESTRATOR_CUSTODY",
+    liveness_status: "OBSERVING_ADOPTED_SOURCE",
+    focused_checks: focusedChecks,
+    next_action: "Keep the durable campaign roles source-bound and return a liveness readback to the Controller.",
+  };
+} else if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_ORCHESTRATE") {
   artifactName = "controller-supervisor-orchestrator-plan.json";
   product = {
     ...base,
@@ -200,14 +210,20 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_ORCH
     buildCommit = git(featureWorktree, ["rev-parse", "HEAD"]);
     buildTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
-    assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
-    const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
-    assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
-    focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? runControllerSupervisorChecks(featureWorktree) : runFocusedChecks(featureWorktree);
+    if (taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
+      assert(buildCommit === sourceCommit && buildTree === sourceTree, "Auditor liveness observed a different source");
+      assert(changedPaths.length === 0, "Auditor liveness observed source changes");
+      focusedChecks = runControllerSupervisorChecks(featureWorktree);
+    } else {
+      assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
+      const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
+      focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? runControllerSupervisorChecks(featureWorktree) : runFocusedChecks(featureWorktree);
+    }
     buildStatus = "AUDIT_VERIFIED";
     product = {
       ...product,
-      audit_status: "FEATURE_BUILD_VERIFIED",
+      audit_status: taskKind === "CONTROLLER_SUPERVISOR_LIVENESS" ? "SOURCE_LIVENESS_VERIFIED" : "FEATURE_BUILD_VERIFIED",
       audited_feature_worktree: featureWorktree,
       audited_feature_commit: buildCommit,
       audited_feature_tree: buildTree,
@@ -260,6 +276,26 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_ORCH
       changed_paths: changedPaths,
       focused_checks: focusedChecks,
     };
+  } else if (taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
+    artifactName = "controller-supervisor-liveness-observation.json";
+    focusedChecks = runControllerSupervisorChecks(worktreePath);
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    assert(buildCommit === sourceCommit && buildTree === sourceTree, "liveness Feature Agent source differs");
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      observation_status: "SOURCE_LIVENESS_VERIFIED",
+      build_status: "COMPLETED",
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: [],
+      focused_checks: focusedChecks,
+    };
+    writeFileAtomic(path.join(worktreePath, artifactName), `${JSON.stringify(product, null, 2)}\n`);
+    buildStatus = "COMPLETED";
   } else if (taskKind === "CONTROLLER_SUPERVISOR_REPAIR") {
     artifactName = "control/controller-supervisor-repair-receipt.mjs";
     const changedByRepair = applyControllerSupervisorRepair(worktreePath);

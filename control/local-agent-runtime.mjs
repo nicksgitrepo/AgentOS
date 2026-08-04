@@ -124,14 +124,23 @@ function validateHandshake(handshake, expected) {
     assert(handshake.build_status === "COMPLETED" && handshake.build_commit !== null && handshake.build_tree !== null, "Feature Agent did not return a real build checkpoint");
     requireGitObject(handshake.build_commit, "Feature Agent build commit");
     requireGitObject(handshake.build_tree, "Feature Agent build tree");
-    assert(handshake.build_commit !== expected.sourceCommit && handshake.build_tree !== expected.sourceTree, "Feature Agent build checkpoint did not change source");
-    const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
-    assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Feature Agent build did not change the required code");
+    if (expected.taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
+      assert(handshake.build_commit === expected.sourceCommit && handshake.build_tree === expected.sourceTree, "liveness Feature Agent observed a different source");
+      assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.length === 0, "liveness Feature Agent changed source code");
+    } else {
+      assert(handshake.build_commit !== expected.sourceCommit && handshake.build_tree !== expected.sourceTree, "Feature Agent build checkpoint did not change source");
+      const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Feature Agent build did not change the required code");
+    }
     assert(Array.isArray(handshake.focused_checks) && handshake.focused_checks.length > 0 && typeof handshake.build_checkpoint_sha256 === "string", "Feature Agent build evidence is incomplete");
   }
   if (expected.role === "INDEPENDENT_AUDITOR" && expected.featureWorktree !== null) {
-    const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
-    assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Auditor did not verify the Feature-Agent code change");
+    if (expected.taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
+      assert(handshake.build_status === "AUDIT_VERIFIED" && handshake.build_commit === expected.sourceCommit && handshake.build_tree === expected.sourceTree && Array.isArray(handshake.changed_paths) && handshake.changed_paths.length === 0, "Auditor liveness readback is not source-bound");
+    } else {
+      const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Auditor did not verify the Feature-Agent code change");
+    }
   }
   const artifactPath = safeChild(expected.worktreePath, handshake.artifact_path);
   assert(fs.existsSync(artifactPath) && fs.statSync(artifactPath).isFile(), "local worker artifact is missing");
@@ -578,8 +587,12 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
   assert(readback.build_tree === null || GIT_OBJECT.test(readback.build_tree), "local worker readback build tree is invalid");
   assert(Array.isArray(readback.changed_paths) && Array.isArray(readback.focused_checks), "local worker readback build evidence is invalid");
   if (readback.role === "FEATURE_AGENT") {
-    const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
-    assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null && readback.changed_paths.includes(requiredChangedPath) && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
+    if (taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
+      assert(readback.build_status === "COMPLETED" && readback.build_commit === readback.source_commit && readback.build_tree === readback.source_tree && readback.changed_paths.length === 0 && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "liveness Feature Agent readback is not source-bound");
+    } else {
+      const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null && readback.changed_paths.includes(requiredChangedPath) && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
+    }
   }
   requireSha(readback.artifact_sha256, "local worker readback artifact");
   assert(readback.exit_code === 0, "local worker readback exit status is not successful");
