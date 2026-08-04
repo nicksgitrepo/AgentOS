@@ -251,6 +251,10 @@ function applyOwnerConversationSurfaceRepair(worktreePath) {
   const newChecklistAssertion = '  assert(!renderedPacket.includes("they are examples, not a fixed script"));';
   if (ownerReviewVerifierSource.includes(oldChecklistAssertion)) ownerReviewVerifierSource = ownerReviewVerifierSource.replace(oldChecklistAssertion, newChecklistAssertion);
   else assert(ownerReviewVerifierSource.includes(newChecklistAssertion), "owner review checklist assertion is not at the expected source checkpoint");
+  const oldNumericAssertion = '  assert(renderedPacket.includes("Reply with one number"));';
+  const newNumericAssertion = '  assert(renderedPacket.includes("If I give you a few choices, reply with one number."));';
+  if (ownerReviewVerifierSource.includes(oldNumericAssertion)) ownerReviewVerifierSource = ownerReviewVerifierSource.replace(oldNumericAssertion, newNumericAssertion);
+  else assert(ownerReviewVerifierSource.includes(newNumericAssertion), "owner review numeric answer assertion is not at the expected source checkpoint");
   writeFileAtomic(ownerReviewVerifierPath, ownerReviewVerifierSource);
 
   const testSource = String.raw`#!/usr/bin/env node
