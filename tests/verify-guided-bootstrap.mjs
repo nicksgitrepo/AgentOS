@@ -68,7 +68,8 @@ const questions = planBootstrapQuestions({discovery: [], answers: {}});
 assert.equal(questions.status, "QUESTION_PENDING");
 assert(questions.question_budget.recommended_maximum <= 9);
 const discovery = discoverProject(root, "RECOMMENDED").facts;
-const plan = compileBootstrapPlan({discovery, answers, projectRoot: root});
+const inProjectStorage = (projectRoot) => ({controlPlaneRoot: projectRoot, controlPlaneMode: "IN_PROJECT_OPT_IN"});
+const plan = compileBootstrapPlan({discovery, answers, projectRoot: root, ...inProjectStorage(root)});
 validateBootstrapPlan(plan);
 for (const group of [
   "project_definition", "north_star", "first_useful_workflow", "technical_baseline",
@@ -151,6 +152,7 @@ const importedPlan = compileBootstrapPlan({
   discovery: discoverProject(root, "RECOMMENDED").facts,
   answers: {...answers, "authority-corpus.source": {operation: "IMPORT", source_root: source}},
   projectRoot: root,
+  ...inProjectStorage(root),
 });
 const importedApproved = approveBootstrapPlan(importedPlan, {
   decision: PLAN_APPROVAL,

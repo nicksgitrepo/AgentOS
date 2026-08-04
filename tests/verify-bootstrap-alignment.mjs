@@ -78,7 +78,8 @@ assert(planned.coverage.outputs.some((row) => row.output_id === "DATA_AND_MIGRAT
 assert(BOOTSTRAP_QUESTIONS.some((question) => question.output === "NORTH_STAR"));
 assert.equal(planBootstrapQuestions({discovery, answers}).status, "READY_TO_COMPILE");
 
-const plan = compileBootstrapPlan({discovery, answers, projectRoot});
+const inProjectStorage = (projectRoot) => ({controlPlaneRoot: projectRoot, controlPlaneMode: "IN_PROJECT_OPT_IN"});
+const plan = compileBootstrapPlan({discovery, answers, projectRoot, ...inProjectStorage(projectRoot)});
 validateBootstrapPlan(plan);
 assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");
 assert.deepEqual(plan.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
@@ -98,11 +99,11 @@ const missingRuntimeAnswers = structuredClone(answers);
 delete missingRuntimeAnswers["project.runtime"];
 assert.equal(planBootstrapQuestions({discovery, answers: missingRuntimeAnswers}).status, "QUESTION_PENDING");
 assert(planBootstrapQuestions({discovery, answers: missingRuntimeAnswers}).coverage.pending_question_ids.includes("project.runtime"));
-assert.throws(() => compileBootstrapPlan({discovery, answers: missingRuntimeAnswers, projectRoot}), /unresolved material questions/u);
+assert.throws(() => compileBootstrapPlan({discovery, answers: missingRuntimeAnswers, projectRoot, ...inProjectStorage(projectRoot)}), /unresolved material questions/u);
 const legacyNamingAnswers = structuredClone(answers);
 legacyNamingAnswers["project.technical_constraints"] = legacyNamingAnswers["project.technical_baseline"];
 delete legacyNamingAnswers["project.technical_baseline"];
-const legacyNamingPlan = compileBootstrapPlan({discovery, answers: legacyNamingAnswers, projectRoot});
+const legacyNamingPlan = compileBootstrapPlan({discovery, answers: legacyNamingAnswers, projectRoot, ...inProjectStorage(projectRoot)});
 assert.equal(legacyNamingPlan.plan_sha256, plan.plan_sha256, "legacy technical answer alias changed the canonical plan");
 
 assert.throws(() => approveBootstrapPlan(plan, {decision: "PROCEED", planSha256: plan.plan_sha256, discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO}));
@@ -211,7 +212,7 @@ try {
   const importedAnswers = structuredClone(answers);
   importedAnswers["authority-corpus.source"] = {operation: "IMPORT", source_root: sourceRoot};
   const importedDiscovery = discoverProject(importedProject, "RECOMMENDED").facts;
-  const importedPlan = compileBootstrapPlan({discovery: importedDiscovery, answers: importedAnswers, projectRoot: importedProject});
+  const importedPlan = compileBootstrapPlan({discovery: importedDiscovery, answers: importedAnswers, projectRoot: importedProject, ...inProjectStorage(importedProject)});
   const importedApproval = approveBootstrapPlan(importedPlan, {decision: PLAN_APPROVAL, planSha256: importedPlan.plan_sha256, discoveryDigestSha256: importedPlan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
   const execution = executeBootstrapPlan(importedApproval, {bootstrapSessionId: "BOOTSTRAP-IMPORT", projectRoot: importedProject, legacySourceRoot: sourceRoot, workflow: JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8")), nowUtc: ISO, controllerRuntimeReadback: controllerReadbackFor(importedApproval, "CONTROLLER-READBACK-IMPORT"), controllerSessionId: "CONTROLLER-SESSION-IMPORT"});
   const legacyRoot = path.join(execution.staging_root, importedPlan.authority_corpus.roots.authority_root);
@@ -228,7 +229,7 @@ try {
   const toctouAnswers = structuredClone(answers);
   toctouAnswers["authority-corpus.source"] = {operation: "IMPORT", source_root: toctouSourceRoot};
   const toctouDiscovery = discoverProject(toctouProject, "RECOMMENDED").facts;
-  const toctouPlan = compileBootstrapPlan({discovery: toctouDiscovery, answers: toctouAnswers, projectRoot: toctouProject});
+  const toctouPlan = compileBootstrapPlan({discovery: toctouDiscovery, answers: toctouAnswers, projectRoot: toctouProject, ...inProjectStorage(toctouProject)});
   const toctouApproval = approveBootstrapPlan(toctouPlan, {decision: PLAN_APPROVAL, planSha256: toctouPlan.plan_sha256, discoveryDigestSha256: toctouPlan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
   fs.writeFileSync(path.join(toctouSourceRoot, "legacy.md"), "changed after approval\n");
   assert.throws(() => executeBootstrapPlan(toctouApproval, {
@@ -252,7 +253,7 @@ try {
   const secretAnswers = structuredClone(answers);
   secretAnswers["authority-corpus.source"] = {operation: "IMPORT", source_root: secretSourceRoot};
   const secretDiscovery = discoverProject(secretProject, "RECOMMENDED").facts;
-  assert.throws(() => compileBootstrapPlan({discovery: secretDiscovery, answers: secretAnswers, projectRoot: secretProject}), /secret-bearing file/u);
+  assert.throws(() => compileBootstrapPlan({discovery: secretDiscovery, answers: secretAnswers, projectRoot: secretProject, ...inProjectStorage(secretProject)}), /secret-bearing file/u);
 } finally {
   fs.rmSync(secretSourceRoot, {recursive: true, force: true});
   fs.rmSync(secretProject, {recursive: true, force: true});

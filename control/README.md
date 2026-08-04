@@ -3,6 +3,7 @@
 Canonical executable authorities:
 
 - `bootstrap-compiler.mjs` — discovery-backed exact setup plan and transaction;
+- `control-plane-root.mjs` — separate control-plane binding and containment rules;
 - `bootstrap-coverage.mjs` — deterministic setup output-gap inventory and material-question planner input;
 - `campaign-lifecycle.mjs` — custody, leases, holds, checkpoints, Runtime, and
   next-campaign orientation;
@@ -15,6 +16,9 @@ Canonical executable authorities:
 - `gpt-assist.mjs` — optional Auditor-bound Markdown exchange;
 - `legacy-preservation.mjs`, `authority-corpus.mjs`, and `evidence-library.mjs` —
   preservation and corpus/evidence utilities.
+
+Bootstrap writes AgentOS state to the bound control plane, not to the Product
+root by default. The Product root remains a project input/output boundary.
 
 `bootstrap-interview.mjs`, `guided-bootstrap.mjs`, and `dynamic-bootstrap.mjs`
 are migration-only compatibility aliases. They cannot create setup state,

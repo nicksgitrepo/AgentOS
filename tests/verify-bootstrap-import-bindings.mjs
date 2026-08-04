@@ -59,7 +59,8 @@ const answers = {
   "project.model_economics": {profile: "ECO_CONTINUOUS", completion_floor: 0.8},
   "project.runtime": {session_id: "RUNTIME-IMPORT", environment_identity: "ENV-IMPORT", capabilities: ["filesystem"]},
 };
-const plan = compileBootstrapPlan({discovery, answers, projectRoot: destination});
+const inProjectStorage = (projectRoot) => ({controlPlaneRoot: projectRoot, controlPlaneMode: "IN_PROJECT_OPT_IN"});
+const plan = compileBootstrapPlan({discovery, answers, projectRoot: destination, ...inProjectStorage(destination)});
 validateBootstrapPlan(plan);
 assert.equal(plan.project_import.mode, "NORMALIZE_AND_AUDIT");
 assert.equal(plan.project_import.standards_registry_sha256, plan.standards_registry.registry_sha256);
@@ -105,7 +106,7 @@ fs.writeFileSync(path.join(adoptRoot, "package.json"), "{\"name\":\"adopt\"}\n")
 const adoptAnswers = structuredClone(answers);
 adoptAnswers["project.boundary"].project_name = "Synthetic Adopt Project";
 adoptAnswers["project.import"] = {mode: "ADOPT_IN_PLACE", source_root: adoptRoot};
-const adoptPlan = compileBootstrapPlan({discovery: discoverProject(adoptRoot, "RECOMMENDED").facts, answers: adoptAnswers, projectRoot: adoptRoot});
+const adoptPlan = compileBootstrapPlan({discovery: discoverProject(adoptRoot, "RECOMMENDED").facts, answers: adoptAnswers, projectRoot: adoptRoot, ...inProjectStorage(adoptRoot)});
 const adoptApproved = approveBootstrapPlan(adoptPlan, {
   decision: "APPROVE_EXACT_PLAN",
   planSha256: adoptPlan.plan_sha256,
@@ -149,7 +150,7 @@ fs.mkdirSync(emptyRoot);
 const emptyDiscovery = discoverProject(emptyRoot, "RECOMMENDED").facts;
 const emptyAnswers = {...answers};
 delete emptyAnswers["project.import"];
-const emptyPlan = compileBootstrapPlan({discovery: emptyDiscovery, answers: emptyAnswers, projectRoot: emptyRoot});
+const emptyPlan = compileBootstrapPlan({discovery: emptyDiscovery, answers: emptyAnswers, projectRoot: emptyRoot, ...inProjectStorage(emptyRoot)});
 assert.equal(emptyPlan.project_import, null);
 assert.equal(emptyPlan.normalization_policy.import_mode, null);
 assert.equal(emptyPlan.exact_creation_plan.project_import_sha256, null);

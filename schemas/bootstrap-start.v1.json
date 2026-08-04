@@ -19,6 +19,8 @@
       "canonical_controller",
       "agentos_root",
       "project_root",
+      "control_plane_root",
+      "control_plane",
       "initial_answers",
       "discovery",
       "question_plan",
@@ -26,7 +28,7 @@
       "start_sha256"
     ],
     "status": "READ_ONLY_DISCOVERY_COMPLETE",
-    "binding": "start_sha256 is the SHA-256 of the complete result with start_sha256 omitted; discovery and question_plan retain their own exact digests."
+    "binding": "start_sha256 is the SHA-256 of the complete result with start_sha256 omitted; discovery and question_plan retain their own exact digests; control_plane binds the default external storage decision without creating that folder."
   },
   "safety": {
     "must_not": [

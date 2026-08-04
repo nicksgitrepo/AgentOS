@@ -4,11 +4,19 @@ Keep the package and its binding at `PREPARED_NOT_ACTIVATED` until an owner expl
 
 Before setup, verify `schemas/bootstrap-binding.v1.json` against the exact files. Run `node tests/verify-portability.mjs` and `node tests/verify-all.mjs` from the candidate. Do not use a dirty convenience copy as authority.
 
-Bootstrap is controlled by `control/bootstrap-compiler.mjs`:
+Treat the public checkout, the Product checkout, and the control plane as
+different roots. The public checkout is reusable distribution. The Product
+checkout is source and delivery space. The control plane is the default home
+for authority, conversations, controller and campaign state, evidence,
+handoffs, and source-preservation records. A plan must carry a content-addressed
+control-plane binding; an in-project root is valid only with explicit opt-in.
+
+Bootstrap is controlled by `control/bootstrap-compiler.mjs` and
+`control/control-plane-root.mjs`:
 
 ```text
 discover -> plan -> display exact digests -> APPROVE_EXACT_PLAN
-        -> stage -> read back -> independent setup audit -> seal/promote
+        -> stage in control plane -> read back -> independent setup audit -> seal/promote
 ```
 
 The delivery-policy controller keeps pushes, serialized merges, CI runner

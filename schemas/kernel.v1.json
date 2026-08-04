@@ -123,7 +123,15 @@
       "controller": "control/agentos-controller.mjs",
       "contract": "schemas/agentos-controller.v1.json",
       "state_path": "agentos/controller-state.json",
+      "storage_rule": "state_path is relative to the bound control-plane root; the product root is not used for controller state unless IN_PROJECT_OPT_IN is explicit.",
       "rule": "Bootstrap must bind the project-persistent AGENTOS_CONTROLLER to the exact policy and an independent Controller Runtime readback before setup audit can pass."
+    },
+    "control_plane": {
+      "controller": "control/control-plane-root.mjs",
+      "contract": "schemas/control-plane-root.v1.json",
+      "default_mode": "EXTERNAL_DEFAULT",
+      "rule": "AgentOS authority, conversations, controller state, campaign state, evidence, handoffs, and source-preservation records stay outside the product root by default. In-project storage requires an explicit opt-in binding.",
+      "product_root_rule": "The product root is the user's source and delivery space, not AgentOS's default state directory."
     },
     "bootstrap": {
     "controller": "control/bootstrap-compiler.mjs",

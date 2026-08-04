@@ -50,6 +50,11 @@ import {
   verifySourcePreservation,
 } from "./project-import.mjs";
 import {
+  relativeControlPlanePath,
+  resolveControlPlaneRoot,
+  validateControlPlaneBinding,
+} from "./control-plane-root.mjs";
+import {
   compileGlobalPolicyState,
   getPolicyValue,
   policyStateDigest,
@@ -726,8 +731,10 @@ export function validateBootstrapAnswer(questionId, value, discovery = []) {
   return question;
 }
 
-export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot = null} = {}) {
+export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot = null, controlPlaneRoot = null, controlPlaneMode = null} = {}) {
   assert(projectRoot !== null, "Bootstrap plan requires an exact project root");
+  const resolvedProjectRoot = fs.realpathSync.native(path.resolve(projectRoot));
+  const controlPlane = resolveControlPlaneRoot({projectRoot: resolvedProjectRoot, controlPlaneRoot, controlPlaneMode});
   const normalizedAnswers = validateAnswers(discovery, answers);
   const questionPlan = planBootstrapQuestions({discovery, answers: normalizedAnswers});
   assert(questionPlan.status === "READY_TO_COMPILE", "Bootstrap still has unresolved material questions");
@@ -776,7 +783,9 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       discoveryFacts: discovery,
       standardsRegistry,
       normalizationPolicy,
-      sourcePreservationRoot: importAnswer.source_preservation_root ?? null,
+      sourcePreservationRoot: importAnswer.source_preservation_root ?? path.join(controlPlane.control_plane_root, ".agentos", "import"),
+      preservationBoundaryRoot: controlPlane.control_plane_root,
+      preservationStorageMode: controlPlane.binding.mode === "IN_PROJECT_OPT_IN" ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE",
     })
     : null;
   const context = {
@@ -816,7 +825,9 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     schema: "agentos.bootstrap_creation_plan.v1",
     governance_version: "2.1rc",
     status: "AWAITING_EXACT_OWNER_APPROVAL",
-    project_root: projectRoot === null ? null : (fs.existsSync(projectRoot) ? fs.realpathSync.native(path.resolve(projectRoot)) : path.resolve(projectRoot)),
+    project_root: resolvedProjectRoot,
+    control_plane_root: controlPlane.control_plane_root,
+    control_plane: controlPlane.binding,
     discovery_mode: normalizedAnswers["bootstrap.discovery.mode"],
     discovery_digest_sha256: canonicalDigest(discovery),
     answers_sha256: canonicalDigest(normalizedAnswers),
@@ -846,7 +857,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     exact_creation_plan: {
       repositories: normalizedAnswers["project.boundary"]?.repositories ?? [],
       branches: normalizedAnswers["project.boundary"]?.branches ?? [],
-      files_and_roots: Object.values(authorityCorpusPlan.roots),
+      files_and_roots: [controlPlane.control_plane_root, ...Object.values(authorityCorpusPlan.roots)],
       delivery_bindings: {
         runner_provider_id: null,
         deployment_provider_id: null,
@@ -867,8 +878,8 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
       global_policy_state_sha256: globalPolicyState.policy_state_sha256,
       owner_review_policy_sha256: canonicalDigest(ownerReviewPolicy),
-      expected_writes: ["bootstrap.plan.json", "authority corpus roots", "typed project context", "delivery policy and probe bindings", "Bootstrap receipts", "source-preservation artifacts when PROJECT_IMPORT applies"],
-      side_effects: ["CREATE_OR_UPDATE_TYPED_PROJECT_CONTEXT", "CREATE_AUTHORITY_CORPUS", "CREATE_DESIGN_AUTHORITY", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
+      expected_writes: ["control-plane/bootstrap.plan.json", "control-plane authority corpus roots", "control-plane typed project context", "control-plane delivery policy and probe bindings", "control-plane Bootstrap receipts", "control-plane source-preservation artifacts when PROJECT_IMPORT applies"],
+      side_effects: ["CREATE_OR_UPDATE_CONTROL_PLANE_CONTEXT", "CREATE_AUTHORITY_CORPUS_OUTSIDE_PROJECT_ROOT_BY_DEFAULT", "CREATE_DESIGN_AUTHORITY_IN_CONTROL_PLANE", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
       prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
       rollback: "PRESERVE_STAGING_AND_LEGACY_RECEIPTS; PROMOTE_ONLY_AFTER_READBACK",
       deferred_context: ["NON_ROUTE_CHANGING_PREFERENCES"],
@@ -909,6 +920,9 @@ export function validateBootstrapPlan(plan) {
   requireSha(plan.discovery_digest_sha256, "Bootstrap discovery digest");
   requireSha(plan.answers_sha256, "Bootstrap answers digest");
   requireString(plan.project_root, "Bootstrap project root");
+  requireString(plan.control_plane_root, "Bootstrap control-plane root");
+  validateControlPlaneBinding(plan.control_plane, {projectRoot: plan.project_root, controlPlaneRoot: plan.control_plane_root});
+  assert(plan.control_plane.control_plane_root === plan.control_plane_root, "Bootstrap control-plane binding and root differ");
   assert(DISCOVERY_MODES.includes(plan.discovery_mode), "Bootstrap discovery mode is missing from the exact plan");
   assert(Array.isArray(plan.required_output_groups)
     && JSON.stringify(plan.required_output_groups) === JSON.stringify(BOOTSTRAP_REQUIRED_OUTPUT_GROUPS), "Bootstrap required output groups are invalid");
@@ -1045,6 +1059,8 @@ function contextFromPlan(plan) {
     governance_version: "2.1rc",
     status: "PREPARED_NOT_ACTIVATED",
     source_plan_sha256: plan.plan_sha256,
+    control_plane_root: plan.control_plane_root,
+    control_plane: plan.control_plane,
     project_definition: plan.project_definition,
     north_star: plan.north_star,
     first_useful_workflow: plan.first_useful_workflow,
@@ -1073,6 +1089,7 @@ function contextFromPlan(plan) {
     agentos_controller: {
       name: "AGENTOS_CONTROLLER",
       scope: "PROJECT_PERSISTENT",
+      storage_scope: "CONTROL_PLANE_PERSISTENT",
       state_schema: "agentos.controller_state.v1",
       initialization: "REQUIRES_PROJECT_BOUND_CONTROLLER_RUNTIME_READBACK",
     },
@@ -1091,6 +1108,7 @@ function contextFromPlan(plan) {
     kernel: {override_allowed: false},
     authority_corpus_activation: "ACTIVATED",
     authority_corpus_roots: roots,
+    control_plane_root: plan.control_plane_root,
     authority_corpus_entities: {feature_ids: [], capability_ids: [], campaign_ids: [], release_ids: []},
     project_context_root: roots.project_context_root,
     project_context: projectContext,
@@ -1176,6 +1194,17 @@ function assertContained(root, candidate, label) {
   return resolved;
 }
 
+function revalidateControlPlane(plan, projectRoot, controlPlaneRoot = null) {
+  const resolved = resolveControlPlaneRoot({
+    projectRoot,
+    controlPlaneRoot: controlPlaneRoot ?? plan.control_plane_root,
+    controlPlaneMode: plan.control_plane.mode,
+  });
+  assert(resolved.binding.binding_sha256 === plan.control_plane.binding_sha256, "Bootstrap control-plane binding changed after exact-plan approval");
+  assert(resolved.control_plane_root === plan.control_plane_root, "Bootstrap control-plane root changed after exact-plan approval");
+  return resolved.control_plane_root;
+}
+
 function writeCanonicalFile(target, bytes) {
   const directory = path.dirname(target);
   fs.mkdirSync(directory, {recursive: true});
@@ -1208,7 +1237,7 @@ function directoryDigest(root) {
 function validateExecutionState(executionState) {
   requireRecord(executionState, "Bootstrap execution state");
   const fields = [
-    "schema", "status", "bootstrap_session_id", "project_root", "plan_sha256", "phase", "staging_root",
+    "schema", "status", "bootstrap_session_id", "project_root", "control_plane_root", "plan_sha256", "phase", "staging_root",
     "staging_tree_sha256", "staging_entries", "legacy_receipt_sha256", "authority_index_sha256",
     "setup_audit_receipt_sha256", "promotion_receipt_sha256", "promotion_root", "created_at_utc",
     "updated_at_utc", "state_sha256",
@@ -1220,6 +1249,7 @@ function validateExecutionState(executionState) {
   assert(["APPROVED", "PROMOTED"].includes(executionState.status), "Bootstrap execution state status is invalid");
   requireId(executionState.bootstrap_session_id, "Bootstrap execution session");
   requireString(executionState.project_root, "Bootstrap execution project root");
+  requireString(executionState.control_plane_root, "Bootstrap execution control-plane root");
   requireSha(executionState.plan_sha256, "Bootstrap execution plan");
   assert(["APPROVED", "STAGING", "SEALED", "PROMOTED"].includes(executionState.phase), "Bootstrap execution phase is invalid");
   if (executionState.staging_root !== null) {
@@ -1264,9 +1294,10 @@ function validateExecutionState(executionState) {
   return executionState;
 }
 
-function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot) {
+function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot = null) {
   const root = fs.realpathSync.native(path.resolve(projectRoot));
   if (plan.project_root !== null) assert(path.resolve(plan.project_root) === root, "Bootstrap project root changed after exact-plan approval");
+  const control = revalidateControlPlane(plan, root, controlPlaneRoot);
   const observedDiscovery = discoverProject(root, plan.discovery_mode);
   assert(canonicalDigest(observedDiscovery.facts) === plan.discovery_digest_sha256, "Bootstrap discovery changed after exact-plan approval");
   if (plan.authority_corpus.preservation !== "NOT_REQUIRED") {
@@ -1285,19 +1316,20 @@ function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot) {
       && observedImportSource.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
     "project import source contents changed after exact-plan approval");
   }
-  return {root, discovery: observedDiscovery.facts};
+  return {root, controlRoot: control, discovery: observedDiscovery.facts};
 }
 
-export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot, legacySourceRoot = null, nowUtc}) {
+export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot, controlPlaneRoot = null, legacySourceRoot = null, nowUtc}) {
   validateApprovedPlan(plan);
   requireId(bootstrapSessionId, "Bootstrap session ID");
   requireUtc(nowUtc, "Bootstrap execution time");
-  const {root} = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot);
+  const {root, controlRoot} = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot);
   const state = {
     schema: "agentos.bootstrap_execution_state.v1",
     status: "APPROVED",
     bootstrap_session_id: bootstrapSessionId,
     project_root: root,
+    control_plane_root: controlRoot,
     plan_sha256: plan.plan_sha256,
     phase: "APPROVED",
     staging_root: null,
@@ -1322,6 +1354,7 @@ export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot,
 export function executeBootstrapPlan(plan, {
   bootstrapSessionId,
   projectRoot,
+  controlPlaneRoot = null,
   legacySourceRoot = null,
   workflow,
   nowUtc,
@@ -1337,14 +1370,16 @@ export function executeBootstrapPlan(plan, {
   assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap execution requires an independent Controller Runtime readback");
   validateControllerRuntimeReadback(controllerRuntimeReadback);
   requireId(controllerSessionId, "AgentOS Controller session ID");
-  const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot);
+  const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot);
   const root = validation.root;
+  const controlRoot = validation.controlRoot;
   assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
   assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
-  const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, legacySourceRoot, nowUtc});
-  const stagingRoot = fs.mkdtempSync(path.join(root, ".agentos-bootstrap-stage-"));
+  const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, controlPlaneRoot: controlRoot, legacySourceRoot, nowUtc});
+  fs.mkdirSync(controlRoot, {recursive: true});
+  const stagingRoot = fs.mkdtempSync(path.join(controlRoot, ".agentos-bootstrap-stage-"));
   state.phase = "STAGING";
-  state.staging_root = path.relative(root, stagingRoot);
+  state.staging_root = path.relative(controlRoot, stagingRoot);
   const deliveryProbeResults = runDeliveryProbes({
     projectRoot: root,
     policy: plan.delivery_policy,
@@ -1368,9 +1403,13 @@ export function executeBootstrapPlan(plan, {
     const adoptIntoCurrentRoot = plan.project_import.mode === "ADOPT_IN_PLACE"
       && (source === root || source.startsWith(`${root}${path.sep}`));
     if (!adoptIntoCurrentRoot) assert(source !== root && !source.startsWith(`${root}${path.sep}`), "project import source must be outside the destination project root");
-    const destination = adoptIntoCurrentRoot
-      ? assertContained(root, ".agentos/import/source-preservation", "project import preservation destination")
-      : assertContained(stagingRoot, ".agentos/import/source-preservation", "project import preservation destination");
+    const preservationRoot = plan.project_import.preservation.root;
+    assert(preservationRoot !== null, "project import preservation root is required during Bootstrap execution");
+    const preservationRelative = relativeControlPlanePath(controlRoot, preservationRoot, "project import preservation root");
+    const projectSidecar = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR" && adoptIntoCurrentRoot;
+    const destination = projectSidecar
+      ? assertContained(root, path.join(preservationRelative, "source-preservation"), "project import preservation destination")
+      : assertContained(stagingRoot, path.join(preservationRelative, "source-preservation"), "project import preservation destination");
     const preserved = preserveProjectSource(source, destination, nowUtc, {allowDestinationInsideSource: adoptIntoCurrentRoot && destination.startsWith(`${source}${path.sep}`)});
     assert(preserved.receipt.source_content_sha256 === plan.project_import.source_identity.source_content_sha256
       && preserved.receipt.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
@@ -1435,16 +1474,18 @@ export function executeBootstrapPlan(plan, {
   return {state, staging_root: stagingRoot, corpus: corpusResult, owner_review: ownerReviewHandoff, controller_state: controllerState};
 }
 
-export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, nowUtc}) {
+export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, controlPlaneRoot = null, nowUtc}) {
   validateApprovedPlan(plan);
   validateExecutionState(executionState);
   requireRecord(setupAudit, "Bootstrap setup audit");
   requireUtc(nowUtc, "Bootstrap promotion time");
   const root = fs.realpathSync.native(path.resolve(projectRoot));
+  const controlRoot = revalidateControlPlane(plan, root, controlPlaneRoot ?? executionState.control_plane_root);
   assert(executionState.project_root === root, "Bootstrap promotion project root mismatch");
+  assert(executionState.control_plane_root === controlRoot, "Bootstrap promotion control-plane root mismatch");
   assert(executionState.plan_sha256 === plan.plan_sha256, "Bootstrap promotion plan mismatch");
   if (executionState.phase === "PROMOTED") {
-    assert(executionState.promotion_root === root, "Bootstrap promotion root changed on resume");
+    assert(executionState.promotion_root === controlRoot, "Bootstrap promotion root changed on resume");
     requireSha(executionState.promotion_receipt_sha256, "Bootstrap promotion receipt");
     return {state: executionState, receipt: null, resumed: true};
   }
@@ -1454,10 +1495,10 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
     && setupAudit.execution_state_sha256 === executionState.state_sha256,
   "Bootstrap setup audit is not bound to the sealed execution");
   requireSha(setupAudit.audit_sha256, "Bootstrap setup audit digest");
-  const stagingRoot = fs.realpathSync.native(path.resolve(root, executionState.staging_root));
-  assert(stagingRoot !== root && stagingRoot.startsWith(`${root}${path.sep}`), "Bootstrap staging root escapes project root");
+  const stagingRoot = fs.realpathSync.native(path.resolve(controlRoot, executionState.staging_root));
+  assert(stagingRoot !== controlRoot && stagingRoot.startsWith(`${controlRoot}${path.sep}`), "Bootstrap staging root escapes control plane root");
   const promotionReceiptName = "bootstrap.promotion.receipt.json";
-  const promotionReceiptDestination = path.join(root, promotionReceiptName);
+  const promotionReceiptDestination = path.join(controlRoot, promotionReceiptName);
   const promotionReceiptStaging = path.join(stagingRoot, promotionReceiptName);
   const expectedStagedEntries = executionState.staging_entries;
   const expectedStagedTree = executionState.staging_tree_sha256;
@@ -1469,6 +1510,7 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
       && candidate.sealed_state_sha256 === executionState.state_sha256
       && candidate.setup_audit_sha256 === setupAudit.audit_sha256
       && candidate.project_root === root
+      && candidate.control_plane_root === controlRoot
       && candidate.staged_tree_sha256 === expectedStagedTree
       && canonicalCompactJson(candidate.staged_entries) === canonicalCompactJson(expectedStagedEntries)
       && SHA256.test(candidate.receipt_sha256)
@@ -1493,6 +1535,7 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
       sealed_state_sha256: executionState.state_sha256,
       setup_audit_sha256: setupAudit.audit_sha256,
       project_root: root,
+      control_plane_root: controlRoot,
       staged_tree_sha256: expectedStagedTree,
       staged_entries: expectedStagedEntries,
       promoted_at_utc: nowUtc,
@@ -1503,7 +1546,7 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
   const expectedTopLevel = [...new Set(executionState.staging_entries.map((entry) => entry.path.split("/")[0]))].sort(compareUtf8);
   for (const entry of fs.readdirSync(stagingRoot).filter((entry) => entry !== promotionReceiptName).sort(compareUtf8)) {
     const source = path.join(stagingRoot, entry);
-    const destination = path.join(root, entry);
+    const destination = path.join(controlRoot, entry);
     const sourceStat = fs.lstatSync(source);
     assert(!sourceStat.isSymbolicLink() && (sourceStat.isDirectory() || sourceStat.isFile()), `unsafe staged entry: ${entry}`);
     if (fs.existsSync(destination)) {
@@ -1523,7 +1566,7 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
     }
   }
   for (const entry of expectedTopLevel) {
-    assert(fs.existsSync(path.join(root, entry)), `promotion did not materialize staged entry: ${entry}`);
+    assert(fs.existsSync(path.join(controlRoot, entry)), `promotion did not materialize staged entry: ${entry}`);
   }
   if (fs.existsSync(promotionReceiptStaging)) {
     if (fs.existsSync(promotionReceiptDestination)) {
@@ -1537,7 +1580,7 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
     phase: "PROMOTED",
     setup_audit_receipt_sha256: setupAudit.audit_sha256,
     promotion_receipt_sha256: receipt.receipt_sha256,
-    promotion_root: root,
+    promotion_root: controlRoot,
     updated_at_utc: nowUtc,
     state_sha256: "",
   };
@@ -1578,7 +1621,13 @@ export function auditBootstrapSetup({
   requireId(controllerSessionId, "AgentOS Controller session ID");
   assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
   assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
-  const root = fs.realpathSync.native(path.resolve(stagingRoot));
+  const controlRoot = executionState.control_plane_root;
+  revalidateControlPlane(plan, executionState.project_root, controlRoot);
+  const suppliedStagingRoot = path.isAbsolute(stagingRoot)
+    ? path.resolve(stagingRoot)
+    : path.resolve(controlRoot, stagingRoot);
+  const root = fs.realpathSync.native(suppliedStagingRoot);
+  assert(root !== fs.realpathSync.native(path.resolve(controlRoot)) && root.startsWith(`${fs.realpathSync.native(path.resolve(controlRoot))}${path.sep}`), "setup Auditor staging root escapes control plane root");
   const observedStaging = directoryDigest(root);
   assert(observedStaging.sha256 === executionState.staging_tree_sha256
     && canonicalCompactJson(observedStaging.entries) === canonicalCompactJson(executionState.staging_entries),
@@ -1606,10 +1655,15 @@ export function auditBootstrapSetup({
     assert(receipt.status === "VERIFIED_EXACT", "setup Auditor could not verify legacy archive");
   }
   if (plan.project_import !== null) {
-    const importRoot = plan.project_import.mode === "ADOPT_IN_PLACE"
-      && (plan.project_import.source_root === executionState.project_root || plan.project_import.source_root.startsWith(`${executionState.project_root}${path.sep}`))
-      ? assertContained(executionState.project_root, ".agentos/import/source-preservation", "project import preservation readback root")
-      : assertContained(root, ".agentos/import/source-preservation", "project import preservation readback root");
+    const preservationRoot = plan.project_import.preservation.root;
+    assert(preservationRoot !== null, "project import preservation root is required for setup audit");
+    const preservationRelative = relativeControlPlanePath(controlRoot, preservationRoot, "project import preservation root");
+    const projectSidecar = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR"
+      && (plan.project_import.mode === "ADOPT_IN_PLACE")
+      && (plan.project_import.source_root === executionState.project_root || plan.project_import.source_root.startsWith(`${executionState.project_root}${path.sep}`));
+    const importRoot = projectSidecar
+      ? assertContained(executionState.project_root, path.join(preservationRelative, "source-preservation"), "project import preservation readback root")
+      : assertContained(root, path.join(preservationRelative, "source-preservation"), "project import preservation readback root");
     const receipt = verifySourcePreservation(importRoot);
     assert(receipt.status === "VERIFIED_EXACT"
       && receipt.manifest_sha256.length === 64
@@ -1681,6 +1735,7 @@ export function auditBootstrapSetup({
 
 function bootstrapStartResult({discovery, questionPlan}) {
   const agentosRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const controlPlane = resolveControlPlaneRoot({projectRoot: discovery.project_root});
   const body = {
     schema: "agentos.bootstrap_start_result.v1",
     version: 1,
@@ -1689,6 +1744,8 @@ function bootstrapStartResult({discovery, questionPlan}) {
     canonical_controller: "control/bootstrap-compiler.mjs",
     agentos_root: agentosRoot,
     project_root: discovery.project_root,
+    control_plane_root: controlPlane.control_plane_root,
+    control_plane: controlPlane.binding,
     initial_answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
     discovery,
     question_plan: questionPlan,

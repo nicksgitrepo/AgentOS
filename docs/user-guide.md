@@ -2,6 +2,19 @@
 
 AgentOS is a portable governance and orchestration kernel. It helps turn one clear owner outcome into working, verified software without embedding the project’s name, repository, provider, deployment, credentials, or domain policy.
 
+## Where things live
+
+Keep the public AgentOS repository, the Product repository, and the AgentOS
+control plane separate. The public repository contains reusable material. The
+Product repository contains the user’s source. The control plane contains
+private conversations, authority, controller and campaign state, evidence,
+handoffs, and source-preservation records.
+
+Bootstrap chooses a separate sibling control folder by default. An owner can
+select another external folder, or explicitly opt into storing the control
+plane inside the Product repository. The public repository never receives
+runtime state or private handoffs.
+
 ## Start
 
 1. Identify the absolute `AGENTOS_ROOT` and `PROJECT_ROOT`; they may be separate directories.
@@ -13,7 +26,14 @@ AgentOS is a portable governance and orchestration kernel. It helps turn one cle
 6. Review the complete creation plan and its integrity details.
 7. Approve exactly with `APPROVE_EXACT_PLAN` or revise the plan.
 
-Bootstrap then stages a resumable setup transaction. It creates the persistent project-level `AGENTOS_CONTROLLER` state at `agentos/controller-state.json` from an independent Controller Runtime readback. If an authority corpus is imported or refactored, it creates and verifies `legacy.zip`, its manifest, index, and receipt before writing the new corpus. A distinct setup Auditor verifies the exact plan, readback, context separation, security baseline, Runtime and Controller Runtime bindings, and the three-root acceptance slice.
+Bootstrap then stages a resumable setup transaction in the bound control
+plane. It creates the persistent project-level `AGENTOS_CONTROLLER` state at
+`agentos/controller-state.json` inside that control plane from an independent
+Controller Runtime readback. If an authority corpus is imported or refactored,
+it creates and verifies `legacy.zip`, its manifest, index, and receipt before
+writing the new corpus. A distinct setup Auditor verifies the exact plan,
+readback, root separation, security baseline, Runtime and Controller Runtime
+bindings, and the three-root acceptance slice.
 
 The plan also includes a deterministic Bootstrap coverage matrix. It shows
 which outputs were discovered, owner-confirmed, safely defaulted, derived,

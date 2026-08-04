@@ -14,6 +14,8 @@ do not leave them literal:
 ```text
 AGENTOS_ROOT = <absolute path to this AgentOS checkout>
 PROJECT_ROOT = <absolute path to the project to create or import>
+# CONTROL_PLANE_ROOT is optional. When omitted, Bootstrap chooses a separate
+# sibling control folder. IN_PROJECT_OPT_IN is required for a root inside the project.
 ```
 
 The agent must read the AgentOS `README.md` and this file, verify the binding,
@@ -24,8 +26,8 @@ be run with both roots bound:
 node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED
 ```
 
-That command returns a content-addressed discovery result and the current
-output-gap question plan. It does not write the project, authenticate, spend,
+That command returns a content-addressed discovery result, the default
+control-plane binding, and the current output-gap question plan. It does not write the project, authenticate, spend,
 publish, merge, deploy, or create a campaign. The agent continues from that
 returned plan through the exported functions in
 `control/bootstrap-compiler.mjs`; compatibility entrypoints are not substitutes
@@ -45,8 +47,15 @@ read-only discovery
         -> resumable staging transaction
         -> persistent AGENTOS_CONTROLLER state bound to Controller Runtime readback
         -> independent setup audit
-        -> sealed project context and authority corpus
+        -> sealed control-plane context and authority corpus
 ```
+
+The `PROJECT_ROOT` is the user’s source and delivery space. Bootstrap reads it
+for discovery and safe local probes. The `CONTROL_PLANE_ROOT` stores AgentOS
+authority, conversations, controller state, campaign state, evidence,
+handoffs, and source-preservation records. By default it is a separate sibling
+folder. A control plane inside the project requires an explicit
+`IN_PROJECT_OPT_IN` decision.
 
 Bootstrap may discover facts but cannot turn a discovery fact into owner intent. It asks only for material intent, protected boundary, or unresolved choice. It chooses safe configuration defaults when governance already supplies them and reports those defaults in the plan.
 
@@ -121,7 +130,7 @@ APPROVE_EXACT_PLAN
 
 Approval binds both the plan digest and the discovery digest. A changed plan, changed discovery, changed source observation, or mismatched digest is rejected. Generic `PROCEED` is not a valid setup decision.
 
-Execution is resumable and transactional. It stages under the admitted project root, verifies readback, initializes `agentos/controller-state.json` for the persistent `AGENTOS_CONTROLLER`, seals state, and promotes only after the independent setup Auditor confirms the selected plan, context separation, no secrets, Runtime and Controller Runtime bindings, authority-corpus output, and the three-root slice. Re-running a sealed plan is idempotent; a different plan cannot overwrite it. A missing Controller Runtime adapter is unavailable and blocks setup; Bootstrap never invents the controller identity.
+Execution is resumable and transactional. It stages under the bound control-plane root, verifies readback, initializes `agentos/controller-state.json` there for the persistent `AGENTOS_CONTROLLER`, seals state, and promotes only after the independent setup Auditor confirms the selected plan, root separation, no secrets, Runtime and Controller Runtime bindings, authority-corpus output, and the three-root slice. Re-running a sealed plan is idempotent; a different plan cannot overwrite it. A missing Controller Runtime adapter is unavailable and blocks setup; Bootstrap never invents the controller identity.
 
 ## Legacy preservation
 

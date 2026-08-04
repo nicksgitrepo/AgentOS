@@ -36,12 +36,13 @@
     "toctou": "Re-read discovery, source identities, destination containment, and plan digest immediately before each external side effect. A mismatch returns to planning without mutation."
   },
   "plan_identity": {
-    "required_fields": ["project_root", "discovery_mode", "discovery_digest_sha256", "answers_sha256", "required_output_groups", "bootstrap_coverage", "plan_sha256"],
-    "rule": "The exact plan always binds the canonical project root, the discovery mode and digest used to compile it, and the imported source content and filesystem observation when a legacy corpus is selected. Before staging, Bootstrap re-observes the same root and refuses changed discovery, source bytes, or imported source identity."
+    "required_fields": ["project_root", "control_plane_root", "control_plane", "discovery_mode", "discovery_digest_sha256", "answers_sha256", "required_output_groups", "bootstrap_coverage", "plan_sha256"],
+    "rule": "The exact plan always binds the canonical project root, the separate control-plane root and binding, the discovery mode and digest used to compile it, and the imported source content and filesystem observation when a legacy corpus is selected. Before staging, Bootstrap re-observes both roots and refuses changed discovery, source bytes, or imported source identity."
   },
   "execution": {
     "phases": ["PLANNED", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"],
-    "rule": "Stage writes under a contained temporary directory, seal the complete staged file inventory and digest, verify readback and all receipts, then promote each exact staged root without overwriting a different digest. Resume from the last sealed phase using the same plan and staged inventory; already promoted exact roots are accepted, different bytes are rejected, and repeat execution is idempotent.",
+    "control_plane_rule": "Stage, seal, and promote AgentOS authority and state inside the bound control-plane root. The product root is read for discovery and delivery probes and remains free of AgentOS control artifacts unless the plan carries IN_PROJECT_OPT_IN.",
+    "rule": "Stage writes under a contained temporary directory in the bound control plane, seal the complete staged file inventory and digest, verify readback and all receipts, then promote each exact staged root without overwriting a different digest. Resume from the last sealed phase using the same plan and staged inventory; already promoted exact roots are accepted, different bytes are rejected, and repeat execution is idempotent.",
     "legacy_gate": "When an existing authority corpus is imported or refactored, legacy.zip, legacy.manifest.json, legacy.index.jsonl, and legacy.receipt.json are created and verified before replacement corpus writes.",
     "project_import_gate": "When an existing project is imported, source-preservation.zip, source-preservation.manifest.json, source-preservation.index.jsonl, source-preservation.receipt.json, and import-exclusions.md are created and verified before build or normalization."
   },
@@ -67,7 +68,7 @@
   "project_import": {
     "controller": "control/project-import.mjs",
     "contract": "schemas/project-import.v1.json",
-    "rule": "Adopt in place, clean copy, normalize and audit, and reconstruct from intent are distinct typed modes. The source remains untouched until an exact reversible cutover."
+    "rule": "Adopt in place, clean copy, normalize and audit, and reconstruct from intent are distinct typed modes. Preservation artifacts follow the bound control-plane storage mode; the source remains untouched until an exact reversible cutover."
   },
   "normalization_policy": {
     "controller": "control/normalization-policy.mjs",
@@ -110,6 +111,7 @@
     "controller": "control/agentos-controller.mjs",
     "contract": "schemas/agentos-controller.v1.json",
     "state_path": "agentos/controller-state.json",
+    "storage_rule": "The state path is relative to the bound control-plane root, not the product root, unless IN_PROJECT_OPT_IN is explicit.",
     "initialization": "Bootstrap must stage a persistent AGENTOS_CONTROLLER state bound to the exact project policy and an independent project-bound Controller Runtime readback before setup audit can pass.",
     "campaign_boundary": "The project-level Controller persists across campaigns; CAMPAIGN_ORCHESTRATOR remains campaign-scoped."
   },

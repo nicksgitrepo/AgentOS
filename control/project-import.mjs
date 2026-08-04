@@ -24,6 +24,7 @@ export const PROJECT_IMPORT_STATUSES = Object.freeze([
   "ROLLED_BACK",
 ]);
 export const IMPORT_AUDIT_LANES = Object.freeze([...AUDIT_DISCIPLINES]);
+export const PROJECT_IMPORT_STORAGE_MODES = Object.freeze(["PROJECT_SIDE_CAR", "EXTERNAL_CONTROL_PLANE"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
@@ -130,6 +131,10 @@ function canonicalDestination(root, label) {
 
 function isInside(root, candidate) {
   return candidate === root || candidate.startsWith(`${root}${path.sep}`);
+}
+
+function pathsOverlap(left, right) {
+  return isInside(left, right) || isInside(right, left);
 }
 
 function sourceDestination(sourceRoot, destinationRoot, {allowNullDestination = false, allowDestinationInsideSource = false} = {}) {
@@ -406,7 +411,7 @@ export function recommendProjectImportMode(discoveryFacts = []) {
   };
 }
 
-export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, sourcePreservationRoot = null} = {}) {
+export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null} = {}) {
   assert(PROJECT_IMPORT_MODES.includes(mode), "project import mode is invalid or missing");
   requireRecord(standardsRegistry, "project import standards registry");
   validateStandardsRegistry(standardsRegistry);
@@ -417,14 +422,27 @@ export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = nu
   const roots = sourceDestination(sourceRoot, destinationRoot, {allowNullDestination: mode === "ADOPT_IN_PLACE"});
   const sourceIdentity = inspectProjectSource(roots.source);
   const fullAudit = ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(mode);
-  const preservationRoot = sourcePreservationRoot ?? (roots.destination === null ? null : path.join(roots.destination, ".agentos", "import"));
+  const storageMode = preservationStorageMode ?? (preservationBoundaryRoot === null ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE");
+  assert(PROJECT_IMPORT_STORAGE_MODES.includes(storageMode), "project source preservation storage mode is invalid");
+  let preservationRoot = sourcePreservationRoot ?? (roots.destination === null
+    ? (preservationBoundaryRoot === null ? null : path.join(preservationBoundaryRoot, ".agentos", "import"))
+    : path.join(roots.destination, ".agentos", "import"));
+  const boundaryRoot = preservationBoundaryRoot === null
+    ? null
+    : canonicalDestination(preservationBoundaryRoot, "project source preservation boundary");
   if (preservationRoot !== null) {
     assert(path.isAbsolute(preservationRoot), "project source preservation root must be absolute");
     const resolvedPreservationRoot = canonicalDestination(preservationRoot, "project source preservation root");
     const reservedInSource = path.join(roots.source, RESERVED_PRESERVATION_ROOT);
     const insideImportedSource = isInside(roots.source, resolvedPreservationRoot);
     assert(!insideImportedSource || (mode === "ADOPT_IN_PLACE" && isInside(reservedInSource, resolvedPreservationRoot)), "project source preservation root cannot be inside the imported source");
-    if (roots.destination !== null) assert(isInside(roots.destination, resolvedPreservationRoot), "project source preservation root must remain inside the destination project");
+    if (storageMode === "EXTERNAL_CONTROL_PLANE") {
+      assert(boundaryRoot !== null && isInside(boundaryRoot, resolvedPreservationRoot), "project source preservation root must remain inside the external control plane");
+      assert(!pathsOverlap(roots.source, boundaryRoot), "external control plane overlaps the project import source");
+    } else if (roots.destination !== null) {
+      assert(isInside(roots.destination, resolvedPreservationRoot), "project source preservation root must remain inside the destination project");
+    }
+    preservationRoot = resolvedPreservationRoot;
   }
   const body = {
     schema: PROJECT_IMPORT_SCHEMA,
@@ -435,10 +453,14 @@ export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = nu
     source_root: roots.source,
     destination_root: roots.destination,
     source_remains_unchanged_until_cutover: true,
-    source_sidecar_exception: "ADOPT_IN_PLACE_MAY_WRITE_ONLY_THE_DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS_TO_THE_RESERVED_AGENTOS_IMPORT_ROOT;_PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED",
+    source_sidecar_exception: storageMode === "EXTERNAL_CONTROL_PLANE"
+      ? "EXTERNAL_CONTROL_PLANE_WRITES_DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS_OUTSIDE_PROJECT_ROOT;_PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED"
+      : "ADOPT_IN_PLACE_MAY_WRITE_ONLY_THE_DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS_TO_THE_RESERVED_AGENTOS_IMPORT_ROOT;_PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED",
     source_identity: sourceIdentity,
     preservation: {
       required_before_build: true,
+      storage_mode: storageMode,
+      boundary_root: boundaryRoot,
       root: preservationRoot,
       artifacts: ["source-preservation.zip", "source-preservation.manifest.json", "source-preservation.index.jsonl", "source-preservation.receipt.json", "import-exclusions.md"],
       secret_handling: "EXCLUDE_AND_RECORD;_NEVER_COPY_SECRETS_OR_CREDENTIALS",
@@ -487,7 +509,7 @@ export function validateProjectImportPlan(plan) {
   requireString(plan.source_root, "project import source root");
   assert(plan.destination_root === null || typeof plan.destination_root === "string", "project import destination root is invalid");
   assert(plan.source_remains_unchanged_until_cutover === true, "project import plan permits source mutation before cutover");
-  assert(plan.source_sidecar_exception.includes("ONLY_THE_DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS")
+  assert(plan.source_sidecar_exception.includes("DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS")
     && plan.source_sidecar_exception.includes("PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED"), "project import source sidecar boundary is weakened");
   requireRecord(plan.source_identity, "project import source identity");
   requireSha(plan.source_identity.source_content_sha256, "project import source content identity");
@@ -496,6 +518,17 @@ export function validateProjectImportPlan(plan) {
   requireRecord(plan.preservation, "project import preservation");
   assert(plan.preservation.required_before_build === true && Array.isArray(plan.preservation.artifacts)
     && JSON.stringify(plan.preservation.artifacts) === JSON.stringify(["source-preservation.zip", "source-preservation.manifest.json", "source-preservation.index.jsonl", "source-preservation.receipt.json", "import-exclusions.md"]), "project import preservation gate is incomplete");
+  assert(PROJECT_IMPORT_STORAGE_MODES.includes(plan.preservation.storage_mode), "project import preservation storage mode is invalid");
+  assert(plan.preservation.boundary_root === null || typeof plan.preservation.boundary_root === "string", "project import preservation boundary is invalid");
+  if (plan.preservation.root !== null) {
+    requireString(plan.preservation.root, "project import preservation root");
+    assert(path.isAbsolute(plan.preservation.root), "project import preservation root must be absolute");
+    if (plan.preservation.storage_mode === "EXTERNAL_CONTROL_PLANE") {
+      assert(plan.preservation.boundary_root !== null && isInside(path.resolve(plan.preservation.boundary_root), path.resolve(plan.preservation.root)), "external project preservation escapes its control plane");
+    } else if (plan.destination_root !== null) {
+      assert(isInside(path.resolve(plan.destination_root), path.resolve(plan.preservation.root)), "project source preservation root must remain inside the destination project");
+    }
+  }
   requireSha(plan.standards_registry_sha256, "project import standards binding");
   requireSha(plan.normalization_sha256, "project import normalization binding");
   assert(Array.isArray(plan.phases) && JSON.stringify(plan.phases) === JSON.stringify(phaseNames(plan.mode)), "project import phase plan does not match its mode");

@@ -5,6 +5,8 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "name": "AGENTOS_CONTROLLER",
   "scope": "PROJECT_PERSISTENT",
+  "storage_scope": "CONTROL_PLANE_PERSISTENT",
+  "storage_rule": "Controller state is stored under the bound control-plane root and is never written into the product root by default. An in-project control plane requires an explicit owner opt-in.",
   "purpose": "A persistent project-level control plane that starts and reconciles campaigns while keeping deterministic state transitions separate from judgment.",
   "controller_agent": {
     "schema": "agentos.controller_agent_binding.v1",

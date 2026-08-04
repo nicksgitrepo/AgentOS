@@ -1,0 +1,28 @@
+{
+  "schema": "agentos.control_plane_root_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/control-plane-root.mjs",
+  "result": "agentos.control_plane_root.v1",
+  "purpose": "Keep AgentOS authority, conversations, controller state, campaign state, evidence, handoffs, and source-preservation records outside a user project by default.",
+  "modes": {
+    "EXTERNAL_DEFAULT": "Use a separate sibling control folder derived from the project folder.",
+    "EXTERNAL_EXPLICIT": "Use a separate owner-selected folder outside the project folder.",
+    "IN_PROJECT_OPT_IN": "Allow the control folder inside the project only when the owner explicitly selects that mode."
+  },
+  "artifact_groups": [
+    "AUTHORITY_CORPUS",
+    "PROJECT_CONTEXT",
+    "POLICY_STATE",
+    "CONTROLLER_STATE",
+    "CAMPAIGN_STATE",
+    "EVIDENCE_AND_RECEIPTS",
+    "HANDOFFS",
+    "SOURCE_PRESERVATION"
+  ],
+  "default_rule": "The product folder is source and delivery space. The control plane is separate state and authority space. Bootstrap must not create AgentOS control artifacts in the product folder unless IN_PROJECT_OPT_IN is explicitly bound.",
+  "boundary_rule": "External control planes may not overlap the project root. In-project control planes must be contained by the project root and must carry the explicit opt-in mode.",
+  "binding_rule": "The project root, control-plane root, mode, storage scope, artifact groups, and source-preservation rule are content-addressed together and rechecked before writes.",
+  "public_repo_rule": "Public distribution contains reusable AgentOS code, contracts, documentation, tests, and synthetic examples only. Runtime control-plane records, owner conversations, private handoffs, credentials, and external paths are never copied into it."
+}

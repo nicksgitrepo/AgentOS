@@ -122,6 +122,12 @@ assert.equal(bootstrapPlan.bootstrap_coverage.contract, "schemas/bootstrap-cover
 assert.equal(bootstrapPlan.project_life_contract.controller, "control/project-life-contract.mjs");
 assert.equal(bootstrapPlan.boundary_contract.controller, "control/boundary-contract.mjs");
 assert.equal(bootstrapPlan.delivery_target.controller, "control/delivery-target.mjs");
+assert(bootstrapPlan.plan_identity.required_fields.includes("control_plane_root") && bootstrapPlan.plan_identity.required_fields.includes("control_plane"));
+assert.equal(bootstrapPlan.execution.control_plane_rule.includes("product root"), true);
+const controlPlane = JSON.parse(read("schemas/control-plane-root.v1.json"));
+assert.equal(controlPlane.controller, "control/control-plane-root.mjs");
+assert.equal(controlPlane.modes.EXTERNAL_DEFAULT.includes("separate sibling"), true);
+assert.equal(controlPlane.modes.IN_PROJECT_OPT_IN.includes("explicitly"), true);
 const bootstrapCoverage = JSON.parse(read("schemas/bootstrap-coverage.v1.json"));
 assert.equal(bootstrapCoverage.status, "PREPARED_NOT_ACTIVATED");
 assert(bootstrapCoverage.coverage_outputs.some((entry) => entry.output_id === "PERSISTENT_RUNTIME"));
@@ -159,6 +165,9 @@ assert.equal(kernel.owner_review.controller, "control/owner-review.mjs");
 assert.equal(kernel.owner_review.review_type, "PRE_CAMPAIGN_OWNER_REVIEW");
 assert.equal(kernel.agentos_controller_initialization.controller, "control/agentos-controller.mjs");
 assert.equal(kernel.agentos_controller_initialization.state_path, "agentos/controller-state.json");
+assert.equal(kernel.agentos_controller_initialization.storage_rule.includes("control-plane root"), true);
+assert.equal(kernel.control_plane.controller, "control/control-plane-root.mjs");
+assert.equal(kernel.control_plane.default_mode, "EXTERNAL_DEFAULT");
 assert.equal(kernel.bootstrap.start_contract, "schemas/bootstrap-start.v1.json");
 assert.equal(kernel.bootstrap.start_command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
 const bootstrapStart = JSON.parse(read("schemas/bootstrap-start.v1.json"));
@@ -211,6 +220,7 @@ for (const relativePath of [
   "tests/verify-continuous-audit-sentinel.mjs",
   "tests/verify-repository-readback.mjs",
   "tests/verify-portability.mjs",
+  "tests/verify-control-plane-root.mjs",
 ]) run(relativePath);
 
 console.log(`PASS AgentOS 2.1rc canonical verifier: ${allFiles.length} files scanned; ${Object.keys(binding.normative).length} normative paths hashed; JSON, scripts, portability, lifecycle, Bootstrap, GPT_ASSIST, and hostile suites passed`);

@@ -26,6 +26,9 @@ try {
   assert.equal(output.canonical_controller, "control/bootstrap-compiler.mjs");
   assert.equal(output.agentos_root, root);
   assert.equal(output.project_root, fs.realpathSync.native(projectRoot));
+  assert.equal(output.control_plane.mode, "EXTERNAL_DEFAULT");
+  assert.equal(output.control_plane_root, output.control_plane.control_plane_root);
+  assert.notEqual(output.control_plane_root, output.project_root);
   assert.equal(output.initial_answers["bootstrap.discovery.mode"], "RECOMMENDED");
   assert.equal(output.discovery.operations.read_only, true);
   assert.equal(output.discovery.operations.authentication_attempted, false);
