@@ -27,7 +27,7 @@
     "secrets_accessed": false,
     "destructive_work_performed": false
   },
-  "readback": "Execution must be a completed inactive CONTROL_PLANE_RECORD_ONLY readback with complete JSON, no findings, only control-plane source paths, and all forbidden effects false.",
+  "readback": "Execution must be a completed inactive CONTROL_PLANE_RECORD_ONLY readback with complete JSON, no findings, only control-plane source paths or the root README, and all forbidden effects false.",
   "persistence": "Execution, reconciliation, and queued-task records are content-addressed, bounded to the control-plane root, compare-and-swap protected, written atomically, and read back as JSON.",
   "stop_conditions": [
     "Any owner decision, campaign, version, policy, identity, parent, scope, source, or boundary mismatch.",

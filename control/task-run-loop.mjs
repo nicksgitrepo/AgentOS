@@ -111,7 +111,7 @@ function validateChangedPaths(paths) {
   requireStringArray(paths, "task execution changed paths", {allowEmpty: true});
   for (const changedPath of paths) {
     assert(!changedPath.startsWith("/") && !changedPath.includes("\\") && !changedPath.split("/").includes(".."), "task execution path is not bounded");
-    assert(["control/", "schemas/", "tests/", "docs/", "governance/"].some((prefix) => changedPath.startsWith(prefix)), "task execution path leaves the control-plane source set");
+    assert(changedPath === "README.md" || ["control/", "schemas/", "tests/", "docs/", "governance/"].some((prefix) => changedPath.startsWith(prefix)), "task execution path leaves the control-plane source set");
   }
 }
 

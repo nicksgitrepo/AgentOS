@@ -148,7 +148,7 @@ const execute = ({task: suppliedTask, iteration}) => {
     action: "CONTROL_PLANE_RECORD_ONLY",
     source_commit: suppliedTask.source_commit,
     source_tree: suppliedTask.source_tree,
-    changed_paths: ["control/task-run-loop.mjs", "schemas/task-run-loop.v1.json", "tests/verify-task-run-loop.mjs"],
+    changed_paths: ["README.md", "control/task-run-loop.mjs", "schemas/task-run-loop.v1.json", "tests/verify-task-run-loop.mjs"],
     active_campaign: false,
     product_writes_allowed: false,
     product_agent_spawns_allowed: false,
