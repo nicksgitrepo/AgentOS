@@ -9,6 +9,7 @@ Canonical executable authorities:
   next-campaign orientation;
 - `campaign-cascade.mjs` — rolling applicable audits, Finalizer, and delta path;
 - `campaign-controller.mjs` — canonical lifecycle-facing transport and paired-state boundary;
+- `campaign-receipts.mjs` — bounded approval, audit, and inactive-status receipt with JSON readback;
 - `campaign-state-owner.mjs` — one serialized lifecycle/cascade/bridge snapshot with compare-and-swap persistence and policy-boundary reconciliation;
 - `agentos-controller.mjs` — persistent project-level `AGENTOS_CONTROLLER` with a judgment boundary, deterministic event loop, adapter readbacks, policy/session reconciliation, and compare-and-swap state;
 - `repository-readback.mjs` — local Git checkpoint readback; provider and hosted-runtime readback remain typed external adapters;

@@ -119,6 +119,11 @@
     "review_type": "PRE_CAMPAIGN_OWNER_REVIEW",
       "rule": "The User Review Campaign is advisory and pre-admission. It can clarify intent, campaign shape, and model recommendations, but it cannot write Product, spawn Product agents, authorize spending, publish, merge, deploy, delete, or activate without a separate exact authenticated approval."
     },
+    "campaign_receipts": {
+      "controller": "control/campaign-receipts.mjs",
+      "contract": "schemas/campaign-receipts.v1.json",
+      "rule": "One bounded receipt retains the exact approval, admission, Controller identity mapping, complete audit bodies, and current status. It is read back as JSON and fails closed on any mismatch or inactive-boundary crossing."
+    },
     "agentos_controller_initialization": {
       "controller": "control/agentos-controller.mjs",
       "contract": "schemas/agentos-controller.v1.json",

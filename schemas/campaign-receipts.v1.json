@@ -1,0 +1,52 @@
+{
+  "schema": "agentos.campaign_control_plane_receipt.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/campaign-receipts.mjs",
+  "purpose": "Persist one exact development control-plane receipt for an admitted but inactive campaign.",
+  "required_identity": [
+    "project_id",
+    "campaign_id",
+    "campaign_version",
+    "source_commit",
+    "source_tree",
+    "policy_epoch",
+    "policy_state_sha256",
+    "controller_candidate_sha256",
+    "owner_review_candidate_sha256",
+    "approval_packet_sha256",
+    "owner_approval_sha256",
+    "admission_sha256",
+    "identity_binding_sha256",
+    "audit_checkpoint_sha256",
+    "audit_plan_sha256",
+    "audit_reconciliation_sha256"
+  ],
+  "retained_bodies": [
+    "approval_packet",
+    "owner_approval",
+    "admission",
+    "identity_binding",
+    "audit_evidence",
+    "current_status"
+  ],
+  "audit_evidence_rule": "Retain and validate the complete candidate, plan, four report bodies, and reconciliation; a summary cannot replace a report body.",
+  "identity_rule": "The Controller candidate remains the canonical campaign identity. The audit checkpoint is accepted only through its exact content-addressed identity mapping and packet binding.",
+  "checkpoint_rule": "A clean local checkpoint may be intentionally unpushed and nonterminal; that state is not release readiness.",
+  "inactive_boundary": {
+    "receipt_status": "RECONCILED_INACTIVE",
+    "active_campaign": false,
+    "product_writes_allowed": false,
+    "product_agent_spawns_allowed": false,
+    "deployment_allowed": false,
+    "agentos_status": "PREPARED_NOT_ACTIVATED"
+  },
+  "persistence": {
+    "write": "Atomic, bounded, compare-and-swap protected, and lock-protected under the control-plane root.",
+    "readback": "Read the written file, parse it as JSON, validate every retained body, and compare the exact receipt digest.",
+    "malformed_json": "Fail closed.",
+    "symlink_path": "Reject.",
+    "stale_parent": "Reject."
+  },
+  "activation": "This receipt does not start a campaign, spawn agents, write Product code, deploy, publish, push, merge, or activate 2.1rc."
+}

@@ -40,3 +40,14 @@ sterile release repository is a public publication candidate. Product release
 repositories and private work repositories remain outside that chain.
 
 Before handoff, run `node tests/verify-portability.mjs`, `node tests/verify-all.mjs`, and each focused verifier. Never add credentials, real project paths, deployment receipts, release evidence, or product-specific policy.
+
+### Campaign control-plane receipts
+
+Use `control/campaign-receipts.mjs` for the one bounded receipt that joins an
+exact owner approval and admission to the canonical Controller candidate,
+validated audit mapping, complete four-lens report bodies, and current status.
+Write through its compare-and-swap helper and always read the file back as
+JSON before handing it off. A local unpushed, nonterminal checkpoint may be
+valid development evidence; it is not release readiness. Stop on any digest,
+campaign, policy, acceptance, source, scope, intent, report-body, JSON, or
+inactive-boundary mismatch.
