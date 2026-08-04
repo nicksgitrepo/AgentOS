@@ -137,9 +137,22 @@ function readAutonomousTaskQueue(campaignRoot, campaignId, campaignVersion) {
 function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext}) {
   const existing = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
   const checkpointIsCurrent = campaignProgress !== null && checkpointOnCurrentSource === true;
-  const task = checkpointIsCurrent
+  const auditTaskId = `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`;
+  const buildTaskId = `CAMPAIGN-PROGRESS-BUILD-${sourceCommit.slice(0, 16).toUpperCase()}`;
+  const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
+  const completedCurrentAudit = sameSource && existing.tasks.some((candidate) => candidate.task_id === auditTaskId && candidate.status === "COMPLETED");
+  const task = completedCurrentAudit
     ? {
-      task_id: `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`,
+      task_id: buildTaskId,
+      status: "OPEN",
+      priority: 0,
+      summary: `Continue the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects the next bounded control-plane behavior, the Feature Agent builds it, and the Auditor checks the same result.`,
+      scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    }
+    : checkpointIsCurrent
+    ? {
+      task_id: auditTaskId,
       status: "OPEN",
       priority: 0,
       summary: "Recheck the accepted local checkpoint, campaign handoff, worker receipts, retained failures, and the next safe control-plane action.",
@@ -147,14 +160,13 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
       owner_decision_required: false,
     }
     : {
-      task_id: `CAMPAIGN-PROGRESS-BUILD-${sourceCommit.slice(0, 16).toUpperCase()}`,
+      task_id: buildTaskId,
       status: "OPEN",
       priority: 0,
       summary: `Carry out the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects the next bounded control-plane repair, the Feature Agent builds it, and the Auditor checks the same result.`,
       scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     };
-  const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
   if (sameSource) {
     const matchingTask = existing.tasks.find((candidate) => candidate.task_id === task.task_id);
     if (["OPEN", "IN_PROGRESS", "COMPLETED"].includes(matchingTask?.status)) return existing;
@@ -166,7 +178,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
       campaign_version: handoff.campaign_version,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      generated_reason: checkpointIsCurrent
+      generated_reason: completedCurrentAudit
+        ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
+        : checkpointIsCurrent
         ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK"
         : "ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED",
       tasks: [task],
@@ -182,7 +196,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
     campaign_version: handoff.campaign_version,
     source_commit: sourceCommit,
     source_tree: sourceTree,
-    generated_reason: checkpointIsCurrent
+    generated_reason: completedCurrentAudit
+      ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
+      : checkpointIsCurrent
       ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK"
       : "ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED",
     tasks: [task],
