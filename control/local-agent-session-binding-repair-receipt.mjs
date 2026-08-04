@@ -1,12 +1,12 @@
 // Local Feature Agent repository binding repair receipt; held in the isolated campaign worktree.
 export const LOCAL_AGENT_SESSION_BINDING_REPAIR = Object.freeze({
-  "task_id": "TASK-CONTROLLER-SUPERVISOR-4CD2860ECB9DEE66",
+  "task_id": "TASK-CONTROLLER-SUPERVISOR-AF609398DC968F50",
   "task_kind": "LOCAL_AGENT_SESSION_BINDING_REPAIR",
   "campaign_id": "CAMPAIGN-AGENTOS-SELF-DEVELOPMENT-1",
   "campaign_version": "v1",
-  "candidate_sha256": "d93e40d1f1f9f61b3d8f736a770050cd8e9bca25a3f12375b410dac911150dbc",
-  "source_commit": "ef363c4212e2a4c44bf6fdb1bb4e9e54c89c63bf",
-  "source_tree": "3c3e7966f6ac114cab83a484701b11e542038abf",
+  "candidate_sha256": "fc9752968f6c40e8ebaece101881ab4b4395642d3d14551065d6a8f5d826267d",
+  "source_commit": "a648df4802a9ab1fc77a2b8e2c29fec55cf7fff9",
+  "source_tree": "6418042dcfa3861ae9ff9cebae3f84ac7009638f",
   "custody_status": "FEATURE_AGENT_CUSTODY",
   "changed_by_repair": [
     "schemas/bootstrap-binding.v1.json"
