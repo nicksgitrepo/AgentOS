@@ -104,7 +104,7 @@
     "owner_review_controller": {"path": "control/owner-review.mjs", "sha256": "7f3877bb8a562fccc591fd63a0131678ba5c7ecebb03f7fad0a49fd26a6eb31b"},
     "owner_review_contract": {"path": "schemas/owner-review.v1.json", "sha256": "12317cf40fd64ade3b20cbbaa7a647e85b5094589a7ee1fd1debbd8f76aebebf"},
     "owner_review_article": {"path": "governance/2.1rc/owner-review.md", "sha256": "ad733c47dd6ed6bd3d3c346ac8f26be9d36012be55b0caea7b8438a947cfa311"},
-    "owner_review_verifier": {"path": "tests/verify-owner-review.mjs", "sha256": "9576210242d343aa85fb5c2bede34d1417e324c8153cf2ac1498d7a1912a9f2e"},
+    "owner_review_verifier": {"path": "tests/verify-owner-review.mjs", "sha256": "56c9ab4b3b21895a4c26ba2bcae19d28b357a44acf48e1066bf25222278372c6"},
     "runtime_lifecycle_contract": {"path": "schemas/browser-runtime-lifecycle.v1.json", "sha256": "d442e57abb0a246da72e7daba827c428cc6b037d5ab8aca05beb73d0fce45352"},
     "runtime_lifecycle_verifier": {"path": "tests/verify-browser-runtime-lifecycle.mjs", "sha256": "8fcfccf53683705e4e3ce8f72f85ac81fce32341000900fe0af7131223cb7e49"},
     "naming_registry": {"path": "schemas/naming-and-terminology.v1.json", "sha256": "c3476e31a649fcc28b51f46cb9a5599195a44377010abe33123f5fd585da5b98"},

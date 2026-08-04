@@ -330,12 +330,9 @@ try {
   assert.equal(boundApprovalPacket.campaign_identity_binding.binding_sha256, identityBinding.binding_sha256);
   assert.equal(boundApprovalPacket.candidate_sha256, boundCandidate.candidate_sha256);
   reject("queued owner review without a campaign identity binding", () => compileOwnerApprovalPacket({candidate: boundCandidate, packet: boundPacket, policyState}));
-  reject("queued owner review bound to a different Controller candidate", () => compileOwnerApprovalPacket({
-    candidate: boundCandidate,
-    packet: boundPacket,
-    policyState,
-    campaignIdentityBinding: {...identityBinding, controller_candidate_sha256: "c".repeat(64), binding_sha256: null},
-  }));
+  const wrongIdentityBinding = {...identityBinding, controller_candidate_sha256: "c".repeat(64), binding_sha256: null};
+  wrongIdentityBinding.binding_sha256 = campaignIdentityBindingDigest({...wrongIdentityBinding, binding_sha256: null});
+  reject("queued owner review bound to a different Controller candidate", () => compileOwnerApprovalPacket({candidate: boundCandidate, packet: boundPacket, policyState, campaignIdentityBinding: wrongIdentityBinding}));
   const approval = compileOwnerApproval({
     approvalPacket,
     approvedAtUtc: "2026-01-02T02:00:00.000Z",
