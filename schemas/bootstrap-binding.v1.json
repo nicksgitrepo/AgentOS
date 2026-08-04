@@ -434,7 +434,7 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "84f1c4ef6cd957402422ddf1a403f60fde94a626f3892c776c0da84c3c2786f2"
+      "sha256": "ac018b9fa51290b08060fb57bd5b6d38e833a6ff2d6b103ca0d8932d71a0a2f4"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",

@@ -11,7 +11,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import {execFileSync} from "node:child_process";
+import {execFileSync, spawn} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {
   canonicalSupervisorJson,
@@ -285,6 +285,10 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
         const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
         results.push(await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc}));
       } catch (error) {
+        if (error?.code === "AGENTOS_SUPERVISOR_RESTART_REQUIRED") {
+          stopping = true;
+          break;
+        }
         const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
         writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
         if (once) throw error;
@@ -323,9 +327,16 @@ async function main() {
   const repoRoot = args.repoRoot ?? args.runtimeRoot;
   let loadedAdapter = null;
   let loadedIdentity = null;
+  let restartRequested = false;
   const loadAdapter = async () => {
     const identity = adapterSourceIdentity({adapterPath, repoRoot});
     if (loadedAdapter !== null && loadedIdentity === identity) return loadedAdapter;
+    if (loadedAdapter !== null && loadedIdentity !== identity) {
+      restartRequested = true;
+      const error = new Error("AgentOS source changed; restarting the Controller so every loaded control-plane module refreshes together.");
+      error.code = "AGENTOS_SUPERVISOR_RESTART_REQUIRED";
+      throw error;
+    }
     const adapterUrl = pathToFileURL(adapterPath);
     adapterUrl.searchParams.set("source", identity);
     const adapterModule = await import(adapterUrl.href);
@@ -338,6 +349,10 @@ async function main() {
   };
   const adapter = await loadAdapter();
   const results = await runControllerSupervisor({runtimeRoot: args.runtimeRoot, adapter, adapterFactory: loadAdapter, runtimeId: args.runtimeId, intervalMs: args.intervalMs, once: args.once});
+  if (restartRequested && !args.once) {
+    const child = spawn(process.execPath, [process.argv[1], ...process.argv.slice(2)], {detached: true, stdio: "ignore"});
+    child.unref();
+  }
   if (args.once) process.stdout.write(`${JSON.stringify(results.at(-1) ?? null)}\n`);
 }
 
