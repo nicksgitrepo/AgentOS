@@ -14,6 +14,7 @@ import {
   validateSupervisorObservation,
   writeSupervisorRecordCompareAndSwap,
 } from "../control/controller-supervisor.mjs";
+import {runControllerSupervisorIteration} from "../control/controller-supervisor-runtime.mjs";
 
 const sourceCommit = "1".repeat(40);
 const sourceTree = "2".repeat(40);
@@ -133,5 +134,28 @@ writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: "controlle
 assert.deepEqual(readSupervisorRecord({authorityRoot: root, recordPath: "controller/record.json"}), record);
 assert.throws(() => writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: "controller/record.json", expectedDigest: "5".repeat(64), record, digestField: "record_sha256"}), /compare-and-swap parent is stale/u);
 fs.rmSync(root, {recursive: true, force: true});
+
+const runtimeRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-runtime-"));
+const changedObservation = observation({sourceCommit: "5".repeat(40), sourceTree: "6".repeat(40)});
+let runtimeObservation = puzzle;
+let routeAttempts = 0;
+const runtimeAdapter = {
+  observe: () => runtimeObservation,
+  route: () => {
+    routeAttempts += 1;
+    if (routeAttempts === 1) throw new Error("stale route adapter");
+    return {status: "ROUTED", attempt: routeAttempts};
+  },
+};
+const firstRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
+assert.equal(firstRuntime.tick.route_status, "ROUTE_FAILED");
+runtimeObservation = changedObservation;
+const secondRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
+assert.equal(secondRuntime.tick.route_status, "ROUTED");
+assert.equal(fs.existsSync(path.join(runtimeRoot, "supervisor", "route-failures", `${firstRuntime.goal.goal_id}.json`)), true);
+const reusedRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
+assert.equal(reusedRuntime.reused, true, "an unchanged observation must not retry the same route");
+assert.equal(routeAttempts, 2);
+fs.rmSync(runtimeRoot, {recursive: true, force: true});
 
 console.log("PASS Controller supervisor: deterministic goal minting, hard-stop enforcement, soft review routing, repair routing, liveness choice, failure retention, and CAS records verified");

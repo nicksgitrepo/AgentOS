@@ -166,6 +166,29 @@ function compileRuntimeState({runtimeId, status, observation = null, goal = null
   return state;
 }
 
+function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
+  const rca = {
+    schema: "agentos.controller_supervisor_route_failure_rca.v1",
+    version: 1,
+    status: "OPEN_REPAIR_REQUIRED",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    controller_role: "AGENTOS_CONTROLLER",
+    runtime_id: runtimeId,
+    prior_goal_id: priorGoal.goal_id,
+    prior_goal_sha256: priorGoal.goal_sha256,
+    prior_observation_sha256: priorTick.observation_sha256,
+    failed_route_status: priorTick.route_status,
+    error_message_exact: priorTick.route_error,
+    current_observation_sha256: currentObservation.observation_sha256,
+    required_action: "Retain the exact failed route, change the source-bound route or repair the stale boundary rule, then re-observe before retrying.",
+    external_actions_attempted: false,
+    observed_at_utc: observedAtUtc,
+    rca_sha256: null,
+  };
+  rca.rca_sha256 = digestWithout(rca, "rca_sha256");
+  return rca;
+}
+
 function writeOrVerify({runtimeRoot, recordPath, record, digestField, validate}) {
   const existing = readSupervisorRecord({authorityRoot: runtimeRoot, recordPath});
   if (existing !== null) {
@@ -185,6 +208,16 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   const observation = await adapter.observe();
   validateSupervisorObservation(observation);
   const existingTick = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/tick.json"});
+  if (existingTick !== null && existingTick.route_status === "ROUTE_FAILED" && existingTick.observation_sha256 !== observation.observation_sha256) {
+    const priorGoal = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/goal.json"});
+    validateSupervisorTick(existingTick);
+    validateSupervisorGoal(priorGoal);
+    const rcaPath = `supervisor/route-failures/${priorGoal.goal_id}.json`;
+    const rca = compileRouteFailureRca({runtimeId, priorGoal, priorTick: existingTick, currentObservation: observation, observedAtUtc: nowUtc});
+    const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
+    if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
+    else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor route failure RCA differs");
+  }
   if (existingTick !== null && existingTick.observation_sha256 === observation.observation_sha256) {
     validateSupervisorTick(existingTick);
     const existingGoal = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/goal.json"});
@@ -194,8 +227,12 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   }
   const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
   const result = await runSupervisorIterationAsync({observation, route});
-  writeOrVerify({runtimeRoot: root, recordPath: "supervisor/goal.json", record: result.goal, digestField: "goal_sha256", validate: validateSupervisorGoal});
-  writeOrVerify({runtimeRoot: root, recordPath: "supervisor/tick.json", record: result.tick, digestField: "tick_sha256", validate: validateSupervisorTick});
+  const goalRecordPath = `supervisor/goals/${observation.observation_sha256}.json`;
+  const tickRecordPath = `supervisor/ticks/${observation.observation_sha256}.json`;
+  writeOrVerify({runtimeRoot: root, recordPath: goalRecordPath, record: result.goal, digestField: "goal_sha256", validate: validateSupervisorGoal});
+  writeOrVerify({runtimeRoot: root, recordPath: tickRecordPath, record: result.tick, digestField: "tick_sha256", validate: validateSupervisorTick});
+  writeJsonAtomic(safeChild(root, "supervisor/goal.json"), result.goal);
+  writeJsonAtomic(safeChild(root, "supervisor/tick.json"), result.tick);
   const status = result.tick.route_status === "STOPPED_HARD_BOUNDARY"
     ? "HARD_BOUNDARY_STOPPED"
     : result.tick.route_status === "ROUTE_FAILED" ? "ROUTE_FAILED_RETAINED" : "ROUTED_OR_RECONCILED";

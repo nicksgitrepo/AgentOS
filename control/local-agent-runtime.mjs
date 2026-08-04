@@ -125,7 +125,8 @@ function validateHandshake(handshake, expected) {
     requireGitObject(handshake.build_commit, "Feature Agent build commit");
     requireGitObject(handshake.build_tree, "Feature Agent build tree");
     assert(handshake.build_commit !== expected.sourceCommit && handshake.build_tree !== expected.sourceTree, "Feature Agent build checkpoint did not change source");
-    assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes("control/governance-decision-tree.mjs"), "Feature Agent build did not change governance code");
+    const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+    assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Feature Agent build did not change the required code");
     assert(Array.isArray(handshake.focused_checks) && handshake.focused_checks.length > 0 && typeof handshake.build_checkpoint_sha256 === "string", "Feature Agent build evidence is incomplete");
   }
   if (expected.role === "INDEPENDENT_AUDITOR" && expected.featureWorktree !== null) {

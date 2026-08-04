@@ -34,7 +34,8 @@
   "persistence": {
     "controller": "control/controller-supervisor.mjs",
     "records": "Content-addressed records use compare-and-swap parent checks and regular non-symlink files.",
-    "failure_rule": "A route failure is retained as an exact repairable record; it does not become an owner question unless it crosses a hard boundary or remains materially ambiguous."
+    "failure_rule": "A route failure is retained as an exact repairable record; it does not become an owner question unless it crosses a hard boundary or remains materially ambiguous.",
+    "history_rule": "Each observation has its own goal and tick record; a changed observation preserves the prior failed route under a source-bound failure RCA before a new route is attempted."
   },
   "activation": {
     "requires_explicit_owner_approval": true,
