@@ -19,6 +19,8 @@ import {
   validateLocalWorkerHeartbeat,
   validateLocalWorkerReadback,
 } from "./local-agent-runtime.mjs";
+import {compileControllerCampaignCandidate} from "./agentos-controller.mjs";
+import {compileGovernanceDecisionTree} from "./governance-decision-tree.mjs";
 import {
   compileSupervisorObservation,
   selectAutonomousNextTask,
@@ -26,6 +28,7 @@ import {
 } from "./controller-supervisor.mjs";
 
 const AUTONOMOUS_TASK_QUEUE_FILE = "autonomous-supervisor-task-queue.json";
+const CAMPAIGN_PROGRESS_FILE = "autonomous-supervisor-campaign-progress.json";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -37,6 +40,10 @@ function requireString(value, label) {
 
 function requireSha(value, label) {
   assert(typeof value === "string" && /^[0-9a-f]{64}$/u.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+function requireGitObject(value, label) {
+  assert(typeof value === "string" && /^[0-9a-f]{40}$/u.test(value), `${label} must be a Git object`);
 }
 
 function canonicalize(value) {
@@ -125,12 +132,48 @@ function readAutonomousTaskQueue(campaignRoot, campaignId, campaignVersion) {
   return queue === null ? null : validateAutonomousTaskQueue(queue, campaignId, campaignVersion);
 }
 
-function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree}) {
+function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, executionContext}) {
   const existing = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
-  if (existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree) return existing;
-  if (existing !== null) {
+  const checkpointIsCurrent = campaignProgress?.source_commit === sourceCommit && campaignProgress?.source_tree === sourceTree;
+  const task = checkpointIsCurrent
+    ? {
+      task_id: `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`,
+      status: "OPEN",
+      priority: 0,
+      summary: "Recheck the accepted local checkpoint, campaign handoff, worker receipts, retained failures, and the next safe control-plane action.",
+      scope: ["ACTIVE_CAMPAIGN_HANDOFF", "ACCEPTED_LOCAL_CHECKPOINT", "CONTROLLER_STATE", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    }
+    : {
+      task_id: `CAMPAIGN-PROGRESS-BUILD-${sourceCommit.slice(0, 16).toUpperCase()}`,
+      status: "OPEN",
+      priority: 0,
+      summary: `Carry out the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects the next bounded control-plane repair, the Feature Agent builds it, and the Auditor checks the same result.`,
+      scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    };
+  const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
+  if (sameSource) {
+    const matchingTask = existing.tasks.find((candidate) => candidate.task_id === task.task_id);
+    const hasOpenTask = existing.tasks.some((candidate) => ["OPEN", "IN_PROGRESS"].includes(candidate.status));
+    if (hasOpenTask || matchingTask?.status === "COMPLETED") return existing;
     writeAddressed(campaignRoot, `autonomous-supervisor-task-queues/${existing.queue_sha256}.json`, existing, "queue_sha256");
+    const queue = {
+      schema: "agentos.controller_autonomous_task_queue.v1",
+      version: 1,
+      campaign_id: handoff.campaign_id,
+      campaign_version: handoff.campaign_version,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      generated_reason: checkpointIsCurrent
+        ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK"
+        : "ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED",
+      tasks: [task],
+      queue_sha256: null,
+    };
+    return writeMutableAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, queue, "queue_sha256", existing.queue_sha256);
   }
+  if (existing !== null) writeAddressed(campaignRoot, `autonomous-supervisor-task-queues/${existing.queue_sha256}.json`, existing, "queue_sha256");
   const queue = {
     schema: "agentos.controller_autonomous_task_queue.v1",
     version: 1,
@@ -138,18 +181,14 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
     campaign_version: handoff.campaign_version,
     source_commit: sourceCommit,
     source_tree: sourceTree,
-    generated_reason: "ACTIVE_CAMPAIGN_HAS_NO_OPEN_NEXT_TASK",
-    tasks: [{
-      task_id: `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`,
-      status: "OPEN",
-      priority: 0,
-      summary: "Inspect the active campaign handoff, worker receipts, retained failures, acceptance state, and next safe control-plane action.",
-      scope: ["ACTIVE_CAMPAIGN_HANDOFF", "CONTROLLER_STATE", "WORKER_RECEIPTS"].sort(),
-      owner_decision_required: false,
-    }],
+    generated_reason: checkpointIsCurrent
+      ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK"
+      : "ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED",
+    tasks: [task],
     queue_sha256: null,
   };
-  return writeAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, queue, "queue_sha256");
+  if (existing === null) return writeAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, queue, "queue_sha256");
+  return writeMutableAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, queue, "queue_sha256", existing.queue_sha256);
 }
 
 function writeMutableAddressed(root, name, value, field, expectedDigest = null) {
@@ -168,6 +207,123 @@ function writeMutableAddressed(root, name, value, field, expectedDigest = null) 
     if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
   }
   return readJson(target);
+}
+
+function readCampaignProgress(campaignRoot, campaignId, campaignVersion) {
+  const progress = readAddressed(campaignRoot, CAMPAIGN_PROGRESS_FILE, "progress_sha256");
+  if (progress === null) return null;
+  assert(progress.schema === "agentos.controller_autonomous_campaign_progress.v1" && progress.version === 1, "autonomous campaign progress identity is invalid");
+  assert(progress.campaign_id === campaignId && progress.campaign_version === campaignVersion, "autonomous campaign progress campaign differs");
+  assert(progress.status === "CHECKPOINT_READY", "autonomous campaign progress status is invalid");
+  requireGitObject(progress.source_commit, "autonomous campaign progress source commit");
+  requireGitObject(progress.source_tree, "autonomous campaign progress source tree");
+  requireSha(progress.candidate_sha256, "autonomous campaign progress candidate");
+  requireSha(progress.context_sha256, "autonomous campaign progress context");
+  return progress;
+}
+
+function readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree}) {
+  const ownerIntent = readJson(path.join(campaignRoot, "owner-intent.json"));
+  const scope = readJson(path.join(campaignRoot, "scope.json"));
+  const acceptance = readJson(path.join(campaignRoot, "acceptance-contract.json"));
+  const decisionTreeRequirement = readJson(path.join(campaignRoot, "decision-tree-requirement.json"));
+  const decisionTree = readJson(path.join(campaignRoot, "decision-tree.json"));
+  const modelPlan = readJson(path.join(campaignRoot, "model-plan.json"));
+  const controllerState = readJson(path.join(campaignRoot, "controller-state.json"));
+  assert(ownerIntent?.schema === "agentos.agentos_self_development_owner_intent.v1", "autonomous campaign owner intent is unavailable");
+  assert(scope?.schema === "agentos.local_self_development_scope.v1", "autonomous campaign scope is unavailable");
+  assert(acceptance?.schema === "agentos.local_self_development_acceptance.v1", "autonomous campaign acceptance contract is unavailable");
+  assert(decisionTreeRequirement?.schema === "agentos.executable_decision_tree_requirement.v1", "autonomous campaign decision-tree requirement is unavailable");
+  assert(modelPlan?.schema === "agentos.local_self_development_model_plan.v1", "autonomous campaign model plan is unavailable");
+  assert(controllerState?.schema === "agentos.controller_state.v1", "autonomous campaign Controller state is unavailable");
+  assert(controllerState.active_campaign_id === handoff.campaign_id, "autonomous campaign Controller state is not bound to the active campaign");
+  for (const [value, label] of [
+    [ownerIntent.owner_intent_sha256, "owner intent"],
+    [scope.scope_sha256, "scope"],
+    [acceptance.acceptance_sha256, "acceptance contract"],
+    [decisionTreeRequirement.decision_tree_requirement_sha256, "decision-tree requirement"],
+    [modelPlan.model_plan_sha256, "model plan"],
+    [controllerState.policy_state_sha256, "Controller policy"],
+  ]) requireSha(value, `autonomous campaign ${label}`);
+  requireString(ownerIntent.goal, "autonomous campaign owner goal");
+  const policyVariables = controllerState.policy_state?.variables;
+  assert(Array.isArray(policyVariables), "autonomous campaign policy variables are unavailable");
+  const firstUsefulWorkflow = policyVariables.find((variable) => variable?.variable_id === "PROJECT.FIRST_USEFUL_WORKFLOW")?.current_value;
+  requireString(firstUsefulWorkflow ?? ownerIntent.current_run, "autonomous campaign first useful workflow");
+  assert(decisionTree?.schema === "agentos.governance_decision_tree.v1", "autonomous campaign decision tree is unavailable");
+  assert(Array.isArray(decisionTree.gates) && decisionTree.gates.length > 0, "autonomous campaign decision tree has no gates");
+  const featureFiles = [...new Set(decisionTree.gates.flatMap((gate) => gate.feature_files))].sort();
+  assert(featureFiles.length > 0, "autonomous campaign decision tree has no feature files");
+
+  /*
+   * A prior audited checkpoint may have changed the source after Bootstrap
+   * wrote its original candidate and tree.  Rebind those immutable intent and
+   * scope records to the exact source the Controller is observing before any
+   * worker is started.  This is a control-plane reconciliation, not a scope
+   * expansion and not Product work.
+   */
+  const candidate = compileControllerCampaignCandidate({
+    projectId: ownerIntent.project_id,
+    campaignId: handoff.campaign_id,
+    campaignVersion: handoff.campaign_version,
+    policyEpoch: controllerState.policy_epoch,
+    policyStateSha256: controllerState.policy_state_sha256,
+    ownerIntentSha256: ownerIntent.owner_intent_sha256,
+    acceptanceContractSha256: acceptance.acceptance_sha256,
+    modelPlanSha256: modelPlan.model_plan_sha256,
+    scopeSha256: scope.scope_sha256,
+    sourceCommit,
+    sourceTree,
+  });
+  const sourceBoundDecisionTree = compileGovernanceDecisionTree({
+    sourceCommit,
+    sourceTree,
+    ownerIntentSha256: ownerIntent.owner_intent_sha256,
+    scopeSha256: scope.scope_sha256,
+    featureFiles,
+  });
+  const contextPath = `autonomous-supervisor-context/${sourceCommit}.json`;
+  const context = writeAddressed(campaignRoot, contextPath, {
+    schema: "agentos.controller_autonomous_campaign_context.v1",
+    version: 1,
+    status: "SOURCE_BOUND",
+    campaign_id: handoff.campaign_id,
+    campaign_version: handoff.campaign_version,
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    owner_intent_sha256: ownerIntent.owner_intent_sha256,
+    scope_sha256: scope.scope_sha256,
+    acceptance_sha256: acceptance.acceptance_sha256,
+    model_plan_sha256: modelPlan.model_plan_sha256,
+    decision_tree_requirement_sha256: decisionTreeRequirement.decision_tree_requirement_sha256,
+    candidate_sha256: candidate.candidate_sha256,
+    decision_tree_sha256: sourceBoundDecisionTree.tree_sha256,
+    first_useful_workflow: firstUsefulWorkflow ?? ownerIntent.current_run,
+    owner_goal: ownerIntent.goal,
+    allowed_work: [...scope.allowed_work].sort(),
+    required_evidence: [...acceptance.required_evidence].sort(),
+    external_actions_attempted: false,
+    context_sha256: null,
+  }, "context_sha256");
+  const candidatePath = `autonomous-supervisor-context/${sourceCommit}-candidate.json`;
+  const decisionTreePath = `autonomous-supervisor-context/${sourceCommit}-decision-tree.json`;
+  const writtenCandidate = writeAddressed(campaignRoot, candidatePath, candidate, "candidate_sha256");
+  const writtenDecisionTree = writeAddressed(campaignRoot, decisionTreePath, sourceBoundDecisionTree, "tree_sha256");
+  return {
+    ownerIntent,
+    scope,
+    acceptance,
+    decisionTreeRequirement,
+    modelPlan,
+    controllerState,
+    context,
+    contextPath,
+    candidate: writtenCandidate,
+    decisionTree: writtenDecisionTree,
+    candidatePath,
+    decisionTreePath,
+    firstUsefulWorkflow: firstUsefulWorkflow ?? ownerIntent.current_run,
+  };
 }
 
 function relativeChild(root, relativePath, label) {
@@ -501,6 +657,20 @@ function runControllerWorkflowAuditChecks(worktreePath) {
   return checks;
 }
 
+function runCampaignProgressChecks(worktreePath) {
+  const checks = [
+    "node --check control/governance-decision-tree.mjs",
+    "node tests/verify-governance-decision-tree.mjs",
+    "node --check control/controller-supervisor.mjs",
+    "node tests/verify-controller-supervisor.mjs",
+  ];
+  for (const check of checks) {
+    const [program, ...args] = check.split(" ");
+    execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+  }
+  return checks;
+}
+
 function permissionsFrom(handoff, activation) {
   const permissions = activation?.permissions ?? handoff.boundary ?? {};
   return {
@@ -623,6 +793,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const gateFinding = readOptional(campaignRoot, "gate-evidence-anti-drift-rca.json");
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    const executionContext = handoff.campaign_active
+      ? readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree})
+      : null;
+    const campaignProgress = handoff.campaign_active
+      ? readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version)
+      : null;
+    const taskQueue = handoff.campaign_active
+      ? ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, executionContext})
+      : null;
     const permissions = permissionsFrom(handoff, activation);
     const lifecycle = gateFinding?.lifecycle_roi_finding ?? null;
     const lifecycleResolution = lifecycle === null ? null : readAddressed(campaignRoot, `autonomous-supervisor-lifecycle-resolutions/${lifecycle.finding_id}.json`, "resolution_sha256");
@@ -712,15 +891,27 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
   async function routeRepair(goal) {
     const handoff = readCurrentHandoff(campaignRoot, handoffPath);
     const activation = readOptional(campaignRoot, "activation.json");
-    const candidate = readJson(path.join(campaignRoot, "candidate.json"));
     const gateFinding = readJson(path.join(campaignRoot, "gate-evidence-anti-drift-rca.json"));
     const lifecycleFinding = gateFinding.lifecycle_roi_finding;
+    const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
+    const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    const executionContext = readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree});
+    const candidate = executionContext.candidate;
+    const autonomousTaskFindingId = goal.finding_ids.find((findingId) => findingId.startsWith("F-AUTONOMOUS-TASK-"));
+    const autonomousTaskQueue = autonomousTaskFindingId === undefined
+      ? null
+      : readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+    const autonomousTaskId = autonomousTaskFindingId?.slice("F-AUTONOMOUS-TASK-".length) ?? null;
+    const autonomousTask = autonomousTaskQueue?.tasks.find((task) => task.task_id === autonomousTaskId) ?? null;
+    const campaignProgressTask = autonomousTask?.task_id.startsWith("CAMPAIGN-PROGRESS-BUILD-") === true;
     const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
     const localAgentSessionBinding = localAgentSessionBindingFinding(repositoryRoot);
     const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
     const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
-    const repairKind = goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+    const repairKind = campaignProgressTask
+      ? "CAMPAIGN_PROGRESS_BUILD"
+      : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
       ? "CONTROLLER_SUPERVISOR_REPAIR"
       : goal.finding_ids.includes(ownerSurfaceFinding?.finding_id)
       ? "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -731,20 +922,24 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         : goal.finding_ids.includes(localAgentSessionBinding?.finding_id)
           ? "LOCAL_AGENT_SESSION_BINDING_REPAIR"
         : "CONTROLLER_SUPERVISOR_REPAIR";
-    const routeFinding = goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id) ? boundaryPrecedenceFinding : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
+    const routeFinding = campaignProgressTask
+      ? {
+        finding_id: autonomousTaskFindingId,
+        source_sha256: autonomousTaskQueue.queue_sha256,
+        status: "OPEN_NEXT_REQUIRED_BEHAVIOR",
+      }
+      : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id) ? boundaryPrecedenceFinding : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
       finding_id: lifecycleFinding?.finding_id,
       source_sha256: gateFinding.finding_sha256,
       status: lifecycleFinding?.status,
     };
     const bindingRepair = repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR";
-    const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
-    const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
     const permissions = permissionsFrom(handoff, activation);
     assert(permissions.local_development_writes_allowed && permissions.local_worker_agent_spawns_allowed, "local Controller route lacks local development authorization");
     assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "local Controller route cannot enter Product custody");
     assert(!permissions.external_deployment_allowed && !permissions.external_release_allowed && !permissions.external_publication_allowed && !permissions.external_push_allowed && !permissions.external_merge_allowed, "local Controller route cannot perform external actions");
     const previousSessions = sessionEntries(campaignRoot, handoff);
-    const taskId = `TASK-CONTROLLER-SUPERVISOR-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
+    const taskId = `${campaignProgressTask ? "TASK-CAMPAIGN-PROGRESS" : "TASK-CONTROLLER-SUPERVISOR"}-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
     const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;
     const task = writeAddressed(campaignRoot, taskRecordPath, {
       schema: "agentos.controller_autonomous_supervisor_task.v1",
@@ -762,7 +957,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       parent_handoff_sha256: goal.parent_handoff_sha256,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      scope: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+      scope: campaignProgressTask
+        ? ["acceptance-contract.json", "decision-tree-requirement.json", "decision-tree.json", "owner-intent.json", "scope.json"].sort()
+        : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs", "tests/verify-owner-review.mjs"].sort()
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? ["tests/verify-local-agent-session.mjs"].sort()
@@ -781,9 +978,12 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: "Supervise the bounded Controller supervisor repair and return the exact role handoff.",
+      task: campaignProgressTask
+        ? `Read the bound owner intent, scope, acceptance contract, and executable decision tree. Select the next bounded control-plane repair for the first useful workflow: ${executionContext.firstUsefulWorkflow}. Return the exact Feature-Agent handoff without expanding scope.`
+        : "Supervise the bounded Controller supervisor repair and return the exact role handoff.",
       taskId: `${taskId}-ORCHESTRATOR`,
-      taskKind: "CONTROLLER_SUPERVISOR_ORCHESTRATE",
+      taskKind: campaignProgressTask ? "CAMPAIGN_PROGRESS_ORCHESTRATE" : "CONTROLLER_SUPERVISOR_ORCHESTRATE",
+      decisionTreePath: campaignProgressTask ? path.join(campaignRoot, executionContext.decisionTreePath) : null,
     });
     const feature = await startDurableWorkerSession({
       repoRoot: repositoryRoot,
@@ -794,7 +994,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+      task: campaignProgressTask
+        ? "Build the next bounded AgentOS control-plane repair selected from the bound first useful workflow. Change only declared control-plane files, run focused checks, and return a real clean commit and tree."
+        : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
         ? "Make every open hard security or owner boundary stop before any soft-scope review, then run the focused Controller checks."
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? "Keep Bootstrap and the ongoing owner review casual and nontechnical while preserving the typed internal plan, then return exact focused evidence."
@@ -815,7 +1017,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+      task: campaignProgressTask
+        ? "Independently inspect the Feature-Agent changed tree and verify the same source-bound commit, tree, changed files, focused checks, and protected boundaries."
+        : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
         ? "Independently verify that every open hard security or owner boundary stops before any soft-scope review."
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? "Independently inspect the Feature-Agent repair and verify that Bootstrap and the ongoing owner review keep technical governance wording behind the conversation."
@@ -828,7 +1032,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       taskKind: repairKind,
       featureWorktree: feature.session_record.worktree_path,
     });
-    const controllerChecks = runControllerChecks(feature.session_record.worktree_path, repairKind);
+    const controllerChecks = campaignProgressTask
+      ? runCampaignProgressChecks(feature.session_record.worktree_path)
+      : runControllerChecks(feature.session_record.worktree_path, repairKind);
     const featureReadback = feature.readback;
     const auditorReadback = auditor.readback;
     validateLocalWorkerReadback(featureReadback, repairKind);
@@ -868,6 +1074,41 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       external_actions_attempted: false,
       finalizer_sha256: null,
     }, "finalizer_sha256");
+    const adoptedExecutionContext = campaignProgressTask
+      ? readCampaignExecutionContext({campaignRoot, handoff, sourceCommit: finalizerResult.adopted_commit, sourceTree: finalizerResult.adopted_tree})
+      : null;
+    const campaignProgress = campaignProgressTask
+      ? writeAddressed(campaignRoot, CAMPAIGN_PROGRESS_FILE, {
+        schema: "agentos.controller_autonomous_campaign_progress.v1",
+        version: 1,
+        status: "CHECKPOINT_READY",
+        controller_role: "AGENTOS_CONTROLLER",
+        campaign_id: goal.campaign_id,
+        campaign_version: goal.campaign_version,
+        task_id: autonomousTask.task_id,
+        source_commit: finalizerResult.adopted_commit,
+        source_tree: finalizerResult.adopted_tree,
+        candidate_sha256: adoptedExecutionContext.candidate.candidate_sha256,
+        context_sha256: adoptedExecutionContext.context.context_sha256,
+        feature_commit: featureReadback.build_commit,
+        feature_tree: featureReadback.build_tree,
+        auditor_commit: auditorReadback.build_commit,
+        auditor_tree: auditorReadback.build_tree,
+        controller_recheck_sha256: controllerRecheck.record_sha256,
+        finalizer_sha256: finalizerRecord.finalizer_sha256,
+        next_action: "The first useful workflow reached an audited local checkpoint; the Controller will keep observing and choose the next safe control-plane action automatically.",
+        external_actions_attempted: false,
+        progress_sha256: null,
+      }, "progress_sha256")
+      : null;
+    const completedQueue = campaignProgressTask
+      ? writeMutableAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, {
+        ...autonomousTaskQueue,
+        tasks: autonomousTaskQueue.tasks.map((taskCandidate) => taskCandidate.task_id === autonomousTask.task_id
+          ? {...taskCandidate, status: "COMPLETED"}
+          : taskCandidate),
+      }, "queue_sha256", autonomousTaskQueue.queue_sha256)
+      : null;
     assert(routeFinding?.finding_id && routeFinding.status !== "RESOLVED", "Controller repair route lacks the open finding it was asked to close");
     const resolutionPath = `autonomous-supervisor-lifecycle-resolutions/${routeFinding.finding_id}.json`;
     const lifecycleResolution = writeAddressed(campaignRoot, resolutionPath, compileLifecycleResolution({
@@ -891,13 +1132,17 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const transitionedHandoff = compileSupervisorHandoff({
       previous: handoff,
       goal,
-      status: "SUPERVISOR_REPAIR_ACCEPTED",
+      status: campaignProgressTask ? "SUPERVISOR_CAMPAIGN_PROGRESS_ACCEPTED" : "SUPERVISOR_REPAIR_ACCEPTED",
       sourceCommit: finalizerResult.adopted_commit,
       sourceTree: finalizerResult.adopted_tree,
-      nextAction: "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
+      nextAction: campaignProgressTask
+        ? "The Controller will re-observe the new source-bound checkpoint and choose the next safe control-plane action automatically; no outside prompt is needed."
+        : "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
         repair: {
-        summary: goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+        summary: campaignProgressTask
+          ? `Carry out the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}.`
+          : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
           ? "Make hard security and owner boundaries take precedence over soft-scope review."
           : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
           ? "Keep Bootstrap and the ongoing owner review in short everyday language while preserving the typed internal plan."
@@ -913,6 +1158,10 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_tree: sourceTree,
         adopted_commit: finalizerResult.adopted_commit,
         adopted_tree: finalizerResult.adopted_tree,
+        ...(campaignProgress === null ? {} : {
+          campaign_progress_sha256: campaignProgress.progress_sha256,
+          completed_task_queue_sha256: completedQueue.queue_sha256,
+        }),
       },
       finalizer: {
         record_path: finalizerRecordPath,
@@ -924,7 +1173,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
-      status: "ROUTED_CONTROLLER_RECHECKED_AND_ADOPTED",
+      status: campaignProgressTask ? "CAMPAIGN_PROGRESS_RECHECKED_AND_ADOPTED" : "ROUTED_CONTROLLER_RECHECKED_AND_ADOPTED",
       task_id: taskId,
       source_commit: sourceCommit,
       source_tree: sourceTree,
@@ -950,6 +1199,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       supervised_session_record_paths: currentSessions.map((entry) => path.relative(campaignRoot, entry.target)).sort(),
       task_record_path: taskRecordPath,
       readback_record_paths: [orchestratorRecordPath, featureRecordPath, auditorRecordPath, controllerRecordPath, finalizerRecordPath, resolutionPath].sort(),
+      campaign_progress_sha256: campaignProgress?.progress_sha256 ?? null,
+      autonomous_task_queue_sha256: completedQueue?.queue_sha256 ?? null,
       protected_boundaries: permissions,
     };
   }
@@ -957,15 +1208,17 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
   async function routeLiveness(goal) {
     const handoff = readCurrentHandoff(campaignRoot, handoffPath);
     const activation = readOptional(campaignRoot, "activation.json");
-    const candidate = readJson(path.join(campaignRoot, "candidate.json"));
     const permissions = permissionsFrom(handoff, activation);
     assert(permissions.local_development_writes_allowed && permissions.local_worker_agent_spawns_allowed, "local Controller liveness route lacks local development authorization");
     assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "local Controller liveness route cannot enter Product custody");
     assert(!permissions.external_deployment_allowed && !permissions.external_release_allowed && !permissions.external_publication_allowed && !permissions.external_push_allowed && !permissions.external_merge_allowed, "local Controller liveness route cannot perform external actions");
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    const executionContext = readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree});
+    const candidate = executionContext.candidate;
+    const campaignProgress = readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version);
     const existingSessions = sessionEntries(campaignRoot, handoff);
-    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree});
+    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, executionContext});
     const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
       .filter(({record}) => record.status === "FAILED")
       .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256);
@@ -1102,7 +1355,6 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
   async function routeAutonomousWorkflowTask(goal) {
     const handoff = readCurrentHandoff(campaignRoot, handoffPath);
     const activation = readOptional(campaignRoot, "activation.json");
-    const candidate = readJson(path.join(campaignRoot, "candidate.json"));
     const permissions = permissionsFrom(handoff, activation);
     assert(permissions.local_development_writes_allowed && permissions.local_worker_agent_spawns_allowed, "autonomous Controller task lacks local development authorization");
     assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "autonomous Controller task cannot enter Product custody");
@@ -1110,12 +1362,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const taskFindingId = goal.finding_ids.find((findingId) => findingId.startsWith("F-AUTONOMOUS-TASK-"));
     assert(taskFindingId !== undefined, "autonomous Controller workflow goal lacks its selected task");
     const taskId = taskFindingId.slice("F-AUTONOMOUS-TASK-".length);
+    if (taskId.startsWith("CAMPAIGN-PROGRESS-BUILD-")) return routeRepair(goal);
     const queue = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
     assert(queue !== null, "autonomous Controller task queue disappeared before routing");
     const task = queue.tasks.find((candidateTask) => candidateTask.task_id === taskId);
     assert(task !== undefined && task.status === "OPEN", "autonomous Controller selected task is not open");
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    const executionContext = readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree});
+    const candidate = executionContext.candidate;
     assert(queue.source_commit === sourceCommit && queue.source_tree === sourceTree, "autonomous Controller task queue is stale for the current source");
     const checks = runControllerWorkflowAuditChecks(repositoryRoot);
     const controllerState = readOptional(campaignRoot, "controller-state.json");
