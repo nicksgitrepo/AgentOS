@@ -77,6 +77,16 @@ assert.equal(naming.compatibility_aliases.GLOBAL_ORCHESTRATOR, "AGENTOS_CONTROLL
 const controllerContract = JSON.parse(read("schemas/agentos-controller.v1.json"));
 assert.equal(controllerContract.name, "AGENTOS_CONTROLLER");
 assert.equal(controllerContract.scope, "PROJECT_PERSISTENT");
+assert.equal(controllerContract.supervisor.controller, "control/controller-supervisor-runtime.mjs");
+assert.equal(controllerContract.supervisor.contract, "schemas/controller-supervisor.v1.json");
+assert(controllerContract.controller_agent.wake_rule.includes("every active campaign handoff"));
+const supervisorContract = JSON.parse(read("schemas/controller-supervisor.v1.json"));
+assert.equal(supervisorContract.role, "AGENTOS_CONTROLLER");
+assert.equal(supervisorContract.persistence.controller, "control/controller-supervisor.mjs");
+assert.equal(supervisorContract.goal.one_at_a_time_rule.includes("deterministic bounded goal"), true);
+const sessionContract = JSON.parse(read("schemas/local-agent-session.v1.json"));
+assert.equal(sessionContract.session.controller, "control/local-agent-session.mjs");
+assert.equal(sessionContract.handoff.one_command_at_a_time, true);
 for (const [name, entry] of Object.entries(binding.normative)) assertBoundFile(entry, `normative ${name}`);
 for (const [name, entry] of Object.entries(binding.compatibility_only)) {
   if (entry && typeof entry === "object" && !Array.isArray(entry) && entry.path) assertBoundFile(entry, `compatibility ${name}`);
@@ -175,6 +185,11 @@ assert.equal(kernel.agentos_controller.controller, "control/agentos-controller.m
 assert.equal(kernel.agentos_controller.contract, "schemas/agentos-controller.v1.json");
 assert.equal(kernel.agentos_controller.name, "AGENTOS_CONTROLLER");
 assert.equal(kernel.agentos_controller.campaign_orchestrator, "CAMPAIGN_SCOPED");
+assert.equal(kernel.agentos_controller.supervisor, "control/controller-supervisor-runtime.mjs");
+assert.equal(kernel.agentos_controller.supervisor_contract, "schemas/controller-supervisor.v1.json");
+assert.equal(kernel.agentos_controller.durable_session_controller, "control/local-agent-session.mjs");
+assert.equal(kernel.agentos_controller.durable_session_contract, "schemas/local-agent-session.v1.json");
+assert(kernel.agentos_controller.supervisor_rule.includes("every active handoff") && kernel.agentos_controller.supervisor_rule.includes("hard boundary"));
 assert.equal(kernel.campaign_policy.contract, "schemas/campaign-policy-reconcile.v1.json");
 assert.equal(kernel.campaign_state_owner.controller, "control/campaign-state-owner.mjs");
 assert.equal(kernel.campaign_state_owner.contract, "schemas/campaign-state-owner.v1.json");
@@ -241,6 +256,8 @@ for (const relativePath of [
   "tests/verify-gpt-assist.mjs",
   "tests/verify-global-policy-state.mjs",
   "tests/verify-agentos-controller.mjs",
+  "tests/verify-controller-supervisor.mjs",
+  "tests/verify-local-agent-session.mjs",
   "tests/verify-global-policy-store.mjs",
   "tests/verify-project-context-store.mjs",
   "tests/verify-owner-review.mjs",

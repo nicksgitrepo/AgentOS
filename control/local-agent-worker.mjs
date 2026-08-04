@@ -73,6 +73,26 @@ function runFocusedChecks(worktreePath) {
   ]);
 }
 
+function runControllerSupervisorChecks(worktreePath) {
+  return runChecks(worktreePath, [
+    "node --check control/controller-supervisor.mjs",
+    "node --check control/controller-supervisor-runtime.mjs",
+    "node --check control/local-agent-session.mjs",
+    "node tests/verify-controller-supervisor.mjs",
+  ]);
+}
+
+function applyControllerSupervisorRepair(worktreePath) {
+  const supervisorPath = path.join(worktreePath, "control/controller-supervisor.mjs");
+  assert(fs.existsSync(supervisorPath), "Controller supervisor source is unavailable");
+  const source = fs.readFileSync(supervisorPath, "utf8");
+  const oldBranch = '  if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE", "HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) {\n    return "ROUTE_REPAIRABLE_PUZZLE";\n  }';
+  const newBranch = '  if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";\n  if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE"])) {\n    return "ROUTE_REPAIRABLE_PUZZLE";\n  }';
+  assert(source.includes(oldBranch), "Controller supervisor boundary branch is not at the expected source checkpoint");
+  writeFileAtomic(supervisorPath, source.replace(oldBranch, newBranch));
+  return ["control/controller-supervisor.mjs"];
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -136,7 +156,15 @@ let buildTree = null;
 let changedPaths = [];
 let focusedChecks = [];
 
-if (role === "CAMPAIGN_ORCHESTRATOR") {
+if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_ORCHESTRATE") {
+  artifactName = "controller-supervisor-orchestrator-plan.json";
+  product = {
+    ...base,
+    custody_status: "CAMPAIGN_ORCHESTRATOR_CUSTODY",
+    audit_scope: ["controller supervisor observation", "durable session liveness", "source-bound Feature-Agent handoff"],
+    next_action: "Observe the Feature-Agent and Auditor readbacks, then return the exact campaign handoff to the Controller.",
+  };
+} else if (role === "CAMPAIGN_ORCHESTRATOR") {
   artifactName = "orchestrator-plan.json";
   assert(decisionTreePath !== null, "Orchestrator decision tree is unavailable");
   assert(fs.existsSync(decisionTreePath) && fs.statSync(decisionTreePath).isFile(), "Orchestrator decision tree record is unavailable");
@@ -173,8 +201,9 @@ if (role === "CAMPAIGN_ORCHESTRATOR") {
     buildTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
-    assert(changedPaths.includes("control/governance-decision-tree.mjs"), "Auditor did not observe the required Feature-Agent code change");
-    focusedChecks = runFocusedChecks(featureWorktree);
+    const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+    assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
+    focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? runControllerSupervisorChecks(featureWorktree) : runFocusedChecks(featureWorktree);
     buildStatus = "AUDIT_VERIFIED";
     product = {
       ...product,
@@ -217,6 +246,49 @@ if (role === "CAMPAIGN_ORCHESTRATOR") {
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean evidence-repair checkpoint");
     for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), `Feature Agent evidence repair did not change ${requiredPath}`);
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "CONTROLLER_SUPERVISOR_REPAIR") {
+    artifactName = "control/controller-supervisor-repair-receipt.mjs";
+    const changedByRepair = applyControllerSupervisorRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/controller-supervisor.mjs",
+      "node --check control/controller-supervisor-runtime.mjs",
+      "node --check control/local-agent-session.mjs",
+      "node tests/verify-controller-supervisor.mjs",
+    ]);
+    const marker = `// Local Feature Agent Controller-supervisor repair receipt; held in the isolated campaign worktree.\nexport const CONTROLLER_SUPERVISOR_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: enforce supervisor boundary stops"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean Controller-supervisor checkpoint");
+    assert(changedPaths.includes("control/controller-supervisor.mjs"), "Feature Agent supervisor repair did not change the supervisor engine");
     buildStatus = "COMPLETED";
     product = {
       ...base,
@@ -285,6 +357,8 @@ const handshake = {
   status: "COMPLETED",
   role,
   session_id: sessionId,
+  task_id: taskId,
+  task_kind: taskKind,
   campaign_id: campaignId,
   campaign_version: campaignVersion,
   candidate_sha256: candidateSha256,

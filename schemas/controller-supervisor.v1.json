@@ -1,0 +1,44 @@
+{
+  "schema": "agentos.controller_supervisor.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "role": "AGENTOS_CONTROLLER",
+  "scope": "PROJECT_PERSISTENT_CONTROL_PLANE",
+  "purpose": "Wake the project-persistent Controller from typed campaign observations, mint one bounded goal, and route safe work without an outside prompt.",
+  "observation": {
+    "schema": "agentos.controller_supervisor_observation.v1",
+    "source_rule": "The observation is compiled from current control-plane records, exact source identity, active campaign state, handoffs, findings, and permission boundaries.",
+    "identity_rule": "A caller-supplied label is not accepted as proof of a runtime, external, repository, or deployment identity.",
+    "freshness_rule": "The source commit, source tree, parent handoff digest, and observation digest are read back before a goal is routed."
+  },
+  "goal": {
+    "schema": "agentos.controller_supervisor_goal.v1",
+    "one_at_a_time_rule": "One observation produces one deterministic bounded goal. An equivalent observation produces the same goal identity.",
+    "actions": [
+      "ROUTE_REPAIRABLE_PUZZLE",
+      "REVIEW_SOFT_BOUNDARY",
+      "STOP_HARD_BOUNDARY",
+      "RECONCILE_LIVENESS",
+      "WAIT_FOR_AUTHORIZED_WORK"
+    ],
+    "scope_rule": "A safe repair stays within the current campaign and control plane. A scope change is reviewed before changed work continues.",
+    "no_inference_rule": "The goal cannot infer Product writes, Product agents, credentials, external deployment, release, publication, push, merge, or destructive work."
+  },
+  "boundary_behavior": {
+    "hard": "Stop the dependent route and retain exact evidence for owner or protected-authority review.",
+    "soft": "Ask the campaign Orchestrator to review the changed scope or operating choice while unrelated safe work continues.",
+    "puzzle": "Route one bounded repair through the existing campaign custody, then require Auditor and Controller rechecks.",
+    "liveness": "Observe active roles and receipts and repair safe liveness gaps without changing owner intent.",
+    "idle": "Wait for an authorized task; do not invent Product work."
+  },
+  "persistence": {
+    "controller": "control/controller-supervisor.mjs",
+    "records": "Content-addressed records use compare-and-swap parent checks and regular non-symlink files.",
+    "failure_rule": "A route failure is retained as an exact repairable record; it does not become an owner question unless it crosses a hard boundary or remains materially ambiguous."
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "product_writes_allowed_by_default": false,
+    "external_actions_allowed_by_default": false
+  }
+}

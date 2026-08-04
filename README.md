@@ -60,6 +60,11 @@ build the first pass, independent checkers inspect it, a stronger Finalizer
 repairs the retained code, and persistent Runtime handles release and
 deployment.
 
+The Controller keeps moving by itself: it watches campaign handoffs and worker
+heartbeats, creates one small next goal, routes safe repairs, and checks the
+result again. Hard boundaries stop only the dependent work; soft boundaries go
+to campaign review. Routine puzzles do not wait for an outside prompt.
+
 The owner-facing flow stays conversational: when a real finish choice is needed,
 it asks, “When we're ready, what should I do with it?” and shows simple numbered
 choices while keeping the delivery details and campaign design behind the scenes.

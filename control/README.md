@@ -14,6 +14,8 @@ Canonical executable authorities:
 - `task-run-loop.mjs` — repeatable one-task inactive control-plane execution, reconciliation, and next-task queuing;
 - `campaign-state-owner.mjs` — one serialized lifecycle/cascade/bridge snapshot with compare-and-swap persistence and policy-boundary reconciliation;
 - `agentos-controller.mjs` — persistent project-level `AGENTOS_CONTROLLER` with a judgment boundary, deterministic event loop, adapter readbacks, policy/session reconciliation, and compare-and-swap state;
+- `controller-supervisor.mjs` and `controller-supervisor-runtime.mjs` — the self-starting observation, bounded-goal, boundary, lease, heartbeat, and repair-routing loop for the persistent Controller;
+- `local-agent-session.mjs` — durable campaign-role custody with source-bound commands, heartbeats, isolated worktrees, and exact initial/follow-up readbacks;
 - `repository-readback.mjs` — local Git checkpoint readback; provider and hosted-runtime readback remain typed external adapters;
 - `question-tree.mjs` — three-root answer/lifecycle acceptance compiler;
 - `gpt-assist.mjs` — optional Auditor-bound Markdown exchange;
@@ -46,3 +48,9 @@ deterministic event/state transaction and requires external readback before
 completion. `CAMPAIGN_ORCHESTRATOR` remains campaign-scoped; the project
 controller does not write Product code, accept Product work, override the
 Auditor, deploy directly, or hold Feature/Platform worktrees.
+
+The Controller supervisor wakes from every active handoff, liveness finding,
+and boundary observation. It mints one bounded goal and routes safe work on its
+own. A hard boundary stops the dependent outcome; a soft boundary goes to
+Orchestrator review; a repairable puzzle keeps moving through campaign
+custody. No outside chat prompt is required for those routine decisions.

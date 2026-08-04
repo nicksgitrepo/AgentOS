@@ -17,7 +17,7 @@
   "controller_agent": {
     "schema": "agentos.controller_agent_binding.v1",
     "role": "JUDGMENT_INTERPRETATION_PLANNING_ROUTING",
-    "wake_rule": "Wake only when a judgment, owner boundary, reframe, policy amendment, or materially ambiguous route requires interpretation.",
+    "wake_rule": "Wake on every active campaign handoff, liveness observation, failure finding, policy amendment, or boundary change; ask the owner only when the typed boundary requires an owner decision.",
     "may_not": [
       "WRITE_PRODUCT_CODE",
       "GRANT_PRODUCT_ACCEPTANCE",
@@ -36,6 +36,16 @@
     "consequential_transition_rule": "No external action is complete until a project-bound adapter performs it and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
     "persistent_state": "Compare-and-swap protected state with an append-only event head and readback receipts.",
     "reconciliation_interval_minutes": 30
+  },
+  "supervisor": {
+    "controller": "control/controller-supervisor-runtime.mjs",
+    "contract": "schemas/controller-supervisor.v1.json",
+    "role": "PROJECT_PERSISTENT_AUTONOMOUS_OBSERVATION_GOAL_ROUTING",
+    "loop_rule": "Hold one supervisor lease, observe current control-plane records, mint one deterministic bounded goal, route safe work, retain exact failures, and reconcile again without an outside prompt.",
+    "hard_boundary_rule": "Stop the dependent outcome on protected authority, identity, evidence, credential, destructive, external, or unresolved owner-intent boundaries.",
+    "soft_boundary_rule": "Send changed scope or operating choices to campaign Orchestrator review while unrelated safe work continues.",
+    "puzzle_rule": "Route one repairable engineering puzzle through campaign custody, then require Auditor and Controller rechecks.",
+    "session_rule": "Campaign roles remain observable through durable local sessions, heartbeats, source-bound commands, and readbacks."
   },
   "event_types": [
     "BOOTSTRAP_REQUESTED",

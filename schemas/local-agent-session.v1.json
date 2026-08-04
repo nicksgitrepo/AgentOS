@@ -1,0 +1,29 @@
+{
+  "schema": "agentos.local_agent_session.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "scope": "CAMPAIGN_LOCAL_CONTROL_PLANE",
+  "purpose": "Keep an authorized campaign role alive across bounded handoffs while preserving one isolated worktree, source identity, heartbeat, and readback.",
+  "session": {
+    "controller": "control/local-agent-session.mjs",
+    "record": "agentos.local_worker_session_record.v1",
+    "heartbeat": "agentos.local_worker_heartbeat.v1",
+    "command": "agentos.local_worker_session_command.v1",
+    "rule": "A durable session supervises local campaign work; it does not authorize Product writes, external actions, credentials, release, push, merge, or destructive work."
+  },
+  "handoff": {
+    "one_command_at_a_time": true,
+    "identity": "Every command is bound to the exact role, session, campaign, candidate, source commit, and source tree.",
+    "failure": "A failed command returns an exact result and keeps the session observable; equivalent retries require a new Controller decision or a changed observation."
+  },
+  "liveness": {
+    "required": ["session PID", "heartbeat", "isolated worktree", "source commit", "source tree", "initial readback"],
+    "stale_rule": "A dead or failed session is retained and is not silently replaced under the same identity."
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "local_worker_spawns_allowed_only_when_authorized": true,
+    "product_agent_spawns_allowed_by_default": false,
+    "external_actions_allowed_by_default": false
+  }
+}
