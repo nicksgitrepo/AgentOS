@@ -18,6 +18,11 @@ import {
   bridgeDigest,
   validateCampaignStateBridge,
 } from "./campaign-state-bridge.mjs";
+import {
+  compileCampaignPolicyProjection,
+  reconcileCampaignPolicy,
+} from "./campaign-policy-reconcile.mjs";
+import {validatePolicyState} from "./global-policy-state.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 
@@ -29,8 +34,23 @@ function requireRecord(value, label) {
   assert(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
 }
 
+function exactKeys(value, keys, label) {
+  requireRecord(value, label);
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  assert(JSON.stringify(actual) === JSON.stringify(expected), `${label} fields mismatch`);
+}
+
 function requireSha(value, label) {
   assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+const STATE_OWNER_SNAPSHOT_KEYS = ["schema", "version", "status", "lifecycle", "cascade", "bridge", "state_owner_sha256"];
+
+export function stateOwnerDigest(snapshot) {
+  const body = structuredClone(snapshot);
+  delete body.state_owner_sha256;
+  return bridgeDigest(body);
 }
 
 function compactLifecycleBinding(state) {
@@ -79,6 +99,45 @@ export function validateSerializedStateOwnerResult(result) {
   return result;
 }
 
+export function reconcilePolicyAtCampaignBoundary({currentPolicyState, nextPolicyState, amendment, campaignId, campaignVersion, activeRoster, currentBoundary}) {
+  validatePolicyState(currentPolicyState);
+  validatePolicyState(nextPolicyState);
+  const currentProjection = compileCampaignPolicyProjection({policyState: currentPolicyState, campaignId, campaignVersion});
+  const {nextProjection, reconciliation} = reconcileCampaignPolicy({
+    currentProjection,
+    nextPolicyState,
+    amendment,
+    activeRoster,
+    currentBoundary,
+  });
+  return {currentProjection, nextProjection, reconciliation};
+}
+
+export function compileSerializedStateOwnerSnapshot(result) {
+  const validated = validateSerializedStateOwnerResult(result);
+  const snapshot = {
+    schema: "governance.campaign_state_owner_snapshot.v1",
+    version: 1,
+    status: "PREPARED_NOT_ACTIVATED",
+    lifecycle: structuredClone(validated.lifecycle),
+    cascade: structuredClone(validated.cascade),
+    bridge: structuredClone(validated.bridge),
+    state_owner_sha256: null,
+  };
+  snapshot.state_owner_sha256 = stateOwnerDigest(snapshot);
+  return validateSerializedStateOwnerSnapshot(snapshot);
+}
+
+export function validateSerializedStateOwnerSnapshot(snapshot) {
+  exactKeys(snapshot, STATE_OWNER_SNAPSHOT_KEYS, "serialized state-owner snapshot");
+  assert(snapshot.schema === "governance.campaign_state_owner_snapshot.v1" && snapshot.version === 1, "serialized state-owner snapshot identity is invalid");
+  assert(snapshot.status === "PREPARED_NOT_ACTIVATED", "serialized state-owner snapshot must remain prepared and inactive");
+  validateSerializedStateOwnerResult({lifecycle: snapshot.lifecycle, cascade: snapshot.cascade, bridge: snapshot.bridge});
+  requireSha(snapshot.state_owner_sha256, "serialized state-owner snapshot digest");
+  assert(snapshot.state_owner_sha256 === stateOwnerDigest(snapshot), "serialized state-owner snapshot digest mismatch");
+  return snapshot;
+}
+
 export function applySerializedCampaignTransition({
   lifecycle,
   cascade,
@@ -106,11 +165,77 @@ export function applySerializedCampaignTransition({
   return validateSerializedStateOwnerResult(result);
 }
 
+export function applyAndWriteSerializedCampaignTransition({
+  authorityRoot,
+  stateOwnerPath = "campaign/state-owner.json",
+  expectedStateOwnerSha256 = null,
+  lifecycle,
+  cascade,
+  nextLifecycle,
+  nextCascade,
+  lifecycleEvent = {},
+  cascadeEvent = {},
+}) {
+  const result = applySerializedCampaignTransition({lifecycle, cascade, nextLifecycle, nextCascade, lifecycleEvent, cascadeEvent});
+  const snapshot = compileSerializedStateOwnerSnapshot(result);
+  const persistence = writeSerializedCampaignStateCompareAndSwap({
+    authorityRoot,
+    stateOwnerPath,
+    expectedStateOwnerSha256,
+    snapshot,
+  });
+  return {result, snapshot, persistence};
+}
+
 function safeAuthorityPath(root, relativePath) {
   const resolvedRoot = fs.realpathSync.native(root);
   const target = path.resolve(resolvedRoot, relativePath);
   assert(target === resolvedRoot || target.startsWith(`${resolvedRoot}${path.sep}`), "state-owner path escapes authority root");
   return {resolvedRoot, target};
+}
+
+function safeSnapshotPath(root, relativePath) {
+  const result = safeAuthorityPath(root, relativePath);
+  assert(!fs.existsSync(result.target) || !fs.lstatSync(result.target).isSymbolicLink(), "state-owner snapshot may not be a symbolic link");
+  return result;
+}
+
+export function readSerializedCampaignState({authorityRoot, stateOwnerPath = "campaign/state-owner.json"}) {
+  const {target} = safeSnapshotPath(authorityRoot, stateOwnerPath);
+  try {
+    const stat = fs.lstatSync(target);
+    assert(stat.isFile() && !stat.isSymbolicLink(), "state-owner snapshot is not a regular file");
+    return validateSerializedStateOwnerSnapshot(JSON.parse(fs.readFileSync(target, "utf8")));
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+export function writeSerializedCampaignStateCompareAndSwap({
+  authorityRoot,
+  stateOwnerPath = "campaign/state-owner.json",
+  expectedStateOwnerSha256 = null,
+  snapshot,
+}) {
+  validateSerializedStateOwnerSnapshot(snapshot);
+  if (expectedStateOwnerSha256 !== null) requireSha(expectedStateOwnerSha256, "expected state-owner snapshot");
+  const {target} = safeSnapshotPath(authorityRoot, stateOwnerPath);
+  const current = readSerializedCampaignState({authorityRoot, stateOwnerPath});
+  if (expectedStateOwnerSha256 === null) assert(current === null, "state-owner snapshot already exists");
+  else assert(current !== null && current.state_owner_sha256 === expectedStateOwnerSha256, "state-owner snapshot compare-and-swap parent is stale");
+  fs.mkdirSync(path.dirname(target), {recursive: true});
+  const temporary = path.join(path.dirname(target), `.${path.basename(target)}.${process.pid}.${Date.now()}.stage`);
+  assert(!fs.existsSync(temporary), "state-owner snapshot staging path already exists");
+  fs.writeFileSync(temporary, `${JSON.stringify(snapshot)}\n`, {flag: "wx", mode: 0o600});
+  try {
+    fs.renameSync(temporary, target);
+  } finally {
+    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
+  }
+  const readback = readSerializedCampaignState({authorityRoot, stateOwnerPath});
+  assert(readback?.state_owner_sha256 === snapshot.state_owner_sha256, "state-owner snapshot readback digest differs from the written snapshot");
+  return {state_owner_sha256: readback.state_owner_sha256, path: stateOwnerPath};
 }
 
 export function writeSerializedCampaignTransitionCompareAndSwap({

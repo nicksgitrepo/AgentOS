@@ -8,6 +8,7 @@ import {
   PLAN_APPROVAL,
   approveBootstrapPlan,
   auditBootstrapSetup,
+  compileRuntimeReadback,
   compileBootstrapPlan,
   createBootstrapExecution,
   executeBootstrapPlan,
@@ -19,6 +20,14 @@ import {discoverProject} from "../control/bootstrap-discovery.mjs";
 import * as guided from "../control/guided-bootstrap.mjs";
 
 const DIGEST = "a".repeat(64);
+const runtimeReadbackFor = (plan) => compileRuntimeReadback({
+  sessionId: plan.persistent_runtime.session_id,
+  environmentIdentity: plan.persistent_runtime.environment_identity,
+  capabilities: plan.persistent_runtime.capabilities,
+  observedByRole: "SYNTHETIC_RUNTIME_ADAPTER",
+  observedBySession: "RUNTIME-READBACK-GUIDED",
+  observedAtUtc: "2026-08-03T00:00:00.000Z",
+});
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-guided-"));
 const source = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-legacy-"));
 fs.writeFileSync(path.join(source, "legacy.md"), "legacy authority\n");
@@ -59,7 +68,7 @@ for (const group of [
 assert.equal(plan.persistent_runtime.persistent, true);
 assert.equal(plan.persistent_runtime.never_despawn_between_campaigns, true);
 assert.equal(plan.security_baseline.standard_identity, "PROJECT_SECURITY_STANDARD");
-assert.equal(plan.authority_corpus.numbering.feature_block_size, 100);
+assert.equal(plan.authority_corpus.numbering.feature_allocation, "SPARSE_CAPSULES");
 
 assert.throws(() => approveBootstrapPlan(plan, {
   decision: "PROCEED",
@@ -105,6 +114,7 @@ const setupAudit = auditBootstrapSetup({
   bootstrapSessionId: "BOOTSTRAP-001",
   stagingRoot: result.staging_root,
   workflow,
+  runtimeReadback: runtimeReadbackFor(approved),
 });
 assert.equal(setupAudit.status, "PASS");
 const promoted = promoteBootstrapExecution({plan: approved, executionState: result.state, setupAudit, projectRoot: root, nowUtc: "2026-08-03T00:03:00.000Z"});
@@ -117,6 +127,7 @@ assert.throws(() => auditBootstrapSetup({
   bootstrapSessionId: "BOOTSTRAP-001",
   stagingRoot: result.staging_root,
   workflow,
+  runtimeReadback: runtimeReadbackFor(approved),
 }), /independent/);
 assert.equal(execution.phase, "APPROVED");
 

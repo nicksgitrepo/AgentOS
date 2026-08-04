@@ -56,6 +56,11 @@ import {
   validatePolicyState,
 } from "./global-policy-state.mjs";
 import {writePolicyStateCompareAndSwap} from "./global-policy-store.mjs";
+import {
+  compileOwnerReviewPacket,
+  renderOwnerReviewMarkdown,
+  validateOwnerReviewPacket,
+} from "./owner-review.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
@@ -75,6 +80,10 @@ const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 const SAFE_FACT_ID = /^[A-Za-z0-9][A-Za-z0-9._:/ -]*$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 const SECRET_PATTERN = /(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret)\s*[:=]/iu;
+const RUNTIME_READBACK_KEYS = [
+  "schema", "session_id", "environment_identity", "capabilities", "persistent", "pinned", "resume_readback",
+  "observed_by_role", "observed_by_session", "observed_at_utc", "verification_method", "readback_sha256",
+];
 
 export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
@@ -227,6 +236,50 @@ function requireSha(value, label) {
 function requireUtc(value, label) {
   requireString(value, label);
   assert(ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`);
+}
+
+function validateRuntimeReadbackShape(readback) {
+  exactKeys(readback, RUNTIME_READBACK_KEYS, "Runtime readback");
+  assert(readback.schema === "agentos.runtime_readback.v1", "Runtime readback schema mismatch");
+  for (const field of ["session_id", "environment_identity", "observed_by_role", "observed_by_session", "verification_method"]) requireId(readback[field], `Runtime readback ${field}`);
+  assert(Array.isArray(readback.capabilities), "Runtime readback capabilities are invalid");
+  const capabilities = [...readback.capabilities].sort(compareUtf8);
+  assert(JSON.stringify(readback.capabilities) === JSON.stringify(capabilities)
+    && new Set(capabilities).size === capabilities.length
+    && capabilities.every((value) => SAFE_ID.test(value)), "Runtime readback capabilities are not unique and sorted");
+  assert(readback.persistent === true && readback.pinned === true && readback.resume_readback === true, "Runtime readback did not confirm persistent pinned resume continuity");
+  requireUtc(readback.observed_at_utc, "Runtime readback observation time");
+  assert(readback.verification_method === "RUNTIME_ADAPTER_READBACK", "Runtime readback method is invalid");
+  requireSha(readback.readback_sha256, "Runtime readback digest");
+  assert(readback.readback_sha256 === canonicalDigest({...readback, readback_sha256: null}), "Runtime readback is not content-addressed");
+  return readback;
+}
+
+export function compileRuntimeReadback({sessionId, environmentIdentity, capabilities = [], observedByRole, observedBySession, observedAtUtc}) {
+  const readback = {
+    schema: "agentos.runtime_readback.v1",
+    session_id: sessionId,
+    environment_identity: environmentIdentity,
+    capabilities: [...capabilities].sort(compareUtf8),
+    persistent: true,
+    pinned: true,
+    resume_readback: true,
+    observed_by_role: observedByRole,
+    observed_by_session: observedBySession,
+    observed_at_utc: observedAtUtc,
+    verification_method: "RUNTIME_ADAPTER_READBACK",
+    readback_sha256: null,
+  };
+  readback.readback_sha256 = canonicalDigest({...readback, readback_sha256: null});
+  return validateRuntimeReadbackShape(readback);
+}
+
+function validateRuntimeReadback(readback, runtime, label = "Runtime readback") {
+  validateRuntimeReadbackShape(readback);
+  assert(readback.session_id === runtime.session_id, `${label} session differs from the Bootstrap Runtime`);
+  assert(readback.environment_identity === runtime.environment_identity, `${label} environment differs from the Bootstrap Runtime`);
+  assert(JSON.stringify(readback.capabilities) === JSON.stringify([...runtime.capabilities].sort(compareUtf8)), `${label} capabilities differ from the Bootstrap Runtime`);
+  return readback;
 }
 
 function secretFree(value, label) {
@@ -508,9 +561,9 @@ function deriveAuthorityCorpus(answer) {
       bootstrap: "000",
       governance: [1, 100],
       shared_project: [100, 200],
-      feature_block_size: 100,
       first_feature_start: 200,
-      allocation: "IMMUTABLE_NO_RENUMBER_UNSIGNED_UTF8_ORDER",
+      feature_allocation: "SPARSE_CAPSULES",
+      allocation: "IMMUTABLE_NO_RENUMBER_LOWEST_UNUSED_ID_UNSIGNED_UTF8_ORDER",
     },
     article_taxonomy: ["PROJECT_CONTEXT", "NORTH_STAR", "DESIGN_BIBLE", "PROJECT_IMPORT", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "SOURCE_PRESERVATION", "FEATURE", "PLATFORM_CAPABILITY", "CAMPAIGN", "MIGRATION_CAMPAIGN", "DECISION", "CASE", "EVIDENCE_INDEX", "RELEASE_SUMMARY", "HANDOFF", "ARCHIVE_INDEX"],
   };
@@ -1053,6 +1106,56 @@ function contextFromPlan(plan) {
   };
 }
 
+export function projectContextFromBootstrapPlan(plan) {
+  validateBootstrapPlan(plan);
+  return contextFromPlan(plan);
+}
+
+export function compileBootstrapOwnerReviewHandoff({
+  plan,
+  reviewId,
+  createdAtUtc,
+  expiresAtUtc,
+  sourceBinding,
+  currentProject,
+  reviewScope,
+  questionIdsByRoot,
+  candidateCampaign,
+  modelCandidates,
+  reviewTransport,
+  transportBinding,
+  memoryPosture,
+  voiceRecommended,
+}) {
+  validateApprovedPlan(plan);
+  assert(plan.owner_review_policy.user_review_mode !== "OFF", "Bootstrap owner review is disabled by the current policy");
+  requireRecord(sourceBinding, "Bootstrap owner review source binding");
+  const context = contextFromPlan(plan).project_context;
+  assert(sourceBinding.policy_epoch === plan.global_policy_state.policy_epoch
+    && sourceBinding.policy_state_sha256 === plan.global_policy_state.policy_state_sha256,
+  "Bootstrap owner review source binding policy is stale");
+  assert(sourceBinding.project_context_sha256 === context.exact_context_digest, "Bootstrap owner review source binding context differs from the exact Bootstrap context");
+  const packet = compileOwnerReviewPacket({
+    reviewId,
+    projectId: plan.project_definition.project_name,
+    createdAtUtc,
+    expiresAtUtc,
+    sourceBinding,
+    policyState: plan.global_policy_state,
+    questionIdsByRoot,
+    currentProject,
+    reviewScope,
+    candidateCampaign,
+    modelCandidates,
+    transport: reviewTransport,
+    transportBinding,
+    memoryPosture,
+    voiceRecommended,
+  });
+  validateOwnerReviewPacket(packet);
+  return {packet, markdown: renderOwnerReviewMarkdown(packet)};
+}
+
 function assertContained(root, candidate, label) {
   const resolvedRoot = fs.realpathSync.native(path.resolve(root));
   const resolved = path.resolve(resolvedRoot, candidate);
@@ -1203,7 +1306,7 @@ export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot,
   return state;
 }
 
-export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, legacySourceRoot = null, workflow, nowUtc}) {
+export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, legacySourceRoot = null, workflow, nowUtc, ownerReview = null}) {
   validateApprovedPlan(plan);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap execution requires the exact authority-corpus workflow");
   requireId(bootstrapSessionId, "Bootstrap session ID");
@@ -1249,6 +1352,7 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
   const destination = assertContained(stagingRoot, plan.authority_corpus.roots.authority_root, "authority root");
   fs.mkdirSync(destination, {recursive: true});
   const context = contextFromPlan(plan);
+  const ownerReviewHandoff = ownerReview === null ? null : compileBootstrapOwnerReviewHandoff({plan, ...ownerReview});
   const projectContextPath = assertContained(
     stagingRoot,
     `${context.project_context_root}/project-context.json`,
@@ -1265,6 +1369,12 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
   });
   const ownerReviewPolicyPath = assertContained(stagingRoot, context.project_context.owner_review_policy_path, "owner review policy artifact");
   writeCanonicalFile(ownerReviewPolicyPath, Buffer.from(`${canonicalCompactJson(context.project_context.owner_review_policy)}\n`, "utf8"));
+  if (ownerReviewHandoff !== null) {
+    const handoffRoot = assertContained(stagingRoot, `${context.project_context_root}/owner-review`, "owner review handoff root");
+    fs.mkdirSync(handoffRoot, {recursive: true});
+    writeCanonicalFile(path.join(handoffRoot, "packet.json"), Buffer.from(`${canonicalCompactJson(ownerReviewHandoff.packet)}\n`, "utf8"));
+    writeCanonicalFile(path.join(handoffRoot, "handoff.md"), Buffer.from(ownerReviewHandoff.markdown, "utf8"));
+  }
   const corpusResult = applyCorpusPlan(stagingRoot, context, workflow);
   if (corpusResult) state.authority_index_sha256 = corpusResult.index_sha256;
   const planBytes = Buffer.from(`${canonicalCompactJson(plan)}\n`, "utf8");
@@ -1280,7 +1390,7 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
   delete body.state_sha256;
   state.state_sha256 = canonicalDigest(body);
   validateExecutionState(state);
-  return {state, staging_root: stagingRoot, corpus: corpusResult};
+  return {state, staging_root: stagingRoot, corpus: corpusResult, owner_review: ownerReviewHandoff};
 }
 
 export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, nowUtc}) {
@@ -1396,7 +1506,7 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
   return {state: nextState, receipt, resumed: false};
 }
 
-export function auditBootstrapSetup({plan, executionState, auditorSessionId, bootstrapSessionId, stagingRoot, workflow}) {
+export function auditBootstrapSetup({plan, executionState, auditorSessionId, bootstrapSessionId, stagingRoot, workflow, ownerReview = null, runtimeReadback = null}) {
   validateApprovedPlan(plan);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap setup audit requires the exact authority-corpus workflow");
   requireId(auditorSessionId, "setup Auditor session");
@@ -1407,6 +1517,8 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   assert(plan.persistent_runtime.persistent === true && plan.persistent_runtime.status === "BOUND"
     && typeof plan.persistent_runtime.session_id === "string" && plan.persistent_runtime.environment_identity !== null,
   "Bootstrap setup cannot pass without an exact persistent Runtime binding");
+  assert(runtimeReadback !== null, "Bootstrap setup requires an independent Runtime adapter readback");
+  validateRuntimeReadback(runtimeReadback, plan.persistent_runtime);
   const root = fs.realpathSync.native(path.resolve(stagingRoot));
   const observedStaging = directoryDigest(root);
   assert(observedStaging.sha256 === executionState.staging_tree_sha256
@@ -1472,13 +1584,26 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   const persistedOwnerPolicy = JSON.parse(fs.readFileSync(ownerPolicyPath, "utf8"));
   assert(canonicalDigest(persistedOwnerPolicy) === canonicalDigest(plan.owner_review_policy),
     "persisted owner review policy is not bound to the exact plan");
+  if (ownerReview !== null) {
+    const expectedHandoff = compileBootstrapOwnerReviewHandoff({plan, ...ownerReview});
+    const handoffRoot = assertContained(root, `${plan.authority_corpus.roots.project_context_root}/owner-review`, "owner review handoff readback root");
+    const packetPath = path.join(handoffRoot, "packet.json");
+    const markdownPath = path.join(handoffRoot, "handoff.md");
+    assert(fs.existsSync(packetPath) && fs.existsSync(markdownPath), "owner review handoff artifacts are missing");
+    const packetBytes = fs.readFileSync(packetPath);
+    const packet = JSON.parse(packetBytes.toString("utf8"));
+    assert(canonicalCompactJson(packet) + "\n" === packetBytes.toString("utf8"), "owner review packet is not canonical JSON");
+    validateOwnerReviewPacket(packet);
+    assert(packet.packet_sha256 === expectedHandoff.packet.packet_sha256, "owner review packet readback is not bound to the exact handoff");
+    assert(fs.readFileSync(markdownPath, "utf8") === expectedHandoff.markdown, "owner review Markdown readback differs from the exact handoff");
+  }
   const reportBody = {
     schema: "agentos.bootstrap_setup_audit.v1",
     auditor_session_id: auditorSessionId,
     bootstrap_session_id: bootstrapSessionId,
     plan_sha256: plan.plan_sha256,
     execution_state_sha256: executionState.state_sha256,
-    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "PROJECT_IMPORT_SOURCE_PRESERVATION", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "THREE_ROOT_SLICE"],
+    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "PROJECT_IMPORT_SOURCE_PRESERVATION", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "RUNTIME_ADAPTER_READBACK", "THREE_ROOT_SLICE", ...(ownerReview === null ? [] : ["OWNER_REVIEW_HANDOFF"])],
     status: "PASS",
   };
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};

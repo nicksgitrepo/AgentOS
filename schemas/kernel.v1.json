@@ -65,7 +65,13 @@
       "ACCEPTED_LIVE_CLOSED"
     ],
     "holds": "Orthogonal to stage; hold only the dependent outcome and continue unrelated work.",
-    "heartbeat_minutes": 15,
+    "heartbeat_policy_variable": "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES",
+    "default_heartbeat_minutes": 15,
+    "continuous_audit_sentinel": {
+      "controller": "control/continuous-audit-sentinel.mjs",
+      "contract": "schemas/continuous-audit-sentinel.v1.json",
+      "rule": "One read-only pinned sentinel remains bound to the campaign Auditor until the same canonical closure transition archives and unpins it."
+    },
     "runtime": "One persistent Runtime identity continues across campaigns."
   },
   "campaign_cascade": {
@@ -84,6 +90,18 @@
     "controller": "control/global-policy-state.mjs",
     "contract": "schemas/global-policy-state.v1.json",
     "rule": "Declared policy variables are independently addressable, content-addressed, dependency-aware, and amended through exact owner approval. Constitutional rules cannot be weakened by a project amendment."
+  },
+  "agentos_controller": {
+    "controller": "control/agentos-controller.mjs",
+    "contract": "schemas/agentos-controller.v1.json",
+    "name": "AGENTOS_CONTROLLER",
+    "scope": "PROJECT_PERSISTENT",
+    "controller_agent": "Judgment, interpretation, planning, and routing; wakes only when a material decision requires it.",
+    "controller_runtime": "Deterministic event loop, state transaction, timer, adapter, lease, session, worktree, test, deployment, and readback boundary.",
+    "campaign_orchestrator": "CAMPAIGN_SCOPED",
+    "runtime_rule": "No consequential transition completes until a project-bound adapter performs the action and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
+    "reconciliation_interval_minutes": 30,
+    "activation": "The controller remains PREPARED_NOT_ACTIVATED and cannot rebind an active Product campaign without explicit owner approval."
   },
   "campaign_policy": {
     "controller": "control/campaign-policy-reconcile.mjs",
@@ -143,6 +161,11 @@
       "contract": "schemas/delivery-policy.v1.json",
       "probe_contract": "schemas/delivery-probes.v1.json",
       "target_contract": "schemas/delivery-target.v1.json",
+      "local_checkpoint_readback": {
+        "controller": "control/repository-readback.mjs",
+        "contract": "schemas/repository-readback.v1.json",
+        "rule": "A local Git checkpoint must be read back from the actual worktree and upstream before clean/pushed handoff is admitted."
+      },
       "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, and cost choices are typed project context. Bootstrap recommends route classes and target profiles and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
     }
   },
@@ -184,10 +207,11 @@
       "bootstrap": "000",
       "governance": [1, 100],
       "shared_project": [100, 200],
-      "feature_block_size": 100,
-      "first_feature_start": 200
+      "first_feature_start": 200,
+      "feature_allocation": "SPARSE_CAPSULES",
+      "allocation": "IMMUTABLE_NO_RENUMBER_LOWEST_UNUSED_ID_UNSIGNED_UTF8_ORDER"
     },
-    "allocation": "Preserve accepted allocations; assign new blocks by unsigned UTF-8 order; never renumber accepted authority."
+    "allocation": "Preserve accepted allocations; assign the lowest unused sparse capsule or extension ID at or above 200 by unsigned UTF-8 order; never renumber accepted authority."
   },
   "activation": {
     "status": "PREPARED_NOT_ACTIVATED",

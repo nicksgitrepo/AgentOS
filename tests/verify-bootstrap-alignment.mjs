@@ -9,6 +9,7 @@ import {
   PLAN_APPROVAL,
   approveBootstrapPlan,
   auditBootstrapSetup,
+  compileRuntimeReadback,
   compileBootstrapPlan,
   createBootstrapExecution,
   executeBootstrapPlan,
@@ -27,6 +28,14 @@ import {discoverProject} from "../control/bootstrap-discovery.mjs";
 import {verifyLegacyPreservation} from "../control/legacy-preservation.mjs";
 
 const ISO = "2026-01-01T00:00:00.000Z";
+const runtimeReadbackFor = (plan) => compileRuntimeReadback({
+  sessionId: plan.persistent_runtime.session_id,
+  environmentIdentity: plan.persistent_runtime.environment_identity,
+  capabilities: plan.persistent_runtime.capabilities,
+  observedByRole: "SYNTHETIC_RUNTIME_ADAPTER",
+  observedBySession: "RUNTIME-READBACK-1",
+  observedAtUtc: ISO,
+});
 const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-project-"));
 const discovery = discoverProject(projectRoot, "RECOMMENDED").facts;
 const answers = {
@@ -65,7 +74,8 @@ assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");
 assert.deepEqual(plan.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
 for (const group of ["project_definition", "north_star", "first_useful_workflow", "technical_baseline", "delivery_policy", "delivery_probe_plan", "design_bible", "security_baseline", "authority_boundaries", "authority_corpus", "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan"]) assert(plan[group] !== undefined, `missing compiled group ${group}`);
 assert.equal(plan.authority_corpus.numbering.bootstrap, "000");
-assert.equal(plan.authority_corpus.numbering.feature_block_size, 100);
+assert.equal(plan.authority_corpus.numbering.feature_allocation, "SPARSE_CAPSULES");
+assert.equal(plan.authority_corpus.numbering.allocation, "IMMUTABLE_NO_RENUMBER_LOWEST_UNUSED_ID_UNSIGNED_UTF8_ORDER");
 assert.equal(plan.model_policy.work_slots, 20);
 assert.equal(plan.persistent_runtime.never_despawn_between_campaigns, true);
 assert.equal(plan.bootstrap_coverage.status, "READY_TO_COMPILE");
@@ -159,7 +169,8 @@ try {
   assert(fs.existsSync(path.join(execution.staging_root, "bootstrap.plan.json")));
   const stagedDeliveryProbeResults = JSON.parse(fs.readFileSync(path.join(execution.staging_root, "delivery.probe.results.json"), "utf8"));
   validateDeliveryProbeResults(stagedDeliveryProbeResults, {planSha256: approved.plan_sha256, policySha256: approved.delivery_policy.policy_sha256, discoveryDigestSha256: approved.discovery_digest_sha256});
-  const audit = auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow});
+  assert.throws(() => auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow}), /Runtime adapter readback/u);
+  const audit = auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow, runtimeReadback: runtimeReadbackFor(approved)});
   assert.equal(audit.status, "PASS");
   const contextPath = path.join(execution.staging_root, plan.authority_corpus.roots.project_context_root, "project-context.json");
   const context = JSON.parse(fs.readFileSync(contextPath, "utf8"));

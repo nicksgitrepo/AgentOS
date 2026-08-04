@@ -99,5 +99,12 @@
     "staged_result": "delivery.probe.results.json",
     "rule": "Execution runs the five-probe read-only plan before setup writes continue. The result is bound to the approved plan digest, delivery-policy digest, discovery digest, and canonical project root; owner-boundary probes remain NOT_RUN_OWNER_BOUNDARY."
   },
+  "owner_review_handoff": {
+    "controller": "control/bootstrap-compiler.mjs",
+    "operation": "compileBootstrapOwnerReviewHandoff",
+    "execution_option": "executeBootstrapPlan.ownerReview",
+    "outputs": ["<project-context-root>/owner-review/packet.json", "<project-context-root>/owner-review/handoff.md"],
+    "rule": "Bootstrap can materialize the provider-neutral User Review Campaign handoff only when the caller supplies a current source binding, typed project summary, question inventory, candidate campaign, transport binding, and a host model catalog. Missing host or source observations fail closed; policy metadata alone is not presented as a handoff."
+  },
   "extension_boundary": "Project-specific context can fill typed fields and add stricter clauses, but cannot remove required output groups, weaken lifecycle, change acceptance roots, or replace the portable kernel."
 }

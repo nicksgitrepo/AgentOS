@@ -95,7 +95,14 @@ The current Auditor may clear a release for deployment and produce a next-campai
 
 ## Optional assistant handoff
 
-An assistant handoff is a Markdown exchange. The Auditor creates one exact, secret-free status packet and parses one canonical JSON response. A connected assistant can help with listed questions, research, scenarios, and comparisons. It cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+An assistant handoff is a plain-language Markdown exchange. The owner answers
+short questions naturally and may return Markdown, a private file, an admitted
+Git handoff, or an authorized connected conversation. A separate adapter may
+carry a structured return for reconciliation; the owner-facing route does not
+expose machine fields, hashes, or a forced JSON checklist. A connected assistant
+can help with listed questions, research, scenarios, and comparisons. It cannot
+invent truth, mark findings fixed, write authority, change custody, deploy, or
+create a successor roster.
 
 ## Boundaries
 

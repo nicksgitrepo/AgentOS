@@ -13,6 +13,7 @@ import {
   validateCampaignPolicyProjection,
   validateCampaignPolicyReconciliation,
 } from "../control/campaign-policy-reconcile.mjs";
+import {reconcilePolicyAtCampaignBoundary} from "../control/campaign-state-owner.mjs";
 
 const SHA = "a".repeat(64);
 const NOW = "2026-01-01T00:00:00.000Z";
@@ -35,6 +36,26 @@ const amendment = compilePolicyAmendment({
 const approval = compilePolicyApproval({amendment, approvedAtUtc: LATER, actorDigestSha256: SHA});
 const nextState = applyPolicyAmendment({state, amendment, approval, currentBoundary: "NEXT_ASSIGNMENT"});
 const {nextProjection, reconciliation} = reconcileCampaignPolicy({currentProjection, nextPolicyState: nextState, amendment, activeRoster: roster, currentBoundary: "NEXT_ASSIGNMENT"});
+const canonicalBoundary = reconcilePolicyAtCampaignBoundary({
+  currentPolicyState: state,
+  nextPolicyState: nextState,
+  amendment,
+  campaignId: "CAMPAIGN-1",
+  campaignVersion: "v1",
+  activeRoster: roster,
+  currentBoundary: "NEXT_ASSIGNMENT",
+});
+assert.equal(canonicalBoundary.nextProjection.projection_sha256, nextProjection.projection_sha256);
+assert.deepEqual(canonicalBoundary.reconciliation.stale_session_ids, ["SESSION-FEATURE_AGENT"]);
+assert.throws(() => reconcilePolicyAtCampaignBoundary({
+  currentPolicyState: state,
+  nextPolicyState: nextState,
+  amendment: {...amendment, parent_policy_state_sha256: SHA},
+  campaignId: "CAMPAIGN-1",
+  campaignVersion: "v1",
+  activeRoster: roster,
+  currentBoundary: "NEXT_ASSIGNMENT",
+}), /parent differs|amendment digest mismatch/u);
 assert.equal(nextProjection.role_models.find((item) => item.role === "FEATURE_AGENT").model_class, "ECONOMICAL");
 assert.deepEqual(reconciliation.rotations_required, ["FEATURE_AGENT"]);
 assert.deepEqual(reconciliation.stale_session_ids, ["SESSION-FEATURE_AGENT"]);

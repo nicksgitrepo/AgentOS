@@ -4,6 +4,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {verifyProductAcceptanceProof} from "./acceptance-bridge.mjs";
+import {
+  archiveContinuousAuditSentinel,
+  compileContinuousAuditSentinel,
+  validateContinuousAuditSentinel,
+} from "./continuous-audit-sentinel.mjs";
 import {getPolicyValue, validatePolicyState} from "./global-policy-state.mjs";
 
 export const LIFECYCLE_STAGES = Object.freeze([
@@ -1070,7 +1075,7 @@ function appendTransition(next, previous, event) {
 }
 
 export function validateLifecycleState(state) {
-  exactKeys(state, ["schema", "governance_version", "status", "campaign_id", "campaign_version", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "stage", "root", "active_writer", "holds", "platform_pool", "checkpoint_ledger", "finalizer", "acceptance", "runtime", "roster", "successor_orientation", "living_ledger", "transition_journal", "state_sha256"], "campaign lifecycle state");
+  exactKeys(state, ["schema", "governance_version", "status", "campaign_id", "campaign_version", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "stage", "root", "active_writer", "holds", "platform_pool", "checkpoint_ledger", "finalizer", "acceptance", "runtime", "roster", "continuous_audit_sentinel", "successor_orientation", "living_ledger", "transition_journal", "state_sha256"], "campaign lifecycle state");
   assert(state.schema === "governance.campaign_lifecycle_state.v1" && state.governance_version === "2.1rc", "campaign lifecycle identity is invalid");
   assert(state.status === "PREPARED_NOT_ACTIVATED", "campaign lifecycle must remain prepared and inactive");
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) requireIdentifier(state[field], `campaign ${field}`);
@@ -1113,8 +1118,16 @@ export function validateLifecycleState(state) {
   validateFinalizer(state.finalizer, state);
   validateAcceptance(state.acceptance, state);
   validateRuntimeBinding(state.runtime);
+  validateContinuousAuditSentinel(state.continuous_audit_sentinel, {
+    campaignId: state.campaign_id,
+    campaignVersion: state.campaign_version,
+    logicalLineageId: state.logical_lineage_id,
+  });
   if (["ACCEPTED_LIVE_PENDING_CLOSURE", "ACCEPTED_LIVE_CLOSED"].includes(state.stage)) validateLiveTransitionEvidence(state);
   const rosterSessions = validateRoster(state.roster, state);
+  assert(state.continuous_audit_sentinel.auditor_session_id === state.roster.auditor.session_id, "continuous audit sentinel is not bound to the current Auditor");
+  if (state.stage === "ACCEPTED_LIVE_CLOSED") assert(state.continuous_audit_sentinel.status === "ARCHIVED_UNPINNED", "accepted-live closure did not archive the continuous audit sentinel");
+  else assert(state.continuous_audit_sentinel.status === "ACTIVE", "campaign lost its active continuous audit sentinel before closure");
   if (state.active_writer !== null) {
     if (state.active_writer.kind === "FEATURE_AGENT") {
       const feature = state.roster.feature_agents.find((item) => item.session_id === state.active_writer.session_id);
@@ -1199,6 +1212,13 @@ export function createLifecycleState(input) {
     acceptance: structuredClone(input.acceptance),
     runtime: structuredClone(input.runtime),
     roster: structuredClone(input.roster),
+    continuous_audit_sentinel: structuredClone(input.continuous_audit_sentinel ?? compileContinuousAuditSentinel({
+      campaignId: input.campaign_id,
+      campaignVersion: input.campaign_version,
+      logicalLineageId: input.logical_lineage_id,
+      auditorSessionId: input.roster?.auditor?.session_id,
+      startedAtUtc: input.continuous_audit_started_at_utc ?? GENESIS_UTC,
+    })),
     successor_orientation: structuredClone(input.successor_orientation ?? emptySuccessorOrientation()),
     living_ledger: structuredClone(input.living_ledger),
     transition_journal: structuredClone(input.transition_journal ?? []),
@@ -1211,6 +1231,7 @@ function assertLineage(previous, next) {
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) assert(previous[field] === next[field], `lifecycle transition changed ${field}`);
   for (const field of ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"]) assert(previous[field] === next[field], `lifecycle transition changed ${field} without a policy or acceptance rebind`);
   for (const field of ["role_id", "runtime_identity", "session_id", "state_identity", "environment_id", "capability_set_sha256", "pinned", "persistent", "retention", "continuity_receipt_sha256"]) assert(previous.runtime[field] === next.runtime[field], `lifecycle transition changed persistent Runtime ${field}`);
+  for (const field of ["campaign_id", "campaign_version", "logical_lineage_id", "role_id", "auditor_session_id", "scope", "started_at_utc"]) assert(previous.continuous_audit_sentinel[field] === next.continuous_audit_sentinel[field], `lifecycle transition changed continuous audit sentinel ${field}`);
 }
 
 export function applyLifecycleTransition(previous, next, event = {}) {
@@ -1266,6 +1287,7 @@ export function applyLifecycleTransition(previous, next, event = {}) {
     const receipt = validateClosureReceipt(event.payload.closure_receipt);
     assert(receipt.final_candidate_commit === candidate.root.commit && receipt.final_candidate_tree === candidate.root.tree, "closure transition is not bound to the accepted root");
     assert(candidate.runtime.deployed_identity === receipt.deployment_receipt.deployed_identity && candidate.runtime.rollback_identity === receipt.deployment_receipt.rollback_identity, "closure transition Runtime identity mismatch");
+    candidate.continuous_audit_sentinel = archiveContinuousAuditSentinel(candidate.continuous_audit_sentinel, {archivedAtUtc: event.at_utc, reason: "ACCEPTED_LIVE_CLOSURE"});
   }
   appendTransition(candidate, previous, event);
   const sealed = sealLifecycleState(candidate);

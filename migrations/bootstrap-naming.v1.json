@@ -30,7 +30,7 @@
     "USER_CUSTOM": "CUSTOM"
   },
   "role_aliases": {
-    "GLOBAL_ORCHESTRATOR": "CAMPAIGN_ORCHESTRATOR",
+    "GLOBAL_ORCHESTRATOR": "AGENTOS_CONTROLLER",
     "FEATURE_LEAD": "FEATURE_AGENT"
   },
   "campaign_aliases": {

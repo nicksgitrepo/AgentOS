@@ -143,9 +143,9 @@ governed campaign in a separate destination.
 
 ## Authority corpus
 
-Creation is project-context driven and produces the canonical roots: project context, goals, Design Authority, features, platform capabilities, campaigns, decisions, cases, evidence indexes, archive, and an evidence library. Root variables and article numbering come from [governance/2.1rc/portable-authority-corpus-format.md](../governance/2.1rc/portable-authority-corpus-format.md). Imported accepted article IDs are preserved; new feature blocks are allocated by unsigned UTF-8 order and never renumbered.
+Creation is project-context driven and produces the canonical roots: project context, goals, Design Authority, features, platform capabilities, campaigns, decisions, cases, evidence indexes, archive, and an evidence library. Root variables and article numbering come from [governance/2.1rc/portable-authority-corpus-format.md](../governance/2.1rc/portable-authority-corpus-format.md). Imported accepted article IDs are preserved; new feature-capsule and extension IDs are allocated sparsely by unsigned UTF-8 order and never renumbered.
 
-Project-specific extensions may add facts or stricter constraints, but cannot weaken or rewrite the portable kernel. A clean synthetic project must compile without product-specific context.
+Project-specific extensions may add facts or stricter constraints, but cannot weaken or rewrite the portable kernel. Feature capsules use sparse, collision-checked article IDs; an empty 100-number block is never reserved merely because a feature exists. A clean synthetic project must compile without product-specific context.
 
 The default target can remain a private prototype. A managed-site target may be
 selected for a prototype or an explicitly limited working product; the target
@@ -173,7 +173,14 @@ The current Auditor may clear a release for deployment and prepare a next-campai
 
 ## Optional assistant handoff
 
-An assistant handoff is only a Markdown exchange. The Auditor binds one exact status packet and parses one canonical JSON response. A connected assistant may help with listed questions, research, scenarios, and comparisons, but cannot invent truth, mark findings fixed, write authority, change custody, deploy, or create a successor roster.
+An assistant handoff is a plain-language Markdown exchange. The owner may
+answer naturally, including by voice, and may return a Markdown note, a private
+file, an admitted Git handoff, or an authorized connected conversation. A
+separate adapter may carry a structured return for reliable reconciliation, but
+the owner is never asked to write or inspect the machine packet. A connected
+assistant may help with listed questions, research, scenarios, and comparisons,
+but cannot invent truth, mark findings fixed, write authority, change custody,
+deploy, or create a successor roster.
 
 ## User Review Campaign
 

@@ -148,6 +148,10 @@ assert.equal(kernel.bootstrap.delivery_policy.controller, "control/delivery-poli
 assert.equal(kernel.bootstrap.delivery_policy.probe_contract, "schemas/delivery-probes.v1.json");
 assert.equal(kernel.global_policy.controller, "control/global-policy-state.mjs");
 assert.equal(kernel.global_policy.contract, "schemas/global-policy-state.v1.json");
+assert.equal(kernel.agentos_controller.controller, "control/agentos-controller.mjs");
+assert.equal(kernel.agentos_controller.contract, "schemas/agentos-controller.v1.json");
+assert.equal(kernel.agentos_controller.name, "AGENTOS_CONTROLLER");
+assert.equal(kernel.agentos_controller.campaign_orchestrator, "CAMPAIGN_SCOPED");
 assert.equal(kernel.campaign_policy.contract, "schemas/campaign-policy-reconcile.v1.json");
 assert.equal(kernel.campaign_state_owner.controller, "control/campaign-state-owner.mjs");
 assert.equal(kernel.campaign_state_owner.contract, "schemas/campaign-state-owner.v1.json");
@@ -184,6 +188,7 @@ for (const relativePath of [
   "tests/verify-normalization-policy.mjs",
   "tests/verify-project-import.mjs",
   "tests/verify-bootstrap-import-bindings.mjs",
+  "tests/verify-bootstrap-owner-review-handoff.mjs",
   "tests/verify-bootstrap-contract-bindings.mjs",
   "tests/verify-project-life-contract.mjs",
   "tests/verify-delivery-target.mjs",
@@ -195,11 +200,14 @@ for (const relativePath of [
   "tests/verify-browser-runtime-lifecycle.mjs",
   "tests/verify-gpt-assist.mjs",
   "tests/verify-global-policy-state.mjs",
+  "tests/verify-agentos-controller.mjs",
   "tests/verify-global-policy-store.mjs",
   "tests/verify-project-context-store.mjs",
   "tests/verify-owner-review.mjs",
   "tests/verify-campaign-state-bridge.mjs",
   "tests/verify-campaign-state-owner.mjs",
+  "tests/verify-continuous-audit-sentinel.mjs",
+  "tests/verify-repository-readback.mjs",
   "tests/verify-portability.mjs",
 ]) run(relativePath);
 

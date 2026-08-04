@@ -17,7 +17,7 @@ The conversation gradually covers:
 - the tradeoff between economy, speed, and reasoning strength;
 - what remains unclear or needs correction.
 
-The owner may return plain Markdown, a private file, an admitted Git handoff, or an authorized connected conversation. The natural return is held when a material answer or confirmation is missing; it is never silently filled from the old packet. A structured return preserves the conversation, owner confirmations, and unresolved items.
+The owner may return plain Markdown, a private file, an admitted Git handoff, or an authorized connected conversation. A structured return is an adapter option, not a user-facing checklist. The natural return is held when a material answer or confirmation is missing; it is never silently filled from the old packet. A structured return preserves the conversation, owner confirmations, and unresolved items.
 
 ## Machine reconciliation
 

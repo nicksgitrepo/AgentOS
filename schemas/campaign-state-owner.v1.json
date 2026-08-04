@@ -5,11 +5,23 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "purpose": "Canonical controller boundary for one serialized lifecycle and cascade transition.",
   "required_result_fields": ["lifecycle", "cascade", "bridge"],
-  "rule": "The state owner validates complete current lifecycle and cascade states, applies the paired transitions, validates the resulting states, and emits a bridge whose compact identities reference both resulting state digests. A caller cannot advance only one state machine through the canonical controller. Persistence stages all replacement artifacts before the ordered replacement; a host that requires crash-atomic multi-file publication must place this writer behind a single-directory or external transaction owner.",
+  "snapshot": {
+    "schema": "governance.campaign_state_owner_snapshot.v1",
+    "required_fields": ["schema", "version", "status", "lifecycle", "cascade", "bridge", "state_owner_sha256"],
+    "path": "campaign/state-owner.json",
+    "rule": "The aggregate snapshot is the canonical crash-recovery record. Lifecycle, cascade, and bridge projections may be retained for inspection, but a restart must load and validate this single content-addressed snapshot before accepting a transition."
+  },
+  "policy_boundary": {
+    "controller": "control/campaign-state-owner.mjs",
+    "operation": "reconcilePolicyAtCampaignBoundary",
+    "required_inputs": ["currentPolicyState", "nextPolicyState", "amendment", "campaignId", "campaignVersion", "activeRoster", "currentBoundary"],
+    "rule": "An approved policy amendment is not merely metadata. The canonical state-owner boundary derives the current and next campaign projections, computes stale sessions, rotations, invalidated questions, and recompile targets, and returns the exact assignment action set before a controller may issue new leases. A stale parent or boundary is rejected."
+  },
+  "rule": "The state owner validates complete current lifecycle and cascade states, applies the paired transitions, validates the resulting states, and emits a bridge whose compact identities reference both resulting state digests. A caller cannot advance only one state machine through the canonical controller. The aggregate snapshot is written by one staged temporary file and atomic rename with compare-and-swap; separate projections remain an optional compatibility/readability export and are not the crash-recovery authority.",
   "persistence": {
     "compare_and_swap": true,
     "staged_replacement": true,
-    "multi_artifact_atomicity": "EXTERNAL_TRANSACTION_OWNER_REQUIRED",
+    "multi_artifact_atomicity": "AGGREGATE_SNAPSHOT_ATOMIC",
     "symlink_rejected": true,
     "separate_artifacts": ["lifecycle", "cascade", "bridge"]
   }

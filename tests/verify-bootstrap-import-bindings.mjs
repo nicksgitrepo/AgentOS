@@ -7,6 +7,7 @@ import path from "node:path";
 import {
   approveBootstrapPlan,
   auditBootstrapSetup,
+  compileRuntimeReadback,
   compileBootstrapPlan,
   executeBootstrapPlan,
   validateBootstrapPlan,
@@ -22,6 +23,14 @@ fs.mkdirSync(destination);
 fs.writeFileSync(path.join(source, "package.json"), "{\"name\":\"synthetic\"}\n");
 fs.writeFileSync(path.join(source, "src", "main.js"), "export default true;\n");
 const workflow = JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8"));
+const runtimeReadbackFor = (plan) => compileRuntimeReadback({
+  sessionId: plan.persistent_runtime.session_id,
+  environmentIdentity: plan.persistent_runtime.environment_identity,
+  capabilities: plan.persistent_runtime.capabilities,
+  observedByRole: "SYNTHETIC_RUNTIME_ADAPTER",
+  observedBySession: "RUNTIME-READBACK-IMPORT",
+  observedAtUtc: "2026-08-03T00:00:00.000Z",
+});
 const discovery = discoverProject(destination, "RECOMMENDED").facts;
 const answers = {
   "bootstrap.discovery.mode": "RECOMMENDED",
@@ -70,6 +79,7 @@ const setupAudit = auditBootstrapSetup({
   bootstrapSessionId: "BOOTSTRAP-IMPORT-001",
   stagingRoot: executed.staging_root,
   workflow,
+  runtimeReadback: runtimeReadbackFor(approved),
 });
 assert.equal(setupAudit.status, "PASS");
 assert(setupAudit.checks.includes("PROJECT_IMPORT_SOURCE_PRESERVATION"));
@@ -102,6 +112,7 @@ const adoptAudit = auditBootstrapSetup({
   bootstrapSessionId: "BOOTSTRAP-ADOPT-001",
   stagingRoot: adoptExecuted.staging_root,
   workflow,
+  runtimeReadback: runtimeReadbackFor(adoptApproved),
 });
 assert.equal(adoptAudit.status, "PASS");
 assert(fs.existsSync(path.join(adoptRoot, ".agentos", "import", "source-preservation", "source-preservation.zip")));

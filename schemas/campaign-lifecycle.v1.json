@@ -105,6 +105,11 @@
     ],
     "rule": "Runtime is one pinned, persistent RUNTIME identity retained across campaigns. The continuity receipt binds its stable identity, environment, capabilities, and retention posture. Deployment evidence must still come from an admitted Runtime/readback adapter."
   },
+  "continuous_audit_sentinel": {
+    "contract": "schemas/continuous-audit-sentinel.v1.json",
+    "required_state_field": "continuous_audit_sentinel",
+    "rule": "Every campaign carries one active, read-only, pinned sentinel bound to the current Auditor through accepted-live closure. The canonical closure transition archives and unpins it with an exact receipt-bound event; it is not Product custody or acceptance authority."
+  },
   "repository_checkpoint_proof": {
     "required_fields": [
       "schema",

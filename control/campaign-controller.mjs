@@ -51,13 +51,21 @@ import {
   validateCampaignPolicyReconciliation,
 } from "./campaign-policy-reconcile.mjs";
 import {
+  applyAndWriteSerializedCampaignTransition,
   applySerializedCampaignTransition,
+  compileSerializedStateOwnerSnapshot,
   compileSerializedStateBridge,
+  readSerializedCampaignState,
+  reconcilePolicyAtCampaignBoundary,
   stateOwnerTempRoot,
+  stateOwnerDigest,
+  validateSerializedStateOwnerSnapshot,
   validateSerializedStateOwnerResult,
+  writeSerializedCampaignStateCompareAndSwap,
   writeSerializedCampaignTransitionCompareAndSwap,
 } from "./campaign-state-owner.mjs";
 import {deriveChangedSurfacesFromPaths} from "./campaign-cascade.mjs";
+import {readLocalGitCheckpoint} from "./repository-readback.mjs";
 
 export {
   acquirePlatformLease,
@@ -104,10 +112,18 @@ export {
   validateCampaignPolicyProjection,
   validateCampaignPolicyReconciliation,
   applySerializedCampaignTransition,
+  applyAndWriteSerializedCampaignTransition,
+  compileSerializedStateOwnerSnapshot,
   compileSerializedStateBridge,
+  readSerializedCampaignState,
+  reconcilePolicyAtCampaignBoundary,
   stateOwnerTempRoot,
+  stateOwnerDigest,
+  validateSerializedStateOwnerSnapshot,
   validateSerializedStateOwnerResult,
+  writeSerializedCampaignStateCompareAndSwap,
   writeSerializedCampaignTransitionCompareAndSwap,
+  readLocalGitCheckpoint,
 };
 
 export {lifecycleDigest};
@@ -205,6 +221,11 @@ function main() {
   if (command === "heartbeat") {
     const payload = payloadPath ? JSON.parse(fs.readFileSync(payloadPath, "utf8")) : {};
     process.stdout.write(`${canonicalJson(decideHeartbeatAction(state, payload.observed_at_utc, payload.now_utc, payload.policy_state))}\n`);
+    return;
+  }
+  if (command === "reconcile-policy") {
+    const payload = payloadPath ? JSON.parse(fs.readFileSync(payloadPath, "utf8")) : {};
+    process.stdout.write(`${canonicalJson(reconcilePolicyAtCampaignBoundary(payload))}\n`);
     return;
   }
   throw new Error(`unknown campaign controller command: ${command}`);

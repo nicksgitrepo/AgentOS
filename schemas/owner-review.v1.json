@@ -5,6 +5,14 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "review_type": "PRE_CAMPAIGN_OWNER_REVIEW",
   "purpose": "A low-cost, owner-facing conversation that clarifies the next campaign without becoming Product authority.",
+  "presentation": {
+    "human_route": "ONE_SHORT_NATURAL_QUESTION_AT_A_TIME",
+    "machine_phase_names_are_internal": true,
+    "machine_fields_are_hidden_from_friendly_handoff": true,
+    "human_return": "PLAIN_MARKDOWN_OR_AUTHORIZED_STRUCTURED_RETURN",
+    "structured_return_optional": true,
+    "rule": "The packet may retain a structured internal compilation map and an optional structured return channel. The owner-facing handoff must not expose the map, hashes, field names, or a forced checklist. Missing material answers remain unresolved rather than being filled from the packet."
+  },
   "phases": [
     "ORIENTATION",
     "INTENT",
@@ -55,7 +63,7 @@
     "floor_rule": "Every level and role candidate carries structured economy, speed, difficulty-fit, and reason guidance. An unavailable or below-floor model is not a valid recommendation. The Orchestrator chooses from the admitted host catalog and records economics and completion evidence."
   },
   "transports": {
-    "PRIVATE_MARKDOWN": "Recommended. The user returns one exact JSON payload through a private file exchange.",
+    "PRIVATE_MARKDOWN": "Recommended. The user may return an ordinary Markdown note; an adapter may also carry a separate structured payload.",
     "PRIVATE_GIT": "The return binds an admitted repository, branch, commit, and tree.",
     "CONNECTED_PRIVATE_CHAT": "The connector binds the exact project, conversation, identity, and return integrity.",
     "SHARED_LINK_ADVISORY": "Advisory only. It cannot carry exact approval or sensitive project evidence."
