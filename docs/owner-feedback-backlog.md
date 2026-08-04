@@ -8,7 +8,7 @@ Product work, and agent spawning still require their separate boundaries.
 
 | ID | User-visible symptom | Expected behavior | Follow-up campaign | Status |
 | --- | --- | --- | --- | --- |
-| `FEEDBACK-001` | The system stopped at an inactive gate without explaining the exact boundary in the user flow. | Explain the specific inactive boundary and the safe next action in plain language. | `CAMPAIGN-CONTROLLER-INACTIVE-EXPLANATION` | `OPEN` |
+| `FEEDBACK-001` | The system stopped at an inactive gate without explaining the exact boundary in the user flow. | Explain the specific inactive boundary and the safe next action in plain language. | `CAMPAIGN-CONTROLLER-INACTIVE-EXPLANATION` | `RESOLVED` |
 | `FEEDBACK-002` | A completed task was still shown as not started. | Reconcile task status and user-facing progress so a completed task is shown as completed. | `CAMPAIGN-CONTROLLER-STATUS-RECONCILIATION` | `OPEN` |
 | `FEEDBACK-003` | A completion record hit a stale-digest failure. | Bind completion records to the current parent, report the mismatch clearly, and preserve the original evidence. | `CAMPAIGN-CONTROLLER-DIGEST-REPAIR` | `OPEN` |
 | `FEEDBACK-004` | The Controller spent several minutes planning without visible progress. | Show a concise progress state and the next bounded action while planning continues. | `CAMPAIGN-CONTROLLER-PROGRESS-RECEIPTS` | `OPEN` |

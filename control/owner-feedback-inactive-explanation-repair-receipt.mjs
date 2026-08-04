@@ -1,18 +1,15 @@
 // Local Feature Agent owner-feedback repair receipt; held in the isolated campaign worktree.
 export const OWNER_FEEDBACK_REPAIR = Object.freeze({
-  "task_id": "TASK-OWNER-FEEDBACK-9FA75F3A7AE7192E",
+  "task_id": "TASK-OWNER-FEEDBACK-030D78358895399F",
   "task_kind": "OWNER_FEEDBACK_REPAIR",
   "feedback_id": "FEEDBACK-001",
   "campaign_id": "CAMPAIGN-AGENTOS-SELF-DEVELOPMENT-1",
   "campaign_version": "v1",
-  "candidate_sha256": "8dd9965f520bfb7f35c4d7ab2c899f50682d21b5d8951abec7c47e949248e48b",
-  "source_commit": "ac04f0872786a7d573626a9b1d080cdd7e86d402",
-  "source_tree": "77983953fd82c2efd03170a125df1355b1c0f362",
+  "candidate_sha256": "8661a82e44a8927056380f1318a7649322a20fa94edcee208292655819fa0b7c",
+  "source_commit": "51aa7852e7dc94940fbf25811a68787c06a04fbd",
+  "source_tree": "60295e0db41a7b9bda64ad48b10def21e44ae108",
   "custody_status": "FEATURE_AGENT_CUSTODY",
   "changed_by_repair": [
-    "control/task-run-loop.mjs",
-    "docs/owner-feedback-backlog.md",
-    "schemas/bootstrap-binding.v1.json",
-    "tests/verify-task-run-loop.mjs"
+    "docs/owner-feedback-backlog.md"
   ]
 });
