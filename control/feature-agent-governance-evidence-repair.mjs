@@ -398,6 +398,7 @@ export function applyGovernanceEvidenceRepair({worktreePath}) {
   worker = replaceOnce(worker, initialAuditorBranch, AUDITOR_RECHECK_BRANCH, "auditor evidence re-check branch");
 
   writeFile(governancePath, governance);
+  writeFile(workerPath, worker);
   writeFile(path.join(worktreePath, "control/governance-evidence.mjs"), GOVERNANCE_EVIDENCE_MODULE);
   writeFile(testPath, GOVERNANCE_TEST);
   return ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"];
