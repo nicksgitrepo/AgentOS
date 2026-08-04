@@ -215,4 +215,26 @@ assert.equal(reusedRuntime.reused, true, "an unchanged observation must not retr
 assert.equal(routeAttempts, 2);
 fs.rmSync(runtimeRoot, {recursive: true, force: true});
 
+const evolvingFailureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-evolving-failure-"));
+let evolvingObservation = puzzle;
+let evolvingAttempts = 0;
+const evolvingAdapter = {
+  observe: () => evolvingObservation,
+  route: () => {
+    evolvingAttempts += 1;
+    throw new Error(`route failure ${evolvingAttempts}`);
+  },
+};
+const firstEvolvingRuntime = await runControllerSupervisorIteration({runtimeRoot: evolvingFailureRoot, adapter: evolvingAdapter, runtimeId: "SUPERVISOR-EVOLVING-FAILURE-TEST"});
+evolvingObservation = changedObservation;
+const secondEvolvingRuntime = await runControllerSupervisorIteration({runtimeRoot: evolvingFailureRoot, adapter: evolvingAdapter, runtimeId: "SUPERVISOR-EVOLVING-FAILURE-TEST"});
+assert.equal(secondEvolvingRuntime.tick.route_status, "ROUTE_FAILED");
+assert.equal(fs.existsSync(path.join(evolvingFailureRoot, "supervisor", "route-failures", `${firstEvolvingRuntime.goal.goal_id}.json`)), true);
+fs.writeFileSync(path.join(evolvingFailureRoot, "supervisor", "goal.json"), `${JSON.stringify(firstEvolvingRuntime.goal)}\n`);
+fs.writeFileSync(path.join(evolvingFailureRoot, "supervisor", "tick.json"), `${JSON.stringify(firstEvolvingRuntime.tick)}\n`);
+evolvingObservation = observation({sourceCommit: "7".repeat(40), sourceTree: "8".repeat(40)});
+await runControllerSupervisorIteration({runtimeRoot: evolvingFailureRoot, adapter: evolvingAdapter, runtimeId: "SUPERVISOR-EVOLVING-FAILURE-TEST"});
+assert.equal(fs.existsSync(path.join(evolvingFailureRoot, "supervisor", "route-failures", `${firstEvolvingRuntime.goal.goal_id}-${evolvingObservation.observation_sha256}.json`)), true);
+fs.rmSync(evolvingFailureRoot, {recursive: true, force: true});
+
 console.log("PASS Controller supervisor: deterministic goal minting, hard-stop enforcement, soft review routing, repair routing, liveness choice, failure retention, and CAS records verified");

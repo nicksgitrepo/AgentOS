@@ -226,9 +226,19 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     const priorGoal = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/goal.json"});
     validateSupervisorTick(existingTick);
     validateSupervisorGoal(priorGoal);
-    const rcaPath = `supervisor/route-failures/${priorGoal.goal_id}.json`;
-    const rca = compileRouteFailureRca({runtimeId, priorGoal, priorTick: existingTick, currentObservation: observation, observedAtUtc: nowUtc});
+    const baseRcaPath = `supervisor/route-failures/${priorGoal.goal_id}.json`;
+    const existingBaseRca = readSupervisorRecord({authorityRoot: root, recordPath: baseRcaPath});
+    const rcaPath = existingBaseRca === null || existingBaseRca.current_observation_sha256 === observation.observation_sha256
+      ? baseRcaPath
+      : `supervisor/route-failures/${priorGoal.goal_id}-${observation.observation_sha256}.json`;
     const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
+    const rca = compileRouteFailureRca({
+      runtimeId,
+      priorGoal,
+      priorTick: existingTick,
+      currentObservation: observation,
+      observedAtUtc: existingRca?.observed_at_utc ?? nowUtc,
+    });
     if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
     else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor route failure RCA differs");
   }
