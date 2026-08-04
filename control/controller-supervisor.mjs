@@ -272,7 +272,8 @@ export function deriveSupervisorAction(observation) {
   validateSupervisorObservation(observation);
   if (observation.hard_boundary || observation.owner_decision_required) return "STOP_HARD_BOUNDARY";
   if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";
-  if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE", "HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) {
+  if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";
+  if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE"])) {
     return "ROUTE_REPAIRABLE_PUZZLE";
   }
   if (observation.active_campaign) return "RECONCILE_LIVENESS";
