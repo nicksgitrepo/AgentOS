@@ -174,10 +174,17 @@ function discoverSupervisorSessions(campaignRoot, campaignId) {
 function sessionEntries(campaignRoot, handoff) {
   const declared = Array.isArray(handoff.supervised_sessions) ? handoff.supervised_sessions : [];
   const paths = declared.map((entry) => entry.session_record_path).filter((value) => typeof value === "string");
-  const discovered = paths.length > 0
-    ? paths.map((relativePath) => ({target: relativeChild(campaignRoot, relativePath, "supervised session path"), record: null}))
-    : discoverSupervisorSessions(campaignRoot, handoff.campaign_id).filter(({record}) => record.status === "RUNNING");
-  return discovered.map(({target, record}) => ({target, record: record ?? readJson(target)})).filter(({record}) => record !== null);
+  const declaredEntries = paths.map((relativePath) => ({target: relativeChild(campaignRoot, relativePath, "supervised session path"), record: null}));
+  const discoveredEntries = discoverSupervisorSessions(campaignRoot, handoff.campaign_id).filter(({record}) => record.status === "RUNNING");
+  const combined = [...declaredEntries, ...discoveredEntries];
+  const seen = new Set();
+  return combined
+    .map(({target, record}) => ({target, record: record ?? readJson(target)}))
+    .filter(({target, record}) => {
+      if (record === null || seen.has(target)) return false;
+      seen.add(target);
+      return true;
+    });
 }
 
 function processAlive(pid) {
@@ -513,6 +520,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     assert(permissions.local_development_writes_allowed && permissions.local_worker_agent_spawns_allowed, "local Controller route lacks local development authorization");
     assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "local Controller route cannot enter Product custody");
     assert(!permissions.external_deployment_allowed && !permissions.external_release_allowed && !permissions.external_publication_allowed && !permissions.external_push_allowed && !permissions.external_merge_allowed, "local Controller route cannot perform external actions");
+    const previousSessions = sessionEntries(campaignRoot, handoff);
     const taskId = `TASK-CONTROLLER-SUPERVISOR-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
     const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;
     const task = writeAddressed(campaignRoot, taskRecordPath, {
@@ -643,7 +651,10 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       finalizerSha256: finalizerRecord.finalizer_sha256,
     }), "resolution_sha256");
     const priorPointer = readAddressed(campaignRoot, "autonomous-supervisor-current-handoff.json", "pointer_sha256");
-    const priorSessions = sessionEntries(campaignRoot, handoff);
+    for (const entry of previousSessions) {
+      if (entry.record.status === "RUNNING" && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
+    }
+    const currentSessions = [orchestrator, feature, auditor].map((session) => ({target: sessionRecordPath(session.session_record), record: session.session_record}));
     const transitionedHandoff = compileSupervisorHandoff({
       previous: handoff,
       goal,
@@ -670,7 +681,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         status: finalizerRecord.status,
       },
       lifecycleResolutionSha256: lifecycleResolution.resolution_sha256,
-      supervisedSessions: priorSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
+      supervisedSessions: currentSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
@@ -697,7 +708,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       adopted_tree: finalizerResult.adopted_tree,
       handoff_path: `autonomous-supervisor-handoffs/${transitioned.handoff.goal_id}.json`,
       current_handoff_pointer_sha256: transitioned.pointer.pointer_sha256,
-      supervised_session_record_paths: priorSessions.map((entry) => path.relative(campaignRoot, entry.target)).sort(),
+      supervised_session_record_paths: currentSessions.map((entry) => path.relative(campaignRoot, entry.target)).sort(),
       task_record_path: taskRecordPath,
       readback_record_paths: [orchestratorRecordPath, featureRecordPath, auditorRecordPath, controllerRecordPath, finalizerRecordPath, resolutionPath].sort(),
       protected_boundaries: permissions,
