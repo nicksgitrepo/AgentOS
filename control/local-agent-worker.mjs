@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
+import {applyGovernanceEvidenceRepair} from "./feature-agent-governance-evidence-repair.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -57,16 +58,19 @@ function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
 
-function runFocusedChecks(worktreePath) {
-  const checks = [
-    "node --check control/governance-decision-tree.mjs",
-    "node tests/verify-governance-decision-tree.mjs",
-  ];
+function runChecks(worktreePath, checks) {
   for (const check of checks) {
     const [program, ...args] = check.split(" ");
     execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
   }
   return checks;
+}
+
+function runFocusedChecks(worktreePath) {
+  return runChecks(worktreePath, [
+    "node --check control/governance-decision-tree.mjs",
+    "node tests/verify-governance-decision-tree.mjs",
+  ]);
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -79,7 +83,10 @@ const sourceCommit = args.source_commit;
 const sourceTree = args.source_tree;
 const worktreePath = path.resolve(args.worktree ?? "");
 const task = args.task;
+const taskId = args.task_id ?? "INITIAL";
+const taskKind = args.task_kind ?? "INITIAL";
 const featureWorktree = args.feature_worktree ? path.resolve(args.feature_worktree) : null;
+const evidenceWorktree = args.evidence_worktree ? path.resolve(args.evidence_worktree) : null;
 const decisionTreePath = args.decision_tree ? path.resolve(args.decision_tree) : null;
 const nowUtc = new Date().toISOString();
 
@@ -180,42 +187,88 @@ if (role === "CAMPAIGN_ORCHESTRATOR") {
     };
   }
 } else if (role === "FEATURE_AGENT") {
-  artifactName = "control/feature-agent-work-product.mjs";
-  const governancePath = path.join(worktreePath, "control/governance-decision-tree.mjs");
-  assert(fs.existsSync(governancePath), "Feature Agent governance tree source is unavailable");
-  const existingSource = fs.readFileSync(governancePath, "utf8");
-  assert(!existingSource.includes("compileFeatureAgentRepairReceipt"), "Feature Agent repair was already applied in this worktree");
-  const implementation = `\n\nexport function compileFeatureAgentRepairReceipt({campaignId, candidateSha256, sourceCommit, sourceTree, changedPaths, focusedChecks}) {\n  if (typeof campaignId !== "string" || typeof candidateSha256 !== "string" || typeof sourceCommit !== "string" || typeof sourceTree !== "string") throw new Error("Feature Agent repair receipt identity is incomplete");\n  if (!Array.isArray(changedPaths) || !changedPaths.includes("control/governance-decision-tree.mjs")) throw new Error("Feature Agent repair receipt lacks the governance-tree code change");\n  if (!Array.isArray(focusedChecks) || focusedChecks.length === 0) throw new Error("Feature Agent repair receipt lacks focused checks");\n  return {schema: "agentos.feature_agent_repair_receipt.v1", version: 1, campaign_id: campaignId, candidate_sha256: candidateSha256, source_commit: sourceCommit, source_tree: sourceTree, changed_paths: [...changedPaths].sort(), focused_checks: [...focusedChecks].sort()};\n}\n`;
-  writeFileAtomic(governancePath, `${existingSource}${implementation}`);
-  focusedChecks = runFocusedChecks(worktreePath);
-  const marker = `// Local Feature Agent work product; held in the isolated campaign worktree.\nexport const FEATURE_AGENT_WORK_PRODUCT = Object.freeze(${JSON.stringify({
-    campaign_id: campaignId,
-    campaign_version: campaignVersion,
-    candidate_sha256: candidateSha256,
-    source_commit: sourceCommit,
-    source_tree: sourceTree,
-    custody_status: "FEATURE_AGENT_CUSTODY",
-    task: "Build and test the executable four-root governance tree and local admission bridge.",
-  }, null, 2)});\n`;
-  writeFileAtomic(path.join(worktreePath, artifactName), marker);
-  execFileSync("git", ["add", "control/governance-decision-tree.mjs", artifactName], {cwd: worktreePath, encoding: "utf8"});
-  execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: implement governance repair receipt"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
-  buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
-  buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
-  changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
-  assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean changed checkpoint");
-  buildStatus = "COMPLETED";
-  product = {
-    ...base,
-    custody_status: "FEATURE_AGENT_CUSTODY",
-    code_change_path: "control/governance-decision-tree.mjs",
-    change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
-    build_status: buildStatus,
-    build_commit: buildCommit,
-    build_tree: buildTree,
-    changed_paths: changedPaths,
-    focused_checks: focusedChecks,
-  };
+  if (taskKind === "GOVERNANCE_EVIDENCE_REPAIR") {
+    artifactName = "control/feature-agent-governance-evidence-repair-receipt.mjs";
+    const changedByRepair = applyGovernanceEvidenceRepair({worktreePath});
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/governance-decision-tree.mjs",
+      "node --check control/governance-evidence.mjs",
+      "node --check control/local-agent-worker.mjs",
+      "node tests/verify-governance-decision-tree.mjs",
+      "node tests/verify-local-campaign-admission.mjs",
+    ]);
+    const marker = `// Local Feature Agent evidence-repair receipt; held in the isolated campaign worktree.\nexport const FEATURE_AGENT_EVIDENCE_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: bind real governance gate evidence"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean evidence-repair checkpoint");
+    for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), `Feature Agent evidence repair did not change ${requiredPath}`);
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else {
+    artifactName = "control/feature-agent-work-product.mjs";
+    const governancePath = path.join(worktreePath, "control/governance-decision-tree.mjs");
+    assert(fs.existsSync(governancePath), "Feature Agent governance tree source is unavailable");
+    const existingSource = fs.readFileSync(governancePath, "utf8");
+    assert(!existingSource.includes("compileFeatureAgentRepairReceipt"), "Feature Agent repair was already applied in this worktree");
+    const implementation = `\n\nexport function compileFeatureAgentRepairReceipt({campaignId, candidateSha256, sourceCommit, sourceTree, changedPaths, focusedChecks}) {\n  if (typeof campaignId !== "string" || typeof candidateSha256 !== "string" || typeof sourceCommit !== "string" || typeof sourceTree !== "string") throw new Error("Feature Agent repair receipt identity is incomplete");\n  if (!Array.isArray(changedPaths) || !changedPaths.includes("control/governance-decision-tree.mjs")) throw new Error("Feature Agent repair receipt lacks the governance-tree code change");\n  if (!Array.isArray(focusedChecks) || focusedChecks.length === 0) throw new Error("Feature Agent repair receipt lacks focused checks");\n  return {schema: "agentos.feature_agent_repair_receipt.v1", version: 1, campaign_id: campaignId, candidate_sha256: candidateSha256, source_commit: sourceCommit, source_tree: sourceTree, changed_paths: [...changedPaths].sort(), focused_checks: [...focusedChecks].sort()};\n}\n`;
+    writeFileAtomic(governancePath, `${existingSource}${implementation}`);
+    focusedChecks = runFocusedChecks(worktreePath);
+    const marker = `// Local Feature Agent work product; held in the isolated campaign worktree.\nexport const FEATURE_AGENT_WORK_PRODUCT = Object.freeze(${JSON.stringify({
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      task: "Build and test the executable four-root governance tree and local admission bridge.",
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    execFileSync("git", ["add", "control/governance-decision-tree.mjs", artifactName], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: implement governance repair receipt"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean changed checkpoint");
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_path: "control/governance-decision-tree.mjs",
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  }
 } else {
   throw new Error(`unsupported local worker role: ${role}`);
 }

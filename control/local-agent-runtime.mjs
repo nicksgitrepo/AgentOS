@@ -129,7 +129,7 @@ function validateHandshake(handshake, expected) {
   return handshake;
 }
 
-function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, task, featureWorktree = null, decisionTreePath = null}) {
+function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, task, taskId = "INITIAL", taskKind = "INITIAL", featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, workerScriptPath = null}) {
   assert(LOCAL_WORKER_ROLES.includes(role), `unsupported local worker role: ${role}`);
   requireIdentifier(campaignId, "local worker campaign ID");
   requireString(campaignVersion, "local worker campaign version");
@@ -137,15 +137,22 @@ function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, 
   requireGitObject(sourceCommit, "local worker source commit");
   requireGitObject(sourceTree, "local worker source tree");
   requireString(task, "local worker task");
+  requireIdentifier(taskId, "local worker task ID");
+  requireIdentifier(taskKind, "local worker task kind");
   const root = canonicalRoot(repoRoot);
   const runtime = safeChild(root, path.relative(root, runtimeRoot));
+  const feature = featureWorktree === null ? null : safeChild(root, path.relative(root, featureWorktree));
+  const evidence = evidenceWorktree === null ? null : safeChild(root, path.relative(root, evidenceWorktree));
   const decisionTree = decisionTreePath === null ? null : safeChild(root, path.relative(root, decisionTreePath));
+  const workerScript = workerScriptPath === null ? null : safeChild(root, path.relative(root, workerScriptPath));
   if (role === "CAMPAIGN_ORCHESTRATOR") assert(decisionTree !== null && fs.existsSync(decisionTree), "local runtime decision tree adapter is unavailable");
   const runtimeKey = `${campaignId}-${campaignVersion}`.replace(/[^A-Za-z0-9._-]/gu, "_");
-  const sessionId = `LOCAL-${role}-${candidateSha256.slice(0, 12)}`;
+  const taskSuffix = taskId === "INITIAL" ? "" : `-${taskId}`;
+  const sessionId = `LOCAL-${role}-${candidateSha256.slice(0, 12)}${taskSuffix}`;
   const roleKey = role.replaceAll(":", "_");
-  const worktreePath = safeChild(runtime, path.join("worktrees", runtimeKey, roleKey));
-  const recordPath = safeChild(runtime, path.join("spawn-records", `${roleKey}.json`));
+  const workerKey = `${roleKey}${taskSuffix}`;
+  const worktreePath = safeChild(runtime, path.join("worktrees", runtimeKey, workerKey));
+  const recordPath = safeChild(runtime, path.join("spawn-records", `${workerKey}.json`));
   const existing = readJson(recordPath);
   if (existing !== null) {
     assert(existing.status === "COMPLETED", "local worker spawn record is stale or crashed; repair is required before retry");
@@ -168,9 +175,10 @@ function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, 
     started_at_utc: new Date().toISOString(),
     readback: null,
   });
-  const workerScript = new URL("./local-agent-worker.mjs", import.meta.url);
-  const workerArgs = [workerScript.pathname, "--role", role, "--session-id", sessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task];
-  if (featureWorktree !== null) workerArgs.push("--feature-worktree", featureWorktree);
+  const workerScriptFile = workerScript ?? new URL("./local-agent-worker.mjs", import.meta.url).pathname;
+  const workerArgs = [workerScriptFile, "--role", role, "--session-id", sessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind];
+  if (feature !== null) workerArgs.push("--feature-worktree", feature);
+  if (evidence !== null) workerArgs.push("--evidence-worktree", evidence);
   if (decisionTree !== null) workerArgs.push("--decision-tree", decisionTree);
   const result = spawnSync(process.execPath, workerArgs, {
     cwd: worktree,
@@ -204,7 +212,7 @@ function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, 
     writeJsonAtomic(recordPath, {...readJson(recordPath), status: "FAILED", failure: `invalid worker handshake: ${error.message}`});
     throw new Error(`local worker ${role} returned invalid handshake: ${error.message}`);
   }
-  validateHandshake(handshake, {role, sessionId, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, worktreePath: worktree, featureWorktree});
+  validateHandshake(handshake, {role, sessionId, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, worktreePath: worktree, featureWorktree: feature});
   const readback = {
     schema: "agentos.local_worker_spawn_readback.v1",
     version: 1,
