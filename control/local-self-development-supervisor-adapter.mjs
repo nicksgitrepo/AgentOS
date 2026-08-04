@@ -809,6 +809,15 @@ function ownerConversationSurfaceFinding(repositoryRoot) {
   };
 }
 
+export function selectValidatedAutonomousTask({tasks, boundary, findings = [], activeCampaign}) {
+  const selection = selectAutonomousNextTask({tasks, boundary, findings, activeCampaign});
+  if (selection.action === "ROUTE_REPAIRABLE_PUZZLE" && selection.task_id !== null) {
+    const selectedTask = tasks.find((task) => task.task_id === selection.task_id);
+    assert(selectedTask !== undefined && selectedTask.status === "OPEN", "Controller selected task is not an open queued task");
+    assert(selectedTask.owner_decision_required === false, "Controller selected task requires an owner decision");
+  }
+  return selection;
+}
 function autonomousTaskFinding({campaignRoot, handoff, activation, findings, activeCampaign}) {
   const queue = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
   if (queue === null) return null;
@@ -820,7 +829,7 @@ function autonomousTaskFinding({campaignRoot, handoff, activation, findings, act
     scope_changed: handoff.scope_changed === true,
     ...permissions,
   };
-  const selection = selectAutonomousNextTask({tasks: queue.tasks, boundary, findings, activeCampaign});
+  const selection = selectValidatedAutonomousTask({tasks: queue.tasks, boundary, findings, activeCampaign});
   if (selection.action !== "ROUTE_REPAIRABLE_PUZZLE" || selection.task_id === null) return null;
   const task = queue.tasks.find((candidate) => candidate.task_id === selection.task_id);
   if (task === undefined) throw new Error("autonomous Controller selected a task missing from its queue");
