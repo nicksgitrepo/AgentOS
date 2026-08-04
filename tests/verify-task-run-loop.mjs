@@ -15,6 +15,7 @@ import {
   TASK_EXECUTION_READBACK_SCHEMA,
   TASK_RUN_RECONCILIATION_SCHEMA,
   prepareQueuedContinuationTask,
+  renderOwnerInactiveBoundaryMessage,
   readTaskRunLoopRecord,
   runSafeControlPlaneTaskLoop,
   validateQueuedTask,
@@ -299,7 +300,12 @@ assert.equal(prepared.task.task_id, result.queued.task_id);
 assert.equal(prepared.task.parent_handoff_sha256, completedPromotionParent.handoff_sha256);
 assert.equal(prepared.task.parent_reconciliation_sha256, result.reconciliation.reconciliation_sha256);
 assert.equal(prepared.startHandoff.phase, "START");
-assert.equal(prepared.startHandoff.next_action.includes("AgentOS Controller"), true);
+const inactiveMessage = renderOwnerInactiveBoundaryMessage({taskId: prepared.task.task_id, boundary: prepared.task.boundary});
+assert.equal(prepared.startHandoff.next_action, inactiveMessage);
+assert.match(inactiveMessage, /safely paused while setup is still in place/u);
+assert.match(inactiveMessage, /have not changed the project, started extra agents, or sent anything out/u);
+assert.doesNotMatch(inactiveMessage, /campaign_activation_allowed/u);
+reject("inactive explanation crosses activation", () => renderOwnerInactiveBoundaryMessage({taskId: prepared.task.task_id, boundary: {...prepared.task.boundary, campaign_activation_allowed: true}}));
 
 const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-task-run-loop-"));
 try {

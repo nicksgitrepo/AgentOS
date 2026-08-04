@@ -200,6 +200,15 @@ export function validateQueuedTask(queued) {
   return queued;
 }
 
+export function renderOwnerInactiveBoundaryMessage({taskId, boundary}) {
+  requireIdentifier(taskId, "inactive task");
+  requireRecord(boundary, "inactive task boundary");
+  assert(boundary.active_campaign === false && boundary.campaign_activation_allowed === false, "inactive explanation requires an inactive boundary");
+  for (const field of ["product_writes_allowed", "product_agent_spawns_allowed", "deployment_allowed", "publication_allowed", "push_allowed", "merge_allowed"]) {
+    assert(boundary[field] === false, `inactive explanation boundary ${field} is not closed`);
+  }
+  return "I am keeping this safely paused while setup is still in place. I have not changed the project, started extra agents, or sent anything out. The next safe step is to review the prepared work; it will stay paused until you choose to turn it on.";
+}
 export function prepareQueuedContinuationTask({queuedTask, parentHandoff, currentStatus, sourceCommit, sourceTree, startedAtUtc}) {
   validateQueuedTask(queuedTask);
   validateContinuationHandoff(parentHandoff);
@@ -293,7 +302,7 @@ export function prepareQueuedContinuationTask({queuedTask, parentHandoff, curren
     audit_reports: [],
     audit_reconciliation: null,
     findings: [],
-    next_action: "AgentOS Controller will run only the queued control-plane task; keep the campaign inactive.",
+    next_action: renderOwnerInactiveBoundaryMessage({taskId: task.task_id, boundary: task.boundary}),
     stop_conditions: structuredClone(candidate.stop_conditions),
     undo: structuredClone(candidate.undo),
     recorded_at_utc: startedAtUtc,

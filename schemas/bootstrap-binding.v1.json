@@ -274,7 +274,7 @@
     },
     "task_run_loop_controller": {
       "path": "control/task-run-loop.mjs",
-      "sha256": "4b2959737228a9156a5ab8ec1a9ff20b7e4ccb6aa223e2070f1d35396218e448"
+      "sha256": "626ef06c0e59853f8e4805dab43a669241dbf39fbf67625f4adad30225d627c4"
     },
     "task_run_loop_contract": {
       "path": "schemas/task-run-loop.v1.json",
@@ -282,7 +282,7 @@
     },
     "task_run_loop_verifier": {
       "path": "tests/verify-task-run-loop.mjs",
-      "sha256": "304a4e5e1eced284c1c99f6cb622dff039d9d542cb11d151a82cccf85b8167e8"
+      "sha256": "f8a0d5f3e9be651e3c0561844caa59b950c0bbffd7895fc561170b5caec2f560"
     },
     "campaign_policy_reconcile_controller": {
       "path": "control/campaign-policy-reconcile.mjs",
