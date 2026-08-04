@@ -6,7 +6,7 @@
   "normative": {
     "user_readme": {
       "path": "README.md",
-      "sha256": "4433415d49b0e36392f0e632f5dabae7d209ae6da1a4af9547064fce14761931"
+      "sha256": "cf537d0d68c054db531908492f8f1ee635a542feda532fb3556c1f63b3666a88"
     },
     "repository_roles_guide": {
       "path": "docs/repository-roles.md",
