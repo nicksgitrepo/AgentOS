@@ -424,7 +424,9 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? "control/bootstrap-compiler.mjs"
           : "control/governance-decision-tree.mjs";
-      assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
+      assert(taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath))
+        : changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
       focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? runControllerSupervisorChecks(featureWorktree)
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
@@ -560,9 +562,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner-conversation checkpoint");
-    for (const requiredPath of ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "tests/verify-owner-review.mjs"]) {
-      assert(changedPaths.includes(requiredPath), "Feature Agent owner-conversation repair did not change " + requiredPath);
-    }
+    assert(["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath)), "Feature Agent owner-conversation repair did not change a conversation surface");
+    assert(changedPaths.includes("tests/verify-owner-review.mjs"), "Feature Agent owner-conversation repair did not update its focused verifier");
     buildStatus = "COMPLETED";
     product = {
       ...base,

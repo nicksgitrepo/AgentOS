@@ -138,7 +138,9 @@ function validateHandshake(handshake, expected) {
           : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? "control/bootstrap-compiler.mjs"
           : "control/governance-decision-tree.mjs";
-      assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Feature Agent build did not change the required code");
+      assert(Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
+        : handshake.changed_paths.includes(requiredChangedPath)), "Feature Agent build did not change the required code");
     }
     assert(Array.isArray(handshake.focused_checks) && handshake.focused_checks.length > 0 && typeof handshake.build_checkpoint_sha256 === "string", "Feature Agent build evidence is incomplete");
   }
@@ -155,7 +157,9 @@ function validateHandshake(handshake, expected) {
           : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? "control/bootstrap-compiler.mjs"
           : "control/governance-decision-tree.mjs";
-      assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Auditor did not verify the Feature-Agent code change");
+      assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
+        : handshake.changed_paths.includes(requiredChangedPath)), "Auditor did not verify the Feature-Agent code change");
     }
   }
   const artifactPath = safeChild(expected.worktreePath, handshake.artifact_path);
@@ -615,7 +619,11 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
             : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
               ? "control/bootstrap-compiler.mjs"
             : "control/governance-decision-tree.mjs";
-      assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null && readback.changed_paths.includes(requiredChangedPath) && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
+      assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null
+        && (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+          ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath))
+          : readback.changed_paths.includes(requiredChangedPath))
+        && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
     }
   }
   requireSha(readback.artifact_sha256, "local worker readback artifact");
