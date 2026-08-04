@@ -484,17 +484,6 @@ export function renderOwnerReviewMarkdown(packet) {
   };
   const recommendedRoles = recommendedRoleModels(packet)
     .map(({role, model_class}) => `- ${roleLabels[role] ?? role}: ${friendlyModel(model_class)}`).join("\n");
-  const chatAlternatives = packet.model_candidates.chat_review_levels
-    .map((candidate) => `- ${candidate.level}: ${friendlyModel(candidate.model_class)} — ${candidate.guidance.reason} Cost ${candidate.guidance.economy.toLowerCase()}, speed ${candidate.guidance.speed.toLowerCase()}, fit for ${candidate.guidance.difficulty.toLowerCase().replaceAll("_", " ")} work.`)
-    .join("\n");
-  const roleAlternatives = MODEL_ROLES.map((role) => {
-    const label = roleLabels[role] ?? role;
-    const candidates = packet.model_candidates.campaign_role_candidates
-      .filter((candidate) => candidate.role === role)
-      .map((candidate) => `${friendlyModel(candidate.model_class)} — ${candidate.guidance.reason} Cost ${candidate.guidance.economy.toLowerCase()}, speed ${candidate.guidance.speed.toLowerCase()}, fit for ${candidate.guidance.difficulty.toLowerCase().replaceAll("_", " ")} work.`)
-      .join("; ");
-    return `- ${label}: ${candidates}`;
-  }).join("\n");
   const list = (values) => values.length > 0 ? values.map((value) => `- ${value}`).join("\n") : "- None recorded";
   return [
     "# Let's talk about the next useful step",
@@ -502,6 +491,8 @@ export function renderOwnerReviewMarkdown(packet) {
     "This is a private planning conversation about what you want to do next. Nothing will be changed, published, merged, deployed, or spent because of this conversation.",
     "",
     "Talk naturally, as if you were explaining the project to a thoughtful teammate. Short answers are fine, and you can use voice if that is easier.",
+    "Start with: \"Tell me about what you're building. Who is it for, and what made you want it?\"",
+    "Use plain everyday language, like you are explaining it to a friend. The context below is already known, so do not make the owner repeat it.",
     "",
     "## What is true about the project right now",
     "",
@@ -514,23 +505,33 @@ export function renderOwnerReviewMarkdown(packet) {
     "Already accepted:", list(packet.current_project.accepted_capabilities), "",
     "Still uncertain or unfinished:", list([...packet.current_project.working_unaccepted, ...packet.current_project.known_flaws, ...packet.current_project.unavailable]), "",
     "## Start with one question", "",
-    "What outcome would make the next step worthwhile?",
+    "Tell me about what you're building. Who is it for, and what made you want it?",
     "",
-    "Answer this one first. The next short question will depend on what you say; you do not need to complete a checklist.",
+    "Answer this one first. I will ask one short, natural follow-up at a time, and the next question will depend on what you say. You do not need to complete a checklist.",
     "",
-    "The current suggested boundary is:", packet.candidate_campaign.owner_outcome, "",
-    "The smallest complete result currently suggested is:", packet.candidate_campaign.first_useful_workflow, "",
-    "## Model and time suggestion", "",
-    `For this conversation, ${friendlyLevel} is suggested. The campaign model suggestions are:`, recommendedRoles, "",
-    "Here are the available conversation levels so you can compare the tradeoff:", chatAlternatives, "",
-    "Here are the available role choices and how they trade cost, speed, and reasoning:", roleAlternatives, "",
+    "Use only the prompts that are needed; they are examples, not a fixed script:",
+    "1. What would you love this to make easier?",
+    "2. What would you like the first version to do?",
+    "3. What should stay just as you imagine it, and what can wait?",
+    "4. Is there anything this should never touch, change, share, or do without you?",
+    "5. Should we keep it economical, move quickly, be extra careful, or should I recommend a balance?",
+    "",
+    "Keep the packet, internal field names, hashes, and technical governance terms in the background. Do not expose schema questions. Ask a technical or operational question only when a genuine boundary or lasting decision requires it.",
+    "If a lasting choice is needed, explain it in plain language with simple tradeoffs and a recommendation. If the owner says \"do what you recommend,\" record that preference while preserving the later exact-approval gate.",
+    "At the end, play the plan back in ordinary language and ask whether it sounds right.",
+    "",
+    "The current suggested boundary, in everyday terms, is:", packet.candidate_campaign.owner_outcome, "",
+    "The smallest result that currently seems worth building is:", packet.candidate_campaign.first_useful_workflow, "",
+    "## A practical suggestion", "",
+    `For this conversation, ${friendlyLevel} is suggested. For the build itself, the current recommendation is ${friendlyModel(chat.model_class)}.`,
+    "The role recommendations are:", recommendedRoles, "",
     `This task is currently described as ${packet.candidate_campaign.task_profile.difficulty.toLowerCase().replaceAll("_", " ")} work, with ${packet.candidate_campaign.task_profile.time_sensitivity.toLowerCase()} time sensitivity and ${packet.candidate_campaign.task_profile.cost_sensitivity.toLowerCase()} cost sensitivity.`, "",
-    "These are recommendations, not commitments. Tell me if you care most about saving cost, finishing quickly, or getting the strongest reasoning, and I will reflect that preference.",
+    "These are recommendations, not commitments. Tell me naturally if you care most about saving cost, finishing quickly, or getting the strongest reasoning, and I will reflect that preference.",
     "",
     "## How to return the conversation", "",
-    "When we are finished, reply with a short note using plain-language headings such as `What I want`, `Who it helps`, `What should change`, `What should stay`, `What can wait`, `Model preference`, and `Anything unresolved`. Do not say that the project changed. AgentOS will turn the note into a bound candidate and show the owner the exact result for separate approval.",
+    "When we are finished, I will play the plan back in ordinary language. You may answer in your own words; headings are optional. Do not say that the project changed. AgentOS will turn the conversation into a bound candidate and show the owner the exact result for separate approval. Saying that the plan sounds right is not approval by itself.",
     "",
-    `Keep this conversation scoped to review ${packet.review.review_id}; project memory is helpful context, but it never outranks the current project and its boundaries.`,
+    "Keep this conversation scoped to this project; memory is helpful for continuity, but it never outranks the current context or its boundaries.",
     "",
   ].join("\n");
 }

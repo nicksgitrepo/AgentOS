@@ -6,16 +6,37 @@ The Campaign Orchestrator creates a read-only packet from the current project co
 
 ## Owner-facing conversation
 
-The Markdown handoff starts with one short natural question. The next question is chosen after the owner responds. The handoff does not expose phase names, field names, hashes, or a large technical checklist. It should feel like a thoughtful teammate asking one useful question at a time.
+Begin with an open invitation such as:
 
-The conversation gradually covers:
+> Tell me about what you’re building. Who is it for, and what made you want it?
 
-- the outcome and the people it should help;
-- what should change, stay familiar, or wait;
-- the smallest complete result that would let the owner stop honestly;
-- anything unsafe, private, costly, irreversible, or outside the boundary;
-- the tradeoff between economy, speed, and reasoning strength;
-- what remains unclear or needs correction.
+Let the owner explain the project in their own words. Reflect what they say,
+then ask one short, natural follow-up at a time. The owner should never have to
+translate their idea into governance language. The assistant quietly maps the
+story, the needed follow-ups, and a friendly recap to the required fields; the
+underlying field names are not user-facing.
+
+Use only the prompts that are needed:
+
+1. What would you love this to make easier?
+2. What would you like the first version to do?
+3. What should stay just as you imagine it, and what can wait?
+4. Is there anything this should never touch, change, share, or do without you?
+5. Should we keep it economical, move quickly, be extra careful, or should I recommend a balance?
+
+These are prompts, not a checklist. Skip anything already clear from the packet
+or the owner’s story. Ask a technical or operational question only when a real
+boundary or lasting decision remains. Explain that decision in plain language,
+with simple tradeoffs and a recommendation. If the owner says “do what you
+recommend,” record that preference while preserving the later exact-approval
+gate.
+
+Do not ask the owner to rediscover facts already supplied in the packet. Keep
+the packet, source binding, internal field names, hashes, and return contract in
+the background. At the end, play back the plan in ordinary language and ask
+whether it sounds right. The return contains one canonical JSON payload.
+Narrative is advisory. Memory can supply continuity, but it cannot override the
+current packet, source, policy epoch, or owner boundary.
 
 The owner may return plain Markdown, a private file, an admitted Git handoff, or an authorized connected conversation. A structured return is an adapter option, not a user-facing checklist. The natural return is held when a material answer or confirmation is missing; it is never silently filled from the old packet. A structured return preserves the conversation, owner confirmations, and unresolved items.
 

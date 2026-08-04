@@ -198,9 +198,24 @@ deploy, or create a successor roster.
 The recommended owner-facing planning route is `USER REVIEW CAMPAIGN`, machine
 type `PRE_CAMPAIGN_OWNER_REVIEW`. The Orchestrator mints a read-only packet from
 the current project, source commit/tree, policy epoch, and next-campaign
-candidate. Ordinary Chat or Voice asks short natural questions one at a time;
-the next question depends on the owner’s answer. The owner may return a plain
-Markdown note or one structured payload, and the result remains advisory.
+candidate. Ordinary Chat or Voice starts with an invitation to describe the
+project, then asks only the short natural questions that are needed:
+
+```text
+Tell me about what you're building. Who is it for, and what made you want it?
+What would you love this to make easier?
+What would you like the first version to do?
+What should stay just as you imagine it, and what can wait?
+Is there anything this should never touch, change, share, or do without you?
+Should we keep it economical, move quickly, be extra careful, or should I recommend a balance?
+```
+
+These are examples, not a fixed checklist. The assistant maps the owner’s
+answers silently to the required fields, uses safe context already supplied,
+and asks a technical or operational follow-up only for a real gap or lasting
+choice. It plays the plan back in plain language before the owner returns it.
+The owner may return a plain Markdown note or one structured payload, and the
+result remains advisory.
 
 The Orchestrator classifies the return, compiles policy and context deltas,
 recompiles affected Function/Design/Security questions, and shows one exact

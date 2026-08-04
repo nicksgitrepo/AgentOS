@@ -169,8 +169,14 @@ try {
   validateOwnerReviewPacket(packet);
   const renderedPacket = renderOwnerReviewMarkdown(packet);
   assert(renderedPacket.includes("Let's talk about the next useful step"));
-  assert(!renderedPacket.includes("PRE_CAMPAIGN_OWNER_REVIEW"));
+  assert(renderedPacket.includes("Tell me about what you're building"));
+  assert(renderedPacket.includes("do what you recommend"));
+  assert(renderedPacket.includes("Do not expose schema questions"));
+  assert(renderedPacket.includes("they are examples, not a fixed script"));
+  assert(renderedPacket.includes("plain everyday language"));
   assert(!renderedPacket.includes("source_binding"));
+  assert(!renderedPacket.includes("What is the smallest complete proving workflow?"));
+  assert(!renderedPacket.includes("PRE_CAMPAIGN_OWNER_REVIEW"));
   assert.equal((renderedPacket.match(/```json/gu) || []).length, 0);
 
   const conversationalReturn = parseOwnerReviewReturnMarkdown([
