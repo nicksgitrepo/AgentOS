@@ -308,7 +308,7 @@ const AUDITOR_RECHECK_BRANCH = `} else if (role === "INDEPENDENT_AUDITOR") {
     focusedChecks = runFocusedChecks(featureWorktree);
     buildStatus = "AUDIT_VERIFIED";
     product = {
-      ...initialProduct,
+      ...product,
       task_id: taskId,
       task_kind: taskKind,
       audit_status: "GOVERNANCE_EVIDENCE_VERIFIED",
