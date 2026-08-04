@@ -411,6 +411,10 @@ function processAlive(pid) {
   }
 }
 
+function compareFindingIds(left, right) {
+  return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
+}
+
 function reconcileExitedSessionRecords(entries) {
   return entries.map((entry) => {
     if (entry.record.status === "RUNNING" && !processAlive(entry.record.pid)) {
@@ -437,6 +441,59 @@ function sessionIsHealthy({record, sourceCommit, sourceTree}) {
       sourceTree,
     });
     return record.status === "RUNNING" && heartbeat.status === "RUNNING" && processAlive(record.pid);
+  } catch {
+    return false;
+  }
+}
+
+function durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree}) {
+  const heartbeat = (() => {
+    try {
+      return readJson(record.heartbeat_path);
+    } catch {
+      return null;
+    }
+  })();
+  let heartbeatValid = false;
+  try {
+    validateLocalDurableSessionRecord(record);
+    validateLocalWorkerHeartbeat(heartbeat, {
+      role: record.role,
+      sessionId: record.session_id,
+      campaignId: record.campaign_id,
+      campaignVersion: record.campaign_version,
+      candidateSha256: record.candidate_sha256,
+      sourceCommit: record.source_commit,
+      sourceTree: record.source_tree,
+    });
+    heartbeatValid = true;
+  } catch {
+    heartbeatValid = false;
+  }
+  const processIsAlive = processAlive(record.pid);
+  return {
+    role: record.role,
+    session_id: record.session_id,
+    task_id: record.task_id,
+    task_kind: record.task_kind,
+    pid: record.pid,
+    process_alive: processIsAlive,
+    record_status: record.status,
+    heartbeat_status: heartbeat?.status ?? null,
+    heartbeat_session_pid: heartbeat?.session_pid ?? null,
+    heartbeat_valid: heartbeatValid,
+    source_aligned: record.source_commit === sourceCommit && record.source_tree === sourceTree,
+    session_record_path: path.relative(campaignRoot, target),
+    source_commit: record.source_commit,
+    source_tree: record.source_tree,
+    repair_required: !processIsAlive || !heartbeatValid || heartbeat?.status !== "RUNNING" || heartbeat?.session_pid !== record.pid,
+  };
+}
+
+function durableSessionFailureRepairPresent(repositoryRoot) {
+  try {
+    const runtimeSource = fs.readFileSync(path.join(repositoryRoot, "control/local-agent-runtime.mjs"), "utf8");
+    return runtimeSource.includes("return markDurableWorkerSessionFailed({sessionRecordPath");
   } catch {
     return false;
   }
@@ -605,29 +662,14 @@ function durableSessionTestFinding(campaignRoot) {
   };
 }
 
-function durableSessionLivenessFinding({campaignRoot, handoff, sourceCommit, sourceTree}) {
+function durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree}) {
   if (handoff.campaign_active !== true) return null;
+  if (durableSessionFailureRepairPresent(repositoryRoot)) return null;
   const entries = sessionEntries(campaignRoot, handoff);
   const unhealthy = entries
     .filter(({record}) => record.status === "RUNNING")
-    .filter(({record}) => !sessionIsHealthy({record, sourceCommit, sourceTree}))
-    .map(({target, record}) => {
-      const heartbeat = readJson(record.heartbeat_path);
-      return {
-        role: record.role,
-        session_id: record.session_id,
-        task_id: record.task_id,
-        task_kind: record.task_kind,
-        pid: record.pid,
-        process_alive: processAlive(record.pid),
-        record_status: record.status,
-        heartbeat_status: heartbeat?.status ?? null,
-        heartbeat_session_pid: heartbeat?.session_pid ?? null,
-        session_record_path: path.relative(campaignRoot, target),
-        source_commit: record.source_commit,
-        source_tree: record.source_tree,
-      };
-    })
+    .map(({target, record}) => durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree}))
+    .filter((entry) => entry.repair_required)
     .sort((left, right) => left.session_id.localeCompare(right.session_id));
   if (unhealthy.length === 0) return null;
   const sourceSha256 = supervisorDigest({source_commit: sourceCommit, source_tree: sourceTree, unhealthy_sessions: unhealthy});
@@ -715,24 +757,8 @@ function recordOrphanedSessionRca({campaignRoot, handoff, entries, sourceCommit,
 function recordUnhealthySessionRca({campaignRoot, handoff, entries, sourceCommit, sourceTree}) {
   const unhealthy = entries
     .filter(({record}) => record.status === "RUNNING")
-    .filter(({record}) => !sessionIsHealthy({record, sourceCommit, sourceTree}))
-    .map(({target, record}) => {
-      const heartbeat = readJson(record.heartbeat_path);
-      return {
-        role: record.role,
-        session_id: record.session_id,
-        task_id: record.task_id,
-        task_kind: record.task_kind,
-        pid: record.pid,
-        process_alive: processAlive(record.pid),
-        record_status: record.status,
-        heartbeat_status: heartbeat?.status ?? null,
-        heartbeat_session_pid: heartbeat?.session_pid ?? null,
-        session_record_path: path.relative(campaignRoot, target),
-        source_commit: record.source_commit,
-        source_tree: record.source_tree,
-      };
-    })
+    .map(({target, record}) => durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree}))
+    .filter((entry) => entry.repair_required)
     .sort((left, right) => left.session_id.localeCompare(right.session_id));
   if (unhealthy.length === 0) return null;
   const observationSha256 = supervisorDigest({source_commit: sourceCommit, source_tree: sourceTree, unhealthy_sessions: unhealthy});
@@ -1023,8 +1049,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: durableSessionFinding.source_sha256,
       });
     }
-    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, sourceCommit, sourceTree});
+    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree});
     if (durableSessionLiveness !== null) findings.push(durableSessionLiveness);
+    findings.sort((left, right) => compareFindingIds(left.finding_id, right.finding_id));
     const autonomousFinding = autonomousTaskFinding({
       campaignRoot,
       handoff,
@@ -1033,7 +1060,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       activeCampaign: handoff.campaign_active === true,
     });
     if (autonomousFinding !== null) findings.push(autonomousFinding);
-    findings.sort((left, right) => left.finding_id.localeCompare(right.finding_id));
+    findings.sort((left, right) => compareFindingIds(left.finding_id, right.finding_id));
     const ownerDecisionRequired = handoff.owner_decision_required === true;
     return compileSupervisorObservation({
       controllerDisplayName: handoff.controller_display_name ?? "AgentOS Controller",
@@ -1079,7 +1106,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
     const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
-    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, sourceCommit, sourceTree});
+    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree});
     const governanceEvidenceRepair = goal.finding_ids.includes(gateFinding.finding_id);
     const governanceEvidenceFinding = governanceEvidenceRepair ? {
       finding_id: gateFinding.finding_id,
@@ -1504,12 +1531,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const checkpointOnCurrentSource = campaignProgress === null
       ? false
       : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
-    const existingSessions = reconcileExitedSessionRecords(sessionEntries(campaignRoot, handoff));
+    const existingSessions = sessionEntries(campaignRoot, handoff);
     const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext});
+    const unhealthySessionRca = recordUnhealthySessionRca({campaignRoot, handoff, entries: existingSessions, sourceCommit, sourceTree});
+    reconcileExitedSessionRecords(existingSessions);
     const orphanedSessionRca = recordOrphanedSessionRca({campaignRoot, handoff, entries: existingSessions, sourceCommit, sourceTree});
     const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
       .filter(({record}) => record.status === "FAILED")
       .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256)
+      .concat(unhealthySessionRca === null ? [] : [unhealthySessionRca.rca_sha256])
       .concat(orphanedSessionRca === null ? [] : [orphanedSessionRca.rca_sha256]);
     if (existingSessions.length === 3 && existingSessions.every((entry) => sessionIsHealthy({record: entry.record, sourceCommit, sourceTree}))) {
       return {
