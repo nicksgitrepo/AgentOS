@@ -1,0 +1,125 @@
+{
+  "schema": "agentos.bootstrap_plan_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Compile discovery and the smallest material owner answers into one exact, reviewable, resumable Bootstrap creation plan.",
+  "question_rule": "Ask only the earliest unresolved field whose answer cannot be discovered, safely defaulted, derived, or deferred without changing the first route, authority, proof, rollback, or owner boundary. The canonical output-gap matrix is the question planner's authority.",
+  "required_output_groups": [
+    "PROJECT_DEFINITION",
+    "PROJECT_IMPORT",
+    "SOURCE_PRESERVATION",
+    "NORMALIZATION_POLICY",
+    "STANDARDS_REGISTRY",
+    "NORTH_STAR",
+    "FIRST_USEFUL_WORKFLOW",
+    "PROJECT_LIFE_CONTRACT",
+    "FUNCTION_REQUIREMENTS",
+    "TECHNICAL_BASELINE",
+    "DELIVERY_POLICY",
+    "DELIVERY_TARGET",
+    "DESIGN_BIBLE",
+    "SECURITY_BASELINE",
+    "AUTHORITY_BOUNDARIES",
+    "BOUNDARY_CONTRACT",
+    "AUTHORITY_CORPUS",
+    "MODEL_POLICY",
+    "GLOBAL_POLICY_STATE",
+    "OWNER_REVIEW",
+    "PERSISTENT_RUNTIME",
+    "FIRST_CAMPAIGN",
+    "EXACT_CREATION_PLAN"
+  ],
+  "approval": {
+    "decision": "APPROVE_EXACT_PLAN",
+    "rule": "Bootstrap displays the complete plan and SHA-256 before approval. The approval receipt binds the exact pre-approval plan body digest, discovery digest, actor, time, and execution boundary; changing the approved body invalidates the receipt even if a new outer plan digest is computed. A generic PROCEED answer is insufficient.",
+    "toctou": "Re-read discovery, source identities, destination containment, and plan digest immediately before each external side effect. A mismatch returns to planning without mutation."
+  },
+  "plan_identity": {
+    "required_fields": ["project_root", "control_plane_root", "control_plane", "discovery_mode", "discovery_digest_sha256", "answers_sha256", "required_output_groups", "bootstrap_coverage", "plan_sha256"],
+    "rule": "The exact plan always binds the canonical project root, the separate control-plane root and binding, the discovery mode and digest used to compile it, and the imported source content and filesystem observation when a legacy corpus is selected. Before staging, Bootstrap re-observes both roots and refuses changed discovery, source bytes, or imported source identity."
+  },
+  "execution": {
+    "phases": ["PLANNED", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"],
+    "control_plane_rule": "Stage, seal, and promote AgentOS authority and state inside the bound control-plane root. The product root is read for discovery and delivery probes and remains free of AgentOS control artifacts unless the plan carries IN_PROJECT_OPT_IN.",
+    "rule": "Stage writes under a contained temporary directory in the bound control plane, seal the complete staged file inventory and digest, verify readback and all receipts, then promote each exact staged root without overwriting a different digest. Resume from the last sealed phase using the same plan and staged inventory; already promoted exact roots are accepted, different bytes are rejected, and repeat execution is idempotent.",
+    "legacy_gate": "When an existing authority corpus is imported or refactored, legacy.zip, legacy.manifest.json, legacy.index.jsonl, and legacy.receipt.json are created and verified before replacement corpus writes.",
+    "project_import_gate": "When an existing project is imported, source-preservation.zip, source-preservation.manifest.json, source-preservation.index.jsonl, source-preservation.receipt.json, and import-exclusions.md are created and verified before build or normalization."
+  },
+  "security_baseline": {
+    "required": ["standard_identity", "version", "standard_sha256", "requirement_ids"],
+    "rule": "The security standard identity, version, requirement IDs, and their digest are explicit and content-addressed."
+  },
+  "delivery_policy": {
+    "contract": "schemas/delivery-policy.v1.json",
+    "required_fields": ["delivery_policy", "delivery_target", "delivery_probe_plan"],
+    "binding_rule": "The delivery policy, explicit delivery target, read-only probe plan, exact creation plan, discovery digest, and final Bootstrap plan digest must bind one another."
+  },
+  "project_life_contract": {
+    "controller": "control/project-life-contract.mjs",
+    "contract": "schemas/project-life-contract.v1.json",
+    "rule": "Maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement are one compact owner-intent contract. A private-prototype default is allowed only when no material route, audience, data, or lifetime signal exists."
+  },
+  "boundary_contract": {
+    "controller": "control/boundary-contract.mjs",
+    "contract": "schemas/boundary-contract.v1.json",
+    "rule": "Constitutional, owner-sovereign, derived-operating, and temporary-probe boundaries are explicit. More restrictive boundaries win; project extensions cannot weaken the portable kernel or owner authority."
+  },
+  "project_import": {
+    "controller": "control/project-import.mjs",
+    "contract": "schemas/project-import.v1.json",
+    "rule": "Adopt in place, clean copy, normalize and audit, and reconstruct from intent are distinct typed modes. Preservation artifacts follow the bound control-plane storage mode; the source remains untouched until an exact reversible cutover."
+  },
+  "control_plane": {
+    "controller": "control/control-plane-root.mjs",
+    "contract": "schemas/control-plane-root.v1.json",
+    "storage_backends": ["LOCAL", "GIT", "HYBRID"],
+    "rule": "The AgentOS home is separate from the Product by default and contains the wiki, governance, tooling, agent notes, conversations, handoffs, campaign state, evidence, and source preservation. The Product repository remains release-clean."
+  },
+  "normalization_policy": {
+    "controller": "control/normalization-policy.mjs",
+    "contract": "schemas/normalization-policy.v1.json",
+    "rule": "External, persisted, and public contracts outrank language, framework, project glossary, and AgentOS fallback conventions. Full refactoring runs as the first governed campaign."
+  },
+  "standards_registry": {
+    "controller": "control/standards-registry.mjs",
+    "contract": "schemas/standards-registry.v1.json",
+    "rule": "Standards are version-pinned, source-bound, applicability-scoped, and assigned a role; typed project overlays can only add stricter requirements."
+  },
+  "delivery_target": {
+    "controller": "control/delivery-target.mjs",
+    "contract": "schemas/delivery-target.v1.json",
+    "rule": "A target family, maturity mode, audience, data posture, authentication route, limitations, and optional project-bound adapter are content-addressed. Managed-site prototype and limited-product routes are available without implying production capability."
+  },
+  "bootstrap_coverage": {
+    "controller": "control/bootstrap-coverage.mjs",
+    "contract": "schemas/bootstrap-coverage.v1.json",
+    "required_fields": ["schema", "discovery_digest_sha256", "answers_sha256", "outputs", "material_gaps", "coverage_sha256"],
+    "rule": "Every required setup obligation has one deterministic row with applicability, provenance, status, safe default, probe requirement, owner boundary, unavailable behavior, reopen triggers, dependencies, and exact compiled field paths. Material gaps block exact-plan compilation."
+  },
+  "exact_creation_plan_binding": {
+    "required_fields": ["exact_creation_plan.bootstrap_coverage_sha256", "exact_creation_plan.project_life_contract_sha256", "exact_creation_plan.delivery_target_sha256", "exact_creation_plan.boundary_contract_sha256", "exact_creation_plan.standards_registry_sha256", "exact_creation_plan.normalization_sha256", "exact_creation_plan.project_import_sha256", "exact_creation_plan.global_policy_state_sha256", "exact_creation_plan.owner_review_policy_sha256"],
+    "rule": "The exact creation plan must carry the exact coverage, life-contract, delivery-target, boundary, standards, normalization, project-import, global-policy, and owner-review digests. A plan cannot be approved when any required contract is pending or differs."
+  },
+  "delivery_probe_gate": {
+    "contract": "schemas/delivery-probes.v1.json",
+    "staged_result": "delivery.probe.results.json",
+    "rule": "Execution runs the five-probe read-only plan before setup writes continue. The result is bound to the approved plan digest, delivery-policy digest, discovery digest, and canonical project root; owner-boundary probes remain NOT_RUN_OWNER_BOUNDARY."
+  },
+  "owner_review_handoff": {
+    "controller": "control/bootstrap-compiler.mjs",
+    "operation": "compileBootstrapOwnerReviewHandoff",
+    "execution_option": "executeBootstrapPlan.ownerReview",
+    "outputs": ["<project-context-root>/owner-review/packet.json", "<project-context-root>/owner-review/handoff.md"],
+    "rule": "Bootstrap can materialize the provider-neutral User Review Campaign handoff only when the caller supplies a current source binding, typed project summary, question inventory, candidate campaign, transport binding, and a host model catalog. Missing host or source observations fail closed; policy metadata alone is not presented as a handoff."
+  },
+  "agentos_controller": {
+    "controller": "control/agentos-controller.mjs",
+    "contract": "schemas/agentos-controller.v1.json",
+    "state_path": "agentos/controller-state.json",
+    "storage_rule": "The state path is relative to the bound control-plane root, not the product root, unless IN_PROJECT_OPT_IN is explicit.",
+    "initialization": "Bootstrap must stage a persistent AGENTOS_CONTROLLER state bound to the exact project policy and an independent project-bound Controller Runtime readback before setup audit can pass.",
+    "campaign_boundary": "The project-level Controller persists across campaigns; CAMPAIGN_ORCHESTRATOR remains campaign-scoped."
+  },
+  "extension_boundary": "Project-specific context can fill typed fields and add stricter clauses, but cannot remove required output groups, weaken lifecycle, change acceptance roots, or replace the portable kernel."
+}

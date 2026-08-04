@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.standards_registry_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/standards-registry.mjs",
+  "result": "agentos.standards_registry.v1",
+  "purpose": "Pin external standards and AgentOS normalization baselines without turning every process or awareness reference into a Product acceptance gate.",
+  "roles": [
+    "NORMATIVE_GATE_SOURCE",
+    "PROCESS_BASELINE",
+    "INTERCHANGE_STANDARD",
+    "AWARENESS_CROSSCHECK",
+    "PROJECT_CONTEXT_OVERLAY"
+  ],
+  "gate_roots": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY", "NONE"],
+  "baseline_rule": "Every selected requirement binds standard_id, version, source, atomic identity, applicability, and evidence. A process baseline or awareness cross-check is not a Product pass by itself.",
+  "extension_rule": "Project context may add typed standards and stricter requirements only; it cannot remove, replace, collide with, or weaken a pinned baseline.",
+  "minimum_entry_fields": [
+    "standard_id", "title", "authority", "version", "role", "status", "source", "applies_when", "gate_root", "requirement_identity_rule", "minimum_evidence", "rule"
+  ]
+}

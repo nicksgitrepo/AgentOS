@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.bootstrap_interview_compatibility_import.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "RETAINED_COMPATIBILITY_IMPORT_ONLY_NOT_NORMATIVE",
+  "canonical_controller": "control/bootstrap-compiler.mjs",
+  "canonical_contract": "schemas/bootstrap-plan.v1.json",
+  "rule": "The former interview exchange is a migration transport only. Its records must be normalized into typed answers, exact discovery identity, and the canonical creation plan before any execution delegated to the canonical controller.",
+  "approval": "APPROVE_EXACT_PLAN",
+  "forbidden": ["PROCEED", "phase executor", "temporary worker authority", "unbound owner response", "successor roster"]
+}

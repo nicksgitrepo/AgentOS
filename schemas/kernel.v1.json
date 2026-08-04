@@ -1,0 +1,236 @@
+{
+  "schema": "governance.portable_kernel.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Project-agnostic behavioral kernel for governed autonomous development.",
+  "mission": "Turn one clear owner outcome into working, verified, deployable software with the least necessary owner interruption, coordination, compute, and repeated work.",
+  "north_star_rule": "Maximize verified forward Product progress while preserving intent, truth, Design Bible, security, authority, reversibility, and recovery.",
+  "authority_order": [
+    "human_safety_and_emergency_authority",
+    "verified_law_and_regulation",
+    "explicit_current_owner_intent",
+    "accepted_source_backed_domain_and_engineering_truth",
+    "most_specific_governing_authority",
+    "portable_kernel",
+    "bounded_task_declaration",
+    "convenience_and_local_convention"
+  ],
+  "control_plane_states": [
+    "PASS",
+    "OPEN_REPAIR",
+    "UNKNOWN",
+    "OWNER_ONLY",
+    "ON_HOLD_DEPENDENT_OUTCOME"
+  ],
+  "product_acceptance": {
+    "controller": "control/question-tree.mjs",
+    "contract": "schemas/question-tree.v1.json",
+    "ordered_roots": [
+      "FUNCTION_REQUIREMENTS",
+      "DESIGN_BIBLE",
+      "SECURITY"
+    ],
+    "answer_values": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE",
+      "EXCEPTION_REQUESTED"
+    ],
+    "lifecycle_states": [
+      "UNEVALUATED",
+      "EVIDENCE_PENDING",
+      "OPEN_REPAIR",
+      "VERIFIED",
+      "INVALIDATED"
+    ],
+    "closure": "FUNCTION_REQUIREMENTS_PASS -> DESIGN_BIBLE_PASS -> SECURITY_PASS -> RC_READY",
+    "code_quality_rule": "Code quality and hygiene are audit disciplines, never a fourth Product root."
+  },
+  "campaign_lifecycle": {
+    "controller": "control/campaign-lifecycle.mjs",
+    "contract": "schemas/campaign-lifecycle.v1.json",
+    "stages": [
+      "BUILDING",
+      "TERMINAL_PROPOSED",
+      "FIRST_PASS_REPAIR_REQUIRED",
+      "TERMINAL_SETTLED",
+      "FINALIZER_ACTIVE",
+      "FINALIZER_COMPLETE",
+      "DELTA_AUDIT",
+      "READY_FOR_ACCEPTANCE",
+      "DEPLOYMENT_CLEARED",
+      "ACCEPTED_LIVE_PENDING_CLOSURE",
+      "ACCEPTED_LIVE_CLOSED"
+    ],
+    "holds": "Orthogonal to stage; hold only the dependent outcome and continue unrelated work.",
+    "heartbeat_policy_variable": "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES",
+    "default_heartbeat_minutes": 15,
+    "continuous_audit_sentinel": {
+      "controller": "control/continuous-audit-sentinel.mjs",
+      "contract": "schemas/continuous-audit-sentinel.v1.json",
+      "rule": "One read-only pinned sentinel remains bound to the campaign Auditor until the same canonical closure transition archives and unpins it."
+    },
+    "runtime": "One persistent Runtime identity continues across campaigns."
+  },
+  "campaign_cascade": {
+    "controller": "control/campaign-cascade.mjs",
+    "contract": "schemas/campaign-cascade.v1.json",
+    "disciplines": [
+      "FUNCTIONALITY",
+      "DESIGN_UI_SHELL_NAVIGATION",
+      "SECURITY",
+      "CODE_QUALITY_HYGIENE"
+    ],
+    "rule": "Builders advance through immutable checkpoints while applicable read-only audits run concurrently; a terminal settled checkpoint may enter one fresh Finalizer custody; delta audits recheck only invalidated and dependent questions.",
+    "finalizer": "The Finalizer never owns intent, acceptance, deployment, exceptions, or self-acceptance. The campaign root adopts its exact final commit and tree through a recorded handoff."
+  },
+  "global_policy": {
+    "controller": "control/global-policy-state.mjs",
+    "contract": "schemas/global-policy-state.v1.json",
+    "rule": "Declared policy variables are independently addressable, content-addressed, dependency-aware, and amended through exact owner approval. Constitutional rules cannot be weakened by a project amendment."
+  },
+  "agentos_controller": {
+    "controller": "control/agentos-controller.mjs",
+    "contract": "schemas/agentos-controller.v1.json",
+    "name": "AGENTOS_CONTROLLER",
+    "scope": "PROJECT_PERSISTENT",
+    "controller_agent": "Judgment, interpretation, planning, and routing; wakes only when a material decision requires it.",
+    "controller_runtime": "Deterministic event loop, state transaction, timer, adapter, lease, session, worktree, test, deployment, and readback boundary.",
+    "campaign_orchestrator": "CAMPAIGN_SCOPED",
+    "runtime_rule": "No consequential transition completes until a project-bound adapter performs the action and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
+    "reconciliation_interval_minutes": 30,
+    "activation": "The controller remains PREPARED_NOT_ACTIVATED and cannot rebind an active Product campaign without explicit owner approval."
+  },
+  "campaign_policy": {
+    "controller": "control/campaign-policy-reconcile.mjs",
+    "contract": "schemas/campaign-policy-reconcile.v1.json",
+    "rule": "Every approved mutable policy change compiles a current campaign projection and an explicit rotation, invalidation, recompile, and assignment action set at its declared boundary."
+  },
+  "campaign_state_owner": {
+    "controller": "control/campaign-state-owner.mjs",
+    "contract": "schemas/campaign-state-owner.v1.json",
+    "rule": "The canonical campaign transition owns lifecycle and cascade mutation together, validates one aligned bridge before and after the transition, and emits one serialized state result. Low-level validators are not an alternate admission path."
+  },
+    "owner_review": {
+    "controller": "control/owner-review.mjs",
+    "contract": "schemas/owner-review.v1.json",
+    "review_type": "PRE_CAMPAIGN_OWNER_REVIEW",
+      "rule": "The User Review Campaign is advisory and pre-admission. It can clarify intent, campaign shape, and model recommendations, but it cannot write Product, spawn Product agents, authorize spending, publish, merge, deploy, delete, or activate without a separate exact authenticated approval."
+    },
+    "agentos_controller_initialization": {
+      "controller": "control/agentos-controller.mjs",
+      "contract": "schemas/agentos-controller.v1.json",
+      "state_path": "agentos/controller-state.json",
+      "storage_rule": "state_path is relative to the bound control-plane root; the product root is not used for controller state unless IN_PROJECT_OPT_IN is explicit.",
+      "rule": "Bootstrap must bind the project-persistent AGENTOS_CONTROLLER to the exact policy and an independent Controller Runtime readback before setup audit can pass."
+    },
+    "control_plane": {
+      "controller": "control/control-plane-root.mjs",
+      "contract": "schemas/control-plane-root.v1.json",
+      "default_mode": "EXTERNAL_DEFAULT",
+      "storage_backends": ["LOCAL", "GIT", "HYBRID"],
+      "rule": "AgentOS authority, conversations, controller state, campaign state, evidence, handoffs, and source-preservation records stay outside the product root by default. In-project storage requires an explicit opt-in binding.",
+      "product_root_rule": "The product root is the user's source and delivery space, not AgentOS's default state directory."
+    },
+    "bootstrap": {
+    "controller": "control/bootstrap-compiler.mjs",
+    "contract": "schemas/bootstrap-plan.v1.json",
+    "start_contract": "schemas/bootstrap-start.v1.json",
+    "start_command": "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED",
+    "start_rule": "A fresh agent binds both exact roots and runs the read-only start command before asking questions or creating setup state.",
+    "coverage": {
+      "controller": "control/bootstrap-coverage.mjs",
+      "contract": "schemas/bootstrap-coverage.v1.json",
+      "rule": "One deterministic output-gap row covers every material creation, trust, data, delivery, recovery, evidence, and activation obligation. Only material unresolved rows create questions or block exact-plan compilation."
+    },
+    "project_life_contract": {
+      "controller": "control/project-life-contract.mjs",
+      "contract": "schemas/project-life-contract.v1.json",
+      "rule": "Maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement are compact typed project context."
+    },
+    "boundary_contract": {
+      "controller": "control/boundary-contract.mjs",
+      "contract": "schemas/boundary-contract.v1.json",
+      "rule": "Constitutional, owner-sovereign, derived-operating, and temporary-probe boundaries are explicit; more restrictive boundaries win."
+    },
+    "project_import": {
+      "controller": "control/project-import.mjs",
+      "contract": "schemas/project-import.v1.json",
+      "rule": "A source-preserving import selects exactly one mode. Normalize and reconstruct modes run the full migration and four-lane audit as the first governed campaign; Bootstrap only authorizes and seals the inputs."
+    },
+    "normalization_policy": {
+      "controller": "control/normalization-policy.mjs",
+      "contract": "schemas/normalization-policy.v1.json",
+      "rule": "External and persisted compatibility outranks language, framework, glossary, and AgentOS fallback naming."
+    },
+    "standards_registry": {
+      "controller": "control/standards-registry.mjs",
+      "contract": "schemas/standards-registry.v1.json",
+      "rule": "Standards have explicit version, source, applicability, role, requirement identity, and evidence; project extensions can only be stricter."
+    },
+    "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably.",
+    "delivery_policy": {
+      "controller": "control/delivery-policy.mjs",
+      "contract": "schemas/delivery-policy.v1.json",
+      "probe_contract": "schemas/delivery-probes.v1.json",
+      "target_contract": "schemas/delivery-target.v1.json",
+      "local_checkpoint_readback": {
+        "controller": "control/repository-readback.mjs",
+        "contract": "schemas/repository-readback.v1.json",
+        "rule": "A local Git checkpoint must be read back from the actual worktree and upstream before clean/pushed handoff is admitted."
+      },
+      "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, and cost choices are typed project context. Bootstrap recommends route classes and target profiles and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
+    }
+  },
+  "platform_pool": {
+    "rule": "One campaign-local logical Platform Agent per materially used capability has one stable worktree and sequential supervision leases passed between Feature Agents. A second simultaneous supervisor is invalid.",
+    "controller": "control/campaign-lifecycle.mjs"
+  },
+  "runtime_and_successor": {
+    "runtime": "Persistent Runtime is never intentionally despawned between campaigns.",
+    "successor": "After current Auditor release clearance, orient only the next Campaign Orchestrator. No successor Auditor, Feature Agent, Platform Agent, writer lease, or campaign start exists before accepted-live closure and explicit next-campaign admission."
+  },
+  "context_separation": {
+    "project_context_template": "authority/templates/project-context.v1.json",
+    "kernel_forbidden": [
+      "project_name",
+      "repository_identity",
+      "repository_path",
+      "provider_account",
+      "deployment_target",
+      "task_or_thread_identity",
+      "domain_policy",
+      "credential"
+    ],
+    "extension_rule": "Project-specific context may add facts and stricter constraints but cannot weaken, replace, or reinterpret the portable kernel."
+  },
+  "failure_and_recovery": {
+    "ordinary_failure": "Repair inside current custody when a safe reversible route exists.",
+    "reframe": "One direct supervisor selects one materially different route after the governed trigger; equivalent retries stop.",
+    "true_boundary": "Escalate only for protected safety, law, security, privacy, credential, spending, destructive-production, promotion, topology, stack, or unresolved material-intent authority.",
+    "scope": "A genuine hold pauses only its dependent outcome; unaffected work continues.",
+    "ledger": "Living campaign state is append-only, content-addressed, compare-and-swap protected, and carried with the worktree."
+  },
+  "optional_assistant_exchange": {
+    "rule": "An assistant exchange is optional and advisory. Its transport, provider, model, and storage are supplied by typed project context. The Auditor binds exact source and chronology; an assistant cannot invent truth, write authority, change custody, or create a successor roster."
+  },
+  "portable_authority_format": {
+    "controller": "control/authority-corpus.mjs",
+    "article_blocks": {
+      "bootstrap": "000",
+      "governance": [1, 100],
+      "shared_project": [100, 200],
+      "first_feature_start": 200,
+      "feature_allocation": "SPARSE_CAPSULES",
+      "allocation": "IMMUTABLE_NO_RENUMBER_LOWEST_UNUSED_ID_UNSIGNED_UTF8_ORDER"
+    },
+    "allocation": "Preserve accepted allocations; assign the lowest unused sparse capsule or extension ID at or above 200 by unsigned UTF-8 order; never renumber accepted authority."
+  },
+  "activation": {
+    "status": "PREPARED_NOT_ACTIVATED",
+    "requires_explicit_owner_approval": true,
+    "does_not_rebind_product_campaign": true
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.legacy_preservation_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Preserve an imported authority corpus exactly before Bootstrap creates or rewrites its replacement.",
+  "artifacts": {
+    "archive": "legacy.zip",
+    "manifest": "legacy.manifest.json",
+    "index": "legacy.index.jsonl",
+    "receipt": "legacy.receipt.json"
+  },
+  "archive": {
+    "format": "deterministic UTF-8 stored ZIP",
+    "entry_names": "source-relative regular-file paths, sorted by unsigned UTF-8 bytes",
+    "timestamps": "zeroed by the deterministic ZIP writer",
+    "mode": "preserved regular-file permission bits",
+    "content": "exact source bytes at the read-only preservation boundary"
+  },
+  "source_observation": {
+    "required": ["repository", "commit", "tree", "dirty", "entries", "observation_sha256"],
+    "rule": "Capture Git commit/tree plus dirty and untracked status when available. A non-Git source is explicit. The pre-capture and pre-promotion observations must match exactly."
+  },
+  "default_exclusions": {
+    "directories": [".git", ".cache", ".next", ".turbo", "build", "coverage", "dist", "node_modules"],
+    "files": [".DS_Store"],
+    "swap_or_temporary_suffixes": [".swp", ".swo", ".tmp"]
+  },
+  "rejection": [
+    "source root is missing, non-canonical, or outside the admitted import boundary",
+    "source contains symbolic links or unsafe filesystem objects",
+    "destination is inside the source tree",
+    "an output already exists",
+    "archive, manifest, index, or receipt readback differs from the source plan",
+    "source commit, tree, dirty state, untracked inventory, or content changes during capture",
+    "size or publication policy cannot be satisfied without silently dropping a source path"
+  ],
+  "receipt": "The receipt binds source content, included and excluded records, archive, manifest, index, output directory, and creation time by SHA-256."
+}

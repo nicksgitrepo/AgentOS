@@ -1,0 +1,10 @@
+{
+  "schema": "governance.local_git_checkpoint_readback.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Provider-neutral local Git adapter that observes the actual worktree, upstream identity, cleanliness, and remote equality before a checkpoint is admitted.",
+  "required_fields": ["schema", "worktree_root", "worktree_id", "status", "local", "upstream", "proof"],
+  "proof_contract": "schemas/campaign-lifecycle.v1.json#repository_checkpoint_proof",
+  "rule": "The structural checkpoint compiler remains useful for synthetic fixtures, but a real local Git handoff must use an adapter readback. Missing Git, missing upstream, dirty files, or remote inequality remains unavailable or not-ready; no caller-supplied flags are promoted to clean and pushed by this adapter."
+}

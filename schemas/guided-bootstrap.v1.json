@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.guided_bootstrap_compatibility_import.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "RETAINED_COMPATIBILITY_IMPORT_ONLY_NOT_NORMATIVE",
+  "canonical_controller": "control/bootstrap-compiler.mjs",
+  "canonical_contract": "schemas/bootstrap-plan.v1.json",
+  "rule": "Older guided-bootstrap records may be translated into the canonical discovery-backed exact plan. This path has no independent setup authority; it may only delegate an approved exact plan to the canonical controller and cannot own authority, Product custody, or launch approval.",
+  "required_migration_outputs": ["typed_answers", "discovery_digest_sha256", "canonical_plan_sha256", "legacy_preservation_receipt_or_not_applicable"],
+  "forbidden": ["generic approval", "unbound Markdown truth", "provider-specific identity", "successor roster"]
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "agentos.bootstrap_start_result.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Provide the one deterministic, read-only first invocation for a fresh AgentOS Bootstrap agent.",
+  "invocation": {
+    "command": "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED",
+    "required_bindings": ["AGENTOS_ROOT", "PROJECT_ROOT"],
+    "path_rule": "Both roots are supplied by the user as exact absolute paths. PROJECT_ROOT is canonicalized and must be a real directory; AGENTOS_ROOT is the checkout containing this controller.",
+    "side_effects": "READ_ONLY_DISCOVERY_ONLY"
+  },
+  "result": {
+    "required_fields": [
+      "schema",
+      "version",
+      "governance_version",
+      "status",
+      "canonical_controller",
+      "agentos_root",
+      "project_root",
+      "control_plane_root",
+      "control_plane",
+      "initial_answers",
+      "discovery",
+      "question_plan",
+      "next_action",
+      "start_sha256"
+    ],
+    "status": "READ_ONLY_DISCOVERY_COMPLETE",
+    "binding": "start_sha256 is the SHA-256 of the complete result with start_sha256 omitted; discovery and question_plan retain their own exact digests; control_plane binds the default external storage decision without creating that folder."
+  },
+  "safety": {
+    "must_not": [
+      "AUTHENTICATE",
+      "READ_OR_STORE_SECRETS",
+      "SPEND",
+      "PUBLISH",
+      "PUSH",
+      "MERGE",
+      "DEPLOY",
+      "DELETE",
+      "CREATE_PRODUCT_AGENTS",
+      "CREATE_A_CAMPAIGN"
+    ],
+    "next_step": "Continue only through the canonical Bootstrap controller after the owner answers the material questions and approves the exact plan with APPROVE_EXACT_PLAN."
+  },
+  "extension_boundary": "Project-specific context may affect discovery facts and later typed answers, but cannot replace this invocation, weaken its read-only behavior, or alter the canonical controller."
+}

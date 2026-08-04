@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.campaign_policy_reconcile_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Project-neutral projection and boundary application for mutable campaign policy.",
+  "projection": {
+    "controller": "control/campaign-policy-reconcile.mjs",
+    "required_fields": [
+      "schema", "campaign_id", "campaign_version", "policy_epoch", "policy_state_sha256",
+      "mode", "model_profile", "role_models", "heartbeat_interval_minutes", "projection_sha256"
+    ],
+    "rule": "Every campaign controller consumes a projection compiled from the current validated Global Policy State, not a caller-supplied model or mode label."
+  },
+  "reconciliation": {
+    "required_fields": [
+      "schema", "campaign_id", "campaign_version", "previous_projection_sha256", "next_projection_sha256",
+      "amendment_sha256", "policy_epoch", "policy_state_sha256", "rotations_required", "stale_session_ids",
+      "invalidated_question_ids", "recompile_targets", "next_assignments", "status", "reconciliation_sha256"
+    ],
+    "rule": "An approved amendment produces explicit rotations, invalidated question IDs, recompile targets, and next role assignments at its declared effective boundary."
+  },
+  "safety": [
+    "stale parent policy is rejected",
+    "an amendment cannot take effect before its declared boundary",
+    "affected role sessions are marked for rotation",
+    "the projection and reconciliation are independently content-addressed",
+    "provider and model names remain outside the portable kernel"
+  ]
+}

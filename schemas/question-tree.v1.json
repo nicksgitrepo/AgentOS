@@ -1,0 +1,182 @@
+{
+  "schema": "governance.portable_question_tree.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Project-agnostic executable Product acceptance and selective repair routing.",
+  "acceptance_roots": [
+    "FUNCTION_REQUIREMENTS",
+    "DESIGN_BIBLE",
+    "SECURITY"
+  ],
+  "ordered_admission": "FUNCTION_REQUIREMENTS_PASS -> DESIGN_BIBLE_PASS -> SECURITY_PASS -> RC_READY",
+  "answer_values": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE",
+    "EXCEPTION_REQUESTED"
+  ],
+  "lifecycle_states": [
+    "UNEVALUATED",
+    "EVIDENCE_PENDING",
+    "OPEN_REPAIR",
+    "VERIFIED",
+    "INVALIDATED"
+  ],
+  "separation_rule": "The answer describes the observed result. The lifecycle describes whether that result is current and usable. Invalidation changes lifecycle without rewriting the historical answer.",
+  "policy_amendment_invalidation": {
+    "controller_function": "invalidateQuestionsFromPolicyAmendment",
+    "rule": "A content-addressed policy amendment supplies the exact invalidated question IDs. Only those questions and their dependent children become INVALIDATED; unrelated verified answers are reused."
+  },
+  "root_statuses": [
+    "PASS",
+    "OPEN_REPAIR",
+    "UNKNOWN"
+  ],
+  "question_contract": {
+    "required_fields": [
+      "question_id",
+      "root",
+      "parent_question_id",
+      "source_authority",
+      "applicability",
+      "question",
+      "required_evidence",
+      "allowed_answers",
+      "branches",
+      "repair_owner_role",
+      "invalidation_conditions",
+      "blocking_scope",
+      "exception_policy"
+    ],
+    "source_authority_fields": [
+      "authority_id",
+      "version",
+      "sha256"
+    ],
+    "applicability_fields": [
+      "predicate_id",
+      "question"
+    ],
+    "evidence_binding_fields": [
+      "evidence_id",
+      "kind",
+      "sha256",
+      "commit_sha",
+      "worktree_id",
+      "build_identity",
+      "environment_id",
+      "observed_at_utc",
+      "question_tree_version"
+    ],
+    "evaluation_binding_fields": [
+      "commit_sha",
+      "worktree_id",
+      "relevant_hashes",
+      "build_identity",
+      "environment_id",
+      "question_tree_version"
+    ],
+    "exception_policy_fields": [
+      "allowed",
+      "granting_authority_ids",
+      "scope"
+    ]
+  },
+  "question_rules": [
+    "Every question is one observable yes-or-no proposition.",
+    "Every question ends with a question mark.",
+    "Every answer binds the exact evidence, commit, worktree, build, environment, observation time, and question-tree version.",
+    "Applicability is evaluated independently for every selected question.",
+    "A root with no selected questions carries one compact non-applicability proof.",
+    "Confidence scores, weighted aggregates, mostly-compliant states, and self-attested acceptance are forbidden."
+  ],
+  "slice_compiler": {
+    "inputs": [
+      "content-addressed source-clause library",
+      "exact changed paths and surfaces",
+      "prior valid answer cache",
+      "selective invalidation conditions"
+    ],
+    "outputs": [
+      "smallest applicable question slice",
+      "root non-applicability proof where applicable",
+      "reused evidence IDs",
+      "new evidence IDs",
+      "open repair IDs"
+    ],
+    "forbidden": [
+      "whole-library questionnaire on every edit",
+      "one narrative non-applicability answer per irrelevant question",
+      "agent judgment replacing deterministic proof",
+      "re-emitting unchanged answers as new events"
+    ]
+  },
+  "answer_lifecycle_contract": {
+    "YES": {
+      "required_lifecycle": "VERIFIED",
+      "route": "EVALUATE_DEPENDENT_CHILDREN"
+    },
+    "NO": {
+      "required_lifecycle": "OPEN_REPAIR",
+      "route": "TARGETED_REPAIR_CONTINUE_UNRELATED"
+    },
+    "UNKNOWN": {
+      "required_lifecycle": "EVIDENCE_PENDING or OPEN_REPAIR",
+      "route": "AUTONOMOUS_EVIDENCE_ACQUISITION"
+    },
+    "NOT_APPLICABLE": {
+      "required_lifecycle": "VERIFIED",
+      "route": "PRESERVE_APPLICABILITY_PROOF"
+    },
+    "EXCEPTION_REQUESTED": {
+      "requested_lifecycle": "OPEN_REPAIR",
+      "authorized_lifecycle": "VERIFIED",
+      "route": "NAMED_AUTHORITY_ONLY"
+    },
+    "INVALIDATED": {
+      "rule": "Any prior answer may be retained with INVALIDATED lifecycle until a new current observation is recorded. It cannot contribute to PASS."
+    }
+  },
+  "owner_boundary_contract": {
+    "rule": "True owner boundaries are a separate blocker object, never a fourth Product root or a replacement answer.",
+    "required_fields": [
+      "owner_boundary_class",
+      "authority_boundary_id",
+      "blocker_evidence_sha256",
+      "smallest_owner_action",
+      "attempted_safe_alternatives",
+      "unaffected_work"
+    ],
+    "scope": "Pause only the affected outcome; continue unrelated work."
+  },
+  "evidence_cache": {
+    "reuse_rule": "Reuse only when the answer is VERIFIED, the question-tree version and exact relevant hashes match, the environment contract permits reuse, and selective invalidation did not touch the question.",
+    "scopes": [
+      "SOURCE_STABLE",
+      "BUILD_ENVIRONMENT_BOUND"
+    ]
+  },
+  "invalidation": {
+    "rule": "A repair invalidates only the changed question and dependent descendants. Unaffected verified answers remain reusable.",
+    "required_record": [
+      "question_id",
+      "invalidated_by",
+      "prior_answer",
+      "lifecycle"
+    ]
+  },
+  "critical_freeze": {
+    "domains": [
+      "SECURITY",
+      "HUMAN_SAFETY"
+    ],
+    "rule": "A critical finding freezes only affected surfaces unless exact evidence proves global impact. Unaffected work continues."
+  },
+  "machine_authority": {
+    "controller": "control/question-tree.mjs",
+    "acceptance_bridge": "control/acceptance-bridge.mjs",
+    "status": "PREPARED_NOT_ACTIVATED"
+  }
+}

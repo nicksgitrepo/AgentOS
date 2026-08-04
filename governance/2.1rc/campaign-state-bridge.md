@@ -1,0 +1,5 @@
+# Campaign State Bridge
+
+The lifecycle controller and the first-pass/audit cascade are separate state machines because they answer different questions. They must not become separate authorities.
+
+At a state boundary, the canonical `campaign-state-owner` controller validates the complete lifecycle and cascade states, applies their paired transitions, and compiles one bridge receipt containing both compact state identities. The receipt compares campaign ID, campaign version, logical lineage, policy epoch, policy snapshot, complete acceptance contract, stage alignment, and each state digest. A mismatch fails closed. The serialization rule is `ONE_SERIALIZED_STATE_TRANSITION`, so the canonical controller cannot advance one half of a campaign without the other. Lifecycle `BUILDING`, terminal proposal/repair/settlement, Finalizer, delta, and release stages have explicit allowed cascade counterparts; contradictory stage pairs are rejected. Low-level controllers remain implementation primitives for focused tests, not a separate campaign admission route.
