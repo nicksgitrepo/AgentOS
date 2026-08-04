@@ -95,6 +95,25 @@ const soft = observation({
 assert.equal(deriveSupervisorAction(soft), "REVIEW_SOFT_BOUNDARY");
 assert.equal(runSupervisorIteration({observation: soft, route: () => ({status: "REVIEWED"})}).goal.action, "REVIEW_SOFT_BOUNDARY");
 
+const hardFindingWithSoftScopeChange = observation({
+  boundary: boundary({soft_review: true, scope_changed: true}),
+  findings: [{
+    finding_id: "F-HARD-SECURITY-1",
+    classification: "HARD_SECURITY_BOUNDARY",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "A protected security boundary is open while the campaign scope also changed.",
+    source_sha256: sourceSha256,
+  }],
+});
+assert.equal(deriveSupervisorAction(hardFindingWithSoftScopeChange), "STOP_HARD_BOUNDARY", "hard security findings must outrank soft review");
+let attemptedMixedBoundaryRoute = false;
+const mixedBoundaryResult = runSupervisorIteration({
+  observation: hardFindingWithSoftScopeChange,
+  route: () => { attemptedMixedBoundaryRoute = true; return {}; },
+});
+assert.equal(attemptedMixedBoundaryRoute, false, "a hard security finding must not be routed through soft review");
+assert.equal(mixedBoundaryResult.tick.route_status, "STOPPED_HARD_BOUNDARY");
+
 const hard = observation({
   ownerDecisionRequired: true,
   boundary: boundary({hard_stop: true, owner_decision_required: true}),

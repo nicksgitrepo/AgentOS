@@ -100,13 +100,26 @@ function runDurableSessionChecks(worktreePath) {
 
 function applyControllerSupervisorRepair(worktreePath) {
   const supervisorPath = path.join(worktreePath, "control/controller-supervisor.mjs");
-  assert(fs.existsSync(supervisorPath), "Controller supervisor source is unavailable");
+  const bindingPath = path.join(worktreePath, "schemas/bootstrap-binding.v1.json");
+  assert(fs.existsSync(supervisorPath) && fs.existsSync(bindingPath), "Controller supervisor repair inputs are unavailable");
   const source = fs.readFileSync(supervisorPath, "utf8");
-  const oldBranch = '  if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE", "HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) {\n    return "ROUTE_REPAIRABLE_PUZZLE";\n  }';
-  const newBranch = '  if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";\n  if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE"])) {\n    return "ROUTE_REPAIRABLE_PUZZLE";\n  }';
-  assert(source.includes(oldBranch), "Controller supervisor boundary branch is not at the expected source checkpoint");
-  writeFileAtomic(supervisorPath, source.replace(oldBranch, newBranch));
-  return ["control/controller-supervisor.mjs"];
+  const oldOrder = [
+    '  if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";',
+    '  if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";',
+  ].join("\n");
+  const newOrder = [
+    '  if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";',
+    '  if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";',
+  ].join("\n");
+  assert(source.includes(oldOrder) || source.includes(newOrder), "Controller supervisor boundary precedence is not at the expected source checkpoint");
+  const repairedSource = source.includes(oldOrder) ? source.replace(oldOrder, newOrder) : source;
+  writeFileAtomic(supervisorPath, repairedSource);
+  const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
+  const controllerEntry = Object.values(binding.normative ?? {}).find((entry) => entry?.path === "control/controller-supervisor.mjs");
+  assert(controllerEntry !== undefined, "Controller supervisor binding entry is unavailable");
+  controllerEntry.sha256 = crypto.createHash("sha256").update(fs.readFileSync(supervisorPath)).digest("hex");
+  writeFileAtomic(bindingPath, JSON.stringify(binding, null, 2) + "\n");
+  return ["control/controller-supervisor.mjs", "schemas/bootstrap-binding.v1.json"];
 }
 
 function applyControllerSupervisorBindingRepair(worktreePath) {

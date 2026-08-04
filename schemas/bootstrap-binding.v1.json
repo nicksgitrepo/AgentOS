@@ -442,7 +442,7 @@
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "290296b17518b1e929e6491e8e8f0010e85b3f1484e2e25a6fa0d1eae5fb1c48"
+      "sha256": "5e509556ca6075016f90301292781b405b8b7df3dd6a782e9b1340d4dfaf6df1"
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",

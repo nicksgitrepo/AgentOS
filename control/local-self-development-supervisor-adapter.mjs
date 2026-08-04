@@ -250,6 +250,23 @@ function controllerSupervisorBindingFinding(repositoryRoot) {
   };
 }
 
+function controllerBoundaryPrecedenceFinding(repositoryRoot) {
+  const controllerPath = path.join(repositoryRoot, "control/controller-supervisor.mjs");
+  const source = fs.readFileSync(controllerPath, "utf8");
+  const hardFindingBranch = 'if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";';
+  const softReviewBranch = 'if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";';
+  const hardIndex = source.indexOf(hardFindingBranch);
+  const softIndex = source.indexOf(softReviewBranch);
+  if (hardIndex >= 0 && softIndex >= 0 && hardIndex < softIndex) return null;
+  return {
+    finding_id: "F-CONTROLLER-HARD-BOUNDARY-PRECEDENCE",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "The Controller can send a soft-scope review ahead of an open hard security or owner boundary instead of stopping the dependent work.",
+    source_sha256: crypto.createHash("sha256").update(source, "utf8").digest("hex"),
+  };
+}
+
 function localAgentSessionBindingFinding(repositoryRoot) {
   const bindingPath = path.join(repositoryRoot, "schemas/bootstrap-binding.v1.json");
   const verifierPath = path.join(repositoryRoot, "tests/verify-local-agent-session.mjs");
@@ -545,6 +562,14 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     }
     const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
     if (ownerSurfaceFinding !== null) findings.push(ownerSurfaceFinding);
+    const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
+    if (boundaryPrecedenceFinding !== null) {
+      const boundaryPrecedenceResolutionPath = "autonomous-supervisor-lifecycle-resolutions/" + boundaryPrecedenceFinding.finding_id + ".json";
+      const boundaryPrecedenceResolution = readAddressed(campaignRoot, boundaryPrecedenceResolutionPath, "resolution_sha256");
+      if (!(boundaryPrecedenceResolution?.status === "RESOLVED" && boundaryPrecedenceResolution.source_finding_sha256 === boundaryPrecedenceFinding.source_sha256)) {
+        findings.push(boundaryPrecedenceFinding);
+      }
+    }
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
     if (durableSessionFinding !== null) {
       findings.push({
@@ -589,8 +614,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
     const localAgentSessionBinding = localAgentSessionBindingFinding(repositoryRoot);
     const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
+    const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
-    const repairKind = goal.finding_ids.includes(ownerSurfaceFinding?.finding_id)
+    const repairKind = goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+      ? "CONTROLLER_SUPERVISOR_REPAIR"
+      : goal.finding_ids.includes(ownerSurfaceFinding?.finding_id)
       ? "OWNER_CONVERSATION_SURFACE_REPAIR"
       : goal.finding_ids.includes(durableSessionFinding?.finding_id)
       ? "DURABLE_SESSION_TEST_ROOT_REPAIR"
@@ -599,7 +627,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         : goal.finding_ids.includes(localAgentSessionBinding?.finding_id)
           ? "LOCAL_AGENT_SESSION_BINDING_REPAIR"
         : "CONTROLLER_SUPERVISOR_REPAIR";
-    const routeFinding = repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
+    const routeFinding = goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id) ? boundaryPrecedenceFinding : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
       finding_id: lifecycleFinding?.finding_id,
       source_sha256: gateFinding.finding_sha256,
       status: lifecycleFinding?.status,
@@ -636,7 +664,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         ? ["tests/verify-local-agent-session.mjs"].sort()
         : bindingRepair
         ? ["schemas/bootstrap-binding.v1.json", "control/controller-supervisor.mjs", "tests/verify-all.mjs"].sort()
-        : ["control/controller-supervisor.mjs", "control/controller-supervisor-runtime.mjs", "control/local-agent-session.mjs", "tests/verify-controller-supervisor.mjs"].sort(),
+        : ["control/controller-supervisor.mjs", "control/controller-supervisor-runtime.mjs", "control/local-agent-session.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-controller-supervisor.mjs"].sort(),
       protected_boundaries: permissions,
       record_sha256: null,
     });
@@ -662,7 +690,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+      task: goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+        ? "Make every open hard security or owner boundary stop before any soft-scope review, then run the focused Controller checks."
+        : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? "Keep Bootstrap and the ongoing owner review casual and nontechnical while preserving the typed internal plan, then return exact focused evidence."
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Repair the durable-session verifier so it creates its temporary folder in an isolated worktree, then run its focused check."
@@ -681,7 +711,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+      task: goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+        ? "Independently verify that every open hard security or owner boundary stops before any soft-scope review."
+        : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? "Independently inspect the Feature-Agent repair and verify that Bootstrap and the ongoing owner review keep technical governance wording behind the conversation."
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Independently inspect the Feature-Agent durable-session verifier repair and return source-bound test evidence."
@@ -760,8 +792,10 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       sourceTree: finalizerResult.adopted_tree,
       nextAction: "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
-      repair: {
-        summary: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        repair: {
+        summary: goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
+          ? "Make hard security and owner boundaries take precedence over soft-scope review."
+          : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
           ? "Keep Bootstrap and the ongoing owner review in short everyday language while preserving the typed internal plan."
           : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
           ? "Make the durable-session verifier create its temporary root inside every isolated worktree."
