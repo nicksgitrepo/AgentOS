@@ -243,10 +243,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     validateLocalWorkerReadback(featureReadback, "CONTROLLER_SUPERVISOR_REPAIR");
     validateLocalWorkerReadback(auditorReadback, "CONTROLLER_SUPERVISOR_REPAIR");
     assert(featureReadback.build_commit === auditorReadback.build_commit && featureReadback.build_tree === auditorReadback.build_tree, "Controller supervisor Feature-Agent and Auditor checkpoints differ");
-    writeAddressed(campaignRoot, "autonomous-supervisor-orchestrator-readback.json", {schema: "agentos.controller_autonomous_supervisor_orchestrator_readback.v1", version: 1, status: "DURABLE_SESSION_RUNNING", task_id: taskId, session_id: orchestrator.session_record.session_id, pid: orchestrator.session_record.pid, source_commit: sourceCommit, source_tree: sourceTree, readback: orchestrator.readback, record_sha256: null});
-    writeAddressed(campaignRoot, "autonomous-supervisor-feature-agent-readback.json", {schema: "agentos.controller_autonomous_supervisor_feature_readback.v1", version: 1, status: "DURABLE_SESSION_RUNNING", task_id: taskId, session_id: feature.session_record.session_id, pid: feature.session_record.pid, source_commit: sourceCommit, source_tree: sourceTree, readback: featureReadback, record_sha256: null});
-    writeAddressed(campaignRoot, "autonomous-supervisor-auditor-readback.json", {schema: "agentos.controller_autonomous_supervisor_auditor_readback.v1", version: 1, status: "DURABLE_SESSION_RUNNING", task_id: taskId, session_id: auditor.session_record.session_id, pid: auditor.session_record.pid, source_commit: sourceCommit, source_tree: sourceTree, readback: auditorReadback, record_sha256: null});
-    const controllerRecheck = writeAddressed(campaignRoot, "autonomous-supervisor-controller-recheck.json", {schema: "agentos.controller_autonomous_supervisor_controller_recheck.v1", version: 1, status: "PASS", controller_role: "AGENTOS_CONTROLLER", task_id: taskId, source_commit: sourceCommit, source_tree: sourceTree, feature_commit: featureReadback.build_commit, feature_tree: featureReadback.build_tree, auditor_commit: auditorReadback.build_commit, auditor_tree: auditorReadback.build_tree, checks: controllerChecks, record_sha256: null});
+    const readbackRoot = `autonomous-supervisor-readbacks/${taskId}`;
+    const orchestratorRecordPath = `${readbackRoot}/orchestrator.json`;
+    const featureRecordPath = `${readbackRoot}/feature-agent.json`;
+    const auditorRecordPath = `${readbackRoot}/auditor.json`;
+    const controllerRecordPath = `${readbackRoot}/controller-recheck.json`;
+    writeAddressed(campaignRoot, orchestratorRecordPath, {schema: "agentos.controller_autonomous_supervisor_orchestrator_readback.v1", version: 1, status: "DURABLE_SESSION_RUNNING", task_id: taskId, session_id: orchestrator.session_record.session_id, pid: orchestrator.session_record.pid, source_commit: sourceCommit, source_tree: sourceTree, readback: orchestrator.readback, record_sha256: null});
+    writeAddressed(campaignRoot, featureRecordPath, {schema: "agentos.controller_autonomous_supervisor_feature_readback.v1", version: 1, status: "DURABLE_SESSION_RUNNING", task_id: taskId, session_id: feature.session_record.session_id, pid: feature.session_record.pid, source_commit: sourceCommit, source_tree: sourceTree, readback: featureReadback, record_sha256: null});
+    writeAddressed(campaignRoot, auditorRecordPath, {schema: "agentos.controller_autonomous_supervisor_auditor_readback.v1", version: 1, status: "DURABLE_SESSION_RUNNING", task_id: taskId, session_id: auditor.session_record.session_id, pid: auditor.session_record.pid, source_commit: sourceCommit, source_tree: sourceTree, readback: auditorReadback, record_sha256: null});
+    const controllerRecheck = writeAddressed(campaignRoot, controllerRecordPath, {schema: "agentos.controller_autonomous_supervisor_controller_recheck.v1", version: 1, status: "PASS", controller_role: "AGENTOS_CONTROLLER", task_id: taskId, source_commit: sourceCommit, source_tree: sourceTree, feature_commit: featureReadback.build_commit, feature_tree: featureReadback.build_tree, auditor_commit: auditorReadback.build_commit, auditor_tree: auditorReadback.build_tree, checks: controllerChecks, record_sha256: null});
     return {
       status: "ROUTED_AND_CONTROLLER_RECHECKED",
       task_id: taskId,
@@ -264,6 +269,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       orchestrator_pid: orchestrator.session_record.pid,
       controller_recheck_sha256: controllerRecheck.record_sha256,
       task_record_path: taskRecordPath,
+      readback_record_paths: [orchestratorRecordPath, featureRecordPath, auditorRecordPath, controllerRecordPath].sort(),
       protected_boundaries: permissions,
     };
   }
