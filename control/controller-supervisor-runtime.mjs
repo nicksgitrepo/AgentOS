@@ -11,6 +11,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import {execFileSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {
   canonicalSupervisorJson,
@@ -74,6 +75,19 @@ function readJson(target) {
   const stat = fs.lstatSync(target);
   assert(stat.isFile() && !stat.isSymbolicLink(), `supervisor runtime record is not a regular file: ${target}`);
   return JSON.parse(fs.readFileSync(target, "utf8"));
+}
+
+function adapterSourceIdentity({adapterPath, repoRoot}) {
+  const stat = fs.statSync(adapterPath);
+  let repositoryHead = "NO_REPOSITORY";
+  if (repoRoot) {
+    try {
+      repositoryHead = execFileSync("git", ["-C", path.resolve(repoRoot), "rev-parse", "HEAD"], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
+    } catch {
+      repositoryHead = "UNAVAILABLE_REPOSITORY";
+    }
+  }
+  return `${repositoryHead}:${stat.mtimeMs}:${stat.size}`;
 }
 
 function writeJsonAtomic(target, value) {
@@ -244,8 +258,10 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-export async function runControllerSupervisor({runtimeRoot, adapter, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMs = 30_000, once = false, signal = null}) {
+export async function runControllerSupervisor({runtimeRoot, adapter, adapterFactory = null, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMs = 30_000, once = false, signal = null}) {
   assert(Number.isInteger(intervalMs) && intervalMs >= 250 && intervalMs <= 60_000, "supervisor interval must be between 250ms and 60s");
+  assert(adapter && typeof adapter.observe === "function", "supervisor adapter must provide observe()");
+  assert(adapterFactory === null || typeof adapterFactory === "function", "supervisor adapter factory must be callable");
   const root = canonicalRoot(runtimeRoot);
   const leaseState = acquireLease({runtimeRoot: root, runtimeId});
   let stopping = false;
@@ -256,7 +272,8 @@ export async function runControllerSupervisor({runtimeRoot, adapter, runtimeId =
     do {
       const nowUtc = new Date().toISOString();
       try {
-        results.push(await runControllerSupervisorIteration({runtimeRoot: root, adapter, runtimeId, nowUtc}));
+        const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
+        results.push(await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc}));
       } catch (error) {
         const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
         writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
@@ -292,12 +309,25 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   requireString(args.runtimeRoot, "--runtime-root");
   requireString(args.adapterPath, "--adapter");
-  const adapterModule = await import(pathToFileURL(path.resolve(args.adapterPath)).href);
-  const adapter = typeof adapterModule.createControllerSupervisorAdapter === "function"
-    ? await adapterModule.createControllerSupervisorAdapter({runtimeRoot: args.runtimeRoot, repoRoot: args.repoRoot ?? args.runtimeRoot})
-    : adapterModule.default;
-  assert(adapter && typeof adapter.observe === "function", "supervisor adapter module does not export an adapter");
-  const results = await runControllerSupervisor({runtimeRoot: args.runtimeRoot, adapter, runtimeId: args.runtimeId, intervalMs: args.intervalMs, once: args.once});
+  const adapterPath = path.resolve(args.adapterPath);
+  const repoRoot = args.repoRoot ?? args.runtimeRoot;
+  let loadedAdapter = null;
+  let loadedIdentity = null;
+  const loadAdapter = async () => {
+    const identity = adapterSourceIdentity({adapterPath, repoRoot});
+    if (loadedAdapter !== null && loadedIdentity === identity) return loadedAdapter;
+    const adapterUrl = pathToFileURL(adapterPath);
+    adapterUrl.searchParams.set("source", identity);
+    const adapterModule = await import(adapterUrl.href);
+    loadedAdapter = typeof adapterModule.createControllerSupervisorAdapter === "function"
+      ? await adapterModule.createControllerSupervisorAdapter({runtimeRoot: args.runtimeRoot, repoRoot})
+      : adapterModule.default;
+    assert(loadedAdapter && typeof loadedAdapter.observe === "function", "supervisor adapter module does not export an adapter");
+    loadedIdentity = identity;
+    return loadedAdapter;
+  };
+  const adapter = await loadAdapter();
+  const results = await runControllerSupervisor({runtimeRoot: args.runtimeRoot, adapter, adapterFactory: loadAdapter, runtimeId: args.runtimeId, intervalMs: args.intervalMs, once: args.once});
   if (args.once) process.stdout.write(`${JSON.stringify(results.at(-1) ?? null)}\n`);
 }
 
