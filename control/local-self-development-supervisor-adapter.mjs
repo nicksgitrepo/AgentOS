@@ -1471,7 +1471,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? readCampaignExecutionContext({campaignRoot, handoff, sourceCommit: finalizerResult.adopted_commit, sourceTree: finalizerResult.adopted_tree})
       : null;
     const campaignProgress = campaignProgressTask
-      ? writeAddressed(campaignRoot, CAMPAIGN_PROGRESS_FILE, {
+      ? writeMutableAddressed(campaignRoot, CAMPAIGN_PROGRESS_FILE, {
         schema: "agentos.controller_autonomous_campaign_progress.v1",
         version: 1,
         status: "CHECKPOINT_READY",
@@ -1493,7 +1493,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         next_action: "The owner-defined first useful workflow is complete at an audited local checkpoint; the Controller will remain available for a new bounded intent without prompting for approval.",
         external_actions_attempted: false,
         progress_sha256: null,
-      }, "progress_sha256")
+      }, "progress_sha256", existingCampaignProgress?.progress_sha256 ?? null)
       : null;
     const completedQueue = campaignProgressTask
       ? writeMutableAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, {
