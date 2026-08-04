@@ -972,6 +972,66 @@ function applyOwnerFeedbackProgressRepair(worktreePath, feedbackId) {
   };
 }
 
+function applyOwnerFeedbackContinuationRepair(worktreePath, feedbackId) {
+  const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
+  const verifierPath = path.join(worktreePath, "tests/verify-owner-feedback-continuation.mjs");
+  const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
+  assert(fs.existsSync(adapterPath) && fs.existsSync(backlogPath), "owner feedback continuation repair inputs are unavailable");
+
+  let adapterSource = fs.readFileSync(adapterPath, "utf8");
+  const helperMarker = "export function selectValidatedAutonomousTask";
+  assert(!adapterSource.includes(helperMarker), "owner feedback continuation repair was already applied");
+  const findingMarker = "function autonomousTaskFinding({campaignRoot, handoff, activation, findings, activeCampaign}) {";
+  assert(adapterSource.includes(findingMarker), "autonomous task finding function is unavailable");
+  const helper = [
+    "export function selectValidatedAutonomousTask({tasks, boundary, findings = [], activeCampaign}) {",
+    "  const selection = selectAutonomousNextTask({tasks, boundary, findings, activeCampaign});",
+    "  if (selection.action === \"ROUTE_REPAIRABLE_PUZZLE\" && selection.task_id !== null) {",
+    "    const selectedTask = tasks.find((task) => task.task_id === selection.task_id);",
+    "    assert(selectedTask !== undefined && selectedTask.status === \"OPEN\", \"Controller selected task is not an open queued task\");",
+    "    assert(selectedTask.owner_decision_required === false, \"Controller selected task requires an owner decision\");",
+    "  }",
+    "  return selection;",
+    "}",
+    "",
+  ].join("\n");
+  adapterSource = adapterSource.replace(findingMarker, `${helper}${findingMarker}`);
+  const selectionMarker = "  const selection = selectAutonomousNextTask({tasks: queue.tasks, boundary, findings, activeCampaign});";
+  assert(adapterSource.includes(selectionMarker), "autonomous task selection call is unavailable");
+  adapterSource = adapterSource.replace(selectionMarker, "  const selection = selectValidatedAutonomousTask({tasks: queue.tasks, boundary, findings, activeCampaign});");
+  writeFileAtomic(adapterPath, adapterSource);
+
+  const verifierSource = [
+    "#!/usr/bin/env node",
+    "",
+    "import assert from \"node:assert/strict\";",
+    "import {selectValidatedAutonomousTask} from \"../control/local-self-development-supervisor-adapter.mjs\";",
+    "",
+    "const boundary = {hard_stop: false, soft_review: false, owner_decision_required: false, scope_changed: false, local_development_writes_allowed: true, local_worker_agent_spawns_allowed: true, product_writes_allowed: false, product_agent_spawns_allowed: false, external_deployment_allowed: false, external_release_allowed: false, external_publication_allowed: false, external_push_allowed: false, external_merge_allowed: false, secrets_allowed: false, destructive_work_allowed: false};",
+    "const tasks = [{task_id: \"CONTROLLER-TASK-FIRST\", status: \"OPEN\", priority: 0, summary: \"First bounded task.\", scope: [\"CONTROL_PLANE\"], owner_decision_required: false}, {task_id: \"CONTROLLER-TASK-LATER\", status: \"OPEN\", priority: 1, summary: \"Later bounded task.\", scope: [\"CONTROL_PLANE\"], owner_decision_required: false}];",
+    "const selection = selectValidatedAutonomousTask({tasks, boundary, findings: [], activeCampaign: true});",
+    "assert.equal(selection.action, \"ROUTE_REPAIRABLE_PUZZLE\");",
+    "assert.equal(selection.task_id, \"CONTROLLER-TASK-FIRST\");",
+    "const ownerDecisionTask = [{...tasks[0], owner_decision_required: true}];",
+    "assert.equal(selectValidatedAutonomousTask({tasks: ownerDecisionTask, boundary, findings: [], activeCampaign: true}).action, \"STOP_HARD_BOUNDARY\");",
+    "const higherPriorityPuzzle = [{finding_id: \"F-REPAIR\", classification: \"REPAIRABLE_ENGINEERING_PUZZLE\", status: \"OPEN_REPAIR_REQUIRED\", summary: \"Repair first.\", source_sha256: \"a\".repeat(64)}];",
+    "assert.equal(selectValidatedAutonomousTask({tasks, boundary, findings: higherPriorityPuzzle, activeCampaign: true}).task_id, null);",
+    "console.log(\"PASS Controller selects one validated queued task without a manual task declaration\");",
+  ].join("\n") + "\n";
+  writeFileAtomic(verifierPath, verifierSource);
+
+  const backlogSource = fs.readFileSync(backlogPath, "utf8");
+  const backlogLines = backlogSource.split(/\r?\n/u);
+  const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith("| `" + feedbackId + "` |") && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+  assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  writeFileAtomic(backlogPath, backlogLines.join("\n"));
+  return {
+    changedByRepair: ["control/local-self-development-supervisor-adapter.mjs", "docs/owner-feedback-backlog.md", "tests/verify-owner-feedback-continuation.mjs"],
+    artifactName: "control/owner-feedback-continuation-repair-receipt.mjs",
+  };
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -1386,6 +1446,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     else if (feedbackId === "FEEDBACK-002") repair = applyOwnerFeedbackStatusRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-003") repair = applyOwnerFeedbackDigestRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-004") repair = applyOwnerFeedbackProgressRepair(worktreePath, feedbackId);
+    else if (feedbackId === "FEEDBACK-005") repair = applyOwnerFeedbackContinuationRepair(worktreePath, feedbackId);
     else throw new Error(`owner feedback ${feedbackId} requires its own repair recipe`);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
@@ -1396,6 +1457,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       "node tests/verify-local-agent-session.mjs",
       "node tests/verify-owner-feedback-digest.mjs",
       "node tests/verify-owner-feedback-progress.mjs",
+      "node tests/verify-owner-feedback-continuation.mjs",
       "node tests/verify-owner-feedback-backlog.mjs",
       "node tests/verify-all.mjs",
     ]);
@@ -1422,7 +1484,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     const changedOwnerFeedbackCode = (changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs"))
       || (changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"))
       || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-digest.mjs"))
-      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-progress.mjs"));
+      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-progress.mjs"))
+      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-continuation.mjs"));
     assert(changedOwnerFeedbackCode, "Feature Agent owner feedback repair changed neither the requested code nor its focused test");
     buildStatus = "COMPLETED";
     product = {
