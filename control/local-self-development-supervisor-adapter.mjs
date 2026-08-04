@@ -167,7 +167,7 @@ function discoverSupervisorSessions(campaignRoot, campaignId) {
   return walkRegularFiles(campaignRoot, sessionsRoot)
     .filter((target) => path.basename(target) === "session.json")
     .map((target) => ({target, record: readJson(target)}))
-    .filter(({record}) => record?.campaign_id === campaignId && typeof record.task_kind === "string" && record.task_kind.startsWith("CONTROLLER_SUPERVISOR_"))
+    .filter(({record}) => record?.campaign_id === campaignId && typeof record.task_id === "string" && record.task_id.startsWith("TASK-CONTROLLER-SUPERVISOR-"))
     .map(({target, record}) => ({target, record}));
 }
 
