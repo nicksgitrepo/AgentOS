@@ -129,7 +129,11 @@ function validateHandshake(handshake, expected) {
       assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.length === 0, "liveness Feature Agent changed source code");
     } else {
       assert(handshake.build_commit !== expected.sourceCommit && handshake.build_tree !== expected.sourceTree, "Feature Agent build checkpoint did not change source");
-      const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
+        ? "control/controller-supervisor.mjs"
+        : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+          ? "schemas/bootstrap-binding.v1.json"
+          : "control/governance-decision-tree.mjs";
       assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Feature Agent build did not change the required code");
     }
     assert(Array.isArray(handshake.focused_checks) && handshake.focused_checks.length > 0 && typeof handshake.build_checkpoint_sha256 === "string", "Feature Agent build evidence is incomplete");
@@ -138,7 +142,11 @@ function validateHandshake(handshake, expected) {
     if (expected.taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
       assert(handshake.build_status === "AUDIT_VERIFIED" && handshake.build_commit === expected.sourceCommit && handshake.build_tree === expected.sourceTree && Array.isArray(handshake.changed_paths) && handshake.changed_paths.length === 0, "Auditor liveness readback is not source-bound");
     } else {
-      const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
+        ? "control/controller-supervisor.mjs"
+        : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+          ? "schemas/bootstrap-binding.v1.json"
+          : "control/governance-decision-tree.mjs";
       assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Auditor did not verify the Feature-Agent code change");
     }
   }
@@ -590,7 +598,11 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
     if (taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
       assert(readback.build_status === "COMPLETED" && readback.build_commit === readback.source_commit && readback.build_tree === readback.source_tree && readback.changed_paths.length === 0 && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "liveness Feature Agent readback is not source-bound");
     } else {
-      const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
+        ? "control/controller-supervisor.mjs"
+        : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+          ? "schemas/bootstrap-binding.v1.json"
+          : "control/governance-decision-tree.mjs";
       assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null && readback.changed_paths.includes(requiredChangedPath) && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
     }
   }

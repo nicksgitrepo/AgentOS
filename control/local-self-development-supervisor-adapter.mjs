@@ -223,6 +223,26 @@ function sessionSummary(campaignRoot, entry) {
   };
 }
 
+function controllerSupervisorBindingFinding(repositoryRoot) {
+  const bindingPath = path.join(repositoryRoot, "schemas/bootstrap-binding.v1.json");
+  const controllerPath = path.join(repositoryRoot, "control/controller-supervisor.mjs");
+  const binding = readJson(bindingPath);
+  const expected = binding?.normative?.controller_supervisor_controller?.sha256;
+  requireSha(expected, "Controller supervisor binding digest");
+  const actual = crypto.createHash("sha256").update(fs.readFileSync(controllerPath)).digest("hex");
+  if (actual === expected) return null;
+  return {
+    finding_id: "F-CONTROLLER-SUPERVISOR-BINDING-MISMATCH",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "The adopted Controller supervisor source does not match the exact digest recorded in the repository binding.",
+    source_sha256: expected,
+    expected_sha256: expected,
+    actual_sha256: actual,
+    observed_path: "schemas/bootstrap-binding.v1.json",
+  };
+}
+
 function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
   const failure = entry.record.failure ?? "durable session failed without an error message";
   const rcaPath = `autonomous-supervisor-route-rcas/${entry.record.task_id}.json`;
@@ -257,13 +277,14 @@ function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
 
-function runControllerChecks(worktreePath) {
+function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REPAIR") {
   const checks = [
     "node --check control/controller-supervisor.mjs",
     "node --check control/controller-supervisor-runtime.mjs",
     "node --check control/local-agent-session.mjs",
     "node tests/verify-controller-supervisor.mjs",
   ];
+  if (taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
   for (const check of checks) {
     const [program, ...args] = check.split(" ");
     execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
@@ -404,6 +425,18 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       summary: lifecycle.symptom,
       source_sha256: gateFinding.finding_sha256,
     }] : [];
+    const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
+    const bindingResolution = bindingFinding === null ? null : readAddressed(campaignRoot, `autonomous-supervisor-lifecycle-resolutions/${bindingFinding.finding_id}.json`, "resolution_sha256");
+    if (bindingFinding !== null && !(bindingResolution?.status === "RESOLVED" && bindingResolution.source_finding_sha256 === bindingFinding.source_sha256)) {
+      findings.push({
+        finding_id: bindingFinding.finding_id,
+        classification: bindingFinding.classification,
+        status: bindingFinding.status,
+        summary: bindingFinding.summary,
+        source_sha256: bindingFinding.source_sha256,
+      });
+    }
+    findings.sort((left, right) => left.finding_id.localeCompare(right.finding_id));
     const ownerDecisionRequired = handoff.owner_decision_required === true;
     return compileSupervisorObservation({
       controllerDisplayName: handoff.controller_display_name ?? "AgentOS Controller",
@@ -434,6 +467,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const candidate = readJson(path.join(campaignRoot, "candidate.json"));
     const gateFinding = readJson(path.join(campaignRoot, "gate-evidence-anti-drift-rca.json"));
     const lifecycleFinding = gateFinding.lifecycle_roi_finding;
+    const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
+    const repairKind = goal.finding_ids.includes(bindingFinding?.finding_id)
+      ? "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+      : "CONTROLLER_SUPERVISOR_REPAIR";
+    const routeFinding = repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : {
+      finding_id: lifecycleFinding?.finding_id,
+      source_sha256: gateFinding.finding_sha256,
+      status: lifecycleFinding?.status,
+    };
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
     const permissions = permissionsFrom(handoff, activation);
@@ -452,13 +494,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,
       task_id: taskId,
-      task_kind: "CONTROLLER_SUPERVISOR_REPAIR",
+      task_kind: repairKind,
       goal_id: goal.goal_id,
       goal_sha256: goal.goal_sha256,
       parent_handoff_sha256: goal.parent_handoff_sha256,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      scope: ["control/controller-supervisor.mjs", "control/controller-supervisor-runtime.mjs", "control/local-agent-session.mjs", "tests/verify-controller-supervisor.mjs"].sort(),
+      scope: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        ? ["schemas/bootstrap-binding.v1.json", "control/controller-supervisor.mjs", "tests/verify-all.mjs"].sort()
+        : ["control/controller-supervisor.mjs", "control/controller-supervisor-runtime.mjs", "control/local-agent-session.mjs", "tests/verify-controller-supervisor.mjs"].sort(),
       protected_boundaries: permissions,
       record_sha256: null,
     });
@@ -484,9 +528,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: "Repair the Controller supervisor boundary classification in isolated Feature-Agent custody, then run its focused checks.",
+      task: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        ? "Repair the exact Controller supervisor repository binding in isolated Feature-Agent custody, then run the full repository checks."
+        : "Repair the Controller supervisor boundary classification in isolated Feature-Agent custody, then run its focused checks.",
       taskId,
-      taskKind: "CONTROLLER_SUPERVISOR_REPAIR",
+      taskKind: repairKind,
     });
     const auditor = await startDurableWorkerSession({
       repoRoot: repositoryRoot,
@@ -497,16 +543,18 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: "Independently inspect the Feature-Agent Controller supervisor checkpoint and return source-bound audit evidence.",
+      task: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        ? "Independently inspect the Feature-Agent Controller supervisor binding checkpoint and return full repository audit evidence."
+        : "Independently inspect the Feature-Agent Controller supervisor checkpoint and return source-bound audit evidence.",
       taskId: `${taskId}-AUDITOR`,
-      taskKind: "CONTROLLER_SUPERVISOR_REPAIR",
+      taskKind: repairKind,
       featureWorktree: feature.session_record.worktree_path,
     });
-    const controllerChecks = runControllerChecks(feature.session_record.worktree_path);
+    const controllerChecks = runControllerChecks(feature.session_record.worktree_path, repairKind);
     const featureReadback = feature.readback;
     const auditorReadback = auditor.readback;
-    validateLocalWorkerReadback(featureReadback, "CONTROLLER_SUPERVISOR_REPAIR");
-    validateLocalWorkerReadback(auditorReadback, "CONTROLLER_SUPERVISOR_REPAIR");
+    validateLocalWorkerReadback(featureReadback, repairKind);
+    validateLocalWorkerReadback(auditorReadback, repairKind);
     assert(featureReadback.build_commit === auditorReadback.build_commit && featureReadback.build_tree === auditorReadback.build_tree, "Controller supervisor Feature-Agent and Auditor checkpoints differ");
     const readbackRoot = `autonomous-supervisor-readbacks/${taskId}`;
     const orchestratorRecordPath = `${readbackRoot}/orchestrator.json`;
@@ -542,14 +590,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       external_actions_attempted: false,
       finalizer_sha256: null,
     }, "finalizer_sha256");
-    assert(lifecycleFinding?.finding_id && lifecycleFinding.status !== "RESOLVED", "Controller repair route lacks the open lifecycle finding it was asked to close");
-    const resolutionPath = `autonomous-supervisor-lifecycle-resolutions/${lifecycleFinding.finding_id}.json`;
+    assert(routeFinding?.finding_id && routeFinding.status !== "RESOLVED", "Controller repair route lacks the open finding it was asked to close");
+    const resolutionPath = `autonomous-supervisor-lifecycle-resolutions/${routeFinding.finding_id}.json`;
     const lifecycleResolution = writeAddressed(campaignRoot, resolutionPath, compileLifecycleResolution({
       goal,
-      finding: {
-        finding_id: lifecycleFinding.finding_id,
-        source_sha256: gateFinding.finding_sha256,
-      },
+      finding: routeFinding,
       sourceCommit: finalizerResult.adopted_commit,
       sourceTree: finalizerResult.adopted_tree,
       taskId,
@@ -571,7 +616,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       nextAction: "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
       repair: {
-        summary: "Replace one-shot Controller supervision with a durable, autonomous observation-to-route loop.",
+        summary: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+          ? "Restore the exact repository binding for the adopted Controller supervisor source and require the full verifier to pass."
+          : "Replace one-shot Controller supervision with a durable, autonomous observation-to-route loop.",
         changed_paths: [...new Set(featureReadback.changed_paths)].sort(),
         source_commit: sourceCommit,
         source_tree: sourceTree,

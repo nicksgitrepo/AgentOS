@@ -82,6 +82,14 @@ function runControllerSupervisorChecks(worktreePath) {
   ]);
 }
 
+function runControllerSupervisorBindingChecks(worktreePath) {
+  return runChecks(worktreePath, [
+    "node --check control/controller-supervisor.mjs",
+    "node tests/verify-controller-supervisor.mjs",
+    "node tests/verify-all.mjs",
+  ]);
+}
+
 function applyControllerSupervisorRepair(worktreePath) {
   const supervisorPath = path.join(worktreePath, "control/controller-supervisor.mjs");
   assert(fs.existsSync(supervisorPath), "Controller supervisor source is unavailable");
@@ -91,6 +99,18 @@ function applyControllerSupervisorRepair(worktreePath) {
   assert(source.includes(oldBranch), "Controller supervisor boundary branch is not at the expected source checkpoint");
   writeFileAtomic(supervisorPath, source.replace(oldBranch, newBranch));
   return ["control/controller-supervisor.mjs"];
+}
+
+function applyControllerSupervisorBindingRepair(worktreePath) {
+  const bindingPath = path.join(worktreePath, "schemas/bootstrap-binding.v1.json");
+  const controllerPath = path.join(worktreePath, "control/controller-supervisor.mjs");
+  assert(fs.existsSync(bindingPath) && fs.existsSync(controllerPath), "Controller supervisor binding inputs are unavailable");
+  const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
+  const actualSha256 = crypto.createHash("sha256").update(fs.readFileSync(controllerPath)).digest("hex");
+  assert(binding.normative?.controller_supervisor_controller?.sha256 !== actualSha256, "Controller supervisor binding repair was already applied");
+  binding.normative.controller_supervisor_controller.sha256 = actualSha256;
+  writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
+  return ["schemas/bootstrap-binding.v1.json"];
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -219,7 +239,11 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
       const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
       assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
-      focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? runControllerSupervisorChecks(featureWorktree) : runFocusedChecks(featureWorktree);
+      focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
+        ? runControllerSupervisorChecks(featureWorktree)
+        : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+          ? runControllerSupervisorBindingChecks(featureWorktree)
+          : runFocusedChecks(featureWorktree);
     }
     buildStatus = "AUDIT_VERIFIED";
     product = {
@@ -263,6 +287,48 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean evidence-repair checkpoint");
     for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), `Feature Agent evidence repair did not change ${requiredPath}`);
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR") {
+    artifactName = "control/controller-supervisor-binding-repair-receipt.mjs";
+    const changedByRepair = applyControllerSupervisorBindingRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/controller-supervisor.mjs",
+      "node tests/verify-controller-supervisor.mjs",
+      "node tests/verify-all.mjs",
+    ]);
+    const marker = `// Local Feature Agent Controller-supervisor binding repair receipt; held in the isolated campaign worktree.\nexport const CONTROLLER_SUPERVISOR_BINDING_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: refresh Controller supervisor binding"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean Controller binding checkpoint");
+    assert(changedPaths.includes("schemas/bootstrap-binding.v1.json"), "Feature Agent binding repair did not change the binding");
     buildStatus = "COMPLETED";
     product = {
       ...base,
