@@ -1353,6 +1353,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const previousSessions = sessionEntries(campaignRoot, handoff);
     const unhealthySessionRca = recordUnhealthySessionRca({campaignRoot, handoff, entries: previousSessions, sourceCommit, sourceTree});
     reconcileExitedSessionRecords(previousSessions);
+    for (const entry of previousSessions) {
+      if (entry.record.status === "RUNNING" && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
+    }
     const taskPrefix = governanceEvidenceRepair
       ? "TASK-GOVERNANCE-EVIDENCE"
       : campaignProgressTask
