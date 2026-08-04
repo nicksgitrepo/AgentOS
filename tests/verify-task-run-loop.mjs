@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {AUDIT_DISCIPLINES} from "../control/campaign-cascade.mjs";
 import {
   continuationDigest,
   validateContinuationHandoff,
@@ -13,6 +14,7 @@ import {
   QUEUED_TASK_SCHEMA,
   TASK_EXECUTION_READBACK_SCHEMA,
   TASK_RUN_RECONCILIATION_SCHEMA,
+  prepareQueuedContinuationTask,
   readTaskRunLoopRecord,
   runSafeControlPlaneTaskLoop,
   validateQueuedTask,
@@ -185,6 +187,109 @@ assert.equal(result.reconciliation.next_task_candidate_sha256, result.queued.tas
 assert.equal(result.queued.parent_task_sha256, task.task_sha256);
 assert.equal(result.queued.parent_run_reconciliation_sha256, result.reconciliation.reconciliation_sha256);
 
+const promotionBinding = {
+  ...startHandoff.campaign_binding,
+  source_commit: COMMIT,
+  source_tree: TREE,
+  controller_candidate_sha256: SHA,
+  owner_review_candidate_sha256: SHA,
+  approval_packet_sha256: SHA,
+  identity_binding_sha256: SHA,
+};
+const promotionReports = AUDIT_DISCIPLINES.map((discipline) => {
+  const check = {
+    command: `node tests/verify-${discipline.toLowerCase()}.mjs`,
+    exit_code: 0,
+    stdout: "PASS synthetic promotion audit",
+    stderr: "",
+    passed: true,
+    check_sha256: null,
+  };
+  check.check_sha256 = continuationDigest({...check, check_sha256: null});
+  const report = {
+    schema: "agentos.development_task_audit_report.v1",
+    version: 1,
+    report_id: `${discipline}-PROMOTION-TEST`,
+    discipline,
+    task_sha256: task.task_sha256,
+    parent_reconciliation_sha256: task.parent_reconciliation_sha256,
+    campaign_id: task.campaign_id,
+    campaign_version: task.campaign_version,
+    source_commit: task.source_commit,
+    source_tree: task.source_tree,
+    independent: true,
+    auditor_role: "DETERMINISTIC_VERIFIER",
+    checked_at_utc: NOW,
+    scope: "Synthetic queued-candidate promotion coverage.",
+    checks: [check],
+    findings: [],
+    settled: true,
+    report_sha256: null,
+  };
+  report.report_sha256 = continuationDigest({...report, report_sha256: null});
+  return report;
+});
+const promotionAuditReconciliation = {
+  schema: "agentos.development_task_audit_reconciliation.v1",
+  version: 1,
+  status: "SETTLED_CLEAN",
+  task_sha256: task.task_sha256,
+  parent_reconciliation_sha256: task.parent_reconciliation_sha256,
+  campaign_id: task.campaign_id,
+  campaign_version: task.campaign_version,
+  source_commit: task.source_commit,
+  source_tree: task.source_tree,
+  complete_reports: 4,
+  settled_disciplines: [...AUDIT_DISCIPLINES],
+  report_sha256: promotionReports.map((report) => report.report_sha256),
+  findings: [],
+  immediate_first_pass_repairs: [],
+  finalization_queue: [],
+  owner_only_findings: [],
+  reconciliation_sha256: null,
+};
+promotionAuditReconciliation.reconciliation_sha256 = continuationDigest({...promotionAuditReconciliation, reconciliation_sha256: null});
+const completedPromotionParent = {
+  ...structuredClone(startHandoff),
+  status: "COMPLETED_INACTIVE",
+  phase: "COMPLETION",
+  campaign_binding: promotionBinding,
+  audit_reports: promotionReports,
+  audit_reconciliation: promotionAuditReconciliation,
+  next_action: "Review the exact completed continuation handoff; keep the campaign inactive.",
+  handoff_sha256: null,
+};
+completedPromotionParent.handoff_sha256 = continuationDigest({...completedPromotionParent, handoff_sha256: null});
+validateContinuationHandoff(completedPromotionParent);
+const promotionStatus = {
+  ...currentStatus,
+  current_reconciliation_sha256: result.reconciliation.reconciliation_sha256,
+  continuation_completion_handoff_sha256: completedPromotionParent.handoff_sha256,
+  current_commit: COMMIT,
+  current_tree: TREE,
+  policy_epoch: task.policy_epoch,
+  policy_state_sha256: task.policy_state_sha256,
+  controller_candidate_sha256: SHA,
+  owner_review_candidate_sha256: SHA,
+  approval_packet_sha256: SHA,
+  identity_binding_sha256: SHA,
+};
+const prepared = prepareQueuedContinuationTask({
+  queuedTask: result.queued,
+  parentHandoff: completedPromotionParent,
+  currentStatus: promotionStatus,
+  sourceCommit: COMMIT,
+  sourceTree: TREE,
+  startedAtUtc: NOW,
+});
+validateContinuationTask(prepared.task);
+validateContinuationHandoff(prepared.startHandoff);
+assert.equal(prepared.task.task_id, result.queued.task_id);
+assert.equal(prepared.task.parent_handoff_sha256, completedPromotionParent.handoff_sha256);
+assert.equal(prepared.task.parent_reconciliation_sha256, result.reconciliation.reconciliation_sha256);
+assert.equal(prepared.startHandoff.phase, "START");
+assert.equal(prepared.startHandoff.next_action.includes("AgentOS Controller"), true);
+
 const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-task-run-loop-"));
 try {
   const executionWrite = writeTaskRunLoopRecordCompareAndSwap({authorityRoot, recordPath: "loop/execution.json", record: result.execution});
@@ -230,5 +335,31 @@ const unsafeCandidate = candidate("TASK-UNSAFE-NEXT");
 unsafeCandidate.boundary.campaign_activation_allowed = true;
 reject("unsafe next candidate", () => runSafeControlPlaneTaskLoop({readyTask: task, readyHandoff: startHandoff, currentStatus, nextTaskCandidates: [unsafeCandidate], selectedNextTaskId: unsafeCandidate.task_id, execute, runAtUtc: NOW}));
 
-assert(hostileCases >= 12);
+reject("queued stale current reconciliation", () => prepareQueuedContinuationTask({
+  queuedTask: result.queued,
+  parentHandoff: completedPromotionParent,
+  currentStatus: {...promotionStatus, current_reconciliation_sha256: "f".repeat(64)},
+  sourceCommit: COMMIT,
+  sourceTree: TREE,
+  startedAtUtc: NOW,
+}));
+reject("queued stale parent handoff", () => prepareQueuedContinuationTask({
+  queuedTask: result.queued,
+  parentHandoff: completedPromotionParent,
+  currentStatus: {...promotionStatus, continuation_completion_handoff_sha256: "f".repeat(64)},
+  sourceCommit: COMMIT,
+  sourceTree: TREE,
+  startedAtUtc: NOW,
+}));
+const unsafeQueued = structuredClone(result.queued);
+unsafeQueued.task_candidate.boundary.campaign_activation_allowed = true;
+reject("unsafe queued candidate", () => prepareQueuedContinuationTask({queuedTask: unsafeQueued, parentHandoff: completedPromotionParent, currentStatus: promotionStatus, sourceCommit: COMMIT, sourceTree: TREE, startedAtUtc: NOW}));
+const mismatchedQueued = structuredClone(result.queued);
+mismatchedQueued.campaign_id = "CAMPAIGN-OTHER";
+reject("queued campaign mismatch", () => prepareQueuedContinuationTask({queuedTask: mismatchedQueued, parentHandoff: completedPromotionParent, currentStatus: promotionStatus, sourceCommit: COMMIT, sourceTree: TREE, startedAtUtc: NOW}));
+reject("queued invalid source", () => prepareQueuedContinuationTask({queuedTask: result.queued, parentHandoff: completedPromotionParent, currentStatus: promotionStatus, sourceCommit: "short", sourceTree: TREE, startedAtUtc: NOW}));
+const incompleteParent = {...completedPromotionParent, phase: "START", status: "STARTED_INACTIVE"};
+reject("queued incomplete parent handoff", () => prepareQueuedContinuationTask({queuedTask: result.queued, parentHandoff: incompleteParent, currentStatus: promotionStatus, sourceCommit: COMMIT, sourceTree: TREE, startedAtUtc: NOW}));
+
+assert(hostileCases >= 18);
 console.log(`PASS AgentOS repeatable safe run loop (${hostileCases} hostile cases, exact execution, reconciliation, next-task selection, inactive boundaries, CAS, JSON, and symlink checks)`);

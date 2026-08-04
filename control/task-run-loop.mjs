@@ -171,6 +171,99 @@ export function validateQueuedTask(queued) {
   return queued;
 }
 
+export function prepareQueuedContinuationTask({queuedTask, parentHandoff, currentStatus, sourceCommit, sourceTree, startedAtUtc}) {
+  validateQueuedTask(queuedTask);
+  validateContinuationHandoff(parentHandoff);
+  assert(parentHandoff.phase === "COMPLETION" && parentHandoff.status === "COMPLETED_INACTIVE", "queued continuation requires a completed inactive parent handoff");
+  requireRecord(currentStatus, "queued continuation current status");
+  assert(currentStatus.active_campaign === false && currentStatus.controller_status === "PREPARED_NOT_ACTIVATED", "queued continuation current status crossed activation");
+  assert(currentStatus.current_reconciliation_sha256 === queuedTask.parent_run_reconciliation_sha256, "queued continuation parent reconciliation is stale");
+  assert(currentStatus.continuation_completion_handoff_sha256 === parentHandoff.handoff_sha256, "queued continuation parent handoff is stale");
+  assert(queuedTask.parent_task_sha256 === parentHandoff.task_sha256, "queued continuation parent task differs");
+  const parentTask = parentHandoff.task;
+  for (const field of ["project_id", "campaign_id", "campaign_version"]) {
+    assert(queuedTask[field] === parentTask[field], `queued continuation ${field} differs`);
+  }
+  assert(queuedTask.canonical_campaign_identity === "CONTROLLER_CANDIDATE" && parentTask.canonical_campaign_identity === "CONTROLLER_CANDIDATE", "queued continuation campaign identity differs");
+  assert(queuedTask.policy_epoch === parentTask.policy_epoch && queuedTask.policy_state_sha256 === parentTask.policy_state_sha256, "queued continuation policy differs");
+  assert(JSON.stringify(queuedTask.boundary) === JSON.stringify(queuedTask.task_candidate.boundary), "queued continuation boundary differs");
+  assert(JSON.stringify(queuedTask.boundary) === JSON.stringify(parentTask.boundary), "queued continuation parent boundary differs");
+  const campaignBinding = parentHandoff.campaign_binding;
+  requireRecord(campaignBinding, "queued continuation campaign binding");
+  assert(campaignBinding.project_id === queuedTask.project_id
+    && campaignBinding.campaign_id === queuedTask.campaign_id
+    && campaignBinding.campaign_version === queuedTask.campaign_version
+    && campaignBinding.canonical_campaign_identity === "CONTROLLER_CANDIDATE",
+  "queued continuation campaign binding differs");
+  for (const field of ["current_commit", "current_tree"]) requireGitObject(currentStatus[field], `queued continuation ${field}`);
+  assert(currentStatus.current_commit === campaignBinding.source_commit && currentStatus.current_tree === campaignBinding.source_tree, "queued continuation current campaign source differs");
+  for (const field of ["controller_candidate_sha256", "owner_review_candidate_sha256", "approval_packet_sha256", "identity_binding_sha256"]) {
+    requireSha(currentStatus[field], `queued continuation ${field}`);
+    requireSha(campaignBinding[field], `queued continuation campaign ${field}`);
+    assert(currentStatus[field] === campaignBinding[field], `queued continuation campaign ${field} differs`);
+  }
+  assert(currentStatus.policy_epoch === queuedTask.policy_epoch && currentStatus.policy_state_sha256 === queuedTask.policy_state_sha256, "queued continuation current policy differs");
+  requireGitObject(sourceCommit, "queued continuation source commit");
+  requireGitObject(sourceTree, "queued continuation source tree");
+  requireUtc(startedAtUtc, "queued continuation start time");
+  const candidate = queuedTask.task_candidate;
+  const task = {
+    schema: "agentos.control_plane_continuation_task.v1",
+    version: 1,
+    status: "IN_PROGRESS_INACTIVE",
+    task_id: candidate.task_id,
+    project_id: queuedTask.project_id,
+    campaign_id: queuedTask.campaign_id,
+    campaign_version: queuedTask.campaign_version,
+    canonical_campaign_identity: "CONTROLLER_CANDIDATE",
+    parent_handoff_sha256: parentHandoff.handoff_sha256,
+    parent_reconciliation_sha256: queuedTask.parent_run_reconciliation_sha256,
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    policy_epoch: queuedTask.policy_epoch,
+    policy_state_sha256: queuedTask.policy_state_sha256,
+    authorization_status: "OWNER_AUTHORIZED_EXACT_TASK",
+    authorization_route: "DIRECT_AGENTOS_CONFIRMATION",
+    goal: candidate.goal,
+    scope: candidate.scope,
+    change_set: structuredClone(candidate.change_set),
+    excluded_scope: structuredClone(candidate.excluded_scope),
+    checks: structuredClone(candidate.checks),
+    stop_conditions: structuredClone(candidate.stop_conditions),
+    undo: structuredClone(candidate.undo),
+    start_boundary: candidate.start_boundary,
+    boundary: structuredClone(candidate.boundary),
+    started_at_utc: startedAtUtc,
+    task_sha256: null,
+  };
+  task.task_sha256 = continuationDigest({...task, task_sha256: null});
+  validateContinuationTask(task);
+  const startHandoff = {
+    schema: "agentos.control_plane_continuation_handoff.v1",
+    version: 1,
+    status: "STARTED_INACTIVE",
+    phase: "START",
+    task_sha256: task.task_sha256,
+    parent_handoff_sha256: parentHandoff.handoff_sha256,
+    parent_reconciliation_sha256: queuedTask.parent_run_reconciliation_sha256,
+    task: structuredClone(task),
+    campaign_binding: structuredClone(campaignBinding),
+    source_checkpoint: {commit: sourceCommit, tree: sourceTree, clean: true, pushed: false, remote_commit: "UNPUBLISHED", remote_tree: "UNPUBLISHED"},
+    boundary: {...structuredClone(candidate.boundary), controller_status: "PREPARED_NOT_ACTIVATED"},
+    audit_reports: [],
+    audit_reconciliation: null,
+    findings: [],
+    next_action: "Run only the queued control-plane task as the AgentOS Controller; keep the campaign inactive.",
+    stop_conditions: structuredClone(candidate.stop_conditions),
+    undo: structuredClone(candidate.undo),
+    recorded_at_utc: startedAtUtc,
+    handoff_sha256: null,
+  };
+  startHandoff.handoff_sha256 = continuationDigest({...startHandoff, handoff_sha256: null});
+  validateContinuationHandoff(startHandoff);
+  return {task, startHandoff};
+}
+
 export function runSafeControlPlaneTaskLoop({readyTask, readyHandoff, currentStatus, nextTaskCandidates, selectedNextTaskId, execute, iteration = 1, runAtUtc}) {
   validateContinuationTask(readyTask);
   validateContinuationHandoff(readyHandoff);

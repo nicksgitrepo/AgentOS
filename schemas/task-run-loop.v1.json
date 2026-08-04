@@ -6,7 +6,8 @@
   "purpose": "Repeat one safe control-plane iteration from a continuation-ready task without requiring a new manual message.",
   "iteration": {
     "rule": "Consume exactly one validated inactive task, require its inactive start handoff, record its execution and reconciliation, and queue exactly one validated next candidate.",
-    "selection": "The next candidate must be selected from the supplied catalog by an exact task ID; missing, duplicate, current-task, or unsafe candidates fail closed."
+    "selection": "The next candidate must be selected from the supplied catalog by an exact task ID; missing, duplicate, current-task, or unsafe candidates fail closed.",
+    "promotion": "A queued candidate is promoted into the next inactive task and start-handoff pair from the retained completed handoff and current status; no new owner message or task definition is required."
   },
   "records": [
     "agentos.control_plane_task_execution_readback.v1",
