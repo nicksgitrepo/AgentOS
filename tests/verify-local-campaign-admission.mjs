@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
-import {compileControllerCampaignCandidate} from "../control/agentos-controller.mjs";
+import {compileControllerCampaignCandidate, compileControllerEvent} from "../control/agentos-controller.mjs";
 import {
   compileLocalCampaignActivation,
   compileLocalCampaignAdmission,
@@ -10,6 +10,7 @@ import {
   validateLocalCampaignAdmission,
   validateLocalDevelopmentAuthorization,
 } from "../control/local-campaign-admission.mjs";
+import {localStartEventId} from "../control/start-local-self-development.mjs";
 
 const SHA = "a".repeat(64);
 const POLICY = "b".repeat(64);
@@ -92,5 +93,36 @@ oldSynthetic.owner_decision.decision = "KEEP_REVIEW_ONLY";
 oldSynthetic.authorization_sha256 = SHA;
 assert.throws(() => validateLocalDevelopmentAuthorization(oldSynthetic), /owner's existing consent|current owner consent|local owner decision is not the authorized start|digest mismatch/u);
 
-console.log("PASS local campaign admission (current-source binding, split local/external permissions, metadata-only build rejection, and anti-drift hostile coverage)");
+const lowercaseEventId = `LOCAL-SELF-DEVELOPMENT-AUTHORIZED-${"a".repeat(12)}`;
+assert.throws(() => compileControllerEvent({
+  eventId: lowercaseEventId,
+  eventType: "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
+  sourceRole: "AGENTOS_CONTROLLER",
+  controllerId: "AGENTOS-CONTROLLER-1",
+  projectId: "agentos-self-development",
+  policyEpoch: 1,
+  policyStateSha256: POLICY,
+  campaignId: authorization.campaign_id,
+  sequence: 1,
+  priorControllerHeadSha256: null,
+  payload: {},
+  occurredAtUtc: NOW,
+}), /stable identifier/u);
+const generatedEventId = localStartEventId("a".repeat(40));
+assert.match(generatedEventId, /LOCAL-SELF-DEVELOPMENT-AUTHORIZED-A{12}/u);
+assert.doesNotThrow(() => compileControllerEvent({
+  eventId: generatedEventId,
+  eventType: "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
+  sourceRole: "AGENTOS_CONTROLLER",
+  controllerId: "AGENTOS-CONTROLLER-1",
+  projectId: "agentos-self-development",
+  policyEpoch: 1,
+  policyStateSha256: POLICY,
+  campaignId: authorization.campaign_id,
+  sequence: 1,
+  priorControllerHeadSha256: null,
+  payload: {},
+  occurredAtUtc: NOW,
+}));
 
+console.log("PASS local campaign admission (current-source binding, split local/external permissions, metadata-only build rejection, and anti-drift hostile coverage)");

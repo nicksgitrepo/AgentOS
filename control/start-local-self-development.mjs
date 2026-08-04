@@ -81,6 +81,11 @@ function contentAddressed(record, field) {
   return result;
 }
 
+export function localStartEventId(sourceCommit) {
+  assert(typeof sourceCommit === "string" && sourceCommit.length >= 12, "local start source commit is incomplete");
+  return `LOCAL-SELF-DEVELOPMENT-AUTHORIZED-${sourceCommit.slice(0, 12).toUpperCase()}`;
+}
+
 function git(root, args) {
   try {
     return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
@@ -458,7 +463,7 @@ function main() {
     const decisionTreePath = path.join(campaignRoot, "decision-tree.json");
     const adapters = createLocalSelfDevelopmentAdapters({repoRoot, runtimeRoot: campaignRoot, authorization, admission, candidate, identityBinding, decisionTreePath});
     const event = compileControllerEvent({
-      eventId: `LOCAL-SELF-DEVELOPMENT-AUTHORIZED-${sourceCommit.slice(0, 12)}`,
+      eventId: localStartEventId(sourceCommit),
       eventType: "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
       sourceRole: "AGENTOS_CONTROLLER",
       controllerId: CONTROLLER_ID,
