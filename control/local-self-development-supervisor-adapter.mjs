@@ -115,6 +115,24 @@ function readOptional(root, name) {
   return fs.existsSync(target) ? readJson(target) : null;
 }
 
+export function resolveAddressedRecordConflict({recordName, digestField, existingRecord, replacementRecord}) {
+  requireString(recordName, "addressed record name");
+  requireString(digestField, "addressed record digest field");
+  assert(existingRecord && typeof existingRecord === "object" && !Array.isArray(existingRecord), "existing addressed record is required");
+  assert(replacementRecord && typeof replacementRecord === "object" && !Array.isArray(replacementRecord), "replacement addressed record is required");
+  requireSha(existingRecord[digestField], "existing addressed record digest");
+  requireSha(replacementRecord[digestField], "replacement addressed record digest");
+  if (existingRecord[digestField] === replacementRecord[digestField]) return {action: "KEEP_EXISTING", record_name: recordName, digest_field: digestField, original_digest: existingRecord[digestField], replacement_digest: replacementRecord[digestField]};
+  return {
+    action: "PRESERVE_AND_REPLACE",
+    record_name: recordName,
+    digest_field: digestField,
+    original_digest: existingRecord[digestField],
+    replacement_digest: replacementRecord[digestField],
+    reason: "existing completion record is bound to a stale parent; preserve it before writing the current parent-bound record",
+  };
+}
+
 function writeAddressed(root, name, value, field = "record_sha256") {
   const target = path.join(root, name);
   const record = structuredClone(value);
@@ -122,8 +140,19 @@ function writeAddressed(root, name, value, field = "record_sha256") {
   record[field] = digestWithout(record, field);
   if (fs.existsSync(target)) {
     const existing = readJson(target);
-    assert(existing[field] === record[field], `local supervisor record differs: ${name}`);
-    return existing;
+    const conflict = resolveAddressedRecordConflict({recordName: name, digestField: field, existingRecord: existing, replacementRecord: record});
+    if (conflict.action === "KEEP_EXISTING") return existing;
+    const safeName = name.replaceAll("/", "__").replace(/[^A-Za-z0-9._-]/gu, "_");
+    const archiveDirectory = path.join(root, "autonomous-supervisor-stale-records");
+    const archivePath = path.join(archiveDirectory, `${safeName}-${conflict.original_digest}.json`);
+    const originalBytes = fs.readFileSync(target);
+    fs.mkdirSync(archiveDirectory, {recursive: true});
+    if (!fs.existsSync(archivePath)) fs.writeFileSync(archivePath, originalBytes, {flag: "wx", mode: 0o600});
+    else { assert(!fs.lstatSync(archivePath).isSymbolicLink(), "stale addressed record archive may not be a symlink"); assert(fs.readFileSync(archivePath).equals(originalBytes), "stale addressed record archive changed"); }
+    const mismatch = {...conflict, schema: "agentos.controller_stale_completion_record_mismatch.v1", version: 1, original_evidence_path: path.relative(root, archivePath), observed_at_utc: new Date().toISOString(), mismatch_sha256: null};
+    mismatch.mismatch_sha256 = digestWithout(mismatch, "mismatch_sha256");
+    const mismatchPath = `${archivePath}.mismatch.json`;
+    if (!fs.existsSync(mismatchPath)) fs.writeFileSync(mismatchPath, `${JSON.stringify(mismatch)}\n`, {flag: "wx", mode: 0o600});
   }
   fs.mkdirSync(path.dirname(target), {recursive: true});
   const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
@@ -135,7 +164,6 @@ function writeAddressed(root, name, value, field = "record_sha256") {
   }
   return readJson(target);
 }
-
 function readAddressed(root, name, field) {
   const record = readOptional(root, name);
   if (record === null) return null;
@@ -1084,6 +1112,7 @@ function compileLifecycleResolution({goal, finding, sourceCommit, sourceTree, ta
     campaign_version: goal.campaign_version,
     finding_id: finding.finding_id,
     source_finding_sha256: finding.source_sha256,
+    parent_handoff_sha256: goal.parent_handoff_sha256,
     task_id: taskId,
     source_commit: sourceCommit,
     source_tree: sourceTree,
@@ -1602,6 +1631,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       status: finalizerResult.status,
       controller_role: "AGENTOS_CONTROLLER",
       task_id: taskId,
+      parent_handoff_sha256: goal.parent_handoff_sha256,
       source_commit: sourceCommit,
       source_tree: sourceTree,
       feature_commit: featureReadback.build_commit,
@@ -1625,6 +1655,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         campaign_id: goal.campaign_id,
         campaign_version: goal.campaign_version,
         task_id: autonomousTask.task_id,
+        parent_handoff_sha256: goal.parent_handoff_sha256,
         source_commit: finalizerResult.adopted_commit,
         source_tree: finalizerResult.adopted_tree,
         candidate_sha256: adoptedExecutionContext.candidate.candidate_sha256,
