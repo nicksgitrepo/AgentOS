@@ -577,8 +577,8 @@ function applyOwnerFeedbackRepair(worktreePath, feedbackId) {
   verifierSource = verifierSource.replace(oldImport, `${oldImport}  renderOwnerInactiveBoundaryMessage,\n`);
   const oldAssertion = 'assert.equal(prepared.startHandoff.next_action.includes("AgentOS Controller"), true);';
   const newAssertions = [
-    oldAssertion,
     "const inactiveMessage = renderOwnerInactiveBoundaryMessage({taskId: prepared.task.task_id, boundary: prepared.task.boundary});",
+    "assert.equal(prepared.startHandoff.next_action, inactiveMessage);",
     'assert.match(inactiveMessage, /safely paused while setup is still in place/u);',
     'assert.match(inactiveMessage, /have not changed the project, started extra agents, or sent anything out/u);',
     'assert.doesNotMatch(inactiveMessage, /campaign_activation_allowed/u);',
