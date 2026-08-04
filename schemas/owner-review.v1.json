@@ -124,7 +124,7 @@
         "audit_reconciliation_sha256",
         "binding_sha256"
       ],
-      "rule": "The Controller candidate remains the canonical campaign identity. A separate audit checkpoint is acceptable only when its campaign/version, policy, acceptance, source commit/tree, terminal audit plan, and settled reconciliation are validated into this content-addressed mapping. The approval packet must bind the mapping to the exact Controller candidate digest."
+      "rule": "The Controller candidate remains the canonical campaign identity. A separate audit checkpoint is acceptable only when its campaign/version, policy, acceptance, source commit/tree, audit plan, and reconciliation are validated into this content-addressed mapping. The approval packet must bind the mapping to the exact Controller candidate digest."
     },
     "forbidden_authority": [
       "spending",

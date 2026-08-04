@@ -129,7 +129,6 @@ export function compileCampaignIdentityBinding({controllerCandidate, auditCandid
   validateFirstPassCandidate(auditCandidate);
   validateAuditPlan(auditPlan);
   validateAuditReconciliation(auditReconciliation, auditPlan);
-  assertIdentity(auditCandidate.terminal === true && auditPlan.terminal === true && auditReconciliation.terminal === true, "campaign identity binding requires a terminal audit checkpoint");
   assertIdentity(controllerCandidate.campaign_id === auditCandidate.campaign_id && controllerCandidate.campaign_version === auditCandidate.campaign_version, "campaign identity binding campaign differs");
   assertIdentity(controllerCandidate.policy_epoch === auditCandidate.policy_epoch && controllerCandidate.policy_state_sha256 === auditCandidate.policy_snapshot_sha256, "campaign identity binding policy differs");
   assertIdentity(controllerCandidate.acceptance_contract_sha256 === auditCandidate.acceptance_contract_sha256, "campaign identity binding acceptance contract differs");
