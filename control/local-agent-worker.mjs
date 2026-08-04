@@ -112,7 +112,16 @@ function applyControllerSupervisorRepair(worktreePath) {
     '  if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";',
   ].join("\n");
   assert(source.includes(oldOrder) || source.includes(newOrder), "Controller supervisor boundary precedence is not at the expected source checkpoint");
-  const repairedSource = source.includes(oldOrder) ? source.replace(oldOrder, newOrder) : source;
+  const oldGoalBoundary = "    boundary: structuredClone(observation.boundary),";
+  const newGoalBoundary = [
+    "    boundary: {",
+    "      ...structuredClone(observation.boundary),",
+    "      hard_stop: action === \"STOP_HARD_BOUNDARY\" || observation.boundary.hard_stop,",
+    "    },",
+  ].join("\n");
+  assert(source.includes(oldGoalBoundary) || source.includes(newGoalBoundary), "Controller supervisor goal boundary is not at the expected source checkpoint");
+  let repairedSource = source.includes(oldOrder) ? source.replace(oldOrder, newOrder) : source;
+  if (repairedSource.includes(oldGoalBoundary)) repairedSource = repairedSource.replace(oldGoalBoundary, newGoalBoundary);
   writeFileAtomic(supervisorPath, repairedSource);
   const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
   const controllerEntry = Object.values(binding.normative ?? {}).find((entry) => entry?.path === "control/controller-supervisor.mjs");
