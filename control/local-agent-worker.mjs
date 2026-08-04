@@ -1034,6 +1034,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
   } else if (taskKind === "OWNER_FEEDBACK_REPAIR") {
     const feedbackId = task.match(/owner feedback (FEEDBACK-\d+)/iu)?.[1] ?? taskId.match(/(FEEDBACK-\d+)(?:-|$)/u)?.[1];
     assert(feedbackId !== undefined, "owner feedback task ID is missing its feedback item");
+    assert(feedbackId === "FEEDBACK-001", `owner feedback ${feedbackId} requires its own repair recipe`);
     const repair = applyOwnerFeedbackRepair(worktreePath, feedbackId);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
