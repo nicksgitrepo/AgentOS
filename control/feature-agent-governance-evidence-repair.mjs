@@ -328,7 +328,7 @@ const AUDITOR_RECHECK_BRANCH = `} else if (role === "INDEPENDENT_AUDITOR") {
       assert(fs.existsSync(featureWorktree) && fs.statSync(featureWorktree).isDirectory(), "auditor Feature-Agent worktree is unavailable");
       buildCommit = git(featureWorktree, ["rev-parse", "HEAD"]);
       buildTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);
-      changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+      changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\\n").filter(Boolean);
       assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
       assert(changedPaths.includes("control/governance-decision-tree.mjs"), "Auditor did not observe the required Feature-Agent code change");
       focusedChecks = runFocusedChecks(featureWorktree);
