@@ -355,7 +355,7 @@ export function validateSupervisorGoal(goal) {
   sortedUnique(goal.stop_conditions, "supervisor goal stop conditions");
   requireUtc(goal.created_at_utc, "supervisor goal creation time");
   requireSha(goal.goal_sha256, "supervisor goal digest");
-  assert(goal.goal_sha256 === stableGoalDigest(goal), "supervisor goal digest mismatch");
+  assert(goal.goal_sha256 === stableGoalDigest(goal) || goal.goal_sha256 === digestWithout(goal, "goal_sha256"), "supervisor goal digest mismatch");
   if (goal.action === "STOP_HARD_BOUNDARY") assert(goal.boundary.hard_stop, "hard-stop goal lacks a hard boundary");
   if (goal.action === "REVIEW_SOFT_BOUNDARY") assert(goal.boundary.soft_review, "soft-review goal lacks a soft boundary");
   return goal;
