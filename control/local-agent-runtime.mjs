@@ -133,6 +133,8 @@ function validateHandshake(handshake, expected) {
         ? "control/controller-supervisor.mjs"
         : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || expected.taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
           ? "schemas/bootstrap-binding.v1.json"
+          : expected.taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+            ? "control/local-agent-runtime.mjs"
           : expected.taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
           : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -152,6 +154,8 @@ function validateHandshake(handshake, expected) {
         ? "control/controller-supervisor.mjs"
         : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || expected.taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
           ? "schemas/bootstrap-binding.v1.json"
+          : expected.taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+            ? "control/local-agent-runtime.mjs"
           : expected.taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
           : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -573,6 +577,37 @@ export function issueDurableWorkerSessionCommand({sessionRecordPath, commandId, 
   return readback;
 }
 
+export function markDurableWorkerSessionFailed({sessionRecordPath, failure = "durable worker process exited before stop"}) {
+  const session = readJson(sessionRecordPath);
+  validateLocalDurableSessionRecord(session);
+  requireString(failure, "durable worker failure");
+  if (session.status !== "RUNNING") return session;
+  const failed = compileDurableSessionRecord({
+    status: "FAILED",
+    role: session.role,
+    sessionId: session.session_id,
+    taskId: session.task_id,
+    taskKind: session.task_kind,
+    campaignId: session.campaign_id,
+    campaignVersion: session.campaign_version,
+    candidateSha256: session.candidate_sha256,
+    sourceCommit: session.source_commit,
+    sourceTree: session.source_tree,
+    worktreePath: session.worktree_path,
+    pid: session.pid,
+    heartbeatPath: session.heartbeat_path,
+    commandPath: session.command_path,
+    commandResultPath: session.command_result_path,
+    initialReadback: session.initial_readback,
+    lastCommandId: session.last_command_id,
+    failure,
+    startedAtUtc: session.started_at_utc,
+    updatedAtUtc: new Date().toISOString(),
+  });
+  writeJsonAtomic(sessionRecordPath, failed);
+  return failed;
+}
+
 export async function stopDurableWorkerSession({sessionRecordPath, timeoutMs = 5_000}) {
   const session = readJson(sessionRecordPath);
   validateLocalDurableSessionRecord(session);
@@ -614,6 +649,8 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
         ? "control/controller-supervisor.mjs"
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
             ? "schemas/bootstrap-binding.v1.json"
+            : taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+              ? "control/local-agent-runtime.mjs"
             : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
               ? "tests/verify-local-agent-session.mjs"
             : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"

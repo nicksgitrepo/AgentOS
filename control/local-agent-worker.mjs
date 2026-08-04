@@ -167,6 +167,61 @@ function applyDurableSessionTestRootRepair(worktreePath) {
   return ["tests/verify-local-agent-session.mjs"];
 }
 
+function applyDurableSessionLivenessRepair(worktreePath) {
+  const runtimePath = path.join(worktreePath, "control/local-agent-runtime.mjs");
+  const testPath = path.join(worktreePath, "tests/verify-local-agent-session.mjs");
+  assert(fs.existsSync(runtimePath) && fs.existsSync(testPath), "durable-session liveness repair inputs are unavailable");
+  const runtimeSource = fs.readFileSync(runtimePath, "utf8");
+  const oldBranch = "  if (!pidAlive(session.pid)) return session;";
+  const newBranch = [
+    "  if (!pidAlive(session.pid)) {",
+    "    return markDurableWorkerSessionFailed({sessionRecordPath, failure: \"durable worker process exited before stop\"});",
+    "  }",
+  ].join("\n");
+  assert(runtimeSource.includes(oldBranch), "durable-session stop path is not at the expected liveness checkpoint");
+  writeFileAtomic(runtimePath, runtimeSource.replace(oldBranch, newBranch));
+
+  let testSource = fs.readFileSync(testPath, "utf8");
+  if (!testSource.includes("SMOKE-UNEXPECTED-DEATH-1")) {
+    const anchor = "\n} finally {\n  if (started && worktreePath) {";
+    const livenessTest = [
+      "  const unexpected = await startDurableWorkerSession({",
+      "    repoRoot: root,",
+      "    runtimeRoot,",
+      "    role: \"FEATURE_AGENT\",",
+      "    campaignId,",
+      "    campaignVersion: \"v1\",",
+      "    candidateSha256: crypto.createHash(\"sha256\").update(campaignId + \"-unexpected\").digest(\"hex\"),",
+      "    sourceCommit,",
+      "    sourceTree,",
+      "    task: \"Run an abrupt session-exit durability test.\",",
+      "    taskId: \"SMOKE-UNEXPECTED-DEATH-1\",",
+      "    taskKind: \"INITIAL\",",
+      "  });",
+      "  const unexpectedWorktreePath = unexpected.session_record.worktree_path;",
+      "  const unexpectedRecordPath = path.join(runtimeRoot, \"sessions\", campaignId + \"-v1\", \"FEATURE_AGENT-SMOKE-UNEXPECTED-DEATH-1\", \"session.json\");",
+      "  try {",
+      "    process.kill(Number(unexpected.session_record.pid), \"SIGKILL\");",
+      "    await new Promise((resolve) => setTimeout(resolve, 100));",
+      "    const failed = await stopDurableWorkerSession({sessionRecordPath: unexpectedRecordPath});",
+      "    validateLocalDurableSessionRecord(failed);",
+      "    assert.equal(failed.status, \"FAILED\");",
+      "    assert.match(failed.failure, /process exited before stop/u);",
+      "  } finally {",
+      "    try {",
+      "      execFileSync(\"git\", [\"-C\", root, \"worktree\", \"remove\", \"--force\", unexpectedWorktreePath], {encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]});",
+      "    } catch {",
+      "      // The abrupt-exit test retains no user worktree; an already-removed test worktree is safe.",
+      "    }",
+      "  }",
+    ].join("\n");
+    assert(testSource.includes(anchor), "durable-session liveness test insertion point is unavailable");
+    testSource = testSource.replace(anchor, `\n${livenessTest}${anchor}`);
+  }
+  writeFileAtomic(testPath, testSource);
+  return ["control/local-agent-runtime.mjs", "tests/verify-local-agent-session.mjs"];
+}
+
 function applyOwnerConversationSurfaceRepair(worktreePath) {
   const bootstrapPath = path.join(worktreePath, "control/bootstrap-compiler.mjs");
   const ownerReviewPath = path.join(worktreePath, "control/owner-review.mjs");
@@ -523,6 +578,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           ? "schemas/bootstrap-binding.v1.json"
           : taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
             ? "schemas/bootstrap-binding.v1.json"
+          : taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+            ? "control/local-agent-runtime.mjs"
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
           : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -537,6 +594,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           ? runControllerSupervisorBindingChecks(featureWorktree, taskKind)
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? runDurableSessionChecks(featureWorktree)
+          : taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+            ? runChecks(featureWorktree, ["node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs"])
           : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? runChecks(featureWorktree, ["node --check control/bootstrap-compiler.mjs", "node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs"])
           : runFocusedChecks(featureWorktree);
@@ -583,6 +642,47 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean evidence-repair checkpoint");
     for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), `Feature Agent evidence repair did not change ${requiredPath}`);
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") {
+    artifactName = "control/durable-session-liveness-repair-receipt.mjs";
+    const changedByRepair = applyDurableSessionLivenessRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/local-agent-runtime.mjs",
+      "node tests/verify-local-agent-session.mjs",
+    ]);
+    const marker = `// Local Feature Agent durable-session liveness repair receipt; held in the isolated campaign worktree.\nexport const DURABLE_SESSION_LIVENESS_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: recover abruptly exited durable sessions"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean durable-session liveness checkpoint");
+    assert(changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"), "Feature Agent durable-session liveness repair did not change runtime and hostile verifier");
     buildStatus = "COMPLETED";
     product = {
       ...base,

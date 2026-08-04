@@ -14,6 +14,7 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {
+  markDurableWorkerSessionFailed,
   startDurableWorkerSession,
   stopDurableWorkerSession,
   validateLocalDurableSessionRecord,
@@ -410,6 +411,18 @@ function processAlive(pid) {
   }
 }
 
+function reconcileExitedSessionRecords(entries) {
+  return entries.map((entry) => {
+    if (entry.record.status === "RUNNING" && !processAlive(entry.record.pid)) {
+      entry.record = markDurableWorkerSessionFailed({
+        sessionRecordPath: entry.target,
+        failure: "durable worker process exited before Controller reconciliation",
+      });
+    }
+    return entry;
+  });
+}
+
 function sessionIsHealthy({record, sourceCommit, sourceTree}) {
   try {
     validateLocalDurableSessionRecord(record);
@@ -592,6 +605,44 @@ function durableSessionTestFinding(campaignRoot) {
   };
 }
 
+function durableSessionLivenessFinding({campaignRoot, handoff, sourceCommit, sourceTree}) {
+  if (handoff.campaign_active !== true) return null;
+  const entries = sessionEntries(campaignRoot, handoff);
+  const unhealthy = entries
+    .filter(({record}) => record.status === "RUNNING")
+    .filter(({record}) => !sessionIsHealthy({record, sourceCommit, sourceTree}))
+    .map(({target, record}) => {
+      const heartbeat = readJson(record.heartbeat_path);
+      return {
+        role: record.role,
+        session_id: record.session_id,
+        task_id: record.task_id,
+        task_kind: record.task_kind,
+        pid: record.pid,
+        process_alive: processAlive(record.pid),
+        record_status: record.status,
+        heartbeat_status: heartbeat?.status ?? null,
+        heartbeat_session_pid: heartbeat?.session_pid ?? null,
+        session_record_path: path.relative(campaignRoot, target),
+        source_commit: record.source_commit,
+        source_tree: record.source_tree,
+      };
+    })
+    .sort((left, right) => left.session_id.localeCompare(right.session_id));
+  if (unhealthy.length === 0) return null;
+  const sourceSha256 = supervisorDigest({source_commit: sourceCommit, source_tree: sourceTree, unhealthy_sessions: unhealthy});
+  const deadRoles = unhealthy.filter((entry) => entry.process_alive === false).map((entry) => entry.role).sort();
+  return {
+    finding_id: "F-DURABLE-SESSION-LIVENESS",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: deadRoles.length > 0
+      ? `The Controller found ${deadRoles.length} campaign role process${deadRoles.length === 1 ? "" : "es"} gone while its session record still says RUNNING: ${deadRoles.join(", ")}.`
+      : "A campaign role session record or heartbeat no longer matches a healthy source-bound live session.",
+    source_sha256: sourceSha256,
+  };
+}
+
 function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
   const failure = entry.record.failure ?? "durable session failed without an error message";
   const rcaPath = `autonomous-supervisor-route-rcas/${entry.record.task_id}.json`;
@@ -661,6 +712,53 @@ function recordOrphanedSessionRca({campaignRoot, handoff, entries, sourceCommit,
   }, "rca_sha256");
 }
 
+function recordUnhealthySessionRca({campaignRoot, handoff, entries, sourceCommit, sourceTree}) {
+  const unhealthy = entries
+    .filter(({record}) => record.status === "RUNNING")
+    .filter(({record}) => !sessionIsHealthy({record, sourceCommit, sourceTree}))
+    .map(({target, record}) => {
+      const heartbeat = readJson(record.heartbeat_path);
+      return {
+        role: record.role,
+        session_id: record.session_id,
+        task_id: record.task_id,
+        task_kind: record.task_kind,
+        pid: record.pid,
+        process_alive: processAlive(record.pid),
+        record_status: record.status,
+        heartbeat_status: heartbeat?.status ?? null,
+        heartbeat_session_pid: heartbeat?.session_pid ?? null,
+        session_record_path: path.relative(campaignRoot, target),
+        source_commit: record.source_commit,
+        source_tree: record.source_tree,
+      };
+    })
+    .sort((left, right) => left.session_id.localeCompare(right.session_id));
+  if (unhealthy.length === 0) return null;
+  const observationSha256 = supervisorDigest({source_commit: sourceCommit, source_tree: sourceTree, unhealthy_sessions: unhealthy});
+  const rcaPath = `autonomous-supervisor-route-rcas/UNHEALTHY-SESSIONS-${observationSha256.slice(0, 32).toUpperCase()}.json`;
+  const existing = readOptional(campaignRoot, rcaPath);
+  if (existing !== null) return existing;
+  return writeAddressed(campaignRoot, rcaPath, {
+    schema: "agentos.controller_autonomous_supervisor_unhealthy_sessions_rca.v1",
+    version: 1,
+    status: "OPEN_REPAIR_REQUIRED",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    controller_role: "AGENTOS_CONTROLLER",
+    campaign_id: handoff.campaign_id,
+    campaign_version: handoff.campaign_version,
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    unhealthy_sessions: unhealthy,
+    symptom: "A campaign role process disappeared or stopped reporting valid source-bound liveness while its durable session record remained RUNNING.",
+    expected_behavior: "The Controller observation must change when a role process disappears, retain the exact failed session, and route recovery without an outside prompt.",
+    root_cause: "The supervisor observation was derived from the last handoff and did not include verified host-process liveness, so the runtime reused an unchanged observation after the Feature Agent exited.",
+    required_repair: "Bind observation identity to current session process and heartbeat facts, mark an exited session as failed, and rerun the three-role liveness route through the Controller.",
+    external_actions_attempted: false,
+    rca_sha256: null,
+  }, "rca_sha256");
+}
+
 function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
@@ -682,6 +780,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
     "node tests/verify-controller-supervisor.mjs",
   ];
   if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
+  if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") checks.push("node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
   if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
   if (taskKind === "GOVERNANCE_EVIDENCE_REPAIR") checks.push(
@@ -924,6 +1023,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: durableSessionFinding.source_sha256,
       });
     }
+    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, sourceCommit, sourceTree});
+    if (durableSessionLiveness !== null) findings.push(durableSessionLiveness);
     const autonomousFinding = autonomousTaskFinding({
       campaignRoot,
       handoff,
@@ -978,6 +1079,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
     const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
+    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, sourceCommit, sourceTree});
     const governanceEvidenceRepair = goal.finding_ids.includes(gateFinding.finding_id);
     const governanceEvidenceFinding = governanceEvidenceRepair ? {
       finding_id: gateFinding.finding_id,
@@ -994,6 +1096,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? "CONTROLLER_SUPERVISOR_REPAIR"
       : goal.finding_ids.includes(ownerSurfaceFinding?.finding_id)
       ? "OWNER_CONVERSATION_SURFACE_REPAIR"
+      : goal.finding_ids.includes(durableSessionLiveness?.finding_id)
+      ? "DURABLE_SESSION_LIVENESS_REPAIR"
       : goal.finding_ids.includes(durableSessionFinding?.finding_id)
       ? "DURABLE_SESSION_TEST_ROOT_REPAIR"
       : goal.finding_ids.includes(bindingFinding?.finding_id)
@@ -1009,7 +1113,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: autonomousTaskQueue.queue_sha256,
         status: "OPEN_NEXT_REQUIRED_BEHAVIOR",
       }
-      : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id) ? boundaryPrecedenceFinding : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
+      : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id) ? boundaryPrecedenceFinding : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR" ? durableSessionLiveness : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
       finding_id: lifecycleFinding?.finding_id,
       source_sha256: gateFinding.finding_sha256,
       status: lifecycleFinding?.status,
@@ -1020,7 +1124,16 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "local Controller route cannot enter Product custody");
     assert(!permissions.external_deployment_allowed && !permissions.external_release_allowed && !permissions.external_publication_allowed && !permissions.external_push_allowed && !permissions.external_merge_allowed, "local Controller route cannot perform external actions");
     const previousSessions = sessionEntries(campaignRoot, handoff);
-    const taskId = `${governanceEvidenceRepair ? "TASK-GOVERNANCE-EVIDENCE" : campaignProgressTask ? "TASK-CAMPAIGN-PROGRESS" : "TASK-CONTROLLER-SUPERVISOR"}-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
+    const unhealthySessionRca = recordUnhealthySessionRca({campaignRoot, handoff, entries: previousSessions, sourceCommit, sourceTree});
+    reconcileExitedSessionRecords(previousSessions);
+    const taskPrefix = governanceEvidenceRepair
+      ? "TASK-GOVERNANCE-EVIDENCE"
+      : campaignProgressTask
+      ? "TASK-CAMPAIGN-PROGRESS"
+      : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+      ? "TASK-DURABLE-SESSION-LIVENESS"
+      : "TASK-CONTROLLER-SUPERVISOR";
+    const taskId = `${taskPrefix}-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
     const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;
     const task = writeAddressed(campaignRoot, taskRecordPath, {
       schema: "agentos.controller_autonomous_supervisor_task.v1",
@@ -1044,6 +1157,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         ? ["control/feature-agent-governance-evidence-repair.mjs", "control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs", "tests/verify-local-campaign-admission.mjs"].sort()
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs", "tests/verify-owner-review.mjs"].sort()
+        : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+        ? ["control/local-agent-runtime.mjs", "tests/verify-local-agent-session.mjs"].sort()
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? ["tests/verify-local-agent-session.mjs"].sort()
         : bindingRepair
@@ -1132,6 +1247,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
           ? "Keep Bootstrap and the ongoing owner review casual and nontechnical while preserving the typed internal plan, then return exact focused evidence."
           : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
           ? "Repair the durable-session verifier so it creates its temporary folder in an isolated worktree, then run its focused check."
+          : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+          ? "Repair durable session recovery so an exited worker is retained as failed instead of being mistaken for a running session, then run the focused durability checks."
           : bindingRepair
             ? "Repair the exact changed repository binding in isolated Feature-Agent custody, then run the full repository checks."
           : "Repair the Controller supervisor boundary classification in isolated Feature-Agent custody, then run its focused checks.",
@@ -1162,6 +1279,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         ? "Independently inspect the Feature-Agent repair and verify that Bootstrap and the ongoing owner review keep technical governance wording behind the conversation."
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Independently inspect the Feature-Agent durable-session verifier repair and return source-bound test evidence."
+        : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+        ? "Independently inspect the Feature-Agent durable-session recovery repair and verify that an abrupt worker exit is retained and recoverable."
         : bindingRepair
           ? "Independently inspect the Feature-Agent repository binding checkpoint and return full repository audit evidence."
         : "Independently inspect the Feature-Agent Controller supervisor checkpoint and return source-bound audit evidence.",
@@ -1308,6 +1427,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
           ? "Make hard security and owner boundaries take precedence over soft-scope review."
           : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
           ? "Keep Bootstrap and the ongoing owner review in short everyday language while preserving the typed internal plan."
+          : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
+          ? "Make unexpected worker exits change Controller observation, retain the failed session, and recover the three source-bound roles automatically."
           : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
           ? "Make the durable-session verifier create its temporary root inside every isolated worktree."
           : bindingRepair
@@ -1332,6 +1453,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       },
       lifecycleResolutionSha256: lifecycleResolution.resolution_sha256,
       supervisedSessions: currentSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
+      preservedFailureRcas: unhealthySessionRca === null ? [] : [unhealthySessionRca.rca_sha256],
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
@@ -1382,7 +1504,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const checkpointOnCurrentSource = campaignProgress === null
       ? false
       : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
-    const existingSessions = sessionEntries(campaignRoot, handoff);
+    const existingSessions = reconcileExitedSessionRecords(sessionEntries(campaignRoot, handoff));
     const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext});
     const orphanedSessionRca = recordOrphanedSessionRca({campaignRoot, handoff, entries: existingSessions, sourceCommit, sourceTree});
     const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
