@@ -1,0 +1,47 @@
+{
+  "schema": "agentos.project_life_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Describe how real the first project needs to be, who may use it, what it may hold, how long it should live, and who maintains or retires it without forcing infrastructure before intent is known.",
+  "question": {
+    "id": "project.life_contract",
+    "class": "OWNER_INTENT",
+    "rule": "Ask one compact structured question only when maturity, audience, data, lifetime, maintenance, or commercialization would change the first route. Otherwise use the private-prototype safe default and disclose it."
+  },
+  "maturity_values": ["CONCEPT", "PRIVATE_PROTOTYPE", "LIMITED_PRODUCT", "PRIVATE_BETA", "PUBLIC_BETA", "STANDARD_PRODUCTION", "HIGH_CONSEQUENCE_PRODUCTION"],
+  "assurance_classes": ["PROTOTYPE", "STANDARD", "ELEVATED", "HIGH_CONSEQUENCE"],
+  "audiences": ["OWNER_ONLY", "SELECTED_USERS", "WORKSPACE", "PUBLIC"],
+  "data_postures": ["NONE_OR_SYNTHETIC", "NON_SENSITIVE_DURABLE", "SENSITIVE_DURABLE", "HIGH_CONSEQUENCE"],
+  "lifetime_values": ["PROBE_ONLY", "CAMPAIGN", "SHORT_LIVED", "LONG_LIVED", "INDEFINITE", "PROJECT_DEFINED"],
+  "maintenance_values": ["DISPOSABLE", "CAMPAIGN_BOUNDED", "ACTIVE_MAINTENANCE", "OWNER_MAINTAINED", "PROJECT_DEFINED"],
+  "source_custodies": ["PROJECT_CONTEXT_BOUND", "OWNER_CONTROLLED", "MANAGED_TARGET", "PROJECT_DEFINED"],
+  "account_custodies": ["NONE", "OWNER_CONTROLLED", "WORKSPACE_CONTROLLED", "PROJECT_DEFINED"],
+  "commercialization_values": ["NONE", "INTERNAL", "PLANNED", "ACTIVE"],
+  "portability_values": ["PORTABLE_REQUIRED", "PORTABLE_PREFERRED", "TARGET_BOUND", "PROJECT_DEFINED"],
+  "retirement_values": ["OWNER_DECISION", "EXPIRE_AFTER_CAMPAIGN", "EXPIRE_AFTER_DAYS", "KEEP_UNTIL_RETIRED", "PROJECT_DEFINED"],
+  "defaults": {
+    "maturity": "PRIVATE_PROTOTYPE",
+    "assurance_class": "PROTOTYPE",
+    "audience": "OWNER_ONLY",
+    "data_posture": "NONE_OR_SYNTHETIC",
+    "expected_lifetime": "CAMPAIGN",
+    "maintenance_posture": "CAMPAIGN_BOUNDED",
+    "availability": "ON_DEMAND",
+    "portability": "PORTABLE_REQUIRED",
+    "commercialization": "NONE",
+    "retirement": "OWNER_DECISION"
+  },
+  "safety_rules": [
+    "A defaulted contract cannot claim production or sensitive durable data.",
+    "HIGH_CONSEQUENCE_PRODUCTION requires HIGH_CONSEQUENCE assurance.",
+    "A prototype target uses NONE_OR_SYNTHETIC data unless a stricter typed route explicitly proves otherwise.",
+    "Project-specific extensions may add restrictions but cannot lower assurance, widen audience, remove recovery, or change owner authority."
+  ],
+  "binding": {
+    "field": "project_life_contract",
+    "digest": "life_contract_sha256 is the SHA-256 of the canonical contract body without its digest field",
+    "plan": "exact_creation_plan.project_life_contract_sha256 must equal life_contract_sha256",
+    "context": "typed Project Context carries the complete contract and its digest"
+  }
+}

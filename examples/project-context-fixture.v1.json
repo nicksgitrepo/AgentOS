@@ -79,11 +79,11 @@
       }
     ],
     "roles": {
-      "global_orchestrator": "global orchestrator",
-      "feature_lead_registry": "feature registry",
+      "campaign_orchestrator": "campaign orchestrator",
+    "feature_agent_registry": "feature registry",
       "platform_agent_policy": "on-demand platform agents",
       "independent_auditor": "independent auditor",
-      "global_runtime": "global runtime"
+      "persistent_runtime": "persistent runtime"
     },
     "resources": {
       "maximum_parallel_writer_lanes": 1,
@@ -100,7 +100,7 @@
       "lease_recovery_inspection_interval": 15
     },
     "release": {
-      "exclusive_release_operator": "global runtime",
+      "exclusive_release_operator": "persistent runtime",
       "integration_branch": "main",
       "artifact_authority": "immutable build identity",
       "deployment_targets": "configured targets",
@@ -141,9 +141,9 @@
       "project_goal_question_overrides_or_extensions": [],
       "design_system_question_overrides_or_extensions": [],
       "feature_question_overrides_or_extensions": [],
-      "owner_only_preference_routes": "global orchestrator to project owner",
+      "owner_only_preference_routes": "campaign orchestrator to project owner",
       "accepted_safe_defaults": "smallest reversible route",
-      "context_blocker_owner_routes": "global orchestrator"
+      "context_blocker_owner_routes": "campaign orchestrator"
     }
   },
   "kernel": {

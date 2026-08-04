@@ -89,6 +89,10 @@ const credentialUrl = /https?:\/\/[^/\s:@]+:[^/\s@]+@/iu;
 const accessKey = /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/u;
 const tokenValue = /\b(?:ghp|github_pat|sk|rk)[_-][A-Za-z0-9_-]{20,}\b/u;
 const taskUuid = /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/iu;
+const absoluteHostPath = new RegExp(`${["/", "private", "/"].join("")}(?:tmp|var|home|root|opt|Volumes)/`, "u");
+const localOrPrivateUrl = new RegExp(`${["https", "://"].join("")}(?:localhost|127\\.0\\.0\\.1|[A-Za-z0-9.-]+\\.(?:internal|local|corp|private))(?:[/:?#]|$)`, "iu");
+const cloudResource = new RegExp(`(?:${["arn", ":", "aws", ":"].join("")}|${["i", "-"].join("")}[0-9a-f]{8,}|${["ocid1", "\\."].join("")})`, "iu");
+const numericBinding = /\b(?:account|subscription|project|tenant|deployment|resource)(?:[_-]?id)?\s*[:=]\s*["']?\d{8,}/iu;
 for (const absolute of files) {
   const text = fs.readFileSync(absolute, "utf8");
   const relative = path.relative(root, absolute);
@@ -99,6 +103,10 @@ for (const absolute of files) {
   if (accessKey.test(text)) fail(`cloud access key shape in ${relative}`);
   if (tokenValue.test(text)) fail(`API token shape in ${relative}`);
   if (taskUuid.test(text)) fail(`task/session UUID in ${relative}`);
+  if (absoluteHostPath.test(text)) fail(`host-specific absolute path in ${relative}`);
+  if (localOrPrivateUrl.test(text)) fail(`private or local URL in ${relative}`);
+  if (cloudResource.test(text)) fail(`cloud resource identity in ${relative}`);
+  if (numericBinding.test(text)) fail(`numeric account or deployment identity in ${relative}`);
 }
 
 const binding = readJson("schemas/bootstrap-binding.v1.json");

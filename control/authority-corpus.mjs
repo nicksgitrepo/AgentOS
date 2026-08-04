@@ -375,7 +375,7 @@ export function renderDraftPage(page, plan) {
       `page_type: ${page.page_type}`,
       "schema_version: 1",
       "authority_status: DRAFT_NONAUTHORITATIVE",
-      "owner: GLOBAL_ORCHESTRATOR",
+      "owner: CAMPAIGN_ORCHESTRATOR",
       `source_identity: ${plan.context_identity.exact_context_digest}`,
       "created_at: PENDING_ACTIVATION",
       "last_verified_at: UNPROVEN",
@@ -451,7 +451,7 @@ export function renderDraftPage(page, plan) {
     "",
     "# Owner and next",
     "",
-    "Global Orchestrator routes ownership after context admission.",
+    "Campaign Orchestrator routes ownership after context admission.",
     "",
   ].join("\n");
 }

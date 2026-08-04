@@ -1,0 +1,31 @@
+{
+  "schema": "agentos.delivery_probe_contracts.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "plan": {
+    "schema": "agentos.delivery_probe_plan.v1",
+    "required": ["policy_sha256", "discovery_digest_sha256", "allowed_operations", "prohibited_operations", "probes", "probe_plan_sha256"],
+    "rule": "The probe plan is deterministic and contains only local read-only operations. Its policy and discovery digests are part of the exact Bootstrap plan."
+  },
+  "results": {
+    "schema": "agentos.delivery_probe_results.v1",
+    "required": ["probe_plan_sha256", "binding", "operations", "results", "result_sha256"],
+    "statuses": ["PASS", "CONFLICT", "NOT_RUN_OWNER_BOUNDARY", "UNAVAILABLE", "UNPROVEN"],
+    "binding": ["plan_sha256", "delivery_policy_sha256", "discovery_digest_sha256", "project_root"],
+    "rule": "A result is accepted only when its exact plan, policy, discovery, and canonical project-root binding match the expected values."
+  },
+  "safe_effects": {
+    "read_only": true,
+    "authentication_attempted": false,
+    "network_attempted": false,
+    "spending_attempted": false,
+    "writes_attempted": false,
+    "publication_attempted": false,
+    "deployment_attempted": false,
+    "rollback_attempted": false
+  },
+  "prohibited": ["provider_login", "credential_read", "network_request", "push", "merge", "preview_creation", "deployment", "rollback", "spending", "file_write", "deletion"],
+  "determinism": "Canonical JSON recursively orders object keys by unsigned UTF-8 byte order; probe output retains typed observations and hashes raw command output without retaining unbounded or secret-bearing output.",
+  "containment": "The project root must be a real directory, not a symlink. Probe execution never follows a project-root symlink."
+}

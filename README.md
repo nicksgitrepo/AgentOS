@@ -1,40 +1,94 @@
 # AgentOS
 
-AgentOS is a portable, project-agnostic governance and orchestration system for autonomous software-development agents.
+> **Status:** `2.1rc — PREPARED_NOT_ACTIVATED`
 
-This repository is the standalone home of the `2.1rc` generation. It is intentionally separated from every product repository and must not contain product-specific identities, paths, providers, policies, or domain truth in its portable governance.
+AgentOS is a work-in-progress operating system for autonomous software-development agents. It is portable and project-agnostic: this repository is the Bootstrap authority, not the Product you want to build.
 
-## Repository layout
+## Start in three steps
 
-- `bootstrap/` — user-guided environment discovery and configuration entrypoint.
-- `governance/2.1rc/` — normative portable governance for this release candidate.
-- `authority/templates/` — project authority-corpus and context templates.
-- `control/` — executable controllers, compilers, and maintainers.
-- `schemas/` — machine-readable contracts.
-- `tests/` — positive, hostile, portability, and determinism tests.
-- `docs/` — user and maintainer documentation.
-- `migrations/` — tools and mappings for importing earlier governance generations.
-- `examples/` — generic examples with no real project identity.
+1. Find the absolute paths for this AgentOS checkout and the project you want to create or import. They may be separate directories.
+2. Start a fresh agent with the strongest economical coding model available. Do not choose a model below Bootstrap’s completion-reliability floor.
+3. Replace `<AGENTOS_ROOT>` and `<PROJECT_ROOT>` in the instruction below with those exact paths, then copy and paste it:
 
-## Current status
+```text
+You are Bootstrap 2.1rc. AgentOS root: <AGENTOS_ROOT>. Project root: <PROJECT_ROOT>.
+Use the AgentOS root only as the Bootstrap authority, not as the Product. Read <AGENTOS_ROOT>/README.md, then <AGENTOS_ROOT>/bootstrap/start-here.md, verify <AGENTOS_ROOT>/schemas/bootstrap-binding.v1.json, and use the canonical controller at <AGENTOS_ROOT>/control/bootstrap-compiler.mjs.
+Run the first read-only Bootstrap invocation exactly:
+node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED
+Use the returned discovery and question plan, ask only one material question at a time, and do not write, spend, authenticate, publish, merge, or deploy until Bootstrap displays the exact creation plan and I approve it with APPROVE_EXACT_PLAN. If either path is missing or unclear, ask for that path before discovery.
+```
 
-`2.1rc` is under development and is not activated by this scaffold.
+Running Bootstrap as an agent uses the host’s agentic execution allowance. Use ordinary Chat or a private handoff-file exchange when you want advice without repository execution; use a public Git handoff only when public source exchange is intentional. Provider APIs and unattended automation may have separate billing and credentials.
 
-No license has been selected yet.
+## AgentOS in one minute
 
-## Verification
+You explain what you want. Bootstrap inspects the project, preserves imported source before changing it, asks only what it cannot safely discover, and shows one clear plan. Economical agents build the first pass, independent checkers inspect it, a stronger Finalizer repairs the retained code, and persistent Runtime handles release and deployment.
 
-From the repository root, run:
+The cascade is measured by the cost of the complete accepted result, not by
+token prices alone. AgentOS keeps it as the default for a task class only after
+at least three accepted observations show a cascade-to-direct-result ratio of
+`0.75` or lower. If Finalizer work becomes a second implementation, the pass is
+classified as a rebuild rather than quietly called a repair.
+
+## Main choices
+
+- **New project (`NEW_PROJECT`):** build a clean project from your intent.
+- **Adopt in place (`ADOPT_IN_PLACE`):** add governance around an existing project without changing its Product files.
+- **Clean copy (`CLEAN_COPY`):** create a separate copy while preserving the source and behavior.
+- **Normalize and audit (`NORMALIZE_AND_AUDIT`):** create a separate destination, normalize structure and naming, run the four independent audit lenses—`FUNCTIONALITY`, `DESIGN_UI_SHELL_NAVIGATION`, `SECURITY`, and `CODE_QUALITY_HYGIENE`—then repair the result as the first governed campaign.
+- **Rebuild from intent (`RECONSTRUCT_FROM_INTENT`):** use an existing project as reference while constructing a cleaner replacement.
+- **Prototype, limited product, beta, or production:** choose how real, public, durable, and maintained the first outcome should be.
+- **Local, managed site, VPS, cloud, or hybrid:** Bootstrap recommends the smallest capable delivery route from the project’s actual needs.
+- **Eco, standard, or performance:** choose the operating condition; the cheapest model is rejected when it is unlikely to finish reliably.
+- **Optional continuity:** import a predecessor handoff, preserve a legacy authority corpus, or recover context from selected sessions or files.
+- **User Review Campaign:** talk through the next campaign in ordinary Chat or Voice before AgentOS spends agentic usage; the Orchestrator returns one exact candidate and model recommendation for approval.
+
+## Why use it?
+
+AgentOS is designed to provide:
+
+- high autonomy with fewer routine questions;
+- economical first-pass construction with stronger final correction;
+- independent Function, Design, Security, and code-hygiene inspection;
+- exact checkpoints, rollback, recovery, and persistent deployment knowledge;
+- source and documentation preservation before import or refactor;
+- explicit owner boundaries for intent, spending, authentication, publication, destruction, and production.
+
+The tradeoffs are honest: this is still an unactivated release candidate; deep normalization, continuous audit, and high-assurance work cost more and take longer; provider capabilities and permissions vary; and the owner remains necessary at genuine authority boundaries.
+
+## Project protection
+
+AgentOS does not silently spend money, publish source, expose secrets, delete accepted work, change repository ownership, or deploy production. Imported documents and predecessor agents are evidence, not authority. A real hold pauses only the affected outcome while unrelated safe work continues.
+
+## Policy and owner review
+
+AgentOS keeps campaign behavior in a content-addressed Global Policy State. The
+owner can change declared variables such as campaign mode, role model class,
+North Star, first useful workflow, review transport, memory posture, and heartbeat
+preference. Dependencies, invalidated question slices, safe effective
+boundaries, and required rotations are calculated and retained in an amendment
+ledger. Constitutional rules cannot be weakened by a project setting.
+
+For substantial or ambiguous work, the recommended route is a `USER REVIEW CAMPAIGN`.
+It is advisory until the Orchestrator reconciles the return and the
+owner gives authenticated exact approval over one digest. Chat memory supplies
+continuity only; it never overrides the current packet. A review packet cannot
+write Product, spawn Product agents, authorize spending, merge, deploy, or
+delete.
+
+## Start-here and verification
+
+- Bootstrap entrypoint: [`bootstrap/start-here.md`](bootstrap/start-here.md)
+- Fresh-agent start contract: replace the two path placeholders in the instruction above, then run `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED` for the first read-only discovery and question plan.
+- Exact binding: [`schemas/bootstrap-binding.v1.json`](schemas/bootstrap-binding.v1.json)
+- User guide: [`docs/user-guide.md`](docs/user-guide.md)
+- Maintainer guide: [`docs/maintainer-guide.md`](docs/maintainer-guide.md)
+
+From the repository root:
 
 ```text
 node tests/verify-portability.mjs
 node tests/verify-all.mjs
 ```
 
-The first command checks the whole package for portability, syntax, path
-containment, deterministic empty-project creation, context separation,
-extension boundaries, and symlink refusal. The second runs the complete
-positive and hostile governance suite.
-
-Extraction provenance and the activation hold are recorded in
-`migrations/2.1rc-extraction-manifest.json`.
+No license has been selected yet. This repository remains `PREPARED_NOT_ACTIVATED`; it does not activate, merge, deploy, or rebind a Product campaign.

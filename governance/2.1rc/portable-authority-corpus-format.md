@@ -19,14 +19,15 @@ prevents the boundary article from belonging to two ranges.
 | `000` | Bootstrap and recovery entry |
 | `0001–0099` | Portable governance |
 | `0100–0199` | Shared project context and documentation |
-| `0200–0299` | First allocated feature |
-| each later 100-number block | One additional feature or a linked feature extension |
+| `0200+` | Sparse feature-capsule and extension allocation |
 
-Article IDs are immutable. Imported allocations are preserved. New feature
-IDs are sorted by unsigned UTF-8 byte order and assigned the next free
-100-number block. A full block receives a linked extension block; accepted
-articles are never renumbered. Every extension chain is acyclic and must
-terminate at exactly one primary block for the same feature.
+Article IDs are immutable. Imported allocations are preserved. A new feature
+receives the lowest unused ID at or above `0200`; optional feature extensions
+receive additional unused IDs only when needed. No empty 100-number block is
+reserved for work that does not exist, and accepted articles are never
+renumbered. New allocations are collision-checked in unsigned UTF-8 order.
+Every extension chain is acyclic and terminates at exactly one primary feature
+capsule.
 
 Filenames are `<article>-<short-stable-slug>.md`. The generated machine index
 binds every article number, path, owner, class, feature allocation, current
@@ -83,38 +84,37 @@ content digest, supersession, and accepted-release identity.
 | `0123` | Project-context change history |
 | `0124–0199` | Reserved shared-project expansion |
 
-## 5. Feature block
+## 5. Feature capsule
 
-For a feature whose block begins at `x00`, use:
+For a feature capsule with primary ID `f`, use the following article types as
+needed. Their IDs are allocated sparsely from the unused `0200+` space; the
+table is a semantic order, not a pre-reserved numeric block:
 
-| Offset | Purpose |
+| Type | Purpose |
 |---|---|
-| `x00` | Feature index and reading order |
-| `x01` | Intent and user outcome |
-| `x02` | Outcome gates and current status |
-| `x03` | Users, workflows, and contextual examples |
-| `x04` | Ownership, scope, non-goals, and protected boundaries |
-| `x05` | Dependencies and dependency order |
-| `x06` | Contracts, interfaces, events, and compatibility |
-| `x07` | Data, database, tenancy, and row security |
-| `x08` | Backend, API, services, and durable behavior |
-| `x09` | UI/UX, views, responsive behavior, and accessibility |
-| `x10` | Shell, navigation, routing, and mounting |
-| `x11` | Integrations and provider seams |
-| `x12` | Security, privacy, authorization, and hostile boundaries |
-| `x13` | Runtime, configuration, observability, and recovery |
-| `x14` | Tests, proof, and affected stable gates |
-| `x15` | Failure and honest unavailable behavior |
-| `x16` | Accepted implementation map: paths, symbols, variables, schemas |
-| `x17` | Compact event and build log |
-| `x18` | Handoffs, checkpoint identity, and archived session lineage |
-| `x19` | Feature decisions and supersession |
-| `x20` | Accepted release history |
-| `x21` | Open owner questions and context gaps |
-| `x22` | Deferred improvements and next-cycle backlog |
-| `x23–x79` | Reserved feature expansion |
-| `x80–x89` | Feature-specific case statements and failure examples |
-| `x90–x99` | Extension-block, migration, and compatibility references |
+| `primary` | Feature index and reading order |
+| `intent` | Intent and user outcome |
+| `gates` | Outcome gates and current status |
+| `workflows` | Users, workflows, and contextual examples |
+| `boundaries` | Ownership, scope, non-goals, and protected boundaries |
+| `dependencies` | Dependencies and dependency order |
+| `contracts` | Contracts, interfaces, events, and compatibility |
+| `data` | Data, database, tenancy, and row security |
+| `behavior` | Backend, API, services, and durable behavior |
+| `experience` | UI/UX, views, responsive behavior, and accessibility |
+| `navigation` | Shell, navigation, routing, and mounting |
+| `integrations` | Integrations and provider seams |
+| `security` | Security, privacy, authorization, and hostile boundaries |
+| `runtime` | Runtime, configuration, observability, and recovery |
+| `checks` | Tests and affected stable gates |
+| `unavailable` | Failure and honest unavailable behavior |
+| `implementation` | Accepted implementation map: paths, symbols, variables, schemas |
+| `events` | Compact event and build log |
+| `handoffs` | Handoffs, checkpoint identity, and archived session lineage |
+| `decisions` | Feature decisions and supersession |
+| `releases` | Accepted release history |
+| `questions` | Open owner questions and context gaps |
+| `backlog` | Deferred improvements and next-cycle backlog |
 
 Platform Agents do not create separate competing truth. Their compact
 pseudocode, implementation notes, and handoff details go in the feature
@@ -128,7 +128,7 @@ Every standard article begins with:
 ```text
 article: <immutable number>
 title: <short stable title>
-status: <DRAFT | PLANNED | BUILDING | PROTOTYPED | TESTING | VERIFIED | ACCEPTED_LIVE | BLOCKED | DEFERRED | UNAVAILABLE | SUPERSEDED>
+status: <DRAFT | PLANNED | BUILDING | PROTOTYPED | TESTING | VERIFIED | ACCEPTED_LIVE | ON_HOLD | DEFERRED | UNAVAILABLE | SUPERSEDED>
 owner: <one role or owner ID>
 applies_to: <project, feature, capability, environment, or release>
 accepted_release: <exact accepted-live identity or UNRELEASED>
@@ -174,7 +174,7 @@ each carries its own receipt digest; free-form release labels are insufficient.
 Allowed lifecycle statuses are:
 
 `PLANNED`, `BUILDING`, `PROTOTYPED`, `TESTING`, `VERIFIED`,
-`ACCEPTED_LIVE`, `BLOCKED`, `DEFERRED`, `UNAVAILABLE`, `SUPERSEDED`.
+`ACCEPTED_LIVE`, `ON_HOLD`, `DEFERRED`, `UNAVAILABLE`, `SUPERSEDED`.
 
 Evidence disposition is separately one of `PASS_WITH_EVIDENCE`,
 `FAIL_ACTIVE_REPAIR`, `UNPROVEN_ACTIVE_EVIDENCE`,
@@ -197,8 +197,8 @@ Active campaign files live under
 4. `03-audit-gaps.md`;
 5. `04-owner-questions.md`;
 6. `05-release-and-rollback.md`.
-7. `06-gpt-assist-project-status.md` only when the owner enabled
-   `GPT_ASSIST`.
+7. An optional assistant-exchange status packet only when the owner enabled
+   the typed assistant extension.
 
 The campaign tree is the recovery source for work in progress. Standard
 numbered articles remain the last accepted-live truth. At accepted-live

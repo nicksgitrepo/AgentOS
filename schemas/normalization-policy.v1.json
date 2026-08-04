@@ -1,0 +1,19 @@
+{
+  "schema": "agentos.normalization_policy_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/normalization-policy.mjs",
+  "result": "agentos.normalization_policy.v1",
+  "purpose": "Make project structure and naming refactors deterministic while preserving public, persisted, and external compatibility.",
+  "scopes": ["NOT_APPLICABLE", "INTERNAL_AND_NEW_SURFACES", "FULL_WITH_COMPATIBILITY"],
+  "precedence": [
+    "EXTERNAL_PERSISTED_OR_PUBLIC_CONTRACT",
+    "OFFICIAL_LANGUAGE_CONVENTION",
+    "OFFICIAL_FRAMEWORK_OR_PLATFORM_CONVENTION",
+    "ACCEPTED_PROJECT_GLOSSARY",
+    "AGENTOS_FALLBACK"
+  ],
+  "rename_dispositions": ["PRESERVE_EXTERNAL", "ALIAS_THEN_MIGRATE", "RENAME_INTERNAL", "OWNER_REQUIRED_ON_CONFLICT"],
+  "rule": "Bootstrap compiles the policy; the first governed campaign executes the migration. A route, API field, database column, event, environment variable, or persisted identity is never silently renamed."
+}

@@ -13,7 +13,9 @@
   "target": {
     "repository_role": "STANDALONE_PORTABLE_GOVERNANCE_REPOSITORY",
     "base_commit": "6cad8d8309b6e30165a79081ed60041a5913815f",
-    "branch": "agent/extract-2.1rc"
+    "branch": "agent/bootstrap-alignment-naming",
+    "extraction_commit": "b0323a2adf6e79e2ffddf4d4e0292f8f8b4edd21",
+    "extraction_tree": "9df52134f7da75f21dbdc2a611b1ccc493a0f679"
   },
   "portable_mapping": [
     ["bootstrap entrypoint", "bootstrap/start-here.md"],
@@ -54,10 +56,28 @@
     "renamed legacy article-store semantic identifiers to provider-neutral authority-corpus terms",
     "rebound all machine paths and digests to the standalone layout",
     "made project-context governance override attempts fail closed",
-    "required complete successor Feature Agent coverage for every dependency owner",
-    "made DIRECT_ONLY successor waves omit GPT_ASSIST handoffs",
+    "required a full next-campaign orientation packet before any later admission",
+    "made the optional assistant exchange advisory and prohibited successor rosters before lifecycle admission",
     "rejected final current-view symlinks and content-unbound Product-acceptance receipts",
     "bound RC_READY to a recomputed question-tree proof and Auditor attestation"
+  ],
+  "alignment_repairs": [
+    "introduced canonical Bootstrap Interview and Bootstrap Discovery names with read-compatible aliases",
+    "replaced provider-specific/direct openers with discovery permission and compact owner-question selection",
+    "added ECO_CONTINUOUS, STANDARD_WORKWEEK, PERFORMANCE, and CUSTOM economics profiles with a completion floor",
+    "added deterministic legacy.zip preservation with manifest, index, receipt, and symlink/unsafe-object rejection",
+    "added mission, north-star, governance-value, causal-repair, and dependent-scope continuity laws",
+    "made terminal successor orientation Orchestrator-only until a distinct next campaign is admitted",
+    "made Platform Agents campaign-local logical capabilities with stable worktrees and sequential Feature-Agent supervision leases",
+    "added a deterministic Bootstrap Coverage output-gap matrix for creation, trust, data, delivery, recovery, proof, and activation obligations",
+    "added one compact Project Life Contract so maturity, audience, data posture, lifetime, maintenance, portability, and retirement are explicit before infrastructure selection",
+    "split Delivery Target from transport mechanics and added a profiled managed-site prototype and limited-product option without provider-account authority",
+    "added a content-addressed Boundary Contract with immutable constitutional, owner-sovereign, derived-operating, and temporary-probe classes",
+    "added typed project import modes with source-preservation archive, manifest, index, receipt, and explicit exclusion record",
+    "added compatibility-first normalization precedence for directories, filenames, identifiers, routes, data contracts, events, and persisted identities",
+    "added a version-pinned Standards Registry with explicit role, applicability, evidence, and non-weakening project-overlay boundary",
+    "bound full project normalization and four-lane import auditing to the first governed campaign rather than hidden Bootstrap implementation",
+    "added accepted-result cascade economics with a 0.75 savings target, minimum observation floor, task-class telemetry, and evidence-derived Finalizer rebuild classification"
   ],
   "activation": {
     "requires_explicit_owner_approval": true,

@@ -2,6 +2,35 @@
   "schema": "governance.project_context_template.v1",
   "version": 1,
   "purpose": "Portable input template for binding one project to the Governance 2.1rc kernel without importing another project's context.",
+  "bootstrap_compiler_output": {
+    "contract": "schemas/bootstrap-plan.v1.json",
+    "required_groups": [
+      "PROJECT_DEFINITION",
+      "PROJECT_IMPORT",
+      "SOURCE_PRESERVATION",
+      "NORMALIZATION_POLICY",
+      "STANDARDS_REGISTRY",
+      "NORTH_STAR",
+      "FIRST_USEFUL_WORKFLOW",
+      "PROJECT_LIFE_CONTRACT",
+      "FUNCTION_REQUIREMENTS",
+      "TECHNICAL_BASELINE",
+      "DELIVERY_POLICY",
+      "DELIVERY_TARGET",
+      "DESIGN_BIBLE",
+      "SECURITY_BASELINE",
+      "AUTHORITY_BOUNDARIES",
+      "BOUNDARY_CONTRACT",
+      "AUTHORITY_CORPUS",
+      "MODEL_POLICY",
+      "GLOBAL_POLICY_STATE",
+      "OWNER_REVIEW",
+      "PERSISTENT_RUNTIME",
+      "FIRST_CAMPAIGN",
+      "EXACT_CREATION_PLAN"
+    ],
+    "rule": "Bootstrap compiles these groups before any setup side effect. Each group records source, epistemic class, owner authority, unresolved gaps, and the smallest honest unavailable behavior."
+  },
   "required": {
     "project_identity": [
       "project_name",
@@ -58,11 +87,11 @@
       "protected_paths"
     ],
     "roles": [
-      "global_orchestrator",
-      "feature_lead_registry",
+      "campaign_orchestrator",
+      "feature_agent_registry",
       "platform_agent_policy",
       "independent_auditor",
-      "global_runtime"
+      "persistent_runtime"
     ],
     "resources": [
       "maximum_parallel_writer_lanes",
@@ -85,6 +114,95 @@
       "evidence_retention",
       "evidence_library_active_window_days",
       "evidence_library_loose_compaction_policy"
+    ],
+    "delivery_policy": [
+      "source_control",
+      "merge",
+      "ci_runner",
+      "deployment",
+      "rollback",
+      "cost_boundaries"
+    ],
+    "project_life_contract": [
+      "maturity",
+      "assurance_class",
+      "audience",
+      "data_posture",
+      "expected_lifetime",
+      "maintenance_posture",
+      "portability",
+      "retirement"
+    ],
+    "delivery_target": [
+      "family",
+      "adapter_id",
+      "mode",
+      "audience",
+      "data_posture",
+      "authentication",
+      "limitations",
+      "target_sha256"
+    ],
+    "boundary_contract": [
+      "constitutional",
+      "owner_sovereign",
+      "derived_operating",
+      "temporary_probes",
+      "conflict_rule",
+      "hold_rule",
+      "boundary_contract_sha256"
+    ],
+    "project_import": [
+      "mode",
+      "source_root",
+      "destination_root",
+      "source_identity",
+      "preservation",
+      "phases",
+      "audit",
+      "cutover",
+      "rollback",
+      "plan_sha256"
+    ],
+    "normalization_policy": [
+      "scope",
+      "precedence",
+      "rules",
+      "rename_dispositions",
+      "normalization_sha256"
+    ],
+    "standards_registry": [
+      "standards",
+      "required_standard_ids",
+      "overlay_ids",
+      "registry_sha256"
+    ],
+    "bootstrap_coverage": [
+      "schema",
+      "discovery_digest_sha256",
+      "answers_sha256",
+      "outputs",
+      "material_gaps",
+      "coverage_sha256"
+    ],
+    "global_policy_state": [
+      "schema",
+      "policy_epoch",
+      "policy_state_sha256",
+      "variables",
+      "dependency_graph",
+      "amendment_ledger"
+    ],
+    "owner_review_policy": [
+      "schema",
+      "policy_epoch",
+      "policy_state_sha256",
+      "user_review_mode",
+      "transport",
+      "memory_posture",
+      "voice_recommended",
+      "model_selection",
+      "approval_route"
     ],
     "protected_boundaries": [
       "safety_and_law",
@@ -120,6 +238,14 @@
     "digest_rule": "project_identity.exact_context_digest is lowercase SHA-256 of the UTF-8 compact canonical JSON for portable_template_instance after omitting exact_context_digest itself. Canonical JSON recursively orders object keys by unsigned UTF-8 byte order, preserves array order, and contains no insignificant whitespace.",
     "repository_rule": "repositories is a nonempty array of typed records. Every repository_id is unique; every remote, default_branch, ownership value, and protected_paths member is a nonempty string.",
     "capability_rule": "enabled_baseline_capability_ids contains every exact portable baseline capability ID once. typed_project_capability_extensions is an array whose members conform to extension_schema.",
+    "delivery_policy_rule": "delivery_policy is the single source for push, merge, runner, hosting/deployment, rollback, provider, environment, and delivery-cost choices. Release fields may reference its exact digest but cannot create a competing policy.",
+    "delivery_target_rule": "delivery_policy.delivery_target is the single target description. It keeps product maturity, audience, data posture, authentication, limitations, and optional adapter separate from transport mechanics. A target adapter never supplies account authority or invented provider capability.",
+    "project_life_rule": "project_life_contract is the single compact description of maturity, assurance, audience, data posture, lifetime, maintenance, portability, commercialization, and retirement. The private-prototype default is safe only when no material signal requires owner intent.",
+    "boundary_contract_rule": "boundary_contract is the single enforceable boundary set. Constitutional rules are immutable; owner, derived, and probe boundaries may be extended only more restrictively.",
+    "project_import_rule": "project_import is the single typed source-to-destination migration plan. It preserves the source before build, selects one import mode, schedules the canonical four audit disciplines, and keeps cutover reversible.",
+    "normalization_policy_rule": "normalization_policy is the single naming and structure policy. External, persisted, and public contracts outrank official language/framework conventions, the project glossary, and AgentOS fallback rules.",
+    "standards_registry_rule": "standards_registry is the single version-pinned standards inventory. Project overlays may add typed requirements but cannot remove or weaken portable standards.",
+    "bootstrap_coverage_rule": "bootstrap_coverage is the single output-gap inventory for setup readiness. It may be extended with stricter project rows but cannot omit, weaken, or reinterpret portable rows.",
     "interval_rule": "Every operational interval is a positive finite integer number of minutes.",
     "extension_rule": "Additional project fields are permitted only outside portable_template_instance or through typed_project_capability_extensions; they cannot shadow or weaken a required portable field."
   },
@@ -151,6 +277,7 @@
       "ambiguous repository or owner",
       "unbounded writer or migration namespace",
       "missing progress, supervisor, or lease-recovery interval",
+      "missing life, target, or boundary contract binding",
       "capability extension without one owner and handoff",
       "project context that weakens or overrides the portable kernel"
     ],

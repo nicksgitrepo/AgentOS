@@ -1,0 +1,77 @@
+{
+  "schema": "governance.cascade_economics_contract.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Portable authority for comparing first-pass cascade cost with an equivalent direct accepted-result cost and for classifying bounded Finalizer repair versus rebuild.",
+  "cost_ledger": {
+    "schema": "governance.accepted_result_cost_ledger.v1",
+    "cascade_components": [
+      "first_pass_implementation",
+      "rolling_audit",
+      "finalizer",
+      "delta_reaudit",
+      "additional_repair",
+      "integration"
+    ],
+    "direct_components": [
+      "full_implementation",
+      "equivalent_final_audit",
+      "equivalent_integration"
+    ],
+    "comparison_basis": "EQUIVALENT_ACCEPTED_RESULT_COST",
+    "formula": "CASCADE_EFFICIENCY_RATIO = CASCADE_ACCEPTED_RESULT_COST / DIRECT_ACCEPTED_RESULT_COST",
+    "threshold": 0.75,
+    "decisions": {
+      "at_or_below_threshold": "COST_SAVING_DEMONSTRATED",
+      "above_threshold_and_at_or_below_one": "NONCOST_JUSTIFICATION_REQUIRED",
+      "above_one": "RECONSIDER_CASCADE",
+      "without_two_observed_accepted_results": "UNPROVEN"
+    },
+    "rule": "Token rates, model labels, and task estimates cannot establish savings. A savings decision requires two equivalent accepted-result identities and observed component costs."
+  },
+  "task_class_telemetry": {
+    "schema": "governance.task_class_economics.v1",
+    "minimum_observations_before_default": 3,
+    "required_metrics": [
+      "first_pass_survival",
+      "finalizer_rebuild_rate",
+      "audit_cost",
+      "repair_rounds",
+      "escaped_findings",
+      "accepted_result_cost",
+      "mean_efficiency_ratio"
+    ],
+    "default_rule": "KEEP_CASCADE_DEFAULT only after at least three accepted observations, every observed ratio is at or below 0.75, and no observation is REBUILD_REQUIRED.",
+    "unproven_rule": "Fewer than three observations or any missing accepted-result proof remains UNPROVEN and cannot be presented as demonstrated savings."
+  },
+  "finalizer_rewrite": {
+    "schema": "governance.finalizer_rewrite_assessment.v1",
+    "signals": [
+      "relevant_hunks_replaced",
+      "relevant_hunks_total",
+      "files_substantially_rewritten",
+      "public_contracts_reinterpreted",
+      "architecture_changed",
+      "owner_intent_recompiled",
+      "tests_rebuilt",
+      "new_platform_seams_added",
+      "load_bearing_implementation_replaced",
+      "broad_repository_rediscovery_required",
+      "first_pass_behavior_preserved",
+      "same_task_class_low_survival"
+    ],
+    "classification": ["TARGETED_REPAIR", "REBUILD_REQUIRED"],
+    "rebuild_triggers": [
+      "PUBLIC_CONTRACT_REINTERPRETED",
+      "ARCHITECTURE_CHANGED",
+      "OWNER_INTENT_RECOMPILED",
+      "LOAD_BEARING_IMPLEMENTATION_REPLACED",
+      "BROAD_REPOSITORY_REDISCOVERY_REQUIRED",
+      "FIRST_PASS_BEHAVIOR_NOT_PRESERVED",
+      "REPEATED_LOW_ROUGH_SURVIVAL"
+    ],
+    "warning": "A one-third relevant-hunk replacement is an early warning only. It is not, by itself, proof of a rebuild."
+  },
+  "privacy": "Cost and rewrite telemetry is typed, secret-free, content-addressed, and retained by project policy. It never grants Product acceptance, deployment, spending, or owner authority."
+}

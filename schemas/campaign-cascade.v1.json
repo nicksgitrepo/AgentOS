@@ -1,0 +1,342 @@
+{
+  "schema": "governance.campaign_cascade_contract.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Portable machine authority for an adaptive first-pass, four-lens audit, campaign finalization, and delta-repair cascade.",
+  "lineage": {
+    "rule": "One logical Product lineage advances through immutable checkpoints. Physical worktrees may be isolated, but every derived candidate binds its exact parent commit and tree.",
+    "first_pass_name": "FIRST_PASS_CANDIDATE",
+    "finalizer_name": "CAMPAIGN_FINALIZER",
+    "fresh_worktree_required": true,
+    "exclusive_writer_required": true
+  },
+  "modes": {
+    "SMALL_DETERMINISTIC": {
+      "rule": "Capability-selected first-pass builders, deterministic proof, applicable audit, and finalization only when a material finding remains.",
+      "finalizer_required": false
+    },
+    "STANDARD_SUBSTANTIAL": {
+      "rule": "Capability-selected first-pass builders, rolling applicable audits, one terminal four-lens audit settlement, a Campaign Finalizer, and delta-only retesting.",
+      "finalizer_required": true
+    },
+    "FOUNDATIONAL_HIGH_CONSEQUENCE": {
+      "rule": "Use an early bounded architecture adjudication, then the same first-pass, audit, finalizer, delta, and exact final acceptance controls.",
+      "finalizer_required": true
+    }
+  },
+  "stages": [
+    "FIRST_PASS_BUILDING",
+    "TERMINAL_PROPOSED",
+    "FIRST_PASS_REPAIR_REQUIRED",
+    "TERMINAL_SETTLED",
+    "FINALIZER_PENDING",
+    "FINALIZING",
+    "DELTA_REPAIR",
+    "READY_FOR_ACCEPTANCE"
+  ],
+  "audit_disciplines": [
+    "FUNCTIONALITY",
+    "DESIGN_UI_SHELL_NAVIGATION",
+    "SECURITY",
+    "CODE_QUALITY_HYGIENE"
+  ],
+  "audit_dispositions": [
+    "REQUIRED",
+    "DEFERRED_UNTIL_TERMINAL",
+    "NOT_APPLICABLE_WITH_PROOF",
+    "DETERMINISTIC_ONLY"
+  ],
+  "finding_severities": [
+    "NONCRITICAL",
+    "MATERIAL",
+    "CATASTROPHIC",
+    "OWNER_ONLY"
+  ],
+  "finding_routes": [
+    "CLOSED_NO_FINDING",
+    "FINALIZATION_QUEUE",
+    "IMMEDIATE_FIRST_PASS_REPAIR",
+    "OWNER_ONLY"
+  ],
+  "quality_floor": {
+    "required_fields": [
+      "intended_path_present",
+      "affected_checks_pass",
+      "interfaces_coherent",
+      "critical_defect_disclosed",
+      "safe_operations",
+      "clean_checkpoint",
+      "pushed_checkpoint",
+      "incomplete_work",
+      "evidence"
+    ],
+    "terminal_rule": "A FIRST_PASS_CANDIDATE is eligible for the terminal audit only when every boolean floor condition is true, the exact checkpoint is clean and pushed, and incomplete work is explicitly named even when the list is empty.",
+    "forbidden": [
+      "self_attested_green_status_without_evidence",
+      "concealed_known_critical_defect",
+      "secret_or_destructive_action",
+      "dirty_or_unpushed_checkpoint"
+    ]
+  },
+  "first_pass_candidate": {
+    "required_fields": [
+      "schema",
+      "candidate_id",
+      "campaign_id",
+      "campaign_version",
+      "logical_lineage_id",
+      "policy_epoch",
+      "policy_snapshot_sha256",
+      "acceptance_contract",
+      "acceptance_contract_sha256",
+      "scope_justification",
+      "worktree_id",
+      "branch",
+      "commit",
+      "tree",
+      "remote_commit",
+      "remote_tree",
+      "repository_proof",
+      "clean",
+      "pushed",
+      "changed_paths",
+      "changed_surfaces",
+      "owner_role_id",
+      "auditor_session_id",
+      "checkpoint_kind",
+      "terminal",
+      "quality_floor",
+      "created_at_utc",
+      "candidate_sha256"
+    ],
+    "auditor_binding": "Every immutable checkpoint binds the exact current campaign Auditor session. Audit plans, reports, rolling audits, and final acceptance must preserve that identity."
+  },
+  "state_binding": {
+    "required_fields": ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"],
+    "rule": "The cascade state and its first-pass candidate carry the same policy and complete acceptance identity. A same-campaign cascade transition cannot change either identity without a new admitted campaign."
+  },
+  "audit_plan": {
+    "required_fields": [
+      "schema",
+      "campaign_id",
+      "campaign_version",
+      "candidate_id",
+      "candidate_commit",
+      "candidate_tree",
+      "changed_surfaces",
+      "policy_epoch",
+      "policy_state_sha256",
+      "acceptance_contract_sha256",
+      "required_question_ids",
+      "auditor_session_id",
+      "terminal",
+      "disciplines",
+      "plan_sha256"
+    ],
+    "discipline_fields": ["discipline", "disposition", "applicability_evidence", "applicability_evidence_sha256"],
+    "rule": "Each plan covers Functionality, Design/UI/Shell/Navigation, Security, and Code Quality/Hygiene and binds the current campaign/version, candidate, changed surfaces, and Auditor session. The plan terminal flag must exactly match the bound candidate checkpoint. Applicability is derived from changed surfaces; terminal non-applicable disciplines require a structured, candidate-bound evidence object and matching digest."
+  },
+  "audit_rule": {
+    "intermediate": "Only materially applicable disciplines need an immediate report; unaffected disciplines remain deferred until the terminal checkpoint.",
+    "terminal": "All four disciplines must settle exactly once as REQUIRED, DETERMINISTIC_ONLY, or NOT_APPLICABLE_WITH_PROOF. Deterministic proof is attempted first. Every terminal REQUIRED discipline binds one distinct fresh read-only Audit Worker session; the independent Auditor coordinates and reconciles these reports but cannot substitute for a required worker. DETERMINISTIC_ONLY always uses no Audit Worker session.",
+    "read_only": "Auditors and audit workers inspect exact immutable candidate identities and never write Product or repair findings.",
+    "critical_route": "A catastrophic, wrong-direction, foundational-dependency, or critical security/safety finding returns to the first-pass owner immediately and cannot be queued only for finalization.",
+    "ordinary_route": "Material and noncritical findings are consolidated by causal root and sent to the Campaign Finalizer when finalization is required."
+  },
+  "reconciliation": {
+    "settled_disciplines": "The exact non-deferred discipline set from the bound audit plan.",
+    "reports": {
+      "fields": [
+        "discipline",
+        "report_sha256",
+        "auditor_session_id",
+        "worker_session_id",
+        "worker_binding_sha256"
+      ],
+      "rule": "Each required or deterministic-only discipline has exactly one content-addressed report binding; terminal REQUIRED reports use distinct on-demand worker sessions, deterministic reports use no worker, and every finding references a listed report digest."
+    }
+  },
+  "audit_report": {
+    "required_fields": [
+      "schema",
+      "report_id",
+      "discipline",
+      "candidate_id",
+      "candidate_commit",
+      "candidate_tree",
+      "auditor_session_id",
+      "worker_session_id",
+      "worker_binding",
+      "read_only",
+      "reviewed_question_ids",
+      "failed_question_ids",
+      "findings",
+      "coverage",
+      "evidence_sha256",
+      "settled",
+      "report_sha256"
+    ],
+    "coverage_rule": "Every report records inspected surfaces, excluded paths, honest unavailable behavior, and the fixed INDEPENDENT_DOMAIN_WIDE scope basis. Auditor coverage is read-only and may not be narrowed to the builder's declared scope. A terminal REQUIRED discipline must bind a nonempty applicable question slice."
+  },
+  "audit_worker_binding": {
+    "required_fields": [
+      "schema", "role", "session_id", "campaign_id", "campaign_version", "candidate_id", "candidate_commit",
+      "candidate_tree", "discipline", "auditor_session_id", "spawn_receipt", "roster_receipt", "fresh", "pinned",
+      "read_only", "binding_sha256"
+    ],
+    "receipt_fields": [
+      "schema", "receipt_kind", "session_id", "campaign_id", "campaign_version", "candidate_id", "discipline",
+      "issued_by_role", "issued_at_utc", "receipt_sha256"
+    ],
+    "roster_receipt_extra_fields": ["role", "status"],
+    "rule": "Spawn and roster receipts are typed, content-addressed, bound to the exact candidate and discipline, and issued by the Campaign Orchestrator. Their issuer remains an external roster/host integration boundary until a host adapter supplies independent readback."
+  },
+  "finalizer": {
+    "role": "CAMPAIGN_FINALIZER",
+    "statuses": ["ACTIVE", "COMPLETE"],
+    "source": "Exact terminal proposed First-Pass checkpoint commit and tree",
+    "worktree": "Fresh clean derived worktree with exclusive writer custody",
+    "owns": [
+      "cross-cutting corrections",
+      "consolidated audit findings",
+      "bounded simplification",
+      "final proof preparation"
+    ],
+    "does_not_own": [
+      "owner intent",
+      "acceptance authority",
+      "deployment or rollback custody",
+      "security exceptions",
+      "self-acceptance",
+      "greenfield rewrite or unrelated scope"
+    ],
+    "change_rule": "Every finalizer change must close a failed question, close a material finding, repair its shared causal root, remove a duplicate truth source, simplify with a concrete reliability/security/performance/maintenance consequence, or preserve behavior required for one of those outcomes.",
+    "change_justification": {
+      "required_fields": ["basis", "references", "summary", "owner_authorization_sha256", "changed_paths", "path_bindings"],
+      "path_binding_fields": ["path", "references", "observation"],
+      "path_observation_fields": ["schema", "path", "candidate_id", "commit", "tree", "observation_kind", "summary", "observation_sha256"],
+      "bases": ["REQUIRED_ACCEPTANCE", "HARD_RULE_OR_MATERIAL_RISK", "OBSERVED_BLOCKER", "OWNER_AUTHORIZATION"],
+      "rule": "Every changed path must be listed in the justification and carry a candidate-bound PATH_BOUND_SCOPE observation for the exact commit and tree. A nonempty changed-path set must cite an acceptance contract, hard rule or present risk, observed blocker, or explicit owner authorization. Empty finding scope is not a justification."
+    },
+    "loop_rule": "One finalization pass and at most one targeted delta-repair pass are the normal limit. The same causal failure receives one materially different route or one supervisor-selected reframe; equivalent retries stop.",
+    "custody": "The Feature Agent releases Product custody before Finalizer admission. Finalizer completion releases its lease and the campaign root adopts the exact final commit/tree through a recorded handoff.",
+    "rewrite_assessment": {
+      "required_fields": [
+        "relevant_hunks_replaced",
+        "relevant_hunks_total",
+        "files_substantially_rewritten",
+        "public_contracts_reinterpreted",
+        "architecture_changed",
+        "owner_intent_recompiled",
+        "tests_rebuilt",
+        "new_platform_seams_added",
+        "load_bearing_implementation_replaced",
+        "broad_repository_rediscovery_required",
+        "first_pass_behavior_preserved",
+        "same_task_class_low_survival",
+        "relevant_hunk_replacement_ratio",
+        "one_third_replacement_warning",
+        "rebuild_trigger_ids",
+        "classification",
+        "assessment_sha256"
+      ],
+      "rule": "The Finalizer must classify its completed pass from evidence-derived rewrite signals. A one-third hunk replacement is an early warning only; architecture change, owner-intent reinterpretation, load-bearing replacement, broad rediscovery, lost first-pass behavior, repeated low survival, or a changed public contract requires REBUILD_REQUIRED and cannot close as targeted repair."
+    }
+  },
+  "delta_rule": {
+    "rerun": [
+      "previously failed questions",
+      "directly touched questions",
+      "dependent child questions",
+      "one small end-to-end smoke set"
+    ],
+    "reuse": "Unaffected accepted evidence is reused by exact question-tree version, relevant hashes, build identity, and environment identity.",
+    "forbidden": [
+      "whole-tree_restart_without_invalidation",
+      "repeating_unaffected_audits",
+      "treating_audit_latency_as_a_product_gate"
+    ]
+  },
+  "model_policy": {
+    "roles": [
+      "CAMPAIGN_ORCHESTRATOR",
+      "INDEPENDENT_AUDITOR",
+      "FEATURE_AGENT",
+      "PLATFORM_AGENT",
+      "AUDIT_WORKER",
+      "CAMPAIGN_FINALIZER",
+      "RUNTIME"
+    ],
+    "selection": "Role and workload policy select from an external current model snapshot. Governance stores capability floors and economics, not provider or model names.",
+    "below_floor": "EXCLUDE",
+    "no_eligible_model": "FAIL_CLOSED",
+    "no_feasible_model_under_budget": "FAIL_CLOSED",
+    "calibration": "Compare expected accepted cost with observed accepted outcomes after three to five campaigns; do not silently lower the completion floor.",
+    "economics_policy": {
+      "minimum_savings_target_ratio": 0.75,
+      "minimum_observations_before_default": 3,
+      "comparison_basis": "EQUIVALENT_ACCEPTED_RESULT_COST",
+      "unproven_action": "DO_NOT_CLAIM_SAVINGS",
+      "default_rule": "KEEP_CASCADE_DEFAULT_ONLY_AFTER_THREE_ACCEPTED_OBSERVATIONS_AT_OR_BELOW_TARGET_WITHOUT_REBUILD_REQUIRED_FINALIZATION",
+      "required_metrics": ["accepted_result_cost", "audit_cost", "escaped_findings", "finalizer_rewrite_rate", "first_pass_survival", "repair_rounds"]
+    }
+  },
+  "economics_contract": {
+    "controller": "control/cascade-economics.mjs",
+    "schema": "schemas/cascade-economics.v1.json",
+    "rule": "A cascade is economically demonstrated only by an equivalent accepted-result cost comparison. Estimates remain UNPROVEN; the default target is a ratio at or below 0.75 after at least three accepted observations."
+  },
+  "telemetry": {
+    "purpose": "Measure whether the cascade reduces expected cost and time without hiding escaped defects.",
+    "required_metrics": [
+      "first_pass_cost",
+      "audit_cost_by_discipline",
+      "finalizer_cost",
+      "finalizer_delta_cost",
+      "accepted_result_cost",
+      "cascade_efficiency_ratio",
+      "wall_time",
+      "first_pass_survival",
+      "finalizer_rewrite_rate",
+      "repair_rounds",
+      "audit_false_positive_rate",
+      "evidence_reuse_rate",
+      "escaped_finding_count",
+      "owner_interruptions",
+      "cost_per_accepted_function_outcome"
+    ],
+    "privacy": "Telemetry is typed, secret-free, and retained by configured evidence policy; it never becomes Product acceptance by itself."
+  },
+  "accepted_live_binding": {
+    "required": [
+      "cascade_state_sha256",
+      "final_candidate_commit",
+      "final_candidate_tree",
+      "product_acceptance_sha256",
+      "deployed_identity",
+      "rollback_identity",
+      "independent_audit_identity",
+      "closure_receipt_sha256",
+      "deployment_receipt_sha256",
+      "independent_audit_receipt_sha256"
+    ],
+    "rule": "Accepted-live closure is invalid unless the exact finalizer candidate, exact three-root Product acceptance proof, deployment, rollback, independent audit, and closure receipt all bind to the same cascade state."
+  },
+  "checkpoint_ledger": {
+    "schema": "governance.first_pass_checkpoint_ledger.v1",
+    "required_fields": ["candidate_id", "candidate_commit", "candidate_tree", "terminal", "audit_plan_sha256", "audit_reconciliation_sha256", "finding_status", "status"],
+    "rolling_audit": "Earlier checkpoint reports remain bound while later first-pass checkpoints advance. Only the terminal proposed checkpoint must settle every applicable discipline.",
+    "repair": "Immediate first-pass repair creates a new candidate identity on the same logical lineage; terminal bytes are never rewritten in place."
+  },
+  "next_campaign_ledger": {
+    "required_fields": ["entry_id", "category", "summary", "references", "status", "created_at_utc", "entry_sha256"],
+    "category": "ADJACENT_IMPROVEMENT",
+    "status": "DEFERRED_NEXT_CAMPAIGN",
+    "rule": "Every adjacent improvement discovered during the campaign is recorded here instead of being silently implemented. The ledger is append-only across cascade transitions and does not reopen a completed acceptance contract."
+  },
+  "rolling_audits": {
+    "required_fields": ["candidate_id", "candidate_commit", "candidate_tree", "audit_plan", "audit_reconciliation", "rolling_audit_sha256"],
+    "rule": "A nonterminal checkpoint may retain its own content-addressed applicable audit plan and reconciliation while the active first-pass builder advances to a later checkpoint. The active builder checkpoint is never simultaneously treated as a prior rolling-audit checkpoint; each rolling entry is immutable and remains bound to its exact candidate identity."
+  }
+}

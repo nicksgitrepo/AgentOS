@@ -1,0 +1,139 @@
+{
+  "schema": "agentos.user_review_handoff.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "review_type": "PRE_CAMPAIGN_OWNER_REVIEW",
+  "purpose": "A low-cost, owner-facing conversation that clarifies the next campaign without becoming Product authority.",
+  "presentation": {
+    "human_route": "ONE_SHORT_NATURAL_QUESTION_AT_A_TIME",
+    "machine_phase_names_are_internal": true,
+    "machine_fields_are_hidden_from_friendly_handoff": true,
+    "human_return": "PLAIN_MARKDOWN_OR_AUTHORIZED_STRUCTURED_RETURN",
+    "structured_return_optional": true,
+    "rule": "The packet may retain a structured internal compilation map and an optional structured return channel. The owner-facing handoff must not expose the map, hashes, field names, or a forced checklist. Missing material answers remain unresolved rather than being filled from the packet."
+  },
+  "phases": [
+    "ORIENTATION",
+    "INTENT",
+    "DESIRED_CHANGES",
+    "CAMPAIGN_SHAPE",
+    "MODEL_PLAN",
+    "REVIEW_SUMMARY"
+  ],
+  "packet": {
+    "controller": "control/owner-review.mjs",
+    "question_inventory": {
+      "field": "question_ids_by_root",
+      "roots": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+      "rule": "The packet carries the current typed question inventory. Policy and North Star changes use it to compile exact invalidated question IDs; root names alone are not sufficient."
+    },
+    "transport_binding_fields": [
+      "kind",
+      "handoff_locator",
+      "return_locator",
+      "repository_digest_sha256",
+      "branch",
+      "commit",
+      "tree",
+      "connector_identity_sha256",
+      "conversation_identity_sha256",
+      "user_authorized"
+    ],
+    "required_bindings": [
+      "policy_epoch",
+      "policy_state_sha256",
+      "project_context_sha256",
+      "source_commit",
+      "source_tree",
+      "current_campaign_id",
+      "next_campaign_candidate_sha256"
+    ],
+    "rule": "The packet is read-only and content-addressed. It names what the conversation may clarify and what it may not change. The selected transport binds its handoff/return identity, while a shared link remains advisory. Project memory is continuity context only and never overrides the current exact packet."
+  },
+  "campaign_shape": {
+    "required_fields": ["owner_outcome", "first_useful_workflow", "proposed_features", "dependencies", "excluded_scope", "campaign_mode", "release_stop", "task_profile"],
+    "task_profile_fields": ["difficulty", "time_sensitivity", "cost_sensitivity"],
+    "rule": "The task profile is explicit so each available review level can explain its economy, speed, and difficulty fit for this specific proposed campaign."
+  },
+  "model_plan": {
+    "chat_levels": ["MEDIUM", "HIGH", "EXTRA_HIGH", "PRO"],
+    "agent_model_values": ["HOST_DEFAULT", "ECONOMICAL", "BALANCED", "PERFORMANCE", "FRONTIER"],
+    "guidance_fields": ["economy", "speed", "difficulty", "task_fit", "reason"],
+    "floor_rule": "Every level and role candidate carries structured economy, speed, difficulty-fit, and reason guidance. An unavailable or below-floor model is not a valid recommendation. The Orchestrator chooses from the admitted host catalog and records economics and completion evidence."
+  },
+  "transports": {
+    "PRIVATE_MARKDOWN": "Recommended. The user may return an ordinary Markdown note; an adapter may also carry a separate structured payload.",
+    "PRIVATE_GIT": "The return binds an admitted repository, branch, commit, and tree.",
+    "CONNECTED_PRIVATE_CHAT": "The connector binds the exact project, conversation, identity, and return integrity.",
+    "SHARED_LINK_ADVISORY": "Advisory only. It cannot carry exact approval or sensitive project evidence."
+  },
+  "return_contract": {
+    "schema": "agentos.user_review_return.v1",
+    "advisory_only": true,
+    "approval_not_included": true,
+    "one_json_payload": true,
+    "required_sections": [
+      "orientation",
+      "intent",
+      "changes",
+      "campaign",
+      "model_preferences",
+      "policy_changes",
+      "owner_soft_confirmations",
+      "unresolved"
+    ]
+  },
+  "classification": [
+    "CURRENT_CAMPAIGN_COMPATIBLE",
+    "CURRENT_CAMPAIGN_RECOMPILE",
+    "NEXT_CAMPAIGN",
+    "PROJECT_COURSE_CHANGE",
+    "MIGRATION_REQUIRED",
+    "OWNER_BOUNDARY",
+    "REJECTED_CONTRADICTION"
+  ],
+  "approval": {
+    "states": [
+      "OWNER_CONVERSATIONALLY_CONFIRMED",
+      "OWNER_STATED_EXACT_APPROVAL",
+      "OWNER_AUTHENTICATED_EXACT_APPROVAL"
+    ],
+    "activation_rule": "Only OWNER_AUTHENTICATED_EXACT_APPROVAL over the exact approval-packet digest can admit the candidate. The conversation return itself cannot activate a campaign.",
+    "forbidden_authority": [
+      "spending",
+      "publication",
+      "merge",
+      "deployment",
+      "deletion",
+      "Product_agent_creation"
+    ]
+  },
+  "cancellation": {
+    "schema": "agentos.owner_review_cancellation.v1",
+    "rule": "Cancellation is content-addressed and leaves current policy, campaign, Product writes, and Product-agent spawns unchanged."
+  },
+  "hostile_cases": [
+    "review packet cannot become an active campaign",
+    "no Product agent spawn during review",
+    "memory cannot override the current handoff",
+    "old policy epoch is rejected",
+    "another project is rejected",
+    "shared link cannot approve",
+    "conversational yes cannot activate",
+    "exact digest approval is required",
+    "Chat cannot authorize spending or deployment",
+    "unavailable model is rejected",
+    "below-floor model is rejected",
+    "changed source invalidates the packet",
+    "secrets are rejected",
+    "prompt text has no authority",
+    "cancellation leaves current state unchanged"
+  ],
+  "portability": {
+    "chat_provider_neutral": true,
+    "model_provider_neutral": true,
+    "memory_is_not_authority": true,
+    "project_context_external": true
+  }
+}

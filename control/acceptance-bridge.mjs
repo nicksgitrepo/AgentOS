@@ -106,7 +106,11 @@ export function compileProductAcceptanceProof({
     auditor_session_id: auditorSessionId,
     evaluated_at_utc: evaluatedAtUtc,
     critical_freezes: criticalFreezes,
+    acceptance_receipt_sha256: "",
   };
+  const receiptBody = structuredClone(productAcceptance);
+  delete receiptBody.acceptance_receipt_sha256;
+  productAcceptance.acceptance_receipt_sha256 = sha256(receiptBody);
   return {
     proof: {
       schema: "governance.product_acceptance_proof.v1",
@@ -144,5 +148,9 @@ export function verifyProductAcceptanceProof(acceptance, proof, expectedCampaign
       `Product acceptance field is not bound to the compiler result: ${field}`);
   }
   requireSha(acceptance.acceptance_receipt_sha256, "acceptance receipt");
+  const receiptBody = structuredClone(acceptance);
+  delete receiptBody.acceptance_receipt_sha256;
+  assert(acceptance.acceptance_receipt_sha256 === sha256(receiptBody),
+    "acceptance receipt is not content-addressed");
   return rebuilt;
 }

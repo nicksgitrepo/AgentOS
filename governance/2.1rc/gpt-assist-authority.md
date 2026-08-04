@@ -9,7 +9,7 @@ the user one compact, portable project-status brief suitable for a ChatGPT
 conversation using text, voice, research, scenarios, comparisons, or
 specialized models.
 
-It is separate from `CHATGPT_GUIDED`, which assists initial Bootstrap setup.
+It is separate from the optional Bootstrap Interview Markdown exchange.
 `GPT_ASSIST` operates during development campaigns.
 
 ## Production and custody
@@ -19,7 +19,7 @@ read-only content-addressed status packet. The packet binds the exact authority
 snapshot, source commit/tree, campaign progress, Auditor session/report, and
 release identity.
 
-The Global Orchestrator remains the only canonical authority-corpus writer. It
+The Campaign Orchestrator remains the only canonical authority-corpus writer. It
 may publish the Auditor packet into the current campaign tree as
 `06-gpt-assist-project-status.md`. The Auditor and ChatGPT receive no Product,
 authority-corpus, campaign, release, Runtime, or provider custody.
@@ -77,18 +77,21 @@ answers to correct or complete the next-campaign candidate, and hands off:
 - a content-addressed work-in-progress authority update candidate; and
 - the source status and response identities
 
-to the fresh next-release Global Orchestrator. The Auditor remains read-only
-and never writes the authority corpus. The next-release Orchestrator is the
-sole writer: it validates the handoff, updates the work-in-progress campaign
-authority, and starts the next release.
+to a later admitted next Campaign Orchestrator. The Auditor remains
+read-only and never writes the authority corpus. No successor Orchestrator,
+Auditor, Feature Agent, or Product writer lease is created at this handoff.
+After admission, the next Campaign Orchestrator is the sole writer: it validates
+the handoff, updates the work-in-progress campaign authority, and starts the
+next release.
 
 The status source commit and tree are mechanically read back from the admitted
 repository. Status generation strictly precedes response completion, and the
 handoff cannot predate completion. The handoff binds the exact source response
 Markdown digest, normalized response digest, next-campaign digest,
-authority-update candidate digest, current and successor roster receipts, new
-release identity, and one distinct fresh pinned Global Orchestrator session.
-The next campaign transition consumes that exact handoff digest.
+authority-update candidate digest, and current roster receipt. The successor
+roster receipt is `null` until a later admission creates it. A later
+next-campaign transition consumes that exact handoff digest; the candidate
+packet does not itself create a successor session.
 
 Standard numbered articles remain the last accepted-live release. They are
 not rewritten merely because ChatGPT answered a question or the Auditor

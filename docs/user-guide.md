@@ -1,215 +1,111 @@
-# Governance 2.1rc — User Guide
+# AgentOS 2.1rc User Guide
 
-## What this package does
+AgentOS is a portable governance and orchestration kernel. It helps turn one clear owner outcome into working, verified software without embedding the project’s name, repository, provider, deployment, credentials, or domain policy.
 
-Governance 2.1rc turns a normal project directory into a portable,
-self-documenting agent workspace. Its Bootstrap creates or aligns the project
-authority corpus, Design Bible, and feature intent, records changeable preferences, builds deterministic development
-campaigns, passes one cumulative worktree through the required Feature Agents,
-creates Platform Agents only when needed, audits changes as they move, and
-hands the completed milestone to Runtime for merge and deployment.
+## Start
 
-The governance package is project-agnostic. Your project’s identity, goals,
-features, providers, design language, and deployment rules live in the authority corpus
-created during setup.
+1. Identify the absolute `AGENTOS_ROOT` and `PROJECT_ROOT`; they may be separate directories.
+2. Open [bootstrap/start-here.md](../bootstrap/start-here.md) and replace its path placeholders.
+3. Start a fresh agent above Bootstrap’s completion-reliability floor and run:
+   `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED`
+4. Allow safe read-only discovery to answer mechanical setup questions.
+5. Answer only unresolved intent, boundary, or preference questions.
+6. Review the complete creation plan and its integrity details.
+7. Approve exactly with `APPROVE_EXACT_PLAN` or revise the plan.
 
-## Before you start
+Bootstrap then stages a resumable setup transaction. It creates the persistent project-level `AGENTOS_CONTROLLER` state at `agentos/controller-state.json` from an independent Controller Runtime readback. If an authority corpus is imported or refactored, it creates and verifies `legacy.zip`, its manifest, index, and receipt before writing the new corpus. A distinct setup Auditor verifies the exact plan, readback, context separation, security baseline, Runtime and Controller Runtime bindings, and the three-root acceptance slice.
 
-1. Create the folder that will be the project root, if it does not already
-   exist.
-2. Put this Governance 2.1rc package in that folder. If you already have a
-   authority corpus, put it in or below the same project root, or be ready to give
-   Bootstrap its path. Bootstrap preserves external sources and writes only
-   into the admitted project destination after an explicit choice.
-3. Start a capable general agent with the project folder as its working
-   directory.
-4. Give it the start instruction below.
-
-## Start instruction
-
-Copy this exactly:
-
-> You are the Governance 2.1rc Bootstrap agent for this project. Treat your
-> current working directory as the project root. Open and follow
-> `bootstrap/start-here.md` from this directory and verify
-> its exact machine binding before consequential work. Rename this task
-> `Bootstrap 2.1rc` and pin it if the host supports task pinning. Do read-only
-> discovery only inside the project root, then ask me exactly one unresolved
-> material setup question at a time. My first question must be whether I want
-> the optional ChatGPT-guided flow or to work with Bootstrap directly. Persist each answer through the governed
-> Bootstrap state transition. Do not infer import, refactor, creation,
-> publication, provider, deployment, retention, model, or cost choices.
-> Bootstrap itself must create or align the authority corpus, Design Bible, and feature
-> intent. Create only one fresh read-only setup Auditor after those outputs are
-> complete. Never request or retain secrets in
-> chat or project files. Continue until the setup snapshot is sealed and the
-> first campaign is ready to open, or until one true owner blocker requires my
-> answer.
+The plan also includes a deterministic Bootstrap coverage matrix. It shows
+which outputs were discovered, owner-confirmed, safely defaulted, derived,
+deferred, not applicable with evidence, or still blocking. This lets Bootstrap
+cover data, recovery, delivery, evidence, and activation obligations without
+asking one question for every field.
 
 ## What Bootstrap asks
 
-Bootstrap discovers what it safely can, then asks one question at a time. The
-questions cover:
+Discovery supplies repository shape, source markers, authority/design candidates, deployment markers, and available tools without reading secrets or changing the project. The compact question compiler asks about:
 
-- import, refactor, or creation of the authority corpus;
-- project name and goals;
-- local-only or version-controlled work;
-- repository providers, visibility, merge policy, and release policy;
-- one or more hosting, cloud, routing, database, or API providers;
-- deployment enablement and target type;
-- provider authentication readiness;
-- authority and evidence paths;
-- evidence active-window retention;
-- Orchestrator and specialist model policies;
-- task pinning and session archival;
-- single-root or explicitly justified multi-lane campaigns;
-- progress-check interval;
-- ongoing campaign assistance: `GPT_ASSIST` or `DIRECT_ONLY`;
-- import, refactor, creation, or explicit deferral of the Design Bible.
+- the project’s users, north star, first useful workflow, and boundary;
+- the import mode when an existing project is detected: adopt in place, clean
+  copy, normalize and audit, or reconstruct from intent;
+- protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent limits;
+- authority-corpus import/refactor/create choice;
+- Design Bible and stack/testing/authentication/data constraints only when applicable or unresolved;
+- one delivery-policy decision covering pushes, merges, CI runners, hosting/deployment, rollback, provider binding, and delivery cost;
+- typed security standard and requirement identities;
+- model economics and operating conditions;
+- persistent Runtime and first-campaign context.
 
-Every preference remains changeable. Changes have an effective boundary such
-as immediate, next handoff, next campaign, migration required, or owner
-confirmation.
+Bootstrap also compiles a Project Life Contract and Delivery Target. Together
+they answer how real the first outcome needs to be, who may use it, what data it
+may hold, how long it should live, and whether the route is a local workspace,
+managed site, managed app, VPS, cloud, hybrid, or project-defined target. A
+managed-site prototype or limited working product is available without making
+a production claim.
 
-Model recommendations use current available models. Recommended means only as
-strong as needed to deliver the intended project reliably. Eco minimizes
-expected total completion cost, including retries and rework, so a model that
-costs one-fifth per attempt but needs twenty times as many attempts is not
-economical. Light high-reasoning models are preferred for bounded building;
-Orchestrators and Feature Agents move to stronger models near the best-value
-point when coordination complexity justifies it. Model names are discovered,
-not embedded in governance.
+For imported projects, Bootstrap records a deterministic Standards Registry and
+Normalization Policy. It preserves the source before any migration build with
+an archive, manifest, index, receipt, and explicit exclusion note. A full
+normalization and four-lane audit is the first governed campaign, so setup does
+not become an unbounded hidden implementation.
 
-## Optional ChatGPT-guided setup
+The existing protected-boundary answer becomes an enforceable Boundary
+Contract. It separates immutable constitutional protections, owner-sovereign
+decisions, derived operating limits, and temporary read-only probe boundaries.
+More restrictive rules win, and a true hold pauses only its dependent outcome.
 
-In ChatGPT-guided mode, Bootstrap performs discovery and emits one phase at a
-time as a plain Markdown prompt plus canonical JSON manifest. Give both to ChatGPT. ChatGPT
-asks one question and waits for one response, may use scenarios, comparisons,
-and edge cases only where they can change the route, and returns the completed
-Markdown prompt plus response JSON. Bootstrap accepts only schema-valid JSON bound to the
-exact package, then performs the work. ChatGPT never receives secrets or
-repository/provider custody.
+The compiled plan records safe defaults and honest unknowns. It does not recommend a model below the configured completion-reliability floor merely because it is inexpensive. `ECO_CONTINUOUS` represents a 168-hour week with up to twenty work slots; `STANDARD_WORKWEEK` represents 40 hours; `PERFORMANCE` prioritizes elapsed time; `CUSTOM` requires typed conditions. Recommendations minimize expected cost per accepted result, including retries and rework.
 
-Bootstrap itself performs one of three authority corpus operations:
+For the adaptive campaign cascade, Bootstrap keeps economics honest by
+comparing the complete accepted-result cost with an equivalent direct result.
+Token rates and estimates are not evidence of savings. The cascade becomes the
+default for a task class only after at least three accepted observations show a
+ratio of `0.75` or lower. Finalizer rewrite signals distinguish targeted repair
+from a deliberate rebuild when the correction would reinterpret intent,
+architecture, contracts, or the load-bearing implementation.
 
-- `IMPORT`: adopt an existing compatible authority corpus;
-- `REFACTOR_PREVIOUS_GOVERNANCE`: preserve the source and produce a normalized
-  2.1rc tree plus a mapping;
-- `CREATE_NEW`: build a new authority tree from the setup answers.
+## Product acceptance
 
-The Design Bible follows the same model, with an additional explicit defer
-option. Bootstrap audits each output for gaps and walks you through only
-material unresolved findings, one question at a time. A distinct read-only
-setup Auditor performs the final independent inspection.
+The Product engine has exactly three ordered roots:
 
-## Optional GPT_ASSIST during campaigns
+1. `FUNCTION_REQUIREMENTS`
+2. `DESIGN_BIBLE`
+3. `SECURITY`
 
-`GPT_ASSIST` is separate from ChatGPT-guided setup. When enabled, the current
-Auditor produces one compact `06-gpt-assist-project-status.md` containing
-verified status, open findings, missing context, decisions, and only the
-material questions the Auditor actually needs answered.
+Answers are `YES`, `NO`, `UNKNOWN`, `NOT_APPLICABLE`, and `EXCEPTION_REQUESTED`. Lifecycle is separate: `UNEVALUATED`, `EVIDENCE_PENDING`, `OPEN_REPAIR`, `VERIFIED`, and `INVALIDATED`. The smallest changed question slice is compiled; unaffected evidence is reused only when its exact hashes and environment still match. Code quality is a separate check, not a fourth acceptance root.
 
-Give that Markdown file to ChatGPT. ChatGPT must:
+## Campaign path
 
-- refer only to the brief, the user's answers, scenarios, stated intent, and
-  clearly labelled research;
-- ask exactly one listed question at a time;
-- use scenarios to clarify intent instead of expanding the questionnaire;
-- never invent project truth or mark a finding fixed; and
-- stop asking when every listed question is answered or explicitly deferred,
-  then return one concise response Markdown bound to the source brief.
-
-Return the response Markdown to the same Auditor. The Auditor uses the
-owner-confirmed answers to finish or correct the next-campaign candidate, then
-hands that candidate and a proposed work-in-progress authority corpus update to the fresh
-next-release Orchestrator. The Auditor never writes the authority corpus. The new
-Orchestrator validates the handoff, updates the campaign authority corpus, and begins the
-next release. Standard numbered articles remain the last accepted-live truth
-until accepted-live closure.
-
-The generated authority corpus uses stable numeric blocks: `000` for
-Bootstrap, `0001–0099` for governance, `0100–0199` for shared project
-context, and `0200–0299`, `0300–0399`, and later 100-number blocks for
-individual features. A content-addressed allocation registry prevents
-renumbering. A full feature block receives a linked extension block.
-Extension chains must be acyclic and terminate at that feature's one primary
-block.
-
-Every numbered Markdown article has a small common header—article, title,
-status, owner, applicability, accepted release, source commit, supersession,
-and update time—and a purpose-specific body. Active campaigns stay under a
-separate campaign tree until accepted-live closure promotes their resulting
-truth into the numbered standard articles.
-
-When setup is sealed, Bootstrap asks:
-
-> `<ProjectName>'s 2.1rc environment is ready for launch. Proceed?`
-
-If you proceed, Bootstrap starts and pins the first independent Auditor using
-your selected model rules. That session must be fresh, distinct from
-Bootstrap and the setup Auditor, and the working observation must name the
-same activated session. Bootstrap then thanks you, completes its goal,
-and unpins itself. The Auditor creates and pins the new campaign Orchestrator
-only after the campaign is coherent.
-
-## Day-to-day development
-
-An idea, misalignment, or accepted audit finding becomes a campaign input. The
-Auditor identifies intended outcomes and dependency gaps. The Orchestrator
-compiles a logical dependency chain. By default, one cumulative worktree moves
-through that chain:
+The default campaign uses one cumulative worktree lineage:
 
 ```text
-dependency A -> dependency B -> feature C -> terminal checkpoint
-             -> Runtime merge/release/deploy -> live Auditor -> closure
+Feature Agents build substantial checkpoints
+        -> applicable read-only audits run concurrently
+        -> terminal settlement
+        -> fresh Campaign Finalizer correction batch
+        -> delta-only audit
+        -> three-root acceptance
+        -> persistent Runtime integration/deployment
+        -> independent live audit and exact closure
 ```
 
-Each Feature Agent receives the current checkpoint, completes one substantial
-stage goal, commits and pushes a clean checkpoint, and hands the same root to
-the next Feature Agent. Platform Agents are created only for database/RLS,
-backend/API, UI/UX, shell/navigation, accessibility, security, integration,
-runtime, recovery, or another material seam actually touched.
+Platform Agents are created only on first material need. Each is a campaign-local logical capability with one stable worktree and sequential Feature-Agent leases. A second simultaneous supervisor is invalid. Runtime persists across campaigns and executes integration, deployment, rollback, and live mechanical checks.
 
-The campaign is also a living record inside that worktree. Each admitted
-agent appends only its own short event file in an independent session stream.
-The Orchestrator records the sessions it creates; the active Feature Agent
-records each on-demand Platform Agent session it creates. At progress checks
-and handoffs, the Orchestrator deterministically compiles those events into
-the current campaign view. This avoids a shared-file write race and keeps
-session lineage, progress, findings, checkpoints, and next action beside the
-code being handed forward.
+The current Auditor may clear a release for deployment and produce a next-campaign candidate. That candidate orients only the next Campaign Orchestrator. No successor Auditor, Feature Agent, Platform Agent, Product writer, or campaign-start disposition exists before accepted-live closure and explicit next-campaign admission.
 
-Ordinary failures are work, not blockers. The responsible agent finds the root
-cause, tries one supervisor-selected reframe when the route is stuck, and
-fixes the issue. Only a true authority, safety, credential, irreversible
-production, unexpected cost, stack-replacement, or irresolvable shared-writer
-boundary pauses the campaign for the user.
+## Optional assistant handoff
 
-## Browser and authentication testing
+An assistant handoff is a plain-language Markdown exchange. The owner answers
+short questions naturally and may return Markdown, a private file, an admitted
+Git handoff, or an authorized connected conversation. A separate adapter may
+carry a structured return for reconciliation; the owner-facing route does not
+expose machine fields, hashes, or a forced JSON checklist. A connected assistant
+can help with listed questions, research, scenarios, and comparisons. It cannot
+invent truth, mark findings fixed, write authority, change custody, deploy, or
+create a successor roster.
 
-- Bootstrap asks which interactive browser, if any, to use.
-- Open that exact browser explicitly; never use the operating-system default
-  or an unconfigured fallback.
-- Bootstrap separately asks which automation framework and isolated-profile
-  policy to use.
-- Bootstrap separately asks how builders, Auditors, and Runtime authenticate
-  in each environment.
-- Use only the selected project-auth route; portable governance never assumes
-  a project-specific development-auth system.
-- Provider authentication and application authentication are separate.
-- Never store tokens, cookies, signed links, or credentials in the authority corpus,
-  prompts, logs, screenshots, or receipts.
+## Boundaries
 
-## Recovery
+Routine implementation failures, tests, compilation, integration, and reversible choices remain autonomous work. A true owner boundary is limited to protected safety/law/security/privacy/credential, unapproved cost, destructive production, stack or topology changes, promotion authority, or unresolved material intent. A hold pauses only its dependent outcome while unrelated work continues.
 
-The active campaign article is the recovery record. It contains the exact
-root, branch, checkpoint, active owner, goal, lease, dependency position,
-aggregate event-ledger digest, per-session writer heads, exact agent sessions,
-blocker, and next action. The standard authority corpus describes the last accepted live
-release. If a machine or task is lost, a fresh agent loads the package,
-standard authority corpus, and active campaign record, verifies Git reality, and resumes
-from the last accepted checkpoint.
-
-After closure, raw release evidence is packaged at the configured retention
-boundary into a verified ZIP in the historical evidence library. The archive
-and prior task/session identities remain available for later questions.
+This repository remains `PREPARED_NOT_ACTIVATED`; it does not activate or rebind a Product campaign.
