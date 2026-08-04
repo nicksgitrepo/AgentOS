@@ -144,6 +144,95 @@ function applyDurableSessionTestRootRepair(worktreePath) {
   return ["tests/verify-local-agent-session.mjs"];
 }
 
+function applyOwnerConversationSurfaceRepair(worktreePath) {
+  const bootstrapPath = path.join(worktreePath, "control/bootstrap-compiler.mjs");
+  const bindingPath = path.join(worktreePath, "schemas/bootstrap-binding.v1.json");
+  const testPath = path.join(worktreePath, "tests/verify-owner-conversation-surface.mjs");
+  assert(fs.existsSync(bootstrapPath) && fs.existsSync(bindingPath), "owner conversation surface repair inputs are unavailable");
+  let source = fs.readFileSync(bootstrapPath, "utf8");
+  const replacements = new Map([
+    ["May Bootstrap perform safe read-only discovery so it can answer technical setup questions for you?", "May I take a quick look around without changing anything, so I can understand how to set things up?"],
+    ["Who is this for, what recurring moment matters, and what should be better after the project works?", "Who is this for, what would you like it to make easier, and what would a good result feel like?"],
+    ["What is the smallest real workflow that proves the project is useful, and what does working mean?", "What is the first small thing you want people to be able to do, and how will you know it worked?"],
+    ["How real should this project be for its first users: a prototype, a limited working product, a beta, or production; who may use it, what data may it hold, and how long should it live?", "How real should the first version be: a rough try, a small working version, a beta, or something ready for everyday use? Who should use it, what information may it keep, and how long should it live?"],
+    ["Which repositories, data, environments, and external systems belong inside the project boundary?", "What should this project be allowed to touch, and what should stay off-limits?"],
+    ["How much should AgentOS change while importing this existing project: use it as-is, make a clean copy, normalize and audit it, or reconstruct it from intent?", "Should I leave the current project as it is, make a separate copy, tidy it up, or use it as a reference for a fresh version?"],
+    ["Which safety, legal, privacy, data-loss, spending, authentication, irreversible-action, or intent boundaries remain owner-controlled?", "What must I never do, change, share, or spend without you?"],
+    ["Should Bootstrap import, refactor, or create the authority corpus, and which read-only source should be preserved?", "Are there notes, instructions, or an older version I should keep safe and use as background?"],
+    ["Which users, devices, accessibility needs, protected visual surfaces, page families, and states must the Design Bible govern?", "Who will use it, what will they use it on, and are there any important look-and-feel or accessibility needs?"],
+    ["Are any stack, authentication, testing, data, or observability choices required or forbidden?", "Is there anything you already want me to use or avoid? If not, I can choose a sensible starting point."],
+    ["How should Bootstrap handle pushes, merges, CI runners, hosting, deployment, rollback, provider binding, and delivery cost limits?", "Is there anything special about how this should be saved, shared, or put online? If not, I can use the safest simple option."],
+    ["Which operating conditions apply: continuous eco, standard workweek, performance-first, or typed custom conditions?", "Should I favor saving effort, finishing sooner, taking extra care, or should I recommend a balance?"],
+    ["Which persistent Runtime session and environment should remain available across campaigns, and what capabilities may it use?", "Would you like me to remember this project between work sessions? If so, what should that memory be allowed to use?"],
+  ]);
+  for (const [oldText, newText] of replacements) {
+    assert(source.includes(`prompt: "${oldText}"`), `owner conversation prompt is not at the expected source checkpoint: ${oldText}`);
+    source = source.replace(`prompt: "${oldText}"`, `prompt: "${newText}"`);
+  }
+  source = source.replace('    owner_visible: false,\n', '');
+  writeFileAtomic(bootstrapPath, source);
+
+  const testSource = String.raw`#!/usr/bin/env node
+
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {BOOTSTRAP_QUESTIONS, planBootstrapQuestions} from "../control/bootstrap-compiler.mjs";
+import {discoverProject} from "../control/bootstrap-discovery.mjs";
+
+const FORBIDDEN_OWNER_TERMS = [
+  /technical setup/iu,
+  /\bproves?\b/iu,
+  /\bproving\b/iu,
+  /\bstack\b/iu,
+  /\bauthentication\b/iu,
+  /\bobservability\b/iu,
+  /\brepositor(?:y|ies)\b/iu,
+  /\benvironments?\b/iu,
+  /\bexternal systems?\b/iu,
+  /\bauthority corpus\b/iu,
+  /\bdesign bible\b/iu,
+  /\boperating conditions?\b/iu,
+  /\bpersistent runtime\b/iu,
+  /\bCI runners?\b/iu,
+  /\bprovider binding\b/iu,
+];
+
+const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-owner-conversation-surface-"));
+try {
+  for (const question of BOOTSTRAP_QUESTIONS) {
+    for (const pattern of FORBIDDEN_OWNER_TERMS) assert(!pattern.test(question.prompt), "Bootstrap owner prompt exposes " + pattern + ": " + question.id);
+  }
+  const discovery = discoverProject(root, "RECOMMENDED").facts;
+  const plan = planBootstrapQuestions({discovery, answers: {"bootstrap.discovery.mode": "RECOMMENDED"}});
+  assert.equal(plan.questions.length, 1);
+  assert.equal(plan.owner_questions.length, 1);
+  assert.equal(plan.owner_questions[0].prompt, plan.questions[0].prompt);
+  for (const pattern of FORBIDDEN_OWNER_TERMS) {
+    assert(!pattern.test(plan.questions[0].prompt), "Bootstrap question exposes " + pattern);
+    assert(!pattern.test(plan.owner_questions[0].prompt), "Bootstrap owner question exposes " + pattern);
+  }
+  console.log("PASS Bootstrap owner conversation surface stays casual and nontechnical");
+} finally {
+  fs.rmSync(root, {recursive: true, force: true});
+}
+`;
+  writeFileAtomic(testPath, testSource);
+
+  const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
+  const changedPaths = ["control/bootstrap-compiler.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs"];
+  let refreshed = 0;
+  for (const entry of Object.values(binding.normative ?? {})) {
+    if (entry?.path !== "control/bootstrap-compiler.mjs") continue;
+    entry.sha256 = crypto.createHash("sha256").update(fs.readFileSync(bootstrapPath)).digest("hex");
+    refreshed += 1;
+  }
+  assert(refreshed === 1, "Bootstrap compiler binding entry is unavailable");
+  writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
+  return changedPaths;
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -276,7 +365,9 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
             ? "schemas/bootstrap-binding.v1.json"
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
-            : "control/governance-decision-tree.mjs";
+          : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+            ? "control/bootstrap-compiler.mjs"
+          : "control/governance-decision-tree.mjs";
       assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
       focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? runControllerSupervisorChecks(featureWorktree)
@@ -284,6 +375,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           ? runControllerSupervisorBindingChecks(featureWorktree, taskKind)
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? runDurableSessionChecks(featureWorktree)
+          : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+            ? runChecks(featureWorktree, ["node --check control/bootstrap-compiler.mjs", "node tests/verify-owner-conversation-surface.mjs"])
           : runFocusedChecks(featureWorktree);
     }
     buildStatus = "AUDIT_VERIFIED";
@@ -369,6 +462,48 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean durable-session verifier checkpoint");
     assert(changedPaths.includes("tests/verify-local-agent-session.mjs"), "Feature Agent durable-session repair did not change the verifier");
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") {
+    artifactName = "control/owner-conversation-surface-repair-receipt.mjs";
+    const changedByRepair = applyOwnerConversationSurfaceRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/bootstrap-compiler.mjs",
+      "node tests/verify-owner-conversation-surface.mjs",
+      "node tests/verify-bootstrap-delivery-finish.mjs",
+    ]);
+    const marker = `// Local Feature Agent owner-conversation repair receipt; held in the isolated campaign worktree.\nexport const OWNER_CONVERSATION_SURFACE_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: keep Bootstrap owner conversation casual"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner-conversation checkpoint");
+    assert(changedPaths.includes("control/bootstrap-compiler.mjs"), "Feature Agent owner-conversation repair did not change Bootstrap prompts");
     buildStatus = "COMPLETED";
     product = {
       ...base,

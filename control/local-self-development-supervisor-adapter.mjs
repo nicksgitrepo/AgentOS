@@ -270,6 +270,40 @@ function localAgentSessionBindingFinding(repositoryRoot) {
   };
 }
 
+function ownerConversationSurfaceFinding(repositoryRoot) {
+  const bootstrapPath = path.join(repositoryRoot, "control/bootstrap-compiler.mjs");
+  const source = fs.readFileSync(bootstrapPath, "utf8");
+  const leakedPrompts = [
+    "technical setup questions",
+    "proves the project is useful",
+    "repositories, data, environments, and external systems",
+    "normalize and audit it",
+    "authentication, irreversible-action",
+    "authority corpus",
+    "Design Bible",
+    "stack, authentication, testing, data, or observability",
+    "pushes, merges, CI runners, hosting, deployment, rollback, provider binding",
+    "operating conditions",
+    "persistent Runtime session and environment",
+  ].filter((term) => source.includes(term));
+  const ownerVisibilityLeak = source.includes("owner_visible: false") && source.includes("prompt: question.prompt");
+  if (leakedPrompts.length === 0 && !ownerVisibilityLeak) return null;
+  return {
+    finding_id: "F-OWNER-CONVERSATION-SURFACE",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: ownerVisibilityLeak
+      ? "Bootstrap still exposes a hidden technical setup field through the owner question projection."
+      : "Bootstrap still exposes technical governance wording in the owner-facing conversation instead of translating it into ordinary language.",
+    source_sha256: supervisorDigest({
+      path: "control/bootstrap-compiler.mjs",
+      leaked_prompts: leakedPrompts,
+      owner_visibility_leak: ownerVisibilityLeak,
+      source: crypto.createHash("sha256").update(source, "utf8").digest("hex"),
+    }),
+  };
+}
+
 function durableSessionTestFinding(campaignRoot) {
   const tick = readOptional(campaignRoot, "supervisor/tick.json");
   const routeError = typeof tick?.route_error === "string" ? tick.route_error : "";
@@ -330,6 +364,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
   ];
   if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
+  if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
   for (const check of checks) {
     const [program, ...args] = check.split(" ");
     execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
@@ -492,6 +527,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: localAgentSessionBinding.source_sha256,
       });
     }
+    const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
+    if (ownerSurfaceFinding !== null) findings.push(ownerSurfaceFinding);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
     if (durableSessionFinding !== null) {
       findings.push({
@@ -535,15 +572,18 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const lifecycleFinding = gateFinding.lifecycle_roi_finding;
     const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
     const localAgentSessionBinding = localAgentSessionBindingFinding(repositoryRoot);
+    const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
-    const repairKind = goal.finding_ids.includes(durableSessionFinding?.finding_id)
+    const repairKind = goal.finding_ids.includes(ownerSurfaceFinding?.finding_id)
+      ? "OWNER_CONVERSATION_SURFACE_REPAIR"
+      : goal.finding_ids.includes(durableSessionFinding?.finding_id)
       ? "DURABLE_SESSION_TEST_ROOT_REPAIR"
       : goal.finding_ids.includes(bindingFinding?.finding_id)
         ? "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
         : goal.finding_ids.includes(localAgentSessionBinding?.finding_id)
           ? "LOCAL_AGENT_SESSION_BINDING_REPAIR"
         : "CONTROLLER_SUPERVISOR_REPAIR";
-    const routeFinding = repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
+    const routeFinding = repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
       finding_id: lifecycleFinding?.finding_id,
       source_sha256: gateFinding.finding_sha256,
       status: lifecycleFinding?.status,
@@ -574,7 +614,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       parent_handoff_sha256: goal.parent_handoff_sha256,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      scope: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+      scope: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        ? ["control/bootstrap-compiler.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs"].sort()
+        : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? ["tests/verify-local-agent-session.mjs"].sort()
         : bindingRepair
         ? ["schemas/bootstrap-binding.v1.json", "control/controller-supervisor.mjs", "tests/verify-all.mjs"].sort()
@@ -604,7 +646,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+      task: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        ? "Translate Bootstrap owner questions into a casual, nontechnical conversation and return exact focused evidence."
+        : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Repair the durable-session verifier so it creates its temporary folder in an isolated worktree, then run its focused check."
         : bindingRepair
           ? "Repair the exact changed repository binding in isolated Feature-Agent custody, then run the full repository checks."
@@ -621,7 +665,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+      task: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+        ? "Independently inspect the Feature-Agent owner conversation repair and verify that technical governance wording stays behind the conversation."
+        : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Independently inspect the Feature-Agent durable-session verifier repair and return source-bound test evidence."
         : bindingRepair
           ? "Independently inspect the Feature-Agent repository binding checkpoint and return full repository audit evidence."
@@ -699,7 +745,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       nextAction: "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
       repair: {
-        summary: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+        summary: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+          ? "Translate Bootstrap's technical setup questions into short everyday questions while preserving the typed internal plan."
+          : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
           ? "Make the durable-session verifier create its temporary root inside every isolated worktree."
           : bindingRepair
             ? repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"

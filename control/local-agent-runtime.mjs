@@ -135,6 +135,8 @@ function validateHandshake(handshake, expected) {
           ? "schemas/bootstrap-binding.v1.json"
           : expected.taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
+          : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+            ? "control/bootstrap-compiler.mjs"
           : "control/governance-decision-tree.mjs";
       assert(Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Feature Agent build did not change the required code");
     }
@@ -150,6 +152,8 @@ function validateHandshake(handshake, expected) {
           ? "schemas/bootstrap-binding.v1.json"
           : expected.taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
+          : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+            ? "control/bootstrap-compiler.mjs"
           : "control/governance-decision-tree.mjs";
       assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && handshake.changed_paths.includes(requiredChangedPath), "Auditor did not verify the Feature-Agent code change");
     }
@@ -605,10 +609,12 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
       const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? "control/controller-supervisor.mjs"
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
-          ? "schemas/bootstrap-binding.v1.json"
-          : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
-            ? "tests/verify-local-agent-session.mjs"
-          : "control/governance-decision-tree.mjs";
+            ? "schemas/bootstrap-binding.v1.json"
+            : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+              ? "tests/verify-local-agent-session.mjs"
+            : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
+              ? "control/bootstrap-compiler.mjs"
+            : "control/governance-decision-tree.mjs";
       assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null && readback.changed_paths.includes(requiredChangedPath) && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
     }
   }
