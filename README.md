@@ -61,12 +61,13 @@ repairs the retained code, and persistent Runtime handles release and
 deployment.
 
 The Controller keeps moving by itself: it watches campaign handoffs and worker
-heartbeats, creates one small next goal, and, when an active campaign has no
-queued task, mints one bounded control-plane audit from the current typed
-context. It chooses the first safe task, routes repairs, checks the result
-again, and waits only when work is complete or authority is missing. Hard
-boundaries stop only the dependent work; soft boundaries go to campaign review.
-Routine puzzles do not wait for an outside prompt.
+heartbeats, re-binds unchanged intent and acceptance records to the exact source
+it is observing, and chooses the next safe task from the active campaign. Before
+the first checkpoint, that means routing the bound first useful workflow through
+the Campaign Orchestrator, Feature Agent, Auditor, and Finalizer. After a
+checkpoint, it rechecks the result and continues watching. Hard boundaries stop
+only the dependent work; soft boundaries go to campaign review. Routine puzzles
+do not wait for an outside prompt.
 
 The owner-facing flow stays conversational: when a real finish choice is needed,
 it asks, “When we're ready, what should I do with it?” and shows simple numbered
