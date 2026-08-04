@@ -549,7 +549,15 @@ function applyOwnerFeedbackRepair(worktreePath, feedbackId) {
   assert(fs.existsSync(taskLoopPath) && fs.existsSync(verifierPath) && fs.existsSync(backlogPath) && fs.existsSync(bindingPath), "owner feedback repair inputs are unavailable");
   const taskLoopSource = fs.readFileSync(taskLoopPath, "utf8");
   const marker = "export function renderOwnerInactiveBoundaryMessage";
-  assert(!taskLoopSource.includes(marker), "owner feedback inactive explanation repair was already applied");
+  if (taskLoopSource.includes(marker)) {
+    const backlogSource = fs.readFileSync(backlogPath, "utf8");
+    const backlogLines = backlogSource.split(/\r?\n/u);
+    const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith(`| \`${feedbackId}\` |`) && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+    assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+    backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+    writeFileAtomic(backlogPath, backlogLines.join("\n"));
+    return {changedByRepair: ["docs/owner-feedback-backlog.md"], artifactName: "control/owner-feedback-inactive-explanation-repair-receipt.mjs"};
+  }
   const helper = [
     "export function renderOwnerInactiveBoundaryMessage({taskId, boundary}) {",
     "  requireIdentifier(taskId, \"inactive task\");",
@@ -592,7 +600,7 @@ function applyOwnerFeedbackRepair(worktreePath, feedbackId) {
   const backlogLines = backlogSource.split(/\r?\n/u);
   const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith(`| \`${feedbackId}\` |`) && /\|\s*`?OPEN`?\s*\|$/u.test(row));
   assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
-  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
   writeFileAtomic(backlogPath, backlogLines.join("\n"));
 
   const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
@@ -814,8 +822,13 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           : taskKind === "OWNER_FEEDBACK_REPAIR"
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
+      const ownerFeedbackBacklogOnly = taskKind === "OWNER_FEEDBACK_REPAIR"
+        && changedPaths.includes("docs/owner-feedback-backlog.md")
+        && !changedPaths.includes("control/task-run-loop.mjs");
       assert(taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath))
+        : ownerFeedbackBacklogOnly
+          ? changedPaths.includes("docs/owner-feedback-backlog.md")
         : changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
       focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? runControllerSupervisorChecks(featureWorktree)
