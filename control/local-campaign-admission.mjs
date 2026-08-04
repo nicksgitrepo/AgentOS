@@ -343,11 +343,76 @@ export function compileLocalCampaignAdmission({authorization, candidate, identit
   return validateLocalCampaignAdmission(admission);
 }
 
+export function validateLocalCampaignExecutionBoundary(boundary) {
+  exactKeys(boundary, [
+    "schema", "version", "status", "controller_role", "campaign_id", "campaign_version", "source_commit", "source_tree",
+    "candidate_sha256", "authorization_sha256", "admission_sha256", "owner_authorized", "active_campaign", "campaign_start_allowed",
+    "required_worker_roles", "local_development_writes_allowed", "local_worker_agent_spawns_allowed", "product_writes_allowed", "product_agent_spawns_allowed",
+    "external_deployment_allowed", "external_release_allowed", "external_publication_allowed", "external_push_allowed", "external_merge_allowed", "secrets_allowed", "destructive_work_allowed", "next_event", "boundary_sha256",
+  ], "local campaign execution boundary");
+  assert(boundary.schema === "agentos.local_campaign_execution_boundary.v1" && boundary.version === 1, "local campaign execution boundary schema mismatch");
+  assert(boundary.status === "PREPARED_OWNER_AUTHORIZED", "local campaign execution boundary status is invalid");
+  assert(boundary.controller_role === "AGENTOS_CONTROLLER", "local campaign execution boundary role is invalid");
+  requireIdentifier(boundary.campaign_id, "local execution boundary campaign ID");
+  requireString(boundary.campaign_version, "local execution boundary campaign version");
+  requireGitObject(boundary.source_commit, "local execution boundary source commit");
+  requireGitObject(boundary.source_tree, "local execution boundary source tree");
+  for (const field of ["candidate_sha256", "authorization_sha256", "admission_sha256", "boundary_sha256"]) requireSha(boundary[field], `local execution boundary ${field}`);
+  assert(boundary.owner_authorized === true && boundary.active_campaign === false && boundary.campaign_start_allowed === true, "local execution boundary is not an owner-authorized inactive start");
+  validateWorkerRoles(boundary.required_worker_roles);
+  assert(boundary.local_development_writes_allowed === true && boundary.local_worker_agent_spawns_allowed === true, "local execution boundary lacks local worker permissions");
+  for (const key of ["product_writes_allowed", "product_agent_spawns_allowed", "external_deployment_allowed", "external_release_allowed", "external_publication_allowed", "external_push_allowed", "external_merge_allowed", "secrets_allowed", "destructive_work_allowed"]) assert(boundary[key] === false, `local execution boundary ${key} must remain closed`);
+  assert(boundary.next_event === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED", "local execution boundary next event is invalid");
+  assert(boundary.boundary_sha256 === digestWithout(boundary, "boundary_sha256"), "local execution boundary digest mismatch");
+  return boundary;
+}
+
+export function compileLocalCampaignExecutionBoundary({authorization, admission}) {
+  validateLocalDevelopmentAuthorization(authorization);
+  validateLocalCampaignAdmission(admission);
+  assert(authorization.campaign_id === admission.campaign_id && authorization.campaign_version === admission.campaign_version, "local execution boundary campaign differs");
+  assert(authorization.source_commit === admission.source_commit && authorization.source_tree === admission.source_tree, "local execution boundary source differs");
+  assert(authorization.authorization_sha256 && admission.admission_sha256, "local execution boundary authority digests are missing");
+  const boundary = {
+    schema: "agentos.local_campaign_execution_boundary.v1",
+    version: 1,
+    status: "PREPARED_OWNER_AUTHORIZED",
+    controller_role: "AGENTOS_CONTROLLER",
+    campaign_id: admission.campaign_id,
+    campaign_version: admission.campaign_version,
+    source_commit: admission.source_commit,
+    source_tree: admission.source_tree,
+    candidate_sha256: admission.controller_candidate_sha256,
+    authorization_sha256: authorization.authorization_sha256,
+    admission_sha256: admission.admission_sha256,
+    owner_authorized: authorization.status === "AUTHORIZED" && authorization.owner_decision.decision === "START_LOCAL_AGENTOS_SELF_DEVELOPMENT",
+    active_campaign: admission.active_campaign,
+    campaign_start_allowed: authorization.status === "AUTHORIZED" && admission.active_campaign === false,
+    required_worker_roles: [...authorization.worker_roles].sort(),
+    local_development_writes_allowed: authorization.permissions.local_development_writes_allowed,
+    local_worker_agent_spawns_allowed: authorization.permissions.local_worker_agent_spawns_allowed,
+    product_writes_allowed: authorization.permissions.product_writes_allowed,
+    product_agent_spawns_allowed: authorization.permissions.product_agent_spawns_allowed,
+    external_deployment_allowed: authorization.permissions.external_deployment_allowed,
+    external_release_allowed: authorization.permissions.external_release_allowed,
+    external_publication_allowed: authorization.permissions.external_publication_allowed,
+    external_push_allowed: authorization.permissions.external_push_allowed,
+    external_merge_allowed: authorization.permissions.external_merge_allowed,
+    secrets_allowed: authorization.permissions.secrets_allowed,
+    destructive_work_allowed: authorization.permissions.destructive_work_allowed,
+    next_event: admission.next_event,
+    boundary_sha256: null,
+  };
+  boundary.boundary_sha256 = digestWithout(boundary, "boundary_sha256");
+  return validateLocalCampaignExecutionBoundary(boundary);
+}
 export function validateLocalStartTransition({authorization, admission}) {
   validateLocalDevelopmentAuthorization(authorization);
   validateLocalCampaignAdmission(admission);
   assert(admission.active_campaign === false, "local start transition cannot begin from an active campaign");
   assert(admission.next_event === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED", "valid local authorization cannot remain on a queued-only path");
+  const executionBoundary = compileLocalCampaignExecutionBoundary({authorization, admission});
+  assert(executionBoundary.campaign_start_allowed === true && executionBoundary.active_campaign === false, "local start transition crossed its execution boundary");
   return {event_type: admission.next_event, campaign_id: admission.campaign_id, campaign_version: admission.campaign_version};
 }
 
