@@ -679,7 +679,7 @@ function applyOwnerFeedbackDigestRepair(worktreePath, feedbackId) {
   const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
   const verifierPath = path.join(worktreePath, "tests/verify-owner-feedback-digest.mjs");
   const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
-  assert(fs.existsSync(adapterPath) && fs.existsSync(verifierPath) && fs.existsSync(backlogPath), "owner feedback digest repair inputs are unavailable");
+  assert(fs.existsSync(adapterPath) && fs.existsSync(backlogPath), "owner feedback digest repair inputs are unavailable");
 
   let adapterSource = fs.readFileSync(adapterPath, "utf8");
   const conflictMarker = "export function resolveAddressedRecordConflict";
