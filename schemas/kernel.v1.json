@@ -124,6 +124,11 @@
       "contract": "schemas/campaign-receipts.v1.json",
       "rule": "One bounded receipt retains the exact approval, admission, Controller identity mapping, complete audit bodies, and current status. It is read back as JSON and fails closed on any mismatch or inactive-boundary crossing."
     },
+    "task_continuation": {
+      "controller": "control/task-continuation.mjs",
+      "contract": "schemas/task-continuation.v1.json",
+      "rule": "From a completed inactive handoff, select exactly one owner-authorized control-plane task and record its inactive task/handoff pair. Preserve the parent identity, policy, scope, and reconciliation; fail closed on ambiguity or any activation boundary."
+    },
     "agentos_controller_initialization": {
       "controller": "control/agentos-controller.mjs",
       "contract": "schemas/agentos-controller.v1.json",

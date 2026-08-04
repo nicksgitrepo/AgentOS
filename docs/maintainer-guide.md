@@ -51,3 +51,11 @@ JSON before handing it off. A local unpushed, nonterminal checkpoint may be
 valid development evidence; it is not release readiness. Stop on any digest,
 campaign, policy, acceptance, source, scope, intent, report-body, JSON, or
 inactive-boundary mismatch.
+
+### Safe continuation
+
+Use `control/task-continuation.mjs` only after a completed inactive handoff.
+It selects exactly one owner-authorized `CONTROL_PLANE_ONLY` task and records
+the task plus its handoff without activating the campaign or spawning agents.
+The parent identity, policy, and reconciliation remain unchanged; ambiguous
+selection or any forbidden boundary fails closed.

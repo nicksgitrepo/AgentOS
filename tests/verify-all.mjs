@@ -168,6 +168,9 @@ assert.equal(kernel.owner_review.review_type, "PRE_CAMPAIGN_OWNER_REVIEW");
 assert.equal(kernel.campaign_receipts.controller, "control/campaign-receipts.mjs");
 assert.equal(kernel.campaign_receipts.contract, "schemas/campaign-receipts.v1.json");
 assert(kernel.campaign_receipts.rule.includes("complete audit bodies") && kernel.campaign_receipts.rule.includes("fails closed"));
+assert.equal(kernel.task_continuation.controller, "control/task-continuation.mjs");
+assert.equal(kernel.task_continuation.contract, "schemas/task-continuation.v1.json");
+assert(kernel.task_continuation.rule.includes("exactly one") && kernel.task_continuation.rule.includes("inactive"));
 assert.equal(kernel.agentos_controller_initialization.controller, "control/agentos-controller.mjs");
 assert.equal(kernel.agentos_controller_initialization.state_path, "agentos/controller-state.json");
 assert.equal(kernel.agentos_controller_initialization.storage_rule.includes("control-plane root"), true);
@@ -222,6 +225,7 @@ for (const relativePath of [
   "tests/verify-project-context-store.mjs",
   "tests/verify-owner-review.mjs",
   "tests/verify-campaign-receipts.mjs",
+  "tests/verify-task-continuation.mjs",
   "tests/verify-campaign-state-bridge.mjs",
   "tests/verify-campaign-state-owner.mjs",
   "tests/verify-continuous-audit-sentinel.mjs",

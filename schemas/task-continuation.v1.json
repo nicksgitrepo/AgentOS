@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.control_plane_continuation_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/task-continuation.mjs",
+  "purpose": "Select and start exactly one owner-authorized control-plane task from a completed inactive handoff without activating the campaign.",
+  "selection": {
+    "rule": "The selected task ID must match exactly one validated CONTROL_PLANE_ONLY candidate.",
+    "ambiguous_or_missing": "Reject and leave the parent handoff unchanged."
+  },
+  "identity": "Preserve the canonical Controller campaign identity, project, campaign version, policy, parent reconciliation, and approval-linked evidence.",
+  "inactive_boundary": {
+    "campaign_activation_allowed": false,
+    "product_writes_allowed": false,
+    "product_agent_spawns_allowed": false,
+    "deployment_allowed": false,
+    "publication_allowed": false,
+    "push_allowed": false,
+    "merge_allowed": false,
+    "sterile_copy_allowed": false,
+    "policy_changes_allowed": false,
+    "owner_intent_changes_allowed": false,
+    "campaign_identity_changes_allowed": false,
+    "release_candidate_activation_allowed": false
+  },
+  "records": [
+    "agentos.control_plane_continuation_task.v1",
+    "agentos.control_plane_continuation_handoff.v1"
+  ],
+  "persistence": "Records are content-addressed, bounded to the control-plane root, compare-and-swap protected, written atomically, and read back as JSON.",
+  "audit_rule": "A completion handoff retains four complete independent report bodies and a clean reconciliation; a summary cannot replace a report body.",
+  "stop_conditions": [
+    "Any campaign, version, policy, identity, parent, scope, or source mismatch.",
+    "Any activation, Product write, agent-spawn, deployment, release, push, merge, sterile-copy, secret, or destructive boundary request.",
+    "Any missing, ambiguous, summarized-only, malformed, stale, or unreadable record."
+  ],
+  "undo": "Remove the continuation records and revert only the isolated development commit; leave the parent campaign evidence and approval records untouched."
+}
