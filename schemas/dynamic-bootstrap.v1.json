@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.dynamic_bootstrap_compatibility_import.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "RETAINED_COMPATIBILITY_IMPORT_ONLY_NOT_NORMATIVE",
+  "canonical_controller": "control/bootstrap-compiler.mjs",
+  "canonical_contract": "schemas/bootstrap-plan.v1.json",
+  "canonical_discovery": "control/bootstrap-discovery.mjs",
+  "rule": "Older dynamic-bootstrap records may be translated into discovery facts or typed answers, but this path has no independent authority and may only delegate an approved exact plan to the canonical controller; it cannot independently create setup state, campaign state, provider identity, Product custody, or successor rosters.",
+  "forbidden": ["generic plan approval", "temporary setup-worker authority", "provider-specific identity", "sealed-history rewrite", "successor wave"]
+}

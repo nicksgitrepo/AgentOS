@@ -1,0 +1,65 @@
+{
+  "schema": "agentos.controller.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "name": "AGENTOS_CONTROLLER",
+  "scope": "PROJECT_PERSISTENT",
+  "storage_scope": "CONTROL_PLANE_PERSISTENT",
+  "storage_rule": "Controller state is stored under the bound control-plane root and is never written into the product root by default. An in-project control plane requires an explicit owner opt-in.",
+  "purpose": "A persistent project-level control plane that starts and reconciles campaigns while keeping deterministic state transitions separate from judgment.",
+  "controller_agent": {
+    "schema": "agentos.controller_agent_binding.v1",
+    "role": "JUDGMENT_INTERPRETATION_PLANNING_ROUTING",
+    "wake_rule": "Wake only when a judgment, owner boundary, reframe, policy amendment, or materially ambiguous route requires interpretation.",
+    "may_not": [
+      "WRITE_PRODUCT_CODE",
+      "GRANT_PRODUCT_ACCEPTANCE",
+      "OVERRIDE_INDEPENDENT_AUDITOR",
+      "INVENT_OWNER_INTENT",
+      "DEPLOY_DIRECTLY",
+      "HOLD_FEATURE_OR_PLATFORM_WORKTREES",
+      "EXPAND_CAMPAIGN_SCOPE",
+      "SPEND_BEYOND_POLICY",
+      "CHANGE_CONSTITUTIONAL_GOVERNANCE"
+    ]
+  },
+  "controller_runtime": {
+    "schema": "agentos.controller_runtime_readback.v1",
+    "role": "DETERMINISTIC_EVENT_LOOP_AND_STATE_TRANSACTIONS",
+    "consequential_transition_rule": "No external action is complete until a project-bound adapter performs it and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
+    "persistent_state": "Compare-and-swap protected state with an append-only event head and readback receipts.",
+    "reconciliation_interval_minutes": 30
+  },
+  "event_types": [
+    "BOOTSTRAP_REQUESTED",
+    "BOOTSTRAP_PROMOTED",
+    "USER_REVIEW_RETURNED",
+    "CAMPAIGN_APPROVED",
+    "AGENT_STALLED",
+    "POLICY_AMENDMENT",
+    "CHECKPOINT_READY",
+    "AUDITOR_RELEASE_CLEARED",
+    "RUNTIME_DEPLOYED",
+    "ACCEPTED_LIVE",
+    "TRUE_OWNER_BOUNDARY",
+    "RECONCILIATION_TICK"
+  ],
+  "campaign_boundary": {
+    "orchestrator": "CAMPAIGN_SCOPED",
+    "controller": "PROJECT_PERSISTENT",
+    "platform_agents": "CAMPAIGN_LOCAL_ON_DEMAND",
+    "runtime": "PERSISTENT_PROJECT_RUNTIME",
+    "successor_rule": "Orient the next Campaign Orchestrator only after Auditor release clearance; do not start the next campaign before accepted-live closure."
+  },
+  "external_adapters": {
+    "rule": "Model, session, worktree, repository, provider, deployment, rollback, live-audit, and browser capabilities enter through typed project-bound adapters.",
+    "missing_adapter": "UNAVAILABLE_AND_NOT_COMPLETE",
+    "caller_claimed_identity": "NOT_ACCEPTED_AS_READBACK"
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "product_campaign_rebind": false,
+    "deployment_custody": false
+  }
+}

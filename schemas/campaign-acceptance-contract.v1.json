@@ -1,0 +1,40 @@
+{
+  "schema": "governance.campaign_acceptance_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "The complete campaign contract that must exist before a builder chooses the smallest implementation.",
+  "ordered_roots": [
+    "FUNCTION_REQUIREMENTS",
+    "DESIGN_BIBLE",
+    "SECURITY"
+  ],
+  "required_fields": [
+    "schema",
+    "campaign_id",
+    "campaign_version",
+    "logical_lineage_id",
+    "policy_epoch",
+    "policy_state_sha256",
+    "question_tree_sha256",
+    "ordered_roots",
+    "required_question_ids_by_root",
+    "required_question_ids",
+    "operational_requirements",
+    "evidence_requirements",
+    "non_goals",
+    "hard_rules",
+    "stop_condition",
+    "owner_intent_sha256",
+    "contract_sha256"
+  ],
+  "smallest_complete_campaign_rule": [
+    "The complete contract comes before implementation.",
+    "Every implementation addition is bound to acceptance, a hard rule or material risk, an observed blocker, or explicit owner authorization.",
+    "Builders implement the smallest architecture that satisfies the complete contract.",
+    "Auditors investigate broadly within their read-only domain.",
+    "The Finalizer repairs confirmed failures at the owning boundary and rebuilds only when targeted repair cannot pass.",
+    "The campaign stops when all required gates pass; adjacent improvements move to the next-campaign ledger."
+  ],
+  "binding_rule": "A First-Pass Candidate must carry the exact contract object and digest, the policy epoch and snapshot digest, before it can enter audit or Finalizer custody. Each required question ID must use the prefix belonging to the root that contains it: FR-, DB-, or SEC-."
+}

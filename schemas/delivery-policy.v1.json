@@ -1,0 +1,67 @@
+{
+  "schema": "agentos.delivery_policy_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Keep source-control, merge, CI-runner, product-target, hosting, deployment, rollback, provider-binding, and delivery-cost choices explicit in typed project context instead of hiding them in the portable kernel.",
+  "question": {
+    "id": "project.delivery_policy",
+    "class": "MATERIAL_PREFERENCE",
+    "rule": "Ask one compact structured question when exact discovery does not provide an admitted delivery policy. The question may include the product target family and maturity mode. Discovery may recommend route classes but cannot choose owner intent, authenticate, spend, push, merge, deploy, or select a provider account."
+  },
+  "routes": {
+    "runner": ["HOSTED", "VPS", "LOCAL", "HYBRID", "PROJECT_DEFINED"],
+    "deployment": ["MANAGED", "VPS", "LOCAL", "HYBRID", "PROJECT_DEFINED"],
+    "selection_rule": "Provider names, accounts, quotas, credentials, and target identities are typed project-context data. The portable kernel uses route classes and exact bindings only."
+  },
+  "source_control": {
+    "push_modes": ["CHECKPOINTS_REMOTE_EQUAL", "LOCAL_UNTIL_HANDOFF", "EVERY_COMMIT_REMOTE_EQUAL", "PROJECT_DEFINED"],
+    "default": "CHECKPOINTS_REMOTE_EQUAL",
+    "checkpoint_rule": "A clean substantial checkpoint is pushed and remote-equal before independent audit, Platform handoff, Finalizer handoff, Runtime custody, or release admission.",
+    "branch_rule": "The project supplies a contained branch namespace. Bootstrap never invents a real repository or branch identity."
+  },
+  "merge": {
+    "authorities": ["CENTRAL_SERIALIZED", "PROJECT_OWNER", "PROJECT_DEFINED"],
+    "gates": ["REQUIRED_AFFECTED_CHECKS", "REQUIRED_ALL_CHECKS", "PROJECT_DEFINED"],
+    "default_authority": "CENTRAL_SERIALIZED",
+    "default_auto_merge": "DISABLED_BY_DEFAULT",
+    "rule": "Feature or Platform agents do not self-merge or self-accept. Shared integration remains serialized."
+  },
+  "ci_runner": {
+    "required_fields": ["route", "provider_id", "fallback_route", "max_concurrency", "weekly_minutes_budget", "secrets", "network", "execution_scope"],
+    "secret_rule": "Secrets are never discovered or copied. Runner secret access is PROJECT_CONTEXT_ONLY.",
+    "network_rule": "Runner network and egress are PROJECT_CONTEXT_BOUND, not inferred from a provider name.",
+    "cost_rule": "Minutes, concurrency, duty cycle, and spend ceilings are explicit or remain unresolved."
+  },
+  "deployment": {
+    "required_fields": ["route", "provider_id", "environment_ids", "trigger", "authority", "artifact_identity", "preview"],
+    "trigger": "EXACT_ACCEPTED_COMMIT",
+    "authority": "RUNTIME_AFTER_CENTRAL_ACCEPTANCE",
+    "artifact_identity": "COMMIT_TREE_BUILD_ARTIFACT",
+    "rule": "Bootstrap does not publish, deploy, create previews, or contact a hosting provider."
+  },
+  "delivery_target": {
+    "contract": "schemas/delivery-target.v1.json",
+    "field": "delivery_policy.delivery_target",
+    "rule": "Keep the product target separate from transport mechanics. A managed-site target can be PROTOTYPE or LIMITED_PRODUCT without a production claim. The optional adapter ID is project-context data and never supplies account authority or unproven capabilities."
+  },
+  "rollback": {
+    "required": true,
+    "identity": "EXACT_LAST_ACCEPTED_DEPLOYMENT",
+    "test_required": true,
+    "authority": "RUNTIME_WITH_OWNER_BOUNDARY",
+    "rule": "Rollback is a separate exact identity from deployment and is never a vague provider action."
+  },
+  "recommendation": {
+    "rule": "Recommend route classes using stated cost, speed, reliability, availability, and continuity preferences. Mark recommendations CANDIDATE_ONLY until project binding and a safe probe prove the assumptions.",
+    "never": ["INVENT_PROVIDER_FACTS", "AUTHENTICATE", "SPEND", "PUSH", "MERGE", "DEPLOY", "ROLLBACK"]
+  },
+  "probe_contract": {
+    "schemas": ["agentos.delivery_probe_plan.v1", "agentos.delivery_probe_results.v1"],
+    "allowed": ["LOCAL_GIT_READBACK", "LOCAL_MARKER_READBACK", "LOCAL_TOOL_AVAILABILITY_READBACK"],
+    "prohibited": ["AUTHENTICATION", "NETWORK", "PUSH", "MERGE", "SPENDING", "DEPLOYMENT", "ROLLBACK", "FILE_WRITES", "DELETION"],
+    "binding": ["exact_bootstrap_plan_sha256", "delivery_policy_sha256", "discovery_digest_sha256", "canonical_project_root"],
+    "result_rule": "Each result records PASS, CONFLICT, NOT_RUN_OWNER_BOUNDARY, UNAVAILABLE, or UNPROVEN. Raw output is reduced to secret-free digests and typed observations."
+  },
+  "extension_boundary": "Project-specific delivery fields may add stricter constraints and provider bindings, but cannot weaken clean checkpoint custody, serialized merge authority, Runtime deployment authority, exact rollback identity, or probe prohibitions."
+}

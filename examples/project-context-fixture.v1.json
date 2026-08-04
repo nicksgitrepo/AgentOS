@@ -1,0 +1,216 @@
+{
+  "schema": "governance.project_context_fixture.v1",
+  "version": 1,
+  "project_name": "Portable Fixture",
+  "portable_template_instance": {
+    "project_identity": {
+      "project_name": "Portable Fixture",
+      "context_version": 1,
+      "exact_context_digest": "0da311abea9625bb61d420c9edad3db1441fd492b71dcc5b2c76c6952e18006f"
+    },
+    "authority": {
+      "authority_repository": "https://example.invalid/authority.git",
+      "exact_admitted_commit": "1111111111111111111111111111111111111111",
+      "charter": "authority/charter.md",
+      "project_context_articles": [
+        "authority/project-context.md"
+      ],
+      "authority_order": [
+        "human safety and law",
+        "explicit owner intent",
+        "accepted source-backed truth",
+        "specific authority",
+        "bounded task"
+      ]
+    },
+    "authority_corpus_roots": {
+      "authority_root": ".",
+      "authority_index_path": "authority/index.json",
+      "project_context_root": "authority/project-context",
+      "project_goals_root": "authority/project-goals",
+      "design_system_root": "authority/design-system",
+      "features_root": "authority/features",
+      "platform_capabilities_root": "authority/platform-capabilities",
+      "campaigns_root": "authority/campaigns",
+      "decisions_root": "authority/decisions",
+      "cases_root": "authority/cases",
+      "evidence_index_root": "authority/evidence-index",
+      "archive_root": "authority/archive",
+      "evidence_library_root": "evidence-library"
+    },
+    "authority_corpus_entities": {
+      "feature_ids": [],
+      "capability_ids": [],
+      "campaign_ids": [],
+      "release_ids": []
+    },
+    "authority_article_numbering": {
+      "bootstrap_article": "000",
+      "governance_start": 1,
+      "governance_end_exclusive": 100,
+      "project_start": 100,
+      "project_end_exclusive": 200,
+      "feature_block_size": 100,
+      "first_feature_start": 200,
+      "existing_feature_blocks": [],
+      "registry_path": "authority/article-numbering.json"
+    },
+    "authority_corpus_activation": {
+      "PREPARED_NOT_ACTIVATED_or_ACTIVATED": "PREPARED_NOT_ACTIVATED"
+    },
+    "repositories": [
+      {
+        "repository_id": "project",
+        "remote": "https://example.invalid/project.git",
+        "default_branch": "main",
+        "ownership": "governed project owner",
+        "protected_paths": [
+          "authority"
+        ]
+      },
+      {
+        "repository_id": "support",
+        "remote": "https://example.invalid/support.git",
+        "default_branch": "main",
+        "ownership": "bounded support owner",
+        "protected_paths": [
+          "contracts"
+        ]
+      }
+    ],
+    "roles": {
+      "campaign_orchestrator": "campaign orchestrator",
+    "feature_agent_registry": "feature registry",
+      "platform_agent_policy": "on-demand platform agents",
+      "independent_auditor": "independent auditor",
+      "persistent_runtime": "persistent runtime"
+    },
+    "resources": {
+      "maximum_parallel_writer_lanes": 1,
+      "worktree_roots": [
+        "worktrees"
+      ],
+      "branch_namespace": "campaign/*",
+      "migration_namespaces": "allocated nonoverlapping ranges",
+      "shared_resource_namespaces": "serialized shared resources"
+    },
+    "operational_intervals": {
+      "concrete_progress_interval": 15,
+      "supervisor_reframe_response_interval": 15,
+      "lease_recovery_inspection_interval": 15
+    },
+    "release": {
+      "exclusive_release_operator": "persistent runtime",
+      "integration_branch": "main",
+      "artifact_authority": "immutable build identity",
+      "deployment_targets": "configured targets",
+      "rollback_authority": "exact rollback identity",
+      "evidence_retention": "configured active window then permanent archive",
+      "evidence_library_active_window_days": "Bootstrap preference",
+      "evidence_library_loose_compaction_policy": "archive without deleting evidence information"
+    },
+    "protected_boundaries": {
+      "safety_and_law": "owner authority",
+      "security_privacy_and_tenancy": "fail closed",
+      "durable_data_and_migrations": "allocated additive custody",
+      "owner_only_policy": "explicit owner decision",
+      "protected_user_surfaces": "project-defined protected surfaces",
+      "production_promotion": "runtime only after acceptance"
+    },
+    "capabilities": {
+      "enabled_baseline_capability_ids": [
+        "DATABASE_RLS",
+        "BACKEND_API",
+        "IDENTITY_ACCESS",
+        "SECURITY_PRIVACY",
+        "UI_UX",
+        "SHELL_NAVIGATION",
+        "SETTINGS_CONFIGURATION",
+        "DOMAIN_VIEW",
+        "INTEGRATIONS_PROVIDERS",
+        "MESSAGING_NOTIFICATIONS",
+        "DOCUMENTS_RECORDS",
+        "SEARCH_AI",
+        "OBSERVABILITY_OPERATIONS",
+        "RUNTIME_RELEASE",
+        "QUALITY_TEST_ARCHITECTURE"
+      ],
+      "typed_project_capability_extensions": []
+    },
+    "context_elicitation": {
+      "project_goal_question_overrides_or_extensions": [],
+      "design_system_question_overrides_or_extensions": [],
+      "feature_question_overrides_or_extensions": [],
+      "owner_only_preference_routes": "campaign orchestrator to project owner",
+      "accepted_safe_defaults": "smallest reversible route",
+      "context_blocker_owner_routes": "campaign orchestrator"
+    }
+  },
+  "kernel": {
+    "override_allowed": false
+  },
+  "authority_corpus_roots": {
+    "authority_root": ".",
+    "authority_index_path": "authority/index.json",
+    "project_context_root": "authority/project-context",
+    "project_goals_root": "authority/project-goals",
+    "design_system_root": "authority/design-system",
+    "features_root": "authority/features",
+    "platform_capabilities_root": "authority/platform-capabilities",
+    "campaigns_root": "authority/campaigns",
+    "decisions_root": "authority/decisions",
+    "cases_root": "authority/cases",
+    "evidence_index_root": "authority/evidence-index",
+    "archive_root": "authority/archive",
+    "evidence_library_root": "evidence-library",
+    "status": "PROPOSED_2_1RC_TREE_NOT_CREATED"
+  },
+  "authority_corpus_entities": {
+    "feature_ids": [],
+    "capability_ids": [],
+    "campaign_ids": [],
+    "release_ids": []
+  },
+  "authority_corpus_activation": "PREPARED_NOT_ACTIVATED",
+  "context_elicitation": {
+    "mode": "SEMI_SCRIPTED_DRILL_ME",
+    "status": "PREPARED_NOT_RUNNING"
+  },
+  "release_context": {
+    "release_operator_is_exclusive": true,
+    "local_product_browser_testing_forbidden": true,
+    "immutable_rapid_development_evidence_retention_days": "BOOTSTRAP_VARIABLE"
+  },
+  "operational_intervals": {
+    "concrete_progress_minutes": 15,
+    "supervisor_reframe_response_minutes": 15,
+    "lease_recovery_inspection_minutes": 15
+  },
+  "capability_extensions": [],
+  "binding_law": {
+    "may_not_override": [
+      "materiality filter",
+      "blueprint budget",
+      "delegated stage transition",
+      "audit/deployment boundary",
+      "authority/reality split",
+      "draft/seal law",
+      "mechanical receipt law",
+      "proportionality",
+      "owner-only filter",
+      "single-goal law",
+      "root-cause deduplication",
+      "handoff law",
+      "failure reframing",
+      "feature/platform worktree topology",
+      "single-lane/multi-lane campaign compiler",
+      "context capsule",
+      "lease recovery",
+      "checkpoint-only topology amendment",
+      "machine-first governance representation",
+      "authority-corpus lifecycle",
+      "context elicitation and blocker continuity",
+      "specialist execution autonomy and communication budget"
+    ]
+  }
+}

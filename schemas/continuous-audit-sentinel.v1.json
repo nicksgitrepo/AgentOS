@@ -1,0 +1,18 @@
+{
+  "schema": "governance.continuous_audit_sentinel.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "One campaign-scoped, read-only, pinned audit identity that remains available through the campaign and is explicitly archived and unpinned at accepted-live closure.",
+  "required_fields": [
+    "schema", "campaign_id", "campaign_version", "logical_lineage_id", "role_id", "auditor_session_id",
+    "status", "read_only", "pinned", "scope", "started_at_utc", "archived_at_utc", "archive_reason", "sentinel_sha256"
+  ],
+  "statuses": ["ACTIVE", "ARCHIVED_UNPINNED"],
+  "rules": {
+    "active": "ACTIVE means read_only=true and pinned=true; it is a campaign-scoped observation identity, not Product writer custody or acceptance authority.",
+    "closure": "ACCEPTED_LIVE_CLOSED requires the exact active sentinel to be transformed into ARCHIVED_UNPINNED with an archive time and reason in the same canonical lifecycle transition.",
+    "portability": "The sentinel binds only portable role and campaign identities. Host/session capability and live-site evidence remain external adapter boundaries."
+  }
+}
+

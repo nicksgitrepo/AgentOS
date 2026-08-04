@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.project_import_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/project-import.mjs",
+  "result": "agentos.project_import.v1",
+  "purpose": "Authorize a source-preserving project adoption, copy, normalization, or reconstruction without mutating the source before cutover.",
+  "modes": ["ADOPT_IN_PLACE", "CLEAN_COPY", "NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"],
+  "preservation_storage_modes": ["PROJECT_SIDE_CAR", "EXTERNAL_CONTROL_PLANE"],
+  "source_preservation": {
+    "required_artifacts": [
+      "source-preservation.zip",
+      "source-preservation.manifest.json",
+      "source-preservation.index.jsonl",
+      "source-preservation.receipt.json",
+      "import-exclusions.md"
+    ],
+    "rule": "Preserve exact included bytes before migration; exclude and record secrets, generated material, temporary material, and unsafe objects; never mutate the source before cutover."
+  },
+  "audit_lanes": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
+  "audit_scheduler": "control/campaign-cascade.mjs",
+  "acceptance_order": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+  "storage_rule": "External control-plane storage keeps preservation artifacts outside the product root by default. Project-sidecar storage is allowed only when the owner explicitly opts into an in-project control plane.",
+  "cutover_rule": "A full normalize or reconstruct mode requires grouped repair, independent read-only audit, exact candidate identity, and reversible cutover. Product source files remain unchanged before cutover; preservation artifacts are written only to the bound control-plane storage root."
+}
