@@ -24,7 +24,7 @@ import {spawnWorker, validateLocalWorkerReadback} from "./local-agent-runtime.mj
 const CAMPAIGN_ROOT_NAME = "tmp/agentos-local-self-development-1";
 const CAMPAIGN_ID = "CAMPAIGN-AGENTOS-SELF-DEVELOPMENT-1";
 const CAMPAIGN_VERSION = "v1";
-const FEATURE_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-REPAIR-2";
+const FEATURE_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-REPAIR-3";
 const ORCHESTRATOR_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-ORCHESTRATOR-RECHECK-1";
 const AUDITOR_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-AUDITOR-RECHECK-1";
 const FEATURE_TASK_KIND = "GOVERNANCE_EVIDENCE_REPAIR";
@@ -137,7 +137,7 @@ function compileFailureRca({root, phase, command, error, task, featureReadback, 
     required_response: "Keep the campaign open, route the exact failure to a bounded Feature-Agent repair, and require the same source-bound Auditor and Controller re-check.",
     rca_sha256: null,
   }, "rca_sha256");
-  record(root, "gate-evidence-repair-failure-rca.json", rca);
+  record(root, `gate-evidence-repair-failure-rca-${FEATURE_TASK_ID}.json`, rca);
   return rca;
 }
 

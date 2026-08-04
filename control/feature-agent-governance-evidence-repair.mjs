@@ -223,13 +223,13 @@ numeric["G-FUNCTIONALITY-ROOT"].answer = 1;
 assert.throws(() => evaluateGovernanceDecisionTree({tree, answers: numeric}), /explicit YES or NO/u);
 
 const generic = yesAnswers();
-generic["G-FUNCTIONALITY-ROOT"].evidence.check_id = "PLACEHOLDER";
+generic["G-FUNCTIONALITY-ROOT"].evidence.source_commit.check_id = "PLACEHOLDER";
 assert.throws(() => evaluateGovernanceDecisionTree({tree, answers: generic}), /evidence record|fields mismatch|source commit|exactly the declared evidence/u);
 
 const stale = yesAnswers();
-stale["G-FUNCTIONALITY-ROOT"].evidence.source_commit = "3".repeat(40);
-stale["G-FUNCTIONALITY-ROOT"].evidence.source_tree = TREE;
-stale["G-FUNCTIONALITY-ROOT"].evidence.evidence_sha256 = controllerDigest({...stale["G-FUNCTIONALITY-ROOT"].evidence, evidence_sha256: null});
+stale["G-FUNCTIONALITY-ROOT"].evidence.source_commit.source_commit = "3".repeat(40);
+stale["G-FUNCTIONALITY-ROOT"].evidence.source_commit.source_tree = TREE;
+stale["G-FUNCTIONALITY-ROOT"].evidence.source_commit.evidence_sha256 = controllerDigest({...stale["G-FUNCTIONALITY-ROOT"].evidence.source_commit, evidence_sha256: null});
 assert.throws(() => evaluateGovernanceDecisionTree({tree, answers: stale}), /source binding differs/u);
 
 const missingEvidence = yesAnswers();
