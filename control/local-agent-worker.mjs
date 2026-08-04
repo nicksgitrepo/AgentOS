@@ -298,6 +298,79 @@ function applyAutonomousCampaignProgressRepair(worktreePath) {
   return ["control/local-self-development-supervisor-adapter.mjs"];
 }
 
+function applyAutonomousCampaignContinuationRepair(worktreePath) {
+  const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
+  assert(fs.existsSync(adapterPath), "autonomous campaign continuation repair adapter is unavailable");
+  let source = fs.readFileSync(adapterPath, "utf8");
+  const taskRegion = /  const task = firstUsefulWorkflowCompleted\n[\s\S]*?\n    : completedCurrentAudit/u;
+  const repairedTaskRegion = [
+    "  const continuationCount = Number.isSafeInteger(campaignProgress?.autonomous_continuation_count) ? campaignProgress.autonomous_continuation_count : 0;",
+    "  const continuationEligible = firstUsefulWorkflowCompleted && continuationCount < 1;",
+    "  const task = continuationEligible",
+    "    ? {",
+    "      task_id: buildTaskId,",
+    "      status: \"OPEN\",",
+    "      priority: 0,",
+    "      summary: `The Controller selected one bounded next control-plane behavior from the standing owner intent: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects its exact repair, the Feature Agent builds it, and the Auditor checks the same result.`,",
+    "      scope: [\"ACCEPTANCE_CONTRACT\", \"DECISION_TREE\", \"OWNER_INTENT\", \"SCOPED_CONTROL_PLANE_CODE\", \"WORKER_RECEIPTS\"].sort(),",
+    "      owner_decision_required: false,",
+    "    }",
+    "    : firstUsefulWorkflowCompleted",
+    "    ? {",
+    "      task_id: completedTaskId,",
+    "      status: \"HELD\",",
+    "      priority: 0,",
+    "      summary: \"The owner-defined first useful workflow and one bounded autonomous continuation are complete at audited local checkpoints; no additional safe control-plane behavior is currently declared.\",",
+    "      scope: [\"ACCEPTANCE_CONTRACT\", \"CONTROLLER_STATE\", \"OWNER_INTENT\", \"WORKER_RECEIPTS\"].sort(),",
+    "      owner_decision_required: false,",
+    "    }",
+    "    : completedCurrentAudit",
+  ].join("\n");
+  assert(taskRegion.test(source), "autonomous campaign continuation queue is not at the expected source checkpoint");
+  source = source.replace(taskRegion, repairedTaskRegion);
+  const oldReasons = [
+    [
+      "      generated_reason: firstUsefulWorkflowCompleted",
+      "        ? \"FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT\"",
+      "        : completedCurrentAudit",
+    ].join("\n"),
+    [
+      "    generated_reason: firstUsefulWorkflowCompleted",
+      "      ? \"FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT\"",
+      "      : completedCurrentAudit",
+    ].join("\n"),
+  ];
+  const newReasons = [
+    [
+      "      generated_reason: continuationEligible",
+      "        ? \"AUTONOMOUS_CONTINUATION_REQUIRED\"",
+      "        : firstUsefulWorkflowCompleted",
+      "        ? \"FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT\"",
+      "        : completedCurrentAudit",
+    ].join("\n"),
+    [
+      "    generated_reason: continuationEligible",
+      "      ? \"AUTONOMOUS_CONTINUATION_REQUIRED\"",
+      "      : firstUsefulWorkflowCompleted",
+      "      ? \"FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT\"",
+      "      : completedCurrentAudit",
+    ].join("\n"),
+  ];
+  for (let index = 0; index < oldReasons.length; index += 1) {
+    assert(source.includes(oldReasons[index]), `autonomous campaign continuation generated-reason ${index + 1} is not at the expected source checkpoint`);
+    source = source.replace(oldReasons[index], newReasons[index]);
+  }
+  const oldProgressField = "        first_useful_workflow_completed: true,\n";
+  const newProgressFields = [
+    "        first_useful_workflow_completed: true,",
+    "        autonomous_continuation_count: (existingCampaignProgress?.autonomous_continuation_count ?? 0) + (existingCampaignProgress?.first_useful_workflow_completed === true ? 1 : 0),",
+  ].join("\n") + "\n";
+  assert(source.includes(oldProgressField), "autonomous campaign progress completion field is not at the expected source checkpoint");
+  source = source.replace(oldProgressField, newProgressFields);
+  writeFileAtomic(adapterPath, source);
+  return ["control/local-self-development-supervisor-adapter.mjs"];
+}
+
 function applyOwnerConversationSurfaceRepair(worktreePath) {
   const bootstrapPath = path.join(worktreePath, "control/bootstrap-compiler.mjs");
   const ownerReviewPath = path.join(worktreePath, "control/owner-review.mjs");
@@ -656,6 +729,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
             ? "schemas/bootstrap-binding.v1.json"
           : taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
             ? "control/local-self-development-supervisor-adapter.mjs"
+          : taskKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
+            ? "control/local-self-development-supervisor-adapter.mjs"
           : taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
             ? "control/local-agent-runtime.mjs"
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
@@ -671,6 +746,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
           ? runControllerSupervisorBindingChecks(featureWorktree, taskKind)
           : taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+            ? runChecks(featureWorktree, ["node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-controller-supervisor.mjs"])
+          : taskKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
             ? runChecks(featureWorktree, ["node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-controller-supervisor.mjs"])
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? runDurableSessionChecks(featureWorktree)
@@ -932,6 +1009,47 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean autonomous campaign progress checkpoint");
     assert(changedPaths.includes("control/local-self-development-supervisor-adapter.mjs"), "Feature Agent autonomous campaign progress repair did not change the Controller queue");
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR") {
+    artifactName = "control/autonomous-campaign-continuation-repair-receipt.mjs";
+    const changedByRepair = applyAutonomousCampaignContinuationRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/local-self-development-supervisor-adapter.mjs",
+      "node tests/verify-controller-supervisor.mjs",
+    ]);
+    const marker = `// Local Feature Agent autonomous-campaign-continuation repair receipt; held in the isolated campaign worktree.\nexport const AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: continue bounded campaigns automatically"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean autonomous continuation checkpoint");
+    assert(changedPaths.includes("control/local-self-development-supervisor-adapter.mjs"), "Feature Agent autonomous continuation repair did not change the Controller queue");
     buildStatus = "COMPLETED";
     product = {
       ...base,
