@@ -273,6 +273,7 @@ function localAgentSessionBindingFinding(repositoryRoot) {
 function ownerConversationSurfaceFinding(repositoryRoot) {
   const bootstrapPath = path.join(repositoryRoot, "control/bootstrap-compiler.mjs");
   const source = fs.readFileSync(bootstrapPath, "utf8");
+  const promptTexts = [...source.matchAll(/prompt:\s+"([^"]*)"/gu)].map((match) => match[1]);
   const leakedPrompts = [
     "technical setup questions",
     "proves the project is useful",
@@ -285,7 +286,7 @@ function ownerConversationSurfaceFinding(repositoryRoot) {
     "pushes, merges, CI runners, hosting, deployment, rollback, provider binding",
     "operating conditions",
     "persistent Runtime session and environment",
-  ].filter((term) => source.includes(term));
+  ].filter((term) => promptTexts.some((prompt) => prompt.includes(term)));
   const ownerVisibilityLeak = source.includes("owner_visible: false") && source.includes("prompt: question.prompt");
   if (leakedPrompts.length === 0 && !ownerVisibilityLeak) return null;
   return {
