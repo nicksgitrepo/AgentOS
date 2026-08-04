@@ -174,7 +174,10 @@ try {
   assert(renderedPacket.includes("Let's talk about the next useful step"));
   assert(renderedPacket.includes("Tell me about what you're building"));
   assert(renderedPacket.includes("do what you recommend"));
-  assert(renderedPacket.includes("Do not expose schema questions"));
+  assert(renderedPacket.includes("Keep the behind-the-scenes notes out of this conversation"));
+  assert(!renderedPacket.includes("For the build itself, the current recommendation is"));
+  assert(!renderedPacket.includes("The role recommendations are:"));
+  assert(!renderedPacket.includes("This task is currently described as"));
   assert(renderedPacket.includes("they are examples, not a fixed script"));
   assert(renderedPacket.includes("plain everyday language"));
   assert(renderedPacket.includes("Reply with one number"));

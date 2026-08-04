@@ -25,8 +25,18 @@ const FORBIDDEN_OWNER_TERMS = [
   /\bprovider binding\b/iu,
 ];
 
+const FORBIDDEN_REVIEW_OUTPUT = [
+  "For the build itself, the current recommendation is",
+  "The role recommendations are:",
+  "This task is currently described as",
+  "technical governance terms",
+  "exact result for separate approval",
+];
+
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-owner-conversation-surface-"));
 try {
+  const ownerReviewSource = fs.readFileSync(new URL("../control/owner-review.mjs", import.meta.url), "utf8");
+  for (const phrase of FORBIDDEN_REVIEW_OUTPUT) assert(!ownerReviewSource.includes(phrase), "Ongoing owner review exposes " + phrase);
   for (const question of BOOTSTRAP_QUESTIONS) {
     for (const pattern of FORBIDDEN_OWNER_TERMS) assert(!pattern.test(question.prompt), "Bootstrap owner prompt exposes " + pattern + ": " + question.id);
   }
