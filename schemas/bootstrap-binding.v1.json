@@ -42,7 +42,7 @@
     },
     "bootstrap_compiler": {
       "path": "control/bootstrap-compiler.mjs",
-      "sha256": "7ff5d87fa38dee21dc7962cdc2a4e6d04700e1e5ccd50c9a4357f4acc7267ac4"
+      "sha256": "7919fd4fde0edbb701a919d8fe0c62a0b3e2d37cc22e984df762d2486f514f59"
     },
     "control_plane_controller": {
       "path": "control/control-plane-root.mjs",

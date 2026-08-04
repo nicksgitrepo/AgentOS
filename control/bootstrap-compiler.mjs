@@ -102,7 +102,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "bootstrap.discovery.mode",
     class: "DISCOVERY_PERMISSION",
-    prompt: "May Bootstrap perform safe read-only discovery so it can answer technical setup questions for you?",
+    prompt: "May I take a quick look around without changing anything, so I can understand how to set things up?",
     type: "ENUM",
     choices: DISCOVERY_MODES,
     owner_choices: ["Recommended read-only discovery", "Guided discovery", "Expert discovery", "Local-only discovery"],
@@ -112,7 +112,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.north_star",
     class: "OWNER_INTENT",
-    prompt: "Who is this for, what recurring moment matters, and what should be better after the project works?",
+    prompt: "Who is this for, what would you like it to make easier, and what would a good result feel like?",
     type: "JSON",
     output: "NORTH_STAR",
     required: true,
@@ -120,7 +120,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.first_workflow",
     class: "OWNER_INTENT",
-    prompt: "What is the smallest real workflow that proves the project is useful, and what does working mean?",
+    prompt: "What is the first small thing you want people to be able to do, and how will you know it worked?",
     type: "JSON",
     output: "FIRST_USEFUL_WORKFLOW",
     required: true,
@@ -128,7 +128,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.life_contract",
     class: "OWNER_INTENT",
-    prompt: "How real should this project be for its first users: a prototype, a limited working product, a beta, or production; who may use it, what data may it hold, and how long should it live?",
+    prompt: "How real should the first version be: a rough try, a small working version, a beta, or something ready for everyday use? Who should use it, what information may it keep, and how long should it live?",
     type: "JSON",
     output: "PROJECT_LIFE_CONTRACT",
     required: false,
@@ -137,7 +137,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.boundary",
     class: "OWNER_BOUNDARY",
-    prompt: "Which repositories, data, environments, and external systems belong inside the project boundary?",
+    prompt: "What should this project be allowed to touch, and what should stay off-limits?",
     type: "JSON",
     output: "PROJECT_DEFINITION",
     required: true,
@@ -145,7 +145,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.import",
     class: "CREATION_AUTHORIZATION",
-    prompt: "How much should AgentOS change while importing this existing project: use it as-is, make a clean copy, normalize and audit it, or reconstruct it from intent?",
+    prompt: "Should I leave the current project as it is, make a separate copy, tidy it up, or use it as a reference for a fresh version?",
     type: "JSON",
     output: "PROJECT_IMPORT",
     required: false,
@@ -154,7 +154,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.protected_boundaries",
     class: "OWNER_BOUNDARY",
-    prompt: "Which safety, legal, privacy, data-loss, spending, authentication, irreversible-action, or intent boundaries remain owner-controlled?",
+    prompt: "What must I never do, change, share, or spend without you?",
     type: "JSON",
     output: "AUTHORITY_BOUNDARIES",
     required: true,
@@ -162,7 +162,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "authority-corpus.source",
     class: "CREATION_AUTHORIZATION",
-    prompt: "Should Bootstrap import, refactor, or create the authority corpus, and which read-only source should be preserved?",
+    prompt: "Are there notes, instructions, or an older version I should keep safe and use as background?",
     type: "JSON",
     output: "AUTHORITY_CORPUS",
     required: true,
@@ -170,7 +170,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.design",
     class: "OWNER_INTENT",
-    prompt: "Which users, devices, accessibility needs, protected visual surfaces, page families, and states must the Design Bible govern?",
+    prompt: "Who will use it, what will they use it on, and are there any important look-and-feel or accessibility needs?",
     type: "JSON",
     output: "DESIGN_BIBLE",
     required: false,
@@ -179,7 +179,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.technical_baseline",
     class: "MATERIAL_PREFERENCE",
-    prompt: "Are any stack, authentication, testing, data, or observability choices required or forbidden?",
+    prompt: "Is there anything you already want me to use or avoid? If not, I can choose a sensible starting point.",
     type: "JSON",
     output: "TECHNICAL_BASELINE",
     required: false,
@@ -188,12 +188,11 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.delivery_policy",
     class: "MATERIAL_PREFERENCE",
-    prompt: "How should Bootstrap handle pushes, merges, CI runners, hosting, deployment, rollback, provider binding, and delivery cost limits?",
+    prompt: "Is there anything special about how this should be saved, shared, or put online? If not, I can use the safest simple option.",
     type: "JSON",
     output: "DELIVERY_POLICY",
     required: true,
     askWhen: "CONFLICT_OR_MISSING_DELIVERY_POLICY",
-    owner_visible: false,
   },
   {
     id: "project.delivery_finish",
@@ -209,7 +208,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.model_economics",
     class: "MATERIAL_PREFERENCE",
-    prompt: "Which operating conditions apply: continuous eco, standard workweek, performance-first, or typed custom conditions?",
+    prompt: "Should I favor saving effort, finishing sooner, taking extra care, or should I recommend a balance?",
     type: "JSON",
     output: "MODEL_POLICY",
     required: true,
@@ -217,7 +216,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.runtime",
     class: "OWNER_BOUNDARY",
-    prompt: "Which persistent Runtime session and environment should remain available across campaigns, and what capabilities may it use?",
+    prompt: "Would you like me to remember this project between work sessions? If so, what should that memory be allowed to use?",
     type: "JSON",
     output: "PERSISTENT_RUNTIME",
     required: true,
