@@ -484,6 +484,18 @@ export function renderOwnerReviewMarkdown(packet) {
   };
   const recommendedRoles = recommendedRoleModels(packet)
     .map(({role, model_class}) => `- ${roleLabels[role] ?? role}: ${friendlyModel(model_class)}`).join("\n");
+  const modelBalancePrompt = renderOwnerReviewShortQuestion({
+    question_id: "OWNER_REVIEW_MODEL_BALANCE",
+    kind: "CHOICE",
+    prompt: "Which balance sounds right?",
+    choices: [
+      {value: "ECONOMICAL", label: "Keep it economical"},
+      {value: "PERFORMANCE", label: "Move quickly"},
+      {value: "FRONTIER", label: "Be extra careful"},
+      {value: "BALANCED", label: "Recommend a balance"},
+    ],
+    optional: false,
+  }).split("\n");
   const list = (values) => values.length > 0 ? values.map((value) => `- ${value}`).join("\n") : "- None recorded";
   return [
     "# Let's talk about the next useful step",
@@ -514,8 +526,11 @@ export function renderOwnerReviewMarkdown(packet) {
     "2. What would you like the first version to do?",
     "3. What should stay just as you imagine it, and what can wait?",
     "4. Is there anything this should never touch, change, share, or do without you?",
-    "5. Should we keep it economical, move quickly, be extra careful, or should I recommend a balance?",
+    "5. Which balance sounds right? Reply with one number:",
+    ...modelBalancePrompt.slice(1).map((line) => `   ${line}`),
     "",
+    "For a genuinely yes/no question, reply y/yes or n/no. If that boolean question is optional, you can say skip or unanswered.",
+    "A number or letter only counts when it belongs to the exact question being asked; otherwise it stays unresolved.",
     "Keep the packet, internal field names, hashes, and technical governance terms in the background. Do not expose schema questions. Ask a technical or operational question only when a genuine boundary or lasting decision requires it.",
     "If a lasting choice is needed, explain it in plain language with simple tradeoffs and a recommendation. If the owner says \"do what you recommend,\" record that preference while preserving the later exact-approval gate.",
     "At the end, play the plan back in ordinary language and ask whether it sounds right.",
@@ -573,6 +588,66 @@ function markdownHasSection(markdown, names) {
 function normalizeOptionalItems(values) {
   if (values.length === 1 && /^(?:none|nothing|no(?:ne)? yet|n\/a|not applicable)[.!]?$/iu.test(values[0])) return [];
   return values;
+}
+
+const SHORT_REPLY_KINDS = Object.freeze(["CHOICE", "BOOLEAN"]);
+const SHORT_REPLY_SKIP_WORDS = new Set(["skip", "skipped", "unanswered", "no answer"]);
+
+function validateShortReplyQuestion(question) {
+  exactKeys(question, ["question_id", "kind", "prompt", "choices", "optional"], "owner review short-reply question");
+  requireIdentifier(question.question_id, "owner review short-reply question ID");
+  assert(SHORT_REPLY_KINDS.includes(question.kind), "owner review short-reply question kind is invalid");
+  safeText(question.prompt, "owner review short-reply prompt");
+  assert(typeof question.optional === "boolean", "owner review short-reply optional flag is invalid");
+  if (question.kind === "BOOLEAN") {
+    assert(question.choices === null, "boolean short-reply question cannot expose choices");
+    return question;
+  }
+  assert(Array.isArray(question.choices) && question.choices.length >= 2 && question.choices.length <= 9, "choice short-reply question needs two to nine choices");
+  const values = new Set();
+  const labels = new Set();
+  for (const choice of question.choices) {
+    exactKeys(choice, ["value", "label"], "owner review short-reply choice");
+    requireIdentifier(choice.value, "owner review short-reply choice value");
+    safeText(choice.label, "owner review short-reply choice label");
+    assert(!values.has(choice.value) && !labels.has(choice.label), "owner review short-reply choices must be unique");
+    values.add(choice.value);
+    labels.add(choice.label);
+  }
+  return question;
+}
+
+export function renderOwnerReviewShortQuestion(question) {
+  validateShortReplyQuestion(question);
+  const lines = [question.prompt];
+  if (question.kind === "CHOICE") {
+    lines.push(...question.choices.map((choice, index) => `${index + 1}. ${choice.label}`), "Reply with one number.");
+  } else {
+    lines.push(question.optional
+      ? "Reply y/yes for yes, n/no for no, or say skip/unanswered."
+      : "Reply y/yes for yes or n/no for no.");
+  }
+  return lines.join("\n");
+}
+
+export function normalizeOwnerReviewShortReply({question, answer}) {
+  validateShortReplyQuestion(question);
+  assert(typeof answer === "string" && !/[\u0000-\u001f\u007f]/u.test(answer) && Buffer.byteLength(answer, "utf8") <= 256, "owner review short reply must be a short plain answer");
+  const normalized = answer.trim().toLocaleLowerCase("en-US").replace(/[.!?]+$/gu, "");
+  if (normalized.length === 0 || SHORT_REPLY_SKIP_WORDS.has(normalized)) {
+    assert(question.optional, "owner review short reply cannot skip a required question");
+    return {question_id: question.question_id, status: "UNANSWERED", value: null, label: null, reply_kind: normalized.length === 0 ? "EMPTY" : "EXPLICIT_SKIP"};
+  }
+  if (question.kind === "BOOLEAN") {
+    if (normalized === "y" || normalized === "yes") return {question_id: question.question_id, status: "ANSWERED", value: true, label: "Yes", reply_kind: "BOOLEAN_YES"};
+    if (normalized === "n" || normalized === "no") return {question_id: question.question_id, status: "ANSWERED", value: false, label: "No", reply_kind: "BOOLEAN_NO"};
+    throw new Error("owner review boolean short reply must be y/yes or n/no");
+  }
+  assert(/^[1-9]\d*$/u.test(normalized), "owner review choice short reply must be one number from the matching question");
+  const index = Number(normalized) - 1;
+  assert(Number.isSafeInteger(index) && index >= 0 && index < question.choices.length, "owner review choice short reply is outside the matching question choices");
+  const choice = question.choices[index];
+  return {question_id: question.question_id, status: "ANSWERED", value: choice.value, label: choice.label, reply_kind: "NUMERIC_CHOICE"};
 }
 
 function parseNaturalOwnerReviewReturn(markdown, packet) {

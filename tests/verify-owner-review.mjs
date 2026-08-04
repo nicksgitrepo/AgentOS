@@ -8,8 +8,10 @@ import {
   compileOwnerApprovalPacket,
   compileOwnerReviewCandidate,
   compileOwnerReviewPacket,
+  normalizeOwnerReviewShortReply,
   parseOwnerReviewReturnMarkdown,
   renderOwnerReviewMarkdown,
+  renderOwnerReviewShortQuestion,
   validateOwnerReviewCandidate,
   validateOwnerReviewPacket,
 } from "../control/owner-review.mjs";
@@ -174,6 +176,12 @@ try {
   assert(renderedPacket.includes("Do not expose schema questions"));
   assert(renderedPacket.includes("they are examples, not a fixed script"));
   assert(renderedPacket.includes("plain everyday language"));
+  assert(renderedPacket.includes("Reply with one number"));
+  assert(renderedPacket.includes("y/yes or n/no"));
+  assert(renderedPacket.includes("skip or unanswered"));
+  assert(renderedPacket.includes("A number or letter only counts"));
+  assert(!renderedPacket.includes("OWNER_REVIEW_MODEL_BALANCE"));
+  assert(!renderedPacket.includes("ECONOMICAL"));
   assert(!renderedPacket.includes("source_binding"));
   assert(!renderedPacket.includes("What is the smallest complete proving workflow?"));
   assert(!renderedPacket.includes("PRE_CAMPAIGN_OWNER_REVIEW"));
@@ -203,6 +211,58 @@ try {
   ].join("\n"), packet);
   assert.equal(conversationalReturn.advisory_only, true);
   assert.equal(conversationalReturn.changes.required.length, 1);
+
+  const balanceQuestion = {
+    question_id: "OWNER-REVIEW-BALANCE",
+    kind: "CHOICE",
+    prompt: "Which balance sounds right?",
+    choices: [
+      {value: "ECONOMICAL", label: "Keep it economical"},
+      {value: "PERFORMANCE", label: "Move quickly"},
+      {value: "FRONTIER", label: "Be extra careful"},
+      {value: "BALANCED", label: "Recommend a balance"},
+    ],
+    optional: false,
+  };
+  const renderedShortQuestion = renderOwnerReviewShortQuestion(balanceQuestion);
+  assert(renderedShortQuestion.includes("1. Keep it economical"));
+  assert(renderedShortQuestion.includes("4. Recommend a balance"));
+  assert(!renderedShortQuestion.includes("OWNER-REVIEW-BALANCE"));
+  assert(!renderedShortQuestion.includes("ECONOMICAL"));
+  assert.deepEqual(normalizeOwnerReviewShortReply({question: balanceQuestion, answer: "1"}), {
+    question_id: "OWNER-REVIEW-BALANCE", status: "ANSWERED", value: "ECONOMICAL", label: "Keep it economical", reply_kind: "NUMERIC_CHOICE",
+  });
+  assert.deepEqual(normalizeOwnerReviewShortReply({question: balanceQuestion, answer: "4."}), {
+    question_id: "OWNER-REVIEW-BALANCE", status: "ANSWERED", value: "BALANCED", label: "Recommend a balance", reply_kind: "NUMERIC_CHOICE",
+  });
+  reject("numeric reply without matching question context", () => normalizeOwnerReviewShortReply({answer: "1"}));
+  reject("letter reply in a choice question", () => normalizeOwnerReviewShortReply({question: balanceQuestion, answer: "y"}));
+  reject("out-of-range numeric reply", () => normalizeOwnerReviewShortReply({question: balanceQuestion, answer: "5"}));
+
+  const requiredBoundaryQuestion = {
+    question_id: "OWNER-REVIEW-BOUNDARY",
+    kind: "BOOLEAN",
+    prompt: "Should this ever publish without your exact approval?",
+    choices: null,
+    optional: false,
+  };
+  assert(renderOwnerReviewShortQuestion(requiredBoundaryQuestion).includes("y/yes for yes or n/no for no"));
+  assert.deepEqual(normalizeOwnerReviewShortReply({question: requiredBoundaryQuestion, answer: "Y"}), {
+    question_id: "OWNER-REVIEW-BOUNDARY", status: "ANSWERED", value: true, label: "Yes", reply_kind: "BOOLEAN_YES",
+  });
+  assert.deepEqual(normalizeOwnerReviewShortReply({question: requiredBoundaryQuestion, answer: "no"}), {
+    question_id: "OWNER-REVIEW-BOUNDARY", status: "ANSWERED", value: false, label: "No", reply_kind: "BOOLEAN_NO",
+  });
+  reject("number does not answer a boolean question", () => normalizeOwnerReviewShortReply({question: requiredBoundaryQuestion, answer: "1"}));
+  reject("required boolean cannot skip", () => normalizeOwnerReviewShortReply({question: requiredBoundaryQuestion, answer: "skip"}));
+
+  const optionalBoundaryQuestion = {...requiredBoundaryQuestion, question_id: "OWNER-REVIEW-OPTIONAL-BOUNDARY", optional: true};
+  assert.deepEqual(normalizeOwnerReviewShortReply({question: optionalBoundaryQuestion, answer: "skip"}), {
+    question_id: "OWNER-REVIEW-OPTIONAL-BOUNDARY", status: "UNANSWERED", value: null, label: null, reply_kind: "EXPLICIT_SKIP",
+  });
+  assert.deepEqual(normalizeOwnerReviewShortReply({question: optionalBoundaryQuestion, answer: "unanswered"}), {
+    question_id: "OWNER-REVIEW-OPTIONAL-BOUNDARY", status: "UNANSWERED", value: null, label: null, reply_kind: "EXPLICIT_SKIP",
+  });
 
   const incompleteReturn = parseOwnerReviewReturnMarkdown("# A quick note\n\nI will think about this later.", packet);
   assert(incompleteReturn.unresolved.length >= 1, "an incomplete natural return must preserve its missing material answers");

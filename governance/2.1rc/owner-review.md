@@ -31,6 +31,13 @@ with simple tradeoffs and a recommendation. If the owner says “do what you
 recommend,” record that preference while preserving the later exact-approval
 gate.
 
+For a short choice, show the choices plainly as one-based numbered options and
+accept only a single number against that exact question. For a genuinely yes/no
+question, accept `y`, `yes`, `n`, or `no`. An optional boolean question may also
+accept `skip` or `unanswered`, which remains unresolved rather than becoming
+`no`. A number or letter without the matching question context is never owner
+intent, and ambiguous input stays unresolved.
+
 Do not ask the owner to rediscover facts already supplied in the packet. Keep
 the packet, source binding, internal field names, hashes, and return contract in
 the background. At the end, play back the plan in ordinary language and ask

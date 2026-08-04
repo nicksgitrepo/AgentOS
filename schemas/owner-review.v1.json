@@ -9,6 +9,13 @@
     "human_route": "ONE_SHORT_NATURAL_QUESTION_AT_A_TIME",
     "machine_phase_names_are_internal": true,
     "machine_fields_are_hidden_from_friendly_handoff": true,
+    "short_replies": {
+      "choice": "ONE_BASED_NUMBER_AGAINST_THE_MATCHING_QUESTION_ONLY",
+      "boolean": ["y", "yes", "n", "no"],
+      "optional_boolean_skip": ["skip", "unanswered"],
+      "ambiguous_input": "REMAIN_UNRESOLVED",
+      "technical_values_hidden": true
+    },
     "human_return": "PLAIN_MARKDOWN_OR_AUTHORIZED_STRUCTURED_RETURN",
     "structured_return_optional": true,
     "rule": "The packet may retain a structured internal compilation map and an optional structured return channel. The owner-facing handoff must not expose the map, hashes, field names, or a forced checklist. Missing material answers remain unresolved rather than being filled from the packet."

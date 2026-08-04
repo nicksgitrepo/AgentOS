@@ -213,7 +213,11 @@ Should we keep it economical, move quickly, be extra careful, or should I recomm
 These are examples, not a fixed checklist. The assistant maps the owner’s
 answers silently to the required fields, uses safe context already supplied,
 and asks a technical or operational follow-up only for a real gap or lasting
-choice. It plays the plan back in plain language before the owner returns it.
+choice. Short choices are shown as plain numbered options and accept one number
+only for that question. Truly yes/no questions accept `y`, `yes`, `n`, or `no`;
+an optional boolean can accept `skip` or `unanswered`. A number or letter without
+its matching question remains unresolved. It plays the plan back in plain
+language before the owner returns it.
 The owner may return a plain Markdown note or one structured payload, and the
 result remains advisory.
 
