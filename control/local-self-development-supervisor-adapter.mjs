@@ -137,11 +137,22 @@ function readAutonomousTaskQueue(campaignRoot, campaignId, campaignVersion) {
 function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext}) {
   const existing = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
   const checkpointIsCurrent = campaignProgress !== null && checkpointOnCurrentSource === true;
+  const firstUsefulWorkflowCompleted = campaignProgress?.first_useful_workflow_completed === true;
   const auditTaskId = `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const buildTaskId = `CAMPAIGN-PROGRESS-BUILD-${sourceCommit.slice(0, 16).toUpperCase()}`;
+  const completedTaskId = `CAMPAIGN-FIRST-USEFUL-WORKFLOW-COMPLETED-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
   const completedCurrentAudit = sameSource && existing.tasks.some((candidate) => candidate.task_id === auditTaskId && candidate.status === "COMPLETED");
-  const task = completedCurrentAudit
+  const task = firstUsefulWorkflowCompleted
+    ? {
+      task_id: completedTaskId,
+      status: "HELD",
+      priority: 0,
+      summary: "The owner-defined first useful workflow is complete at an audited local checkpoint; no additional bounded behavior is declared in this campaign.",
+      scope: ["ACCEPTANCE_CONTRACT", "CONTROLLER_STATE", "OWNER_INTENT", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    }
+    : completedCurrentAudit
     ? {
       task_id: buildTaskId,
       status: "OPEN",
@@ -169,7 +180,7 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
     };
   if (sameSource) {
     const matchingTask = existing.tasks.find((candidate) => candidate.task_id === task.task_id);
-    if (["OPEN", "IN_PROGRESS", "COMPLETED"].includes(matchingTask?.status)) return existing;
+    if (["OPEN", "IN_PROGRESS", "COMPLETED", "HELD"].includes(matchingTask?.status)) return existing;
     writeAddressed(campaignRoot, `autonomous-supervisor-task-queues/${existing.queue_sha256}.json`, existing, "queue_sha256");
     const queue = {
       schema: "agentos.controller_autonomous_task_queue.v1",
@@ -178,7 +189,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
       campaign_version: handoff.campaign_version,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      generated_reason: completedCurrentAudit
+      generated_reason: firstUsefulWorkflowCompleted
+        ? "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
+        : completedCurrentAudit
         ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
         : checkpointIsCurrent
         ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK"
@@ -196,7 +209,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
     campaign_version: handoff.campaign_version,
     source_commit: sourceCommit,
     source_tree: sourceTree,
-    generated_reason: completedCurrentAudit
+    generated_reason: firstUsefulWorkflowCompleted
+      ? "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
+      : completedCurrentAudit
       ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
       : checkpointIsCurrent
       ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK"
@@ -662,7 +677,7 @@ function autonomousTaskFinding({campaignRoot, handoff, activation, findings, act
 }
 
 function autonomousCampaignProgressStallFinding({campaignRoot, handoff, campaignProgress, checkpointOnCurrentSource, taskQueue, sourceCommit, sourceTree}) {
-  if (handoff.campaign_active !== true || campaignProgress === null || checkpointOnCurrentSource !== true || taskQueue === null) return null;
+  if (handoff.campaign_active !== true || campaignProgress === null || campaignProgress.first_useful_workflow_completed === true || checkpointOnCurrentSource !== true || taskQueue === null) return null;
   const auditTaskId = `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const auditTask = taskQueue.tasks.find((task) => task.task_id === auditTaskId);
   if (auditTask?.status !== "COMPLETED") return null;
@@ -1474,7 +1489,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         auditor_tree: auditorReadback.build_tree,
         controller_recheck_sha256: controllerRecheck.record_sha256,
         finalizer_sha256: finalizerRecord.finalizer_sha256,
-        next_action: "The first useful workflow reached an audited local checkpoint; the Controller will keep observing and choose the next safe control-plane action automatically.",
+        first_useful_workflow_completed: true,
+        next_action: "The owner-defined first useful workflow is complete at an audited local checkpoint; the Controller will remain available for a new bounded intent without prompting for approval.",
         external_actions_attempted: false,
         progress_sha256: null,
       }, "progress_sha256")
@@ -1514,7 +1530,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       sourceCommit: finalizerResult.adopted_commit,
       sourceTree: finalizerResult.adopted_tree,
       nextAction: campaignProgressTask
-        ? "The Controller will re-observe the new source-bound checkpoint and choose the next safe control-plane action automatically; no outside prompt is needed."
+        ? "The owner-defined first useful workflow is complete at an audited local checkpoint; the Controller will remain available for a new bounded intent without prompting for approval."
         : "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
         repair: {
