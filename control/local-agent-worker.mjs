@@ -90,6 +90,13 @@ function runControllerSupervisorBindingChecks(worktreePath) {
   ]);
 }
 
+function runDurableSessionChecks(worktreePath) {
+  return runChecks(worktreePath, [
+    "node --check tests/verify-local-agent-session.mjs",
+    "node tests/verify-local-agent-session.mjs",
+  ]);
+}
+
 function applyControllerSupervisorRepair(worktreePath) {
   const supervisorPath = path.join(worktreePath, "control/controller-supervisor.mjs");
   assert(fs.existsSync(supervisorPath), "Controller supervisor source is unavailable");
@@ -111,6 +118,17 @@ function applyControllerSupervisorBindingRepair(worktreePath) {
   binding.normative.controller_supervisor_controller.sha256 = actualSha256;
   writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
   return ["schemas/bootstrap-binding.v1.json"];
+}
+
+function applyDurableSessionTestRootRepair(worktreePath) {
+  const testPath = path.join(worktreePath, "tests/verify-local-agent-session.mjs");
+  assert(fs.existsSync(testPath), "durable-session verifier source is unavailable");
+  const source = fs.readFileSync(testPath, "utf8");
+  const oldLine = 'const runtimeRoot = fs.mkdtempSync(path.join(root, "tmp/agentos-durable-session-"));';
+  const newLines = 'fs.mkdirSync(path.join(root, "tmp"), {recursive: true});\nconst runtimeRoot = fs.mkdtempSync(path.join(root, "tmp/agentos-durable-session-"));';
+  assert(source.includes(oldLine), "durable-session verifier temporary-root setup is not at the expected source checkpoint");
+  writeFileAtomic(testPath, source.replace(oldLine, newLines));
+  return ["tests/verify-local-agent-session.mjs"];
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -243,6 +261,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
         ? runControllerSupervisorChecks(featureWorktree)
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
           ? runControllerSupervisorBindingChecks(featureWorktree)
+          : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+            ? runDurableSessionChecks(featureWorktree)
           : runFocusedChecks(featureWorktree);
     }
     buildStatus = "AUDIT_VERIFIED";
@@ -287,6 +307,47 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean evidence-repair checkpoint");
     for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), `Feature Agent evidence repair did not change ${requiredPath}`);
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") {
+    artifactName = "control/durable-session-test-root-repair-receipt.mjs";
+    const changedByRepair = applyDurableSessionTestRootRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check tests/verify-local-agent-session.mjs",
+      "node tests/verify-local-agent-session.mjs",
+    ]);
+    const marker = `// Local Feature Agent durable-session verifier repair receipt; held in the isolated campaign worktree.\nexport const DURABLE_SESSION_TEST_ROOT_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: make durable-session verifier worktree-safe"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean durable-session verifier checkpoint");
+    assert(changedPaths.includes("tests/verify-local-agent-session.mjs"), "Feature Agent durable-session repair did not change the verifier");
     buildStatus = "COMPLETED";
     product = {
       ...base,

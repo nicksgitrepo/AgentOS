@@ -243,6 +243,20 @@ function controllerSupervisorBindingFinding(repositoryRoot) {
   };
 }
 
+function durableSessionTestFinding(campaignRoot) {
+  const tick = readOptional(campaignRoot, "supervisor/tick.json");
+  const routeError = typeof tick?.route_error === "string" ? tick.route_error : "";
+  if (tick?.route_status !== "ROUTE_FAILED" || !routeError.includes("mkdtemp") || !routeError.includes("agentos-durable-session")) return null;
+  return {
+    finding_id: "F-DURABLE-SESSION-TEST-TMP-ROOT",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "The durable-session verifier cannot create its temporary test folder inside an isolated worktree.",
+    source_sha256: tick.tick_sha256,
+    observed_path: "tests/verify-local-agent-session.mjs",
+  };
+}
+
 function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
   const failure = entry.record.failure ?? "durable session failed without an error message";
   const rcaPath = `autonomous-supervisor-route-rcas/${entry.record.task_id}.json`;
@@ -285,6 +299,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
     "node tests/verify-controller-supervisor.mjs",
   ];
   if (taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
+  if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
   for (const check of checks) {
     const [program, ...args] = check.split(" ");
     execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
@@ -436,6 +451,16 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: bindingFinding.source_sha256,
       });
     }
+    const durableSessionFinding = durableSessionTestFinding(campaignRoot);
+    if (durableSessionFinding !== null) {
+      findings.push({
+        finding_id: durableSessionFinding.finding_id,
+        classification: durableSessionFinding.classification,
+        status: durableSessionFinding.status,
+        summary: durableSessionFinding.summary,
+        source_sha256: durableSessionFinding.source_sha256,
+      });
+    }
     findings.sort((left, right) => left.finding_id.localeCompare(right.finding_id));
     const ownerDecisionRequired = handoff.owner_decision_required === true;
     return compileSupervisorObservation({
@@ -468,10 +493,13 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const gateFinding = readJson(path.join(campaignRoot, "gate-evidence-anti-drift-rca.json"));
     const lifecycleFinding = gateFinding.lifecycle_roi_finding;
     const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
-    const repairKind = goal.finding_ids.includes(bindingFinding?.finding_id)
-      ? "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
-      : "CONTROLLER_SUPERVISOR_REPAIR";
-    const routeFinding = repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : {
+    const durableSessionFinding = durableSessionTestFinding(campaignRoot);
+    const repairKind = goal.finding_ids.includes(durableSessionFinding?.finding_id)
+      ? "DURABLE_SESSION_TEST_ROOT_REPAIR"
+      : goal.finding_ids.includes(bindingFinding?.finding_id)
+        ? "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        : "CONTROLLER_SUPERVISOR_REPAIR";
+    const routeFinding = repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : {
       finding_id: lifecycleFinding?.finding_id,
       source_sha256: gateFinding.finding_sha256,
       status: lifecycleFinding?.status,
@@ -500,7 +528,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       parent_handoff_sha256: goal.parent_handoff_sha256,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      scope: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+      scope: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+        ? ["tests/verify-local-agent-session.mjs"].sort()
+        : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
         ? ["schemas/bootstrap-binding.v1.json", "control/controller-supervisor.mjs", "tests/verify-all.mjs"].sort()
         : ["control/controller-supervisor.mjs", "control/controller-supervisor-runtime.mjs", "control/local-agent-session.mjs", "tests/verify-controller-supervisor.mjs"].sort(),
       protected_boundaries: permissions,
@@ -528,7 +558,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+      task: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+        ? "Repair the durable-session verifier so it creates its temporary folder in an isolated worktree, then run its focused check."
+        : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
         ? "Repair the exact Controller supervisor repository binding in isolated Feature-Agent custody, then run the full repository checks."
         : "Repair the Controller supervisor boundary classification in isolated Feature-Agent custody, then run its focused checks.",
       taskId,
@@ -543,7 +575,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit,
       sourceTree,
-      task: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+      task: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+        ? "Independently inspect the Feature-Agent durable-session verifier repair and return source-bound test evidence."
+        : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
         ? "Independently inspect the Feature-Agent Controller supervisor binding checkpoint and return full repository audit evidence."
         : "Independently inspect the Feature-Agent Controller supervisor checkpoint and return source-bound audit evidence.",
       taskId: `${taskId}-AUDITOR`,
@@ -616,9 +650,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       nextAction: "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
       repair: {
-        summary: repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
-          ? "Restore the exact repository binding for the adopted Controller supervisor source and require the full verifier to pass."
-          : "Replace one-shot Controller supervision with a durable, autonomous observation-to-route loop.",
+        summary: repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+          ? "Make the durable-session verifier create its temporary root inside every isolated worktree."
+          : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+            ? "Restore the exact repository binding for the adopted Controller supervisor source and require the full verifier to pass."
+            : "Replace one-shot Controller supervision with a durable, autonomous observation-to-route loop.",
         changed_paths: [...new Set(featureReadback.changed_paths)].sort(),
         source_commit: sourceCommit,
         source_tree: sourceTree,
