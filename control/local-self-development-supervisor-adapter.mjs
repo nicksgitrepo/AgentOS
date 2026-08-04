@@ -31,6 +31,7 @@ import {
 
 const AUTONOMOUS_TASK_QUEUE_FILE = "autonomous-supervisor-task-queue.json";
 const CAMPAIGN_PROGRESS_FILE = "autonomous-supervisor-campaign-progress.json";
+const OWNER_FEEDBACK_BACKLOG_FILE = "docs/owner-feedback-backlog.md";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -46,6 +47,41 @@ function requireSha(value, label) {
 
 function requireGitObject(value, label) {
   assert(typeof value === "string" && /^[0-9a-f]{40}$/u.test(value), `${label} must be a Git object`);
+}
+
+export function parseOwnerFeedbackBacklogMarkdown(markdown) {
+  requireString(markdown, "owner feedback backlog");
+  const items = [];
+  const rowPattern = /^\|\s*`(FEEDBACK-\d+)`\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*`?(OPEN|IN_PROGRESS|RESOLVED|DEFERRED)`?\s*\|$/u;
+  for (const line of markdown.split(/\r?\n/u)) {
+    const match = line.match(rowPattern);
+    if (match === null) continue;
+    items.push({
+      id: match[1],
+      symptom: match[2].trim(),
+      expected_behavior: match[3].trim(),
+      follow_up_campaign: match[4].trim(),
+      status: match[5],
+    });
+  }
+  assert(new Set(items.map((item) => item.id)).size === items.length, "owner feedback backlog IDs are duplicated");
+  return items.sort((left, right) => Number(left.id.slice("FEEDBACK-".length)) - Number(right.id.slice("FEEDBACK-".length)));
+}
+
+function readOwnerFeedbackBacklog(repositoryRoot) {
+  const target = path.join(repositoryRoot, OWNER_FEEDBACK_BACKLOG_FILE);
+  if (!fs.existsSync(target)) return {items: [], backlog_sha256: null};
+  const stat = fs.lstatSync(target);
+  assert(stat.isFile() && !stat.isSymbolicLink(), "owner feedback backlog must be a regular file");
+  const markdown = fs.readFileSync(target, "utf8");
+  return {
+    items: parseOwnerFeedbackBacklogMarkdown(markdown),
+    backlog_sha256: crypto.createHash("sha256").update(markdown, "utf8").digest("hex"),
+  };
+}
+
+function nextOpenOwnerFeedbackItem(repositoryRoot) {
+  return readOwnerFeedbackBacklog(repositoryRoot).items.find((item) => item.status === "OPEN") ?? null;
 }
 
 function canonicalize(value) {
@@ -134,13 +170,15 @@ function readAutonomousTaskQueue(campaignRoot, campaignId, campaignVersion) {
   return queue === null ? null : validateAutonomousTaskQueue(queue, campaignId, campaignVersion);
 }
 
-function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext}) {
+function ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext}) {
   const existing = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
   const checkpointIsCurrent = campaignProgress !== null && checkpointOnCurrentSource === true;
   const firstUsefulWorkflowCompleted = campaignProgress?.first_useful_workflow_completed === true;
+  const nextOwnerFeedback = nextOpenOwnerFeedbackItem(repositoryRoot);
   const auditTaskId = `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const buildTaskId = `CAMPAIGN-PROGRESS-BUILD-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const completedTaskId = `CAMPAIGN-FIRST-USEFUL-WORKFLOW-COMPLETED-${sourceCommit.slice(0, 16).toUpperCase()}`;
+  const ownerFeedbackTaskId = nextOwnerFeedback === null ? null : `CAMPAIGN-OWNER-FEEDBACK-${nextOwnerFeedback.id}-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
   const completedCurrentAudit = sameSource && existing.tasks.some((candidate) => candidate.task_id === auditTaskId && candidate.status === "COMPLETED");
   const continuationCount = Number.isSafeInteger(campaignProgress?.autonomous_continuation_count) ? campaignProgress.autonomous_continuation_count : 0;
@@ -152,6 +190,15 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
       priority: 0,
       summary: `The Controller selected one bounded next control-plane behavior from the standing owner intent: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects its exact repair, the Feature Agent builds it, and the Auditor checks the same result.`,
       scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    }
+    : firstUsefulWorkflowCompleted && nextOwnerFeedback !== null
+    ? {
+      task_id: ownerFeedbackTaskId,
+      status: "OPEN",
+      priority: 0,
+      summary: `Continue from owner feedback ${nextOwnerFeedback.id}: ${nextOwnerFeedback.expected_behavior} The Controller will route this bounded repair through the Orchestrator, Feature Agent, and Auditor.`,
+      scope: ["CONTROL_PLANE_CODE", "OWNER_FEEDBACK_BACKLOG", "FOCUSED_CHECKS", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     }
     : firstUsefulWorkflowCompleted
@@ -203,7 +250,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
       generated_reason: continuationEligible
         ? "AUTONOMOUS_CONTINUATION_REQUIRED"
         : firstUsefulWorkflowCompleted
-        ? "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
+        ? nextOwnerFeedback !== null
+          ? "OWNER_FEEDBACK_BACKLOG_REQUIRES_NEXT_CAMPAIGN"
+          : "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
         : completedCurrentAudit
         ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
         : checkpointIsCurrent
@@ -225,7 +274,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
     generated_reason: continuationEligible
       ? "AUTONOMOUS_CONTINUATION_REQUIRED"
       : firstUsefulWorkflowCompleted
-      ? "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
+      ? nextOwnerFeedback !== null
+        ? "OWNER_FEEDBACK_BACKLOG_REQUIRES_NEXT_CAMPAIGN"
+        : "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
       : completedCurrentAudit
       ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
       : checkpointIsCurrent
@@ -895,6 +946,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
   if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") checks.push("node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs");
   if (taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs");
   if (taskKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-controller-supervisor.mjs");
+  if (taskKind === "OWNER_FEEDBACK_REPAIR") checks.push("node --check control/task-run-loop.mjs", "node tests/verify-task-run-loop.mjs", "node tests/verify-owner-feedback-backlog.mjs", "node tests/verify-all.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
   if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
   if (taskKind === "GOVERNANCE_EVIDENCE_REPAIR") checks.push(
@@ -1070,7 +1122,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? false
       : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
     const taskQueue = handoff.campaign_active
-      ? ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext})
+      ? ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext})
       : null;
     const permissions = permissionsFrom(handoff, activation);
     const lifecycle = gateFinding?.lifecycle_roi_finding ?? null;
@@ -1208,6 +1260,10 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const autonomousTaskId = autonomousTaskFindingId?.slice("F-AUTONOMOUS-TASK-".length) ?? null;
     const autonomousTask = autonomousTaskQueue?.tasks.find((task) => task.task_id === autonomousTaskId) ?? null;
     const campaignProgressTask = autonomousTask?.task_id.startsWith("CAMPAIGN-PROGRESS-BUILD-") === true;
+    const ownerFeedbackTask = autonomousTask?.task_id.startsWith("CAMPAIGN-OWNER-FEEDBACK-") === true;
+    const ownerFeedbackId = ownerFeedbackTask ? autonomousTask.task_id.match(/(FEEDBACK-\d+)/u)?.[1] ?? null : null;
+    const ownerFeedbackItem = ownerFeedbackId === null ? null : nextOpenOwnerFeedbackItem(repositoryRoot);
+    if (ownerFeedbackTask) assert(ownerFeedbackItem?.id === ownerFeedbackId, "selected owner feedback item is no longer open");
     const existingCampaignProgress = readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version);
     const checkpointOnCurrentSource = existingCampaignProgress !== null && isAncestor(repositoryRoot, existingCampaignProgress.source_commit, sourceCommit);
     const currentTaskQueue = autonomousTaskQueue ?? readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
@@ -1247,6 +1303,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? "GOVERNANCE_EVIDENCE_REPAIR"
       : campaignProgressTask
       ? "CAMPAIGN_PROGRESS_BUILD"
+      : ownerFeedbackTask
+      ? "OWNER_FEEDBACK_REPAIR"
       : goal.finding_ids.includes(campaignProgressStall?.finding_id)
       ? "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
       : goal.finding_ids.includes(campaignContinuation?.finding_id)
@@ -1267,6 +1325,12 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const routeFinding = governanceEvidenceRepair
       ? governanceEvidenceFinding
       : campaignProgressTask
+      ? {
+        finding_id: autonomousTaskFindingId,
+        source_sha256: autonomousTaskQueue.queue_sha256,
+        status: "OPEN_NEXT_REQUIRED_BEHAVIOR",
+      }
+      : ownerFeedbackTask
       ? {
         finding_id: autonomousTaskFindingId,
         source_sha256: autonomousTaskQueue.queue_sha256,
@@ -1293,6 +1357,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? "TASK-GOVERNANCE-EVIDENCE"
       : campaignProgressTask
       ? "TASK-CAMPAIGN-PROGRESS"
+      : ownerFeedbackTask
+      ? "TASK-OWNER-FEEDBACK"
       : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
       ? "TASK-AUTONOMOUS-CAMPAIGN-PROGRESS"
       : repairKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
@@ -1320,6 +1386,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       source_tree: sourceTree,
       scope: campaignProgressTask
         ? ["acceptance-contract.json", "decision-tree-requirement.json", "decision-tree.json", "owner-intent.json", "scope.json"].sort()
+        : ownerFeedbackTask
+        ? ["control/owner-feedback-inactive-explanation-repair-receipt.mjs", "control/task-run-loop.mjs", "docs/owner-feedback-backlog.md", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-feedback-backlog.mjs", "tests/verify-task-run-loop.mjs"].sort()
         : governanceEvidenceRepair
         ? ["control/feature-agent-governance-evidence-repair.mjs", "control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs", "tests/verify-local-campaign-admission.mjs"].sort()
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -1396,6 +1464,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         sourceTree,
         task: campaignProgressTask
           ? `Read the bound owner intent, scope, acceptance contract, and executable decision tree. Select the next bounded control-plane repair for the first useful workflow: ${executionContext.firstUsefulWorkflow}. Return the exact Feature-Agent handoff without expanding scope.`
+          : ownerFeedbackTask
+          ? `Read owner feedback ${ownerFeedbackItem.id}: ${ownerFeedbackItem.symptom} The expected behavior is: ${ownerFeedbackItem.expected_behavior} Select the exact bounded repair and keep the work inside the existing control-plane scope.`
           : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
           ? "Inspect the completed self-audit and return the exact bounded handoff for repairing the Controller queue so it mints the next campaign behavior."
           : repairKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
@@ -1416,6 +1486,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         sourceTree,
         task: campaignProgressTask
           ? "Build the next bounded AgentOS control-plane repair selected from the bound first useful workflow. Change only declared control-plane files, run focused checks, and return a real clean commit and tree."
+          : ownerFeedbackTask
+          ? `Implement the exact bounded repair for owner feedback ${ownerFeedbackItem.id}: ${ownerFeedbackItem.expected_behavior} Update the feedback record only when the repair and its focused checks are complete; return a clean source-bound commit and tree.`
           : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
           ? "Repair the Controller queue so a completed self-audit mints the next bounded self-development behavior from the owner’s ongoing intent, then run the focused checks."
           : repairKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
@@ -1448,10 +1520,12 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       candidateSha256: candidate.candidate_sha256,
       sourceCommit: auditorSourceCommit,
       sourceTree: auditorSourceTree,
-      task: governanceEvidenceRepair
+        task: governanceEvidenceRepair
         ? "Independently verify every governance gate evidence record and exact evaluation against the repaired Feature-Agent checkpoint."
         : campaignProgressTask
         ? "Independently inspect the Feature-Agent changed tree and verify the same source-bound commit, tree, changed files, focused checks, and protected boundaries."
+        : ownerFeedbackTask
+        ? `Independently inspect the Feature-Agent repair for owner feedback ${ownerFeedbackItem.id}. Verify the exact changed files, focused checks, source identity, and that the feedback item was closed only after the repair passed.`
         : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
         ? "Independently inspect the Feature-Agent queue-state repair and verify that the completed self-audit cannot leave the active campaign without a next bounded behavior."
         : repairKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
@@ -1566,6 +1640,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       }, "progress_sha256", existingCampaignProgress?.progress_sha256 ?? null)
       : null;
     const completedQueue = campaignProgressTask
+      || ownerFeedbackTask
       ? writeMutableAddressed(campaignRoot, AUTONOMOUS_TASK_QUEUE_FILE, {
         ...autonomousTaskQueue,
         tasks: autonomousTaskQueue.tasks.map((taskCandidate) => taskCandidate.task_id === autonomousTask.task_id
@@ -1612,6 +1687,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
           ? "Make the active Controller mint the next bounded campaign behavior after a completed self-audit while preserving scope, evidence, and owner boundaries."
           : repairKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR"
           ? "Make the active Controller select one bounded next campaign behavior after a completed local checkpoint instead of waiting for a routine outside prompt."
+          : repairKind === "OWNER_FEEDBACK_REPAIR"
+          ? `Repair owner feedback ${ownerFeedbackItem.id} through the Orchestrator, Feature Agent, and Auditor, then continue to the next open bounded feedback item.`
           : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
           ? "Make hard security and owner boundaries take precedence over soft-scope review."
           : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -1694,7 +1771,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? false
       : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
     const existingSessions = sessionEntries(campaignRoot, handoff);
-    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext});
+    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext});
     const unhealthySessionRca = recordUnhealthySessionRca({campaignRoot, handoff, entries: existingSessions, sourceCommit, sourceTree});
     reconcileExitedSessionRecords(existingSessions);
     const orphanedSessionRca = recordOrphanedSessionRca({campaignRoot, handoff, entries: existingSessions, sourceCommit, sourceTree});
@@ -1845,7 +1922,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const taskFindingId = goal.finding_ids.find((findingId) => findingId.startsWith("F-AUTONOMOUS-TASK-"));
     assert(taskFindingId !== undefined, "autonomous Controller workflow goal lacks its selected task");
     const taskId = taskFindingId.slice("F-AUTONOMOUS-TASK-".length);
-    if (taskId.startsWith("CAMPAIGN-PROGRESS-BUILD-")) return routeRepair(goal);
+    if (taskId.startsWith("CAMPAIGN-PROGRESS-BUILD-") || taskId.startsWith("CAMPAIGN-OWNER-FEEDBACK-")) return routeRepair(goal);
     const queue = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
     assert(queue !== null, "autonomous Controller task queue disappeared before routing");
     const task = queue.tasks.find((candidateTask) => candidateTask.task_id === taskId);

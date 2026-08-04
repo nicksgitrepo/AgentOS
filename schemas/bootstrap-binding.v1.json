@@ -546,7 +546,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "d9022ac790251ec54a868b995f037598a6fb524daafe298d1a16a14fe94a9a00"
+      "sha256": "80785b7fcf2bfd7f154d9530f2808145117116807831b625d0c67eb5ef7e39fe"
     }
   },
   "compatibility_only": {

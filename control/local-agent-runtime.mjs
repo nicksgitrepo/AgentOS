@@ -143,6 +143,8 @@ function validateHandshake(handshake, expected) {
             ? "tests/verify-local-agent-session.mjs"
           : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? "control/bootstrap-compiler.mjs"
+          : expected.taskKind === "OWNER_FEEDBACK_REPAIR"
+            ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       assert(Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
@@ -168,6 +170,8 @@ function validateHandshake(handshake, expected) {
             ? "tests/verify-local-agent-session.mjs"
           : expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? "control/bootstrap-compiler.mjs"
+          : expected.taskKind === "OWNER_FEEDBACK_REPAIR"
+            ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
@@ -669,6 +673,8 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
               ? "tests/verify-local-agent-session.mjs"
             : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
               ? "control/bootstrap-compiler.mjs"
+            : taskKind === "OWNER_FEEDBACK_REPAIR"
+              ? "control/task-run-loop.mjs"
             : "control/governance-decision-tree.mjs";
       assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null
         && (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"

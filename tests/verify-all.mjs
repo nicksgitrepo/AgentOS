@@ -264,6 +264,7 @@ for (const relativePath of [
   "tests/verify-campaign-receipts.mjs",
   "tests/verify-task-continuation.mjs",
   "tests/verify-task-run-loop.mjs",
+  "tests/verify-owner-feedback-backlog.mjs",
   "tests/verify-campaign-state-bridge.mjs",
   "tests/verify-campaign-state-owner.mjs",
   "tests/verify-continuous-audit-sentinel.mjs",
