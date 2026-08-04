@@ -430,7 +430,7 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "1ded9e277b5caf60cc91cadd3768deec8e320ba383b0cef62b0f66619c7a87ca"
+      "sha256": "de51ae77142575b3352a121fd94000312b62ddacc37e982fa3a7fa47c3615fcb"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",

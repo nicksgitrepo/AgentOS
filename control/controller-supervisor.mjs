@@ -271,8 +271,8 @@ function hasOpenFinding(findings, classifications) {
 export function deriveSupervisorAction(observation) {
   validateSupervisorObservation(observation);
   if (observation.hard_boundary || observation.owner_decision_required) return "STOP_HARD_BOUNDARY";
-  if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";
   if (hasOpenFinding(observation.findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"])) return "STOP_HARD_BOUNDARY";
+  if (observation.soft_boundary || hasOpenFinding(observation.findings, ["SOFT_BOUNDARY"])) return "REVIEW_SOFT_BOUNDARY";
   if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE"])) {
     return "ROUTE_REPAIRABLE_PUZZLE";
   }
@@ -321,7 +321,10 @@ export function compileSupervisorGoal({observation, goalId = null}) {
     goal: actionGoal(action, observation),
     finding_ids: findings,
     scope: action === "STOP_HARD_BOUNDARY" ? "DEPENDENT_OUTCOME_ONLY" : "CURRENT_CAMPAIGN_CONTROL_PLANE",
-    boundary: structuredClone(observation.boundary),
+    boundary: {
+      ...structuredClone(observation.boundary),
+      hard_stop: action === "STOP_HARD_BOUNDARY" || observation.boundary.hard_stop,
+    },
     stop_conditions: [
       "A hard boundary, missing owner authority, identity mismatch, or evidence mismatch stops the dependent route.",
       "A scope change is reviewed before the changed work continues.",
