@@ -113,7 +113,7 @@ function commandForEvidence(worktreePath, key) {
   const ownerCheck = ["tests/verify-bootstrap-delivery-finish.mjs"];
   const admissionCheck = ["tests/verify-local-campaign-admission.mjs"];
   if (["root_order_trace", "focused_functionality_result", "ambiguous_answer_hostile_result", "typed_answer_result", "repair_route_trace", "exact_recheck_trace", "feature_path_trace", "specific_question_trace"].includes(key)) return nodeCommand(worktreePath, treeCheck);
-  if (["owner_surface_term_check", "friendly_finish_question_check", "design_bible_result"].includes(key)) return nodeCommand(worktreePath, ownerCheck);
+  if (["owner_surface_term_check", "one_question_trace", "friendly_finish_question_check", "design_bible_result"].includes(key)) return nodeCommand(worktreePath, ownerCheck);
   if (["changed_surface_trace", "full_check_result", "portability_result", "boundary_matrix", "external_action_rejection_trace", "hostile_security_result"].includes(key)) return nodeCommand(worktreePath, admissionCheck);
   if (key === "static_source_check") return nodeCommand(worktreePath, ["--check", "control/governance-decision-tree.mjs"]);
   if (key === "hostile_fallback_check") return nodeCommand(worktreePath, treeCheck);
