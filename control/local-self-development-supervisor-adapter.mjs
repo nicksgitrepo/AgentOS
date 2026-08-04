@@ -622,6 +622,45 @@ function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
   }, "rca_sha256");
 }
 
+function recordOrphanedSessionRca({campaignRoot, handoff, entries, sourceCommit, sourceTree}) {
+  const declaredTargets = new Set((Array.isArray(handoff.supervised_sessions) ? handoff.supervised_sessions : [])
+    .map((entry) => typeof entry?.session_record_path === "string" ? relativeChild(campaignRoot, entry.session_record_path, "declared supervised session path") : null)
+    .filter((target) => target !== null));
+  const orphaned = entries.filter(({target, record}) => record.status === "RUNNING" && !declaredTargets.has(target));
+  if (orphaned.length === 0) return null;
+  const rcaPath = `autonomous-supervisor-route-rcas/ORPHANED-SESSIONS-${sourceCommit}.json`;
+  const existing = readOptional(campaignRoot, rcaPath);
+  if (existing !== null) return existing;
+  return writeAddressed(campaignRoot, rcaPath, {
+    schema: "agentos.controller_autonomous_supervisor_orphaned_sessions_rca.v1",
+    version: 1,
+    status: "OPEN_REPAIR_REQUIRED",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    controller_role: "AGENTOS_CONTROLLER",
+    campaign_id: handoff.campaign_id,
+    campaign_version: handoff.campaign_version,
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    observed_session_count: entries.length,
+    declared_session_count: declaredTargets.size,
+    orphaned_sessions: orphaned.map(({target, record}) => ({
+      role: record.role,
+      session_id: record.session_id,
+      task_id: record.task_id,
+      task_kind: record.task_kind,
+      session_record_path: path.relative(campaignRoot, target),
+      source_commit: record.source_commit,
+      source_tree: record.source_tree,
+    })).sort((left, right) => left.session_id.localeCompare(right.session_id)),
+    symptom: "Superseded campaign worker sessions remained RUNNING after an earlier route changed the active handoff.",
+    expected_behavior: "The Controller discovers every session in campaign custody, retains its evidence, and stops superseded workers before declaring liveness healthy.",
+    root_cause: "Session discovery admitted only an old task-name prefix, so Campaign Progress and governance-evidence workers were invisible to liveness reconciliation.",
+    required_repair: "Stop the orphaned workers, retain their session and route evidence, and verify exactly three source-bound roles remain.",
+    external_actions_attempted: false,
+    rca_sha256: null,
+  }, "rca_sha256");
+}
+
 function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
@@ -1345,9 +1384,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
     const existingSessions = sessionEntries(campaignRoot, handoff);
     const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext});
+    const orphanedSessionRca = recordOrphanedSessionRca({campaignRoot, handoff, entries: existingSessions, sourceCommit, sourceTree});
     const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
       .filter(({record}) => record.status === "FAILED")
-      .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256);
+      .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256)
+      .concat(orphanedSessionRca === null ? [] : [orphanedSessionRca.rca_sha256]);
     if (existingSessions.length === 3 && existingSessions.every((entry) => sessionIsHealthy({record: entry.record, sourceCommit, sourceTree}))) {
       return {
         status: "LIVENESS_HEALTHY",
@@ -1355,6 +1396,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_tree: sourceTree,
         discovered_session_count: existingSessions.length,
         stale_session_count: Math.max(0, existingSessions.length - 3),
+        stale_session_rca_sha256: orphanedSessionRca?.rca_sha256 ?? null,
         autonomous_task_queue_sha256: taskQueue.queue_sha256,
         retained_failure_rcas: retainedFailureRcas.sort(),
         supervised_sessions: existingSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
@@ -1466,6 +1508,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       source_tree: sourceTree,
       discovered_session_count: existingSessions.length,
       stale_session_count: Math.max(0, existingSessions.length - 3),
+      stale_session_rca_sha256: orphanedSessionRca?.rca_sha256 ?? null,
       autonomous_task_queue_sha256: taskQueue.queue_sha256,
       controller_recheck_sha256: controllerRecheck.record_sha256,
       task_record_path: taskRecordPath,
