@@ -1032,6 +1032,135 @@ function applyOwnerFeedbackContinuationRepair(worktreePath, feedbackId) {
   };
 }
 
+function applyOwnerFeedbackExecutionBoundaryRepair(worktreePath, feedbackId) {
+  const admissionPath = path.join(worktreePath, "control/local-campaign-admission.mjs");
+  const verifierPath = path.join(worktreePath, "tests/verify-owner-feedback-execution-boundary.mjs");
+  const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
+  assert(fs.existsSync(admissionPath) && fs.existsSync(backlogPath), "owner feedback execution-boundary repair inputs are unavailable");
+
+  let admissionSource = fs.readFileSync(admissionPath, "utf8");
+  const boundaryMarker = "export function compileLocalCampaignExecutionBoundary";
+  assert(!admissionSource.includes(boundaryMarker), "owner feedback execution-boundary repair was already applied");
+  const transitionMarker = "export function validateLocalStartTransition({authorization, admission}) {";
+  assert(admissionSource.includes(transitionMarker), "local start transition function is unavailable");
+  const boundaryHelper = [
+    "export function validateLocalCampaignExecutionBoundary(boundary) {",
+    "  exactKeys(boundary, [",
+    "    \"schema\", \"version\", \"status\", \"controller_role\", \"campaign_id\", \"campaign_version\", \"source_commit\", \"source_tree\",",
+    "    \"candidate_sha256\", \"authorization_sha256\", \"admission_sha256\", \"owner_authorized\", \"active_campaign\", \"campaign_start_allowed\",",
+    "    \"required_worker_roles\", \"local_development_writes_allowed\", \"local_worker_agent_spawns_allowed\", \"product_writes_allowed\", \"product_agent_spawns_allowed\",",
+    "    \"external_deployment_allowed\", \"external_release_allowed\", \"external_publication_allowed\", \"external_push_allowed\", \"external_merge_allowed\", \"secrets_allowed\", \"destructive_work_allowed\", \"next_event\", \"boundary_sha256\",",
+    "  ], \"local campaign execution boundary\");",
+    "  assert(boundary.schema === \"agentos.local_campaign_execution_boundary.v1\" && boundary.version === 1, \"local campaign execution boundary schema mismatch\");",
+    "  assert(boundary.status === \"PREPARED_OWNER_AUTHORIZED\", \"local campaign execution boundary status is invalid\");",
+    "  assert(boundary.controller_role === \"AGENTOS_CONTROLLER\", \"local campaign execution boundary role is invalid\");",
+    "  requireIdentifier(boundary.campaign_id, \"local execution boundary campaign ID\");",
+    "  requireString(boundary.campaign_version, \"local execution boundary campaign version\");",
+    "  requireGitObject(boundary.source_commit, \"local execution boundary source commit\");",
+    "  requireGitObject(boundary.source_tree, \"local execution boundary source tree\");",
+    "  for (const field of [\"candidate_sha256\", \"authorization_sha256\", \"admission_sha256\", \"boundary_sha256\"]) requireSha(boundary[field], `local execution boundary ${field}`);",
+    "  assert(boundary.owner_authorized === true && boundary.active_campaign === false && boundary.campaign_start_allowed === true, \"local execution boundary is not an owner-authorized inactive start\");",
+    "  validateWorkerRoles(boundary.required_worker_roles);",
+    "  assert(boundary.local_development_writes_allowed === true && boundary.local_worker_agent_spawns_allowed === true, \"local execution boundary lacks local worker permissions\");",
+    "  for (const key of [\"product_writes_allowed\", \"product_agent_spawns_allowed\", \"external_deployment_allowed\", \"external_release_allowed\", \"external_publication_allowed\", \"external_push_allowed\", \"external_merge_allowed\", \"secrets_allowed\", \"destructive_work_allowed\"]) assert(boundary[key] === false, `local execution boundary ${key} must remain closed`);",
+    "  assert(boundary.next_event === \"LOCAL_SELF_DEVELOPMENT_AUTHORIZED\", \"local execution boundary next event is invalid\");",
+    "  assert(boundary.boundary_sha256 === digestWithout(boundary, \"boundary_sha256\"), \"local execution boundary digest mismatch\");",
+    "  return boundary;",
+    "}",
+    "",
+    "export function compileLocalCampaignExecutionBoundary({authorization, admission}) {",
+    "  validateLocalDevelopmentAuthorization(authorization);",
+    "  validateLocalCampaignAdmission(admission);",
+    "  assert(authorization.campaign_id === admission.campaign_id && authorization.campaign_version === admission.campaign_version, \"local execution boundary campaign differs\");",
+    "  assert(authorization.source_commit === admission.source_commit && authorization.source_tree === admission.source_tree, \"local execution boundary source differs\");",
+    "  assert(authorization.authorization_sha256 && admission.admission_sha256, \"local execution boundary authority digests are missing\");",
+    "  const boundary = {",
+    "    schema: \"agentos.local_campaign_execution_boundary.v1\",",
+    "    version: 1,",
+    "    status: \"PREPARED_OWNER_AUTHORIZED\",",
+    "    controller_role: \"AGENTOS_CONTROLLER\",",
+    "    campaign_id: admission.campaign_id,",
+    "    campaign_version: admission.campaign_version,",
+    "    source_commit: admission.source_commit,",
+    "    source_tree: admission.source_tree,",
+    "    candidate_sha256: admission.controller_candidate_sha256,",
+    "    authorization_sha256: authorization.authorization_sha256,",
+    "    admission_sha256: admission.admission_sha256,",
+    "    owner_authorized: authorization.status === \"AUTHORIZED\" && authorization.owner_decision.decision === \"START_LOCAL_AGENTOS_SELF_DEVELOPMENT\",",
+    "    active_campaign: admission.active_campaign,",
+    "    campaign_start_allowed: authorization.status === \"AUTHORIZED\" && admission.active_campaign === false,",
+    "    required_worker_roles: [...authorization.worker_roles].sort(),",
+    "    local_development_writes_allowed: authorization.permissions.local_development_writes_allowed,",
+    "    local_worker_agent_spawns_allowed: authorization.permissions.local_worker_agent_spawns_allowed,",
+    "    product_writes_allowed: authorization.permissions.product_writes_allowed,",
+    "    product_agent_spawns_allowed: authorization.permissions.product_agent_spawns_allowed,",
+    "    external_deployment_allowed: authorization.permissions.external_deployment_allowed,",
+    "    external_release_allowed: authorization.permissions.external_release_allowed,",
+    "    external_publication_allowed: authorization.permissions.external_publication_allowed,",
+    "    external_push_allowed: authorization.permissions.external_push_allowed,",
+    "    external_merge_allowed: authorization.permissions.external_merge_allowed,",
+    "    secrets_allowed: authorization.permissions.secrets_allowed,",
+    "    destructive_work_allowed: authorization.permissions.destructive_work_allowed,",
+    "    next_event: admission.next_event,",
+    "    boundary_sha256: null,",
+    "  };",
+    "  boundary.boundary_sha256 = digestWithout(boundary, \"boundary_sha256\");",
+    "  return validateLocalCampaignExecutionBoundary(boundary);",
+    "}",
+    "",
+  ].join("\n");
+  admissionSource = admissionSource.replace(transitionMarker, `${boundaryHelper}${transitionMarker}`);
+  const transitionEventMarker = '  assert(admission.next_event === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED", "valid local authorization cannot remain on a queued-only path");';
+  assert(admissionSource.includes(transitionEventMarker), "local start transition event checkpoint is unavailable");
+  admissionSource = admissionSource.replace(transitionEventMarker, `${transitionEventMarker}\n  const executionBoundary = compileLocalCampaignExecutionBoundary({authorization, admission});\n  assert(executionBoundary.campaign_start_allowed === true && executionBoundary.active_campaign === false, "local start transition crossed its execution boundary");`);
+  writeFileAtomic(admissionPath, admissionSource);
+
+  const verifierSource = [
+    "#!/usr/bin/env node",
+    "",
+    "import assert from \"node:assert/strict\";",
+    "import {compileControllerCampaignCandidate} from \"../control/agentos-controller.mjs\";",
+    "import {",
+    "  compileLocalCampaignAdmission,",
+    "  compileLocalCampaignExecutionBoundary,",
+    "  compileLocalCampaignIdentityBinding,",
+    "  compileLocalDevelopmentAuthorization,",
+    "  validateLocalCampaignExecutionBoundary,",
+    "} from \"../control/local-campaign-admission.mjs\";",
+    "",
+    "const SHA = \"a\".repeat(64);",
+    "const COMMIT = \"1\".repeat(40);",
+    "const TREE = \"2\".repeat(40);",
+    "const authorization = compileLocalDevelopmentAuthorization({campaignId: \"CAMPAIGN-BOUNDARY-1\", campaignVersion: \"v1\", sourceCommit: COMMIT, sourceTree: TREE, parentAuditPacketSha256: SHA, parentAuditAddendumSha256: SHA, ownerIntentSha256: SHA, decisionTreeRequirementSha256: SHA, policyEpoch: 1, policyStateSha256: SHA, acceptanceContractSha256: SHA, modelPlanSha256: SHA, scopeSha256: SHA});",
+    "const candidate = compileControllerCampaignCandidate({projectId: \"PROJECT-BOUNDARY\", campaignId: authorization.campaign_id, campaignVersion: authorization.campaign_version, policyEpoch: 1, policyStateSha256: SHA, ownerIntentSha256: SHA, acceptanceContractSha256: SHA, modelPlanSha256: SHA, scopeSha256: SHA, sourceCommit: COMMIT, sourceTree: TREE});",
+    "const binding = compileLocalCampaignIdentityBinding({authorization, candidate, auditCandidate: {candidate_id: \"CANDIDATE-BOUNDARY\", candidate_sha256: SHA, commit: COMMIT, tree: TREE}, auditPlanSha256: SHA, auditReconciliationSha256: SHA, parentAuditPacketSha256: SHA, parentAuditAddendumSha256: SHA});",
+    "const admission = compileLocalCampaignAdmission({authorization, candidate, identityBinding: binding, nowUtc: \"2026-08-04T12:00:00.000Z\"});",
+    "const boundary = compileLocalCampaignExecutionBoundary({authorization, admission});",
+    "assert.equal(boundary.status, \"PREPARED_OWNER_AUTHORIZED\");",
+    "assert.equal(boundary.campaign_start_allowed, true);",
+    "assert.equal(boundary.active_campaign, false);",
+    "assert.deepEqual(boundary.required_worker_roles, [\"CAMPAIGN_ORCHESTRATOR\", \"FEATURE_AGENT\", \"INDEPENDENT_AUDITOR\"]);",
+    "assert.equal(boundary.product_writes_allowed, false);",
+    "assert.equal(boundary.product_agent_spawns_allowed, false);",
+    "assert.equal(boundary.external_push_allowed, false);",
+    "assert.doesNotThrow(() => validateLocalCampaignExecutionBoundary(boundary));",
+    "assert.throws(() => validateLocalCampaignExecutionBoundary({...boundary, product_writes_allowed: true}), /product_writes_allowed must remain closed|digest mismatch/u);",
+    "console.log(\"PASS local campaign execution has a separate owner-authorized inactive boundary with closed Product and external permissions\");",
+  ].join("\n") + "\n";
+  writeFileAtomic(verifierPath, verifierSource);
+
+  const backlogSource = fs.readFileSync(backlogPath, "utf8");
+  const backlogLines = backlogSource.split(/\r?\n/u);
+  const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith("| `" + feedbackId + "` |") && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+  assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  writeFileAtomic(backlogPath, backlogLines.join("\n"));
+  return {
+    changedByRepair: ["control/local-campaign-admission.mjs", "docs/owner-feedback-backlog.md", "tests/verify-owner-feedback-execution-boundary.mjs"],
+    artifactName: "control/owner-feedback-execution-boundary-repair-receipt.mjs",
+  };
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -1447,6 +1576,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     else if (feedbackId === "FEEDBACK-003") repair = applyOwnerFeedbackDigestRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-004") repair = applyOwnerFeedbackProgressRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-005") repair = applyOwnerFeedbackContinuationRepair(worktreePath, feedbackId);
+    else if (feedbackId === "FEEDBACK-006") repair = applyOwnerFeedbackExecutionBoundaryRepair(worktreePath, feedbackId);
     else throw new Error(`owner feedback ${feedbackId} requires its own repair recipe`);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
@@ -1458,6 +1588,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       "node tests/verify-owner-feedback-digest.mjs",
       "node tests/verify-owner-feedback-progress.mjs",
       "node tests/verify-owner-feedback-continuation.mjs",
+      "node tests/verify-owner-feedback-execution-boundary.mjs",
       "node tests/verify-owner-feedback-backlog.mjs",
       "node tests/verify-all.mjs",
     ]);
@@ -1485,7 +1616,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       || (changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"))
       || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-digest.mjs"))
       || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-progress.mjs"))
-      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-continuation.mjs"));
+      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-continuation.mjs"))
+      || (changedPaths.includes("control/local-campaign-admission.mjs") && changedPaths.includes("tests/verify-owner-feedback-execution-boundary.mjs"));
     assert(changedOwnerFeedbackCode, "Feature Agent owner feedback repair changed neither the requested code nor its focused test");
     buildStatus = "COMPLETED";
     product = {
