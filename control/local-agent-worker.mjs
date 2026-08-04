@@ -784,6 +784,194 @@ function applyOwnerFeedbackDigestRepair(worktreePath, feedbackId) {
   };
 }
 
+function applyOwnerFeedbackProgressRepair(worktreePath, feedbackId) {
+  const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
+  const verifierPath = path.join(worktreePath, "tests/verify-owner-feedback-progress.mjs");
+  const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
+  assert(fs.existsSync(adapterPath) && fs.existsSync(backlogPath), "owner feedback progress repair inputs are unavailable");
+
+  let adapterSource = fs.readFileSync(adapterPath, "utf8");
+  const progressConstant = 'const CONTROLLER_PLANNING_PROGRESS_FILE = "autonomous-supervisor-planning-progress.json";';
+  assert(!adapterSource.includes(progressConstant), "owner feedback progress repair was already applied");
+  const progressConstantMarker = 'const CAMPAIGN_PROGRESS_FILE = "autonomous-supervisor-campaign-progress.json";';
+  assert(adapterSource.includes(progressConstantMarker), "campaign progress constant is unavailable");
+  adapterSource = adapterSource.replace(progressConstantMarker, `${progressConstantMarker}\n${progressConstant}`);
+
+  const progressHelperMarker = "function readCampaignProgress(campaignRoot, campaignId, campaignVersion) {";
+  assert(adapterSource.includes(progressHelperMarker), "campaign progress reader is unavailable");
+  const progressHelper = [
+    "const CONTROLLER_PLANNING_PHASES = Object.freeze([\"ORCHESTRATOR_REVIEW\", \"FEATURE_BUILD\", \"INDEPENDENT_AUDIT\", \"FINALIZER_REVIEW\", \"COMPLETED\", \"FAILED\"]);",
+    "",
+    "export function compileControllerPlanningProgress({goal, taskId, sourceCommit, sourceTree, status = \"IN_PROGRESS\", phase, message, nextAction, updatedAtUtc = new Date().toISOString()}) {",
+    "  assert(goal && typeof goal === \"object\" && !Array.isArray(goal), \"planning progress goal is required\");",
+    "  requireString(taskId, \"planning progress task ID\");",
+    "  requireGitObject(sourceCommit, \"planning progress source commit\");",
+    "  requireGitObject(sourceTree, \"planning progress source tree\");",
+    "  assert([\"IN_PROGRESS\", \"COMPLETED\", \"FAILED\"].includes(status), \"planning progress status is invalid\");",
+    "  assert(CONTROLLER_PLANNING_PHASES.includes(phase), \"planning progress phase is invalid\");",
+    "  requireString(message, \"planning progress message\");",
+    "  requireString(nextAction, \"planning progress next action\");",
+    "  requireString(updatedAtUtc, \"planning progress time\");",
+    "  assert(updatedAtUtc.endsWith(\"Z\") && Number.isFinite(Date.parse(updatedAtUtc)), \"planning progress time must be UTC\");",
+    "  const progress = {",
+    "    schema: \"agentos.controller_planning_progress.v1\",",
+    "    version: 1,",
+    "    status,",
+    "    controller_role: \"AGENTOS_CONTROLLER\",",
+    "    controller_display_name: \"AgentOS Controller\",",
+    "    project_id: goal.project_id,",
+    "    campaign_id: goal.campaign_id,",
+    "    campaign_version: goal.campaign_version,",
+    "    goal_id: goal.goal_id,",
+    "    goal_sha256: goal.goal_sha256,",
+    "    task_id: taskId,",
+    "    source_commit: sourceCommit,",
+    "    source_tree: sourceTree,",
+    "    phase,",
+    "    message,",
+    "    next_action: nextAction,",
+    "    updated_at_utc: updatedAtUtc,",
+    "    progress_sha256: null,",
+    "  };",
+    "  requireString(progress.project_id, \"planning progress project ID\");",
+    "  requireString(progress.campaign_id, \"planning progress campaign ID\");",
+    "  requireString(progress.campaign_version, \"planning progress campaign version\");",
+    "  requireString(progress.goal_id, \"planning progress goal ID\");",
+    "  requireSha(progress.goal_sha256, \"planning progress goal digest\");",
+    "  progress.progress_sha256 = digestWithout(progress, \"progress_sha256\");",
+    "  return progress;",
+    "}",
+    "",
+    "function readControllerPlanningProgress(campaignRoot, campaignId, campaignVersion) {",
+    "  const progress = readAddressed(campaignRoot, CONTROLLER_PLANNING_PROGRESS_FILE, \"progress_sha256\");",
+    "  if (progress === null) return null;",
+    "  assert(progress.schema === \"agentos.controller_planning_progress.v1\" && progress.version === 1, \"Controller planning progress identity is invalid\");",
+    "  assert(progress.campaign_id === campaignId && progress.campaign_version === campaignVersion, \"Controller planning progress campaign differs\");",
+    "  assert([\"IN_PROGRESS\", \"COMPLETED\", \"FAILED\"].includes(progress.status), \"Controller planning progress status is invalid\");",
+    "  assert(CONTROLLER_PLANNING_PHASES.includes(progress.phase), \"Controller planning progress phase is invalid\");",
+    "  requireGitObject(progress.source_commit, \"Controller planning progress source commit\");",
+    "  requireGitObject(progress.source_tree, \"Controller planning progress source tree\");",
+    "  requireSha(progress.goal_sha256, \"Controller planning progress goal digest\");",
+    "  requireString(progress.message, \"Controller planning progress message\");",
+    "  requireString(progress.next_action, \"Controller planning progress next action\");",
+    "  return progress;",
+    "}",
+    "",
+    "function writeControllerPlanningProgress({campaignRoot, goal, taskId, sourceCommit, sourceTree, status = \"IN_PROGRESS\", phase, message, nextAction}) {",
+    "  const existing = readAddressed(campaignRoot, CONTROLLER_PLANNING_PROGRESS_FILE, \"progress_sha256\");",
+    "  const progress = compileControllerPlanningProgress({goal, taskId, sourceCommit, sourceTree, status, phase, message, nextAction});",
+    "  return writeMutableAddressed(campaignRoot, CONTROLLER_PLANNING_PROGRESS_FILE, progress, \"progress_sha256\", existing?.progress_sha256 ?? null);",
+    "}",
+    "",
+  ].join("\n");
+  adapterSource = adapterSource.replace(progressHelperMarker, `${progressHelper}${progressHelperMarker}`);
+
+  const observeProgressMarker = "    const campaignProgress = handoff.campaign_active\n      ? readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version)\n      : null;";
+  assert(adapterSource.includes(observeProgressMarker), "campaign progress observation checkpoint is unavailable");
+  const observeProgressReplacement = `${observeProgressMarker}\n    const planningProgress = handoff.campaign_active\n      ? readControllerPlanningProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version)\n      : null;`;
+  adapterSource = adapterSource.replace(observeProgressMarker, observeProgressReplacement);
+
+  const nextActionMarker = "      nextAction: handoff.next_action,";
+  assert(adapterSource.includes(nextActionMarker), "Controller observation next action is unavailable");
+  adapterSource = adapterSource.replace(nextActionMarker, "      nextAction: planningProgress?.status === \"IN_PROGRESS\" ? planningProgress.next_action : handoff.next_action,");
+
+  const taskIdMarker = "    const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;";
+  assert(adapterSource.includes(taskIdMarker), "Controller route task identity checkpoint is unavailable");
+  const initialProgress = [
+    "    writeControllerPlanningProgress({",
+    "      campaignRoot,",
+    "      goal,",
+    "      taskId,",
+    "      sourceCommit,",
+    "      sourceTree,",
+    "      phase: \"ORCHESTRATOR_REVIEW\",",
+    "      message: \"The Controller has selected a bounded repair and started the campaign handoff.\",",
+    "      nextAction: \"The Campaign Orchestrator is selecting the exact repair; no Product or external work is allowed.\",",
+    "    });",
+  ].join("\n");
+  adapterSource = adapterSource.replace(taskIdMarker, `${initialProgress}\n${taskIdMarker}`);
+
+  const featureReadbackMarker = "    const featureReadback = feature.readback;";
+  assert(adapterSource.includes(featureReadbackMarker), "Feature-Agent readback checkpoint is unavailable");
+  const featureProgress = [
+    "    writeControllerPlanningProgress({",
+    "      campaignRoot,",
+    "      goal,",
+    "      taskId,",
+    "      sourceCommit,",
+    "      sourceTree,",
+    "      phase: \"INDEPENDENT_AUDIT\",",
+    "      message: \"The bounded build is complete and the independent audit is running against the same source.\",",
+    "      nextAction: \"The Independent Auditor is checking the exact files, checks, source identity, and boundaries.\",",
+    "    });",
+  ].join("\n");
+  adapterSource = adapterSource.replace(featureReadbackMarker, `${featureProgress}\n${featureReadbackMarker}`);
+
+  const controllerChecksMarker = "    const controllerChecks = campaignProgressTask\n      ? runCampaignProgressChecks(feature.session_record.worktree_path)\n      : runControllerChecks(feature.session_record.worktree_path, repairKind);";
+  assert(adapterSource.includes(controllerChecksMarker), "Controller recheck checkpoint is unavailable");
+  const finalizerProgress = [
+    "    writeControllerPlanningProgress({",
+    "      campaignRoot,",
+    "      goal,",
+    "      taskId,",
+    "      sourceCommit,",
+    "      sourceTree,",
+    "      phase: \"FINALIZER_REVIEW\",",
+    "      message: \"The audit readback is complete and the Controller is checking the local checkpoint before adoption.\",",
+    "      nextAction: \"The Controller Finalizer is checking the audited checkpoint; external actions remain closed.\",",
+    "    });",
+  ].join("\n");
+  adapterSource = adapterSource.replace(controllerChecksMarker, `${finalizerProgress}\n${controllerChecksMarker}`);
+
+  const priorPointerMarker = "    const priorPointer = readAddressed(campaignRoot, \"autonomous-supervisor-current-handoff.json\", \"pointer_sha256\");";
+  assert(adapterSource.includes(priorPointerMarker), "Controller handoff transition checkpoint is unavailable");
+  const completedProgress = [
+    "    writeControllerPlanningProgress({",
+    "      campaignRoot,",
+    "      goal,",
+    "      taskId,",
+    "      sourceCommit: finalizerResult.adopted_commit,",
+    "      sourceTree: finalizerResult.adopted_tree,",
+    "      status: \"COMPLETED\",",
+    "      phase: \"COMPLETED\",",
+    "      message: \"The Controller finished the bounded campaign and retained the audited local checkpoint.\",",
+    "      nextAction: \"The Controller will inspect the next bounded item automatically; no outside prompt is needed.\",",
+    "    });",
+  ].join("\n");
+  adapterSource = adapterSource.replace(priorPointerMarker, `${completedProgress}\n${priorPointerMarker}`);
+  writeFileAtomic(adapterPath, adapterSource);
+
+  const verifierSource = [
+    "#!/usr/bin/env node",
+    "",
+    "import assert from \"node:assert/strict\";",
+    "import {compileControllerPlanningProgress} from \"../control/local-self-development-supervisor-adapter.mjs\";",
+    "import {supervisorDigest} from \"../control/controller-supervisor.mjs\";",
+    "",
+    "const goal = {project_id: \"PROJECT\", campaign_id: \"CAMPAIGN-1\", campaign_version: \"v1\", goal_id: \"CONTROLLER-GOAL-1\", goal_sha256: \"a\".repeat(64)};",
+    "const progress = compileControllerPlanningProgress({goal, taskId: \"TASK-1\", sourceCommit: \"b\".repeat(40), sourceTree: \"c\".repeat(40), phase: \"ORCHESTRATOR_REVIEW\", message: \"The Controller selected one bounded repair.\", nextAction: \"The Campaign Orchestrator is selecting the exact repair.\", updatedAtUtc: \"2026-01-01T00:00:00.000Z\"});",
+    "assert.equal(progress.schema, \"agentos.controller_planning_progress.v1\");",
+    "assert.equal(progress.status, \"IN_PROGRESS\");",
+    "assert.equal(progress.phase, \"ORCHESTRATOR_REVIEW\");",
+    "assert.equal(progress.next_action, \"The Campaign Orchestrator is selecting the exact repair.\");",
+    "assert.equal(progress.progress_sha256, supervisorDigest({...progress, progress_sha256: null}));",
+    "assert.throws(() => compileControllerPlanningProgress({goal, taskId: \"TASK-1\", sourceCommit: \"b\".repeat(40), sourceTree: \"c\".repeat(40), phase: \"UNKNOWN\", message: \"The Controller selected one bounded repair.\", nextAction: \"The Campaign Orchestrator is selecting the exact repair.\"}), /phase is invalid/u);",
+    "console.log(\"PASS Controller exposes concise source-bound planning progress and next action\");",
+  ].join("\n") + "\n";
+  writeFileAtomic(verifierPath, verifierSource);
+
+  const backlogSource = fs.readFileSync(backlogPath, "utf8");
+  const backlogLines = backlogSource.split(/\r?\n/u);
+  const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith("| `" + feedbackId + "` |") && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+  assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  writeFileAtomic(backlogPath, backlogLines.join("\n"));
+  return {
+    changedByRepair: ["control/local-self-development-supervisor-adapter.mjs", "docs/owner-feedback-backlog.md", "tests/verify-owner-feedback-progress.mjs"],
+    artifactName: "control/owner-feedback-progress-repair-receipt.mjs",
+  };
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -1197,6 +1385,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     if (feedbackId === "FEEDBACK-001") repair = applyOwnerFeedbackRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-002") repair = applyOwnerFeedbackStatusRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-003") repair = applyOwnerFeedbackDigestRepair(worktreePath, feedbackId);
+    else if (feedbackId === "FEEDBACK-004") repair = applyOwnerFeedbackProgressRepair(worktreePath, feedbackId);
     else throw new Error(`owner feedback ${feedbackId} requires its own repair recipe`);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
@@ -1206,6 +1395,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       "node tests/verify-task-run-loop.mjs",
       "node tests/verify-local-agent-session.mjs",
       "node tests/verify-owner-feedback-digest.mjs",
+      "node tests/verify-owner-feedback-progress.mjs",
       "node tests/verify-owner-feedback-backlog.mjs",
       "node tests/verify-all.mjs",
     ]);
@@ -1231,7 +1421,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner feedback checkpoint");
     const changedOwnerFeedbackCode = (changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs"))
       || (changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"))
-      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-digest.mjs"));
+      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-digest.mjs"))
+      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-progress.mjs"));
     assert(changedOwnerFeedbackCode, "Feature Agent owner feedback repair changed neither the requested code nor its focused test");
     buildStatus = "COMPLETED";
     product = {
