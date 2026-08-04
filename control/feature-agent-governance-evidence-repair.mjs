@@ -303,7 +303,7 @@ const AUDITOR_RECHECK_BRANCH = `} else if (role === "INDEPENDENT_AUDITOR") {
     assert(controllerDigest(flattenedEvidence) === controllerDigest(evidencePlan.gate_evidence), "Auditor gate evidence contains an undeclared or missing record");
     buildCommit = auditedFeatureCommit;
     buildTree = auditedFeatureTree;
-    changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\\n").filter(Boolean);
     for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), "Auditor did not observe the complete Feature-Agent evidence repair");
     focusedChecks = runFocusedChecks(featureWorktree);
     buildStatus = "AUDIT_VERIFIED";
