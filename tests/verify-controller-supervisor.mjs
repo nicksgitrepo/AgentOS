@@ -70,6 +70,8 @@ const puzzle = observation({
   }],
 });
 assert.equal(deriveSupervisorAction(puzzle), "ROUTE_REPAIRABLE_PUZZLE");
+const sameObservationLater = observation({observedAtUtc: "2026-08-04T12:00:01.000Z", findings: puzzle.findings});
+assert.equal(sameObservationLater.observation_sha256, puzzle.observation_sha256, "observation identity must ignore the heartbeat clock");
 let routed = 0;
 const routedResult = runSupervisorIteration({
   observation: puzzle,

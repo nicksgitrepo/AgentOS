@@ -99,6 +99,20 @@ function digestWithout(value, field) {
   return supervisorDigest(body);
 }
 
+function stableObservationDigest(value) {
+  const body = structuredClone(value);
+  body.observation_sha256 = null;
+  body.observed_at_utc = null;
+  return supervisorDigest(body);
+}
+
+function stableGoalDigest(value) {
+  const body = structuredClone(value);
+  body.goal_sha256 = null;
+  body.created_at_utc = null;
+  return supervisorDigest(body);
+}
+
 function exactKeys(value, keys, label) {
   requireRecord(value, label);
   assert(JSON.stringify(Object.keys(value).sort(compareUtf8)) === JSON.stringify([...keys].sort(compareUtf8)), `${label} fields mismatch`);
@@ -206,7 +220,7 @@ export function validateSupervisorObservation(observation) {
   requireSha(observation.parent_handoff_sha256, "supervisor parent handoff digest");
   requireUtc(observation.observed_at_utc, "supervisor observation time");
   requireSha(observation.observation_sha256, "supervisor observation digest");
-  assert(observation.observation_sha256 === digestWithout(observation, "observation_sha256"), "supervisor observation digest mismatch");
+  assert(observation.observation_sha256 === stableObservationDigest(observation), "supervisor observation digest mismatch");
   return observation;
 }
 
@@ -246,7 +260,7 @@ export function compileSupervisorObservation({
     observed_at_utc: observedAtUtc,
     observation_sha256: null,
   };
-  observation.observation_sha256 = digestWithout(observation, "observation_sha256");
+  observation.observation_sha256 = stableObservationDigest(observation);
   return validateSupervisorObservation(observation);
 }
 
@@ -316,7 +330,7 @@ export function compileSupervisorGoal({observation, goalId = null}) {
     created_at_utc: observation.observed_at_utc,
     goal_sha256: null,
   };
-  goal.goal_sha256 = digestWithout(goal, "goal_sha256");
+  goal.goal_sha256 = stableGoalDigest(goal);
   return validateSupervisorGoal(goal);
 }
 
@@ -341,7 +355,7 @@ export function validateSupervisorGoal(goal) {
   sortedUnique(goal.stop_conditions, "supervisor goal stop conditions");
   requireUtc(goal.created_at_utc, "supervisor goal creation time");
   requireSha(goal.goal_sha256, "supervisor goal digest");
-  assert(goal.goal_sha256 === digestWithout(goal, "goal_sha256"), "supervisor goal digest mismatch");
+  assert(goal.goal_sha256 === stableGoalDigest(goal), "supervisor goal digest mismatch");
   if (goal.action === "STOP_HARD_BOUNDARY") assert(goal.boundary.hard_stop, "hard-stop goal lacks a hard boundary");
   if (goal.action === "REVIEW_SOFT_BOUNDARY") assert(goal.boundary.soft_review, "soft-review goal lacks a soft boundary");
   return goal;
