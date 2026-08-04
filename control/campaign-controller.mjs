@@ -64,8 +64,96 @@ import {
   writeSerializedCampaignStateCompareAndSwap,
   writeSerializedCampaignTransitionCompareAndSwap,
 } from "./campaign-state-owner.mjs";
-import {deriveChangedSurfacesFromPaths} from "./campaign-cascade.mjs";
+import {validateControllerCampaignCandidate} from "./agentos-controller.mjs";
+import {
+  deriveChangedSurfacesFromPaths,
+  validateAuditPlan,
+  validateAuditReconciliation,
+  validateFirstPassCandidate,
+} from "./campaign-cascade.mjs";
 import {readLocalGitCheckpoint} from "./repository-readback.mjs";
+
+const SHA256 = /^[0-9a-f]{64}$/u;
+const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
+const CAMPAIGN_IDENTITY_BINDING_SCHEMA = "agentos.campaign_identity_binding.v1";
+const CAMPAIGN_IDENTITY_BINDING_KIND = "AUDIT_CHECKPOINT_WRAPPER";
+const CAMPAIGN_IDENTITY_BINDING_KEYS = [
+  "schema", "version", "mapping_kind", "project_id", "campaign_id", "campaign_version",
+  "controller_candidate_sha256", "audit_candidate_id", "audit_candidate_sha256", "audit_candidate_commit",
+  "audit_candidate_tree", "audit_plan_sha256", "audit_reconciliation_sha256", "binding_sha256",
+];
+
+function assertIdentity(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function requireIdentityString(value, label) {
+  assertIdentity(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
+  assertIdentity(!/[\u0000-\u001f\u007f]/u.test(value), `${label} contains control characters`);
+}
+
+function requireIdentityIdentifier(value, label) {
+  requireIdentityString(value, label);
+  assertIdentity(IDENTIFIER.test(value), `${label} is not a stable identifier`);
+}
+
+function requireIdentitySha(value, label) {
+  assertIdentity(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+function identityBindingBody(binding) {
+  const body = structuredClone(binding);
+  body.binding_sha256 = null;
+  return body;
+}
+
+export function campaignIdentityBindingDigest(value) {
+  return lifecycleDigest(value);
+}
+
+export function validateCampaignIdentityBinding(binding) {
+  assertIdentity(binding && typeof binding === "object" && !Array.isArray(binding), "campaign identity binding must be an object");
+  const actual = Object.keys(binding).sort();
+  const expected = [...CAMPAIGN_IDENTITY_BINDING_KEYS].sort();
+  assertIdentity(actual.length === expected.length && actual.every((key, index) => key === expected[index]), "campaign identity binding fields mismatch");
+  assertIdentity(binding.schema === CAMPAIGN_IDENTITY_BINDING_SCHEMA && binding.version === 1, "campaign identity binding identity is invalid");
+  assertIdentity(binding.mapping_kind === CAMPAIGN_IDENTITY_BINDING_KIND, "campaign identity binding kind is invalid");
+  for (const field of ["project_id", "campaign_id", "campaign_version", "audit_candidate_id", "audit_candidate_commit", "audit_candidate_tree"]) requireIdentityIdentifier(binding[field], `campaign identity binding ${field}`);
+  for (const field of ["controller_candidate_sha256", "audit_candidate_sha256", "audit_plan_sha256", "audit_reconciliation_sha256", "binding_sha256"]) requireIdentitySha(binding[field], `campaign identity binding ${field}`);
+  assertIdentity(binding.binding_sha256 === campaignIdentityBindingDigest(identityBindingBody(binding)), "campaign identity binding digest mismatch");
+  return binding;
+}
+
+export function compileCampaignIdentityBinding({controllerCandidate, auditCandidate, auditPlan, auditReconciliation}) {
+  validateControllerCampaignCandidate(controllerCandidate);
+  validateFirstPassCandidate(auditCandidate);
+  validateAuditPlan(auditPlan);
+  validateAuditReconciliation(auditReconciliation, auditPlan);
+  assertIdentity(auditCandidate.terminal === true && auditPlan.terminal === true && auditReconciliation.terminal === true, "campaign identity binding requires a terminal audit checkpoint");
+  assertIdentity(controllerCandidate.campaign_id === auditCandidate.campaign_id && controllerCandidate.campaign_version === auditCandidate.campaign_version, "campaign identity binding campaign differs");
+  assertIdentity(controllerCandidate.policy_epoch === auditCandidate.policy_epoch && controllerCandidate.policy_state_sha256 === auditCandidate.policy_snapshot_sha256, "campaign identity binding policy differs");
+  assertIdentity(controllerCandidate.acceptance_contract_sha256 === auditCandidate.acceptance_contract_sha256, "campaign identity binding acceptance contract differs");
+  assertIdentity(controllerCandidate.owner_intent_sha256 === auditCandidate.acceptance_contract.owner_intent_sha256, "campaign identity binding owner intent differs");
+  assertIdentity(controllerCandidate.source_commit === auditCandidate.commit && controllerCandidate.source_tree === auditCandidate.tree, "campaign identity binding source checkpoint differs");
+  const binding = {
+    schema: CAMPAIGN_IDENTITY_BINDING_SCHEMA,
+    version: 1,
+    mapping_kind: CAMPAIGN_IDENTITY_BINDING_KIND,
+    project_id: controllerCandidate.project_id,
+    campaign_id: controllerCandidate.campaign_id,
+    campaign_version: controllerCandidate.campaign_version,
+    controller_candidate_sha256: controllerCandidate.candidate_sha256,
+    audit_candidate_id: auditCandidate.candidate_id,
+    audit_candidate_sha256: auditCandidate.candidate_sha256,
+    audit_candidate_commit: auditCandidate.commit,
+    audit_candidate_tree: auditCandidate.tree,
+    audit_plan_sha256: auditPlan.plan_sha256,
+    audit_reconciliation_sha256: auditReconciliation.reconciliation_sha256,
+    binding_sha256: null,
+  };
+  binding.binding_sha256 = campaignIdentityBindingDigest(identityBindingBody(binding));
+  return validateCampaignIdentityBinding(binding);
+}
 
 export {
   acquirePlatformLease,

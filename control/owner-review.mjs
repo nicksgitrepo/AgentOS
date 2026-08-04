@@ -13,6 +13,7 @@ import {
 } from "./global-policy-state.mjs";
 import {writePolicyStateCompareAndSwap} from "./global-policy-store.mjs";
 import {writeProjectContextCompareAndSwap} from "./project-context-store.mjs";
+import {validateCampaignIdentityBinding} from "./campaign-controller.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40,64}$/u;
@@ -985,7 +986,7 @@ function approvalPacketBody(packet) {
   return body;
 }
 
-export function compileOwnerApprovalPacket({candidate, packet, policyState}) {
+export function compileOwnerApprovalPacket({candidate, packet, policyState, campaignIdentityBinding = null}) {
   validateOwnerReviewPacket(packet);
   validateOwnerReviewCandidate(candidate);
   validatePolicyState(policyState);
@@ -993,6 +994,12 @@ export function compileOwnerApprovalPacket({candidate, packet, policyState}) {
   assert(candidate.source_binding.policy_epoch === policyState.policy_epoch
     && candidate.source_binding.policy_state_sha256 === policyState.policy_state_sha256,
   "owner review approval packet policy state is stale");
+  if (candidate.source_binding.next_campaign_candidate_sha256 !== null) {
+    assert(campaignIdentityBinding !== null, "owner review approval packet lacks the campaign identity binding");
+    validateCampaignIdentityBinding(campaignIdentityBinding);
+    assert(campaignIdentityBinding.project_id === candidate.project_id, "owner review campaign identity binding project differs");
+    assert(campaignIdentityBinding.controller_candidate_sha256 === candidate.source_binding.next_campaign_candidate_sha256, "owner review campaign identity binding targets a different Controller candidate");
+  } else assert(campaignIdentityBinding === null, "owner review approval packet has an unexpected campaign identity binding");
   const sharedLink = packet.review_transport === "SHARED_LINK_ADVISORY";
   const configuredRoute = getPolicyValue(policyState, "REVIEW.APPROVAL_ROUTE");
   const candidateReady = candidate.candidate_status === "CANDIDATE_ONLY"
@@ -1011,6 +1018,7 @@ export function compileOwnerApprovalPacket({candidate, packet, policyState}) {
     protected_boundaries: structuredClone(candidate.protected_boundaries),
     excluded_scope: structuredClone(candidate.excluded_scope),
     release_stop: candidate.campaign_shape.release_stop,
+    campaign_identity_binding: campaignIdentityBinding === null ? null : structuredClone(campaignIdentityBinding),
     approval_state: "PENDING_EXACT_APPROVAL",
     approval_allowed: !sharedLink && candidateReady,
     configured_approval_route: sharedLink || !candidateReady ? null : configuredRoute,
@@ -1026,7 +1034,7 @@ export function compileOwnerApprovalPacket({candidate, packet, policyState}) {
 export function validateOwnerApprovalPacket(packet) {
   exactKeys(packet, [
     "schema", "review_id", "project_id", "source_policy_epoch", "source_policy_state_sha256", "candidate_sha256", "policy_amendment_sha256",
-    "exact_candidate", "protected_boundaries", "excluded_scope", "release_stop", "approval_state", "approval_allowed", "allowed_approval_routes",
+    "exact_candidate", "protected_boundaries", "excluded_scope", "release_stop", "campaign_identity_binding", "approval_state", "approval_allowed", "allowed_approval_routes",
     "configured_approval_route", "forbidden_routes", "activation_effect", "approval_packet_sha256",
   ], "owner review approval packet");
   assert(packet.schema === "agentos.owner_review_approval_packet.v1", "owner review approval packet schema mismatch");
@@ -1041,6 +1049,12 @@ export function validateOwnerApprovalPacket(packet) {
   validateTextArray(packet.protected_boundaries, "approval packet protected boundaries");
   validateTextArray(packet.excluded_scope, "approval packet excluded scope");
   safeText(packet.release_stop, "approval packet release stop");
+  if (packet.exact_candidate.source_binding.next_campaign_candidate_sha256 !== null) {
+    assert(packet.campaign_identity_binding !== null, "approval packet lacks the campaign identity binding");
+    validateCampaignIdentityBinding(packet.campaign_identity_binding);
+    assert(packet.campaign_identity_binding.project_id === packet.project_id, "approval packet campaign identity binding project differs");
+    assert(packet.campaign_identity_binding.controller_candidate_sha256 === packet.exact_candidate.source_binding.next_campaign_candidate_sha256, "approval packet campaign identity binding targets a different Controller candidate");
+  } else assert(packet.campaign_identity_binding === null, "approval packet has an unexpected campaign identity binding");
   assert(packet.approval_state === "PENDING_EXACT_APPROVAL", "approval packet is not pending exact approval");
   assert(typeof packet.approval_allowed === "boolean", "approval packet allowance invalid");
   sortedStrings(packet.allowed_approval_routes, "approval packet routes", {allowEmpty: true});

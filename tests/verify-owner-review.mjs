@@ -16,6 +16,7 @@ import {
   validateOwnerReviewPacket,
 } from "../control/owner-review.mjs";
 import {compileGlobalPolicyState} from "../control/global-policy-state.mjs";
+import {campaignIdentityBindingDigest} from "../control/campaign-controller.mjs";
 
 const SHA = "b".repeat(64);
 const NOW = "2026-01-02T00:00:00.000Z";
@@ -293,6 +294,48 @@ try {
   const approvalPacket = compileOwnerApprovalPacket({candidate, packet, policyState});
   assert.equal(approvalPacket.approval_state, "PENDING_EXACT_APPROVAL");
   assert.equal(approvalPacket.approval_allowed, true);
+  const boundPacket = compileOwnerReviewPacket({
+    reviewId: "REVIEW-BOUND",
+    projectId: packet.review.project_id,
+    createdAtUtc: NOW,
+    expiresAtUtc: "2026-01-09T00:00:00.000Z",
+    sourceBinding: {...packet.source_binding, next_campaign_candidate_sha256: SHA},
+    currentProject: packet.current_project,
+    reviewScope: packet.review_scope,
+    questionIdsByRoot,
+    candidateCampaign: packet.candidate_campaign,
+    modelCandidates: packet.model_candidates,
+    policyState,
+  });
+  const boundReturn = parseOwnerReviewReturnMarkdown(`\`\`\`json\n${JSON.stringify(returnPayload(boundPacket))}\n\`\`\``, boundPacket);
+  const boundCandidate = compileOwnerReviewCandidate({packet: boundPacket, response: boundReturn, policyState, nowUtc: LATER});
+  const identityBinding = {
+    schema: "agentos.campaign_identity_binding.v1",
+    version: 1,
+    mapping_kind: "AUDIT_CHECKPOINT_WRAPPER",
+    project_id: packet.review.project_id,
+    campaign_id: "CAMPAIGN-1",
+    campaign_version: "v1",
+    controller_candidate_sha256: SHA,
+    audit_candidate_id: "CANDIDATE-1",
+    audit_candidate_sha256: SHA,
+    audit_candidate_commit: COMMIT,
+    audit_candidate_tree: TREE,
+    audit_plan_sha256: SHA,
+    audit_reconciliation_sha256: SHA,
+    binding_sha256: null,
+  };
+  identityBinding.binding_sha256 = campaignIdentityBindingDigest({...identityBinding, binding_sha256: null});
+  const boundApprovalPacket = compileOwnerApprovalPacket({candidate: boundCandidate, packet: boundPacket, policyState, campaignIdentityBinding: identityBinding});
+  assert.equal(boundApprovalPacket.campaign_identity_binding.binding_sha256, identityBinding.binding_sha256);
+  assert.equal(boundApprovalPacket.candidate_sha256, boundCandidate.candidate_sha256);
+  reject("queued owner review without a campaign identity binding", () => compileOwnerApprovalPacket({candidate: boundCandidate, packet: boundPacket, policyState}));
+  reject("queued owner review bound to a different Controller candidate", () => compileOwnerApprovalPacket({
+    candidate: boundCandidate,
+    packet: boundPacket,
+    policyState,
+    campaignIdentityBinding: {...identityBinding, controller_candidate_sha256: "c".repeat(64), binding_sha256: null},
+  }));
   const approval = compileOwnerApproval({
     approvalPacket,
     approvedAtUtc: "2026-01-02T02:00:00.000Z",

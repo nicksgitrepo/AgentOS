@@ -26,7 +26,13 @@ import {
 } from "../control/campaign-cascade.mjs";
 import {compileFinalizerRewriteAssessment} from "../control/cascade-economics.mjs";
 import {compileCampaignAcceptanceContract} from "../control/campaign-acceptance-contract.mjs";
-import {compileRepositoryCheckpointProof} from "../control/campaign-controller.mjs";
+import {
+  campaignIdentityBindingDigest,
+  compileCampaignIdentityBinding,
+  compileRepositoryCheckpointProof,
+  validateCampaignIdentityBinding,
+} from "../control/campaign-controller.mjs";
+import {compileControllerCampaignCandidate} from "../control/agentos-controller.mjs";
 
 const SHA = "a".repeat(64);
 function pathBinding(path, candidateId, commit, tree, references) {
@@ -162,6 +168,31 @@ const reports = fullPlan.disciplines.filter((item) => ["REQUIRED", "DETERMINISTI
 }));
 const reconciliation = reconcileAuditFindings({plan: fullPlan, reports});
 assert.equal(reconciliation.immediate_first_pass_repairs.length, 0);
+const controllerCandidate = compileControllerCampaignCandidate({
+  projectId: "synthetic-project",
+  campaignId: fullCandidate.campaign_id,
+  campaignVersion: fullCandidate.campaign_version,
+  policyEpoch: fullCandidate.policy_epoch,
+  policyStateSha256: fullCandidate.policy_snapshot_sha256,
+  ownerIntentSha256: fullCandidate.acceptance_contract.owner_intent_sha256,
+  acceptanceContractSha256: fullCandidate.acceptance_contract_sha256,
+  modelPlanSha256: SHA,
+  scopeSha256: SHA,
+  sourceCommit: fullCandidate.commit,
+  sourceTree: fullCandidate.tree,
+});
+const identityBinding = compileCampaignIdentityBinding({
+  controllerCandidate,
+  auditCandidate: fullCandidate,
+  auditPlan: fullPlan,
+  auditReconciliation: reconciliation,
+});
+validateCampaignIdentityBinding(identityBinding);
+assert.equal(identityBinding.controller_candidate_sha256, controllerCandidate.candidate_sha256);
+assert.equal(identityBinding.audit_candidate_sha256, fullCandidate.candidate_sha256);
+assert.equal(identityBinding.audit_plan_sha256, fullPlan.plan_sha256);
+assert.equal(identityBinding.audit_reconciliation_sha256, reconciliation.reconciliation_sha256);
+assert.equal(identityBinding.binding_sha256, campaignIdentityBindingDigest({...identityBinding, binding_sha256: null}));
 const reportsWithFindings = reports.map((report, index) => compileAuditReport({
   plan: fullPlan,
   discipline: report.discipline,
@@ -267,6 +298,25 @@ hostileCase("path observation names a different candidate", () => {
   tampered.candidate_sha256 = cascadeDigest({...tampered, candidate_sha256: null});
   validateFirstPassCandidate(tampered);
 });
+hostileCase("Controller and audit source checkpoints differ", () => compileCampaignIdentityBinding({
+  controllerCandidate: compileControllerCampaignCandidate({
+    projectId: "synthetic-project",
+    campaignId: fullCandidate.campaign_id,
+    campaignVersion: fullCandidate.campaign_version,
+    policyEpoch: fullCandidate.policy_epoch,
+    policyStateSha256: fullCandidate.policy_snapshot_sha256,
+    ownerIntentSha256: fullCandidate.acceptance_contract.owner_intent_sha256,
+    acceptanceContractSha256: fullCandidate.acceptance_contract_sha256,
+    modelPlanSha256: SHA,
+    scopeSha256: SHA,
+    sourceCommit: fullCandidate.commit,
+    sourceTree: "different-tree",
+  }),
+  auditCandidate: fullCandidate,
+  auditPlan: fullPlan,
+  auditReconciliation: reconciliation,
+}));
+hostileCase("tampered identity binding digest", () => validateCampaignIdentityBinding({...identityBinding, binding_sha256: SHA}));
 hostileCase("first-pass path omitted from justification", () => compileFirstPassCandidate({
   ...candidateInput,
   scope_justification: {...candidateInput.scope_justification, changed_paths: ["docs/other.md"]},

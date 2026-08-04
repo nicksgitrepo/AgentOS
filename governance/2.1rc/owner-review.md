@@ -58,3 +58,5 @@ The packet binds:
 - the selected transport and its return identity.
 
 The Orchestrator reconciles the return, compiles any policy or project-course amendment, derives exact affected question IDs, and creates a typed project-context/authority delta. A conversational “yes” is not activation. A shared link is never an approval route. Only authenticated exact approval over the exact candidate and approval-packet digests can admit the next campaign. After admission, the ordinary Orchestrator controls the roster and custody; the review module itself creates no Product agents and writes no Product code.
+
+When the queued campaign has a separate audit-checkpoint wrapper, the approval packet also carries a content-addressed identity mapping. That mapping keeps the Controller candidate as the canonical campaign identity and records the audit candidate, source commit/tree, terminal audit plan, and settled reconciliation. A missing or mismatched mapping keeps the candidate queued and inactive.

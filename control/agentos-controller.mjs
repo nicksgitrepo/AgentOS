@@ -185,7 +185,7 @@ function validateActionReceipts(receipts, projectId, controllerId) {
   }
 }
 
-function validateCandidate(candidate) {
+export function validateControllerCampaignCandidate(candidate) {
   const keys = [
     "schema", "version", "project_id", "campaign_id", "campaign_version", "policy_epoch", "policy_state_sha256",
     "owner_intent_sha256", "acceptance_contract_sha256", "model_plan_sha256", "scope_sha256", "source_commit", "source_tree", "candidate_sha256",
@@ -232,7 +232,7 @@ export function compileControllerCampaignCandidate({
     candidate_sha256: null,
   };
   candidate.candidate_sha256 = digestWithout(candidate, "candidate_sha256");
-  return validateCandidate(candidate);
+  return validateControllerCampaignCandidate(candidate);
 }
 
 export function validateControllerAgentBinding(binding) {
@@ -346,7 +346,7 @@ function validateQueue(queue, projectId) {
   const ids = [];
   for (const entry of queue) {
     exactKeys(entry, ["campaign_id", "campaign_version", "candidate", "status", "queued_at_utc", "admitted_at_utc"], "controller queue entry");
-    validateCandidate(entry.candidate);
+    validateControllerCampaignCandidate(entry.candidate);
     assert(entry.candidate.project_id === projectId && entry.candidate.campaign_id === entry.campaign_id && entry.candidate.campaign_version === entry.campaign_version, "controller queue candidate identity differs");
     assert(QUEUE_STATUSES.includes(entry.status), "controller queue status is invalid");
     requireUtc(entry.queued_at_utc, "controller queue time");
@@ -364,7 +364,7 @@ function validateActiveCampaign(active, projectId, policyState) {
     "feature_agent_session_ids", "platform_agent_session_ids", "roster", "stage", "policy_epoch", "policy_state_sha256",
     "latest_checkpoint_sha256", "next_orchestrator_session_id", "next_orchestrator_orientation_only", "deployment_identity", "rollback_identity", "live_audit_identity",
   ], "active controller campaign");
-  validateCandidate(active.candidate);
+  validateControllerCampaignCandidate(active.candidate);
   assert(active.candidate.project_id === projectId && active.candidate.campaign_id === active.campaign_id && active.candidate.campaign_version === active.campaign_version, "active campaign candidate identity differs");
   assert(active.candidate_sha256 === active.candidate.candidate_sha256, "active campaign candidate digest differs");
   requireString(active.orchestrator_session_id, "active orchestrator session");
@@ -671,7 +671,7 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       assert(state.active_campaign === null, "User Review return cannot replace an active campaign");
       const readback = add("reconcileUserReview");
       const details = requireDetails(readback, ["candidate"], "User Review reconciliation");
-      validateCandidate(details.candidate);
+      validateControllerCampaignCandidate(details.candidate);
       assert(details.candidate.project_id === state.project_id && details.candidate.policy_epoch === state.policy_epoch && details.candidate.policy_state_sha256 === state.policy_state_sha256, "User Review candidate is stale for project policy");
       next = updateState(next, {operational_status: "OWNER_REVIEW_PENDING", campaign_queue: queueCandidate(next, details.candidate, event.occurred_at_utc)});
       break;
@@ -680,7 +680,7 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       assert(state.active_campaign === null, "a campaign is already active");
       assert(state.runtime_id !== null, "persistent Runtime is required before campaign admission");
       const candidate = payload.candidate;
-      validateCandidate(candidate);
+      validateControllerCampaignCandidate(candidate);
       assert(candidate.project_id === state.project_id && candidate.policy_epoch === state.policy_epoch && candidate.policy_state_sha256 === state.policy_state_sha256, "approved campaign candidate is stale");
       if (payload.owner_approval_sha256 !== undefined) requireSha(payload.owner_approval_sha256, "campaign owner approval");
       const queued = state.campaign_queue.find((entry) => entry.campaign_id === candidate.campaign_id);
@@ -749,7 +749,7 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
         requireSha(details.reconciliation_sha256, "policy reconciliation readback");
         assert(details.reconciliation_sha256 === reconciliation.reconciliation_sha256, "policy adapter reconciliation differs");
         validateNextRoster(state.active_campaign.roster, details.next_roster, reconciliation);
-        validateCandidate(details.recompiled_candidate);
+        validateControllerCampaignCandidate(details.recompiled_candidate);
         assert(details.recompiled_candidate.project_id === state.project_id
           && details.recompiled_candidate.campaign_id === state.active_campaign.campaign_id
           && details.recompiled_candidate.campaign_version === state.active_campaign.campaign_version

@@ -107,6 +107,25 @@
       "OWNER_AUTHENTICATED_EXACT_APPROVAL"
     ],
     "activation_rule": "Only OWNER_AUTHENTICATED_EXACT_APPROVAL over the exact approval-packet digest can admit the candidate. The conversation return itself cannot activate a campaign.",
+    "campaign_identity_binding": {
+      "schema": "agentos.campaign_identity_binding.v1",
+      "required_when": "source_binding.next_campaign_candidate_sha256 is not null",
+      "mapping_kind": "AUDIT_CHECKPOINT_WRAPPER",
+      "fields": [
+        "project_id",
+        "campaign_id",
+        "campaign_version",
+        "controller_candidate_sha256",
+        "audit_candidate_id",
+        "audit_candidate_sha256",
+        "audit_candidate_commit",
+        "audit_candidate_tree",
+        "audit_plan_sha256",
+        "audit_reconciliation_sha256",
+        "binding_sha256"
+      ],
+      "rule": "The Controller candidate remains the canonical campaign identity. A separate audit checkpoint is acceptable only when its campaign/version, policy, acceptance, source commit/tree, terminal audit plan, and settled reconciliation are validated into this content-addressed mapping. The approval packet must bind the mapping to the exact Controller candidate digest."
+    },
     "forbidden_authority": [
       "spending",
       "publication",
