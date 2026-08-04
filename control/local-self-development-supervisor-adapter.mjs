@@ -143,12 +143,23 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
   const completedTaskId = `CAMPAIGN-FIRST-USEFUL-WORKFLOW-COMPLETED-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
   const completedCurrentAudit = sameSource && existing.tasks.some((candidate) => candidate.task_id === auditTaskId && candidate.status === "COMPLETED");
-  const task = firstUsefulWorkflowCompleted
+  const continuationCount = Number.isSafeInteger(campaignProgress?.autonomous_continuation_count) ? campaignProgress.autonomous_continuation_count : 0;
+  const continuationEligible = firstUsefulWorkflowCompleted && continuationCount < 1;
+  const task = continuationEligible
+    ? {
+      task_id: buildTaskId,
+      status: "OPEN",
+      priority: 0,
+      summary: `The Controller selected one bounded next control-plane behavior from the standing owner intent: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects its exact repair, the Feature Agent builds it, and the Auditor checks the same result.`,
+      scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
+      owner_decision_required: false,
+    }
+    : firstUsefulWorkflowCompleted
     ? {
       task_id: completedTaskId,
       status: "HELD",
       priority: 0,
-      summary: "The owner-defined first useful workflow is complete at an audited local checkpoint; no additional bounded behavior is declared in this campaign.",
+      summary: "The owner-defined first useful workflow and one bounded autonomous continuation are complete at audited local checkpoints; no additional safe control-plane behavior is currently declared.",
       scope: ["ACCEPTANCE_CONTRACT", "CONTROLLER_STATE", "OWNER_INTENT", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     }
@@ -189,7 +200,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
       campaign_version: handoff.campaign_version,
       source_commit: sourceCommit,
       source_tree: sourceTree,
-      generated_reason: firstUsefulWorkflowCompleted
+      generated_reason: continuationEligible
+        ? "AUTONOMOUS_CONTINUATION_REQUIRED"
+        : firstUsefulWorkflowCompleted
         ? "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
         : completedCurrentAudit
         ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
@@ -209,7 +222,9 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
     campaign_version: handoff.campaign_version,
     source_commit: sourceCommit,
     source_tree: sourceTree,
-    generated_reason: firstUsefulWorkflowCompleted
+    generated_reason: continuationEligible
+      ? "AUTONOMOUS_CONTINUATION_REQUIRED"
+      : firstUsefulWorkflowCompleted
       ? "FIRST_USEFUL_WORKFLOW_COMPLETED_AWAITING_NEXT_INTENT"
       : completedCurrentAudit
       ? "ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR"
@@ -1542,6 +1557,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         controller_recheck_sha256: controllerRecheck.record_sha256,
         finalizer_sha256: finalizerRecord.finalizer_sha256,
         first_useful_workflow_completed: true,
+        autonomous_continuation_count: (existingCampaignProgress?.autonomous_continuation_count ?? 0) + (existingCampaignProgress?.first_useful_workflow_completed === true ? 1 : 0),
         next_action: "The owner-defined first useful workflow is complete at an audited local checkpoint; the Controller will remain available for a new bounded intent without prompting for approval.",
         external_actions_attempted: false,
         progress_sha256: null,
