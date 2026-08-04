@@ -262,21 +262,38 @@ function applyAutonomousCampaignProgressRepair(worktreePath) {
   ].join("\n");
   assert(taskRegion.test(source), "autonomous campaign queue state machine is not at the expected source checkpoint");
   source = source.replace(taskRegion, repairedTaskRegion);
-  const oldReason = [
-    "      generated_reason: checkpointIsCurrent",
-    "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
-    "        : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
-  ].join("\n");
-  const newReason = [
-    "      generated_reason: completedCurrentAudit",
-    "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR\"",
-    "        : checkpointIsCurrent",
-    "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
-    "        : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
-  ].join("\n");
-  const reasonCount = source.split(oldReason).length - 1;
-  assert(reasonCount === 2, `autonomous campaign queue generated-reason count is ${reasonCount}, expected 2`);
-  source = source.replaceAll(oldReason, newReason);
+  const oldReasons = [
+    [
+      "      generated_reason: checkpointIsCurrent",
+      "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
+      "        : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
+    ].join("\n"),
+    [
+      "    generated_reason: checkpointIsCurrent",
+      "      ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
+      "      : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
+    ].join("\n"),
+  ];
+  const newReasons = [
+    [
+      "      generated_reason: completedCurrentAudit",
+      "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR\"",
+      "        : checkpointIsCurrent",
+      "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
+      "        : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
+    ].join("\n"),
+    [
+      "    generated_reason: completedCurrentAudit",
+      "      ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR\"",
+      "      : checkpointIsCurrent",
+      "      ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
+      "      : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
+    ].join("\n"),
+  ];
+  for (let index = 0; index < oldReasons.length; index += 1) {
+    assert(source.includes(oldReasons[index]), `autonomous campaign queue generated-reason ${index + 1} is not at the expected source checkpoint`);
+    source = source.replace(oldReasons[index], newReasons[index]);
+  }
   writeFileAtomic(adapterPath, source);
   return ["control/local-self-development-supervisor-adapter.mjs"];
 }
