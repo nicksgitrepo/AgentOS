@@ -70,7 +70,7 @@
     "task_continuation_controller": {"path": "control/task-continuation.mjs", "sha256": "b51a20bb1d8da4a4b8f45a699195193df0b54740f9b7646751e5b8aaffb19a21"},
     "task_continuation_contract": {"path": "schemas/task-continuation.v1.json", "sha256": "25c9fb5c9eb516afce12f9103f46fb49aab193735e16d6ca4750253dd85c0b58"},
     "task_continuation_verifier": {"path": "tests/verify-task-continuation.mjs", "sha256": "aa139ff03c4776f7a256f9b0eb648e3d61f4d9c0eb82f0fd396ca90d4eb9f36c"},
-    "task_run_loop_controller": {"path": "control/task-run-loop.mjs", "sha256": "e6f56a78aa4e9c666a6f5257a22ee4b6a021471ae7567c136205fce53d756912"},
+    "task_run_loop_controller": {"path": "control/task-run-loop.mjs", "sha256": "4f34a9e0c1c1ef17f8899f9730e92d32a128c6bad41c7676438616e29c3e6500"},
     "task_run_loop_contract": {"path": "schemas/task-run-loop.v1.json", "sha256": "2af1382cc083db2b9cec90403e19852c3942f3b0da3ebb1c5c712b6ce5f66173"},
     "task_run_loop_verifier": {"path": "tests/verify-task-run-loop.mjs", "sha256": "dac8a6e31f52c69e0a7811996536ca29935242fc914b23963da5bfe35e60d424"},
     "campaign_policy_reconcile_controller": {"path": "control/campaign-policy-reconcile.mjs", "sha256": "586a90711ada94470045a00ebcc4e227ce98595d17a6b5b35c3d82ed31be8ba9"},

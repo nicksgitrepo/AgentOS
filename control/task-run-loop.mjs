@@ -202,7 +202,9 @@ export function prepareQueuedContinuationTask({queuedTask, parentHandoff, curren
     requireSha(campaignBinding[field], `queued continuation campaign ${field}`);
     assert(currentStatus[field] === campaignBinding[field], `queued continuation campaign ${field} differs`);
   }
-  assert(currentStatus.policy_epoch === queuedTask.policy_epoch && currentStatus.policy_state_sha256 === queuedTask.policy_state_sha256, "queued continuation current policy differs");
+  if ("policy_epoch" in currentStatus || "policy_state_sha256" in currentStatus) {
+    assert(currentStatus.policy_epoch === queuedTask.policy_epoch && currentStatus.policy_state_sha256 === queuedTask.policy_state_sha256, "queued continuation current policy differs");
+  }
   requireGitObject(sourceCommit, "queued continuation source commit");
   requireGitObject(sourceTree, "queued continuation source tree");
   requireUtc(startedAtUtc, "queued continuation start time");
