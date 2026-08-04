@@ -472,7 +472,7 @@ export function runSupervisorIteration({observation, route = null}) {
     const routeReadback = route(goal);
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "ROUTED", routeReadback})};
   } catch (error) {
-    const routeError = error?.message ?? String(error);
+    const routeError = JSON.stringify(error?.message ?? String(error));
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "ROUTE_FAILED", routeError})};
   }
 }
@@ -487,7 +487,7 @@ export async function runSupervisorIterationAsync({observation, route = null}) {
     const routeReadback = await route(goal);
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "ROUTED", routeReadback})};
   } catch (error) {
-    const routeError = error?.message ?? String(error);
+    const routeError = JSON.stringify(error?.message ?? String(error));
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "ROUTE_FAILED", routeError})};
   }
 }

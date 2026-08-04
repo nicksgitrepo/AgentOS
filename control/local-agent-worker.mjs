@@ -209,12 +209,13 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     assert(fs.existsSync(featureWorktree) && fs.statSync(featureWorktree).isDirectory(), "auditor Feature-Agent worktree is unavailable");
     buildCommit = git(featureWorktree, ["rev-parse", "HEAD"]);
     buildTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);
-    changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     if (taskKind === "CONTROLLER_SUPERVISOR_LIVENESS") {
       assert(buildCommit === sourceCommit && buildTree === sourceTree, "Auditor liveness observed a different source");
+      changedPaths = git(featureWorktree, ["diff", "--name-only", sourceCommit, "HEAD"]).split("\n").filter(Boolean);
       assert(changedPaths.length === 0, "Auditor liveness observed source changes");
       focusedChecks = runControllerSupervisorChecks(featureWorktree);
     } else {
+      changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
       assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
       const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
       assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
