@@ -1361,7 +1361,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
+        && ["control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
       assert(taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath))
         : ownerFeedbackCodeChanged
