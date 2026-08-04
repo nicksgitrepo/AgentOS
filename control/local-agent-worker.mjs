@@ -82,12 +82,13 @@ function runControllerSupervisorChecks(worktreePath) {
   ]);
 }
 
-function runControllerSupervisorBindingChecks(worktreePath) {
-  return runChecks(worktreePath, [
+function runControllerSupervisorBindingChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_BINDING_REPAIR") {
+  const checks = [
     "node --check control/controller-supervisor.mjs",
     "node tests/verify-controller-supervisor.mjs",
-    "node tests/verify-all.mjs",
-  ]);
+  ];
+  if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
+  return runChecks(worktreePath, checks);
 }
 
 function runDurableSessionChecks(worktreePath) {
@@ -116,6 +117,18 @@ function applyControllerSupervisorBindingRepair(worktreePath) {
   const actualSha256 = crypto.createHash("sha256").update(fs.readFileSync(controllerPath)).digest("hex");
   assert(binding.normative?.controller_supervisor_controller?.sha256 !== actualSha256, "Controller supervisor binding repair was already applied");
   binding.normative.controller_supervisor_controller.sha256 = actualSha256;
+  writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
+  return ["schemas/bootstrap-binding.v1.json"];
+}
+
+function applyLocalAgentSessionBindingRepair(worktreePath) {
+  const bindingPath = path.join(worktreePath, "schemas/bootstrap-binding.v1.json");
+  const verifierPath = path.join(worktreePath, "tests/verify-local-agent-session.mjs");
+  assert(fs.existsSync(bindingPath) && fs.existsSync(verifierPath), "local agent session binding inputs are unavailable");
+  const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
+  const actualSha256 = crypto.createHash("sha256").update(fs.readFileSync(verifierPath)).digest("hex");
+  assert(binding.normative?.local_agent_session_verifier?.sha256 !== actualSha256, "local agent session binding repair was already applied");
+  binding.normative.local_agent_session_verifier.sha256 = actualSha256;
   writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
   return ["schemas/bootstrap-binding.v1.json"];
 }
@@ -259,6 +272,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
         ? "control/controller-supervisor.mjs"
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
           ? "schemas/bootstrap-binding.v1.json"
+          : taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
+            ? "schemas/bootstrap-binding.v1.json"
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
             : "control/governance-decision-tree.mjs";
@@ -266,7 +281,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? runControllerSupervisorChecks(featureWorktree)
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
-          ? runControllerSupervisorBindingChecks(featureWorktree)
+          ? runControllerSupervisorBindingChecks(featureWorktree, taskKind)
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? runDurableSessionChecks(featureWorktree)
           : runFocusedChecks(featureWorktree);
@@ -368,15 +383,16 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
       changed_paths: changedPaths,
       focused_checks: focusedChecks,
     };
-  } else if (taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR") {
-    artifactName = "control/controller-supervisor-binding-repair-receipt.mjs";
-    const changedByRepair = applyControllerSupervisorBindingRepair(worktreePath);
+  } else if (taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") {
+    const localBindingRepair = taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR";
+    artifactName = localBindingRepair ? "control/local-agent-session-binding-repair-receipt.mjs" : "control/controller-supervisor-binding-repair-receipt.mjs";
+    const changedByRepair = localBindingRepair ? applyLocalAgentSessionBindingRepair(worktreePath) : applyControllerSupervisorBindingRepair(worktreePath);
     focusedChecks = runChecks(worktreePath, [
       "node --check control/controller-supervisor.mjs",
       "node tests/verify-controller-supervisor.mjs",
-      "node tests/verify-all.mjs",
     ]);
-    const marker = `// Local Feature Agent Controller-supervisor binding repair receipt; held in the isolated campaign worktree.\nexport const CONTROLLER_SUPERVISOR_BINDING_REPAIR = Object.freeze(${JSON.stringify({
+    if (localBindingRepair) focusedChecks.push(...runChecks(worktreePath, ["node tests/verify-all.mjs"]));
+    const marker = `// Local Feature Agent repository binding repair receipt; held in the isolated campaign worktree.\nexport const ${localBindingRepair ? "LOCAL_AGENT_SESSION_BINDING_REPAIR" : "CONTROLLER_SUPERVISOR_BINDING_REPAIR"} = Object.freeze(${JSON.stringify({
       task_id: taskId,
       task_kind: taskKind,
       campaign_id: campaignId,
@@ -390,7 +406,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: refresh Controller supervisor binding"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", localBindingRepair ? "Feature Agent: refresh local session verifier binding" : "Feature Agent: refresh Controller supervisor binding"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
