@@ -13,7 +13,7 @@ AgentOS is a portable governance and orchestration kernel. It helps turn one cle
 6. Review the complete creation plan and its integrity details.
 7. Approve exactly with `APPROVE_EXACT_PLAN` or revise the plan.
 
-Bootstrap then stages a resumable setup transaction. If an authority corpus is imported or refactored, it creates and verifies `legacy.zip`, its manifest, index, and receipt before writing the new corpus. A distinct setup Auditor verifies the exact plan, readback, context separation, security baseline, persistent Runtime binding, and the three-root acceptance slice.
+Bootstrap then stages a resumable setup transaction. It creates the persistent project-level `AGENTOS_CONTROLLER` state at `agentos/controller-state.json` from an independent Controller Runtime readback. If an authority corpus is imported or refactored, it creates and verifies `legacy.zip`, its manifest, index, and receipt before writing the new corpus. A distinct setup Auditor verifies the exact plan, readback, context separation, security baseline, Runtime and Controller Runtime bindings, and the three-root acceptance slice.
 
 The plan also includes a deterministic Bootstrap coverage matrix. It shows
 which outputs were discovered, owner-confirmed, safely defaulted, derived,

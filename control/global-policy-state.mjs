@@ -427,7 +427,7 @@ export function validatePolicyState(state) {
   assert(Array.isArray(state.dependency_graph), "policy dependency graph is required");
   const expectedGraph = state.variables.flatMap((item) => item.dependencies.map((dependsOn) => ({variable_id: item.variable_id, depends_on: dependsOn})))
     .sort((left, right) => compareUtf8(`${left.variable_id}\u0000${left.depends_on}`, `${right.variable_id}\u0000${right.depends_on}`));
-  assert(JSON.stringify(state.dependency_graph) === JSON.stringify(expectedGraph), "policy dependency graph is not declared deterministically");
+  assert(policyDigest(state.dependency_graph) === policyDigest(expectedGraph), "policy dependency graph is not declared deterministically");
   for (const edge of state.dependency_graph) {
     assert(isRecord(edge) && typeof edge.variable_id === "string" && typeof edge.depends_on === "string", "policy dependency edge is invalid");
     definition(edge.variable_id); definition(edge.depends_on);

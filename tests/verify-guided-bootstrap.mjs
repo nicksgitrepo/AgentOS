@@ -18,6 +18,7 @@ import {
 } from "../control/bootstrap-compiler.mjs";
 import {discoverProject} from "../control/bootstrap-discovery.mjs";
 import * as guided from "../control/guided-bootstrap.mjs";
+import {compileControllerRuntimeReadback} from "../control/agentos-controller.mjs";
 
 const DIGEST = "a".repeat(64);
 const runtimeReadbackFor = (plan) => compileRuntimeReadback({
@@ -26,6 +27,15 @@ const runtimeReadbackFor = (plan) => compileRuntimeReadback({
   capabilities: plan.persistent_runtime.capabilities,
   observedByRole: "SYNTHETIC_RUNTIME_ADAPTER",
   observedBySession: "RUNTIME-READBACK-GUIDED",
+  observedAtUtc: "2026-08-03T00:00:00.000Z",
+});
+const controllerReadbackFor = (plan, observedBySession = "CONTROLLER-READBACK-GUIDED") => compileControllerRuntimeReadback({
+  projectId: plan.project_definition.project_name,
+  controllerRuntimeId: "CONTROLLER-RUNTIME-GUIDED",
+  runtimeId: "PROJECT-RUNTIME-GUIDED",
+  environmentIdentity: plan.persistent_runtime.environment_identity,
+  capabilitySetSha256: "a".repeat(64),
+  observedBySession,
   observedAtUtc: "2026-08-03T00:00:00.000Z",
 });
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-guided-"));
@@ -104,6 +114,8 @@ const result = executeBootstrapPlan(approved, {
   projectRoot: root,
   workflow,
   nowUtc: "2026-08-03T00:02:00.000Z",
+  controllerRuntimeReadback: controllerReadbackFor(approved),
+  controllerSessionId: "CONTROLLER-SESSION-GUIDED",
 });
 assert.equal(result.state.phase, "SEALED");
 assert(fs.existsSync(path.join(result.staging_root, "bootstrap.plan.json")));
@@ -115,6 +127,8 @@ const setupAudit = auditBootstrapSetup({
   stagingRoot: result.staging_root,
   workflow,
   runtimeReadback: runtimeReadbackFor(approved),
+  controllerRuntimeReadback: controllerReadbackFor(approved),
+  controllerSessionId: "CONTROLLER-SESSION-GUIDED",
 });
 assert.equal(setupAudit.status, "PASS");
 const promoted = promoteBootstrapExecution({plan: approved, executionState: result.state, setupAudit, projectRoot: root, nowUtc: "2026-08-03T00:03:00.000Z"});
@@ -128,6 +142,8 @@ assert.throws(() => auditBootstrapSetup({
   stagingRoot: result.staging_root,
   workflow,
   runtimeReadback: runtimeReadbackFor(approved),
+  controllerRuntimeReadback: controllerReadbackFor(approved),
+  controllerSessionId: "CONTROLLER-SESSION-GUIDED",
 }), /independent/);
 assert.equal(execution.phase, "APPROVED");
 
@@ -149,6 +165,8 @@ const imported = executeBootstrapPlan(importedApproved, {
   legacySourceRoot: source,
   workflow,
   nowUtc: "2026-08-03T00:04:00.000Z",
+  controllerRuntimeReadback: controllerReadbackFor(importedApproved, "CONTROLLER-READBACK-GUIDED-IMPORT"),
+  controllerSessionId: "CONTROLLER-SESSION-GUIDED-IMPORT",
 });
 assert.equal(imported.state.phase, "SEALED");
 assert(imported.state.legacy_receipt_sha256);

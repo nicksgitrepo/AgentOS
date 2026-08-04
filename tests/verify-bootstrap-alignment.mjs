@@ -26,6 +26,7 @@ import {
 } from "../control/delivery-policy.mjs";
 import {discoverProject} from "../control/bootstrap-discovery.mjs";
 import {verifyLegacyPreservation} from "../control/legacy-preservation.mjs";
+import {compileControllerRuntimeReadback} from "../control/agentos-controller.mjs";
 
 const ISO = "2026-01-01T00:00:00.000Z";
 const runtimeReadbackFor = (plan) => compileRuntimeReadback({
@@ -34,6 +35,15 @@ const runtimeReadbackFor = (plan) => compileRuntimeReadback({
   capabilities: plan.persistent_runtime.capabilities,
   observedByRole: "SYNTHETIC_RUNTIME_ADAPTER",
   observedBySession: "RUNTIME-READBACK-1",
+  observedAtUtc: ISO,
+});
+const controllerReadbackFor = (plan, observedBySession = "CONTROLLER-READBACK-1") => compileControllerRuntimeReadback({
+  projectId: plan.project_definition.project_name,
+  controllerRuntimeId: "CONTROLLER-RUNTIME-1",
+  runtimeId: "PROJECT-RUNTIME-1",
+  environmentIdentity: plan.persistent_runtime.environment_identity,
+  capabilitySetSha256: "a".repeat(64),
+  observedBySession,
   observedAtUtc: ISO,
 });
 const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-project-"));
@@ -164,13 +174,15 @@ try {
   const workflow = JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8"));
   const resumable = createBootstrapExecution(approved, {bootstrapSessionId: "BOOTSTRAP-2", projectRoot, nowUtc: ISO});
   assert.equal(resumable.phase, "APPROVED");
-  const execution = executeBootstrapPlan(approved, {bootstrapSessionId: "BOOTSTRAP-1", projectRoot, workflow, nowUtc: ISO});
+  assert.throws(() => executeBootstrapPlan(approved, {bootstrapSessionId: "BOOTSTRAP-NO-CONTROLLER", projectRoot, workflow, nowUtc: ISO}), /Controller Runtime readback/u);
+  const execution = executeBootstrapPlan(approved, {bootstrapSessionId: "BOOTSTRAP-1", projectRoot, workflow, nowUtc: ISO, controllerRuntimeReadback: controllerReadbackFor(approved), controllerSessionId: "CONTROLLER-SESSION-1"});
   assert.equal(execution.state.phase, "SEALED");
   assert(fs.existsSync(path.join(execution.staging_root, "bootstrap.plan.json")));
   const stagedDeliveryProbeResults = JSON.parse(fs.readFileSync(path.join(execution.staging_root, "delivery.probe.results.json"), "utf8"));
   validateDeliveryProbeResults(stagedDeliveryProbeResults, {planSha256: approved.plan_sha256, policySha256: approved.delivery_policy.policy_sha256, discoveryDigestSha256: approved.discovery_digest_sha256});
   assert.throws(() => auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow}), /Runtime adapter readback/u);
-  const audit = auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow, runtimeReadback: runtimeReadbackFor(approved)});
+  assert.throws(() => auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow, runtimeReadback: runtimeReadbackFor(approved)}), /Controller Runtime adapter readback/u);
+  const audit = auditBootstrapSetup({plan: approved, executionState: execution.state, auditorSessionId: "SETUP-AUDITOR-1", bootstrapSessionId: "BOOTSTRAP-1", stagingRoot: execution.staging_root, workflow, runtimeReadback: runtimeReadbackFor(approved), controllerRuntimeReadback: controllerReadbackFor(approved), controllerSessionId: "CONTROLLER-SESSION-1"});
   assert.equal(audit.status, "PASS");
   const contextPath = path.join(execution.staging_root, plan.authority_corpus.roots.project_context_root, "project-context.json");
   const context = JSON.parse(fs.readFileSync(contextPath, "utf8"));
@@ -201,7 +213,7 @@ try {
   const importedDiscovery = discoverProject(importedProject, "RECOMMENDED").facts;
   const importedPlan = compileBootstrapPlan({discovery: importedDiscovery, answers: importedAnswers, projectRoot: importedProject});
   const importedApproval = approveBootstrapPlan(importedPlan, {decision: PLAN_APPROVAL, planSha256: importedPlan.plan_sha256, discoveryDigestSha256: importedPlan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
-  const execution = executeBootstrapPlan(importedApproval, {bootstrapSessionId: "BOOTSTRAP-IMPORT", projectRoot: importedProject, legacySourceRoot: sourceRoot, workflow: JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8")), nowUtc: ISO});
+  const execution = executeBootstrapPlan(importedApproval, {bootstrapSessionId: "BOOTSTRAP-IMPORT", projectRoot: importedProject, legacySourceRoot: sourceRoot, workflow: JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8")), nowUtc: ISO, controllerRuntimeReadback: controllerReadbackFor(importedApproval, "CONTROLLER-READBACK-IMPORT"), controllerSessionId: "CONTROLLER-SESSION-IMPORT"});
   const legacyRoot = path.join(execution.staging_root, importedPlan.authority_corpus.roots.authority_root);
   assert.equal(verifyLegacyPreservation(legacyRoot).status, "VERIFIED_EXACT");
 } finally {
@@ -225,6 +237,8 @@ try {
     legacySourceRoot: toctouSourceRoot,
     workflow: JSON.parse(fs.readFileSync("schemas/capability-and-worktree-registry.v1.json", "utf8")),
     nowUtc: ISO,
+    controllerRuntimeReadback: controllerReadbackFor(toctouApproval, "CONTROLLER-READBACK-TOCTOU"),
+    controllerSessionId: "CONTROLLER-SESSION-TOCTOU",
   }), /legacy source contents changed/u);
 } finally {
   fs.rmSync(toctouSourceRoot, {recursive: true, force: true});

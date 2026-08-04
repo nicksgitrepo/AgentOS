@@ -901,7 +901,7 @@ export function writeAgentOSControllerStateCompareAndSwap({authorityRoot, stateP
   try {
     fs.writeFileSync(lock, `${process.pid}\n`, {flag: "wx", mode: 0o600});
     lockHeld = true;
-    fs.writeFileSync(temporary, `${JSON.stringify(state)}\n`, {flag: "wx", mode: 0o600});
+    fs.writeFileSync(temporary, `${canonicalJson(state)}\n`, {flag: "wx", mode: 0o600});
     fs.renameSync(temporary, target);
   } finally {
     if (fs.existsSync(temporary)) fs.unlinkSync(temporary);

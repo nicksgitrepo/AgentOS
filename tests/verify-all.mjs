@@ -157,6 +157,8 @@ assert.equal(kernel.campaign_state_owner.controller, "control/campaign-state-own
 assert.equal(kernel.campaign_state_owner.contract, "schemas/campaign-state-owner.v1.json");
 assert.equal(kernel.owner_review.controller, "control/owner-review.mjs");
 assert.equal(kernel.owner_review.review_type, "PRE_CAMPAIGN_OWNER_REVIEW");
+assert.equal(kernel.agentos_controller_initialization.controller, "control/agentos-controller.mjs");
+assert.equal(kernel.agentos_controller_initialization.state_path, "agentos/controller-state.json");
 assert.equal(kernel.bootstrap.start_contract, "schemas/bootstrap-start.v1.json");
 assert.equal(kernel.bootstrap.start_command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
 const bootstrapStart = JSON.parse(read("schemas/bootstrap-start.v1.json"));

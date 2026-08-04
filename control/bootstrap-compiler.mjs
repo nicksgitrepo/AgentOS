@@ -61,6 +61,12 @@ import {
   renderOwnerReviewMarkdown,
   validateOwnerReviewPacket,
 } from "./owner-review.mjs";
+import {
+  compileAgentOSControllerState,
+  validateAgentOSControllerState,
+  validateControllerRuntimeReadback,
+  writeAgentOSControllerStateCompareAndSwap,
+} from "./agentos-controller.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY"]);
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
@@ -1063,6 +1069,13 @@ function contextFromPlan(plan) {
     global_policy_state_path: globalPolicyStatePath,
     owner_review_policy_path: ownerReviewPolicyPath,
     persistent_runtime: plan.persistent_runtime,
+    agentos_controller_state_path: "agentos/controller-state.json",
+    agentos_controller: {
+      name: "AGENTOS_CONTROLLER",
+      scope: "PROJECT_PERSISTENT",
+      state_schema: "agentos.controller_state.v1",
+      initialization: "REQUIRES_PROJECT_BOUND_CONTROLLER_RUNTIME_READBACK",
+    },
     first_campaign: plan.first_campaign,
     exact_creation_plan: plan.exact_creation_plan,
     question_slice: plan.question_slice,
@@ -1306,13 +1319,28 @@ export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot,
   return state;
 }
 
-export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, legacySourceRoot = null, workflow, nowUtc, ownerReview = null}) {
+export function executeBootstrapPlan(plan, {
+  bootstrapSessionId,
+  projectRoot,
+  legacySourceRoot = null,
+  workflow,
+  nowUtc,
+  ownerReview = null,
+  controllerRuntimeReadback,
+  controllerSessionId,
+  logicalControllerId = "AGENTOS-CONTROLLER",
+}) {
   validateApprovedPlan(plan);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap execution requires the exact authority-corpus workflow");
   requireId(bootstrapSessionId, "Bootstrap session ID");
   requireUtc(nowUtc, "Bootstrap execution time");
+  assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap execution requires an independent Controller Runtime readback");
+  validateControllerRuntimeReadback(controllerRuntimeReadback);
+  requireId(controllerSessionId, "AgentOS Controller session ID");
   const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot);
   const root = validation.root;
+  assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
+  assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
   const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, legacySourceRoot, nowUtc});
   const stagingRoot = fs.mkdtempSync(path.join(root, ".agentos-bootstrap-stage-"));
   state.phase = "STAGING";
@@ -1352,6 +1380,20 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
   const destination = assertContained(stagingRoot, plan.authority_corpus.roots.authority_root, "authority root");
   fs.mkdirSync(destination, {recursive: true});
   const context = contextFromPlan(plan);
+  const controllerState = compileAgentOSControllerState({
+    projectId: plan.project_definition.project_name,
+    logicalControllerId,
+    currentSessionId: controllerSessionId,
+    policyState: plan.global_policy_state,
+    controllerRuntimeReadback,
+    nowUtc,
+  });
+  writeAgentOSControllerStateCompareAndSwap({
+    authorityRoot: stagingRoot,
+    statePath: context.project_context.agentos_controller_state_path,
+    expectedStateSha256: null,
+    state: controllerState,
+  });
   const ownerReviewHandoff = ownerReview === null ? null : compileBootstrapOwnerReviewHandoff({plan, ...ownerReview});
   const projectContextPath = assertContained(
     stagingRoot,
@@ -1390,7 +1432,7 @@ export function executeBootstrapPlan(plan, {bootstrapSessionId, projectRoot, leg
   delete body.state_sha256;
   state.state_sha256 = canonicalDigest(body);
   validateExecutionState(state);
-  return {state, staging_root: stagingRoot, corpus: corpusResult, owner_review: ownerReviewHandoff};
+  return {state, staging_root: stagingRoot, corpus: corpusResult, owner_review: ownerReviewHandoff, controller_state: controllerState};
 }
 
 export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, nowUtc}) {
@@ -1506,7 +1548,19 @@ export function promoteBootstrapExecution({plan, executionState, setupAudit, pro
   return {state: nextState, receipt, resumed: false};
 }
 
-export function auditBootstrapSetup({plan, executionState, auditorSessionId, bootstrapSessionId, stagingRoot, workflow, ownerReview = null, runtimeReadback = null}) {
+export function auditBootstrapSetup({
+  plan,
+  executionState,
+  auditorSessionId,
+  bootstrapSessionId,
+  stagingRoot,
+  workflow,
+  ownerReview = null,
+  runtimeReadback = null,
+  controllerRuntimeReadback,
+  controllerSessionId,
+  logicalControllerId = "AGENTOS-CONTROLLER",
+}) {
   validateApprovedPlan(plan);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap setup audit requires the exact authority-corpus workflow");
   requireId(auditorSessionId, "setup Auditor session");
@@ -1519,6 +1573,11 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   "Bootstrap setup cannot pass without an exact persistent Runtime binding");
   assert(runtimeReadback !== null, "Bootstrap setup requires an independent Runtime adapter readback");
   validateRuntimeReadback(runtimeReadback, plan.persistent_runtime);
+  assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap setup requires an independent Controller Runtime adapter readback");
+  validateControllerRuntimeReadback(controllerRuntimeReadback);
+  requireId(controllerSessionId, "AgentOS Controller session ID");
+  assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
+  assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
   const root = fs.realpathSync.native(path.resolve(stagingRoot));
   const observedStaging = directoryDigest(root);
   assert(observedStaging.sha256 === executionState.staging_tree_sha256
@@ -1584,6 +1643,17 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
   const persistedOwnerPolicy = JSON.parse(fs.readFileSync(ownerPolicyPath, "utf8"));
   assert(canonicalDigest(persistedOwnerPolicy) === canonicalDigest(plan.owner_review_policy),
     "persisted owner review policy is not bound to the exact plan");
+  const controllerStatePath = assertContained(root, context.agentos_controller_state_path, "AgentOS Controller state readback");
+  const controllerStateBytes = fs.readFileSync(controllerStatePath);
+  assert(canonicalCompactJson(JSON.parse(controllerStateBytes.toString("utf8"))) + "\n" === controllerStateBytes.toString("utf8"), "AgentOS Controller state is not canonical JSON");
+  const controllerState = JSON.parse(controllerStateBytes.toString("utf8"));
+  validateAgentOSControllerState(controllerState);
+  assert(controllerState.project_id === plan.project_definition.project_name
+    && controllerState.logical_controller_id === logicalControllerId
+    && controllerState.current_session_id === controllerSessionId
+    && controllerState.policy_state_sha256 === plan.global_policy_state.policy_state_sha256
+    && controllerState.controller_runtime_readback.readback_sha256 === controllerRuntimeReadback.readback_sha256,
+  "AgentOS Controller state is not bound to Bootstrap policy, session, or Runtime readback");
   if (ownerReview !== null) {
     const expectedHandoff = compileBootstrapOwnerReviewHandoff({plan, ...ownerReview});
     const handoffRoot = assertContained(root, `${plan.authority_corpus.roots.project_context_root}/owner-review`, "owner review handoff readback root");
@@ -1603,7 +1673,7 @@ export function auditBootstrapSetup({plan, executionState, auditorSessionId, boo
     bootstrap_session_id: bootstrapSessionId,
     plan_sha256: plan.plan_sha256,
     execution_state_sha256: executionState.state_sha256,
-    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "PROJECT_IMPORT_SOURCE_PRESERVATION", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "RUNTIME_ADAPTER_READBACK", "THREE_ROOT_SLICE", ...(ownerReview === null ? [] : ["OWNER_REVIEW_HANDOFF"])],
+    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "PROJECT_IMPORT_SOURCE_PRESERVATION", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "RUNTIME_ADAPTER_READBACK", "AGENTOS_CONTROLLER_INITIALIZATION", "CONTROLLER_RUNTIME_ADAPTER_READBACK", "THREE_ROOT_SLICE", ...(ownerReview === null ? [] : ["OWNER_REVIEW_HANDOFF"])],
     status: "PASS",
   };
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};

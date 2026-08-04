@@ -43,6 +43,7 @@ read-only discovery
         -> APPROVE_EXACT_PLAN
         -> run bound local delivery probes
         -> resumable staging transaction
+        -> persistent AGENTOS_CONTROLLER state bound to Controller Runtime readback
         -> independent setup audit
         -> sealed project context and authority corpus
 ```
@@ -120,7 +121,7 @@ APPROVE_EXACT_PLAN
 
 Approval binds both the plan digest and the discovery digest. A changed plan, changed discovery, changed source observation, or mismatched digest is rejected. Generic `PROCEED` is not a valid setup decision.
 
-Execution is resumable and transactional. It stages under the admitted project root, verifies readback, seals state, and promotes only after the independent setup Auditor confirms the selected plan, context separation, no secrets, Runtime binding, authority-corpus output, and the three-root slice. Re-running a sealed plan is idempotent; a different plan cannot overwrite it.
+Execution is resumable and transactional. It stages under the admitted project root, verifies readback, initializes `agentos/controller-state.json` for the persistent `AGENTOS_CONTROLLER`, seals state, and promotes only after the independent setup Auditor confirms the selected plan, context separation, no secrets, Runtime and Controller Runtime bindings, authority-corpus output, and the three-root slice. Re-running a sealed plan is idempotent; a different plan cannot overwrite it. A missing Controller Runtime adapter is unavailable and blocks setup; Bootstrap never invents the controller identity.
 
 ## Legacy preservation
 

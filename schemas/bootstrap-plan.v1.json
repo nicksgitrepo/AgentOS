@@ -106,5 +106,12 @@
     "outputs": ["<project-context-root>/owner-review/packet.json", "<project-context-root>/owner-review/handoff.md"],
     "rule": "Bootstrap can materialize the provider-neutral User Review Campaign handoff only when the caller supplies a current source binding, typed project summary, question inventory, candidate campaign, transport binding, and a host model catalog. Missing host or source observations fail closed; policy metadata alone is not presented as a handoff."
   },
+  "agentos_controller": {
+    "controller": "control/agentos-controller.mjs",
+    "contract": "schemas/agentos-controller.v1.json",
+    "state_path": "agentos/controller-state.json",
+    "initialization": "Bootstrap must stage a persistent AGENTOS_CONTROLLER state bound to the exact project policy and an independent project-bound Controller Runtime readback before setup audit can pass.",
+    "campaign_boundary": "The project-level Controller persists across campaigns; CAMPAIGN_ORCHESTRATOR remains campaign-scoped."
+  },
   "extension_boundary": "Project-specific context can fill typed fields and add stricter clauses, but cannot remove required output groups, weaken lifecycle, change acceptance roots, or replace the portable kernel."
 }

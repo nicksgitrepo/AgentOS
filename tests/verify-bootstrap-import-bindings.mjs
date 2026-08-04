@@ -14,6 +14,7 @@ import {
 } from "../control/bootstrap-compiler.mjs";
 import {discoverProject} from "../control/bootstrap-discovery.mjs";
 import {canonicalDigest as importDigest} from "../control/project-import.mjs";
+import {compileControllerRuntimeReadback} from "../control/agentos-controller.mjs";
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-import-binding-"));
 const source = path.join(root, "source");
@@ -29,6 +30,15 @@ const runtimeReadbackFor = (plan) => compileRuntimeReadback({
   capabilities: plan.persistent_runtime.capabilities,
   observedByRole: "SYNTHETIC_RUNTIME_ADAPTER",
   observedBySession: "RUNTIME-READBACK-IMPORT",
+  observedAtUtc: "2026-08-03T00:00:00.000Z",
+});
+const controllerReadbackFor = (plan, observedBySession = "CONTROLLER-READBACK-IMPORT") => compileControllerRuntimeReadback({
+  projectId: plan.project_definition.project_name,
+  controllerRuntimeId: "CONTROLLER-RUNTIME-IMPORT",
+  runtimeId: "PROJECT-RUNTIME-IMPORT",
+  environmentIdentity: plan.persistent_runtime.environment_identity,
+  capabilitySetSha256: "a".repeat(64),
+  observedBySession,
   observedAtUtc: "2026-08-03T00:00:00.000Z",
 });
 const discovery = discoverProject(destination, "RECOMMENDED").facts;
@@ -71,6 +81,8 @@ const executed = executeBootstrapPlan(approved, {
   projectRoot: destination,
   workflow,
   nowUtc: "2026-08-03T00:00:00.000Z",
+  controllerRuntimeReadback: controllerReadbackFor(approved),
+  controllerSessionId: "CONTROLLER-SESSION-IMPORT",
 });
 const setupAudit = auditBootstrapSetup({
   plan: approved,
@@ -80,6 +92,8 @@ const setupAudit = auditBootstrapSetup({
   stagingRoot: executed.staging_root,
   workflow,
   runtimeReadback: runtimeReadbackFor(approved),
+  controllerRuntimeReadback: controllerReadbackFor(approved),
+  controllerSessionId: "CONTROLLER-SESSION-IMPORT",
 });
 assert.equal(setupAudit.status, "PASS");
 assert(setupAudit.checks.includes("PROJECT_IMPORT_SOURCE_PRESERVATION"));
@@ -104,6 +118,8 @@ const adoptExecuted = executeBootstrapPlan(adoptApproved, {
   projectRoot: adoptRoot,
   workflow,
   nowUtc: "2026-08-03T00:00:00.000Z",
+  controllerRuntimeReadback: controllerReadbackFor(adoptApproved, "CONTROLLER-READBACK-ADOPT"),
+  controllerSessionId: "CONTROLLER-SESSION-ADOPT",
 });
 const adoptAudit = auditBootstrapSetup({
   plan: adoptApproved,
@@ -113,6 +129,8 @@ const adoptAudit = auditBootstrapSetup({
   stagingRoot: adoptExecuted.staging_root,
   workflow,
   runtimeReadback: runtimeReadbackFor(adoptApproved),
+  controllerRuntimeReadback: controllerReadbackFor(adoptApproved, "CONTROLLER-READBACK-ADOPT"),
+  controllerSessionId: "CONTROLLER-SESSION-ADOPT",
 });
 assert.equal(adoptAudit.status, "PASS");
 assert(fs.existsSync(path.join(adoptRoot, ".agentos", "import", "source-preservation", "source-preservation.zip")));
