@@ -664,7 +664,6 @@ function durableSessionTestFinding(campaignRoot) {
 
 function durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree}) {
   if (handoff.campaign_active !== true) return null;
-  if (durableSessionFailureRepairPresent(repositoryRoot)) return null;
   const entries = sessionEntries(campaignRoot, handoff);
   const unhealthy = entries
     .filter(({record}) => record.status === "RUNNING")
@@ -1107,6 +1106,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
     const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree});
+    if (durableSessionLiveness !== null && durableSessionFailureRepairPresent(repositoryRoot)) return routeLiveness(goal);
     const governanceEvidenceRepair = goal.finding_ids.includes(gateFinding.finding_id);
     const governanceEvidenceFinding = governanceEvidenceRepair ? {
       finding_id: gateFinding.finding_id,
