@@ -223,6 +223,36 @@ function sessionSummary(campaignRoot, entry) {
   };
 }
 
+function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
+  const failure = entry.record.failure ?? "durable session failed without an error message";
+  const rcaPath = `autonomous-supervisor-route-rcas/${entry.record.task_id}.json`;
+  const existing = readOptional(campaignRoot, rcaPath);
+  if (existing !== null) return existing;
+  return writeAddressed(campaignRoot, rcaPath, {
+    schema: "agentos.controller_autonomous_supervisor_route_rca.v1",
+    version: 1,
+    status: "OPEN_REPAIR_REQUIRED",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    controller_role: "AGENTOS_CONTROLLER",
+    task_id: entry.record.task_id,
+    task_kind: entry.record.task_kind,
+    role: entry.record.role,
+    session_id: entry.record.session_id,
+    source_commit: entry.record.source_commit,
+    source_tree: entry.record.source_tree,
+    observed_against_commit: sourceCommit,
+    observed_against_tree: sourceTree,
+    error_message_exact: failure,
+    evidence_path: path.relative(campaignRoot, entry.target),
+    root_cause: failure.includes("Auditor liveness observed source changes")
+      ? "The liveness Auditor compared the Feature-Agent commit diff with its parent instead of comparing the Feature-Agent checkpoint with the current source identity."
+      : "A durable campaign role exited before returning a source-bound readback.",
+    required_repair: "Preserve the failed session, correct the source-bound observation or worker behavior, then rerun the bounded liveness route.",
+    external_actions_attempted: false,
+    rca_sha256: null,
+  }, "rca_sha256");
+}
+
 function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
@@ -285,7 +315,7 @@ function adoptFeatureCheckpoint({repositoryRoot, sourceCommit, sourceTree, featu
   };
 }
 
-function compileSupervisorHandoff({previous, goal, status, sourceCommit, sourceTree, nextAction, permissions, repair = null, finalizer = null, lifecycleResolutionSha256 = null, supervisedSessions = []}) {
+function compileSupervisorHandoff({previous, goal, status, sourceCommit, sourceTree, nextAction, permissions, repair = null, finalizer = null, lifecycleResolutionSha256 = null, supervisedSessions = [], preservedFailureRcas = []}) {
   return {
     schema: "agentos.controller_autonomous_supervisor_handoff.v1",
     version: 1,
@@ -309,7 +339,10 @@ function compileSupervisorHandoff({previous, goal, status, sourceCommit, sourceT
     finalizer,
     lifecycle_resolution_sha256: lifecycleResolutionSha256,
     supervised_sessions: supervisedSessions,
-    preserved_failure_rcas: Array.isArray(previous.preserved_failure_rcas) ? [...previous.preserved_failure_rcas].sort() : [],
+    preserved_failure_rcas: [...new Set([
+      ...(Array.isArray(previous.preserved_failure_rcas) ? previous.preserved_failure_rcas : []),
+      ...preservedFailureRcas,
+    ])].sort(),
     boundary: permissions,
     next_action: nextAction,
     owner_decision_required: false,
@@ -596,11 +629,15 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
     const existingSessions = sessionEntries(campaignRoot, handoff);
+    const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
+      .filter(({record}) => record.status === "FAILED")
+      .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256);
     if (existingSessions.length === 3 && existingSessions.every((entry) => sessionIsHealthy({record: entry.record, sourceCommit, sourceTree}))) {
       return {
         status: "LIVENESS_HEALTHY",
         source_commit: sourceCommit,
         source_tree: sourceTree,
+        retained_failure_rcas: retainedFailureRcas.sort(),
         supervised_sessions: existingSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
         protected_boundaries: permissions,
       };
@@ -700,6 +737,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       finalizer: handoff.finalizer ?? null,
       lifecycleResolutionSha256: handoff.lifecycle_resolution_sha256 ?? null,
       supervisedSessions: activeSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
+      preservedFailureRcas: retainedFailureRcas,
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
@@ -712,6 +750,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       readback_record_paths: [orchestratorRecordPath, featureRecordPath, auditorRecordPath, controllerRecordPath].sort(),
       handoff_path: `autonomous-supervisor-handoffs/${transitioned.handoff.goal_id}.json`,
       current_handoff_pointer_sha256: transitioned.pointer.pointer_sha256,
+      retained_failure_rcas: retainedFailureRcas.sort(),
       supervised_session_record_paths: activeSessions.map((entry) => path.relative(campaignRoot, entry.target)).sort(),
       protected_boundaries: permissions,
     };
