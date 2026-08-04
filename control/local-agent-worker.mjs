@@ -255,7 +255,13 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     } else {
       changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
       assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
-      const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR" ? "control/controller-supervisor.mjs" : "control/governance-decision-tree.mjs";
+      const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
+        ? "control/controller-supervisor.mjs"
+        : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+          ? "schemas/bootstrap-binding.v1.json"
+          : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
+            ? "tests/verify-local-agent-session.mjs"
+            : "control/governance-decision-tree.mjs";
       assert(changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
       focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? runControllerSupervisorChecks(featureWorktree)
