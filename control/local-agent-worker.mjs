@@ -146,9 +146,11 @@ function applyDurableSessionTestRootRepair(worktreePath) {
 
 function applyOwnerConversationSurfaceRepair(worktreePath) {
   const bootstrapPath = path.join(worktreePath, "control/bootstrap-compiler.mjs");
+  const ownerReviewPath = path.join(worktreePath, "control/owner-review.mjs");
   const bindingPath = path.join(worktreePath, "schemas/bootstrap-binding.v1.json");
   const testPath = path.join(worktreePath, "tests/verify-owner-conversation-surface.mjs");
-  assert(fs.existsSync(bootstrapPath) && fs.existsSync(bindingPath), "owner conversation surface repair inputs are unavailable");
+  const ownerReviewVerifierPath = path.join(worktreePath, "tests/verify-owner-review.mjs");
+  assert(fs.existsSync(bootstrapPath) && fs.existsSync(ownerReviewPath) && fs.existsSync(bindingPath) && fs.existsSync(ownerReviewVerifierPath), "owner conversation surface repair inputs are unavailable");
   let source = fs.readFileSync(bootstrapPath, "utf8");
   const replacements = new Map([
     ["May Bootstrap perform safe read-only discovery so it can answer technical setup questions for you?", "May I take a quick look around without changing anything, so I can understand how to set things up?"],
@@ -166,11 +168,49 @@ function applyOwnerConversationSurfaceRepair(worktreePath) {
     ["Which persistent Runtime session and environment should remain available across campaigns, and what capabilities may it use?", "Would you like me to remember this project between work sessions? If so, what should that memory be allowed to use?"],
   ]);
   for (const [oldText, newText] of replacements) {
-    assert(source.includes(`prompt: "${oldText}"`), `owner conversation prompt is not at the expected source checkpoint: ${oldText}`);
-    source = source.replace(`prompt: "${oldText}"`, `prompt: "${newText}"`);
+    const oldLine = `prompt: "${oldText}"`;
+    const newLine = `prompt: "${newText}"`;
+    if (source.includes(oldLine)) source = source.replace(oldLine, newLine);
+    else assert(source.includes(newLine), `owner conversation prompt is not at the expected source checkpoint: ${oldText}`);
   }
   source = source.replace('    owner_visible: false,\n', '');
   writeFileAtomic(bootstrapPath, source);
+
+  let ownerReviewSource = fs.readFileSync(ownerReviewPath, "utf8");
+  const oldReviewBlock = [
+    '    "## A practical suggestion", "",',
+    '    `For this conversation, ${friendlyLevel} is suggested. For the build itself, the current recommendation is ${friendlyModel(chat.model_class)}.`,',
+    '    "The role recommendations are:", recommendedRoles, "",',
+    '    `This task is currently described as ${packet.candidate_campaign.task_profile.difficulty.toLowerCase().replaceAll("_", " ")} work, with ${packet.candidate_campaign.task_profile.time_sensitivity.toLowerCase()} time sensitivity and ${packet.candidate_campaign.task_profile.cost_sensitivity.toLowerCase()} cost sensitivity.`, "",',
+    '    "These are recommendations, not commitments. Tell me naturally if you care most about saving cost, finishing quickly, or getting the strongest reasoning, and I will reflect that preference.",',
+  ].join("\n");
+  const newReviewBlock = [
+    '    "## A practical suggestion", "",',
+    '    "I will keep the build details in the background. If you care most about saving effort, finishing sooner, or taking extra care, just tell me.",',
+  ].join("\n");
+  if (ownerReviewSource.includes(oldReviewBlock)) ownerReviewSource = ownerReviewSource.replace(oldReviewBlock, newReviewBlock);
+  else assert(ownerReviewSource.includes(newReviewBlock), "owner review practical suggestion is not at the expected source checkpoint");
+  ownerReviewSource = ownerReviewSource.replace(
+    '    "Keep the packet, internal field names, hashes, and technical governance terms in the background. Do not expose schema questions. Ask a technical or operational question only when a genuine boundary or lasting decision requires it.",',
+    '    "Keep the behind-the-scenes notes out of this conversation. Do not show internal questions. Ask for extra details only when a real boundary or lasting choice truly needs them.",',
+  );
+  ownerReviewSource = ownerReviewSource.replace(
+    '    "When we are finished, I will play the plan back in ordinary language. You may answer in your own words; headings are optional. Do not say that the project changed. AgentOS will turn the conversation into a bound candidate and show the owner the exact result for separate approval. Saying that the plan sounds right is not approval by itself.",',
+    '    "When we are finished, I will play the plan back in ordinary language. You may answer in your own words; headings are optional. The project will not change just because the conversation sounds right; you will see the clear plan before anything starts.",',
+  );
+  writeFileAtomic(ownerReviewPath, ownerReviewSource);
+
+  let ownerReviewVerifierSource = fs.readFileSync(ownerReviewVerifierPath, "utf8");
+  const oldOwnerReviewAssertion = '  assert(renderedPacket.includes("Do not expose schema questions"));';
+  const newOwnerReviewAssertions = [
+    '  assert(renderedPacket.includes("Keep the behind-the-scenes notes out of this conversation"));',
+    '  assert(!renderedPacket.includes("For the build itself, the current recommendation is"));',
+    '  assert(!renderedPacket.includes("The role recommendations are:"));',
+    '  assert(!renderedPacket.includes("This task is currently described as"));',
+  ].join("\n");
+  if (ownerReviewVerifierSource.includes(oldOwnerReviewAssertion)) ownerReviewVerifierSource = ownerReviewVerifierSource.replace(oldOwnerReviewAssertion, newOwnerReviewAssertions);
+  else assert(ownerReviewVerifierSource.includes(newOwnerReviewAssertions), "owner review verifier is not at the expected source checkpoint");
+  writeFileAtomic(ownerReviewVerifierPath, ownerReviewVerifierSource);
 
   const testSource = String.raw`#!/usr/bin/env node
 
@@ -199,8 +239,18 @@ const FORBIDDEN_OWNER_TERMS = [
   /\bprovider binding\b/iu,
 ];
 
+const FORBIDDEN_REVIEW_OUTPUT = [
+  "For the build itself, the current recommendation is",
+  "The role recommendations are:",
+  "This task is currently described as",
+  "technical governance terms",
+  "exact result for separate approval",
+];
+
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-owner-conversation-surface-"));
 try {
+  const ownerReviewSource = fs.readFileSync(new URL("../control/owner-review.mjs", import.meta.url), "utf8");
+  for (const phrase of FORBIDDEN_REVIEW_OUTPUT) assert(!ownerReviewSource.includes(phrase), "Ongoing owner review exposes " + phrase);
   for (const question of BOOTSTRAP_QUESTIONS) {
     for (const pattern of FORBIDDEN_OWNER_TERMS) assert(!pattern.test(question.prompt), "Bootstrap owner prompt exposes " + pattern + ": " + question.id);
   }
@@ -221,14 +271,20 @@ try {
   writeFileAtomic(testPath, testSource);
 
   const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
-  const changedPaths = ["control/bootstrap-compiler.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs"];
+  const changedPaths = ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs", "tests/verify-owner-review.mjs"];
   let refreshed = 0;
+  const bindingSources = new Map([
+    ["control/bootstrap-compiler.mjs", bootstrapPath],
+    ["control/owner-review.mjs", ownerReviewPath],
+    ["tests/verify-owner-review.mjs", ownerReviewVerifierPath],
+  ]);
   for (const entry of Object.values(binding.normative ?? {})) {
-    if (entry?.path !== "control/bootstrap-compiler.mjs") continue;
-    entry.sha256 = crypto.createHash("sha256").update(fs.readFileSync(bootstrapPath)).digest("hex");
+    const sourcePath = bindingSources.get(entry?.path);
+    if (sourcePath === undefined) continue;
+    entry.sha256 = crypto.createHash("sha256").update(fs.readFileSync(sourcePath)).digest("hex");
     refreshed += 1;
   }
-  assert(refreshed === 1, "Bootstrap compiler binding entry is unavailable");
+  assert(refreshed === 3, "Bootstrap, owner-review, or owner-review verifier binding entry is unavailable");
   writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
   return changedPaths;
 }
@@ -376,7 +432,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? runDurableSessionChecks(featureWorktree)
           : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
-            ? runChecks(featureWorktree, ["node --check control/bootstrap-compiler.mjs", "node tests/verify-owner-conversation-surface.mjs"])
+            ? runChecks(featureWorktree, ["node --check control/bootstrap-compiler.mjs", "node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs"])
           : runFocusedChecks(featureWorktree);
     }
     buildStatus = "AUDIT_VERIFIED";
@@ -482,6 +538,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     focusedChecks = runChecks(worktreePath, [
       "node --check control/bootstrap-compiler.mjs",
       "node tests/verify-owner-conversation-surface.mjs",
+      "node tests/verify-owner-review.mjs",
       "node tests/verify-bootstrap-delivery-finish.mjs",
     ]);
     const marker = `// Local Feature Agent owner-conversation repair receipt; held in the isolated campaign worktree.\nexport const OWNER_CONVERSATION_SURFACE_REPAIR = Object.freeze(${JSON.stringify({
@@ -503,7 +560,9 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner-conversation checkpoint");
-    assert(changedPaths.includes("control/bootstrap-compiler.mjs"), "Feature Agent owner-conversation repair did not change Bootstrap prompts");
+    for (const requiredPath of ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "tests/verify-owner-review.mjs"]) {
+      assert(changedPaths.includes(requiredPath), "Feature Agent owner-conversation repair did not change " + requiredPath);
+    }
     buildStatus = "COMPLETED";
     product = {
       ...base,

@@ -272,7 +272,9 @@ function localAgentSessionBindingFinding(repositoryRoot) {
 
 function ownerConversationSurfaceFinding(repositoryRoot) {
   const bootstrapPath = path.join(repositoryRoot, "control/bootstrap-compiler.mjs");
+  const ownerReviewPath = path.join(repositoryRoot, "control/owner-review.mjs");
   const source = fs.readFileSync(bootstrapPath, "utf8");
+  const ownerReviewSource = fs.readFileSync(ownerReviewPath, "utf8");
   const promptTexts = [...source.matchAll(/prompt:\s+"([^"]*)"/gu)].map((match) => match[1]);
   const leakedPrompts = [
     "technical setup questions",
@@ -288,19 +290,32 @@ function ownerConversationSurfaceFinding(repositoryRoot) {
     "persistent Runtime session and environment",
   ].filter((term) => promptTexts.some((prompt) => prompt.includes(term)));
   const ownerVisibilityLeak = source.includes("owner_visible: false") && source.includes("prompt: question.prompt");
-  if (leakedPrompts.length === 0 && !ownerVisibilityLeak) return null;
+  const leakedReviewOutput = [
+    "For the build itself, the current recommendation is",
+    "The role recommendations are:",
+    "This task is currently described as",
+    "technical governance terms",
+    "exact result for separate approval",
+  ].filter((term) => ownerReviewSource.includes(term));
+  if (leakedPrompts.length === 0 && !ownerVisibilityLeak && leakedReviewOutput.length === 0) return null;
   return {
     finding_id: "F-OWNER-CONVERSATION-SURFACE",
     classification: "REPAIRABLE_ENGINEERING_PUZZLE",
     status: "OPEN_REPAIR_REQUIRED",
     summary: ownerVisibilityLeak
       ? "Bootstrap still exposes a hidden technical setup field through the owner question projection."
-      : "Bootstrap still exposes technical governance wording in the owner-facing conversation instead of translating it into ordinary language.",
+      : leakedReviewOutput.length > 0
+        ? "The ongoing owner review still exposes internal build recommendations instead of keeping them behind the casual conversation."
+        : "Bootstrap still exposes technical governance wording in the owner-facing conversation instead of translating it into ordinary language.",
     source_sha256: supervisorDigest({
-      path: "control/bootstrap-compiler.mjs",
+      paths: ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"],
       leaked_prompts: leakedPrompts,
       owner_visibility_leak: ownerVisibilityLeak,
-      source: crypto.createHash("sha256").update(source, "utf8").digest("hex"),
+      leaked_review_output: leakedReviewOutput,
+      source: {
+        bootstrap: crypto.createHash("sha256").update(source, "utf8").digest("hex"),
+        owner_review: crypto.createHash("sha256").update(ownerReviewSource, "utf8").digest("hex"),
+      },
     }),
   };
 }
@@ -365,7 +380,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
   ];
   if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
-  if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
+  if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
   for (const check of checks) {
     const [program, ...args] = check.split(" ");
     execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
@@ -616,7 +631,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       source_commit: sourceCommit,
       source_tree: sourceTree,
       scope: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
-        ? ["control/bootstrap-compiler.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs"].sort()
+        ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs", "tests/verify-owner-review.mjs"].sort()
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? ["tests/verify-local-agent-session.mjs"].sort()
         : bindingRepair
@@ -648,7 +663,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       sourceCommit,
       sourceTree,
       task: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
-        ? "Translate Bootstrap owner questions into a casual, nontechnical conversation and return exact focused evidence."
+        ? "Keep Bootstrap and the ongoing owner review casual and nontechnical while preserving the typed internal plan, then return exact focused evidence."
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Repair the durable-session verifier so it creates its temporary folder in an isolated worktree, then run its focused check."
         : bindingRepair
@@ -667,7 +682,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       sourceCommit,
       sourceTree,
       task: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
-        ? "Independently inspect the Feature-Agent owner conversation repair and verify that technical governance wording stays behind the conversation."
+        ? "Independently inspect the Feature-Agent repair and verify that Bootstrap and the ongoing owner review keep technical governance wording behind the conversation."
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
         ? "Independently inspect the Feature-Agent durable-session verifier repair and return source-bound test evidence."
         : bindingRepair
@@ -747,7 +762,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       permissions,
       repair: {
         summary: repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
-          ? "Translate Bootstrap's technical setup questions into short everyday questions while preserving the typed internal plan."
+          ? "Keep Bootstrap and the ongoing owner review in short everyday language while preserving the typed internal plan."
           : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
           ? "Make the durable-session verifier create its temporary root inside every isolated worktree."
           : bindingRepair
