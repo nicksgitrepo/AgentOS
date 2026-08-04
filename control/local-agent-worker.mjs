@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
+import {collectGovernanceGateEvidence} from "./governance-evidence.mjs";
 import {pathToFileURL} from "node:url";
 import {applyGovernanceEvidenceRepair} from "./feature-agent-governance-evidence-repair.mjs";
 
@@ -423,7 +424,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
   assert(fs.existsSync(decisionTreePath) && fs.statSync(decisionTreePath).isFile(), "Orchestrator decision tree record is unavailable");
   const decisionTree = JSON.parse(fs.readFileSync(decisionTreePath, "utf8"));
   const {evaluateGovernanceDecisionTree} = await import(pathToFileURL(path.join(worktreePath, "control/governance-decision-tree.mjs")).href);
-  const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, `${gate.gate_id}:${key}`]));
+  const gateEvidence = collectGovernanceGateEvidence({worktreePath, tree: decisionTree});
+  const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, gateEvidence[gate.gate_id + ":" + key]]));
   const gateAnswers = Object.fromEntries(decisionTree.gates.map((gate) => [gate.gate_id, {answer: "YES", evidence: evidence(gate), failure: null, recheck: null}]));
   const gateEvaluation = evaluateGovernanceDecisionTree({tree: decisionTree, answers: gateAnswers});
   assert(gateEvaluation.status === "PASS", "Orchestrator four-root governance evaluation did not pass");
@@ -431,6 +433,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     ...base,
     custody_status: "CAMPAIGN_ORCHESTRATOR_CUSTODY",
     ordered_roots: ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "CODE_QUALITY_HYGIENE", "SECURITY"],
+    gate_evidence: gateEvidence,
+    gate_answers: gateAnswers,
     gate_evaluation: gateEvaluation,
     repair_task: {
       task_id: "TASK-FEATURE-AGENT-EXECUTABLE-GOVERNANCE-1",
@@ -448,7 +452,60 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     audit_status: "INITIAL_AUDIT_READY",
     observation: "Inspect the actual Feature-Agent worktree and compare it with the exact candidate and gate evidence.",
   };
-  if (featureWorktree !== null) {
+  if (taskKind === "GOVERNANCE_EVIDENCE_RECHECK") {
+    assert(featureWorktree !== null && fs.existsSync(featureWorktree) && fs.statSync(featureWorktree).isDirectory(), "auditor Feature-Agent worktree is unavailable");
+    assert(evidenceWorktree !== null && fs.existsSync(evidenceWorktree) && fs.statSync(evidenceWorktree).isDirectory(), "auditor evidence worktree is unavailable");
+    assert(decisionTreePath !== null && fs.existsSync(decisionTreePath), "auditor decision tree is unavailable");
+    const decisionTree = JSON.parse(fs.readFileSync(decisionTreePath, "utf8"));
+    const evidencePlanPath = path.join(evidenceWorktree, "orchestrator-plan.json");
+    assert(fs.existsSync(evidencePlanPath), "auditor orchestrator evidence plan is unavailable");
+    const evidencePlan = JSON.parse(fs.readFileSync(evidencePlanPath, "utf8"));
+    const {evaluateGovernanceDecisionTree} = await import(pathToFileURL(path.join(worktreePath, "control/governance-decision-tree.mjs")).href);
+    const {controllerDigest} = await import(pathToFileURL(path.join(worktreePath, "control/agentos-controller.mjs")).href);
+    const evaluation = evaluateGovernanceDecisionTree({tree: decisionTree, answers: evidencePlan.gate_answers});
+    assert(evaluation.status === "PASS", "Auditor governance evidence re-check did not pass");
+    assert(evidencePlan.gate_evaluation?.evaluation_sha256 === evaluation.evaluation_sha256, "Auditor observed a different governance evaluation");
+    const auditedFeatureCommit = git(featureWorktree, ["rev-parse", "HEAD"]);
+    const auditedFeatureTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);
+    assert(auditedFeatureCommit === sourceCommit && auditedFeatureTree === sourceTree, "Auditor source differs from the repaired Feature-Agent checkpoint");
+    assert(evidencePlan.source_commit === sourceCommit && evidencePlan.source_tree === sourceTree, "Auditor evidence plan source differs from the repaired checkpoint");
+    const flattenedEvidence = {};
+    for (const gate of decisionTree.gates) {
+      const gateAnswer = evidencePlan.gate_answers?.[gate.gate_id];
+      assert(gateAnswer?.answer === "YES", "Auditor evidence plan contains a non-YES gate answer");
+      for (const key of gate.evidence_requirements) {
+        const compositeKey = gate.gate_id + ":" + key;
+        const record = evidencePlan.gate_evidence?.[compositeKey];
+        assert(record && gateAnswer.evidence?.[key], "Auditor evidence plan is missing a declared gate record");
+        assert(record.source_commit === sourceCommit && record.source_tree === sourceTree, "Auditor gate evidence source differs from the repaired checkpoint");
+        assert(!record.check_id.includes("PLACEHOLDER") && !record.check_id.includes("}"), "Auditor accepted generic gate evidence");
+        assert(controllerDigest(record) === controllerDigest(gateAnswer.evidence[key]), "Auditor gate evidence map differs from each gate answer");
+        flattenedEvidence[compositeKey] = gateAnswer.evidence[key];
+      }
+    }
+    assert(controllerDigest(flattenedEvidence) === controllerDigest(evidencePlan.gate_evidence), "Auditor gate evidence contains an undeclared or missing record");
+    buildCommit = auditedFeatureCommit;
+    buildTree = auditedFeatureTree;
+    changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    for (const requiredPath of ["control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs"]) assert(changedPaths.includes(requiredPath), "Auditor did not observe the complete Feature-Agent evidence repair");
+    focusedChecks = runFocusedChecks(featureWorktree);
+    buildStatus = "AUDIT_VERIFIED";
+    product = {
+      ...product,
+      task_id: taskId,
+      task_kind: taskKind,
+      audit_status: "GOVERNANCE_EVIDENCE_VERIFIED",
+      audited_feature_worktree: featureWorktree,
+      audited_feature_commit: buildCommit,
+      audited_feature_tree: buildTree,
+      audited_feature_changed_paths: changedPaths,
+      audited_feature_checks: focusedChecks,
+      audited_gate_evidence: evidencePlan.gate_evidence,
+      audited_gate_answers: evidencePlan.gate_answers,
+      audited_gate_evaluation: evaluation,
+      evidence_worktree: evidenceWorktree,
+    };
+  } else if (featureWorktree !== null) {
     assert(fs.existsSync(featureWorktree) && fs.statSync(featureWorktree).isDirectory(), "auditor Feature-Agent worktree is unavailable");
     buildCommit = git(featureWorktree, ["rev-parse", "HEAD"]);
     buildTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);

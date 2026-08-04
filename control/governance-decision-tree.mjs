@@ -334,16 +334,35 @@ function normalizeBoolean(value, label) {
   throw new Error(`${label} requires explicit YES or NO`);
 }
 
-function validateEvidence(evidence, required, label) {
+function validateEvidenceRecord(value, key, label, tree) {
+  exactKeys(value, ["schema", "version", "evidence_key", "source_commit", "source_tree", "check_id", "observed", "result_sha256", "evidence_sha256"], label);
+  assert(value.schema === "agentos.governance_gate_evidence.v1" && value.version === 1, label + " schema mismatch");
+  assert(value.evidence_key === key, label + " key mismatch");
+  requireGitObject(value.source_commit, label + " source commit");
+  requireGitObject(value.source_tree, label + " source tree");
+  assert(value.source_commit === tree.source_commit && value.source_tree === tree.source_tree, label + " source binding differs from the tested tree");
+  requireString(value.check_id, label + " check ID");
+  assert(!value.check_id.includes("PLACEHOLDER") && !value.check_id.includes("}"), label + " uses generic evidence");
+  exactKeys(value.observed, ["command", "exit_code", "stdout_sha256", "stderr_sha256", "status"], label + " observation");
+  requireString(value.observed.command, label + " command");
+  assert(Number.isSafeInteger(value.observed.exit_code) && value.observed.exit_code === 0, label + " command did not pass");
+  assert(value.observed.status === "PASS", label + " observation is not a passing check");
+  requireSha(value.observed.stdout_sha256, label + " stdout digest");
+  requireSha(value.observed.stderr_sha256, label + " stderr digest");
+  requireSha(value.result_sha256, label + " result digest");
+  assert(value.result_sha256 === controllerDigest(value.observed), label + " result digest does not match the observation");
+  requireSha(value.evidence_sha256, label + " evidence digest");
+  assert(value.evidence_sha256 === digestWithout(value, "evidence_sha256"), label + " evidence digest mismatch");
+}
+
+function validateEvidence(evidence, required, label, tree) {
   requireRecord(evidence, label);
   const actual = Object.keys(evidence).sort();
   const expected = [...required].sort();
-  assert(JSON.stringify(actual) === JSON.stringify(expected), `${label} must contain exactly the declared evidence`);
-  for (const key of required) {
-    const value = evidence[key];
-    assert((typeof value === "string" && value.length > 0) || isRecord(value), `${label}.${key} is missing`);
-  }
+  assert(JSON.stringify(actual) === JSON.stringify(expected), label + " must contain exactly the declared evidence");
+  for (const key of required) validateEvidenceRecord(evidence[key], key, label + "." + key, tree);
 }
+
 
 function inspectAnswer(gate, answer, answers, traces) {
   requireRecord(answer, `${gate.gate_id} answer`);
@@ -351,7 +370,7 @@ function inspectAnswer(gate, answer, answers, traces) {
   const yes = normalizeBoolean(answer.answer, `${gate.gate_id} answer`);
   if (yes) {
     assert(answer.failure === null && answer.recheck === null, `${gate.gate_id} YES cannot carry a failure or recheck`);
-    validateEvidence(answer.evidence, gate.evidence_requirements, `${gate.gate_id} evidence`);
+    validateEvidence(answer.evidence, gate.evidence_requirements, gate.gate_id + " evidence", answers._tree);
     traces.push({gate_id: gate.gate_id, answer: "YES", evidence: structuredClone(answer.evidence)});
     return {status: "PASS"};
   }
@@ -364,7 +383,7 @@ function inspectAnswer(gate, answer, answers, traces) {
   assert(normalizeBoolean(answer.recheck.answer, `${gate.gate_id} re-check`) === true, `${gate.gate_id} exact re-check must be YES`);
   const recheckGate = answers._tree.gates.find((candidate) => candidate.gate_id === answer.recheck.gate_id);
   assert(recheckGate, `${gate.gate_id} exact re-check names an unknown gate`);
-  validateEvidence(answer.recheck.evidence, recheckGate.evidence_requirements, `${gate.gate_id} re-check evidence`);
+  validateEvidence(answer.recheck.evidence, recheckGate.evidence_requirements, gate.gate_id + " re-check evidence", answers._tree);
   traces.push({gate_id: gate.gate_id, answer: "NO", failure: structuredClone(answer.failure), recheck: structuredClone(answer.recheck)});
   if (answer.failure.classification === "REPAIRABLE_ENGINEERING_PUZZLE") return {status: "REPAIRED"};
   return {status: answer.failure.classification};
