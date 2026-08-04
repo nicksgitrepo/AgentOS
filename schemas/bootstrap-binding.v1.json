@@ -69,6 +69,9 @@
     "task_continuation_controller": {"path": "control/task-continuation.mjs", "sha256": "b51a20bb1d8da4a4b8f45a699195193df0b54740f9b7646751e5b8aaffb19a21"},
     "task_continuation_contract": {"path": "schemas/task-continuation.v1.json", "sha256": "25c9fb5c9eb516afce12f9103f46fb49aab193735e16d6ca4750253dd85c0b58"},
     "task_continuation_verifier": {"path": "tests/verify-task-continuation.mjs", "sha256": "aa139ff03c4776f7a256f9b0eb648e3d61f4d9c0eb82f0fd396ca90d4eb9f36c"},
+    "task_run_loop_controller": {"path": "control/task-run-loop.mjs", "sha256": "9806da3ec876a46ca923854dbf4e7ba7174ca9b2f709c14c8652bd8b9a5cbcdb"},
+    "task_run_loop_contract": {"path": "schemas/task-run-loop.v1.json", "sha256": "b2de34fb223282ed258b40c9f3d2efabe1ff72518c8f6cd5014e2f06a4caf30d"},
+    "task_run_loop_verifier": {"path": "tests/verify-task-run-loop.mjs", "sha256": "81c28f7600fdf54fe3b8da7d477d2ad585b88957bf9d5307dc5cd93d69b2d3c3"},
     "campaign_policy_reconcile_controller": {"path": "control/campaign-policy-reconcile.mjs", "sha256": "586a90711ada94470045a00ebcc4e227ce98595d17a6b5b35c3d82ed31be8ba9"},
     "campaign_policy_reconcile_verifier": {"path": "tests/verify-campaign-policy-reconcile.mjs", "sha256": "03a89707eb581c9b5d67229a6747b9dd1293f6ae6c8c5f01c23211832127c0f0"},
     "campaign_policy_reconcile_contract": {"path": "schemas/campaign-policy-reconcile.v1.json", "sha256": "1eb268afedec8d6d31a797e4487f17b04953cf52110dc8ce9fa6e22f3c9b8533"},
@@ -117,14 +120,14 @@
     "naming_article": {"path": "governance/2.1rc/naming-and-terminology.md", "sha256": "8418175c88dacd35b3fa8fe3d21bb8767467f115ec96bceaf41a1d2dc3a334c6"},
     "workflow_registry": {"path": "schemas/capability-and-worktree-registry.v1.json", "sha256": "42e75d5c879c626c35342615fed908fb77dbda3a86182fb614289048f454a58c"},
     "workflow_article": {"path": "governance/2.1rc/feature-platform-workflow.md", "sha256": "570566ce140c256110161b364c5ccb16974b90ff991ec5dcb42fd933fe5b1a95"},
-    "kernel_registry": {"path": "schemas/kernel.v1.json", "sha256": "d8b22ca00530ed256c86a263e5d11c7c8af693bb8c21c6ed4b090387ac64482c"},
+    "kernel_registry": {"path": "schemas/kernel.v1.json", "sha256": "fd910e053a965f2dbc78b3855de9c6cfea96e8129b04323f6c65ba702ec19a32"},
     "kernel_article": {"path": "governance/2.1rc/portable-kernel.md", "sha256": "a673158ba3b1b3861bdcf216c4f79ecdb1d685f02f1a08947259cc1125efaee5"},
     "authority_format": {"path": "governance/2.1rc/portable-authority-corpus-format.md", "sha256": "a8bf6867070e554d4d7046be2cb1701b792efe9b3d3d3fbaf77698fe1dc937e9"},
     "project_context_template": {"path": "authority/templates/project-context.v1.json", "sha256": "1e9751fe4d1a7114b126d100ea2d9c9961bf79835251e69f09cd7a7f94466185"},
     "synthetic_context": {"path": "examples/project-context-fixture.v1.json", "sha256": "957f41aa6fa8276f40c3e58a6171a5cdd913d21ade0f17183f3d6a608e0b4311"},
     "extraction_manifest": {"path": "migrations/2.1rc-extraction-manifest.json", "sha256": "c394e176bbfe37cbf08b64f54ee8da175ddd2e7985f4016d533785e66aecaff9"},
     "portability_verifier": {"path": "tests/verify-portability.mjs", "sha256": "8221b6e8ba19ca7a46b5e80b2fd9f1087c8f5a515ad1d800bd3e9ef6ec05197c"},
-    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "a5db96d0f976e9a475f4e003497360da56bf5bc8239db2fed8bdc070af64bfc4"}
+    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "55e39f6a0723fbf6533299ea830fc497f72bd0587ccc8c3861dc2435e59379d1"}
   },
   "compatibility_only": {
     "bootstrap_interview_alias": {"path": "control/bootstrap-interview.mjs", "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"},

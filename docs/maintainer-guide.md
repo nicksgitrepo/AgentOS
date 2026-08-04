@@ -59,3 +59,18 @@ It selects exactly one owner-authorized `CONTROL_PLANE_ONLY` task and records
 the task plus its handoff without activating the campaign or spawning agents.
 The parent identity, policy, and reconciliation remain unchanged; ambiguous
 selection or any forbidden boundary fails closed.
+
+### Repeatable safe runs and owner feedback
+
+Use `control/task-run-loop.mjs` after a continuation task has a valid inactive
+start handoff. One loop iteration consumes one ready control-plane task,
+records its inactive execution readback and reconciliation, and queues exactly
+one validated next candidate. It does not activate a campaign, write Product,
+spawn agents, deploy, release, push, merge, or change the sterile copy. A real
+owner decision, scope or intent change, hard boundary, or safety problem stops
+the loop.
+
+Keep roughness found in the owner flow in `docs/owner-feedback-backlog.md`.
+Each item keeps its user-visible symptom, expected behavior, and follow-up
+campaign. The loop may queue those follow-ups as bounded control-plane work;
+the separate campaign-start boundary remains required for real execution.

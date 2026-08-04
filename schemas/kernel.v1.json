@@ -129,6 +129,11 @@
       "contract": "schemas/task-continuation.v1.json",
       "rule": "From a completed inactive handoff, select exactly one owner-authorized control-plane task and record its inactive task/handoff pair. Preserve the parent identity, policy, scope, and reconciliation; fail closed on ambiguity or any activation boundary."
     },
+    "task_run_loop": {
+      "controller": "control/task-run-loop.mjs",
+      "contract": "schemas/task-run-loop.v1.json",
+      "rule": "Each iteration consumes exactly one continuation-ready control-plane task, records inactive execution and reconciliation, queues exactly one next safe candidate, and fails closed on any identity, evidence, scope, intent, or boundary mismatch."
+    },
     "agentos_controller_initialization": {
       "controller": "control/agentos-controller.mjs",
       "contract": "schemas/agentos-controller.v1.json",

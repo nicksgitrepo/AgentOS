@@ -171,6 +171,9 @@ assert(kernel.campaign_receipts.rule.includes("complete audit bodies") && kernel
 assert.equal(kernel.task_continuation.controller, "control/task-continuation.mjs");
 assert.equal(kernel.task_continuation.contract, "schemas/task-continuation.v1.json");
 assert(kernel.task_continuation.rule.includes("exactly one") && kernel.task_continuation.rule.includes("inactive"));
+assert.equal(kernel.task_run_loop.controller, "control/task-run-loop.mjs");
+assert.equal(kernel.task_run_loop.contract, "schemas/task-run-loop.v1.json");
+assert(kernel.task_run_loop.rule.includes("exactly one") && kernel.task_run_loop.rule.includes("fails closed"));
 assert.equal(kernel.agentos_controller_initialization.controller, "control/agentos-controller.mjs");
 assert.equal(kernel.agentos_controller_initialization.state_path, "agentos/controller-state.json");
 assert.equal(kernel.agentos_controller_initialization.storage_rule.includes("control-plane root"), true);
@@ -226,6 +229,7 @@ for (const relativePath of [
   "tests/verify-owner-review.mjs",
   "tests/verify-campaign-receipts.mjs",
   "tests/verify-task-continuation.mjs",
+  "tests/verify-task-run-loop.mjs",
   "tests/verify-campaign-state-bridge.mjs",
   "tests/verify-campaign-state-owner.mjs",
   "tests/verify-continuous-audit-sentinel.mjs",

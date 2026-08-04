@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.control_plane_task_run_loop_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/task-run-loop.mjs",
+  "purpose": "Repeat one safe control-plane iteration from a continuation-ready task without requiring a new manual message.",
+  "iteration": {
+    "rule": "Consume exactly one validated inactive task, require its inactive start handoff, record its execution and reconciliation, and queue exactly one validated next candidate.",
+    "selection": "The next candidate must be selected from the supplied catalog by an exact task ID; missing, duplicate, current-task, or unsafe candidates fail closed."
+  },
+  "records": [
+    "agentos.control_plane_task_execution_readback.v1",
+    "agentos.control_plane_task_run_reconciliation.v1",
+    "agentos.control_plane_queued_task.v1"
+  ],
+  "identity": "Every output preserves the ready task's campaign, version, canonical Controller identity, policy, source commit/tree, parent handoff, and parent reconciliation.",
+  "inactive_boundary": {
+    "campaign_activation_allowed": false,
+    "active_campaign": false,
+    "product_writes_allowed": false,
+    "product_agent_spawns_allowed": false,
+    "deployment_allowed": false,
+    "publication_allowed": false,
+    "push_allowed": false,
+    "merge_allowed": false,
+    "sterile_copy_changed": false,
+    "secrets_accessed": false,
+    "destructive_work_performed": false
+  },
+  "readback": "Execution must be a completed inactive CONTROL_PLANE_RECORD_ONLY readback with complete JSON, no findings, only control-plane source paths, and all forbidden effects false.",
+  "persistence": "Execution, reconciliation, and queued-task records are content-addressed, bounded to the control-plane root, compare-and-swap protected, written atomically, and read back as JSON.",
+  "stop_conditions": [
+    "Any owner decision, campaign, version, policy, identity, parent, scope, source, or boundary mismatch.",
+    "Any campaign activation, Product write, Product-agent spawn, deployment, release, push, merge, sterile-copy, secret, or destructive request.",
+    "Any missing, ambiguous, stale, malformed, summarized-only, or unreadable record or check."
+  ],
+  "owner_feedback": "Open user-visible roughness stays in docs/owner-feedback-backlog.md and may be scheduled only as bounded control-plane follow-up work.",
+  "undo": "Remove the loop records and revert only the isolated development commit; leave the parent campaign evidence, approval, and inactive status unchanged."
+}
