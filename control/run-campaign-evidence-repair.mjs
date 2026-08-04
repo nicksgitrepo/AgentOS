@@ -24,7 +24,7 @@ import {spawnWorker, validateLocalWorkerReadback} from "./local-agent-runtime.mj
 const CAMPAIGN_ROOT_NAME = "tmp/agentos-local-self-development-1";
 const CAMPAIGN_ID = "CAMPAIGN-AGENTOS-SELF-DEVELOPMENT-1";
 const CAMPAIGN_VERSION = "v1";
-const FEATURE_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-REPAIR-1";
+const FEATURE_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-REPAIR-2";
 const ORCHESTRATOR_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-ORCHESTRATOR-RECHECK-1";
 const AUDITOR_TASK_ID = "TASK-GOVERNANCE-EVIDENCE-AUDITOR-RECHECK-1";
 const FEATURE_TASK_KIND = "GOVERNANCE_EVIDENCE_REPAIR";
@@ -158,9 +158,11 @@ async function run(repoRoot) {
     const activeState = readActive(campaignRoot, "controller-state.json");
     const gateRca = readActive(campaignRoot, "gate-evidence-anti-drift-rca.json");
     const stallRca = readActive(campaignRoot, "supervisor-stall-rca.json");
+    const priorFailureRca = readActive(campaignRoot, "gate-evidence-repair-failure-rca.json");
     validateLocalCampaignActivation(activation);
     verifyRca(gateRca, "finding_sha256", "gate-evidence anti-drift RCA");
     verifyRca(stallRca, "rca_sha256", "supervisor stall RCA");
+    verifyRca(priorFailureRca, "rca_sha256", "prior gate-evidence repair failure RCA");
     assert(activation.campaign_id === CAMPAIGN_ID && activation.campaign_version === CAMPAIGN_VERSION, "active campaign identity differs");
     assert(activation.active_campaign === true, "active campaign is not active");
     assert(activation.permissions.local_development_writes_allowed === true && activation.permissions.local_worker_agent_spawns_allowed === true, "local repair permissions are unavailable");
@@ -188,6 +190,7 @@ async function run(repoRoot) {
       parent_finding_id: "F-GOVERNANCE-EVIDENCE-PLACEHOLDER",
       parent_gate_rca_sha256: gateRca.finding_sha256,
       parent_stall_rca_sha256: stallRca.rca_sha256,
+      prior_failure_rca_sha256: priorFailureRca.rca_sha256,
       task_id: FEATURE_TASK_ID,
       task_kind: FEATURE_TASK_KIND,
       source_checkpoint: {commit: originalFeature.build_commit, tree: originalFeature.build_tree},
