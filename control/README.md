@@ -29,6 +29,11 @@ boundary.
 are migration-only compatibility aliases. They cannot create setup state,
 campaign state, provider identity, Product custody, or successor rosters.
 
+After first-run setup, the ongoing project-persistent role is **AgentOS
+Controller** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate discovery
+and setup authority.
+
+`AGENTOS_CONTROLLER` persists across campaigns. Its Controller Agent may
 The portable kernel does not contain a provider-specific model host, worktree
 spawner, deployment connector, or live-site browser driver. Those are admitted
 through project-bound adapters. A missing adapter is an unavailable boundary;

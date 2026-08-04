@@ -15,6 +15,7 @@ Product work, and agent spawning still require their separate boundaries.
 | `FEEDBACK-005` | Continuing required a manually supplied exact task instead of the Controller choosing the next safe task. | Select one validated next control-plane task from the queued candidates without requiring a new manual task declaration. | `CAMPAIGN-CONTROLLER-AUTOMATIC-CONTINUATION` | `OPEN` |
 | `FEEDBACK-006` | There is no working path yet from safe preparation to real campaign execution with agents. | Define and verify the separate owner-authorized transition from inactive preparation to campaign execution, including the required agent and Product boundaries. | `CAMPAIGN-CONTROLLER-EXECUTION-BOUNDARY` | `OPEN` |
 | `FEEDBACK-007` | The checks needed repair during the task. | Make check failures visible, preserve their evidence, and repair the check path before claiming a clean handoff. | `CAMPAIGN-CONTROLLER-CHECK-REPAIR` | `OPEN` |
+| `FEEDBACK-008` | The ongoing Controller conversation was presented with the Bootstrap identity. | Identify the ongoing project-persistent role as AgentOS Controller (`AGENTOS_CONTROLLER`) and reserve Bootstrap for discovery and setup. | `CAMPAIGN-CONTROLLER-ROLE-DISPLAY` | `OPEN` |
 
 No item in this record authorizes a campaign start, Product write, agent
 spawn, deployment, release, push, merge, sterile-copy change, secret access,

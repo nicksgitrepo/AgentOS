@@ -4,9 +4,10 @@
   "release_candidate": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
   "normative": {
-    "user_readme": {"path": "README.md", "sha256": "6b094fa167f0a40c37bdda0428de7694be517f00cec1b547dfaebcc6502d5b7e"},
+    "user_readme": {"path": "README.md", "sha256": "eb41d31a72413938b63b8bb8deadc08a69cb746c687b19247e0cbb5f484cf2f5"},
     "repository_roles_guide": {"path": "docs/repository-roles.md", "sha256": "84b56e31d41ea46b8ea120e4d89a9c32287c6496832bfb307c76931ec3ed5727"},
-    "readme_verifier": {"path": "tests/verify-readme.mjs", "sha256": "4d7bd188fff911ba21ebcdc6d0d206c3ab16b56f2980436f052929bc7cff665d"},
+    "readme_verifier": {"path": "tests/verify-readme.mjs", "sha256": "51f744897b990ddd3a055fc600f2ace7f0176cce48616019e6a88a12167092eb"},
+    "role_naming_verifier": {"path": "tests/verify-role-naming.mjs", "sha256": "381efb0d84ddb32cc3e707d91e2f63448f785fab0f1ca36b32e12d502f5a65cc"},
     "cascade_economics_controller": {"path": "control/cascade-economics.mjs", "sha256": "d5a7710f1bb0b47db5bacf08c6817852441ea1638da89a242748172ac13f26cb"},
     "cascade_economics_contract": {"path": "schemas/cascade-economics.v1.json", "sha256": "2979eb5859bc9ea302f6cb4f2d647009663a02055c447c4af34df222c2625468"},
     "cascade_economics_article": {"path": "governance/2.1rc/cascade-economics.md", "sha256": "de9391435d25058fa0f99eb7d4e79b7ab974ed5356e7c9733bc305c9b28d9384"},
@@ -127,7 +128,7 @@
     "synthetic_context": {"path": "examples/project-context-fixture.v1.json", "sha256": "957f41aa6fa8276f40c3e58a6171a5cdd913d21ade0f17183f3d6a608e0b4311"},
     "extraction_manifest": {"path": "migrations/2.1rc-extraction-manifest.json", "sha256": "c394e176bbfe37cbf08b64f54ee8da175ddd2e7985f4016d533785e66aecaff9"},
     "portability_verifier": {"path": "tests/verify-portability.mjs", "sha256": "8221b6e8ba19ca7a46b5e80b2fd9f1087c8f5a515ad1d800bd3e9ef6ec05197c"},
-    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "55e39f6a0723fbf6533299ea830fc497f72bd0587ccc8c3861dc2435e59379d1"}
+    "all_verifier": {"path": "tests/verify-all.mjs", "sha256": "614ac6f3f40956994300fbafa851894a04d5c2fc3a3e163e56de18a35b46d718"}
   },
   "compatibility_only": {
     "bootstrap_interview_alias": {"path": "control/bootstrap-interview.mjs", "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"},

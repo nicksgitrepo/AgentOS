@@ -66,6 +66,13 @@ assert.equal(binding.activation.requires_explicit_owner_approval, true);
 assert.equal(binding.activation.product_campaign_rebind, false);
 assert.equal(binding.activation.deployment_custody, false);
 assert.equal(binding.activation.source_repository_modified, false);
+const naming = JSON.parse(read("schemas/naming-and-terminology.v1.json"));
+assert.equal(naming.canonical_terms.BOOTSTRAP.public_name, "Bootstrap");
+assert.equal(naming.canonical_terms.AGENTOS_CONTROLLER.public_name, "AgentOS Controller");
+assert.equal(naming.compatibility_aliases.GLOBAL_ORCHESTRATOR, "AGENTOS_CONTROLLER");
+const controllerContract = JSON.parse(read("schemas/agentos-controller.v1.json"));
+assert.equal(controllerContract.name, "AGENTOS_CONTROLLER");
+assert.equal(controllerContract.scope, "PROJECT_PERSISTENT");
 for (const [name, entry] of Object.entries(binding.normative)) assertBoundFile(entry, `normative ${name}`);
 for (const [name, entry] of Object.entries(binding.compatibility_only)) {
   if (entry && typeof entry === "object" && !Array.isArray(entry) && entry.path) assertBoundFile(entry, `compatibility ${name}`);
@@ -204,6 +211,7 @@ for (const relativePath of [
   "tests/verify-campaign-cascade.mjs",
   "tests/verify-question-tree.mjs",
   "tests/verify-readme.mjs",
+  "tests/verify-role-naming.mjs",
   "tests/verify-bootstrap-start.mjs",
   "tests/verify-cascade-economics.mjs",
   "tests/verify-bootstrap-coverage.mjs",

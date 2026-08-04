@@ -36,6 +36,10 @@ writing the new corpus. A distinct setup Auditor verifies the exact plan,
 readback, root separation, security baseline, Runtime and Controller Runtime
 bindings, and the three-root acceptance slice.
 
+After setup, the ongoing owner conversation is with the project-persistent
+**AgentOS Controller** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate
+discovery and setup authority; it is not the ongoing Controller role.
+
 The plan also includes a deterministic Bootstrap coverage matrix. It shows
 which outputs were discovered, owner-confirmed, safely defaulted, derived,
 deferred, not applicable with evidence, or still blocking. This lets Bootstrap

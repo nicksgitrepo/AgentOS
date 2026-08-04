@@ -46,9 +46,19 @@ Use the returned discovery and question plan, ask only one material question at 
 
 Running Bootstrap as an agent uses the host’s agentic execution allowance. Use ordinary Chat or a private handoff-file exchange when you want advice without repository execution; use a public Git handoff only when public source exchange is intentional. Provider APIs and unattended automation may have separate billing and credentials.
 
+The prompt above is only for first-run Bootstrap discovery and setup. After
+setup, the ongoing project-persistent role is **AgentOS Controller**
+`AGENTOS_CONTROLLER`. It owns the control-plane conversation and safe
+campaign coordination; Bootstrap does not continue as that role.
+
 ## AgentOS in one minute
 
-You explain what you want. Bootstrap inspects the project, preserves imported source before changing it, asks only what it cannot safely discover, and shows one clear plan. Economical agents build the first pass, independent checkers inspect it, a stronger Finalizer repairs the retained code, and persistent Runtime handles release and deployment.
+You explain what you want. Bootstrap handles the first read-only discovery and
+setup plan. After setup, AgentOS Controller carries the project-persistent
+control-plane conversation and safe campaign coordination. Economical agents
+build the first pass, independent checkers inspect it, a stronger Finalizer
+repairs the retained code, and persistent Runtime handles release and
+deployment.
 
 The cascade is measured by the cost of the complete accepted result, not by
 token prices alone. AgentOS keeps it as the default for a task class only after
