@@ -445,6 +445,15 @@ export function validateLocalDurableSessionRecord(record) {
   return record;
 }
 
+export function durableWorkerTaskStatus(session) {
+  validateLocalDurableSessionRecord(session);
+  if (session.initial_readback?.status === "COMPLETED") return "COMPLETED";
+  if (session.status === "FAILED") return "FAILED";
+  if (session.status === "STOPPED") return "STOPPED";
+  if (session.status === "STOPPING") return "STOPPING";
+  if (session.status === "STARTING") return "STARTING";
+  return "IN_PROGRESS";
+}
 export function compileDurableWorkerSessionCommand({session, commandId, task, taskId, taskKind, featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, createdAtUtc = new Date().toISOString()}) {
   validateLocalDurableSessionRecord(session);
   requireIdentifier(commandId, "durable worker command ID");
