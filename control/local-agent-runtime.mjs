@@ -131,7 +131,7 @@ function validateHandshake(handshake, expected) {
       assert(handshake.build_commit !== expected.sourceCommit && handshake.build_tree !== expected.sourceTree, "Feature Agent build checkpoint did not change source");
       const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? "control/controller-supervisor.mjs"
-        : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || expected.taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
           ? "schemas/bootstrap-binding.v1.json"
           : expected.taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
@@ -146,7 +146,7 @@ function validateHandshake(handshake, expected) {
     } else {
       const requiredChangedPath = expected.taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? "control/controller-supervisor.mjs"
-        : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        : expected.taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || expected.taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
           ? "schemas/bootstrap-binding.v1.json"
           : expected.taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
@@ -604,7 +604,7 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
     } else {
       const requiredChangedPath = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? "control/controller-supervisor.mjs"
-        : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
+        : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" || taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
           ? "schemas/bootstrap-binding.v1.json"
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? "tests/verify-local-agent-session.mjs"
