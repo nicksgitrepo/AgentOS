@@ -712,6 +712,8 @@ function autonomousCampaignProgressStallFinding({campaignRoot, handoff, campaign
 
 function autonomousCampaignContinuationFinding({handoff, campaignProgress, checkpointOnCurrentSource, taskQueue, sourceCommit, sourceTree}) {
   if (handoff.campaign_active !== true || campaignProgress?.first_useful_workflow_completed !== true || checkpointOnCurrentSource !== true || taskQueue === null) return null;
+  const continuationCount = Number.isSafeInteger(campaignProgress.autonomous_continuation_count) ? campaignProgress.autonomous_continuation_count : 0;
+  if (continuationCount >= 1) return null;
   if (taskQueue.tasks.some((task) => task.status === "OPEN" || task.status === "IN_PROGRESS")) return null;
   const heldCompletion = taskQueue.tasks.find((task) => task.status === "HELD" && task.task_id.startsWith("CAMPAIGN-FIRST-USEFUL-WORKFLOW-COMPLETED-"));
   if (heldCompletion === undefined) return null;
