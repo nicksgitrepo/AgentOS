@@ -367,35 +367,18 @@ export function applyGovernanceEvidenceRepair({worktreePath}) {
   worker = replaceOnce(worker, 'import {execFileSync} from "node:child_process";\n', 'import {execFileSync} from "node:child_process";\nimport {collectGovernanceGateEvidence} from "./governance-evidence.mjs";\n', "worker evidence import");
   worker = replaceOnce(worker, "const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, `${gate.gate_id}:${key}`]));", "const gateEvidence = collectGovernanceGateEvidence({worktreePath, tree: decisionTree});\n  const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, gateEvidence[gate.gate_id + \":\" + key]]));", "placeholder evidence branch");
   worker = replaceOnce(worker, "    gate_evaluation: gateEvaluation,", "    gate_evidence: gateEvidence,\n    gate_answers: gateAnswers,\n    gate_evaluation: gateEvaluation,", "gate evidence artifact");
-  const initialAuditorBranch = `} else if (role === "INDEPENDENT_AUDITOR") {
-  artifactName = "auditor-observation.json";
-  product = {
-    ...base,
-    custody_status: "INDEPENDENT_AUDITOR_CUSTODY",
-    audit_status: "INITIAL_AUDIT_READY",
-    observation: "Inspect the actual Feature-Agent worktree and compare it with the exact candidate and gate evidence.",
-  };
-  if (featureWorktree !== null) {
-    assert(fs.existsSync(featureWorktree) && fs.statSync(featureWorktree).isDirectory(), "auditor Feature-Agent worktree is unavailable");
-    buildCommit = git(featureWorktree, ["rev-parse", "HEAD"]);
-    buildTree = git(featureWorktree, ["rev-parse", "HEAD^{tree}"]);
-    changedPaths = git(featureWorktree, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\\n").filter(Boolean);
-    assert(buildCommit !== sourceCommit && buildTree !== sourceTree, "Auditor did not observe a changed Feature-Agent checkpoint");
-    assert(changedPaths.includes("control/governance-decision-tree.mjs"), "Auditor did not observe the required Feature-Agent code change");
-    focusedChecks = runFocusedChecks(featureWorktree);
-    buildStatus = "AUDIT_VERIFIED";
-    product = {
-      ...product,
-      audit_status: "FEATURE_BUILD_VERIFIED",
-      audited_feature_worktree: featureWorktree,
-      audited_feature_commit: buildCommit,
-      audited_feature_tree: buildTree,
-      audited_feature_changed_paths: changedPaths,
-      audited_feature_checks: focusedChecks,
-    };
-  }
-`;
-  worker = replaceOnce(worker, initialAuditorBranch, AUDITOR_RECHECK_BRANCH, "auditor evidence re-check branch");
+  const auditorBranchStart = worker.indexOf('} else if (role === "INDEPENDENT_AUDITOR") {');
+  const featureAgentBranchStart = worker.indexOf('} else if (role === "FEATURE_AGENT") {', auditorBranchStart);
+  assert(auditorBranchStart >= 0 && featureAgentBranchStart > auditorBranchStart, "auditor worker branch was not found");
+  let auditorBranch = worker.slice(auditorBranchStart, featureAgentBranchStart);
+  const auditorWorktreeBranch = "  if (featureWorktree !== null) {";
+  assert(auditorBranch.includes(auditorWorktreeBranch), "auditor worker worktree branch was not found");
+  const evidenceRecheckStart = AUDITOR_RECHECK_BRANCH.indexOf('  if (taskKind === "GOVERNANCE_EVIDENCE_RECHECK") {');
+  const evidenceRecheckElse = AUDITOR_RECHECK_BRANCH.indexOf("  } else {", evidenceRecheckStart);
+  assert(evidenceRecheckStart >= 0 && evidenceRecheckElse > evidenceRecheckStart, "auditor evidence re-check template is incomplete");
+  const evidenceRecheckBranch = AUDITOR_RECHECK_BRANCH.slice(evidenceRecheckStart, evidenceRecheckElse);
+  auditorBranch = auditorBranch.replace(auditorWorktreeBranch, `${evidenceRecheckBranch}  } else if (featureWorktree !== null) {`);
+  worker = worker.slice(0, auditorBranchStart) + auditorBranch + worker.slice(featureAgentBranchStart);
 
   writeFile(governancePath, governance);
   writeFile(workerPath, worker);
