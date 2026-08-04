@@ -176,7 +176,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     assert(!permissions.product_writes_allowed && !permissions.product_agent_spawns_allowed, "local Controller route cannot enter Product custody");
     assert(!permissions.external_deployment_allowed && !permissions.external_release_allowed && !permissions.external_publication_allowed && !permissions.external_push_allowed && !permissions.external_merge_allowed, "local Controller route cannot perform external actions");
     const taskId = `TASK-CONTROLLER-SUPERVISOR-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
-    const task = writeAddressed(campaignRoot, "autonomous-supervisor-task.json", {
+    const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;
+    const task = writeAddressed(campaignRoot, taskRecordPath, {
       schema: "agentos.controller_autonomous_supervisor_task.v1",
       version: 1,
       status: "ROUTED_TO_DURABLE_CAMPAIGN_ROLES",
@@ -262,6 +263,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       orchestrator_session_id: orchestrator.session_record.session_id,
       orchestrator_pid: orchestrator.session_record.pid,
       controller_recheck_sha256: controllerRecheck.record_sha256,
+      task_record_path: taskRecordPath,
       protected_boundaries: permissions,
     };
   }
