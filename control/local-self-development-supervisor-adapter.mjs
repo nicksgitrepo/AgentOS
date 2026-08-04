@@ -246,7 +246,10 @@ function controllerSupervisorBindingFinding(repositoryRoot) {
 function durableSessionTestFinding(campaignRoot) {
   const tick = readOptional(campaignRoot, "supervisor/tick.json");
   const routeError = typeof tick?.route_error === "string" ? tick.route_error : "";
-  if (tick?.route_status !== "ROUTE_FAILED" || !routeError.includes("mkdtemp") || !routeError.includes("agentos-durable-session")) return null;
+  const goal = readOptional(campaignRoot, "supervisor/goal.json");
+  const priorGoalOwnedFinding = Array.isArray(goal?.finding_ids) && goal.finding_ids.includes("F-DURABLE-SESSION-TEST-TMP-ROOT");
+  const matchesKnownFailure = routeError.includes("mkdtemp") && routeError.includes("agentos-durable-session");
+  if (tick?.route_status !== "ROUTE_FAILED" || (!matchesKnownFailure && !priorGoalOwnedFinding)) return null;
   return {
     finding_id: "F-DURABLE-SESSION-TEST-TMP-ROOT",
     classification: "REPAIRABLE_ENGINEERING_PUZZLE",
