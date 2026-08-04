@@ -132,9 +132,9 @@ function readAutonomousTaskQueue(campaignRoot, campaignId, campaignVersion) {
   return queue === null ? null : validateAutonomousTaskQueue(queue, campaignId, campaignVersion);
 }
 
-function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, executionContext}) {
+function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext}) {
   const existing = readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
-  const checkpointIsCurrent = campaignProgress?.source_commit === sourceCommit && campaignProgress?.source_tree === sourceTree;
+  const checkpointIsCurrent = campaignProgress !== null && checkpointOnCurrentSource === true;
   const task = checkpointIsCurrent
     ? {
       task_id: `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`,
@@ -155,8 +155,7 @@ function ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceT
   const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
   if (sameSource) {
     const matchingTask = existing.tasks.find((candidate) => candidate.task_id === task.task_id);
-    const hasOpenTask = existing.tasks.some((candidate) => ["OPEN", "IN_PROGRESS"].includes(candidate.status));
-    if (hasOpenTask || matchingTask?.status === "COMPLETED") return existing;
+    if (["OPEN", "IN_PROGRESS", "COMPLETED"].includes(matchingTask?.status)) return existing;
     writeAddressed(campaignRoot, `autonomous-supervisor-task-queues/${existing.queue_sha256}.json`, existing, "queue_sha256");
     const queue = {
       schema: "agentos.controller_autonomous_task_queue.v1",
@@ -626,6 +625,15 @@ function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
 
+function isAncestor(root, ancestorCommit, descendantCommit) {
+  try {
+    execFileSync("git", ["-C", root, "merge-base", "--is-ancestor", ancestorCommit, descendantCommit], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REPAIR") {
   const checks = [
     "node --check control/controller-supervisor.mjs",
@@ -799,8 +807,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const campaignProgress = handoff.campaign_active
       ? readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version)
       : null;
+    const checkpointOnCurrentSource = campaignProgress === null
+      ? false
+      : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
     const taskQueue = handoff.campaign_active
-      ? ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, executionContext})
+      ? ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext})
       : null;
     const permissions = permissionsFrom(handoff, activation);
     const lifecycle = gateFinding?.lifecycle_roi_finding ?? null;
@@ -1217,8 +1228,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const executionContext = readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree});
     const candidate = executionContext.candidate;
     const campaignProgress = readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+    const checkpointOnCurrentSource = campaignProgress === null
+      ? false
+      : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
     const existingSessions = sessionEntries(campaignRoot, handoff);
-    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, executionContext});
+    const taskQueue = ensureAutonomousTaskQueue({campaignRoot, handoff, sourceCommit, sourceTree, campaignProgress, checkpointOnCurrentSource, executionContext});
     const retainedFailureRcas = discoverSupervisorSessions(campaignRoot, goal.campaign_id)
       .filter(({record}) => record.status === "FAILED")
       .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256);
