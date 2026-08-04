@@ -71,6 +71,35 @@ try {
   assert.equal(stopped.status, "STOPPED");
   const stoppedHeartbeat = JSON.parse(fs.readFileSync(stopped.heartbeat_path, "utf8"));
   assert.equal(stoppedHeartbeat.status, "STOPPED");
+  const unexpected = await startDurableWorkerSession({
+    repoRoot: root,
+    runtimeRoot,
+    role: "FEATURE_AGENT",
+    campaignId,
+    campaignVersion: "v1",
+    candidateSha256: crypto.createHash("sha256").update(campaignId + "-unexpected").digest("hex"),
+    sourceCommit,
+    sourceTree,
+    task: "Run an abrupt session-exit durability test.",
+    taskId: "SMOKE-UNEXPECTED-DEATH-1",
+    taskKind: "INITIAL",
+  });
+  const unexpectedWorktreePath = unexpected.session_record.worktree_path;
+  const unexpectedRecordPath = path.join(runtimeRoot, "sessions", campaignId + "-v1", "FEATURE_AGENT-SMOKE-UNEXPECTED-DEATH-1", "session.json");
+  try {
+    process.kill(Number(unexpected.session_record.pid), "SIGKILL");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const failed = await stopDurableWorkerSession({sessionRecordPath: unexpectedRecordPath});
+    validateLocalDurableSessionRecord(failed);
+    assert.equal(failed.status, "FAILED");
+    assert.match(failed.failure, /process exited before stop/u);
+  } finally {
+    try {
+      execFileSync("git", ["-C", root, "worktree", "remove", "--force", unexpectedWorktreePath], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    } catch {
+      // The abrupt-exit test retains no user worktree; an already-removed test worktree is safe.
+    }
+  }
 } finally {
   if (started && worktreePath) {
     try {

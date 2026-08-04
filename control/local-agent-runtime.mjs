@@ -611,7 +611,9 @@ export function markDurableWorkerSessionFailed({sessionRecordPath, failure = "du
 export async function stopDurableWorkerSession({sessionRecordPath, timeoutMs = 5_000}) {
   const session = readJson(sessionRecordPath);
   validateLocalDurableSessionRecord(session);
-  if (!pidAlive(session.pid)) return session;
+  if (!pidAlive(session.pid)) {
+    return markDurableWorkerSessionFailed({sessionRecordPath, failure: "durable worker process exited before stop"});
+  }
   process.kill(Number(session.pid), "SIGTERM");
   const deadline = Date.now() + timeoutMs;
   let heartbeat = null;
