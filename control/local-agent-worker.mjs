@@ -675,6 +675,115 @@ function applyOwnerFeedbackStatusRepair(worktreePath, feedbackId) {
   };
 }
 
+function applyOwnerFeedbackDigestRepair(worktreePath, feedbackId) {
+  const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
+  const verifierPath = path.join(worktreePath, "tests/verify-owner-feedback-digest.mjs");
+  const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
+  assert(fs.existsSync(adapterPath) && fs.existsSync(verifierPath) && fs.existsSync(backlogPath), "owner feedback digest repair inputs are unavailable");
+
+  let adapterSource = fs.readFileSync(adapterPath, "utf8");
+  const conflictMarker = "export function resolveAddressedRecordConflict";
+  assert(!adapterSource.includes(conflictMarker), "owner feedback digest repair was already applied");
+  const writerStartMarker = "function writeAddressed(root, name, value, field = \"record_sha256\") {";
+  const writerEndMarker = "function readAddressed(root, name, field) {";
+  const writerStart = adapterSource.indexOf(writerStartMarker);
+  const writerEnd = adapterSource.indexOf(writerEndMarker);
+  assert(writerStart >= 0 && writerEnd > writerStart, "addressed record writer is unavailable");
+  const replacementWriter = [
+    "export function resolveAddressedRecordConflict({recordName, digestField, existingRecord, replacementRecord}) {",
+    "  requireString(recordName, \"addressed record name\");",
+    "  requireString(digestField, \"addressed record digest field\");",
+    "  assert(existingRecord && typeof existingRecord === \"object\" && !Array.isArray(existingRecord), \"existing addressed record is required\");",
+    "  assert(replacementRecord && typeof replacementRecord === \"object\" && !Array.isArray(replacementRecord), \"replacement addressed record is required\");",
+    "  requireSha(existingRecord[digestField], \"existing addressed record digest\");",
+    "  requireSha(replacementRecord[digestField], \"replacement addressed record digest\");",
+    "  if (existingRecord[digestField] === replacementRecord[digestField]) return {action: \"KEEP_EXISTING\", record_name: recordName, digest_field: digestField, original_digest: existingRecord[digestField], replacement_digest: replacementRecord[digestField]};",
+    "  return {",
+    "    action: \"PRESERVE_AND_REPLACE\",",
+    "    record_name: recordName,",
+    "    digest_field: digestField,",
+    "    original_digest: existingRecord[digestField],",
+    "    replacement_digest: replacementRecord[digestField],",
+    "    reason: \"existing completion record is bound to a stale parent; preserve it before writing the current parent-bound record\",",
+    "  };",
+    "}",
+    "",
+    "function writeAddressed(root, name, value, field = \"record_sha256\") {",
+    "  const target = path.join(root, name);",
+    "  const record = structuredClone(value);",
+    "  record[field] = null;",
+    "  record[field] = digestWithout(record, field);",
+    "  if (fs.existsSync(target)) {",
+    "    const existing = readJson(target);",
+    "    const conflict = resolveAddressedRecordConflict({recordName: name, digestField: field, existingRecord: existing, replacementRecord: record});",
+    "    if (conflict.action === \"KEEP_EXISTING\") return existing;",
+    "    const safeName = name.replaceAll(\"/\", \"__\").replace(/[^A-Za-z0-9._-]/gu, \"_\");",
+    "    const archiveDirectory = path.join(root, \"autonomous-supervisor-stale-records\");",
+    "    const archivePath = path.join(archiveDirectory, `${safeName}-${conflict.original_digest}.json`);",
+    "    const originalBytes = fs.readFileSync(target);",
+    "    fs.mkdirSync(archiveDirectory, {recursive: true});",
+    "    if (!fs.existsSync(archivePath)) fs.writeFileSync(archivePath, originalBytes, {flag: \"wx\", mode: 0o600});",
+    "    else { assert(!fs.lstatSync(archivePath).isSymbolicLink(), \"stale addressed record archive may not be a symlink\"); assert(fs.readFileSync(archivePath).equals(originalBytes), \"stale addressed record archive changed\"); }",
+    "    const mismatch = {...conflict, schema: \"agentos.controller_stale_completion_record_mismatch.v1\", version: 1, original_evidence_path: path.relative(root, archivePath), observed_at_utc: new Date().toISOString(), mismatch_sha256: null};",
+    "    mismatch.mismatch_sha256 = digestWithout(mismatch, \"mismatch_sha256\");",
+    "    const mismatchPath = `${archivePath}.mismatch.json`;",
+    "    if (!fs.existsSync(mismatchPath)) fs.writeFileSync(mismatchPath, `${JSON.stringify(mismatch)}\\n`, {flag: \"wx\", mode: 0o600});",
+    "  }",
+    "  fs.mkdirSync(path.dirname(target), {recursive: true});",
+    "  const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;",
+    "  try {",
+    "    fs.writeFileSync(temporary, `${JSON.stringify(record)}\\n`, {flag: \"wx\", mode: 0o600});",
+    "    fs.renameSync(temporary, target);",
+    "  } finally {",
+    "    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);",
+    "  }",
+    "  return readJson(target);",
+    "}",
+    "",
+  ].join("\n");
+  adapterSource = adapterSource.slice(0, writerStart) + replacementWriter + adapterSource.slice(writerEnd);
+  const lifecycleParentMarker = "    source_finding_sha256: finding.source_sha256,\n";
+  assert(adapterSource.includes(lifecycleParentMarker), "lifecycle completion parent field is unavailable");
+  adapterSource = adapterSource.replace(lifecycleParentMarker, `${lifecycleParentMarker}    parent_handoff_sha256: goal.parent_handoff_sha256,\n`);
+  const finalizerParentMarker = "      task_id: taskId,\n      source_commit: sourceCommit,\n";
+  assert(adapterSource.includes(finalizerParentMarker), "finalizer completion parent field is unavailable");
+  adapterSource = adapterSource.replace(finalizerParentMarker, `      task_id: taskId,\n      parent_handoff_sha256: goal.parent_handoff_sha256,\n      source_commit: sourceCommit,\n`);
+  const progressParentMarker = "        task_id: autonomousTask.task_id,\n        source_commit: finalizerResult.adopted_commit,\n";
+  assert(adapterSource.includes(progressParentMarker), "campaign progress completion parent field is unavailable");
+  adapterSource = adapterSource.replace(progressParentMarker, `        task_id: autonomousTask.task_id,\n        parent_handoff_sha256: goal.parent_handoff_sha256,\n        source_commit: finalizerResult.adopted_commit,\n`);
+  writeFileAtomic(adapterPath, adapterSource);
+
+  const verifierSource = [
+    "#!/usr/bin/env node",
+    "",
+    "import assert from \"node:assert/strict\";",
+    "import {resolveAddressedRecordConflict} from \"../control/local-self-development-supervisor-adapter.mjs\";",
+    "",
+    "const existing = {schema: \"agentos.controller_completion_record.v1\", record_sha256: \"a\".repeat(64), parent_handoff_sha256: \"1\".repeat(64), source_commit: \"2\".repeat(40), source_tree: \"3\".repeat(40)};",
+    "const replacement = {...existing, record_sha256: \"b\".repeat(64), parent_handoff_sha256: \"4\".repeat(64), source_commit: \"5\".repeat(40), source_tree: \"6\".repeat(40)};",
+    "const conflict = resolveAddressedRecordConflict({recordName: \"autonomous-supervisor-lifecycle-resolutions/FINDING.json\", digestField: \"record_sha256\", existingRecord: existing, replacementRecord: replacement});",
+    "assert.equal(conflict.action, \"PRESERVE_AND_REPLACE\");",
+    "assert.equal(conflict.original_digest, existing.record_sha256);",
+    "assert.equal(conflict.replacement_digest, replacement.record_sha256);",
+    "assert.match(conflict.reason, /stale parent/u);",
+    "assert.equal(resolveAddressedRecordConflict({recordName: \"same.json\", digestField: \"record_sha256\", existingRecord: existing, replacementRecord: existing}).action, \"KEEP_EXISTING\");",
+    "assert.throws(() => resolveAddressedRecordConflict({recordName: \"bad.json\", digestField: \"record_sha256\", existingRecord: {...existing, record_sha256: \"bad\"}, replacementRecord: replacement}), /SHA-256/u);",
+    "console.log(\"PASS owner feedback completion records preserve stale evidence and classify current-parent replacement\");",
+  ].join("\n") + "\n";
+  writeFileAtomic(verifierPath, verifierSource);
+
+  const backlogSource = fs.readFileSync(backlogPath, "utf8");
+  const backlogLines = backlogSource.split(/\r?\n/u);
+  const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith("| `" + feedbackId + "` |") && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+  assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  writeFileAtomic(backlogPath, backlogLines.join("\n"));
+  return {
+    changedByRepair: ["control/local-self-development-supervisor-adapter.mjs", "docs/owner-feedback-backlog.md", "tests/verify-owner-feedback-digest.mjs"],
+    artifactName: "control/owner-feedback-digest-repair-receipt.mjs",
+  };
+}
+
 const args = parseArgs(process.argv.slice(2));
 const role = args.role;
 const sessionId = args.session_id;
@@ -875,7 +984,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
       assert(taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath))
         : ownerFeedbackCodeChanged
@@ -1087,13 +1196,16 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     let repair;
     if (feedbackId === "FEEDBACK-001") repair = applyOwnerFeedbackRepair(worktreePath, feedbackId);
     else if (feedbackId === "FEEDBACK-002") repair = applyOwnerFeedbackStatusRepair(worktreePath, feedbackId);
+    else if (feedbackId === "FEEDBACK-003") repair = applyOwnerFeedbackDigestRepair(worktreePath, feedbackId);
     else throw new Error(`owner feedback ${feedbackId} requires its own repair recipe`);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
       "node --check control/task-run-loop.mjs",
       "node --check control/local-agent-runtime.mjs",
+      "node --check control/local-self-development-supervisor-adapter.mjs",
       "node tests/verify-task-run-loop.mjs",
       "node tests/verify-local-agent-session.mjs",
+      "node tests/verify-owner-feedback-digest.mjs",
       "node tests/verify-owner-feedback-backlog.mjs",
       "node tests/verify-all.mjs",
     ]);
@@ -1118,7 +1230,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner feedback checkpoint");
     const changedOwnerFeedbackCode = (changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs"))
-      || (changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"));
+      || (changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"))
+      || (changedPaths.includes("control/local-self-development-supervisor-adapter.mjs") && changedPaths.includes("tests/verify-owner-feedback-digest.mjs"));
     assert(changedOwnerFeedbackCode, "Feature Agent owner feedback repair changed neither the requested code nor its focused test");
     buildStatus = "COMPLETED";
     product = {

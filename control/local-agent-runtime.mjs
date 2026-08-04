@@ -147,7 +147,7 @@ function validateHandshake(handshake, expected) {
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
       assert(Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
         : ownerFeedbackCodeChanged
@@ -178,7 +178,7 @@ function validateHandshake(handshake, expected) {
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
       assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
         : ownerFeedbackCodeChanged
@@ -694,7 +694,7 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
               ? "control/task-run-loop.mjs"
             : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath));
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath));
       assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null
         && (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
           ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath))

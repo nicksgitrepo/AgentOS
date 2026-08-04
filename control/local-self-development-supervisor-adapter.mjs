@@ -946,7 +946,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
   if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") checks.push("node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs");
   if (taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs");
   if (taskKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-controller-supervisor.mjs");
-  if (taskKind === "OWNER_FEEDBACK_REPAIR") checks.push("node --check control/task-run-loop.mjs", "node --check control/local-agent-runtime.mjs", "node tests/verify-task-run-loop.mjs", "node tests/verify-local-agent-session.mjs", "node tests/verify-owner-feedback-backlog.mjs", "node tests/verify-all.mjs");
+  if (taskKind === "OWNER_FEEDBACK_REPAIR") checks.push("node --check control/task-run-loop.mjs", "node --check control/local-agent-runtime.mjs", "node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-task-run-loop.mjs", "node tests/verify-local-agent-session.mjs", "node tests/verify-owner-feedback-digest.mjs", "node tests/verify-owner-feedback-backlog.mjs", "node tests/verify-all.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
   if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
   if (taskKind === "GOVERNANCE_EVIDENCE_REPAIR") checks.push(
@@ -1390,7 +1390,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       scope: campaignProgressTask
         ? ["acceptance-contract.json", "decision-tree-requirement.json", "decision-tree.json", "owner-intent.json", "scope.json"].sort()
         : ownerFeedbackTask
-        ? ["control/local-agent-runtime.mjs", "control/owner-feedback-inactive-explanation-repair-receipt.mjs", "control/owner-feedback-status-reconciliation-repair-receipt.mjs", "control/task-run-loop.mjs", "docs/owner-feedback-backlog.md", "schemas/bootstrap-binding.v1.json", "tests/verify-local-agent-session.mjs", "tests/verify-owner-feedback-backlog.mjs", "tests/verify-task-run-loop.mjs"].sort()
+        ? ["control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs", "control/owner-feedback-digest-repair-receipt.mjs", "control/owner-feedback-inactive-explanation-repair-receipt.mjs", "control/owner-feedback-status-reconciliation-repair-receipt.mjs", "control/task-run-loop.mjs", "docs/owner-feedback-backlog.md", "schemas/bootstrap-binding.v1.json", "tests/verify-local-agent-session.mjs", "tests/verify-owner-feedback-backlog.mjs", "tests/verify-owner-feedback-digest.mjs", "tests/verify-task-run-loop.mjs"].sort()
         : governanceEvidenceRepair
         ? ["control/feature-agent-governance-evidence-repair.mjs", "control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs", "tests/verify-local-campaign-admission.mjs"].sort()
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
