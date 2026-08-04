@@ -31,6 +31,7 @@ import {
 
 const AUTONOMOUS_TASK_QUEUE_FILE = "autonomous-supervisor-task-queue.json";
 const CAMPAIGN_PROGRESS_FILE = "autonomous-supervisor-campaign-progress.json";
+const CONTROLLER_PLANNING_PROGRESS_FILE = "autonomous-supervisor-planning-progress.json";
 const OWNER_FEEDBACK_BACKLOG_FILE = "docs/owner-feedback-backlog.md";
 
 function assert(condition, message) {
@@ -335,6 +336,68 @@ function writeMutableAddressed(root, name, value, field, expectedDigest = null) 
   return readJson(target);
 }
 
+const CONTROLLER_PLANNING_PHASES = Object.freeze(["ORCHESTRATOR_REVIEW", "FEATURE_BUILD", "INDEPENDENT_AUDIT", "FINALIZER_REVIEW", "COMPLETED", "FAILED"]);
+
+export function compileControllerPlanningProgress({goal, taskId, sourceCommit, sourceTree, status = "IN_PROGRESS", phase, message, nextAction, updatedAtUtc = new Date().toISOString()}) {
+  assert(goal && typeof goal === "object" && !Array.isArray(goal), "planning progress goal is required");
+  requireString(taskId, "planning progress task ID");
+  requireGitObject(sourceCommit, "planning progress source commit");
+  requireGitObject(sourceTree, "planning progress source tree");
+  assert(["IN_PROGRESS", "COMPLETED", "FAILED"].includes(status), "planning progress status is invalid");
+  assert(CONTROLLER_PLANNING_PHASES.includes(phase), "planning progress phase is invalid");
+  requireString(message, "planning progress message");
+  requireString(nextAction, "planning progress next action");
+  requireString(updatedAtUtc, "planning progress time");
+  assert(updatedAtUtc.endsWith("Z") && Number.isFinite(Date.parse(updatedAtUtc)), "planning progress time must be UTC");
+  const progress = {
+    schema: "agentos.controller_planning_progress.v1",
+    version: 1,
+    status,
+    controller_role: "AGENTOS_CONTROLLER",
+    controller_display_name: "AgentOS Controller",
+    project_id: goal.project_id,
+    campaign_id: goal.campaign_id,
+    campaign_version: goal.campaign_version,
+    goal_id: goal.goal_id,
+    goal_sha256: goal.goal_sha256,
+    task_id: taskId,
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    phase,
+    message,
+    next_action: nextAction,
+    updated_at_utc: updatedAtUtc,
+    progress_sha256: null,
+  };
+  requireString(progress.project_id, "planning progress project ID");
+  requireString(progress.campaign_id, "planning progress campaign ID");
+  requireString(progress.campaign_version, "planning progress campaign version");
+  requireString(progress.goal_id, "planning progress goal ID");
+  requireSha(progress.goal_sha256, "planning progress goal digest");
+  progress.progress_sha256 = digestWithout(progress, "progress_sha256");
+  return progress;
+}
+
+function readControllerPlanningProgress(campaignRoot, campaignId, campaignVersion) {
+  const progress = readAddressed(campaignRoot, CONTROLLER_PLANNING_PROGRESS_FILE, "progress_sha256");
+  if (progress === null) return null;
+  assert(progress.schema === "agentos.controller_planning_progress.v1" && progress.version === 1, "Controller planning progress identity is invalid");
+  assert(progress.campaign_id === campaignId && progress.campaign_version === campaignVersion, "Controller planning progress campaign differs");
+  assert(["IN_PROGRESS", "COMPLETED", "FAILED"].includes(progress.status), "Controller planning progress status is invalid");
+  assert(CONTROLLER_PLANNING_PHASES.includes(progress.phase), "Controller planning progress phase is invalid");
+  requireGitObject(progress.source_commit, "Controller planning progress source commit");
+  requireGitObject(progress.source_tree, "Controller planning progress source tree");
+  requireSha(progress.goal_sha256, "Controller planning progress goal digest");
+  requireString(progress.message, "Controller planning progress message");
+  requireString(progress.next_action, "Controller planning progress next action");
+  return progress;
+}
+
+function writeControllerPlanningProgress({campaignRoot, goal, taskId, sourceCommit, sourceTree, status = "IN_PROGRESS", phase, message, nextAction}) {
+  const existing = readAddressed(campaignRoot, CONTROLLER_PLANNING_PROGRESS_FILE, "progress_sha256");
+  const progress = compileControllerPlanningProgress({goal, taskId, sourceCommit, sourceTree, status, phase, message, nextAction});
+  return writeMutableAddressed(campaignRoot, CONTROLLER_PLANNING_PROGRESS_FILE, progress, "progress_sha256", existing?.progress_sha256 ?? null);
+}
 function readCampaignProgress(campaignRoot, campaignId, campaignVersion) {
   const progress = readAddressed(campaignRoot, CAMPAIGN_PROGRESS_FILE, "progress_sha256");
   if (progress === null) return null;
@@ -1147,6 +1210,9 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const campaignProgress = handoff.campaign_active
       ? readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version)
       : null;
+    const planningProgress = handoff.campaign_active
+      ? readControllerPlanningProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version)
+      : null;
     const checkpointOnCurrentSource = campaignProgress === null
       ? false
       : isAncestor(repositoryRoot, campaignProgress.source_commit, sourceCommit);
@@ -1265,7 +1331,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         ...permissions,
       },
       findings,
-      nextAction: handoff.next_action,
+      nextAction: planningProgress?.status === "IN_PROGRESS" ? planningProgress.next_action : handoff.next_action,
       sourceCommit,
       sourceTree,
       parentHandoffSha256: handoff.handoff_sha256,
@@ -1399,6 +1465,16 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? "TASK-DURABLE-SESSION-LIVENESS"
       : "TASK-CONTROLLER-SUPERVISOR";
     const taskId = `${taskPrefix}-${goal.goal_sha256.slice(0, 16).toUpperCase()}`;
+    writeControllerPlanningProgress({
+      campaignRoot,
+      goal,
+      taskId,
+      sourceCommit,
+      sourceTree,
+      phase: "ORCHESTRATOR_REVIEW",
+      message: "The Controller has selected a bounded repair and started the campaign handoff.",
+      nextAction: "The Campaign Orchestrator is selecting the exact repair; no Product or external work is allowed.",
+    });
     const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;
     const task = writeAddressed(campaignRoot, taskRecordPath, {
       schema: "agentos.controller_autonomous_supervisor_task.v1",
@@ -1539,6 +1615,16 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         taskKind: repairKind,
       });
     }
+    writeControllerPlanningProgress({
+      campaignRoot,
+      goal,
+      taskId,
+      sourceCommit,
+      sourceTree,
+      phase: "INDEPENDENT_AUDIT",
+      message: "The bounded build is complete and the independent audit is running against the same source.",
+      nextAction: "The Independent Auditor is checking the exact files, checks, source identity, and boundaries.",
+    });
     const featureReadback = feature.readback;
     const auditorTaskKind = governanceEvidenceRepair ? "GOVERNANCE_EVIDENCE_RECHECK" : repairKind;
     const auditorSourceCommit = governanceEvidenceRepair ? featureReadback.build_commit : sourceCommit;
@@ -1579,6 +1665,16 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       evidenceWorktree: governanceEvidenceRepair ? orchestrator.session_record.worktree_path : null,
       decisionTreePath: governanceEvidenceRepair ? governanceEvidenceDecisionTreePath : null,
       workerScriptPath: governanceEvidenceRepair ? path.join(feature.session_record.worktree_path, "control/local-agent-worker.mjs") : null,
+    });
+    writeControllerPlanningProgress({
+      campaignRoot,
+      goal,
+      taskId,
+      sourceCommit,
+      sourceTree,
+      phase: "FINALIZER_REVIEW",
+      message: "The audit readback is complete and the Controller is checking the local checkpoint before adoption.",
+      nextAction: "The Controller Finalizer is checking the audited checkpoint; external actions remain closed.",
     });
     const controllerChecks = campaignProgressTask
       ? runCampaignProgressChecks(feature.session_record.worktree_path)
@@ -1697,6 +1793,17 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       controllerRecheckSha256: controllerRecheck.record_sha256,
       finalizerSha256: finalizerRecord.finalizer_sha256,
     }), "resolution_sha256");
+    writeControllerPlanningProgress({
+      campaignRoot,
+      goal,
+      taskId,
+      sourceCommit: finalizerResult.adopted_commit,
+      sourceTree: finalizerResult.adopted_tree,
+      status: "COMPLETED",
+      phase: "COMPLETED",
+      message: "The Controller finished the bounded campaign and retained the audited local checkpoint.",
+      nextAction: "The Controller will inspect the next bounded item automatically; no outside prompt is needed.",
+    });
     const priorPointer = readAddressed(campaignRoot, "autonomous-supervisor-current-handoff.json", "pointer_sha256");
     for (const entry of previousSessions) {
       if (["RUNNING", "STARTING"].includes(entry.record.status) && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
