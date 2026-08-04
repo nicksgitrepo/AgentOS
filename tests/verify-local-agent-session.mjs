@@ -7,6 +7,7 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {
   compileDurableWorkerSessionCommand,
+  durableWorkerTaskStatus,
   startDurableWorkerSession,
   stopDurableWorkerSession,
   validateDurableWorkerSessionCommand,
@@ -53,6 +54,7 @@ try {
   assert.equal(started.session_record.status, "RUNNING");
   assert.equal(started.heartbeat.status, "RUNNING");
   assert.equal(started.readback.status, "COMPLETED");
+  assert.equal(durableWorkerTaskStatus(started.session_record), "COMPLETED");
 
   const command = compileDurableWorkerSessionCommand({
     session: started.session_record,
@@ -69,6 +71,7 @@ try {
   const stopped = await stopDurableWorkerSession({sessionRecordPath: recordPath});
   validateLocalDurableSessionRecord(stopped);
   assert.equal(stopped.status, "STOPPED");
+  assert.equal(durableWorkerTaskStatus(stopped), "COMPLETED");
   const stoppedHeartbeat = JSON.parse(fs.readFileSync(stopped.heartbeat_path, "utf8"));
   assert.equal(stoppedHeartbeat.status, "STOPPED");
   const unexpected = await startDurableWorkerSession({

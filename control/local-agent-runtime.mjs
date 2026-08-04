@@ -146,13 +146,12 @@ function validateHandshake(handshake, expected) {
           : expected.taskKind === "OWNER_FEEDBACK_REPAIR"
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
-      const ownerFeedbackBacklogOnly = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
-        && handshake.changed_paths.includes("docs/owner-feedback-backlog.md")
-        && !handshake.changed_paths.includes("control/task-run-loop.mjs");
+      const ownerFeedbackCodeChanged = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
       assert(Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
-        : ownerFeedbackBacklogOnly
-          ? handshake.changed_paths.includes("docs/owner-feedback-backlog.md")
+        : ownerFeedbackCodeChanged
+          ? true
         : handshake.changed_paths.includes(requiredChangedPath)), "Feature Agent build did not change the required code");
     }
     assert(Array.isArray(handshake.focused_checks) && handshake.focused_checks.length > 0 && typeof handshake.build_checkpoint_sha256 === "string", "Feature Agent build evidence is incomplete");
@@ -178,13 +177,12 @@ function validateHandshake(handshake, expected) {
           : expected.taskKind === "OWNER_FEEDBACK_REPAIR"
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
-      const ownerFeedbackBacklogOnly = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
-        && handshake.changed_paths.includes("docs/owner-feedback-backlog.md")
-        && !handshake.changed_paths.includes("control/task-run-loop.mjs");
+      const ownerFeedbackCodeChanged = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
       assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
-        : ownerFeedbackBacklogOnly
-          ? handshake.changed_paths.includes("docs/owner-feedback-backlog.md")
+        : ownerFeedbackCodeChanged
+          ? true
         : handshake.changed_paths.includes(requiredChangedPath)), "Auditor did not verify the Feature-Agent code change");
     }
   }
@@ -447,6 +445,16 @@ export function validateLocalDurableSessionRecord(record) {
   return record;
 }
 
+export function durableWorkerTaskStatus(session) {
+  validateLocalDurableSessionRecord(session);
+  if (session.initial_readback?.status === "COMPLETED") return "COMPLETED";
+  if (session.status === "FAILED") return "FAILED";
+  if (session.status === "STOPPED") return "STOPPED";
+  if (session.status === "STOPPING") return "STOPPING";
+  if (session.status === "STARTING") return "STARTING";
+  return "IN_PROGRESS";
+}
+
 export function compileDurableWorkerSessionCommand({session, commandId, task, taskId, taskKind, featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, createdAtUtc = new Date().toISOString()}) {
   validateLocalDurableSessionRecord(session);
   requireIdentifier(commandId, "durable worker command ID");
@@ -686,14 +694,13 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
             : taskKind === "OWNER_FEEDBACK_REPAIR"
               ? "control/task-run-loop.mjs"
             : "control/governance-decision-tree.mjs";
-      const ownerFeedbackBacklogOnly = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && readback.changed_paths.includes("docs/owner-feedback-backlog.md")
-        && !readback.changed_paths.includes("control/task-run-loop.mjs");
+      const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath));
       assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null
         && (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
           ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath))
-          : ownerFeedbackBacklogOnly
-            ? readback.changed_paths.includes("docs/owner-feedback-backlog.md")
+          : ownerFeedbackCodeChanged
+            ? true
           : readback.changed_paths.includes(requiredChangedPath))
         && readback.focused_checks.length > 0 && readback.build_checkpoint_sha256 !== null, "metadata-only Feature Agent readback is not a completed build");
     }

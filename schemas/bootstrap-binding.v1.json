@@ -454,7 +454,7 @@
     },
     "local_agent_session_verifier": {
       "path": "tests/verify-local-agent-session.mjs",
-      "sha256": "676ac9967d8ef2200768366515b044c923f2de2c7e65b75445e96499d4d6c01a"
+      "sha256": "f9300c4807d1a37db85f4d2553c00c00187857c6d1d5712fde74d231c9e91cbf"
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",

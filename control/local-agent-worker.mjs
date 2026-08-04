@@ -549,16 +549,7 @@ function applyOwnerFeedbackRepair(worktreePath, feedbackId) {
   assert(fs.existsSync(taskLoopPath) && fs.existsSync(verifierPath) && fs.existsSync(backlogPath) && fs.existsSync(bindingPath), "owner feedback repair inputs are unavailable");
   const taskLoopSource = fs.readFileSync(taskLoopPath, "utf8");
   const marker = "export function renderOwnerInactiveBoundaryMessage";
-  if (taskLoopSource.includes(marker)) {
-    assert(feedbackId === "FEEDBACK-001", `owner feedback ${feedbackId} requires its own repair recipe`);
-    const backlogSource = fs.readFileSync(backlogPath, "utf8");
-    const backlogLines = backlogSource.split(/\r?\n/u);
-    const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith(`| \`${feedbackId}\` |`) && /\|\s*`?OPEN`?\s*\|$/u.test(row));
-    assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
-    backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
-    writeFileAtomic(backlogPath, backlogLines.join("\n"));
-    return {changedByRepair: ["docs/owner-feedback-backlog.md"], artifactName: "control/owner-feedback-inactive-explanation-repair-receipt.mjs"};
-  }
+  assert(!taskLoopSource.includes(marker), "owner feedback inactive explanation repair was already applied");
   const helper = [
     "export function renderOwnerInactiveBoundaryMessage({taskId, boundary}) {",
     "  requireIdentifier(taskId, \"inactive task\");",
@@ -622,6 +613,66 @@ function applyOwnerFeedbackRepair(worktreePath, feedbackId) {
   const artifactName = "control/owner-feedback-inactive-explanation-repair-receipt.mjs";
   const changedByRepair = ["control/task-run-loop.mjs", "docs/owner-feedback-backlog.md", "schemas/bootstrap-binding.v1.json", "tests/verify-task-run-loop.mjs"];
   return {changedByRepair, artifactName};
+}
+
+function applyOwnerFeedbackStatusRepair(worktreePath, feedbackId) {
+  const runtimePath = path.join(worktreePath, "control/local-agent-runtime.mjs");
+  const verifierPath = path.join(worktreePath, "tests/verify-local-agent-session.mjs");
+  const backlogPath = path.join(worktreePath, "docs/owner-feedback-backlog.md");
+  const bindingPath = path.join(worktreePath, "schemas/bootstrap-binding.v1.json");
+  assert(fs.existsSync(runtimePath) && fs.existsSync(verifierPath) && fs.existsSync(backlogPath) && fs.existsSync(bindingPath), "owner feedback status repair inputs are unavailable");
+  const runtimeMarker = "export function durableWorkerTaskStatus";
+  let runtimeSource = fs.readFileSync(runtimePath, "utf8");
+  assert(!runtimeSource.includes(runtimeMarker), "owner feedback status reconciliation repair was already applied");
+  const runtimeInsertionMarker = "export function compileDurableWorkerSessionCommand";
+  assert(runtimeSource.includes(runtimeInsertionMarker), "durable worker session command function is unavailable");
+  const helper = [
+    "export function durableWorkerTaskStatus(session) {",
+    "  validateLocalDurableSessionRecord(session);",
+    "  if (session.initial_readback?.status === \"COMPLETED\") return \"COMPLETED\";",
+    "  if (session.status === \"FAILED\") return \"FAILED\";",
+    "  if (session.status === \"STOPPED\") return \"STOPPED\";",
+    "  if (session.status === \"STOPPING\") return \"STOPPING\";",
+    "  if (session.status === \"STARTING\") return \"STARTING\";",
+    "  return \"IN_PROGRESS\";",
+    "}",
+    "",
+  ].join("\n");
+  runtimeSource = runtimeSource.replace(runtimeInsertionMarker, `${helper}${runtimeInsertionMarker}`);
+  writeFileAtomic(runtimePath, runtimeSource);
+
+  let verifierSource = fs.readFileSync(verifierPath, "utf8");
+  const oldImport = "  compileDurableWorkerSessionCommand,\n";
+  assert(verifierSource.includes(oldImport), "durable session verifier import is unavailable");
+  verifierSource = verifierSource.replace(oldImport, `${oldImport}  durableWorkerTaskStatus,\n`);
+  const oldAssertion = '  assert.equal(started.readback.status, "COMPLETED");';
+  assert(verifierSource.includes(oldAssertion), "durable session verifier completion assertion is unavailable");
+  verifierSource = verifierSource.replace(oldAssertion, `${oldAssertion}\n  assert.equal(durableWorkerTaskStatus(started.session_record), "COMPLETED");`);
+  const stoppedAssertion = '  assert.equal(stopped.status, "STOPPED");';
+  assert(verifierSource.includes(stoppedAssertion), "durable session verifier stopped assertion is unavailable");
+  verifierSource = verifierSource.replace(stoppedAssertion, `${stoppedAssertion}\n  assert.equal(durableWorkerTaskStatus(stopped), "COMPLETED");`);
+  writeFileAtomic(verifierPath, verifierSource);
+
+  const backlogSource = fs.readFileSync(backlogPath, "utf8");
+  const backlogLines = backlogSource.split(/\r?\n/u);
+  const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith(`| \`${feedbackId}\` |`) && /\|\s*`?OPEN`?\s*\|$/u.test(row));
+  assert(backlogRowIndex >= 0, `owner feedback ${feedbackId} is not open at the expected source checkpoint`);
+  backlogLines[backlogRowIndex] = backlogLines[backlogRowIndex].replace(/`OPEN`(?=\s*\|$)/u, "`RESOLVED`").replace(/OPEN(?=\s*\|$)/u, "RESOLVED");
+  writeFileAtomic(backlogPath, backlogLines.join("\n"));
+
+  const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
+  let refreshed = 0;
+  for (const entry of Object.values(binding.normative ?? {})) {
+    if (entry?.path !== "tests/verify-local-agent-session.mjs") continue;
+    entry.sha256 = crypto.createHash("sha256").update(fs.readFileSync(verifierPath)).digest("hex");
+    refreshed += 1;
+  }
+  assert(refreshed === 1, "durable session verifier binding entry is unavailable");
+  writeFileAtomic(bindingPath, `${JSON.stringify(binding, null, 2)}\n`);
+  return {
+    changedByRepair: ["control/local-agent-runtime.mjs", "docs/owner-feedback-backlog.md", "schemas/bootstrap-binding.v1.json", "tests/verify-local-agent-session.mjs"],
+    artifactName: "control/owner-feedback-status-reconciliation-repair-receipt.mjs",
+  };
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -823,13 +874,12 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           : taskKind === "OWNER_FEEDBACK_REPAIR"
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
-      const ownerFeedbackBacklogOnly = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && changedPaths.includes("docs/owner-feedback-backlog.md")
-        && !changedPaths.includes("control/task-run-loop.mjs");
+      const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
+        && ["control/task-run-loop.mjs", "control/local-agent-runtime.mjs"].some((candidatePath) => changedPaths.includes(candidatePath));
       assert(taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => changedPaths.includes(candidatePath))
-        : ownerFeedbackBacklogOnly
-          ? changedPaths.includes("docs/owner-feedback-backlog.md")
+        : ownerFeedbackCodeChanged
+          ? true
         : changedPaths.includes(requiredChangedPath), "Auditor did not observe the required Feature-Agent code change");
       focusedChecks = taskKind === "CONTROLLER_SUPERVISOR_REPAIR"
         ? runControllerSupervisorChecks(featureWorktree)
@@ -846,7 +896,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           : taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
             ? runChecks(featureWorktree, ["node --check control/bootstrap-compiler.mjs", "node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs"])
           : taskKind === "OWNER_FEEDBACK_REPAIR"
-            ? runChecks(featureWorktree, ["node --check control/task-run-loop.mjs", "node tests/verify-task-run-loop.mjs", "node tests/verify-owner-feedback-backlog.mjs", "node tests/verify-all.mjs"])
+            ? runChecks(featureWorktree, ["node --check control/task-run-loop.mjs", "node --check control/local-agent-runtime.mjs", "node tests/verify-task-run-loop.mjs", "node tests/verify-local-agent-session.mjs", "node tests/verify-owner-feedback-backlog.mjs", "node tests/verify-all.mjs"])
           : runFocusedChecks(featureWorktree);
     }
     buildStatus = "AUDIT_VERIFIED";
@@ -1034,12 +1084,16 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
   } else if (taskKind === "OWNER_FEEDBACK_REPAIR") {
     const feedbackId = task.match(/owner feedback (FEEDBACK-\d+)/iu)?.[1] ?? taskId.match(/(FEEDBACK-\d+)(?:-|$)/u)?.[1];
     assert(feedbackId !== undefined, "owner feedback task ID is missing its feedback item");
-    assert(feedbackId === "FEEDBACK-001", `owner feedback ${feedbackId} requires its own repair recipe`);
-    const repair = applyOwnerFeedbackRepair(worktreePath, feedbackId);
+    let repair;
+    if (feedbackId === "FEEDBACK-001") repair = applyOwnerFeedbackRepair(worktreePath, feedbackId);
+    else if (feedbackId === "FEEDBACK-002") repair = applyOwnerFeedbackStatusRepair(worktreePath, feedbackId);
+    else throw new Error(`owner feedback ${feedbackId} requires its own repair recipe`);
     artifactName = repair.artifactName;
     focusedChecks = runChecks(worktreePath, [
       "node --check control/task-run-loop.mjs",
+      "node --check control/local-agent-runtime.mjs",
       "node tests/verify-task-run-loop.mjs",
+      "node tests/verify-local-agent-session.mjs",
       "node tests/verify-owner-feedback-backlog.mjs",
       "node tests/verify-all.mjs",
     ]);
@@ -1063,9 +1117,9 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner feedback checkpoint");
-    const changedOwnerFeedbackCode = changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs");
-    const reconciledOwnerFeedback = changedPaths.includes("docs/owner-feedback-backlog.md") && !changedPaths.includes("control/task-run-loop.mjs");
-    assert(changedOwnerFeedbackCode || reconciledOwnerFeedback, "Feature Agent owner feedback repair changed neither the requested code nor its unresolved feedback record");
+    const changedOwnerFeedbackCode = (changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs"))
+      || (changedPaths.includes("control/local-agent-runtime.mjs") && changedPaths.includes("tests/verify-local-agent-session.mjs"));
+    assert(changedOwnerFeedbackCode, "Feature Agent owner feedback repair changed neither the requested code nor its focused test");
     buildStatus = "COMPLETED";
     product = {
       ...base,
