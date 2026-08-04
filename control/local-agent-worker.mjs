@@ -220,17 +220,33 @@ function applyOwnerConversationSurfaceRepair(worktreePath) {
     '    "When we are finished, I will play the plan back in ordinary language. You may answer in your own words; headings are optional. Do not say that the project changed. AgentOS will turn the conversation into a bound candidate and show the owner the exact result for separate approval. Saying that the plan sounds right is not approval by itself.",',
     '    "When we are finished, I will play the plan back in ordinary language. You may answer in your own words; headings are optional. The project will not change just because the conversation sounds right; you will see the clear plan before anything starts.",',
   );
+  const promptListPattern = /    "Use only the prompts that are needed; they are examples, not a fixed script:",\n(?:    "\d\. [^"]*",\n){5}    \.\.\.modelBalancePrompt\.slice\(1\)\.map\(\(line\) => [^\n]*\n    "",/u;
+  const newPromptList = [
+    '    "Ask only what we need, one short question at a time. You do not need to fill out a checklist.",',
+    '    "If I give you a few choices, reply with one number.",',
+    '    "",',
+  ].join("\n");
+  assert(promptListPattern.test(ownerReviewSource) || ownerReviewSource.includes(newPromptList), "owner review question list is not at the expected source checkpoint");
+  ownerReviewSource = ownerReviewSource.replace(promptListPattern, newPromptList);
   writeFileAtomic(ownerReviewPath, ownerReviewSource);
 
   let ownerReviewVerifierSource = fs.readFileSync(ownerReviewVerifierPath, "utf8");
   const oldOwnerReviewAssertion = '  assert(renderedPacket.includes("Do not expose schema questions"));';
-  const newOwnerReviewAssertions = [
+  const existingOwnerReviewAssertions = [
     '  assert(renderedPacket.includes("Keep the behind-the-scenes notes out of this conversation"));',
     '  assert(!renderedPacket.includes("For the build itself, the current recommendation is"));',
     '  assert(!renderedPacket.includes("The role recommendations are:"));',
     '  assert(!renderedPacket.includes("This task is currently described as"));',
   ].join("\n");
+  const newOwnerReviewAssertions = [
+    existingOwnerReviewAssertions,
+    '  assert(renderedPacket.includes("one short question at a time"));',
+    '  assert(renderedPacket.includes("If I give you a few choices, reply with one number."));',
+    '  assert(!renderedPacket.includes("What would you love this to make easier?"));',
+    '  assert(!renderedPacket.includes("they are examples, not a fixed script"));',
+  ].join("\n");
   if (ownerReviewVerifierSource.includes(oldOwnerReviewAssertion)) ownerReviewVerifierSource = ownerReviewVerifierSource.replace(oldOwnerReviewAssertion, newOwnerReviewAssertions);
+  else if (ownerReviewVerifierSource.includes(existingOwnerReviewAssertions)) ownerReviewVerifierSource = ownerReviewVerifierSource.replace(existingOwnerReviewAssertions, newOwnerReviewAssertions);
   else assert(ownerReviewVerifierSource.includes(newOwnerReviewAssertions), "owner review verifier is not at the expected source checkpoint");
   writeFileAtomic(ownerReviewVerifierPath, ownerReviewVerifierSource);
 
@@ -267,6 +283,8 @@ const FORBIDDEN_REVIEW_OUTPUT = [
   "This task is currently described as",
   "technical governance terms",
   "exact result for separate approval",
+  "Use only the prompts that are needed; they are examples, not a fixed script:",
+  "What would you love this to make easier?",
 ];
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-owner-conversation-surface-"));

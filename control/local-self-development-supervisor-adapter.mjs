@@ -313,6 +313,8 @@ function ownerConversationSurfaceFinding(repositoryRoot) {
     "This task is currently described as",
     "technical governance terms",
     "exact result for separate approval",
+    "Use only the prompts that are needed; they are examples, not a fixed script:",
+    "What would you love this to make easier?",
   ].filter((term) => ownerReviewSource.includes(term));
   if (leakedPrompts.length === 0 && !ownerVisibilityLeak && leakedReviewOutput.length === 0) return null;
   return {
