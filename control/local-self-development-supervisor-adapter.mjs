@@ -485,7 +485,7 @@ function sessionEntries(campaignRoot, handoff) {
   const declared = Array.isArray(handoff.supervised_sessions) ? handoff.supervised_sessions : [];
   const paths = declared.map((entry) => entry.session_record_path).filter((value) => typeof value === "string");
   const declaredEntries = paths.map((relativePath) => ({target: relativeChild(campaignRoot, relativePath, "supervised session path"), record: null}));
-  const discoveredEntries = discoverSupervisorSessions(campaignRoot, handoff.campaign_id).filter(({record}) => record.status === "RUNNING");
+  const discoveredEntries = discoverSupervisorSessions(campaignRoot, handoff.campaign_id).filter(({record}) => ["RUNNING", "STARTING"].includes(record.status));
   const combined = [...declaredEntries, ...discoveredEntries];
   const seen = new Set();
   return combined
@@ -514,7 +514,7 @@ function compareFindingIds(left, right) {
 
 function reconcileExitedSessionRecords(entries) {
   return entries.map((entry) => {
-    if (entry.record.status === "RUNNING" && !processAlive(entry.record.pid)) {
+    if (["RUNNING", "STARTING"].includes(entry.record.status) && !processAlive(entry.record.pid)) {
       entry.record = markDurableWorkerSessionFailed({
         sessionRecordPath: entry.target,
         failure: "durable worker process exited before Controller reconciliation",
@@ -1354,7 +1354,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const unhealthySessionRca = recordUnhealthySessionRca({campaignRoot, handoff, entries: previousSessions, sourceCommit, sourceTree});
     reconcileExitedSessionRecords(previousSessions);
     for (const entry of previousSessions) {
-      if (entry.record.status === "RUNNING" && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
+      if (["RUNNING", "STARTING"].includes(entry.record.status) && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
     }
     const taskPrefix = governanceEvidenceRepair
       ? "TASK-GOVERNANCE-EVIDENCE"
@@ -1668,7 +1668,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     }), "resolution_sha256");
     const priorPointer = readAddressed(campaignRoot, "autonomous-supervisor-current-handoff.json", "pointer_sha256");
     for (const entry of previousSessions) {
-      if (entry.record.status === "RUNNING" && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
+      if (["RUNNING", "STARTING"].includes(entry.record.status) && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
     }
     const currentSessions = [orchestrator, feature, auditor].map((session) => ({target: sessionRecordPath(session.session_record), record: session.session_record}));
     const transitionedHandoff = compileSupervisorHandoff({
@@ -1798,7 +1798,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       };
     }
     for (const entry of existingSessions) {
-      if (entry.record.status === "RUNNING" && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
+      if (["RUNNING", "STARTING"].includes(entry.record.status) && processAlive(entry.record.pid)) await stopDurableWorkerSession({sessionRecordPath: entry.target});
     }
     const taskId = `TASK-CONTROLLER-SUPERVISOR-LIVENESS-${sourceCommit.slice(0, 16).toUpperCase()}`;
     const taskRecordPath = `autonomous-supervisor-tasks/${taskId}.json`;
