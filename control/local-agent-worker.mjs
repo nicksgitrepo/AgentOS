@@ -550,6 +550,7 @@ function applyOwnerFeedbackRepair(worktreePath, feedbackId) {
   const taskLoopSource = fs.readFileSync(taskLoopPath, "utf8");
   const marker = "export function renderOwnerInactiveBoundaryMessage";
   if (taskLoopSource.includes(marker)) {
+    assert(feedbackId === "FEEDBACK-001", `owner feedback ${feedbackId} requires its own repair recipe`);
     const backlogSource = fs.readFileSync(backlogPath, "utf8");
     const backlogLines = backlogSource.split(/\r?\n/u);
     const backlogRowIndex = backlogLines.findIndex((row) => row.startsWith(`| \`${feedbackId}\` |`) && /\|\s*`?OPEN`?\s*\|$/u.test(row));
