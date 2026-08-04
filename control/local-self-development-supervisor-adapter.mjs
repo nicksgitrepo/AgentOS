@@ -645,6 +645,25 @@ function autonomousTaskFinding({campaignRoot, handoff, activation, findings, act
   };
 }
 
+function autonomousCampaignProgressStallFinding({campaignRoot, handoff, campaignProgress, checkpointOnCurrentSource, taskQueue, sourceCommit, sourceTree}) {
+  if (handoff.campaign_active !== true || campaignProgress === null || checkpointOnCurrentSource !== true || taskQueue === null) return null;
+  const auditTaskId = `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`;
+  const auditTask = taskQueue.tasks.find((task) => task.task_id === auditTaskId);
+  if (auditTask?.status !== "COMPLETED") return null;
+  return {
+    finding_id: "F-AUTONOMOUS-CAMPAIGN-PROGRESS-STALL",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "The active campaign completed its self-audit but did not mint the next bounded build behavior from the owner’s ongoing self-development intent.",
+    source_sha256: supervisorDigest({
+      campaign_progress_sha256: campaignProgress.progress_sha256,
+      queue_sha256: taskQueue.queue_sha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+    }),
+  };
+}
+
 function durableSessionTestFinding(campaignRoot) {
   const tick = readOptional(campaignRoot, "supervisor/tick.json");
   const routeError = typeof tick?.route_error === "string" ? tick.route_error : "";
@@ -806,6 +825,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
   ];
   if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
   if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") checks.push("node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs");
+  if (taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs");
   if (taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR") checks.push("node tests/verify-local-agent-session.mjs");
   if (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR") checks.push("node tests/verify-owner-conversation-surface.mjs", "node tests/verify-owner-review.mjs", "node tests/verify-bootstrap-delivery-finish.mjs");
   if (taskKind === "GOVERNANCE_EVIDENCE_REPAIR") checks.push(
@@ -1050,6 +1070,16 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     }
     const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree});
     if (durableSessionLiveness !== null) findings.push(durableSessionLiveness);
+    const campaignProgressStall = autonomousCampaignProgressStallFinding({
+      campaignRoot,
+      handoff,
+      campaignProgress,
+      checkpointOnCurrentSource,
+      taskQueue,
+      sourceCommit,
+      sourceTree,
+    });
+    if (campaignProgressStall !== null) findings.push(campaignProgressStall);
     findings.sort((left, right) => compareFindingIds(left.finding_id, right.finding_id));
     const autonomousFinding = autonomousTaskFinding({
       campaignRoot,
@@ -1100,6 +1130,18 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const autonomousTaskId = autonomousTaskFindingId?.slice("F-AUTONOMOUS-TASK-".length) ?? null;
     const autonomousTask = autonomousTaskQueue?.tasks.find((task) => task.task_id === autonomousTaskId) ?? null;
     const campaignProgressTask = autonomousTask?.task_id.startsWith("CAMPAIGN-PROGRESS-BUILD-") === true;
+    const existingCampaignProgress = readCampaignProgress(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+    const checkpointOnCurrentSource = existingCampaignProgress !== null && isAncestor(repositoryRoot, existingCampaignProgress.source_commit, sourceCommit);
+    const currentTaskQueue = autonomousTaskQueue ?? readAutonomousTaskQueue(campaignRoot, handoff.campaign_id, handoff.campaign_version);
+    const campaignProgressStall = autonomousCampaignProgressStallFinding({
+      campaignRoot,
+      handoff,
+      campaignProgress: existingCampaignProgress,
+      checkpointOnCurrentSource,
+      taskQueue: currentTaskQueue,
+      sourceCommit,
+      sourceTree,
+    });
     const bindingFinding = controllerSupervisorBindingFinding(repositoryRoot);
     const localAgentSessionBinding = localAgentSessionBindingFinding(repositoryRoot);
     const ownerSurfaceFinding = ownerConversationSurfaceFinding(repositoryRoot);
@@ -1119,6 +1161,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? "GOVERNANCE_EVIDENCE_REPAIR"
       : campaignProgressTask
       ? "CAMPAIGN_PROGRESS_BUILD"
+      : goal.finding_ids.includes(campaignProgressStall?.finding_id)
+      ? "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
       : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
       ? "CONTROLLER_SUPERVISOR_REPAIR"
       : goal.finding_ids.includes(ownerSurfaceFinding?.finding_id)
@@ -1140,6 +1184,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: autonomousTaskQueue.queue_sha256,
         status: "OPEN_NEXT_REQUIRED_BEHAVIOR",
       }
+      : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+      ? campaignProgressStall
       : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id) ? boundaryPrecedenceFinding : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR" ? ownerSurfaceFinding : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR" ? durableSessionLiveness : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR" ? durableSessionFinding : repairKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR" ? bindingFinding : repairKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR" ? localAgentSessionBinding : {
       finding_id: lifecycleFinding?.finding_id,
       source_sha256: gateFinding.finding_sha256,
@@ -1157,6 +1203,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       ? "TASK-GOVERNANCE-EVIDENCE"
       : campaignProgressTask
       ? "TASK-CAMPAIGN-PROGRESS"
+      : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+      ? "TASK-AUTONOMOUS-CAMPAIGN-PROGRESS"
       : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
       ? "TASK-DURABLE-SESSION-LIVENESS"
       : "TASK-CONTROLLER-SUPERVISOR";
@@ -1184,6 +1232,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         ? ["control/feature-agent-governance-evidence-repair.mjs", "control/governance-decision-tree.mjs", "control/governance-evidence.mjs", "control/local-agent-worker.mjs", "tests/verify-governance-decision-tree.mjs", "tests/verify-local-campaign-admission.mjs"].sort()
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs", "schemas/bootstrap-binding.v1.json", "tests/verify-owner-conversation-surface.mjs", "tests/verify-owner-review.mjs"].sort()
+        : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+        ? ["control/local-self-development-supervisor-adapter.mjs"].sort()
         : repairKind === "DURABLE_SESSION_LIVENESS_REPAIR"
         ? ["control/local-agent-runtime.mjs", "tests/verify-local-agent-session.mjs"].sort()
         : repairKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
@@ -1252,6 +1302,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         sourceTree,
         task: campaignProgressTask
           ? `Read the bound owner intent, scope, acceptance contract, and executable decision tree. Select the next bounded control-plane repair for the first useful workflow: ${executionContext.firstUsefulWorkflow}. Return the exact Feature-Agent handoff without expanding scope.`
+          : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+          ? "Inspect the completed self-audit and return the exact bounded handoff for repairing the Controller queue so it mints the next campaign behavior."
           : "Supervise the bounded Controller supervisor repair and return the exact role handoff.",
         taskId: `${taskId}-ORCHESTRATOR`,
         taskKind: campaignProgressTask ? "CAMPAIGN_PROGRESS_ORCHESTRATE" : "CONTROLLER_SUPERVISOR_ORCHESTRATE",
@@ -1268,6 +1320,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         sourceTree,
         task: campaignProgressTask
           ? "Build the next bounded AgentOS control-plane repair selected from the bound first useful workflow. Change only declared control-plane files, run focused checks, and return a real clean commit and tree."
+          : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+          ? "Repair the Controller queue so a completed self-audit mints the next bounded self-development behavior from the owner’s ongoing intent, then run the focused checks."
           : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
           ? "Make every open hard security or owner boundary stop before any soft-scope review, then run the focused Controller checks."
           : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -1300,6 +1354,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         ? "Independently verify every governance gate evidence record and exact evaluation against the repaired Feature-Agent checkpoint."
         : campaignProgressTask
         ? "Independently inspect the Feature-Agent changed tree and verify the same source-bound commit, tree, changed files, focused checks, and protected boundaries."
+        : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+        ? "Independently inspect the Feature-Agent queue-state repair and verify that the completed self-audit cannot leave the active campaign without a next bounded behavior."
         : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
         ? "Independently verify that every open hard security or owner boundary stops before any soft-scope review."
         : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
@@ -1450,6 +1506,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
           ? `Carry out the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}.`
           : governanceEvidenceRepair
           ? "Replace placeholder governance gate evidence with actual source-bound command and readback evidence, then require exact Orchestrator, Auditor, and Controller re-checks."
+          : repairKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+          ? "Make the active Controller mint the next bounded campaign behavior after a completed self-audit while preserving scope, evidence, and owner boundaries."
           : goal.finding_ids.includes(boundaryPrecedenceFinding?.finding_id)
           ? "Make hard security and owner boundaries take precedence over soft-scope review."
           : repairKind === "OWNER_CONVERSATION_SURFACE_REPAIR"

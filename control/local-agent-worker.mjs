@@ -222,6 +222,65 @@ function applyDurableSessionLivenessRepair(worktreePath) {
   return ["control/local-agent-runtime.mjs", "tests/verify-local-agent-session.mjs"];
 }
 
+function applyAutonomousCampaignProgressRepair(worktreePath) {
+  const adapterPath = path.join(worktreePath, "control/local-self-development-supervisor-adapter.mjs");
+  assert(fs.existsSync(adapterPath), "autonomous campaign progress repair adapter is unavailable");
+  let source = fs.readFileSync(adapterPath, "utf8");
+  const taskRegion = /  const task = checkpointIsCurrent\n[\s\S]*?  if \(sameSource\) \{/u;
+  const repairedTaskRegion = [
+    "  const auditTaskId = `CONTROLLER-WORKFLOW-AUDIT-${sourceCommit.slice(0, 16).toUpperCase()}`;",
+    "  const buildTaskId = `CAMPAIGN-PROGRESS-BUILD-${sourceCommit.slice(0, 16).toUpperCase()}`;",
+    "  const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;",
+    "  const completedCurrentAudit = sameSource && existing.tasks.some((candidate) => candidate.task_id === auditTaskId && candidate.status === \"COMPLETED\");",
+    "  const task = completedCurrentAudit",
+    "    ? {",
+    "      task_id: buildTaskId,",
+    "      status: \"OPEN\",",
+    "      priority: 0,",
+    "      summary: `Continue the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects the next bounded control-plane behavior, the Feature Agent builds it, and the Auditor checks the same result.`,",
+    "      scope: [\"ACCEPTANCE_CONTRACT\", \"DECISION_TREE\", \"OWNER_INTENT\", \"SCOPED_CONTROL_PLANE_CODE\", \"WORKER_RECEIPTS\"].sort(),",
+    "      owner_decision_required: false,",
+    "    }",
+    "    : checkpointIsCurrent",
+    "    ? {",
+    "      task_id: auditTaskId,",
+    "      status: \"OPEN\",",
+    "      priority: 0,",
+    "      summary: \"Recheck the accepted local checkpoint, campaign handoff, worker receipts, retained failures, and the next safe control-plane action.\",",
+    "      scope: [\"ACTIVE_CAMPAIGN_HANDOFF\", \"ACCEPTED_LOCAL_CHECKPOINT\", \"CONTROLLER_STATE\", \"WORKER_RECEIPTS\"].sort(),",
+    "      owner_decision_required: false,",
+    "    }",
+    "    : {",
+    "      task_id: buildTaskId,",
+    "      status: \"OPEN\",",
+    "      priority: 0,",
+    "      summary: `Carry out the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects the next bounded control-plane repair, the Feature Agent builds it, and the Auditor checks the same result.`,",
+    "      scope: [\"ACCEPTANCE_CONTRACT\", \"DECISION_TREE\", \"OWNER_INTENT\", \"SCOPED_CONTROL_PLANE_CODE\", \"WORKER_RECEIPTS\"].sort(),",
+    "      owner_decision_required: false,",
+    "    };",
+    "  if (sameSource) {",
+  ].join("\n");
+  assert(taskRegion.test(source), "autonomous campaign queue state machine is not at the expected source checkpoint");
+  source = source.replace(taskRegion, repairedTaskRegion);
+  const oldReason = [
+    "      generated_reason: checkpointIsCurrent",
+    "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
+    "        : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
+  ].join("\n");
+  const newReason = [
+    "      generated_reason: completedCurrentAudit",
+    "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_NEXT_CAMPAIGN_BEHAVIOR\"",
+    "        : checkpointIsCurrent",
+    "        ? \"ACCEPTED_LOCAL_CHECKPOINT_REQUIRES_CONTROLLER_RECHECK\"",
+    "        : \"ACTIVE_CAMPAIGN_FIRST_USEFUL_WORKFLOW_NOT_COMPLETED\",",
+  ].join("\n");
+  const reasonCount = source.split(oldReason).length - 1;
+  assert(reasonCount === 2, `autonomous campaign queue generated-reason count is ${reasonCount}, expected 2`);
+  source = source.replaceAll(oldReason, newReason);
+  writeFileAtomic(adapterPath, source);
+  return ["control/local-self-development-supervisor-adapter.mjs"];
+}
+
 function applyOwnerConversationSurfaceRepair(worktreePath) {
   const bootstrapPath = path.join(worktreePath, "control/bootstrap-compiler.mjs");
   const ownerReviewPath = path.join(worktreePath, "control/owner-review.mjs");
@@ -578,6 +637,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
           ? "schemas/bootstrap-binding.v1.json"
           : taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR"
             ? "schemas/bootstrap-binding.v1.json"
+          : taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+            ? "control/local-self-development-supervisor-adapter.mjs"
           : taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
             ? "control/local-agent-runtime.mjs"
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
@@ -592,6 +653,8 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
         ? runControllerSupervisorChecks(featureWorktree)
         : taskKind === "CONTROLLER_SUPERVISOR_BINDING_REPAIR"
           ? runControllerSupervisorBindingChecks(featureWorktree, taskKind)
+          : taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR"
+            ? runChecks(featureWorktree, ["node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-controller-supervisor.mjs"])
           : taskKind === "DURABLE_SESSION_TEST_ROOT_REPAIR"
             ? runDurableSessionChecks(featureWorktree)
           : taskKind === "DURABLE_SESSION_LIVENESS_REPAIR"
@@ -811,6 +874,47 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean Controller binding checkpoint");
     assert(changedPaths.includes("schemas/bootstrap-binding.v1.json"), "Feature Agent binding repair did not change the binding");
+    buildStatus = "COMPLETED";
+    product = {
+      ...base,
+      task_id: taskId,
+      task_kind: taskKind,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      code_change_paths: changedPaths,
+      change_status: "COMMITTED_IN_ISOLATED_WORKTREE",
+      build_status: buildStatus,
+      build_commit: buildCommit,
+      build_tree: buildTree,
+      changed_paths: changedPaths,
+      focused_checks: focusedChecks,
+    };
+  } else if (taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR") {
+    artifactName = "control/autonomous-campaign-progress-repair-receipt.mjs";
+    const changedByRepair = applyAutonomousCampaignProgressRepair(worktreePath);
+    focusedChecks = runChecks(worktreePath, [
+      "node --check control/local-self-development-supervisor-adapter.mjs",
+      "node tests/verify-controller-supervisor.mjs",
+    ]);
+    const marker = `// Local Feature Agent autonomous-campaign-progress repair receipt; held in the isolated campaign worktree.\nexport const AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR = Object.freeze(${JSON.stringify({
+      task_id: taskId,
+      task_kind: taskKind,
+      campaign_id: campaignId,
+      campaign_version: campaignVersion,
+      candidate_sha256: candidateSha256,
+      source_commit: sourceCommit,
+      source_tree: sourceTree,
+      custody_status: "FEATURE_AGENT_CUSTODY",
+      changed_by_repair: changedByRepair,
+    }, null, 2)});\n`;
+    writeFileAtomic(path.join(worktreePath, artifactName), marker);
+    const stagedPaths = [...changedByRepair, artifactName];
+    execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
+    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: mint next autonomous campaign behavior"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
+    buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+    changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
+    assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean autonomous campaign progress checkpoint");
+    assert(changedPaths.includes("control/local-self-development-supervisor-adapter.mjs"), "Feature Agent autonomous campaign progress repair did not change the Controller queue");
     buildStatus = "COMPLETED";
     product = {
       ...base,
