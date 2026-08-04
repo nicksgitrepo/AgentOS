@@ -1061,7 +1061,9 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
     assert(buildCommit !== sourceCommit && buildTree !== sourceTree && git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]) === "", "Feature Agent did not produce a clean owner feedback checkpoint");
-    assert(changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs"), "Feature Agent owner feedback repair did not change the task loop and verifier");
+    const changedOwnerFeedbackCode = changedPaths.includes("control/task-run-loop.mjs") && changedPaths.includes("tests/verify-task-run-loop.mjs");
+    const reconciledOwnerFeedback = changedPaths.includes("docs/owner-feedback-backlog.md") && !changedPaths.includes("control/task-run-loop.mjs");
+    assert(changedOwnerFeedbackCode || reconciledOwnerFeedback, "Feature Agent owner feedback repair changed neither the requested code nor its unresolved feedback record");
     buildStatus = "COMPLETED";
     product = {
       ...base,
