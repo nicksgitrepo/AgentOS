@@ -1,0 +1,27 @@
+graph UI_UX 1
+entry UI-001
+
+gate UI-001
+context CODE_CHANGE
+question "Does the visible surface make the admitted action and result understandable without internal governance terms?"
+evidence surface,task,language
+YES UI-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate UI-002
+context CODE_CHANGE
+question "Does the surface preserve the required keyboard, accessibility, layout, and error behavior?"
+evidence accessibility,layout,errors
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+terminal COMPLETE COMPLETE "The user-facing surface is understandable and usable."
+terminal SOFT-REVIEW SOFT_REVIEW "The UI and UX result needs design review."
+terminal UNPROVEN UNPROVEN "The UI and UX claim lacks observed evidence."
+

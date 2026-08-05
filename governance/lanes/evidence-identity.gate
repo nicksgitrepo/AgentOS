@@ -1,0 +1,27 @@
+graph EVIDENCE_IDENTITY 1
+entry EVIDENCE-001
+
+gate EVIDENCE-001
+context HANDOFF
+question "Does every claim point to a real readback or reproducible observation instead of a receipt or assertion alone?"
+evidence claim_map,readback,observation
+YES EVIDENCE-002
+NO HARD-STOP-EVIDENCE
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate EVIDENCE-002
+context HANDOFF
+question "Do all evidence records name the same source, worktree, session, goal, and environment as the claimed result?"
+evidence identity,comparison,digest
+YES COMPLETE
+NO HARD-STOP-IDENTITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+terminal COMPLETE COMPLETE "The result evidence is real, matching, and traceable."
+terminal HARD-STOP-EVIDENCE HARD_STOP "A result cannot be accepted without real evidence."
+terminal HARD-STOP-IDENTITY HARD_STOP "Evidence identities do not match the result."
+

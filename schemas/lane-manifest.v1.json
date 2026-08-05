@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.lane_manifest.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "lanes", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.lane_manifest.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "lanes": { "type": "array", "minItems": 12 },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

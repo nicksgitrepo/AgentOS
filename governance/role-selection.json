@@ -1,0 +1,18 @@
+{
+  "schema": "agentos.role_selection.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "general_graph_ids": ["CORE", "EVIDENCE_IDENTITY", "PROGRESS_HEALTH", "RECOVERY_BOUNDARIES", "SECURITY_PRIVACY"],
+  "roles": [
+    {"role_id": "CAMPAIGN_ORCHESTRATOR", "display_name": "Campaign Orchestrator", "graph_ids": ["BOOTSTRAP_CONTEXT", "DELIVERY_CLOSURE", "EVIDENCE_IDENTITY", "INTENT_SCOPE", "PROGRESS_HEALTH", "RECOVERY_BOUNDARIES", "ROLE_ROUTING", "SECURITY_PRIVACY", "USER_CONVERSATION"]},
+    {"role_id": "INDEPENDENT_AUDITOR", "display_name": "Independent Auditor", "graph_ids": ["CODE_HYGIENE", "DELIVERY_CLOSURE", "EVIDENCE_IDENTITY", "FUNCTIONALITY", "RECOVERY_BOUNDARIES", "SECURITY_PRIVACY", "UI_UX"]},
+    {"role_id": "INTENT_REGULATOR", "display_name": "Intent Regulator", "graph_ids": ["DELIVERY_CLOSURE", "INTENT_SCOPE", "ROLE_ROUTING", "USER_CONVERSATION"]},
+    {"role_id": "RUNTIME", "display_name": "Runtime", "graph_ids": ["DELIVERY_CLOSURE", "EVIDENCE_IDENTITY", "SECURITY_PRIVACY"]}
+  ],
+  "worker_template": {
+    "role_id": "NAMED_LANE_WORKER",
+    "base_graph_ids": ["CORE", "EVIDENCE_IDENTITY", "PROGRESS_HEALTH", "RECOVERY_BOUNDARIES", "SECURITY_PRIVACY"],
+    "lane_ids": ["bootstrap-context", "code-hygiene", "delivery-closure", "evidence-identity", "functionality", "intent-scope", "progress-health", "recovery-boundaries", "role-routing", "security-privacy", "ui-ux", "user-conversation"]
+  },
+  "digest": "b8500c9750648b644e069a454529f05f3f9836f836ee143202c2cf5117c2a989"
+}

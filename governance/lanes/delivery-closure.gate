@@ -1,0 +1,29 @@
+graph DELIVERY_CLOSURE 1
+entry DELIVERY-001
+
+gate DELIVERY-001
+context CLOSURE
+question "Does the accepted result match the finish the owner chose, such as handoff, merge, push, deployment, release, or stop?"
+evidence accepted,finish,owner_choice
+YES DELIVERY-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate DELIVERY-002
+context CLOSURE
+question "Were the handoff preserved, temporary worker unpinned and archived, and the active roster cleared by host readback?"
+evidence handoff,archive,roster
+YES COMPLETE
+NO HARD-STOP-CLOSURE
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-CLOSURE
+end
+
+terminal COMPLETE COMPLETE "The chosen delivery path and temporary-agent closure are complete."
+terminal HARD-STOP-CLOSURE HARD_STOP "Temporary work or delivery authority is not safely closed."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Closure cannot be claimed without host readback."
+terminal SOFT-REVIEW SOFT_REVIEW "The chosen delivery result needs campaign review."
+terminal UNPROVEN UNPROVEN "Delivery or closure is not established."
+

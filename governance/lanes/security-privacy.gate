@@ -1,0 +1,27 @@
+graph SECURITY_PRIVACY 1
+entry SECURITY-001
+
+gate SECURITY-001
+context CODE_CHANGE
+question "Are inputs, permissions, secrets, private data, and isolation handled according to the admitted security boundary?"
+evidence threats,permissions,secrets,isolation
+YES SECURITY-002
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+gate SECURITY-002
+context CLOSURE
+question "Are destructive, external, and release actions held for the Runtime authority with an exact bounded request?"
+evidence authority,actions,request
+YES COMPLETE
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+terminal COMPLETE COMPLETE "The security and privacy boundary is satisfied."
+terminal HARD-STOP-SECURITY HARD_STOP "Security, privacy, or authority evidence failed."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Security cannot proceed on unknown evidence."
+

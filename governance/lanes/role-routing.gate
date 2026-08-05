@@ -1,0 +1,28 @@
+graph ROLE_ROUTING 1
+entry ROUTE-001
+
+gate ROUTE-001
+context TASK_START
+question "Does the assignment name one persistent or campaign role and one specific lane?"
+evidence role,lane,assignment
+YES ROUTE-002
+NO HARD-STOP-ROUTING
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-ROUTING
+end
+
+gate ROUTE-002
+context TASK_START
+question "Is the role packet limited to general rules plus the applicable lane rules and authority?"
+evidence packet,selection,authority
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-ROUTING
+end
+
+terminal COMPLETE COMPLETE "The work is routed to one correctly scoped role and lane."
+terminal HARD-STOP-ROUTING HARD_STOP "The role or lane cannot be safely identified."
+terminal SOFT-REVIEW SOFT_REVIEW "The Campaign Orchestrator must review role routing."
+terminal UNPROVEN UNPROVEN "Role routing lacks sufficient evidence."
+

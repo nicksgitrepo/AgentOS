@@ -1,0 +1,29 @@
+graph BOOTSTRAP_CONTEXT 1
+entry BOOT-001
+
+gate BOOT-001
+context TASK_START
+question "Can every named source be read inside the admitted boundary without writing or bypassing permission?"
+evidence sources,read_capability,boundary
+YES BOOT-002
+NO HARD-STOP-BOUNDARY
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-BOUNDARY
+end
+
+gate BOOT-002
+context TASK_START
+question "Is each retained fact labeled current, historical, decided, unresolved, or excluded with its provenance?"
+evidence provenance,classification,conflicts
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+terminal COMPLETE COMPLETE "Bootstrap context is classified and traceable."
+terminal HARD-STOP-BOUNDARY HARD_STOP "Bootstrap cannot read or cross the admitted boundary."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Bootstrap context lacks required provenance evidence."
+terminal SOFT-REVIEW SOFT_REVIEW "The context packet needs campaign review."
+terminal UNPROVEN UNPROVEN "Bootstrap context is not yet established."
+

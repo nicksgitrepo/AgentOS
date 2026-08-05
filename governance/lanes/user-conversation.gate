@@ -1,0 +1,27 @@
+graph USER_CONVERSATION 1
+entry CONV-001
+
+gate CONV-001
+context RESPONSE
+question "Does this question ask for exactly one missing owner choice in short, ordinary words?"
+evidence question,missing_choice,wording
+YES CONV-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate CONV-002
+context RESPONSE
+question "Can a numeric answer or yes or no answer be mapped without changing the owner's meaning?"
+evidence answer_map,ambiguity,context
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+terminal COMPLETE COMPLETE "The owner question is short, plain, and safely mappable."
+terminal SOFT-REVIEW SOFT_REVIEW "The user-facing question needs conversation review."
+terminal UNPROVEN UNPROVEN "The question meaning is not established."
+

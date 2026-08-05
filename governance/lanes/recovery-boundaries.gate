@@ -1,0 +1,29 @@
+graph RECOVERY_BOUNDARIES 1
+entry RECOVERY-001
+
+gate RECOVERY-001
+context HANDOFF
+question "Is each failure classified as an ordinary puzzle, soft-boundary review, hard stop, or true owner blocker?"
+evidence failure,class,route
+YES RECOVERY-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate RECOVERY-002
+context HANDOFF
+question "When scope, intent, authority, or conditions changed, was the old goal closed and a replacement goal routed?"
+evidence goal_change,reassessment,replacement
+YES COMPLETE
+NO HARD-STOP-SCOPE
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+terminal COMPLETE COMPLETE "Recovery and boundary handling are explicit."
+terminal HARD-STOP-SCOPE HARD_STOP "The changed condition requires a new goal or authority."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Failure classification is not evidenced."
+terminal SOFT-REVIEW SOFT_REVIEW "The Campaign Orchestrator must review the recovery route."
+terminal UNPROVEN UNPROVEN "Recovery behavior is not established."
+
