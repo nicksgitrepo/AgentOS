@@ -12,7 +12,7 @@
     "host_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
     "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
     "environment_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
-    "capabilities": { "const": ["create_thread", "list_threads", "read_thread", "wait_threads", "send_message_to_thread", "set_thread_archived", "set_thread_pinned", "remove_from_active_roster"] },
+    "capabilities": { "const": ["create_thread", "list_threads", "read_thread", "send_message_to_thread", "set_thread_archived", "set_thread_pinned", "wait_threads"] },
     "model": { "const": "gpt-5.6-luna" },
     "reasoning_effort": { "const": "max" },
     "attached_at_utc": { "type": "string", "format": "date-time" },

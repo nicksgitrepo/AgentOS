@@ -63,7 +63,7 @@ function fakeHost(graph, admission, workerSessionId) {
   });
   return {
     async create_thread() { threads.set(threadId, {active: true, pinned: false, archived: false}); return {...identity}; },
-    async list_threads() { return {threads: threads.has(threadId) ? [{...identity, ...threads.get(threadId)}] : []}; },
+    async list_threads({include_archived = false} = {}) { const thread = threads.get(threadId); return {threads: thread && (include_archived || thread.active) ? [{...identity, ...thread}] : []}; },
     async wait_threads() { return {threads: [{thread_id: threadId, host_id: workerSessionId}]}; },
     async read_thread({view}) {
       if (view === "progress") return {...identity, progress};
@@ -76,8 +76,7 @@ function fakeHost(graph, admission, workerSessionId) {
     },
     async send_message_to_thread() {},
     async set_thread_pinned({pinned}) { threads.get(threadId).pinned = pinned; return {pinned}; },
-    async set_thread_archived({archived}) { threads.get(threadId).archived = archived; return {archived}; },
-    async remove_from_active_roster() { threads.delete(threadId); return {active_roster_removed: true}; },
+    async set_thread_archived({archived}) { threads.get(threadId).archived = archived; threads.get(threadId).active = !archived; return {archived}; },
   };
 }
 

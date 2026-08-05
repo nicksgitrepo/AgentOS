@@ -60,7 +60,7 @@ function makeHost({wrongSource = false, wrongThread = false, wrongHandoff = fals
       if (partialCreate) delete readback.host_id;
       return readback;
     },
-    async list_threads() { calls.push(["LIST"]); return {threads: [...threads.values()].filter((thread) => thread.active)}; },
+    async list_threads({include_archived = false} = {}) { calls.push(["LIST"]); return {threads: [...threads.values()].filter((thread) => include_archived || thread.active)}; },
     async read_thread(input) {
       calls.push([input.view === "handoff" ? "READ_HANDOFF" : "READ_PROGRESS"]);
       const thread = threads.get(input.thread_id);
@@ -73,8 +73,7 @@ function makeHost({wrongSource = false, wrongThread = false, wrongHandoff = fals
     async wait_threads(input) { calls.push(["WAIT", input]); return {threads: input.targets}; },
     async send_message_to_thread(input) { calls.push(["SEND"]); const thread = threads.get(input.thread_id); thread.handoff = {summary: "The admitted behavior is complete", result_type: "VERIFIED_BEHAVIOR", artifact_sha256: "2".repeat(64), evidence_sha256: "3".repeat(64)}; },
     async set_thread_pinned(input) { calls.push([input.pinned ? "PIN" : "UNPIN"]); const thread = threads.get(input.thread_id); thread.pinned = input.pinned; return {pinned: input.pinned}; },
-    async set_thread_archived(input) { calls.push(["ARCHIVE"]); const thread = threads.get(input.thread_id); thread.archived = input.archived; return {archived: input.archived}; },
-    async remove_from_active_roster(input) { calls.push(["ROSTER_REMOVE"]); const thread = threads.get(input.thread_id); thread.active = false; threads.delete(input.thread_id); return {active_roster_removed: true}; },
+    async set_thread_archived(input) { calls.push(["ARCHIVE"]); const thread = threads.get(input.thread_id); thread.archived = input.archived; thread.active = !input.archived; return {archived: input.archived}; },
   };
 }
 
@@ -93,11 +92,11 @@ assert.equal(host.calls.filter(([name]) => name === "LIST").length >= 1, true);
 
 const badHost = makeHost({wrongSource: true});
 await assert.rejects(() => spawnNativeSession(badHost, admission), /source_commit differs/u);
-assert.deepEqual(badHost.calls.map(([name]) => name), ["CREATE", "UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
+assert.deepEqual(badHost.calls.map(([name]) => name), ["CREATE", "UNPIN", "ARCHIVE", "LIST"]);
 
 const partialHost = makeHost({partialCreate: true});
 await assert.rejects(() => spawnNativeSession(partialHost, admission), /fields mismatch/u);
-assert.deepEqual(partialHost.calls.map(([name]) => name), ["CREATE", "LIST", "UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
+assert.deepEqual(partialHost.calls.map(([name]) => name), ["CREATE", "LIST", "UNPIN", "ARCHIVE", "LIST"]);
 
 const wrongReadHost = makeHost({wrongThread: true});
 const wrongReadSession = await spawnNativeSession(wrongReadHost, admission);
@@ -108,14 +107,14 @@ const wrongHandoffSession = await spawnNativeSession(wrongHandoffHost, admission
 await assert.rejects(() => closeNativeSession(wrongHandoffHost, wrongHandoffSession, {summary: "The admitted behavior is complete", result_type: "VERIFIED_BEHAVIOR", artifact_sha256: "2".repeat(64), evidence_sha256: "3".repeat(64)}), /differs from the requested handoff/u);
 
 const missing = makeHost();
-delete missing.remove_from_active_roster;
-await assert.rejects(() => spawnNativeSession(missing, admission), /remove_from_active_roster/u);
+delete missing.set_thread_archived;
+await assert.rejects(() => spawnNativeSession(missing, admission), /set_thread_archived/u);
 
 const abortHost = makeHost();
 const abortSession = await spawnNativeSession(abortHost, admission);
 const aborted = await abortNativeSession(abortHost, abortSession, "TEST_ABORT");
 assert.equal(aborted.active_roster_removed, true);
 
-assert.equal(REQUIRED_HOST_ACTIONS.length, 8);
+assert.equal(REQUIRED_HOST_ACTIONS.length, 7);
 assert.equal(sha256({model: DEFAULT_MODEL, reasoning_effort: DEFAULT_REASONING_EFFORT}).length, 64);
 console.log(JSON.stringify({status: "PASS", required_host_actions: REQUIRED_HOST_ACTIONS.length, closure_order: closed.closure.order}));

@@ -32,12 +32,11 @@ const host = {
     threads.set(thread.thread_id, thread);
     return Object.fromEntries(Object.entries(thread).filter(([key]) => ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"].includes(key)));
   },
-  async list_threads() { calls.push("LIST"); return {threads: [...threads.values()].filter((thread) => thread.active)}; },
+  async list_threads({include_archived = false} = {}) { calls.push("LIST"); return {threads: [...threads.values()].filter((thread) => include_archived || thread.active)}; },
   async wait_threads() { calls.push("WAIT"); return {threads: [{thread_id: "THREAD-001", host_id: "WORKER-SESSION-001"}]}; },
   async send_message_to_thread() { calls.push("SEND"); },
   async set_thread_pinned({thread_id, pinned}) { calls.push(pinned ? "PIN" : "UNPIN"); threads.get(thread_id).pinned = pinned; return {pinned}; },
-  async set_thread_archived({thread_id, archived}) { calls.push("ARCHIVE"); threads.get(thread_id).archived = archived; return {archived}; },
-  async remove_from_active_roster({thread_id}) { calls.push("ROSTER_REMOVE"); threads.delete(thread_id); return {active_roster_removed: true}; },
+  async set_thread_archived({thread_id, archived}) { calls.push("ARCHIVE"); threads.get(thread_id).archived = archived; threads.get(thread_id).active = !archived; return {archived}; },
   async read_thread({view}) {
     const base = {thread_id: "THREAD-001", host_id: "WORKER-SESSION-001", project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", goal_id: "GOAL-001", lane_id: "functionality", role_id: "NAMED_LANE_WORKER", source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001"};
     if (view === "progress") return {...base, progress: {result_type: "VERIFIED_BEHAVIOR", summary: "The functionality was observed", artifact_sha256: "c".repeat(64), evidence_sha256: "d".repeat(64)}};
@@ -53,7 +52,7 @@ const host = {
 const result = await runFunctionalityCampaign({host, admission, graph, question_catalog: questionCatalog, authority_secret: authoritySecret, evidence_secret: evidenceSecret});
 assert.equal(result.status, "AUDIT_CANDIDATE");
 assert.equal(result.closed_session.status, "CLOSED");
-assert.deepEqual(calls.slice(-4), ["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
+assert.deepEqual(calls.slice(-3), ["UNPIN", "ARCHIVE", "LIST"]);
 const reviewerReadback = {thread_id: "AUDITOR-THREAD-001", host_id: "AUDITOR-SESSION-001", project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", goal_id: "GOAL-001", lane_id: "functionality", role_id: "INDEPENDENT_AUDITOR", source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001"};
 const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret});
 assert.equal(accepted.status, "ACCEPTED");

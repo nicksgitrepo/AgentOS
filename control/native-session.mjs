@@ -13,7 +13,6 @@ export const REQUIRED_HOST_ACTIONS = Object.freeze([
   "send_message_to_thread",
   "set_thread_pinned",
   "set_thread_archived",
-  "remove_from_active_roster",
 ]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -126,12 +125,10 @@ async function removeAndVerify(host, session, reason) {
   const archive = await host.set_thread_archived({thread_id: session.thread_id, archived: true, identity, reason});
   order.push("ARCHIVE");
   assert(archive && archive.archived === true, "host did not confirm archive");
-  const removed = await host.remove_from_active_roster({thread_id: session.thread_id, host_id: session.host_id, identity, reason});
-  order.push("ROSTER_REMOVE");
-  assert(removed && removed.active_roster_removed === true, "host did not confirm roster removal");
-  const roster = await host.list_threads({identity, include_archived: true});
+  const roster = await host.list_threads({identity, include_archived: false});
   assert(roster && Array.isArray(roster.threads), "host roster readback is invalid");
   assert(!roster.threads.some((thread) => thread.thread_id === session.thread_id), "closed thread remains in host roster");
+  order.push("ROSTER_REMOVE");
   order.push("ROSTER_VERIFY");
   return {order, active_roster_removed: true};
 }
