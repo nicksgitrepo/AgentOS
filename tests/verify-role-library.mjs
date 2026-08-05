@@ -15,6 +15,9 @@ assert.equal(campaign.length, 14);
 const workers = library.packets.filter((packet) => packet.role_id === "NAMED_LANE_WORKER");
 assert.equal(workers.length, 12);
 assert.equal(new Set(workers.map((packet) => packet.lane_id)).size, 12);
+const auditor = library.packets.find((packet) => packet.role_id === "INDEPENDENT_AUDITOR");
+assert.equal(auditor.graph_ids.filter((graphId) => graphId !== "CORE" && graphId.startsWith("GENERAL_")).length, 6);
+assert.equal(auditor.graph_ids.filter((graphId) => !graphId.startsWith("GENERAL_") && graphId !== "CORE").length, 12);
 for (const packet of workers) {
   assert.equal(packet.display_name, `${packet.lane_id} Worker`);
   assert(!packet.display_name.includes("Feature Agent"));
