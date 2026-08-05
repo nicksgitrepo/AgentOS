@@ -199,6 +199,21 @@ export async function readMeaningfulProgress(host, session, timeout_ms = 900_000
   return raw.progress;
 }
 
+export async function readGatePacket(host, session) {
+  validateSession(session);
+  const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "gate_packet"});
+  expectedIdentity(session, raw, "gate packet readback");
+  exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "gate_packet"], "gate packet readback");
+  assert(Array.isArray(raw.gate_packet) && raw.gate_packet.length > 0, "gate packet is empty");
+  for (const [index, item] of raw.gate_packet.entries()) {
+    exactKeys(item, ["gate_id", "answer", "evidence"], `gate packet ${index}`);
+    nonempty(item.gate_id, `gate packet ${index}.gate_id`);
+    assert(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"].includes(item.answer), `gate packet ${index}.answer is invalid`);
+    assert(item.evidence && typeof item.evidence === "object" && !Array.isArray(item.evidence), `gate packet ${index}.evidence is invalid`);
+  }
+  return raw.gate_packet;
+}
+
 export async function closeNativeSession(host, session, handoff) {
   validateSession(session);
   exactKeys(handoff, ["summary", "result_type", "artifact_sha256", "evidence_sha256"], "handoff input");

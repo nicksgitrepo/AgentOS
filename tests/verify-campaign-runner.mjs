@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+
+import assert from "node:assert/strict";
+import {fileURLToPath} from "node:url";
+import path from "node:path";
+import {readFile} from "node:fs/promises";
+import {compileBootstrapPlan} from "../control/bootstrap-plan.mjs";
+import {compileCampaignAdmission} from "../control/campaign-admission.mjs";
+import {createGoal} from "../control/campaign-state.mjs";
+import {compileGateFile} from "../control/gate-dsl.mjs";
+import {createEvidence} from "../control/evidence.mjs";
+import {acceptCampaignResult, runFunctionalityCampaign} from "../control/campaign-runner.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const plan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_context: {objective: "Build a bounded prototype"}, source_binding: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", bootstrap_session_id: "BOOTSTRAP-001", environment_id: "ENV-001"}});
+const goal = createGoal({goal_id: "GOAL-001", objective: "Build functionality", scope: {lane: "functionality"}, intent: {outcome: "works"}, boundaries: {hard: ["no release"], soft: ["review"]}, created_at_utc: "2026-01-01T00:00:00.000Z"});
+const admission = compileCampaignAdmission({plan, goal, project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", lane_id: "functionality", source: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", environment_id: "ENV-001"}, task_name: "functionality_worker_001", prompt: "Build the admitted functionality."});
+const graph = await compileGateFile(path.join(ROOT, "governance/lanes/functionality.gate"));
+const calls = [];
+const threads = new Map();
+const host = {
+  async create_thread(input) {
+    calls.push("CREATE");
+    const thread = {thread_id: "THREAD-001", host_id: "WORKER-SESSION-001", project_id: input.identity.project_id, campaign_id: input.identity.campaign_id, campaign_version: input.identity.campaign_version, goal_id: input.identity.goal_id, lane_id: input.identity.lane_id, role_id: input.identity.role_id, source_commit: input.identity.source_commit, source_tree: input.identity.source_tree, worktree_id: input.identity.worktree_id, active: true, pinned: false, archived: false};
+    threads.set(thread.thread_id, thread);
+    return Object.fromEntries(Object.entries(thread).filter(([key]) => ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"].includes(key)));
+  },
+  async list_threads() { calls.push("LIST"); return {threads: [...threads.values()].filter((thread) => thread.active)}; },
+  async wait_threads() { calls.push("WAIT"); return {threads: [{thread_id: "THREAD-001", host_id: "WORKER-SESSION-001"}]}; },
+  async send_message_to_thread() { calls.push("SEND"); },
+  async set_thread_pinned({thread_id, pinned}) { calls.push(pinned ? "PIN" : "UNPIN"); threads.get(thread_id).pinned = pinned; return {pinned}; },
+  async set_thread_archived({thread_id, archived}) { calls.push("ARCHIVE"); threads.get(thread_id).archived = archived; return {archived}; },
+  async remove_from_active_roster({thread_id}) { calls.push("ROSTER_REMOVE"); threads.delete(thread_id); return {active_roster_removed: true}; },
+  async read_thread({view}) {
+    const base = {thread_id: "THREAD-001", host_id: "WORKER-SESSION-001", project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", goal_id: "GOAL-001", lane_id: "functionality", role_id: "NAMED_LANE_WORKER", source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001"};
+    if (view === "progress") return {...base, progress: {result_type: "VERIFIED_BEHAVIOR", summary: "The functionality was observed", artifact_sha256: "c".repeat(64), evidence_sha256: "d".repeat(64)}};
+    if (view === "handoff") return {...base, handoff: {summary: "The functionality was observed", result_type: "VERIFIED_BEHAVIOR", artifact_sha256: "c".repeat(64), evidence_sha256: "d".repeat(64)}};
+    const identity = {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", session_id: "WORKER-SESSION-001", goal_id: "GOAL-001", environment_id: "ENV-001"};
+    const evidence = (gate, slot) => createEvidence({evidence_id: `${gate.id}-${slot}`, question_id: gate.id, graph_digest: graph.digest, evidence_slot: slot, answer: "YES", kind: "HOST_OBSERVATION", value: {gate: gate.id, slot}, identity, issuer_session_id: slot === "review" ? "AUDITOR-SESSION-001" : "HOST-SESSION-001", issuer_kind: slot === "review" ? "INDEPENDENT_AUDITOR" : "HOST_READBACK", supports_answer: true, observed_at_utc: "2026-01-01T00:00:00.000Z"});
+    return {...base, gate_packet: graph.nodes.map((gate) => ({gate_id: gate.id, answer: "YES", evidence: Object.fromEntries(gate.evidence.map((slot) => [slot, evidence(gate, slot)]))}))};
+  },
+};
+const result = await runFunctionalityCampaign({host, admission, graph, authority_secret: "campaign-runner-authority-secret-001"});
+assert.equal(result.status, "AUDIT_CANDIDATE");
+assert.equal(result.closed_session.status, "CLOSED");
+assert.deepEqual(calls.slice(-4), ["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
+const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z"});
+assert.equal(accepted.status, "ACCEPTED");
+assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "WORKER-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "self", accepted_at_utc: "2026-01-01T00:20:00.000Z"}), /cannot accept its own/u);
+void readFile;
+console.log(JSON.stringify({status: "PASS", campaign: result.status, acceptance: accepted.status}));
+

@@ -18,6 +18,15 @@
 - Native session host contract with exact cleanup ordering.
 - Discovery-based direct test runner and source-hygiene check with no npm
   entry point.
+- Bootstrap plan compiler that covers all twelve lanes, starts in Rapid
+  Prototyping Mode, and declares the Iteration Mode handoff.
+- Campaign admission binds the active goal, phase, named lane, source, and
+  fifteen-minute window before a worker can start.
+- The first Functionality campaign path now runs through native session
+  progress, gate readback, typed handoff, closure, and independent acceptance
+  in a bounded host integration test.
+- Persistent Intent Regulator audit decisions and the configurable fifteen-
+  minute loop are now explicit and abortable.
 
 ## Next slices
 
