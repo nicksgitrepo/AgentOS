@@ -5,6 +5,14 @@ import {ANSWERS, findGate, findTerminal, validateGateGraph} from "./gate-model.m
 
 export const EXECUTION_SCHEMA = "agentos.gate_execution.v1";
 
+function repairKey(from, answer, to) {
+  return `${from}\u0000${answer}\u0000${to}`;
+}
+
+function repairFor(graph, from, answer, to) {
+  return (graph.repair_edges ?? []).find((edge) => edge.from === from && edge.answer === answer && edge.to === to) ?? null;
+}
+
 export function createExecutionAuthority(secret) {
   assert(typeof secret === "string" && secret.length >= 32, "execution authority secret is required");
   const active = new Set();
@@ -20,9 +28,13 @@ export function createExecutionAuthority(secret) {
       active.add(key);
       return {execution_id: `EXEC-${key.slice(0, 24)}`, key};
     },
-    seal(state) {
+    seal(state, previous_auth_tag = null) {
+      const key = keyForState(state);
+      assert(active.has(key), "execution is not active");
+      if (currentTags.has(key)) assert(previous_auth_tag === currentTags.get(key), "cannot seal stale execution state");
+      else assert(state.auth_tag === null, "new execution state must not carry an auth tag");
       const sealed = {...state, auth_tag: tag(state)};
-      currentTags.set(keyForState(sealed), sealed.auth_tag);
+      currentTags.set(key, sealed.auth_tag);
       return sealed;
     },
     verify(state, graph) {
@@ -79,6 +91,7 @@ export function createExecution(graph, binding, {maxSteps = 128, authority} = {}
     step_count: 0,
     max_steps: maxSteps,
     trace: [],
+    repair_visits: {},
     binding: {...binding},
     result: null,
     auth_tag: null,
@@ -87,7 +100,7 @@ export function createExecution(graph, binding, {maxSteps = 128, authority} = {}
 
 export function answerCurrent(state, graph, answer, evidence, {authority} = {}) {
   validateGateGraph(graph);
-  exactKeys(state, ["schema", "version", "graph_id", "graph_digest", "execution_id", "status", "current_node", "step_count", "max_steps", "trace", "binding", "result", "auth_tag"], "execution state");
+  exactKeys(state, ["schema", "version", "graph_id", "graph_digest", "execution_id", "status", "current_node", "step_count", "max_steps", "trace", "repair_visits", "binding", "result", "auth_tag"], "execution state");
   assert(state.schema === EXECUTION_SCHEMA && state.version === 1, "execution identity is invalid");
   assert(state.graph_id === graph.graph_id, "execution graph identity differs");
   assert(authority && typeof authority.verify === "function" && typeof authority.seal === "function", "execution authority is required");
@@ -100,9 +113,34 @@ export function answerCurrent(state, graph, answer, evidence, {authority} = {}) 
   const gate = findGate(graph, state.current_node);
   validateEvidenceBundle(evidence, gate, graph, state.binding, answer);
   const target = gate.transitions[answer];
-  const trace = [...state.trace, {step: state.step_count + 1, gate_id: gate.id, answer, target}];
+  const repair = repairFor(graph, gate.id, answer, target);
+  const repairVisits = {...state.repair_visits};
+  if (repair) repairVisits[repairKey(gate.id, answer, target)] = (repairVisits[repairKey(gate.id, answer, target)] ?? 0) + 1;
+  const trace = [...state.trace, {
+    step: state.step_count + 1,
+    gate_id: gate.id,
+    answer,
+    target,
+    ...(repair ? {repair_visit: repairVisits[repairKey(gate.id, answer, target)], repair_limit: repair.max_visits} : {}),
+  }];
+  if (repair && repairVisits[repairKey(gate.id, answer, target)] > repair.max_visits) {
+    const terminal = findTerminal(graph, graph.repair_limit_terminal);
+    const next = {
+      ...state,
+      status: terminal.type,
+      current_node: null,
+      step_count: state.step_count + 1,
+      trace,
+      repair_visits: repairVisits,
+      result: {terminal_id: terminal.id, terminal_type: terminal.type, message: terminal.message},
+      auth_tag: null,
+    };
+    const sealed = authority.seal(next, state.auth_tag);
+    authority.finish(state.execution_id, graph, state.binding);
+    return sealed;
+  }
   if (graph.nodes.some((node) => node.id === target)) {
-    return authority.seal({...state, current_node: target, step_count: state.step_count + 1, trace, auth_tag: null});
+    return authority.seal({...state, current_node: target, step_count: state.step_count + 1, trace, repair_visits: repairVisits, auth_tag: null}, state.auth_tag);
   }
   const terminal = findTerminal(graph, target);
   const next = {
@@ -111,11 +149,13 @@ export function answerCurrent(state, graph, answer, evidence, {authority} = {}) 
     current_node: null,
     step_count: state.step_count + 1,
     trace,
+    repair_visits: repairVisits,
     result: {terminal_id: terminal.id, terminal_type: terminal.type, message: terminal.message},
     auth_tag: null,
   };
+  const sealed = authority.seal(next, state.auth_tag);
   authority.finish(state.execution_id, graph, state.binding);
-  return authority.seal(next);
+  return sealed;
 }
 
 export function replay(graph, binding, answers, evidenceFor, authority) {

@@ -20,6 +20,8 @@ boundary.
 - `UNKNOWN` never passes.
 - `NOT_APPLICABLE` needs an explicit route and evidence when it permits any
   progress.
+- Ordinary gate paths are acyclic. A repair loop must declare each loop edge
+  and a positive visit limit; exceeding the limit is a hard stop.
 - Hard boundaries stop work.
 - Soft boundaries route to review.
 - Evidence must bind to the same source, worktree, session, goal, and
@@ -34,4 +36,3 @@ boundary.
 The milestone is complete only after the first vertical slice has been
 migrated, replayed deterministically, hostile-tested, independently audited,
 and accepted without activating release behavior.
-

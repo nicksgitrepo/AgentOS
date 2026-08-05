@@ -9,10 +9,12 @@ The old implementation remains the reference outside this milestone.
 | Bootstrap compiler and owner conversation | Bootstrap plan, campaign admission, owner question surface | Core behavior migrated |
 | Role governance library | General manifest, role selection, role-library compiler | Migrated for twelve lanes |
 | Native session team and runner | Native host contract and lifecycle cleanup | Contract migrated; real host adapter remains external |
-| Campaign lifecycle and cascade | Campaign admission, runner, goal/progress state | First Functionality path migrated |
-| Controller and supervisor | Intent Regulator audit loop and campaign routing | Audit decisions migrated; full long-running host loop pending |
+| Campaign lifecycle and cascade | Campaign admission, campaign coordinator, runner, goal/progress state | Four-phase coordinator migrated; native execution slice complete for Functionality |
+| Controller and supervisor | Intent Regulator audit loop and campaign routing | Audit decisions and bounded phase routing migrated; long-running host loop remains an external host seam |
 | Owner review and acceptance bridge | Owner question surface and independent acceptance contract | First slice migrated |
-| Local worker runtime | Named lane worker admission and native session binding | Contract migrated; lane-by-lane execution migration pending |
+| Local worker runtime | Named lane worker admission and native session binding | Contract migrated; native lane execution is complete for Functionality and pending for the other lanes |
+| Runtime authority and release boundary | Persistent Runtime record and protected-action request | Project/environment-bound request contract migrated; host action execution remains intentionally external |
+| Persistent controller identity | Persistent Intent Regulator/Runtime records and fifteen-minute audit loop | Record and decision contract migrated; host session attachment remains external |
 
 ## Extraction rule
 
@@ -27,4 +29,3 @@ Each remaining seam must be migrated with:
 
 No old module is copied into this public milestone merely to make a test
 green. If a behavior cannot yet be migrated, it remains explicitly pending.
-

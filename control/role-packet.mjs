@@ -25,6 +25,32 @@ const PROHIBITED = Object.freeze([
   "SILENT_HARD_BOUNDARY_BYPASS",
 ]);
 
+const GENERAL_GRAPH_IDS = new Set([
+  "CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE",
+  "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_SECURITY",
+]);
+const ROLE_GRAPH_IDS = Object.freeze({
+  CAMPAIGN_ORCHESTRATOR: new Set(["BOOTSTRAP_CONTEXT", "DELIVERY_CLOSURE", "INTENT_SCOPE", "ROLE_ROUTING", "USER_CONVERSATION"]),
+  INDEPENDENT_AUDITOR: new Set(["CODE_HYGIENE", "FUNCTIONALITY", "UI_UX"]),
+  INTENT_REGULATOR: new Set(["DELIVERY_CLOSURE", "INTENT_SCOPE", "ROLE_ROUTING", "USER_CONVERSATION"]),
+  RUNTIME: new Set(["DELIVERY_CLOSURE"]),
+});
+
+function laneGraphId(laneId) {
+  return laneId.toUpperCase().replaceAll("-", "_");
+}
+
+function validateGraphScope(roleId, graphIds, laneId = null) {
+  const extras = graphIds.filter((graphId) => !GENERAL_GRAPH_IDS.has(graphId));
+  if (roleId === "NAMED_LANE_WORKER") {
+    assert(extras.length === 1 && extras[0] === laneGraphId(laneId), `${roleId} graph scope must contain only its lane`);
+    return;
+  }
+  const allowed = ROLE_GRAPH_IDS[roleId];
+  assert(allowed, `${roleId} graph scope is not defined`);
+  assert(extras.every((graphId) => allowed.has(graphId)), `${roleId} received governance for another role`);
+}
+
 function spec(roleId) {
   const value = ROLE_SPECS.find((candidate) => candidate.role_id === roleId);
   assert(value, `unknown role ${roleId}`);
@@ -41,6 +67,7 @@ export function composeRolePacket({role_id, lane_id = null, graph_ids, display_n
     assert(lane_id === null, `${role_id} cannot carry a lane_id`);
     display_name ??= role.display_name;
   }
+  validateGraphScope(role_id, graph_ids, lane_id);
   assert(typeof display_name === "string" && display_name.length > 0, "display_name is required");
   const packet = {
     schema: ROLE_PACKET_SCHEMA,
@@ -67,6 +94,7 @@ export function validateRolePacket(packet) {
   assert(packet.status === "PREPARED_NOT_ACTIVATED", "role packet status is invalid");
   assert(packet.lifetime === role.lifetime, "role packet lifetime is invalid");
   sortedUniqueStrings(packet.graph_ids, "role packet graph_ids");
+  validateGraphScope(packet.role_id, packet.graph_ids, packet.lane_id ?? null);
   assert(JSON.stringify(packet.allowed_authority) === JSON.stringify(AUTHORITY[packet.role_id]), "role packet authority is invalid");
   assert(JSON.stringify(packet.prohibited_authority) === JSON.stringify(PROHIBITED), "role packet prohibitions are invalid");
   if (packet.role_id === "NAMED_LANE_WORKER") assert(typeof packet.lane_id === "string" && packet.lane_id.length > 0, "lane_id is required");
@@ -74,4 +102,3 @@ export function validateRolePacket(packet) {
   assert(packet.digest === digestWithout(packet, "digest"), "role packet digest does not match content");
   return packet;
 }
-

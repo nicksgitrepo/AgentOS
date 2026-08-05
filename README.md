@@ -1,6 +1,6 @@
 # AgentOS Governance Refactor
 
-> Status: `REFactor milestone — PREPARED_NOT_ACTIVATED`
+> Status: `REFACTOR milestone — PREPARED_NOT_ACTIVATED`
 
 This repository is the clean refactor milestone for AgentOS governance. It is
 portable and project-agnostic. Product names, private paths, credentials,
@@ -35,6 +35,11 @@ The first slice establishes:
 - evidence bound to source, worktree, session, goal, and environment;
 - the first Functionality lane;
 - role-packet composition for persistent and campaign roles.
+
+The campaign coordinator now compiles the complete four-phase plan, assigns a
+fresh named worker to each of the twelve lanes, and requires an independent
+phase acceptance before the next phase can begin. The bounded repair form is
+available for a deliberate, counted return to an earlier gate.
 
 The older development checkout remains the reference baseline. It is not
 copied into this milestone wholesale; each behavior is migrated and verified

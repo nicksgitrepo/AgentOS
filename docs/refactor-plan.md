@@ -6,7 +6,8 @@
 - No package manager or third-party runtime dependency.
 - Canonical line-oriented `.gate` format.
 - Canonical JSON graph with deterministic SHA-256 digest.
-- Semantic graph checks, including explicit answer paths and cycle rejection.
+- Semantic graph checks, including explicit answer paths, unreachable-gate
+  rejection, and explicitly bounded repair edges.
 - Deterministic execution state with typed evidence.
 - First Functionality lane.
 - All twelve lane graphs with explicit four-way answer paths.
@@ -25,6 +26,10 @@
 - The first Functionality campaign path now runs through native session
   progress, gate readback, typed handoff, closure, and independent acceptance
   in a bounded host integration test.
+- The campaign coordinator now compiles all four phases, twelve named lane
+  assignments, persistent authority references, and one fresh Auditor slot per
+  phase; its ordered runner requires complete phase acceptance before moving
+  forward.
 - Persistent Intent Regulator audit decisions and the configurable fifteen-
   minute loop are now explicit and abortable.
 - Owner questions are rendered as short plain choices with numeric and
@@ -32,11 +37,13 @@
 - The remaining legacy boundaries are tracked in
   [`migration-map.md`](migration-map.md), with no old control module copied
   into the clean milestone.
+- Bounded repair edges are represented in the graph model and counted by the
+  host engine; they cannot become an unbounded retry loop.
 
 ## Next slices
 
-1. Add general governance blocks and compile role packets from selected blocks.
-1. Migrate Bootstrap and campaign routing through the new engine.
+1. Migrate Bootstrap and campaign routing through the new engine with a real
+   host adapter supplied by the surrounding runtime.
 2. Extract old transaction boundaries one at a time after parity tests pass.
 
 Each slice must have a focused verifier, a hostile verifier, a deterministic

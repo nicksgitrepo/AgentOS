@@ -49,6 +49,21 @@
         }
       }
     },
+    "repair_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "answer", "to", "max_visits"],
+        "properties": {
+          "from": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+          "answer": { "enum": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"] },
+          "to": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+          "max_visits": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "repair_limit_terminal": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   }
 }

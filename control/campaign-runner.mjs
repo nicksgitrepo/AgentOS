@@ -1,4 +1,5 @@
-import {assert, digestWithout} from "./canonical-json.mjs";
+import crypto from "node:crypto";
+import {assert, canonicalJson, digestWithout} from "./canonical-json.mjs";
 import {validateGateGraph, findGate} from "./gate-model.mjs";
 import {answerCurrent, createExecution, createExecutionAuthority} from "./gate-engine.mjs";
 import {readGatePacket, readMeaningfulProgress, spawnNativeSession, closeNativeSession, abortNativeSession} from "./native-session.mjs";
@@ -15,6 +16,11 @@ function digest(value, label) {
   assert(typeof value === "string" && /^[0-9a-f]{64}$/u.test(value), `${label} must be a SHA-256 digest`);
 }
 
+function proof(secret, result) {
+  assert(typeof secret === "string" && secret.length >= 32, "campaign authority secret is required");
+  return crypto.createHmac("sha256", secret).update(canonicalJson({...result, completion_proof: null, digest: null}), "utf8").digest("hex");
+}
+
 function meaningful(value, label) {
   exactKeys(value, ["result_type", "summary", "artifact_sha256", "evidence_sha256"], label);
   assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(value.result_type), `${label}.result_type is not meaningful`);
@@ -23,13 +29,19 @@ function meaningful(value, label) {
   digest(value.evidence_sha256, `${label}.evidence_sha256`);
 }
 
-function validateAuditCandidate(result) {
+function validateAuditCandidate(result, authority_secret) {
+  digest(result.completion_proof, "completion_proof");
+  assert(result.completion_proof === proof(authority_secret, result), "campaign completion proof is invalid");
   assert(result.execution && result.execution.status === "COMPLETE", "campaign execution is not complete");
+  exactKeys(result.execution, ["schema", "version", "graph_id", "graph_digest", "execution_id", "status", "current_node", "step_count", "max_steps", "trace", "repair_visits", "binding", "result", "auth_tag"], "campaign execution");
+  assert(result.execution.current_node === null && Array.isArray(result.execution.trace) && result.execution.trace.length === result.execution.step_count && result.execution.step_count > 0, "campaign execution trace is incomplete");
   assert(result.execution.result && result.execution.result.terminal_type === "COMPLETE", "campaign execution terminal is not COMPLETE");
   assert(result.execution.graph_digest === result.graph_digest, "campaign execution graph differs");
   meaningful(result.progress, "campaign progress");
   assert(result.closed_session && result.closed_session.status === "CLOSED", "native session is not closed");
   meaningful(result.closed_session.handoff, "closed session handoff");
+  exactKeys(result.closed_session, ["schema", "version", "status", "thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id", "model", "reasoning_effort", "governance_digest", "handoff", "digest"], "closed native session");
+  assert(result.closed_session.status === "CLOSED" && result.closed_session.digest === digestWithout(result.closed_session, "digest"), "closed native session digest is invalid");
   assert(result.closed_session.handoff.summary === result.progress.summary && result.closed_session.handoff.result_type === result.progress.result_type && result.closed_session.handoff.artifact_sha256 === result.progress.artifact_sha256 && result.closed_session.handoff.evidence_sha256 === result.progress.evidence_sha256, "closed handoff differs from progress");
   exactKeys(result.closure, ["order", "active_roster_removed"], "campaign closure");
   assert(JSON.stringify(result.closure.order) === JSON.stringify(["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "ROSTER_VERIFY"]), "campaign closure order is incomplete");
@@ -37,9 +49,10 @@ function validateAuditCandidate(result) {
   assert(result.execution.binding.session_id === result.closed_session.host_id, "closed session does not match execution session");
 }
 
-export async function runFunctionalityCampaign({host, admission, graph, authority_secret}) {
+export async function runLaneCampaign({host, admission, graph, authority_secret}) {
   validateCampaignAdmission(admission);
   validateGateGraph(graph);
+  assert(graph.graph_id === admission.lane_id.toUpperCase().replaceAll("-", "_"), "campaign graph does not match admitted lane");
   const nativeAdmission = toNativeAdmission(admission);
   const authority = createExecutionAuthority(authority_secret);
   let session = null;
@@ -79,8 +92,10 @@ export async function runFunctionalityCampaign({host, admission, graph, authorit
       progress,
       closed_session: closed.session,
       closure: closed.closure,
+      completion_proof: null,
       digest: null,
     };
+    result.completion_proof = proof(authority_secret, result);
     result.digest = digestWithout(result, "digest");
     return result;
   } catch (error) {
@@ -91,14 +106,16 @@ export async function runFunctionalityCampaign({host, admission, graph, authorit
   }
 }
 
-export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc}) {
-  exactKeys(result, ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "closed_session", "closure", "digest"], "campaign result");
+export const runFunctionalityCampaign = runLaneCampaign;
+
+export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}) {
+  exactKeys(result, ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "closed_session", "closure", "completion_proof", "digest"], "campaign result");
   assert(result.schema === CAMPAIGN_RESULT_SCHEMA && result.version === 1 && result.status === "AUDIT_CANDIDATE", "campaign result is not an audit candidate");
   digest(result.admission_digest, "admission_digest");
   digest(result.graph_digest, "graph_digest");
   assert(result.digest === digestWithout(result, "digest"), "campaign result digest does not match content");
-  validateAuditCandidate(result);
-  exactKeys({reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc}, ["reviewer_session_id", "reviewer_role_id", "evidence_sha256", "accepted", "reason", "accepted_at_utc"], "campaign acceptance");
+  validateAuditCandidate(result, authority_secret);
+  exactKeys({reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}, ["reviewer_session_id", "reviewer_role_id", "evidence_sha256", "accepted", "reason", "accepted_at_utc", "authority_secret"], "campaign acceptance");
   assert(typeof reviewer_session_id === "string" && reviewer_session_id.length > 0, "reviewer_session_id is required");
   assert(reviewer_session_id !== result.execution.binding.session_id, "worker cannot accept its own result");
   assert(reviewer_role_id === "INDEPENDENT_AUDITOR", "campaign acceptance requires an Independent Auditor");

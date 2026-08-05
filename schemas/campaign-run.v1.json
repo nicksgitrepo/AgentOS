@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.campaign_run.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "plan_digest", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "phase_index", "lane_index", "lane_results", "phase_results", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.campaign_run.v1" },
+    "version": { "const": 1 },
+    "status": { "enum": ["ACTIVE", "COMPLETE"] },
+    "plan_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "project_id": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "campaign_version": { "type": "string" },
+    "goal_id": { "type": "string" },
+    "goal_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "phase_index": { "type": "integer", "minimum": 0 },
+    "lane_index": { "type": "integer", "minimum": 0 },
+    "lane_results": { "type": "array" },
+    "phase_results": { "type": "array" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

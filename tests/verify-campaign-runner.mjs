@@ -16,6 +16,7 @@ const plan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_
 const goal = createGoal({goal_id: "GOAL-001", objective: "Build functionality", scope: {lane: "functionality"}, intent: {outcome: "works"}, boundaries: {hard: ["no release"], soft: ["review"]}, created_at_utc: "2026-01-01T00:00:00.000Z"});
 const admission = compileCampaignAdmission({plan, goal, project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", lane_id: "functionality", source: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", environment_id: "ENV-001"}, task_name: "functionality_worker_001", prompt: "Build the admitted functionality."});
 const graph = await compileGateFile(path.join(ROOT, "governance/lanes/functionality.gate"));
+const authoritySecret = "campaign-runner-authority-secret-001";
 const calls = [];
 const threads = new Map();
 const host = {
@@ -40,14 +41,14 @@ const host = {
     return {...base, gate_packet: graph.nodes.map((gate) => ({gate_id: gate.id, answer: "YES", evidence: Object.fromEntries(gate.evidence.map((slot) => [slot, evidence(gate, slot)]))}))};
   },
 };
-const result = await runFunctionalityCampaign({host, admission, graph, authority_secret: "campaign-runner-authority-secret-001"});
+const result = await runFunctionalityCampaign({host, admission, graph, authority_secret: authoritySecret});
 assert.equal(result.status, "AUDIT_CANDIDATE");
 assert.equal(result.closed_session.status, "CLOSED");
 assert.deepEqual(calls.slice(-4), ["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
-const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z"});
+const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret});
 assert.equal(accepted.status, "ACCEPTED");
-assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "WORKER-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "self", accepted_at_utc: "2026-01-01T00:20:00.000Z"}), /cannot accept its own/u);
+assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "WORKER-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "self", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret}), /cannot accept its own/u);
 const falseSuccess = {...result, progress: null, digest: null};
 falseSuccess.digest = digestWithout(falseSuccess, "digest");
-assert.throws(() => acceptCampaignResult(falseSuccess, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "false", accepted_at_utc: "2026-01-01T00:20:00.000Z"}), /campaign progress must be an object/u);
+assert.throws(() => acceptCampaignResult(falseSuccess, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "false", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret}), /completion proof is invalid/u);
 console.log(JSON.stringify({status: "PASS", campaign: result.status, acceptance: accepted.status}));

@@ -67,6 +67,11 @@ for (const answer of ["YES", "YES", "YES"]) {
   replayState = answerCurrent(replayState, core, answer, evidenceFor(core, gate, answer), {authority: replayAuthority});
 }
 assert.throws(() => answerCurrent(replayInitial, core, "UNKNOWN", evidenceFor(core, findGate(core, "CORE-001"), "UNKNOWN"), {authority: replayAuthority}), /no longer active|stale/u);
+const staleSealAuthority = createExecutionAuthority("stale-seal-authority-secret-001-long-enough");
+const staleSealInitial = createExecution(core, identity, {authority: staleSealAuthority});
+const staleSealNext = answerCurrent(staleSealInitial, core, "YES", evidenceFor(core, findGate(core, "CORE-001"), "YES"), {authority: staleSealAuthority});
+assert.throws(() => staleSealAuthority.seal({...staleSealInitial, auth_tag: null}, staleSealInitial.auth_tag), /stale/u);
+assert.equal(staleSealNext.status, "ACTIVE");
 
 const forged = createExecutionAuthority("forged-state-authority-secret-001");
 const honest = createExecution(core, identity, {authority: forged});
@@ -99,6 +104,74 @@ assert.equal(stopped.result.terminal_id, "HARD-STOP-EVIDENCE");
 
 const missingEvidenceAuthority = createExecutionAuthority("missing-evidence-authority-secret-001");
 assert.throws(() => answerCurrent(createExecution(core, identity, {authority: missingEvidenceAuthority}), core, "YES", {}, {authority: missingEvidenceAuthority}), /evidence fields mismatch/u);
+const boundedRepair = parseGateDsl(`graph REPAIR 1
+entry REPAIR-001
+gate REPAIR-001
+context TASK_START
+question "Is the repair task admitted?"
+evidence one
+YES REPAIR-002
+NO REPAIR-003
+UNKNOWN REPAIR-003
+NOT_APPLICABLE REPAIR-003
+end
+gate REPAIR-002
+context TASK_START
+question "Did the admitted task pass?"
+evidence one
+YES COMPLETE
+NO REPAIR-003
+UNKNOWN REPAIR-003
+NOT_APPLICABLE REPAIR-003
+end
+gate REPAIR-003
+context REPAIR
+question "Is the bounded repair ready?"
+evidence one
+YES REPAIR-004
+NO STOP
+UNKNOWN STOP
+NOT_APPLICABLE STOP
+end
+gate REPAIR-004
+context REPAIR
+question "Did the bounded repair finish?"
+evidence one
+YES REPAIR-003
+NO STOP
+UNKNOWN STOP
+NOT_APPLICABLE STOP
+end
+repair REPAIR-003 YES REPAIR-004 1
+repair REPAIR-004 YES REPAIR-003 1
+repair-limit-terminal REPAIR-LIMIT
+terminal COMPLETE COMPLETE "complete"
+terminal STOP HARD_STOP "stop"
+terminal REPAIR-LIMIT HARD_STOP "The bounded repair limit was reached."
+`);
+validateGateGraph(boundedRepair);
+const boundedRepairAuthority = createExecutionAuthority("bounded-repair-execution-authority-secret-001");
+let boundedRepairRun = createExecution(boundedRepair, identity, {authority: boundedRepairAuthority});
+for (const answer of ["NO", "YES", "YES", "YES"]) {
+  const gate = findGate(boundedRepair, boundedRepairRun.current_node);
+  boundedRepairRun = answerCurrent(boundedRepairRun, boundedRepair, answer, evidenceFor(boundedRepair, gate, answer), {authority: boundedRepairAuthority});
+}
+assert.equal(boundedRepairRun.status, "HARD_STOP");
+assert.equal(boundedRepairRun.result.terminal_id, "REPAIR-LIMIT");
+assert.equal(boundedRepairRun.trace.at(-1).repair_visit, 2);
+assert.throws(() => parseGateDsl(`graph BAD-REPAIR 1
+entry BAD-REPAIR-001
+gate BAD-REPAIR-001
+context REPAIR
+question "cycle"
+evidence one
+YES BAD-REPAIR-001
+NO STOP
+UNKNOWN STOP
+NOT_APPLICABLE STOP
+end
+terminal STOP HARD_STOP "stop"
+repair-limit-terminal STOP`), /repair-limit-terminal requires a repair edge|unbounded cycle/u);
 assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\nquestion \"cycle\"\nevidence one\nYES BAD-001\nNO BAD-001\nUNKNOWN BAD-001\nNOT_APPLICABLE BAD-001\nend\nterminal STOP HARD_STOP \"stop\""), /unbounded cycle/u);
 assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\nquestion \"unsafe\"\nevidence one\nYES COMPLETE\nNO COMPLETE\nUNKNOWN COMPLETE\nNOT_APPLICABLE COMPLETE\nend\nterminal COMPLETE COMPLETE \"complete\""), /can reach COMPLETE/u);
 assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\ncontext CODE_CHANGE\nquestion \"duplicate\"\nevidence one\nYES COMPLETE\nNO COMPLETE\nUNKNOWN STOP\nNOT_APPLICABLE STOP\nend\nterminal COMPLETE COMPLETE \"complete\"\nterminal STOP UNPROVEN \"stop\""), /duplicate context/u);
@@ -116,6 +189,7 @@ assert.equal(functionalityRun.status, "COMPLETE");
 
 const packet = composeRolePacket({role_id: "NAMED_LANE_WORKER", lane_id: "functionality", graph_ids: ["CORE", "FUNCTIONALITY"]});
 assert.equal(validateRolePacket(packet).digest, packet.digest);
+assert.throws(() => composeRolePacket({role_id: "RUNTIME", graph_ids: ["CORE", "FUNCTIONALITY"]}), /another role/u);
 const regulator = composeRolePacket({role_id: "INTENT_REGULATOR", graph_ids: ["CORE"]});
 assert.equal(validateRolePacket(regulator).lifetime, "PERSISTENT");
 

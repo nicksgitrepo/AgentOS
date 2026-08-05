@@ -133,8 +133,18 @@ async function removeAndVerify(host, session, reason) {
 }
 
 async function cleanupCreated(host, admission, created, reason) {
-  if (!created?.thread_id || !created?.host_id) return {attempted: false, order: [], active_roster_removed: false};
-  const session = {thread_id: created.thread_id, host_id: created.host_id, identity: identityFrom(admission, created)};
+  assert(created && typeof created === "object", "native create returned no cleanup identity");
+  assert(created.thread_id || created.host_id, "native create returned no thread or host identity for cleanup");
+  let resolved = created;
+  if (!created.thread_id || !created.host_id) {
+    const roster = await host.list_threads({identity: {...admission}, include_archived: true});
+    assert(roster && Array.isArray(roster.threads), "cleanup roster readback is invalid");
+    const candidates = roster.threads.filter((thread) => (created.thread_id && thread.thread_id === created.thread_id) || (created.host_id && thread.host_id === created.host_id));
+    assert(candidates.length === 1, "cleanup could not resolve the partially identified native thread");
+    expectedIdentity(admission, candidates[0], "cleanup roster readback");
+    resolved = {thread_id: candidates[0].thread_id, host_id: candidates[0].host_id};
+  }
+  const session = {thread_id: resolved.thread_id, host_id: resolved.host_id, identity: identityFrom(admission, resolved)};
   return {attempted: true, ...(await removeAndVerify(host, session, reason))};
 }
 
@@ -150,7 +160,7 @@ export async function spawnNativeSession(host, admission) {
       reasoning_effort: DEFAULT_REASONING_EFFORT,
       identity: {...admission},
     });
-    if (raw && typeof raw === "object") created = {thread_id: raw.thread_id, host_id: raw.host_id};
+    if (raw && typeof raw === "object") created = {thread_id: raw.thread_id ?? null, host_id: raw.host_id ?? null};
     exactKeys(raw, THREAD_IDENTITY_FIELDS, "create_thread readback");
     expectedIdentity(admission, raw, "create_thread readback");
     const session = {

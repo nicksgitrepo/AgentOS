@@ -25,7 +25,7 @@ const admission = {
   prompt: "Build the admitted functionality lane and return a typed handoff.",
 };
 
-function makeHost({wrongSource = false, wrongThread = false, wrongHandoff = false} = {}) {
+function makeHost({wrongSource = false, wrongThread = false, wrongHandoff = false, partialCreate = false} = {}) {
   const calls = [];
   const threads = new Map();
   let sequence = 0;
@@ -53,7 +53,9 @@ function makeHost({wrongSource = false, wrongThread = false, wrongHandoff = fals
         handoff: null,
       };
       threads.set(thread.thread_id, thread);
-      return Object.fromEntries(Object.entries(thread).filter(([key]) => ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"].includes(key)));
+      const readback = Object.fromEntries(Object.entries(thread).filter(([key]) => ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"].includes(key)));
+      if (partialCreate) delete readback.host_id;
+      return readback;
     },
     async list_threads() { calls.push(["LIST"]); return {threads: [...threads.values()].filter((thread) => thread.active)}; },
     async read_thread(input) {
@@ -89,6 +91,10 @@ assert.equal(host.calls.filter(([name]) => name === "LIST").length >= 1, true);
 const badHost = makeHost({wrongSource: true});
 await assert.rejects(() => spawnNativeSession(badHost, admission), /source_commit differs/u);
 assert.deepEqual(badHost.calls.map(([name]) => name), ["CREATE", "UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
+
+const partialHost = makeHost({partialCreate: true});
+await assert.rejects(() => spawnNativeSession(partialHost, admission), /fields mismatch/u);
+assert.deepEqual(partialHost.calls.map(([name]) => name), ["CREATE", "LIST", "UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);
 
 const wrongReadHost = makeHost({wrongThread: true});
 const wrongReadSession = await spawnNativeSession(wrongReadHost, admission);

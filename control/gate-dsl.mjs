@@ -26,6 +26,8 @@ export function parseGateDsl(text, source = "<memory>") {
   let current = null;
   const nodes = new Map();
   const terminals = new Map();
+  const repairEdges = new Map();
+  let repairLimitTerminal = null;
   const lines = text.split(/\r?\n/u);
 
   for (let index = 0; index < lines.length; index += 1) {
@@ -38,6 +40,18 @@ export function parseGateDsl(text, source = "<memory>") {
     if (match) { if (graphId !== null) fail("duplicate graph declaration"); graphId = match[1]; version = Number(match[2]); continue; }
     match = line.match(/^entry\s+(\S+)$/u);
     if (match) { if (entry !== null) fail("duplicate entry declaration"); entry = match[1]; continue; }
+    match = line.match(/^repair-limit-terminal\s+(\S+)$/u);
+    if (match) { if (current !== null) fail("repair-limit-terminal must be outside a gate"); if (repairLimitTerminal !== null) fail("duplicate repair-limit-terminal declaration"); repairLimitTerminal = match[1]; continue; }
+    match = line.match(/^repair\s+(\S+)\s+(YES|NO|UNKNOWN|NOT_APPLICABLE)\s+(\S+)\s+(\d+)$/u);
+    if (match) {
+      if (current !== null) fail("repair must be outside a gate");
+      const key = `${match[1]}\u0000${match[2]}\u0000${match[3]}`;
+      if (repairEdges.has(key)) fail("duplicate repair edge");
+      const maxVisits = Number(match[4]);
+      if (!Number.isSafeInteger(maxVisits) || maxVisits < 1) fail("repair max visits must be a positive integer");
+      repairEdges.set(key, {from: match[1], answer: match[2], to: match[3], max_visits: maxVisits});
+      continue;
+    }
     match = line.match(/^gate\s+(\S+)$/u);
     if (match) {
       if (current !== null) fail(`gate ${current.id} is missing end`);
@@ -78,6 +92,13 @@ export function parseGateDsl(text, source = "<memory>") {
     terminals: [...terminals.values()],
     digest: null,
   };
+  if (repairEdges.size > 0) {
+    assert(repairLimitTerminal !== null, `${source}: repair-limit-terminal is required when repair edges exist`);
+    raw.repair_edges = [...repairEdges.values()];
+    raw.repair_limit_terminal = repairLimitTerminal;
+  } else {
+    assert(repairLimitTerminal === null, `${source}: repair-limit-terminal requires a repair edge`);
+  }
   return normalizeGateGraph(raw);
 }
 

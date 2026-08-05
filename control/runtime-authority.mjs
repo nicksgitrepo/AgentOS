@@ -14,26 +14,31 @@ function exactKeys(value, expected, label) {
 
 function nonempty(value, label) { assert(typeof value === "string" && value.trim().length > 0, `${label} must be nonempty`); }
 
-export function authorizeRuntimeRequest(runtimeRole, {request_id, action, project_id, campaign_id, goal_id, scope_digest, reason, requested_at_utc}) {
+export function authorizeRuntimeRequest(runtimeRole, {request_id, action, project_id, environment_id, campaign_id, goal_id, scope_digest, reason, requested_at_utc}) {
   validatePersistentRole(runtimeRole);
   assert(runtimeRole.role_id === "RUNTIME", "only Runtime may authorize protected actions");
-  exactKeys({request_id, action, project_id, campaign_id, goal_id, scope_digest, reason, requested_at_utc}, ["request_id", "action", "project_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc"], "runtime request");
-  for (const [value, label] of [[request_id, "request_id"], [project_id, "project_id"], [campaign_id, "campaign_id"], [goal_id, "goal_id"]]) { nonempty(value, label); assert(ID.test(value), `${label} is invalid`); }
+  exactKeys({request_id, action, project_id, environment_id, campaign_id, goal_id, scope_digest, reason, requested_at_utc}, ["request_id", "action", "project_id", "environment_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc"], "runtime request");
+  for (const [value, label] of [[request_id, "request_id"], [project_id, "project_id"], [environment_id, "environment_id"], [campaign_id, "campaign_id"], [goal_id, "goal_id"]]) { nonempty(value, label); assert(ID.test(value), `${label} is invalid`); }
+  assert(runtimeRole.project_id === project_id, "runtime request project differs from Runtime");
+  assert(runtimeRole.environment_id === environment_id, "runtime request environment differs from Runtime");
   assert(PROTECTED_ACTIONS.includes(action), "runtime action is not protected or recognized");
   assert(DIGEST.test(scope_digest), "runtime scope digest is invalid");
   nonempty(reason, "runtime request reason");
   assert(typeof requested_at_utc === "string" && UTC.test(requested_at_utc), "runtime requested_at_utc is invalid");
-  const request = {schema: RUNTIME_REQUEST_SCHEMA, version: 1, status: "AUTHORIZED_REQUEST", authority_role: "RUNTIME", authority_digest: runtimeRole.digest, request_id, action, project_id, campaign_id, goal_id, scope_digest, reason, requested_at_utc, digest: null};
+  const request = {schema: RUNTIME_REQUEST_SCHEMA, version: 1, status: "AUTHORIZED_REQUEST", authority_role: "RUNTIME", authority_digest: runtimeRole.digest, authority_host_session_id: runtimeRole.host_session_id, request_id, action, project_id, environment_id, campaign_id, goal_id, scope_digest, reason, requested_at_utc, digest: null};
   request.digest = digestWithout(request, "digest");
   return request;
 }
 
-export function validateRuntimeRequest(request) {
-  exactKeys(request, ["schema", "version", "status", "authority_role", "authority_digest", "request_id", "action", "project_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "digest"], "runtime request");
+export function validateRuntimeRequest(request, {runtimeRole} = {}) {
+  validatePersistentRole(runtimeRole);
+  assert(runtimeRole.role_id === "RUNTIME", "runtime request validator requires Runtime");
+  exactKeys(request, ["schema", "version", "status", "authority_role", "authority_digest", "authority_host_session_id", "request_id", "action", "project_id", "environment_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "digest"], "runtime request");
   assert(request.schema === RUNTIME_REQUEST_SCHEMA && request.version === 1 && request.status === "AUTHORIZED_REQUEST" && request.authority_role === "RUNTIME", "runtime request identity is invalid");
   assert(DIGEST.test(request.authority_digest) && DIGEST.test(request.scope_digest) && DIGEST.test(request.digest), "runtime request digest is invalid");
   assert(PROTECTED_ACTIONS.includes(request.action), "runtime request action is invalid");
+  assert(request.authority_digest === runtimeRole.digest && request.authority_host_session_id === runtimeRole.host_session_id, "runtime request authority differs from Runtime");
+  assert(request.project_id === runtimeRole.project_id && request.environment_id === runtimeRole.environment_id, "runtime request project or environment differs from Runtime");
   assert(request.digest === digestWithout(request, "digest"), "runtime request digest does not match content");
   return request;
 }
-
