@@ -103,3 +103,10 @@ Runtime request and still requires the persistent Runtime, the matching
 project and environment, and owner approval naming the accepted result and
 final audit. The surrounding host performs the actual external action; this
 repository never contains provider credentials or performs delivery itself.
+
+For a deployment or release choice, the host must return three separate
+content-addressed records: a repository checkpoint, a deployment receipt, and
+an independent live-audit receipt. The final closure record binds all three to
+the original owner delivery choice, accepted result, candidate source, and
+Runtime session. A pushed checkpoint must be clean and remote-equal; a live
+audit must identify a different audit identity from the deployment identity.

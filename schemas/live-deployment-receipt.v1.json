@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.live_deployment_receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "final_candidate_commit", "final_candidate_tree", "deployed_identity", "rollback_identity", "runtime_session_id", "deployed_at_utc", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.live_deployment_receipt.v1" },
+    "version": { "const": 1 },
+    "final_candidate_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "final_candidate_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "deployed_identity": { "type": "string" },
+    "rollback_identity": { "type": "string" },
+    "runtime_session_id": { "type": "string" },
+    "deployed_at_utc": { "type": "string", "format": "date-time" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

@@ -36,6 +36,9 @@
 - Delivery closure now records the owner's selected local, push, merge,
   deploy, or release outcome. External choices become project/environment-
   bound Runtime requests and remain host-executed.
+- Deployment and release closure now require a source-bound repository
+  checkpoint, a Runtime deployment receipt, an independent live-audit receipt,
+  and one final record tying those proofs back to the owner delivery choice.
 - Persistent Intent Regulator audit decisions and the configurable fifteen-
   minute loop are now explicit and abortable.
 - Owner questions are rendered as short plain choices with numeric and
