@@ -46,8 +46,11 @@ export function validateRuntimeRequest(request, {runtimeRole} = {}) {
   assert(runtimeRole.role_id === "RUNTIME", "runtime request validator requires Runtime");
   exactKeys(request, ["schema", "version", "status", "authority_role", "authority_digest", "authority_host_session_id", "request_id", "action", "project_id", "environment_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "owner_approval", "digest"], "runtime request");
   assert(request.schema === RUNTIME_REQUEST_SCHEMA && request.version === 1 && request.status === "AUTHORIZED_REQUEST" && request.authority_role === "RUNTIME", "runtime request identity is invalid");
+  assert(ID.test(request.request_id) && ID.test(request.project_id) && ID.test(request.environment_id) && ID.test(request.campaign_id) && ID.test(request.goal_id), "runtime request identity fields are invalid");
   assert(DIGEST.test(request.authority_digest) && DIGEST.test(request.scope_digest) && DIGEST.test(request.digest), "runtime request digest is invalid");
   assert(PROTECTED_ACTIONS.includes(request.action), "runtime request action is invalid");
+  nonempty(request.reason, "runtime request reason");
+  assert(typeof request.requested_at_utc === "string" && UTC.test(request.requested_at_utc), "runtime request requested_at_utc is invalid");
   assert(request.authority_digest === runtimeRole.digest && request.authority_host_session_id === runtimeRole.host_session_id, "runtime request authority differs from Runtime");
   assert(request.project_id === runtimeRole.project_id && request.environment_id === runtimeRole.environment_id, "runtime request project or environment differs from Runtime");
   validateOwnerApproval(request.owner_approval);

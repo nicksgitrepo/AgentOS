@@ -29,8 +29,11 @@ export function validatePersistentRole(record) {
   exactKeys(record, ["schema", "version", "status", "role_id", "lifetime", "project_id", "environment_id", "host_session_id", "source_commit", "source_tree", "governance_digest", "model", "reasoning_effort", "created_at_utc", "digest"], "persistent role");
   assert(record.schema === PERSISTENT_ROLE_SCHEMA && record.version === 1 && record.status === "ACTIVE" && record.lifetime === "PERSISTENT", "persistent role identity is invalid");
   assert(["INTENT_REGULATOR", "RUNTIME"].includes(record.role_id), "persistent role ID is invalid");
+  for (const [value, label] of [[record.project_id, "project_id"], [record.environment_id, "environment_id"], [record.host_session_id, "host_session_id"]]) { nonempty(value, `persistent role ${label}`); assert(ID.test(value), `persistent role ${label} is invalid`); }
+  assert(COMMIT.test(record.source_commit) && COMMIT.test(record.source_tree), "persistent role source identity is invalid");
+  assert(DIGEST.test(record.governance_digest), "persistent role governance digest is invalid");
   assert(record.model === DEFAULT_MODEL && record.reasoning_effort === DEFAULT_REASONING_EFFORT, "persistent role defaults are invalid");
+  assert(typeof record.created_at_utc === "string" && UTC.test(record.created_at_utc), "persistent role created_at_utc is invalid");
   assert(DIGEST.test(record.digest) && record.digest === digestWithout(record, "digest"), "persistent role digest does not match content");
   return record;
 }
-

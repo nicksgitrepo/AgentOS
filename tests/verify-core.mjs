@@ -194,10 +194,13 @@ for (const answer of ["YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "Y
 }
 assert.equal(functionalityRun.status, "COMPLETE");
 
-const packet = composeRolePacket({role_id: "NAMED_LANE_WORKER", lane_id: "functionality", graph_ids: ["CORE", "FUNCTIONALITY"]});
+const generalGraphs = ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_SECURITY"];
+const packet = composeRolePacket({role_id: "NAMED_LANE_WORKER", lane_id: "functionality", graph_ids: [...generalGraphs, "FUNCTIONALITY"].sort()});
 assert.equal(validateRolePacket(packet).digest, packet.digest);
-assert.throws(() => composeRolePacket({role_id: "RUNTIME", graph_ids: ["CORE", "FUNCTIONALITY"]}), /another role/u);
-const regulator = composeRolePacket({role_id: "INTENT_REGULATOR", graph_ids: ["CORE"]});
+assert.throws(() => composeRolePacket({role_id: "RUNTIME", graph_ids: [...generalGraphs, "FUNCTIONALITY"].sort()}), /another role/u);
+assert.throws(() => composeRolePacket({role_id: "RUNTIME", graph_ids: generalGraphs}), /complete role governance/u);
+assert.throws(() => composeRolePacket({role_id: "NAMED_LANE_WORKER", lane_id: "functionality", graph_ids: ["CORE", "FUNCTIONALITY"]}), /complete general foundation/u);
+const regulator = composeRolePacket({role_id: "INTENT_REGULATOR", graph_ids: [...generalGraphs, "DELIVERY_CLOSURE", "INTENT_SCOPE", "ROLE_ROUTING", "USER_CONVERSATION"].sort()});
 assert.equal(validateRolePacket(regulator).lifetime, "PERSISTENT");
 
 const schemaText = await readFile(path.join(ROOT, "schemas/gate-graph.v1.json"), "utf8");

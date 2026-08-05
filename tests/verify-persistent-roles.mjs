@@ -20,4 +20,10 @@ assert.throws(() => authorizeRuntimeRequest(runtime, {...requestInput, request_i
 assert.throws(() => authorizeRuntimeRequest(runtime, {...requestInput, request_id: "REQUEST-004", project_id: "OTHER-PROJECT"}), /project differs/u);
 assert.throws(() => authorizeRuntimeRequest(runtime, {...requestInput, request_id: "REQUEST-005", owner_approval: {...approval, decision: "REJECT"}}), /decision is not APPROVE/u);
 assert.throws(() => validateRuntimeRequest({...request, authority_digest: "0".repeat(64), digest: "0".repeat(64)}, {runtimeRole: runtime}), /authority differs|digest does not match/u);
+const malformedRole = {...runtime, host_session_id: "not a stable session", digest: null};
+malformedRole.digest = digestWithout(malformedRole, "digest");
+assert.throws(() => validateRuntimeRequest(request, {runtimeRole: malformedRole}), /host_session_id is invalid/u);
+const malformedRequest = {...request, request_id: "bad request id", digest: null};
+malformedRequest.digest = digestWithout(malformedRequest, "digest");
+assert.throws(() => validateRuntimeRequest(malformedRequest, {runtimeRole: runtime}), /identity fields are invalid/u);
 console.log(JSON.stringify({status: "PASS", persistent_roles: [intent.role_id, runtime.role_id], action: request.action}));

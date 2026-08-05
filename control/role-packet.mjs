@@ -42,6 +42,7 @@ function laneGraphId(laneId) {
 
 function validateGraphScope(roleId, graphIds, laneId = null) {
   const extras = graphIds.filter((graphId) => !GENERAL_GRAPH_IDS.has(graphId));
+  assert(GENERAL_GRAPH_IDS.size === graphIds.filter((graphId) => GENERAL_GRAPH_IDS.has(graphId)).length, `${roleId} graph scope must include the complete general foundation`);
   if (roleId === "NAMED_LANE_WORKER") {
     assert(extras.length === 1 && extras[0] === laneGraphId(laneId), `${roleId} graph scope must contain only its lane`);
     return;
@@ -49,6 +50,7 @@ function validateGraphScope(roleId, graphIds, laneId = null) {
   const allowed = ROLE_GRAPH_IDS[roleId];
   assert(allowed, `${roleId} graph scope is not defined`);
   assert(extras.every((graphId) => allowed.has(graphId)), `${roleId} received governance for another role`);
+  assert(extras.length === allowed.size, `${roleId} graph scope must contain its complete role governance`);
 }
 
 function spec(roleId) {
