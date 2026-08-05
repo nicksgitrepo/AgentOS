@@ -1,6 +1,6 @@
 import {readFile} from "node:fs/promises";
 import path from "node:path";
-import {assert, digestWithout, sortedUniqueStrings} from "./canonical-json.mjs";
+import {assert, compareUtf8, digestWithout, sortedUniqueStrings} from "./canonical-json.mjs";
 import {compileGateFile} from "./gate-dsl.mjs";
 import {validateGateGraph} from "./gate-model.mjs";
 import {composeRolePacket, validateRolePacket} from "./role-packet.mjs";
@@ -57,7 +57,7 @@ export async function compileRoleLibrary(root) {
   const graphFor = (id) => { const graph = graphs.get(id); assert(graph, `role selection references unknown graph ${id}`); return graph; };
   const packets = [];
   for (const role of selection.roles) {
-    const graphIds = [...new Set([...selection.general_graph_ids, ...role.graph_ids])].sort();
+    const graphIds = [...new Set([...selection.general_graph_ids, ...role.graph_ids])].sort(compareUtf8);
     graphIds.forEach(graphFor);
     packets.push(composeRolePacket({role_id: role.role_id, display_name: role.display_name, graph_ids: graphIds}));
   }
@@ -65,11 +65,11 @@ export async function compileRoleLibrary(root) {
   for (const laneId of selection.worker_template.lane_ids) {
     const lane = manifestByLane.get(laneId);
     assert(lane, `worker template references unknown lane ${laneId}`);
-    const graphIds = [...new Set([...selection.worker_template.base_graph_ids, lane.graph_id])].sort();
+    const graphIds = [...new Set([...selection.worker_template.base_graph_ids, lane.graph_id])].sort(compareUtf8);
     graphIds.forEach(graphFor);
     packets.push(composeRolePacket({role_id: "NAMED_LANE_WORKER", lane_id: laneId, graph_ids: graphIds}));
   }
-  packets.sort((left, right) => `${left.role_id}:${left.lane_id ?? ""}`.localeCompare(`${right.role_id}:${right.lane_id ?? ""}`));
+  packets.sort((left, right) => compareUtf8(`${left.role_id}:${left.lane_id ?? ""}`, `${right.role_id}:${right.lane_id ?? ""}`));
   const library = {
     schema: ROLE_LIBRARY_SCHEMA,
     version: 1,
@@ -80,4 +80,3 @@ export async function compileRoleLibrary(root) {
   };
   return validateLibrary({...library, digest: digestWithout(library, "digest")});
 }
-

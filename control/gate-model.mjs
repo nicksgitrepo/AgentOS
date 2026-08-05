@@ -1,4 +1,4 @@
-import {assert, digestWithout, sortedUniqueStrings} from "./canonical-json.mjs";
+import {assert, compareUtf8, digestWithout, sortedUniqueStrings} from "./canonical-json.mjs";
 
 export const GATE_SCHEMA = "agentos.gate_graph.v1";
 export const ANSWERS = Object.freeze(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]);
@@ -32,7 +32,21 @@ function assertAcyclic(graph) {
     visiting.delete(id);
     visited.add(id);
   }
-  visit(graph.entry);
+  for (const node of graph.nodes) visit(node.id);
+  assert(visited.size === nodes.size, "gate graph contains unreachable gates");
+}
+
+function reachesComplete(target, nodes, terminals, memo = new Map(), visiting = new Set()) {
+  if (memo.has(target)) return memo.get(target);
+  if (visiting.has(target)) throw new Error(`cycle while checking terminal reachability at ${target}`);
+  if (terminals.has(target)) return terminals.get(target).type === "COMPLETE";
+  const node = nodes.get(target);
+  assert(node, `unknown reachability target ${target}`);
+  visiting.add(target);
+  const result = Object.values(node.transitions).some((next) => reachesComplete(next, nodes, terminals, memo, visiting));
+  visiting.delete(target);
+  memo.set(target, result);
+  return result;
 }
 
 export function validateGateGraph(graph, {checkDigest = true} = {}) {
@@ -69,8 +83,11 @@ export function validateGateGraph(graph, {checkDigest = true} = {}) {
   }
 
   assert(nodes.has(graph.entry), "graph entry does not name a gate");
-  for (const node of nodes.values()) for (const answer of ANSWERS) validateTarget(node.transitions[answer], nodes, terminals, `${node.id}.${answer}`);
   assertAcyclic(graph);
+  for (const node of nodes.values()) for (const answer of ANSWERS) {
+    validateTarget(node.transitions[answer], nodes, terminals, `${node.id}.${answer}`);
+    if (answer !== "YES") assert(!reachesComplete(node.transitions[answer], nodes, terminals), `${node.id}.${answer} can reach COMPLETE without YES`);
+  }
   if (checkDigest) assert(graph.digest === digestWithout(graph, "digest"), "gate graph digest does not match content");
   return graph;
 }
@@ -81,15 +98,15 @@ export function normalizeGateGraph(graph) {
     version: 1,
     graph_id: graph.graph_id,
     entry: graph.entry,
-    nodes: [...graph.nodes].sort((a, b) => a.id.localeCompare(b.id)).map((node) => ({
+    nodes: [...graph.nodes].sort((a, b) => compareUtf8(a.id, b.id)).map((node) => ({
       type: "GATE",
       id: node.id,
       context: node.context,
       question: node.question,
-      evidence: [...node.evidence].sort(),
+      evidence: [...node.evidence].sort(compareUtf8),
       transitions: Object.fromEntries(ANSWERS.map((answer) => [answer, node.transitions[answer]])),
     })),
-    terminals: [...graph.terminals].sort((a, b) => a.id.localeCompare(b.id)).map((terminal) => ({...terminal})),
+    terminals: [...graph.terminals].sort((a, b) => compareUtf8(a.id, b.id)).map((terminal) => ({...terminal})),
     digest: null,
   };
   validateGateGraph(normalized, {checkDigest: false});

@@ -33,6 +33,56 @@ NOT_APPLICABLE UNPROVEN
 end
 
 gate FUNC-004
+context CODE_CHANGE
+question "After the behavior reports success, does every state named by the contract persist and read back from its authoritative boundary?"
+evidence persistence,readback
+YES FUNC-005
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE UNPROVEN
+end
+
+gate FUNC-005
+context CODE_CHANGE
+question "After a clean stop and restart or the named recovery event, does the behavior restore state or fail safely as specified?"
+evidence restart,recovery
+YES FUNC-006
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate FUNC-006
+context CODE_CHANGE
+question "When the same admitted input is retried, does the system produce the specified idempotent or safely repeated result without duplication?"
+evidence retry,idempotence
+YES FUNC-007
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate FUNC-007
+context CODE_CHANGE
+question "Do invalid, duplicate, unauthorized, empty, and limit inputs fail or constrain exactly as the admitted contract requires?"
+evidence negative,boundary,authorization
+YES FUNC-008
+NO HARD-STOP-BOUNDARY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-BOUNDARY
+end
+
+gate FUNC-008
+context CLOSURE
+question "Does the focused regression check preserve unrelated accepted behavior and leave no false-success marker?"
+evidence regression,false_success,scope
+YES FUNC-009
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE UNPROVEN
+end
+
+gate FUNC-009
 context CLOSURE
 question "Is the result bound to the same source and independently reviewed before closure?"
 evidence source,review,closure
@@ -44,7 +94,8 @@ end
 
 terminal COMPLETE COMPLETE "The functionality slice passed its gates and is ready for campaign closure."
 terminal HARD-STOP-SCOPE HARD_STOP "The functionality request is outside the admitted scope."
+terminal HARD-STOP-BOUNDARY HARD_STOP "The behavior crossed or failed a required functional boundary."
 terminal HARD-STOP-IDENTITY HARD_STOP "Functionality evidence does not match the active work identity."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Functionality cannot proceed on unknown evidence."
 terminal SOFT-REVIEW SOFT_REVIEW "The Functionality Worker must return the result for campaign review."
 terminal UNPROVEN UNPROVEN "The functionality result needs evidence or a bounded repair."
-

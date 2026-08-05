@@ -41,18 +41,19 @@ export function parseGateDsl(text, source = "<memory>") {
       if (current !== null) fail(`gate ${current.id} is missing end`);
       if (nodes.has(match[1]) || terminals.has(match[1])) fail(`duplicate target ${match[1]}`);
       current = {type: "GATE", id: match[1], context: null, question: null, evidence: [], transitions: Object.fromEntries(ANSWERS.map((answer) => [answer, null]))};
+      current.seen = new Set();
       nodes.set(match[1], current);
       continue;
     }
-    if (line === "end") { if (current === null) fail("end has no open gate"); current = null; continue; }
+    if (line === "end") { if (current === null) fail("end has no open gate"); delete current.seen; current = null; continue; }
     match = line.match(/^context\s+(\S+)$/u);
-    if (match) { if (!current) fail("context must be inside a gate"); current.context = match[1]; continue; }
+    if (match) { if (!current) fail("context must be inside a gate"); if (current.seen.has("context")) fail("duplicate context declaration"); current.seen.add("context"); current.context = match[1]; continue; }
     match = line.match(/^question\s+(.+)$/u);
-    if (match) { if (!current) fail("question must be inside a gate"); current.question = quoted(match[1], "question"); continue; }
+    if (match) { if (!current) fail("question must be inside a gate"); if (current.seen.has("question")) fail("duplicate question declaration"); current.seen.add("question"); current.question = quoted(match[1], "question"); continue; }
     match = line.match(/^evidence\s+(.+)$/u);
-    if (match) { if (!current) fail("evidence must be inside a gate"); current.evidence = match[1] === "none" ? [] : parts(match[1]); continue; }
+    if (match) { if (!current) fail("evidence must be inside a gate"); if (current.seen.has("evidence")) fail("duplicate evidence declaration"); current.seen.add("evidence"); current.evidence = match[1] === "none" ? [] : parts(match[1]); continue; }
     match = line.match(/^(YES|NO|UNKNOWN|NOT_APPLICABLE)\s+(\S+)$/u);
-    if (match) { if (!current) fail("transition must be inside a gate"); current.transitions[match[1]] = match[2]; continue; }
+    if (match) { if (!current) fail("transition must be inside a gate"); if (current.seen.has(match[1])) fail(`duplicate ${match[1]} transition`); current.seen.add(match[1]); current.transitions[match[1]] = match[2]; continue; }
     match = line.match(/^terminal\s+(\S+)\s+(\S+)\s+(.+)$/u);
     if (match) {
       if (current !== null) fail("terminal must be outside a gate");

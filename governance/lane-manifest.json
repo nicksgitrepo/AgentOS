@@ -7,7 +7,7 @@
     {"lane_id": "code-hygiene", "graph_id": "CODE_HYGIENE", "path": "governance/lanes/code-hygiene.gate", "graph_sha256": "de3a23f6c380c08b92f7edcd582c9de7bbdeb4085c3b6364e47d9e0b626c38ca"},
     {"lane_id": "delivery-closure", "graph_id": "DELIVERY_CLOSURE", "path": "governance/lanes/delivery-closure.gate", "graph_sha256": "6ba0ec8a2026d11223b9a39248411ca41c00cddc7968d64c293447bd94963c4a"},
     {"lane_id": "evidence-identity", "graph_id": "EVIDENCE_IDENTITY", "path": "governance/lanes/evidence-identity.gate", "graph_sha256": "e88acfed8740952d7b6ef8a928331caf679ec204daa32b1610af02719a757baf"},
-    {"lane_id": "functionality", "graph_id": "FUNCTIONALITY", "path": "governance/lanes/functionality.gate", "graph_sha256": "379df6c89ee70ef473cd24a59dd12e6125170c685f72fbfa7fbe9af5c6c5e23b"},
+    {"lane_id": "functionality", "graph_id": "FUNCTIONALITY", "path": "governance/lanes/functionality.gate", "graph_sha256": "24e71ab24c1db041e3aeeb571e2319147d997302d62fd20426a71e40dfb28fbb"},
     {"lane_id": "intent-scope", "graph_id": "INTENT_SCOPE", "path": "governance/lanes/intent-scope.gate", "graph_sha256": "229ce6ef1f76fb6c98d0725214ae23ca31fc8e95581fbd6433889bfea9284f75"},
     {"lane_id": "progress-health", "graph_id": "PROGRESS_HEALTH", "path": "governance/lanes/progress-health.gate", "graph_sha256": "4a5bc99df57854f7a89cc3ca1aca8091be26fb0facde03c17bca371aeb1791c6"},
     {"lane_id": "recovery-boundaries", "graph_id": "RECOVERY_BOUNDARIES", "path": "governance/lanes/recovery-boundaries.gate", "graph_sha256": "e28078c7ed953b53dbf38339ca7ba0e6450761b6609859ac200143729a549b96"},
@@ -16,5 +16,5 @@
     {"lane_id": "ui-ux", "graph_id": "UI_UX", "path": "governance/lanes/ui-ux.gate", "graph_sha256": "fb7020bf411713cf834af97dba133bee970c5360f2ef16586f665e9468c65c7d"},
     {"lane_id": "user-conversation", "graph_id": "USER_CONVERSATION", "path": "governance/lanes/user-conversation.gate", "graph_sha256": "f5459903bcee9ddcf95d0cbba37e7bc312d0e435baff09e98823b35316dec9df"}
   ],
-  "digest": "5bcb53420a05e8483c9143ae84038907aeb95826206c79af29c6292299049e31"
+  "digest": "945a996877cbd323f49076236e7eebd7de22df2a84830c1717490c692e539321"
 }

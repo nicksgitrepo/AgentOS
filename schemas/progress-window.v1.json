@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.progress_window.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "window_id", "worker_id", "goal_id", "window_minutes", "started_at_utc", "deadline_at_utc", "last_result", "stall_reason", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.progress_window.v1" },
+    "version": { "const": 1 },
+    "status": { "enum": ["OPEN", "PROGRESS_RECORDED", "STALLED", "CLOSED"] },
+    "window_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "worker_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "goal_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "window_minutes": { "type": "integer", "minimum": 1, "maximum": 240 },
+    "started_at_utc": { "type": "string", "format": "date-time" },
+    "deadline_at_utc": { "type": "string", "format": "date-time" },
+    "last_result": { "type": ["object", "null"] },
+    "stall_reason": { "type": ["string", "null"] },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}
