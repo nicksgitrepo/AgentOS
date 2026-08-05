@@ -12,7 +12,7 @@ The old implementation remains the reference outside this milestone.
 | Campaign lifecycle and cascade | Campaign admission, campaign coordinator, runner, goal/progress state | Four-phase coordinator migrated; native execution slice complete for Functionality |
 | Controller and supervisor | Intent Regulator audit loop and campaign routing | Audit decisions and bounded phase routing migrated; long-running host loop remains an external host seam |
 | Owner review and acceptance bridge | Owner question surface and independent acceptance contract | First slice migrated |
-| Local worker runtime | Named lane worker admission and native session binding | Contract migrated; native lane execution is complete for Functionality and pending for the other lanes |
+| Local worker runtime | Named lane worker admission and native session binding | Portable runner exercised across all twelve lanes; provider-backed host attachment remains external |
 | Runtime authority and release boundary | Persistent Runtime record and protected-action request | Project/environment-bound request contract migrated; host action execution remains intentionally external |
 | Persistent controller identity | Persistent Intent Regulator/Runtime records and fifteen-minute audit loop | Record and decision contract migrated; host session attachment remains external |
 

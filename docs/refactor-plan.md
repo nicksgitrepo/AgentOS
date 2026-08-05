@@ -30,6 +30,9 @@
   assignments, persistent authority references, and one fresh Auditor slot per
   phase; its ordered runner requires complete phase acceptance before moving
   forward.
+- A bounded fake-host campaign now exercises all twelve lane graphs through
+  native spawn, attested evidence, meaningful progress, typed handoff,
+  closure, and independent phase acceptance.
 - Persistent Intent Regulator audit decisions and the configurable fifteen-
   minute loop are now explicit and abortable.
 - Owner questions are rendered as short plain choices with numeric and

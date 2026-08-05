@@ -28,6 +28,8 @@ boundary.
   environment as the claim.
 - Evidence must carry a host or Independent Auditor attestation; matching
   fields alone do not make a claim real.
+- Protected Runtime actions require a project/environment-bound owner
+  approval tied to the accepted result and final audit.
 - Temporary workers preserve a handoff, then unpin, archive, and leave the
   active roster.
 - A changed scope or intent closes the current goal and requires a new one.

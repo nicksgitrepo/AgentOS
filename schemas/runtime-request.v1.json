@@ -3,7 +3,7 @@
   "$id": "agentos.runtime_request.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "status", "authority_role", "authority_digest", "authority_host_session_id", "request_id", "action", "project_id", "environment_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "digest"],
+  "required": ["schema", "version", "status", "authority_role", "authority_digest", "authority_host_session_id", "request_id", "action", "project_id", "environment_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "owner_approval", "digest"],
   "properties": {
     "schema": { "const": "agentos.runtime_request.v1" },
     "version": { "const": 1 },
@@ -20,6 +20,20 @@
     "scope_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "reason": { "type": "string", "minLength": 1 },
     "requested_at_utc": { "type": "string", "format": "date-time" },
+    "owner_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "decision", "actor_digest", "accepted_result_digest", "final_audit_digest", "decided_at_utc", "digest"],
+      "properties": {
+        "decision_id": { "type": "string", "minLength": 1 },
+        "decision": { "const": "APPROVE" },
+        "actor_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "accepted_result_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "final_audit_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "decided_at_utc": { "type": "string", "format": "date-time" },
+        "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   }
 }

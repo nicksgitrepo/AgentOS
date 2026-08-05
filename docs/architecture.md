@@ -86,3 +86,8 @@ ordered handoffs.
 The native lane runner is generic: it binds the admitted lane to the matching
 graph ID, so the Functionality integration is the first exercised slice rather
 than a special execution path.
+
+Runtime does not perform a protected action from a free-form request. Its
+request must bind to the persistent Runtime's project and environment and
+carry a content-addressed owner approval naming both the accepted result and
+the final audit.
