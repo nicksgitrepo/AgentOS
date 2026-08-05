@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 import path from "node:path";
 import {compileGateFile, parseGateDsl} from "../control/gate-dsl.mjs";
 import {createEvidence} from "../control/evidence.mjs";
+import {digestWithout} from "../control/canonical-json.mjs";
 import {answerCurrent, createExecution, createExecutionAuthority} from "../control/gate-engine.mjs";
 import {composeRolePacket, validateRolePacket} from "../control/role-packet.mjs";
 import {findGate, validateGateGraph} from "../control/gate-model.mjs";
@@ -19,6 +20,7 @@ const identity = {
   goal_id: "GOAL-001",
   environment_id: "ENVIRONMENT-001",
 };
+const evidenceSecret = "core-evidence-attestation-secret-001";
 
 function evidenceFor(graph, gate, answer) {
   return Object.fromEntries(gate.evidence.map((key) => [key, createEvidence({
@@ -34,6 +36,7 @@ function evidenceFor(graph, gate, answer) {
     issuer_kind: key === "review" ? "INDEPENDENT_AUDITOR" : "HOST_READBACK",
     supports_answer: true,
     observed_at_utc: "2026-01-01T00:00:00.000Z",
+    attestation_secret: evidenceSecret,
   })]));
 }
 
@@ -54,7 +57,7 @@ const authority = createExecutionAuthority("execution-authority-secret-001-which
 let execution = createExecution(core, identity, {authority});
 for (const answer of ["YES", "YES", "YES"]) {
   const gate = findGate(core, execution.current_node);
-  execution = answerCurrent(execution, core, answer, evidenceFor(core, gate, answer), {authority});
+  execution = answerCurrent(execution, core, answer, evidenceFor(core, gate, answer), {authority, attestation_secret: evidenceSecret});
 }
 assert.equal(execution.status, "COMPLETE");
 assert.equal(execution.trace.length, 3);
@@ -64,23 +67,27 @@ const replayInitial = createExecution(core, identity, {authority: replayAuthorit
 let replayState = replayInitial;
 for (const answer of ["YES", "YES", "YES"]) {
   const gate = findGate(core, replayState.current_node);
-  replayState = answerCurrent(replayState, core, answer, evidenceFor(core, gate, answer), {authority: replayAuthority});
+  replayState = answerCurrent(replayState, core, answer, evidenceFor(core, gate, answer), {authority: replayAuthority, attestation_secret: evidenceSecret});
 }
-assert.throws(() => answerCurrent(replayInitial, core, "UNKNOWN", evidenceFor(core, findGate(core, "CORE-001"), "UNKNOWN"), {authority: replayAuthority}), /no longer active|stale/u);
+assert.throws(() => answerCurrent(replayInitial, core, "UNKNOWN", evidenceFor(core, findGate(core, "CORE-001"), "UNKNOWN"), {authority: replayAuthority, attestation_secret: evidenceSecret}), /no longer active|stale/u);
 const staleSealAuthority = createExecutionAuthority("stale-seal-authority-secret-001-long-enough");
 const staleSealInitial = createExecution(core, identity, {authority: staleSealAuthority});
-const staleSealNext = answerCurrent(staleSealInitial, core, "YES", evidenceFor(core, findGate(core, "CORE-001"), "YES"), {authority: staleSealAuthority});
+const staleSealNext = answerCurrent(staleSealInitial, core, "YES", evidenceFor(core, findGate(core, "CORE-001"), "YES"), {authority: staleSealAuthority, attestation_secret: evidenceSecret});
 assert.throws(() => staleSealAuthority.seal({...staleSealInitial, auth_tag: null}, staleSealInitial.auth_tag), /stale/u);
 assert.equal(staleSealNext.status, "ACTIVE");
 
 const forged = createExecutionAuthority("forged-state-authority-secret-001");
 const honest = createExecution(core, identity, {authority: forged});
-assert.throws(() => answerCurrent({...honest, current_node: "CORE-003"}, core, "YES", evidenceFor(core, findGate(core, "CORE-001"), "YES"), {authority: forged}), /authentication failed/u);
+assert.throws(() => answerCurrent({...honest, current_node: "CORE-003"}, core, "YES", evidenceFor(core, findGate(core, "CORE-001"), "YES"), {authority: forged, attestation_secret: evidenceSecret}), /authentication failed/u);
 const foreignIdentity = {...identity, worktree_id: "WORKTREE-FOREIGN"};
 const foreignEvidence = evidenceFor(core, findGate(core, "CORE-001"), "YES");
 foreignEvidence.admission = {...foreignEvidence.admission, worktree_id: foreignIdentity.worktree_id};
 foreignEvidence.admission.digest = "0".repeat(64);
-assert.throws(() => answerCurrent(honest, core, "YES", foreignEvidence, {authority: forged}), /digest does not match|differs from execution binding/u);
+assert.throws(() => answerCurrent(honest, core, "YES", foreignEvidence, {authority: forged, attestation_secret: evidenceSecret}), /digest does not match|differs from execution binding|attestation/u);
+const tamperedEvidence = evidenceFor(core, findGate(core, "CORE-001"), "YES");
+tamperedEvidence.admission.value_sha256 = "0".repeat(64);
+tamperedEvidence.admission.digest = digestWithout(tamperedEvidence.admission, "digest");
+assert.throws(() => answerCurrent(honest, core, "YES", tamperedEvidence, {authority: forged, attestation_secret: evidenceSecret}), /attestation is invalid/u);
 assert.throws(() => createEvidence({
   evidence_id: "BAD-EVIDENCE",
   question_id: "CORE-001",
@@ -98,12 +105,12 @@ assert.throws(() => createEvidence({
 
 const stoppedAuthority = createExecutionAuthority("stopped-execution-authority-secret-001");
 let stopped = createExecution(core, identity, {authority: stoppedAuthority});
-stopped = answerCurrent(stopped, core, "UNKNOWN", evidenceFor(core, findGate(core, stopped.current_node), "UNKNOWN"), {authority: stoppedAuthority});
+stopped = answerCurrent(stopped, core, "UNKNOWN", evidenceFor(core, findGate(core, stopped.current_node), "UNKNOWN"), {authority: stoppedAuthority, attestation_secret: evidenceSecret});
 assert.equal(stopped.status, "HARD_STOP");
 assert.equal(stopped.result.terminal_id, "HARD-STOP-EVIDENCE");
 
 const missingEvidenceAuthority = createExecutionAuthority("missing-evidence-authority-secret-001");
-assert.throws(() => answerCurrent(createExecution(core, identity, {authority: missingEvidenceAuthority}), core, "YES", {}, {authority: missingEvidenceAuthority}), /evidence fields mismatch/u);
+assert.throws(() => answerCurrent(createExecution(core, identity, {authority: missingEvidenceAuthority}), core, "YES", {}, {authority: missingEvidenceAuthority, attestation_secret: evidenceSecret}), /evidence fields mismatch/u);
 const boundedRepair = parseGateDsl(`graph REPAIR 1
 entry REPAIR-001
 gate REPAIR-001
@@ -154,7 +161,7 @@ const boundedRepairAuthority = createExecutionAuthority("bounded-repair-executio
 let boundedRepairRun = createExecution(boundedRepair, identity, {authority: boundedRepairAuthority});
 for (const answer of ["NO", "YES", "YES", "YES"]) {
   const gate = findGate(boundedRepair, boundedRepairRun.current_node);
-  boundedRepairRun = answerCurrent(boundedRepairRun, boundedRepair, answer, evidenceFor(boundedRepair, gate, answer), {authority: boundedRepairAuthority});
+  boundedRepairRun = answerCurrent(boundedRepairRun, boundedRepair, answer, evidenceFor(boundedRepair, gate, answer), {authority: boundedRepairAuthority, attestation_secret: evidenceSecret});
 }
 assert.equal(boundedRepairRun.status, "HARD_STOP");
 assert.equal(boundedRepairRun.result.terminal_id, "REPAIR-LIMIT");
@@ -183,7 +190,7 @@ const functionalityAuthority = createExecutionAuthority("functionality-execution
 let functionalityRun = createExecution(functionality, identity, {authority: functionalityAuthority});
 for (const answer of ["YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES"]) {
   const gate = findGate(functionality, functionalityRun.current_node);
-  functionalityRun = answerCurrent(functionalityRun, functionality, answer, evidenceFor(functionality, gate, answer), {authority: functionalityAuthority});
+  functionalityRun = answerCurrent(functionalityRun, functionality, answer, evidenceFor(functionality, gate, answer), {authority: functionalityAuthority, attestation_secret: evidenceSecret});
 }
 assert.equal(functionalityRun.status, "COMPLETE");
 

@@ -32,7 +32,8 @@ The first slice establishes:
 - a canonical, content-addressed decision graph;
 - explicit `YES`, `NO`, `UNKNOWN`, and `NOT_APPLICABLE` transitions;
 - a deterministic engine that chooses transitions from the graph;
-- evidence bound to source, worktree, session, goal, and environment;
+- evidence bound to source, worktree, session, goal, and environment, with a
+  host or Auditor attestation;
 - the first Functionality lane;
 - role-packet composition for persistent and campaign roles.
 

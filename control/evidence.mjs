@@ -1,4 +1,5 @@
-import {assert, digestWithout, sha256} from "./canonical-json.mjs";
+import crypto from "node:crypto";
+import {assert, canonicalJson, digestWithout, sha256} from "./canonical-json.mjs";
 
 export const IDENTITY_FIELDS = Object.freeze([
   "source_commit",
@@ -12,6 +13,11 @@ export const IDENTITY_FIELDS = Object.freeze([
 const COMMIT = /^[0-9a-f]{40}$/u;
 const DIGEST = /^[0-9a-f]{64}$/u;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
+
+function attestation(secret, record) {
+  assert(typeof secret === "string" && secret.length >= 32, "evidence attestation secret is required");
+  return crypto.createHmac("sha256", secret).update(canonicalJson({...record, attestation_hmac: null, digest: null}), "utf8").digest("hex");
+}
 
 function nonempty(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be nonempty`);
@@ -28,7 +34,7 @@ export function validateIdentity(identity, label = "identity") {
   return identity;
 }
 
-export function createEvidence({evidence_id, question_id, graph_digest, evidence_slot, answer, kind, value, identity, issuer_session_id, issuer_kind, supports_answer, observed_at_utc}) {
+export function createEvidence({evidence_id, question_id, graph_digest, evidence_slot, answer, kind, value, identity, issuer_session_id, issuer_kind, supports_answer, observed_at_utc, attestation_secret}) {
   nonempty(evidence_id, "evidence_id");
   nonempty(question_id, "question_id");
   assert(DIGEST.test(graph_digest), "graph_digest is invalid");
@@ -55,14 +61,16 @@ export function createEvidence({evidence_id, question_id, graph_digest, evidence
     issuer_kind,
     supports_answer,
     observed_at_utc,
+    attestation_hmac: null,
     digest: null,
   };
+  record.attestation_hmac = attestation(attestation_secret, record);
   return {...record, digest: digestWithout(record, "digest")};
 }
 
-export function validateEvidence(record, {question_id, graph_digest, evidence_slot, answer, binding}, label = "evidence") {
+export function validateEvidence(record, {question_id, graph_digest, evidence_slot, answer, binding, attestation_secret}, label = "evidence") {
   assert(record && typeof record === "object" && !Array.isArray(record), `${label} must be an object`);
-  const expected = ["evidence_id", "question_id", "graph_digest", "evidence_slot", "answer", "kind", "value_sha256", ...IDENTITY_FIELDS, "issuer_session_id", "issuer_kind", "supports_answer", "observed_at_utc", "digest"].sort();
+  const expected = ["evidence_id", "question_id", "graph_digest", "evidence_slot", "answer", "kind", "value_sha256", ...IDENTITY_FIELDS, "issuer_session_id", "issuer_kind", "supports_answer", "observed_at_utc", "attestation_hmac", "digest"].sort();
   assert(JSON.stringify(Object.keys(record).sort()) === JSON.stringify(expected), `${label} fields mismatch`);
   assert(record.question_id === question_id, `${label} question identity differs`);
   assert(record.graph_digest === graph_digest, `${label} graph identity differs`);
@@ -81,6 +89,8 @@ export function validateEvidence(record, {question_id, graph_digest, evidence_sl
   assert(record.supports_answer === true, `${label} does not support its answer`);
   if (record.evidence_slot === "review") assert(record.issuer_kind === "INDEPENDENT_AUDITOR", `${label} review is not independent`);
   assert(UTC.test(record.observed_at_utc), `${label}.observed_at_utc is invalid`);
+  assert(DIGEST.test(record.attestation_hmac), `${label}.attestation_hmac is invalid`);
+  assert(record.attestation_hmac === attestation(attestation_secret, record), `${label} attestation is invalid`);
   assert(DIGEST.test(record.digest), `${label}.digest is invalid`);
   assert(record.digest === digestWithout(record, "digest"), `${label}.digest does not match content`);
   return record;

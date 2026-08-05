@@ -29,3 +29,9 @@ Each remaining seam must be migrated with:
 
 No old module is copied into this public milestone merely to make a test
 green. If a behavior cannot yet be migrated, it remains explicitly pending.
+
+The machine-readable companion is `control/migration-registry.mjs`. It checks
+that every replacement and evidence path stays inside this repository and
+that no control module exceeds the milestone's seam-size limit. `PARTIAL` and
+`EXTERNAL_HOST_REQUIRED` are deliberate non-complete states; they are not
+silently treated as migrated.

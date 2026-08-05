@@ -29,6 +29,15 @@ function meaningful(value, label) {
   digest(value.evidence_sha256, `${label}.evidence_sha256`);
 }
 
+function validateReviewerReadback(readback, result) {
+  exactKeys(readback, ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"], "Auditor readback");
+  for (const [value, label] of [[readback.thread_id, "Auditor readback.thread_id"], [readback.host_id, "Auditor readback.host_id"], [readback.project_id, "Auditor readback.project_id"], [readback.campaign_id, "Auditor readback.campaign_id"], [readback.campaign_version, "Auditor readback.campaign_version"], [readback.goal_id, "Auditor readback.goal_id"], [readback.lane_id, "Auditor readback.lane_id"], [readback.worktree_id, "Auditor readback.worktree_id"]]) assert(typeof value === "string" && value.length > 0, `${label} is required`);
+  assert(readback.role_id === "INDEPENDENT_AUDITOR", "Auditor readback role is invalid");
+  const binding = result.closed_session;
+  for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "source_commit", "source_tree", "worktree_id"]) assert(readback[field] === binding[field], `Auditor readback ${field} differs`);
+  return readback;
+}
+
 function validateAuditCandidate(result, authority_secret) {
   digest(result.completion_proof, "completion_proof");
   assert(result.completion_proof === proof(authority_secret, result), "campaign completion proof is invalid");
@@ -49,9 +58,10 @@ function validateAuditCandidate(result, authority_secret) {
   assert(result.execution.binding.session_id === result.closed_session.host_id, "closed session does not match execution session");
 }
 
-export async function runLaneCampaign({host, admission, graph, authority_secret}) {
+export async function runLaneCampaign({host, admission, graph, authority_secret, evidence_secret}) {
   validateCampaignAdmission(admission);
   validateGateGraph(graph);
+  assert(typeof evidence_secret === "string" && evidence_secret.length >= 32, "campaign evidence attestation secret is required");
   assert(graph.graph_id === admission.lane_id.toUpperCase().replaceAll("-", "_"), "campaign graph does not match admitted lane");
   const nativeAdmission = toNativeAdmission(admission);
   const authority = createExecutionAuthority(authority_secret);
@@ -73,7 +83,7 @@ export async function runLaneCampaign({host, admission, graph, authority_secret}
       assert(execution.status === "ACTIVE", "gate packet continued after execution terminal");
       const gate = findGate(graph, execution.current_node);
       assert(item.gate_id === gate.id, `gate packet expected ${gate.id} but received ${item.gate_id}`);
-      execution = answerCurrent(execution, graph, item.answer, item.evidence, {authority});
+      execution = answerCurrent(execution, graph, item.answer, item.evidence, {authority, attestation_secret: evidence_secret});
     }
     assert(execution.status === "COMPLETE", `functionality campaign did not complete gates: ${execution.status}`);
     const closed = await closeNativeSession(host, session, {
@@ -108,17 +118,18 @@ export async function runLaneCampaign({host, admission, graph, authority_secret}
 
 export const runFunctionalityCampaign = runLaneCampaign;
 
-export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}) {
+export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}) {
   exactKeys(result, ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "closed_session", "closure", "completion_proof", "digest"], "campaign result");
   assert(result.schema === CAMPAIGN_RESULT_SCHEMA && result.version === 1 && result.status === "AUDIT_CANDIDATE", "campaign result is not an audit candidate");
   digest(result.admission_digest, "admission_digest");
   digest(result.graph_digest, "graph_digest");
   assert(result.digest === digestWithout(result, "digest"), "campaign result digest does not match content");
   validateAuditCandidate(result, authority_secret);
-  exactKeys({reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}, ["reviewer_session_id", "reviewer_role_id", "evidence_sha256", "accepted", "reason", "accepted_at_utc", "authority_secret"], "campaign acceptance");
+  exactKeys({reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}, ["reviewer_session_id", "reviewer_role_id", "reviewer_readback", "evidence_sha256", "accepted", "reason", "accepted_at_utc", "authority_secret"], "campaign acceptance");
   assert(typeof reviewer_session_id === "string" && reviewer_session_id.length > 0, "reviewer_session_id is required");
   assert(reviewer_session_id !== result.execution.binding.session_id, "worker cannot accept its own result");
   assert(reviewer_role_id === "INDEPENDENT_AUDITOR", "campaign acceptance requires an Independent Auditor");
+  assert(reviewer_session_id === validateReviewerReadback(reviewer_readback, result).host_id, "reviewer session does not match Auditor readback");
   digest(evidence_sha256, "acceptance evidence_sha256");
   assert(accepted === true, "campaign result was not accepted");
   assert(typeof reason === "string" && reason.length > 0, "acceptance reason is required");

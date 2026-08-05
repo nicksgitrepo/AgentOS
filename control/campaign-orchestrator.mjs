@@ -199,10 +199,21 @@ function validateCandidate(candidate, assignment, phase) {
   return candidate;
 }
 
-function validatePhaseAcceptance(acceptance, phase, candidates) {
-  exactKeys(acceptance, ["status", "reviewer_role_id", "reviewer_session_id", "evidence_sha256", "reason", "lane_results", "acceptance_digest"], "phase acceptance");
+function validateAuditorReadback(readback, plan, phase) {
+  exactKeys(readback, ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "phase_id", "role_id", "source_commit", "source_tree", "worktree_id"], "Auditor readback");
+  for (const [value, label] of [[readback.thread_id, "Auditor readback.thread_id"], [readback.host_id, "Auditor readback.host_id"], [readback.project_id, "Auditor readback.project_id"], [readback.campaign_id, "Auditor readback.campaign_id"], [readback.campaign_version, "Auditor readback.campaign_version"], [readback.goal_id, "Auditor readback.goal_id"], [readback.phase_id, "Auditor readback.phase_id"], [readback.worktree_id, "Auditor readback.worktree_id"]]) nonempty(value, label);
+  assert(readback.role_id === "INDEPENDENT_AUDITOR", "Auditor readback role is invalid");
+  assert(readback.project_id === plan.project_id && readback.campaign_id === plan.campaign_id && readback.campaign_version === plan.campaign_version && readback.goal_id === plan.goal_id && readback.phase_id === phase.phase_id, "Auditor readback campaign identity differs");
+  assert(readback.source_commit === plan.source.source_commit && readback.source_tree === plan.source.source_tree && readback.worktree_id === plan.source.worktree_id, "Auditor readback source identity differs");
+  return readback;
+}
+
+function validatePhaseAcceptance(acceptance, phase, candidates, plan) {
+  exactKeys(acceptance, ["status", "reviewer_role_id", "reviewer_session_id", "auditor_readback", "evidence_sha256", "reason", "lane_results", "acceptance_digest"], "phase acceptance");
   assert(acceptance.status === "ACCEPTED" && acceptance.reviewer_role_id === "INDEPENDENT_AUDITOR", "phase acceptance is not independent");
   nonempty(acceptance.reviewer_session_id, "phase acceptance reviewer session");
+  const auditorReadback = validateAuditorReadback(acceptance.auditor_readback, plan, phase);
+  assert(acceptance.reviewer_session_id === auditorReadback.host_id, "phase acceptance reviewer does not match Auditor readback");
   assert(DIGEST.test(acceptance.evidence_sha256), "phase acceptance evidence is invalid");
   nonempty(acceptance.reason, "phase acceptance reason");
   assert(Array.isArray(acceptance.lane_results) && acceptance.lane_results.length === candidates.length, "phase acceptance lane count differs");
@@ -239,7 +250,7 @@ export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptan
   const priorSessions = new Set(run.lane_results.map((item) => item.worker_session_id));
   assert(candidates.every((candidate) => !priorSessions.has(candidate.worker_session_id)), "campaign reuses a worker session across phases");
   assert(!run.phase_results.some((item) => item.auditor_session_id === acceptance.reviewer_session_id), "campaign reuses an Auditor session across phases");
-  validatePhaseAcceptance(acceptance, phase, candidates);
+  validatePhaseAcceptance(acceptance, phase, candidates, plan);
   const laneResults = candidates.map((candidate) => ({phase_id, lane_id: candidate.lane_id, result_digest: candidate.result_digest, worker_session_id: candidate.worker_session_id})).sort((left, right) => compareUtf8(left.lane_id, right.lane_id));
   const phaseResult = {phase_id, lane_ids: laneResults.map((item) => item.lane_id), auditor_session_id: acceptance.reviewer_session_id, acceptance_digest: acceptance.acceptance_digest, status: "ACCEPTED"};
   const completed = run.phase_index + 1 >= plan.phases.length;

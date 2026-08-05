@@ -43,7 +43,10 @@ environment
 
 The evidence record is content-addressed. Native-session lifecycle and
 campaign-specific identity use the same binding rather than creating a second
-identity system.
+identity system. A host or Independent Auditor must also attach an
+attestation HMAC over the complete claim; the gate engine verifies that
+attestation before accepting the answer. A record that only declares itself
+to be a host readback is not sufficient.
 
 ## Lifecycle contract
 

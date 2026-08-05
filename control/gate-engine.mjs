@@ -61,7 +61,7 @@ function exactKeys(value, expected, label) {
   assert(JSON.stringify(actual) === JSON.stringify(wanted), `${label} fields mismatch`);
 }
 
-function validateEvidenceBundle(bundle, gate, graph, binding, answer) {
+function validateEvidenceBundle(bundle, gate, graph, binding, answer, attestation_secret) {
   assert(bundle && typeof bundle === "object" && !Array.isArray(bundle), `${gate.id} evidence must be an object`);
   const expected = [...gate.evidence].sort();
   assert(JSON.stringify(Object.keys(bundle).sort()) === JSON.stringify(expected), `${gate.id} evidence fields mismatch`);
@@ -71,6 +71,7 @@ function validateEvidenceBundle(bundle, gate, graph, binding, answer) {
     evidence_slot: key,
     answer,
     binding,
+    attestation_secret,
   }, `${gate.id}.${key}`);
 }
 
@@ -98,7 +99,7 @@ export function createExecution(graph, binding, {maxSteps = 128, authority} = {}
   });
 }
 
-export function answerCurrent(state, graph, answer, evidence, {authority} = {}) {
+export function answerCurrent(state, graph, answer, evidence, {authority, attestation_secret} = {}) {
   validateGateGraph(graph);
   exactKeys(state, ["schema", "version", "graph_id", "graph_digest", "execution_id", "status", "current_node", "step_count", "max_steps", "trace", "repair_visits", "binding", "result", "auth_tag"], "execution state");
   assert(state.schema === EXECUTION_SCHEMA && state.version === 1, "execution identity is invalid");
@@ -111,7 +112,7 @@ export function answerCurrent(state, graph, answer, evidence, {authority} = {}) 
   validateIdentity(state.binding, "execution binding");
 
   const gate = findGate(graph, state.current_node);
-  validateEvidenceBundle(evidence, gate, graph, state.binding, answer);
+  validateEvidenceBundle(evidence, gate, graph, state.binding, answer, attestation_secret);
   const target = gate.transitions[answer];
   const repair = repairFor(graph, gate.id, answer, target);
   const repairVisits = {...state.repair_visits};

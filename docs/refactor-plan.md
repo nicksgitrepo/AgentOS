@@ -39,6 +39,9 @@
   into the clean milestone.
 - Bounded repair edges are represented in the graph model and counted by the
   host engine; they cannot become an unbounded retry loop.
+- A machine-readable seam registry now records migrated, partial, and
+  external-host responsibilities and rejects oversized control modules or
+  paths that escape the clean repository.
 
 ## Next slices
 
