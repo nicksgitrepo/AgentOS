@@ -40,6 +40,9 @@ boundary.
 - Bootstrap creates or verifies a sibling control repository before writing
   control state; worker checkouts and their Git metadata stay under that
   control repository, never in a project repository.
+- A release update replaces only the release checkout and explicitly chooses
+  whether project-specific governance appendices are preserved or discarded;
+  project repositories and the control repository remain in place.
 
 ## Completion of this milestone
 

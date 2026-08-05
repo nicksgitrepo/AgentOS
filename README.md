@@ -108,3 +108,21 @@ The host-side Bootstrap entry point is
 projects, and selected project directories, creates or verifies the sibling
 `AgentOS-control` Git repository, and writes the boundary record there. It does
 not write to the release checkout or any project repository.
+
+## Updating the release
+
+To update AgentOS, replace only the `AgentOS` release checkout. Keep the
+`projects` container and `AgentOS-control` in place, then tell the Intent
+Regulator which release is now installed. It presents one simple choice:
+
+- keep the project-specific governance additions; or
+- start with clean governance from the new release.
+
+The first choice preserves the additions in the control repository and
+rechecks them against the new release. The second rebuilds governance without
+those additions. Both choices leave every project repository unchanged. The
+update record is compiled by `control/release-update.mjs`.
+
+The host should retain the previous release until the new release is bound and
+checked, even if the user ultimately deletes the old release. The Intent
+Regulator never deletes project repositories or the control repository.

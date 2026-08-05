@@ -73,6 +73,25 @@ path that is not inside the control repository's worktree area. The project
 tree is read-only to AgentOS control behavior: no AgentOS files, records,
 worktrees, notes, or self-references are stored there.
 
+## Release replacement
+
+Release replacement changes only the `AgentOS` checkout at
+`workspace_boundary.release_root`. The project container and external control
+repository remain in place. The Intent Regulator receives the new release
+identity and compiles a `release_update` record with one of two modes:
+
+```text
+KEEP_PROJECT_APPENDICES
+  preserve control-repository governance additions and revalidate them
+
+RESET_GOVERNANCE_CLEAN
+  rebuild governance from the new release without those additions
+```
+
+Both modes require a control snapshot, leave project repositories unchanged,
+and keep the previous release available until the replacement is bound and
+checked. The host may remove the previous release only after that check.
+
 ## Lifecycle contract
 
 The graph describes decisions. A separate runtime state machine owns active

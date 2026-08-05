@@ -7,6 +7,8 @@
   and Bootstrap-created control repository are separate roots.
 - Host-side workspace preparation that creates or verifies the external control
   Git repository and records the boundary without touching the project tree.
+- Release replacement record with an explicit preserve-appendices or clean-
+  governance choice while retaining the external control repository.
 - No package manager or third-party runtime dependency.
 - Canonical line-oriented `.gate` format.
 - Canonical JSON graph with deterministic SHA-256 digest.
