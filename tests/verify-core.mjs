@@ -59,6 +59,14 @@ for (const answer of ["YES", "YES", "YES"]) {
 assert.equal(execution.status, "COMPLETE");
 assert.equal(execution.trace.length, 3);
 assert.throws(() => createExecution(core, identity, {authority}), /already active or permanently closed/u);
+const replayAuthority = createExecutionAuthority("replay-authority-secret-001-long-enough");
+const replayInitial = createExecution(core, identity, {authority: replayAuthority});
+let replayState = replayInitial;
+for (const answer of ["YES", "YES", "YES"]) {
+  const gate = findGate(core, replayState.current_node);
+  replayState = answerCurrent(replayState, core, answer, evidenceFor(core, gate, answer), {authority: replayAuthority});
+}
+assert.throws(() => answerCurrent(replayInitial, core, "UNKNOWN", evidenceFor(core, findGate(core, "CORE-001"), "UNKNOWN"), {authority: replayAuthority}), /no longer active|stale/u);
 
 const forged = createExecutionAuthority("forged-state-authority-secret-001");
 const honest = createExecution(core, identity, {authority: forged});
@@ -95,6 +103,8 @@ assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncont
 assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\nquestion \"unsafe\"\nevidence one\nYES COMPLETE\nNO COMPLETE\nUNKNOWN COMPLETE\nNOT_APPLICABLE COMPLETE\nend\nterminal COMPLETE COMPLETE \"complete\""), /can reach COMPLETE/u);
 assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\ncontext CODE_CHANGE\nquestion \"duplicate\"\nevidence one\nYES COMPLETE\nNO COMPLETE\nUNKNOWN STOP\nNOT_APPLICABLE STOP\nend\nterminal COMPLETE COMPLETE \"complete\"\nterminal STOP UNPROVEN \"stop\""), /duplicate context/u);
 assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\nquestion \"entry\"\nevidence one\nYES COMPLETE\nNO STOP\nUNKNOWN STOP\nNOT_APPLICABLE STOP\nend\ngate BAD-002\ncontext TASK_START\nquestion \"unreachable\"\nevidence one\nYES BAD-002\nNO BAD-002\nUNKNOWN BAD-002\nNOT_APPLICABLE BAD-002\nend\nterminal COMPLETE COMPLETE \"complete\"\nterminal STOP UNPROVEN \"stop\""), /unbounded cycle|unreachable/u);
+assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\nquestion \"entry\"\nevidence one\nYES COMPLETE\nNO STOP\nUNKNOWN STOP\nNOT_APPLICABLE STOP\nend\ngate BAD-002\ncontext TASK_START\nquestion \"unreachable\"\nevidence one\nYES STOP\nNO STOP\nUNKNOWN STOP\nNOT_APPLICABLE STOP\nend\nterminal COMPLETE COMPLETE \"complete\"\nterminal STOP UNPROVEN \"stop\""), /unreachable gates/u);
+assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncontext TASK_START\nquestion \"empty evidence\"\nevidence one,,two\nYES COMPLETE\nNO STOP\nUNKNOWN STOP\nNOT_APPLICABLE STOP\nend\nterminal COMPLETE COMPLETE \"complete\"\nterminal STOP UNPROVEN \"stop\""), /empty slot/u);
 
 const functionalityAuthority = createExecutionAuthority("functionality-execution-authority-secret-001");
 let functionalityRun = createExecution(functionality, identity, {authority: functionalityAuthority});

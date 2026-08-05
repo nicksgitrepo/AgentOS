@@ -33,7 +33,16 @@ function assertAcyclic(graph) {
     visited.add(id);
   }
   for (const node of graph.nodes) visit(node.id);
-  assert(visited.size === nodes.size, "gate graph contains unreachable gates");
+  const reachable = new Set();
+  function mark(id) {
+    if (reachable.has(id)) return;
+    reachable.add(id);
+    const node = nodes.get(id);
+    if (!node) return;
+    for (const target of Object.values(node.transitions)) if (nodes.has(target)) mark(target);
+  }
+  mark(graph.entry);
+  assert(reachable.size === nodes.size, "gate graph contains unreachable gates");
 }
 
 function reachesComplete(target, nodes, terminals, memo = new Map(), visiting = new Set()) {

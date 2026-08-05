@@ -15,6 +15,28 @@ function digest(value, label) {
   assert(typeof value === "string" && /^[0-9a-f]{64}$/u.test(value), `${label} must be a SHA-256 digest`);
 }
 
+function meaningful(value, label) {
+  exactKeys(value, ["result_type", "summary", "artifact_sha256", "evidence_sha256"], label);
+  assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(value.result_type), `${label}.result_type is not meaningful`);
+  assert(typeof value.summary === "string" && value.summary.length > 0, `${label}.summary is required`);
+  digest(value.artifact_sha256, `${label}.artifact_sha256`);
+  digest(value.evidence_sha256, `${label}.evidence_sha256`);
+}
+
+function validateAuditCandidate(result) {
+  assert(result.execution && result.execution.status === "COMPLETE", "campaign execution is not complete");
+  assert(result.execution.result && result.execution.result.terminal_type === "COMPLETE", "campaign execution terminal is not COMPLETE");
+  assert(result.execution.graph_digest === result.graph_digest, "campaign execution graph differs");
+  meaningful(result.progress, "campaign progress");
+  assert(result.closed_session && result.closed_session.status === "CLOSED", "native session is not closed");
+  meaningful(result.closed_session.handoff, "closed session handoff");
+  assert(result.closed_session.handoff.summary === result.progress.summary && result.closed_session.handoff.result_type === result.progress.result_type && result.closed_session.handoff.artifact_sha256 === result.progress.artifact_sha256 && result.closed_session.handoff.evidence_sha256 === result.progress.evidence_sha256, "closed handoff differs from progress");
+  exactKeys(result.closure, ["order", "active_roster_removed"], "campaign closure");
+  assert(JSON.stringify(result.closure.order) === JSON.stringify(["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "ROSTER_VERIFY"]), "campaign closure order is incomplete");
+  assert(result.closure.active_roster_removed === true, "campaign closure did not remove the active roster entry");
+  assert(result.execution.binding.session_id === result.closed_session.host_id, "closed session does not match execution session");
+}
+
 export async function runFunctionalityCampaign({host, admission, graph, authority_secret}) {
   validateCampaignAdmission(admission);
   validateGateGraph(graph);
@@ -75,6 +97,7 @@ export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role
   digest(result.admission_digest, "admission_digest");
   digest(result.graph_digest, "graph_digest");
   assert(result.digest === digestWithout(result, "digest"), "campaign result digest does not match content");
+  validateAuditCandidate(result);
   exactKeys({reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc}, ["reviewer_session_id", "reviewer_role_id", "evidence_sha256", "accepted", "reason", "accepted_at_utc"], "campaign acceptance");
   assert(typeof reviewer_session_id === "string" && reviewer_session_id.length > 0, "reviewer_session_id is required");
   assert(reviewer_session_id !== result.execution.binding.session_id, "worker cannot accept its own result");
@@ -87,4 +110,3 @@ export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role
   acceptance.digest = digestWithout(acceptance, "digest");
   return {schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: digestWithout({schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: null}, "digest")};
 }
-

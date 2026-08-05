@@ -13,7 +13,9 @@ function quoted(value, label) {
 }
 
 function parts(value) {
-  return value.split(",").map((item) => item.trim()).filter(Boolean);
+  const values = value.split(",").map((item) => item.trim());
+  assert(values.every((item) => item.length > 0), "evidence list contains an empty slot");
+  return values;
 }
 
 export function parseGateDsl(text, source = "<memory>") {

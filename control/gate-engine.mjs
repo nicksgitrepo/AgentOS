@@ -9,7 +9,9 @@ export function createExecutionAuthority(secret) {
   assert(typeof secret === "string" && secret.length >= 32, "execution authority secret is required");
   const active = new Set();
   const closed = new Set();
+  const currentTags = new Map();
   const keyFor = (graph, binding) => sha256({graph_digest: graph.digest, binding});
+  const keyForState = (state) => sha256({graph_digest: state.graph_digest, binding: state.binding});
   const tag = (state) => crypto.createHmac("sha256", secret).update(canonicalJson({...state, auth_tag: null}), "utf8").digest("hex");
   return Object.freeze({
     register(graph, binding) {
@@ -18,10 +20,17 @@ export function createExecutionAuthority(secret) {
       active.add(key);
       return {execution_id: `EXEC-${key.slice(0, 24)}`, key};
     },
-    seal(state) { return {...state, auth_tag: tag(state)}; },
+    seal(state) {
+      const sealed = {...state, auth_tag: tag(state)};
+      currentTags.set(keyForState(sealed), sealed.auth_tag);
+      return sealed;
+    },
     verify(state, graph) {
       assert(typeof state.auth_tag === "string" && state.auth_tag === tag(state), "execution state authentication failed");
       assert(state.graph_digest === graph.digest, "execution graph digest differs");
+      const key = keyFor(graph, state.binding);
+      assert(active.has(key), "execution state is no longer active");
+      assert(currentTags.get(key) === state.auth_tag, "execution state is stale");
       return state;
     },
     finish(executionId, graph, binding) {

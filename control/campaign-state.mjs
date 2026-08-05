@@ -170,7 +170,7 @@ export function recordWorkerResult(window, result) {
   assert(window.status === "OPEN", "worker window is no longer open");
   const record = {...result, digest: null};
   record.digest = digestWithout(record, "digest");
-  const afterDeadline = Date.parse(result.observed_at_utc) > Date.parse(window.deadline_at_utc);
+  const afterDeadline = Date.parse(result.observed_at_utc) >= Date.parse(window.deadline_at_utc);
   const stalled = result.result_type === "FAILURE_LIST" || afterDeadline;
   const next = {
     ...window,
@@ -192,4 +192,3 @@ export function evaluateProgressWindow(window, observed_at_utc) {
   stalled.digest = digestWithout(stalled, "digest");
   return {status: "STALLED", window: validateProgressWindow(stalled)};
 }
-

@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
 import path from "node:path";
-import {readFile} from "node:fs/promises";
+import {digestWithout} from "../control/canonical-json.mjs";
 import {compileBootstrapPlan} from "../control/bootstrap-plan.mjs";
 import {compileCampaignAdmission} from "../control/campaign-admission.mjs";
 import {createGoal} from "../control/campaign-state.mjs";
@@ -47,6 +47,7 @@ assert.deepEqual(calls.slice(-4), ["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"])
 const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z"});
 assert.equal(accepted.status, "ACCEPTED");
 assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "WORKER-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "self", accepted_at_utc: "2026-01-01T00:20:00.000Z"}), /cannot accept its own/u);
-void readFile;
+const falseSuccess = {...result, progress: null, digest: null};
+falseSuccess.digest = digestWithout(falseSuccess, "digest");
+assert.throws(() => acceptCampaignResult(falseSuccess, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", evidence_sha256: "e".repeat(64), accepted: true, reason: "false", accepted_at_utc: "2026-01-01T00:20:00.000Z"}), /campaign progress must be an object/u);
 console.log(JSON.stringify({status: "PASS", campaign: result.status, acceptance: accepted.status}));
-

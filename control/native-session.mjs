@@ -104,6 +104,11 @@ function identityFrom(admission, raw) {
   };
 }
 
+function expectedSessionIds(session, raw, label) {
+  assert(raw.thread_id === session.thread_id, `${label}.thread_id differs from active session`);
+  assert(raw.host_id === session.host_id, `${label}.host_id differs from active session`);
+}
+
 function idsFor(session) {
   return {thread_id: session.thread_id, host_id: session.host_id, identity: session.identity};
 }
@@ -191,6 +196,7 @@ export async function readMeaningfulProgress(host, session, timeout_ms = 900_000
   assert(waited.threads[0].thread_id === session.thread_id && waited.threads[0].host_id === session.host_id, "wait_threads returned the wrong target");
   const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "progress"});
   expectedIdentity(session, raw, "progress readback");
+  expectedSessionIds(session, raw, "progress readback");
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "progress"], "progress readback");
   exactKeys(raw.progress, ["result_type", "summary", "artifact_sha256", "evidence_sha256"], "progress");
   assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(raw.progress.result_type), "progress is not meaningful");
@@ -203,6 +209,7 @@ export async function readGatePacket(host, session) {
   validateSession(session);
   const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "gate_packet"});
   expectedIdentity(session, raw, "gate packet readback");
+  expectedSessionIds(session, raw, "gate packet readback");
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "gate_packet"], "gate packet readback");
   assert(Array.isArray(raw.gate_packet) && raw.gate_packet.length > 0, "gate packet is empty");
   for (const [index, item] of raw.gate_packet.entries()) {
@@ -223,9 +230,10 @@ export async function closeNativeSession(host, session, handoff) {
   await host.send_message_to_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, message: "Return the final typed handoff for this task."});
   const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "handoff"});
   expectedIdentity(session, raw, "handoff readback");
+  expectedSessionIds(session, raw, "handoff readback");
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "handoff"], "handoff readback");
   exactKeys(raw.handoff, ["summary", "result_type", "artifact_sha256", "evidence_sha256"], "typed handoff");
-  assert(raw.handoff.summary === handoff.summary && raw.handoff.result_type === handoff.result_type, "host handoff differs from the requested handoff");
+  assert(raw.handoff.summary === handoff.summary && raw.handoff.result_type === handoff.result_type && raw.handoff.artifact_sha256 === handoff.artifact_sha256 && raw.handoff.evidence_sha256 === handoff.evidence_sha256, "host handoff differs from the requested handoff");
   const closure = await removeAndVerify(host, session, "NORMAL_CLOSURE");
   const closed = {...session, status: "CLOSED", handoff: raw.handoff, digest: null};
   closed.digest = digestWithout(closed, "digest");

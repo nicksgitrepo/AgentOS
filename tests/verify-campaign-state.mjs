@@ -63,5 +63,7 @@ assert.equal(expired.status, "STALLED");
 assert.equal(expired.window.stall_reason, "WINDOW_EXPIRED");
 expiredWindow = expired.window;
 assert.throws(() => recordWorkerResult(expiredWindow, {...progressInput, result_type: "ARTIFACT", summary: "Too late", observed_at_utc: "2026-01-01T00:16:00.000Z"}), /no longer open/u);
+const exactWindow = createProgressWindow({window_id: "WINDOW-004", worker_id: "WORKER-001", goal_id: goal.goal_id, started_at_utc: "2026-01-01T00:00:00.000Z"});
+assert.equal(recordWorkerResult(exactWindow, {...progressInput, result_type: "ARTIFACT", summary: "Exactly at the deadline", observed_at_utc: "2026-01-01T00:15:00.000Z"}).status, "STALLED");
 
 console.log(JSON.stringify({status: "PASS", reassessment: changed.status, failure_list: failureWindow.status, expired: expired.status}));
