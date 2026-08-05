@@ -1,5 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {validateGateResponse} from "./gate-response.mjs";
+import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const NATIVE_SESSION_SCHEMA = "agentos.native_session.v1";
 export const DEFAULT_MODEL = "gpt-5.6-luna";
@@ -46,7 +47,7 @@ function task(value, label) {
 const ADMISSION_FIELDS = [
   "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256",
   "lane_id", "role_id", "role_display_name", "source_commit", "source_tree",
-  "worktree_id", "governance_digest", "task_name", "prompt",
+  "worktree_id", "workspace_boundary", "governance_digest", "task_name", "prompt",
 ];
 
 const THREAD_IDENTITY_FIELDS = [
@@ -65,6 +66,7 @@ export function validateAdmission(admission) {
   assert(COMMIT.test(admission.source_tree), "admission.source_tree is invalid");
   assert(SHA256.test(admission.goal_sha256), "admission.goal_sha256 is invalid");
   assert(SHA256.test(admission.governance_digest), "admission.governance_digest is invalid");
+  validateWorkspaceBoundary(admission.workspace_boundary);
   return admission;
 }
 
@@ -102,6 +104,7 @@ function identityFrom(admission, raw) {
     source_commit: admission.source_commit,
     source_tree: admission.source_tree,
     worktree_id: admission.worktree_id,
+    workspace_boundary: admission.workspace_boundary,
   };
 }
 
@@ -188,10 +191,11 @@ export async function spawnNativeSession(host, admission) {
 }
 
 export function validateSession(session) {
-  exactKeys(session, ["schema", "version", "status", ...THREAD_IDENTITY_FIELDS, "model", "reasoning_effort", "governance_digest", "handoff", "digest"], "native session");
+  exactKeys(session, ["schema", "version", "status", ...THREAD_IDENTITY_FIELDS, "workspace_boundary", "model", "reasoning_effort", "governance_digest", "handoff", "digest"], "native session");
   assert(session.schema === NATIVE_SESSION_SCHEMA && session.version === 1, "native session identity is invalid");
   assert(session.status === "ACTIVE", "native session is not active");
   for (const field of THREAD_IDENTITY_FIELDS) nonempty(session[field], `session.${field}`);
+  validateWorkspaceBoundary(session.workspace_boundary);
   assert(COMMIT.test(session.source_commit) && COMMIT.test(session.source_tree), "native session source identity is invalid");
   assert(session.model === DEFAULT_MODEL && session.reasoning_effort === DEFAULT_REASONING_EFFORT, "native session defaults are invalid");
   assert(SHA256.test(session.governance_digest), "native session governance digest is invalid");

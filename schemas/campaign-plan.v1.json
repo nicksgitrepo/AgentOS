@@ -3,7 +3,7 @@
   "$id": "agentos.campaign_plan.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source", "defaults", "persistent_roles", "campaign_roles", "phases", "role_library_digest", "digest"],
+  "required": ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source", "workspace_boundary", "defaults", "persistent_roles", "campaign_roles", "phases", "role_library_digest", "digest"],
   "properties": {
     "schema": { "const": "agentos.campaign_plan.v1" },
     "version": { "const": 1 },
@@ -14,6 +14,7 @@
     "goal_id": { "type": "string" },
     "goal_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "source": { "type": "object" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v1.json" },
     "defaults": { "type": "object" },
     "persistent_roles": { "const": ["INTENT_REGULATOR", "RUNTIME"] },
     "campaign_roles": { "const": ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR"] },

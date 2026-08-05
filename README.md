@@ -77,3 +77,34 @@ activation is implied by a passing local check.
 
 The gate inventory and display rules are documented in
 [`docs/gate-governance.md`](docs/gate-governance.md).
+
+## Where a user keeps it
+
+AgentOS is placed beside the user's project container, not inside a project
+repository:
+
+```text
+workspace/
+├── AgentOS                 release checkout
+├── projects                container for the user's project repositories
+│   ├── project-one/
+│   └── project-two/
+└── AgentOS-control         created by Bootstrap
+    ├── bootstrap/
+    ├── campaigns/
+    ├── handoffs/
+    └── worktrees/             isolated worker checkouts
+```
+
+Bootstrap verifies this sibling layout and creates the separate control
+repository before it records anything. Project repositories remain free of
+AgentOS files, control records, worktrees, notes, and self-references. Agents
+work as human workers through isolated checkouts under `AgentOS-control/`; no
+linked Git worktree may place administrative files in the project repository.
+The product repositories remain the user's clean source repositories.
+
+The host-side Bootstrap entry point is
+`control/workspace-bootstrap.mjs:prepareWorkspace`. It reads the release,
+projects, and selected project directories, creates or verifies the sibling
+`AgentOS-control` Git repository, and writes the boundary record there. It does
+not write to the release checkout or any project repository.

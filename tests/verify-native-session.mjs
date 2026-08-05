@@ -5,9 +5,11 @@ import {fileURLToPath} from "node:url";
 import path from "node:path";
 import {sha256} from "../control/canonical-json.mjs";
 import {abortNativeSession, closeNativeSession, DEFAULT_MODEL, DEFAULT_REASONING_EFFORT, readMeaningfulProgress, REQUIRED_HOST_ACTIONS, spawnNativeSession} from "../control/native-session.mjs";
+import {compileWorkspaceBoundary} from "../control/workspace-boundary.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 void ROOT;
+const workspace_boundary = compileWorkspaceBoundary({release_root: "/workspace/AgentOS", projects_root: "/workspace/projects", project_root: "/workspace/projects/example-project", control_root: "/workspace/AgentOS-control"});
 const admission = {
   project_id: "PROJECT-001",
   campaign_id: "CAMPAIGN-001",
@@ -20,6 +22,7 @@ const admission = {
   source_commit: "b".repeat(40),
   source_tree: "c".repeat(40),
   worktree_id: "WORKTREE-001",
+  workspace_boundary,
   governance_digest: "d".repeat(64),
   task_name: "functionality_worker_001",
   prompt: "Build the admitted functionality lane and return a typed handoff.",

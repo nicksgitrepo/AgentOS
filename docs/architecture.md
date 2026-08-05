@@ -48,6 +48,31 @@ attestation HMAC over the complete claim; the gate engine verifies that
 attestation before accepting the answer. A record that only declares itself
 to be a host readback is not sufficient.
 
+## Workspace boundary
+
+Bootstrap uses three sibling roots under one user-selected parent:
+
+```text
+<parent>/AgentOS          release checkout
+<parent>/projects         container holding project repositories
+<parent>/AgentOS-control  Bootstrap-created control repository
+```
+
+The selected project must be a child of `<parent>/projects`. The host-side
+Bootstrap function `prepareWorkspace` creates or verifies
+`<parent>/AgentOS-control` before writing Bootstrap state, campaign state,
+handoffs, notes, or tooling. Temporary worker checkouts must be below
+`AgentOS-control/worktrees`, never below the release checkout or a project
+repository. They must be isolated clones or equivalent checkouts whose Git
+administrative metadata also stays under the control root; ordinary linked
+worktrees that modify the source repository's `.git` directory are forbidden.
+
+The boundary is content-addressed and carried through the Bootstrap plan,
+campaign plan, worker admission, and native host request. A host must reject a
+path that is not inside the control repository's worktree area. The project
+tree is read-only to AgentOS control behavior: no AgentOS files, records,
+worktrees, notes, or self-references are stored there.
+
 ## Lifecycle contract
 
 The graph describes decisions. A separate runtime state machine owns active

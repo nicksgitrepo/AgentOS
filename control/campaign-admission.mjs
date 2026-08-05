@@ -1,6 +1,7 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {validateGoal} from "./campaign-state.mjs";
 import {validateBootstrapPlan} from "./bootstrap-plan.mjs";
+import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const CAMPAIGN_ADMISSION_SCHEMA = "agentos.campaign_admission.v1";
 const ID = /^[A-Z][A-Z0-9._-]*$/u;
@@ -39,6 +40,7 @@ export function compileCampaignAdmission({plan, goal, project_id, campaign_id, c
   assert(typeof task_name === "string" && TASK.test(task_name), "campaign task_name is invalid");
   nonempty(prompt, "campaign prompt");
   validateSource(source);
+  validateWorkspaceBoundary(plan.workspace_boundary);
   const phase = lanePhase(plan, lane_id);
   const admission = {
     schema: CAMPAIGN_ADMISSION_SCHEMA,
@@ -54,6 +56,7 @@ export function compileCampaignAdmission({plan, goal, project_id, campaign_id, c
     goal_id: goal.goal_id,
     goal_sha256: goal.digest,
     source: {...source},
+    workspace_boundary: {...plan.workspace_boundary},
     governance_digest: plan.role_library_digest,
     task_name,
     prompt,
@@ -65,7 +68,7 @@ export function compileCampaignAdmission({plan, goal, project_id, campaign_id, c
 }
 
 export function validateCampaignAdmission(admission) {
-  exactKeys(admission, ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "phase_id", "lane_id", "role_id", "role_display_name", "goal_id", "goal_sha256", "source", "governance_digest", "task_name", "prompt", "progress_window_minutes", "digest"], "campaign admission");
+  exactKeys(admission, ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "phase_id", "lane_id", "role_id", "role_display_name", "goal_id", "goal_sha256", "source", "workspace_boundary", "governance_digest", "task_name", "prompt", "progress_window_minutes", "digest"], "campaign admission");
   assert(admission.schema === CAMPAIGN_ADMISSION_SCHEMA && admission.version === 1, "campaign admission identity is invalid");
   assert(admission.status === "PREPARED_NOT_ACTIVATED", "campaign admission status is invalid");
   for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id", "phase_id", "role_id"]) assert(ID.test(admission[field]), `campaign admission ${field} is invalid`);
@@ -73,6 +76,7 @@ export function validateCampaignAdmission(admission) {
   assert(admission.role_id === "NAMED_LANE_WORKER" && admission.role_display_name === `${admission.lane_id} Worker`, "campaign lane role is not dynamic");
   assert(DIGEST.test(admission.goal_sha256) && DIGEST.test(admission.governance_digest), "campaign admission digest binding is invalid");
   validateSource(admission.source);
+  validateWorkspaceBoundary(admission.workspace_boundary);
   assert(TASK.test(admission.task_name) && typeof admission.prompt === "string" && admission.prompt.length > 0, "campaign task is invalid");
   assert(Number.isInteger(admission.progress_window_minutes) && admission.progress_window_minutes === 15, "campaign progress window is invalid");
   assert(DIGEST.test(admission.digest) && admission.digest === digestWithout(admission, "digest"), "campaign admission digest does not match content");
@@ -93,9 +97,9 @@ export function toNativeAdmission(admission) {
     source_commit: admission.source.source_commit,
     source_tree: admission.source.source_tree,
     worktree_id: admission.source.worktree_id,
+    workspace_boundary: {...admission.workspace_boundary},
     governance_digest: admission.governance_digest,
     task_name: admission.task_name,
     prompt: admission.prompt,
   };
 }
-

@@ -1,6 +1,7 @@
 import {assert, digestWithout, sha256, sortedUniqueStrings} from "./canonical-json.mjs";
 import {compileRoleLibrary} from "./role-library.mjs";
 import {DEFAULT_MODEL, DEFAULT_REASONING_EFFORT} from "./native-session.mjs";
+import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const BOOTSTRAP_PLAN_SCHEMA = "agentos.bootstrap_plan.v1";
 export const BOOTSTRAP_MODES = Object.freeze(["RAPID_PROTOTYPING", "ITERATION"]);
@@ -33,11 +34,12 @@ function phase(phase_id, lane_ids, purpose) {
   return {phase_id, lane_ids: [...lane_ids], purpose};
 }
 
-export async function compileBootstrapPlan(root, {project_id, owner_context, source_binding, rapid_prototyping = true}) {
+export async function compileBootstrapPlan(root, {project_id, owner_context, source_binding, workspace_boundary, rapid_prototyping = true}) {
   nonempty(project_id, "project_id");
   assert(ID.test(project_id), "project_id is invalid");
   assert(owner_context && typeof owner_context === "object" && !Array.isArray(owner_context), "owner_context must be an object");
   validateSourceBinding(source_binding);
+  validateWorkspaceBoundary(workspace_boundary);
   assert(rapid_prototyping === true, "this compiler currently requires Rapid Prototyping Mode");
   const roleLibrary = await compileRoleLibrary(root);
   const phases = [
@@ -58,6 +60,7 @@ export async function compileBootstrapPlan(root, {project_id, owner_context, sou
     next_mode: "ITERATION",
     owner_context_sha256: sha256(owner_context),
     source_binding: {...source_binding},
+    workspace_boundary: {...workspace_boundary},
     defaults: {model: DEFAULT_MODEL, reasoning_effort: DEFAULT_REASONING_EFFORT, progress_window_minutes: 15},
     conversation: {
       style: "FRIENDLY_ONE_SHORT_QUESTION",
@@ -88,12 +91,13 @@ export async function compileBootstrapPlan(root, {project_id, owner_context, sou
 }
 
 export function validateBootstrapPlan(plan) {
-  exactKeys(plan, ["schema", "version", "status", "project_id", "mode", "next_mode", "owner_context_sha256", "source_binding", "defaults", "conversation", "activation", "persistent_roles", "campaign_roles", "lane_worker_role", "phases", "role_library_digest", "protected_actions", "completion", "digest"], "bootstrap plan");
+  exactKeys(plan, ["schema", "version", "status", "project_id", "mode", "next_mode", "owner_context_sha256", "source_binding", "workspace_boundary", "defaults", "conversation", "activation", "persistent_roles", "campaign_roles", "lane_worker_role", "phases", "role_library_digest", "protected_actions", "completion", "digest"], "bootstrap plan");
   assert(plan.schema === BOOTSTRAP_PLAN_SCHEMA && plan.version === 1, "bootstrap plan identity is invalid");
   assert(plan.status === "PREPARED_NOT_ACTIVATED" && plan.mode === "RAPID_PROTOTYPING" && plan.next_mode === "ITERATION", "bootstrap mode is invalid");
   assert(typeof plan.project_id === "string" && ID.test(plan.project_id), "bootstrap project ID is invalid");
   assert(DIGEST.test(plan.owner_context_sha256) && DIGEST.test(plan.role_library_digest), "bootstrap plan digest binding is invalid");
   validateSourceBinding(plan.source_binding);
+  validateWorkspaceBoundary(plan.workspace_boundary);
   exactKeys(plan.defaults, ["model", "reasoning_effort", "progress_window_minutes"], "bootstrap defaults");
   assert(plan.defaults.model === DEFAULT_MODEL && plan.defaults.reasoning_effort === DEFAULT_REASONING_EFFORT && plan.defaults.progress_window_minutes === 15, "bootstrap defaults are invalid");
   exactKeys(plan.conversation, ["style", "numeric_answers", "boolean_answers", "technical_terms_hidden", "ask_only_when_owner_choice_is_real"], "bootstrap conversation");
@@ -113,4 +117,3 @@ export function validateBootstrapPlan(plan) {
   assert(plan.digest === digestWithout(plan, "digest"), "bootstrap plan digest does not match content");
   return plan;
 }
-

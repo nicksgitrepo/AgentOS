@@ -12,9 +12,11 @@ import {createEvidence} from "../control/evidence.mjs";
 import {loadQuestionCatalog, renderGateQuestion} from "../control/question-catalog.mjs";
 import {createGateResponse} from "../control/gate-response.mjs";
 import {acceptCampaignResult, runFunctionalityCampaign} from "../control/campaign-runner.mjs";
+import {compileWorkspaceBoundary} from "../control/workspace-boundary.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const plan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_context: {objective: "Build a bounded prototype"}, source_binding: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", bootstrap_session_id: "BOOTSTRAP-001", environment_id: "ENV-001"}});
+const workspace_boundary = compileWorkspaceBoundary({release_root: "/workspace/AgentOS", projects_root: "/workspace/projects", project_root: "/workspace/projects/example-project", control_root: "/workspace/AgentOS-control"});
+const plan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_context: {objective: "Build a bounded prototype"}, source_binding: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", bootstrap_session_id: "BOOTSTRAP-001", environment_id: "ENV-001"}, workspace_boundary});
 const goal = createGoal({goal_id: "GOAL-001", objective: "Build functionality", scope: {lane: "functionality"}, intent: {outcome: "works"}, boundaries: {hard: ["no release"], soft: ["review"]}, created_at_utc: "2026-01-01T00:00:00.000Z"});
 const admission = compileCampaignAdmission({plan, goal, project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", lane_id: "functionality", source: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", environment_id: "ENV-001"}, task_name: "functionality_worker_001", prompt: "Build the admitted functionality."});
 const graph = await compileGateFile(path.join(ROOT, "governance/lanes/functionality.gate"));

@@ -37,6 +37,9 @@ boundary.
   active roster.
 - A changed scope or intent closes the current goal and requires a new one.
 - No product or private context is stored in this repository.
+- Bootstrap creates or verifies a sibling control repository before writing
+  control state; worker checkouts and their Git metadata stay under that
+  control repository, never in a project repository.
 
 ## Completion of this milestone
 

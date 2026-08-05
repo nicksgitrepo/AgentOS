@@ -4,6 +4,7 @@ import {assert, compareUtf8, digestWithout, sortedUniqueStrings} from "./canonic
 import {validateBootstrapPlan} from "./bootstrap-plan.mjs";
 import {validateGoal} from "./campaign-state.mjs";
 import {compileRoleLibrary} from "./role-library.mjs";
+import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const CAMPAIGN_PLAN_SCHEMA = "agentos.campaign_plan.v1";
 export const CAMPAIGN_RUN_SCHEMA = "agentos.campaign_run.v1";
@@ -130,6 +131,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
     goal_id: goal.goal_id,
     goal_sha256: goal.digest,
     source: {...source},
+    workspace_boundary: {...plan.workspace_boundary},
     defaults: {...plan.defaults},
     persistent_roles: ["INTENT_REGULATOR", "RUNTIME"],
     campaign_roles: ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR"],
@@ -142,12 +144,13 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
 }
 
 export function validateCampaignPlan(plan) {
-  exactKeys(plan, ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source", "defaults", "persistent_roles", "campaign_roles", "phases", "role_library_digest", "digest"], "campaign plan");
+  exactKeys(plan, ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source", "workspace_boundary", "defaults", "persistent_roles", "campaign_roles", "phases", "role_library_digest", "digest"], "campaign plan");
   assert(plan.schema === CAMPAIGN_PLAN_SCHEMA && plan.version === 1, "campaign plan identity is invalid");
   assert(plan.status === "PREPARED_NOT_ACTIVATED", "campaign plan must remain prepared");
   for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id"]) assert(ID.test(plan[field]), `campaign plan ${field} is invalid`);
   assert(DIGEST.test(plan.goal_sha256) && DIGEST.test(plan.role_library_digest), "campaign plan digest binding is invalid");
   validateSource(plan.source);
+  validateWorkspaceBoundary(plan.workspace_boundary);
   exactKeys(plan.defaults, ["model", "reasoning_effort", "progress_window_minutes"], "campaign plan defaults");
   assert(plan.defaults.model === "gpt-5.6-luna" && plan.defaults.reasoning_effort === "max" && plan.defaults.progress_window_minutes === 15, "campaign plan defaults are invalid");
   assert(JSON.stringify(plan.persistent_roles) === JSON.stringify(["INTENT_REGULATOR", "RUNTIME"]), "campaign persistent roles are invalid");

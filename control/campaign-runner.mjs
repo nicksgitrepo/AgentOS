@@ -6,6 +6,7 @@ import {readGatePacket, readMeaningfulProgress, spawnNativeSession, closeNativeS
 import {toNativeAdmission, validateCampaignAdmission} from "./campaign-admission.mjs";
 import {renderGateQuestion, validateQuestionCatalog} from "./question-catalog.mjs";
 import {validateGateResponse} from "./gate-response.mjs";
+import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const CAMPAIGN_RESULT_SCHEMA = "agentos.campaign_result.v1";
 
@@ -59,7 +60,8 @@ function validateAuditCandidate(result, authority_secret) {
   meaningful(result.progress, "campaign progress");
   assert(result.closed_session && result.closed_session.status === "CLOSED", "native session is not closed");
   meaningful(result.closed_session.handoff, "closed session handoff");
-  exactKeys(result.closed_session, ["schema", "version", "status", "thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id", "model", "reasoning_effort", "governance_digest", "handoff", "digest"], "closed native session");
+  exactKeys(result.closed_session, ["schema", "version", "status", "thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id", "workspace_boundary", "model", "reasoning_effort", "governance_digest", "handoff", "digest"], "closed native session");
+  validateWorkspaceBoundary(result.closed_session.workspace_boundary);
   assert(result.closed_session.status === "CLOSED" && result.closed_session.digest === digestWithout(result.closed_session, "digest"), "closed native session digest is invalid");
   assert(result.closed_session.handoff.summary === result.progress.summary && result.closed_session.handoff.result_type === result.progress.result_type && result.closed_session.handoff.artifact_sha256 === result.progress.artifact_sha256 && result.closed_session.handoff.evidence_sha256 === result.progress.evidence_sha256, "closed handoff differs from progress");
   exactKeys(result.closure, ["order", "active_roster_removed"], "campaign closure");

@@ -3,7 +3,7 @@
   "$id": "agentos.bootstrap_plan.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "status", "project_id", "mode", "next_mode", "owner_context_sha256", "source_binding", "defaults", "conversation", "activation", "persistent_roles", "campaign_roles", "lane_worker_role", "phases", "role_library_digest", "protected_actions", "completion", "digest"],
+  "required": ["schema", "version", "status", "project_id", "mode", "next_mode", "owner_context_sha256", "source_binding", "workspace_boundary", "defaults", "conversation", "activation", "persistent_roles", "campaign_roles", "lane_worker_role", "phases", "role_library_digest", "protected_actions", "completion", "digest"],
   "properties": {
     "schema": { "const": "agentos.bootstrap_plan.v1" },
     "version": { "const": 1 },
@@ -13,6 +13,7 @@
     "next_mode": { "const": "ITERATION" },
     "owner_context_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "source_binding": { "type": "object" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v1.json" },
     "defaults": { "type": "object" },
     "conversation": { "type": "object" },
     "activation": { "type": "object" },

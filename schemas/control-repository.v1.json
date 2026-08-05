@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.control_repository.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "workspace_boundary", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.control_repository.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "BOUND" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v1.json" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

@@ -14,12 +14,14 @@ import {loadQuestionCatalog, renderGateQuestion} from "../control/question-catal
 import {createGateResponse} from "../control/gate-response.mjs";
 import {acceptCampaignResult, runLaneCampaign} from "../control/campaign-runner.mjs";
 import {digestWithout, sha256} from "../control/canonical-json.mjs";
+import {compileWorkspaceBoundary} from "../control/workspace-boundary.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const source = {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", environment_id: "ENV-001"};
+const workspace_boundary = compileWorkspaceBoundary({release_root: "/workspace/AgentOS", projects_root: "/workspace/projects", project_root: "/workspace/projects/example-project", control_root: "/workspace/AgentOS-control"});
 const authoritySecret = "full-campaign-authority-secret-001";
 const evidenceSecret = "full-campaign-evidence-secret-001";
-const bootstrapPlan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_context: {objective: "Build a complete bounded prototype"}, source_binding: {...source, bootstrap_session_id: "BOOTSTRAP-001"}});
+const bootstrapPlan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_context: {objective: "Build a complete bounded prototype"}, source_binding: {...source, bootstrap_session_id: "BOOTSTRAP-001"}, workspace_boundary});
 const goal = createGoal({goal_id: "GOAL-001", objective: "Build a complete bounded prototype", scope: {all_lanes: true}, intent: {outcome: "working"}, boundaries: {hard: ["no release"], soft: ["review"]}, created_at_utc: "2026-01-01T00:00:00.000Z"});
 const plan = await compileCampaignPlan(ROOT, {plan: bootstrapPlan, goal, campaign_id: "CAMPAIGN-001", campaign_version: "V1", source});
 const laneManifest = JSON.parse(await readFile(path.join(ROOT, "governance/lane-manifest.json"), "utf8"));

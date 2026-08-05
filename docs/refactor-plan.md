@@ -3,6 +3,10 @@
 ## Completed in this milestone slice
 
 - New clean repository boundary.
+- Explicit sibling workspace boundary: release checkout, project container,
+  and Bootstrap-created control repository are separate roots.
+- Host-side workspace preparation that creates or verifies the external control
+  Git repository and records the boundary without touching the project tree.
 - No package manager or third-party runtime dependency.
 - Canonical line-oriented `.gate` format.
 - Canonical JSON graph with deterministic SHA-256 digest.
@@ -62,6 +66,11 @@
    runtime and exercise the four-phase campaign outside the fake host.
 2. Let the surrounding host perform an explicitly authorized push, merge,
    deploy, or release only after the owner selects that delivery mode.
+3. Have the Bootstrap host call `prepareWorkspace` to create and verify the
+   sibling control repository in the selected workspace before it writes any
+   state or starts a worker. Worker checkouts must be isolated clones under
+   the control root, not linked worktrees that mutate the project repository's
+   Git metadata.
 
 The preserved reference remains outside this repository. Its nine large
 transaction boundaries are represented by explicit focused replacements in

@@ -16,6 +16,7 @@ The old implementation remains the reference outside this milestone.
 | Runtime authority and release boundary | Persistent Runtime record and protected-action request | Project/environment-bound request contract migrated; host action execution remains intentionally external |
 | Delivery and campaign closure | Delivery choice, repository checkpoint, deployment receipt, live audit, and Runtime request | Choice and proof contracts migrated; provider action execution remains external |
 | Persistent controller identity | Persistent Intent Regulator/Runtime records and fifteen-minute audit loop | Record and decision contract migrated; host session attachment remains external |
+| Repository and control-plane boundary | Sibling workspace boundary and control-repository worktree policy | Boundary contract migrated; host creation of the sibling repository remains external |
 
 ## Extraction rule
 
