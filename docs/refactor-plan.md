@@ -29,6 +29,9 @@
   minute loop are now explicit and abortable.
 - Owner questions are rendered as short plain choices with numeric and
   optional yes/no answers while internal fields remain hidden.
+- The remaining legacy boundaries are tracked in
+  [`migration-map.md`](migration-map.md), with no old control module copied
+  into the clean milestone.
 
 ## Next slices
 
