@@ -14,7 +14,7 @@ function exactKeys(value, expected, label) {
 
 function nonempty(value, label) { assert(typeof value === "string" && value.trim().length > 0, `${label} must be nonempty`); }
 
-function validateOwnerApproval(approval) {
+export function validateOwnerApproval(approval) {
   exactKeys(approval, ["decision_id", "decision", "actor_digest", "accepted_result_digest", "final_audit_digest", "decided_at_utc", "digest"], "owner approval");
   assert(ID.test(approval.decision_id), "owner approval decision_id is invalid");
   assert(approval.decision === "APPROVE", "owner approval decision is not APPROVE");

@@ -30,6 +30,9 @@ boundary.
   fields alone do not make a claim real.
 - Protected Runtime actions require a project/environment-bound owner
   approval tied to the accepted result and final audit.
+- Delivery choices are explicit: local accepted result, push, merge, deploy,
+  or release. External choices become Runtime requests; the portable kernel
+  does not execute provider actions.
 - Temporary workers preserve a handoff, then unpin, archive, and leave the
   active roster.
 - A changed scope or intent closes the current goal and requires a new one.
@@ -37,6 +40,8 @@ boundary.
 
 ## Completion of this milestone
 
-The milestone is complete only after the first vertical slice has been
-migrated, replayed deterministically, hostile-tested, independently audited,
-and accepted without activating release behavior.
+The portable milestone slice is complete only after the twelve-lane campaign
+has been replayed deterministically, hostile-tested, independently audited,
+and accepted without activating release behavior. A real host adapter and any
+provider action remain outside this repository and must be verified by the
+surrounding runtime before activation.

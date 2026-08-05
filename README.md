@@ -34,13 +34,15 @@ The first slice establishes:
 - a deterministic engine that chooses transitions from the graph;
 - evidence bound to source, worktree, session, goal, and environment, with a
   host or Auditor attestation;
-- the first Functionality lane;
+- all twelve named governance lanes;
 - role-packet composition for persistent and campaign roles.
 
-The campaign coordinator now compiles the complete four-phase plan, assigns a
+The campaign coordinator compiles the complete four-phase plan, assigns a
 fresh named worker to each of the twelve lanes, and requires an independent
-phase acceptance before the next phase can begin. The bounded repair form is
-available for a deliberate, counted return to an earlier gate.
+phase acceptance before the next phase can begin. The portable fake-host
+integration exercises all twelve lanes, including bounded repair, evidence
+attestation, typed handoff, and closure. The campaign ends with an explicit
+owner-selected delivery choice; external delivery remains a host action.
 
 The older development checkout remains the reference baseline. It is not
 copied into this milestone wholesale; each behavior is migrated and verified

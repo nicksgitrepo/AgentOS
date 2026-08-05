@@ -91,3 +91,15 @@ Runtime does not perform a protected action from a free-form request. Its
 request must bind to the persistent Runtime's project and environment and
 carry a content-addressed owner approval naming both the accepted result and
 the final audit.
+
+## Delivery and closure
+
+The campaign ends with a content-addressed delivery choice. The owner may
+choose to keep the accepted result local, or select push, merge, deploy, or
+release. The portable kernel compiles and validates that choice, the accepted
+result, the final audit, the source identity, and the owner decision. A local
+choice produces a `NO_EXTERNAL_ACTION` record. Any external choice becomes a
+Runtime request and still requires the persistent Runtime, the matching
+project and environment, and owner approval naming the accepted result and
+final audit. The surrounding host performs the actual external action; this
+repository never contains provider credentials or performs delivery itself.

@@ -14,6 +14,7 @@ const SEAMS = Object.freeze([
   {seam_id: "PERSISTENT_CONTROL", replacement_paths: ["control/intent-regulator.mjs", "control/persistent-role.mjs", "control/runtime-authority.mjs"], evidence_test: "tests/verify-intent-regulator.mjs", status: "MIGRATED"},
   {seam_id: "PROGRESS_AND_REASSESSMENT", replacement_paths: ["control/campaign-state.mjs", "control/intent-regulator.mjs"], evidence_test: "tests/verify-campaign-state.mjs", status: "MIGRATED"},
   {seam_id: "OWNER_ACCEPTANCE", replacement_paths: ["control/owner-conversation.mjs", "control/campaign-runner.mjs"], evidence_test: "tests/verify-campaign-runner.mjs", status: "MIGRATED"},
+  {seam_id: "DELIVERY_CLOSURE", replacement_paths: ["control/delivery-closure.mjs", "control/runtime-authority.mjs"], evidence_test: "tests/verify-delivery-closure.mjs", status: "EXTERNAL_HOST_REQUIRED"},
   {seam_id: "TWELVE_LANE_EXECUTION", replacement_paths: ["control/campaign-orchestrator.mjs", "control/campaign-runner.mjs"], evidence_test: "tests/verify-full-native-campaign.mjs", status: "PARTIAL"},
   {seam_id: "LEGACY_TRANSACTION_BOUNDARIES", replacement_paths: ["docs/migration-map.md", "docs/refactor-plan.md"], evidence_test: "tests/verify-migration-registry.mjs", status: "PARTIAL"},
 ]);
