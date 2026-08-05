@@ -1,0 +1,6 @@
+.DS_Store
+.agentos/
+tmp/
+*.tmp
+*.log
+

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.gate-graph.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "graph_id", "entry", "nodes", "terminals", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.gate_graph.v1" },
+    "version": { "type": "integer", "const": 1 },
+    "graph_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "entry": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "id", "context", "question", "evidence", "transitions"],
+        "properties": {
+          "type": { "const": "GATE" },
+          "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+          "context": { "type": "string", "minLength": 1 },
+          "question": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "transitions": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+            "properties": {
+              "YES": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+              "NO": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+              "UNKNOWN": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+              "NOT_APPLICABLE": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" }
+            }
+          }
+        }
+      }
+    },
+    "terminals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "message"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+          "type": { "enum": ["COMPLETE", "HARD_STOP", "SOFT_REVIEW", "UNPROVEN"] },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

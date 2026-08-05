@@ -1,0 +1,50 @@
+# First migrated vertical slice: functionality from assignment to closure.
+graph FUNCTIONALITY 1
+entry FUNC-001
+
+gate FUNC-001
+context TASK_START
+question "Is the assigned behavior observable with a baseline, success condition, and failure condition?"
+evidence assignment,baseline
+YES FUNC-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate FUNC-002
+context CODE_CHANGE
+question "Can the admitted behavior run through its intended path under the bound environment?"
+evidence execution,environment
+YES FUNC-003
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-IDENTITY
+end
+
+gate FUNC-003
+context CODE_CHANGE
+question "Does the intended behavior produce the required result and state without an unhandled failure?"
+evidence result,state
+YES FUNC-004
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE UNPROVEN
+end
+
+gate FUNC-004
+context CLOSURE
+question "Is the result bound to the same source and independently reviewed before closure?"
+evidence source,review,closure
+YES COMPLETE
+NO HARD-STOP-IDENTITY
+UNKNOWN UNPROVEN
+NOT_APPLICABLE UNPROVEN
+end
+
+terminal COMPLETE COMPLETE "The functionality slice passed its gates and is ready for campaign closure."
+terminal HARD-STOP-SCOPE HARD_STOP "The functionality request is outside the admitted scope."
+terminal HARD-STOP-IDENTITY HARD_STOP "Functionality evidence does not match the active work identity."
+terminal SOFT-REVIEW SOFT_REVIEW "The Functionality Worker must return the result for campaign review."
+terminal UNPROVEN UNPROVEN "The functionality result needs evidence or a bounded repair."
+

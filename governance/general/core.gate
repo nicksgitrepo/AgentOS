@@ -1,0 +1,41 @@
+# Shared gates. This file is normative after compilation, not executable code.
+graph CORE 1
+entry CORE-001
+
+gate CORE-001
+context TASK_START
+question "Is the admitted work one clear change with a known scope and owner?"
+evidence admission,scope
+YES CORE-002
+NO HARD-STOP-SCOPE
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate CORE-002
+context TASK_START
+question "Do the source, worktree, session, goal, and environment all identify the same work?"
+evidence source,worktree,session,goal,environment
+YES CORE-003
+NO HARD-STOP-IDENTITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate CORE-003
+context HANDOFF
+question "Did the work stay inside its boundary and receive the required independent review?"
+evidence changed_scope,review
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+terminal COMPLETE COMPLETE "The governed work passed its applicable gates."
+terminal HARD-STOP-SCOPE HARD_STOP "The scope or authority is not safe to continue."
+terminal HARD-STOP-IDENTITY HARD_STOP "The work identity does not match its evidence."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Required evidence is missing or unknown."
+terminal SOFT-REVIEW SOFT_REVIEW "An orchestrator review is required before continuing."
+terminal UNPROVEN UNPROVEN "The result is not proven by the available evidence."
+
