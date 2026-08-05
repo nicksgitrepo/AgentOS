@@ -2,6 +2,7 @@
 
 import assert from "node:assert/strict";
 import {compileHostAttachment, bindNativeHost, validateHostAttachment} from "../control/native-host-attachment.mjs";
+import {loadNativeHostAdapter} from "../control/native-host-loader.mjs";
 import {REQUIRED_HOST_ACTIONS} from "../control/native-session.mjs";
 
 const attachment = compileHostAttachment({attachment_id: "ATTACHMENT-001", host_id: "HOST-001", project_id: "PROJECT-001", environment_id: "ENV-001", attached_at_utc: "2026-01-01T00:00:00.000Z"});
@@ -20,4 +21,9 @@ assert.deepEqual(calls[0].payload.host_attachment, {attachment_id: "ATTACHMENT-0
 assert.throws(() => bindNativeHost({...host, remove_from_active_roster: undefined}, attachment), /remove_from_active_roster/u);
 assert.throws(() => validateHostAttachment({...attachment, capabilities: ["create_thread"]}), /capabilities/u);
 assert.throws(() => validateHostAttachment({...attachment, digest: "0".repeat(64)}), /digest does not match/u);
+const moduleSource = `export async function createNativeHostAdapter() { return {${REQUIRED_HOST_ACTIONS.map((action) => `${action}: async (payload) => payload`).join(",")}}; }`;
+const moduleUrl = `data:text/javascript;base64,${Buffer.from(moduleSource, "utf8").toString("base64")}`;
+const loadedBound = await loadNativeHostAdapter(moduleUrl, attachment);
+assert.equal(typeof loadedBound.create_thread, "function");
+await assert.rejects(() => loadNativeHostAdapter("data:text/javascript,export default 1", attachment), /must export/u);
 console.log(JSON.stringify({status: "PASS", capabilities: Object.keys(bound).length, model: attachment.model}));

@@ -91,7 +91,9 @@ The real session provider is an injected host adapter. The kernel accepts only
 the eight required session actions, binds each call to a content-addressed
 host attachment, and still requires raw thread readbacks to match the active
 campaign identity. No provider-specific adapter, account, or credential is
-stored here.
+stored here. The surrounding runtime may load its adapter through the small
+host-loader entry point; the imported module is outside this repository and is
+never treated as governance.
 
 Runtime does not perform a protected action from a free-form request. Its
 request must bind to the persistent Runtime's project and environment and

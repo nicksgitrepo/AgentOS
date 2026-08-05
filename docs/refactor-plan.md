@@ -19,6 +19,8 @@
 - Native session host contract with exact cleanup ordering.
 - Typed native-host attachment boundary that accepts a surrounding provider
   adapter without importing provider code or credentials.
+- A host-loader entry point for attaching that externally supplied adapter at
+  runtime, with no provider module included in the milestone.
 - Discovery-based direct test runner and source-hygiene check with no npm
   entry point.
 - Bootstrap plan compiler that covers all twelve lanes, starts in Rapid
