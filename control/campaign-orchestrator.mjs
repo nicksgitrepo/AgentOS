@@ -1,6 +1,6 @@
 import {readFile} from "node:fs/promises";
 import path from "node:path";
-import {assert, compareUtf8, digestWithout} from "./canonical-json.mjs";
+import {assert, compareUtf8, digestWithout, sortedUniqueStrings} from "./canonical-json.mjs";
 import {validateBootstrapPlan} from "./bootstrap-plan.mjs";
 import {validateGoal} from "./campaign-state.mjs";
 import {compileRoleLibrary} from "./role-library.mjs";
@@ -71,11 +71,13 @@ function validatePhase(phase, label) {
     return assignment.lane_id;
   });
   assert(new Set(laneIds).size === laneIds.length, `${label} contains duplicate lanes`);
-  exactKeys(phase.auditor, ["role_id", "display_name", "lifetime", "task_name", "prompt", "status"], `${label}.auditor`);
+  exactKeys(phase.auditor, ["role_id", "display_name", "lifetime", "task_name", "prompt", "audit_lane_ids", "status"], `${label}.auditor`);
   assert(phase.auditor.role_id === "INDEPENDENT_AUDITOR" && phase.auditor.display_name === "Independent Auditor", `${label}.auditor identity is invalid`);
   assert(phase.auditor.lifetime === "CAMPAIGN_PHASE", `${label}.auditor lifetime is invalid`);
   assert(LOWER_ID.test(phase.auditor.task_name), `${label}.auditor.task_name is invalid`);
   nonempty(phase.auditor.prompt, `${label}.auditor.prompt`);
+  sortedUniqueStrings(phase.auditor.audit_lane_ids, `${label}.auditor.audit_lane_ids`);
+  assert(JSON.stringify([...phase.auditor.audit_lane_ids].sort(compareUtf8)) === JSON.stringify([...laneIds].sort(compareUtf8)), `${label}.auditor audit lanes do not cover the phase`);
   assert(phase.auditor.status === "NOT_STARTED", `${label}.auditor.status is invalid`);
   return laneIds;
 }
@@ -114,6 +116,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
       lifetime: "CAMPAIGN_PHASE",
       task_name: taskName(campaign_id, campaign_version, phase.phase_id.toLowerCase(), "auditor"),
       prompt: `Independently review every accepted result in ${phase.phase_id}. Do not accept work authored by your own session.`,
+      audit_lane_ids: [...phase.lane_ids].sort(compareUtf8),
       status: "NOT_STARTED",
     },
   }));
@@ -165,6 +168,17 @@ function validateRun(run, plan) {
   assert(Number.isInteger(run.phase_index) && run.phase_index >= 0 && run.phase_index <= plan.phases.length, "campaign run phase index is invalid");
   assert(Number.isInteger(run.lane_index) && run.lane_index >= 0, "campaign run lane index is invalid");
   assert(Array.isArray(run.lane_results) && Array.isArray(run.phase_results), "campaign run results are invalid");
+  for (const [index, result] of run.phase_results.entries()) {
+    exactKeys(result, ["phase_id", "lane_ids", "reviewed_lane_ids", "auditor_session_id", "acceptance_digest", "status"], `campaign phase result ${index}`);
+    const phase = plan.phases.find((candidate) => candidate.phase_id === result.phase_id);
+    assert(phase, `campaign phase result ${index} names an unknown phase`);
+    sortedUniqueStrings(result.lane_ids, `campaign phase result ${index}.lane_ids`);
+    sortedUniqueStrings(result.reviewed_lane_ids, `campaign phase result ${index}.reviewed_lane_ids`);
+    assert(JSON.stringify(result.lane_ids) === JSON.stringify(result.reviewed_lane_ids), `campaign phase result ${index} was not fully reviewed`);
+    assert(JSON.stringify(result.lane_ids) === JSON.stringify([...phase.auditor.audit_lane_ids].sort(compareUtf8)), `campaign phase result ${index} lane coverage differs from plan`);
+    nonempty(result.auditor_session_id, `campaign phase result ${index}.auditor_session_id`);
+    assert(DIGEST.test(result.acceptance_digest) && result.status === "ACCEPTED", `campaign phase result ${index} is invalid`);
+  }
   assert(DIGEST.test(run.digest) && run.digest === digestWithout(run, "digest"), "campaign run digest does not match content");
   return run;
 }
@@ -209,7 +223,7 @@ function validateAuditorReadback(readback, plan, phase) {
 }
 
 function validatePhaseAcceptance(acceptance, phase, candidates, plan) {
-  exactKeys(acceptance, ["status", "reviewer_role_id", "reviewer_session_id", "auditor_readback", "evidence_sha256", "reason", "lane_results", "acceptance_digest"], "phase acceptance");
+  exactKeys(acceptance, ["status", "reviewer_role_id", "reviewer_session_id", "auditor_readback", "evidence_sha256", "reason", "lane_results", "reviewed_lane_ids", "acceptance_digest"], "phase acceptance");
   assert(acceptance.status === "ACCEPTED" && acceptance.reviewer_role_id === "INDEPENDENT_AUDITOR", "phase acceptance is not independent");
   nonempty(acceptance.reviewer_session_id, "phase acceptance reviewer session");
   const auditorReadback = validateAuditorReadback(acceptance.auditor_readback, plan, phase);
@@ -217,6 +231,7 @@ function validatePhaseAcceptance(acceptance, phase, candidates, plan) {
   assert(DIGEST.test(acceptance.evidence_sha256), "phase acceptance evidence is invalid");
   nonempty(acceptance.reason, "phase acceptance reason");
   assert(Array.isArray(acceptance.lane_results) && acceptance.lane_results.length === candidates.length, "phase acceptance lane count differs");
+  sortedUniqueStrings(acceptance.reviewed_lane_ids, "phase acceptance reviewed_lane_ids");
   const expected = new Map(candidates.map((candidate) => [candidate.lane_id, candidate]));
   assert(expected.size === candidates.length, "phase candidates contain duplicate lanes");
   assert(new Set(candidates.map((candidate) => candidate.worker_session_id)).size === candidates.length, "phase candidates reuse a worker session");
@@ -230,6 +245,7 @@ function validatePhaseAcceptance(acceptance, phase, candidates, plan) {
     seen.add(item.lane_id);
   }
   assert(seen.size === expected.size, "phase acceptance did not cover every lane");
+  assert(JSON.stringify(acceptance.reviewed_lane_ids) === JSON.stringify([...expected.keys()].sort(compareUtf8)), "phase acceptance reviewed lane coverage differs");
   assert(DIGEST.test(acceptance.acceptance_digest) && acceptance.acceptance_digest === digestWithout(acceptance, "acceptance_digest"), "phase acceptance digest does not match content");
   return acceptance;
 }
@@ -252,7 +268,7 @@ export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptan
   assert(!run.phase_results.some((item) => item.auditor_session_id === acceptance.reviewer_session_id), "campaign reuses an Auditor session across phases");
   validatePhaseAcceptance(acceptance, phase, candidates, plan);
   const laneResults = candidates.map((candidate) => ({phase_id, lane_id: candidate.lane_id, result_digest: candidate.result_digest, worker_session_id: candidate.worker_session_id})).sort((left, right) => compareUtf8(left.lane_id, right.lane_id));
-  const phaseResult = {phase_id, lane_ids: laneResults.map((item) => item.lane_id), auditor_session_id: acceptance.reviewer_session_id, acceptance_digest: acceptance.acceptance_digest, status: "ACCEPTED"};
+  const phaseResult = {phase_id, lane_ids: laneResults.map((item) => item.lane_id), reviewed_lane_ids: [...acceptance.reviewed_lane_ids], auditor_session_id: acceptance.reviewer_session_id, acceptance_digest: acceptance.acceptance_digest, status: "ACCEPTED"};
   const completed = run.phase_index + 1 >= plan.phases.length;
   const next = {
     ...run,

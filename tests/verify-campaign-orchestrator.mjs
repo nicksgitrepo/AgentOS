@@ -33,6 +33,7 @@ const duplicateAcceptance = {
   evidence_sha256: "e".repeat(64),
   reason: "duplicate hostile fixture",
   lane_results: duplicateCandidates.map(({lane_id, result_digest, worker_session_id}) => ({lane_id, result_digest, worker_session_id})),
+  reviewed_lane_ids: duplicateCandidates.map(({lane_id}) => lane_id).sort(),
   acceptance_digest: null,
 };
 duplicateAcceptance.reviewer_session_id = duplicateAcceptance.auditor_readback.host_id;
@@ -59,6 +60,7 @@ const run = await runCampaign({
       evidence_sha256: sha256({phase: phase.phase_id, review: true}),
       reason: "The phase results were independently reviewed.",
       lane_results: candidates.map(({lane_id, result_digest, worker_session_id}) => ({lane_id, result_digest, worker_session_id})),
+      reviewed_lane_ids: candidates.map(({lane_id}) => lane_id).sort(),
       acceptance_digest: null,
     };
     acceptance.reviewer_session_id = acceptance.auditor_readback.host_id;

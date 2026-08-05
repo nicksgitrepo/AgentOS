@@ -17,7 +17,33 @@
     "defaults": { "type": "object" },
     "persistent_roles": { "const": ["INTENT_REGULATOR", "RUNTIME"] },
     "campaign_roles": { "const": ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR"] },
-    "phases": { "type": "array", "minItems": 1 },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["phase_id", "purpose", "worker_assignments", "auditor"],
+        "properties": {
+          "phase_id": { "type": "string" },
+          "purpose": { "type": "string" },
+          "worker_assignments": { "type": "array", "minItems": 1 },
+          "auditor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role_id", "display_name", "lifetime", "task_name", "prompt", "audit_lane_ids", "status"],
+            "properties": {
+              "role_id": { "const": "INDEPENDENT_AUDITOR" },
+              "display_name": { "const": "Independent Auditor" },
+              "lifetime": { "const": "CAMPAIGN_PHASE" },
+              "task_name": { "type": "string" },
+              "prompt": { "type": "string" },
+              "audit_lane_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+              "status": { "const": "NOT_STARTED" }
+            }
+          }
+        }
+      }
+    },
     "role_library_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   }

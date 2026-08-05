@@ -17,7 +17,22 @@
     "phase_index": { "type": "integer", "minimum": 0 },
     "lane_index": { "type": "integer", "minimum": 0 },
     "lane_results": { "type": "array" },
-    "phase_results": { "type": "array" },
+    "phase_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phase_id", "lane_ids", "reviewed_lane_ids", "auditor_session_id", "acceptance_digest", "status"],
+        "properties": {
+          "phase_id": { "type": "string" },
+          "lane_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "reviewed_lane_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "auditor_session_id": { "type": "string", "minLength": 1 },
+          "acceptance_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "status": { "const": "ACCEPTED" }
+        }
+      }
+    },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   }
 }

@@ -106,6 +106,7 @@ const run = await runCampaign({
       evidence_sha256: sha256({phase: phase.phase_id, accepted: true}),
       reason: "The phase Auditor independently reviewed every lane result.",
       lane_results: candidates.map(({lane_id, result_digest, worker_session_id}) => ({lane_id, result_digest, worker_session_id})),
+      reviewed_lane_ids: candidates.map(({lane_id}) => lane_id).sort(),
       acceptance_digest: null,
     };
     acceptance.acceptance_digest = digestWithout(acceptance, "acceptance_digest");
