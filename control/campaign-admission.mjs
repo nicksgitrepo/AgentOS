@@ -1,6 +1,7 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {validateGoal} from "./campaign-state.mjs";
 import {validateBootstrapPlan} from "./bootstrap-plan.mjs";
+import {createOwnerContinuationRunner, validateOwnerContinuation} from "./owner-continuation.mjs";
 import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const CAMPAIGN_ADMISSION_SCHEMA = "agentos.campaign_admission.v1";
@@ -102,4 +103,15 @@ export function toNativeAdmission(admission) {
     task_name: admission.task_name,
     prompt: admission.prompt,
   };
+}
+
+export function createCampaignAdmissionRoute({admit}) {
+  assert(typeof admit === "function", "campaign admission callback is required");
+  const continuation = createOwnerContinuationRunner({admit});
+  return Object.freeze({
+    async recordOwnerAnswer(record, answer) {
+      validateOwnerContinuation(record);
+      return continuation.resumeAfterOwnerAnswer(record, answer);
+    },
+  });
 }

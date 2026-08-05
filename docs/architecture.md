@@ -118,6 +118,13 @@ the exact protected-action set. A rejected answer remains rejected; an adapter
 failure becomes a typed blocked record that can be audited rather than silently
 opening a second conversation.
 
+The production route is `bootstrap-runtime`: it hands the answer to the
+campaign-admission continuation route, prepares the admission, and invokes the
+visible worker spawn route. The spawn route validates the host-worker boundary
+before calling the native host adapter, and carries that boundary with the
+create request. Tests of the continuation helper alone are not sufficient
+evidence for Bootstrap launch.
+
 Visible host-managed worker workspaces have a separate boundary. They are
 permitted only for a release/control worker bound to the registered release
 source and release project identity. Product work must use an isolated

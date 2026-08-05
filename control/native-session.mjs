@@ -1,5 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {validateGateResponse} from "./gate-response.mjs";
+import {validateHostWorkerBoundaryForAdmission} from "./host-worker-boundary.mjs";
 import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 
 export const NATIVE_SESSION_SCHEMA = "agentos.native_session.v1";
@@ -149,18 +150,21 @@ async function cleanupCreated(host, admission, created, reason) {
   return {attempted: true, ...(await removeAndVerify(host, session, reason))};
 }
 
-export async function spawnNativeSession(host, admission) {
+export async function spawnNativeSession(host, admission, {host_worker_boundary = null} = {}) {
   validateHostAdapter(host);
   validateAdmission(admission);
+  if (host_worker_boundary !== null) validateHostWorkerBoundaryForAdmission(host_worker_boundary, admission);
   let created = null;
   try {
-    const raw = await host.create_thread({
+    const createInput = {
       task_name: admission.task_name,
       message: admission.prompt,
       model: DEFAULT_MODEL,
       reasoning_effort: DEFAULT_REASONING_EFFORT,
       identity: {...admission},
-    });
+    };
+    if (host_worker_boundary !== null) createInput.host_worker_boundary = {...host_worker_boundary};
+    const raw = await host.create_thread(createInput);
     if (raw && typeof raw === "object") created = {thread_id: raw.thread_id ?? null, host_id: raw.host_id ?? null};
     exactKeys(raw, THREAD_IDENTITY_FIELDS, "create_thread readback");
     expectedIdentity(admission, raw, "create_thread readback");
@@ -185,6 +189,12 @@ export async function spawnNativeSession(host, admission) {
     }
     throw error;
   }
+}
+
+export async function spawnVisibleWorker(host, admission, host_worker_boundary) {
+  validateHostWorkerBoundaryForAdmission(host_worker_boundary, admission);
+  assert(host_worker_boundary.workspace_mode === "HOST_MANAGED_VISIBLE", "visible worker spawn requires a host-managed visible boundary");
+  return spawnNativeSession(host, admission, {host_worker_boundary});
 }
 
 export function validateSession(session) {

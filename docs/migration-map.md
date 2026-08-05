@@ -6,9 +6,9 @@ The old implementation remains the reference outside this milestone.
 | Previous boundary | New boundary | Status |
 |---|---|---|
 | Governance decision tree and task questions | `.gate` parser, graph validator, and gate engine | First slice migrated |
-| Bootstrap compiler and owner conversation | Bootstrap plan, campaign admission, owner question surface | Core behavior migrated |
+| Bootstrap compiler and owner conversation | Bootstrap plan, campaign admission route, owner question surface, automatic continuation, and Bootstrap runtime | Core behavior migrated; provider host remains external |
 | Role governance library | General manifest, role selection, role-library compiler | Migrated for twelve lanes |
-| Native session team and runner | Native host contract, typed host attachment, and lifecycle cleanup | Contract and attachment boundary migrated; real provider adapter remains external |
+| Native session team and runner | Native host contract, typed host attachment, release-only visible worker boundary, and lifecycle cleanup | Contract and boundary gate migrated; real provider adapter remains external |
 | Campaign lifecycle and cascade | Campaign admission, campaign coordinator, runner, goal/progress state, and live closure proofs | Four-phase coordinator and all twelve portable lane executions migrated; real host execution remains external |
 | Controller and supervisor | Intent Regulator audit loop and campaign routing | Audit decisions and bounded phase routing migrated; long-running host loop remains an external host seam |
 | Owner review and acceptance bridge | Owner question surface and independent acceptance contract | First slice migrated |

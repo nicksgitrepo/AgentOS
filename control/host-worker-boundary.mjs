@@ -133,10 +133,24 @@ export function validateHostWorkspacePath(boundary, candidate) {
   return pathValue;
 }
 
+export function validateHostWorkerBoundaryForAdmission(boundary, admission) {
+  validateHostWorkerBoundary(boundary);
+  assert(admission && typeof admission === "object" && !Array.isArray(admission), "host worker admission is required");
+  nonempty(admission.project_id, "host worker admission project_id");
+  assert(COMMIT.test(admission.source_commit) && COMMIT.test(admission.source_tree), "host worker admission source identity is invalid");
+  assert(boundary.campaign_project_id === admission.project_id, "host worker boundary project identity differs from admission");
+  assert(boundary.source_binding.source_commit === admission.source_commit, "host worker boundary source commit differs from admission");
+  assert(boundary.source_binding.source_tree === admission.source_tree, "host worker boundary source tree differs from admission");
+  if (boundary.workspace_mode === "HOST_MANAGED_VISIBLE") {
+    assert(boundary.workspace_path !== null, "host-managed visible worker requires a bound workspace path");
+    validateHostWorkspacePath(boundary, boundary.workspace_path);
+  } else if (boundary.workspace_path !== null) validateHostWorkspacePath(boundary, boundary.workspace_path);
+  return boundary;
+}
+
 export function bindHostWorkspacePath(boundary, workspace_path) {
   validateHostWorkerBoundary(boundary);
   const pathValue = validateHostWorkspacePath(boundary, workspace_path);
   if (boundary.workspace_path !== null) assert(path.normalize(boundary.workspace_path) === pathValue, "host workspace path is already bound to a different path");
   return seal({...boundary, workspace_path: pathValue, digest: null});
 }
-
