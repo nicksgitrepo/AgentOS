@@ -27,6 +27,8 @@
   in a bounded host integration test.
 - Persistent Intent Regulator audit decisions and the configurable fifteen-
   minute loop are now explicit and abortable.
+- Owner questions are rendered as short plain choices with numeric and
+  optional yes/no answers while internal fields remain hidden.
 
 ## Next slices
 

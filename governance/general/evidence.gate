@@ -1,0 +1,26 @@
+graph GENERAL_EVIDENCE 1
+entry GENERAL-EVIDENCE-001
+
+gate GENERAL-EVIDENCE-001
+context HANDOFF
+question "Does every claim point to a real readback or reproducible observation rather than a receipt or assertion alone?"
+evidence claim_map,readback,observation
+YES GENERAL-EVIDENCE-002
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+gate GENERAL-EVIDENCE-002
+context HANDOFF
+question "Do all records name the same source, worktree, session, goal, graph, and environment as the claimed result?"
+evidence identity,comparison,digest
+YES GENERAL-COMPLETE
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+terminal GENERAL-COMPLETE COMPLETE "The result evidence is real, matching, and traceable."
+terminal GENERAL-HARD-STOP HARD_STOP "A result cannot be accepted without matching evidence."
+

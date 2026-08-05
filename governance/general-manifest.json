@@ -1,0 +1,15 @@
+{
+  "schema": "agentos.general_manifest.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "graphs": [
+    {"graph_id": "GENERAL_CLOSURE", "path": "governance/general/closure.gate", "graph_sha256": "8a24c9818382a8bfd35b70f81bac7425af9c03fb88deafd093043e1cc3e54692"},
+    {"graph_id": "GENERAL_CONVERSATION", "path": "governance/general/conversation.gate", "graph_sha256": "8c0a3cbbcf82815da9e97b9bf0ec84060c8ae87ab7e1515e25aa2254902349fd"},
+    {"graph_id": "CORE", "path": "governance/general/core.gate", "graph_sha256": "9bdb79c59186413f0b8388e79e8a7c735f5c8fded670952ad8ebb57136ac20f9"},
+    {"graph_id": "GENERAL_EVIDENCE", "path": "governance/general/evidence.gate", "graph_sha256": "2e59f4276123ba35dd4f7289dcbf0a800030bb438f1fd0bcc4104a498f6f9e66"},
+    {"graph_id": "GENERAL_PROGRESS", "path": "governance/general/progress.gate", "graph_sha256": "02f27eecdeab3d2adfbfac588039b46df8a843b5582cfca63622b1fb8750cbd9"},
+    {"graph_id": "GENERAL_RECOVERY", "path": "governance/general/recovery.gate", "graph_sha256": "c96bd0eeba9ddd05395d1ef50b107db621115774a6de45cacbf39e1b7c05c989"},
+    {"graph_id": "GENERAL_SECURITY", "path": "governance/general/security.gate", "graph_sha256": "b1ce7039d7e685312348e6149bb1f73dd2d92b502e7e00c2dc74df9f0046c3eb"}
+  ],
+  "digest": "eb07b532aa6c405cbdb57edbb28dfb825e66c193aec4305c1c1acf25049d3c97"
+}

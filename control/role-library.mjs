@@ -33,7 +33,7 @@ function validateSelection(selection) {
 function validateLibrary(library) {
   assert(library.schema === ROLE_LIBRARY_SCHEMA && library.version === 1, "role library identity is invalid");
   assert(library.status === "PREPARED_NOT_ACTIVATED", "role library status is invalid");
-  assert(library.source && typeof library.source.lane_manifest_sha256 === "string" && typeof library.source.role_selection_sha256 === "string", "role library source binding is incomplete");
+  assert(library.source && typeof library.source.general_manifest_sha256 === "string" && typeof library.source.lane_manifest_sha256 === "string" && typeof library.source.role_selection_sha256 === "string", "role library source binding is incomplete");
   assert(Array.isArray(library.packets) && library.packets.length === 16, "role library must contain four fixed roles and twelve lane workers");
   for (const packet of library.packets) validateRolePacket(packet);
   assert(library.digest === digestWithout(library, "digest"), "role library digest does not match content");
@@ -42,12 +42,18 @@ function validateLibrary(library) {
 
 export async function compileRoleLibrary(root) {
   const manifest = await readJson(root, "governance/lane-manifest.json");
+  const generalManifest = await readJson(root, "governance/general-manifest.json");
   const selection = validateSelection(await readJson(root, "governance/role-selection.json"));
   assert(manifest.schema === "agentos.lane_manifest.v1" && manifest.digest === digestWithout(manifest, "digest"), "lane manifest is not bound");
+  assert(generalManifest.schema === "agentos.general_manifest.v1" && generalManifest.digest === digestWithout(generalManifest, "digest"), "general manifest is not bound");
 
   const graphs = new Map();
-  const core = await compileGateFile(path.join(root, "governance/general/core.gate"));
-  graphs.set(core.graph_id, core);
+  for (const binding of generalManifest.graphs) {
+    const graph = await compileGateFile(path.join(root, binding.path));
+    validateGateGraph(graph);
+    assert(graph.graph_id === binding.graph_id && graph.digest === binding.graph_sha256, `${binding.graph_id} general graph binding differs`);
+    graphs.set(graph.graph_id, graph);
+  }
   for (const lane of manifest.lanes) {
     const graph = await compileGateFile(path.join(root, lane.path));
     validateGateGraph(graph);
@@ -74,7 +80,7 @@ export async function compileRoleLibrary(root) {
     schema: ROLE_LIBRARY_SCHEMA,
     version: 1,
     status: "PREPARED_NOT_ACTIVATED",
-    source: {lane_manifest_sha256: manifest.digest, role_selection_sha256: selection.digest},
+    source: {general_manifest_sha256: generalManifest.digest, lane_manifest_sha256: manifest.digest, role_selection_sha256: selection.digest},
     packets,
     digest: null,
   };

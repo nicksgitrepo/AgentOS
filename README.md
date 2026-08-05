@@ -45,7 +45,7 @@ through a bounded vertical slice.
 Run the milestone verifier directly:
 
 ```text
-node tests/verify-core.mjs
+node tests/verify-all.mjs
 ```
 
 There is intentionally no `npm` command.
@@ -59,4 +59,3 @@ not the language model, enforces graph transitions and evidence identity.
 
 This milestone remains prepared and inactive. No push, merge, deployment, or
 activation is implied by a passing local check.
-

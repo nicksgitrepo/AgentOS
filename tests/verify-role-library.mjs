@@ -19,10 +19,9 @@ for (const packet of workers) {
   assert.equal(packet.display_name, `${packet.lane_id} Worker`);
   assert(!packet.display_name.includes("Feature Agent"));
   assert(packet.graph_ids.includes("CORE"));
-  assert(packet.graph_ids.includes("EVIDENCE_IDENTITY"));
-  assert(packet.graph_ids.includes("PROGRESS_HEALTH"));
-  assert(packet.graph_ids.includes("RECOVERY_BOUNDARIES"));
-  assert(packet.graph_ids.includes("SECURITY_PRIVACY"));
+  assert(packet.graph_ids.includes("GENERAL_EVIDENCE"));
+  assert(packet.graph_ids.includes("GENERAL_PROGRESS"));
+  assert(packet.graph_ids.includes("GENERAL_RECOVERY"));
+  assert(packet.graph_ids.includes("GENERAL_SECURITY"));
 }
 console.log(JSON.stringify({status: "PASS", packet_count: library.packets.length, digest: library.digest}));
-
