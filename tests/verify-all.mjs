@@ -32,6 +32,6 @@ const controlFiles = (await walk(path.join(ROOT, "control"))).filter((file) => f
 const testFiles = (await walk(path.join(ROOT, "tests"))).filter((file) => file.endsWith(".mjs"));
 for (const file of [...controlFiles, ...testFiles]) run(`syntax ${path.relative(ROOT, file)}`, ["--check", file]);
 const verifiers = testFiles.filter((file) => path.basename(file).startsWith("verify-") && path.basename(file) !== "verify-all.mjs");
-assert(verifiers.length >= 12, "canonical verifier discovered too few verifier scripts");
+assert(verifiers.length >= 13, "canonical verifier discovered too few verifier scripts");
 for (const file of verifiers) run(`test ${path.relative(ROOT, file)}`, [file]);
 console.log(JSON.stringify({status: "PASS", syntax_files: controlFiles.length + testFiles.length, verifier_files: verifiers.length}));

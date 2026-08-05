@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.runtime_request.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "authority_role", "authority_digest", "request_id", "action", "project_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.runtime_request.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "AUTHORIZED_REQUEST" },
+    "authority_role": { "const": "RUNTIME" },
+    "authority_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "request_id": { "type": "string" },
+    "action": { "type": "string" },
+    "project_id": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "goal_id": { "type": "string" },
+    "scope_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "reason": { "type": "string", "minLength": 1 },
+    "requested_at_utc": { "type": "string", "format": "date-time" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}
