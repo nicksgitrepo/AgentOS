@@ -17,6 +17,8 @@ const bound = bindNativeHost(host, attachment);
 assert.deepEqual(Object.keys(bound).sort(), [...REQUIRED_HOST_ACTIONS].sort());
 const response = await bound.create_thread({identity: {project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", goal_id: "GOAL-001", lane_id: "functionality", role_id: "NAMED_LANE_WORKER", source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001"}});
 assert.equal(response.thread_id, "THREAD-001");
+await assert.rejects(() => bound.create_thread({identity: {project_id: "FOREIGN-PROJECT", campaign_id: "CAMPAIGN-001", campaign_version: "V1", goal_id: "GOAL-001", lane_id: "functionality", role_id: "NAMED_LANE_WORKER", source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001"}}), /payload project differs/u);
+await assert.rejects(() => bound.read_thread({project_id: "PROJECT-001", environment_id: "FOREIGN-ENVIRONMENT"}), /payload environment differs/u);
 assert.deepEqual(calls[0].payload.host_attachment, {attachment_id: "ATTACHMENT-001", host_id: "HOST-001", project_id: "PROJECT-001", environment_id: "ENV-001"});
 assert.throws(() => bindNativeHost({...host, remove_from_active_roster: undefined}, attachment), /remove_from_active_roster/u);
 assert.throws(() => validateHostAttachment({...attachment, capabilities: ["create_thread"]}), /capabilities/u);

@@ -1,0 +1,48 @@
+# Every agent output is itself governed evidence, not an unverified claim.
+graph GENERAL_RESPONSE 1
+entry GENERAL-RESPONSE-001
+
+gate GENERAL-RESPONSE-001
+context RESPONSE
+question "Does this response stay inside the admitted task, role authority, current goal, and named boundary?"
+evidence scope,authority,goal,boundary
+YES GENERAL-RESPONSE-002
+NO GENERAL-RESPONSE-HARD-STOP
+UNKNOWN GENERAL-RESPONSE-UNPROVEN
+NOT_APPLICABLE GENERAL-RESPONSE-HARD-STOP
+end
+
+gate GENERAL-RESPONSE-002
+context RESPONSE
+question "Does every claimed pass identify the human-readable gate, answer YES, and include the evidence needed by that gate?"
+evidence response,claim_map,question,readback
+YES GENERAL-RESPONSE-003
+NO GENERAL-RESPONSE-HARD-STOP
+UNKNOWN GENERAL-RESPONSE-UNPROVEN
+NOT_APPLICABLE GENERAL-RESPONSE-HARD-STOP
+end
+
+gate GENERAL-RESPONSE-003
+context RESPONSE
+question "Does the response match the recorded source, worktree, session, goal, environment, and independent review instead of relying on a self-authored receipt?"
+evidence identity,comparison,review,digest
+YES GENERAL-RESPONSE-004
+NO GENERAL-RESPONSE-HARD-STOP
+UNKNOWN GENERAL-RESPONSE-UNPROVEN
+NOT_APPLICABLE GENERAL-RESPONSE-HARD-STOP
+end
+
+gate GENERAL-RESPONSE-004
+context RESPONSE
+question "Is the response plain enough for the owner while preserving the exact failure, repair route, and next authorized action?"
+evidence wording,failure,route,language
+YES GENERAL-RESPONSE-COMPLETE
+NO GENERAL-RESPONSE-SOFT-REVIEW
+UNKNOWN GENERAL-RESPONSE-UNPROVEN
+NOT_APPLICABLE GENERAL-RESPONSE-SOFT-REVIEW
+end
+
+terminal GENERAL-RESPONSE-COMPLETE COMPLETE "The response is scoped, evidence-bound, truthful, and understandable."
+terminal GENERAL-RESPONSE-HARD-STOP HARD_STOP "The response cannot be trusted or safely disclosed."
+terminal GENERAL-RESPONSE-SOFT-REVIEW SOFT_REVIEW "The response needs review before it is shown or recorded."
+terminal GENERAL-RESPONSE-UNPROVEN UNPROVEN "The response claim is not established by independent evidence."

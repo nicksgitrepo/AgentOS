@@ -15,6 +15,16 @@ gate GENERAL-RECOVERY-002
 context HANDOFF
 question "When scope, intent, authority, or conditions changed, was the old goal closed and a replacement goal routed?"
 evidence goal_change,reassessment,replacement
+YES GENERAL-RECOVERY-003
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-UNPROVEN
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+gate GENERAL-RECOVERY-003
+context HANDOFF
+question "After a failure or replacement, were partial sessions, leases, worktrees, and evidence safely cleaned up or preserved?"
+evidence cleanup,archive,roster,leases
 YES GENERAL-COMPLETE
 NO GENERAL-HARD-STOP
 UNKNOWN GENERAL-UNPROVEN
@@ -25,4 +35,3 @@ terminal GENERAL-COMPLETE COMPLETE "Recovery and goal reassessment are explicit.
 terminal GENERAL-HARD-STOP HARD_STOP "The changed condition requires a new goal or authority."
 terminal GENERAL-SOFT-REVIEW SOFT_REVIEW "The recovery route needs campaign review."
 terminal GENERAL-UNPROVEN UNPROVEN "Recovery behavior is not established."
-

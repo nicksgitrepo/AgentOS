@@ -86,8 +86,38 @@ gate FUNC-009
 context CLOSURE
 question "Is the result bound to the same source and independently reviewed before closure?"
 evidence source,review,closure
-YES COMPLETE
+YES FUNC-010
 NO HARD-STOP-IDENTITY
+UNKNOWN UNPROVEN
+NOT_APPLICABLE UNPROVEN
+end
+
+gate FUNC-010
+context CODE_CHANGE
+question "For each state transition, does the system reject illegal transitions and preserve one authoritative state without split-brain updates?"
+evidence state,persistence,negative
+YES FUNC-011
+NO HARD-STOP-BOUNDARY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE UNPROVEN
+end
+
+gate FUNC-011
+context CODE_CHANGE
+question "When a dependency, host, or permission disappears mid-operation, does the behavior fail closed without claiming success or leaving orphaned work?"
+evidence recovery,false_success,cleanup
+YES FUNC-012
+NO HARD-STOP-BOUNDARY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE UNPROVEN
+end
+
+gate FUNC-012
+context CLOSURE
+question "Did a real observer see the intended user outcome at the bound source and record what happened, including any visible error or limitation?"
+evidence artifact_or_behavior,review,surface
+YES COMPLETE
+NO SOFT-REVIEW
 UNKNOWN UNPROVEN
 NOT_APPLICABLE UNPROVEN
 end

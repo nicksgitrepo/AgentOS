@@ -15,6 +15,46 @@ gate UI-002
 context CODE_CHANGE
 question "Does the surface preserve the required keyboard, accessibility, layout, and error behavior?"
 evidence accessibility,layout,errors
+YES UI-003
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate UI-003
+context CODE_CHANGE
+question "Does the implemented surface match the project's design bible for hierarchy, wording, spacing, color, interaction, and states?"
+evidence design_bible,surface,task
+YES UI-004
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate UI-004
+context CODE_CHANGE
+question "Does every user action have understandable loading, empty, success, error, disabled, and recovery states?"
+evidence errors,state,accessibility
+YES UI-005
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate UI-005
+context CODE_CHANGE
+question "Can a keyboard and assistive technology complete the admitted task with visible focus, labels, roles, and announcements?"
+evidence accessibility,language,task
+YES UI-006
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate UI-006
+context CODE_CHANGE
+question "Does the surface remain usable at the supported sizes without clipping, overlap, unreadable text, or layout-dependent failure?"
+evidence layout,errors,surface
 YES COMPLETE
 NO SOFT-REVIEW
 UNKNOWN UNPROVEN
@@ -24,4 +64,3 @@ end
 terminal COMPLETE COMPLETE "The user-facing surface is understandable and usable."
 terminal SOFT-REVIEW SOFT_REVIEW "The UI and UX result needs design review."
 terminal UNPROVEN UNPROVEN "The UI and UX claim lacks observed evidence."
-

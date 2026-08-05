@@ -3,7 +3,7 @@
   "$id": "agentos.campaign_result.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "closed_session", "closure", "completion_proof", "digest"],
+  "required": ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "gate_responses", "closed_session", "closure", "completion_proof", "digest"],
   "properties": {
     "schema": { "const": "agentos.campaign_result.v1" },
     "version": { "const": 1 },
@@ -12,6 +12,7 @@
     "graph_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "execution": { "type": "object" },
     "progress": { "type": "object" },
+    "gate_responses": { "type": "array", "minItems": 1 },
     "closed_session": { "type": "object" },
     "closure": { "type": "object" },
     "completion_proof": { "type": "string", "pattern": "^[0-9a-f]{64}$" },

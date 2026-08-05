@@ -2,7 +2,7 @@
   "schema": "agentos.role_selection.v1",
   "version": 1,
   "status": "PREPARED_NOT_ACTIVATED",
-  "general_graph_ids": ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_SECURITY"],
+  "general_graph_ids": ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_RESPONSE", "GENERAL_SECURITY"],
   "roles": [
     {"role_id": "CAMPAIGN_ORCHESTRATOR", "display_name": "Campaign Orchestrator", "graph_ids": ["BOOTSTRAP_CONTEXT", "DELIVERY_CLOSURE", "INTENT_SCOPE", "ROLE_ROUTING", "USER_CONVERSATION"]},
     {"role_id": "INDEPENDENT_AUDITOR", "display_name": "Independent Auditor", "graph_ids": ["BOOTSTRAP_CONTEXT", "CODE_HYGIENE", "DELIVERY_CLOSURE", "EVIDENCE_IDENTITY", "FUNCTIONALITY", "INTENT_SCOPE", "PROGRESS_HEALTH", "RECOVERY_BOUNDARIES", "ROLE_ROUTING", "SECURITY_PRIVACY", "UI_UX", "USER_CONVERSATION"]},
@@ -11,8 +11,8 @@
   ],
   "worker_template": {
     "role_id": "NAMED_LANE_WORKER",
-    "base_graph_ids": ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_SECURITY"],
+    "base_graph_ids": ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_RESPONSE", "GENERAL_SECURITY"],
     "lane_ids": ["bootstrap-context", "code-hygiene", "delivery-closure", "evidence-identity", "functionality", "intent-scope", "progress-health", "recovery-boundaries", "role-routing", "security-privacy", "ui-ux", "user-conversation"]
   },
-  "digest": "a7928ce0625c65bf46e9c1b75b3ab83e0dd12deed1f4927e1cd411f3a6a56a3c"
+  "digest": "72c233a60401ca24860d439d91f26348a44ffec1ecdd286c698346af5fdbb3ca"
 }

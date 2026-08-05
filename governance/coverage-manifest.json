@@ -1,0 +1,47 @@
+{
+  "schema": "agentos.gate_coverage.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "scope_rules": {
+    "NAMED_LANE_WORKER": "The general foundation plus exactly one named lane.",
+    "INDEPENDENT_AUDITOR": "Every general graph and every lane graph for a full-project sweep."
+  },
+  "categories": [
+    {"category_id": "intent_scope", "display_name": "Intent and scope", "standard_families": ["goal reassessment", "hard and soft boundaries", "non-goals", "owner intent", "scope drift"]},
+    {"category_id": "bootstrap_context", "display_name": "Bootstrap and context", "standard_families": ["external control-plane separation", "mode transition", "phase planning", "provenance", "read-only discovery"]},
+    {"category_id": "user_conversation", "display_name": "User conversation", "standard_families": ["no internal vocabulary", "numeric answers", "one short question", "plain language", "yes/no answers"]},
+    {"category_id": "role_routing", "display_name": "Role routing", "standard_families": ["full-project Auditor", "no self-acceptance", "one-lane worker", "tailored authority", "true session lifecycle"]},
+    {"category_id": "progress_health", "display_name": "Progress and health", "standard_families": ["fifteen-minute window", "heartbeat is not progress", "meaningful result", "stall escalation"]},
+    {"category_id": "functionality", "display_name": "Functionality", "standard_families": ["false-success defense", "interruption safety", "negative cases", "observable behavior", "restart", "retry", "state persistence"]},
+    {"category_id": "ui_ux_design_bible", "display_name": "UI and UX design bible", "standard_families": ["accessibility", "design-bible match", "keyboard use", "loading/empty/error/recovery states", "responsive layout", "understandability"]},
+    {"category_id": "code_hygiene_repository", "display_name": "Code and repository hygiene", "standard_families": ["dependency changes", "generated residue", "minimal diff", "ordering", "race conditions", "reviewable history", "shared-state safety", "syntax and behavior checks"]},
+    {"category_id": "security_privacy", "display_name": "Security and privacy", "standard_families": ["SSRF", "authentication and authorization", "cross-project isolation", "injection", "permissions", "private content", "protected actions", "secrets", "traversal", "unsafe commands"]},
+    {"category_id": "evidence_identity", "display_name": "Evidence and identity", "standard_families": ["artifact existence", "claim-to-evidence mapping", "independent review", "real readback", "source/worktree/session/goal/environment match"]},
+    {"category_id": "recovery_boundaries", "display_name": "Recovery and boundaries", "standard_families": ["bounded repair", "cleanup and preservation", "hard stop before mutation", "puzzle classification", "soft-boundary review"]},
+    {"category_id": "response_gating", "display_name": "Response gating", "standard_families": ["YES-only pass", "evidence-bound statement", "identity-bound statement", "named gate claim", "plain repair route", "privacy-safe output"]},
+    {"category_id": "delivery_closure", "display_name": "Delivery and closure", "standard_families": ["archive and roster removal", "clean checkpoint", "live verification", "owner-chosen finish", "push/deployment/release receipt", "rollback"]}
+  ],
+  "graph_coverage": [
+    {"graph_id": "BOOTSTRAP_CONTEXT", "category_id": "bootstrap_context", "gate_ids": ["BOOT-001", "BOOT-002", "BOOT-003", "BOOT-004"]},
+    {"graph_id": "CODE_HYGIENE", "category_id": "code_hygiene_repository", "gate_ids": ["HYGIENE-001", "HYGIENE-002", "HYGIENE-003", "HYGIENE-004", "HYGIENE-005"]},
+    {"graph_id": "CORE", "category_id": "intent_scope", "gate_ids": ["CORE-001", "CORE-002", "CORE-003"]},
+    {"graph_id": "DELIVERY_CLOSURE", "category_id": "delivery_closure", "gate_ids": ["DELIVERY-001", "DELIVERY-002", "DELIVERY-003", "DELIVERY-004"]},
+    {"graph_id": "EVIDENCE_IDENTITY", "category_id": "evidence_identity", "gate_ids": ["EVIDENCE-001", "EVIDENCE-002", "EVIDENCE-003", "EVIDENCE-004", "EVIDENCE-005"]},
+    {"graph_id": "FUNCTIONALITY", "category_id": "functionality", "gate_ids": ["FUNC-001", "FUNC-002", "FUNC-003", "FUNC-004", "FUNC-005", "FUNC-006", "FUNC-007", "FUNC-008", "FUNC-009", "FUNC-010", "FUNC-011", "FUNC-012"]},
+    {"graph_id": "GENERAL_CLOSURE", "category_id": "delivery_closure", "gate_ids": ["GENERAL-CLOSE-001", "GENERAL-CLOSE-002"]},
+    {"graph_id": "GENERAL_CONVERSATION", "category_id": "user_conversation", "gate_ids": ["GENERAL-CONV-001", "GENERAL-CONV-002", "GENERAL-CONV-003"]},
+    {"graph_id": "GENERAL_EVIDENCE", "category_id": "evidence_identity", "gate_ids": ["GENERAL-EVIDENCE-001", "GENERAL-EVIDENCE-002", "GENERAL-EVIDENCE-003"]},
+    {"graph_id": "GENERAL_PROGRESS", "category_id": "progress_health", "gate_ids": ["GENERAL-PROGRESS-001", "GENERAL-PROGRESS-002", "GENERAL-PROGRESS-003"]},
+    {"graph_id": "GENERAL_RECOVERY", "category_id": "recovery_boundaries", "gate_ids": ["GENERAL-RECOVERY-001", "GENERAL-RECOVERY-002", "GENERAL-RECOVERY-003"]},
+    {"graph_id": "GENERAL_RESPONSE", "category_id": "response_gating", "gate_ids": ["GENERAL-RESPONSE-001", "GENERAL-RESPONSE-002", "GENERAL-RESPONSE-003", "GENERAL-RESPONSE-004"]},
+    {"graph_id": "GENERAL_SECURITY", "category_id": "security_privacy", "gate_ids": ["GENERAL-SECURITY-001", "GENERAL-SECURITY-002", "GENERAL-SECURITY-003"]},
+    {"graph_id": "INTENT_SCOPE", "category_id": "intent_scope", "gate_ids": ["INTENT-001", "INTENT-002", "INTENT-003", "INTENT-004"]},
+    {"graph_id": "PROGRESS_HEALTH", "category_id": "progress_health", "gate_ids": ["PROGRESS-001", "PROGRESS-002", "PROGRESS-003", "PROGRESS-004"]},
+    {"graph_id": "RECOVERY_BOUNDARIES", "category_id": "recovery_boundaries", "gate_ids": ["RECOVERY-001", "RECOVERY-002", "RECOVERY-003", "RECOVERY-004", "RECOVERY-005"]},
+    {"graph_id": "ROLE_ROUTING", "category_id": "role_routing", "gate_ids": ["ROUTE-001", "ROUTE-002", "ROUTE-003", "ROUTE-004", "ROUTE-005"]},
+    {"graph_id": "SECURITY_PRIVACY", "category_id": "security_privacy", "gate_ids": ["SECURITY-001", "SECURITY-002", "SECURITY-003", "SECURITY-004", "SECURITY-005", "SECURITY-006"]},
+    {"graph_id": "UI_UX", "category_id": "ui_ux_design_bible", "gate_ids": ["UI-001", "UI-002", "UI-003", "UI-004", "UI-005", "UI-006"]},
+    {"graph_id": "USER_CONVERSATION", "category_id": "user_conversation", "gate_ids": ["CONV-001", "CONV-002", "CONV-003", "CONV-004", "CONV-005", "CONV-006"]}
+  ],
+  "digest": "093202326e1914ee32dd3031f5f8f2ad67158fb18a7f34fc7fa58b64358aea27"
+}

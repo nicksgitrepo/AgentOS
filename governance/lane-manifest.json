@@ -3,18 +3,18 @@
   "version": 1,
   "status": "PREPARED_NOT_ACTIVATED",
   "lanes": [
-    {"lane_id": "bootstrap-context", "graph_id": "BOOTSTRAP_CONTEXT", "path": "governance/lanes/bootstrap-context.gate", "graph_sha256": "5c6cd264d043d9effb2b1ad108925ba63baa8d2f4c3e2cf796d42b78f472fc7b"},
-    {"lane_id": "code-hygiene", "graph_id": "CODE_HYGIENE", "path": "governance/lanes/code-hygiene.gate", "graph_sha256": "de3a23f6c380c08b92f7edcd582c9de7bbdeb4085c3b6364e47d9e0b626c38ca"},
-    {"lane_id": "delivery-closure", "graph_id": "DELIVERY_CLOSURE", "path": "governance/lanes/delivery-closure.gate", "graph_sha256": "6ba0ec8a2026d11223b9a39248411ca41c00cddc7968d64c293447bd94963c4a"},
-    {"lane_id": "evidence-identity", "graph_id": "EVIDENCE_IDENTITY", "path": "governance/lanes/evidence-identity.gate", "graph_sha256": "e88acfed8740952d7b6ef8a928331caf679ec204daa32b1610af02719a757baf"},
-    {"lane_id": "functionality", "graph_id": "FUNCTIONALITY", "path": "governance/lanes/functionality.gate", "graph_sha256": "24e71ab24c1db041e3aeeb571e2319147d997302d62fd20426a71e40dfb28fbb"},
-    {"lane_id": "intent-scope", "graph_id": "INTENT_SCOPE", "path": "governance/lanes/intent-scope.gate", "graph_sha256": "229ce6ef1f76fb6c98d0725214ae23ca31fc8e95581fbd6433889bfea9284f75"},
-    {"lane_id": "progress-health", "graph_id": "PROGRESS_HEALTH", "path": "governance/lanes/progress-health.gate", "graph_sha256": "4a5bc99df57854f7a89cc3ca1aca8091be26fb0facde03c17bca371aeb1791c6"},
-    {"lane_id": "recovery-boundaries", "graph_id": "RECOVERY_BOUNDARIES", "path": "governance/lanes/recovery-boundaries.gate", "graph_sha256": "e28078c7ed953b53dbf38339ca7ba0e6450761b6609859ac200143729a549b96"},
-    {"lane_id": "role-routing", "graph_id": "ROLE_ROUTING", "path": "governance/lanes/role-routing.gate", "graph_sha256": "c6ae083bbb4b4dbc336e3a14ea4e4918cf10602f425b432e28890a20cb0b9ca4"},
-    {"lane_id": "security-privacy", "graph_id": "SECURITY_PRIVACY", "path": "governance/lanes/security-privacy.gate", "graph_sha256": "a234eed69eadda7959e3faabc020d4ac5126b27237e0b245d4737dca74782085"},
-    {"lane_id": "ui-ux", "graph_id": "UI_UX", "path": "governance/lanes/ui-ux.gate", "graph_sha256": "fb7020bf411713cf834af97dba133bee970c5360f2ef16586f665e9468c65c7d"},
-    {"lane_id": "user-conversation", "graph_id": "USER_CONVERSATION", "path": "governance/lanes/user-conversation.gate", "graph_sha256": "f5459903bcee9ddcf95d0cbba37e7bc312d0e435baff09e98823b35316dec9df"}
+    {"lane_id": "bootstrap-context", "graph_id": "BOOTSTRAP_CONTEXT", "path": "governance/lanes/bootstrap-context.gate", "graph_sha256": "ffeead87fc47d4b60768b4dd82e560452071fc5917db47e50549d9d6d72de1f7"},
+    {"lane_id": "code-hygiene", "graph_id": "CODE_HYGIENE", "path": "governance/lanes/code-hygiene.gate", "graph_sha256": "ac9ebc96a83de9be10e8c1bd87d7ab7cadf46b4a654e8ca695b1b2368500e036"},
+    {"lane_id": "delivery-closure", "graph_id": "DELIVERY_CLOSURE", "path": "governance/lanes/delivery-closure.gate", "graph_sha256": "e6686450d3f6d88185c8aa95c87ee2c5024640b01287b4fa0d61617cf0486bcb"},
+    {"lane_id": "evidence-identity", "graph_id": "EVIDENCE_IDENTITY", "path": "governance/lanes/evidence-identity.gate", "graph_sha256": "0c3edb8508c7795d1bb1c558a611ea1767a8dd4618bef945477ae7f20e963cf6"},
+    {"lane_id": "functionality", "graph_id": "FUNCTIONALITY", "path": "governance/lanes/functionality.gate", "graph_sha256": "cc5f668306adb4d2574e0de72730e0d8f6b8a985c764957c10a130f2e5c58bbe"},
+    {"lane_id": "intent-scope", "graph_id": "INTENT_SCOPE", "path": "governance/lanes/intent-scope.gate", "graph_sha256": "ae887edf91e9ee1577344d3ec56840989e2a9dfbde32246ba4176d4b84be5014"},
+    {"lane_id": "progress-health", "graph_id": "PROGRESS_HEALTH", "path": "governance/lanes/progress-health.gate", "graph_sha256": "454a79bcf47f8b9312106bc45c44e3e205445be66ef83ae0533a3e932b75eac4"},
+    {"lane_id": "recovery-boundaries", "graph_id": "RECOVERY_BOUNDARIES", "path": "governance/lanes/recovery-boundaries.gate", "graph_sha256": "738f9c74ced0ecd4912435bd9f19973f9f2283c4d9ac53f88cd67eedf3c56a62"},
+    {"lane_id": "role-routing", "graph_id": "ROLE_ROUTING", "path": "governance/lanes/role-routing.gate", "graph_sha256": "b9e58bf494ae62777b1955016cb976064202a60d8b6a8e67685d15dd660d11c3"},
+    {"lane_id": "security-privacy", "graph_id": "SECURITY_PRIVACY", "path": "governance/lanes/security-privacy.gate", "graph_sha256": "fff7abca0393d304727a3c3d13ecc9552b5edede4ff16f6c34f844f25343d815"},
+    {"lane_id": "ui-ux", "graph_id": "UI_UX", "path": "governance/lanes/ui-ux.gate", "graph_sha256": "95716b48ad9bcc440c8df4ff3a0b860a9796f8ff233a394611d098716fcbf75b"},
+    {"lane_id": "user-conversation", "graph_id": "USER_CONVERSATION", "path": "governance/lanes/user-conversation.gate", "graph_sha256": "008d31af60e92dee436dfa816bfe5a67900bda180ec12e2d36cd16ff5e4d72e6"}
   ],
-  "digest": "945a996877cbd323f49076236e7eebd7de22df2a84830c1717490c692e539321"
+  "digest": "4d3b64119655cda00ef1c43ab9d58ec0ee4be028893f028459da4574af6f6d9c"
 }

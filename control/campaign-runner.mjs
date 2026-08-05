@@ -4,6 +4,8 @@ import {validateGateGraph, findGate} from "./gate-model.mjs";
 import {answerCurrent, createExecution, createExecutionAuthority} from "./gate-engine.mjs";
 import {readGatePacket, readMeaningfulProgress, spawnNativeSession, closeNativeSession, abortNativeSession} from "./native-session.mjs";
 import {toNativeAdmission, validateCampaignAdmission} from "./campaign-admission.mjs";
+import {renderGateQuestion, validateQuestionCatalog} from "./question-catalog.mjs";
+import {validateGateResponse} from "./gate-response.mjs";
 
 export const CAMPAIGN_RESULT_SCHEMA = "agentos.campaign_result.v1";
 
@@ -46,6 +48,14 @@ function validateAuditCandidate(result, authority_secret) {
   assert(result.execution.current_node === null && Array.isArray(result.execution.trace) && result.execution.trace.length === result.execution.step_count && result.execution.step_count > 0, "campaign execution trace is incomplete");
   assert(result.execution.result && result.execution.result.terminal_type === "COMPLETE", "campaign execution terminal is not COMPLETE");
   assert(result.execution.graph_digest === result.graph_digest, "campaign execution graph differs");
+  assert(Array.isArray(result.gate_responses) && result.gate_responses.length === result.execution.trace.length, "campaign gate response count differs from execution trace");
+  for (const [index, response] of result.gate_responses.entries()) {
+    exactKeys(response, ["gate_id", "gate_name", "answer", "response_digest"], `campaign gate response ${index}`);
+    assert(response.gate_id === result.execution.trace[index].gate_id, `campaign gate response ${index} gate differs from execution trace`);
+    assert(typeof response.gate_name === "string" && response.gate_name.trim().length > 0, `campaign gate response ${index} name is missing`);
+    assert(response.answer === "YES", `campaign gate response ${index} is not a pass`);
+    digest(response.response_digest, `campaign gate response ${index}.response_digest`);
+  }
   meaningful(result.progress, "campaign progress");
   assert(result.closed_session && result.closed_session.status === "CLOSED", "native session is not closed");
   meaningful(result.closed_session.handoff, "closed session handoff");
@@ -58,9 +68,10 @@ function validateAuditCandidate(result, authority_secret) {
   assert(result.execution.binding.session_id === result.closed_session.host_id, "closed session does not match execution session");
 }
 
-export async function runLaneCampaign({host, admission, graph, authority_secret, evidence_secret}) {
+export async function runLaneCampaign({host, admission, graph, question_catalog, authority_secret, evidence_secret}) {
   validateCampaignAdmission(admission);
   validateGateGraph(graph);
+  validateQuestionCatalog(question_catalog);
   assert(typeof evidence_secret === "string" && evidence_secret.length >= 32, "campaign evidence attestation secret is required");
   assert(graph.graph_id === admission.lane_id.toUpperCase().replaceAll("-", "_"), "campaign graph does not match admitted lane");
   const nativeAdmission = toNativeAdmission(admission);
@@ -78,11 +89,23 @@ export async function runLaneCampaign({host, admission, graph, authority_secret,
     };
     let execution = createExecution(graph, binding, {authority});
     const progress = await readMeaningfulProgress(host, session, admission.progress_window_minutes * 60_000);
-    const packet = await readGatePacket(host, session);
+    const expectedIdentity = {
+      source_commit: admission.source.source_commit,
+      source_tree: admission.source.source_tree,
+      worktree_id: admission.source.worktree_id,
+      session_id: session.host_id,
+      goal_id: admission.goal_id,
+      environment_id: admission.source.environment_id,
+    };
+    const packet = await readGatePacket(host, session, {renderedForGate: (gateId) => renderGateQuestion(graph, gateId, question_catalog)});
+    const gate_responses = [];
     for (const item of packet) {
       assert(execution.status === "ACTIVE", "gate packet continued after execution terminal");
       const gate = findGate(graph, execution.current_node);
       assert(item.gate_id === gate.id, `gate packet expected ${gate.id} but received ${item.gate_id}`);
+      const rendered = renderGateQuestion(graph, item.gate_id, question_catalog);
+      const response = validateGateResponse(item.response, rendered, {evidence: item.evidence, expectedIdentity});
+      gate_responses.push({gate_id: response.gate_id, gate_name: response.gate_name, answer: response.answer, response_digest: response.digest});
       execution = answerCurrent(execution, graph, item.answer, item.evidence, {authority, attestation_secret: evidence_secret});
     }
     assert(execution.status === "COMPLETE", `functionality campaign did not complete gates: ${execution.status}`);
@@ -100,6 +123,7 @@ export async function runLaneCampaign({host, admission, graph, authority_secret,
       graph_digest: graph.digest,
       execution,
       progress,
+      gate_responses,
       closed_session: closed.session,
       closure: closed.closure,
       completion_proof: null,
@@ -119,7 +143,7 @@ export async function runLaneCampaign({host, admission, graph, authority_secret,
 export const runFunctionalityCampaign = runLaneCampaign;
 
 export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}) {
-  exactKeys(result, ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "closed_session", "closure", "completion_proof", "digest"], "campaign result");
+  exactKeys(result, ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "gate_responses", "closed_session", "closure", "completion_proof", "digest"], "campaign result");
   assert(result.schema === CAMPAIGN_RESULT_SCHEMA && result.version === 1 && result.status === "AUDIT_CANDIDATE", "campaign result is not an audit candidate");
   digest(result.admission_digest, "admission_digest");
   digest(result.graph_digest, "graph_digest");

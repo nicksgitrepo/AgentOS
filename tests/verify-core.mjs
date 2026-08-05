@@ -188,13 +188,13 @@ assert.throws(() => parseGateDsl("graph BAD 1\nentry BAD-001\ngate BAD-001\ncont
 
 const functionalityAuthority = createExecutionAuthority("functionality-execution-authority-secret-001");
 let functionalityRun = createExecution(functionality, identity, {authority: functionalityAuthority});
-for (const answer of ["YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES"]) {
+for (const answer of ["YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES"]) {
   const gate = findGate(functionality, functionalityRun.current_node);
   functionalityRun = answerCurrent(functionalityRun, functionality, answer, evidenceFor(functionality, gate, answer), {authority: functionalityAuthority, attestation_secret: evidenceSecret});
 }
 assert.equal(functionalityRun.status, "COMPLETE");
 
-const generalGraphs = ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_SECURITY"];
+const generalGraphs = ["CORE", "GENERAL_CLOSURE", "GENERAL_CONVERSATION", "GENERAL_EVIDENCE", "GENERAL_PROGRESS", "GENERAL_RECOVERY", "GENERAL_RESPONSE", "GENERAL_SECURITY"];
 const packet = composeRolePacket({role_id: "NAMED_LANE_WORKER", lane_id: "functionality", graph_ids: [...generalGraphs, "FUNCTIONALITY"].sort()});
 assert.equal(validateRolePacket(packet).digest, packet.digest);
 assert.throws(() => composeRolePacket({role_id: "RUNTIME", graph_ids: [...generalGraphs, "FUNCTIONALITY"].sort()}), /another role/u);

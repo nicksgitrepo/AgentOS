@@ -9,6 +9,8 @@ import {compileCampaignAdmission} from "../control/campaign-admission.mjs";
 import {createGoal} from "../control/campaign-state.mjs";
 import {compileGateFile} from "../control/gate-dsl.mjs";
 import {createEvidence} from "../control/evidence.mjs";
+import {loadQuestionCatalog, renderGateQuestion} from "../control/question-catalog.mjs";
+import {createGateResponse} from "../control/gate-response.mjs";
 import {acceptCampaignResult, runFunctionalityCampaign} from "../control/campaign-runner.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -16,6 +18,7 @@ const plan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001", owner_
 const goal = createGoal({goal_id: "GOAL-001", objective: "Build functionality", scope: {lane: "functionality"}, intent: {outcome: "works"}, boundaries: {hard: ["no release"], soft: ["review"]}, created_at_utc: "2026-01-01T00:00:00.000Z"});
 const admission = compileCampaignAdmission({plan, goal, project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", lane_id: "functionality", source: {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", environment_id: "ENV-001"}, task_name: "functionality_worker_001", prompt: "Build the admitted functionality."});
 const graph = await compileGateFile(path.join(ROOT, "governance/lanes/functionality.gate"));
+const questionCatalog = await loadQuestionCatalog(ROOT);
 const authoritySecret = "campaign-runner-authority-secret-001";
 const evidenceSecret = "campaign-runner-evidence-attestation-secret-001";
 const calls = [];
@@ -39,10 +42,13 @@ const host = {
     if (view === "handoff") return {...base, handoff: {summary: "The functionality was observed", result_type: "VERIFIED_BEHAVIOR", artifact_sha256: "c".repeat(64), evidence_sha256: "d".repeat(64)}};
     const identity = {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001", session_id: "WORKER-SESSION-001", goal_id: "GOAL-001", environment_id: "ENV-001"};
     const evidence = (gate, slot) => createEvidence({evidence_id: `${gate.id}-${slot}`, question_id: gate.id, graph_digest: graph.digest, evidence_slot: slot, answer: "YES", kind: "HOST_OBSERVATION", value: {gate: gate.id, slot}, identity, issuer_session_id: slot === "review" ? "AUDITOR-SESSION-001" : "HOST-SESSION-001", issuer_kind: slot === "review" ? "INDEPENDENT_AUDITOR" : "HOST_READBACK", supports_answer: true, observed_at_utc: "2026-01-01T00:00:00.000Z", attestation_secret: evidenceSecret});
-    return {...base, gate_packet: graph.nodes.map((gate) => ({gate_id: gate.id, answer: "YES", evidence: Object.fromEntries(gate.evidence.map((slot) => [slot, evidence(gate, slot)]))}))};
+    return {...base, gate_packet: graph.nodes.map((gate) => {
+      const gateEvidence = Object.fromEntries(gate.evidence.map((slot) => [slot, evidence(gate, slot)]));
+      return {gate_id: gate.id, gate_name: renderGateQuestion(graph, gate.id, questionCatalog).gate_name, context: renderGateQuestion(graph, gate.id, questionCatalog).context, question: renderGateQuestion(graph, gate.id, questionCatalog).question, answer: "YES", evidence: gateEvidence, response: createGateResponse({rendered: renderGateQuestion(graph, gate.id, questionCatalog), answer: "YES", evidence: gateEvidence, identity, issuer_session_id: "AUDITOR-SESSION-001", issuer_kind: "INDEPENDENT_AUDITOR"})};
+    })};
   },
 };
-const result = await runFunctionalityCampaign({host, admission, graph, authority_secret: authoritySecret, evidence_secret: evidenceSecret});
+const result = await runFunctionalityCampaign({host, admission, graph, question_catalog: questionCatalog, authority_secret: authoritySecret, evidence_secret: evidenceSecret});
 assert.equal(result.status, "AUDIT_CANDIDATE");
 assert.equal(result.closed_session.status, "CLOSED");
 assert.deepEqual(calls.slice(-4), ["UNPIN", "ARCHIVE", "ROSTER_REMOVE", "LIST"]);

@@ -15,8 +15,38 @@ gate ROUTE-002
 context TASK_START
 question "Is the role packet limited to general rules plus the applicable lane rules and authority?"
 evidence packet,selection,authority
-YES COMPLETE
+YES ROUTE-003
 NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-ROUTING
+end
+
+gate ROUTE-003
+context TASK_START
+question "Does this builder own exactly one named lane and lack authority to work another lane or accept its own result?"
+evidence lane,authority,assignment
+YES ROUTE-004
+NO HARD-STOP-ROUTING
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-ROUTING
+end
+
+gate ROUTE-004
+context TASK_START
+question "For a full-project audit, does the Independent Auditor receive every lane and inspect the whole project rather than only the changed lane?"
+evidence role,lane,packet,review
+YES ROUTE-005
+NO HARD-STOP-ROUTING
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-ROUTING
+end
+
+gate ROUTE-005
+context CLOSURE
+question "Was the role created as a true host session, pinned while active, handed off, unpinned, archived, and removed from the active roster?"
+evidence session,handoff,archive,roster
+YES COMPLETE
+NO HARD-STOP-ROUTING
 UNKNOWN UNPROVEN
 NOT_APPLICABLE HARD-STOP-ROUTING
 end
@@ -25,4 +55,3 @@ terminal COMPLETE COMPLETE "The work is routed to one correctly scoped role and 
 terminal HARD-STOP-ROUTING HARD_STOP "The role or lane cannot be safely identified."
 terminal SOFT-REVIEW SOFT_REVIEW "The Campaign Orchestrator must review role routing."
 terminal UNPROVEN UNPROVEN "Role routing lacks sufficient evidence."
-

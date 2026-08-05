@@ -15,13 +15,53 @@ gate CONV-002
 context RESPONSE
 question "Can a numeric answer or yes or no answer be mapped without changing the owner's meaning?"
 evidence answer_map,ambiguity,context
-YES COMPLETE
+YES CONV-003
 NO SOFT-REVIEW
 UNKNOWN UNPROVEN
 NOT_APPLICABLE SOFT-REVIEW
 end
 
+gate CONV-003
+context RESPONSE
+question "Can the owner understand and answer this without seeing role names, graph IDs, hashes, schemas, or other AgentOS vocabulary?"
+evidence language,wording,surface
+YES CONV-004
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate CONV-004
+context RESPONSE
+question "Does the response contain one decision at a time rather than a form, bundle of questions, or hidden multi-part choice?"
+evidence question,missing_choice,ambiguity
+YES CONV-005
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate CONV-005
+context RESPONSE
+question "Are numeric choices and yes or no answers accepted only when they map to the displayed choices without guessing?"
+evidence answer_map,ambiguity,context
+YES CONV-006
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate CONV-006
+context RESPONSE
+question "Before sending a user-facing response, did the response gate verify that it is truthful, scoped, plain-language, and supported by the required evidence?"
+evidence response,claim_map,readback
+YES COMPLETE
+NO HARD-STOP-EVIDENCE
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE SOFT-REVIEW
+end
+
 terminal COMPLETE COMPLETE "The owner question is short, plain, and safely mappable."
+terminal HARD-STOP-EVIDENCE HARD_STOP "A user-facing response cannot be sent without a truthful evidence-bound check."
 terminal SOFT-REVIEW SOFT_REVIEW "The user-facing question needs conversation review."
 terminal UNPROVEN UNPROVEN "The question meaning is not established."
-

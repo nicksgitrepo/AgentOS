@@ -15,8 +15,38 @@ gate EVIDENCE-002
 context HANDOFF
 question "Do all evidence records name the same source, worktree, session, goal, and environment as the claimed result?"
 evidence identity,comparison,digest
-YES COMPLETE
+YES EVIDENCE-003
 NO HARD-STOP-IDENTITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate EVIDENCE-003
+context HANDOFF
+question "Does the claimed artifact or behavior exist at the recorded source, worktree, and environment rather than only in a receipt?"
+evidence artifact_or_behavior,source,worktree,environment
+YES EVIDENCE-004
+NO HARD-STOP-EVIDENCE
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate EVIDENCE-004
+context HANDOFF
+question "Did a different session or Independent Auditor inspect the same result and record a matching pass or failure?"
+evidence review,issuer,comparison
+YES EVIDENCE-005
+NO HARD-STOP-IDENTITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate EVIDENCE-005
+context RESPONSE
+question "Does every pass statement name the human-readable gate, answer YES, and match the question, identity, and evidence digest?"
+evidence response,identity,digest,claim_map
+YES COMPLETE
+NO HARD-STOP-EVIDENCE
 UNKNOWN HARD-STOP-EVIDENCE
 NOT_APPLICABLE HARD-STOP-EVIDENCE
 end
@@ -24,4 +54,3 @@ end
 terminal COMPLETE COMPLETE "The result evidence is real, matching, and traceable."
 terminal HARD-STOP-EVIDENCE HARD_STOP "A result cannot be accepted without real evidence."
 terminal HARD-STOP-IDENTITY HARD_STOP "Evidence identities do not match the result."
-

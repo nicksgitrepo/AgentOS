@@ -36,6 +36,13 @@ The first slice establishes:
   host or Auditor attestation;
 - all twelve named governance lanes;
 - role-packet composition for persistent and campaign roles.
+- a named-question catalog and coverage manifest containing 90 displayed gates
+  across 20 graphs and 13 standard families;
+- role-specific rendered question packets: one lane plus the general foundation
+  for a builder, and the complete graph set for an Independent Auditor;
+- response records that can say `Gate "Human Name" passed successfully.` only
+  when the displayed question, `YES` answer, evidence digest, work identity,
+  and independent issuer all match.
 
 The campaign coordinator compiles the complete four-phase plan, assigns a
 fresh named worker to each of the twelve lanes, and requires an independent
@@ -67,3 +74,6 @@ not the language model, enforces graph transitions and evidence identity.
 
 This milestone remains prepared and inactive. No push, merge, deployment, or
 activation is implied by a passing local check.
+
+The gate inventory and display rules are documented in
+[`docs/gate-governance.md`](docs/gate-governance.md).

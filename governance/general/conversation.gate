@@ -15,6 +15,16 @@ gate GENERAL-CONV-002
 context RESPONSE
 question "Can a numeric answer or yes or no answer be mapped without changing the owner's meaning?"
 evidence answer_map,ambiguity,context
+YES GENERAL-CONV-003
+NO GENERAL-SOFT-REVIEW
+UNKNOWN GENERAL-UNPROVEN
+NOT_APPLICABLE GENERAL-SOFT-REVIEW
+end
+
+gate GENERAL-CONV-003
+context RESPONSE
+question "Can the owner understand and answer this without seeing role names, graph IDs, hashes, schemas, or other internal vocabulary?"
+evidence wording,language,surface
 YES GENERAL-COMPLETE
 NO GENERAL-SOFT-REVIEW
 UNKNOWN GENERAL-UNPROVEN
@@ -24,4 +34,3 @@ end
 terminal GENERAL-COMPLETE COMPLETE "The owner question is short, plain, and safely mappable."
 terminal GENERAL-SOFT-REVIEW SOFT_REVIEW "The question needs conversation review."
 terminal GENERAL-UNPROVEN UNPROVEN "The question meaning is not established."
-

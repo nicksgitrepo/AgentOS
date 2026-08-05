@@ -1,4 +1,5 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
+import {validateGateResponse} from "./gate-response.mjs";
 
 export const NATIVE_SESSION_SCHEMA = "agentos.native_session.v1";
 export const DEFAULT_MODEL = "gpt-5.6-luna";
@@ -215,7 +216,7 @@ export async function readMeaningfulProgress(host, session, timeout_ms = 900_000
   return raw.progress;
 }
 
-export async function readGatePacket(host, session) {
+export async function readGatePacket(host, session, {renderedForGate = null} = {}) {
   validateSession(session);
   const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "gate_packet"});
   expectedIdentity(session, raw, "gate packet readback");
@@ -223,7 +224,13 @@ export async function readGatePacket(host, session) {
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "gate_packet"], "gate packet readback");
   assert(Array.isArray(raw.gate_packet) && raw.gate_packet.length > 0, "gate packet is empty");
   for (const [index, item] of raw.gate_packet.entries()) {
-    exactKeys(item, ["gate_id", "answer", "evidence"], `gate packet ${index}`);
+    if (renderedForGate) {
+      exactKeys(item, ["gate_id", "gate_name", "context", "question", "answer", "evidence", "response"], `gate packet ${index}`);
+      const rendered = renderedForGate(item.gate_id);
+      assert(rendered && typeof rendered === "object", `gate packet ${index} has no rendered gate`);
+      assert(item.gate_name === rendered.gate_name && item.context === rendered.context && item.question === rendered.question, `gate packet ${index} display differs from the governed question`);
+      validateGateResponse(item.response, rendered, {evidence: item.evidence});
+    } else exactKeys(item, ["gate_id", "answer", "evidence"], `gate packet ${index}`);
     nonempty(item.gate_id, `gate packet ${index}.gate_id`);
     assert(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"].includes(item.answer), `gate packet ${index}.answer is invalid`);
     assert(item.evidence && typeof item.evidence === "object" && !Array.isArray(item.evidence), `gate packet ${index}.evidence is invalid`);

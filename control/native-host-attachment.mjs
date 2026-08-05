@@ -52,6 +52,10 @@ export function bindNativeHost(host, attachment) {
   for (const action of REQUIRED_HOST_ACTIONS) {
     bound[action] = async (payload = {}) => {
       assert(payload && typeof payload === "object" && !Array.isArray(payload), `${action} payload must be an object`);
+      const identity = payload.identity && typeof payload.identity === "object" ? payload.identity : payload;
+      if (identity.project_id !== undefined) assert(identity.project_id === attachment.project_id, `${action} payload project differs from host attachment`);
+      if (identity.environment_id !== undefined) assert(identity.environment_id === attachment.environment_id, `${action} payload environment differs from host attachment`);
+      if (payload.host_attachment !== undefined) assert(JSON.stringify(payload.host_attachment) === JSON.stringify(context), `${action} payload host attachment differs`);
       return host[action]({...payload, host_attachment: context});
     };
   }

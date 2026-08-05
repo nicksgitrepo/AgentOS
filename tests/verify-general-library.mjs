@@ -12,7 +12,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(await readFile(path.join(ROOT, "governance/general-manifest.json"), "utf8"));
 assert.equal(manifest.schema, "agentos.general_manifest.v1");
 assert.equal(manifest.digest, digestWithout(manifest, "digest"));
-assert.equal(manifest.graphs.length, 7);
+assert.equal(manifest.graphs.length, 8);
 const ids = new Set();
 for (const binding of manifest.graphs) {
   const graph = await compileGateFile(path.join(ROOT, binding.path));
@@ -26,4 +26,3 @@ assert(ids.has("CORE"));
 assert(ids.has("GENERAL_EVIDENCE"));
 assert(ids.has("GENERAL_SECURITY"));
 console.log(JSON.stringify({status: "PASS", general_graph_count: manifest.graphs.length}));
-

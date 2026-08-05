@@ -10,6 +10,8 @@ import {createGoal} from "../control/campaign-state.mjs";
 import {compileCampaignAdmission} from "../control/campaign-admission.mjs";
 import {compileGateFile} from "../control/gate-dsl.mjs";
 import {createEvidence} from "../control/evidence.mjs";
+import {loadQuestionCatalog, renderGateQuestion} from "../control/question-catalog.mjs";
+import {createGateResponse} from "../control/gate-response.mjs";
 import {acceptCampaignResult, runLaneCampaign} from "../control/campaign-runner.mjs";
 import {digestWithout, sha256} from "../control/canonical-json.mjs";
 
@@ -21,6 +23,7 @@ const bootstrapPlan = await compileBootstrapPlan(ROOT, {project_id: "PROJECT-001
 const goal = createGoal({goal_id: "GOAL-001", objective: "Build a complete bounded prototype", scope: {all_lanes: true}, intent: {outcome: "working"}, boundaries: {hard: ["no release"], soft: ["review"]}, created_at_utc: "2026-01-01T00:00:00.000Z"});
 const plan = await compileCampaignPlan(ROOT, {plan: bootstrapPlan, goal, campaign_id: "CAMPAIGN-001", campaign_version: "V1", source});
 const laneManifest = JSON.parse(await readFile(path.join(ROOT, "governance/lane-manifest.json"), "utf8"));
+const questionCatalog = await loadQuestionCatalog(ROOT);
 const graphs = new Map(await Promise.all(laneManifest.lanes.map(async (lane) => [lane.lane_id, await compileGateFile(path.join(ROOT, lane.path))])));
 const results = new Map();
 
@@ -63,7 +66,11 @@ function fakeHost(graph, admission, workerSessionId) {
     async read_thread({view}) {
       if (view === "progress") return {...identity, progress};
       if (view === "handoff") return {...identity, handoff: progress};
-      return {...identity, gate_packet: graph.nodes.map((gate) => ({gate_id: gate.id, answer: "YES", evidence: Object.fromEntries(gate.evidence.map((slot) => [slot, evidenceFor(gate, slot)]))}))};
+      return {...identity, gate_packet: graph.nodes.map((gate) => {
+        const rendered = renderGateQuestion(graph, gate.id, questionCatalog);
+        const gateEvidence = Object.fromEntries(gate.evidence.map((slot) => [slot, evidenceFor(gate, slot)]));
+        return {gate_id: gate.id, gate_name: rendered.gate_name, context: rendered.context, question: rendered.question, answer: "YES", evidence: gateEvidence, response: createGateResponse({rendered, answer: "YES", evidence: gateEvidence, identity: {source_commit: admission.source.source_commit, source_tree: admission.source.source_tree, worktree_id: admission.source.worktree_id, session_id: workerSessionId, goal_id: admission.goal_id, environment_id: "ENV-001"}, issuer_session_id: `${admission.lane_id}-AUDITOR-001`, issuer_kind: "INDEPENDENT_AUDITOR"})};
+      })};
     },
     async send_message_to_thread() {},
     async set_thread_pinned({pinned}) { threads.get(threadId).pinned = pinned; return {pinned}; },
@@ -78,7 +85,7 @@ const run = await runCampaign({
     const graph = graphs.get(assignment.lane_id);
     const admission = compileCampaignAdmission({plan: bootstrapPlan, goal, project_id: plan.project_id, campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, lane_id: assignment.lane_id, source, task_name: assignment.task_name, prompt: assignment.prompt});
     const workerSessionId = `${assignment.lane_id.toUpperCase().replaceAll("-", "_")}-WORKER-001`;
-    const result = await runLaneCampaign({host: fakeHost(graph, admission, workerSessionId), admission, graph, authority_secret: authoritySecret, evidence_secret: evidenceSecret});
+    const result = await runLaneCampaign({host: fakeHost(graph, admission, workerSessionId), admission, graph, question_catalog: questionCatalog, authority_secret: authoritySecret, evidence_secret: evidenceSecret});
     results.set(assignment.lane_id, result);
     return {status: "AUDIT_CANDIDATE", phase_id: phase.phase_id, lane_id: assignment.lane_id, result_digest: result.digest, worker_session_id: result.closed_session.host_id};
   },

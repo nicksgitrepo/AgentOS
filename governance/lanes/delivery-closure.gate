@@ -15,10 +15,30 @@ gate DELIVERY-002
 context CLOSURE
 question "Were the handoff preserved, temporary worker unpinned and archived, and the active roster cleared by host readback?"
 evidence handoff,archive,roster
-YES COMPLETE
+YES DELIVERY-003
 NO HARD-STOP-CLOSURE
 UNKNOWN HARD-STOP-EVIDENCE
 NOT_APPLICABLE HARD-STOP-CLOSURE
+end
+
+gate DELIVERY-003
+context CLOSURE
+question "Does the chosen finish have a clean source checkpoint, exact result digest, a push or deployment receipt when selected, and a rollback path when applicable?"
+evidence accepted,source,receipt,rollback
+YES DELIVERY-004
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate DELIVERY-004
+context CLOSURE
+question "If the owner chose deployment or release, did an independent live check confirm the intended version and behavior?"
+evidence live_audit,environment,accepted
+YES COMPLETE
+NO HARD-STOP-CLOSURE
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
 end
 
 terminal COMPLETE COMPLETE "The chosen delivery path and temporary-agent closure are complete."
@@ -26,4 +46,3 @@ terminal HARD-STOP-CLOSURE HARD_STOP "Temporary work or delivery authority is no
 terminal HARD-STOP-EVIDENCE HARD_STOP "Closure cannot be claimed without host readback."
 terminal SOFT-REVIEW SOFT_REVIEW "The chosen delivery result needs campaign review."
 terminal UNPROVEN UNPROVEN "Delivery or closure is not established."
-

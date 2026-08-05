@@ -15,10 +15,40 @@ gate RECOVERY-002
 context HANDOFF
 question "When scope, intent, authority, or conditions changed, was the old goal closed and a replacement goal routed?"
 evidence goal_change,reassessment,replacement
-YES COMPLETE
+YES RECOVERY-003
 NO HARD-STOP-SCOPE
 UNKNOWN UNPROVEN
 NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate RECOVERY-003
+context CODE_CHANGE
+question "When a hard boundary was detected, did the agent stop before further writes, external actions, or new sessions?"
+evidence boundary,action,scope
+YES RECOVERY-004
+NO HARD-STOP-SCOPE
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate RECOVERY-004
+context HANDOFF
+question "When a soft boundary was detected, did the agent pause and send the exact evidence to the Campaign Orchestrator instead of deciding alone?"
+evidence boundary,route,review
+YES RECOVERY-005
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE SOFT-REVIEW
+end
+
+gate RECOVERY-005
+context HANDOFF
+question "Was each repair attempted only within a bounded retry budget, with failed partial work preserved and cleaned up?"
+evidence retry,cleanup,failure
+YES COMPLETE
+NO HARD-STOP-EVIDENCE
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
 end
 
 terminal COMPLETE COMPLETE "Recovery and boundary handling are explicit."
@@ -26,4 +56,3 @@ terminal HARD-STOP-SCOPE HARD_STOP "The changed condition requires a new goal or
 terminal HARD-STOP-EVIDENCE HARD_STOP "Failure classification is not evidenced."
 terminal SOFT-REVIEW SOFT_REVIEW "The Campaign Orchestrator must review the recovery route."
 terminal UNPROVEN UNPROVEN "Recovery behavior is not established."
-
