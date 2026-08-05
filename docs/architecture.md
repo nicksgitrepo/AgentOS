@@ -61,11 +61,18 @@ Bootstrap uses three sibling roots under one user-selected parent:
 The selected project must be a child of `<parent>/projects`. The host-side
 Bootstrap function `prepareWorkspace` creates or verifies
 `<parent>/AgentOS-control` before writing Bootstrap state, campaign state,
-handoffs, notes, or tooling. Temporary worker checkouts must be below
-`AgentOS-control/worktrees`, never below the release checkout or a project
-repository. They must be isolated clones or equivalent checkouts whose Git
-administrative metadata also stays under the control root; ordinary linked
+handoffs, notes, or tooling. Control-managed temporary worker checkouts must
+be below `AgentOS-control/worktrees`, never below the release checkout or a
+project repository. They must be isolated clones or equivalent checkouts whose
+Git administrative metadata also stays under the control root; ordinary linked
 worktrees that modify the source repository's `.git` directory are forbidden.
+
+The host may create a visible ephemeral workspace only for a release/control
+worker. That exception must bind the registered release project identity and
+the exact release source commit, tree, and reference; it must remain outside
+both the release checkout and the product repository. A product worker may
+never use that host-managed visible exception and must use a control-managed
+isolated workspace instead.
 
 The boundary is content-addressed and carried through the Bootstrap plan,
 campaign plan, worker admission, and native host request. A host must reject a
@@ -99,6 +106,24 @@ node, trace, bounded repair visits, step limits, review holds, progress
 windows, handoffs, and closure. Ordinary graph edges must be acyclic. A cycle
 is valid only when every cycle edge is explicitly declared as a repair edge and
 the engine stops at its declared repair-limit terminal.
+
+## Owner answer continuation
+
+An accepted owner answer is a continuation event, not a message that leaves the
+campaign waiting for another prompt. The host records the answer, creates one
+content-addressed resume request, and invokes the continuation runner against
+the prepared in-scope admission. Concurrent delivery and replay of the same
+answer are idempotent: they may produce only one admission attempt and preserve
+the exact protected-action set. A rejected answer remains rejected; an adapter
+failure becomes a typed blocked record that can be audited rather than silently
+opening a second conversation.
+
+Visible host-managed worker workspaces have a separate boundary. They are
+permitted only for a release/control worker bound to the registered release
+source and release project identity. Product work must use an isolated
+control-managed workspace. The host must bind the resulting ephemeral path and
+prove that it is outside both the release checkout and product repository
+before the worker is admitted.
 
 ## Role composition
 
