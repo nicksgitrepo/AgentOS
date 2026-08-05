@@ -9,7 +9,7 @@ The old implementation remains the reference outside this milestone.
 | Bootstrap compiler and owner conversation | Bootstrap plan, campaign admission, owner question surface | Core behavior migrated |
 | Role governance library | General manifest, role selection, role-library compiler | Migrated for twelve lanes |
 | Native session team and runner | Native host contract, typed host attachment, and lifecycle cleanup | Contract and attachment boundary migrated; real provider adapter remains external |
-| Campaign lifecycle and cascade | Campaign admission, campaign coordinator, runner, goal/progress state | Four-phase coordinator migrated; native execution slice complete for Functionality |
+| Campaign lifecycle and cascade | Campaign admission, campaign coordinator, runner, goal/progress state, and live closure proofs | Four-phase coordinator and all twelve portable lane executions migrated; real host execution remains external |
 | Controller and supervisor | Intent Regulator audit loop and campaign routing | Audit decisions and bounded phase routing migrated; long-running host loop remains an external host seam |
 | Owner review and acceptance bridge | Owner question surface and independent acceptance contract | First slice migrated |
 | Local worker runtime | Named lane worker admission and native session binding | Portable runner exercised across all twelve lanes; provider-backed host attachment remains external |
