@@ -17,6 +17,8 @@
 - Fifteen-minute progress windows classify failure-list-only output and
   expired windows as stalled.
 - Native session host contract with exact cleanup ordering.
+- Typed native-host attachment boundary that accepts a surrounding provider
+  adapter without importing provider code or credentials.
 - Discovery-based direct test runner and source-hygiene check with no npm
   entry point.
 - Bootstrap plan compiler that covers all twelve lanes, starts in Rapid

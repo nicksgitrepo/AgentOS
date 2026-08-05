@@ -10,7 +10,7 @@ const SEAMS = Object.freeze([
   {seam_id: "BOOTSTRAP_AND_CONVERSATION", replacement_paths: ["control/bootstrap-plan.mjs", "control/owner-conversation.mjs"], evidence_test: "tests/verify-bootstrap-plan.mjs", status: "MIGRATED"},
   {seam_id: "ROLE_GOVERNANCE", replacement_paths: ["control/role-packet.mjs", "control/role-library.mjs"], evidence_test: "tests/verify-role-library.mjs", status: "MIGRATED"},
   {seam_id: "CAMPAIGN_ORCHESTRATION", replacement_paths: ["control/campaign-admission.mjs", "control/campaign-orchestrator.mjs", "control/campaign-runner.mjs", "control/campaign-state.mjs"], evidence_test: "tests/verify-campaign-orchestrator.mjs", status: "MIGRATED"},
-  {seam_id: "NATIVE_SESSION_LIFECYCLE", replacement_paths: ["control/native-session.mjs"], evidence_test: "tests/verify-native-session.mjs", status: "EXTERNAL_HOST_REQUIRED"},
+  {seam_id: "NATIVE_SESSION_LIFECYCLE", replacement_paths: ["control/native-session.mjs", "control/native-host-attachment.mjs", "schemas/native-host-attachment.v1.json"], evidence_test: "tests/verify-native-host-attachment.mjs", status: "EXTERNAL_HOST_REQUIRED"},
   {seam_id: "PERSISTENT_CONTROL", replacement_paths: ["control/intent-regulator.mjs", "control/persistent-role.mjs", "control/runtime-authority.mjs"], evidence_test: "tests/verify-intent-regulator.mjs", status: "MIGRATED"},
   {seam_id: "PROGRESS_AND_REASSESSMENT", replacement_paths: ["control/campaign-state.mjs", "control/intent-regulator.mjs"], evidence_test: "tests/verify-campaign-state.mjs", status: "MIGRATED"},
   {seam_id: "OWNER_ACCEPTANCE", replacement_paths: ["control/owner-conversation.mjs", "control/campaign-runner.mjs"], evidence_test: "tests/verify-campaign-runner.mjs", status: "MIGRATED"},
