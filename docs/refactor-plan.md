@@ -56,15 +56,19 @@
   external-host responsibilities and rejects oversized control modules or
   paths that escape the clean repository.
 
-## Remaining boundaries
+## External boundaries and preserved reference
 
 1. Attach a real native-session host adapter supplied by the surrounding
    runtime and exercise the four-phase campaign outside the fake host.
-2. Extract any still-needed transaction behavior from the preserved reference
-   one seam at a time after parity tests pass; the clean milestone contains no
-   oversized control module.
-3. Let the surrounding host perform an explicitly authorized push, merge,
+2. Let the surrounding host perform an explicitly authorized push, merge,
    deploy, or release only after the owner selects that delivery mode.
+
+The preserved reference remains outside this repository. Its nine large
+transaction boundaries are represented by explicit focused replacements in
+the migration registry and checked by
+`verify-legacy-boundary-extraction.mjs`; the clean milestone contains no
+oversized legacy control module. Any future behavior parity work can be added
+as a new seam without importing the old implementation or its environment.
 
 Each slice must have a focused verifier, a hostile verifier, a deterministic
 replay fixture, and an independent audit handoff before the next slice starts.
