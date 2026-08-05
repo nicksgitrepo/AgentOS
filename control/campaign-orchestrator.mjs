@@ -207,6 +207,8 @@ function validatePhaseAcceptance(acceptance, phase, candidates) {
   nonempty(acceptance.reason, "phase acceptance reason");
   assert(Array.isArray(acceptance.lane_results) && acceptance.lane_results.length === candidates.length, "phase acceptance lane count differs");
   const expected = new Map(candidates.map((candidate) => [candidate.lane_id, candidate]));
+  assert(expected.size === candidates.length, "phase candidates contain duplicate lanes");
+  assert(new Set(candidates.map((candidate) => candidate.worker_session_id)).size === candidates.length, "phase candidates reuse a worker session");
   const seen = new Set();
   for (const [index, item] of acceptance.lane_results.entries()) {
     exactKeys(item, ["lane_id", "result_digest", "worker_session_id"], `phase acceptance lane ${index}`);
@@ -234,6 +236,9 @@ export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptan
     assert(candidate, `missing candidate for ${assignment.lane_id}`);
     validateCandidate(candidate, assignment, phase);
   }
+  const priorSessions = new Set(run.lane_results.map((item) => item.worker_session_id));
+  assert(candidates.every((candidate) => !priorSessions.has(candidate.worker_session_id)), "campaign reuses a worker session across phases");
+  assert(!run.phase_results.some((item) => item.auditor_session_id === acceptance.reviewer_session_id), "campaign reuses an Auditor session across phases");
   validatePhaseAcceptance(acceptance, phase, candidates);
   const laneResults = candidates.map((candidate) => ({phase_id, lane_id: candidate.lane_id, result_digest: candidate.result_digest, worker_session_id: candidate.worker_session_id})).sort((left, right) => compareUtf8(left.lane_id, right.lane_id));
   const phaseResult = {phase_id, lane_ids: laneResults.map((item) => item.lane_id), auditor_session_id: acceptance.reviewer_session_id, acceptance_digest: acceptance.acceptance_digest, status: "ACCEPTED"};

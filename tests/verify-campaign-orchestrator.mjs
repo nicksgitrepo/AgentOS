@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {compileBootstrapPlan} from "../control/bootstrap-plan.mjs";
-import {compileCampaignPlan, runCampaign, validateCampaignPlan} from "../control/campaign-orchestrator.mjs";
+import {compileCampaignPlan, createCampaignRun, recordPhaseAcceptance, runCampaign, validateCampaignPlan} from "../control/campaign-orchestrator.mjs";
 import {createGoal} from "../control/campaign-state.mjs";
 import {digestWithout, sha256} from "../control/canonical-json.mjs";
 
@@ -22,6 +22,19 @@ assert.equal(plan.phases.length, 4);
 assert.equal(plan.phases.flatMap((phase) => phase.worker_assignments).length, 12);
 assert(plan.phases.every((phase) => phase.auditor.role_id === "INDEPENDENT_AUDITOR"));
 assert(plan.phases.flatMap((phase) => phase.worker_assignments).every((assignment) => assignment.role_display_name.endsWith(" Worker")));
+const duplicatePhase = plan.phases[0];
+const duplicateCandidates = duplicatePhase.worker_assignments.map((assignment) => ({status: "AUDIT_CANDIDATE", phase_id: duplicatePhase.phase_id, lane_id: assignment.lane_id, result_digest: sha256(assignment.lane_id), worker_session_id: "SAME-WORKER-SESSION"}));
+const duplicateAcceptance = {
+  status: "ACCEPTED",
+  reviewer_role_id: "INDEPENDENT_AUDITOR",
+  reviewer_session_id: "PHASE-AUDITOR-001",
+  evidence_sha256: "e".repeat(64),
+  reason: "duplicate hostile fixture",
+  lane_results: duplicateCandidates.map(({lane_id, result_digest, worker_session_id}) => ({lane_id, result_digest, worker_session_id})),
+  acceptance_digest: null,
+};
+duplicateAcceptance.acceptance_digest = digestWithout(duplicateAcceptance, "acceptance_digest");
+assert.throws(() => recordPhaseAcceptance(createCampaignRun(plan), plan, {phase_id: duplicatePhase.phase_id, candidates: duplicateCandidates, acceptance: duplicateAcceptance}), /reuse a worker session/u);
 
 const run = await runCampaign({
   plan,
