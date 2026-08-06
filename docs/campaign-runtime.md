@@ -53,9 +53,10 @@ inputs only. They are never included in the campaign outcome.
 
 `host` is supplied by the surrounding runtime through
 `control/native-host-loader.mjs`. The release does not contain a provider
-adapter, credentials, machine paths, or provider-specific identities. Secrets
-are passed to the run in memory for attestation and never become part of the
-campaign plan, result, handoff, or Git records.
+adapter, credentials, machine paths, or provider-specific identities. The
+authority and evidence-attestation secrets are passed to the run and later
+Auditor acceptance in memory. Both are checked at every result boundary and
+never become part of the campaign plan, result, handoff, or Git records.
 
 The returned outcome is complete only when every lane has a meaningful result,
 every phase has an independent Auditor decision bound to the exact worker

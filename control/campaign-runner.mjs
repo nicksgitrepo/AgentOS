@@ -159,13 +159,14 @@ export async function runLaneCampaign({host, admission, graph, question_catalog,
 
 export const runFunctionalityCampaign = runLaneCampaign;
 
-export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}) {
+export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret, evidence_secret}) {
   exactKeys(result, ["schema", "version", "status", "admission_digest", "graph_digest", "execution", "progress", "gate_responses", "closed_session", "closure", "completion_proof", "digest"], "campaign result");
   assert(result.schema === CAMPAIGN_RESULT_SCHEMA && result.version === 1 && result.status === "AUDIT_CANDIDATE", "campaign result is not an audit candidate");
   digest(result.admission_digest, "admission_digest");
   digest(result.graph_digest, "graph_digest");
   assert(result.digest === digestWithout(result, "digest"), "campaign result digest does not match content");
-  validateAuditCandidate(result, authority_secret, [authority_secret]);
+  assert(typeof evidence_secret === "string" && evidence_secret.length >= 32, "campaign evidence attestation secret is required for acceptance");
+  validateAuditCandidate(result, authority_secret, [authority_secret, evidence_secret]);
   exactKeys({reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}, ["reviewer_session_id", "reviewer_role_id", "reviewer_readback", "evidence_sha256", "accepted", "reason", "accepted_at_utc", "authority_secret"], "campaign acceptance");
   const validatedReviewerReadback = validateReviewerReadback(reviewer_readback, result);
   const publicReviewerSession = isOpaqueReference(reviewer_session_id, "session")

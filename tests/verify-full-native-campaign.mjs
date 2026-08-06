@@ -103,6 +103,7 @@ const run = await runCampaign({
         reason: "The phase Auditor independently reviewed the lane result.",
         accepted_at_utc: "2026-01-01T00:12:00.000Z",
         authority_secret: authoritySecret,
+        evidence_secret: evidenceSecret,
       });
       assert.equal(accepted.status, "ACCEPTED");
     }

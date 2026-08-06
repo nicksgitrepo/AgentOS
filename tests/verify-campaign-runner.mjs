@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import {fileURLToPath} from "node:url";
 import path from "node:path";
-import {digestWithout} from "../control/canonical-json.mjs";
+import {canonicalJson, digestWithout} from "../control/canonical-json.mjs";
 import {compileBootstrapPlan} from "../control/bootstrap-plan.mjs";
 import {compileCampaignAdmission} from "../control/campaign-admission.mjs";
 import {createGoal} from "../control/campaign-state.mjs";
@@ -54,10 +55,21 @@ assert.equal(result.status, "AUDIT_CANDIDATE");
 assert.equal(result.closed_session.status, "CLOSED");
 assert.deepEqual(calls.slice(-3), ["UNPIN", "ARCHIVE", "LIST"]);
 const reviewerReadback = {thread_id: "AUDITOR-THREAD-001", host_id: "AUDITOR-SESSION-001", project_id: "PROJECT-001", campaign_id: "CAMPAIGN-001", campaign_version: "V1", goal_id: "GOAL-001", lane_id: "functionality", role_id: "INDEPENDENT_AUDITOR", source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-001"};
-const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret});
+const accepted = acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "Independent review matched the result", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret, evidence_secret: evidenceSecret});
 assert.equal(accepted.status, "ACCEPTED");
-assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "WORKER-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: {...reviewerReadback, host_id: "WORKER-SESSION-001"}, evidence_sha256: "e".repeat(64), accepted: true, reason: "self", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret}), /cannot accept its own/u);
+assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "WORKER-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: {...reviewerReadback, host_id: "WORKER-SESSION-001"}, evidence_sha256: "e".repeat(64), accepted: true, reason: "self", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret, evidence_secret: evidenceSecret}), /cannot accept its own/u);
 const falseSuccess = {...result, progress: null, digest: null};
 falseSuccess.digest = digestWithout(falseSuccess, "digest");
-assert.throws(() => acceptCampaignResult(falseSuccess, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "false", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret}), /completion proof is invalid/u);
+assert.throws(() => acceptCampaignResult(falseSuccess, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "false", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret, evidence_secret: evidenceSecret}), /completion proof is invalid/u);
+assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "missing evidence secret", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret}), /evidence attestation secret is required/u);
+const leakyResult = structuredClone(result);
+leakyResult.progress.summary = evidenceSecret;
+leakyResult.closed_session.handoff.summary = evidenceSecret;
+leakyResult.closed_session.digest = null;
+leakyResult.closed_session.digest = digestWithout(leakyResult.closed_session, "digest");
+leakyResult.completion_proof = null;
+leakyResult.digest = null;
+leakyResult.completion_proof = crypto.createHmac("sha256", authoritySecret).update(canonicalJson({...leakyResult, completion_proof: null, digest: null}), "utf8").digest("hex");
+leakyResult.digest = digestWithout(leakyResult, "digest");
+assert.throws(() => acceptCampaignResult(leakyResult, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "secret leak", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret, evidence_secret: evidenceSecret}), /runtime secret/u);
 console.log(JSON.stringify({status: "PASS", campaign: result.status, acceptance: accepted.status}));
