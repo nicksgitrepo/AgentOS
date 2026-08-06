@@ -9,7 +9,7 @@
     "version": { "const": 1 },
     "status": { "const": "BOUND" },
     "attachment_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
-    "host_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "host_id": { "type": "string", "pattern": "^HOST_REF_[0-9a-f]{64}$" },
     "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
     "environment_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
     "capabilities": { "const": ["create_thread", "list_threads", "read_thread", "send_message_to_thread", "set_thread_archived", "set_thread_pinned", "wait_threads"] },

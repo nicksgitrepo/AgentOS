@@ -22,6 +22,7 @@ const admission = {
   source_commit: "b".repeat(40),
   source_tree: "c".repeat(40),
   worktree_id: "WORKTREE-001",
+  environment_id: "ENV-001",
   workspace_boundary,
   governance_digest: "d".repeat(64),
   task_name: "functionality_worker_001",

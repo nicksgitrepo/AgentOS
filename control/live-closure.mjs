@@ -1,5 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {validateDeliveryChoice} from "./delivery-closure.mjs";
+import {assertOpaqueReference, isOpaqueReference, opaqueReference, sessionReference} from "./opaque-reference.mjs";
 
 export const CHECKPOINT_SCHEMA = "agentos.repository_checkpoint.v1";
 export const DEPLOYMENT_RECEIPT_SCHEMA = "agentos.live_deployment_receipt.v1";
@@ -50,7 +51,7 @@ export function validateCheckpoint(proof, expected = {}) {
   nonempty(proof.remote_tree, "checkpoint remote_tree");
   assert(typeof proof.clean === "boolean" && typeof proof.pushed === "boolean", "checkpoint flags are invalid");
   stable(proof.observed_by_role, "checkpoint observed_by_role");
-  stable(proof.observed_by_session, "checkpoint observed_by_session");
+  assertOpaqueReference(proof.observed_by_session, "session", "checkpoint observed_by_session");
   time(proof.observed_at_utc, "checkpoint observed_at_utc");
   assert(METHODS.includes(proof.verification_method), "checkpoint verification_method is invalid");
   if (proof.pushed) {
@@ -65,7 +66,10 @@ export function validateCheckpoint(proof, expected = {}) {
 }
 
 export function compileCheckpoint({worktree_id, commit, tree, remote_commit, remote_tree, clean, pushed, observed_by_role, observed_by_session, observed_at_utc, verification_method = "GIT_READBACK"}) {
-  const proof = {schema: CHECKPOINT_SCHEMA, version: 1, worktree_id, commit, tree, remote_commit, remote_tree, clean, pushed, observed_by_role, observed_by_session, observed_at_utc, verification_method, digest: null};
+  const publicObserver = isOpaqueReference(observed_by_session, "session")
+    ? observed_by_session
+    : sessionReference(observed_by_session, {source_commit: commit, source_tree: tree, worktree_id});
+  const proof = {schema: CHECKPOINT_SCHEMA, version: 1, worktree_id, commit, tree, remote_commit, remote_tree, clean, pushed, observed_by_role, observed_by_session: publicObserver, observed_at_utc, verification_method, digest: null};
   proof.digest = digestWithout(proof, "digest");
   return validateCheckpoint(proof);
 }
@@ -79,7 +83,7 @@ export function validateDeploymentReceipt(receipt, expected = {}) {
   source(receipt.final_candidate_tree, "deployment final_candidate_tree");
   stable(receipt.deployed_identity, "deployment deployed_identity");
   stable(receipt.rollback_identity, "deployment rollback_identity");
-  stable(receipt.runtime_session_id, "deployment runtime_session_id");
+  assertOpaqueReference(receipt.runtime_session_id, "session", "deployment runtime_session_id");
   time(receipt.deployed_at_utc, "deployment deployed_at_utc");
   for (const field of ["final_candidate_commit", "final_candidate_tree", "deployed_identity", "runtime_session_id"]) if (expected[field] !== undefined) assert(receipt[field] === expected[field], `deployment ${field} differs from expected identity`);
   digest(receipt.digest, "deployment digest");
@@ -88,7 +92,10 @@ export function validateDeploymentReceipt(receipt, expected = {}) {
 }
 
 export function compileDeploymentReceipt({final_candidate_commit, final_candidate_tree, deployed_identity, rollback_identity, runtime_session_id, deployed_at_utc}) {
-  const receipt = {schema: DEPLOYMENT_RECEIPT_SCHEMA, version: 1, final_candidate_commit, final_candidate_tree, deployed_identity, rollback_identity, runtime_session_id, deployed_at_utc, digest: null};
+  const publicRuntimeSession = isOpaqueReference(runtime_session_id, "session")
+    ? runtime_session_id
+    : opaqueReference("session", runtime_session_id, `${final_candidate_commit}:${final_candidate_tree}:runtime`);
+  const receipt = {schema: DEPLOYMENT_RECEIPT_SCHEMA, version: 1, final_candidate_commit, final_candidate_tree, deployed_identity, rollback_identity, runtime_session_id: publicRuntimeSession, deployed_at_utc, digest: null};
   receipt.digest = digestWithout(receipt, "digest");
   return validateDeploymentReceipt(receipt);
 }

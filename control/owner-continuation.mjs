@@ -1,6 +1,7 @@
 import {assert, digestWithout, sha256} from "./canonical-json.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
 import {validateCampaignVersion} from "./campaign-names.mjs";
+import {isOpaqueReference, opaqueReference} from "./opaque-reference.mjs";
 
 export const OWNER_CONTINUATION_SCHEMA = "agentos.owner_continuation.v1";
 export const OWNER_RESUME_REQUEST_SCHEMA = "agentos.owner_resume_request.v1";
@@ -190,7 +191,12 @@ function adapterReceipt(receipt, requestDigest) {
   exactKeys(receipt, ["status", "admission_id", "request_digest"], "admission receipt");
   assert(receipt.status === "ADMITTED" && typeof receipt.admission_id === "string" && receipt.admission_id.length > 0, "admission adapter did not return an admitted receipt");
   assert(receipt.request_digest === requestDigest, "admission receipt is bound to a different resume request");
-  return {...receipt};
+  return {
+    ...receipt,
+    admission_id: isOpaqueReference(receipt.admission_id, "admission")
+      ? receipt.admission_id
+      : opaqueReference("admission", receipt.admission_id, requestDigest),
+  };
 }
 
 export function createOwnerContinuationRunner({admit}) {

@@ -2,6 +2,7 @@ import {assert, digestWithout, sha256} from "./canonical-json.mjs";
 import {validateIdentity} from "./evidence.mjs";
 import {validateRenderedGate} from "./question-catalog.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {assertOpaqueReference, isOpaqueReference, sessionReference} from "./opaque-reference.mjs";
 
 export const GATE_RESPONSE_SCHEMA = "agentos.gate_response.v1";
 const DIGEST = /^[0-9a-f]{64}$/u;
@@ -17,7 +18,7 @@ function nonempty(value, label) {
 }
 
 function validateIssuer(issuer_session_id, issuer_kind, identity) {
-  nonempty(issuer_session_id, "gate response issuer_session_id");
+  assertOpaqueReference(issuer_session_id, "session", "gate response issuer_session_id");
   assert(issuer_session_id !== identity.session_id, "gate response issuer must differ from the worker");
   assert(["HOST_READBACK", "INDEPENDENT_AUDITOR"].includes(issuer_kind), "gate response issuer_kind is invalid");
 }
@@ -31,8 +32,11 @@ function expectedStatement(rendered, answer) {
 export function createGateResponse({rendered, answer, evidence, identity, issuer_session_id, issuer_kind}) {
   validateRenderedGate(rendered);
   assert(ANSWERS.includes(answer), "gate response answer is invalid");
-  validateIdentity(identity, "gate response identity");
-  validateIssuer(issuer_session_id, issuer_kind, identity);
+  const normalizedIdentity = {...identity};
+  if (!isOpaqueReference(normalizedIdentity.session_id, "session")) normalizedIdentity.session_id = sessionReference(normalizedIdentity.session_id, normalizedIdentity);
+  validateIdentity(normalizedIdentity, "gate response identity");
+  const normalizedIssuer = isOpaqueReference(issuer_session_id, "session") ? issuer_session_id : sessionReference(issuer_session_id, normalizedIdentity);
+  validateIssuer(normalizedIssuer, issuer_kind, normalizedIdentity);
   const response = {
     schema: GATE_RESPONSE_SCHEMA,
     version: 1,
@@ -44,8 +48,8 @@ export function createGateResponse({rendered, answer, evidence, identity, issuer
     answer,
     statement: expectedStatement(rendered, answer),
     evidence_digest: sha256(evidence),
-    identity: {...identity},
-    issuer_session_id,
+    identity: normalizedIdentity,
+    issuer_session_id: normalizedIssuer,
     issuer_kind,
     status: answer === "YES" ? "PASS" : "ROUTED",
     digest: null,
@@ -68,7 +72,11 @@ export function validateGateResponse(response, rendered, {evidence = undefined, 
   validateIdentity(response.identity, "gate response identity");
   validateIssuer(response.issuer_session_id, response.issuer_kind, response.identity);
   if (requireIndependent) assert(response.issuer_kind === "INDEPENDENT_AUDITOR", "gate response requires an Independent Auditor");
-  if (expectedIdentity) for (const field of Object.keys(expectedIdentity)) assert(response.identity[field] === expectedIdentity[field], `gate response identity ${field} differs`);
+  if (expectedIdentity) {
+    const normalizedExpected = {...expectedIdentity};
+    if (!isOpaqueReference(normalizedExpected.session_id, "session")) normalizedExpected.session_id = sessionReference(normalizedExpected.session_id, normalizedExpected);
+    for (const field of Object.keys(normalizedExpected)) assert(response.identity[field] === normalizedExpected[field], `gate response identity ${field} differs`);
+  }
   if (evidence !== undefined) assert(response.evidence_digest === sha256(evidence), "gate response evidence digest differs from the evidence");
   assert(DIGEST.test(response.digest) && response.digest === digestWithout(response, "digest"), "gate response digest does not match content");
   return response;

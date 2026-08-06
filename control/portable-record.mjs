@@ -1,4 +1,5 @@
 import {assert} from "./canonical-json.mjs";
+import {assertOpaqueReference} from "./opaque-reference.mjs";
 
 const RAW_PATH_KEYS = new Set([
   "release_root", "projects_root", "project_root", "control_root", "projects_path", "control_path",
@@ -6,6 +7,8 @@ const RAW_PATH_KEYS = new Set([
 ]);
 const SECRET_KEY = /(?:^|_)(?:secret|password|token|credential|api_key|private_key|access_key)(?:$|_)/iu;
 const SECRET_VALUE = /(?:-----BEGIN|Bearer\s+[A-Za-z0-9._-]+|(?:sk|gh[opsu]|xox[baprs])-|(?:api[_-]?key|access[_-]?token|password|secret)\s*[=:]\s*\S+)/iu;
+const OPAQUE_SESSION_KEYS = new Set(["session_id", "host_session_id", "bootstrap_session_id", "issuer_session_id", "reviewer_session_id", "worker_session_id", "auditor_session_id", "authority_host_session_id", "runtime_session_id", "observed_by_session"]);
+const OPAQUE_HOST_KEYS = new Set(["host_project_id"]);
 
 function isRawPath(value) {
   const slash = String.fromCharCode(47);
@@ -36,6 +39,12 @@ function walk(value, label, secretValues, seen) {
   else for (const [key, child] of Object.entries(value)) {
     assert(!RAW_PATH_KEYS.has(key), `${label}.${key} is a raw path field; use an external environment reference`);
     assert(!SECRET_KEY.test(key), `${label}.${key} is a secret field; keep it outside persisted data`);
+    if (OPAQUE_SESSION_KEYS.has(key)) assertOpaqueReference(child, "session", `${label}.${key}`);
+    else if (OPAQUE_HOST_KEYS.has(key)) assertOpaqueReference(child, "host", `${label}.${key}`);
+    else if (key === "thread_id") assertOpaqueReference(child, "thread", `${label}.${key}`);
+    else if (key === "host_id") assert(typeof child === "string" && (/^HOST_REF_[0-9a-f]{64}$/u.test(child) || /^SESSION_REF_[0-9a-f]{64}$/u.test(child)), `${label}.${key} must be an opaque host or session reference`);
+    else if (key === "task_name") assertOpaqueReference(child, "task", `${label}.${key}`);
+    else if (key === "admission_id") assertOpaqueReference(child, "admission", `${label}.${key}`);
     walk(child, `${label}.${key}`, secretValues, seen);
   }
   seen.delete(value);

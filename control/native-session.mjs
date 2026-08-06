@@ -4,6 +4,7 @@ import {validateHostWorkerBoundaryForAdmission} from "./host-worker-boundary.mjs
 import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 import {validateCampaignVersion} from "./campaign-names.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {assertOpaqueReference, bindRuntimeIdentity, getRuntimeIdentity, isOpaqueReference, opaqueReference, sessionReference} from "./opaque-reference.mjs";
 
 export const NATIVE_SESSION_SCHEMA = "agentos.native_session.v1";
 export const DEFAULT_MODEL = "gpt-5.6-luna";
@@ -44,12 +45,22 @@ function lane(value, label) {
 function task(value, label) {
   nonempty(value, label);
   assert(/^[a-z][a-z0-9._-]*$/u.test(value), `${label} is not a stable task name`);
+  assertOpaqueReference(value, "task", label);
+}
+
+function normalizeAdmission(admission) {
+  assert(admission && typeof admission === "object" && !Array.isArray(admission), "native admission is required");
+  if (isOpaqueReference(admission.task_name, "task")) return admission;
+  return {
+    ...admission,
+    task_name: opaqueReference("task", admission.task_name, `${admission.project_id}:${admission.campaign_id}:${admission.goal_id}:${admission.lane_id}`),
+  };
 }
 
 const ADMISSION_FIELDS = [
   "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256",
   "lane_id", "role_id", "role_display_name", "source_commit", "source_tree",
-  "worktree_id", "workspace_boundary", "governance_digest", "task_name", "prompt",
+  "worktree_id", "environment_id", "workspace_boundary", "governance_digest", "task_name", "prompt",
 ];
 
 const THREAD_IDENTITY_FIELDS = [
@@ -59,7 +70,7 @@ const THREAD_IDENTITY_FIELDS = [
 
 export function validateAdmission(admission) {
   exactKeys(admission, ADMISSION_FIELDS, "native admission");
-  for (const field of ["project_id", "campaign_id", "goal_id", "role_id", "worktree_id"]) stable(admission[field], `admission.${field}`);
+  for (const field of ["project_id", "campaign_id", "goal_id", "role_id", "worktree_id", "environment_id"]) stable(admission[field], `admission.${field}`);
   validateCampaignVersion(admission.campaign_version, "admission.campaign_version");
   lane(admission.lane_id, "admission.lane_id");
   task(admission.task_name, "admission.task_name");
@@ -95,9 +106,17 @@ function expectedIdentity(admission, raw, label) {
 }
 
 function identityFrom(admission, raw) {
+  const bindingIdentity = {
+    source_commit: admission.source?.source_commit ?? admission.source_commit,
+    source_tree: admission.source?.source_tree ?? admission.source_tree,
+    worktree_id: admission.source?.worktree_id ?? admission.worktree_id,
+    goal_id: admission.goal_id,
+    environment_id: admission.source?.environment_id ?? admission.environment_id,
+  };
+  const binding = `${admission.project_id}:${admission.campaign_id}:${admission.goal_id}:${admission.governance_digest}`;
   return {
-    thread_id: raw.thread_id,
-    host_id: raw.host_id,
+    thread_id: opaqueReference("thread", raw.thread_id, binding),
+    host_id: sessionReference(raw.host_id, bindingIdentity),
     project_id: admission.project_id,
     campaign_id: admission.campaign_id,
     campaign_version: admission.campaign_version,
@@ -112,26 +131,24 @@ function identityFrom(admission, raw) {
 }
 
 function expectedSessionIds(session, raw, label) {
-  assert(raw.thread_id === session.thread_id, `${label}.thread_id differs from active session`);
-  assert(raw.host_id === session.host_id, `${label}.host_id differs from active session`);
-}
-
-function idsFor(session) {
-  return {thread_id: session.thread_id, host_id: session.host_id, identity: session.identity};
+  const runtime = getRuntimeIdentity(session);
+  assert(raw.thread_id === runtime.thread_id, `${label}.thread_id differs from active session`);
+  assert(raw.host_id === runtime.host_id, `${label}.host_id differs from active session`);
 }
 
 async function removeAndVerify(host, session, reason) {
-  const identity = session.identity;
+  const runtime = getRuntimeIdentity(session);
+  const identity = session;
   const order = [];
-  const pin = await host.set_thread_pinned({thread_id: session.thread_id, pinned: false, identity, reason});
+  const pin = await host.set_thread_pinned({thread_id: runtime.thread_id, host_id: runtime.host_id, pinned: false, identity, reason});
   order.push("UNPIN");
   assert(pin && pin.pinned === false, "host did not confirm unpin");
-  const archive = await host.set_thread_archived({thread_id: session.thread_id, archived: true, identity, reason});
+  const archive = await host.set_thread_archived({thread_id: runtime.thread_id, host_id: runtime.host_id, archived: true, identity, reason});
   order.push("ARCHIVE");
   assert(archive && archive.archived === true, "host did not confirm archive");
   const roster = await host.list_threads({identity, include_archived: false});
   assert(roster && Array.isArray(roster.threads), "host roster readback is invalid");
-  assert(!roster.threads.some((thread) => thread.thread_id === session.thread_id), "closed thread remains in host roster");
+  assert(!roster.threads.some((thread) => thread.thread_id === runtime.thread_id || thread.host_id === runtime.host_id), "closed thread remains in host roster");
   order.push("ROSTER_REMOVE");
   order.push("ROSTER_VERIFY");
   return {order, active_roster_removed: true};
@@ -149,47 +166,48 @@ async function cleanupCreated(host, admission, created, reason) {
     expectedIdentity(admission, candidates[0], "cleanup roster readback");
     resolved = {thread_id: candidates[0].thread_id, host_id: candidates[0].host_id};
   }
-  const session = {thread_id: resolved.thread_id, host_id: resolved.host_id, identity: identityFrom(admission, resolved)};
+  const session = bindRuntimeIdentity(identityFrom(admission, resolved), {thread_id: resolved.thread_id, host_id: resolved.host_id});
   return {attempted: true, ...(await removeAndVerify(host, session, reason))};
 }
 
 export async function spawnNativeSession(host, admission, {host_worker_boundary = null} = {}) {
   validateHostAdapter(host);
-  validateAdmission(admission);
-  if (host_worker_boundary !== null) validateHostWorkerBoundaryForAdmission(host_worker_boundary, admission);
+  const boundAdmission = normalizeAdmission(admission);
+  validateAdmission(boundAdmission);
+  if (host_worker_boundary !== null) validateHostWorkerBoundaryForAdmission(host_worker_boundary, boundAdmission);
   let created = null;
   try {
     const createInput = {
-      task_name: admission.task_name,
-      message: admission.prompt,
+      task_name: boundAdmission.task_name,
+      message: boundAdmission.prompt,
       model: DEFAULT_MODEL,
       reasoning_effort: DEFAULT_REASONING_EFFORT,
-      identity: {...admission},
+      identity: {...boundAdmission},
     };
     if (host_worker_boundary !== null) createInput.host_worker_boundary = {...host_worker_boundary};
     const raw = await host.create_thread(createInput);
     if (raw && typeof raw === "object") created = {thread_id: raw.thread_id ?? null, host_id: raw.host_id ?? null};
     exactKeys(raw, THREAD_IDENTITY_FIELDS, "create_thread readback");
-    expectedIdentity(admission, raw, "create_thread readback");
-    const session = {
+    expectedIdentity(boundAdmission, raw, "create_thread readback");
+    const session = bindRuntimeIdentity({
       schema: NATIVE_SESSION_SCHEMA,
       version: 1,
       status: "ACTIVE",
-      ...identityFrom(admission, raw),
+      ...identityFrom(boundAdmission, raw),
       model: DEFAULT_MODEL,
       reasoning_effort: DEFAULT_REASONING_EFFORT,
-      governance_digest: admission.governance_digest,
+      governance_digest: boundAdmission.governance_digest,
       handoff: null,
       digest: null,
-    };
+    }, {thread_id: raw.thread_id, host_id: raw.host_id});
     session.digest = digestWithout(session, "digest");
     assertPortableRecord(session, "native session");
-    const pin = await host.set_thread_pinned({thread_id: raw.thread_id, pinned: true, identity: session});
+    const pin = await host.set_thread_pinned({thread_id: raw.thread_id, host_id: raw.host_id, pinned: true, identity: session});
     assert(pin && pin.pinned === true, "host did not confirm pin");
     return session;
   } catch (error) {
     if (created) {
-      try { await cleanupCreated(host, admission, created, "SPAWN_FAILURE"); } catch (cleanupError) { error.cleanup_error = cleanupError.message; }
+      try { await cleanupCreated(host, boundAdmission, created, "SPAWN_FAILURE"); } catch (cleanupError) { error.cleanup_error = cleanupError.message; }
     }
     throw error;
   }
@@ -205,7 +223,9 @@ export function validateSession(session) {
   exactKeys(session, ["schema", "version", "status", ...THREAD_IDENTITY_FIELDS, "workspace_boundary", "model", "reasoning_effort", "governance_digest", "handoff", "digest"], "native session");
   assert(session.schema === NATIVE_SESSION_SCHEMA && session.version === 1, "native session identity is invalid");
   assert(session.status === "ACTIVE", "native session is not active");
-  for (const field of THREAD_IDENTITY_FIELDS) nonempty(session[field], `session.${field}`);
+  assertOpaqueReference(session.thread_id, "thread", "session.thread_id");
+  assertOpaqueReference(session.host_id, "session", "session.host_id");
+  for (const field of THREAD_IDENTITY_FIELDS.slice(2)) nonempty(session[field], `session.${field}`);
   validateWorkspaceBoundary(session.workspace_boundary);
   assert(COMMIT.test(session.source_commit) && COMMIT.test(session.source_tree), "native session source identity is invalid");
   assert(session.model === DEFAULT_MODEL && session.reasoning_effort === DEFAULT_REASONING_EFFORT, "native session defaults are invalid");
@@ -215,12 +235,13 @@ export function validateSession(session) {
   return session;
 }
 
-export async function readMeaningfulProgress(host, session, timeout_ms = 900_000) {
+export async function readMeaningfulProgress(host, session, timeout_ms = 900_000, {secretValues = []} = {}) {
   validateSession(session);
-  const waited = await host.wait_threads({targets: [{thread_id: session.thread_id, host_id: session.host_id}], timeout_ms, identity: session});
+  const runtime = getRuntimeIdentity(session);
+  const waited = await host.wait_threads({targets: [{thread_id: runtime.thread_id, host_id: runtime.host_id}], timeout_ms, identity: session});
   assert(waited && Array.isArray(waited.threads) && waited.threads.length === 1, "wait_threads returned the wrong target count");
-  assert(waited.threads[0].thread_id === session.thread_id && waited.threads[0].host_id === session.host_id, "wait_threads returned the wrong target");
-  const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "progress"});
+  assert(waited.threads[0].thread_id === runtime.thread_id && waited.threads[0].host_id === runtime.host_id, "wait_threads returned the wrong target");
+  const raw = await host.read_thread({thread_id: runtime.thread_id, host_id: runtime.host_id, identity: session, view: "progress"});
   expectedIdentity(session, raw, "progress readback");
   expectedSessionIds(session, raw, "progress readback");
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "progress"], "progress readback");
@@ -228,13 +249,14 @@ export async function readMeaningfulProgress(host, session, timeout_ms = 900_000
   assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(raw.progress.result_type), "progress is not meaningful");
   nonempty(raw.progress.summary, "progress.summary");
   assert(SHA256.test(raw.progress.artifact_sha256) && SHA256.test(raw.progress.evidence_sha256), "progress evidence is invalid");
-  assertPortableRecord(raw.progress, "native progress");
+  assertPortableRecord(raw.progress, "native progress", {secretValues});
   return raw.progress;
 }
 
 export async function readGatePacket(host, session, {renderedForGate = null} = {}) {
   validateSession(session);
-  const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "gate_packet"});
+  const runtime = getRuntimeIdentity(session);
+  const raw = await host.read_thread({thread_id: runtime.thread_id, host_id: runtime.host_id, identity: session, view: "gate_packet"});
   expectedIdentity(session, raw, "gate packet readback");
   expectedSessionIds(session, raw, "gate packet readback");
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "gate_packet"], "gate packet readback");
@@ -251,29 +273,29 @@ export async function readGatePacket(host, session, {renderedForGate = null} = {
     assert(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"].includes(item.answer), `gate packet ${index}.answer is invalid`);
     assert(item.evidence && typeof item.evidence === "object" && !Array.isArray(item.evidence), `gate packet ${index}.evidence is invalid`);
   }
-  assertPortableRecord(raw, "native gate packet");
   return raw.gate_packet;
 }
 
-export async function closeNativeSession(host, session, handoff) {
+export async function closeNativeSession(host, session, handoff, {secretValues = []} = {}) {
   validateSession(session);
+  const runtime = getRuntimeIdentity(session);
   exactKeys(handoff, ["summary", "result_type", "artifact_sha256", "evidence_sha256"], "handoff input");
   nonempty(handoff.summary, "handoff.summary");
   assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(handoff.result_type), "handoff is not meaningful");
   assert(SHA256.test(handoff.artifact_sha256) && SHA256.test(handoff.evidence_sha256), "handoff evidence is invalid");
-  assertPortableRecord(handoff, "native handoff input");
-  await host.send_message_to_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, message: "Return the final typed handoff for this task."});
-  const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "handoff"});
+  assertPortableRecord(handoff, "native handoff input", {secretValues});
+  await host.send_message_to_thread({thread_id: runtime.thread_id, host_id: runtime.host_id, identity: session, message: "Return the final typed handoff for this task."});
+  const raw = await host.read_thread({thread_id: runtime.thread_id, host_id: runtime.host_id, identity: session, view: "handoff"});
   expectedIdentity(session, raw, "handoff readback");
   expectedSessionIds(session, raw, "handoff readback");
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "handoff"], "handoff readback");
   exactKeys(raw.handoff, ["summary", "result_type", "artifact_sha256", "evidence_sha256"], "typed handoff");
   assert(raw.handoff.summary === handoff.summary && raw.handoff.result_type === handoff.result_type && raw.handoff.artifact_sha256 === handoff.artifact_sha256 && raw.handoff.evidence_sha256 === handoff.evidence_sha256, "host handoff differs from the requested handoff");
-  assertPortableRecord(raw.handoff, "native typed handoff");
+  assertPortableRecord(raw.handoff, "native typed handoff", {secretValues});
   const closure = await removeAndVerify(host, session, "NORMAL_CLOSURE");
   const closed = {...session, status: "CLOSED", handoff: raw.handoff, digest: null};
   closed.digest = digestWithout(closed, "digest");
-  assertPortableRecord(closed, "closed native session");
+  assertPortableRecord(closed, "closed native session", {secretValues});
   return {session: closed, closure};
 }
 

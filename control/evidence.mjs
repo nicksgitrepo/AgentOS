@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import {assert, canonicalJson, digestWithout, sha256} from "./canonical-json.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {assertOpaqueReference, isOpaqueReference, sessionReference} from "./opaque-reference.mjs";
 
 export const IDENTITY_FIELDS = Object.freeze([
   "source_commit",
@@ -24,6 +25,12 @@ function nonempty(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be nonempty`);
 }
 
+function publicIdentity(identity) {
+  const normalized = {...identity};
+  if (!isOpaqueReference(normalized.session_id, "session")) normalized.session_id = sessionReference(normalized.session_id, normalized);
+  return normalized;
+}
+
 export function validateIdentity(identity, label = "identity") {
   assert(identity && typeof identity === "object" && !Array.isArray(identity), `${label} must be an object`);
   const keys = Object.keys(identity).sort();
@@ -32,6 +39,7 @@ export function validateIdentity(identity, label = "identity") {
   assert(COMMIT.test(identity.source_commit), `${label}.source_commit is invalid`);
   assert(COMMIT.test(identity.source_tree), `${label}.source_tree is invalid`);
   for (const field of IDENTITY_FIELDS.slice(2)) nonempty(identity[field], `${label}.${field}`);
+  assertOpaqueReference(identity.session_id, "session", `${label}.session_id`);
   return identity;
 }
 
@@ -42,9 +50,10 @@ export function createEvidence({evidence_id, question_id, graph_digest, evidence
   nonempty(evidence_slot, "evidence_slot");
   assert(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"].includes(answer), "answer is invalid");
   nonempty(kind, "kind");
-  validateIdentity(identity);
-  nonempty(issuer_session_id, "issuer_session_id");
-  assert(issuer_session_id !== identity.session_id, "issuer_session_id must differ from worker session_id");
+  const normalizedIdentity = publicIdentity(identity);
+  validateIdentity(normalizedIdentity);
+  const normalizedIssuer = isOpaqueReference(issuer_session_id, "session") ? issuer_session_id : sessionReference(issuer_session_id, normalizedIdentity);
+  assert(normalizedIssuer !== normalizedIdentity.session_id, "issuer_session_id must differ from worker session_id");
   assert(["HOST_READBACK", "INDEPENDENT_AUDITOR"].includes(issuer_kind), "issuer_kind is invalid");
   assert(supports_answer === true, "evidence must explicitly support its answer");
   if (evidence_slot === "review") assert(issuer_kind === "INDEPENDENT_AUDITOR", "review evidence requires an independent auditor");
@@ -57,8 +66,8 @@ export function createEvidence({evidence_id, question_id, graph_digest, evidence
     answer,
     kind,
     value_sha256: sha256(value),
-    ...identity,
-    issuer_session_id,
+    ...normalizedIdentity,
+    issuer_session_id: normalizedIssuer,
     issuer_kind,
     supports_answer,
     observed_at_utc,
@@ -85,7 +94,7 @@ export function validateEvidence(record, {question_id, graph_digest, evidence_sl
   validateIdentity(identity, label);
   assert(binding && typeof binding === "object", `${label} binding is required`);
   for (const field of IDENTITY_FIELDS) assert(record[field] === binding[field], `${label}.${field} differs from execution binding`);
-  nonempty(record.issuer_session_id, `${label}.issuer_session_id`);
+  assertOpaqueReference(record.issuer_session_id, "session", `${label}.issuer_session_id`);
   assert(record.issuer_session_id !== binding.session_id, `${label} issuer cannot be the worker session`);
   assert(["HOST_READBACK", "INDEPENDENT_AUDITOR"].includes(record.issuer_kind), `${label}.issuer_kind is invalid`);
   assert(record.supports_answer === true, `${label} does not support its answer`);

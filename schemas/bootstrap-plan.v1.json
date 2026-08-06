@@ -12,7 +12,18 @@
     "mode": { "const": "RAPID_PROTOTYPING" },
     "next_mode": { "const": "ITERATION" },
     "owner_context_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "source_binding": { "type": "object" },
+    "source_binding": {
+      "type": "object",
+      "required": ["source_commit", "source_tree", "worktree_id", "bootstrap_session_id", "environment_id"],
+      "properties": {
+        "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "source_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "worktree_id": { "type": "string", "minLength": 1 },
+        "bootstrap_session_id": { "type": "string", "pattern": "^SESSION_REF_[0-9a-f]{64}$" },
+        "environment_id": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
     "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
     "defaults": { "type": "object" },
     "conversation": { "type": "object" },

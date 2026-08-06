@@ -9,6 +9,7 @@ import {auditorDisplayName} from "./campaign-names.mjs";
 import {runIntentRegulatorLoop} from "./intent-regulator.mjs";
 import {loadQuestionCatalog} from "./question-catalog.mjs";
 import {abortNativeSession, closeNativeSession, readMeaningfulProgress, spawnNativeSession, validateHostAdapter} from "./native-session.mjs";
+import {getRuntimeIdentity} from "./opaque-reference.mjs";
 import {loadNativeHostAdapter} from "./native-host-loader.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
 
@@ -30,7 +31,7 @@ function digest(value, label) {
   assert(typeof value === "string" && DIGEST.test(value), `${label} must be a SHA-256 digest`);
 }
 
-function validateOutcome(outcome) {
+function validateOutcome(outcome, secretValues = []) {
   exactKeys(outcome, ["schema", "version", "status", "campaign_plan", "campaign_run", "digest"], "campaign outcome");
   assert(outcome.schema === CAMPAIGN_OUTCOME_SCHEMA && outcome.version === 1, "campaign outcome identity is invalid");
   assert(outcome.status === "COMPLETE", "campaign outcome is not complete");
@@ -38,7 +39,7 @@ function validateOutcome(outcome) {
   assert(outcome.campaign_run?.status === "COMPLETE", "campaign outcome run is not complete");
   digest(outcome.digest, "campaign outcome digest");
   assert(outcome.digest === digestWithout(outcome, "digest"), "campaign outcome digest does not match content");
-  assertPortableRecord(outcome, "campaign outcome");
+  assertPortableRecord(outcome, "campaign outcome", {secretValues});
   return outcome;
 }
 
@@ -76,6 +77,7 @@ function phaseAuditorAdmission(plan, phase) {
     source_commit: plan.source.source_commit,
     source_tree: plan.source.source_tree,
     worktree_id: plan.source.worktree_id,
+    environment_id: plan.source.environment_id,
     workspace_boundary: plan.workspace_boundary,
     governance_digest: plan.role_library_digest,
     task_name: phase.auditor.task_name,
@@ -83,10 +85,13 @@ function phaseAuditorAdmission(plan, phase) {
   };
 }
 
-function validateAuditorDecision(raw, session, phase, candidates) {
+function validateAuditorDecision(raw, session, phase, candidates, secretValues = []) {
   exactKeys(raw, ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id", "phase_id", "audit"], "phase audit readback");
   for (const field of ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id", "phase_id"]) nonempty(raw[field], `phase audit readback.${field}`);
-  for (const field of ["thread_id", "host_id", "project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"]) assert(raw[field] === session[field], `phase audit readback ${field} differs from its session`);
+  const runtime = getRuntimeIdentity(session);
+  assert(raw.thread_id === runtime.thread_id, "phase audit readback thread_id differs from its session");
+  assert(raw.host_id === runtime.host_id, "phase audit readback host_id differs from its session");
+  for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id", "lane_id", "role_id", "source_commit", "source_tree", "worktree_id"]) assert(raw[field] === session[field], `phase audit readback ${field} differs from its session`);
   assert(raw.phase_id === phase.phase_id && raw.role_id === "INDEPENDENT_AUDITOR", "phase audit readback role or phase differs");
   exactKeys(raw.audit, ["accepted", "reason", "evidence_sha256", "reviewed_lane_ids", "reviewed_results"], "phase audit decision");
   assert(raw.audit.accepted === true, "Independent Auditor did not accept the phase");
@@ -96,24 +101,26 @@ function validateAuditorDecision(raw, session, phase, candidates) {
   const expected = candidates.map((candidate) => candidate.lane_id).sort();
   assert(JSON.stringify(raw.audit.reviewed_lane_ids) === JSON.stringify(expected), "phase audit did not review every lane");
   assert(Array.isArray(raw.audit.reviewed_results) && raw.audit.reviewed_results.length === candidates.length, "phase audit reviewed results are incomplete");
+  assertPortableRecord(raw.audit, "phase audit decision", {secretValues});
   const expectedResults = candidates.map(({lane_id, result_digest, worker_session_id}) => ({lane_id, result_digest, worker_session_id})).sort((left, right) => left.lane_id.localeCompare(right.lane_id));
   const actualResults = [...raw.audit.reviewed_results].sort((left, right) => left.lane_id.localeCompare(right.lane_id));
   assert(JSON.stringify(actualResults) === JSON.stringify(expectedResults), "phase audit reviewed result identity differs");
   return raw.audit;
 }
 
-async function runPhaseAuditor({host, plan, phase, candidates}) {
+async function runPhaseAuditor({host, plan, phase, candidates, secretValues = []}) {
   const admission = phaseAuditorAdmission(plan, phase);
   const session = await spawnNativeSession(host, admission);
   let closed = false;
   try {
+    const runtime = getRuntimeIdentity(session);
     const request = candidates.map((candidate) => ({lane_id: candidate.lane_id, result_digest: candidate.result_digest, worker_session_id: candidate.worker_session_id, result_type: candidate.result_type, summary: candidate.summary, artifact_sha256: candidate.artifact_sha256, evidence_sha256: candidate.evidence_sha256}));
-    await host.send_message_to_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, message: JSON.stringify({type: "PHASE_AUDIT_REQUEST", phase_id: phase.phase_id, candidates: request})});
-    const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "phase_audit"});
-    const decision = validateAuditorDecision(raw, session, phase, candidates);
-    const progress = await readMeaningfulProgress(host, session, plan.defaults.progress_window_minutes * 60_000);
+    await host.send_message_to_thread({thread_id: runtime.thread_id, host_id: runtime.host_id, identity: session, message: JSON.stringify({type: "PHASE_AUDIT_REQUEST", phase_id: phase.phase_id, candidates: request})});
+    const raw = await host.read_thread({thread_id: runtime.thread_id, host_id: runtime.host_id, identity: session, view: "phase_audit"});
+    const decision = validateAuditorDecision(raw, session, phase, candidates, secretValues);
+    const progress = await readMeaningfulProgress(host, session, plan.defaults.progress_window_minutes * 60_000, {secretValues});
     assert(progress.evidence_sha256 === decision.evidence_sha256, "Auditor decision evidence differs from meaningful progress");
-    const closedSession = await closeNativeSession(host, session, progress);
+    const closedSession = await closeNativeSession(host, session, progress, {secretValues});
     closed = true;
     const auditorReadback = {
       thread_id: closedSession.session.thread_id,
@@ -140,6 +147,7 @@ async function runPhaseAuditor({host, plan, phase, candidates}) {
       acceptance_digest: null,
     };
     acceptance.acceptance_digest = digestWithout(acceptance, "acceptance_digest");
+    assertPortableRecord(acceptance, "phase acceptance", {secretValues});
     return acceptance;
   } catch (error) {
     if (!closed) {
@@ -185,9 +193,9 @@ export function createCampaignAuditSupervisor({readSnapshot, onAudit, interval_m
   });
 }
 
-export async function prepareNativeCampaign({root, bootstrap_plan, goal, campaign_id, campaign_version, source, role_library = null}) {
+export async function prepareNativeCampaign({root, bootstrap_plan, goal, campaign_id, campaign_version, source, role_library = null, secretValues = []}) {
   const campaign_plan = await compileCampaignPlan(root, {plan: bootstrap_plan, goal, campaign_id, campaign_version, source, role_library});
-  assertPortableRecord(campaign_plan, "prepared native campaign plan");
+  assertPortableRecord(campaign_plan, "prepared native campaign plan", {secretValues});
   return {campaign_plan};
 }
 
@@ -195,7 +203,8 @@ export async function runNativeCampaign({root, bootstrap_plan, goal, campaign_id
   validateHostAdapter(host);
   nonempty(authority_secret, "campaign authority secret");
   nonempty(evidence_secret, "campaign evidence secret");
-  const prepared = await prepareNativeCampaign({root, bootstrap_plan, goal, campaign_id, campaign_version, source, role_library});
+  const secretValues = [authority_secret, evidence_secret];
+  const prepared = await prepareNativeCampaign({root, bootstrap_plan, goal, campaign_id, campaign_version, source, role_library, secretValues});
   const auditSupervisor = intent_regulator ? createCampaignAuditSupervisor(intent_regulator) : null;
   auditSupervisor?.start();
   try {
@@ -223,14 +232,14 @@ export async function runNativeCampaign({root, bootstrap_plan, goal, campaign_id
       },
       async acceptPhase({phase, candidates}) {
         auditSupervisor?.assertHealthy();
-        const acceptance = await runPhaseAuditor({host, plan: prepared.campaign_plan, phase, candidates});
+        const acceptance = await runPhaseAuditor({host, plan: prepared.campaign_plan, phase, candidates, secretValues});
         auditSupervisor?.assertHealthy();
         return acceptance;
       },
     });
     const outcome = {schema: CAMPAIGN_OUTCOME_SCHEMA, version: 1, status: "COMPLETE", campaign_plan: prepared.campaign_plan, campaign_run, digest: null};
     outcome.digest = digestWithout(outcome, "digest");
-    const validated = validateOutcome(outcome);
+    const validated = validateOutcome(outcome, secretValues);
     if (auditSupervisor) await auditSupervisor.stop();
     return validated;
   } catch (error) {

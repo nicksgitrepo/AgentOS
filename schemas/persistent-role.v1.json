@@ -12,7 +12,7 @@
     "lifetime": { "const": "PERSISTENT" },
     "project_id": { "type": "string" },
     "environment_id": { "type": "string" },
-    "host_session_id": { "type": "string" },
+    "host_session_id": { "type": "string", "pattern": "^SESSION_REF_[0-9a-f]{64}$" },
     "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "source_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "governance_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },

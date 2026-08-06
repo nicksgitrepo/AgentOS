@@ -3,6 +3,7 @@ import {compileRoleLibrary} from "./role-library.mjs";
 import {DEFAULT_MODEL, DEFAULT_REASONING_EFFORT} from "./native-session.mjs";
 import {copyWorkspaceBoundary, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {isOpaqueReference, opaqueReference, assertOpaqueReference} from "./opaque-reference.mjs";
 
 export const BOOTSTRAP_PLAN_SCHEMA = "agentos.bootstrap_plan.v1";
 export const BOOTSTRAP_MODES = Object.freeze(["RAPID_PROTOTYPING", "ITERATION"]);
@@ -27,6 +28,7 @@ function validateSourceBinding(binding) {
   exactKeys(binding, ["source_commit", "source_tree", "worktree_id", "bootstrap_session_id", "environment_id"], "bootstrap source binding");
   assert(COMMIT.test(binding.source_commit) && COMMIT.test(binding.source_tree), "bootstrap source binding commit/tree is invalid");
   for (const field of ["worktree_id", "bootstrap_session_id", "environment_id"]) nonempty(binding[field], `bootstrap source binding ${field}`);
+  assertOpaqueReference(binding.bootstrap_session_id, "session", "bootstrap source binding bootstrap_session_id");
 }
 
 function validateRoleLibraryBinding(library) {
@@ -46,7 +48,12 @@ export async function compileBootstrapPlan(root, {project_id, owner_context, sou
   nonempty(project_id, "project_id");
   assert(ID.test(project_id), "project_id is invalid");
   assert(owner_context && typeof owner_context === "object" && !Array.isArray(owner_context), "owner_context must be an object");
-  validateSourceBinding(source_binding);
+  assert(source_binding && typeof source_binding === "object" && !Array.isArray(source_binding), "source_binding is required");
+  const boundSourceBinding = {
+    ...source_binding,
+    bootstrap_session_id: isOpaqueReference(source_binding.bootstrap_session_id, "session") ? source_binding.bootstrap_session_id : opaqueReference("session", source_binding.bootstrap_session_id, `${project_id}:${source_binding.environment_id}`),
+  };
+  validateSourceBinding(boundSourceBinding);
   validateWorkspaceBoundary(workspace_boundary);
   assert(rapid_prototyping === true, "this compiler currently requires Rapid Prototyping Mode");
   const roleLibrary = validateRoleLibraryBinding(role_library ?? await compileRoleLibrary(root));
@@ -67,7 +74,7 @@ export async function compileBootstrapPlan(root, {project_id, owner_context, sou
     mode: "RAPID_PROTOTYPING",
     next_mode: "ITERATION",
     owner_context_sha256: sha256(owner_context),
-    source_binding: {...source_binding},
+    source_binding: boundSourceBinding,
     workspace_boundary: copyWorkspaceBoundary(workspace_boundary),
     defaults: {model: DEFAULT_MODEL, reasoning_effort: DEFAULT_REASONING_EFFORT, progress_window_minutes: 15},
     conversation: {

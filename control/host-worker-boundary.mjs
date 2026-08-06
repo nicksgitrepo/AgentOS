@@ -2,6 +2,7 @@ import path from "node:path";
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {copyWorkspaceBoundary, getWorkspaceRuntimeBinding, validateAgentWorkPath, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {assertOpaqueReference, isOpaqueReference, opaqueReference} from "./opaque-reference.mjs";
 
 export const HOST_WORKER_BOUNDARY_SCHEMA = "agentos.host_worker_boundary.v1";
 export const HOST_WORKER_SCOPES = Object.freeze(["RELEASE_CONTROL", "PRODUCT"]);
@@ -17,6 +18,7 @@ const PROTECTED_ACTIONS = new Set([
 ]);
 const WORKSPACE_PATH_REF = "AGENTOS_WORKSPACE_PATH";
 const RUNTIME_WORKSPACE_PATH = Symbol("agentos.host_worker.runtime_workspace_path");
+const RUNTIME_HOST_PROJECT = Symbol("agentos.host_worker.runtime_host_project");
 const FIELDS = [
   "schema", "version", "status", "worker_id", "worker_scope", "workspace_mode", "source_root_kind", "host_project_id",
   "host_project_role", "campaign_project_id", "source_binding", "workspace_boundary", "product_action", "protected_actions",
@@ -62,6 +64,7 @@ function seal(boundary) {
   const sealed = {...boundary, digest: null};
   sealed.digest = digestWithout(sealed, "digest");
   if (boundary[RUNTIME_WORKSPACE_PATH]) Object.defineProperty(sealed, RUNTIME_WORKSPACE_PATH, {value: boundary[RUNTIME_WORKSPACE_PATH], enumerable: false});
+  if (boundary[RUNTIME_HOST_PROJECT]) Object.defineProperty(sealed, RUNTIME_HOST_PROJECT, {value: boundary[RUNTIME_HOST_PROJECT], enumerable: false});
   return validateHostWorkerBoundary(sealed);
 }
 
@@ -77,6 +80,9 @@ export function compileHostWorkerBoundary({worker_id, worker_scope, workspace_mo
   validateWorkspaceBoundary(workspace_boundary);
   assert(product_action === "LEAVE_PRODUCT_REPOSITORY_UNCHANGED", "product repository action is invalid");
   validateProtectedActions(protected_actions);
+  const publicHostProject = isOpaqueReference(host_project_id, "host")
+    ? host_project_id
+    : opaqueReference("host", host_project_id, `${worker_id}:${campaign_project_id}:${source_binding.source_ref}`);
   const boundary = {
     schema: HOST_WORKER_BOUNDARY_SCHEMA,
     version: 1,
@@ -85,7 +91,7 @@ export function compileHostWorkerBoundary({worker_id, worker_scope, workspace_mo
     worker_scope,
     workspace_mode,
     source_root_kind,
-    host_project_id,
+    host_project_id: publicHostProject,
     host_project_role,
     campaign_project_id,
     source_binding: {...source_binding},
@@ -96,6 +102,7 @@ export function compileHostWorkerBoundary({worker_id, worker_scope, workspace_mo
     digest: null,
   };
   if (workspace_path !== null) Object.defineProperty(boundary, RUNTIME_WORKSPACE_PATH, {value: absolutePath(workspace_path, "workspace_path"), enumerable: false});
+  if (!isOpaqueReference(host_project_id, "host")) Object.defineProperty(boundary, RUNTIME_HOST_PROJECT, {value: host_project_id, enumerable: false});
   return seal(boundary);
 }
 
@@ -107,7 +114,7 @@ export function validateHostWorkerBoundary(boundary) {
   assert(HOST_WORKER_SCOPES.includes(boundary.worker_scope), "worker_scope is invalid");
   assert(HOST_WORKSPACE_MODES.includes(boundary.workspace_mode), "workspace_mode is invalid");
   assert(SOURCE_ROOTS.has(boundary.source_root_kind), "source_root_kind is invalid");
-  nonempty(boundary.host_project_id, "host_project_id");
+  assertOpaqueReference(boundary.host_project_id, "host", "host_project_id");
   assert(HOST_PROJECT_ROLES.has(boundary.host_project_role), "host_project_role is invalid");
   identity(boundary.campaign_project_id, "campaign_project_id");
   validateSourceBinding(boundary.source_binding);

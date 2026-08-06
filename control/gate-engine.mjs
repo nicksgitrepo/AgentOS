@@ -3,6 +3,7 @@ import {assert, canonicalJson, sha256} from "./canonical-json.mjs";
 import {validateEvidence, validateIdentity} from "./evidence.mjs";
 import {ANSWERS, findGate, findTerminal, validateGateGraph} from "./gate-model.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {isOpaqueReference, sessionReference} from "./opaque-reference.mjs";
 
 export const EXECUTION_SCHEMA = "agentos.gate_execution.v1";
 
@@ -78,10 +79,12 @@ function validateEvidenceBundle(bundle, gate, graph, binding, answer, attestatio
 
 export function createExecution(graph, binding, {maxSteps = 128, authority} = {}) {
   validateGateGraph(graph);
-  validateIdentity(binding, "execution binding");
+  const publicBinding = {...binding};
+  if (!isOpaqueReference(publicBinding.session_id, "session")) publicBinding.session_id = sessionReference(publicBinding.session_id, publicBinding);
+  validateIdentity(publicBinding, "execution binding");
   assert(authority && typeof authority.register === "function" && typeof authority.seal === "function", "execution authority is required");
   assert(Number.isInteger(maxSteps) && maxSteps > 0, "maxSteps must be positive");
-  const execution = authority.register(graph, binding);
+  const execution = authority.register(graph, publicBinding);
   const state = authority.seal({
     schema: EXECUTION_SCHEMA,
     version: 1,
@@ -94,7 +97,7 @@ export function createExecution(graph, binding, {maxSteps = 128, authority} = {}
     max_steps: maxSteps,
     trace: [],
     repair_visits: {},
-    binding: {...binding},
+    binding: publicBinding,
     result: null,
     auth_tag: null,
   });

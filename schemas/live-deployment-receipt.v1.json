@@ -11,7 +11,7 @@
     "final_candidate_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "deployed_identity": { "type": "string" },
     "rollback_identity": { "type": "string" },
-    "runtime_session_id": { "type": "string" },
+    "runtime_session_id": { "type": "string", "pattern": "^SESSION_REF_[0-9a-f]{64}$" },
     "deployed_at_utc": { "type": "string", "format": "date-time" },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   }

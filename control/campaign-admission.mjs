@@ -5,6 +5,7 @@ import {createOwnerContinuationRunner, validateOwnerContinuation} from "./owner-
 import {copyWorkspaceBoundary, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
 import {validateCampaignVersion, workerDisplayName} from "./campaign-names.mjs";
+import {assertOpaqueReference, isOpaqueReference, opaqueReference} from "./opaque-reference.mjs";
 
 export const CAMPAIGN_ADMISSION_SCHEMA = "agentos.campaign_admission.v1";
 const ID = /^[A-Z][A-Z0-9._-]*$/u;
@@ -45,6 +46,7 @@ export function compileCampaignAdmission({plan, goal, project_id, campaign_id, c
   validateSource(source);
   validateWorkspaceBoundary(plan.workspace_boundary);
   const phase = lanePhase(plan, lane_id);
+  const task_ref = isOpaqueReference(task_name, "task") ? task_name : opaqueReference("task", task_name, `${campaign_id}:${campaign_version}:${lane_id}:${goal.digest}`);
   const admission = {
     schema: CAMPAIGN_ADMISSION_SCHEMA,
     version: 1,
@@ -61,7 +63,7 @@ export function compileCampaignAdmission({plan, goal, project_id, campaign_id, c
     source: {...source},
     workspace_boundary: copyWorkspaceBoundary(plan.workspace_boundary),
     governance_digest: plan.role_library_digest,
-    task_name,
+    task_name: task_ref,
     prompt,
     progress_window_minutes: plan.defaults.progress_window_minutes,
     digest: null,
@@ -82,7 +84,9 @@ export function validateCampaignAdmission(admission) {
   validateSource(admission.source);
   validateWorkspaceBoundary(admission.workspace_boundary);
   assertPortableRecord(admission, "campaign admission");
-  assert(TASK.test(admission.task_name) && typeof admission.prompt === "string" && admission.prompt.length > 0, "campaign task is invalid");
+  assert(TASK.test(admission.task_name), "campaign task reference is invalid");
+  assertOpaqueReference(admission.task_name, "task", "campaign admission task_name");
+  assert(typeof admission.prompt === "string" && admission.prompt.length > 0, "campaign prompt is invalid");
   assert(Number.isInteger(admission.progress_window_minutes) && admission.progress_window_minutes === 15, "campaign progress window is invalid");
   assert(DIGEST.test(admission.digest) && admission.digest === digestWithout(admission, "digest"), "campaign admission digest does not match content");
   return admission;
@@ -102,6 +106,7 @@ export function toNativeAdmission(admission) {
     source_commit: admission.source.source_commit,
     source_tree: admission.source.source_tree,
     worktree_id: admission.source.worktree_id,
+    environment_id: admission.source.environment_id,
     workspace_boundary: copyWorkspaceBoundary(admission.workspace_boundary),
     governance_digest: admission.governance_digest,
     task_name: admission.task_name,

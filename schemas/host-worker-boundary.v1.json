@@ -12,7 +12,7 @@
     "worker_scope": { "enum": ["RELEASE_CONTROL", "PRODUCT"] },
     "workspace_mode": { "enum": ["HOST_MANAGED_VISIBLE", "CONTROL_ISOLATED"] },
     "source_root_kind": { "enum": ["RELEASE", "PRODUCT"] },
-    "host_project_id": { "type": "string", "minLength": 1 },
+    "host_project_id": { "type": "string", "pattern": "^HOST_REF_[0-9a-f]{64}$" },
     "host_project_role": { "enum": ["RELEASE", "CONTROL", "PRODUCT"] },
     "campaign_project_id": { "type": "string" },
     "source_binding": { "type": "object" },

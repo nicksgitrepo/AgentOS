@@ -1,6 +1,7 @@
 import {assert} from "./canonical-json.mjs";
 import {createCampaignAdmissionRoute} from "./campaign-admission.mjs";
 import {spawnVisibleWorker} from "./native-session.mjs";
+import {opaqueReference} from "./opaque-reference.mjs";
 
 function exactKeys(value, expected, label) {
   assert(value && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
@@ -29,7 +30,7 @@ export function createBootstrapRuntime({host, admitCampaign}) {
       const prepared = validatePreparedAdmission(await admitCampaign({...resume_request}));
       const session = await spawnVisibleWorker(host, prepared.admission, prepared.host_worker_boundary);
       nonempty(session.host_id, "visible worker host_id");
-      return {status: "ADMITTED", admission_id: session.host_id, request_digest: resume_request.digest};
+      return {status: "ADMITTED", admission_id: opaqueReference("admission", session.host_id, resume_request.digest), request_digest: resume_request.digest};
     },
   });
 

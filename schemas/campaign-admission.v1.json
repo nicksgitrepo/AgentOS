@@ -20,7 +20,7 @@
     "source": { "type": "object" },
     "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
     "governance_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "task_name": { "type": "string" },
+    "task_name": { "type": "string", "pattern": "^task_ref_[0-9a-f]{64}$" },
     "prompt": { "type": "string", "minLength": 1 },
     "progress_window_minutes": { "const": 15 },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }

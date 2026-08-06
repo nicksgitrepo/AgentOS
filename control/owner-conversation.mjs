@@ -17,6 +17,25 @@ function plain(value, label) {
   assert(!/[{}[\]<>`]/u.test(value), `${label} looks like a technical form`);
 }
 
+export function validateOwnerQuestion(surface) {
+  exactKeys(surface, ["schema", "version", "question_id", "prompt", "choices", "boolean_answers", "internal_fields_hidden", "digest"], "owner question");
+  assert(surface.schema === OWNER_SURFACE_SCHEMA && surface.version === 1 && surface.internal_fields_hidden === true, "owner question identity is invalid");
+  assert(typeof surface.boolean_answers === "boolean", "owner question boolean_answers is invalid");
+  plain(surface.prompt, "prompt");
+  assert(Array.isArray(surface.choices) && surface.choices.length >= 2 && surface.choices.length <= 5, "owner question choices are invalid");
+  const choiceValues = new Set();
+  for (const [index, choice] of surface.choices.entries()) {
+    exactKeys(choice, ["number", "value", "label"], `owner question choice ${index}`);
+    assert(choice.number === index + 1, `owner question choice ${index} number is invalid`);
+    nonempty(choice.value, `owner question choice ${index}.value`);
+    assert(!choiceValues.has(choice.value), `owner question choice ${index}.value is duplicated`);
+    choiceValues.add(choice.value);
+    plain(choice.label, `owner question choice ${index}.label`);
+  }
+  assert(surface.digest === digestWithout(surface, "digest"), "owner question digest does not match content");
+  return surface;
+}
+
 export function renderOwnerQuestion({question_id, prompt, choices, allow_boolean = false}) {
   assert(typeof question_id === "string" && /^[A-Z][A-Z0-9._-]*$/u.test(question_id), "question_id is invalid");
   plain(prompt, "prompt");
@@ -38,13 +57,11 @@ export function renderOwnerQuestion({question_id, prompt, choices, allow_boolean
     digest: null,
   };
   surface.digest = digestWithout(surface, "digest");
-  return surface;
+  return validateOwnerQuestion(surface);
 }
 
 export function parseOwnerAnswer(surface, input) {
-  exactKeys(surface, ["schema", "version", "question_id", "prompt", "choices", "boolean_answers", "internal_fields_hidden", "digest"], "owner question");
-  assert(surface.schema === OWNER_SURFACE_SCHEMA && surface.version === 1 && surface.internal_fields_hidden === true, "owner question identity is invalid");
-  assert(surface.digest === digestWithout(surface, "digest"), "owner question digest does not match content");
+  validateOwnerQuestion(surface);
   nonempty(String(input), "owner answer");
   const normalized = String(input).trim().toLowerCase();
   if (surface.boolean_answers && ["yes", "y"].includes(normalized)) return {question_id: surface.question_id, answer: "YES", value: true};
@@ -55,4 +72,3 @@ export function parseOwnerAnswer(surface, input) {
   assert(choice, "answer number is not one of the shown choices");
   return {question_id: surface.question_id, answer: "CHOICE", value: choice.value};
 }
-

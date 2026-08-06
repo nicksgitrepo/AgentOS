@@ -8,6 +8,7 @@ import {renderGateQuestion, validateQuestionCatalog} from "./question-catalog.mj
 import {validateGateResponse} from "./gate-response.mjs";
 import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
+import {isOpaqueReference, opaqueReference} from "./opaque-reference.mjs";
 
 export const CAMPAIGN_RESULT_SCHEMA = "agentos.campaign_result.v1";
 
@@ -42,8 +43,18 @@ function validateReviewerReadback(readback, result) {
   return readback;
 }
 
-function validateAuditCandidate(result, authority_secret) {
-  assertPortableRecord(result, "campaign result");
+function reviewerReference(readback, result) {
+  return opaqueReference("session", readback.host_id, [
+    `source_commit=${result.execution.binding.source_commit}`,
+    `source_tree=${result.execution.binding.source_tree}`,
+    `worktree_id=${result.execution.binding.worktree_id}`,
+    `goal_id=${result.execution.binding.goal_id}`,
+    `environment_id=${result.execution.binding.environment_id}`,
+  ].join("|"));
+}
+
+function validateAuditCandidate(result, authority_secret, secretValues = []) {
+  assertPortableRecord(result, "campaign result", {secretValues});
   digest(result.completion_proof, "completion_proof");
   assert(result.completion_proof === proof(authority_secret, result), "campaign completion proof is invalid");
   assert(result.execution && result.execution.status === "COMPLETE", "campaign execution is not complete");
@@ -80,6 +91,7 @@ export async function runLaneCampaign({host, admission, graph, question_catalog,
   assert(graph.graph_id === admission.lane_id.toUpperCase().replaceAll("-", "_"), "campaign graph does not match admitted lane");
   const nativeAdmission = toNativeAdmission(admission);
   const authority = createExecutionAuthority(authority_secret);
+  const secretValues = [authority_secret, evidence_secret];
   let session = null;
   try {
     session = await spawnNativeSession(host, nativeAdmission);
@@ -92,7 +104,7 @@ export async function runLaneCampaign({host, admission, graph, question_catalog,
       environment_id: admission.source.environment_id,
     };
     let execution = createExecution(graph, binding, {authority});
-    const progress = await readMeaningfulProgress(host, session, admission.progress_window_minutes * 60_000);
+    const progress = await readMeaningfulProgress(host, session, admission.progress_window_minutes * 60_000, {secretValues});
     const expectedIdentity = {
       source_commit: admission.source.source_commit,
       source_tree: admission.source.source_tree,
@@ -118,7 +130,7 @@ export async function runLaneCampaign({host, admission, graph, question_catalog,
       result_type: progress.result_type,
       artifact_sha256: progress.artifact_sha256,
       evidence_sha256: progress.evidence_sha256,
-    });
+    }, {secretValues});
     const result = {
       schema: CAMPAIGN_RESULT_SCHEMA,
       version: 1,
@@ -135,7 +147,7 @@ export async function runLaneCampaign({host, admission, graph, question_catalog,
     };
     result.completion_proof = proof(authority_secret, result);
     result.digest = digestWithout(result, "digest");
-    assertPortableRecord(result, "campaign result");
+    assertPortableRecord(result, "campaign result", {secretValues});
     return result;
   } catch (error) {
     if (session) {
@@ -153,20 +165,23 @@ export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role
   digest(result.admission_digest, "admission_digest");
   digest(result.graph_digest, "graph_digest");
   assert(result.digest === digestWithout(result, "digest"), "campaign result digest does not match content");
-  validateAuditCandidate(result, authority_secret);
+  validateAuditCandidate(result, authority_secret, [authority_secret]);
   exactKeys({reviewer_session_id, reviewer_role_id, reviewer_readback, evidence_sha256, accepted, reason, accepted_at_utc, authority_secret}, ["reviewer_session_id", "reviewer_role_id", "reviewer_readback", "evidence_sha256", "accepted", "reason", "accepted_at_utc", "authority_secret"], "campaign acceptance");
-  assert(typeof reviewer_session_id === "string" && reviewer_session_id.length > 0, "reviewer_session_id is required");
-  assert(reviewer_session_id !== result.execution.binding.session_id, "worker cannot accept its own result");
+  const validatedReviewerReadback = validateReviewerReadback(reviewer_readback, result);
+  const publicReviewerSession = isOpaqueReference(reviewer_session_id, "session")
+    ? reviewer_session_id
+    : reviewerReference(validatedReviewerReadback, result);
+  assert(publicReviewerSession !== result.execution.binding.session_id, "worker cannot accept its own result");
   assert(reviewer_role_id === "INDEPENDENT_AUDITOR", "campaign acceptance requires an Independent Auditor");
-  assert(reviewer_session_id === validateReviewerReadback(reviewer_readback, result).host_id, "reviewer session does not match Auditor readback");
+  assert(publicReviewerSession === reviewerReference(validatedReviewerReadback, result), "reviewer session does not match Auditor readback");
   digest(evidence_sha256, "acceptance evidence_sha256");
   assert(accepted === true, "campaign result was not accepted");
   assert(typeof reason === "string" && reason.length > 0, "acceptance reason is required");
   assert(typeof accepted_at_utc === "string" && Number.isFinite(Date.parse(accepted_at_utc)), "accepted_at_utc is invalid");
-  const acceptance = {reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, digest: null};
+  const acceptance = {reviewer_session_id: publicReviewerSession, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, digest: null};
   acceptance.digest = digestWithout(acceptance, "digest");
   const acceptedResult = {schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: null};
   acceptedResult.digest = digestWithout(acceptedResult, "digest");
-  assertPortableRecord(acceptedResult, "accepted campaign result");
+  assertPortableRecord(acceptedResult, "accepted campaign result", {secretValues: [authority_secret]});
   return acceptedResult;
 }
