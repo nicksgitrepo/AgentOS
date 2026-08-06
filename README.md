@@ -1,6 +1,6 @@
 # AgentOS 3.0 Solo Release Candidate
 
-> Status: `3.0.0-rc.1 — PREPARED_NOT_ACTIVATED`
+> Status: `3.0.0-rc.2 — PREPARED_NOT_ACTIVATED`
 
 This repository is the clean 3.0 solo release candidate for AgentOS governance. It is
 portable and project-agnostic. Product names, private paths, credentials,
