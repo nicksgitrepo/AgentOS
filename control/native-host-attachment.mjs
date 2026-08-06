@@ -1,5 +1,6 @@
 import {assert, digestWithout, compareUtf8} from "./canonical-json.mjs";
 import {DEFAULT_MODEL, DEFAULT_REASONING_EFFORT, REQUIRED_HOST_ACTIONS, validateHostAdapter} from "./native-session.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const HOST_ATTACHMENT_SCHEMA = "agentos.native_host_attachment.v1";
 const ID = /^[A-Z][A-Z0-9._-]*$/u;
@@ -15,6 +16,7 @@ function stable(value, label) {
 }
 
 export function validateHostAttachment(attachment) {
+  assertPortableRecord(attachment, "native host attachment");
   exactKeys(attachment, ["schema", "version", "status", "attachment_id", "host_id", "project_id", "environment_id", "capabilities", "model", "reasoning_effort", "attached_at_utc", "digest"], "native host attachment");
   assert(attachment.schema === HOST_ATTACHMENT_SCHEMA && attachment.version === 1 && attachment.status === "BOUND", "native host attachment identity is invalid");
   for (const [value, label] of [[attachment.attachment_id, "attachment_id"], [attachment.host_id, "host_id"], [attachment.project_id, "project_id"], [attachment.environment_id, "environment_id"]]) stable(value, `native host ${label}`);

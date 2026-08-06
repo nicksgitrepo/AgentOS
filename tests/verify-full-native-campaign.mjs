@@ -88,7 +88,7 @@ const run = await runCampaign({
     const workerSessionId = `${assignment.lane_id.toUpperCase().replaceAll("-", "_")}-WORKER-001`;
     const result = await runLaneCampaign({host: fakeHost(graph, admission, workerSessionId), admission, graph, question_catalog: questionCatalog, authority_secret: authoritySecret, evidence_secret: evidenceSecret});
     results.set(assignment.lane_id, result);
-    return {status: "AUDIT_CANDIDATE", phase_id: phase.phase_id, lane_id: assignment.lane_id, result_digest: result.digest, worker_session_id: result.closed_session.host_id};
+    return {status: "AUDIT_CANDIDATE", phase_id: phase.phase_id, lane_id: assignment.lane_id, result_digest: result.digest, worker_session_id: result.closed_session.host_id, result_type: result.progress.result_type, summary: result.progress.summary, artifact_sha256: result.progress.artifact_sha256, evidence_sha256: result.progress.evidence_sha256};
   },
   async acceptPhase({phase, candidates}) {
     const auditorSessionId = `${phase.phase_id}-AUDITOR-001`;

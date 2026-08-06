@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import {assert, canonicalJson, sha256} from "./canonical-json.mjs";
 import {validateEvidence, validateIdentity} from "./evidence.mjs";
 import {ANSWERS, findGate, findTerminal, validateGateGraph} from "./gate-model.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const EXECUTION_SCHEMA = "agentos.gate_execution.v1";
 
@@ -81,7 +82,7 @@ export function createExecution(graph, binding, {maxSteps = 128, authority} = {}
   assert(authority && typeof authority.register === "function" && typeof authority.seal === "function", "execution authority is required");
   assert(Number.isInteger(maxSteps) && maxSteps > 0, "maxSteps must be positive");
   const execution = authority.register(graph, binding);
-  return authority.seal({
+  const state = authority.seal({
     schema: EXECUTION_SCHEMA,
     version: 1,
     graph_id: graph.graph_id,
@@ -97,6 +98,8 @@ export function createExecution(graph, binding, {maxSteps = 128, authority} = {}
     result: null,
     auth_tag: null,
   });
+  assertPortableRecord(state, "gate execution");
+  return state;
 }
 
 export function answerCurrent(state, graph, answer, evidence, {authority, attestation_secret} = {}) {
@@ -138,10 +141,13 @@ export function answerCurrent(state, graph, answer, evidence, {authority, attest
     };
     const sealed = authority.seal(next, state.auth_tag);
     authority.finish(state.execution_id, graph, state.binding);
+    assertPortableRecord(sealed, "gate execution");
     return sealed;
   }
   if (graph.nodes.some((node) => node.id === target)) {
-    return authority.seal({...state, current_node: target, step_count: state.step_count + 1, trace, repair_visits: repairVisits, auth_tag: null}, state.auth_tag);
+    const sealed = authority.seal({...state, current_node: target, step_count: state.step_count + 1, trace, repair_visits: repairVisits, auth_tag: null}, state.auth_tag);
+    assertPortableRecord(sealed, "gate execution");
+    return sealed;
   }
   const terminal = findTerminal(graph, target);
   const next = {
@@ -156,6 +162,7 @@ export function answerCurrent(state, graph, answer, evidence, {authority, attest
   };
   const sealed = authority.seal(next, state.auth_tag);
   authority.finish(state.execution_id, graph, state.binding);
+  assertPortableRecord(sealed, "gate execution");
   return sealed;
 }
 

@@ -1,23 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "agentos.workspace_boundary.v1",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema", "version", "status", "layout", "release_root", "projects_root", "project_root", "control_root", "worktrees_root", "control_repository_policy", "project_state_policy", "agent_worktree_policy", "references_policy", "digest"],
-  "properties": {
-    "schema": { "const": "agentos.workspace_boundary.v1" },
-    "version": { "const": 1 },
-    "status": { "const": "PREPARED_NOT_ACTIVATED" },
-    "layout": { "const": "SIBLING_RELEASE_PROJECTS_CONTROL" },
-    "release_root": { "type": "string", "minLength": 1 },
-    "projects_root": { "type": "string", "minLength": 1 },
-    "project_root": { "type": "string", "minLength": 1 },
-    "control_root": { "type": "string", "minLength": 1 },
-    "worktrees_root": { "type": "string", "minLength": 1 },
-    "control_repository_policy": { "const": "CREATE_SIBLING_REPOSITORY_BEFORE_ANY_WRITE" },
-    "project_state_policy": { "const": "NEVER_WRITE_OR_STORE_AGENTOS_ARTIFACTS" },
-    "agent_worktree_policy": { "const": "ISOLATED_CHECKOUTS_ONLY_UNDER_CONTROL_REPOSITORY" },
-    "references_policy": { "const": "NO_AGENTOS_REFERENCES_IN_PROJECT_TREE" },
-    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
-  }
+  "title": "Retired workspace boundary v1",
+  "description": "Version 1 is retired because it allowed raw machine paths in persisted records. Use agentos.workspace_boundary.v2 with environment references.",
+  "not": {}
 }

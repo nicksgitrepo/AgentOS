@@ -1,4 +1,6 @@
 import {assert, digestWithout, sha256} from "./canonical-json.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
+import {validateCampaignVersion} from "./campaign-names.mjs";
 
 export const OWNER_CONTINUATION_SCHEMA = "agentos.owner_continuation.v1";
 export const OWNER_RESUME_REQUEST_SCHEMA = "agentos.owner_resume_request.v1";
@@ -44,7 +46,8 @@ function validateOwnerAnswer(answer) {
 function validateResumeRequest(request) {
   exactKeys(request, ["schema", "version", "activation_id", "project_id", "campaign_id", "campaign_version", "goal_id", "question_id", "owner_answer", "protected_actions", "digest"], "owner resume request");
   assert(request.schema === OWNER_RESUME_REQUEST_SCHEMA && request.version === 1, "owner resume request identity is invalid");
-  for (const [field, label] of [["activation_id", "activation_id"], ["project_id", "project_id"], ["campaign_id", "campaign_id"], ["campaign_version", "campaign_version"], ["goal_id", "goal_id"], ["question_id", "question_id"]]) identity(request[field], label);
+  for (const [field, label] of [["activation_id", "activation_id"], ["project_id", "project_id"], ["campaign_id", "campaign_id"], ["goal_id", "goal_id"], ["question_id", "question_id"]]) identity(request[field], label);
+  validateCampaignVersion(request.campaign_version, "campaign resume campaign_version");
   validateOwnerAnswer(request.owner_answer);
   validateProtectedActions(request.protected_actions);
   assert(DIGEST.test(request.digest) && request.digest === digestWithout(request, "digest"), "owner resume request digest does not match content");
@@ -63,7 +66,8 @@ export function ownerAnswerDigest(answer) {
 }
 
 export function createOwnerContinuation({activation_id, project_id, campaign_id, campaign_version, goal_id, question_id, expected_value, protected_actions}) {
-  for (const [field, value] of [["activation_id", activation_id], ["project_id", project_id], ["campaign_id", campaign_id], ["campaign_version", campaign_version], ["goal_id", goal_id], ["question_id", question_id]]) identity(value, field);
+  for (const [field, value] of [["activation_id", activation_id], ["project_id", project_id], ["campaign_id", campaign_id], ["goal_id", goal_id], ["question_id", question_id]]) identity(value, field);
+  validateCampaignVersion(campaign_version);
   expectedValue(expected_value, "expected_value");
   validateProtectedActions(protected_actions);
   return seal({
@@ -87,10 +91,12 @@ export function createOwnerContinuation({activation_id, project_id, campaign_id,
 }
 
 export function validateOwnerContinuation(record) {
+  assertPortableRecord(record, "owner continuation");
   exactKeys(record, CONTINUATION_FIELDS, "owner continuation");
   assert(record.schema === OWNER_CONTINUATION_SCHEMA && record.version === 1, "owner continuation identity is invalid");
   assert(STATUSES.has(record.status), "owner continuation status is invalid");
-  for (const [field, value] of [["activation_id", record.activation_id], ["project_id", record.project_id], ["campaign_id", record.campaign_id], ["campaign_version", record.campaign_version], ["goal_id", record.goal_id], ["question_id", record.question_id]]) identity(value, field);
+  for (const [field, value] of [["activation_id", record.activation_id], ["project_id", record.project_id], ["campaign_id", record.campaign_id], ["goal_id", record.goal_id], ["question_id", record.question_id]]) identity(value, field);
+  validateCampaignVersion(record.campaign_version);
   expectedValue(record.expected_value, "expected_value");
   validateProtectedActions(record.protected_actions);
   if (record.owner_answer !== null) validateOwnerAnswer(record.owner_answer);

@@ -24,11 +24,12 @@ assert.equal(validateCampaignPlan(plan).digest, plan.digest);
 assert.equal(plan.phases.length, 4);
 assert.equal(plan.phases.flatMap((phase) => phase.worker_assignments).length, 12);
 assert(plan.phases.every((phase) => phase.auditor.role_id === "INDEPENDENT_AUDITOR"));
-assert(plan.phases.flatMap((phase) => phase.worker_assignments).every((assignment) => assignment.role_display_name.endsWith(" Worker")));
+assert(plan.phases.flatMap((phase) => phase.worker_assignments).every((assignment) => assignment.role_display_name.endsWith(" Worker V1")));
+assert(plan.phases.every((phase) => phase.auditor.display_name.endsWith(" Auditor V1")));
 assert.equal(plan.workspace_boundary.project_state_policy, "NEVER_WRITE_OR_STORE_AGENTOS_ARTIFACTS");
 const auditorReadbackFor = (phase) => ({thread_id: `${phase.phase_id}-THREAD-001`, host_id: `${phase.phase_id}-AUDITOR-001`, project_id: plan.project_id, campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, goal_id: plan.goal_id, phase_id: phase.phase_id, role_id: "INDEPENDENT_AUDITOR", source_commit: source.source_commit, source_tree: source.source_tree, worktree_id: source.worktree_id});
 const duplicatePhase = plan.phases[0];
-const duplicateCandidates = duplicatePhase.worker_assignments.map((assignment) => ({status: "AUDIT_CANDIDATE", phase_id: duplicatePhase.phase_id, lane_id: assignment.lane_id, result_digest: sha256(assignment.lane_id), worker_session_id: "SAME-WORKER-SESSION"}));
+const duplicateCandidates = duplicatePhase.worker_assignments.map((assignment) => ({status: "AUDIT_CANDIDATE", phase_id: duplicatePhase.phase_id, lane_id: assignment.lane_id, result_digest: sha256(assignment.lane_id), worker_session_id: "SAME-WORKER-SESSION", result_type: "VERIFIED_BEHAVIOR", summary: "duplicate hostile fixture", artifact_sha256: "a".repeat(64), evidence_sha256: "b".repeat(64)}));
 const duplicateAcceptance = {
   status: "ACCEPTED",
   reviewer_role_id: "INDEPENDENT_AUDITOR",
@@ -47,13 +48,17 @@ assert.throws(() => recordPhaseAcceptance(createCampaignRun(plan), plan, {phase_
 const run = await runCampaign({
   plan,
   async runLane(assignment, {phase}) {
-    return {
-      status: "AUDIT_CANDIDATE",
-      phase_id: phase.phase_id,
-      lane_id: assignment.lane_id,
-      result_digest: sha256({phase: phase.phase_id, lane: assignment.lane_id}),
-      worker_session_id: `${assignment.lane_id.toUpperCase().replaceAll("-", "_")}-WORKER-001`,
-    };
+      return {
+        status: "AUDIT_CANDIDATE",
+        phase_id: phase.phase_id,
+        lane_id: assignment.lane_id,
+        result_digest: sha256({phase: phase.phase_id, lane: assignment.lane_id}),
+        worker_session_id: `${assignment.lane_id.toUpperCase().replaceAll("-", "_")}-WORKER-001`,
+        result_type: "VERIFIED_BEHAVIOR",
+        summary: `The ${assignment.lane_id} result was observed.`,
+        artifact_sha256: sha256({artifact: assignment.lane_id}),
+        evidence_sha256: sha256({evidence: assignment.lane_id}),
+      };
   },
   async acceptPhase({phase, candidates}) {
     const acceptance = {

@@ -83,8 +83,10 @@ worktrees, notes, or self-references are stored there.
 ## Release replacement
 
 Release replacement changes only the `AgentOS` checkout at
-`workspace_boundary.release_root`. The project container and external control
-repository remain in place. The Intent Regulator receives the new release
+`workspace_boundary.release_root_ref`, which the host resolves from an
+environment binding. Persisted records contain only that reference and a
+digest. The project container and external control repository remain in place.
+The Intent Regulator receives the new release
 identity and compiles a `release_update` record with one of two modes:
 
 ```text

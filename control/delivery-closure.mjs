@@ -1,5 +1,7 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {authorizeRuntimeRequest, validateOwnerApproval, validateRuntimeRequest} from "./runtime-authority.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
+import {validateCampaignVersion} from "./campaign-names.mjs";
 
 export const DELIVERY_CHOICE_SCHEMA = "agentos.delivery_choice.v1";
 export const DELIVERY_MODES = Object.freeze(["ACCEPTED_RESULT", "LOCAL_ONLY", "PUSH", "MERGE", "DEPLOY", "RELEASE"]);
@@ -18,7 +20,8 @@ function exactKeys(value, expected, label) {
 function nonempty(value, label) { assert(typeof value === "string" && value.trim().length > 0, `${label} must be nonempty`); }
 
 function validateIdentity(choice) {
-  for (const [value, label] of [[choice.project_id, "delivery project_id"], [choice.campaign_id, "delivery campaign_id"], [choice.campaign_version, "delivery campaign_version"], [choice.goal_id, "delivery goal_id"], [choice.worktree_id, "delivery worktree_id"], [choice.environment_id, "delivery environment_id"]]) { nonempty(value, label); assert(ID.test(value), `${label} is invalid`); }
+  for (const [value, label] of [[choice.project_id, "delivery project_id"], [choice.campaign_id, "delivery campaign_id"], [choice.goal_id, "delivery goal_id"], [choice.worktree_id, "delivery worktree_id"], [choice.environment_id, "delivery environment_id"]]) { nonempty(value, label); assert(ID.test(value), `${label} is invalid`); }
+  validateCampaignVersion(choice.campaign_version, "delivery campaign_version");
   assert(COMMIT.test(choice.source_commit) && COMMIT.test(choice.source_tree), "delivery source identity is invalid");
 }
 
@@ -30,6 +33,7 @@ export function compileDeliveryChoice({choice_id, mode, project_id, campaign_id,
 }
 
 export function validateDeliveryChoice(choice) {
+  assertPortableRecord(choice, "delivery choice");
   exactKeys(choice, ["schema", "version", "status", "choice_id", "mode", "project_id", "campaign_id", "campaign_version", "goal_id", "accepted_result_digest", "final_audit_digest", "source_commit", "source_tree", "worktree_id", "environment_id", "owner_approval", "selected_at_utc", "digest"], "delivery choice");
   assert(choice.schema === DELIVERY_CHOICE_SCHEMA && choice.version === 1 && choice.status === "PREPARED_NOT_ACTIVATED", "delivery choice identity is invalid");
   assert(ID.test(choice.choice_id), "delivery choice_id is invalid");

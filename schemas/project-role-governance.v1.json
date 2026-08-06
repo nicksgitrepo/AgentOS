@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_role_governance.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "role_id", "display_name", "lifetime", "base_role_packet_digest", "project_governance_digest", "graph_ids", "project_graph_ids", "allowed_authority", "prohibited_authority", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.project_role_governance.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$" },
+    "role_id": { "type": "string", "minLength": 1 },
+    "display_name": { "type": "string", "minLength": 1 },
+    "lane_id": { "type": "string" },
+    "lifetime": { "type": "string", "minLength": 1 },
+    "base_role_packet_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "project_governance_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "graph_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "project_graph_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "allowed_authority": { "type": "array", "items": { "type": "string" } },
+    "prohibited_authority": { "type": "array", "items": { "type": "string" } },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

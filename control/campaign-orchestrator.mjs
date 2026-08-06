@@ -4,7 +4,9 @@ import {assert, compareUtf8, digestWithout, sortedUniqueStrings} from "./canonic
 import {validateBootstrapPlan} from "./bootstrap-plan.mjs";
 import {validateGoal} from "./campaign-state.mjs";
 import {compileRoleLibrary} from "./role-library.mjs";
-import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {copyWorkspaceBoundary, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
+import {auditorDisplayName, validateCampaignVersion, workerDisplayName} from "./campaign-names.mjs";
 
 export const CAMPAIGN_PLAN_SCHEMA = "agentos.campaign_plan.v1";
 export const CAMPAIGN_RUN_SCHEMA = "agentos.campaign_run.v1";
@@ -51,29 +53,35 @@ function validateLaneManifest(manifest) {
   return manifest;
 }
 
-function validateAssignment(assignment, label) {
+function validateRoleLibraryBinding(library) {
+  assert(library && typeof library === "object" && !Array.isArray(library), "campaign role library is required");
+  assert(DIGEST.test(library.digest) && Array.isArray(library.packets) && library.packets.length > 0, "campaign role library binding is invalid");
+  return library;
+}
+
+function validateAssignment(assignment, label, campaign_version) {
   exactKeys(assignment, ["lane_id", "graph_id", "role_id", "role_display_name", "task_name", "prompt", "status"], label);
   assert(LOWER_ID.test(assignment.lane_id), `${label}.lane_id is invalid`);
   assert(ID.test(assignment.graph_id), `${label}.graph_id is invalid`);
   assert(assignment.role_id === "NAMED_LANE_WORKER", `${label}.role_id is invalid`);
-  assert(assignment.role_display_name === `${assignment.lane_id} Worker`, `${label}.role_display_name is invalid`);
+  assert(assignment.role_display_name === workerDisplayName(assignment.lane_id, campaign_version), `${label}.role_display_name is invalid`);
   assert(LOWER_ID.test(assignment.task_name), `${label}.task_name is invalid`);
   nonempty(assignment.prompt, `${label}.prompt`);
   assert(assignment.status === "NOT_STARTED", `${label}.status is invalid`);
 }
 
-function validatePhase(phase, label) {
+function validatePhase(phase, label, campaign_version) {
   exactKeys(phase, ["phase_id", "purpose", "worker_assignments", "auditor"], label);
   assert(ID.test(phase.phase_id), `${label}.phase_id is invalid`);
   nonempty(phase.purpose, `${label}.purpose`);
   assert(Array.isArray(phase.worker_assignments) && phase.worker_assignments.length > 0, `${label}.worker_assignments are empty`);
   const laneIds = phase.worker_assignments.map((assignment, index) => {
-    validateAssignment(assignment, `${label}.worker_assignments[${index}]`);
+    validateAssignment(assignment, `${label}.worker_assignments[${index}]`, campaign_version);
     return assignment.lane_id;
   });
   assert(new Set(laneIds).size === laneIds.length, `${label} contains duplicate lanes`);
   exactKeys(phase.auditor, ["role_id", "display_name", "lifetime", "task_name", "prompt", "audit_lane_ids", "status"], `${label}.auditor`);
-  assert(phase.auditor.role_id === "INDEPENDENT_AUDITOR" && phase.auditor.display_name === "Independent Auditor", `${label}.auditor identity is invalid`);
+  assert(phase.auditor.role_id === "INDEPENDENT_AUDITOR" && phase.auditor.display_name === auditorDisplayName(phase.phase_id, campaign_version), `${label}.auditor identity is invalid`);
   assert(phase.auditor.lifetime === "CAMPAIGN_PHASE", `${label}.auditor lifetime is invalid`);
   assert(LOWER_ID.test(phase.auditor.task_name), `${label}.auditor.task_name is invalid`);
   nonempty(phase.auditor.prompt, `${label}.auditor.prompt`);
@@ -83,16 +91,16 @@ function validatePhase(phase, label) {
   return laneIds;
 }
 
-export async function compileCampaignPlan(root, {plan, goal, campaign_id, campaign_version, source}) {
+export async function compileCampaignPlan(root, {plan, goal, campaign_id, campaign_version, source, role_library = null}) {
   validateBootstrapPlan(plan);
   validateGoal(goal);
   assert(goal.status === "ACTIVE", "campaign plan requires an active goal");
   assert(typeof campaign_id === "string" && ID.test(campaign_id), "campaign_id is invalid");
-  assert(typeof campaign_version === "string" && ID.test(campaign_version), "campaign_version is invalid");
+  validateCampaignVersion(campaign_version);
   assert(plan.project_id.length > 0, "bootstrap plan project identity is missing");
   validateSource(source);
   const manifest = validateLaneManifest(await readJson(root, "governance/lane-manifest.json"));
-  const roleLibrary = await compileRoleLibrary(root);
+  const roleLibrary = validateRoleLibraryBinding(role_library ?? await compileRoleLibrary(root));
   const lanes = new Map(manifest.lanes.map((lane) => [lane.lane_id, lane]));
   const workerPackets = new Set(roleLibrary.packets.filter((packet) => packet.role_id === "NAMED_LANE_WORKER").map((packet) => packet.lane_id));
   const phases = plan.phases.map((phase) => ({
@@ -105,7 +113,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
         lane_id: laneId,
         graph_id: lane.graph_id,
         role_id: "NAMED_LANE_WORKER",
-        role_display_name: `${laneId} Worker`,
+        role_display_name: workerDisplayName(laneId, campaign_version),
         task_name: taskName(campaign_id, campaign_version, laneId, "worker"),
         prompt: `Work only on the admitted ${laneId} lane. Return meaningful progress and a typed handoff with evidence before the fifteen-minute window ends.`,
         status: "NOT_STARTED",
@@ -113,7 +121,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
     }),
     auditor: {
       role_id: "INDEPENDENT_AUDITOR",
-      display_name: "Independent Auditor",
+      display_name: auditorDisplayName(phase.phase_id, campaign_version),
       lifetime: "CAMPAIGN_PHASE",
       task_name: taskName(campaign_id, campaign_version, phase.phase_id.toLowerCase(), "auditor"),
       prompt: `Independently review every accepted result in ${phase.phase_id}. Do not accept work authored by your own session.`,
@@ -131,7 +139,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
     goal_id: goal.goal_id,
     goal_sha256: goal.digest,
     source: {...source},
-    workspace_boundary: {...plan.workspace_boundary},
+    workspace_boundary: copyWorkspaceBoundary(plan.workspace_boundary),
     defaults: {...plan.defaults},
     persistent_roles: ["INTENT_REGULATOR", "RUNTIME"],
     campaign_roles: ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR"],
@@ -147,16 +155,18 @@ export function validateCampaignPlan(plan) {
   exactKeys(plan, ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source", "workspace_boundary", "defaults", "persistent_roles", "campaign_roles", "phases", "role_library_digest", "digest"], "campaign plan");
   assert(plan.schema === CAMPAIGN_PLAN_SCHEMA && plan.version === 1, "campaign plan identity is invalid");
   assert(plan.status === "PREPARED_NOT_ACTIVATED", "campaign plan must remain prepared");
-  for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id"]) assert(ID.test(plan[field]), `campaign plan ${field} is invalid`);
+  for (const field of ["project_id", "campaign_id", "goal_id"]) assert(ID.test(plan[field]), `campaign plan ${field} is invalid`);
+  validateCampaignVersion(plan.campaign_version, "campaign plan campaign_version");
   assert(DIGEST.test(plan.goal_sha256) && DIGEST.test(plan.role_library_digest), "campaign plan digest binding is invalid");
   validateSource(plan.source);
   validateWorkspaceBoundary(plan.workspace_boundary);
+  assertPortableRecord(plan, "campaign plan");
   exactKeys(plan.defaults, ["model", "reasoning_effort", "progress_window_minutes"], "campaign plan defaults");
   assert(plan.defaults.model === "gpt-5.6-luna" && plan.defaults.reasoning_effort === "max" && plan.defaults.progress_window_minutes === 15, "campaign plan defaults are invalid");
   assert(JSON.stringify(plan.persistent_roles) === JSON.stringify(["INTENT_REGULATOR", "RUNTIME"]), "campaign persistent roles are invalid");
   assert(JSON.stringify(plan.campaign_roles) === JSON.stringify(["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR"]), "campaign roles are invalid");
   assert(Array.isArray(plan.phases) && plan.phases.length > 0, "campaign phases are empty");
-  const lanes = plan.phases.flatMap((phase, index) => validatePhase(phase, `campaign phases[${index}]`));
+  const lanes = plan.phases.flatMap((phase, index) => validatePhase(phase, `campaign phases[${index}]`, plan.campaign_version));
   assert(new Set(lanes).size === lanes.length, "campaign plan repeats a lane");
   assert(lanes.length === 12, "campaign plan must cover all twelve lanes");
   assert(DIGEST.test(plan.digest) && plan.digest === digestWithout(plan, "digest"), "campaign plan digest does not match content");
@@ -209,10 +219,13 @@ export function createCampaignRun(plan) {
 }
 
 function validateCandidate(candidate, assignment, phase) {
-  exactKeys(candidate, ["status", "phase_id", "lane_id", "result_digest", "worker_session_id"], "lane candidate");
+  exactKeys(candidate, ["status", "phase_id", "lane_id", "result_digest", "worker_session_id", "result_type", "summary", "artifact_sha256", "evidence_sha256"], "lane candidate");
   assert(candidate.status === "AUDIT_CANDIDATE" && candidate.phase_id === phase.phase_id && candidate.lane_id === assignment.lane_id, "lane candidate identity differs");
   assert(DIGEST.test(candidate.result_digest), "lane candidate result digest is invalid");
   nonempty(candidate.worker_session_id, "lane candidate worker session");
+  assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(candidate.result_type), "lane candidate result type is invalid");
+  nonempty(candidate.summary, "lane candidate summary");
+  assert(DIGEST.test(candidate.artifact_sha256) && DIGEST.test(candidate.evidence_sha256), "lane candidate evidence is invalid");
   return candidate;
 }
 

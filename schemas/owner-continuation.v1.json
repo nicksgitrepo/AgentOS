@@ -11,7 +11,7 @@
     "activation_id": { "type": "string" },
     "project_id": { "type": "string" },
     "campaign_id": { "type": "string" },
-    "campaign_version": { "type": "string" },
+    "campaign_version": { "type": "string", "pattern": "^(?:v[0-9]+[.][0-9]+[.][0-9]+(?:-(?:tb|rc)-[0-9]+)?|[A-Z][A-Z0-9._-]*)$" },
     "goal_id": { "type": "string" },
     "question_id": { "type": "string" },
     "expected_value": { "type": ["string", "boolean"] },

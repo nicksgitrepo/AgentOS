@@ -27,7 +27,9 @@ const release = compileHostWorkerBoundary({
 });
 assert.equal(validateHostWorkspacePath(release, "/host/ephemeral/release-worker"), "/host/ephemeral/release-worker");
 const bound = bindHostWorkspacePath(release, "/host/ephemeral/release-worker");
-assert.equal(bound.workspace_path, "/host/ephemeral/release-worker");
+assert.equal(bound.workspace_path_ref, "AGENTOS_WORKSPACE_PATH");
+assert.equal(Object.hasOwn(bound, "workspace_path"), false);
+assert.equal(JSON.stringify(bound).includes("/host/ephemeral/release-worker"), false);
 assert.equal(bound.source_binding.source_ref, "v2.1.0-rc.5");
 assert.throws(() => validateHostWorkspacePath(bound, "/workspace/projects/example-project/worker"), /product repository/u);
 assert.throws(() => compileHostWorkerBoundary({...release, host_project_role: "CONTROL"}), /registered release project/u);

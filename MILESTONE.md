@@ -1,9 +1,9 @@
-# Refactor milestone
+# AgentOS 3.0 solo milestone
 
 ## Purpose
 
-Establish a small, dependency-free governance kernel before migrating the
-remaining AgentOS control behavior.
+Deliver a small, dependency-free governance kernel whose complete campaign
+path can be exercised from Bootstrap through audited closure.
 
 ## Preserved reference
 
@@ -46,8 +46,9 @@ boundary.
 
 ## Completion of this milestone
 
-The portable milestone slice is complete only after the twelve-lane campaign
-has been replayed deterministically, hostile-tested, independently audited,
-and accepted without activating release behavior. A real host adapter and any
-provider action remain outside this repository and must be verified by the
-surrounding runtime before activation.
+The portable 3.0 slice is complete only after the twelve-lane campaign has
+been replayed deterministically, hostile-tested, independently audited, and
+accepted without activating provider behavior. The source-bound native runtime
+and fifteen-minute Intent Regulator loop are part of this release. A real host
+adapter and any provider action remain outside this repository and must be
+verified by the surrounding runtime before activation.

@@ -1,4 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
+import {validateCampaignVersion} from "./campaign-names.mjs";
 
 export const SNAPSHOT_SCHEMA = "agentos.campaign_snapshot.v1";
 export const AUDIT_SCHEMA = "agentos.intent_regulator_audit.v1";
@@ -26,9 +28,11 @@ function nonempty(value, label) { assert(typeof value === "string" && value.trim
 function bool(value, label) { assert(typeof value === "boolean", `${label} must be boolean`); }
 
 export function validateCampaignSnapshot(snapshot) {
+  assertPortableRecord(snapshot, "campaign snapshot");
   exactKeys(snapshot, ["schema", "version", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source_commit", "source_tree", "progress_status", "scope_changed", "intent_changed", "conditions_changed", "hard_boundary_detected", "soft_boundary_detected", "evidence_identity_ok", "roster_exact", "acceptance_status"], "campaign snapshot");
   assert(snapshot.schema === SNAPSHOT_SCHEMA && snapshot.version === 1, "campaign snapshot identity is invalid");
-  for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id"]) assert(ID.test(snapshot[field]), `campaign snapshot ${field} is invalid`);
+  for (const field of ["project_id", "campaign_id", "goal_id"]) assert(ID.test(snapshot[field]), `campaign snapshot ${field} is invalid`);
+  validateCampaignVersion(snapshot.campaign_version, "campaign snapshot campaign_version");
   assert(DIGEST.test(snapshot.goal_sha256), "campaign snapshot goal digest is invalid");
   assert(COMMIT.test(snapshot.source_commit) && COMMIT.test(snapshot.source_tree), "campaign snapshot source identity is invalid");
   assert(["OPEN", "PROGRESS_RECORDED", "STALLED", "CLOSED"].includes(snapshot.progress_status), "campaign snapshot progress status is invalid");
@@ -67,6 +71,7 @@ export function auditCampaignSnapshot(snapshot, observed_at_utc, interval_minute
     digest: null,
   };
   audit.digest = digestWithout(audit, "digest");
+  assertPortableRecord(audit, "Intent Regulator audit");
   return audit;
 }
 
@@ -95,4 +100,3 @@ export async function runIntentRegulatorLoop({readSnapshot, onAudit, interval_mi
   }
   return {iterations, stopped: Boolean(signal?.aborted)};
 }
-

@@ -8,7 +8,7 @@
     "schema": { "const": "agentos.control_repository.v1" },
     "version": { "const": 1 },
     "status": { "const": "BOUND" },
-    "workspace_boundary": { "$ref": "workspace-boundary.v1.json" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
     "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   }
 }

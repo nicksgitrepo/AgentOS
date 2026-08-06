@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import {assert, canonicalJson, digestWithout, sha256} from "./canonical-json.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const IDENTITY_FIELDS = Object.freeze([
   "source_commit",
@@ -69,6 +70,7 @@ export function createEvidence({evidence_id, question_id, graph_digest, evidence
 }
 
 export function validateEvidence(record, {question_id, graph_digest, evidence_slot, answer, binding, attestation_secret}, label = "evidence") {
+  assertPortableRecord(record, label);
   assert(record && typeof record === "object" && !Array.isArray(record), `${label} must be an object`);
   const expected = ["evidence_id", "question_id", "graph_digest", "evidence_slot", "answer", "kind", "value_sha256", ...IDENTITY_FIELDS, "issuer_session_id", "issuer_kind", "supports_answer", "observed_at_utc", "attestation_hmac", "digest"].sort();
   assert(JSON.stringify(Object.keys(record).sort()) === JSON.stringify(expected), `${label} fields mismatch`);

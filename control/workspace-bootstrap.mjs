@@ -2,7 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {assert, digestWithout} from "./canonical-json.mjs";
-import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {bindWorkspaceBoundary, copyWorkspaceBoundary, getWorkspaceRuntimeBinding, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const CONTROL_BOUNDARY_RECORD = "workspace-boundary.json";
 export const CONTROL_REPOSITORY_SCHEMA = "agentos.control_repository.v1";
@@ -61,10 +62,11 @@ function writeBoundaryRecord(root, boundary) {
     schema: CONTROL_REPOSITORY_SCHEMA,
     version: 1,
     status: "BOUND",
-    workspace_boundary: {...boundary},
+    workspace_boundary: copyWorkspaceBoundary(boundary),
     digest: null,
   };
   record.digest = digestWithout(record, "digest");
+  assertPortableRecord(record, "control repository boundary record");
   const temporary = `${recordPath}.${process.pid}.tmp`;
   try {
     const handle = fs.openSync(temporary, "wx");
@@ -84,14 +86,16 @@ function writeBoundaryRecord(root, boundary) {
  * any state. This function only reads the release/project roots and writes
  * inside the sibling control root.
  */
-export function prepareWorkspace(boundary) {
+export function prepareWorkspace(boundary, {runtime_binding = null} = {}) {
   validateWorkspaceBoundary(boundary);
-  const release = directory(boundary.release_root, "release root");
-  const projects = directory(boundary.projects_root, "projects root");
-  const project = directory(boundary.project_root, "project root");
+  const boundBoundary = runtime_binding ? bindWorkspaceBoundary(boundary, runtime_binding) : boundary;
+  const runtime = getWorkspaceRuntimeBinding(boundBoundary);
+  const release = directory(runtime.release_root, "release root");
+  const projects = directory(runtime.projects_root, "projects root");
+  const project = directory(runtime.project_root, "project root");
   assert(path.dirname(project) === projects || project.startsWith(`${projects}${path.sep}`), "project root is outside projects root");
 
-  const control = path.normalize(boundary.control_root);
+  const control = path.normalize(runtime.control_root);
   let status;
   if (fs.existsSync(control)) {
     directory(control, "control root");
@@ -101,14 +105,13 @@ export function prepareWorkspace(boundary) {
     createRepository(control);
     status = "CREATED";
   }
-  const record = writeBoundaryRecord(control, boundary);
-  return {
+  const record = writeBoundaryRecord(control, boundBoundary);
+  const result = {
     status,
-    release_root: release,
-    projects_root: projects,
-    project_root: project,
-    control_root: control,
+    workspace_boundary: copyWorkspaceBoundary(boundBoundary),
     control_repository: record,
     project_tree_touched: false,
   };
+  assertPortableRecord(result, "prepared workspace result");
+  return result;
 }

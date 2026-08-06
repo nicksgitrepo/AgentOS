@@ -1,6 +1,7 @@
 import {assert, digestWithout, sha256} from "./canonical-json.mjs";
 import {validateIdentity} from "./evidence.mjs";
 import {validateRenderedGate} from "./question-catalog.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const GATE_RESPONSE_SCHEMA = "agentos.gate_response.v1";
 const DIGEST = /^[0-9a-f]{64}$/u;
@@ -54,6 +55,7 @@ export function createGateResponse({rendered, answer, evidence, identity, issuer
 }
 
 export function validateGateResponse(response, rendered, {evidence = undefined, expectedIdentity = null, requireIndependent = false} = {}) {
+  assertPortableRecord(response, "gate response");
   validateRenderedGate(rendered);
   exactKeys(response, ["schema", "version", "graph_id", "gate_id", "gate_name", "context", "question", "answer", "statement", "evidence_digest", "identity", "issuer_session_id", "issuer_kind", "status", "digest"], "gate response");
   assert(response.schema === GATE_RESPONSE_SCHEMA && response.version === 1, "gate response identity is invalid");
@@ -71,4 +73,3 @@ export function validateGateResponse(response, rendered, {evidence = undefined, 
   assert(DIGEST.test(response.digest) && response.digest === digestWithout(response, "digest"), "gate response digest does not match content");
   return response;
 }
-

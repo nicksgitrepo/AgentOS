@@ -1,6 +1,7 @@
 import path from "node:path";
 import {assert, digestWithout} from "./canonical-json.mjs";
-import {validateAgentWorkPath, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {copyWorkspaceBoundary, getWorkspaceRuntimeBinding, validateAgentWorkPath, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const HOST_WORKER_BOUNDARY_SCHEMA = "agentos.host_worker_boundary.v1";
 export const HOST_WORKER_SCOPES = Object.freeze(["RELEASE_CONTROL", "PRODUCT"]);
@@ -14,10 +15,12 @@ const HOST_PROJECT_ROLES = new Set(["RELEASE", "CONTROL", "PRODUCT"]);
 const PROTECTED_ACTIONS = new Set([
   "PUBLISH", "PUSH", "MERGE", "DEPLOY", "ROLLBACK", "SPEND", "AUTHENTICATE", "REVEAL_SECRET", "DELETE_ACCEPTED_WORK",
 ]);
+const WORKSPACE_PATH_REF = "AGENTOS_WORKSPACE_PATH";
+const RUNTIME_WORKSPACE_PATH = Symbol("agentos.host_worker.runtime_workspace_path");
 const FIELDS = [
   "schema", "version", "status", "worker_id", "worker_scope", "workspace_mode", "source_root_kind", "host_project_id",
   "host_project_role", "campaign_project_id", "source_binding", "workspace_boundary", "product_action", "protected_actions",
-  "workspace_path", "digest",
+  "workspace_path_ref", "digest",
 ];
 
 function exactKeys(value, expected, label) {
@@ -51,9 +54,14 @@ function validateSourceBinding(binding) {
   nonempty(binding.source_ref, "host worker source_ref");
 }
 
+function pathReference(value, label) {
+  assert(value === null || (typeof value === "string" && /^[A-Z][A-Z0-9_]*$/u.test(value)), `${label} is invalid`);
+}
+
 function seal(boundary) {
   const sealed = {...boundary, digest: null};
   sealed.digest = digestWithout(sealed, "digest");
+  if (boundary[RUNTIME_WORKSPACE_PATH]) Object.defineProperty(sealed, RUNTIME_WORKSPACE_PATH, {value: boundary[RUNTIME_WORKSPACE_PATH], enumerable: false});
   return validateHostWorkerBoundary(sealed);
 }
 
@@ -69,7 +77,6 @@ export function compileHostWorkerBoundary({worker_id, worker_scope, workspace_mo
   validateWorkspaceBoundary(workspace_boundary);
   assert(product_action === "LEAVE_PRODUCT_REPOSITORY_UNCHANGED", "product repository action is invalid");
   validateProtectedActions(protected_actions);
-  if (workspace_path !== null) absolutePath(workspace_path, "workspace_path");
   const boundary = {
     schema: HOST_WORKER_BOUNDARY_SCHEMA,
     version: 1,
@@ -82,12 +89,13 @@ export function compileHostWorkerBoundary({worker_id, worker_scope, workspace_mo
     host_project_role,
     campaign_project_id,
     source_binding: {...source_binding},
-    workspace_boundary: {...workspace_boundary},
+    workspace_boundary: copyWorkspaceBoundary(workspace_boundary),
     product_action,
     protected_actions: [...protected_actions],
-    workspace_path: workspace_path === null ? null : path.normalize(workspace_path),
+    workspace_path_ref: workspace_path === null ? null : WORKSPACE_PATH_REF,
     digest: null,
   };
+  if (workspace_path !== null) Object.defineProperty(boundary, RUNTIME_WORKSPACE_PATH, {value: absolutePath(workspace_path, "workspace_path"), enumerable: false});
   return seal(boundary);
 }
 
@@ -106,7 +114,8 @@ export function validateHostWorkerBoundary(boundary) {
   validateWorkspaceBoundary(boundary.workspace_boundary);
   assert(boundary.product_action === "LEAVE_PRODUCT_REPOSITORY_UNCHANGED", "product repository action is invalid");
   validateProtectedActions(boundary.protected_actions);
-  if (boundary.workspace_path !== null) absolutePath(boundary.workspace_path, "workspace_path");
+  pathReference(boundary.workspace_path_ref, "workspace_path_ref");
+  if (boundary[RUNTIME_WORKSPACE_PATH]) absolutePath(boundary[RUNTIME_WORKSPACE_PATH], "workspace_path");
 
   if (boundary.workspace_mode === "HOST_MANAGED_VISIBLE") {
     assert(boundary.worker_scope === "RELEASE_CONTROL", "host-managed visible work is reserved for the release/control lane");
@@ -119,17 +128,17 @@ export function validateHostWorkerBoundary(boundary) {
   }
   if (boundary.worker_scope === "RELEASE_CONTROL") assert(boundary.source_root_kind === "RELEASE", "release/control work must bind to the release source");
   assert(DIGEST.test(boundary.digest) && boundary.digest === digestWithout(boundary, "digest"), "host worker boundary digest does not match content");
+  assertPortableRecord(boundary, "host worker boundary");
   return boundary;
 }
 
 export function validateHostWorkspacePath(boundary, candidate) {
   validateHostWorkerBoundary(boundary);
   const pathValue = absolutePath(candidate, "host workspace path");
-  const workspace = boundary.workspace_boundary;
-  const project = path.normalize(workspace.project_root);
-  if (boundary.workspace_mode === "CONTROL_ISOLATED") return validateAgentWorkPath(workspace, pathValue);
-  assert(!sameOrWithin(project, pathValue), "host-managed visible work cannot be inside the product repository");
-  assert(!sameOrWithin(path.normalize(workspace.release_root), pathValue), "host-managed visible work cannot modify the release checkout directly");
+  const workspace = getWorkspaceRuntimeBinding(boundary.workspace_boundary);
+  if (boundary.workspace_mode === "CONTROL_ISOLATED") return validateAgentWorkPath(boundary.workspace_boundary, pathValue);
+  assert(!sameOrWithin(workspace.project_root, pathValue), "host-managed visible work cannot be inside the product repository");
+  assert(!sameOrWithin(workspace.release_root, pathValue), "host-managed visible work cannot modify the release checkout directly");
   return pathValue;
 }
 
@@ -142,15 +151,17 @@ export function validateHostWorkerBoundaryForAdmission(boundary, admission) {
   assert(boundary.source_binding.source_commit === admission.source_commit, "host worker boundary source commit differs from admission");
   assert(boundary.source_binding.source_tree === admission.source_tree, "host worker boundary source tree differs from admission");
   if (boundary.workspace_mode === "HOST_MANAGED_VISIBLE") {
-    assert(boundary.workspace_path !== null, "host-managed visible worker requires a bound workspace path");
-    validateHostWorkspacePath(boundary, boundary.workspace_path);
-  } else if (boundary.workspace_path !== null) validateHostWorkspacePath(boundary, boundary.workspace_path);
+    assert(boundary.workspace_path_ref !== null && boundary[RUNTIME_WORKSPACE_PATH], "host-managed visible worker requires an external workspace path binding");
+    validateHostWorkspacePath(boundary, boundary[RUNTIME_WORKSPACE_PATH]);
+  } else if (boundary.workspace_path_ref !== null && boundary[RUNTIME_WORKSPACE_PATH]) validateHostWorkspacePath(boundary, boundary[RUNTIME_WORKSPACE_PATH]);
   return boundary;
 }
 
 export function bindHostWorkspacePath(boundary, workspace_path) {
   validateHostWorkerBoundary(boundary);
   const pathValue = validateHostWorkspacePath(boundary, workspace_path);
-  if (boundary.workspace_path !== null) assert(path.normalize(boundary.workspace_path) === pathValue, "host workspace path is already bound to a different path");
-  return seal({...boundary, workspace_path: pathValue, digest: null});
+  if (boundary[RUNTIME_WORKSPACE_PATH]) assert(path.normalize(boundary[RUNTIME_WORKSPACE_PATH]) === pathValue, "host workspace path is already bound to a different path");
+  const next = {...boundary, workspace_path_ref: boundary.workspace_path_ref ?? WORKSPACE_PATH_REF, digest: null};
+  Object.defineProperty(next, RUNTIME_WORKSPACE_PATH, {value: pathValue, enumerable: false});
+  return seal(next);
 }

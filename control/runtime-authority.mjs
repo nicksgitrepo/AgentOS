@@ -1,5 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {validatePersistentRole} from "./persistent-role.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const RUNTIME_REQUEST_SCHEMA = "agentos.runtime_request.v1";
 export const PROTECTED_ACTIONS = Object.freeze(["PUBLISH", "PUSH", "MERGE", "DEPLOY", "ROLLBACK", "SPEND", "AUTHENTICATE", "REVEAL_SECRET", "DELETE_ACCEPTED_WORK"]);
@@ -42,6 +43,7 @@ export function authorizeRuntimeRequest(runtimeRole, {request_id, action, projec
 }
 
 export function validateRuntimeRequest(request, {runtimeRole} = {}) {
+  assertPortableRecord(request, "runtime request");
   validatePersistentRole(runtimeRole);
   assert(runtimeRole.role_id === "RUNTIME", "runtime request validator requires Runtime");
   exactKeys(request, ["schema", "version", "status", "authority_role", "authority_digest", "authority_host_session_id", "request_id", "action", "project_id", "environment_id", "campaign_id", "goal_id", "scope_digest", "reason", "requested_at_utc", "owner_approval", "digest"], "runtime request");

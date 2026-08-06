@@ -1,7 +1,8 @@
 import {assert, digestWithout, sha256, sortedUniqueStrings} from "./canonical-json.mjs";
 import {compileRoleLibrary} from "./role-library.mjs";
 import {DEFAULT_MODEL, DEFAULT_REASONING_EFFORT} from "./native-session.mjs";
-import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {copyWorkspaceBoundary, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const BOOTSTRAP_PLAN_SCHEMA = "agentos.bootstrap_plan.v1";
 export const BOOTSTRAP_MODES = Object.freeze(["RAPID_PROTOTYPING", "ITERATION"]);
@@ -28,20 +29,27 @@ function validateSourceBinding(binding) {
   for (const field of ["worktree_id", "bootstrap_session_id", "environment_id"]) nonempty(binding[field], `bootstrap source binding ${field}`);
 }
 
+function validateRoleLibraryBinding(library) {
+  assert(library && typeof library === "object" && !Array.isArray(library), "role library is required");
+  assert(typeof library.digest === "string" && DIGEST.test(library.digest), "role library digest is invalid");
+  assert(Array.isArray(library.packets) && library.packets.length > 0, "role library packets are empty");
+  return library;
+}
+
 function phase(phase_id, lane_ids, purpose) {
   assert(ID.test(phase_id), "bootstrap phase ID is invalid");
   lane_ids.forEach((lane) => assert(LOWER_ID.test(lane), `bootstrap phase lane ${lane} is invalid`));
   return {phase_id, lane_ids: [...lane_ids], purpose};
 }
 
-export async function compileBootstrapPlan(root, {project_id, owner_context, source_binding, workspace_boundary, rapid_prototyping = true}) {
+export async function compileBootstrapPlan(root, {project_id, owner_context, source_binding, workspace_boundary, rapid_prototyping = true, role_library = null}) {
   nonempty(project_id, "project_id");
   assert(ID.test(project_id), "project_id is invalid");
   assert(owner_context && typeof owner_context === "object" && !Array.isArray(owner_context), "owner_context must be an object");
   validateSourceBinding(source_binding);
   validateWorkspaceBoundary(workspace_boundary);
   assert(rapid_prototyping === true, "this compiler currently requires Rapid Prototyping Mode");
-  const roleLibrary = await compileRoleLibrary(root);
+  const roleLibrary = validateRoleLibraryBinding(role_library ?? await compileRoleLibrary(root));
   const phases = [
     phase("RAPID_FOUNDATION", ["intent-scope", "bootstrap-context", "user-conversation", "role-routing", "progress-health"], "Turn the owner's plain-language intent into bounded, routed work."),
     phase("RAPID_BUILD", ["functionality", "ui-ux", "code-hygiene", "security-privacy"], "Build the smallest working prototype and check how people use it."),
@@ -60,7 +68,7 @@ export async function compileBootstrapPlan(root, {project_id, owner_context, sou
     next_mode: "ITERATION",
     owner_context_sha256: sha256(owner_context),
     source_binding: {...source_binding},
-    workspace_boundary: {...workspace_boundary},
+    workspace_boundary: copyWorkspaceBoundary(workspace_boundary),
     defaults: {model: DEFAULT_MODEL, reasoning_effort: DEFAULT_REASONING_EFFORT, progress_window_minutes: 15},
     conversation: {
       style: "FRIENDLY_ONE_SHORT_QUESTION",
@@ -115,5 +123,6 @@ export function validateBootstrapPlan(plan) {
   assert(JSON.stringify([...lanes].sort()) === JSON.stringify([...LANES].sort()), "bootstrap phases do not cover all lanes exactly once");
   assert(Array.isArray(plan.protected_actions) && plan.protected_actions.length > 0, "protected actions are missing");
   assert(plan.digest === digestWithout(plan, "digest"), "bootstrap plan digest does not match content");
+  assertPortableRecord(plan, "bootstrap plan");
   return plan;
 }

@@ -7,6 +7,7 @@ import {toNativeAdmission, validateCampaignAdmission} from "./campaign-admission
 import {renderGateQuestion, validateQuestionCatalog} from "./question-catalog.mjs";
 import {validateGateResponse} from "./gate-response.mjs";
 import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const CAMPAIGN_RESULT_SCHEMA = "agentos.campaign_result.v1";
 
@@ -42,6 +43,7 @@ function validateReviewerReadback(readback, result) {
 }
 
 function validateAuditCandidate(result, authority_secret) {
+  assertPortableRecord(result, "campaign result");
   digest(result.completion_proof, "completion_proof");
   assert(result.completion_proof === proof(authority_secret, result), "campaign completion proof is invalid");
   assert(result.execution && result.execution.status === "COMPLETE", "campaign execution is not complete");
@@ -133,6 +135,7 @@ export async function runLaneCampaign({host, admission, graph, question_catalog,
     };
     result.completion_proof = proof(authority_secret, result);
     result.digest = digestWithout(result, "digest");
+    assertPortableRecord(result, "campaign result");
     return result;
   } catch (error) {
     if (session) {
@@ -162,5 +165,8 @@ export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role
   assert(typeof accepted_at_utc === "string" && Number.isFinite(Date.parse(accepted_at_utc)), "accepted_at_utc is invalid");
   const acceptance = {reviewer_session_id, reviewer_role_id, evidence_sha256, accepted, reason, accepted_at_utc, digest: null};
   acceptance.digest = digestWithout(acceptance, "digest");
-  return {schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: digestWithout({schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: null}, "digest")};
+  const acceptedResult = {schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: null};
+  acceptedResult.digest = digestWithout(acceptedResult, "digest");
+  assertPortableRecord(acceptedResult, "accepted campaign result");
+  return acceptedResult;
 }

@@ -1,10 +1,14 @@
-# AgentOS Governance Refactor
+# AgentOS 3.0 Solo Release Candidate
 
-> Status: `REFACTOR milestone — PREPARED_NOT_ACTIVATED`
+> Status: `3.0.0-rc.1 — PREPARED_NOT_ACTIVATED`
 
-This repository is the clean refactor milestone for AgentOS governance. It is
+This repository is the clean 3.0 solo release candidate for AgentOS governance. It is
 portable and project-agnostic. Product names, private paths, credentials,
 provider identities, conversations, and runtime state do not belong here.
+Machine paths are supplied only through host environment bindings such as
+`AGENTOS_RELEASE_ROOT` and `AGENTOS_CONTROL_ROOT`. Records store the binding
+names and content digests, never the resolved paths. Do not create or commit a
+`.env` file in this repository.
 
 The refactor keeps governance declarative:
 
@@ -43,12 +47,17 @@ The first slice establishes:
 - response records that can say `Gate "Human Name" passed successfully.` only
   when the displayed question, `YES` answer, evidence digest, work identity,
   and independent issuer all match.
+- a source-bound native campaign runtime that carries a Bootstrap plan through
+  all four phases, all twelve lanes, independent phase Auditors, typed
+  handoffs, closure, and the fifteen-minute Intent Regulator audit loop.
 
 The campaign coordinator compiles the complete four-phase plan, assigns a
 fresh named worker to each of the twelve lanes, and requires an independent
-phase acceptance before the next phase can begin. The portable fake-host
-integration exercises all twelve lanes, including bounded repair, evidence
-attestation, typed handoff, and closure. The campaign ends with an explicit
+phase acceptance before the next phase can begin. The native campaign runtime
+exercises the same host contract that the live adapter must provide, including
+bounded repair, evidence attestation, typed handoff, closure, and the attached
+Intent Regulator timer. The repository test host is only a contract test; it is
+not presented as a live provider. The campaign ends with an explicit
 owner-selected delivery choice; external delivery remains a host action.
 
 The older development checkout remains the reference baseline. It is not
@@ -72,8 +81,11 @@ lane workers, and Independent Auditors are fresh per campaign. A worker never
 accepts its own result. Runtime owns external and release actions; the host,
 not the language model, enforces graph transitions and evidence identity.
 
-This milestone remains prepared and inactive. No push, merge, deployment, or
-activation is implied by a passing local check.
+This release candidate remains prepared and inactive. A passing local check
+does not pretend that a provider action happened. Activation requires a real
+host adapter loaded through `control/native-host-loader.mjs`, a host attachment
+whose capabilities match the required session actions, and a successful run of
+the same native campaign path against that host.
 
 The gate inventory and display rules are documented in
 [`docs/gate-governance.md`](docs/gate-governance.md).
@@ -102,6 +114,8 @@ AgentOS files, control records, worktrees, notes, and self-references. Agents
 work as human workers through isolated checkouts under `AgentOS-control/`; no
 linked Git worktree may place administrative files in the project repository.
 The product repositories remain the user's clean source repositories.
+Persisted boundary records contain only safe environment references; the host
+keeps resolved paths outside the record and outside Git.
 
 The host-side Bootstrap entry point is
 `control/workspace-bootstrap.mjs:prepareWorkspace`. It reads the release,

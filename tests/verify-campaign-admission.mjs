@@ -42,11 +42,13 @@ const admission = compileCampaignAdmission({
   prompt: "Build the admitted functionality and return evidence.",
 });
 assert.equal(admission.phase_id, "RAPID_BUILD");
-assert.equal(admission.role_display_name, "functionality Worker");
+assert.equal(admission.role_display_name, "Functionality Worker CAMPAIGN-V1");
 assert.equal(admission.progress_window_minutes, 15);
 const native = toNativeAdmission(admission);
 assert.equal(native.lane_id, "functionality");
-assert.equal(native.workspace_boundary.control_root, "/workspace/AgentOS-control");
+assert.equal(native.workspace_boundary.control_root_ref, "AGENTOS_CONTROL_ROOT");
+assert.equal(Object.hasOwn(native.workspace_boundary, "control_root"), false);
+assert.equal(JSON.stringify(native).includes("/workspace/"), false);
 assert.equal(native.goal_sha256, goal.digest);
 assert.equal(native.source_commit, admission.source.source_commit);
 assert.throws(() => compileCampaignAdmission({plan, goal, project_id: "PROJECT-001", campaign_id: "CAMPAIGN-002", campaign_version: "CAMPAIGN-V1", lane_id: "not-a-lane", source: admission.source, task_name: "functionality_worker_002", prompt: "x"}), /not in the bootstrap plan/u);

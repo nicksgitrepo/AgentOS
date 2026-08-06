@@ -17,7 +17,9 @@ const control_snapshot_digest = "3".repeat(64);
 const preserve = compileReleaseUpdate({update_id: "RELEASE-UPDATE-001", project_id: "PROJECT-001", workspace_boundary: boundary, current_release, replacement_release, governance_mode: "KEEP_PROJECT_APPENDICES", control_snapshot_digest});
 assert.equal(preserve.governance_action, "PRESERVE_APPENDICES_AND_REVALIDATE_AGAINST_NEW_RELEASE");
 assert.equal(preserve.project_action, "LEAVE_PROJECT_REPOSITORIES_UNCHANGED");
-assert.equal(preserve.release_root, boundary.release_root);
+assert.equal(preserve.release_root_ref, boundary.release_root_ref);
+assert.equal(Object.hasOwn(preserve, "release_root"), false);
+assert.equal(JSON.stringify(preserve).includes("/workspace/"), false);
 assert.equal(validateReleaseUpdate(preserve).digest, preserve.digest);
 
 const clean = compileReleaseUpdate({update_id: "RELEASE-UPDATE-002", project_id: "PROJECT-001", workspace_boundary: boundary, current_release, replacement_release, governance_mode: "RESET_GOVERNANCE_CLEAN", control_snapshot_digest});

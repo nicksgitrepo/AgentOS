@@ -1,4 +1,5 @@
 import {assert, digestWithout, sha256} from "./canonical-json.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const GOAL_SCHEMA = "agentos.goal.v1";
 export const WINDOW_SCHEMA = "agentos.progress_window.v1";
@@ -62,6 +63,7 @@ export function createGoal({goal_id, objective, scope, intent, boundaries, creat
 }
 
 export function validateGoal(goal) {
+  assertPortableRecord(goal, "goal");
   exactKeys(goal, ["schema", "version", "status", "goal_id", "objective", "scope", "intent", "boundaries", "fingerprints", "created_at_utc", "closed_at_utc", "close_reason", "replacement_goal_id", "digest"], "goal");
   assert(goal.schema === GOAL_SCHEMA && goal.version === 1, "goal identity is invalid");
   assert(GOAL_STATUSES.includes(goal.status), "goal status is invalid");
@@ -136,6 +138,7 @@ export function createProgressWindow({window_id, worker_id, goal_id, started_at_
 }
 
 export function validateProgressWindow(window) {
+  assertPortableRecord(window, "progress window");
   exactKeys(window, ["schema", "version", "status", "window_id", "worker_id", "goal_id", "window_minutes", "started_at_utc", "deadline_at_utc", "last_result", "stall_reason", "digest"], "progress window");
   assert(window.schema === WINDOW_SCHEMA && window.version === 1, "progress window identity is invalid");
   assert(WINDOW_STATUSES.includes(window.status), "progress window status is invalid");

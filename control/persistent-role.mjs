@@ -1,5 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
 import {DEFAULT_MODEL, DEFAULT_REASONING_EFFORT} from "./native-session.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const PERSISTENT_ROLE_SCHEMA = "agentos.persistent_role.v1";
 const ID = /^[A-Z][A-Z0-9._-]*$/u;
@@ -26,6 +27,7 @@ export function createPersistentRole({role_id, project_id, environment_id, host_
 }
 
 export function validatePersistentRole(record) {
+  assertPortableRecord(record, "persistent role");
   exactKeys(record, ["schema", "version", "status", "role_id", "lifetime", "project_id", "environment_id", "host_session_id", "source_commit", "source_tree", "governance_digest", "model", "reasoning_effort", "created_at_utc", "digest"], "persistent role");
   assert(record.schema === PERSISTENT_ROLE_SCHEMA && record.version === 1 && record.status === "ACTIVE" && record.lifetime === "PERSISTENT", "persistent role identity is invalid");
   assert(["INTENT_REGULATOR", "RUNTIME"].includes(record.role_id), "persistent role ID is invalid");

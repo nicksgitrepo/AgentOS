@@ -13,7 +13,7 @@
     "next_mode": { "const": "ITERATION" },
     "owner_context_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "source_binding": { "type": "object" },
-    "workspace_boundary": { "$ref": "workspace-boundary.v1.json" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
     "defaults": { "type": "object" },
     "conversation": { "type": "object" },
     "activation": { "type": "object" },

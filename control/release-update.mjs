@@ -1,5 +1,6 @@
 import {assert, digestWithout} from "./canonical-json.mjs";
-import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {copyWorkspaceBoundary, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const RELEASE_UPDATE_SCHEMA = "agentos.release_update.v1";
 export const GOVERNANCE_UPDATE_MODES = Object.freeze(["KEEP_PROJECT_APPENDICES", "RESET_GOVERNANCE_CLEAN"]);
@@ -46,8 +47,8 @@ export function compileReleaseUpdate({update_id, project_id, workspace_boundary,
     status: "PREPARED_NOT_ACTIVATED",
     update_id,
     project_id,
-    release_root: workspace_boundary.release_root,
-    workspace_boundary: {...workspace_boundary},
+    release_root_ref: workspace_boundary.release_root_ref,
+    workspace_boundary: copyWorkspaceBoundary(workspace_boundary),
     current_release: {...current_release},
     replacement_release: {...replacement_release},
     governance_mode,
@@ -63,11 +64,11 @@ export function compileReleaseUpdate({update_id, project_id, workspace_boundary,
 }
 
 export function validateReleaseUpdate(update) {
-  exactKeys(update, ["schema", "version", "status", "update_id", "project_id", "release_root", "workspace_boundary", "current_release", "replacement_release", "governance_mode", "governance_action", "control_snapshot_digest", "project_action", "release_action", "rollback_policy", "digest"], "release update");
+  exactKeys(update, ["schema", "version", "status", "update_id", "project_id", "release_root_ref", "workspace_boundary", "current_release", "replacement_release", "governance_mode", "governance_action", "control_snapshot_digest", "project_action", "release_action", "rollback_policy", "digest"], "release update");
   assert(update.schema === RELEASE_UPDATE_SCHEMA && update.version === 1 && update.status === "PREPARED_NOT_ACTIVATED", "release update identity is invalid");
   assert(ID.test(update.update_id) && ID.test(update.project_id), "release update identity fields are invalid");
   validateWorkspaceBoundary(update.workspace_boundary);
-  assert(update.release_root === update.workspace_boundary.release_root, "release update root differs from workspace boundary");
+  assert(update.release_root_ref === update.workspace_boundary.release_root_ref, "release update root reference differs from workspace boundary");
   releaseIdentity(update.current_release, "current release");
   releaseIdentity(update.replacement_release, "replacement release");
   assert(update.current_release.release_digest !== update.replacement_release.release_digest, "replacement release must differ from current release");
@@ -77,6 +78,7 @@ export function validateReleaseUpdate(update) {
   assert(update.project_action === "LEAVE_PROJECT_REPOSITORIES_UNCHANGED", "release update may not alter project repositories");
   assert(update.release_action === "REPLACE_RELEASE_AT_SAME_ROOT", "release update action is invalid");
   assert(update.rollback_policy === "RETAIN_PREVIOUS_RELEASE_UNTIL_NEW_RELEASE_IS_BOUND_AND_CHECKED", "release rollback policy is invalid");
+  assertPortableRecord(update, "release update");
   assert(DIGEST.test(update.digest) && update.digest === digestWithout(update, "digest"), "release update digest does not match content");
   return update;
 }

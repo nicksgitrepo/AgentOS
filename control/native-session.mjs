@@ -2,6 +2,8 @@ import {assert, digestWithout} from "./canonical-json.mjs";
 import {validateGateResponse} from "./gate-response.mjs";
 import {validateHostWorkerBoundaryForAdmission} from "./host-worker-boundary.mjs";
 import {validateWorkspaceBoundary} from "./workspace-boundary.mjs";
+import {validateCampaignVersion} from "./campaign-names.mjs";
+import {assertPortableRecord} from "./portable-record.mjs";
 
 export const NATIVE_SESSION_SCHEMA = "agentos.native_session.v1";
 export const DEFAULT_MODEL = "gpt-5.6-luna";
@@ -57,7 +59,8 @@ const THREAD_IDENTITY_FIELDS = [
 
 export function validateAdmission(admission) {
   exactKeys(admission, ADMISSION_FIELDS, "native admission");
-  for (const field of ["project_id", "campaign_id", "campaign_version", "goal_id", "role_id", "worktree_id"]) stable(admission[field], `admission.${field}`);
+  for (const field of ["project_id", "campaign_id", "goal_id", "role_id", "worktree_id"]) stable(admission[field], `admission.${field}`);
+  validateCampaignVersion(admission.campaign_version, "admission.campaign_version");
   lane(admission.lane_id, "admission.lane_id");
   task(admission.task_name, "admission.task_name");
   nonempty(admission.role_display_name, "admission.role_display_name");
@@ -180,6 +183,7 @@ export async function spawnNativeSession(host, admission, {host_worker_boundary 
       digest: null,
     };
     session.digest = digestWithout(session, "digest");
+    assertPortableRecord(session, "native session");
     const pin = await host.set_thread_pinned({thread_id: raw.thread_id, pinned: true, identity: session});
     assert(pin && pin.pinned === true, "host did not confirm pin");
     return session;
@@ -224,6 +228,7 @@ export async function readMeaningfulProgress(host, session, timeout_ms = 900_000
   assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(raw.progress.result_type), "progress is not meaningful");
   nonempty(raw.progress.summary, "progress.summary");
   assert(SHA256.test(raw.progress.artifact_sha256) && SHA256.test(raw.progress.evidence_sha256), "progress evidence is invalid");
+  assertPortableRecord(raw.progress, "native progress");
   return raw.progress;
 }
 
@@ -246,6 +251,7 @@ export async function readGatePacket(host, session, {renderedForGate = null} = {
     assert(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"].includes(item.answer), `gate packet ${index}.answer is invalid`);
     assert(item.evidence && typeof item.evidence === "object" && !Array.isArray(item.evidence), `gate packet ${index}.evidence is invalid`);
   }
+  assertPortableRecord(raw, "native gate packet");
   return raw.gate_packet;
 }
 
@@ -255,6 +261,7 @@ export async function closeNativeSession(host, session, handoff) {
   nonempty(handoff.summary, "handoff.summary");
   assert(["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"].includes(handoff.result_type), "handoff is not meaningful");
   assert(SHA256.test(handoff.artifact_sha256) && SHA256.test(handoff.evidence_sha256), "handoff evidence is invalid");
+  assertPortableRecord(handoff, "native handoff input");
   await host.send_message_to_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, message: "Return the final typed handoff for this task."});
   const raw = await host.read_thread({thread_id: session.thread_id, host_id: session.host_id, identity: session, view: "handoff"});
   expectedIdentity(session, raw, "handoff readback");
@@ -262,9 +269,11 @@ export async function closeNativeSession(host, session, handoff) {
   exactKeys(raw, [...THREAD_IDENTITY_FIELDS, "handoff"], "handoff readback");
   exactKeys(raw.handoff, ["summary", "result_type", "artifact_sha256", "evidence_sha256"], "typed handoff");
   assert(raw.handoff.summary === handoff.summary && raw.handoff.result_type === handoff.result_type && raw.handoff.artifact_sha256 === handoff.artifact_sha256 && raw.handoff.evidence_sha256 === handoff.evidence_sha256, "host handoff differs from the requested handoff");
+  assertPortableRecord(raw.handoff, "native typed handoff");
   const closure = await removeAndVerify(host, session, "NORMAL_CLOSURE");
   const closed = {...session, status: "CLOSED", handoff: raw.handoff, digest: null};
   closed.digest = digestWithout(closed, "digest");
+  assertPortableRecord(closed, "closed native session");
   return {session: closed, closure};
 }
 
