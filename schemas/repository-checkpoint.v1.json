@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repository_checkpoint.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "worktree_id", "commit", "tree", "remote_commit", "remote_tree", "clean", "pushed", "observed_by_role", "observed_by_session", "observed_at_utc", "verification_method", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.repository_checkpoint.v1" },
+    "version": { "const": 1 },
+    "worktree_id": { "type": "string" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "remote_commit": { "type": "string", "minLength": 1 },
+    "remote_tree": { "type": "string", "minLength": 1 },
+    "clean": { "type": "boolean" },
+    "pushed": { "type": "boolean" },
+    "observed_by_role": { "type": "string" },
+    "observed_by_session": { "type": "string", "pattern": "^SESSION_REF_[0-9a-f]{64}$" },
+    "observed_at_utc": { "type": "string", "format": "date-time" },
+    "verification_method": { "enum": ["GIT_READBACK", "PROVIDER_READBACK", "ARTIFACT_READBACK"] },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

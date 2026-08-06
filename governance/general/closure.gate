@@ -1,0 +1,25 @@
+graph GENERAL_CLOSURE 1
+entry GENERAL-CLOSE-001
+
+gate GENERAL-CLOSE-001
+context CLOSURE
+question "Was the handoff preserved, the temporary worker unpinned and archived, and the active roster cleared by host readback?"
+evidence handoff,archive,roster
+YES GENERAL-CLOSE-002
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+gate GENERAL-CLOSE-002
+context CLOSURE
+question "Does the final closure record match the host's archived state and contain the typed handoff for this exact result?"
+evidence handoff,archive,roster,digest
+YES GENERAL-COMPLETE
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+terminal GENERAL-COMPLETE COMPLETE "Temporary work is closed with host evidence."
+terminal GENERAL-HARD-STOP HARD_STOP "Temporary work cannot be called closed without host readback."

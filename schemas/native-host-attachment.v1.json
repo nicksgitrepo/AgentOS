@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.native_host_attachment.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "attachment_id", "host_id", "project_id", "environment_id", "capabilities", "model", "reasoning_effort", "attached_at_utc", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.native_host_attachment.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "BOUND" },
+    "attachment_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "host_id": { "type": "string", "pattern": "^HOST_REF_[0-9a-f]{64}$" },
+    "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "environment_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "capabilities": { "const": ["create_thread", "list_threads", "read_thread", "send_message_to_thread", "set_thread_archived", "set_thread_pinned", "wait_threads"] },
+    "model": { "const": "gpt-5.6-luna" },
+    "reasoning_effort": { "const": "max" },
+    "attached_at_utc": { "type": "string", "format": "date-time" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

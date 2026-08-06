@@ -1,0 +1,58 @@
+graph CODE_HYGIENE 1
+entry HYGIENE-001
+
+gate HYGIENE-001
+context CODE_CHANGE
+question "Is the implementation the smallest clear change that satisfies the admitted behavior without unrelated files?"
+evidence diff,scope,non_goals
+YES HYGIENE-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate HYGIENE-002
+context CLOSURE
+question "Did direct syntax and behavior checks pass with no unreviewed warnings or generated residue?"
+evidence checks,warnings,workspace
+YES HYGIENE-003
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate HYGIENE-003
+context CODE_CHANGE
+question "Is the worktree diff free of potential race conditions, unsafe shared-state changes, and ordering bugs under the admitted concurrent use?"
+evidence diff,concurrency,shared_state,ordering
+YES HYGIENE-004
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate HYGIENE-004
+context CODE_CHANGE
+question "Are dependency changes, generated files, temporary files, ignored artifacts, and repository metadata either required, bounded, and accounted for?"
+evidence workspace,dependencies,residue,warnings
+YES HYGIENE-005
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate HYGIENE-005
+context CLOSURE
+question "Does the worktree preserve a reviewable diff with no unrelated rewrites, hidden generated changes, or uncommitted required inputs?"
+evidence diff,workspace,scope,changed_paths
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+terminal COMPLETE COMPLETE "The implementation is minimal, clear, and checked."
+terminal HARD-STOP-SCOPE HARD_STOP "The change includes work outside its admitted scope."
+terminal HARD-STOP-EVIDENCE HARD_STOP "The hygiene result cannot be established."
+terminal SOFT-REVIEW SOFT_REVIEW "The code hygiene result needs review."
+terminal UNPROVEN UNPROVEN "The hygiene claim lacks sufficient evidence."

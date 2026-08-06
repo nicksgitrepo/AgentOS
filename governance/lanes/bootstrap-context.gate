@@ -1,0 +1,48 @@
+graph BOOTSTRAP_CONTEXT 1
+entry BOOT-001
+
+gate BOOT-001
+context TASK_START
+question "Can every named source be read inside the admitted boundary without writing or bypassing permission?"
+evidence sources,read_capability,boundary
+YES BOOT-002
+NO HARD-STOP-BOUNDARY
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-BOUNDARY
+end
+
+gate BOOT-002
+context TASK_START
+question "Is each retained fact labeled current, historical, decided, unresolved, or excluded with its provenance?"
+evidence provenance,classification,conflicts
+YES BOOT-003
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+gate BOOT-003
+context TASK_START
+question "Is AgentOS governance stored and operated outside the user's product repository unless an explicit development exception is recorded?"
+evidence boundary,isolation,provenance
+YES BOOT-004
+NO HARD-STOP-BOUNDARY
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-BOUNDARY
+end
+
+gate BOOT-004
+context TASK_START
+question "Does the bootstrap packet show the chosen mode, every development phase, lane ownership, persistent roles, and the change into iteration mode?"
+evidence context,plan,phases,role
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-EVIDENCE
+end
+
+terminal COMPLETE COMPLETE "Bootstrap context is classified and traceable."
+terminal HARD-STOP-BOUNDARY HARD_STOP "Bootstrap cannot read or cross the admitted boundary."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Bootstrap context lacks required provenance evidence."
+terminal SOFT-REVIEW SOFT_REVIEW "The context packet needs campaign review."
+terminal UNPROVEN UNPROVEN "Bootstrap context is not yet established."

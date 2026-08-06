@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.intent_regulator_audit.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "regulator_role", "lifetime", "project_id", "campaign_id", "campaign_version", "goal_id", "source_commit", "source_tree", "interval_minutes", "observed_at_utc", "decision", "reasons", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.intent_regulator_audit.v1" },
+    "version": { "const": 1 },
+    "regulator_role": { "const": "INTENT_REGULATOR" },
+    "lifetime": { "const": "PERSISTENT" },
+    "project_id": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "campaign_version": { "type": "string", "pattern": "^(?:v[0-9]+[.][0-9]+[.][0-9]+(?:-(?:tb|rc)-[0-9]+)?|[A-Z][A-Z0-9._-]*)$" },
+    "goal_id": { "type": "string" },
+    "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "source_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "interval_minutes": { "type": "integer", "minimum": 1, "maximum": 240 },
+    "observed_at_utc": { "type": "string", "format": "date-time" },
+    "decision": { "enum": ["CONTINUE_CAMPAIGN", "STOP_HARD_BOUNDARY", "REASSESS_AND_REPLACE_GOAL", "ORCHESTRATOR_REVIEW", "REPLACE_STALLED_WORKER", "AWAIT_ACCEPTANCE"] },
+    "reasons": { "type": "array" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.3_launch.v1",
+  "title": "AgentOS 3 Bootstrap Launch Packet v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "activation_id",
+    "project_id",
+    "campaign_id",
+    "campaign_version",
+    "goal_id",
+    "launch_answer_value",
+    "question",
+    "continuation",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.3_launch.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "activation_id": {"type": "string"},
+    "project_id": {"type": "string"},
+    "campaign_id": {"type": "string"},
+    "campaign_version": {"type": "string"},
+    "goal_id": {"type": "string"},
+    "launch_answer_value": {"type": "string", "minLength": 1},
+    "question": {"type": "object"},
+    "continuation": {"type": "object"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_role_library.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "base_role_library_digest", "project_governance_digest", "packets", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.project_role_library.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$" },
+    "base_role_library_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "project_governance_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "packets": { "type": "array", "minItems": 1, "items": { "$ref": "project-role-governance.v1.json" } },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

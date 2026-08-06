@@ -1,0 +1,66 @@
+graph SECURITY_PRIVACY 1
+entry SECURITY-001
+
+gate SECURITY-001
+context CODE_CHANGE
+question "Are inputs, permissions, secrets, private data, and isolation handled according to the admitted security boundary?"
+evidence threats,permissions,secrets,isolation
+YES SECURITY-002
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+gate SECURITY-002
+context CLOSURE
+question "Are destructive, external, and release actions held for the Runtime authority with an exact bounded request?"
+evidence authority,actions,request
+YES SECURITY-003
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+gate SECURITY-003
+context CODE_CHANGE
+question "Does every protected operation require the right identity and reject missing, foreign, expired, or downgraded authority?"
+evidence permissions,authorization,negative
+YES SECURITY-004
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+gate SECURITY-004
+context CODE_CHANGE
+question "Do untrusted inputs fail safely against injection, path traversal, SSRF, unsafe commands, and cross-project access?"
+evidence inputs,threats,isolation,negative
+YES SECURITY-005
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+gate SECURITY-005
+context RESPONSE
+question "Do user-facing responses, logs, handoffs, and evidence redact secrets, private paths, credentials, and unrelated project content?"
+evidence secrets,content,response
+YES SECURITY-006
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+gate SECURITY-006
+context CLOSURE
+question "Are external, destructive, financial, deployment, merge, and release actions blocked until Runtime has a matching owner-approved request?"
+evidence authority,actions,request,permissions
+YES COMPLETE
+NO HARD-STOP-SECURITY
+UNKNOWN HARD-STOP-EVIDENCE
+NOT_APPLICABLE HARD-STOP-SECURITY
+end
+
+terminal COMPLETE COMPLETE "The security and privacy boundary is satisfied."
+terminal HARD-STOP-SECURITY HARD_STOP "Security, privacy, or authority evidence failed."
+terminal HARD-STOP-EVIDENCE HARD_STOP "Security cannot proceed on unknown evidence."

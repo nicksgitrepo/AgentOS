@@ -1,0 +1,35 @@
+graph GENERAL_SECURITY 1
+entry GENERAL-SECURITY-001
+
+gate GENERAL-SECURITY-001
+context CODE_CHANGE
+question "Are inputs, permissions, secrets, private data, and isolation handled within the admitted security boundary?"
+evidence threats,permissions,secrets,isolation
+YES GENERAL-SECURITY-002
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+gate GENERAL-SECURITY-002
+context CLOSURE
+question "Are destructive, external, and release actions held for Runtime authority with an exact bounded request?"
+evidence authority,actions,request
+YES GENERAL-SECURITY-003
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+gate GENERAL-SECURITY-003
+context RESPONSE
+question "Does every response, log, handoff, and evidence record avoid exposing secrets, private paths, credentials, or unapproved project content?"
+evidence secrets,content,response
+YES GENERAL-COMPLETE
+NO GENERAL-HARD-STOP
+UNKNOWN GENERAL-HARD-STOP
+NOT_APPLICABLE GENERAL-HARD-STOP
+end
+
+terminal GENERAL-COMPLETE COMPLETE "The security and authority boundary is satisfied."
+terminal GENERAL-HARD-STOP HARD_STOP "Security or authority evidence failed."

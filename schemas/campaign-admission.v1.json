@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.campaign_admission.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "campaign_id", "campaign_version", "phase_id", "lane_id", "role_id", "role_display_name", "goal_id", "goal_sha256", "source", "workspace_boundary", "governance_digest", "task_name", "prompt", "progress_window_minutes", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.campaign_admission.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "project_id": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "campaign_version": { "type": "string", "pattern": "^(?:v[0-9]+[.][0-9]+[.][0-9]+(?:-(?:tb|rc)-[0-9]+)?|[A-Z][A-Z0-9._-]*)$" },
+    "phase_id": { "type": "string" },
+    "lane_id": { "type": "string" },
+    "role_id": { "const": "NAMED_LANE_WORKER" },
+    "role_display_name": { "type": "string" },
+    "goal_id": { "type": "string" },
+    "goal_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "source": { "type": "object" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
+    "governance_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "task_name": { "type": "string", "pattern": "^task_ref_[0-9a-f]{64}$" },
+    "prompt": { "type": "string", "minLength": 1 },
+    "progress_window_minutes": { "const": 15 },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

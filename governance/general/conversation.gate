@@ -1,0 +1,36 @@
+graph GENERAL_CONVERSATION 1
+entry GENERAL-CONV-001
+
+gate GENERAL-CONV-001
+context RESPONSE
+question "Does this ask for exactly one missing owner choice in short, ordinary words?"
+evidence question,missing_choice,wording
+YES GENERAL-CONV-002
+NO GENERAL-SOFT-REVIEW
+UNKNOWN GENERAL-UNPROVEN
+NOT_APPLICABLE GENERAL-SOFT-REVIEW
+end
+
+gate GENERAL-CONV-002
+context RESPONSE
+question "Can a numeric answer or yes or no answer be mapped without changing the owner's meaning?"
+evidence answer_map,ambiguity,context
+YES GENERAL-CONV-003
+NO GENERAL-SOFT-REVIEW
+UNKNOWN GENERAL-UNPROVEN
+NOT_APPLICABLE GENERAL-SOFT-REVIEW
+end
+
+gate GENERAL-CONV-003
+context RESPONSE
+question "Can the owner understand and answer this without seeing role names, graph IDs, hashes, schemas, or other internal vocabulary?"
+evidence wording,language,surface
+YES GENERAL-COMPLETE
+NO GENERAL-SOFT-REVIEW
+UNKNOWN GENERAL-UNPROVEN
+NOT_APPLICABLE GENERAL-SOFT-REVIEW
+end
+
+terminal GENERAL-COMPLETE COMPLETE "The owner question is short, plain, and safely mappable."
+terminal GENERAL-SOFT-REVIEW SOFT_REVIEW "The question needs conversation review."
+terminal GENERAL-UNPROVEN UNPROVEN "The question meaning is not established."

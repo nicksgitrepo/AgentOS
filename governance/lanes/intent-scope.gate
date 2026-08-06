@@ -1,0 +1,47 @@
+graph INTENT_SCOPE 1
+entry INTENT-001
+
+gate INTENT-001
+context TASK_START
+question "Does the admitted task state one intended outcome, one owner, and explicit non-goals?"
+evidence intent,owner,non_goals
+YES INTENT-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate INTENT-002
+context CODE_CHANGE
+question "Does the proposed change remain inside the recorded scope and hard and soft boundaries?"
+evidence scope,boundaries,changed_paths
+YES INTENT-003
+NO HARD-STOP-SCOPE
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate INTENT-003
+context CODE_CHANGE
+question "At this checkpoint, does the result still serve the owner's intended outcome without silently adding a new objective?"
+evidence intent,changed_scope,conflicts
+YES INTENT-004
+NO HARD-STOP-SCOPE
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+gate INTENT-004
+context HANDOFF
+question "If scope, intent, or conditions changed, was the current goal closed or reassessed before more work was allowed?"
+evidence reassessment,replacement,goal_change
+YES COMPLETE
+NO HARD-STOP-SCOPE
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-SCOPE
+end
+
+terminal COMPLETE COMPLETE "The intent and scope are explicit and unchanged."
+terminal HARD-STOP-SCOPE HARD_STOP "The work cannot continue outside its admitted intent or scope."
+terminal SOFT-REVIEW SOFT_REVIEW "The Campaign Orchestrator must review the intent or scope."
+terminal UNPROVEN UNPROVEN "The intent or scope needs evidence before work continues."

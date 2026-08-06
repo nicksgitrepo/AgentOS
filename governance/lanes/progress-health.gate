@@ -1,0 +1,47 @@
+graph PROGRESS_HEALTH 1
+entry PROGRESS-001
+
+gate PROGRESS-001
+context TASK_PROGRESS
+question "Did the worker produce an observable result before the configured fifteen-minute window ended?"
+evidence progress,window,observed_at
+YES PROGRESS-002
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-PROGRESS
+end
+
+gate PROGRESS-002
+context TASK_PROGRESS
+question "Is the result a changed artifact, verified behavior, or bounded handoff rather than only a failure list?"
+evidence result,artifact_or_behavior,handoff
+YES PROGRESS-003
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-PROGRESS
+end
+
+gate PROGRESS-003
+context TASK_PROGRESS
+question "Is progress supported by a changed artifact, verified behavior, checkpoint, or typed handoff—not only a heartbeat or live process?"
+evidence progress,artifact_or_behavior,result,checks
+YES PROGRESS-004
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-PROGRESS
+end
+
+gate PROGRESS-004
+context TASK_PROGRESS
+question "When the worker missed its window or returned only failures, was it marked stalled and escalated or replaced?"
+evidence window,failure,route,progress
+YES COMPLETE
+NO SOFT-REVIEW
+UNKNOWN UNPROVEN
+NOT_APPLICABLE HARD-STOP-PROGRESS
+end
+
+terminal COMPLETE COMPLETE "The worker produced meaningful progress."
+terminal HARD-STOP-PROGRESS HARD_STOP "Progress cannot be established within the governed window."
+terminal SOFT-REVIEW SOFT_REVIEW "The Campaign Orchestrator must review the stalled or weak result."
+terminal UNPROVEN UNPROVEN "The progress claim is not supported by evidence."

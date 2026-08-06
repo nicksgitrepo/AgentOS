@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.owner_continuation.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "activation_id", "project_id", "campaign_id", "campaign_version", "goal_id", "question_id", "expected_value", "protected_actions", "owner_answer", "resume_request", "admission", "failure", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.owner_continuation.v1" },
+    "version": { "const": 1 },
+    "status": { "enum": ["WAITING_OWNER", "RESUME_PENDING", "RESUMED", "REJECTED", "BLOCKED"] },
+    "activation_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "campaign_version": { "type": "string", "pattern": "^(?:v[0-9]+[.][0-9]+[.][0-9]+(?:-(?:tb|rc)-[0-9]+)?|[A-Z][A-Z0-9._-]*)$" },
+    "goal_id": { "type": "string" },
+    "question_id": { "type": "string" },
+    "expected_value": { "type": ["string", "boolean"] },
+    "protected_actions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "owner_answer": { "type": ["object", "null"] },
+    "resume_request": { "type": ["object", "null"] },
+    "admission": { "type": ["object", "null"] },
+    "failure": { "type": ["object", "null"] },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

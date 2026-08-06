@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.release_update.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "update_id", "project_id", "release_root_ref", "workspace_boundary", "current_release", "replacement_release", "governance_mode", "governance_action", "control_snapshot_digest", "project_action", "release_action", "rollback_policy", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.release_update.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "update_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "release_root_ref": { "type": "string", "pattern": "^AGENTOS_[A-Z0-9_]+$" },
+    "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
+    "current_release": { "$ref": "#/$defs/release" },
+    "replacement_release": { "$ref": "#/$defs/release" },
+    "governance_mode": { "enum": ["KEEP_PROJECT_APPENDICES", "RESET_GOVERNANCE_CLEAN"] },
+    "governance_action": { "type": "string" },
+    "control_snapshot_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "project_action": { "const": "LEAVE_PROJECT_REPOSITORIES_UNCHANGED" },
+    "release_action": { "const": "REPLACE_RELEASE_AT_SAME_ROOT" },
+    "rollback_policy": { "const": "RETAIN_PREVIOUS_RELEASE_UNTIL_NEW_RELEASE_IS_BOUND_AND_CHECKED" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "source_commit", "source_tree", "release_digest"],
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "source_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "release_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

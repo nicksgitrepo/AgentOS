@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.live_closure.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "delivery_choice_digest", "accepted_result_digest", "final_audit_digest", "final_candidate_commit", "final_candidate_tree", "deployment_receipt", "live_audit_receipt", "closed_at_utc", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.accepted_live_closure.v1" },
+    "version": { "const": 1 },
+    "delivery_choice_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "accepted_result_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "final_audit_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "final_candidate_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "final_candidate_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "deployment_receipt": { "type": "object" },
+    "live_audit_receipt": { "type": "object" },
+    "closed_at_utc": { "type": "string", "format": "date-time" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

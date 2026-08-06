@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.workspace_boundary.v1",
+  "title": "Retired workspace boundary v1",
+  "description": "Version 1 is retired because it allowed raw machine paths in persisted records. Use agentos.workspace_boundary.v2 with environment references.",
+  "not": {}
+}

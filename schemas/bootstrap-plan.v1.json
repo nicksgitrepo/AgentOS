@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.bootstrap_plan.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "mode", "next_mode", "owner_context_sha256", "source_binding", "workspace_boundary", "defaults", "conversation", "activation", "persistent_roles", "campaign_roles", "lane_worker_role", "phases", "role_library_digest", "protected_actions", "completion", "digest"],
+  "properties": {
+    "schema": { "const": "agentos.bootstrap_plan.v1" },
+    "version": { "const": 1 },
+    "status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "project_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9._-]*$" },
+    "mode": { "const": "RAPID_PROTOTYPING" },
+    "next_mode": { "const": "ITERATION" },
+    "owner_context_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "source_binding": {
+      "type": "object",
+      "required": ["source_commit", "source_tree", "worktree_id", "bootstrap_session_id", "environment_id"],
+      "properties": {
+        "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "source_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "worktree_id": { "type": "string", "minLength": 1 },
+        "bootstrap_session_id": { "type": "string", "pattern": "^SESSION_REF_[0-9a-f]{64}$" },
+        "environment_id": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "workspace_boundary": { "$ref": "workspace-boundary.v2.json" },
+    "defaults": { "type": "object" },
+    "conversation": { "type": "object" },
+    "activation": { "type": "object" },
+    "persistent_roles": { "const": ["INTENT_REGULATOR", "RUNTIME"] },
+    "campaign_roles": { "const": ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR"] },
+    "lane_worker_role": { "const": "NAMED_LANE_WORKER" },
+    "phases": { "type": "array", "minItems": 4 },
+    "role_library_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "protected_actions": { "type": "array", "minItems": 1 },
+    "completion": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}
