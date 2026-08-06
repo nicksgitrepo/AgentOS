@@ -183,6 +183,6 @@ export function acceptCampaignResult(result, {reviewer_session_id, reviewer_role
   acceptance.digest = digestWithout(acceptance, "digest");
   const acceptedResult = {schema: CAMPAIGN_RESULT_SCHEMA, version: 1, status: "ACCEPTED", result_digest: result.digest, acceptance, digest: null};
   acceptedResult.digest = digestWithout(acceptedResult, "digest");
-  assertPortableRecord(acceptedResult, "accepted campaign result", {secretValues: [authority_secret]});
+  assertPortableRecord(acceptedResult, "accepted campaign result", {secretValues: [authority_secret, evidence_secret]});
   return acceptedResult;
 }

@@ -72,4 +72,5 @@ leakyResult.digest = null;
 leakyResult.completion_proof = crypto.createHmac("sha256", authoritySecret).update(canonicalJson({...leakyResult, completion_proof: null, digest: null}), "utf8").digest("hex");
 leakyResult.digest = digestWithout(leakyResult, "digest");
 assert.throws(() => acceptCampaignResult(leakyResult, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: "secret leak", accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret, evidence_secret: evidenceSecret}), /runtime secret/u);
+assert.throws(() => acceptCampaignResult(result, {reviewer_session_id: "AUDITOR-SESSION-001", reviewer_role_id: "INDEPENDENT_AUDITOR", reviewer_readback: reviewerReadback, evidence_sha256: "e".repeat(64), accepted: true, reason: evidenceSecret, accepted_at_utc: "2026-01-01T00:20:00.000Z", authority_secret: authoritySecret, evidence_secret: evidenceSecret}), /runtime secret/u);
 console.log(JSON.stringify({status: "PASS", campaign: result.status, acceptance: accepted.status}));
