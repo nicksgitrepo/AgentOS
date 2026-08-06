@@ -225,7 +225,7 @@ export function createCampaignRun(plan) {
   return validateRun(run, plan);
 }
 
-export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptance}) {
+export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptance, secretValues = []}) {
   validateCampaignPlan(plan);
   validateRun(run, plan);
   assert(run.status === "ACTIVE", "campaign run is not active");
@@ -243,7 +243,7 @@ export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptan
   const priorSessions = new Set(run.lane_results.map((item) => item.worker_session_id));
   assert(normalizedCandidates.every((candidate) => !priorSessions.has(candidate.worker_session_id)), "campaign reuses a worker session across phases");
   assert(!run.phase_results.some((item) => item.auditor_session_id === normalizedAcceptance.reviewer_session_id), "campaign reuses an Auditor session across phases");
-  validatePhaseAcceptance(normalizedAcceptance, phase, normalizedCandidates, plan);
+  validatePhaseAcceptance(normalizedAcceptance, phase, normalizedCandidates, plan, {secretValues});
   const laneResults = normalizedCandidates.map((candidate) => ({phase_id, lane_id: candidate.lane_id, result_digest: candidate.result_digest, worker_session_id: candidate.worker_session_id})).sort((left, right) => compareUtf8(left.lane_id, right.lane_id));
   const phaseResult = {phase_id, lane_ids: laneResults.map((item) => item.lane_id), reviewed_lane_ids: [...normalizedAcceptance.reviewed_lane_ids], auditor_session_id: normalizedAcceptance.reviewer_session_id, acceptance_digest: normalizedAcceptance.acceptance_digest, status: "ACCEPTED"};
   const completed = run.phase_index + 1 >= plan.phases.length;
@@ -260,7 +260,7 @@ export function recordPhaseAcceptance(run, plan, {phase_id, candidates, acceptan
   return validateRun(next, plan);
 }
 
-export async function runCampaign({plan, runLane, acceptPhase}) {
+export async function runCampaign({plan, runLane, acceptPhase, secretValues = []}) {
   validateCampaignPlan(plan);
   assert(typeof runLane === "function" && typeof acceptPhase === "function", "campaign runner callbacks are required");
   let run = createCampaignRun(plan);
@@ -272,7 +272,7 @@ export async function runCampaign({plan, runLane, acceptPhase}) {
       candidates.push(validateCandidate(normalized, assignment, phase));
     }
     const acceptance = await acceptPhase({phase, plan, run, candidates});
-    run = recordPhaseAcceptance(run, plan, {phase_id: phase.phase_id, candidates, acceptance});
+    run = recordPhaseAcceptance(run, plan, {phase_id: phase.phase_id, candidates, acceptance, secretValues});
   }
   assert(run.status === "COMPLETE", "campaign did not reach complete state");
   return run;

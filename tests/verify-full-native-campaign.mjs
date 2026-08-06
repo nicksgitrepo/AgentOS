@@ -5,7 +5,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {readFile} from "node:fs/promises";
 import {compileBootstrapPlan} from "../control/bootstrap-plan.mjs";
-import {compileCampaignPlan, runCampaign} from "../control/campaign-orchestrator.mjs";
+import {compileCampaignPlan, recordPhaseAcceptance, runCampaign} from "../control/campaign-orchestrator.mjs";
 import {createGoal} from "../control/campaign-state.mjs";
 import {compileCampaignAdmission} from "../control/campaign-admission.mjs";
 import {compileGateFile} from "../control/gate-dsl.mjs";
@@ -82,6 +82,7 @@ function fakeHost(graph, admission, workerSessionId) {
 
 const run = await runCampaign({
   plan,
+  secretValues: [authoritySecret, evidenceSecret],
   async runLane(assignment, {phase}) {
     const graph = graphs.get(assignment.lane_id);
     const admission = compileCampaignAdmission({plan: bootstrapPlan, goal, project_id: plan.project_id, campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, lane_id: assignment.lane_id, source, task_name: assignment.task_name, prompt: assignment.prompt});
@@ -90,7 +91,7 @@ const run = await runCampaign({
     results.set(assignment.lane_id, result);
     return {status: "AUDIT_CANDIDATE", phase_id: phase.phase_id, lane_id: assignment.lane_id, result_digest: result.digest, worker_session_id: result.closed_session.host_id, result_type: result.progress.result_type, summary: result.progress.summary, artifact_sha256: result.progress.artifact_sha256, evidence_sha256: result.progress.evidence_sha256};
   },
-  async acceptPhase({phase, candidates}) {
+  async acceptPhase({phase, candidates, run: currentRun}) {
     const auditorSessionId = `${phase.phase_id}-AUDITOR-001`;
     for (const candidate of candidates) {
       const result = results.get(candidate.lane_id);
@@ -119,6 +120,11 @@ const run = await runCampaign({
       acceptance_digest: null,
     };
     acceptance.acceptance_digest = digestWithout(acceptance, "acceptance_digest");
+    if (phase.phase_id === plan.phases[0].phase_id) {
+      const leakyAcceptance = {...acceptance, reason: evidenceSecret, acceptance_digest: null};
+      leakyAcceptance.acceptance_digest = digestWithout(leakyAcceptance, "acceptance_digest");
+      assert.throws(() => recordPhaseAcceptance(currentRun, plan, {phase_id: phase.phase_id, candidates, acceptance: leakyAcceptance, secretValues: [authoritySecret, evidenceSecret]}), /runtime secret/u);
+    }
     return acceptance;
   },
 });

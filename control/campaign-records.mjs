@@ -66,9 +66,9 @@ export function validateAuditorReadback(readback, plan, phase) {
   return readback;
 }
 
-export function validatePhaseAcceptance(acceptance, phase, candidates, plan) {
+export function validatePhaseAcceptance(acceptance, phase, candidates, plan, {secretValues = []} = {}) {
   exactKeys(acceptance, ["status", "reviewer_role_id", "reviewer_session_id", "auditor_readback", "evidence_sha256", "reason", "lane_results", "reviewed_lane_ids", "acceptance_digest"], "phase acceptance");
-  assertPortableRecord(acceptance, "phase acceptance");
+  assertPortableRecord(acceptance, "phase acceptance", {secretValues});
   assert(acceptance.status === "ACCEPTED" && acceptance.reviewer_role_id === "INDEPENDENT_AUDITOR", "phase acceptance is not independent");
   assertOpaqueReference(acceptance.reviewer_session_id, "session", "phase acceptance reviewer session");
   const auditorReadback = validateAuditorReadback(acceptance.auditor_readback, plan, phase);

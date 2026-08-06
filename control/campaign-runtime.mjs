@@ -212,6 +212,7 @@ export async function runNativeCampaign({root, bootstrap_plan, goal, campaign_id
     const questionCatalog = await loadQuestionCatalog(root);
     const campaign_run = await runCampaign({
       plan: prepared.campaign_plan,
+      secretValues,
       async runLane(assignment, {phase}) {
         auditSupervisor?.assertHealthy();
         const admission = compileCampaignAdmission({
