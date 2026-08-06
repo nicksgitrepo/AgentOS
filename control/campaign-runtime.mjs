@@ -15,6 +15,7 @@ import {assertPortableRecord} from "./portable-record.mjs";
 export const CAMPAIGN_OUTCOME_SCHEMA = "agentos.native_campaign_outcome.v1";
 
 const DIGEST = /^[0-9a-f]{64}$/u;
+const STOPPING_AUDIT_DECISIONS = new Set(["STOP_HARD_BOUNDARY", "REASSESS_AND_REPLACE_GOAL", "ORCHESTRATOR_REVIEW", "REPLACE_STALLED_WORKER"]);
 
 function exactKeys(value, expected, label) {
   assert(value && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
@@ -153,11 +154,19 @@ export function createCampaignAuditSupervisor({readSnapshot, onAudit, interval_m
   let controller = null;
   let loop = null;
   let failure = null;
+  const enforceAudit = async (audit) => {
+    await onAudit(audit);
+    if (STOPPING_AUDIT_DECISIONS.has(audit.decision)) {
+      const error = new Error(`INTENT_REGULATOR_${audit.decision}`);
+      error.code = audit.decision;
+      throw error;
+    }
+  };
   return Object.freeze({
     start() {
       assert(controller === null, "campaign audit supervisor has already started");
       controller = new AbortController();
-      loop = runIntentRegulatorLoop({readSnapshot, onAudit, interval_minutes, max_iterations, signal: controller.signal}).catch((error) => {
+      loop = runIntentRegulatorLoop({readSnapshot, onAudit: enforceAudit, interval_minutes, max_iterations, signal: controller.signal}).catch((error) => {
         if (!controller.signal.aborted || error?.message !== "AUDIT_LOOP_ABORTED") failure = error;
         return {iterations: 0, stopped: controller.signal.aborted};
       });
@@ -169,6 +178,9 @@ export function createCampaignAuditSupervisor({readSnapshot, onAudit, interval_m
       await loop;
       if (failure) throw failure;
       return {status: "STOPPED"};
+    },
+    assertHealthy() {
+      if (failure) throw failure;
     },
   });
 }
@@ -192,6 +204,7 @@ export async function runNativeCampaign({root, bootstrap_plan, goal, campaign_id
     const campaign_run = await runCampaign({
       plan: prepared.campaign_plan,
       async runLane(assignment, {phase}) {
+        auditSupervisor?.assertHealthy();
         const admission = compileCampaignAdmission({
           plan: bootstrap_plan,
           goal,
@@ -205,10 +218,14 @@ export async function runNativeCampaign({root, bootstrap_plan, goal, campaign_id
         });
         const inputs = await readLaneInputs(root, assignment.lane_id, assignment.graph_id, manifest, questionCatalog);
         const result = await runLaneCampaign({host, admission, graph: inputs.graph, question_catalog: inputs.question_catalog, authority_secret, evidence_secret});
+        auditSupervisor?.assertHealthy();
         return {status: "AUDIT_CANDIDATE", phase_id: phase.phase_id, lane_id: assignment.lane_id, result_digest: result.digest, worker_session_id: result.closed_session.host_id, result_type: result.progress.result_type, summary: result.progress.summary, artifact_sha256: result.progress.artifact_sha256, evidence_sha256: result.progress.evidence_sha256};
       },
       async acceptPhase({phase, candidates}) {
-        return runPhaseAuditor({host, plan: prepared.campaign_plan, phase, candidates});
+        auditSupervisor?.assertHealthy();
+        const acceptance = await runPhaseAuditor({host, plan: prepared.campaign_plan, phase, candidates});
+        auditSupervisor?.assertHealthy();
+        return acceptance;
       },
     });
     const outcome = {schema: CAMPAIGN_OUTCOME_SCHEMA, version: 1, status: "COMPLETE", campaign_plan: prepared.campaign_plan, campaign_run, digest: null};

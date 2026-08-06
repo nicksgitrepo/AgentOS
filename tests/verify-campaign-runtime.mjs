@@ -235,4 +235,42 @@ assert(!JSON.stringify(outcome).includes("/workspace"));
 assert(!JSON.stringify(outcome).includes(authoritySecret));
 assert(!JSON.stringify(outcome).includes(evidenceSecret));
 
+await assert.rejects(() => runNativeCampaign({
+  root: ROOT,
+  bootstrap_plan: bootstrapPlan,
+  goal,
+  campaign_id: "CAMPAIGN-3-0-TB-04",
+  campaign_version: "v3.0.3-tb-04",
+  source,
+  host,
+  authority_secret: authoritySecret,
+  evidence_secret: evidenceSecret,
+  intent_regulator: {
+    readSnapshot: async () => ({
+      schema: "agentos.campaign_snapshot.v1",
+      version: 1,
+      project_id: "PROJECT-3-0",
+      campaign_id: "CAMPAIGN-3-0-TB-04",
+      campaign_version: "v3.0.3-tb-04",
+      goal_id: "GOAL-3-0",
+      goal_sha256: goal.digest,
+      source_commit: source.source_commit,
+      source_tree: source.source_tree,
+      progress_status: "PROGRESS_RECORDED",
+      scope_changed: false,
+      intent_changed: false,
+      conditions_changed: false,
+      hard_boundary_detected: true,
+      soft_boundary_detected: false,
+      evidence_identity_ok: true,
+      roster_exact: true,
+      acceptance_status: "NONE",
+    }),
+    onAudit: async () => {},
+    interval_minutes: 15,
+    max_iterations: 1,
+  },
+}), /INTENT_REGULATOR_STOP_HARD_BOUNDARY/u);
+assert.equal([...threads.values()].filter((thread) => thread.active).length, 0);
+
 console.log(JSON.stringify({status: "PASS", phases: outcome.campaign_run.phase_results.length, lanes: outcome.campaign_run.lane_results.length, sessions_created: calls.filter((call) => call === "CREATE").length}));
