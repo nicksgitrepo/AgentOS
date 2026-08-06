@@ -7,6 +7,7 @@ import {compileRoleLibrary} from "./role-library.mjs";
 import {copyWorkspaceBoundary, validateWorkspaceBoundary} from "./workspace-boundary.mjs";
 import {assertPortableRecord} from "./portable-record.mjs";
 import {auditorDisplayName, validateCampaignVersion, workerDisplayName} from "./campaign-names.mjs";
+import {auditorPrompt, workerPrompt} from "./campaign-prompts.mjs";
 
 export const CAMPAIGN_PLAN_SCHEMA = "agentos.campaign_plan.v1";
 export const CAMPAIGN_RUN_SCHEMA = "agentos.campaign_run.v1";
@@ -115,7 +116,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
         role_id: "NAMED_LANE_WORKER",
         role_display_name: workerDisplayName(laneId, campaign_version),
         task_name: taskName(campaign_id, campaign_version, laneId, "worker"),
-        prompt: `Work only on the admitted ${laneId} lane. Return meaningful progress and a typed handoff with evidence before the fifteen-minute window ends.`,
+        prompt: workerPrompt(goal, laneId),
         status: "NOT_STARTED",
       };
     }),
@@ -124,7 +125,7 @@ export async function compileCampaignPlan(root, {plan, goal, campaign_id, campai
       display_name: auditorDisplayName(phase.phase_id, campaign_version),
       lifetime: "CAMPAIGN_PHASE",
       task_name: taskName(campaign_id, campaign_version, phase.phase_id.toLowerCase(), "auditor"),
-      prompt: `Independently review every accepted result in ${phase.phase_id}. Do not accept work authored by your own session.`,
+      prompt: auditorPrompt(goal, phase.phase_id),
       audit_lane_ids: [...phase.lane_ids].sort(compareUtf8),
       status: "NOT_STARTED",
     },

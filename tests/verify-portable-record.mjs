@@ -16,6 +16,7 @@ assert.equal(isPortableRecord(safe), true);
 
 assert.throws(() => assertPortableRecord({workspace_path: privatePath}, "raw path"), /raw path field/u);
 assert.throws(() => assertPortableRecord({nested: privatePath}, "raw value"), /raw path/u);
+assert.throws(() => assertPortableRecord({message: `Use${privatePath}`}, "embedded raw value"), /raw path/u);
 assert.throws(() => assertPortableRecord({access_token: "opaque"}, "secret field"), /secret field/u);
 assert.throws(() => assertPortableRecord({message: "Bearer abc123"}, "secret value"), /secret-like value/u);
 assert.equal(isPortableRecord({git_top_level_ref: "AGENTOS_PROJECT_ROOT", value: "ok"}), true);

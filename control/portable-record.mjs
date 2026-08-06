@@ -10,7 +10,12 @@ const SECRET_VALUE = /(?:-----BEGIN|Bearer\s+[A-Za-z0-9._-]+|(?:sk|gh[opsu]|xox[
 function isRawPath(value) {
   const slash = String.fromCharCode(47);
   const backslash = String.fromCharCode(92);
-  return value.startsWith(slash)
+  const embeddedMarkers = [
+    `${slash}Users`, `${slash}home`, `${slash}private`, `${slash}var`, `${slash}tmp`,
+    `${backslash}Users`, `${backslash}home`, `${backslash}${backslash}`,
+  ];
+  return embeddedMarkers.some((marker) => value.includes(marker))
+    || value.startsWith(slash)
     || value.startsWith(`~${slash}`)
     || value.startsWith(`..${slash}`)
     || (/^[A-Za-z]:/u.test(value) && (value[2] === slash || value[2] === backslash))

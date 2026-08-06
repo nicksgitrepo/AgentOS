@@ -26,6 +26,8 @@ assert.equal(plan.phases.flatMap((phase) => phase.worker_assignments).length, 12
 assert(plan.phases.every((phase) => phase.auditor.role_id === "INDEPENDENT_AUDITOR"));
 assert(plan.phases.flatMap((phase) => phase.worker_assignments).every((assignment) => assignment.role_display_name.endsWith(" Worker V1")));
 assert(plan.phases.every((phase) => phase.auditor.display_name.endsWith(" Auditor V1")));
+assert(plan.phases.flatMap((phase) => phase.worker_assignments).every((assignment) => assignment.prompt.includes("Build the first working result")));
+assert(plan.phases.flatMap((phase) => phase.worker_assignments).every((assignment) => assignment.prompt.includes("GOAL-001")));
 assert.equal(plan.workspace_boundary.project_state_policy, "NEVER_WRITE_OR_STORE_AGENTOS_ARTIFACTS");
 const auditorReadbackFor = (phase) => ({thread_id: `${phase.phase_id}-THREAD-001`, host_id: `${phase.phase_id}-AUDITOR-001`, project_id: plan.project_id, campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, goal_id: plan.goal_id, phase_id: phase.phase_id, role_id: "INDEPENDENT_AUDITOR", source_commit: source.source_commit, source_tree: source.source_tree, worktree_id: source.worktree_id});
 const duplicatePhase = plan.phases[0];
