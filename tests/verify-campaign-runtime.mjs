@@ -8,12 +8,17 @@ import {createEvidence} from "../control/evidence.mjs";
 import {createGateResponse} from "../control/gate-response.mjs";
 import {loadQuestionCatalog, renderGateQuestion} from "../control/question-catalog.mjs";
 import {runNativeCampaign} from "../control/campaign-runtime.mjs";
+import {createAgentOS3BootstrapRuntime} from "../control/agentos-3.mjs";
+import {createOwnerContinuation} from "../control/owner-continuation.mjs";
 import {compileWorkspaceBoundary} from "../control/workspace-boundary.mjs";
 import {sha256} from "../control/canonical-json.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const source = {source_commit: "a".repeat(40), source_tree: "b".repeat(40), worktree_id: "WORKTREE-3-0", environment_id: "ENV-3-0"};
-const workspace_boundary = compileWorkspaceBoundary({release_root: "/workspace/AgentOS", projects_root: "/workspace/projects", project_root: "/workspace/projects/example-project", control_root: "/workspace/AgentOS-control"});
+const workspace_parent = path.dirname(ROOT);
+const projects_root = path.join(workspace_parent, "projects");
+const control_root = path.join(workspace_parent, "AgentOS-control");
+const workspace_boundary = compileWorkspaceBoundary({release_root: ROOT, projects_root, project_root: path.join(projects_root, "example-project"), control_root, worktrees_root: path.join(control_root, "worktrees")});
 const bootstrapPlan = await compileBootstrapPlan(ROOT, {
   project_id: "PROJECT-3-0",
   owner_context: {objective: "Build the first governed working release"},
@@ -183,7 +188,7 @@ const host = {
   },
 };
 
-const outcome = await runNativeCampaign({
+const bootstrapRuntime = createAgentOS3BootstrapRuntime({
   root: ROOT,
   bootstrap_plan: bootstrapPlan,
   goal,
@@ -219,6 +224,67 @@ const outcome = await runNativeCampaign({
     max_iterations: 1,
   },
 });
+const ownerContinuation = createOwnerContinuation({
+  activation_id: "ACTIVATION-3-0",
+  project_id: "PROJECT-3-0",
+  campaign_id: "CAMPAIGN-3-0-TB-03",
+  campaign_version: "v3.0.3-tb-03",
+  goal_id: "GOAL-3-0",
+  question_id: "OWNER.LAUNCH",
+  expected_value: "START_LOCAL_CAMPAIGN",
+  protected_actions: ["PUSH"],
+});
+const resumed = await bootstrapRuntime.recordOwnerAnswer(ownerContinuation, {
+  question_id: "OWNER.LAUNCH",
+  answer: "Start the campaign",
+  value: "START_LOCAL_CAMPAIGN",
+});
+assert.equal(resumed.status, "RESUMED");
+const outcome = bootstrapRuntime.campaignOutcome(resumed.resume_request.digest);
+assert(outcome && outcome.status === "COMPLETE");
+const heldContinuation = createOwnerContinuation({
+  activation_id: "ACTIVATION-3-0-HELD",
+  project_id: "PROJECT-3-0",
+  campaign_id: "CAMPAIGN-3-0-TB-03",
+  campaign_version: "v3.0.3-tb-03",
+  goal_id: "GOAL-3-0",
+  question_id: "OWNER.KEEP",
+  expected_value: "KEEP_PREPARED",
+  protected_actions: ["PUSH"],
+});
+const held = await bootstrapRuntime.recordOwnerAnswer(heldContinuation, {
+  question_id: "OWNER.KEEP",
+  answer: "Keep it prepared",
+  value: "KEEP_PREPARED",
+});
+assert.equal(held.status, "BLOCKED");
+assert.equal(held.failure.code, "OWNER_LAUNCH_NOT_AUTHORIZED");
+const unavailableRuntime = createAgentOS3BootstrapRuntime({
+  root: ROOT,
+  bootstrap_plan: bootstrapPlan,
+  goal,
+  campaign_id: "CAMPAIGN-3-0-TB-05",
+  campaign_version: "v3.0.3-tb-05",
+  source,
+  authority_secret: authoritySecret,
+  evidence_secret: evidenceSecret,
+});
+const unavailable = await unavailableRuntime.recordOwnerAnswer(createOwnerContinuation({
+  activation_id: "ACTIVATION-3-0-UNAVAILABLE",
+  project_id: "PROJECT-3-0",
+  campaign_id: "CAMPAIGN-3-0-TB-05",
+  campaign_version: "v3.0.3-tb-05",
+  goal_id: "GOAL-3-0",
+  question_id: "OWNER.LAUNCH",
+  expected_value: "START_LOCAL_CAMPAIGN",
+  protected_actions: ["PUSH"],
+}), {
+  question_id: "OWNER.LAUNCH",
+  answer: "Start the campaign",
+  value: "START_LOCAL_CAMPAIGN",
+});
+assert.equal(unavailable.status, "BLOCKED");
+assert.equal(unavailable.failure.code, "HOST_ADAPTER_UNAVAILABLE");
 
 assert.equal(outcome.status, "COMPLETE");
 assert.equal(outcome.campaign_run.status, "COMPLETE");

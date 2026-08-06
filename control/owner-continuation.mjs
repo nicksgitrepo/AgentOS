@@ -8,6 +8,18 @@ export const OWNER_RESUME_REQUEST_SCHEMA = "agentos.owner_resume_request.v1";
 const ID = /^[A-Z][A-Z0-9._-]*$/u;
 const DIGEST = /^[0-9a-f]{64}$/u;
 const STATUSES = new Set(["WAITING_OWNER", "RESUME_PENDING", "RESUMED", "REJECTED", "BLOCKED"]);
+const FAILURE_CODE = /^[A-Z][A-Z0-9_]{1,79}$/u;
+const FAILURE_MESSAGES = Object.freeze({
+  HOST_ADAPTER_UNAVAILABLE: "The outside connection needed to start this campaign is not available.",
+  HOST_ADAPTER_INVALID: "The outside connection does not provide the required actions.",
+  HOST_ATTACHMENT_INVALID: "The outside connection is not bound to this project.",
+  HOST_ADAPTER_LOAD_FAILED: "The outside connection could not be loaded.",
+  OWNER_LAUNCH_NOT_AUTHORIZED: "This owner answer did not authorize the campaign.",
+  INTENT_REGULATOR_STOP_HARD_BOUNDARY: "The Intent Regulator stopped the campaign at a hard boundary.",
+  INTENT_REGULATOR_REASSESS_AND_REPLACE_GOAL: "The campaign needs a new goal because the situation changed.",
+  INTENT_REGULATOR_ORCHESTRATOR_REVIEW: "The campaign is waiting for orchestrator review.",
+  INTENT_REGULATOR_REPLACE_STALLED_WORKER: "The campaign needs a replacement for a stalled worker.",
+});
 const PROTECTED_ACTIONS = new Set([
   "PUBLISH", "PUSH", "MERGE", "DEPLOY", "ROLLBACK", "SPEND", "AUTHENTICATE", "REVEAL_SECRET", "DELETE_ACCEPTED_WORK",
 ]);
@@ -52,6 +64,11 @@ function validateResumeRequest(request) {
   validateProtectedActions(request.protected_actions);
   assert(DIGEST.test(request.digest) && request.digest === digestWithout(request, "digest"), "owner resume request digest does not match content");
   return request;
+}
+
+function safeFailure(error) {
+  const candidate = error && typeof error.code === "string" && FAILURE_CODE.test(error.code) ? error.code : "ADMISSION_RESUME_FAILED";
+  return {code: candidate, message: FAILURE_MESSAGES[candidate] ?? "The campaign could not safely continue."};
 }
 
 function seal(value) {
@@ -197,7 +214,7 @@ export function createOwnerContinuationRunner({admit}) {
           ...pending,
           status: "BLOCKED",
           admission: null,
-          failure: {code: "ADMISSION_RESUME_FAILED", message: error instanceof Error ? error.message : String(error)},
+          failure: safeFailure(error),
           digest: null,
         });
       }

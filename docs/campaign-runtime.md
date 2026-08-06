@@ -37,6 +37,14 @@ const outcome = await runNativeCampaign({
 });
 ```
 
+The normal Bootstrap path is `control/agentos-3.mjs`. A prepared owner
+continuation is passed to `createAgentOS3BootstrapRuntime`; when the owner
+chooses the launch value, the bridge verifies that the goal, campaign version,
+source, and bound release root still match Bootstrap, then calls the full
+campaign runtime. The result can be read from the bridge by its owner-request
+digest. A different owner choice, missing host, invalid attachment, or failed
+host load blocks the continuation and does not create a worker.
+
 When the host adapter is supplied as an external module, use
 `runConfiguredNativeCampaign`. The module URL and attachment are runtime
 inputs only. They are never included in the campaign outcome.

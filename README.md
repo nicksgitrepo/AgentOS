@@ -1,6 +1,6 @@
 # AgentOS 3.0 Solo Release Candidate
 
-> Status: `3.0.0-rc.3 — PREPARED_NOT_ACTIVATED`
+> Status: `3.0.0-rc.4 — PREPARED_NOT_ACTIVATED`
 
 This repository is the clean 3.0 solo release candidate for AgentOS governance. It is
 portable and project-agnostic. Product names, private paths, credentials,
@@ -50,6 +50,10 @@ The first slice establishes:
 - a source-bound native campaign runtime that carries a Bootstrap plan through
   all four phases, all twelve lanes, independent phase Auditors, typed
   handoffs, closure, and the fifteen-minute Intent Regulator audit loop.
+- the normal Bootstrap-to-campaign bridge in `control/agentos-3.mjs`: the
+  prepared owner answer launches that full campaign path, while a missing or
+  mismatched host becomes a typed blocked outcome instead of a local-process
+  fallback.
 
 The campaign coordinator compiles the complete four-phase plan, assigns a
 fresh named worker to each of the twelve lanes, and requires an independent
