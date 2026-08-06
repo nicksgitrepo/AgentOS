@@ -268,6 +268,29 @@ const unavailableRuntime = createAgentOS3BootstrapRuntime({
   source,
   authority_secret: authoritySecret,
   evidence_secret: evidenceSecret,
+  intent_regulator: {
+    readSnapshot: async () => ({
+      schema: "agentos.campaign_snapshot.v1",
+      version: 1,
+      project_id: "PROJECT-3-0",
+      campaign_id: "CAMPAIGN-3-0-TB-05",
+      campaign_version: "v3.0.3-tb-05",
+      goal_id: "GOAL-3-0",
+      goal_sha256: goal.digest,
+      source_commit: source.source_commit,
+      source_tree: source.source_tree,
+      progress_status: "PROGRESS_RECORDED",
+      scope_changed: false,
+      intent_changed: false,
+      conditions_changed: false,
+      hard_boundary_detected: false,
+      soft_boundary_detected: false,
+      evidence_identity_ok: true,
+      roster_exact: true,
+      acceptance_status: "NONE",
+    }),
+    onAudit: async () => {},
+  },
 });
 const unavailable = await unavailableRuntime.recordOwnerAnswer(createOwnerContinuation({
   activation_id: "ACTIVATION-3-0-UNAVAILABLE",
@@ -297,6 +320,7 @@ assert.equal(calls.filter((call) => call === "CREATE").length, 16);
 assert.equal(calls.filter((call) => call === "ARCHIVE").length, 16);
 assert.equal(audits.length, 1);
 assert.equal(audits[0].decision, "CONTINUE_CAMPAIGN");
+assert.equal(audits[0].interval_minutes, 15);
 assert(!JSON.stringify(outcome).includes("/workspace"));
 assert(!JSON.stringify(outcome).includes(authoritySecret));
 assert(!JSON.stringify(outcome).includes(evidenceSecret));

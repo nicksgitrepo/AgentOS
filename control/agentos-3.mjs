@@ -58,6 +58,13 @@ function validateRequestBinding(request, {bootstrap_plan, goal, campaign_id, cam
   assert(source.source_commit === bootstrap_plan.source_binding.source_commit && source.source_tree === bootstrap_plan.source_binding.source_tree, "owner request source is not bound");
 }
 
+function requireIntentRegulator(intent_regulator) {
+  assert(intent_regulator && typeof intent_regulator === "object" && !Array.isArray(intent_regulator), "AgentOS 3 Intent Regulator is required");
+  assert(typeof intent_regulator.readSnapshot === "function", "AgentOS 3 Intent Regulator readSnapshot is required");
+  assert(typeof intent_regulator.onAudit === "function", "AgentOS 3 Intent Regulator onAudit is required");
+  return {...intent_regulator, interval_minutes: intent_regulator.interval_minutes ?? 15};
+}
+
 async function resolveHost({host, host_module_url, host_attachment}) {
   if (!((host && !host_module_url) || (!host && host_module_url))) throw runtimeError("HOST_ADAPTER_UNAVAILABLE", "No bound outside connection was supplied.");
   if (host) {
@@ -104,6 +111,7 @@ export function createAgentOS3BootstrapRuntime({
 }) {
   validateRuntimeInputs({root, bootstrap_plan, goal, campaign_id, campaign_version, source, authority_secret, evidence_secret});
   assert((typeof launch_answer_value === "string" && launch_answer_value.length > 0) || typeof launch_answer_value === "boolean", "AgentOS 3 launch answer value is invalid");
+  const configuredIntentRegulator = requireIntentRegulator(intent_regulator);
   if (host_attachment !== null) {
     validateHostAttachment(host_attachment);
     assert(host_attachment.project_id === bootstrap_plan.project_id, "native host attachment project differs from Bootstrap");
@@ -130,7 +138,7 @@ export function createAgentOS3BootstrapRuntime({
         authority_secret,
         evidence_secret,
         role_library,
-        intent_regulator,
+        intent_regulator: configuredIntentRegulator,
       });
       assertPortableRecord(outcome, "AgentOS 3 campaign outcome");
       outcomes.set(request.digest, outcome);
@@ -154,6 +162,7 @@ export function createAgentOS3BootstrapRuntime({
 
 export async function runAgentOS3Campaign(options) {
   validateRuntimeInputs(options);
+  const configuredIntentRegulator = requireIntentRegulator(options.intent_regulator);
   const resolvedHost = await resolveHost(options);
-  return runNativeCampaign({...options, host: resolvedHost});
+  return runNativeCampaign({...options, host: resolvedHost, intent_regulator: configuredIntentRegulator});
 }

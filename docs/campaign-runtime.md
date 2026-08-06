@@ -43,7 +43,9 @@ chooses the launch value, the bridge verifies that the goal, campaign version,
 source, and bound release root still match Bootstrap, then calls the full
 campaign runtime. The result can be read from the bridge by its owner-request
 digest. A different owner choice, missing host, invalid attachment, or failed
-host load blocks the continuation and does not create a worker.
+host load blocks the continuation and does not create a worker. The bridge also
+requires the Intent Regulator callbacks; if no interval is supplied, it uses
+the fifteen-minute default rather than running unwatched.
 
 When the host adapter is supplied as an external module, use
 `runConfiguredNativeCampaign`. The module URL and attachment are runtime
