@@ -43,6 +43,10 @@ import {
   validateRoleAuthority,
   validateStatus,
 } from "./four-library-foundation.mjs";
+import {
+  TASK_GATE_CATALOG_SHA256,
+  TASK_GATE_QUESTIONS,
+} from "./task-gate-questions.mjs";
 
 function projectGraphSelection(projectLibrary, packet) {
   const ids = new Set(projectLibrary.default_graph_ids);
@@ -241,6 +245,98 @@ export function compileGeneratedProjectRoleLibrary({
   };
   library.digest = digestWithout(library, "digest");
   return validateGeneratedProjectRoleLibrary(library, {baseGeneralLibrary, baseRoleLibrary, projectGeneralLibrary});
+}
+
+export const GENERATED_TASK_ROLE_PACKET_SCHEMA = "agentos.generated_task_role_packet.v1";
+
+function taskRolePacketFor(library, roleId, laneId) {
+  return library.role_packets.find((packet) => packet.role_id === roleId && (laneId === null || packet.lane_id === laneId))
+    ?? null;
+}
+
+export function validateGeneratedTaskRolePacket(value, {generatedProjectRoleLibrary = null} = {}) {
+  exactKeys(value, [
+    "schema", "version", "status", "task_id_sha256", "task_kind", "role_id", "lane_id",
+    "generated_project_role_library_digest", "task_gate_catalog_sha256", "applicable_question_ids",
+    "graph_ids", "allowed_authority", "prohibited_authority", "required_evidence", "digest",
+  ], "generated task role packet");
+  assert(value.schema === GENERATED_TASK_ROLE_PACKET_SCHEMA && value.version === FOUR_LIBRARY_VERSION, "generated task role packet identity is invalid");
+  assert(value.status === "PREPARED_NOT_ACTIVATED", "generated task role packet status is invalid");
+  requireDigest(value.task_id_sha256, "generated task role packet task id");
+  requireSafeToken(value.task_kind, "generated task role packet task kind");
+  requireIdentifier(value.role_id, "generated task role packet role id");
+  if (value.lane_id !== null) requireLaneIdentifier(value.lane_id, "generated task role packet lane id");
+  requireDigest(value.generated_project_role_library_digest, "generated task role packet library digest");
+  assert(value.task_gate_catalog_sha256 === TASK_GATE_CATALOG_SHA256, "generated task role packet task-gate catalog differs");
+  sortedUniqueStrings(value.applicable_question_ids, "generated task role packet applicable questions");
+  const knownQuestionIds = new Set(TASK_GATE_QUESTIONS.map((question) => question.question_id));
+  value.applicable_question_ids.forEach((questionId) => assert(knownQuestionIds.has(questionId), "generated task role packet has an unknown task-gate question"));
+  sortedUniqueStrings(value.graph_ids, "generated task role packet graph IDs");
+  validateRoleAuthority({
+    allowed_authority: value.allowed_authority,
+    prohibited_authority: value.prohibited_authority,
+    required_evidence: value.required_evidence,
+  }, "generated task role packet");
+  if (generatedProjectRoleLibrary !== null) {
+    requireDigest(generatedProjectRoleLibrary.digest, "generated project role library digest");
+    assert(value.generated_project_role_library_digest === generatedProjectRoleLibrary.digest, "generated task role packet library binding differs");
+    const rolePacket = taskRolePacketFor(generatedProjectRoleLibrary, value.role_id, value.lane_id);
+    assert(rolePacket !== null, "generated task role packet role is not present in generated library");
+    assert(value.lane_id === rolePacket.lane_id, "generated task role packet lane differs");
+    assert(JSON.stringify(value.graph_ids) === JSON.stringify(rolePacket.graph_ids), "generated task role packet graph scope differs");
+    assert(JSON.stringify(value.allowed_authority) === JSON.stringify(rolePacket.allowed_authority), "generated task role packet expands authority");
+    assert(rolePacket.prohibited_authority.every((item) => value.prohibited_authority.includes(item)), "generated task role packet removes prohibitions");
+    assert(rolePacket.required_evidence.every((item) => value.required_evidence.includes(item)), "generated task role packet removes evidence requirements");
+  }
+  assertPortable(value, "generated task role packet");
+  validatePacketDigest(value, "generated task role packet");
+  return value;
+}
+
+export function compileGeneratedTaskRolePacket({
+  generatedProjectRoleLibrary,
+  baseGeneralLibrary = null,
+  baseRoleLibrary = null,
+  projectGeneralLibrary = null,
+  roleId,
+  laneId = null,
+  taskIdSha256,
+  taskKind,
+  applicableQuestionIds,
+} = {}) {
+  assert(generatedProjectRoleLibrary !== null && generatedProjectRoleLibrary !== undefined, "generated project role library is required");
+  assert(generatedProjectRoleLibrary.schema === GENERATED_PROJECT_ROLE_SCHEMA, "generated project role library schema is invalid");
+  validatePacketDigest(generatedProjectRoleLibrary, "generated project role library");
+  if (baseGeneralLibrary !== null && baseRoleLibrary !== null && projectGeneralLibrary !== null) {
+    validateGeneratedProjectRoleLibrary(generatedProjectRoleLibrary, {baseGeneralLibrary, baseRoleLibrary, projectGeneralLibrary});
+  }
+  requireDigest(taskIdSha256, "task id digest");
+  requireIdentifier(roleId, "task role id");
+  if (laneId !== null) requireLaneIdentifier(laneId, "task lane id");
+  requireSafeToken(taskKind, "task kind");
+  assert(Array.isArray(applicableQuestionIds) && applicableQuestionIds.length > 0, "applicable task-gate questions are required");
+  const selectedQuestionIds = [...applicableQuestionIds].sort(compareUtf8);
+  const packet = taskRolePacketFor(generatedProjectRoleLibrary, roleId, laneId);
+  assert(packet !== null, "task role is not present in generated project role library");
+  const taskPacket = {
+    schema: GENERATED_TASK_ROLE_PACKET_SCHEMA,
+    version: FOUR_LIBRARY_VERSION,
+    status: "PREPARED_NOT_ACTIVATED",
+    task_id_sha256: taskIdSha256,
+    task_kind: taskKind,
+    role_id: packet.role_id,
+    lane_id: packet.lane_id,
+    generated_project_role_library_digest: generatedProjectRoleLibrary.digest,
+    task_gate_catalog_sha256: TASK_GATE_CATALOG_SHA256,
+    applicable_question_ids: selectedQuestionIds,
+    graph_ids: [...packet.graph_ids],
+    allowed_authority: [...packet.allowed_authority],
+    prohibited_authority: [...packet.prohibited_authority],
+    required_evidence: [...packet.required_evidence],
+    digest: null,
+  };
+  taskPacket.digest = digestWithout(taskPacket, "digest");
+  return validateGeneratedTaskRolePacket(taskPacket, {generatedProjectRoleLibrary});
 }
 
 export function validateGovernanceBinding(value, {baseGeneralLibrary = null, baseRoleLibrary = null, projectGeneralLibrary = null, generatedProjectRoleLibrary = null} = {}) {

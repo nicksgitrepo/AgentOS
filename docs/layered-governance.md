@@ -18,24 +18,24 @@ remove a prohibition, replace an earlier authority source, expand graph scope,
 or turn a disposable task packet into a source of authority.
 
 The Bootstrap conversation is compiled by
-control/bootstrap-project-contract.mjs. Its contract records intent,
-workflow, terminology, acceptance conditions, boundaries, unknowns, provider
-posture, retention posture, delivery intent, and owner decisions. Decisions
-carry authority, scope, lifetime, provenance class, and a revision trigger. Raw
-owner text is discarded.
+`control/bootstrap-project-contract.mjs`. Its contract records intent,
+workflow, terminology, acceptance conditions, provider posture, retention
+posture, delivery intent, and owner decisions. Decisions carry authority,
+scope, lifetime, provenance class, and a revision trigger. Raw owner text is
+discarded.
 
-control/task-role-packet.mjs binds one opaque task digest, one task-scope
+`control/task-role-packet.mjs` binds one opaque task digest, one task-scope
 digest, one admitted role packet, one gate context, and only the applicable
-gate questions. control/layered-governance-contract.mjs binds that packet to
+gate questions. `control/layered-governance-contract.mjs` binds that packet to
 the project contract and four governance layers. The resulting contract is
-PREPARED_NOT_ACTIVATED; activation requires an owner decision and an
-independent check, and the prepared 2.1rc line remains inactive.
+`PREPARED_NOT_ACTIVATED`; activation requires an owner decision and an
+independent check, and the prepared `2.1rc` line remains inactive.
 
 Project upgrades use the existing conflict-aware migration record and
 append-only project-governance history. A migration preserves the project
 source, rejects cross-project or graph-namespace collisions, and keeps the
 previous binding available until the replacement is independently checked.
-compareLayeredGovernanceEvidence compares the conversation, contract, task
+`compareLayeredGovernanceEvidence` compares the conversation, contract, task
 packet, layered binding, and upgrade digest without relying on narrative
-claims.
-
+claims. The Bootstrap question-map binding remains a shared-lane integration
+seam until its owning contract source is settled.

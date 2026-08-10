@@ -346,3 +346,292 @@ implementation finding.
 - changed_path_disposition: layered contract, task packet, schemas, docs, verifier, and overlapping Bootstrap/governance hardening integrated; binding refresh deferred until combined source is settled
 - functional_status: NOT_RUN_BY_INSTRUCTION
 - archive_status: WITHHELD_UNTIL_DOWNSTREAM_REVIEW
+PRODUCTION_CANDIDATE_PENDING_TESTS, with no true blocker and no remaining
+implementation finding.
+
+## Next admitted feature wave — audit 0 — 2026-08-09
+
+### Source-bound scope and intent review
+
+- Feature: `ROADMAP_02_LAYERED_GOVERNANCE` — Layered Governance and Project Contracts.
+- Authoritative source checkpoint: commit `bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac`, tree `40d495f1599cd0b0f07de83748b74253b526b145`.
+- Inventory source: `docs/feature-inventory.v1.json`; the feature remains `CENTRAL_INTEGRATION_PENDING` and names the roadmap, layered-governance wrapper, and project-general contract as its source intent.
+- The prior candidate and its audit history were preserved. This wave is being repaired only in the isolated feature worktree; no central, neighboring-lane, or unrelated project surface was changed.
+- No npm command or functional verifier was run. `2.1rc` remains prepared and inactive.
+
+The roadmap, layered-governance documentation, Bootstrap contract shape, four-library contracts, migration/history records, and accepted architecture evidence were read together. The intended behavior is a deterministic four-layer composition: general governance/base-general, base role, persistent project governance, and a generated task-role projection. Later layers may add restrictions or evidence but cannot remove prohibitions, replace an authority source, expand graph scope, or make a disposable task packet authoritative. The project contract must bind typed intent, workflow, terminology, acceptance, boundaries, unknowns, provider/retention/delivery posture, and owner decisions without persisting raw owner text. Task packets must bind an opaque task and task-scope digest, the admitted role, applicable gate questions, effective graph evidence, parent library digests, and non-expanding authority. Upgrades must preserve project source, retain rollback evidence, and keep activation separate from compilation.
+
+The accepted seed adds a canonical `agentos.layered_governance.v1` binding and a canonical `agentos.generated_task_role_packet.v1` projection. It also carries a newer Bootstrap question-map binding and cross-layer graph-path collision checks. The current worktree contains the prior compatibility envelope and older task-packet shape, so the seed delta is material to source identity, public API custody, and independent evidence comparison.
+
+### Findings before repair
+
+#### W-01 — canonical four-layer binding was not the public contract — repair required
+
+The current public layered module exposed the preserved compatibility envelope under the old `agentos.layered_governance_contract.v1` shape. The authoritative checkpoint defines the canonical `agentos.layered_governance.v1` contract with exact four-layer order, seven digest bindings, additive-only precedence, typed migration status, inactive activation, and independent evidence requirements.
+
+Why it matters: downstream checkers could bind to the compatibility record while missing the canonical project-contract/task-packet custody and layer semantics. The activation boundary and `2.1rc` inactive posture must remain explicit in the canonical public surface.
+
+Builder action: add the accepted canonical binding as a feature-owned module, export it through the public facade, and retain the old implementation under explicit legacy names and schema custody. Do not activate or replace the compatibility history.
+
+#### W-02 — generated task-role packet was stale and under-bound — repair required
+
+The current public task packet binds only the generated-role library, task ID/kind, gate catalog/questions, graph IDs, and authority. The accepted checkpoint binds task scope, project contract, every parent library digest, role-packet digest, gate context and canonical question projections, effective graph digests, generation inputs, and an explicit authority-expansion rejection.
+
+Why it matters: a task projection without task-scope and project-contract custody can be replayed or detached from the admitted project context, and a packet that does not carry parent/source evidence weakens least-privilege review.
+
+Builder action: add the accepted `control/task-role-packet.mjs` compiler/validator and canonical schema; preserve the old packet compiler/validator as legacy compatibility APIs until downstream callers migrate.
+
+#### W-03 — cross-layer graph namespace was still path-permissive — repair required
+
+The current four-library foundation rejects graph-ID collisions in the established compile paths but does not reject a normalized `path_ref` collision between base-general, base-role, and project graphs whenever validated parent records are supplied. Rebase checks IDs but not paths. The accepted seed provides a shared namespace-collision helper and typed path conflict handling.
+
+Why it matters: distinct graph IDs can still alias one governed source path, creating authority shadowing during validation or upgrade and violating additive-only composition.
+
+Builder action: port only the feature-owned namespace helper and its validation/compile/rebase call sites, preserving the existing stronger safe-history path behavior. Add synthetic hostile path fixtures to the focused verifier without running it.
+
+#### W-04 — canonical Bootstrap question-map binding is a shared-lane seam — deferred integration
+
+The accepted seed’s canonical layered evidence comparison expects `conversation.question_map.map_sha256` and `projectContract.source_binding.question_map_sha256`. The current isolated Bootstrap conversation/contract modules and schemas predate that central binding. The inventory marks `BOOTSTRAP_PROJECT_CONTRACT` as another central-integration lane, and its accepted report records ownership of the overlapping Bootstrap surfaces.
+
+Why it matters: the isolated candidate cannot honestly claim a combined conversation-to-contract question-map comparison until the owning Bootstrap source settles. Cross-editing those shared files would violate custody and could overwrite a newer semantic repair.
+
+Disposition and exact recovery: record the seam and defer only the binding refresh. The owning Bootstrap lane must provide the settled conversation/contract pair; then rebase the feature-owned canonical binding against those exact fields, update the focused fixture, run the static re-audit, and leave functional execution pending under the approved test authority. This is not a true external blocker.
+
+#### W-05 — focused verifier targeted superseded public signatures — repair required
+
+The current `tests/verify-four-library-governance.mjs` calls the public task-packet and layered-contract names with the legacy argument shapes and asserts the legacy status/layer fields. Once the canonical seed surface is public, the verifier would exercise the wrong API and could fail to cover the accepted canonical contract.
+
+Why it matters: a stale focused verifier gives false regression confidence at exactly the boundary where the new contract is meant to be independently checked.
+
+Builder action: route existing compatibility assertions through explicit legacy exports, add canonical export/schema and hostile namespace assertions, and leave execution pending as instructed.
+
+### Cross-cutting audit lenses
+
+| Lens | Finding | Initial disposition |
+| --- | --- | --- |
+| Quality | W-01, W-02, W-05: public contract and verifier identities were not aligned with the accepted seed. | Repair required |
+| Hygiene | W-01–W-03: legacy and canonical records needed explicit names so compatibility history is not mistaken for authority. | Repair required |
+| Minimality | The repair can remain in the layered binding, task packet, graph namespace helper, schemas, focused verifier, and feature documentation. | Acceptable after scoped repair |
+| Security | W-02 and W-03: detached task scope and graph-path aliasing weaken least privilege and additive-only composition. | Repair required |
+| Privacy | No new private paths, credentials, provider tokens, task identities, or chat links are needed; opaque digests remain the boundary. | No source finding observed |
+| Durability | Canonical migration/activation bindings preserve prepared/inactive state; history custody is retained and functional durability remains unverified. | Repair; tests pending |
+| Regression | W-05 leaves the focused verifier pointed at superseded signatures until repaired. | Repair required |
+| Custody | W-04 is owned by the Bootstrap lane; shared files remain untouched and the seam is explicit. | Defer integration |
+| Boundary | The canonical task packet is disposable, the project contract is persistent, and activation remains a separate owner/checker decision. | Preserved |
+| Intent | The accepted roadmap/documentation intent is four-layer governance with project-contract and task-scope custody; the question-map portion remains an explicit integration seam. | Repair and re-audit |
+
+### Production readiness, blockers, and builder actions
+
+Initial status: `NOT_READY_FOR_INDEPENDENT_CLEARANCE` for this wave. W-01,
+W-02, W-03, and W-05 are ordinary in-scope implementation/coverage gaps and
+must be repaired. W-04 is a custody seam, not a blocker. Missing owner-linked
+research remains an evidence unknown carried forward from the prior report;
+no record will be invented.
+
+True blockers: none. Functional tests, schema-engine execution, hostile
+runtime checks, and independent clearance are pending by instruction. If the
+Bootstrap lane later withholds the settled question-map fields, recovery is
+the exact owner-lane source readback and feature binding refresh described in
+W-04; no ordinary implementation gap may be reclassified as a blocker.
+
+Builder actions recorded before repair:
+
+1. Add canonical task-packet and layered-binding modules from the named seed checkpoint.
+2. Re-export canonical public names while preserving legacy compatibility history.
+3. Add the feature-owned graph namespace/path hardening and hostile fixtures.
+4. Preserve the Bootstrap shared-file seam and document its exact refresh condition.
+5. Update the focused verifier and feature documentation, then perform static self-audit and re-audit without npm or functional tests.
+
+Initial handoff for this wave: changed file is this append-only report only;
+remaining findings are W-01 through W-05; next action is the scoped repair pass.
+
+## Repair pass 1 and static self-audit — 2026-08-09
+
+### Changed files and recorded self-audit finding
+
+The builder repaired W-01 through W-03 and W-05 within the feature-owned
+surface. During public module loading, the self-audit found one ordinary
+source defect:
+
+- `control/task-role-packet.mjs` imported
+  `validateGeneratedProjectRoleLibrary` from the foundation even though the
+  validator is owned by `control/four-library-operations.mjs`.
+
+This was recorded as W-06, `RESOLVED_IN_SOURCE`, and was repaired by moving
+the import to the operations module. No shared Bootstrap file was changed.
+
+The repair set is:
+
+- `control/task-role-packet.mjs` — canonical task/scope/project/library/gate
+  binding and corrected validator custody;
+- `control/layered-governance-binding.mjs` — canonical four-layer contract,
+  activation, and evidence comparison;
+- `control/layered-governance-contract.mjs` — explicit legacy compatibility
+  names plus canonical re-exports;
+- `control/four-library-governance.mjs` — canonical and legacy public exports;
+- `control/four-library-foundation.mjs` and
+  `control/four-library-operations.mjs` — graph ID/path namespace checks in
+  validation, compilation, and rebase;
+- `schemas/generated-task-role-packet.v1.json`,
+  `schemas/layered-governance.v1.json`, and
+  `schemas/layered-governance-check.v1.json` — canonical contracts;
+- `schemas/legacy-generated-task-role-packet.v1.json` and
+  `schemas/legacy-layered-governance-contract.v1.json` — preserved legacy
+  contract custody;
+- `docs/layered-governance.md` — canonical four-layer intent and W-04 seam;
+- `tests/verify-four-library-governance.mjs` — legacy calls routed through
+  explicit compatibility exports plus graph-path hostile fixtures; and
+- `tests/verify-layered-governance.mjs` — canonical public/schema inventory
+  coverage with no shared Bootstrap edits.
+
+### Static evidence collected
+
+- `node --check` passed for every changed control module and focused verifier.
+- JSON parsing passed for all canonical and preserved legacy governance
+  schemas.
+- The first public module-load check exposed W-06; after the import repair,
+  the public facade and canonical binding/task-packet modules must be loaded
+  again before re-audit.
+- No functional verifier, schema-engine run, npm command, activation, merge,
+  push, release, deployment, or archive action was performed.
+
+### Self-audit by lens
+
+| Lens | Result |
+| --- | --- |
+| Quality | W-06 exposed and repaired at the module ownership boundary; canonical and legacy APIs are named distinctly. |
+| Hygiene | Legacy schemas remain available under explicit legacy IDs; no compatibility record was silently overwritten. |
+| Minimality | Changes remain inside layered/task contracts, the graph namespace seam, documentation, and focused verifiers. |
+| Security | Task scope and parent digests are bound; graph IDs and normalized paths are checked across layers and upgrades. |
+| Privacy | New records carry only opaque digests and normalized project-agnostic values; no private or secret material was added. |
+| Durability | Migration/activation evidence remains typed and inactive; history code was preserved rather than weakened. |
+| Regression | Compatibility assertions use legacy names, and canonical surface coverage is separate; execution remains pending. |
+| Custody | Bootstrap question-map fields remain a deferred shared-lane seam; no cross-edit was made. |
+| Boundary | The disposable task packet cannot expand authority, and `2.1rc` remains `PREPARED_NOT_ACTIVATED`. |
+| Intent | The canonical docs, schemas, and public names now reflect the four-layer roadmap intent, subject to W-04 refresh. |
+
+### Remaining findings and next action
+
+W-01, W-02, W-03, W-05, and W-06 are resolved in source pending the final
+static re-audit and functional verification. W-04 remains an explicit
+deferred integration seam owned by the Bootstrap lane. Owner-linked research
+provenance, functional tests, schema-engine execution, and independent
+clearance remain evidence conditions, not blockers. Next action: rerun public
+module loading, syntax/JSON/portability checks, then append the re-audit and
+typed source-bound handoff.
+
+## Re-audit 1 — 2026-08-09
+
+### Finding disposition
+
+| Finding | Re-audit result | Evidence | Remaining state |
+| --- | --- | --- | --- |
+| W-01 | Resolved in source | Canonical `agentos.layered_governance.v1` binding is present, publicly exported, four-layer ordered, digest-bound, migration-aware, and inactive by default. Legacy envelope names/schema remain explicit. | Functional and combined-source checks pending. |
+| W-02 | Resolved in source | Canonical task packet binds task/task-scope, project contract, all four library digests, role packet, gate context/questions, effective graph evidence, generation inputs, and `authority_expansion: REJECT`. | Functional hostile checks pending. |
+| W-03 | Resolved in source | Namespace collisions now compare graph IDs and normalized paths during base-role/project validation, compilation, and project rebase; typed path conflict fixtures are present. | Functional collision/rebase checks pending. |
+| W-04 | Deferred shared-lane seam | Current Bootstrap modules intentionally remain unchanged; the canonical binding documents the required question-map fields and the feature verifier avoids claiming them until the owning lane settles its source. | Refresh required at central integration. Not a blocker. |
+| W-05 | Resolved in source | Existing compatibility verifier calls use explicit legacy exports; the new canonical verifier checks canonical public names, legacy custody, schema inventory, and four-layer order. | Functional verifier execution pending. |
+| W-06 | Resolved in source | Public module loading passed after moving the generated-role validator import to `four-library-operations.mjs`. | None beyond functional evidence. |
+
+### Static evidence
+
+- `node --check` passed for all feature control modules and focused verifiers.
+- Every schema in the writable `schemas/` surface parsed as JSON.
+- Public module loading passed for the canonical task packet, canonical
+  layered binding, compatibility envelope, and public facade. Canonical and
+  legacy schema identities were checked explicitly.
+- The portability scan over the report, feature documentation, and governance
+  schemas found no persisted private machine path, credential, provider
+  token, task/session identity, or chat link.
+- No new trailing whitespace was found in the repaired control, schema,
+  documentation, or verifier files. Pre-existing trailing spaces in the
+  preserved opening audit lines were not rewritten, maintaining append-only
+  history custody.
+- Functional tests, schema-engine validation, hostile runtime execution,
+  upgrade/history execution, independent checking, npm, commit, push,
+  activation, merge, release, deployment, and archive actions remain
+  intentionally unperformed.
+
+### Final readiness and unknowns
+
+The feature-owned candidate is `PRODUCTION_CANDIDATE_PENDING_TESTS`. It is
+deterministic, typed, content-addressed, project-agnostic, task-scoped,
+least-privilege, privacy-bounded, four-layer bound, and prepared rather than
+activated. The preserved legacy surface is explicit and cannot be confused
+with the canonical authority contract.
+
+The remaining evidence conditions are the requested functional/hostile/schema
+checks, independent clearance, owner-linked research provenance, and the
+central Bootstrap question-map binding refresh. None is a genuine external
+blocker for this bounded source repair. Exact recovery for the shared seam is
+the owning Bootstrap lane’s settled conversation/contract readback followed
+by a feature-only binding/fixture refresh and static re-audit; no shared file
+should be cross-edited here.
+
+## Typed source-bound handoff — 2026-08-09
+
+```json
+{
+  "schema": "agentos.layered_governance_handoff.v1",
+  "status": "PRODUCTION_CANDIDATE_PENDING_TESTS",
+  "feature": "ROADMAP_02_LAYERED_GOVERNANCE",
+  "source": {
+    "commit": "bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac",
+    "tree": "40d495f1599cd0b0f07de83748b74253b526b145"
+  },
+  "candidate": {
+    "canonical_layered_schema": "agentos.layered_governance.v1",
+    "canonical_task_packet_schema": "agentos.generated_task_role_packet.v1",
+    "activation": "PREPARED_NOT_ACTIVATED",
+    "functional_tests": "PENDING_BY_INSTRUCTION",
+    "shared_bootstrap_question_map": "DEFERRED_OWNER_LANE_REFRESH"
+  },
+  "changed_paths": [
+    "control/four-library-foundation.mjs",
+    "control/four-library-operations.mjs",
+    "control/four-library-governance.mjs",
+    "control/layered-governance-binding.mjs",
+    "control/layered-governance-contract.mjs",
+    "control/task-role-packet.mjs",
+    "docs/layered-governance.md",
+    "schemas/generated-task-role-packet.v1.json",
+    "schemas/layered-governance-check.v1.json",
+    "schemas/layered-governance.v1.json",
+    "schemas/legacy-generated-task-role-packet.v1.json",
+    "schemas/legacy-layered-governance-contract.v1.json",
+    "tests/verify-four-library-governance.mjs",
+    "tests/verify-layered-governance.mjs",
+    "docs/feature-audits/ROADMAP_02_LAYERED_GOVERNANCE/auditreport.md"
+  ],
+  "true_blocker": null,
+  "next_action": "Run the focused functional and independent verification pass on the exact candidate after the owner-lane Bootstrap binding refresh; append any result without rewriting this history."
+}
+```
+
+## Handoff preservation and consumption receipt — 2026-08-09
+
+The typed handoff above is preserved in the append-only feature audit and was
+read back against the authoritative checkpoint, canonical public export
+surface, repaired changed-path set, inactive activation state, and explicit
+Bootstrap custody seam. Consumption result: `ACCEPTED_FOR_DOWNSTREAM_REVIEW`.
+The handoff does not authorize tests, activation, merge, release, push, or
+archive. The visible task may close this goal with functional tests and the
+owner-lane binding refresh still pending as recorded evidence conditions.
+
+## Central integration intake — 2026-08-09 (Layered Governance handoff)
+
+- visible_task_ref: `TASK_REF_ROADMAP_02_LAYERED_GOVERNANCE_VISIBLE`
+- isolated_worktree_ref: `WORKTREE_REF_CD69`
+- source_head: `bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac`
+- source_tree: `40d495f1599cd0b0f07de83748b74253b526b145`
+- isolated_report_sha256: `404960b8478d0d2cdb71add67cf8bb085a404b52754b112dc5d220567c211b92`
+- central_disposition: `SOURCE_BOUND_CANDIDATE_INTEGRATED_PENDING_STATIC_REVIEW`
+- changed_path_disposition: `ONLY_TYPED_HANDOFF_PATHS_INTEGRATED; UNRELATED_LANE_FILES_RETAINED_AT_BASELINE`
+- functional_status: `NOT_RUN_BY_INSTRUCTION`
+- activation_status: `PREPARED_NOT_ACTIVATED`
+- archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
+
+The Controller consumed the typed handoff after checking its source checkpoint
+and changed-path list. Static syntax, schema parsing, module loading, privacy
+scan, and diff hygiene passed. Functional execution, activation, release,
+push, and archive remain outside this intake.

@@ -23,3 +23,23 @@ The candidate is available to every applicable existing platform-domain review
 without creating a duplicate platform task. The Controller must select or
 reject each domain from the architecture matrix, preserve the decision, and
 only then mark downstream consumption complete.
+
+## ROADMAP_02_LAYERED_GOVERNANCE
+
+- handoff_type: `FEATURE_WAVE_CANDIDATE_PENDING_TESTS`
+- candidate_status: `PRODUCTION_CANDIDATE_PENDING_TESTS`
+- feature_report: `docs/feature-audits/ROADMAP_02_LAYERED_GOVERNANCE/auditreport.md`
+- feature_handoff: `docs/feature-handoffs/ROADMAP_02_LAYERED_GOVERNANCE-2026-08-09.md`
+- source_baseline_commit: `bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac`
+- source_baseline_tree: `40d495f1599cd0b0f07de83748b74253b526b145`
+- cumulative_candidate_head: `41de36b33ac97d50583bf8fd760e25b365ce8d3f`
+- downstream_domain_selection: `PENDING_CONTROLLER_MATRIX_REVIEW`
+- source_disposition: `FEATURE_HANDOFF_PATHS_INTEGRATED_WITHOUT_UNRELATED_LANE_FILES`
+- functional_status: `NOT_RUN_BY_INSTRUCTION`
+- activation_status: `PREPARED_NOT_ACTIVATED`
+- archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
+
+The Layered Governance handoff is available for review by the existing
+platform-domain matrix. No new platform task was created. The Bootstrap
+question-map refresh remains an explicit owner-lane seam; downstream review
+must preserve that custody boundary before any binding refresh or activation.

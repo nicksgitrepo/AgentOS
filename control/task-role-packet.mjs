@@ -27,10 +27,12 @@ import {
   sortedUniqueStrings,
   validateBaseGeneralLibrary,
   validateBaseRoleLibrary,
-  validateGeneratedProjectRoleLibrary,
   validatePacketDigest,
   validateProjectGeneralLibrary,
 } from "./four-library-foundation.mjs";
+import {
+  validateGeneratedProjectRoleLibrary,
+} from "./four-library-operations.mjs";
 
 export const GENERATED_TASK_ROLE_PACKET_SCHEMA = "agentos.generated_task_role_packet.v1";
 export const GENERATED_TASK_ROLE_PACKET_VERSION = FOUR_LIBRARY_VERSION;

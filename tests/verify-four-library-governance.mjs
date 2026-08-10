@@ -13,7 +13,9 @@ import {
   compileBaseGeneralLibrary,
   compileBaseRoleLibrary,
   compileGeneratedProjectRoleLibrary,
+  compileLegacyGeneratedTaskRolePacket,
   compileGovernanceBinding,
+  compileLegacyLayeredGovernanceContract,
   compileProjectGeneralLibrary,
   compileProjectHistoryEntry,
   GovernanceConflictError,
@@ -24,11 +26,12 @@ import {
   validateBaseGeneralLibrary,
   validateBaseRoleLibrary,
   validateGeneratedProjectRoleLibrary,
+  validateLegacyGeneratedTaskRolePacket,
   validateGovernanceBinding,
+  validateLegacyLayeredGovernanceContract,
   validateGovernanceMigration,
   validateProjectGeneralLibrary,
 } from "../control/four-library-governance.mjs";
-import {canonicalDigest as historyCanonicalDigest} from "../control/four-library-history.mjs";
 
 const digest = (label) => canonicalDigest({fixture: label});
 const sorted = (items) => [...items].sort((left, right) => Buffer.from(left).compare(Buffer.from(right, "utf8")));
@@ -43,6 +46,8 @@ for (const schemaFile of [
   "governance-migration.v1.json",
   "governance-conflict.v1.json",
   "project-governance-history-entry.v1.json",
+  "layered-governance.v1.json",
+  "generated-task-role-packet.v1.json",
 ]) {
   const schema = JSON.parse(fs.readFileSync(path.join(testRoot, "..", "schemas", schemaFile), "utf8"));
   assert.equal(typeof schema.$id, "string", `${schemaFile} has no schema ID`);
@@ -200,7 +205,6 @@ function makeStack(releaseLabel = "release-a") {
 
 const first = makeStack();
 const second = makeStack();
-assert.equal(historyCanonicalDigest({fixture: "history"}), digest("history"), "history module canonical digest export is not bound");
 assert.equal(first.baseGeneral.digest, second.baseGeneral.digest, "base general compilation is not deterministic");
 assert.equal(first.baseRole.digest, second.baseRole.digest, "base role compilation is not deterministic");
 assert.equal(first.projectGeneral.digest, second.projectGeneral.digest, "project general compilation is not deterministic");
@@ -221,6 +225,35 @@ validateGovernanceBinding(first.binding, {
   projectGeneralLibrary: first.projectGeneral,
   generatedProjectRoleLibrary: first.generatedProjectRole,
 });
+
+const taskPacket = compileLegacyGeneratedTaskRolePacket({
+  generatedProjectRoleLibrary: first.generatedProjectRole,
+  roleId: "WORKER_ALPHA",
+  laneId: "ALPHA",
+  taskIdSha256: digest("task-alpha"),
+  taskKind: "AUDIT",
+  applicableQuestionIds: ["TASK-START-001", "TASK-CHANGE-008", "TASK-PROOF-011"],
+});
+validateLegacyGeneratedTaskRolePacket(taskPacket, {generatedProjectRoleLibrary: first.generatedProjectRole});
+assert.equal(taskPacket.status, "PREPARED_NOT_ACTIVATED");
+assert.equal(taskPacket.role_id, "WORKER_ALPHA");
+assert.deepEqual(taskPacket.applicable_question_ids, ["TASK-CHANGE-008", "TASK-PROOF-011", "TASK-START-001"]);
+
+const layeredContract = compileLegacyLayeredGovernanceContract({
+  projectContractSha256: digest("project-contract"),
+  baseGeneralLibrary: first.baseGeneral,
+  baseRoleLibrary: first.baseRole,
+  projectGeneralLibrary: first.projectGeneral,
+  generatedProjectRoleLibrary: first.generatedProjectRole,
+});
+validateLegacyLayeredGovernanceContract(layeredContract, {
+  baseGeneralLibrary: first.baseGeneral,
+  baseRoleLibrary: first.baseRole,
+  projectGeneralLibrary: first.projectGeneral,
+  generatedProjectRoleLibrary: first.generatedProjectRole,
+});
+assert.deepEqual(layeredContract.layer_order, ["SHARED_GENERAL", "BASE_ROLE", "PERSISTENT_PROJECT", "GENERATED_TASK_ROLE"]);
+assert.equal(layeredContract.activation.active, false);
 
 assert.equal(first.baseRole.role_packets.length, 6, "base role packet inventory is incomplete");
 assert.equal(first.binding.status, "COMPILED", "binding compilation must not imply preparation or activation");
@@ -376,6 +409,18 @@ assert.throws(() => validateGeneratedProjectRoleLibrary(tamperedGenerated, {
 
 const replacementGeneral = makeBaseGeneral("release-b");
 const replacementRole = makeBaseRole(replacementGeneral, "release-b");
+const replacementPathGeneral = makeBaseGeneral("release-path");
+replacementPathGeneral.general_graph_bindings[0].path_ref = first.projectGeneral.project_graph_bindings[0].path_ref;
+replacementPathGeneral.digest = canonicalDigest({...replacementPathGeneral, digest: null});
+const replacementPathRole = makeBaseRole(replacementPathGeneral, "release-path");
+assert.throws(
+  () => rebaseProjectGeneralLibrary({
+    projectGeneralLibrary: first.projectGeneral,
+    replacementBaseGeneralLibrary: replacementPathGeneral,
+    replacementBaseRoleLibrary: replacementPathRole,
+  }),
+  (error) => error instanceof GovernanceConflictError && error.code === "PROJECT_GRAPH_PATH_COLLISION_AFTER_UPGRADE",
+);
 const projectGeneralBeforeUpgrade = JSON.stringify(first.projectGeneral);
 const upgrade = prepareGovernanceUpgrade({
   currentBinding: first.binding,

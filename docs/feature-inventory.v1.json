@@ -107,7 +107,7 @@
       "report_path": "docs/feature-audits/ROADMAP_02_LAYERED_GOVERNANCE/auditreport.md",
       "auditor_task_id": "019fdcf9-973f-7b12-bcc2-0a156c64f65b",
       "worktree_id": "HOST_WORKTREE_CD69",
-    "status": "CENTRAL_INTEGRATION_PENDING"
+      "status": "FEATURE_HANDOFF_CONSUMED_PENDING_PLATFORM_REVIEW"
     },
     {
       "feature_id": "ROADMAP_03_CONTROLLER_INTENT",

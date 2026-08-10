@@ -654,7 +654,6 @@ export function validateProjectGeneralLibrary(value, {baseGeneralLibrary = null,
   requireDigest(value.policy_state_digest, "project general library.policy_state_digest");
   requireSafeToken(value.source_revision, "project general library.source_revision");
   validateGraphBindings(value.project_graph_bindings, "project general library.project_graph_bindings", {project: true});
-  const projectGraphIds = new Set(graphIds(value.project_graph_bindings));
   const baseBindings = [
     ...(baseGeneralLibrary === null ? [] : baseGeneralLibrary.general_graph_bindings),
     ...(baseRoleLibrary === null ? [] : value.base_role_library_digest === baseRoleLibrary.digest ? baseRoleLibrary.role_graph_bindings : []),
@@ -663,6 +662,7 @@ export function validateProjectGeneralLibrary(value, {baseGeneralLibrary = null,
     const collisions = graphNamespaceCollisions(value.project_graph_bindings, baseBindings);
     assert(collisions.paths.length === 0, `project general graph path collides with base governance: ${collisions.paths[0]}`);
   }
+  const projectGraphIds = new Set(graphIds(value.project_graph_bindings));
   const baseGraphIds = baseGeneralLibrary === null && baseRoleLibrary === null
     ? null
     : new Set([
@@ -771,6 +771,15 @@ export function compileProjectGeneralLibrary({
       left_digest: baseGeneralLibrary.digest,
       right_digest: baseRoleLibrary.digest,
       resolution: `PROJECT_GRAPH_ID_MUST_BE_DISJOINT:${collision[1]}`,
+    });
+    const pathCollision = error.message.match(/project general graph path collides with base governance: ([^ ]+)/u);
+    if (pathCollision) failConflict({
+      conflict_code: "PROJECT_GRAPH_PATH_COLLISION",
+      affected_library: PROJECT_GENERAL_KIND,
+      project_id,
+      left_digest: baseGeneralLibrary.digest,
+      right_digest: baseRoleLibrary.digest,
+      resolution: `PROJECT_GRAPH_PATH_MUST_BE_DISJOINT:${pathCollision[1]}`,
     });
     const duplicate = error.message.match(/duplicate role overlay: ([^ ]+)/u);
     if (duplicate) failConflict({

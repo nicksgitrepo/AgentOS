@@ -774,7 +774,7 @@
     },
     "feature_inventory_contract": {
       "path": "docs/feature-inventory.v1.json",
-      "sha256": "f7f7a6413d209892359243164db2d88a331e713970094b84adc03f8f4c3f9274"
+      "sha256": "1158a41164a39c4c24b6cf3aca38d44f6f2f976af4aa223c05add2f15d335d95"
     },
     "feature_inventory_article": {
       "path": "docs/feature-inventory.md",
@@ -1570,11 +1570,11 @@
     },
     "four_library_foundation_controller": {
       "path": "control/four-library-foundation.mjs",
-      "sha256": "fa46db5ed661bdce6fbd2c7c7a5afe95d361e960962352db9e533759d84347ae"
+      "sha256": "2f2c861ffcc71ce2c94dec500bd7b4c753c068abdb588ef3c1bb791aaab2fc11"
     },
     "four_library_governance_controller": {
       "path": "control/four-library-governance.mjs",
-      "sha256": "e8e53b26111923b79c6ef6190ca66fc426c1e50518cf2855f33ca0519a701bf3"
+      "sha256": "333e594dbafa5a04f8b0c965b19ba2bf001a805995002fe47efeab80f30e7fd7"
     },
     "four_library_history_controller": {
       "path": "control/four-library-history.mjs",
@@ -1582,7 +1582,7 @@
     },
     "four_library_operations_controller": {
       "path": "control/four-library-operations.mjs",
-      "sha256": "e1a137c35d9efb17a6112ff0796a2078f0efa3426b1da68983d5cb32e7089f1b"
+      "sha256": "33d3fd8ebc3abd8d4afc849aadc9636fd23901d7d63135b01c45b8954de1d2cc"
     },
     "four_library_base_general_contract": {
       "path": "schemas/base-general-library.v1.json",
@@ -1618,7 +1618,7 @@
     },
     "four_library_verifier": {
       "path": "tests/verify-four-library-governance.mjs",
-      "sha256": "0ebc6a64a556b442a31f863bb512f606d50425cc1101690eda254b9ca19dc043"
+      "sha256": "af701927f95d98a68c62387911018433d44c03a3d53db7cdd23b52953c6677a6"
     },
     "four_library_audit_report": {
       "path": "docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md",
@@ -1628,33 +1628,45 @@
       "path": "docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/central-intake-preservation-manifest-2026-08-09.md",
       "sha256": "f42c5210f0b07a1e30c946b85499fd41637042612242c28e9845eabf176b213c"
     },
+    "layered_governance_binding_controller": {
+      "path": "control/layered-governance-binding.mjs",
+      "sha256": "40c5900c7809a5b68d3a09ae45acaeadc89d48ffd3bcf907e95f7d014cfd393e"
+    },
+    "legacy_generated_task_role_packet_contract": {
+      "path": "schemas/legacy-generated-task-role-packet.v1.json",
+      "sha256": "aac788d653a3b87bd91a417625d931ca262453cc423b0651cb6453f3eaa5e48b"
+    },
+    "legacy_layered_governance_contract": {
+      "path": "schemas/legacy-layered-governance-contract.v1.json",
+      "sha256": "d0f80aa65a9954ea40d26bd6abb7249fc5183358c0db472f6aabc7e19deda885"
+    },
     "restored_layered_governance_contract_controller": {
       "path": "control/layered-governance-contract.mjs",
-      "sha256": "bf8561af8d9011227302dc562452bc66dd0609e3881236e06483cbbe4f64c4f3"
+      "sha256": "87e8ae8dfc7810d4eb0992217984c0f79f8563fd0ce5bd009aca72add4c3279e"
     },
     "restored_task_role_packet_controller": {
       "path": "control/task-role-packet.mjs",
-      "sha256": "8cf3481fedaeb795a25e1f8e3283ad23bf523b04208ed7c65ddf52bc0378347f"
+      "sha256": "fc1c75418b9d1e8fe36635bdcd2b0d61c2aa0348080f99dc64ca2377628466e3"
     },
     "restored_layered_governance_contract": {
       "path": "schemas/layered-governance.v1.json",
-      "sha256": "5b7700604b279c6c949a6f39b27e1ba1288c7b1520fefc4993bdb4eb3e20b3bb"
+      "sha256": "9bbcafb9196afa3b0743ea0cc372e2ac804444b8d261812e24f8238558a6ebeb"
     },
     "restored_layered_governance_check_contract": {
       "path": "schemas/layered-governance-check.v1.json",
-      "sha256": "5448b4e0aa30882939ba0b3ed1259ccd095664d738737867f0a69a187a80c1fb"
+      "sha256": "4d9e1944e454c2f043ed1d69e328010ea97077b79ee61189b57d9f511d3525d6"
     },
     "restored_generated_task_role_packet_contract": {
       "path": "schemas/generated-task-role-packet.v1.json",
-      "sha256": "e42e514f817fa8c33ed74107ebb24213a8aac18fe39b51eb4fdae0d2fc613050"
+      "sha256": "90880307f0cc8eb6d47579bcaf056c2248c60f8b287723f50e37294bad29df1f"
     },
     "restored_layered_governance_article": {
       "path": "docs/layered-governance.md",
-      "sha256": "7e7c7956c7ba530613ec29061e587b9d73c33ef45fbab8b7d930158cc77e4cdf"
+      "sha256": "0880fd07c91953fce13767e033962c65e68e8ecf1ac23e1ba52c23d71b60836a"
     },
     "restored_layered_governance_verifier": {
       "path": "tests/verify-layered-governance.mjs",
-      "sha256": "cd2721b9db64c31b63343455bd499103b678a8e40c2321b5c8f50e21b4d04057"
+      "sha256": "35e02f062b74135799ca437fb5c7466252efcbe53e040f3c557f038aa2e26a84"
     },
     "restored_local_workspace_controller": {
       "path": "control/local-workspace-adapter.mjs",
