@@ -1,0 +1,56 @@
+{
+  "schema": "agentos.autonomous_continuation_repair.v1",
+  "version": 1,
+  "status": "ITER-003_CLOSED_HANDOFF_PRESERVED",
+  "repair_kind": "AUTONOMOUS_CONTINUATION_REPAIR",
+  "persistent_coordinator": "Intent Regulator",
+  "prior_accepted_repair": "docs/rapid-foundations/evidence/architecture-repair.v1.json",
+  "source_binding": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9"
+  },
+  "backlog_readback": {
+    "source": "docs/rapid-foundations/evidence/iteration-transition.v1.json",
+    "selected_item": "ITER-002",
+    "kind": "EXTENDED_HOSTILE_COVERAGE",
+    "dependency": "NONE",
+    "owner_boundary": "NONE_IDENTIFIED",
+    "selection_rule": "SMALLEST_SAFE_DEFERRED_ITEM_WITHOUT_OWNER_DECISION_OR_EXTERNAL_DEPENDENCY"
+  },
+  "continuation_contract": {
+    "intent_regulator_remains_persistent": true,
+    "mint_fresh_source_bound_campaign": true,
+    "fresh_named_role_required": true,
+    "meaningful_progress_window_minutes": 15,
+    "automatic_close_sequence": ["PRESERVE_TYPED_HANDOFF", "UNPIN", "ARCHIVE", "REMOVE_FROM_ACTIVE_ROSTER", "VERIFY_ZERO_ACTIVE"],
+    "stop_only_for": ["HARD_BOUNDARY", "REAL_OWNER_CHOICE", "VERIFIED_HOST_CAPABILITY_FAILURE"],
+    "unrelated_work": "FORBIDDEN"
+  },
+  "continuation_gate_repair": {
+    "status": "RECORDED_AND_ACTIVE",
+    "finding": "BROADER_INTERNAL_AGENTOS_WORK_WAS_MISCLASSIFIED_AS_OWNER_DECISION_REQUIRED",
+    "broader_internal_agentos_work_is_not_owner_boundary": true,
+    "owner_approval_pause": false,
+    "reassessment_required_only_on": ["SCOPE_CHANGE", "INTENT_CHANGE", "POLICY_CHANGE", "CONDITION_CHANGE"],
+    "real_boundary_classes": ["EXTERNAL_ACTION", "AUTHORITY_CHANGE", "DESTRUCTIVE_ACTION", "NEW_PRODUCT_SCOPE", "UNRESOLVED_OWNER_INTENT"],
+    "admission_rule": "Already-typed internal AgentOS backlog work may continue from the recorded launch gate when source, scope, policy, and condition remain bound."
+  },
+  "completed_campaign": "docs/rapid-foundations/evidence/iteration-campaign-002.v1.json",
+  "next_campaign": {
+    "backlog_id": "ITER-003",
+    "status": "CLOSED_HANDOFF_PRESERVED",
+    "kind": "CAMPAIGN_EXPANSION",
+    "reason": "ITER-003 is internal AgentOS governance work already present in the typed backlog; its broader scope is bounded by a fresh source-bound plan, named role, exact files, hostile checks, and independent acceptance.",
+    "owner_choice_required": false,
+    "campaign_record": "docs/rapid-foundations/evidence/iteration-campaign-003.v1.json",
+    "independent_parent_check": "PASS",
+    "lifecycle": "PRESERVE_TYPED_HANDOFF_UNPIN_ARCHIVE_REMOVE_VERIFY_ZERO_ACTIVE"
+  },
+  "next_boundary": {
+    "backlog_id": "ITER-004",
+    "status": "REAL_EXTERNAL_BOUNDARY",
+    "reason": "The next typed item concerns provider, remote delivery, publication, deployment, rollback, production, or activation work and is outside the current internal AgentOS continuation scope.",
+    "owner_choice_required": true,
+    "fresh_source_bound_goal_required": true
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "agentos.rapid_iteration_transition.v1",
+  "version": 1,
+  "from_mode": "RAPID_PROTOTYPING",
+  "to_mode": "NORMAL_ITERATION",
+  "status": "NORMAL_ITERATION_MODE_ACTIVE",
+  "decision": "RAPID_SLICE_ACCEPTED",
+  "source": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "public_plan_sha256": "9169cac42f8908759dba042bb7c44f9bca1a7bb12c0cd760c68b4dce013c06a6",
+    "rapid_plan_contract_sha256": "bb45c0014ee64e0448043bae945e5d4791d1c60505b4b6c2311606b4e8c27e30",
+    "audit_report": "docs/rapid-foundations/evidence/implementation-audit.md",
+    "audit_report_sha256": "075cbdd3b77dd84e3cdecf2d5bfb6e61ebc92e428ff56a8fc6e1aac2235d6ae4",
+    "audit_evidence_sha256": "361f7ab87d14741139d2782ea2dfc822eba43f851246d3def0ad65479fd062d6",
+    "lifecycle_reconciliation_evidence": "docs/rapid-foundations/evidence/lifecycle-reconciliation.v1.json"
+  },
+  "temporary_roster": {
+    "active_count": 0,
+    "implementation_handoffs_preserved": 12,
+    "tailored_handoffs_preserved": 2,
+    "lifecycle": "PRESERVE_TYPED_HANDOFF_UNPIN_ARCHIVE_REMOVE_VERIFY_ZERO_ACTIVE",
+    "closeout_reconciliation": "CLOSEOUT_RECONCILED"
+  },
+  "backlog": [
+    {
+      "id": "ITER-001",
+      "kind": "BOUNDED_VERIFICATION",
+      "scope": "Complete the full verifier as a bounded Iteration check and record its result or timeout.",
+      "owner_lane": "Intent Regulator",
+      "acceptance_root": "A bounded command result is recorded without making it a Bootstrap prerequisite.",
+      "dependency": "NONE",
+      "reopen_trigger": "A fresh Iteration campaign is admitted for verifier work.",
+      "status": "RECORDED_WITH_TIMEOUT",
+      "result": "TIMEOUT_NO_RESULT",
+      "evidence": "docs/rapid-foundations/evidence/iteration-001-bounded-verifier.md"
+    },
+    {
+      "id": "ITER-002",
+      "kind": "EXTENDED_HOSTILE_COVERAGE",
+      "scope": "Broaden portability, lifecycle, public-safety, and boundary coverage around the accepted thin slice.",
+      "owner_lane": "Intent Regulator",
+      "acceptance_root": "A fresh campaign has disjoint scope, hostile cases, exact evidence, and an independent audit.",
+      "dependency": "NONE",
+      "reopen_trigger": "A material gap is found during a fresh Iteration audit.",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "ITER-003",
+      "kind": "CAMPAIGN_EXPANSION",
+      "scope": "Evaluate broader campaign cascade and Finalizer integration beyond this thin slice.",
+      "owner_lane": "Intent Regulator",
+      "acceptance_root": "A new campaign plan names the added roles, boundaries, evidence, and independent acceptance.",
+      "dependency": "ITER-002",
+      "reopen_trigger": "The owner admits a broader campaign with a fresh source-bound goal.",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "ITER-004",
+      "kind": "EXTERNAL_BOUNDARY",
+      "scope": "Provider, remote delivery, publication, deployment, rollback, production, or activation work.",
+      "owner_lane": "Intent Regulator",
+      "acceptance_root": "An explicit owner decision and a new exact plan authorize the specific external boundary.",
+      "dependency": "NONE",
+      "reopen_trigger": "The owner explicitly admits one external boundary in a new goal.",
+      "status": "OUT_OF_SCOPE"
+    },
+    {
+      "id": "ITER-005",
+      "kind": "VERSION_ACTIVATION",
+      "scope": "Any activation of the prepared release candidate.",
+      "owner_lane": "Intent Regulator",
+      "acceptance_root": "An explicit activation decision is recorded with fresh evidence and independent review.",
+      "dependency": "NONE",
+      "reopen_trigger": "An explicit activation decision changes the current condition.",
+      "status": "DEFERRED"
+    }
+  ],
+  "next_action": "Mint a fresh source-bound Iteration campaign only from the typed backlog and current owner admission.",
+  "deferred_full_verifier_is_not_a_bootstrap_gate": true
+}

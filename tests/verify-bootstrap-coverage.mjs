@@ -54,9 +54,13 @@ assert.equal(ready.status, "READY_TO_COMPILE");
 assert.deepEqual(ready, repeated, "coverage output is not deterministic");
 assert.equal(ready.outputs.find((row) => row.output_id === "FUNCTION_REQUIREMENTS").status, "DERIVED");
 assert.equal(ready.outputs.find((row) => row.output_id === "FIRST_CAMPAIGN").status, "DEFAULTED");
+assert.equal(ready.outputs.find((row) => row.output_id === "DEVELOPMENT_PLAN").status, "DEFAULTED");
 assert.equal(ready.outputs.find((row) => row.output_id === "LEGACY_PRESERVATION").status, "NOT_APPLICABLE_WITH_PROOF");
 assert.equal(ready.outputs.find((row) => row.output_id === "ACTIVATION_BOUNDARY").safe_default, "PREPARED_NOT_ACTIVATED");
 validateBootstrapCoverage(ready);
+const configured = compileBootstrapCoverage({discovery: [], answers: {...completeAnswers, "project.development_mode": "ITERATION"}});
+assert.equal(configured.outputs.find((row) => row.output_id === "DEVELOPMENT_PLAN").status, "OWNER_CONFIRMED");
+validateBootstrapCoverage(configured);
 
 const questionPlan = planBootstrapQuestions({discovery: [], answers: {}});
 assert.equal(questionPlan.status, "QUESTION_PENDING");

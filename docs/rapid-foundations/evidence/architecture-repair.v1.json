@@ -1,0 +1,81 @@
+{
+  "schema": "agentos.architecture_repair_evidence.v1",
+  "version": 1,
+  "status": "REPAIR_ACCEPTED",
+  "repair_kind": "ARCHITECTURE_ALIGNMENT_REPAIR",
+  "goal": "SOURCE_BOUND_ARCHITECTURE_REPAIR",
+  "source_binding": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9"
+  },
+  "preserved_prior_work": [
+    "docs/rapid-foundations/evidence/implementation-audit.md",
+    "docs/rapid-foundations/evidence/iteration-001-closeout.v1.json"
+  ],
+  "typed_outputs": {
+    "bootstrap_plan_gate": {
+      "path": "control/bootstrap-compiler.mjs",
+      "focused_check": "tests/verify-bootstrap-alignment.mjs",
+      "result": "PASS",
+      "receipt": "governance_architecture_is_compiled_and_bound_into_exact_creation_plan"
+    },
+    "controller_gate": {
+      "path": "control/agentos-controller.mjs",
+      "focused_check": "tests/verify-role-governance-library.mjs",
+      "result": "PASS",
+      "receipt": "architecture_repair_admission_requires_validated_shared_plus_generated_envelope"
+    },
+    "shared_general_library": {
+      "path": "control/governance-library.mjs",
+      "contract": "schemas/governance-library.v1.json",
+      "focused_check": "tests/verify-governance-library.mjs",
+      "result": "PASS",
+      "sha256": "c018f20c32a3244df83a30efcc75bbd799d997c9c842339afb05da945a4443b4"
+    },
+    "generated_role_specific_library": {
+      "path": "control/role-governance-library.mjs",
+      "focused_check": "tests/verify-role-governance-library.mjs",
+      "result": "PASS",
+      "generation_source": "GENERAL_LIBRARY_PLUS_COMPILED_QUESTION_TREE",
+      "sha256": "9cbd54003c6bc820ccb20004f05fd23700b3e2d35289ab3f722cca2c546fef36"
+    }
+  },
+  "acceptance_requirements": {
+    "SHARED_GENERAL_GOVERNANCE_LIBRARY_PRESENT": "PASS",
+    "ROLE_SPECIFIC_LIBRARY_GENERATED_FROM_GENERAL_LIBRARY_AND_GOVERNANCE_TREE": "PASS",
+    "GENERAL_AND_ROLE_LIBRARIES_SHARE_SOURCE_BINDING": "PASS",
+    "BOOTSTRAP_PLAN_ADMITS_BOTH_GOVERNANCE_LAYERS": "PASS",
+    "CONTROLLER_REPAIR_ADMISSION_REQUIRES_ARCHITECTURE_GATE": "PASS",
+    "ARCHITECTURE_GATE_REJECTS_MISSING_GENERAL_LIBRARY": "PASS",
+    "ARCHITECTURE_GATE_REJECTS_ROLE_LIBRARY_WITHOUT_TREE_BINDING": "PASS",
+    "PUBLIC_PORTABLE_AND_SECRET_FREE": "PASS_FOR_REPAIR_PATHS",
+    "NO_UNRELATED_PATHS_CHANGED": "PASS_FOR_DECLARED_REPAIR_PATHS"
+  },
+  "independent_checks": [
+    {
+      "check": "node --check on repair modules",
+      "result": "PASS"
+    },
+    {
+      "check": "focused governance, role, Bootstrap, Controller, question-tree, and accepted-slice tests",
+      "result": "PASS"
+    },
+    {
+      "check": "node tests/verify-portability.mjs",
+      "result": "DEFERRED_FIXTURE_SCOPE_MISMATCH",
+      "classification": "PUZZLE_DEFERRED_TO_ITERATION",
+      "observed_findings": [
+        "tests/rapid-prototype/security-privacy.mjs: deliberate numeric hostile fixture",
+        "tests/rapid-prototype/ui-ux.mjs: deliberate product-identity hostile fixture"
+      ],
+      "repair_paths_clean": true
+    }
+  ],
+  "handoff": {
+    "owner": "Intent Regulator",
+    "result": "The accepted lane work is preserved; Bootstrap and Controller now require shared general governance plus generated role-specific governance before architecture repair admission.",
+    "deferred": "The broader portability fixture-scope puzzle remains typed Iteration work; no unrelated feature work was started.",
+    "next_action": "Continue only from a fresh source-bound campaign if the deferred fixture puzzle is admitted."
+  },
+  "public_boundary": "Project-agnostic and secret-free; no private paths, session identities, external project names, credentials, provider identities, or chat links are included."
+}

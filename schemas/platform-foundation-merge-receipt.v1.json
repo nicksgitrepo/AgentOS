@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.platform_foundation_merge_receipt.v1",
+  "title": "Platform domain integration receipt",
+  "description": "Controller-owned, source-bound receipt for the platform foundation batch. It records the platform agents' skeleton and routing handoffs, the independent Controller audit and cumulative merge, and the feature-admission decision before any feature lane is started.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "activation_status", "source", "foundation_receipt_sha256", "inventory_sha256",
+    "lane_handoffs", "inventory", "candidate", "independent_audit", "integration",
+    "feature_admission", "universal_closeout", "merge_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.platform_foundation_merge_receipt.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PLATFORM_MERGE_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE", "PLATFORM_MERGE_ACCEPTED"]},
+    "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree", "working_tree"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/gitObject"},
+        "tree": {"$ref": "#/$defs/gitObject"},
+        "working_tree": {"enum": ["CLEAN", "DIRTY", "UNKNOWN"]}
+      }
+    },
+    "foundation_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "inventory_sha256": {"$ref": "#/$defs/sha256"},
+    "lane_handoffs": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["lane_id", "handoff_path", "handoff_sha256", "lane_file", "lane_sha256"],
+        "properties": {
+          "lane_id": {"type": "string", "minLength": 1},
+          "handoff_path": {"$ref": "#/$defs/relativePath"},
+          "handoff_sha256": {"$ref": "#/$defs/sha256"},
+          "lane_file": {"$ref": "#/$defs/relativePath"},
+          "lane_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+    "required": ["feature_count", "feature_report_count", "governance_count", "governance_report_count", "parity", "active_lane_ids"],
+      "properties": {
+        "feature_count": {"type": "integer", "minimum": 0},
+        "feature_report_count": {"type": "integer", "minimum": 0},
+        "governance_count": {"type": "integer", "minimum": 0},
+      "governance_report_count": {"type": "integer", "minimum": 0},
+      "active_lane_ids": {
+        "type": "array",
+        "minItems": 0,
+        "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+        "uniqueItems": true
+      },
+        "parity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["features", "governance"],
+          "properties": {"features": {"type": "integer", "minimum": 0}, "governance": {"type": "integer", "minimum": 0}}
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["changed_paths", "path_sha256", "question_queue_path", "implementation_started", "candidate_sha256"],
+      "properties": {
+        "changed_paths": {"type": "array", "items": {"$ref": "#/$defs/relativePath"}},
+        "path_sha256": {"type": "object", "additionalProperties": {"$ref": "#/$defs/sha256"}},
+        "question_queue_path": {"$ref": "#/$defs/relativePath"},
+        "implementation_started": {
+          "type": "boolean",
+          "description": "Informational compatibility flag. Platform implementation is expected in this candidate and does not by itself prevent feature admission; feature admission remains gated by independent audit, accepted integration, clean source custody, and all other receipt conditions."
+        },
+        "candidate_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "independent_audit": {"$ref": "#/$defs/decisionReceipt"},
+    "integration": {"$ref": "#/$defs/integrationReceipt"},
+    "feature_admission": {"enum": ["HOLD", "READY"]},
+    "universal_closeout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "applies_to", "receipt_schema", "receipt_compiler", "receipt_authorities", "sequence", "required_evidence", "controller_must_wait_for_integration", "archive_is_dynamic", "archive_requires_chat_out_of_scope", "archive_requires_active_scope_removal", "archive_requires_stale_worktree_closed", "archive_preconditions"],
+      "properties": {
+        "mode": {"const": "ALL_DEVELOPMENT_MODES"},
+        "applies_to": {"type": "array", "minItems": 9, "maxItems": 9},
+        "receipt_schema": {"const": "agentos.universal_task_closeout_receipts.v1"},
+        "receipt_compiler": {"const": "compileUniversalTaskCloseoutReceipts"},
+        "receipt_authorities": {"type": "object", "minProperties": 9},
+        "sequence": {"type": "array", "minItems": 9, "maxItems": 9},
+        "required_evidence": {"type": "array", "minItems": 10, "maxItems": 10},
+        "controller_must_wait_for_integration": {"const": true},
+        "archive_is_dynamic": {"const": true},
+        "archive_requires_chat_out_of_scope": {"const": true},
+        "archive_requires_active_scope_removal": {"const": true},
+        "archive_requires_stale_worktree_closed": {"const": true},
+        "archive_preconditions": {"type": "array", "minItems": 7, "maxItems": 7}
+      }
+    },
+    "merge_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "relativePath": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"},
+    "receiptRef": {"type": ["string", "null"], "pattern": "^(?:digest|opaque|ref|sha1|sha256):[A-Za-z0-9._:-]+$"},
+    "decisionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "receipt_ref", "findings_ref"],
+      "properties": {
+        "status": {"enum": ["PENDING", "ACCEPTED", "REJECTED"]},
+        "receipt_ref": {"$ref": "#/$defs/receiptRef"},
+        "findings_ref": {"$ref": "#/$defs/receiptRef"}
+      }
+    },
+    "integrationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "receipt_ref", "candidate_ref"],
+      "properties": {
+        "status": {"enum": ["PENDING", "ACCEPTED", "REJECTED"]},
+        "receipt_ref": {"$ref": "#/$defs/receiptRef"},
+        "candidate_ref": {"$ref": "#/$defs/receiptRef"}
+      }
+    }
+  }
+}

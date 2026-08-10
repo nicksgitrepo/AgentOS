@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_evidence_attestation.v1",
+  "title": "AgentOS apprenticeship evidence attestation",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "mode",
+    "attestation_id",
+    "attestation_type",
+    "authority",
+    "subject_ref",
+    "subject_session_ref",
+    "operation",
+    "result_status",
+    "evidence_ref",
+    "evidence_sha256",
+    "attestor_ref",
+    "attestor_session_ref",
+    "provenance",
+    "source_match",
+    "scope_match",
+    "identity_match",
+    "boundary_decision",
+    "protected_actions",
+    "observed_at",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_evidence_attestation.v1"},
+    "version": {"const": 1},
+    "mode": {"const": "APPRENTICESHIP"},
+    "attestation_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "attestation_type": {"enum": ["HOST_READBACK", "AUDITOR_ASSERTION"]},
+    "authority": {"enum": ["EXTERNAL_HOST", "WORKFLOW_AUDITOR", "INDEPENDENT_AUDITOR"]},
+    "subject_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "subject_session_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/nullableReference"},
+    "operation": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "result_status": {"enum": ["SUCCEEDED", "FAILED", "BLOCKED"]},
+    "evidence_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "evidence_sha256": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "attestor_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "attestor_session_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "provenance": {"$ref": "apprenticeship-common.v1.json#/$defs/provenance"},
+    "source_match": {"type": "boolean"},
+    "scope_match": {"type": "boolean"},
+    "identity_match": {"type": "boolean"},
+    "boundary_decision": {"enum": ["IN_SCOPE", "SOFT_REVIEW", "HARD_STOP"]},
+    "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},
+    "observed_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"attestation_type": {"const": "HOST_READBACK"}}},
+      "then": {"properties": {"authority": {"const": "EXTERNAL_HOST"}}}
+    },
+    {
+      "if": {"properties": {"attestation_type": {"const": "AUDITOR_ASSERTION"}}},
+      "then": {"properties": {"authority": {"enum": ["WORKFLOW_AUDITOR", "INDEPENDENT_AUDITOR"]}}}
+    },
+    {
+      "if": {"properties": {"result_status": {"const": "SUCCEEDED"}}},
+      "then": {
+        "properties": {
+          "source_match": {"const": true},
+          "scope_match": {"const": true},
+          "identity_match": {"const": true},
+          "boundary_decision": {"const": "IN_SCOPE"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"result_status": {"const": "BLOCKED"}}},
+      "then": {"properties": {"boundary_decision": {"enum": ["SOFT_REVIEW", "HARD_STOP"]}}}
+    }
+  ],
+  "additionalProperties": false
+}

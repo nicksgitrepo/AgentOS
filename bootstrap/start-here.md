@@ -42,7 +42,10 @@ read-only discovery
         -> compact unresolved questions
         -> complete exact creation plan
         -> display plan and digests
-        -> APPROVE_EXACT_PLAN
+        -> compile the JSA safety analysis and full phase plan
+        -> continue declared setup work inside the unchanged scope
+        -> reassess on scope, intent, source, condition, or protected-action change
+        -> optional EXACT_PLAN_APPROVAL route when separately required
         -> run bound local delivery probes
         -> resumable staging transaction
         -> persistent AGENTOS_CONTROLLER state bound to Controller Runtime readback
@@ -66,6 +69,22 @@ including rows that resolve through discovery, a safe default, derivation, or an
 explicit unavailable state. It is not a second questionnaire. Only material
 rows with `OWNER_REQUIRED`, `DEPENDENCY_PENDING`, or `CONFLICT` create a user
 question or block exact-plan compilation.
+
+After setup, rapid prototyping uses the Audit-Driven Integration Pyramid:
+
+```text
+project setup or approved import
+        -> platform foundation agents and Controller merge
+        -> feature audit and repair waves from the accepted skeleton
+        -> central integration and final audit/repair
+        -> production candidate pending tests
+```
+
+New projects receive a Controller-owned stack, repository, and directory plan
+before feature work. Imported projects remain discovery-only until the owner
+explicitly approves rapid development. Existing worktrees are adopted only
+after their handoffs and dirty state are preserved; they are never silently
+deleted or treated as fresh clean candidates.
 
 Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, CI/hosting/deployment markers, local Git state, and available local tools. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
 
@@ -106,7 +125,20 @@ The compact catalog covers:
 
 The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
 
-## Creation plan and approval
+When the owner chooses project memory, Bootstrap must bind it to a real host
+session and workspace readback. Use the host-bound helper
+`control/host-runtime-adapter.mjs` `compileHostRuntimeReadbacks` with the actual
+parsed project registration, task objects, and `list_threads`, `read_thread`,
+pin, send, and wait receipts returned by the active host. It binds the returned
+task IDs to the canonical Git workspace, source commit/tree, and available
+filesystem/Git capabilities. It derives pin and resume proof from those host
+receipts and returns both the persistent Runtime and Controller readbacks.
+The host may be Codex, another collaboration host, or a non-graphical adapter;
+the contract is about authoritative task and workspace receipts, not a GUI.
+Never read identity strings from environment variables, ask the owner to type
+them, or replace a missing host receipt with a caller-supplied value.
+
+## Creation plan and safety boundary
 
 The compiled plan covers the project outcome and first useful workflow,
 import and source preservation, normalization and standards, product
@@ -119,17 +151,38 @@ model-class, North Star, delivery, or review changes can be compiled as exact
 amendments instead of silently changing scattered controller constants.
 
 It also carries the content-addressed `bootstrap_coverage`, project life,
-delivery target, and boundary contract results. The complete creation plan, typed Project
-Context, delivery probes, and setup Auditor must bind those results to the exact
-discovery and normalized answers.
+delivery target, boundary contract, and JSA safety analysis. The complete
+creation plan, typed Project Context, delivery probes, and setup Auditor must
+bind those results to the exact discovery and normalized answers.
 
-The owner approves the exact displayed plan with:
+The default JSA path does not add a second approval prompt for declared local
+setup. It continues only these bounded actions: read-only probes, control-plane
+staging, source-preservation records, typed context, and setup audit. If the
+source, owner intent, declared scope, host capability, or relevant condition
+changes, the current plan closes and Bootstrap reassesses before continuing.
+
+The exact approval route remains available when the owner or host requires a
+separate approval of the complete displayed plan:
 
 ```text
 APPROVE_EXACT_PLAN
 ```
 
-Approval binds both the plan digest and the discovery digest. A changed plan, changed discovery, changed source observation, or mismatched digest is rejected. Generic `PROCEED` is not a valid setup decision.
+Approval binds both the plan digest and the discovery digest. A changed plan,
+changed discovery, changed source observation, or mismatched digest is rejected.
+Generic `PROCEED` is not a valid exact-approval decision. JSA never authorizes
+publication, push, merge, deployment, rollback, spending, authentication,
+secrets, destructive overwrite, Product custody, or the protected generic
+campaign activation action. A recorded source-bound local AgentOS campaign
+start is a separate in-scope local action and does not activate a Product or
+release campaign.
+
+When the recorded development mode is `RAPID_PROTOTYPING`, its phase plan is the
+build guide inside the same JSA scope: project initialization, platform
+foundation and Controller merge, feature audit and repair, then central
+integration and final repair. A changed scope, intent, policy, or
+condition closes the current goal and requires a fresh source-bound plan; it
+does not silently expand the current work.
 
 Execution is resumable and transactional. It stages under the bound control-plane root, verifies readback, initializes `agentos/controller-state.json` there for the persistent `AGENTOS_CONTROLLER`, seals state, and promotes only after the independent setup Auditor confirms the selected plan, root separation, no secrets, Runtime and Controller Runtime bindings, authority-corpus output, and the three-root slice. Re-running a sealed plan is idempotent; a different plan cannot overwrite it. A missing Controller Runtime adapter is unavailable and blocks setup; Bootstrap never invents the controller identity.
 
@@ -178,9 +231,9 @@ Answers are `YES`, `NO`, `UNKNOWN`, `NOT_APPLICABLE`, or `EXCEPTION_REQUESTED`. 
 
 ## First campaign handoff
 
-Bootstrap remains separate from Product execution. After setup is independently audited and explicitly admitted, the first campaign compiles one cumulative root by default. Platform Agents are created on demand as a campaign-local reusable pool with sequential Feature-Agent leases. Runtime remains persistent across campaigns.
+Bootstrap remains separate from Product execution. After setup is independently audited and explicitly admitted, the first campaign compiles one cumulative root by default. Named lane workers are created only for the admitted lane, with any platform capability kept under the persistent Runtime boundary. Runtime remains persistent across campaigns.
 
-The current Auditor may clear a release for deployment and prepare a next-campaign candidate. That candidate creates only an orientation-only next Campaign Orchestrator. No next Auditor, Feature Agent, Platform Agent, Product writer, or campaign start exists before accepted-live closure and explicit admission.
+The current Auditor may clear a release for deployment and prepare a next-campaign candidate. That candidate creates only an orientation-only next Campaign Orchestrator. No next Auditor, named lane worker, Product writer, or campaign start exists before accepted-live closure and explicit admission.
 
 ## Optional assistant handoff
 

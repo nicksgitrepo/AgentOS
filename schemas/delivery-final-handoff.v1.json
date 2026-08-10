@@ -1,0 +1,17 @@
+{
+  "schema": "agentos.delivery_final_handoff.v1",
+  "version": 1,
+  "purpose": "The final owner-facing handoff that records the selected result or an explicit prepared/no-delivery outcome.",
+  "completion_statuses": ["SELECTED_RESULT", "PREPARED_NO_DELIVERY"],
+  "required_fields": [
+    "schema", "version", "handoff_id", "project_ref", "campaign_id", "campaign_version", "goal_id",
+    "state_digest", "choice_digest", "outcome", "completion_status", "source_commit", "source_tree",
+    "accepted_result_digest", "final_audit_digest", "receipt_digests", "live_audit_digest",
+    "rollback_receipt_digest", "open_risk_codes", "deferred_item_codes", "next_action", "created_at_utc", "digest"
+  ],
+  "rules": [
+    "PREPARED_NO_DELIVERY is valid only for the explicit PREPARED owner choice.",
+    "SELECTED_RESULT requires acceptance evidence, action evidence, and the prepared adapter contract for every external outcome; DEPLOY and RELEASE also require live-audit evidence.",
+    "Risk, deferred, and next-action fields use safe codes rather than free-form private text."
+  ]
+}

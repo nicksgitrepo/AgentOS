@@ -33,14 +33,14 @@ for (const required of [
   "CODE_QUALITY_HYGIENE",
   "Optional continuity",
   "PREPARED_NOT_ACTIVATED",
-  "setup, the ongoing project-persistent role is **AgentOS Controller**",
+  "setup, the ongoing project-persistent role is **Intent Regulator**",
   "`AGENTOS_CONTROLLER`. It owns the control-plane conversation",
   "Bootstrap does not continue as that role.",
 ]) {
   assert(readme.includes(required), `README is missing required user-facing content: ${required}`);
 }
 
-const startPrompt = "You are Bootstrap 2.1rc. AgentOS root: <AGENTOS_ROOT>. Project root: <PROJECT_ROOT>.";
+const startPrompt = "Use Bootstrap to evaluate this project and guide me through setup.";
 assert(readme.includes(startPrompt), "README is missing the canonical fresh-agent start instruction");
 
 const forbidden = [

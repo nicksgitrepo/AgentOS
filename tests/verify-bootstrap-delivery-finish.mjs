@@ -9,6 +9,7 @@ import {
   canonicalDigest,
   compileBootstrapPlan,
   normalizeBootstrapChoiceReply,
+  normalizeBootstrapModelEconomicsReply,
   planBootstrapQuestions,
   validateBootstrapPlan,
 } from "../control/bootstrap-compiler.mjs";
@@ -81,6 +82,9 @@ try {
   assert.throws(() => normalizeBootstrapChoiceReply("project.delivery_finish", 7), /outside the matching question choices/u);
   assert.throws(() => normalizeBootstrapChoiceReply("project.delivery_finish", "y"), /ambiguous or unknown/u);
   assert.throws(() => normalizeBootstrapChoiceReply("project.unknown", "1"), /matching enum question/u);
+  assert.deepEqual(normalizeBootstrapModelEconomicsReply("3"), {profile: "STANDARD_WORKWEEK", completion_floor: 0.95});
+  assert.deepEqual(normalizeBootstrapModelEconomicsReply(4), {profile: "STANDARD_WORKWEEK", completion_floor: 0.8});
+  assert.throws(() => normalizeBootstrapModelEconomicsReply(5), /outside the matching question choices/u);
 
   const plan = compileBootstrapPlan({discovery, answers, projectRoot: root});
   validateBootstrapPlan(plan);

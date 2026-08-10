@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.delivery_adapter_contract.v1",
+  "title": "AgentOS provider-neutral delivery adapter contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "adapter_ref", "protocol", "capabilities", "permissions", "dry_run",
+    "partial_failure", "rollback", "receipt_verification", "spend_boundary", "secret_boundary", "environment_binding", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.delivery_adapter_contract.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "adapter_ref": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "protocol": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "capabilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["PUSH", "MERGE", "DEPLOY", "RELEASE", "ROLLBACK"]}},
+    "permissions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "authority", "receipt"],
+        "properties": {
+          "action": {"enum": ["PUSH", "MERGE", "DEPLOY", "RELEASE", "ROLLBACK"]},
+          "authority": {"const": "OWNER_APPROVAL_AND_RUNTIME_AUTHORIZATION"},
+          "receipt": {"const": "TYPED_EXTERNAL_RECEIPT"}
+        }
+      }
+    },
+    "dry_run": {"const": {"supported": true, "external_effects": false, "receipt": "TYPED_EXTERNAL_RECEIPT"}},
+    "partial_failure": {"const": {"supported": true, "statuses": ["FAILED", "UNKNOWN"], "retry": "EXPLICIT_NEW_CHOICE"}},
+    "rollback": {"const": {"supported": true, "authority": "RUNTIME_WITH_OWNER_BOUNDARY", "identity": "EXACT_LAST_ACCEPTED_DEPLOYMENT", "test_required": true}},
+    "receipt_verification": {"const": "TYPED_EXTERNAL_RECEIPT"},
+    "spend_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_digest", "enforcement", "exceed_behavior"],
+      "properties": {
+        "policy_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "enforcement": {"const": "HOST_MUST_ENFORCE"},
+        "exceed_behavior": {"const": "FAIL_CLOSED"}
+      }
+    },
+    "secret_boundary": {"const": "HOST_LOCAL_ONLY"},
+    "environment_binding": {"const": "PROJECT_CONTEXT_BOUND"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "rules": [
+    "A provider adapter is project-context data, not a portable provider account or credential.",
+    "Every enabled action has owner-approval and Runtime authorization permission and returns a typed external receipt.",
+    "Dry-run has no external effects; partial failure retries require a fresh explicit choice; spend over the bound policy fails closed.",
+    "The contract is prepared and content-addressed; activation and provider authentication remain outside this contract."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_governance_update.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "mode", "project_id", "current_appendix_digest", "replacement_release_digest", "preserved_appendix_digest", "archived_appendix_digest", "clean_governance_digest", "owner_decision_digest", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.project_governance_update.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PRESERVED", "RESET_STAGED", "GOVERNANCE_REVIEW_REQUIRED"]},
+    "mode": {"enum": ["KEEP_PROJECT_APPENDICES", "RESET_GOVERNANCE_CLEAN"]},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "current_appendix_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "replacement_release_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "preserved_appendix_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "archived_appendix_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "clean_governance_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "owner_decision_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

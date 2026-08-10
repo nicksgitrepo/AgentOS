@@ -14,6 +14,7 @@ import {
 import {writePolicyStateCompareAndSwap} from "./global-policy-store.mjs";
 import {writeProjectContextCompareAndSwap} from "./project-context-store.mjs";
 import {validateCampaignIdentityBinding} from "./campaign-controller.mjs";
+import {canonicalDigest} from "./content-addressing.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40,64}$/u;
@@ -91,18 +92,8 @@ function safeText(value, label, {nullable = false} = {}) {
   assert(!/(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret)\s*[:=]/iu.test(value), `${label} contains secret material`);
 }
 
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (isRecord(value)) {
-    return Object.fromEntries(Object.keys(value).sort((left, right) =>
-      Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8")))
-      .map((key) => [key, canonicalize(value[key])]));
-  }
-  return value;
-}
-
 export function ownerReviewDigest(value) {
-  return crypto.createHash("sha256").update(JSON.stringify(canonicalize(value)), "utf8").digest("hex");
+  return canonicalDigest(value);
 }
 
 function sortedStrings(values, label, {allowEmpty = false} = {}) {

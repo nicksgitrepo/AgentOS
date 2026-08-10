@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.hybrid_scheduler.v1",
+  "title": "AgentOS hybrid scheduler contracts",
+  "description": "Project-agnostic typed contracts for the durable resource-safe scheduler shared by Feature, Platform, and Central work.",
+  "oneOf": [
+    {"$ref": "#/$defs/policy"},
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/job"},
+    {"$ref": "#/$defs/result"}
+  ],
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate": {"type": "string", "pattern": "^(PRELIMINARY_DIAGNOSTIC|[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "opaque_ref": {"type": "string", "pattern": "^opaque:[a-z][a-z0-9._-]*:[0-9a-f]{64}$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "resource_class": {"enum": ["AGENT_BUILD", "COMPILE_HEAVY", "RUNTIME_HEAVY", "DATABASE_EXCLUSIVE", "ARTIFACT_GENERATION", "IO_HEAVY", "NETWORK_BOUNDED", "LIGHTWEIGHT_SOURCE_CHECK"]},
+    "policy_class": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_concurrent", "child_parallelism", "timeout_minutes"],
+      "properties": {
+        "max_concurrent": {"type": "integer", "minimum": 1, "maximum": 32},
+        "child_parallelism": {"type": "integer", "minimum": 1},
+        "timeout_minutes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "policy_revision", "default_resource_class", "resource_classes", "queue", "candidate_binding", "logs", "drain_mode", "policy_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.hybrid_scheduler_policy.v1"},
+        "version": {"const": 1},
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "policy_revision": {"$ref": "#/$defs/identifier"},
+        "default_resource_class": {"$ref": "#/$defs/resource_class"},
+        "resource_classes": {
+          "type": "object",
+          "required": ["AGENT_BUILD", "COMPILE_HEAVY", "RUNTIME_HEAVY", "DATABASE_EXCLUSIVE", "ARTIFACT_GENERATION", "IO_HEAVY", "NETWORK_BOUNDED", "LIGHTWEIGHT_SOURCE_CHECK"],
+          "additionalProperties": {"$ref": "#/$defs/policy_class"}
+        },
+        "queue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["one_active_plan_per_lane_per_class", "semantic_deduplication", "proof_subsumption", "fail_fast_within_plan", "max_active_plans"],
+          "properties": {
+            "one_active_plan_per_lane_per_class": {"const": true},
+            "semantic_deduplication": {"const": true},
+            "proof_subsumption": {"const": true},
+            "fail_fast_within_plan": {"const": true},
+            "max_active_plans": {"type": "integer", "minimum": 1}
+          }
+        },
+        "candidate_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["require_tree_or_content_digest", "cancel_when_stale", "preliminary_diagnostic_not_reusable"],
+          "properties": {
+            "require_tree_or_content_digest": {"const": true},
+            "cancel_when_stale": {"const": true},
+            "preliminary_diagnostic_not_reusable": {"const": true}
+          }
+        },
+        "logs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["redact_secrets", "preserve_terminal_diagnostics"],
+          "properties": {
+            "redact_secrets": {"const": true},
+            "preserve_terminal_diagnostics": {"const": true}
+          }
+        },
+        "drain_mode": {"type": "boolean"},
+        "policy_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "request_id", "requester_id", "lane", "repository_id", "worktree_id", "candidate_commit", "candidate_tree_or_digest", "clean_state", "resource_class", "working_directory_ref", "command_argv", "toolchain_profile", "proof_class", "why_needed", "expected_proof", "coverage", "depends_on", "supersedes", "timeout_class", "cache_policy", "secret_policy", "semantic_key", "request_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.hybrid_scheduler_request.v1"},
+        "version": {"const": 1},
+        "status": {"const": "SUBMITTED"},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "requester_id": {"$ref": "#/$defs/identifier"},
+        "lane": {"$ref": "#/$defs/identifier"},
+        "repository_id": {"$ref": "#/$defs/identifier"},
+        "worktree_id": {"$ref": "#/$defs/identifier"},
+        "candidate_commit": {"$ref": "#/$defs/candidate"},
+        "candidate_tree_or_digest": {"$ref": "#/$defs/candidate"},
+        "clean_state": {"type": "boolean"},
+        "resource_class": {"$ref": "#/$defs/resource_class"},
+        "working_directory_ref": {"$ref": "#/$defs/opaque_ref"},
+        "command_argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1, "not": {"pattern": "^/"}}},
+        "toolchain_profile": {"$ref": "#/$defs/identifier"},
+        "proof_class": {"$ref": "#/$defs/identifier"},
+        "why_needed": {"$ref": "#/$defs/identifier"},
+        "expected_proof": {"$ref": "#/$defs/identifier"},
+        "coverage": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "depends_on": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+        "supersedes": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+        "timeout_class": {"$ref": "#/$defs/identifier"},
+        "cache_policy": {"$ref": "#/$defs/identifier"},
+        "secret_policy": {"$ref": "#/$defs/identifier"},
+        "semantic_key": {"$ref": "#/$defs/sha256"},
+        "request_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "job": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "job_id", "request_id", "request_sha256", "semantic_key", "lane", "resource_class", "status", "submitted_at_utc", "queued_at_utc", "started_at_utc", "finished_at_utc", "execution_unit_id", "exit_code", "log_reference", "artifact_identities", "terminal_reason", "job_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.hybrid_scheduler_job.v1"},
+        "version": {"const": 1},
+        "job_id": {"$ref": "#/$defs/identifier"},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_key": {"$ref": "#/$defs/sha256"},
+        "lane": {"$ref": "#/$defs/identifier"},
+        "resource_class": {"$ref": "#/$defs/resource_class"},
+        "status": {"enum": ["SUBMITTED", "VALIDATING", "QUEUED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED", "INTERRUPTED"]},
+        "submitted_at_utc": {"$ref": "#/$defs/utc"},
+        "queued_at_utc": {"anyOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "started_at_utc": {"anyOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "finished_at_utc": {"anyOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "execution_unit_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "exit_code": {"anyOf": [{"type": "integer"}, {"type": "null"}]},
+        "log_reference": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "artifact_identities": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+        "terminal_reason": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "job_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "request_id", "job_id", "requester_id", "candidate_commit", "candidate_tree_or_digest", "resource_class", "command_argv", "status", "result", "exit_code", "started_at_utc", "finished_at_utc", "log_reference", "artifact_identities", "terminal_reason", "diagnosis", "proof_scope", "result_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.hybrid_scheduler_result.v1"},
+        "version": {"const": 1},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "job_id": {"$ref": "#/$defs/identifier"},
+        "requester_id": {"$ref": "#/$defs/identifier"},
+        "candidate_commit": {"$ref": "#/$defs/candidate"},
+        "candidate_tree_or_digest": {"$ref": "#/$defs/candidate"},
+        "resource_class": {"$ref": "#/$defs/resource_class"},
+        "command_argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "status": {"enum": ["SUCCEEDED", "FAILED", "CANCELLED", "INTERRUPTED"]},
+        "result": {"enum": ["PASS", "FAIL", "UNTESTED"]},
+        "exit_code": {"anyOf": [{"type": "integer"}, {"type": "null"}]},
+        "started_at_utc": {"$ref": "#/$defs/utc"},
+        "finished_at_utc": {"$ref": "#/$defs/utc"},
+        "log_reference": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "artifact_identities": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+        "terminal_reason": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "diagnosis": {"anyOf": [{"type": "object", "additionalProperties": false, "required": ["message_sha256"], "properties": {"message_sha256": {"$ref": "#/$defs/sha256"}}}, {"type": "null"}]},
+        "proof_scope": {"$ref": "#/$defs/identifier"},
+        "result_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

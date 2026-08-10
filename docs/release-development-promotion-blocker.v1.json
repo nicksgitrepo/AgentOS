@@ -1,0 +1,49 @@
+{
+  "schema": "agentos.release_promotion_gate.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "BLOCKED_STERILE_RELEASE_NOT_PROMOTED",
+  "source": {
+    "role": "ACTIVE_DEVELOPMENT_CHECKOUT",
+    "status": "NOT_VERIFIED",
+    "commit_sha256": null,
+    "tree_sha256": null,
+    "artifact_sha256": null,
+    "manifest_sha256": null,
+    "verification_sha256": null
+  },
+  "sterile_release": {
+    "role": "STERILE_RELEASE_CHECKOUT",
+    "status": "NOT_VERIFIED",
+    "commit_sha256": null,
+    "tree_sha256": null,
+    "artifact_sha256": null,
+    "manifest_sha256": null,
+    "verification_sha256": null
+  },
+  "verification": {
+    "ARCHITECTURE": "PENDING",
+    "CANONICAL": "PENDING",
+    "HYGIENE": "PENDING",
+    "PORTABILITY": "PENDING",
+    "RELEASE_SAFETY": "PENDING"
+  },
+  "changed_paths": [],
+  "safety_gate_sha256": null,
+  "publishing": false,
+  "pushes": false,
+  "merges": false,
+  "deployment": false,
+  "activation": false,
+  "action_taken": "NONE",
+  "blockers": ["STERILE_RELEASE_NOT_PROMOTED"],
+  "required_actions": [
+    "OBTAIN_EXPLICIT_MAINTAINER_PROMOTION",
+    "RERUN_CANONICAL_PORTABILITY_ARCHITECTURE_AND_HYGIENE_SUITES",
+    "REVIEW_EXACT_CHANGED_PATHS",
+    "SUPPLY_PASSING_RELEASE_SAFETY_EVIDENCE",
+    "VERIFY_STERILE_RELEASE_CHECKOUT"
+  ],
+  "explicit_maintainer_promotion": false,
+  "gate_sha256": "342478a17e18ce2a1218f6209affe8cd5c5e20fba2883d1c0eb48115e39dd2da"
+}

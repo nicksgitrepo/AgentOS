@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.task_context_policy.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "source_binding_sha256", "project_context_sha256", "task_ref_sha256", "goal_ref_sha256", "authority_allowlist", "allowed_content_classes", "max_age_seconds", "max_items", "memory_authorization", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.task_context_policy.v1"},
+    "version": {"const": 1},
+    "status": {"const": "VALIDATED"},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "task_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "goal_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority_allowlist": {"type": "array", "items": {"enum": ["GENERAL_AUTHORITY", "GOAL_AUTHORITY", "PROJECT_AUTHORITY", "TASK_AUTHORITY", "MEMORY_AUTHORITY"]}},
+    "allowed_content_classes": {"type": "array", "items": {"enum": ["TASK_INPUT", "SOURCE_METADATA", "DERIVED_SUMMARY", "REDACTED_EVIDENCE", "MEMORY_RECORD", "RAW_PRIVATE_CONTENT", "SECRET_MATERIAL"]}},
+    "max_age_seconds": {"type": "integer", "minimum": 1},
+    "max_items": {"type": "integer", "minimum": 1},
+    "memory_authorization": {"enum": ["DENY", "ALLOW_BOUND_MEMORY"]},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

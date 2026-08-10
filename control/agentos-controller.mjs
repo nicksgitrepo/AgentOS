@@ -20,6 +20,10 @@ import {
 import {reconcilePolicyAtCampaignBoundary} from "./campaign-state-owner.mjs";
 import {validatePolicyAmendment, validatePolicyState} from "./global-policy-state.mjs";
 import {AGENTOS_CONTROLLER_DISPLAY_NAME, AGENTOS_CONTROLLER_ROLE, validateControllerRoleDisplay} from "./controller-role-display.mjs";
+import {
+  validateGovernanceArchitecture,
+} from "./role-governance-library.mjs";
+import {ARCHITECTURE_ACCEPTANCE_REQUIREMENTS} from "./governance-library.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -30,6 +34,7 @@ const EVENT_SCHEMA = "agentos.controller_event.v1";
 const AGENT_BINDING_SCHEMA = "agentos.controller_agent_binding.v1";
 const RUNTIME_READBACK_SCHEMA = "agentos.controller_runtime_readback.v1";
 const ADAPTER_READBACK_SCHEMA = "agentos.controller_adapter_readback.v1";
+const ARCHITECTURE_REPAIR_GATE_SCHEMA = "agentos.controller_architecture_repair_gate.v1";
 const EVENT_TYPES = Object.freeze([
   "BOOTSTRAP_REQUESTED",
   "BOOTSTRAP_PROMOTED",
@@ -203,6 +208,64 @@ export function validateControllerCampaignCandidate(candidate) {
   requireSha(candidate.candidate_sha256, "campaign candidate digest");
   assert(candidate.candidate_sha256 === digestWithout(candidate, "candidate_sha256"), "campaign candidate digest mismatch");
   return candidate;
+}
+
+export function validateControllerArchitectureRepairGate(gate, {architecture = null} = {}) {
+  const keys = [
+    "schema", "version", "project_id", "campaign_id", "source_commit", "source_tree",
+    "bootstrap_plan_sha256", "architecture_sha256", "required_acceptance_requirements", "status", "gate_sha256",
+  ];
+  exactKeys(gate, keys, "architecture repair gate");
+  assert(gate.schema === ARCHITECTURE_REPAIR_GATE_SCHEMA && gate.version === 1, "architecture repair gate identity is invalid");
+  requireString(gate.project_id, "architecture repair gate project");
+  requireString(gate.campaign_id, "architecture repair gate campaign");
+  requireString(gate.source_commit, "architecture repair gate source commit");
+  requireString(gate.source_tree, "architecture repair gate source tree");
+  requireSha(gate.bootstrap_plan_sha256, "architecture repair gate Bootstrap plan");
+  requireSha(gate.architecture_sha256, "architecture repair gate architecture digest");
+  sortedUnique(gate.required_acceptance_requirements, "architecture repair gate requirements");
+  assert(JSON.stringify(gate.required_acceptance_requirements) === JSON.stringify([...ARCHITECTURE_ACCEPTANCE_REQUIREMENTS].sort(compareUtf8)), "architecture repair gate requirements are incomplete");
+  assert(gate.status === "ARCHITECTURE_GATE_READY", "architecture repair gate status is invalid");
+  requireSha(gate.gate_sha256, "architecture repair gate digest");
+  assert(gate.gate_sha256 === digestWithout(gate, "gate_sha256"), "architecture repair gate digest mismatch");
+  if (architecture !== null) {
+    validateGovernanceArchitecture(architecture);
+    assert(gate.architecture_sha256 === architecture.digest, "architecture repair gate differs from architecture envelope");
+    assert(gate.source_commit === architecture.source_commit && gate.source_tree === architecture.source_tree, "architecture repair gate source differs from architecture envelope");
+    assert(gate.bootstrap_plan_sha256 === architecture.bootstrap_plan_sha256, "architecture repair gate Bootstrap plan differs from architecture envelope");
+  }
+  return gate;
+}
+
+export function compileControllerArchitectureRepairGate({projectId, campaignId, architecture} = {}) {
+  validateGovernanceArchitecture(architecture);
+  requireString(projectId, "architecture repair gate project");
+  requireString(campaignId, "architecture repair gate campaign");
+  const gate = {
+    schema: ARCHITECTURE_REPAIR_GATE_SCHEMA,
+    version: 1,
+    project_id: projectId,
+    campaign_id: campaignId,
+    source_commit: architecture.source_commit,
+    source_tree: architecture.source_tree,
+    bootstrap_plan_sha256: architecture.bootstrap_plan_sha256,
+    architecture_sha256: architecture.digest,
+    required_acceptance_requirements: [...ARCHITECTURE_ACCEPTANCE_REQUIREMENTS].sort(compareUtf8),
+    status: "ARCHITECTURE_GATE_READY",
+    gate_sha256: null,
+  };
+  gate.gate_sha256 = digestWithout(gate, "gate_sha256");
+  return validateControllerArchitectureRepairGate(gate, {architecture});
+}
+
+export function validateControllerArchitectureRepairAdmission({candidate, architectureGate} = {}) {
+  validateControllerCampaignCandidate(candidate);
+  validateControllerArchitectureRepairGate(architectureGate);
+  assert(candidate.project_id === architectureGate.project_id, "architecture repair candidate project differs from gate");
+  assert(candidate.campaign_id === architectureGate.campaign_id, "architecture repair candidate campaign differs from gate");
+  assert(candidate.source_commit === architectureGate.source_commit && candidate.source_tree === architectureGate.source_tree, "architecture repair candidate source differs from gate");
+  assert(candidate.acceptance_contract_sha256 === architectureGate.architecture_sha256, "architecture repair candidate acceptance contract is not the architecture digest");
+  return {status: "ARCHITECTURE_REPAIR_ADMITTED", candidate_sha256: candidate.candidate_sha256, gate_sha256: architectureGate.gate_sha256};
 }
 
 export function compileControllerCampaignCandidate({
@@ -454,7 +517,7 @@ export function compileAgentOSControllerState({
   policyState,
   controllerRuntimeReadback,
   nowUtc,
-  reconciliationIntervalMinutes = 30,
+  reconciliationIntervalMinutes = 15,
 }) {
   validatePolicyState(policyState);
   validateControllerRuntimeReadback(controllerRuntimeReadback);
@@ -557,6 +620,57 @@ function requireReadback({adapters, operation, state, event, payload = {}}) {
 function requireDetails(readback, fields, label) {
   for (const field of fields) assert(Object.hasOwn(readback.details, field), `${label} readback lacks ${field}`);
   return readback.details;
+}
+
+function sessionIdsFromSpawnReadback(readback) {
+  const details = readback?.details ?? {};
+  const ids = [];
+  if (typeof details.session_id === "string" && details.session_id.length > 0) ids.push(details.session_id);
+  if (Array.isArray(details.feature_agent_session_ids)) ids.push(...details.feature_agent_session_ids.filter((value) => typeof value === "string" && value.length > 0));
+  if (Array.isArray(details.worker_readbacks)) ids.push(...details.worker_readbacks.map((value) => value?.session_id).filter((value) => typeof value === "string" && value.length > 0));
+  return [...new Set(ids)];
+}
+
+function spawnCampaignRolesWithRollback({adapters, state, event, payload, operations}) {
+  assert(typeof adapters.archiveCampaignAgents === "function", "campaign spawn cleanup adapter is unavailable");
+  const readbacks = [];
+  const spawnedSessionIds = [];
+  try {
+    for (const operation of operations) {
+      const readback = requireReadback({adapters, operation, state, event, payload});
+      readbacks.push(readback);
+      spawnedSessionIds.push(...sessionIdsFromSpawnReadback(readback));
+    }
+    return readbacks;
+  } catch (error) {
+    const uniqueSpawnedSessionIds = [...new Set(spawnedSessionIds)].sort(compareUtf8);
+    if (uniqueSpawnedSessionIds.length === 0) throw error;
+    try {
+      const cleanup = requireReadback({
+        adapters,
+        operation: "archiveCampaignAgents",
+        state,
+        event,
+        payload: {
+          ...payload,
+          spawned_session_ids: uniqueSpawnedSessionIds,
+          cleanup_reason: "campaign role spawn failed before activation",
+        },
+      });
+      const archived = cleanup.details?.archived_session_ids;
+      assert(Array.isArray(archived), "campaign spawn cleanup readback lacks archived_session_ids");
+      const archivedSet = new Set(archived);
+      assert(archivedSet.size === archived.length && uniqueSpawnedSessionIds.every((sessionId) => archivedSet.has(sessionId)), "campaign spawn cleanup did not confirm every created session");
+    } catch (cleanupError) {
+      const combined = new Error(`campaign role spawn failed and cleanup failed: ${cleanupError.message}`);
+      combined.code = "CAMPAIGN_SPAWN_CLEANUP_FAILED";
+      combined.cause = error;
+      combined.cleanup_error = cleanupError.message;
+      combined.spawned_session_ids = uniqueSpawnedSessionIds;
+      throw combined;
+    }
+    throw error;
+  }
 }
 
 function validateLocalAuthorizationEnvelope(authorization) {
@@ -730,10 +844,15 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       const admissionReadback = add("admitLocalSelfDevelopment", {authorization, admission, candidate, identity_binding: identityBinding});
       const admissionDetails = requireDetails(admissionReadback, ["status", "admission_sha256", "authorization_sha256", "candidate_sha256", "identity_binding_sha256"], "local self-development admission");
       assert(admissionDetails.status === "CAMPAIGN_ADMITTED" && admissionDetails.admission_sha256 === admission.admission_sha256 && admissionDetails.authorization_sha256 === authorization.authorization_sha256 && admissionDetails.candidate_sha256 === candidate.candidate_sha256 && admissionDetails.identity_binding_sha256 === identityBinding.binding_sha256, "local self-development admission readback differs");
-      const orchestratorReadback = add("spawnCampaignOrchestrator", payload);
       // Feature custody must exist before the Auditor reports on the changed tree.
-      const featureReadback = add("spawnFeatureAgents", payload);
-      const auditorReadback = add("spawnIndependentAuditor", payload);
+      const [orchestratorReadback, featureReadback, auditorReadback] = spawnCampaignRolesWithRollback({
+        adapters,
+        state: next,
+        event,
+        payload,
+        operations: ["spawnCampaignOrchestrator", "spawnFeatureAgents", "spawnIndependentAuditor"],
+      });
+      readbacks.push(orchestratorReadback, featureReadback, auditorReadback);
       const orchestrator = requireDetails(orchestratorReadback, ["session_id", "worker_readback"], "local Campaign Orchestrator spawn").session_id;
       const auditor = requireDetails(auditorReadback, ["session_id", "worker_readback"], "local Independent Auditor spawn").session_id;
       const featureDetails = requireDetails(featureReadback, ["feature_agent_session_ids", "worker_readbacks"], "local Feature Agent spawn");
@@ -754,9 +873,14 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       if (payload.owner_approval_sha256 !== undefined) requireSha(payload.owner_approval_sha256, "campaign owner approval");
       const queued = state.campaign_queue.find((entry) => entry.campaign_id === candidate.campaign_id);
       if (queued) assert(queued.candidate.candidate_sha256 === candidate.candidate_sha256, "approved candidate differs from queued review candidate");
-      const orchestratorReadback = add("spawnCampaignOrchestrator");
-      const auditorReadback = add("spawnIndependentAuditor");
-      const featureReadback = add("spawnFeatureAgents");
+      const [orchestratorReadback, auditorReadback, featureReadback] = spawnCampaignRolesWithRollback({
+        adapters,
+        state: next,
+        event,
+        payload,
+        operations: ["spawnCampaignOrchestrator", "spawnIndependentAuditor", "spawnFeatureAgents"],
+      });
+      readbacks.push(orchestratorReadback, auditorReadback, featureReadback);
       const orchestrator = requireDetails(orchestratorReadback, ["session_id"], "Campaign Orchestrator spawn").session_id;
       const auditor = requireDetails(auditorReadback, ["session_id"], "Auditor spawn").session_id;
       const features = requireDetails(featureReadback, ["feature_agent_session_ids"], "Feature Agent spawn").feature_agent_session_ids;
@@ -988,6 +1112,88 @@ export function applyAndWriteAgentOSControllerEvent({authorityRoot, statePath = 
   const state = processControllerEvent({state: current, event, adapters, nowUtc});
   const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
   return {state, persistence};
+}
+
+function nativeEventOperations(event) {
+  if (event.event_type === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED") return ["admitLocalSelfDevelopment", "spawnCampaignOrchestrator", "spawnFeatureAgents", "spawnIndependentAuditor"];
+  if (event.event_type === "CAMPAIGN_APPROVED") return ["spawnCampaignOrchestrator", "spawnIndependentAuditor", "spawnFeatureAgents"];
+  if (event.event_type === "RECONCILIATION_TICK") return ["reconcileLiveness"];
+  if (event.event_type === "BOOTSTRAP_REQUESTED") return ["runBootstrap"];
+  if (event.event_type === "BOOTSTRAP_PROMOTED") return ["bindPersistentRuntime"];
+  if (event.event_type === "USER_REVIEW_RETURNED") return ["reconcileUserReview"];
+  if (event.event_type === "AGENT_STALLED") return [event.payload?.judgment_required === true ? "wakeControllerAgent" : "recoverStalledSession"];
+  if (event.event_type === "POLICY_AMENDMENT") return ["applyPolicyReconciliation"];
+  throw new Error(`NATIVE_CONTROLLER_EVENT_UNSUPPORTED: ${event.event_type} has no asynchronous host route`);
+}
+
+async function invokeAsyncControllerAdapter({adapters, operation, state, event, payload = {}}) {
+  assert(isRecord(adapters) && typeof adapters[operation] === "function", `required native project adapter is unavailable: ${operation}`);
+  const actionId = `${event.event_id}:${operation.toUpperCase()}`;
+  const readback = await adapters[operation]({
+    operation,
+    action_id: actionId,
+    controller_state: structuredClone(state),
+    event: structuredClone(event),
+    payload: structuredClone(payload),
+  });
+  validateControllerAdapterReadback(readback);
+  assert(readback.operation === operation && readback.action_id === actionId && readback.event_id === event.event_id, `${operation} readback is not bound to the asynchronous action`);
+  assert(readback.controller_id === state.logical_controller_id && readback.project_id === state.project_id, `${operation} readback is not bound to the asynchronous controller/project`);
+  assert(readback.policy_epoch === state.policy_epoch && readback.policy_state_sha256 === state.policy_state_sha256, `${operation} asynchronous readback is stale for policy state`);
+  assert(readback.campaign_id === (state.active_campaign_id ?? event.campaign_id ?? null), `${operation} asynchronous readback is not bound to the current campaign`);
+  assert(readback.status === "SUCCESS", `${operation} did not complete successfully: ${readback.status}`);
+  assert(readback.external_identity !== null, `${operation} did not return an external identity`);
+  return readback;
+}
+
+/*
+ * Async companion for the real host path. The durable Controller state machine
+ * remains synchronous and deterministic; host calls happen first, are fully
+ * validated, and are then replayed as immutable readbacks through that same
+ * state machine. This keeps provider I/O out of the state transition logic.
+ */
+export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, nowUtc = event.occurred_at_utc}) {
+  const current = readAgentOSControllerState({authorityRoot, statePath});
+  assert(current !== null, "controller state is missing");
+  if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
+  const operations = nativeEventOperations(event);
+  const prepared = new Map();
+  const spawned = [];
+  try {
+    for (const operation of operations) {
+      const readback = await invokeAsyncControllerAdapter({adapters, operation, state: current, event, payload: event.payload});
+      prepared.set(operation, readback);
+      spawned.push(...sessionIdsFromSpawnReadback(readback));
+    }
+  } catch (error) {
+    if (spawned.length > 0 && typeof adapters?.archiveCampaignAgents === "function") {
+      try {
+        await invokeAsyncControllerAdapter({
+          adapters,
+          operation: "archiveCampaignAgents",
+          state: current,
+          event,
+          payload: {...event.payload, spawned_session_ids: [...new Set(spawned)].sort(compareUtf8), cleanup_reason: "asynchronous controller event failed before state commit"},
+        });
+      } catch (cleanupError) {
+        error.code = "CAMPAIGN_SPAWN_CLEANUP_FAILED";
+        error.cleanup_error = cleanupError?.message ?? String(cleanupError);
+        error.spawned_session_ids = [...new Set(spawned)].sort(compareUtf8);
+      }
+    }
+    throw error;
+  }
+  const synchronousAdapters = Object.fromEntries(operations.map((operation) => [operation, () => prepared.get(operation)]));
+  // The synchronous state machine verifies that a rollback adapter exists
+  // before it begins a multi-role spawn. The host calls already completed
+  // above; this sentinel is intentionally unreachable on the successful
+  // replay path.
+  synchronousAdapters.archiveCampaignAgents = () => {
+    throw new Error("native rollback was already handled before controller replay");
+  };
+  const state = processControllerEvent({state: current, event, adapters: synchronousAdapters, nowUtc});
+  const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
+  return {state, persistence, host_readbacks: Object.fromEntries(prepared)};
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

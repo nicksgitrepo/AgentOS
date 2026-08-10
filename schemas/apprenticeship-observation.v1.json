@@ -1,0 +1,56 @@
+{
+  "schema": "agentos.apprenticeship_observation_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-observation.mjs",
+  "record_schema": "agentos.apprenticeship_observation.v1",
+  "required_fields": [
+    "schema",
+    "version",
+    "mode",
+    "observation_id",
+    "status",
+    "meaningful_progress",
+    "classification_reason",
+    "provenance",
+    "task_pattern",
+    "bounded_scope",
+    "consent",
+    "action_records",
+    "result_kind",
+    "result_ref",
+    "result_summary",
+    "evidence_refs",
+    "typed_handoff",
+    "source_match",
+    "scope_match",
+    "observed_at",
+    "completed_at",
+    "protected_actions",
+    "digest"
+  ],
+  "result_kinds": [
+    "MEANINGFUL_RESULT",
+    "HEARTBEAT_ONLY",
+    "WAITING",
+    "FAILURE_LIST",
+    "TRUE_BLOCKER",
+    "SOFT_BOUNDARY_REVIEW",
+    "NO_RESULT"
+  ],
+  "meaningful_result_rule": "Only a source-bound, in-scope result with evidence and a typed handoff is meaningful progress.",
+  "action_record_rule": "Each observable action is ordered, bounded, source/scope checked, evidence referenced, and classified as directly observed or inferred from observation.",
+  "action_record_fields": ["observation_basis"],
+  "exclusions": [
+    "Hidden reasoning",
+    "Private conversation or transcript",
+    "Raw host/session/task identity",
+    "Secrets and raw environment values",
+    "Unrelated project context"
+  ],
+  "failure_rule": "A failure observation is retained but cannot produce a reusable workflow reconstruction.",
+  "activation": {
+    "active": false,
+    "automatic_activation": false
+  }
+}

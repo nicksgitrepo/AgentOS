@@ -1,0 +1,24 @@
+{
+  "schema": "agentos.goal_closure.v1",
+  "version": 1,
+  "goal": "ITER-001-BOUNDED-VERIFIER",
+  "status": "CLOSED_RECORDED",
+  "closure_kind": "SAFE_SUCCESSOR_BOUNDARY",
+  "reason": "The bounded verifier result was recorded; the accepted lane slice exposed an architecture alignment failure that requires a separate repair goal.",
+  "preserved_evidence": {
+    "campaign": "docs/rapid-foundations/evidence/iteration-campaign-001.v1.json",
+    "report": "docs/rapid-foundations/evidence/iteration-001-bounded-verifier.md",
+    "result": "TIMEOUT_NO_RESULT",
+    "acceptance_claim": false
+  },
+  "successor": {
+    "goal": "SOURCE_BOUND_ARCHITECTURE_REPAIR",
+    "plan": "schemas/architecture-repair-plan.v1.json",
+    "reason": "Restore shared general governance plus generated role-specific governance as a typed acceptance requirement before further feature work."
+  },
+  "source_binding": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9"
+  },
+  "public_boundary": "No private paths, session identities, project identities, provider identities, credentials, or external actions are included."
+}

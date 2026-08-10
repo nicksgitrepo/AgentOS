@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.layered_governance.v1",
+  "title": "AgentOS four-layer governance contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "project_ref", "project_id",
+    "layer_order", "layers", "precedence", "bindings", "migration",
+    "activation", "acceptance", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.layered_governance.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_NOT_ACTIVATED", "ACTIVE", "SUPERSEDED", "BLOCKED"]},
+    "project_ref": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,63}$"},
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "layer_order": {
+      "const": [
+        "GENERAL_GOVERNANCE",
+        "BASE_ROLE_GOVERNANCE",
+        "PERSISTENT_PROJECT_GOVERNANCE",
+        "GENERATED_TASK_ROLE_GOVERNANCE"
+      ]
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {"$ref": "#/$defs/layer"}
+    },
+    "precedence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["override_policy", "conflict_policy", "task_projection_policy"],
+      "properties": {
+        "override_policy": {"const": "LATER_LAYERS_MAY_ADD_BUT_NOT_REMOVE_OR_EXPAND"},
+        "conflict_policy": {"const": "REJECT_AND_REQUIRE_OWNER_REVIEW"},
+        "task_projection_policy": {"const": "DISPOSABLE_PROJECTION_NO_AUTHORITY"}
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["general_governance", "base_general", "base_role", "project_general", "generated_project_role", "project_contract", "task_packet"],
+      "properties": {
+        "general_governance": {"$ref": "#/$defs/digest"},
+        "base_general": {"$ref": "#/$defs/digest"},
+        "base_role": {"$ref": "#/$defs/digest"},
+        "project_general": {"$ref": "#/$defs/digest"},
+        "generated_project_role": {"$ref": "#/$defs/digest"},
+        "project_contract": {"$ref": "#/$defs/digest"},
+        "task_packet": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "migration_sha256", "reversible", "source_remains_unmodified"],
+      "properties": {
+        "status": {"enum": ["NOT_PRESENT", "READY", "BLOCKED"]},
+        "migration_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "reversible": {"const": true},
+        "source_remains_unmodified": {"const": true}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "NOT_PRESENT"}}},
+          "then": {"properties": {"migration_sha256": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"status": {"enum": ["READY", "BLOCKED"]}}},
+          "then": {"properties": {"migration_sha256": {"$ref": "#/$defs/digest"}}}
+        }
+      ]
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "owner_decision_sha256", "independent_check_sha256"],
+      "properties": {
+        "state": {"enum": ["PREPARED_NOT_ACTIVATED", "ACTIVE", "SUPERSEDED", "BLOCKED"]},
+        "owner_decision_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "independent_check_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"state": {"const": "PREPARED_NOT_ACTIVATED"}}},
+          "then": {
+            "properties": {
+              "owner_decision_sha256": {"type": "null"},
+              "independent_check_sha256": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"state": {"const": "ACTIVE"}}},
+          "then": {
+            "properties": {
+              "owner_decision_sha256": {"$ref": "#/$defs/digest"},
+              "independent_check_sha256": {"$ref": "#/$defs/digest"}
+            }
+          }
+        }
+      ]
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["independent_checker_required", "upgrade_evidence_required", "activation_requires_owner_and_checker"],
+      "properties": {
+        "independent_checker_required": {"const": true},
+        "upgrade_evidence_required": {"const": true},
+        "activation_requires_owner_and_checker": {"const": true}
+      }
+    },
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layer_id", "precedence", "source_digests", "authority_mode"],
+      "properties": {
+        "layer_id": {"enum": ["GENERAL_GOVERNANCE", "BASE_ROLE_GOVERNANCE", "PERSISTENT_PROJECT_GOVERNANCE", "GENERATED_TASK_ROLE_GOVERNANCE"]},
+        "precedence": {"type": "integer", "minimum": 1, "maximum": 4},
+        "source_digests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "authority_mode": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
+

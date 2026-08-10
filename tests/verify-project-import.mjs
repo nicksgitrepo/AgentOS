@@ -56,6 +56,13 @@ assert.deepEqual(plan.phases, ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "
 assert.deepEqual(plan.audit.lanes.map((lane) => lane.discipline), ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"]);
 assert(plan.audit.lanes.every((lane) => lane.disposition === "REQUIRED" && lane.writer === "NONE_READ_ONLY"));
 validateProjectImportPlan(plan);
+assert.equal(plan.universal_closeout.mode, "IMPORT");
+assert.equal(plan.universal_closeout.archive_is_dynamic, true);
+assert.deepEqual(plan.universal_closeout.sequence, [
+  "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
+  "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
+  "ARCHIVE_VISIBLE_TASK",
+]);
 
 for (const mode of ["ADOPT_IN_PLACE", "CLEAN_COPY", "RECONSTRUCT_FROM_INTENT"]) {
   const modeDestination = mode === "ADOPT_IN_PLACE" ? null : path.join(root, `${mode.toLowerCase()}-destination`);

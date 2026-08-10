@@ -120,6 +120,23 @@ function runLocal(command, args, cwd) {
   };
 }
 
+export function readSourceControlBinding(projectRoot) {
+  const root = canonicalRoot(projectRoot);
+  const topLevel = runLocal("git", ["rev-parse", "--show-toplevel"], root);
+  const commit = runLocal("git", ["rev-parse", "HEAD"], root);
+  const tree = runLocal("git", ["rev-parse", "HEAD^{tree}"], root);
+  const fail = (message) => {
+    const error = new Error(message);
+    error.code = "SOURCE_CONTROL_READBACK_REQUIRED";
+    throw error;
+  };
+  if (!topLevel.installed || topLevel.exit_code !== 0 || !topLevel.stdout) fail("source control root readback is unavailable");
+  if (canonicalRoot(topLevel.stdout) !== root) fail("source control root readback differs from the imported root");
+  if (commit.exit_code !== 0 || !/^[0-9a-f]{40}$/u.test(commit.stdout)) fail("source control commit readback is unavailable");
+  if (tree.exit_code !== 0 || !/^[0-9a-f]{40}$/u.test(tree.stdout)) fail("source control tree readback is unavailable");
+  return Object.freeze({source_commit: commit.stdout, source_tree: tree.stdout});
+}
+
 function findExecutable(command) {
   for (const entry of (SAFE_ENVIRONMENT.PATH ?? "").split(path.delimiter)) {
     if (!entry) continue;

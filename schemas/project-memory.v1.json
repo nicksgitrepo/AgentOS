@@ -1,0 +1,674 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_memory_contract.v1",
+  "title": "AgentOS portable project-memory contract and instance registry",
+  "description": "Canonical project-memory records and append-only events are rebuildable authority. Snapshots, invalidation sets, role capsules, maps, indexes, and wiki pages are derived projections only.",
+  "schema": "agentos.project_memory_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/project-memory.mjs",
+  "store": "control/project-memory-store.mjs",
+  "activation": {
+    "active": false,
+    "rule": "Canonical records and append-only events may be compiled and tested while activation remains explicitly inactive. Snapshots and role capsules are advisory projections and cannot grant acceptance or activation."
+  },
+  "authority": {
+    "canonical": [
+      "agentos.project_memory_record.v1",
+      "agentos.project_memory_event.v1"
+    ],
+    "derived": [
+      "agentos.project_memory_snapshot.v1",
+      "agentos.role_context_capsule.v1"
+    ],
+    "rule": "Events and immutable records are rebuildable authority. Snapshots and capsules contain only references, digests, scope, uncertainty, and conflict state; indexes or maps never become authority."
+  },
+  "required_binding": [
+    "project_ref",
+    "campaign_ref",
+    "goal_ref",
+    "role_ref",
+    "source_commit",
+    "source_tree",
+    "source_snapshot_sha256",
+    "policy_sha256",
+    "handoff_sha256"
+  ],
+  "privacy": {
+    "reject": [
+      "absolute paths",
+      "worktree paths",
+      "environment values",
+      "secrets",
+      "raw session or task identities",
+      "private links",
+      "transcripts or conversation payloads"
+    ],
+    "rule": "Use the shared privacy scanner before content addressing. Opaque references and digests are allowed; generic redaction wrappers are not active memory records."
+  },
+  "append": {
+    "cas": true,
+    "idempotent": true,
+    "sequence": "contiguous zero-based sequence with prior event head",
+    "recovery": "restart reconstruction validates every line, digest, sequence, and prior head",
+    "conflict": "divergent content for one record logical key is rejected and must be preserved as an explicit CONFLICT record"
+  },
+  "statuses": {
+    "record": ["CURRENT", "UNKNOWN", "STALE", "SUPERSEDED", "INVALIDATED", "CONFLICT", "ARCHIVED"],
+    "snapshot": ["READY", "PARTIAL", "STALE", "CONFLICT", "UNAVAILABLE"],
+    "capsule": ["READY", "PARTIAL", "STALE", "CONFLICT", "INVALIDATED", "UNAVAILABLE"]
+  },
+  "invalidation_triggers": [
+    "OWNER_INTENT_CHANGED",
+    "SCOPE_CHANGED",
+    "SOURCE_CHANGED",
+    "POLICY_CHANGED",
+    "HANDOFF_CHANGED",
+    "DECISION_SUPERSEDED",
+    "CAPABILITY_CHANGED",
+    "CONTEXT_CHANGED",
+    "EVIDENCE_STALE",
+    "LEDGER_CONFLICT"
+  ],
+  "role_capsule_rule": "A capsule is bound to one snapshot, one role, one lane reference, one goal, one source, one policy, and one handoff. It contains selected canonical-record digests and explicit allowed/prohibited scopes, never a transcript.",
+  "instance_schemas": {
+    "record": "#/$defs/memoryRecord",
+    "event": "#/$defs/memoryEvent",
+    "snapshot": "#/$defs/memorySnapshot",
+    "capsule": "#/$defs/roleContextCapsule",
+    "invalidation_record": "#/$defs/invalidationRecord",
+    "conflict_record": "#/$defs/conflictRecord",
+    "conflict_descriptor": "#/$defs/conflictDescriptor"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "controller",
+    "store",
+    "activation",
+    "authority",
+    "required_binding",
+    "privacy",
+    "append",
+    "statuses",
+    "invalidation_triggers",
+    "role_capsule_rule",
+    "instance_schemas"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.project_memory_contract.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "controller": {"const": "control/project-memory.mjs"},
+    "store": {"const": "control/project-memory-store.mjs"},
+    "activation": {"$ref": "#/$defs/activation"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "required_binding": {
+      "const": [
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "role_ref",
+        "source_commit",
+        "source_tree",
+        "source_snapshot_sha256",
+        "policy_sha256",
+        "handoff_sha256"
+      ]
+    },
+    "privacy": {"$ref": "#/$defs/privacy"},
+    "append": {"$ref": "#/$defs/append"},
+    "statuses": {"$ref": "#/$defs/statuses"},
+    "invalidation_triggers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": [
+        "OWNER_INTENT_CHANGED",
+        "SCOPE_CHANGED",
+        "SOURCE_CHANGED",
+        "POLICY_CHANGED",
+        "HANDOFF_CHANGED",
+        "DECISION_SUPERSEDED",
+        "CAPABILITY_CHANGED",
+        "CONTEXT_CHANGED",
+        "EVIDENCE_STALE",
+        "LEDGER_CONFLICT"
+      ]}
+    },
+    "role_capsule_rule": {"type": "string", "minLength": 1},
+    "instance_schemas": {"$ref": "#/$defs/instanceSchemas"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {"pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"}
+    },
+    "safeText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "nullableSha": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/sha"}
+      ]
+    },
+    "notice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "subject_ref", "detail"],
+      "properties": {
+        "code": {"$ref": "#/$defs/id"},
+        "subject_ref": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/id"}
+          ]
+        },
+        "detail": {"$ref": "#/$defs/safeText"}
+      }
+    },
+    "notices": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/notice"},
+      "uniqueItems": true
+    },
+    "conflictDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflict_key", "left_record_sha256", "right_record_sha256"],
+      "properties": {
+        "conflict_key": {"$ref": "#/$defs/id"},
+        "left_record_sha256": {"$ref": "#/$defs/sha"},
+        "right_record_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/conflictDescriptor"},
+      "uniqueItems": true
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "role_ref",
+        "source_commit",
+        "source_tree",
+        "source_snapshot_sha256",
+        "policy_sha256",
+        "handoff_sha256"
+      ],
+      "properties": {
+        "project_ref": {"$ref": "#/$defs/id"},
+        "campaign_ref": {"$ref": "#/$defs/id"},
+        "goal_ref": {"$ref": "#/$defs/id"},
+        "role_ref": {"$ref": "#/$defs/id"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "source_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["active", "rule"],
+      "properties": {
+        "active": {"const": false},
+        "rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical", "derived", "rule"],
+      "properties": {
+        "canonical": {"const": ["agentos.project_memory_record.v1", "agentos.project_memory_event.v1"]},
+        "derived": {"const": ["agentos.project_memory_snapshot.v1", "agentos.role_context_capsule.v1"]},
+        "rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reject", "rule"],
+      "properties": {
+        "reject": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "append": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cas", "idempotent", "sequence", "recovery", "conflict"],
+      "properties": {
+        "cas": {"const": true},
+        "idempotent": {"const": true},
+        "sequence": {"const": "contiguous zero-based sequence with prior event head"},
+        "recovery": {"type": "string", "minLength": 1},
+        "conflict": {"type": "string", "minLength": 1}
+      }
+    },
+    "statuses": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record", "snapshot", "capsule"],
+      "properties": {
+        "record": {"const": ["CURRENT", "UNKNOWN", "STALE", "SUPERSEDED", "INVALIDATED", "CONFLICT", "ARCHIVED"]},
+        "snapshot": {"const": ["READY", "PARTIAL", "STALE", "CONFLICT", "UNAVAILABLE"]},
+        "capsule": {"const": ["READY", "PARTIAL", "STALE", "CONFLICT", "INVALIDATED", "UNAVAILABLE"]}
+      }
+    },
+    "instanceSchemas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record", "event", "snapshot", "capsule", "invalidation_record", "conflict_record", "conflict_descriptor"],
+      "properties": {
+        "record": {"const": "#/$defs/memoryRecord"},
+        "event": {"const": "#/$defs/memoryEvent"},
+        "snapshot": {"const": "#/$defs/memorySnapshot"},
+        "capsule": {"const": "#/$defs/roleContextCapsule"},
+        "invalidation_record": {"const": "#/$defs/invalidationRecord"},
+        "conflict_record": {"const": "#/$defs/conflictRecord"},
+        "conflict_descriptor": {"const": "#/$defs/conflictDescriptor"}
+      }
+    },
+    "memoryRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "version",
+        "contract_status",
+        "visibility",
+        "canonical_authority",
+        "record_type",
+        "record_id",
+        "record_version",
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "role_ref",
+        "source_commit",
+        "source_tree",
+        "source_snapshot_sha256",
+        "policy_sha256",
+        "handoff_sha256",
+        "status",
+        "supersedes_record_sha256",
+        "dependencies",
+        "uncertainties",
+        "body",
+        "record_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.project_memory_record.v1"},
+        "version": {"const": 1},
+        "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "visibility": {"const": "CONTROL_SPACE"},
+        "canonical_authority": {"const": true},
+        "record_type": {"enum": ["PROJECT_CONTEXT", "GOAL", "DECISION", "REPOSITORY_MAP_REF", "HANDOFF", "POLICY_REF", "INVALIDATION", "CONFLICT"]},
+        "record_id": {"$ref": "#/$defs/id"},
+        "record_version": {"type": "integer", "minimum": 1, "maximum": 1000000000},
+        "project_ref": {"$ref": "#/$defs/id"},
+        "campaign_ref": {"$ref": "#/$defs/id"},
+        "goal_ref": {"$ref": "#/$defs/id"},
+        "role_ref": {"$ref": "#/$defs/id"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "source_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_sha256": {"$ref": "#/$defs/sha"},
+        "status": {"enum": ["CURRENT", "UNKNOWN", "STALE", "SUPERSEDED", "INVALIDATED", "CONFLICT", "ARCHIVED"]},
+        "supersedes_record_sha256": {"$ref": "#/$defs/nullableSha"},
+        "dependencies": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "uncertainties": {"$ref": "#/$defs/notices"},
+        "body": {
+          "oneOf": [
+            {"$ref": "#/$defs/projectContextBody"},
+            {"$ref": "#/$defs/goalBody"},
+            {"$ref": "#/$defs/decisionBody"},
+            {"$ref": "#/$defs/repositoryMapRefBody"},
+            {"$ref": "#/$defs/handoffBody"},
+            {"$ref": "#/$defs/policyRefBody"},
+            {"$ref": "#/$defs/invalidationBody"},
+            {"$ref": "#/$defs/conflictBody"}
+          ]
+        },
+        "record_sha256": {"$ref": "#/$defs/sha"}
+      },
+      "allOf": [
+        {"if": {"properties": {"record_type": {"const": "PROJECT_CONTEXT"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/projectContextBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "GOAL"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/goalBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "DECISION"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/decisionBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "REPOSITORY_MAP_REF"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/repositoryMapRefBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "HANDOFF"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/handoffBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "POLICY_REF"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/policyRefBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "INVALIDATION"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/invalidationBody"}}}},
+        {"if": {"properties": {"record_type": {"const": "CONFLICT"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/conflictBody"}, "status": {"const": "CONFLICT"}}}},
+        {"if": {"properties": {"status": {"const": "SUPERSEDED"}}}, "then": {"properties": {"supersedes_record_sha256": {"$ref": "#/$defs/sha"}}}}
+      ]
+    },
+    "projectContextBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_input_sha256", "intent_sha256", "plan_sha256", "governance_sha256", "boundary_sha256", "project_map_sha256", "derived_index_sha256"],
+      "properties": {
+        "context_input_sha256": {"$ref": "#/$defs/sha"},
+        "intent_sha256": {"$ref": "#/$defs/sha"},
+        "plan_sha256": {"$ref": "#/$defs/sha"},
+        "governance_sha256": {"$ref": "#/$defs/sha"},
+        "boundary_sha256": {"$ref": "#/$defs/sha"},
+        "project_map_sha256": {"$ref": "#/$defs/nullableSha"},
+        "derived_index_sha256": {"$ref": "#/$defs/nullableSha"}
+      }
+    },
+    "goalBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal_sha256", "goal_kind", "scope_sha256", "acceptance_sha256"],
+      "properties": {
+        "goal_sha256": {"$ref": "#/$defs/sha"},
+        "goal_kind": {"$ref": "#/$defs/id"},
+        "scope_sha256": {"$ref": "#/$defs/sha"},
+        "acceptance_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "decisionBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_sha256", "decision_kind", "selection_ref", "effect_scope", "rationale_sha256", "supersedes_decision_sha256"],
+      "properties": {
+        "decision_sha256": {"$ref": "#/$defs/sha"},
+        "decision_kind": {"$ref": "#/$defs/id"},
+        "selection_ref": {"$ref": "#/$defs/id"},
+        "effect_scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "rationale_sha256": {"$ref": "#/$defs/sha"},
+        "supersedes_decision_sha256": {"$ref": "#/$defs/nullableSha"}
+      }
+    },
+    "repositoryMapRefBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["map_sha256", "map_status", "map_source_snapshot_sha256"],
+      "properties": {
+        "map_sha256": {"$ref": "#/$defs/sha"},
+        "map_status": {"enum": ["READY", "BOUNDED_PARTIAL", "STALE", "CONFLICT", "UNAVAILABLE"]},
+        "map_source_snapshot_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "handoffBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handoff_sha256", "handoff_kind", "next_action_ref", "result_sha256", "uncertainty_sha256"],
+      "properties": {
+        "handoff_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_kind": {"$ref": "#/$defs/id"},
+        "next_action_ref": {"$ref": "#/$defs/id"},
+        "result_sha256": {"$ref": "#/$defs/sha"},
+        "uncertainty_sha256": {"$ref": "#/$defs/nullableSha"}
+      }
+    },
+    "policyRefBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_sha256", "policy_epoch", "policy_kind"],
+      "properties": {
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "policy_epoch": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "policy_kind": {"$ref": "#/$defs/id"}
+      }
+    },
+    "invalidationBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger", "reason_code", "affected_record_sha256s", "affected_capsule_sha256s", "action", "old_value_sha256", "new_value_sha256"],
+      "properties": {
+        "trigger": {"enum": ["OWNER_INTENT_CHANGED", "SCOPE_CHANGED", "SOURCE_CHANGED", "POLICY_CHANGED", "HANDOFF_CHANGED", "DECISION_SUPERSEDED", "CAPABILITY_CHANGED", "CONTEXT_CHANGED", "EVIDENCE_STALE", "LEDGER_CONFLICT"]},
+        "reason_code": {"$ref": "#/$defs/id"},
+        "affected_record_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "affected_capsule_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "action": {"enum": ["REBUILD", "REVIEW", "STOP", "ARCHIVE"]},
+        "old_value_sha256": {"$ref": "#/$defs/nullableSha"},
+        "new_value_sha256": {"$ref": "#/$defs/nullableSha"}
+      },
+      "anyOf": [
+        {"properties": {"affected_record_sha256s": {"minItems": 1}}},
+        {"properties": {"affected_capsule_sha256s": {"minItems": 1}}}
+      ]
+    },
+    "conflictBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflict_key", "left_record_sha256", "right_record_sha256", "resolution_status", "resolution_sha256", "reason_code"],
+      "properties": {
+        "conflict_key": {"$ref": "#/$defs/id"},
+        "left_record_sha256": {"$ref": "#/$defs/sha"},
+        "right_record_sha256": {"$ref": "#/$defs/sha"},
+        "resolution_status": {"enum": ["UNRESOLVED", "RESOLVED"]},
+        "resolution_sha256": {"$ref": "#/$defs/nullableSha"},
+        "reason_code": {"$ref": "#/$defs/id"}
+      },
+      "allOf": [
+        {"if": {"properties": {"resolution_status": {"const": "UNRESOLVED"}}}, "then": {"properties": {"resolution_sha256": {"type": "null"}}}},
+        {"if": {"properties": {"resolution_status": {"const": "RESOLVED"}}}, "then": {"properties": {"resolution_sha256": {"$ref": "#/$defs/sha"}}}}
+      ]
+    },
+    "memoryEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "version",
+        "contract_status",
+        "visibility",
+        "canonical_authority",
+        "event_id",
+        "idempotency_key",
+        "sequence",
+        "event_type",
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "role_ref",
+        "source_commit",
+        "source_tree",
+        "source_snapshot_sha256",
+        "policy_sha256",
+        "handoff_sha256",
+        "record_type",
+        "record_sha256",
+        "record",
+        "prior_event_sha256",
+        "event_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.project_memory_event.v1"},
+        "version": {"const": 1},
+        "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "visibility": {"const": "CONTROL_SPACE"},
+        "canonical_authority": {"const": true},
+        "event_id": {"$ref": "#/$defs/id"},
+        "idempotency_key": {"$ref": "#/$defs/id"},
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "event_type": {"enum": ["RECORD_APPENDED", "RECORD_SUPERSEDED", "RECORD_INVALIDATED", "CONFLICT_RECORDED"]},
+        "project_ref": {"$ref": "#/$defs/id"},
+        "campaign_ref": {"$ref": "#/$defs/id"},
+        "goal_ref": {"$ref": "#/$defs/id"},
+        "role_ref": {"$ref": "#/$defs/id"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "source_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_sha256": {"$ref": "#/$defs/sha"},
+        "record_type": {"enum": ["PROJECT_CONTEXT", "GOAL", "DECISION", "REPOSITORY_MAP_REF", "HANDOFF", "POLICY_REF", "INVALIDATION", "CONFLICT"]},
+        "record_sha256": {"$ref": "#/$defs/sha"},
+        "record": {"$ref": "#/$defs/memoryRecord"},
+        "prior_event_sha256": {"$ref": "#/$defs/sha"},
+        "event_sha256": {"$ref": "#/$defs/sha"}
+      },
+      "allOf": [
+        {"if": {"properties": {"event_type": {"const": "RECORD_SUPERSEDED"}}}, "then": {"properties": {"record": {"properties": {"status": {"const": "CURRENT"}, "supersedes_record_sha256": {"$ref": "#/$defs/sha"}}}}}},
+        {"if": {"properties": {"event_type": {"const": "RECORD_INVALIDATED"}}}, "then": {"properties": {"record": {"properties": {"status": {"const": "INVALIDATED"}}}}}},
+        {"if": {"properties": {"event_type": {"const": "CONFLICT_RECORDED"}}}, "then": {"properties": {"record": {"properties": {"record_type": {"const": "CONFLICT"}, "status": {"const": "CONFLICT"}}}}}}
+      ]
+    },
+    "memorySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "version",
+        "contract_status",
+        "visibility",
+        "advisory_only",
+        "acceptance_authority",
+        "snapshot_id",
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "role_ref",
+        "source_commit",
+        "source_tree",
+        "source_snapshot_sha256",
+        "policy_sha256",
+        "handoff_sha256",
+        "event_ledger_head_sha256",
+        "event_cursor",
+        "context_record_sha256",
+        "project_map_sha256",
+        "derived_index_sha256",
+        "record_sha256s",
+        "decision_sha256s",
+        "invalidation_sha256s",
+        "uncertainties",
+        "conflicts",
+        "status",
+        "observed_at_utc",
+        "snapshot_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.project_memory_snapshot.v1"},
+        "version": {"const": 1},
+        "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "visibility": {"const": "CONTROL_SPACE"},
+        "advisory_only": {"const": true},
+        "acceptance_authority": {"const": false},
+        "snapshot_id": {"$ref": "#/$defs/id"},
+        "project_ref": {"$ref": "#/$defs/id"},
+        "campaign_ref": {"$ref": "#/$defs/id"},
+        "goal_ref": {"$ref": "#/$defs/id"},
+        "role_ref": {"$ref": "#/$defs/id"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "source_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_sha256": {"$ref": "#/$defs/sha"},
+        "event_ledger_head_sha256": {"$ref": "#/$defs/sha"},
+        "event_cursor": {"type": "integer", "minimum": 0, "maximum": 1000000000},
+        "context_record_sha256": {"$ref": "#/$defs/nullableSha"},
+        "project_map_sha256": {"$ref": "#/$defs/nullableSha"},
+        "derived_index_sha256": {"$ref": "#/$defs/nullableSha"},
+        "record_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "decision_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "invalidation_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "uncertainties": {"$ref": "#/$defs/notices"},
+        "conflicts": {"$ref": "#/$defs/conflicts"},
+        "status": {"enum": ["READY", "PARTIAL", "STALE", "CONFLICT", "UNAVAILABLE"]},
+        "observed_at_utc": {"type": "string", "format": "date-time"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "roleContextCapsule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "version",
+        "contract_status",
+        "visibility",
+        "advisory_only",
+        "acceptance_authority",
+        "capsule_id",
+        "role_ref",
+        "lane_ref",
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "source_commit",
+        "source_tree",
+        "source_snapshot_sha256",
+        "policy_sha256",
+        "handoff_sha256",
+        "snapshot_sha256",
+        "context_record_sha256",
+        "selected_record_sha256s",
+        "allowed_scope_refs",
+        "prohibited_scope_refs",
+        "required_evidence_sha256s",
+        "uncertainties",
+        "conflicts",
+        "status",
+        "capsule_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.role_context_capsule.v1"},
+        "version": {"const": 1},
+        "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "visibility": {"const": "CONTROL_SPACE"},
+        "advisory_only": {"const": true},
+        "acceptance_authority": {"const": false},
+        "capsule_id": {"$ref": "#/$defs/id"},
+        "role_ref": {"$ref": "#/$defs/id"},
+        "lane_ref": {"$ref": "#/$defs/id"},
+        "project_ref": {"$ref": "#/$defs/id"},
+        "campaign_ref": {"$ref": "#/$defs/id"},
+        "goal_ref": {"$ref": "#/$defs/id"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "source_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_sha256": {"$ref": "#/$defs/sha"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "context_record_sha256": {"$ref": "#/$defs/nullableSha"},
+        "selected_record_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "allowed_scope_refs": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true},
+        "prohibited_scope_refs": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true},
+        "required_evidence_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha"}, "uniqueItems": true},
+        "uncertainties": {"$ref": "#/$defs/notices"},
+        "conflicts": {"$ref": "#/$defs/conflicts"},
+        "status": {"enum": ["READY", "PARTIAL", "STALE", "CONFLICT", "INVALIDATED", "UNAVAILABLE"]},
+        "capsule_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "invalidationRecord": {
+      "allOf": [
+        {"$ref": "#/$defs/memoryRecord"},
+        {"properties": {"record_type": {"const": "INVALIDATION"}}}
+      ]
+    },
+    "conflictRecord": {
+      "allOf": [
+        {"$ref": "#/$defs/memoryRecord"},
+        {"properties": {"record_type": {"const": "CONFLICT"}, "status": {"const": "CONFLICT"}}}
+      ]
+    }
+  }
+}

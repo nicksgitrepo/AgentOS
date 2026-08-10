@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.visible_task_parity_readback.v1",
+  "title": "AgentOS authoritative visible-task parity readback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "authority",
+    "host_id",
+    "project_id",
+    "campaign_id",
+    "observed_at_utc",
+    "entries",
+    "readback_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.visible_task_parity_readback.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["HOST_READBACK", "REQUEST_BOUND_COORDINATION"]},
+    "authority": {"enum": ["HOST_LIST_THREADS", "CODEX_APP_TASK_LIST"]},
+    "host_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "campaign_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["runtime_task_id", "runtime_worktree_id", "host_id", "visible", "active", "archived"],
+        "properties": {
+          "runtime_task_id": {"type": "string", "pattern": "^(?!AUDITOR_TASK_REF_)(?!TASK_REF_)(?!VISIBLE_PLATFORM_TASK_REF_)(?!WORKTREE_REF_)[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "runtime_worktree_id": {"type": "string", "pattern": "^(?!AUDITOR_TASK_REF_)(?!TASK_REF_)(?!VISIBLE_PLATFORM_TASK_REF_)(?!WORKTREE_REF_)[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "host_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "visible": {"const": true},
+          "active": {"type": "boolean"},
+          "archived": {"const": false}
+        }
+      }
+    },
+    "readback_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

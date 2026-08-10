@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.governance_conflict.v1",
+  "title": "AgentOS governance conflict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "conflict_code", "severity", "affected_library", "project_id", "left_digest", "right_digest", "resolution", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.governance_conflict.v1"},
+    "version": {"const": 1},
+    "status": {"const": "BLOCKED"},
+    "conflict_code": {"type": "string"},
+    "severity": {"type": "string"},
+    "affected_library": {"type": "string"},
+    "project_id": {"anyOf": [{"type": "null"}, {"type": "string"}]},
+    "left_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "right_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "resolution": {"type": "string"},
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

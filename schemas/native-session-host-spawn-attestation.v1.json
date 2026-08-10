@@ -1,0 +1,31 @@
+{
+  "schema": "agentos.native_session_host_spawn_attestation.v1",
+  "version": 1,
+  "status": "SPAWN_ACCEPTED",
+  "purpose": "Record an external host's accepted create-thread execution request without confusing request acceptance with later session readback.",
+  "provenance": [
+    "EXTERNAL_HOST_CREATE_THREAD_CONTRACT",
+    "EXTERNAL_HOST_CREATE_THREAD_SUCCESS_RECEIPT"
+  ],
+  "contract": {
+    "request_model_field": "model",
+    "request_reasoning_field": "thinking",
+    "success_identity_fields": ["threadId", "hostId", "clientThreadId"],
+    "returned_model_field": null,
+    "returned_reasoning_field": null,
+    "readback_is_separate": true
+  },
+  "rules": {
+    "accepted_request": "host_accepted_model and host_accepted_reasoning_effort mirror the execution profile accepted at create time and are not session readback proof.",
+    "no_readback": "When the create receipt omits model/reasoning, host_model_readback and host_reasoning_readback remain null and readback_status is NOT_RETURNED.",
+    "worker_acceptance": "The attestation has acceptance false; a caller may continue only when the typed external-host contract permits accepted-request binding and independent source, session, progress, handoff, and closure readbacks still pass.",
+    "protected_actions": "All protected actions remain disabled."
+  },
+  "persistence": {
+    "controller": "control/native-session-host-attestation.mjs",
+    "portable_record": "agentos.persisted_record_privacy.v1",
+    "raw_host_identities": "HOST_RUNTIME_ONLY"
+  },
+  "controller": "control/native-session-host-attestation.mjs",
+  "tests": "tests/verify-native-host-session-lifecycle.mjs"
+}

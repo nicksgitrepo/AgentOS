@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_workflow_reconstruction.v1",
+  "title": "AgentOS apprenticeship workflow reconstruction",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": ["schema", "version", "status", "observation_digest", "provenance", "task_pattern", "bounded_scope", "consent", "steps", "result_contract", "failure_paths", "privacy_boundary", "protected_actions", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_workflow_reconstruction.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PROPOSED"},
+    "observation_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "provenance": {"$ref": "apprenticeship-common.v1.json#/$defs/provenance"},
+    "task_pattern": {"type": "string", "minLength": 1},
+    "bounded_scope": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+    "consent": {"$ref": "apprenticeship-common.v1.json#/$defs/consentDecision"},
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/step"}
+    },
+    "result_contract": {"$ref": "#/$defs/resultContract"},
+    "failure_paths": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+    "privacy_boundary": {"$ref": "#/$defs/privacyBoundary"},
+    "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "$defs": {
+    "step": {
+      "type": "object",
+      "required": ["step_id", "sequence", "preconditions", "observable_action", "tool_class", "observation_basis", "decision_boundary", "required_evidence_refs", "source_evidence_refs", "failure_route", "uncertainty"],
+      "properties": {
+        "step_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+        "sequence": {"type": "integer", "minimum": 1},
+        "preconditions": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+        "observable_action": {"type": "string", "minLength": 1},
+        "tool_class": {"type": "string", "minLength": 1},
+        "observation_basis": {"enum": ["DIRECT_OBSERVATION", "INFERRED_FROM_OBSERVATION"]},
+        "decision_boundary": {"type": "string", "minLength": 1},
+        "required_evidence_refs": {"$ref": "apprenticeship-common.v1.json#/$defs/referenceList"},
+        "source_evidence_refs": {"$ref": "apprenticeship-common.v1.json#/$defs/referenceList"},
+        "failure_route": {"type": "string", "minLength": 1},
+        "uncertainty": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}
+      },
+      "additionalProperties": false
+    },
+    "resultContract": {
+      "type": "object",
+      "required": ["done_when", "required_evidence_refs", "result_ref"],
+      "properties": {
+        "done_when": {"type": "string", "minLength": 1},
+        "required_evidence_refs": {"$ref": "apprenticeship-common.v1.json#/$defs/referenceList"},
+        "result_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"}
+      },
+      "additionalProperties": false
+    },
+    "privacyBoundary": {
+      "type": "object",
+      "required": ["observable_actions_only", "hidden_reasoning_excluded", "private_context_excluded", "unrelated_project_context_excluded"],
+      "properties": {
+        "observable_actions_only": {"const": true},
+        "hidden_reasoning_excluded": {"const": true},
+        "private_context_excluded": {"const": true},
+        "unrelated_project_context_excluded": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

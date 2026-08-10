@@ -17,9 +17,14 @@
     "supported_modes": ["PROTOTYPE", "LIMITED_PRODUCT"],
     "rule": "This generic option may be selected for a prototype or explicitly limited working product. A concrete project adapter may be named outside the portable kernel. The generic option never implies standard production, public availability, durable-data support, authentication support, quota, cost, or rollback capability without project-bound evidence."
   },
+  "record_fields": {
+    "supported_scope": "Typed nonempty scope identifiers required for every non-prototype target.",
+    "operating_envelope": "Typed nonempty operating-envelope identifiers required for every non-prototype target.",
+    "rollback_path": "EXACT_LAST_ACCEPTED_DEPLOYMENT is required for every non-prototype target; prototype targets may leave it null."
+  },
   "safety_rules": [
     "PROTOTYPE targets are synthetic or explicitly admitted and carry no production claim.",
-    "LIMITED_PRODUCT targets require an explicit supported scope, audience, data posture, operating envelope, and rollback path.",
+    "LIMITED_PRODUCT targets require an explicit supported scope, audience, data posture, operating envelope, and exact rollback path.",
     "STANDARD_PRODUCTION requires a matching production project life contract and exact acceptance, deployment, and rollback identity.",
     "Provider capabilities are never invented from an adapter name; unproven capabilities remain unproven."
   ],

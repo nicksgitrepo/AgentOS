@@ -1,0 +1,33 @@
+{
+  "schema": "agentos.apprenticeship_handoff_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-reproduction.mjs",
+  "record_schema": "agentos.apprenticeship_handoff.v1",
+  "required_fields": [
+    "status",
+    "packet_digest",
+    "task_identity",
+    "project_binding",
+    "source_identity",
+    "question_records",
+    "comparison_records",
+    "hostile_findings",
+    "uncertainty",
+    "model_identity",
+    "next_action",
+    "protected_actions"
+  ],
+  "allowed_statuses": [
+    "OWNER_REVIEW_REQUIRED",
+    "OWNER_APPROVED_PENDING_ACTIVATION",
+    "REPAIR_REQUIRED"
+  ],
+  "handoff_rule": "The handoff preserves predecessor, source, goal, workspace, session, model, drill, reproduction, and review provenance.",
+  "owner_rule": "Owner approval is recorded separately and never implies activation.",
+  "privacy_rule": "Bindings use opaque references or content-addressed digests; private paths, secrets, raw environment values, and transcripts are excluded.",
+  "activation": {
+    "active": false,
+    "automatic_activation": false
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "agentos.governance_library_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "general_library": {
+    "schema": "agentos.general_governance_library.v1",
+    "kind": "SHARED_GENERAL_GOVERNANCE",
+    "controller": "control/governance-library.mjs",
+    "required_domains": [
+      "INTENT_SCOPE",
+      "SOURCE_BINDING",
+      "CONVERSATION",
+      "ROLE_ROUTING",
+      "PROGRESS_HEALTH",
+      "FUNCTIONAL_ACCEPTANCE",
+      "EVIDENCE_IDENTITY",
+      "RESPONSE_HANDOFF_GATING",
+      "SECURITY_PRIVACY",
+      "RECOVERY_BOUNDARIES",
+      "DELIVERY_CLOSURE"
+    ],
+    "task_gate_catalog": {
+      "controller": "control/task-gate-questions.mjs",
+      "digest_field": "task_gate_catalog_sha256",
+      "question_contexts": ["TASK_START", "CODE_CHANGE", "DOCUMENTATION", "HANDOFF", "RESPONSE", "CLOSURE"],
+      "rule": "Every role receives the canonical task questions and must answer the questions applicable at task start, change, proof, progress, acceptance, and closure."
+    },
+    "universal_closeout": {
+      "controller": "control/universal-governance.mjs",
+      "public_reexport": "control/governance-library.mjs",
+      "mode": "ALL_DEVELOPMENT_MODES",
+      "receipt_schema": "agentos.universal_task_closeout_receipts.v1",
+      "receipt_compiler": "compileUniversalTaskCloseoutReceipts",
+      "receipt_authorities": {
+        "PRESERVE_HANDOFF": "CONTROLLER_READBACK",
+        "PERSIST_HANDOFF": "CONTROLLER_RECORD",
+        "AUDIT_CANDIDATE": "INDEPENDENT_AUDITOR",
+        "INTEGRATE_ACCEPTED_WORK": "CONTROLLER_INTEGRATION",
+        "UNPIN_SESSION": "HOST_READBACK",
+        "CLOSE_STALE_WORKTREE": "CONTROLLER_RECORD",
+        "REMOVE_ACTIVE_TASK_SCOPE": "CONTROLLER_RECORD",
+        "MARK_CHAT_OUT_OF_SCOPE": "CONTROLLER_RECORD",
+        "ARCHIVE_VISIBLE_TASK": "HOST_READBACK"
+      },
+      "applies_to": ["APPRENTICESHIP", "BOOTSTRAP", "CAMPAIGN", "CASCADE", "ITERATION", "IMPORT", "RAPID_PROTOTYPE", "RAPID_PROTOTYPING", "ALL_DEVELOPMENT_MODES"],
+      "sequence": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"],
+      "required_evidence": ["ARCHIVE_RECEIPT", "CHAT_OUT_OF_SCOPE_RECEIPT", "CLOSURE_RECEIPT", "HANDOFF_PRESERVATION_RECEIPT", "INDEPENDENT_AUDIT_RECEIPT", "INTEGRATION_RECEIPT", "ROSTER_READBACK", "STALE_WORKTREE_CLOSURE_RECEIPT", "TASK_SCOPE_REMOVAL_RECEIPT", "TYPED_HANDOFF"],
+      "controller_must_wait_for_integration": true,
+      "archive_is_dynamic": true,
+      "archive_requires_chat_out_of_scope": true,
+      "archive_after_chat_out_of_scope_required": true,
+      "archive_requires_active_scope_removal": true,
+      "archive_requires_stale_worktree_closed": true,
+      "archive_preconditions": ["HANDOFF_PRESERVED", "HANDOFF_PERSISTED", "CANDIDATE_INDEPENDENTLY_AUDITED", "WORKTREE_INTEGRATED", "STALE_WORKTREE_CLOSED", "ACTIVE_TASK_SCOPE_REMOVED", "CHAT_OUT_OF_SCOPE"],
+      "rule": "A completed temporary task must not remain visible or active after its handoff is preserved. Every inventoried task also carries one persistent controller-owned lane goal through audit, repair, re-audit, handoff, and closure. The Controller performs and proves the sequence before continuing. ARCHIVE_VISIBLE_TASK is forbidden until CLOSE_STALE_WORKTREE, REMOVE_ACTIVE_TASK_SCOPE, and MARK_CHAT_OUT_OF_SCOPE are proven, and archival must occur after the chat is out of scope. The aggregate label is descriptive only; every operational compiler and validator call must supply one concrete development mode. The universal policy is implemented once and re-exported through the general governance surface."
+    },
+    "response_handoff_gating": {
+      "controller": "control/universal-response-gating.mjs",
+      "contract": "schemas/universal-response-handoff.v1.json",
+      "catalog_source": "governance/gate-catalog.v1.json",
+      "catalog_compiler": "control/gate-catalog-compiler.mjs",
+      "applies_to_modes": ["APPRENTICESHIP", "BOOTSTRAP", "CAMPAIGN", "CASCADE", "ITERATION", "IMPORT", "RAPID_PROTOTYPE", "RAPID_PROTOTYPING", "ALL_DEVELOPMENT_MODES"],
+      "applies_to": ["DOCUMENTATION", "HANDOFF", "PROGRESS", "RESPONSE", "CLOSURE"],
+      "complete_requires": ["CATALOG_GRAPH_COMPLETE", "INDEPENDENT_CHECK_PASS", "PRESERVED_TYPED_HANDOFF"],
+      "unknown_behavior": "NEVER_PASSES",
+      "not_applicable_behavior": "REQUIRES_APPLICABILITY_JUSTIFICATION",
+      "public_payload": "SECRET_FREE_PROJECT_AGNOSTIC",
+      "rule": "Every progress statement, document, response, typed handoff, and closure claim is catalog-gated before disclosure or continuation."
+    },
+    "digest_rule": "SHA-256 over the canonical library with digest set to null before hashing."
+  },
+  "role_specific_library": {
+    "schema": "agentos.role_specific_governance_library.v1",
+    "kind": "GENERATED_ROLE_SPECIFIC_GOVERNANCE",
+    "controller": "control/role-governance-library.mjs",
+    "generation_source": "GENERAL_LIBRARY_PLUS_ROLE_DEFINITION_SOURCE_PLUS_COMPILED_QUESTION_TREE",
+    "role_definition_source": "control/governance-role-definitions.mjs",
+    "required_bindings": ["source_commit", "source_tree", "bootstrap_plan_sha256", "task_gate_catalog_sha256", "campaign_id", "governance_tree_sha256", "general_library_sha256", "role_definition_source_sha256"],
+    "generic_feature_agent_admitted": false
+  },
+  "architecture_envelope": {
+    "schema": "agentos.governance_architecture.v1",
+    "required_layers": ["GENERAL_GOVERNANCE", "BASE_ROLE_GOVERNANCE", "PERSISTENT_PROJECT_GOVERNANCE", "GENERATED_TASK_ROLE_GOVERNANCE"],
+    "compatibility_layers": ["SHARED_GENERAL_GOVERNANCE", "GENERATED_ROLE_SPECIFIC_GOVERNANCE"],
+    "layered_contract": "control/layered-governance-contract.mjs",
+    "layered_schema": "agentos.layered_governance.v1",
+    "task_packet_schema": "agentos.generated_task_role_packet.v1",
+    "required_bindings": ["project_contract_sha256", "base_general_library_sha256", "base_role_library_sha256", "project_general_library_sha256", "generated_project_role_library_sha256", "task_packet_sha256"],
+    "required_acceptance_requirements": "control/governance-architecture.mjs:ARCHITECTURE_ACCEPTANCE_REQUIREMENTS",
+    "controller_gate": "REPAIR_CAMPAIGN_ARCHITECTURE_ADMISSION"
+  },
+  "portability": {
+    "project_context": "DATA_ONLY",
+    "provider_identity": "FORBIDDEN",
+    "private_path": "FORBIDDEN",
+    "credential": "FORBIDDEN"
+  }
+}

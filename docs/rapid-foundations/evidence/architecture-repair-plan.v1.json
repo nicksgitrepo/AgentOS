@@ -1,0 +1,15 @@
+{
+  "schema": "agentos.architecture_repair_plan_record.v1",
+  "version": 1,
+  "plan": "schemas/architecture-repair-plan.v1.json",
+  "status": "REPAIR_ACCEPTED",
+  "repair_kind": "ARCHITECTURE_ALIGNMENT_REPAIR",
+  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "prior_goal_closure": "docs/rapid-foundations/evidence/iteration-001-closeout.v1.json",
+  "required_layers": ["SHARED_GENERAL_GOVERNANCE", "GENERATED_ROLE_SPECIFIC_GOVERNANCE"],
+  "generation_source": "COMPILED_QUESTION_TREE",
+  "controller_gate": "REPAIR_CAMPAIGN_ARCHITECTURE_ADMISSION",
+  "implementation_status": "BUILT_AND_INDEPENDENTLY_CHECKED",
+  "public_boundary": "Project-agnostic and secret-free; no private paths, session identities, external project names, credentials, or provider identities."
+}

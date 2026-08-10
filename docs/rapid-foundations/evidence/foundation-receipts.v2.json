@@ -1,0 +1,56 @@
+{
+  "schema": "agentos.foundation_lane_receipts.v2",
+  "version": 2,
+  "status": "SUCCESSOR_RECEIPT",
+  "supersedes": "docs/rapid-foundations/evidence/foundation-receipts.v1.json",
+  "correction": {
+    "finding": "The predecessor receipt truncated the committed tree value.",
+    "predecessor_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d",
+    "fresh_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "repair_method": "FRESH_HOST_GIT_READBACK"
+  },
+  "phase": "ASSEMBLE_FOUNDATION_LANES",
+  "plan_digest": "e889e7454c2c15be8f08be9b45bb52b815f4c404a75ad00980fb5e4d2e7059cd",
+  "source_readback": {
+    "status": "MATCH",
+    "commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "working_tree": "DIRTY",
+    "identity_detail": "FRESH_HOST_READBACK_MATCH"
+  },
+  "lane_receipts": [
+    {"role":"FOUNDATION_INTENT_AND_SCOPE","public_lane":"Intent and scope","lane_file":"docs/rapid-foundations/01-intent-and-scope.md","lane_sha256":"2356e2d45c34ba6c7148a29d43d61bb39518a19946b6681f3ac05f435827e13e","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/01-intent-and-scope.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_6","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_BOOTSTRAP_AND_CONTEXT","public_lane":"Bootstrap and context","lane_file":"docs/rapid-foundations/02-bootstrap-and-context.md","lane_sha256":"15f7b3d920a1afda70ff1c176e487185ea541ab0fb73210fd7c33f8ef6920940","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/02-bootstrap-and-context.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_USER_CONVERSATION","public_lane":"User conversation","lane_file":"docs/rapid-foundations/03-user-conversation.md","lane_sha256":"c9012a0283a25739a7a13c0251522e9749be2b57ab5e5fdeb12a6cf195e7c999","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/03-user-conversation.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_ROLE_ROUTING","public_lane":"Role routing","lane_file":"docs/rapid-foundations/04-role-routing.md","lane_sha256":"806756c30d79093bb15b57e1f620fb8d7d5b5bd57f716edc65443865d0963d3a","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/04-role-routing.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_PROGRESS_AND_HEALTH","public_lane":"Progress and health","lane_file":"docs/rapid-foundations/05-progress-and-health.md","lane_sha256":"4064e7b83b352cac292f624cdaa26c8761f9af51f8020c96b1b6dd0578de7bce","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/05-progress-and-health.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_7","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_FUNCTIONALITY","public_lane":"Functionality","lane_file":"docs/rapid-foundations/06-functionality.md","lane_sha256":"1a0b165cad6024ecaed9100bf599632e652275b1a17f8d0ef3c95c9d820aa712","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/06-functionality.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_UI_UX","public_lane":"UI/UX","lane_file":"docs/rapid-foundations/07-ui-ux.md","lane_sha256":"bd2d2ed4a2d656915f74de2539e1a08cbdb27e081d9a90b997e7abc8aadc91b5","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/07-ui-ux.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS_WITH_RENDERED_SURFACE_DEFERRED","hostile_coverage":"PASS_7","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_CODE_HYGIENE","public_lane":"Code hygiene","lane_file":"docs/rapid-foundations/08-code-hygiene.md","lane_sha256":"763f16b2f472a5fc38a41f4a09c83059c223c004d650d0b0701a9b9eeaef2027","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/08-code-hygiene.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN_BY_REPAIR","focused_checks":"PASS","hostile_coverage":"PASS_CH-01_THROUGH_CH-08","handoff":"PRESERVED_TYPED_HANDOFF_AND_REPAIR_RECEIPT","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_SECURITY_AND_PRIVACY","public_lane":"Security and privacy","lane_file":"docs/rapid-foundations/09-security-and-privacy.md","lane_sha256":"37619471720f2863f5602f25611a0143aac3fd84b7845885c4db5714908865d8","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/09-security-and-privacy.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_7","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_EVIDENCE_AND_IDENTITY","public_lane":"Evidence and identity","lane_file":"docs/rapid-foundations/10-evidence-and-identity.md","lane_sha256":"37f7d2ee8c66701930cc1c108d8d2864711a65f8b8d44a9dbb6400f78e892a2b","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/10-evidence-and-identity.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_RECOVERY_AND_BOUNDARIES","public_lane":"Recovery and boundaries","lane_file":"docs/rapid-foundations/11-recovery-and-boundaries.md","lane_sha256":"84e5bdbaf251f9f182d956e852f661bb1b3e63a5b05ee37224ffd7a41df73932","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/11-recovery-and-boundaries.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"},
+    {"role":"FOUNDATION_DELIVERY_AND_CLOSURE","public_lane":"Delivery and closure","lane_file":"docs/rapid-foundations/12-delivery-and-closure.md","lane_sha256":"223836b14cd71cd9b815e41a42fb1cae7010ad9d54adb9ae184267b170223386","source_readback":{"status":"MATCH","commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9"},"changed_paths":["docs/rapid-foundations/12-delivery-and-closure.md"],"changed_path_proof":"ONLY_ADMITTED_LANE_FILE_WRITTEN","focused_checks":"PASS","hostile_coverage":"PASS_8","handoff":"PRESERVED_TYPED_HANDOFF","independent_check":"REQUESTED"}
+  ],
+  "parent_cross_lane_receipt": {
+    "status": "PASS",
+    "expected_lane_count": 12,
+    "present_lane_count": 12,
+    "unexpected_lane_files": [],
+    "duplicate_lane_files": [],
+    "all_lane_source_readbacks_match": true,
+    "all_changed_path_proofs_present": true,
+    "all_focused_check_results_present": true,
+    "all_typed_handoffs_preserved": true,
+    "implementation_started": false
+  },
+  "lifecycle_finding": {
+    "status": "REPAIR_REQUIRED",
+    "finding": "Completed foundation workers were archived and unpinned manually before the next phase.",
+    "required_control": "Automatically preserve the typed handoff, archive, unpin, and remove each completed worker before phase transition.",
+    "handoffs_preserved": true,
+    "active_foundation_worker_count": 0
+  },
+  "overall_status": "READY_FOR_FRESH_INDEPENDENT_CLEARANCE",
+  "clearance_claim": "NONE"
+}

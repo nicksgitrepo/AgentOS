@@ -14,7 +14,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {spawn} from "node:child_process";
+import {createHybridScheduler, opaqueSchedulerWorktreeRef} from "./hybrid-scheduler.mjs";
+import {createLocalWorkerLaunchAdmission} from "./local-agent-runtime.mjs";
 import {pathToFileURL} from "node:url";
+import {validateLocalTaskKindForRole} from "./local-task-kinds.mjs";
+import {redactPersistedText} from "./persisted-record-privacy.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -60,6 +64,17 @@ function requireUtc(value, label) {
   assert(ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`);
 }
 
+function pidAlive(pid) {
+  const numeric = Number(pid);
+  if (!Number.isInteger(numeric) || numeric <= 0) return false;
+  try {
+    process.kill(numeric, 0);
+    return true;
+  } catch (error) {
+    return error.code === "EPERM";
+  }
+}
+
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
   if (isRecord(value)) return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalize(value[key])]));
@@ -80,6 +95,89 @@ function digestWithout(value, field) {
   return digest(body);
 }
 
+function opaqueError(value) {
+  const raw = value?.message ?? String(value);
+  if (/^opaque:error:[0-9a-f]{64}$/u.test(raw)) return raw;
+  return `opaque:error:${crypto.createHash("sha256").update(raw, "utf8").digest("hex")}`;
+}
+
+const PERSISTED_DIGEST_FIELDS = new Set(["handshake_sha256", "readback_sha256", "session_sha256", "heartbeat_sha256", "command_sha256", "result_sha256", "initial_readback_sha256"]);
+const PRIVATE_PATH_TEXT = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[^\/\s"'`<>)}\]]+\/)+[^\/\s"'`<>)}\]]+|[A-Za-z]:[\\/]|\\\\)/u;
+
+function persistedCustodyRecord(value) {
+  if (Array.isArray(value)) return value.map(persistedCustodyRecord);
+  if (isRecord(value)) {
+    const record = Object.fromEntries(Object.entries(value).map(([key, child]) => [key, persistedCustodyRecord(child)]));
+    for (const field of PERSISTED_DIGEST_FIELDS) {
+      if (Object.prototype.hasOwnProperty.call(record, field)) record[field] = digestWithout(record, field);
+    }
+    return record;
+  }
+  if (typeof value !== "string") return value;
+  if (path.isAbsolute(value) || PRIVATE_PATH_TEXT.test(value)) {
+    return path.isAbsolute(value) || /^[A-Za-z]:[\\/]|^\\\\/u.test(value)
+      ? opaqueSchedulerWorktreeRef(value)
+      : redactPersistedText(value).text;
+  }
+  return value;
+}
+
+function commandCustodyFailure(message) {
+  const error = new Error(message);
+  error.code = "COMMAND_CUSTODY_MISMATCH";
+  return error;
+}
+
+function pathWithin(root, target) {
+  return target === root || target.startsWith(`${root}${path.sep}`);
+}
+
+function validateRuntimeCustodyPath(rawPath, allowedScope, label) {
+  try {
+    requireString(rawPath, label);
+    assert(path.isAbsolute(rawPath), `${label} must be absolute`);
+    const target = path.resolve(rawPath);
+    const scope = allowedScope.find((candidate) => pathWithin(candidate, target));
+    assert(scope !== undefined, `${label} escapes admitted scope`);
+    const scopeStat = fs.lstatSync(scope);
+    assert(scopeStat.isDirectory() && !scopeStat.isSymbolicLink(), `${label} scope is not durable custody`);
+    const targetStat = fs.lstatSync(target);
+    assert(!targetStat.isSymbolicLink(), `${label} may not be a symlink`);
+    const scopeRealPath = fs.realpathSync.native(scope);
+    const targetRealPath = fs.realpathSync.native(target);
+    assert(pathWithin(scopeRealPath, targetRealPath), `${label} escapes admitted real custody`);
+    return target;
+  } catch (error) {
+    if (error?.code === "COMMAND_CUSTODY_MISMATCH") throw error;
+    throw commandCustodyFailure(`${label} is not admitted runtime custody`);
+  }
+}
+
+function createCommandCustody({repositoryRoot, worktreePath, initialCommand}) {
+  const allowedScope = [...new Set([repositoryRoot, worktreePath].map((value) => path.resolve(value)))].sort();
+  const paths = new Map();
+  const bind = (rawPath, label) => {
+    if (rawPath === null) return;
+    const resolved = validateRuntimeCustodyPath(rawPath, allowedScope, label);
+    paths.set(opaqueSchedulerWorktreeRef(resolved), resolved);
+  };
+  bind(worktreePath, "session worktree");
+  bind(initialCommand.featureWorktree, "initial feature worktree");
+  bind(initialCommand.evidenceWorktree, "initial evidence worktree");
+  bind(initialCommand.decisionTreePath, "initial decision tree");
+  return Object.freeze({allowedScope: Object.freeze(allowedScope), paths});
+}
+
+function resolveCommandCustody(value, custody, label) {
+  if (value === null) return null;
+  requireString(value, label);
+  const rawPath = custody.paths.get(value);
+  if (rawPath === undefined) throw commandCustodyFailure(`${label} has no admitted runtime custody mapping`);
+  const resolved = validateRuntimeCustodyPath(rawPath, custody.allowedScope, label);
+  if (opaqueSchedulerWorktreeRef(resolved) !== value) throw commandCustodyFailure(`${label} custody token does not match its admitted path`);
+  return resolved;
+}
+
 function exactKeys(value, keys, label) {
   requireRecord(value, label);
   assert(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...keys].sort()), `${label} fields mismatch`);
@@ -95,8 +193,15 @@ function writeJsonAtomic(target, value) {
   fs.mkdirSync(path.dirname(target), {recursive: true});
   safeExistingFile(target, "session record");
   const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
+  const persisted = persistedCustodyRecord(value);
   try {
-    fs.writeFileSync(temporary, `${canonicalJson(value)}\n`, {flag: "wx", mode: 0o600});
+    const handle = fs.openSync(temporary, "wx", 0o600);
+    try {
+      fs.writeFileSync(handle, `${canonicalJson(persisted)}\n`, "utf8");
+      fs.fsyncSync(handle);
+    } finally {
+      fs.closeSync(handle);
+    }
     fs.renameSync(temporary, target);
   } finally {
     if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
@@ -124,7 +229,7 @@ function compileHeartbeat({base, status, lastCommandId = null, childPid = null, 
     session_pid: String(process.pid),
     child_pid: childPid === null ? null : String(childPid),
     last_command_id: lastCommandId,
-    error,
+    error: error === null ? null : opaqueError(error),
     observed_at_utc: new Date().toISOString(),
     heartbeat_sha256: null,
   };
@@ -144,6 +249,7 @@ function validateCommand(command, base) {
   for (const field of ["task", "task_id", "task_kind"]) requireString(command[field], `session command ${field}`);
   requireIdentifier(command.task_id, "session command task ID");
   requireIdentifier(command.task_kind, "session command task kind");
+  validateLocalTaskKindForRole({role: base.role, taskKind: command.task_kind});
   for (const field of ["feature_worktree", "evidence_worktree", "decision_tree_path"]) assert(command[field] === null || typeof command[field] === "string", `session command ${field} is invalid`);
   requireUtc(command.created_at_utc, "session command creation time");
   requireSha(command.command_sha256, "session command digest");
@@ -175,6 +281,7 @@ function commandArgs(base, workerScript, overrides) {
     source_commit: base.sourceCommit,
     source_tree: base.sourceTree,
     worktree: base.worktreePath,
+    scheduler_root: base.schedulerRoot,
     task: overrides.task,
     task_id: overrides.taskId,
     task_kind: overrides.taskKind,
@@ -187,12 +294,13 @@ function commandArgs(base, workerScript, overrides) {
   return args;
 }
 
-function runWorker({base, workerScript, overrides}) {
+function runWorkerProcess({base, effectiveArgv, onSpawn = null}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, commandArgs(base, workerScript, overrides), {
+    const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {
       cwd: base.worktreePath,
       stdio: ["ignore", "pipe", "pipe"],
     });
+    if (typeof onSpawn === "function") onSpawn(child);
     let stdout = "";
     let stderr = "";
     child.stdout.setEncoding("utf8");
@@ -201,16 +309,47 @@ function runWorker({base, workerScript, overrides}) {
     child.stderr.on("data", (chunk) => { stderr += chunk; });
     child.once("error", (error) => reject(error));
     child.once("close", (code, signal) => {
-      if (code !== 0) return reject(new Error(`durable worker exited with ${code ?? signal}: ${stderr.trim() || stdout.trim()}`));
+      if (code !== 0) return reject(new Error(`durable worker exited with ${code ?? signal}: ${opaqueError(stderr.trim() || stdout.trim())}`));
       const line = stdout.trim().split("\n").find((value) => value.length > 0);
       if (!line) return reject(new Error("durable worker returned no handshake"));
       try {
         resolve({handshake: JSON.parse(line), childPid: child.pid});
       } catch (error) {
-        reject(new Error(`durable worker returned invalid handshake: ${error.message}`));
+        reject(new Error(`durable worker returned invalid handshake: ${opaqueError(error)}`));
       }
     });
   });
+}
+
+async function runWorker({scheduler, base, workerScript, overrides, onSpawn = null}) {
+  const effectiveArgv = [process.execPath, ...commandArgs(base, workerScript, overrides)];
+  const binding = createLocalWorkerLaunchAdmission({
+    scheduler,
+    schedulerRoot: base.schedulerRoot,
+    repositoryRoot: base.repositoryRoot,
+    worktreePath: base.worktreePath,
+    workerScriptPath: workerScript,
+    role: base.role,
+    campaignId: base.campaignId,
+    campaignVersion: base.campaignVersion,
+    candidateSha256: base.candidateSha256,
+    sourceCommit: base.sourceCommit,
+    sourceTree: base.sourceTree,
+    sessionId: base.sessionId,
+    launchId: overrides.launchId ?? overrides.taskId,
+    task: overrides.task,
+    taskId: overrides.taskId,
+    taskKind: overrides.taskKind,
+    mode: "ASYNC",
+    effectiveArgv,
+  });
+  const scheduled = await binding.scheduler.run({
+    request: binding.request,
+    admission: binding.admission,
+    resolveCandidate: binding.resolveCandidate,
+    execute: () => runWorkerProcess({base, effectiveArgv, onSpawn}),
+  });
+  return scheduled.output;
 }
 
 function compileCommandResult({base, command, status, handshake = null, error = null}) {
@@ -227,7 +366,7 @@ function compileCommandResult({base, command, status, handshake = null, error = 
     source_commit: base.sourceCommit,
     source_tree: base.sourceTree,
     handshake,
-    error,
+    error: error === null ? null : opaqueError(error),
     observed_at_utc: new Date().toISOString(),
     result_sha256: null,
   };
@@ -237,6 +376,12 @@ function compileCommandResult({base, command, status, handshake = null, error = 
 
 async function runSession() {
   const args = parseArgs(process.argv.slice(2));
+  const schedulerRootInput = args.scheduler_root ?? process.env.AGENTOS_SCHEDULER_ROOT;
+  requireString(schedulerRootInput, "durable worker scheduler authority root");
+  assert(path.isAbsolute(schedulerRootInput), "durable worker scheduler authority root must be absolute");
+  const repositoryRootInput = args.repository_root;
+  requireString(repositoryRootInput, "durable worker repository root");
+  assert(path.isAbsolute(repositoryRootInput), "durable worker repository root must be absolute");
   const base = {
     role: args.role,
     sessionId: args.session_id,
@@ -247,8 +392,11 @@ async function runSession() {
     sourceTree: args.source_tree,
     taskKind: args.task_kind ?? "INITIAL",
     worktreePath: path.resolve(args.worktree ?? ""),
+    schedulerRoot: path.resolve(schedulerRootInput),
+    repositoryRoot: path.resolve(repositoryRootInput),
   };
   requireIdentifier(base.role, "durable worker role");
+  validateLocalTaskKindForRole({role: base.role, taskKind: base.taskKind});
   requireIdentifier(base.sessionId, "durable worker session");
   requireIdentifier(base.campaignId, "durable worker campaign");
   requireString(base.campaignVersion, "durable worker campaign version");
@@ -256,6 +404,8 @@ async function runSession() {
   requireGitObject(base.sourceCommit, "durable worker source commit");
   requireGitObject(base.sourceTree, "durable worker source tree");
   assert(fs.existsSync(base.worktreePath) && fs.statSync(base.worktreePath).isDirectory(), "durable worker worktree is unavailable");
+  const scheduler = createHybridScheduler({authorityRoot: base.schedulerRoot});
+  process.env.AGENTOS_SCHEDULER_ROOT = base.schedulerRoot;
   const workerScript = path.resolve(args.worker_script ?? path.join(path.dirname(new URL(import.meta.url).pathname), "local-agent-worker.mjs"));
   assert(fs.existsSync(workerScript) && fs.statSync(workerScript).isFile(), "durable worker script is unavailable");
   const heartbeatPath = path.resolve(args.heartbeat_path ?? path.join(base.worktreePath, ".agentos-heartbeat.json"));
@@ -274,13 +424,43 @@ async function runSession() {
   requireString(initialCommand.task, "durable worker initial task");
   requireIdentifier(initialCommand.taskId, "durable worker initial task ID");
   requireIdentifier(initialCommand.taskKind, "durable worker initial task kind");
+  const commandCustody = createCommandCustody({repositoryRoot: base.repositoryRoot, worktreePath: base.worktreePath, initialCommand});
   let lastCommandId = null;
   let stopping = false;
   let running = null;
+  let pollTimer = null;
+  let heartbeatTimer = null;
   const writeHeartbeat = (status, error = null) => writeJsonAtomic(heartbeatPath, compileHeartbeat({base, status, lastCommandId, childPid: running?.childPid ?? null, error}));
+  const stop = async () => {
+    if (stopping) return;
+    stopping = true;
+    if (pollTimer !== null) clearInterval(pollTimer);
+    if (heartbeatTimer !== null) clearInterval(heartbeatTimer);
+    const childPid = running?.childPid;
+    if (childPid !== null && childPid !== undefined && /^\d+$/u.test(String(childPid)) && pidAlive(childPid)) {
+      try { process.kill(Number(childPid), "SIGTERM"); } catch {}
+    }
+    const pending = running?.promise;
+    if (pending) await pending.catch(() => {});
+    writeHeartbeat("STOPPING");
+    writeHeartbeat("STOPPED");
+    process.exitCode = 0;
+  };
+  process.once("SIGTERM", () => { void stop(); });
+  process.once("SIGINT", () => { void stop(); });
   writeHeartbeat("STARTING");
   try {
-    const initial = await runWorker({base, workerScript, overrides: initialCommand});
+    let initialPromise = null;
+    let initialChildPid = null;
+    initialPromise = runWorker({
+      scheduler,
+      base,
+      workerScript,
+      overrides: {...initialCommand, launchId: "INITIAL"},
+      onSpawn: (child) => { initialChildPid = child.pid; if (running) running.childPid = child.pid; },
+    });
+    running = {childPid: initialChildPid, promise: initialPromise};
+    const initial = await initialPromise;
     const handshake = validateHandshake(initial.handshake, base);
     writeJsonAtomic(initialReadbackPath, {
       schema: INITIAL_SCHEMA,
@@ -303,16 +483,20 @@ async function runSession() {
       status: "FAILED",
       session_pid: String(process.pid),
       handshake: null,
-      error: error?.message ?? String(error),
+      error: opaqueError(error),
       observed_at_utc: new Date().toISOString(),
       initial_readback_sha256: null,
     };
     failure.initial_readback_sha256 = digestWithout(failure, "initial_readback_sha256");
     writeJsonAtomic(initialReadbackPath, failure);
-    writeHeartbeat("FAILED", failure.error);
-    process.exitCode = 1;
+    if (stopping) writeHeartbeat("STOPPED", failure.error);
+    else {
+      writeHeartbeat("FAILED", failure.error);
+      process.exitCode = 1;
+    }
     return;
   }
+  running = null;
 
   const poll = async () => {
     if (stopping || running !== null) return;
@@ -323,47 +507,40 @@ async function runSession() {
       validateCommand(command, base);
       running = {childPid: null};
       writeHeartbeat("RUNNING");
-      const result = await runWorker({
+      const commandPromise = runWorker({
+        scheduler,
         base,
         workerScript,
         overrides: {
           task: command.task,
           taskId: command.task_id,
           taskKind: command.task_kind,
-          featureWorktree: command.feature_worktree,
-          evidenceWorktree: command.evidence_worktree,
-          decisionTreePath: command.decision_tree_path,
+          featureWorktree: resolveCommandCustody(command.feature_worktree, commandCustody, "session command feature worktree"),
+          evidenceWorktree: resolveCommandCustody(command.evidence_worktree, commandCustody, "session command evidence worktree"),
+          decisionTreePath: resolveCommandCustody(command.decision_tree_path, commandCustody, "session command decision tree"),
+          launchId: command.command_id,
         },
+        onSpawn: (child) => { if (running) running.childPid = child.pid; },
       });
-      running.childPid = result.childPid;
+      running.promise = commandPromise;
+      const result = await commandPromise;
       const handshake = validateHandshake(result.handshake, {...base, taskKind: command.task_kind});
       writeJsonAtomic(commandResultPath, compileCommandResult({base, command, status: "COMPLETED", handshake}));
       lastCommandId = command.command_id;
       writeHeartbeat("RUNNING");
     } catch (error) {
-      const result = compileCommandResult({base, command, status: "FAILED", error: error?.message ?? String(error)});
+      const result = compileCommandResult({base, command, status: "FAILED", error: opaqueError(error)});
       writeJsonAtomic(commandResultPath, result);
       lastCommandId = command.command_id;
       writeHeartbeat("RUNNING", result.error);
     } finally {
-      running = null;
+      if (running?.promise === commandPromise) running = null;
     }
   };
-  const pollTimer = setInterval(() => { void poll(); }, 250);
-  const heartbeatTimer = setInterval(() => {
-    if (!stopping && running === null) writeHeartbeat("RUNNING");
+  pollTimer = setInterval(() => { void poll(); }, 250);
+  heartbeatTimer = setInterval(() => {
+    if (!stopping) writeHeartbeat("RUNNING");
   }, 1_000);
-  const stop = async () => {
-    if (stopping) return;
-    stopping = true;
-    clearInterval(pollTimer);
-    clearInterval(heartbeatTimer);
-    writeHeartbeat("STOPPING");
-    writeHeartbeat("STOPPED");
-    process.exitCode = 0;
-  };
-  process.once("SIGTERM", () => { void stop(); });
-  process.once("SIGINT", () => { void stop(); });
 }
 
 function parseArgs(argv) {

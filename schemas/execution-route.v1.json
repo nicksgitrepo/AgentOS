@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.execution_route.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "attempt", "predecessor_route_sha256", "fallback_trigger", "task_profile_sha256", "policy_sha256", "context_policy_sha256", "capability_catalog_sha256", "context_selection_sha256", "host_attestation_sha256", "task_ref_sha256", "goal_ref_sha256", "project_context_sha256", "source_binding_sha256", "observed_at_utc", "role", "lane", "selection_source", "preference", "preferred_model", "preferred_reasoning_effort", "model", "reasoning_effort", "worker_shape", "workspace_capability", "evidence_path", "estimated_success_probability", "context", "tools", "verifier", "permissions", "cost", "fallback_candidates", "fallback", "excluded_candidates", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.execution_route.v1"},
+    "version": {"const": 1},
+    "status": {"const": "ADMITTED"},
+    "attempt": {"type": "integer", "minimum": 0},
+    "predecessor_route_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "fallback_trigger": {"type": ["string", "null"], "enum": ["MODEL_UNAVAILABLE", "RATE_LIMITED", "CAPACITY_UNAVAILABLE", "CONTEXT_UNAVAILABLE", "BUDGET_EXCEEDED", null]},
+    "task_profile_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "capability_catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "host_attestation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "task_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "goal_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "role": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "lane": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "selection_source": {"enum": ["POLICY_DEFAULT", "OWNER_ROLE_OVERRIDE", "OWNER_LANE_OVERRIDE", "FALLBACK"]},
+    "preference": {"enum": ["BALANCED", "SAVE_EFFORT", "FINISH_SOONER", "TAKE_EXTRA_CARE"]},
+    "preferred_model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "preferred_reasoning_effort": {"enum": ["low", "medium", "high", "max"]},
+    "model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "reasoning_effort": {"enum": ["low", "medium", "high", "max"]},
+    "worker_shape": {"enum": ["SINGLE_BOUNDED_WORKER", "SMALL_PARALLEL_TEAM", "INDEPENDENT_REVIEW_TEAM"]},
+    "workspace_capability": {"enum": ["READ_ONLY_SOURCE", "ASSIGNED_WORKTREE", "HOST_BOUND_WORKSPACE"]},
+    "evidence_path": {"enum": ["TASK_EVIDENCE_RECORD", "CAMPAIGN_HANDOFF_RECORD", "INDEPENDENT_REVIEW_RECORD"]},
+    "estimated_success_probability": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+    "context": {
+      "type": "object", "additionalProperties": false,
+      "required": ["selection_sha256", "required_tokens", "selected_tokens", "host_max_tokens"],
+      "properties": {"selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "required_tokens": {"type": "integer", "minimum": 1}, "selected_tokens": {"type": "integer", "minimum": 1}, "host_max_tokens": {"type": "integer", "minimum": 1}}
+    },
+    "tools": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "allowed"],
+      "properties": {"required": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9._:-]*$"}}, "allowed": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9._:-]*$"}}}
+    },
+    "verifier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "selected"],
+      "properties": {"required": {"enum": ["NONE", "DETERMINISTIC", "INDEPENDENT_AUDITOR", "HIGH_ASSURANCE"]}, "selected": {"enum": ["NONE", "DETERMINISTIC", "INDEPENDENT_AUDITOR", "HIGH_ASSURANCE"]}}
+    },
+    "permissions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "granted"],
+      "properties": {"required": {"type": "array", "items": {"enum": ["READ_SOURCE", "READ_ASSIGNED_WORKTREE", "WRITE_ASSIGNED_WORKTREE", "HOST_LIFECYCLE", "EMIT_EVIDENCE", "INDEPENDENT_REVIEW"]}}, "granted": {"type": "array", "items": {"enum": ["READ_SOURCE", "READ_ASSIGNED_WORKTREE", "WRITE_ASSIGNED_WORKTREE", "HOST_LIFECYCLE", "EMIT_EVIDENCE", "INDEPENDENT_REVIEW"]}}}
+    },
+    "cost": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit", "expected", "max_allowed", "estimated_wall_seconds"],
+      "properties": {"unit": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}, "expected": {"type": "number", "minimum": 0}, "max_allowed": {"type": ["number", "null"], "minimum": 0}, "estimated_wall_seconds": {"type": "number", "exclusiveMinimum": 0}}
+    },
+    "fallback_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["model", "reasoning_effort", "context_tokens", "verifier_strength", "expected_cost", "estimated_wall_seconds", "estimated_success_probability", "worker_shapes", "workspace_capabilities", "evidence_paths"],
+        "properties": {
+          "model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "reasoning_effort": {"enum": ["low", "medium", "high", "max"]},
+          "context_tokens": {"type": "integer", "minimum": 1},
+          "verifier_strength": {"enum": ["NONE", "DETERMINISTIC", "INDEPENDENT_AUDITOR", "HIGH_ASSURANCE"]},
+          "expected_cost": {"type": "number", "minimum": 0},
+          "estimated_wall_seconds": {"type": "number", "exclusiveMinimum": 0},
+          "estimated_success_probability": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+          "worker_shapes": {"type": "array", "items": {"enum": ["SINGLE_BOUNDED_WORKER", "SMALL_PARALLEL_TEAM", "INDEPENDENT_REVIEW_TEAM"]}},
+          "workspace_capabilities": {"type": "array", "items": {"enum": ["READ_ONLY_SOURCE", "ASSIGNED_WORKTREE", "HOST_BOUND_WORKSPACE"]}},
+          "evidence_paths": {"type": "array", "items": {"enum": ["TASK_EVIDENCE_RECORD", "CAMPAIGN_HANDOFF_RECORD", "INDEPENDENT_REVIEW_RECORD"]}}
+        }
+      }
+    },
+    "fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "max_attempts", "allowed_triggers", "ordered_models", "preserve_requirements", "deny_downgrade"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "max_attempts": {"type": "integer", "minimum": 0},
+        "allowed_triggers": {"type": "array", "items": {"enum": ["MODEL_UNAVAILABLE", "RATE_LIMITED", "CAPACITY_UNAVAILABLE", "CONTEXT_UNAVAILABLE", "BUDGET_EXCEEDED"]}},
+        "ordered_models": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}},
+        "preserve_requirements": {"const": true},
+        "deny_downgrade": {"const": true}
+      }
+    },
+    "excluded_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["model", "reasoning_effort", "reasons"],
+        "properties": {
+          "model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "reasoning_effort": {"enum": ["low", "medium", "high", "max"]},
+          "reasons": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"}}
+        }
+      }
+    },
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

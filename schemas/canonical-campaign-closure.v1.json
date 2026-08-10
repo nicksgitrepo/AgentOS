@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.canonical_campaign_closure.v1",
+  "title": "Canonical campaign closure",
+  "description": "An exact, privacy-safe closure receipt binding accepted worker handoffs, the persistent Runtime checkpoint, the existing campaign state, and the owner's selected review delivery result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "activation_status", "campaign_id", "campaign_version", "parallel_plan_sha256",
+    "campaign_state_sha256", "runtime_state_sha256", "runtime_checkpoint_sha256", "final_acceptance_sha256",
+    "owner_delivery_choice", "delivery_policy_sha256", "worker_count", "accepted_worker_count", "closed_worker_count",
+    "active_native_session_count", "exact_worker_closure", "evidence_identity_ok", "universal_closeout_receipts", "protected_actions", "closed_at_utc",
+    "closure_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.canonical_campaign_closure.v1"},
+    "version": {"const": 1},
+    "status": {"const": "CLOSED"},
+    "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "campaign_id": {"$ref": "#/$defs/identifier"},
+    "campaign_version": {"$ref": "#/$defs/identifier"},
+    "parallel_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "campaign_state_sha256": {"$ref": "#/$defs/sha256"},
+    "runtime_state_sha256": {"$ref": "#/$defs/sha256"},
+    "runtime_checkpoint_sha256": {"$ref": "#/$defs/sha256"},
+    "final_acceptance_sha256": {"$ref": "#/$defs/sha256"},
+    "owner_delivery_choice": {"enum": ["REVIEW", "BRANCH", "PUSH", "MERGE", "DEPLOY", "RELEASE"]},
+    "delivery_policy_sha256": {"$ref": "#/$defs/sha256"},
+    "worker_count": {"type": "integer", "minimum": 1},
+    "accepted_worker_count": {"type": "integer", "minimum": 1},
+    "closed_worker_count": {"type": "integer", "minimum": 1},
+    "active_native_session_count": {"const": 0},
+    "exact_worker_closure": {"const": true},
+    "evidence_identity_ok": {"const": true},
+    "universal_closeout_receipts": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sequence", "step", "receipt_ref", "authority", "status", "observed_at"],
+        "properties": {
+          "sequence": {"type": "integer", "minimum": 1, "maximum": 9},
+          "step": {"enum": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"]},
+          "receipt_ref": {"type": "string", "pattern": "^(opaque|ref|sha1|sha256|digest):[A-Za-z0-9._:-]+$"},
+          "authority": {"enum": ["CONTROLLER_READBACK", "CONTROLLER_RECORD", "INDEPENDENT_AUDITOR", "CONTROLLER_INTEGRATION", "HOST_READBACK"]},
+          "status": {"const": "PROVEN"},
+          "observed_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "protected_actions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["acceptance", "activation", "deployment", "merge", "publication", "push", "rollback", "secrets", "spend"],
+      "properties": {
+        "acceptance": {"const": false},
+        "activation": {"const": false},
+        "deployment": {"const": false},
+        "merge": {"const": false},
+        "publication": {"const": false},
+        "push": {"const": false},
+        "rollback": {"const": false},
+        "secrets": {"const": false},
+        "spend": {"const": false}
+      }
+    },
+    "closed_at_utc": {"type": "string", "format": "date-time"},
+    "closure_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

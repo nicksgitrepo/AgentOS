@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/imported-rapid-development-owner-approval.v1.json",
+  "title": "Imported Rapid Development Owner Approval",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "decision",
+    "scope",
+    "project_id",
+    "import_mode",
+    "source_commit",
+    "source_tree",
+    "source_content_sha256",
+    "source_observation_sha256",
+    "owner_actor_digest_sha256",
+    "approved_at_utc",
+    "activation",
+    "approval_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.imported_rapid_development_owner_approval.v1"},
+    "version": {"const": 1},
+    "status": {"const": "APPROVED"},
+    "decision": {"const": "APPROVE_RAPID_DEVELOPMENT"},
+    "scope": {"const": "IMPORTED_RAPID_DEVELOPMENT_PLATFORM_FOUNDATION"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "import_mode": {"enum": ["ADOPT_IN_PLACE", "CLEAN_COPY", "NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"]},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_observation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "owner_actor_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "approved_at_utc": {"type": "string", "format": "date-time"},
+    "activation": {"const": false},
+    "approval_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

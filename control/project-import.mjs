@@ -5,8 +5,18 @@ import fs from "node:fs";
 import path from "node:path";
 import {buildStoredZip, parseStoredZip} from "./deterministic-zip.mjs";
 import {AUDIT_DISCIPLINES} from "./campaign-cascade.mjs";
+import {
+  assertUniversalDevelopmentMode,
+  universalTaskCloseoutPolicy,
+} from "./governance-library.mjs";
 import {validateNormalizationPolicy} from "./normalization-policy.mjs";
 import {validateStandardsRegistry} from "./standards-registry.mjs";
+import {readSourceControlBinding} from "./bootstrap-discovery.mjs";
+import {opaqueSchedulerWorktreeRef} from "./hybrid-scheduler.mjs";
+import {
+  assertNoSymlinkComponents as assertSafePathComponents,
+  ensureDirectory as ensureSafeDirectory,
+} from "./private-control-common.mjs";
 
 export const PROJECT_IMPORT_SCHEMA = "agentos.project_import.v1";
 export const PROJECT_IMPORT_MODES = Object.freeze([
@@ -211,7 +221,7 @@ function publicFiles(entries) {
 
 function sourceObservation(source, collected) {
   const body = {
-    source_root: source,
+    source_root_ref: opaqueSchedulerWorktreeRef(source),
     source_content_sha256: canonicalDigest({included_files: publicFiles(collected.included), excluded_paths: collected.excluded}),
     included_files: collected.included.length,
     excluded_paths: collected.excluded.length,
@@ -254,8 +264,16 @@ export function inspectProjectSource(sourceRoot) {
   const source = canonicalExistingDirectory(sourceRoot, "project import source root");
   const collected = collectSource(source);
   const manifest = sourceManifest(source, collected);
+  let sourceControl = null;
+  try {
+    sourceControl = readSourceControlBinding(source);
+  } catch (error) {
+    if (error?.code !== "SOURCE_CONTROL_READBACK_REQUIRED") throw error;
+  }
   return {
-    source_root: source,
+    source_root_ref: opaqueSchedulerWorktreeRef(source),
+    source_commit: sourceControl?.source_commit ?? null,
+    source_tree: sourceControl?.source_tree ?? null,
     source_content_sha256: manifest.source_content_sha256,
     source_observation_sha256: manifest.source_observation.observation_sha256,
     included_files: manifest.included_files.length,
@@ -288,6 +306,7 @@ export function compileSourcePreservationPlan(sourceRoot, destinationRoot, {allo
 }
 
 function writeExclusive(target, bytes) {
+  assertSafePathComponents(path.dirname(target), "source preservation target parent");
   const descriptor = fs.openSync(target, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o444);
   try {
     fs.writeFileSync(descriptor, bytes);
@@ -298,8 +317,27 @@ function writeExclusive(target, bytes) {
 }
 
 function moveExclusive(source, target) {
+  assertSafePathComponents(source, "source preservation staged artifact");
+  assertSafePathComponents(path.dirname(target), "source preservation destination parent");
+  assert(!fs.existsSync(target), `source preservation destination already exists: ${path.basename(target)}`);
   fs.linkSync(source, target);
+  const targetStat = fs.lstatSync(target);
+  assert(targetStat.isFile() && !targetStat.isSymbolicLink(), "source preservation destination became unsafe");
   fs.unlinkSync(source);
+}
+
+function rollbackPublishedArtifacts(destinationRoot, published, expectedBytes) {
+  const rolledBack = [];
+  for (const name of [...published].reverse()) {
+    const target = path.join(destinationRoot, name);
+    assertSafePathComponents(target, `source preservation rollback target ${name}`);
+    const stat = fs.lstatSync(target);
+    assert(stat.isFile() && !stat.isSymbolicLink(), `source preservation rollback target is unsafe: ${name}`);
+    assert(sha256(fs.readFileSync(target)) === sha256(expectedBytes.get(name)), `source preservation rollback target changed: ${name}`);
+    fs.unlinkSync(target);
+    rolledBack.push(name);
+  }
+  return rolledBack.sort(compareUtf8);
 }
 
 export function verifySourcePreservation(outputRoot, expectedReceipt = null) {
@@ -356,25 +394,63 @@ export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allo
     created_at_utc: nowUtc,
   };
   const receipt = {...receiptBody, receipt_sha256: canonicalDigest(receiptBody)};
-  fs.mkdirSync(plan.destination_root, {recursive: true});
+  const destinationRootPath = ensureSafeDirectory(plan.destination_root, "project preservation output root");
+  const artifactBytes = new Map([
+    ["source-preservation.zip", plan.archive_bytes],
+    ["source-preservation.manifest.json", plan.manifest_bytes],
+    ["source-preservation.index.jsonl", plan.index_bytes],
+    ["import-exclusions.md", plan.exclusions_bytes],
+    ["source-preservation.receipt.json", Buffer.from(canonicalJson(receipt), "utf8")],
+  ]);
+  const artifactNames = [...artifactBytes.keys()];
+  const existing = artifactNames.filter((name) => fs.existsSync(path.join(destinationRootPath, name)));
+  if (existing.length > 0) {
+    const exact = existing.length === artifactNames.length && existing.every((name) => {
+      const target = path.join(destinationRootPath, name);
+      assertSafePathComponents(target, `existing source preservation target ${name}`);
+      const stat = fs.lstatSync(target);
+      return stat.isFile() && !stat.isSymbolicLink() && sha256(fs.readFileSync(target)) === sha256(artifactBytes.get(name));
+    });
+    if (exact) return {receipt: JSON.parse(fs.readFileSync(path.join(destinationRootPath, "source-preservation.receipt.json"), "utf8")), verification: verifySourcePreservation(destinationRootPath)};
+    const conflict = new Error("source preservation destination contains a partial or conflicting artifact set");
+    conflict.code = "SOURCE_PRESERVATION_TARGET_CONFLICT";
+    throw conflict;
+  }
   const temporary = fs.mkdtempSync(path.join(plan.destination_root, ".agentos-source-preservation-"));
+  assertSafePathComponents(temporary, "source preservation staging root");
+  const published = [];
   try {
-    for (const [name, bytes] of [
-      ["source-preservation.zip", plan.archive_bytes],
-      ["source-preservation.manifest.json", plan.manifest_bytes],
-      ["source-preservation.index.jsonl", plan.index_bytes],
-      ["import-exclusions.md", plan.exclusions_bytes],
-      ["source-preservation.receipt.json", Buffer.from(canonicalJson(receipt), "utf8")],
-    ]) writeExclusive(path.join(temporary, name), bytes);
+    for (const [name, bytes] of artifactBytes) writeExclusive(path.join(temporary, name), bytes);
     verifySourcePreservation(temporary);
     const finalCheck = compileSourcePreservationPlan(plan.source_root, plan.destination_root, {allowDestinationInsideSource});
     assert(finalCheck.manifest.source_content_sha256 === plan.manifest.source_content_sha256
       && finalCheck.manifest.source_observation.observation_sha256 === plan.manifest.source_observation.observation_sha256, "source changed during preservation publish");
-    for (const name of ["source-preservation.zip", "source-preservation.manifest.json", "source-preservation.index.jsonl", "import-exclusions.md", "source-preservation.receipt.json"]) moveExclusive(path.join(temporary, name), path.join(plan.destination_root, name));
+    for (const name of artifactNames) {
+      const beforePublish = compileSourcePreservationPlan(plan.source_root, plan.destination_root, {allowDestinationInsideSource});
+      assert(beforePublish.manifest.source_content_sha256 === plan.manifest.source_content_sha256
+        && beforePublish.manifest.source_observation.observation_sha256 === plan.manifest.source_observation.observation_sha256, "source changed during preservation publish");
+      moveExclusive(path.join(temporary, name), path.join(destinationRootPath, name));
+      published.push(name);
+    }
     fs.rmdirSync(temporary);
-    return {receipt, verification: verifySourcePreservation(plan.destination_root)};
+    return {receipt, verification: verifySourcePreservation(destinationRootPath)};
+  } catch (error) {
+    try {
+      rollbackPublishedArtifacts(destinationRootPath, published, artifactBytes);
+    } catch (rollbackError) {
+      const recovery = new Error(`${error.message}; source preservation rollback failed: ${rollbackError.message}`);
+      recovery.code = "SOURCE_PRESERVATION_RECOVERY_REQUIRED";
+      throw recovery;
+    }
+    const rolledBack = new Error(`source preservation rolled back after publish failure: ${error.message}`);
+    rolledBack.code = "SOURCE_PRESERVATION_ROLLED_BACK";
+    rolledBack.published_paths = [...published].sort(compareUtf8);
+    throw rolledBack;
   } finally {
-    if (fs.existsSync(temporary)) fs.rmSync(temporary, {recursive: true, force: true});
+    if (fs.existsSync(temporary)) {
+      assertSafePathComponents(temporary, "source preservation staging root");
+      fs.rmSync(temporary, {recursive: true, force: true});
+    }
   }
 }
 
@@ -411,7 +487,11 @@ export function recommendProjectImportMode(discoveryFacts = []) {
   };
 }
 
-export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null} = {}) {
+export function compileProjectImportPlan({projectId, mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null, rapidDevelopmentApproved = false, rapidDevelopmentApproval = null} = {}) {
+  assert(typeof projectId === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(projectId), "project import project ID is required", "PROJECT_BINDING_REQUIRED");
+  if (rapidDevelopmentApproved) assert(rapidDevelopmentApproval !== null && typeof rapidDevelopmentApproval === "object", "imported rapid development requires a typed owner approval receipt", "OWNER_APPROVAL_REQUIRED");
+  if (!rapidDevelopmentApproved) assert(rapidDevelopmentApproval === null, "unactivated imported owner approval cannot be retained", "IMPORTED_OWNER_APPROVAL_INVALID");
+  assertUniversalDevelopmentMode("IMPORT");
   assert(PROJECT_IMPORT_MODES.includes(mode), "project import mode is invalid or missing");
   requireRecord(standardsRegistry, "project import standards registry");
   validateStandardsRegistry(standardsRegistry);
@@ -449,19 +529,30 @@ export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = nu
     version: 1,
     governance_version: "2.1rc",
     status: "PLANNED",
+    project_id: projectId,
     mode,
-    source_root: roots.source,
-    destination_root: roots.destination,
+    source_root_ref: sourceIdentity.source_root_ref,
+    destination_root_ref: roots.destination === null ? null : opaqueSchedulerWorktreeRef(roots.destination),
     source_remains_unchanged_until_cutover: true,
     source_sidecar_exception: storageMode === "EXTERNAL_CONTROL_PLANE"
       ? "EXTERNAL_CONTROL_PLANE_WRITES_DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS_OUTSIDE_PROJECT_ROOT;_PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED"
       : "ADOPT_IN_PLACE_MAY_WRITE_ONLY_THE_DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS_TO_THE_RESERVED_AGENTOS_IMPORT_ROOT;_PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED",
     source_identity: sourceIdentity,
+    rapid_development: {
+      mode: "OPT_IN",
+      owner_approval_required: true,
+      owner_approved: Boolean(rapidDevelopmentApproved),
+      owner_approval: rapidDevelopmentApproval,
+      owner_approval_sha256: rapidDevelopmentApproval?.approval_sha256 ?? null,
+      initial_stage: rapidDevelopmentApproved ? "PLATFORM_DISCOVERY" : "IMPORT_APPROVAL_REQUIRED",
+      workflow: "agentos.rapid_prototype_workflow.v1",
+      rule: "IMPORTED_PROJECT_REMAINS_DISCOVERY_ONLY_UNTIL_EXPLICIT_OWNER_APPROVAL_FOR_RAPID_DEVELOPMENT",
+    },
     preservation: {
       required_before_build: true,
       storage_mode: storageMode,
-      boundary_root: boundaryRoot,
-      root: preservationRoot,
+      boundary_root_ref: boundaryRoot === null ? null : opaqueSchedulerWorktreeRef(boundaryRoot),
+      root_ref: preservationRoot === null ? null : opaqueSchedulerWorktreeRef(preservationRoot),
       artifacts: ["source-preservation.zip", "source-preservation.manifest.json", "source-preservation.index.jsonl", "source-preservation.receipt.json", "import-exclusions.md"],
       secret_handling: "EXCLUDE_AND_RECORD;_NEVER_COPY_SECRETS_OR_CREDENTIALS",
       unsafe_object_handling: "REJECT_SYMLINKS_DEVICES_SOCKETS_AND_UNSAFE_FILESYSTEM_OBJECTS",
@@ -475,9 +566,11 @@ export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = nu
       full_audit_required: fullAudit,
       lanes: auditSchedule(mode),
       scheduler: "control/campaign-cascade.mjs",
+      governed_scheduler: "control/hybrid-scheduler.mjs",
       acceptance: "FUNCTION_REQUIREMENTS_PASS_THEN_DESIGN_BIBLE_PASS_THEN_SECURITY_PASS;_CODE_QUALITY_HYGIENE_REMAINS_AUDIT_DISCIPLINE",
       writer_rule: "AUDITORS_READ_ONLY;_ONE_MIGRATION_WRITER_CUSTODY_AT_A_TIME",
     },
+    universal_closeout: universalTaskCloseoutPolicy("IMPORT"),
     normalization: {
       execute_in_first_governed_campaign: fullAudit,
       rename_rule: "PRESERVE_EXTERNAL;_ALIAS_THEN_MIGRATE_WHEN_SAFE;_RENAME_INTERNAL_ONLY_AFTER_REFERENCE_SCAN",
@@ -502,33 +595,49 @@ export function compileProjectImportPlan({mode, sourceRoot, destinationRoot = nu
 }
 
 export function validateProjectImportPlan(plan) {
+  assert(!Object.hasOwn(plan, "destination_root"), "project import plan cannot persist a raw destination root", "PROJECT_IMPORT_PRIVATE_PATH");
+  assert(!Object.hasOwn(plan.preservation ?? {}, "root") && !Object.hasOwn(plan.preservation ?? {}, "boundary_root"), "project import plan cannot persist raw preservation roots", "PROJECT_IMPORT_PRIVATE_PATH");
+  assert(typeof plan.project_id === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(plan.project_id), "project import project ID is invalid", "PROJECT_BINDING_REQUIRED");
+  if (plan.rapid_development?.owner_approved) {
+    const approval = plan.rapid_development.owner_approval;
+    validateTypedImportedApproval(approval, {projectId: plan.project_id, sourceBinding: plan.source_identity});
+    assert(plan.rapid_development.owner_approval_sha256 === approval.approval_sha256, "project import owner approval digest is not bound to the embedded receipt", "IMPORTED_OWNER_APPROVAL_INVALID");
+    const sourceContentSha256 = plan.source_identity?.source_content_sha256 ?? plan.source_identity?.content_sha256;
+    const sourceObservationSha256 = plan.source_identity?.source_observation_sha256 ?? plan.source_identity?.observation_sha256;
+    assert(approval.import_mode === plan.mode, "project import owner approval mode is stale", "IMPORTED_OWNER_APPROVAL_SOURCE_MISMATCH");
+    assert(typeof sourceContentSha256 === "string" && approval.source_content_sha256 === sourceContentSha256, "project import owner approval content binding is stale", "IMPORTED_OWNER_APPROVAL_SOURCE_MISMATCH");
+    assert(typeof sourceObservationSha256 === "string" && approval.source_observation_sha256 === sourceObservationSha256, "project import owner approval observation binding is stale", "IMPORTED_OWNER_APPROVAL_SOURCE_MISMATCH");
+    assert(typeof plan.source_identity?.source_commit === "string" && approval.source_commit === plan.source_identity.source_commit, "project import owner approval commit binding is unavailable or stale", "IMPORTED_OWNER_APPROVAL_SOURCE_MISMATCH");
+    assert(typeof plan.source_identity?.source_tree === "string" && approval.source_tree === plan.source_identity.source_tree, "project import owner approval tree binding is unavailable or stale", "IMPORTED_OWNER_APPROVAL_SOURCE_MISMATCH");
+  }
+  if (!plan.rapid_development?.owner_approved) assert(plan.rapid_development?.owner_approval === null, "project import cannot retain an unactivated owner approval", "IMPORTED_OWNER_APPROVAL_INVALID");
+  assertUniversalDevelopmentMode("IMPORT");
   requireRecord(plan, "project import plan");
   assert(plan.schema === PROJECT_IMPORT_SCHEMA && plan.version === 1 && plan.governance_version === "2.1rc", "project import plan identity is invalid");
   assert(PROJECT_IMPORT_STATUSES.includes(plan.status), "project import plan status is invalid");
   assert(PROJECT_IMPORT_MODES.includes(plan.mode), "project import plan mode is invalid");
-  requireString(plan.source_root, "project import source root");
-  assert(plan.destination_root === null || typeof plan.destination_root === "string", "project import destination root is invalid");
+  assert(typeof plan.source_root_ref === "string" && /^opaque:worktree:[0-9a-f]{64}$/u.test(plan.source_root_ref), "project import source root reference is invalid", "PROJECT_SOURCE_REFERENCE_REQUIRED");
+  assert(plan.destination_root_ref === null || (typeof plan.destination_root_ref === "string" && /^opaque:worktree:[0-9a-f]{64}$/u.test(plan.destination_root_ref)), "project import destination root reference is invalid");
   assert(plan.source_remains_unchanged_until_cutover === true, "project import plan permits source mutation before cutover");
   assert(plan.source_sidecar_exception.includes("DETERMINISTIC_SOURCE_PRESERVATION_ARTIFACTS")
     && plan.source_sidecar_exception.includes("PRODUCT_SOURCE_FILES_REMAIN_UNCHANGED"), "project import source sidecar boundary is weakened");
   requireRecord(plan.source_identity, "project import source identity");
+  assert(typeof plan.source_identity.source_root_ref === "string" && /^opaque:worktree:[0-9a-f]{64}$/u.test(plan.source_identity.source_root_ref), "project import source identity reference is invalid", "PROJECT_SOURCE_REFERENCE_REQUIRED");
   requireSha(plan.source_identity.source_content_sha256, "project import source content identity");
   requireSha(plan.source_identity.source_observation_sha256, "project import source observation identity");
-  assert(plan.source_identity.source_root === plan.source_root, "project import source identity is bound to a different source root");
+  assert(plan.source_identity.source_root_ref === plan.source_root_ref, "project import source identity is bound to a different source reference");
+  requireRecord(plan.rapid_development, "project import rapid development policy");
+  assert(plan.rapid_development.mode === "OPT_IN" && plan.rapid_development.owner_approval_required === true, "project import rapid development must remain owner opt-in");
+  assert(typeof plan.rapid_development.owner_approved === "boolean", "project import rapid development approval is invalid");
+  assert(plan.rapid_development.initial_stage === (plan.rapid_development.owner_approved ? "PLATFORM_DISCOVERY" : "IMPORT_APPROVAL_REQUIRED"), "project import rapid development stage is inconsistent with approval");
+  assert(plan.rapid_development.workflow === "agentos.rapid_prototype_workflow.v1", "project import rapid development workflow is invalid");
+  assert(plan.rapid_development.rule.includes("EXPLICIT_OWNER_APPROVAL"), "project import rapid development approval rule is weakened");
   requireRecord(plan.preservation, "project import preservation");
   assert(plan.preservation.required_before_build === true && Array.isArray(plan.preservation.artifacts)
     && JSON.stringify(plan.preservation.artifacts) === JSON.stringify(["source-preservation.zip", "source-preservation.manifest.json", "source-preservation.index.jsonl", "source-preservation.receipt.json", "import-exclusions.md"]), "project import preservation gate is incomplete");
   assert(PROJECT_IMPORT_STORAGE_MODES.includes(plan.preservation.storage_mode), "project import preservation storage mode is invalid");
-  assert(plan.preservation.boundary_root === null || typeof plan.preservation.boundary_root === "string", "project import preservation boundary is invalid");
-  if (plan.preservation.root !== null) {
-    requireString(plan.preservation.root, "project import preservation root");
-    assert(path.isAbsolute(plan.preservation.root), "project import preservation root must be absolute");
-    if (plan.preservation.storage_mode === "EXTERNAL_CONTROL_PLANE") {
-      assert(plan.preservation.boundary_root !== null && isInside(path.resolve(plan.preservation.boundary_root), path.resolve(plan.preservation.root)), "external project preservation escapes its control plane");
-    } else if (plan.destination_root !== null) {
-      assert(isInside(path.resolve(plan.destination_root), path.resolve(plan.preservation.root)), "project source preservation root must remain inside the destination project");
-    }
-  }
+  assert(plan.preservation.boundary_root_ref === null || (typeof plan.preservation.boundary_root_ref === "string" && /^opaque:worktree:[0-9a-f]{64}$/u.test(plan.preservation.boundary_root_ref)), "project import preservation boundary reference is invalid");
+  assert(plan.preservation.root_ref === null || (typeof plan.preservation.root_ref === "string" && /^opaque:worktree:[0-9a-f]{64}$/u.test(plan.preservation.root_ref)), "project import preservation root reference is invalid");
   requireSha(plan.standards_registry_sha256, "project import standards binding");
   requireSha(plan.normalization_sha256, "project import normalization binding");
   assert(Array.isArray(plan.phases) && JSON.stringify(plan.phases) === JSON.stringify(phaseNames(plan.mode)), "project import phase plan does not match its mode");
@@ -545,6 +654,9 @@ export function validateProjectImportPlan(plan) {
     assert(lane.schedule === (fullAudit ? "PARALLEL_READ_ONLY_AT_SUBSTANTIAL_CHECKPOINTS" : "BASELINE_ONLY_UNTIL_CAMPAIGN_ADMISSION"), "project import audit schedule does not match its mode");
   }
   assert(plan.audit.scheduler === "control/campaign-cascade.mjs", "project import created a competing audit scheduler");
+  assert(plan.audit.governed_scheduler === "control/hybrid-scheduler.mjs", "project import resource-governed work is not bound to the shared hybrid scheduler");
+  assert(JSON.stringify(plan.universal_closeout) === JSON.stringify(universalTaskCloseoutPolicy("IMPORT")),
+    "project import universal closeout policy differs from general governance");
   assert(plan.audit.acceptance.includes("FUNCTION_REQUIREMENTS_PASS_THEN_DESIGN_BIBLE_PASS_THEN_SECURITY_PASS"), "project import acceptance order is invalid");
   assert(plan.cutover.status === "NOT_AUTHORIZED" && plan.cutover.never_rewrites_source_in_place === true, "project import cutover boundary is weakened");
   assert(plan.normalization.execute_in_first_governed_campaign === fullAudit, "project import normalization phase is not bound to its mode");
@@ -558,3 +670,4 @@ export function validateProjectImportPlan(plan) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("project import controller loaded\n");
+import {validateTypedImportedApproval} from "./audit-driven-integration-pyramid.mjs";

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.canonical_campaign_admission.v1",
+  "title": "Canonical campaign admission",
+  "description": "A privacy-safe projection from an already validated Bootstrap plan into the existing parallel campaign scheduler. Host-local prompts and identities are deliberately absent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "activation_status", "team_id", "project_id", "environment_id",
+    "campaign_id", "campaign_version", "logical_lineage_id", "goal_id", "goal_sha256", "source",
+    "bootstrap_plan_sha256", "bootstrap_context_sha256", "delivery", "review_interval_minutes",
+    "progress_window_minutes", "max_concurrent_workers", "auditor_role", "lanes", "parallel_plan_sha256",
+    "admission_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.canonical_campaign_admission.v1"},
+    "version": {"const": 1},
+    "status": {"const": "ADMITTED"},
+    "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "team_id": {"$ref": "#/$defs/identifier"},
+    "project_id": {"$ref": "#/$defs/identifier"},
+    "environment_id": {"$ref": "#/$defs/identifier"},
+    "campaign_id": {"$ref": "#/$defs/identifier"},
+    "campaign_version": {"$ref": "#/$defs/identifier"},
+    "logical_lineage_id": {"$ref": "#/$defs/identifier"},
+    "goal_id": {"$ref": "#/$defs/identifier"},
+    "goal_sha256": {"$ref": "#/$defs/sha256"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree", "worktree_id"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/sourceSha1"},
+        "tree": {"$ref": "#/$defs/sourceSha1"},
+        "worktree_id": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "bootstrap_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "bootstrap_context_sha256": {"$ref": "#/$defs/sha256"},
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_sha256", "owner_choice"],
+      "properties": {
+        "policy_sha256": {"$ref": "#/$defs/sha256"},
+        "owner_choice": {"enum": ["REVIEW", "BRANCH", "PUSH", "MERGE", "DEPLOY", "RELEASE"]}
+      }
+    },
+    "review_interval_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+    "progress_window_minutes": {"type": "integer", "minimum": 1, "maximum": 240},
+    "max_concurrent_workers": {"type": "integer", "minimum": 1},
+    "auditor_role": {"const": "INDEPENDENT_AUDITOR"},
+    "lanes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/lane"}
+    },
+    "parallel_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "admission_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sourceSha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane_id", "native_role", "worktree_mode", "dependencies", "writable_scope", "task_sha256"],
+      "properties": {
+        "lane_id": {"$ref": "#/$defs/identifier"},
+        "native_role": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+        "worktree_mode": {"enum": ["PROJECT_LOCAL_SESSION", "ISOLATED_WORKTREE"]},
+        "dependencies": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+        "writable_scope": {"$ref": "#/$defs/identifier"},
+        "task_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

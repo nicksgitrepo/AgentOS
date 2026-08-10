@@ -8,6 +8,14 @@ import path from "node:path";
 import {execFileSync, spawn, spawnSync} from "node:child_process";
 import {compileControllerAdapterReadback} from "./agentos-controller.mjs";
 import {LOCAL_WORKER_ROLES} from "./local-campaign-admission.mjs";
+import {validateLocalTaskKindForRole} from "./local-task-kinds.mjs";
+import {redactPersistedText} from "./persisted-record-privacy.mjs";
+import {
+  compileHybridSchedulerCommandDescriptor,
+  compileHybridSchedulerRequest,
+  createHybridScheduler,
+  opaqueSchedulerWorktreeRef,
+} from "./hybrid-scheduler.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -20,6 +28,15 @@ function assert(condition, message) {
 
 function requireString(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
+}
+
+function safeRuntimeText(value, fallback = "UNAVAILABLE") {
+  if (value === null || value === undefined) return fallback;
+  try {
+    return redactPersistedText(String(value)).text.replace(/\s+/gu, " ").trim().slice(0, 2000);
+  } catch {
+    return `opaque:error:${crypto.createHash("sha256").update(String(value), "utf8").digest("hex")}`;
+  }
 }
 
 function requireSha(value, label) {
@@ -52,6 +69,27 @@ function digestWithout(value, field) {
   return crypto.createHash("sha256").update(JSON.stringify(canonicalize(body)), "utf8").digest("hex");
 }
 
+const PERSISTED_DIGEST_FIELDS = new Set(["handshake_sha256", "readback_sha256", "session_sha256", "heartbeat_sha256", "command_sha256", "result_sha256", "initial_readback_sha256"]);
+const PRIVATE_PATH_TEXT = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[^\/\s"'`<>)}\]]+\/)+[^\/\s"'`<>)}\]]+|[A-Za-z]:[\\/]|\\\\)/u;
+
+function persistedCustodyRecord(value) {
+  if (Array.isArray(value)) return value.map(persistedCustodyRecord);
+  if (value !== null && typeof value === "object") {
+    const record = Object.fromEntries(Object.entries(value).map(([key, child]) => [key, persistedCustodyRecord(child)]));
+    for (const field of PERSISTED_DIGEST_FIELDS) {
+      if (Object.prototype.hasOwnProperty.call(record, field)) record[field] = digestWithout(record, field);
+    }
+    return record;
+  }
+  if (typeof value !== "string") return value;
+  if (path.isAbsolute(value) || PRIVATE_PATH_TEXT.test(value)) {
+    return path.isAbsolute(value) || /^[A-Za-z]:[\\/]|^\\\\/u.test(value)
+      ? opaqueSchedulerWorktreeRef(value)
+      : redactPersistedText(value).text;
+  }
+  return value;
+}
+
 function canonicalRoot(root) {
   requireString(root, "local runtime repository root");
   const resolved = fs.realpathSync.native(path.resolve(root));
@@ -60,10 +98,23 @@ function canonicalRoot(root) {
   return resolved;
 }
 
+function assertNoSymlinkAncestors(root, target, label) {
+  let current = target;
+  while (true) {
+    if (fs.existsSync(current)) assert(!fs.lstatSync(current).isSymbolicLink(), `${label} contains a symbolic-link component`);
+    if (current === root) return;
+    const parent = path.dirname(current);
+    assert(parent !== current && parent.startsWith(`${root}${path.sep}`), `${label} escapes the bound root`);
+    current = parent;
+  }
+}
+
 function safeChild(root, child) {
   const resolvedRoot = canonicalRoot(root);
+  assert(!path.isAbsolute(child), "local runtime path must be relative");
   const target = path.resolve(resolvedRoot, child);
   assert(target === resolvedRoot || target.startsWith(`${resolvedRoot}${path.sep}`), "local runtime path escapes the development root");
+  assertNoSymlinkAncestors(resolvedRoot, target, "local runtime path");
   return target;
 }
 
@@ -71,17 +122,28 @@ function git(root, args) {
   try {
     return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
   } catch (error) {
-    const detail = error.stderr?.toString().trim() || error.message;
+    const detail = safeRuntimeText(error.stderr?.toString().trim() || error.message);
     throw new Error(`local runtime git readback failed for git ${args.join(" ")}: ${detail}`);
   }
 }
 
 function writeJsonAtomic(target, value) {
   fs.mkdirSync(path.dirname(target), {recursive: true});
+  assert(!fs.lstatSync(path.dirname(target)).isSymbolicLink(), "local runtime record parent may not be a symlink");
   assert(!fs.existsSync(target) || !fs.lstatSync(target).isSymbolicLink(), "local runtime record may not be a symlink");
   const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
-  fs.writeFileSync(temporary, `${JSON.stringify(value)}\n`, {flag: "wx", mode: 0o600});
-  fs.renameSync(temporary, target);
+  try {
+    const handle = fs.openSync(temporary, "wx", 0o600);
+    try {
+      fs.writeFileSync(handle, `${JSON.stringify(persistedCustodyRecord(value))}\n`, "utf8");
+      fs.fsyncSync(handle);
+    } finally {
+      fs.closeSync(handle);
+    }
+    fs.renameSync(temporary, target);
+  } finally {
+    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
+  }
   return JSON.parse(fs.readFileSync(target, "utf8"));
 }
 
@@ -95,6 +157,8 @@ function readJson(target) {
 function ensureWorktree({repoRoot, worktreePath, sourceCommit, sourceTree}) {
   const target = safeChild(repoRoot, path.relative(repoRoot, worktreePath));
   if (!fs.existsSync(target)) {
+    fs.mkdirSync(path.dirname(target), {recursive: true});
+    assert(!fs.lstatSync(path.dirname(target)).isSymbolicLink(), "local worker worktree parent may not be a symlink");
     execFileSync("git", ["-C", repoRoot, "worktree", "add", "--detach", target, sourceCommit], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
   }
   const stat = fs.lstatSync(target);
@@ -102,6 +166,212 @@ function ensureWorktree({repoRoot, worktreePath, sourceCommit, sourceTree}) {
   assert(git(target, ["rev-parse", "HEAD"]) === sourceCommit, "local worker worktree commit differs");
   assert(git(target, ["rev-parse", "HEAD^{tree}"]) === sourceTree, "local worker worktree tree differs");
   return target;
+}
+
+function schedulerHash(value) {
+  return crypto.createHash("sha256").update(String(value), "utf8").digest("hex");
+}
+
+function schedulerFailure(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
+export function createLocalWorkerLaunchAdmission({
+  scheduler = null,
+  schedulerRoot,
+  repositoryRoot = null,
+  worktreePath,
+  workerScriptPath,
+  role,
+  campaignId,
+  campaignVersion,
+  candidateSha256,
+  sourceCommit,
+  sourceTree,
+  sessionId,
+  launchId,
+  task,
+  taskId,
+  taskKind,
+  mode = "ASYNC",
+  effectiveArgv,
+} = {}) {
+  requireString(schedulerRoot, "local worker scheduler root");
+  assert(path.isAbsolute(schedulerRoot), "local worker scheduler root must be absolute");
+  requireString(worktreePath, "local worker launch worktree");
+  assert(path.isAbsolute(worktreePath), "local worker launch worktree must be absolute");
+  requireString(workerScriptPath, "local worker launch script");
+  assert(path.isAbsolute(workerScriptPath), "local worker launch script must be absolute");
+  requireIdentifier(role, "local worker launch role");
+  requireIdentifier(campaignId, "local worker launch campaign");
+  requireString(campaignVersion, "local worker launch campaign version");
+  requireSha(candidateSha256, "local worker launch candidate");
+  requireGitObject(sourceCommit, "local worker launch source commit");
+  requireGitObject(sourceTree, "local worker launch source tree");
+  requireIdentifier(sessionId, "local worker launch session");
+  requireIdentifier(launchId, "local worker launch ID");
+  requireString(task, "local worker launch task");
+  requireIdentifier(taskId, "local worker launch task ID");
+  requireIdentifier(taskKind, "local worker launch task kind");
+  requireIdentifier(mode, "local worker launch mode");
+  assert(mode === "SYNC" || mode === "ASYNC", "local worker launch mode is invalid");
+  const repository = repositoryRoot === null ? worktreePath : repositoryRoot;
+  requireString(repository, "local worker launch repository root");
+  assert(path.isAbsolute(repository), "local worker launch repository root must be absolute");
+  const goal = `${campaignId}:${campaignVersion}:${role}:${sessionId}:${launchId}:${taskId}:${taskKind}:${schedulerHash(task)}`;
+  const goalBinding = `GOAL-${schedulerHash(goal).slice(0, 24).toUpperCase()}`;
+  const sourceBinding = `SOURCE-${sourceCommit.slice(0, 20).toUpperCase()}-${sourceTree.slice(0, 20).toUpperCase()}`;
+  const requestId = `REQUEST-${schedulerHash(`${goal}:${sourceCommit}:${sourceTree}:${mode}`).slice(0, 32).toUpperCase()}`;
+  const requesterId = `REQUESTER-${schedulerHash(`${repository}:${role}`).slice(0, 24).toUpperCase()}`;
+  const lane = `LANE-${schedulerHash(goal).slice(0, 24).toUpperCase()}`;
+  const repositoryId = `REPOSITORY-${schedulerHash(repository).slice(0, 24).toUpperCase()}`;
+  const worktreeId = `WORKTREE-${schedulerHash(worktreePath).slice(0, 24).toUpperCase()}`;
+  const workingDirectoryRef = opaqueSchedulerWorktreeRef(worktreePath);
+  const coverage = [goalBinding, sourceBinding].sort();
+  const dependsOn = [sourceBinding];
+  assert(Array.isArray(effectiveArgv) && effectiveArgv.length > 1, "local worker effective argv is required");
+  const commandArgv = compileHybridSchedulerCommandDescriptor(effectiveArgv);
+  const runtimeAllowedScope = [...new Set([
+    repository,
+    schedulerRoot,
+    worktreePath,
+    path.dirname(workerScriptPath),
+    path.dirname(process.execPath),
+  ].map((value) => path.resolve(value)))].sort();
+  const request = compileHybridSchedulerRequest({
+    requestId,
+    requesterId,
+    lane,
+    repositoryId,
+    worktreeId,
+    candidateCommit: sourceCommit,
+    candidateTreeOrDigest: sourceTree,
+    cleanState: true,
+    resourceClass: "AGENT_BUILD",
+    workingDirectoryRef,
+    commandArgv,
+    toolchainProfile: "NODE_HOST",
+    proofClass: "AGENT_SESSION",
+    whyNeeded: "ADMITTED_LOCAL_WORKER_LAUNCH",
+    expectedProof: "SOURCE_BOUND_WORKER_HANDSHAKE",
+    coverage,
+    dependsOn,
+    timeoutClass: "BOUNDED",
+    cachePolicy: "NONE",
+    secretPolicy: "REDACTED",
+  });
+  const boundScheduler = scheduler ?? createHybridScheduler({authorityRoot: schedulerRoot});
+  const assertBound = (admitted) => {
+    if (admitted.request_id !== requestId
+      || admitted.requester_id !== requesterId
+      || admitted.lane !== lane
+      || admitted.repository_id !== repositoryId
+      || admitted.worktree_id !== worktreeId
+      || admitted.candidate_commit !== sourceCommit
+      || admitted.candidate_tree_or_digest !== sourceTree
+      || admitted.clean_state !== true
+      || admitted.resource_class !== "AGENT_BUILD"
+      || admitted.working_directory_ref !== workingDirectoryRef
+      || JSON.stringify(admitted.coverage) !== JSON.stringify(coverage)
+      || JSON.stringify(admitted.depends_on) !== JSON.stringify(dependsOn)
+      || admitted.toolchain_profile !== "NODE_HOST"
+      || admitted.proof_class !== "AGENT_SESSION"
+      || admitted.why_needed !== "ADMITTED_LOCAL_WORKER_LAUNCH"
+      || admitted.expected_proof !== "SOURCE_BOUND_WORKER_HANDSHAKE"
+      || JSON.stringify(admitted.command_argv) !== JSON.stringify(commandArgv)
+      || JSON.stringify(compileHybridSchedulerCommandDescriptor(effectiveArgv)) !== JSON.stringify(admitted.command_argv)) {
+      throw schedulerFailure("SCHEDULER_SOURCE_BINDING_MISMATCH", "local worker launch scheduler binding changed before execution");
+    }
+  };
+  const closureAssert = (condition, message, code) => {
+    if (!condition) throw schedulerFailure(code, message);
+  };
+  const validateRuntimeClosure = (admitted) => {
+    assertBound(admitted);
+    closureAssert(effectiveArgv[0] === process.execPath, "local worker runtime identity differs from effective argv", "SCHEDULER_COMMAND_MISMATCH");
+    closureAssert(effectiveArgv[1] === workerScriptPath, "local worker script identity differs from effective argv", "SCHEDULER_COMMAND_MISMATCH");
+    closureAssert(fs.statSync(process.execPath).isFile(), "local worker runtime is not a regular file", "SCHEDULER_RUNTIME_UNAVAILABLE");
+    const scriptStat = fs.lstatSync(workerScriptPath);
+    closureAssert(!scriptStat.isSymbolicLink() && scriptStat.isFile(), "local worker launch script is not admitted custody", "SCHEDULER_CUSTODY_MISMATCH");
+    const repositoryStat = fs.lstatSync(repository);
+    closureAssert(!repositoryStat.isSymbolicLink() && repositoryStat.isDirectory(), "local worker repository is not admitted custody", "SCHEDULER_CUSTODY_MISMATCH");
+    const worktreeStat = fs.lstatSync(worktreePath);
+    closureAssert(!worktreeStat.isSymbolicLink() && worktreeStat.isDirectory(), "local worker launch worktree is not admitted custody", "SCHEDULER_CUSTODY_MISMATCH");
+    const repositoryRealPath = fs.realpathSync.native(repository);
+    const worktreeRealPath = fs.realpathSync.native(worktreePath);
+    closureAssert(worktreeRealPath === repositoryRealPath || worktreeRealPath.startsWith(`${repositoryRealPath}${path.sep}`), "local worker launch worktree escapes repository custody", "SCHEDULER_CUSTODY_MISMATCH");
+    const schedulerAuthorityStat = fs.lstatSync(schedulerRoot);
+    closureAssert(!schedulerAuthorityStat.isSymbolicLink() && schedulerAuthorityStat.isDirectory(), "local worker scheduler root is not admitted custody", "SCHEDULER_CUSTODY_MISMATCH");
+    closureAssert(typeof boundScheduler.root === "function" && typeof boundScheduler.inspect === "function", "local worker scheduler does not expose file-backed inspection", "SCHEDULER_PREFLIGHT_REQUIRED");
+    const schedulerStateRoot = boundScheduler.root();
+    requireString(schedulerStateRoot, "local worker scheduler state root");
+    closureAssert(path.isAbsolute(schedulerStateRoot), "local worker scheduler state root must be absolute", "SCHEDULER_CUSTODY_MISMATCH");
+    const resolvedSchedulerRoot = path.resolve(schedulerRoot);
+    const resolvedStateRoot = path.resolve(schedulerStateRoot);
+    closureAssert(resolvedStateRoot.startsWith(`${resolvedSchedulerRoot}${path.sep}`), "local worker scheduler state escapes its authority root", "SCHEDULER_CUSTODY_MISMATCH");
+    const schedulerStateStat = fs.lstatSync(resolvedStateRoot);
+    closureAssert(!schedulerStateStat.isSymbolicLink() && schedulerStateStat.isDirectory(), "local worker scheduler state root is not durable custody", "SCHEDULER_CUSTODY_MISMATCH");
+    for (const name of ["requests", "jobs", "results", "semantic", "leases", "locks"]) {
+      const directory = path.join(resolvedStateRoot, name);
+      fs.mkdirSync(directory, {recursive: true, mode: 0o700});
+      const stat = fs.lstatSync(directory);
+      closureAssert(!stat.isSymbolicLink() && stat.isDirectory(), `local worker scheduler ${name} custody is unavailable`, "SCHEDULER_CUSTODY_MISMATCH");
+    }
+    const inspected = boundScheduler.inspect();
+    closureAssert(inspected && inspected.mode === "FILE_BACKED", "local worker scheduler inspection is not file-backed", "SCHEDULER_PREFLIGHT_FAILED");
+    requireSha(inspected.policy_sha256, "local worker scheduler policy digest");
+    return {
+      runtime: fs.realpathSync.native(process.execPath),
+      script: fs.realpathSync.native(workerScriptPath),
+      repository: repositoryRealPath,
+      worktree: worktreeRealPath,
+      scheduler: resolvedStateRoot,
+      policy_sha256: inspected.policy_sha256,
+    };
+  };
+  const admission = {
+    effectiveArgv: [...effectiveArgv],
+    workingDirectory: worktreePath,
+    workingDirectoryRef: request.working_directory_ref,
+    allowedScope: ["."],
+    runtimeAllowedScope,
+    dependencyPreflight: ({request: admitted}) => {
+      const closure = validateRuntimeClosure(admitted);
+      return {status: "READY", identity: `DEPENDENCY_${schedulerHash(JSON.stringify(closure)).slice(0, 24).toUpperCase()}`};
+    },
+    runtimePreflight: ({request: admitted}) => {
+      const closure = validateRuntimeClosure(admitted);
+      return {status: "READY", identity: `RUNTIME_${schedulerHash(JSON.stringify(closure)).slice(0, 24).toUpperCase()}`};
+    },
+  };
+  const resolveCandidate = () => {
+    let commit;
+    let tree;
+    let status;
+    try {
+      commit = git(worktreePath, ["rev-parse", "HEAD"]);
+      tree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+      status = git(worktreePath, ["status", "--porcelain=v1", "--untracked-files=all"]);
+    } catch {
+      throw schedulerFailure("CANCELLED_STALE_CANDIDATE", "local worker candidate could not be reread before execution");
+    }
+    const dirtySha256 = schedulerHash(status);
+    if (commit !== sourceCommit || tree !== sourceTree) {
+      throw schedulerFailure("CANCELLED_STALE_CANDIDATE", "local worker source candidate changed before execution");
+    }
+    if (status.length > 0) {
+      throw schedulerFailure("CANCELLED_DIAGNOSTIC_CANDIDATE", `local worker candidate is dirty before execution: ${dirtySha256}`);
+    }
+    return {commit, tree, clean: true, dirty_sha256: dirtySha256};
+  };
+  return {
+    scheduler: boundScheduler,
+    request,
+    admission,
+    resolveCandidate,
+  };
 }
 
 function validateHandshake(handshake, expected) {
@@ -147,7 +417,7 @@ function validateHandshake(handshake, expected) {
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
+        && ["control/check-runner.mjs", "control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
       assert(Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
         : ownerFeedbackCodeChanged
@@ -178,7 +448,7 @@ function validateHandshake(handshake, expected) {
             ? "control/task-run-loop.mjs"
           : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = expected.taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
+        && ["control/check-runner.mjs", "control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath));
       assert(handshake.build_status === "AUDIT_VERIFIED" && Array.isArray(handshake.changed_paths) && (expected.taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
         ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => handshake.changed_paths.includes(candidatePath))
         : ownerFeedbackCodeChanged
@@ -203,6 +473,7 @@ function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, 
   requireString(task, "local worker task");
   requireIdentifier(taskId, "local worker task ID");
   requireIdentifier(taskKind, "local worker task kind");
+  validateLocalTaskKindForRole({role, taskKind});
   const root = canonicalRoot(repoRoot);
   const runtime = safeChild(root, path.relative(root, runtimeRoot));
   const feature = featureWorktree === null ? null : safeChild(root, path.relative(root, featureWorktree));
@@ -240,41 +511,44 @@ function spawnWorker({repoRoot, runtimeRoot, role, campaignId, campaignVersion, 
     readback: null,
   });
   const workerScriptFile = workerScript ?? new URL("./local-agent-worker.mjs", import.meta.url).pathname;
-  const workerArgs = [workerScriptFile, "--role", role, "--session-id", sessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind];
+  const schedulerRoot = safeChild(runtime, "scheduler-authority");
+  const workerArgs = [workerScriptFile, "--role", role, "--session-id", sessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot];
   if (feature !== null) workerArgs.push("--feature-worktree", feature);
   if (evidence !== null) workerArgs.push("--evidence-worktree", evidence);
   if (decisionTree !== null) workerArgs.push("--decision-tree", decisionTree);
-  const result = spawnSync(process.execPath, workerArgs, {
-    cwd: worktree,
-    encoding: "utf8",
-    timeout: 30_000,
-  });
-  if (result.error || result.status !== 0) {
-    writeJsonAtomic(recordPath, {
-      schema: "agentos.local_worker_spawn_record.v1",
-      version: 1,
-      status: "FAILED",
-      role,
-      session_id: sessionId,
-      campaign_id: campaignId,
-      campaign_version: campaignVersion,
-      candidate_sha256: candidateSha256,
-      source_commit: sourceCommit,
-      source_tree: sourceTree,
-      worktree_path: worktree,
-      started_at_utc: new Date().toISOString(),
-      failure: result.error?.message ?? result.stderr ?? `worker exited with ${result.status}`,
-      readback: null,
-    });
-    throw new Error(`local worker ${role} failed: ${result.error?.message ?? result.stderr ?? `exit ${result.status}`}`);
+  const effectiveArgv = [process.execPath, ...workerArgs];
+  const binding = createLocalWorkerLaunchAdmission({schedulerRoot, repositoryRoot: root, worktreePath: worktree, workerScriptPath: workerScriptFile, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, sessionId, launchId: taskId, task, taskId, taskKind, mode: "SYNC", effectiveArgv});
+  let result;
+  try {
+    result = binding.scheduler.runSync({
+      request: binding.request,
+      admission: binding.admission,
+      resolveCandidate: binding.resolveCandidate,
+      execute: () => {
+        const spawned = spawnSync(effectiveArgv[0], effectiveArgv.slice(1), {cwd: worktree, encoding: "utf8", timeout: 30_000});
+        if (spawned.error || spawned.status !== 0) {
+          const failure = safeRuntimeText(spawned.error?.message ?? spawned.stderr ?? `worker exited with ${spawned.status}`);
+          const error = new Error(`local worker ${role} failed: ${failure}`);
+          error.code = "LOCAL_WORKER_PROCESS_FAILED";
+          throw error;
+        }
+        return spawned;
+      },
+      waitMs: 30_000,
+    }).output;
+  } catch (error) {
+    const runningRecord = readJson(recordPath);
+    if (runningRecord?.status === "RUNNING") writeJsonAtomic(recordPath, {...runningRecord, status: "FAILED", failure: safeRuntimeText(error?.message ?? error)});
+    throw error;
   }
   const line = result.stdout.trim().split("\n")[0];
   let handshake;
   try {
     handshake = JSON.parse(line);
   } catch (error) {
-    writeJsonAtomic(recordPath, {...readJson(recordPath), status: "FAILED", failure: `invalid worker handshake: ${error.message}`});
-    throw new Error(`local worker ${role} returned invalid handshake: ${error.message}`);
+    const failure = safeRuntimeText(`invalid worker handshake: ${error.message}`);
+    writeJsonAtomic(recordPath, {...readJson(recordPath), status: "FAILED", failure});
+    throw new Error(`local worker ${role} returned invalid handshake: ${failure}`);
   }
   validateHandshake(handshake, {role, sessionId, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, worktreePath: worktree, featureWorktree: feature, taskKind});
   const readback = {
@@ -431,6 +705,7 @@ export function validateLocalDurableSessionRecord(record) {
   for (const field of ["role", "session_id", "campaign_id", "campaign_version", "worktree_path", "pid", "heartbeat_path", "command_path", "command_result_path", "started_at_utc", "updated_at_utc"]) requireString(record[field], `local durable session ${field}`);
   requireIdentifier(record.task_id, "local durable session task ID");
   requireIdentifier(record.task_kind, "local durable session task kind");
+  validateLocalTaskKindForRole({role: record.role, taskKind: record.task_kind, label: "local durable session task kind"});
   requireSha(record.candidate_sha256, "local durable session candidate");
   requireGitObject(record.source_commit, "local durable session commit");
   requireGitObject(record.source_tree, "local durable session tree");
@@ -460,6 +735,7 @@ export function compileDurableWorkerSessionCommand({session, commandId, task, ta
   requireString(task, "durable worker command task");
   requireIdentifier(taskId, "durable worker command task ID");
   requireIdentifier(taskKind, "durable worker command task kind");
+  validateLocalTaskKindForRole({role: session.role, taskKind});
   for (const [value, label] of [[featureWorktree, "feature worktree"], [evidenceWorktree, "evidence worktree"], [decisionTreePath, "decision tree path"]]) assert(value === null || typeof value === "string", `${label} is invalid`);
   requireUtc(createdAtUtc, "durable worker command time");
   const command = {
@@ -499,6 +775,7 @@ export function validateDurableWorkerSessionCommand(command, session) {
   requireString(command.task, "durable worker command task");
   requireIdentifier(command.task_id, "durable worker command task ID");
   requireIdentifier(command.task_kind, "durable worker command task kind");
+  validateLocalTaskKindForRole({role: session.role, taskKind: command.task_kind, label: "durable worker command task kind"});
   for (const field of ["feature_worktree", "evidence_worktree", "decision_tree_path"]) assert(command[field] === null || typeof command[field] === "string", `durable worker command ${field} is invalid`);
   requireUtc(command.created_at_utc, "durable worker command time");
   requireSha(command.command_sha256, "durable worker command digest");
@@ -518,6 +795,7 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   requireString(task, "durable worker task");
   requireIdentifier(taskId, "durable worker task ID");
   requireIdentifier(taskKind, "durable worker task kind");
+  validateLocalTaskKindForRole({role, taskKind});
   const root = canonicalRoot(repoRoot);
   const runtime = safeChild(root, path.relative(root, runtimeRoot));
   const feature = featureWorktree === null ? null : safeChild(root, path.relative(root, featureWorktree));
@@ -550,19 +828,39 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   const startedAtUtc = new Date().toISOString();
   const workerScript = workerScriptPath === null ? new URL("./local-agent-worker.mjs", import.meta.url).pathname : safeChild(root, path.relative(root, workerScriptPath));
   const sessionScript = new URL("./local-agent-session.mjs", import.meta.url).pathname;
-  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath];
+  const schedulerRoot = safeChild(runtime, "scheduler-authority");
+  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath];
   if (feature !== null) args.push("--feature-worktree", feature);
   if (evidence !== null) args.push("--evidence-worktree", evidence);
   if (decisionTree !== null) args.push("--decision-tree", decisionTree);
-  const child = spawn(process.execPath, args, {cwd: worktree, detached: true, stdio: "ignore"});
-  child.unref();
+  const effectiveArgv = [process.execPath, ...args];
+  const binding = createLocalWorkerLaunchAdmission({schedulerRoot, repositoryRoot: root, worktreePath: worktree, workerScriptPath: sessionScript, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, sessionId: durableSessionId, launchId: durableSessionId, task, taskId, taskKind, mode: "ASYNC", effectiveArgv});
+  const scheduled = await binding.scheduler.run({
+    request: binding.request,
+    admission: binding.admission,
+    resolveCandidate: binding.resolveCandidate,
+    execute: async () => {
+      const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {cwd: worktree, detached: true, stdio: "ignore"});
+      child.unref();
+      return child;
+    },
+  });
+  const child = scheduled.output;
   let sessionRecord = compileDurableSessionRecord({status: "STARTING", role, sessionId: durableSessionId, taskId, taskKind, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, worktreePath: worktree, pid: child.pid, heartbeatPath, commandPath, commandResultPath, startedAtUtc, updatedAtUtc: startedAtUtc});
   writeJsonAtomic(recordPath, sessionRecord);
   const deadline = Date.now() + timeoutMs;
   let initial = null;
   while (Date.now() < deadline) {
     initial = readJson(initialReadbackPath);
-    if (initial !== null) break;
+    if (initial !== null) {
+      try {
+        requireSha(initial.initial_readback_sha256, "durable worker initial readback digest");
+        assert(initial.initial_readback_sha256 === digestWithout(initial, "initial_readback_sha256"), "durable worker initial readback digest mismatch");
+        break;
+      } catch {
+        initial = null;
+      }
+    }
     if (!pidAlive(child.pid)) break;
     await sleep(100);
   }
@@ -576,8 +874,6 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
     writeJsonAtomic(recordPath, sessionRecord);
     throw new Error(sessionRecord.failure);
   }
-  requireSha(initial.initial_readback_sha256, "durable worker initial readback digest");
-  assert(initial.initial_readback_sha256 === digestWithout(initial, "initial_readback_sha256"), "durable worker initial readback digest mismatch");
   const expected = {role, sessionId: durableSessionId, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, worktreePath: worktree, featureWorktree: feature};
   const handshake = validateHandshake(initial.handshake, {...expected, taskKind});
   const readback = compileDurableSessionReadback(handshake, 0);
@@ -694,7 +990,7 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
               ? "control/task-run-loop.mjs"
             : "control/governance-decision-tree.mjs";
       const ownerFeedbackCodeChanged = taskKind === "OWNER_FEEDBACK_REPAIR"
-        && ["control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath));
+        && ["control/check-runner.mjs", "control/local-campaign-admission.mjs", "control/task-run-loop.mjs", "control/local-agent-runtime.mjs", "control/local-self-development-supervisor-adapter.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath));
       assert(readback.build_status === "COMPLETED" && readback.build_commit !== null && readback.build_tree !== null
         && (taskKind === "OWNER_CONVERSATION_SURFACE_REPAIR"
           ? ["control/bootstrap-compiler.mjs", "control/owner-review.mjs"].some((candidatePath) => readback.changed_paths.includes(candidatePath))
@@ -711,7 +1007,12 @@ export function validateLocalWorkerReadback(readback, taskKind = null) {
   return readback;
 }
 
-export function createLocalSelfDevelopmentAdapters({repoRoot, runtimeRoot, authorization, admission, candidate, identityBinding, decisionTreePath = null}) {
+export function createLocalSelfDevelopmentAdapters({repoRoot, runtimeRoot, authorization, admission, candidate, identityBinding, decisionTreePath = null, allowLegacyProcessWorkers = false}) {
+  if (allowLegacyProcessWorkers !== true) {
+    const error = new Error("NATIVE_SESSION_TOOLING_REQUIRED: campaign roles must use create_thread, list_threads, wait_threads, send_message_to_thread, and set_thread_archived; local child processes are not campaign agents");
+    error.code = "NATIVE_SESSION_TOOLING_REQUIRED";
+    throw error;
+  }
   requireString(repoRoot, "local adapter repository root");
   requireString(runtimeRoot, "local adapter runtime root");
   assert(authorization?.permissions?.local_worker_agent_spawns_allowed === true, "local adapter lacks worker-spawn authorization");
@@ -801,3 +1102,4 @@ export function createLocalSelfDevelopmentAdapters({repoRoot, runtimeRoot, autho
 }
 
 export {spawnWorker};
+export {createNativeSelfDevelopmentAdapters} from "./native-self-development-adapter.mjs";

@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.runtime_delivery_request.v1",
+  "version": 1,
+  "purpose": "The portable boundary between a selected owner outcome and the persistent Runtime.",
+  "actions": ["PUSH", "MERGE", "DEPLOY", "RELEASE", "ROLLBACK"],
+  "statuses": ["PREPARED", "AUTHORIZED"],
+  "required_fields": [
+    "schema", "version", "request_id", "action", "choice_digest", "project_ref", "campaign_id",
+    "campaign_version", "goal_id", "source_commit", "source_tree", "environment_ref", "scope_digest",
+    "owner_approval_digest", "policy_digest", "adapter_contract_digest", "rollback_target_digest", "runtime_ref", "status", "requested_at_utc",
+    "authorized_by_role", "authorized_at_utc", "digest"
+  ],
+  "authorization": {
+    "role": "RUNTIME",
+    "rule": "Only the persistent Runtime may move PREPARED to AUTHORIZED.",
+    "adapter_rule": "Every external request is bound to a prepared, inactive, content-addressed delivery-adapter contract that supports the requested action and the exact delivery-policy digest.",
+    "execution_rule": "Authorization is not execution; the external host must return a typed receipt bound to the same choice, policy, adapter contract, source, environment, scope, and rollback target."
+  },
+  "privacy": "runtime_ref is opaque; credentials and provider-specific values remain host-local."
+}

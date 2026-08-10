@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_receipt.v1",
+  "title": "AgentOS verified inactive repair receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "opaque": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,31}:[0-9a-f]{64}$"},
+    "source": {"type": "object", "additionalProperties": false, "required": ["commit", "tree", "checkpoint_sha256", "clean", "pushed"], "properties": {"commit": {"$ref": "#/$defs/git"}, "tree": {"$ref": "#/$defs/git"}, "checkpoint_sha256": {"$ref": "#/$defs/sha"}, "clean": {"const": true}, "pushed": {"const": false}}},
+    "scope": {"type": "object", "additionalProperties": false, "required": ["scope_ref", "affected_paths_sha256", "excluded_scope_sha256", "boundary_sha256", "source_root", "product_writes_allowed", "external_actions_allowed"], "properties": {"scope_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"}, "affected_paths_sha256": {"$ref": "#/$defs/sha"}, "excluded_scope_sha256": {"$ref": "#/$defs/sha"}, "boundary_sha256": {"$ref": "#/$defs/sha"}, "source_root": {"const": "CONTROL_GOVERNANCE"}, "product_writes_allowed": {"const": false}, "external_actions_allowed": {"const": false}}},
+    "checkpoint": {"$ref": "agentos.digest_bound_checkpoint.v1"},
+    "limits": {"type": "object", "additionalProperties": false, "required": ["max_attempts", "max_duration_minutes", "max_respawns", "cost_limit_ref"], "properties": {"max_attempts": {"type": "integer", "minimum": 1, "maximum": 2}, "max_duration_minutes": {"type": "integer", "minimum": 1, "maximum": 240}, "max_respawns": {"type": "integer", "minimum": 0, "maximum": 1}, "cost_limit_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"}]}}},
+    "protected": {"type": "object", "additionalProperties": false, "required": ["acceptance", "activation", "deletion", "deployment", "external_release", "external_publish", "external_push", "merge", "product_writes", "secrets", "spend", "authority_change"], "properties": {"acceptance": {"const": false}, "activation": {"const": false}, "deletion": {"const": false}, "deployment": {"const": false}, "external_release": {"const": false}, "external_publish": {"const": false}, "external_push": {"const": false}, "merge": {"const": false}, "product_writes": {"const": false}, "secrets": {"const": false}, "spend": {"const": false}, "authority_change": {"const": false}}},
+    "verification": {"type": "object", "additionalProperties": false, "required": ["focused_checks_passed", "focused_checks_sha256", "independent_audit_passed", "auditor_ref", "evidence_sha256", "safety_floor_unchanged", "verified_at_utc"], "properties": {"focused_checks_passed": {"const": true}, "focused_checks_sha256": {"$ref": "#/$defs/sha"}, "independent_audit_passed": {"const": true}, "auditor_ref": {"$ref": "#/$defs/opaque"}, "evidence_sha256": {"$ref": "#/$defs/sha"}, "safety_floor_unchanged": {"const": true}, "verified_at_utc": {"type": "string", "format": "date-time"}}}
+  },
+  "required": ["schema", "version", "status", "parent_rca_sha256", "proposal_sha256", "patch_version_sha256", "source_before", "resume_checkpoint", "scope", "predecessor_evidence_sha256", "owner_approval_sha256", "owner_actor_ref", "verification", "limits", "safety_floor_sha256", "protected_actions", "observed_at_utc", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.repair_receipt.v1"},
+    "version": {"const": 1},
+    "status": {"const": "VERIFIED_NOT_ACTIVATED"},
+    "parent_rca_sha256": {"$ref": "#/$defs/sha"},
+    "proposal_sha256": {"$ref": "#/$defs/sha"},
+    "patch_version_sha256": {"$ref": "#/$defs/sha"},
+    "source_before": {"$ref": "#/$defs/source"},
+    "resume_checkpoint": {"$ref": "#/$defs/checkpoint"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "predecessor_evidence_sha256": {"$ref": "#/$defs/sha"},
+    "owner_approval_sha256": {"$ref": "#/$defs/sha"},
+    "owner_actor_ref": {"$ref": "#/$defs/opaque"},
+    "verification": {"$ref": "#/$defs/verification"},
+    "limits": {"$ref": "#/$defs/limits"},
+    "safety_floor_sha256": {"$ref": "#/$defs/sha"},
+    "protected_actions": {"$ref": "#/$defs/protected"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "receipt_sha256": {"$ref": "#/$defs/sha"}
+  }
+}

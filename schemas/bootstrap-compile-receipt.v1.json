@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.bootstrap_compile_receipt.v1",
+  "title": "AgentOS Bootstrap project-contract compilation receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "conversation_sha256",
+    "discovery_sha256",
+    "contract_sha256",
+    "intent_scope_sha256",
+    "blocking_question_ids",
+    "failure_code",
+    "reassessment_required",
+    "compiler_version",
+    "receipt_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.bootstrap_compile_receipt.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["QUESTION_PENDING", "READY", "REASSESSMENT_REQUIRED", "BLOCKED"]},
+    "conversation_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "discovery_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "contract_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "intent_scope_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "blocking_question_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"}
+    },
+    "failure_code": {
+      "type": ["string", "null"],
+      "enum": ["COMPILATION_VALIDATION_FAILURE", "PRIVACY_BOUNDARY_FAILURE", "INTEGRITY_FAILURE", "UNKNOWN_INPUT_REJECTED", null]
+    },
+    "reassessment_required": {"type": "boolean"},
+    "compiler_version": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "agentos.apprenticeship_owner_decision_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-reproduction.mjs",
+  "record_schema": "agentos.apprenticeship_owner_decision.v1",
+  "allowed_decisions": [
+    "RETAIN_INACTIVE",
+    "REQUEST_REPAIR",
+    "REJECT",
+    "APPROVE_INTENT_AUTHORITY_CHANGE"
+  ],
+  "required_fields": [
+    "proposal_digest",
+    "independent_review_ref",
+    "owner_ref",
+    "decision",
+    "intent_or_authority_change",
+    "explicit",
+    "activation_allowed"
+  ],
+  "rule": "An intent or authority change requires an explicit owner decision after independent review.",
+  "activation": {
+    "active": false,
+    "automatic_activation": false,
+    "recorded_decision_is_not_activation": true
+  }
+}

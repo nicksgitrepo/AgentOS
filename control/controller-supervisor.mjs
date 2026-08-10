@@ -94,6 +94,12 @@ export function supervisorDigest(value) {
   return crypto.createHash("sha256").update(canonicalSupervisorJson(value), "utf8").digest("hex");
 }
 
+function opaqueError(value) {
+  const raw = value?.message ?? String(value);
+  if (/^opaque:error:[0-9a-f]{64}$/u.test(raw)) return raw;
+  return `opaque:error:${crypto.createHash("sha256").update(raw, "utf8").digest("hex")}`;
+}
+
 function digestWithout(value, field) {
   const body = structuredClone(value);
   body[field] = null;
@@ -283,7 +289,7 @@ export function validateSupervisorObservation(observation) {
 }
 
 export function compileSupervisorObservation({
-  controllerDisplayName = "AgentOS Controller",
+  controllerDisplayName = "Intent Regulator",
   projectId,
   campaignId,
   campaignVersion,
@@ -432,6 +438,7 @@ export function compileSupervisorTick({observation, goal, routeStatus, routeRead
   if (routeStatus === "ROUTE_FAILED") requireString(routeError, "supervisor route error");
   if (goal.action === "STOP_HARD_BOUNDARY") assert(routeStatus === "STOPPED_HARD_BOUNDARY", "hard-boundary goal must stop before routing");
   if (goal.action !== "STOP_HARD_BOUNDARY") assert(routeStatus !== "STOPPED_HARD_BOUNDARY", "non-boundary goal cannot claim a hard stop");
+  const safeRouteError = routeStatus === "ROUTE_FAILED" ? opaqueError(routeError) : null;
   const tick = {
     schema: TICK_SCHEMA,
     version: 1,
@@ -442,7 +449,7 @@ export function compileSupervisorTick({observation, goal, routeStatus, routeRead
     action: goal.action,
     route_status: routeStatus,
     route_readback: routeReadback,
-    route_error: routeError,
+    route_error: safeRouteError,
     observed_at_utc: observation.observed_at_utc,
     tick_sha256: null,
   };

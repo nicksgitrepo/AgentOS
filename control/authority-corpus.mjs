@@ -30,8 +30,22 @@ const ENTITY_VARIABLES = {
 };
 
 const sha256 = (bytes) => crypto.createHash("sha256").update(bytes).digest("hex");
+const SHA256 = /^[0-9a-f]{64}$/u;
 export const compareUtf8 = (left, right) =>
   Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
+
+const PAGE_CONTRACT_METADATA = Object.freeze([
+  "page_id",
+  "page_type",
+  "schema_version",
+  "authority_status",
+  "owner",
+  "source_identity",
+  "created_at",
+  "last_verified_at",
+  "supersedes",
+  "freshness_and_invalidation",
+]);
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -68,13 +82,23 @@ function requireString(value, label) {
   }
 }
 
+function requireSha(value, label) {
+  if (typeof value !== "string" || !SHA256.test(value)) {
+    throw new Error(`${label} must be a lowercase SHA-256 digest`);
+  }
+}
+
 function normalizeRelativePath(value, label, allowDot = false) {
   requireString(value, label);
   if (path.isAbsolute(value) || value.includes("\0")) {
     throw new Error(`${label} must be repository-relative`);
   }
   const normalized = path.posix.normalize(value.replaceAll("\\", "/"));
-  if (normalized === ".." || normalized.startsWith("../") || (normalized === "." && !allowDot)) {
+  if (path.posix.isAbsolute(normalized)
+      || /^[A-Za-z]:\//u.test(normalized)
+      || normalized === ".."
+      || normalized.startsWith("../")
+      || (normalized === "." && !allowDot)) {
     throw new Error(`${label} escapes or does not identify a file/directory`);
   }
   return normalized;
@@ -89,7 +113,15 @@ function validateEntityId(value, label) {
 }
 
 function pathContains(parent, child) {
-  return child === parent || child.startsWith(`${parent}/`);
+  const relative = path.posix.relative(parent, child);
+  return relative === ""
+    || (relative !== ".."
+      && !relative.startsWith("../")
+      && !path.posix.isAbsolute(relative));
+}
+
+function pathStrictlyContains(parent, child) {
+  return parent !== child && pathContains(parent, child);
 }
 
 function validateRootSeparation(roots) {
@@ -106,6 +138,17 @@ function validateRootSeparation(roots) {
     if (pathContains(left, roots.authority_index_path)
         || pathContains(roots.authority_index_path, left)) {
       throw new Error(`authority_index_path overlaps ${leftName}`);
+    }
+  }
+}
+
+function validateRootContainment(roots) {
+  if (!pathStrictlyContains(roots.authority_root, roots.authority_index_path)) {
+    throw new Error("authority_index_path must be beneath authority_root");
+  }
+  for (const rootName of DIRECTORY_ROOT_VARIABLES) {
+    if (!pathStrictlyContains(roots.authority_root, roots[rootName])) {
+      throw new Error(`${rootName} must be beneath authority_root`);
     }
   }
 }
@@ -204,6 +247,71 @@ function readFileNoFollow(realRoot, relativePath, label) {
   }
 }
 
+function normalizeRootSet(roots, label) {
+  if (!roots || typeof roots !== "object" || Array.isArray(roots)) {
+    throw new Error(`${label} missing`);
+  }
+  const normalizedRoots = {};
+  for (const rootVariable of ROOT_VARIABLES) {
+    normalizedRoots[rootVariable] = normalizeRelativePath(
+      roots[rootVariable],
+      `${label}.${rootVariable}`,
+      rootVariable === "authority_root",
+    );
+  }
+  validateRootContainment(normalizedRoots);
+  validateRootSeparation(normalizedRoots);
+  return normalizedRoots;
+}
+
+function normalizeEntitySet(entities, label) {
+  if (!entities || typeof entities !== "object" || Array.isArray(entities)) {
+    throw new Error(`${label} missing`);
+  }
+  const normalizedEntities = {};
+  for (const entityList of ["feature_ids", "capability_ids", "campaign_ids", "release_ids"]) {
+    if (!Array.isArray(entities[entityList])) {
+      throw new Error(`${label}.${entityList} must be an array`);
+    }
+    normalizedEntities[entityList] = entities[entityList]
+      .map((value) => validateEntityId(value, `${label}.${entityList}`))
+      .sort(compareUtf8);
+    if (new Set(normalizedEntities[entityList]).size !== normalizedEntities[entityList].length) {
+      throw new Error(`${label}.${entityList} contains duplicates`);
+    }
+  }
+  return normalizedEntities;
+}
+
+function portableTemplateDigest(portableTemplateInstance) {
+  const body = structuredClone(portableTemplateInstance);
+  delete body.project_identity.exact_context_digest;
+  return sha256(Buffer.from(canonicalCompactJson(body), "utf8"));
+}
+
+function validatePortableTemplateInstance(context) {
+  const portableTemplateInstance = context.portable_template_instance;
+  if (!portableTemplateInstance
+      || typeof portableTemplateInstance !== "object"
+      || Array.isArray(portableTemplateInstance)) {
+    throw new Error("portable_template_instance missing");
+  }
+  const projectIdentity = portableTemplateInstance.project_identity;
+  if (!projectIdentity || typeof projectIdentity !== "object" || Array.isArray(projectIdentity)) {
+    throw new Error("portable_template_instance.project_identity missing");
+  }
+  if (projectIdentity.context_version !== 1) {
+    throw new Error("portable template context version is invalid");
+  }
+  requireString(projectIdentity.project_name, "portable template project name");
+  requireSha(projectIdentity.exact_context_digest, "portable template exact context digest");
+  const computedDigest = portableTemplateDigest(portableTemplateInstance);
+  if (computedDigest !== projectIdentity.exact_context_digest) {
+    throw new Error("portable template exact context digest is stale or mismatched");
+  }
+  return {portableTemplateInstance, portableContextDigest: computedDigest};
+}
+
 export function validateCorpusInputs(context, workflow) {
   if (!context || typeof context !== "object" || Array.isArray(context)) {
     throw new Error("project context must be an object");
@@ -215,33 +323,29 @@ export function validateCorpusInputs(context, workflow) {
   if (!workflow?.authority_corpus_system?.tree_template) {
     throw new Error("workflow authority-corpus tree template missing");
   }
-  const roots = context.authority_corpus_roots;
-  if (!roots || typeof roots !== "object" || Array.isArray(roots)) {
-    throw new Error("authority_corpus_roots missing");
+  const {portableTemplateInstance, portableContextDigest} = validatePortableTemplateInstance(context);
+  const normalizedRoots = normalizeRootSet(context.authority_corpus_roots, "authority_corpus_roots");
+  const portableRoots = normalizeRootSet(
+    portableTemplateInstance.authority_corpus_roots,
+    "portable_template_instance.authority_corpus_roots",
+  );
+  if (canonicalCompactJson(normalizedRoots) !== canonicalCompactJson(portableRoots)) {
+    throw new Error("authority corpus roots are not bound to the portable template instance");
   }
-  const normalizedRoots = {};
-  for (const rootVariable of ROOT_VARIABLES) {
-    normalizedRoots[rootVariable] = normalizeRelativePath(
-      roots[rootVariable],
-      rootVariable,
-      rootVariable === "authority_root",
-    );
+  const normalizedEntities = normalizeEntitySet(context.authority_corpus_entities, "authority_corpus_entities");
+  const portableEntities = normalizeEntitySet(
+    portableTemplateInstance.authority_corpus_entities,
+    "portable_template_instance.authority_corpus_entities",
+  );
+  if (canonicalCompactJson(normalizedEntities) !== canonicalCompactJson(portableEntities)) {
+    throw new Error("authority corpus entities are not bound to the portable template instance");
   }
-  validateRootSeparation(normalizedRoots);
-  const entities = context.authority_corpus_entities ?? {};
-  const normalizedEntities = {};
-  for (const entityList of ["feature_ids", "capability_ids", "campaign_ids", "release_ids"]) {
-    if (!Array.isArray(entities[entityList])) {
-      throw new Error(`${entityList} must be an array`);
-    }
-    normalizedEntities[entityList] = entities[entityList]
-      .map((value) => validateEntityId(value, entityList))
-      .sort(compareUtf8);
-    if (new Set(normalizedEntities[entityList]).size !== normalizedEntities[entityList].length) {
-      throw new Error(`${entityList} contains duplicates`);
-    }
-  }
-  return {roots: normalizedRoots, entities: normalizedEntities};
+  return {
+    roots: normalizedRoots,
+    entities: normalizedEntities,
+    portableTemplateInstance,
+    portableContextDigest,
+  };
 }
 
 function expandTemplate(template, variables) {
@@ -260,8 +364,18 @@ function pageTypeFor(section, relativePath) {
     .replaceAll(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+function validateCompiledPagePath(relativePath, roots) {
+  if (!pathStrictlyContains(roots.authority_root, relativePath)) {
+    throw new Error(`compiled authority page escapes authority_root: ${relativePath}`);
+  }
+  if (pathContains(roots.authority_index_path, relativePath)
+      || pathContains(relativePath, roots.authority_index_path)) {
+    throw new Error(`compiled authority page overlaps authority_index_path: ${relativePath}`);
+  }
+}
+
 export function compileCorpusPlan(context, workflow) {
-  const {roots, entities} = validateCorpusInputs(context, workflow);
+  const {roots, entities, portableTemplateInstance, portableContextDigest} = validateCorpusInputs(context, workflow);
   const tree = workflow.authority_corpus_system.tree_template;
   const pages = [];
   for (const section of ["project", "corpus_indexes"]) {
@@ -282,6 +396,7 @@ export function compileCorpusPlan(context, workflow) {
       }
     }
   }
+  for (const page of pages) validateCompiledPagePath(page.relative_path, roots);
   pages.sort((left, right) => compareUtf8(left.relative_path, right.relative_path));
   const paths = pages.map((page) => page.relative_path);
   if (new Set(paths).size !== paths.length) {
@@ -300,8 +415,8 @@ export function compileCorpusPlan(context, workflow) {
     schema: "governance.authority_corpus_plan.v1",
     context_identity: {
       schema: context.schema ?? null,
-      project_name: context.project_name ?? null,
-      exact_context_digest: sha256(Buffer.from(canonicalCompactJson(context), "utf8")),
+      project_name: portableTemplateInstance.project_identity.project_name,
+      exact_context_digest: portableContextDigest,
     },
     authority_index_path: roots.authority_index_path,
     pages,
@@ -456,11 +571,76 @@ export function renderDraftPage(page, plan) {
   ].join("\n");
 }
 
-function buildAuthorityIndex(realRoot, plan) {
+function requiredPageMetadata(workflow) {
+  const required = workflow.authority_corpus_system.page_contract?.required_metadata;
+  if (!Array.isArray(required)
+      || required.length !== PAGE_CONTRACT_METADATA.length
+      || PAGE_CONTRACT_METADATA.some((field) => !required.includes(field))) {
+    throw new Error("authority page contract metadata does not match the portable compiler");
+  }
+  return required;
+}
+
+function parsePageMetadata(bytes, label) {
+  const text = bytes.toString("utf8");
+  const lines = text.split("\n");
+  if (lines[0] !== "---") throw new Error(`${label} has no front matter`);
+  const closingIndex = lines.indexOf("---", 1);
+  if (closingIndex < 0) throw new Error(`${label} front matter is not closed`);
+  const metadata = {};
+  for (const line of lines.slice(1, closingIndex)) {
+    const separator = line.indexOf(":");
+    if (separator <= 0) throw new Error(`${label} front matter contains an invalid field`);
+    const key = line.slice(0, separator).trim();
+    const value = line.slice(separator + 1).trim();
+    if (Object.prototype.hasOwnProperty.call(metadata, key)) {
+      throw new Error(`${label} front matter repeats ${key}`);
+    }
+    metadata[key] = value;
+  }
+  return metadata;
+}
+
+function validatePageMetadata(page, plan, metadata, required, label) {
+  for (const field of required) {
+    requireString(metadata[field], `${label} ${field}`);
+  }
+  if (metadata.page_id !== page.page_id) throw new Error(`${label} page_id disagrees with the plan`);
+  if (metadata.page_type !== page.page_type) throw new Error(`${label} page_type disagrees with the plan`);
+  if (metadata.source_identity !== plan.context_identity.exact_context_digest) {
+    throw new Error(`${label} source_identity disagrees with the portable context`);
+  }
+  requireSha(metadata.source_identity, `${label} source_identity`);
+  if (metadata.owner === "UNASSIGNED" && metadata.authority_status !== "DRAFT_NONAUTHORITATIVE") {
+    throw new Error(`${label} is unowned authority`);
+  }
+  return metadata;
+}
+
+function buildAuthorityIndex(realRoot, plan, workflow) {
+  const required = requiredPageMetadata(workflow);
   const entries = plan.pages.map((page) => {
+    const content = readFileNoFollow(realRoot, page.relative_path, "authority page");
+    const metadata = validatePageMetadata(
+      page,
+      plan,
+      parsePageMetadata(content, "authority page"),
+      required,
+      `authority page ${page.relative_path}`,
+    );
     return {
+      path: page.relative_path,
       ...page,
-      content_sha256: sha256(readFileNoFollow(realRoot, page.relative_path, "authority page")),
+      schema_version: metadata.schema_version,
+      authority_status: metadata.authority_status,
+      owner: metadata.owner,
+      source_identity: metadata.source_identity,
+      created_at: metadata.created_at,
+      last_verified_at: metadata.last_verified_at,
+      supersedes: metadata.supersedes,
+      freshness_and_invalidation: metadata.freshness_and_invalidation,
+      dependencies: [],
+      content_sha256: sha256(content),
     };
   });
   return {
@@ -471,49 +651,151 @@ function buildAuthorityIndex(realRoot, plan) {
   };
 }
 
-export function applyCorpusPlan(authorityRoot, context, workflow) {
+function validatePhysicalLayout(realRoot, roots) {
+  inspectExistingPath(realRoot, roots.authority_root, "authority root");
+  for (const rootName of DIRECTORY_ROOT_VARIABLES) {
+    inspectExistingPath(realRoot, roots[rootName], `${rootName} root`);
+  }
+  inspectExistingPath(realRoot, roots.authority_index_path, "authority index");
+}
+
+function acquireExclusiveLock(realRoot, relativePath, label) {
+  const lockRelativePath = `${relativePath}.lock`;
+  ensureSafeDirectory(realRoot, path.posix.dirname(lockRelativePath), `${label} lock parent`);
+  const lockPath = resolveLexicallyInside(realRoot, lockRelativePath, `${label} lock`);
+  let descriptor;
+  let created = false;
+  try {
+    descriptor = fs.openSync(
+      lockPath,
+      fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | noFollowFlag(),
+      0o600,
+    );
+    created = true;
+    fs.writeSync(descriptor, Buffer.from("exclusive\n", "utf8"));
+    fs.fsyncSync(descriptor);
+  } catch (error) {
+    if (descriptor !== undefined) fs.closeSync(descriptor);
+    if (created) {
+      try {
+        fs.unlinkSync(lockPath);
+      } catch (cleanupError) {
+        if (cleanupError.code !== "ENOENT") throw cleanupError;
+      }
+    }
+    if (error.code === "EEXIST") throw new Error(`${label} compare-and-swap is already in progress`);
+    throw error;
+  }
+  fs.closeSync(descriptor);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    fs.unlinkSync(lockPath);
+  };
+}
+
+function readExistingIndex(realRoot, relativePath) {
+  const absolutePath = inspectExistingPath(realRoot, relativePath, "authority index");
+  if (!fs.existsSync(absolutePath)) return null;
+  const bytes = readFileNoFollow(realRoot, relativePath, "authority index");
+  let value;
+  try {
+    value = JSON.parse(bytes.toString("utf8"));
+  } catch (error) {
+    throw new Error(`authority index is invalid JSON: ${error.message}`);
+  }
+  if (canonicalJson(value) !== bytes.toString("utf8")) {
+    throw new Error("authority index is not canonical JSON");
+  }
+  return {absolutePath, bytes, value, digest: sha256(bytes)};
+}
+
+function syncDirectory(realRoot, relativeDirectory, label) {
+  const directory = inspectExistingPath(realRoot, relativeDirectory, label, true);
+  const descriptor = fs.openSync(directory, fs.constants.O_RDONLY | noFollowFlag());
+  try {
+    fs.fsyncSync(descriptor);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
+export function applyCorpusPlan(authorityRoot, context, workflow, {expectedParentDigest = null} = {}) {
   if (context.authority_corpus_activation !== "ACTIVATED") {
     throw new Error("authority corpus apply requires authority_corpus_activation=ACTIVATED");
   }
+  if (expectedParentDigest !== null) requireSha(expectedParentDigest, "authority index expected parent digest");
   const plan = compileCorpusPlan(context, workflow);
   const realRoot = canonicalAuthorityRoot(authorityRoot);
-  for (const page of plan.pages) {
-    const absolutePath = inspectExistingPath(realRoot, page.relative_path, "authority page");
-    if (fs.existsSync(absolutePath)) {
-      readFileNoFollow(realRoot, page.relative_path, "authority page");
-      continue;
+  validatePhysicalLayout(realRoot, plan.roots);
+  ensureSafeDirectory(realRoot, plan.roots.authority_root, "authority root");
+  const indexParentRelativePath = path.posix.dirname(plan.authority_index_path);
+  ensureSafeDirectory(realRoot, indexParentRelativePath, "authority index parent");
+  const releaseLock = acquireExclusiveLock(realRoot, plan.authority_index_path, "authority index");
+  let temporaryPath = null;
+  try {
+    const existing = readExistingIndex(realRoot, plan.authority_index_path);
+    if (existing !== null && expectedParentDigest !== null && existing.digest !== expectedParentDigest) {
+      throw new Error("authority index compare-and-swap parent is stale");
     }
-    writeNewFileNoFollow(realRoot, page.relative_path, renderDraftPage(page, plan), "authority page");
+    if (existing !== null && expectedParentDigest === null) {
+      let currentIndex;
+      try {
+        currentIndex = buildAuthorityIndex(realRoot, plan, workflow);
+      } catch (error) {
+        throw new Error(`existing authority index requires an expected parent digest before replacement: ${error.message}`);
+      }
+      const currentBytes = Buffer.from(canonicalJson(currentIndex), "utf8");
+      if (currentBytes.equals(existing.bytes)) {
+        return {plan, index: currentIndex, index_sha256: existing.digest};
+      }
+      throw new Error("existing authority index requires an expected parent digest before replacement");
+    }
+    if (existing === null && expectedParentDigest !== null) {
+      throw new Error("authority index expected parent digest is set but no parent index exists");
+    }
+
+    for (const page of plan.pages) {
+      const absolutePath = inspectExistingPath(realRoot, page.relative_path, "authority page");
+      if (fs.existsSync(absolutePath)) {
+        readFileNoFollow(realRoot, page.relative_path, "authority page");
+        continue;
+      }
+      writeNewFileNoFollow(realRoot, page.relative_path, renderDraftPage(page, plan), "authority page");
+    }
+    const index = buildAuthorityIndex(realRoot, plan, workflow);
+    const indexBytes = Buffer.from(canonicalJson(index), "utf8");
+    const latest = readExistingIndex(realRoot, plan.authority_index_path);
+    if (existing === null && latest !== null) throw new Error("authority index appeared during compare-and-swap");
+    if (existing !== null && (latest === null || latest.digest !== existing.digest)) {
+      throw new Error("authority index changed during compare-and-swap");
+    }
+    const temporaryRelativePath = `${plan.authority_index_path}.tmp-${process.pid}-${crypto.randomBytes(12).toString("hex")}`;
+    temporaryPath = writeNewFileNoFollow(
+      realRoot,
+      temporaryRelativePath,
+      indexBytes,
+      "authority index temporary file",
+    );
+    const indexPath = resolveLexicallyInside(realRoot, plan.authority_index_path, "authority index");
+    inspectExistingPath(realRoot, indexParentRelativePath, "authority index parent", true);
+    fs.renameSync(temporaryPath, indexPath);
+    temporaryPath = null;
+    syncDirectory(realRoot, indexParentRelativePath, "authority index parent");
+    const readbackBytes = readFileNoFollow(realRoot, plan.authority_index_path, "authority index");
+    if (!readbackBytes.equals(indexBytes)) throw new Error("authority index readback differs from the staged index");
+    const readback = readExistingIndex(realRoot, plan.authority_index_path);
+    if (readback.digest !== sha256(indexBytes)
+        || readback.value.plan_sha256 !== plan.plan_sha256
+        || canonicalCompactJson(readback.value) !== canonicalCompactJson(index)) {
+      throw new Error("authority index readback identity differs from the compiled index");
+    }
+    return {plan, index: readback.value, index_sha256: readback.digest};
+  } finally {
+    if (temporaryPath !== null && fs.existsSync(temporaryPath)) fs.unlinkSync(temporaryPath);
+    releaseLock();
   }
-  const index = buildAuthorityIndex(realRoot, plan);
-  const indexPath = inspectExistingPath(realRoot, plan.authority_index_path, "authority index");
-  ensureSafeDirectory(
-    realRoot,
-    path.relative(realRoot, path.dirname(indexPath)),
-    "authority index parent",
-  );
-  if (fs.existsSync(indexPath)) readFileNoFollow(realRoot, plan.authority_index_path, "authority index");
-  const indexBytes = canonicalJson(index);
-  const temporaryRelativePath = `${plan.authority_index_path}.tmp-${process.pid}-${crypto.randomBytes(12).toString("hex")}`;
-  const temporaryPath = writeNewFileNoFollow(
-    realRoot,
-    temporaryRelativePath,
-    indexBytes,
-    "authority index temporary file",
-  );
-  inspectExistingPath(
-    realRoot,
-    path.relative(realRoot, path.dirname(indexPath)),
-    "authority index parent",
-    true,
-  );
-  fs.renameSync(temporaryPath, indexPath);
-  readFileNoFollow(realRoot, plan.authority_index_path, "authority index");
-  return {
-    plan,
-    index,
-    index_sha256: sha256(Buffer.from(indexBytes, "utf8")),
-  };
 }
 
 function parseCli(argv) {

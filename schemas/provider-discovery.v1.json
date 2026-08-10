@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.provider_discovery.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "offline_mode", "provider_discovery_mode", "workspace_binding_digest", "host_capability_catalog_digest", "catalog_digest",
+    "entries", "operations", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.provider_discovery.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["LOCAL_CATALOG_ONLY", "HOST_CATALOG_READ_ONLY", "HOST_ATTESTED_CAPABILITIES", "EMPTY"]},
+    "offline_mode": {"enum": ["OFFLINE_ENFORCED", "ONLINE_READ_ONLY", "ONLINE_ACTIONS"]},
+    "provider_discovery_mode": {"enum": ["LOCAL_CATALOG_ONLY", "HOST_CATALOG_READ_ONLY", "HOST_ATTESTED_CAPABILITIES"]},
+    "workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "host_capability_catalog_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "catalog_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["adapter_ref", "protocol", "capabilities", "network_required", "authentication_required", "external_write_required", "trust_status"],
+        "allOf": [
+          {"if": {"properties": {"capabilities": {"contains": {"enum": ["NETWORK_READ", "NETWORK_WRITE"]}}}, "required": ["capabilities"]}, "then": {"properties": {"network_required": {"const": true}}}},
+          {"if": {"properties": {"network_required": {"const": true}}, "required": ["network_required"]}, "then": {"properties": {"capabilities": {"contains": {"enum": ["NETWORK_READ", "NETWORK_WRITE"]}}}}},
+          {"if": {"properties": {"capabilities": {"contains": {"const": "AUTHENTICATION"}}}, "required": ["capabilities"]}, "then": {"properties": {"authentication_required": {"const": true}}}},
+          {"if": {"properties": {"authentication_required": {"const": true}}, "required": ["authentication_required"]}, "then": {"properties": {"capabilities": {"contains": {"const": "AUTHENTICATION"}}}}},
+          {"if": {"properties": {"capabilities": {"contains": {"enum": ["NETWORK_WRITE", "PUBLISH", "MERGE", "DEPLOY", "SPEND"]}}}, "required": ["capabilities"]}, "then": {"properties": {"external_write_required": {"const": true}}}},
+          {"if": {"properties": {"external_write_required": {"const": true}}, "required": ["external_write_required"]}, "then": {"properties": {"capabilities": {"contains": {"enum": ["NETWORK_WRITE", "PUBLISH", "MERGE", "DEPLOY", "SPEND"]}}}}},
+          {"if": {"properties": {"trust_status": {"const": "UNAVAILABLE"}}, "required": ["trust_status"]}, "then": {"properties": {"capabilities": {"const": []}, "network_required": {"const": false}, "authentication_required": {"const": false}, "external_write_required": {"const": false}}}}
+        ],
+        "properties": {
+          "adapter_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+          "protocol": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "capabilities": {"type": "array", "items": {"enum": ["LOCAL_FILESYSTEM_READ", "LOCAL_FILESYSTEM_WRITE", "LOCAL_GIT_READ", "LOCAL_GIT_WRITE", "NETWORK_READ", "NETWORK_WRITE", "AUTHENTICATION", "PUBLISH", "MERGE", "DEPLOY", "SPEND"]}, "uniqueItems": true},
+          "network_required": {"type": "boolean"},
+          "authentication_required": {"type": "boolean"},
+          "external_write_required": {"type": "boolean"},
+          "trust_status": {"enum": ["UNVERIFIED", "TRUSTED_HOST_CATALOG", "CAPABILITY_ATTESTED", "UNAVAILABLE"]}
+        }
+      }
+    },
+    "operations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network_attempted", "authentication_attempted", "spending_attempted", "external_write_attempted"],
+      "properties": {
+        "network_attempted": {"const": false},
+        "authentication_attempted": {"const": false},
+        "spending_attempted": {"const": false},
+        "external_write_attempted": {"const": false}
+      }
+    },
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {"if": {"properties": {"offline_mode": {"const": "OFFLINE_ENFORCED"}}, "required": ["offline_mode"]}, "then": {"properties": {"provider_discovery_mode": {"const": "LOCAL_CATALOG_ONLY"}, "host_capability_catalog_digest": {"const": null}}}},
+    {"if": {"properties": {"offline_mode": {"const": "ONLINE_READ_ONLY"}}, "required": ["offline_mode"]}, "then": {"properties": {"provider_discovery_mode": {"const": "HOST_CATALOG_READ_ONLY"}, "host_capability_catalog_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}},
+    {"if": {"properties": {"offline_mode": {"const": "ONLINE_ACTIONS"}}, "required": ["offline_mode"]}, "then": {"properties": {"provider_discovery_mode": {"const": "HOST_ATTESTED_CAPABILITIES"}, "host_capability_catalog_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}},
+    {"if": {"properties": {"status": {"const": "EMPTY"}}, "required": ["status"]}, "then": {"properties": {"entries": {"maxItems": 0}}}, "else": {"properties": {"entries": {"minItems": 1}}}}
+  ]
+}

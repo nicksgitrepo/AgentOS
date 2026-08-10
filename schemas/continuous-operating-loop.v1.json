@@ -1,0 +1,106 @@
+{
+  "schema": "agentos.continuous_operating_loop_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/continuous-operating-loop.mjs",
+  "purpose": "Run the project-persistent self-development workflow through a timed Intent Regulator inspection, campaign-owned repair, fresh replacement, and independent clearance.",
+  "roles": {
+    "intent_regulator": {
+      "persistent": true,
+      "responsibility": "Own the campaign goal, inspect workflow health, preserve failures, classify boundaries, and decide whether the whole process is moving toward intent."
+    },
+    "runtime": {
+      "persistent": true,
+      "responsibility": "Keep the control-plane records and timer available across temporary worker cycling."
+    },
+    "orchestrator": {
+      "persistent": false,
+      "responsibility": "Start the admitted campaign workers, keep each worker in one named lane, and attempt ordinary in-scope repairs."
+    },
+    "auditor": {
+      "persistent": false,
+      "responsibility": "Independently audit the campaign, report unresolved repair or boundary findings, and never accept its own work."
+    }
+  },
+  "cadence": {
+    "default_meaningful_progress_window_minutes": 15,
+    "configurable": true,
+    "background_runner": "runContinuousOperatingLoop",
+    "heartbeat_is_not_meaningful_progress": true,
+    "failure_list_is_not_meaningful_progress": true,
+    "plan_is_not_meaningful_progress": true,
+    "timer_rule": "At each expiry the Intent Regulator inspects every active worker's scope, exact source identity, evidence, handoff, and progress signal. Runtime and Intent Regulator are inspected but never cycled."
+  },
+  "worker_naming": {
+    "format": "<clear role or lane> v<version>-tb-<two-digit test build>",
+    "examples": ["Auditor v2.0.3-tb-03", "Security Auditor v2.0.3-tb-03"],
+    "rule": "Every temporary Orchestrator, Auditor, and worker display name carries the exact version and test-build tag of the governance it is using."
+  },
+  "inspection": {
+    "controller": "control/continuous-operating-loop.mjs",
+    "record": "agentos.continuous_operating_loop_inspection.v1",
+    "required_per_active_worker": ["scope", "source_commit", "source_tree", "evidence", "typed_handoff", "progress_signal"],
+    "meaningful_result": "Only a source-bound result with a typed handoff counts as meaningful progress.",
+    "classification_order": ["HARD_BOUNDARY_STOP", "TRUE_BLOCKER", "SOFT_BOUNDARY_REVIEW", "PUZZLE", "NONE"]
+  },
+  "repair_replacement": {
+    "sequence": [
+      "PRESERVE_ORIGINAL_EVIDENCE",
+      "CLASSIFY_FINDING",
+      "RECORD_ROOT_CAUSE_ANALYSIS",
+      "MINT_GOVERNANCE_TEST_BUILD_IDENTITY_WHEN_IN_SCOPE",
+      "APPLY_SMALLEST_LIVE_IN_SCOPE_PATCH",
+      "REFRESH_EXACT_SOURCE_AND_NORMATIVE_BINDINGS",
+      "MINT_REPLACEMENT_GOAL_WITH_PREDECESSOR_HISTORY",
+      "START_VISIBLE_PINNED_NAMED_REPLACEMENT",
+      "REQUIRE_MEANINGFUL_RESULT_AND_TYPED_HANDOFF",
+      "UNPIN_ARCHIVE_REMOVE_FROM_ACTIVE_ROSTER",
+      "INDEPENDENT_AUDITOR_CLEARANCE"
+    ],
+    "records": [
+      "agentos.continuous_operating_loop_patch_receipt.v1",
+      "agentos.continuous_operating_loop_repair_record.v1",
+      "agentos.continuous_operating_loop_replacement_goal.v1",
+      "agentos.continuous_operating_loop_replacement_receipt.v1"
+    ],
+    "predecessor_rule": "A replacement is invalid without the predecessor's exact typed handoff and session identity.",
+    "closure_rule": "A replacement is not complete until host receipts prove visible creation, pin, send, wait, read, unpin, archive, post-close readback, and active-roster absence.",
+    "host_failure_retention": "A missing, malformed, failed, or thrown host receipt is preserved as a workflow record with its phase, opaque error digest, and raw-receipt digest; raw host text never enters the durable record and the failure never becomes success.",
+    "host_receipt_binding": "Every named host receipt is content-addressed and binds its operation name, replacement session, observation time, exact source commit/tree, and meaningful-progress flag. The read receipt additionally binds the typed handoff and must prove meaningful progress."
+  },
+  "goal_transitions": {
+    "source_or_intent_change": "Close the current goal as SUCCEEDED_BY_REASSESSMENT and mint a replacement goal bound to the observed exact source and intent.",
+    "hard_boundary": "STOP_HARD_BOUNDARY; preserve evidence and do not continue or mint a worker replacement.",
+    "soft_boundary": "SOFT_BOUNDARY_REVIEW; the Orchestrator may continue unrelated safe work but the dependent route waits for review.",
+    "puzzle": "ORCHESTRATOR_REPAIR; ordinary engineering problems stay within the admitted AgentOS scope.",
+    "true_blocker": "INTENT_REGULATOR_REVIEW; the Orchestrator cannot silently turn an identity, evidence, or authority blocker into success."
+  },
+  "protected_actions": {
+    "published": false,
+    "pushed": false,
+    "merged": false,
+    "deployed": false,
+    "spent": false,
+    "revealed_secrets": false,
+    "deleted": false,
+    "product_writes": false
+  },
+  "persistence": {
+    "compare_and_swap": true,
+    "symlink_rejected": true,
+    "directory_fsync_after_atomic_rename": true,
+    "original_evidence_retained": true,
+    "failed_patch_retained": true,
+    "host_closure_failure_retained": true,
+    "persisted_error_text_is_privacy_safe": true
+  },
+  "execution_binding": {
+    "model_and_reasoning": "The admitted model and reasoning binding are typed data supplied by the campaign; the portable loop does not select or name a provider-specific model."
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "product_writes_allowed_by_default": false,
+    "external_actions_allowed_by_default": false,
+    "release_candidate_activation": false
+  }
+}

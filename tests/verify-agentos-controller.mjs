@@ -68,9 +68,9 @@ let state = compileAgentOSControllerState({
 });
 validateAgentOSControllerState(state);
 assert.equal(state.operational_status, "IDLE");
-assert.equal(state.reconciliation_interval_minutes, 30);
+assert.equal(state.reconciliation_interval_minutes, 15);
 assert.equal(state.controller_role, "AGENTOS_CONTROLLER");
-assert.equal(state.controller_display_name, "AgentOS Controller");
+assert.equal(state.controller_display_name, "Intent Regulator");
 
 function readback({operation, action_id, controller_state, event, details = {}, externalIdentity = `EXT-${operation.toUpperCase()}`}) {
   return compileControllerAdapterReadback({
@@ -103,6 +103,7 @@ for (const operation of [
     if (operation === "spawnCampaignOrchestrator") details = {session_id: "CAMPAIGN-ORCH-1"};
     if (operation === "spawnIndependentAuditor") details = {session_id: "AUDITOR-1"};
     if (operation === "spawnFeatureAgents") details = {feature_agent_session_ids: ["FEATURE-1"]};
+    if (operation === "archiveCampaignAgents") details = {archived_session_ids: payload.spawned_session_ids ?? []};
     if (operation === "wakeControllerAgent") details = {judgment_id: "JUDGMENT-1", reason: "The stalled dependency changes the route.", affected_outcomes: ["CAMPAIGN-1"]};
     if (operation === "recoverStalledSession") details = {replacement_session_id: "FEATURE-RECOVERED-1", role: "FEATURE_AGENT"};
     if (operation === "verifyCheckpoint") details = {checkpoint_sha256: payload.checkpoint_sha256};
@@ -215,6 +216,26 @@ assert.equal(state.last_closed_campaign_id, "CAMPAIGN-1");
 apply("RECONCILIATION_TICK", {}, null, "AGENTOS_CONTROLLER", "2026-01-01T00:30:00.000Z");
 apply("TRUE_OWNER_BOUNDARY", {boundary_id: "BOUNDARY-1", scope: "publication", reason: "Owner approval is required before public release.", recommended_action: "Keep the candidate prepared."}, null, "OWNER", "2026-01-01T00:31:00.000Z");
 assert.equal(state.operational_status, "OWNER_ONLY");
+
+const rollbackCandidate = candidate(state.policy_state, "CAMPAIGN-ROLLBACK", "v1");
+const rollbackEvent = makeEvent("CAMPAIGN_APPROVED", {candidate: rollbackCandidate, owner_approval_sha256: SHA}, rollbackCandidate.campaign_id, "OWNER", "2026-01-01T00:32:00.000Z");
+const rollbackCalls = [];
+const failingSpawnAdapters = {
+  ...adapters,
+  spawnIndependentAuditor: () => { throw new Error("auditor host failed"); },
+  archiveCampaignAgents: (context) => {
+    rollbackCalls.push(...(context.payload.spawned_session_ids ?? []));
+    return readback({
+      operation: context.operation,
+      action_id: context.action_id,
+      controller_state: context.controller_state,
+      event: context.event,
+      details: {archived_session_ids: context.payload.spawned_session_ids ?? []},
+    });
+  },
+};
+assert.throws(() => processControllerEvent({state, event: rollbackEvent, adapters: failingSpawnAdapters}), /auditor host failed/u);
+assert.deepEqual(rollbackCalls, ["CAMPAIGN-ORCH-1"], "partial campaign start must close the already-created role");
 
 const badSequenceEvent = {...makeEvent("RECONCILIATION_TICK"), sequence: state.event_cursor + 2, event_sha256: null};
 badSequenceEvent.event_sha256 = controllerDigest({...badSequenceEvent, event_sha256: null});

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.native_campaign_activation.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "controller_role", "host_attachment_sha256", "campaign_id", "campaign_version",
+    "source_commit", "source_tree", "controller_candidate_sha256", "authorization_sha256", "admission_sha256",
+    "identity_binding_sha256", "permissions", "worker_roles", "spawn_readbacks", "controller_state_sha256",
+    "started_at_utc", "active_campaign", "protected_actions", "activation_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.native_campaign_activation.v1"},
+    "version": {"const": 1},
+    "status": {"const": "CAMPAIGN_ACTIVE"},
+    "controller_role": {"const": "AGENTOS_CONTROLLER"},
+    "host_attachment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "campaign_version": {"type": "string", "minLength": 1},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "controller_candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "admission_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identity_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "permissions": {"type": "object"},
+    "worker_roles": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}},
+    "spawn_readbacks": {"type": "array", "minItems": 3, "items": {"$ref": "agentos.native_controller_worker_readback.v1"}},
+    "controller_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "started_at_utc": {"type": "string", "format": "date-time"},
+    "active_campaign": {"const": true},
+    "protected_actions": {"type": "object", "additionalProperties": {"const": false}},
+    "activation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

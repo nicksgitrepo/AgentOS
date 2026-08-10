@@ -5,3 +5,5 @@
 - `maintainer-guide.md` — normative changes, registries, and digest maintenance.
 - `owner-feedback-backlog.md` — open project-agnostic user feedback and its follow-up campaigns.
 - `activation.md` — explicit owner approval and activation boundary.
+
+- `architecture.md` documents four-library governance composition and authority flow.

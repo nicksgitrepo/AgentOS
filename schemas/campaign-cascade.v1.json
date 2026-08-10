@@ -116,6 +116,13 @@
     "required_fields": ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"],
     "rule": "The cascade state and its first-pass candidate carry the same policy and complete acceptance identity. A same-campaign cascade transition cannot change either identity without a new admitted campaign."
   },
+  "universal_closeout": {
+    "mode": "CASCADE",
+    "receipt_schema": "agentos.universal_task_closeout_receipts.v1",
+    "receipt_compiler": "compileUniversalTaskCloseoutReceipts",
+    "sequence": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"],
+    "rule": "A cascade cannot become READY_FOR_ACCEPTANCE while temporary builder, audit, or finalizer work remains open. The Controller must carry the complete general closeout receipt sequence and dynamically archive each visible task only after handoff preservation, audited integration, stale-worktree closure, active-scope removal, and chat-out-of-scope readback."
+  },
   "audit_plan": {
     "required_fields": [
       "schema",

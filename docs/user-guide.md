@@ -25,7 +25,8 @@ inside the Product repository is an explicit opt-in.
 4. Allow safe read-only discovery to answer mechanical setup questions.
 5. Answer only unresolved intent, boundary, or preference questions.
 6. Review the complete creation plan and its integrity details.
-7. Approve exactly with `APPROVE_EXACT_PLAN` or revise the plan.
+7. Let the default JSA path continue only the declared local setup work, or
+   choose `APPROVE_EXACT_PLAN` when a separate exact approval is required.
 
 Bootstrap then stages a resumable setup transaction in the bound control
 plane. It creates the persistent project-level `AGENTOS_CONTROLLER` state at
@@ -37,8 +38,14 @@ readback, root separation, security baseline, Runtime and Controller Runtime
 bindings, and the three-root acceptance slice.
 
 After setup, the ongoing owner conversation is with the project-persistent
-**AgentOS Controller** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate
+**Intent Regulator** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate
 discovery and setup authority; it is not the ongoing Controller role.
+
+JSA is not a broad permission. It covers only the recorded local setup actions
+while source, intent, scope, host readback, and relevant conditions remain the
+same. A changed condition triggers reassessment. Publication, push, merge,
+deployment, rollback, spending, authentication, secrets, destructive writes,
+Product custody, and campaign activation retain their own exact authority.
 
 The plan also includes a deterministic Bootstrap coverage matrix. It shows
 which outputs were discovered, owner-confirmed, safely defaulted, derived,

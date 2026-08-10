@@ -1,0 +1,43 @@
+{
+  "schema": "agentos.apprenticeship_reproduction_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-reproduction.mjs",
+  "record_schemas": [
+    "agentos.apprenticeship_reproduction_packet.v1",
+    "agentos.apprenticeship_reproduction_result.v1",
+    "agentos.apprenticeship_independent_review.v1",
+    "agentos.apprenticeship_owner_decision.v1"
+  ],
+  "fresh_worker_rule": "The reproducing worker and session must differ from the learner and Workflow Auditor.",
+  "packet_required_fields": [
+    "proposal_digest",
+    "drill_digest",
+    "packet_digest",
+    "provenance",
+    "fresh_worker",
+    "role_behavior",
+    "consent",
+    "observed_tools",
+    "revocation",
+    "gate_source",
+    "evidence_requirements",
+    "prohibited_actions",
+    "done_when",
+    "fresh_context",
+    "activation_allowed"
+  ],
+  "fresh_context": {
+    "learner_transcript_included": false,
+    "hidden_reasoning_included": false,
+    "private_context_included": false,
+    "unrelated_project_context_included": false
+  },
+  "revocation_rule": "A revoked packet is retained for audit but cannot run, receive independent review, or produce a handoff.",
+  "success_rule": "Reproduction requires a meaningful source-bound result, complete gate responses, matching evidence, and a typed handoff.",
+  "failure_rule": "Divergent or failed reproduction routes to repair or rejection and cannot silently promote the proposal.",
+  "activation": {
+    "active": false,
+    "automatic_activation": false
+  }
+}

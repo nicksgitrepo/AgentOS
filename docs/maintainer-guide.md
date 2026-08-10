@@ -14,7 +14,7 @@ Keep one canonical implementation for each authority:
 - acceptance: `control/question-tree.mjs`;
 - optional exchange: `control/gpt-assist.mjs`.
 - control-plane boundary: `control/control-plane-root.mjs`.
-- ongoing project control plane: **AgentOS Controller** (`AGENTOS_CONTROLLER`);
+- ongoing project control plane: **Intent Regulator** (`AGENTOS_CONTROLLER`);
 - first-run discovery and setup: **Bootstrap** (`BOOTSTRAP`), which is not the ongoing Controller role.
 
 Compatibility entrypoints are import-only aliases. They cannot create setup state, campaign state, provider identity, Product custody, or successor rosters.

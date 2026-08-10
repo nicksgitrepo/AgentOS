@@ -43,7 +43,7 @@ function digest(bytes) {
 
 function walk(directory, result = []) {
   for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((left, right) => compareUtf8(left.name, right.name))) {
-    if (entry.name === ".git" || entry.name === "node_modules") continue;
+    if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "tmp") continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) {
       if (isRetainedFailedAttempt(absolute, root)) continue;
@@ -72,7 +72,7 @@ assert.equal(binding.activation.deployment_custody, false);
 assert.equal(binding.activation.source_repository_modified, false);
 const naming = JSON.parse(read("schemas/naming-and-terminology.v1.json"));
 assert.equal(naming.canonical_terms.BOOTSTRAP.public_name, "Bootstrap");
-assert.equal(naming.canonical_terms.AGENTOS_CONTROLLER.public_name, "AgentOS Controller");
+assert.equal(naming.canonical_terms.AGENTOS_CONTROLLER.public_name, "Intent Regulator");
 assert.equal(naming.compatibility_aliases.GLOBAL_ORCHESTRATOR, "AGENTOS_CONTROLLER");
 const controllerContract = JSON.parse(read("schemas/agentos-controller.v1.json"));
 assert.equal(controllerContract.name, "AGENTOS_CONTROLLER");
@@ -80,6 +80,19 @@ assert.equal(controllerContract.scope, "PROJECT_PERSISTENT");
 assert.equal(controllerContract.supervisor.controller, "control/controller-supervisor-runtime.mjs");
 assert.equal(controllerContract.supervisor.contract, "schemas/controller-supervisor.v1.json");
 assert(controllerContract.controller_agent.wake_rule.includes("every active campaign handoff"));
+assert.equal(controllerContract.operating_loop.controller, "control/continuous-operating-loop.mjs");
+assert.equal(controllerContract.operating_loop.contract, "schemas/continuous-operating-loop.v1.json");
+assert.equal(controllerContract.operating_loop.default_meaningful_progress_window_minutes, 15);
+assert.deepEqual(controllerContract.operating_loop.persistent_roles, ["INTENT_REGULATOR", "RUNTIME"]);
+const operatingLoopContract = JSON.parse(read("schemas/continuous-operating-loop.v1.json"));
+assert.equal(operatingLoopContract.cadence.default_meaningful_progress_window_minutes, 15);
+assert.equal(operatingLoopContract.cadence.background_runner, "runContinuousOperatingLoop");
+assert.equal(operatingLoopContract.cadence.heartbeat_is_not_meaningful_progress, true);
+assert.equal(operatingLoopContract.cadence.failure_list_is_not_meaningful_progress, true);
+assert.equal(operatingLoopContract.cadence.plan_is_not_meaningful_progress, true);
+assert.equal(operatingLoopContract.worker_naming.format, "<clear role or lane> v<version>-tb-<two-digit test build>");
+assert.equal(operatingLoopContract.repair_replacement.records.length, 4);
+assert.equal(operatingLoopContract.repair_replacement.host_receipt_binding.includes("content-addressed"), true);
 const supervisorContract = JSON.parse(read("schemas/controller-supervisor.v1.json"));
 assert.equal(supervisorContract.role, "AGENTOS_CONTROLLER");
 assert.equal(supervisorContract.persistence.controller, "control/controller-supervisor.mjs");
@@ -87,6 +100,9 @@ assert.equal(supervisorContract.goal.one_at_a_time_rule.includes("deterministic 
 const sessionContract = JSON.parse(read("schemas/local-agent-session.v1.json"));
 assert.equal(sessionContract.session.controller, "control/local-agent-session.mjs");
 assert.equal(sessionContract.handoff.one_command_at_a_time, true);
+const nativeSessionContract = JSON.parse(read("schemas/native-session-team.v1.json"));
+assert.equal(nativeSessionContract.rules.execution_mode_binding.PROJECT_LOCAL_SESSION.includes("environment type local"), true);
+assert.equal(nativeSessionContract.rules.execution_mode_binding.ISOLATED_WORKTREE.includes("environment type worktree"), true);
 for (const [name, entry] of Object.entries(binding.normative)) assertBoundFile(entry, `normative ${name}`);
 for (const [name, entry] of Object.entries(binding.compatibility_only)) {
   if (entry && typeof entry === "object" && !Array.isArray(entry) && entry.path) assertBoundFile(entry, `compatibility ${name}`);
@@ -138,6 +154,9 @@ assert.equal(bootstrapPlan.approval.decision, "APPROVE_EXACT_PLAN");
 assert(bootstrapPlan.approval.toctou.includes("Re-read discovery") && bootstrapPlan.approval.toctou.includes("plan digest"));
 assert(bootstrapPlan.execution.legacy_gate.includes("legacy.zip") && bootstrapPlan.execution.legacy_gate.includes("before replacement corpus writes"));
 assert(bootstrapPlan.required_output_groups.includes("DELIVERY_POLICY"));
+assert(bootstrapPlan.required_output_groups.includes("BOOTSTRAP_SAFETY_ANALYSIS"));
+assert.equal(bootstrapPlan.bootstrap_safety_analysis.default_operating_mode, "JSA");
+assert(bootstrapPlan.bootstrap_safety_analysis.protected_activation_rule.includes("protected actions"));
 assert.equal(bootstrapPlan.bootstrap_coverage.controller, "control/bootstrap-coverage.mjs");
 assert.equal(bootstrapPlan.bootstrap_coverage.contract, "schemas/bootstrap-coverage.v1.json");
 assert.equal(bootstrapPlan.project_life_contract.controller, "control/project-life-contract.mjs");
@@ -190,6 +209,9 @@ assert.equal(kernel.agentos_controller.supervisor_contract, "schemas/controller-
 assert.equal(kernel.agentos_controller.durable_session_controller, "control/local-agent-session.mjs");
 assert.equal(kernel.agentos_controller.durable_session_contract, "schemas/local-agent-session.v1.json");
 assert(kernel.agentos_controller.supervisor_rule.includes("every active handoff") && kernel.agentos_controller.supervisor_rule.includes("hard boundary"));
+assert.equal(kernel.agentos_controller.continuous_operating_loop.controller, "control/continuous-operating-loop.mjs");
+assert.equal(kernel.agentos_controller.continuous_operating_loop.contract, "schemas/continuous-operating-loop.v1.json");
+assert.equal(kernel.agentos_controller.reconciliation_interval_minutes, 15);
 assert.equal(kernel.campaign_policy.contract, "schemas/campaign-policy-reconcile.v1.json");
 assert.equal(kernel.campaign_state_owner.controller, "control/campaign-state-owner.mjs");
 assert.equal(kernel.campaign_state_owner.contract, "schemas/campaign-state-owner.v1.json");
@@ -215,7 +237,16 @@ assert.equal(kernel.bootstrap.start_command, "node <AGENTOS_ROOT>/control/bootst
 const bootstrapStart = JSON.parse(read("schemas/bootstrap-start.v1.json"));
 assert.equal(bootstrapStart.invocation.side_effects, "READ_ONLY_DISCOVERY_ONLY");
 assert.equal(bootstrapStart.invocation.command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
-assert(bootstrapStart.safety.next_step.includes("APPROVE_EXACT_PLAN"));
+assert(bootstrapStart.result.required_fields.includes("bootstrap_operating_mode"));
+assert(bootstrapStart.safety.next_step.includes("default JSA mode"));
+assert(bootstrapStart.safety.next_step.includes("changed scope returns to reassessment"));
+const promotionGate = JSON.parse(read("schemas/release-promotion-gate.v1.json"));
+assert.equal(promotionGate.controller, "control/release-promotion-gate.mjs");
+assert.equal(promotionGate.blocker, "STERILE_RELEASE_NOT_PROMOTED");
+const promotionBlocker = JSON.parse(read("docs/release-development-promotion-blocker.v1.json"));
+assert.equal(promotionBlocker.status, "BLOCKED_STERILE_RELEASE_NOT_PROMOTED");
+assert.equal(promotionBlocker.publishing, false);
+assert.equal(promotionBlocker.action_taken, "NONE");
 
 const runtime = JSON.parse(read("schemas/browser-runtime-lifecycle.v1.json"));
 assert.equal(runtime.agent_lifecycle.persistent_roles.join(","), "RUNTIME");
@@ -228,50 +259,13 @@ const run = (relativePath) => {
   const result = spawnSync(process.execPath, [relativePath], {cwd: root, encoding: "utf8"});
   assert.equal(result.status, 0, `${relativePath} failed\n${result.stdout}\n${result.stderr}`);
 };
-for (const relativePath of [
-  "tests/verify-campaign-controller.mjs",
-  "tests/verify-campaign-policy-reconcile.mjs",
-  "tests/verify-campaign-cascade.mjs",
-  "tests/verify-question-tree.mjs",
-  "tests/verify-readme.mjs",
-  "tests/verify-role-naming.mjs",
-  "tests/verify-bootstrap-start.mjs",
-  "tests/verify-cascade-economics.mjs",
-  "tests/verify-bootstrap-coverage.mjs",
-  "tests/verify-bootstrap-delivery-finish.mjs",
-  "tests/verify-standards-registry.mjs",
-  "tests/verify-normalization-policy.mjs",
-  "tests/verify-project-import.mjs",
-  "tests/verify-bootstrap-import-bindings.mjs",
-  "tests/verify-bootstrap-owner-review-handoff.mjs",
-  "tests/verify-bootstrap-contract-bindings.mjs",
-  "tests/verify-project-life-contract.mjs",
-  "tests/verify-delivery-target.mjs",
-  "tests/verify-boundary-contract.mjs",
-  "tests/verify-bootstrap-alignment.mjs",
-  "tests/verify-delivery-policy.mjs",
-  "tests/verify-guided-bootstrap.mjs",
-  "tests/verify-dynamic-bootstrap.mjs",
-  "tests/verify-browser-runtime-lifecycle.mjs",
-  "tests/verify-gpt-assist.mjs",
-  "tests/verify-global-policy-state.mjs",
-  "tests/verify-agentos-controller.mjs",
-  "tests/verify-controller-supervisor.mjs",
-  "tests/verify-local-agent-session.mjs",
-  "tests/verify-global-policy-store.mjs",
-  "tests/verify-project-context-store.mjs",
-  "tests/verify-owner-review.mjs",
-  "tests/verify-campaign-receipts.mjs",
-  "tests/verify-task-continuation.mjs",
-  "tests/verify-task-run-loop.mjs",
-  "tests/verify-owner-feedback-backlog.mjs",
-  "tests/verify-campaign-state-bridge.mjs",
-  "tests/verify-campaign-state-owner.mjs",
-  "tests/verify-continuous-audit-sentinel.mjs",
-  "tests/verify-repository-readback.mjs",
-  "tests/verify-portability.mjs",
-  "tests/verify-retained-failed-worktree.mjs",
-  "tests/verify-control-plane-root.mjs",
-]) run(relativePath);
+const canonicalVerifierPaths = allFiles
+  .map((file) => path.relative(root, file))
+  .filter((relativePath) => relativePath.startsWith("tests/")
+    && relativePath.endsWith(".mjs")
+    && relativePath !== "tests/verify-all.mjs")
+  .sort(compareUtf8);
+assert(canonicalVerifierPaths.length > 0, "canonical verifier discovered no test modules");
+for (const relativePath of canonicalVerifierPaths) run(relativePath);
 
-console.log(`PASS AgentOS 2.1rc canonical verifier: ${allFiles.length} files scanned; ${Object.keys(binding.normative).length} normative paths hashed; JSON, scripts, portability, lifecycle, Bootstrap, GPT_ASSIST, and hostile suites passed`);
+console.log(`PASS AgentOS 2.1rc canonical verifier: ${allFiles.length} files scanned; ${Object.keys(binding.normative).length} normative paths hashed; ${canonicalVerifierPaths.length} test modules executed; JSON, scripts, portability, lifecycle, Bootstrap, GPT_ASSIST, hostile, and the canonical rapid-lane runner passed`);

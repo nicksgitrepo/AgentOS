@@ -5,9 +5,25 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "controller": "control/project-import.mjs",
   "result": "agentos.project_import.v1",
+  "project_id": "SOURCE_BOUND_PROJECT_IDENTIFIER",
+  "source_root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256",
+  "destination_root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256_OR_NULL",
+  "source_identity": {
+    "source_root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256",
+    "source_commit": "40_LOWERCASE_HEX_GIT_OBJECT_OR_NULL_UNTIL_APPROVED",
+    "source_tree": "40_LOWERCASE_HEX_GIT_OBJECT_OR_NULL_UNTIL_APPROVED",
+    "source_content_sha256": "64_LOWERCASE_HEX_SHA256",
+    "source_observation_sha256": "64_LOWERCASE_HEX_SHA256",
+    "source_control_rule": "Approved rapid development requires authoritative source_commit and source_tree readback from the imported root; approval fields cannot create source identity."
+  },
   "purpose": "Authorize a source-preserving project adoption, copy, normalization, or reconstruction without mutating the source before cutover.",
   "modes": ["ADOPT_IN_PLACE", "CLEAN_COPY", "NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"],
   "preservation_storage_modes": ["PROJECT_SIDE_CAR", "EXTERNAL_CONTROL_PLANE"],
+  "preservation_root_refs": {
+    "boundary_root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256_OR_NULL",
+    "root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256_OR_NULL",
+    "rule": "Persist only opaque references; resolve host paths only at the execution boundary."
+  },
   "source_preservation": {
     "required_artifacts": [
       "source-preservation.zip",
@@ -18,8 +34,28 @@
     ],
     "rule": "Preserve exact included bytes before migration; exclude and record secrets, generated material, temporary material, and unsafe objects; never mutate the source before cutover."
   },
+  "rapid_development": {
+    "mode": "OPT_IN",
+    "owner_approval_required": true,
+    "owner_approval_schema": "agentos.imported_rapid_development_owner_approval.v1",
+    "owner_approved": "BOOLEAN_DERIVED_ONLY_FROM_OWNER_APPROVAL_RECEIPT",
+    "owner_approval": "CONTENT_ADDRESSED_INACTIVE_OWNER_APPROVAL_RECEIPT_OR_NULL",
+    "owner_approval_sha256": "MATCHES_OWNER_APPROVAL_APPROVAL_SHA256_OR_NULL",
+    "initial_stage_without_approval": "IMPORT_APPROVAL_REQUIRED",
+    "initial_stage_after_approval": "PLATFORM_DISCOVERY",
+    "workflow": "agentos.rapid_prototype_workflow.v1",
+    "rule": "Imported projects remain discovery-only until the owner explicitly approves rapid development."
+  },
   "audit_lanes": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
   "audit_scheduler": "control/campaign-cascade.mjs",
+  "governed_scheduler": "control/hybrid-scheduler.mjs",
+  "universal_closeout": {
+    "mode": "IMPORT",
+    "receipt_schema": "agentos.universal_task_closeout_receipts.v1",
+    "receipt_compiler": "compileUniversalTaskCloseoutReceipts",
+    "sequence": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"],
+    "rule": "Imported-project temporary tasks use the general closeout contract in every import mode. Rapid development remains discovery-only until explicit owner approval; after approval, the Controller preserves and integrates each handoff, closes stale worktrees, removes active task scope, marks the chat out of scope, and dynamically archives the visible task."
+  },
   "acceptance_order": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
   "storage_rule": "External control-plane storage keeps preservation artifacts outside the product root by default. Project-sidecar storage is allowed only when the owner explicitly opts into an in-project control plane.",
   "cutover_rule": "A full normalize or reconstruct mode requires grouped repair, independent read-only audit, exact candidate identity, and reversible cutover. Product source files remain unchanged before cutover; preservation artifacts are written only to the bound control-plane storage root."

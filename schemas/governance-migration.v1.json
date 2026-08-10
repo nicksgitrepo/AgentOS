@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.governance_migration.v1",
+  "title": "AgentOS governance migration record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "mode", "from_binding_digest", "replacement_base_general_digest", "replacement_base_role_digest", "preservation", "candidate_binding_digest", "conflicts", "rollback", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.governance_migration.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["READY", "BLOCKED"]},
+    "project_id": {"type": "string"},
+    "mode": {"enum": ["KEEP_PROJECT_GOVERNANCE", "RESET_GOVERNANCE_CLEAN"]},
+    "from_binding_digest": {"$ref": "#/$defs/digest"},
+    "replacement_base_general_digest": {"$ref": "#/$defs/digest"},
+    "replacement_base_role_digest": {"$ref": "#/$defs/digest"},
+    "preservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_general_library_digest", "project_history_digest", "source_remains_unmodified"],
+      "properties": {
+        "project_general_library_digest": {"$ref": "#/$defs/digest"},
+        "project_history_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "source_remains_unmodified": {"const": true}
+      }
+    },
+    "candidate_binding_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "conflicts": {"type": "array", "items": {"type": "object"}},
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previous_binding_digest", "old_binding_remains_active_until_checked"],
+      "properties": {
+        "previous_binding_digest": {"$ref": "#/$defs/digest"},
+        "old_binding_remains_active_until_checked": {"const": true}
+      }
+    },
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

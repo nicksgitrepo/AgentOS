@@ -1,0 +1,334 @@
+#!/usr/bin/env node
+
+/*
+ * Small, host-independent owner conversation surface for the project-contract
+ * Bootstrap slice. Raw replies are parsed and discarded; only normalized
+ * answers and their digests are retained in the conversation state.
+ */
+
+import crypto from "node:crypto";
+
+export const BOOTSTRAP_CONVERSATION_SCHEMA = "agentos.bootstrap_conversation.v1";
+export const BOOTSTRAP_CONVERSATION_VERSION = 1;
+export const BOOTSTRAP_ANSWER_SCHEMA = "agentos.bootstrap_answer.v1";
+export const BOOTSTRAP_ANSWER_VERSION = 1;
+export const CERTAINTY = Object.freeze(["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]);
+export const ANSWER_PROVENANCE = Object.freeze(["OWNER", "DISCOVERY", "COMPILER", "UNRESOLVED_OWNER"]);
+export const OWNER_RETRY_MESSAGE = "Please answer in a few words or choose one of the options shown.";
+
+const SHA256 = /^[0-9a-f]{64}$/u;
+const SAFE_PROJECT_REF = /^[a-z][a-z0-9._-]{0,63}$/u;
+const UNSAFE_TEXT = Object.freeze([
+  ["PRIVATE_PATH", /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\|~[\\/]|\.codex[\\/])[^\s"'`<>)}\]]*/u],
+  ["PRIVATE_LINK", /(?:file:\/\/|chatgpt-conversation:\/\/|chat:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp))(?:[/:?\s]|$))/iu],
+  ["ENVIRONMENT_VALUE", /(?:\$[A-Z][A-Z0-9_]*|\$\{[A-Z][A-Z0-9_]*\}|\b[A-Z][A-Z0-9_]{2,}=[^\s,;]+)/u],
+  ["SECRET", /(?:-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----|\b(?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|password|passwd|secret|credential)\s*[:=])/iu],
+  ["SESSION_OR_TASK_IDENTITY", /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu],
+]);
+
+export const BOOTSTRAP_QUESTIONS = Object.freeze([
+  Object.freeze({
+    id: "intent.audience",
+    kind: "TEXT",
+    prompt: "Who is this for?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "intent.outcome",
+    kind: "TEXT",
+    prompt: "What should it make easier?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "intent.first_result",
+    kind: "TEXT",
+    prompt: "What would a useful first result look like?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "scope.allowed",
+    kind: "TEXT",
+    prompt: "What should this work touch?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "scope.non_goals",
+    kind: "TEXT",
+    prompt: "What should I explicitly leave out for now?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "boundaries.hard",
+    kind: "TEXT",
+    prompt: "What must always make me stop?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "boundaries.soft",
+    kind: "TEXT",
+    prompt: "What should make me pause and check with you?",
+    required: true,
+  }),
+  Object.freeze({
+    id: "governance.memory",
+    kind: "BOOLEAN",
+    prompt: "Should I remember this next time?",
+    choices: Object.freeze([
+      Object.freeze({value: true, label: "Yes"}),
+      Object.freeze({value: false, label: "No"}),
+    ]),
+    required: true,
+  }),
+  Object.freeze({
+    id: "delivery.finish",
+    kind: "CHOICE",
+    prompt: "When the first version is ready, what should happen?",
+    choices: Object.freeze([
+      Object.freeze({value: "REVIEW", label: "Leave it ready for review"}),
+      Object.freeze({value: "SAVE", label: "Save it safely for later"}),
+      Object.freeze({value: "SHARE", label: "Share the saved work"}),
+      Object.freeze({value: "LIVE", label: "Put it live"}),
+    ]),
+    required: true,
+  }),
+  Object.freeze({
+    id: "governance.review_interval",
+    kind: "CHOICE",
+    prompt: "How often should I pause to review progress?",
+    choices: Object.freeze([
+      Object.freeze({value: 15, label: "15 minutes (recommended)"}),
+      Object.freeze({value: 30, label: "30 minutes"}),
+      Object.freeze({value: 60, label: "60 minutes"}),
+    ]),
+    required: false,
+    default_value: 15,
+  }),
+]);
+
+const QUESTIONS_BY_ID = new Map(BOOTSTRAP_QUESTIONS.map((question) => [question.id, question]));
+const REQUIRED_QUESTION_IDS = Object.freeze(BOOTSTRAP_QUESTIONS.filter((question) => question.required).map((question) => question.id));
+const INTENT_SCOPE_QUESTION_IDS = new Set([
+  "intent.audience",
+  "intent.outcome",
+  "intent.first_result",
+  "scope.allowed",
+  "scope.non_goals",
+]);
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function compareUtf8(left, right) {
+  return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (isRecord(value)) return Object.fromEntries(Object.keys(value).sort(compareUtf8).map((key) => [key, canonicalize(value[key])]));
+  return value;
+}
+
+export function canonicalDigest(value) {
+  return crypto.createHash("sha256").update(JSON.stringify(canonicalize(value)), "utf8").digest("hex");
+}
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function assertSafeText(value, label) {
+  assert(typeof value === "string", `${label} must be text`);
+  for (const [category, pattern] of UNSAFE_TEXT) {
+    if (pattern.test(value)) throw new Error(`${label} contains unsafe ${category}`);
+  }
+}
+
+function normalizeText(value, label) {
+  assertSafeText(value, label);
+  const normalized = value.trim().replace(/[\t\r\n ]+/gu, " ");
+  assert(normalized.length >= 2, `${label} is too short`);
+  assert(normalized.length <= 1000, `${label} is too long`);
+  return normalized;
+}
+
+function normalizeBoolean(value, label) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number" && (value === 1 || value === 2)) return value === 1;
+  if (typeof value !== "string") throw new Error(`${label} must be yes or no`);
+  const normalized = value.trim().toLowerCase();
+  if (["yes", "y", "true", "1"].includes(normalized)) return true;
+  if (["no", "n", "false", "2"].includes(normalized)) return false;
+  throw new Error(`${label} must be yes or no`);
+}
+
+function normalizeChoice(question, value) {
+  let choice = value;
+  if (typeof choice === "string" && /^\d+$/u.test(choice.trim())) choice = Number(choice.trim());
+  if (Number.isSafeInteger(choice)) {
+    const selected = question.choices[choice - 1];
+    if (selected) return selected.value;
+  }
+  const selected = question.choices.find((candidate) => typeof choice === "string"
+    && (candidate.label.toLowerCase() === choice.trim().toLowerCase() || String(candidate.value).toLowerCase() === choice.trim().toLowerCase()));
+  if (selected) return selected.value;
+  throw new Error("answer is not one of the listed choices");
+}
+
+function normalizeAnswer(question, value) {
+  if (question.kind === "TEXT") return normalizeText(value, question.id);
+  if (question.kind === "BOOLEAN") return normalizeBoolean(value, question.id);
+  if (question.kind === "CHOICE") return normalizeChoice(question, value);
+  throw new Error(`unsupported Bootstrap question kind: ${question.kind}`);
+}
+
+export function parseBootstrapReply(questionId, reply) {
+  const question = QUESTIONS_BY_ID.get(questionId);
+  assert(question, `unknown Bootstrap question: ${questionId}`);
+  return {question_id: questionId, value: normalizeAnswer(question, reply)};
+}
+
+function questionSurface(question) {
+  return {
+    question_id: question.id,
+    prompt: question.prompt,
+    answer_kind: question.kind,
+    choices: question.choices?.map((choice) => choice.label) ?? [],
+    required: question.required,
+  };
+}
+
+function sessionDigest(session) {
+  return canonicalDigest({...session, session_sha256: null});
+}
+
+function sealSession(session) {
+  const sealed = {...session, session_sha256: null};
+  sealed.session_sha256 = sessionDigest(sealed);
+  return Object.freeze(sealed);
+}
+
+function missingRequired(session) {
+  return REQUIRED_QUESTION_IDS.filter((id) => !Object.hasOwn(session.answers, id));
+}
+
+function nextQuestionId(session, includeOptional) {
+  return BOOTSTRAP_QUESTIONS.find((question) => !Object.hasOwn(session.answers, question.id)
+    && (question.required || includeOptional))?.id ?? null;
+}
+
+export function createBootstrapConversation({projectRef = "unbound-project", priorContractDigest = null} = {}) {
+  assert(typeof projectRef === "string" && SAFE_PROJECT_REF.test(projectRef), "projectRef must be a safe opaque project label");
+  assert(priorContractDigest === null || SHA256.test(priorContractDigest), "priorContractDigest must be a SHA-256 or null");
+  return sealSession({
+    schema: BOOTSTRAP_CONVERSATION_SCHEMA,
+    version: BOOTSTRAP_CONVERSATION_VERSION,
+    status: "QUESTION_PENDING",
+    project_ref: projectRef,
+    answers: {},
+    answer_order: [],
+    reassessment_required: false,
+    prior_contract_sha256: priorContractDigest,
+    session_sha256: null,
+  });
+}
+
+export function nextBootstrapQuestion(session, {includeOptional = true} = {}) {
+  validateBootstrapConversation(session);
+  const id = nextQuestionId(session, includeOptional);
+  return id === null ? null : questionSurface(QUESTIONS_BY_ID.get(id));
+}
+
+export function acceptBootstrapReply(session, {questionId, reply} = {}) {
+  validateBootstrapConversation(session);
+  const question = QUESTIONS_BY_ID.get(questionId);
+  assert(question, `unknown Bootstrap question: ${questionId}`);
+  try {
+    const value = parseBootstrapReply(questionId, reply).value;
+    const previous = session.answers[questionId];
+    const replayed = previous?.value === value;
+    if (replayed) {
+      return {
+        accepted: true,
+        replayed: true,
+        session,
+        next_question: nextBootstrapQuestion(session),
+      };
+    }
+    const expected = nextQuestionId(session, true);
+    const revision = previous !== undefined;
+    assert(revision || expected === questionId, "Bootstrap answers must follow the current question");
+    const answers = {...session.answers};
+    answers[questionId] = {
+      schema: BOOTSTRAP_ANSWER_SCHEMA,
+      version: BOOTSTRAP_ANSWER_VERSION,
+      question_id: questionId,
+      value,
+      certainty: "CONFIRMED",
+      provenance: "OWNER",
+      answer_sha256: canonicalDigest({question_id: questionId, value}),
+    };
+    const answerOrder = revision ? session.answer_order : [...session.answer_order, questionId];
+    const reassessmentRequired = session.reassessment_required
+      || (previous !== undefined && INTENT_SCOPE_QUESTION_IDS.has(questionId));
+    const next = sealSession({
+      ...session,
+      status: missingRequired({...session, answers}).length === 0 ? "READY_FOR_CONTRACT" : "QUESTION_PENDING",
+      answers,
+      answer_order: answerOrder,
+      reassessment_required: reassessmentRequired,
+      session_sha256: null,
+    });
+    return {
+      accepted: true,
+      replayed,
+      session: next,
+      next_question: nextBootstrapQuestion(next),
+    };
+  } catch {
+    return {
+      accepted: false,
+      replayed: false,
+      error: {
+        code: "ANSWER_NOT_RECOGNIZED",
+        message: OWNER_RETRY_MESSAGE,
+      },
+      session,
+      next_question: questionSurface(question),
+    };
+  }
+}
+
+export function validateBootstrapConversation(session) {
+  assert(isRecord(session), "Bootstrap conversation must be an object");
+  assert(session.schema === BOOTSTRAP_CONVERSATION_SCHEMA && session.version === BOOTSTRAP_CONVERSATION_VERSION, "Bootstrap conversation identity is invalid");
+  assert(["QUESTION_PENDING", "READY_FOR_CONTRACT"].includes(session.status), "Bootstrap conversation status is invalid");
+  assert(typeof session.project_ref === "string" && SAFE_PROJECT_REF.test(session.project_ref), "Bootstrap conversation project reference is invalid");
+  assert(isRecord(session.answers), "Bootstrap conversation answers are invalid");
+  for (const [questionId, answer] of Object.entries(session.answers)) {
+    const question = QUESTIONS_BY_ID.get(questionId);
+    assert(question && isRecord(answer), `Bootstrap answer is invalid: ${questionId}`);
+    assert(answer.schema === BOOTSTRAP_ANSWER_SCHEMA && answer.version === BOOTSTRAP_ANSWER_VERSION, `Bootstrap answer identity is invalid: ${questionId}`);
+    assert(answer.question_id === questionId && CERTAINTY.includes(answer.certainty) && ANSWER_PROVENANCE.includes(answer.provenance), `Bootstrap answer metadata is invalid: ${questionId}`);
+    assert(SHA256.test(answer.answer_sha256) && answer.answer_sha256 === canonicalDigest({question_id: questionId, value: answer.value}), `Bootstrap answer digest is invalid: ${questionId}`);
+    assertSafeText(JSON.stringify(answer.value), `Bootstrap answer ${questionId}`);
+    assert(answer.certainty === "CONFIRMED" && answer.provenance === "OWNER", `Bootstrap owner answer provenance is invalid: ${questionId}`);
+  }
+  assert(Array.isArray(session.answer_order) && session.answer_order.every((id) => Object.hasOwn(session.answers, id)), "Bootstrap answer order is invalid");
+  assert(typeof session.reassessment_required === "boolean", "Bootstrap reassessment flag is invalid");
+  assert(session.prior_contract_sha256 === null || SHA256.test(session.prior_contract_sha256), "Bootstrap prior contract digest is invalid");
+  assert(SHA256.test(session.session_sha256) && session.session_sha256 === sessionDigest(session), "Bootstrap conversation is not content-addressed");
+  return session;
+}
+
+export function bootstrapQuestionById(questionId) {
+  const question = QUESTIONS_BY_ID.get(questionId);
+  if (!question) throw new Error(`unknown Bootstrap question: ${questionId}`);
+  return question;
+}
+
+export function requiredBootstrapQuestionIds() {
+  return [...REQUIRED_QUESTION_IDS];
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Bootstrap conversation surface loaded\n");

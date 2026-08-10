@@ -1,0 +1,487 @@
+{
+  "schema": "governance.feature_inventory.v1",
+  "version": 1,
+  "contract_status": "PREPARED_NOT_ACTIVATED",
+  "authority": "CURRENT_ACCEPTED_MERGE",
+  "source_catalog": [
+    "docs/roadmap.md",
+    "docs/bootstrap-rapid-prototype-plan.md",
+    "docs/architecture.md",
+    "docs/release-promotion.md",
+    "docs/rapid-foundations/",
+    "governance/",
+    "control/",
+    "schemas/",
+    "research-records-linked-by-owner"
+  ],
+  "coverage_rule": "Every distinct named capability and governance audit lane has exactly one visible auditor task, one isolated worktree, and one append-only auditreport.md. Platform domains are first-phase aliases over existing feature custody and never create duplicate tasks or worktrees.",
+  "expected_feature_count": 37,
+  "expected_governance_lane_count": 12,
+  "expected_auditor_count": 49,
+  "expected_report_count": 49,
+  "expected_goal_count": 49,
+  "expected_platform_lane_count": 3,
+  "goal_rule": "Every feature and governance lane has one controller-owned content-addressed goal bound to its target, visible auditor task, isolated worktree, append-only report, and source references. The goal remains active through audit and repair and reaches a terminal state only at preserved, audited, integrated closeout or an actual external blocker.",
+  "platform_phase": {
+    "platform_roster_source": "platform_lanes",
+    "required_outputs": ["feature_consumption_matrix", "platform_domain_candidate", "atomic_seam_batches", "cross_platform_agreements", "external_platform_dependencies", "remaining_uncertainties", "source_bound_handoffs"],
+    "feature_admission": "PLATFORM_FOUNDATION_THEN_PLATFORM_INTEGRATION_THEN_FEATURE_AUDIT_REPAIR_THEN_CENTRAL_INTEGRATION"
+  },
+  "platform_domains": [
+    {
+      "domain_id": "NATIVE_SESSION_AND_EVIDENCE_CUSTODY",
+      "name": "Native Session and Evidence Custody",
+      "applicability": "ACTIVE",
+      "required_capabilities": ["CLOSURE_RECEIPTS", "NATIVE_SESSION_LIFECYCLE", "SOURCE_BOUND_EVIDENCE"],
+      "feature_ids": ["EVIDENCE_IDENTITY_HANDOFFS", "NATIVE_HOST_SESSION_LIFECYCLE"],
+      "source_refs": ["control/native-session-runner.mjs", "control/native-session-team.mjs", "docs/platform-handoffs/native-session-evidence-platform-handoff.md"],
+      "reason": "Multiple features share one native-session identity, evidence, and preserve-unpin-archive-roster-closure boundary."
+    },
+    {
+      "domain_id": "GATE_CATALOG_AND_RESPONSE_GATING",
+      "name": "Named Gate Catalog and Universal Response Gating",
+      "applicability": "ACTIVE",
+      "required_capabilities": ["EVIDENCE_REQUIRED_RESPONSES", "NAMED_GATE_SELECTION", "UNIVERSAL_RESPONSE_ENVELOPE"],
+      "feature_ids": ["NAMED_GATE_DECISION_TREE", "UNIVERSAL_RESPONSE_GATING"],
+      "source_refs": ["control/governance-decision-tree.mjs", "control/task-gate-questions.mjs", "docs/platform-handoffs/gate-catalog-response-platform-handoff.md"],
+      "reason": "Named gates and response envelopes are shared by every role, task, document, handoff, progress report, and owner-facing response."
+    },
+    {
+      "domain_id": "PRIVATE_CONTROL_AND_MEMORY_MAPS",
+      "name": "Private Control, Memory Ledger, and Bounded Maps",
+      "applicability": "ACTIVE",
+      "required_capabilities": ["BOUNDED_PROJECT_MAPS", "PRIVATE_CONTROL_ROOT", "PROJECT_MEMORY_LEDGER", "PROVIDER_DISCOVERY"],
+      "feature_ids": ["ROADMAP_08_MEMORY_CAPSULES", "BOUNDED_PROJECT_MAPS", "OFFLINE_LOCAL_MODE", "PRIVATE_CONTROL_INSTANCE", "PROJECT_MEMORY_LEDGER", "PROVIDER_DISCOVERY"],
+      "source_refs": ["control/private-control-storage.mjs", "control/private-provider-discovery.mjs", "control/project-map.mjs", "control/project-memory.mjs", "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md"],
+      "reason": "Offline control, provider discovery, durable project memory, and derived maps share the private control-plane custody and source-bound index boundary."
+    }
+  ],
+  "platform_lanes": [
+    {
+      "lane_id": "PLATFORM_NATIVE_SESSION_EVIDENCE",
+      "name": "Native Session and Evidence Custody",
+      "domain_ids": ["NATIVE_SESSION_AND_EVIDENCE_CUSTODY"],
+      "source_refs": ["control/native-session-runner.mjs", "control/native-session-team.mjs", "docs/platform-handoffs/native-session-evidence-platform-handoff.md"],
+      "report_path": "docs/platform-audits/PLATFORM_NATIVE_SESSION_EVIDENCE/auditreport.md",
+      "auditor_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "worktree_id": "HOST_WORKTREE_C22B",
+      "status": "HANDOFF_RECEIVED"
+    },
+    {
+      "lane_id": "PLATFORM_GATE_RESPONSE",
+      "name": "Named Gate Catalog and Universal Response Gating",
+      "domain_ids": ["GATE_CATALOG_AND_RESPONSE_GATING"],
+      "source_refs": ["control/governance-decision-tree.mjs", "control/task-gate-questions.mjs", "docs/platform-handoffs/gate-catalog-response-platform-handoff.md"],
+      "report_path": "docs/platform-audits/PLATFORM_GATE_RESPONSE/auditreport.md",
+      "auditor_task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+      "worktree_id": "HOST_WORKTREE_C3BA",
+      "status": "HANDOFF_RECEIVED"
+    },
+    {
+      "lane_id": "PLATFORM_PRIVATE_CONTROL_MEMORY",
+      "name": "Private Control, Memory Ledger, and Bounded Maps",
+      "domain_ids": ["PRIVATE_CONTROL_AND_MEMORY_MAPS"],
+      "source_refs": ["control/private-control-storage.mjs", "control/private-provider-discovery.mjs", "control/project-map.mjs", "control/project-memory.mjs", "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md"],
+      "report_path": "docs/platform-audits/PLATFORM_PRIVATE_CONTROL_MEMORY/auditreport.md",
+      "auditor_task_id": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
+      "worktree_id": "HOST_WORKTREE_7C07",
+      "status": "HANDOFF_RECEIVED"
+    }
+  ],
+  "features": [
+    {
+      "feature_id": "ROADMAP_01_PORTABLE_KERNEL",
+      "name": "Deterministic Portable Kernel",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "governance/2.1rc/portable-kernel.md"],
+      "report_path": "docs/feature-audits/ROADMAP_01_PORTABLE_KERNEL/auditreport.md",
+      "auditor_task_id": "019fdcf9-5cba-7042-9404-54e905f696a8",
+      "worktree_id": "HOST_WORKTREE_EB84",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_02_LAYERED_GOVERNANCE",
+      "name": "Layered Governance and Project Contracts",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/governance-library.v1.json", "schemas/project-general-library.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_02_LAYERED_GOVERNANCE/auditreport.md",
+      "auditor_task_id": "019fdcf9-973f-7b12-bcc2-0a156c64f65b",
+      "worktree_id": "HOST_WORKTREE_CD69",
+    "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_03_CONTROLLER_INTENT",
+      "name": "Controller-Owned Intent and Low-Chat Operation",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/controller-supervisor.v1.json", "schemas/continuous-operating-loop.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
+      "auditor_task_id": "019fdcf9-97f6-7200-bad2-6606d1259e99",
+      "worktree_id": "HOST_WORKTREE_746B",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "ROADMAP_04_TASK_ROUTING_CONTEXT",
+      "name": "Task-Shaped Routing and Context",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/task-model-policy.v1.json", "schemas/effective-model-readback.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md",
+      "auditor_task_id": "019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec",
+      "worktree_id": "HOST_WORKTREE_D6FC",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "ROADMAP_05_LOCAL_ADAPTERS",
+      "name": "Local-First Workspace, Host, and Provider Adapters",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/provider-discovery.v1.json", "schemas/private-workspace-binding.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md",
+      "auditor_task_id": "019fdcf9-9d12-7b93-835a-10aebdba1b94",
+      "worktree_id": "HOST_WORKTREE_D986",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "ROADMAP_06_CAMPAIGN_LIFECYCLE",
+      "name": "Governed Campaign Lifecycle and Progress Recovery",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/campaign-lifecycle.v1.json", "schemas/continuous-operating-loop.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_06_CAMPAIGN_LIFECYCLE/auditreport.md",
+      "auditor_task_id": "019fdcf9-9f99-7a20-8d25-1a8aba18c9f4",
+      "worktree_id": "HOST_WORKTREE_E0D7",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_07_PROOF_ACCEPTANCE",
+      "name": "Proof-Carrying Work and Whole-Project Acceptance",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/feature-completeness.v1.json", "schemas/repair-receipt.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/auditreport.md",
+      "auditor_task_id": "019fdcf9-a1f7-78b0-aaa1-6c55aae5630f",
+      "worktree_id": "HOST_WORKTREE_DB99",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_08_MEMORY_CAPSULES",
+      "name": "Structured Memory, Recovery, and Portable Project Capsules",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/project-memory.v1.json", "schemas/private-control-bundle.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
+      "auditor_task_id": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
+      "worktree_id": "HOST_WORKTREE_7C07",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_09_RELEASE_MIGRATION",
+      "name": "Release, Compatibility, and Migration Safety",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "docs/release-promotion.md", "schemas/release-lifecycle.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/auditreport.md",
+      "auditor_task_id": "019fdcf9-e62a-76e2-9452-90d76e43295d",
+      "worktree_id": "HOST_WORKTREE_7730",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_10_MAPS_INTELLIGENCE",
+      "name": "Bounded Maps and Repository Intelligence",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/project-map.v1.json", "schemas/derived-index.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_10_MAPS_INTELLIGENCE/auditreport.md",
+      "auditor_task_id": "019fdcf9-e853-7bc0-b44b-d5269f982261",
+      "worktree_id": "HOST_WORKTREE_AB45",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_11_WORKFLOW_DISTILLATION",
+      "name": "Workflow Distillation and Teacher-to-Worker Handoff",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/apprenticeship-plan.v1.json", "schemas/apprenticeship-reproduction.v1.json"],
+    "report_path": "docs/feature-audits/ROADMAP_11_WORKFLOW_DISTILLATION/auditreport.md",
+      "auditor_task_id": "019fdcf9-eaa7-7401-96d5-a8d182c07b02",
+      "worktree_id": "HOST_WORKTREE_C56C",
+    "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "ROADMAP_12_REMOTE_DELIVERY",
+      "name": "Remote Delivery Integrations",
+      "kind": "ROADMAP_CAPABILITY",
+      "sources": ["docs/roadmap.md", "schemas/runtime-delivery-request.v1.json", "schemas/delivery-target.v1.json"],
+      "report_path": "docs/feature-audits/ROADMAP_12_REMOTE_DELIVERY/auditreport.md",
+  "auditor_task_id": "019fdcf9-ee14-74f1-a195-5269fc1234a4",
+  "worktree_id": "HOST_WORKTREE_C6F3",
+  "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "BOOTSTRAP_PROJECT_CONTRACT",
+      "name": "Bootstrap to Project Contract Compilation",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/bootstrap-rapid-prototype-plan.md", "schemas/bootstrap-project-contract.v1.json", "control/bootstrap-project-contract.mjs"],
+      "report_path": "docs/feature-audits/BOOTSTRAP_PROJECT_CONTRACT/auditreport.md",
+      "auditor_task_id": "019fdcf9-f096-7e62-8cc3-458ab4714dae",
+      "worktree_id": "HOST_WORKTREE_B5E0",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "DYNAMIC_OWNER_CONVERSATION",
+      "name": "Dynamic Owner Conversation and Question Map",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/rapid-foundations/03-user-conversation.md", "schemas/bootstrap-conversation.v1.json", "research-records-linked-by-owner"],
+      "report_path": "docs/feature-audits/DYNAMIC_OWNER_CONVERSATION/auditreport.md",
+      "auditor_task_id": "019fdcf9-f34d-7712-b941-5f62101cc857",
+      "worktree_id": "HOST_WORKTREE_3BEF",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "FOUR_LIBRARY_GOVERNANCE",
+      "name": "Four-Library Governance Composition",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/base-general-library.v1.json", "schemas/base-role-library.v1.json", "schemas/project-general-library.v1.json", "schemas/generated-project-role-library.v1.json", "research-records-linked-by-owner"],
+      "report_path": "docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md",
+      "auditor_task_id": "019fdcf9-f611-7550-ae5e-e1dac246aa5b",
+      "worktree_id": "HOST_WORKTREE_4BB9",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PROJECT_GOVERNANCE_PERSISTENCE",
+      "name": "Persistent Project Governance and Upgrade Migration",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/project-governance-appendix.v1.json", "schemas/governance-migration.v1.json", "research-records-linked-by-owner"],
+      "report_path": "docs/feature-audits/PROJECT_GOVERNANCE_PERSISTENCE/auditreport.md",
+      "auditor_task_id": "019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd",
+      "worktree_id": "HOST_WORKTREE_CC4B",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "FEATURE_COMPLETENESS_AUDITOR_SEED",
+      "name": "Whole-Project Feature Map and Auditor Seed",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/feature-completeness.v1.json", "control/feature-completeness.mjs", "docs/roadmap.md"],
+      "report_path": "docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md",
+      "auditor_task_id": "019fdcfa-3e24-7ac1-bd30-a9ac136b34e6",
+      "worktree_id": "HOST_WORKTREE_B7E0",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PERSISTENT_INTENT_RUNTIME",
+      "name": "Persistent Intent Regulator and Runtime",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/persistent-intent-runtime.v1.json", "schemas/controller-supervisor.v1.json", "control/persistent-intent-runtime.mjs", "control/intent-regulator-runtime.mjs"],
+      "report_path": "docs/feature-audits/PERSISTENT_INTENT_RUNTIME/auditreport.md",
+      "auditor_task_id": "019fdcfa-4162-7702-baab-3d8aca14ea70",
+      "worktree_id": "HOST_WORKTREE_C08F",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "NATIVE_HOST_SESSION_LIFECYCLE",
+      "name": "Native Host Attachment and Session Lifecycle",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/native-session-run.v1.json", "schemas/native-host-attachment.v1.json", "control/native-session-runner.mjs"],
+      "report_path": "docs/feature-audits/NATIVE_HOST_SESSION_LIFECYCLE/auditreport.md",
+      "auditor_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "worktree_id": "HOST_WORKTREE_C22B",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "DYNAMIC_PROJECT_LANES",
+      "name": "Dynamic Project Lanes and Capability Roster",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/dynamic-lane-manifest.v1.json", "schemas/dynamic-lane-role-packet.v1.json", "control/dynamic-project-lanes.mjs"],
+      "report_path": "docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md",
+      "auditor_task_id": "019fdcfa-4873-7ea2-ae5d-f29729224d0c",
+      "worktree_id": "HOST_WORKTREE_A790",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PARALLEL_CAMPAIGN_LIFECYCLE",
+      "name": "Parallel Campaign Planning, Leases, and Merge Custody",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/parallel-campaign-plan.v1.json", "schemas/parallel-campaign-state.v1.json", "control/parallel-campaign-lifecycle.mjs"],
+      "report_path": "docs/feature-audits/PARALLEL_CAMPAIGN_LIFECYCLE/auditreport.md",
+      "auditor_task_id": "019fdcfa-4ccf-77e2-87d8-05d6efee71c4",
+      "worktree_id": "HOST_WORKTREE_3620",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "MODEL_TASK_ROUTING",
+      "name": "Model, Tool, and Task Routing Policy",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/task-model-policy.v1.json", "schemas/effective-model-readback.v1.json", "control/task-model-routing.mjs"],
+      "report_path": "docs/feature-audits/MODEL_TASK_ROUTING/auditreport.md",
+      "auditor_task_id": "019fdcfa-4fdf-7df0-aa55-96009715f717",
+      "worktree_id": "HOST_WORKTREE_94BF",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PROJECT_MEMORY_LEDGER",
+      "name": "Project Memory Ledger, Replay, and Projections",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/project-memory.v1.json", "control/project-memory.mjs", "control/project-memory-store.mjs", "control/project-memory-projections.mjs"],
+      "report_path": "docs/feature-audits/PROJECT_MEMORY_LEDGER/auditreport.md",
+      "auditor_task_id": "019fdcfa-52b0-73f3-8fd4-4e3ef665e09c",
+      "worktree_id": "HOST_WORKTREE_431F",
+      "status": "CENTRAL_INTEGRATION_PENDING"
+    },
+    {
+      "feature_id": "BOUNDED_PROJECT_MAPS",
+      "name": "Bounded Project Maps and Derived Indexes",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/project-map.v1.json", "schemas/derived-index.v1.json", "control/project-map.mjs", "control/derived-index.mjs"],
+      "report_path": "docs/feature-audits/BOUNDED_PROJECT_MAPS/auditreport.md",
+      "auditor_task_id": "019fdcfa-55ac-7691-86b6-e11e9f47bd15",
+      "worktree_id": "HOST_WORKTREE_3596",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "OFFLINE_LOCAL_MODE",
+      "name": "Offline and Local-First Operation",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/offline-policy.v1.json", "control/private-offline-mode.mjs", "docs/roadmap.md"],
+      "report_path": "docs/feature-audits/OFFLINE_LOCAL_MODE/auditreport.md",
+      "auditor_task_id": "019fdcfa-8c0f-7d20-9a90-e440f200c44f",
+      "worktree_id": "HOST_WORKTREE_F12D",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PROVIDER_DISCOVERY",
+      "name": "Provider Discovery and Capability Attestation",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/provider-discovery.v1.json", "schemas/host-capability-catalog.v1.json", "control/private-provider-discovery.mjs"],
+      "report_path": "docs/feature-audits/PROVIDER_DISCOVERY/auditreport.md",
+      "auditor_task_id": "019fdcfa-8ea0-7f20-9411-67ede286ac41",
+      "worktree_id": "HOST_WORKTREE_604D",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PRIVATE_CONTROL_INSTANCE",
+      "name": "Private Control Instance, Import, and Portable Bundle",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/private-control-bundle.v1.json", "schemas/project-import.v1.json", "control/private-control-bundle.mjs", "control/project-import.mjs"],
+      "report_path": "docs/feature-audits/PRIVATE_CONTROL_INSTANCE/auditreport.md",
+      "auditor_task_id": "019fdcfa-92a9-7720-9e08-accad24c0e8b",
+      "worktree_id": "HOST_WORKTREE_955F",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "RELEASE_CANDIDATE_ROLLOUT",
+      "name": "Test-Build, Release-Candidate, and Owner-Accepted Rollout",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/release-promotion.md", "schemas/release-lifecycle.v1.json", "research-records-linked-by-owner"],
+      "report_path": "docs/feature-audits/RELEASE_CANDIDATE_ROLLOUT/auditreport.md",
+      "auditor_task_id": "019fdcfa-95a6-7b02-8cdd-1985ebfad6b8",
+      "worktree_id": "HOST_WORKTREE_27E5",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "APPRENTICESHIP_WORKFLOW_LEARNING",
+      "name": "Apprenticeship, Drill, Reproduction, and Role Packet Learning",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/apprenticeship-admission.v1.json", "schemas/apprenticeship-reproduction.v1.json", "control/apprenticeship-drill.mjs"],
+      "report_path": "docs/feature-audits/APPRENTICESHIP_WORKFLOW_LEARNING/auditreport.md",
+      "auditor_task_id": "019fdcfa-98e8-7f90-ba8f-6bd776e06523",
+      "worktree_id": "HOST_WORKTREE_E26A",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "NAMED_GATE_DECISION_TREE",
+      "name": "Named Gate Catalog and Decision-Tree Governance",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/gate-catalog.v1.json", "governance/gate-catalog.v1.json", "control/gate-catalog-compiler.mjs", "control/task-gate-questions.mjs"],
+      "report_path": "docs/feature-audits/NAMED_GATE_DECISION_TREE/auditreport.md",
+      "auditor_task_id": "019fdcfa-9d3b-7cb2-898d-cba336947601",
+      "worktree_id": "HOST_WORKTREE_F29A",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "EVIDENCE_IDENTITY_HANDOFFS",
+      "name": "Evidence Identity, Typed Handoffs, and Independent Clearance",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/rapid-foundations/10-evidence-and-identity.md", "schemas/digest-bound-checkpoint.v1.json", "control/native-session-runner.mjs"],
+      "report_path": "docs/feature-audits/EVIDENCE_IDENTITY_HANDOFFS/auditreport.md",
+      "auditor_task_id": "019fdcfa-9fd6-7f82-a03b-605be9d2b5fc",
+      "worktree_id": "HOST_WORKTREE_D889",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "REPAIR_RECOVERY_LOOP",
+      "name": "Repair, Recovery, Reframing, and Continuous Operating Loop",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/root-cause-analysis.v1.json", "schemas/continuous-operating-loop.v1.json", "control/continuous-operating-loop.mjs", "control/repair-recovery.mjs"],
+      "report_path": "docs/feature-audits/REPAIR_RECOVERY_LOOP/auditreport.md",
+      "auditor_task_id": "019fdcfa-a3da-7f60-a8f1-c397033921d7",
+      "worktree_id": "HOST_WORKTREE_D9C9",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "DELIVERY_CLOSURE_BOUNDARY",
+      "name": "Delivery, Closure, Archival, and Active-Roster Cleanup",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["schemas/delivery-closure.v1.json", "schemas/canonical-campaign-closure.v1.json", "control/delivery-closure-state.mjs"],
+      "report_path": "docs/feature-audits/DELIVERY_CLOSURE_BOUNDARY/auditreport.md",
+      "auditor_task_id": "019fdcfb-c2db-7d93-be4c-144963f2782f",
+      "worktree_id": "HOST_WORKTREE_CCE6",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "SECURITY_PRIVACY_PERSISTENCE",
+      "name": "Security, Privacy, Secret-Free Persistence, and Boundary Enforcement",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/rapid-foundations/09-security-and-privacy.md", "schemas/persisted-record-privacy.v1.json", "control/persisted-record-privacy.mjs"],
+      "report_path": "docs/feature-audits/SECURITY_PRIVACY_PERSISTENCE/auditreport.md",
+      "auditor_task_id": "019fdcfb-ca6b-79f0-bd9e-21836906f135",
+      "worktree_id": "HOST_WORKTREE_2975",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "OWNER_PUBLIC_SURFACE",
+      "name": "Owner-Facing UI, UX, Responses, and Public Surface",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/rapid-foundations/07-ui-ux.md", "control/rapid-prototype/ui-ux.mjs", "control/bootstrap-owner-surface.mjs"],
+      "report_path": "docs/feature-audits/OWNER_PUBLIC_SURFACE/auditreport.md",
+      "auditor_task_id": "019fdcfb-d089-72b0-bf99-0380b2b2d8c4",
+      "worktree_id": "HOST_WORKTREE_A72C",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "UNIVERSAL_RESPONSE_GATING",
+      "name": "Universal Response, Handoff, and Anti-Lie Gating",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/rapid-foundations/", "schemas/gate-catalog.v1.json", "control/gate-catalog-compiler.mjs", "control/governance-decision-tree.mjs", "control/universal-response-gating.mjs", "schemas/universal-response-handoff.v1.json", "tests/verify-universal-response-gating.mjs", "research-records-linked-by-owner"],
+      "report_path": "docs/feature-audits/UNIVERSAL_RESPONSE_GATING/auditreport.md",
+      "auditor_task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+      "worktree_id": "HOST_WORKTREE_C3BA",
+      "status": "AUDIT_IN_PROGRESS"
+    },
+    {
+      "feature_id": "PORTABILITY_SOURCE_HYGIENE",
+      "name": "Portability, Source Hygiene, and Minimal Implementation Discipline",
+      "kind": "NAMED_CAPABILITY",
+      "sources": ["docs/rapid-foundations/08-code-hygiene.md", "control/rapid-prototype/code-hygiene.mjs", "docs/roadmap.md"],
+      "report_path": "docs/feature-audits/PORTABILITY_SOURCE_HYGIENE/auditreport.md",
+      "auditor_task_id": "019fdcfb-ddb9-7611-acfa-b1fcbac2d56f",
+      "worktree_id": "HOST_WORKTREE_F2F9",
+      "status": "AUDIT_IN_PROGRESS"
+    }
+  ],
+  "governance_lanes": [
+    {"lane_id": "LANE_01_INTENT_AND_SCOPE", "name": "Intent and Scope", "report_path": "docs/rapid-foundations/01-intent-and-scope-auditreport.md", "auditor_task_id": "019fe052-defd-7ac1-824e-ea83ef2a7980", "worktree_id": "HOST_WORKTREE_8EF2", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_02_BOOTSTRAP_AND_CONTEXT", "name": "Bootstrap and Context", "report_path": "docs/rapid-foundations/02-bootstrap-and-context-auditreport.md", "auditor_task_id": "019fe052-df05-72f1-bff0-64123bed03c1", "worktree_id": "HOST_WORKTREE_8CBE", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_03_USER_CONVERSATION", "name": "User Conversation", "report_path": "docs/rapid-foundations/03-user-conversation-auditreport.md", "auditor_task_id": "019fe053-3185-7de2-80a4-d123054f19b9", "worktree_id": "HOST_WORKTREE_4101", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_04_ROLE_ROUTING", "name": "Role Routing", "report_path": "docs/rapid-foundations/04-role-routing-auditreport.md", "auditor_task_id": "019fe053-3643-7a80-a62a-d5584386ab66", "worktree_id": "HOST_WORKTREE_88C0", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_05_PROGRESS_AND_HEALTH", "name": "Progress and Health", "report_path": "docs/rapid-foundations/05-progress-and-health-auditreport.md", "auditor_task_id": "019fe053-3648-7d72-8286-9a2e1de5f13f", "worktree_id": "HOST_WORKTREE_2F7C", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_06_FUNCTIONALITY", "name": "Functionality", "report_path": "docs/rapid-foundations/06-functionality-auditreport.md", "auditor_task_id": "019fe054-4c66-7a82-a347-699f7d6a8017", "worktree_id": "HOST_WORKTREE_5B0F", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_07_UI_UX", "name": "UI and UX", "report_path": "docs/rapid-foundations/07-ui-and-ux-auditreport.md", "auditor_task_id": "019fe05a-36c2-7833-9c13-4092b9e56400", "worktree_id": "HOST_WORKTREE_152B", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_08_CODE_HYGIENE", "name": "Code Hygiene", "report_path": "docs/rapid-foundations/08-code-hygiene-auditreport.md", "auditor_task_id": "019fe8a7-7774-7af3-b09e-0c1240f80338", "worktree_id": "HOST_WORKTREE_5CD6", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_09_SECURITY_PRIVACY", "name": "Security and Privacy", "report_path": "docs/rapid-foundations/09-security-and-privacy-auditreport.md", "auditor_task_id": "019fe8a7-7774-7af3-b09e-0bf16fc12c28", "worktree_id": "HOST_WORKTREE_7F6B", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_10_EVIDENCE_IDENTITY", "name": "Evidence and Identity", "report_path": "docs/rapid-foundations/10-evidence-and-identity-auditreport.md", "auditor_task_id": "019fe8a7-7978-73b3-b82d-bfa5936150d9", "worktree_id": "HOST_WORKTREE_C905", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_11_RECOVERY_BOUNDARIES", "name": "Recovery and Boundaries", "report_path": "docs/rapid-foundations/11-recovery-and-boundaries-auditreport.md", "auditor_task_id": "019fe8a7-7d05-7d81-a578-bc44131b8e37", "worktree_id": "HOST_WORKTREE_0FA9", "status": "AUDIT_IN_PROGRESS"},
+    {"lane_id": "LANE_12_DELIVERY_CLOSURE", "name": "Delivery and Closure", "report_path": "docs/rapid-foundations/12-delivery-and-closure-auditreport.md", "auditor_task_id": "019fe8a7-7f24-7900-a1dc-014adacdcdf6", "worktree_id": "HOST_WORKTREE_2669", "status": "AUDIT_IN_PROGRESS"}
+  ],
+  "parity": {
+    "feature_tasks_created": 37,
+    "feature_reports_present": 37,
+    "governance_tasks_created": 12,
+    "governance_reports_present": 12,
+    "platform_tasks_created": 0,
+    "platform_reports_present": 3,
+    "goal_records_compiled": 49,
+    "parity_status": "PLATFORM_AND_FEATURE_INVENTORY_PRESERVED_PENDING_VISIBLE_READBACK"
+  }
+}

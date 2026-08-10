@@ -6,7 +6,14 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {collectGovernanceGateEvidence} from "./governance-evidence.mjs";
 import {pathToFileURL} from "node:url";
+import {validateLocalTaskKindForRole} from "./local-task-kinds.mjs";
 import {applyGovernanceEvidenceRepair} from "./feature-agent-governance-evidence-repair.mjs";
+import {parseCheckCommand} from "./check-runner.mjs";
+import {
+  compileHybridSchedulerRequest,
+  createHybridScheduler,
+  opaqueSchedulerWorktreeRef,
+} from "./hybrid-scheduler.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -59,12 +66,82 @@ function git(root, args) {
   return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
 }
 
+const PROJECT_WORKER_COMMIT_NAME = "Project Worker";
+const PROJECT_WORKER_COMMIT_EMAIL = "project-worker@localhost";
+let checkScheduler = null;
+let checkSchedulerContext = null;
+
+function commitProjectWorktree(worktreePath, message) {
+  execFileSync("git", [
+    "-c", `user.name=${PROJECT_WORKER_COMMIT_NAME}`,
+    "-c", `user.email=${PROJECT_WORKER_COMMIT_EMAIL}`,
+    "commit", "-m", message,
+  ], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+}
+
 function runChecks(worktreePath, checks) {
-  for (const check of checks) {
-    const [program, ...args] = check.split(" ");
-    execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
-  }
-  return checks;
+  const execute = () => {
+    for (const check of checks) {
+      const {program, args} = parseCheckCommand(check);
+      execFileSync(program, args, {cwd: worktreePath, encoding: "utf8", maxBuffer: 64 * 1024, stdio: ["ignore", "pipe", "pipe"]});
+    }
+    return checks;
+  };
+  assert(checkScheduler !== null && checkSchedulerContext !== null, "worker checks require the shared Hybrid Scheduler");
+  const candidate = schedulerCandidateIdentity(worktreePath);
+  const heavyweight = checks.some((check) => /(?:build|compile|test|verify|integration|database|artifact)/iu.test(check));
+  const request = compileHybridSchedulerRequest({
+    requestId: `CHECK-${crypto.createHash("sha256").update(JSON.stringify({task: checkSchedulerContext.taskId, candidate, checks}), "utf8").digest("hex").slice(0, 32).toUpperCase()}`,
+    requesterId: `WORKER-${crypto.createHash("sha256").update(String(checkSchedulerContext.taskId), "utf8").digest("hex").slice(0, 24).toUpperCase()}`,
+    lane: `CHECK-${crypto.createHash("sha256").update(`${checkSchedulerContext.role}:${checkSchedulerContext.taskId}`, "utf8").digest("hex").slice(0, 24).toUpperCase()}`,
+    repositoryId: "AGENTOS_PROJECT",
+    worktreeId: `WORKTREE-${crypto.createHash("sha256").update(worktreePath, "utf8").digest("hex").slice(0, 24).toUpperCase()}`,
+    candidateCommit: candidate.commit,
+    candidateTreeOrDigest: candidate.tree,
+    cleanState: candidate.clean,
+    resourceClass: heavyweight ? "COMPILE_HEAVY" : "LIGHTWEIGHT_SOURCE_CHECK",
+    workingDirectoryRef: opaqueSchedulerWorktreeRef(worktreePath),
+    commandArgv: ["AGENTOS_CHECK_PLAN", ...checks],
+    toolchainProfile: "NODE_HOST",
+    proofClass: heavyweight ? "TEST_BATCH" : "SOURCE_CHECK",
+    whyNeeded: "RUN_ADMITTED_CHECK_PLAN",
+    expectedProof: "ALL_COMMANDS_EXIT_ZERO",
+    coverage: checks.map((check) => `CHECK-${crypto.createHash("sha256").update(check, "utf8").digest("hex").slice(0, 16).toUpperCase()}`).sort(),
+    timeoutClass: "BOUNDED",
+    cachePolicy: "NO_SHARED_OUTPUT",
+    secretPolicy: "REDACTED",
+  });
+  const scheduled = checkScheduler.runSync({
+    request,
+    admission: {
+      effectiveArgv: request.command_argv,
+      workingDirectory: worktreePath,
+      workingDirectoryRef: request.working_directory_ref,
+      allowedScope: ["."],
+      dependencyPreflight: () => ({status: "READY", identity: `DEPENDENCY_${request.request_sha256.slice(0, 24).toUpperCase()}`}),
+      runtimePreflight: () => ({status: "READY", identity: `RUNTIME_${request.request_sha256.slice(0, 24).toUpperCase()}`}),
+    },
+    resolveCandidate: () => schedulerCandidateIdentity(worktreePath),
+    execute,
+  });
+  return scheduled.output ?? checks;
+}
+
+function schedulerCandidateIdentity(worktreePath) {
+  const commit = git(worktreePath, ["rev-parse", "HEAD"]);
+  const tree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+  const status = git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]);
+  if (status.length === 0) return {commit, tree, clean: true};
+  const diff = execFileSync("git", ["-C", worktreePath, "diff", "--binary"], {encoding: "buffer", maxBuffer: 64 * 1024 * 1024});
+  const untracked = git(worktreePath, ["ls-files", "--others", "--exclude-standard", "-z"]);
+  const dirtyDigest = crypto.createHash("sha256").update(JSON.stringify({
+    commit,
+    tree,
+    status,
+    diff_sha256: crypto.createHash("sha256").update(diff).digest("hex"),
+    untracked,
+  }), "utf8").digest("hex");
+  return {commit: "PRELIMINARY_DIAGNOSTIC", tree: dirtyDigest, clean: false};
 }
 
 function runFocusedChecks(worktreePath) {
@@ -757,6 +834,7 @@ function applyOwnerFeedbackDigestRepair(worktreePath, feedbackId) {
     "#!/usr/bin/env node",
     "",
     "import assert from \"node:assert/strict\";",
+    "import {execFileSync} from \"node:child_process\";",
     "import {resolveAddressedRecordConflict} from \"../control/local-self-development-supervisor-adapter.mjs\";",
     "",
     "const existing = {schema: \"agentos.controller_completion_record.v1\", record_sha256: \"a\".repeat(64), parent_handoff_sha256: \"1\".repeat(64), source_commit: \"2\".repeat(40), source_tree: \"3\".repeat(40)};",
@@ -907,8 +985,12 @@ function applyOwnerFeedbackProgressRepair(worktreePath, feedbackId) {
   ].join("\n");
   adapterSource = adapterSource.replace(featureReadbackMarker, `${featureProgress}\n${featureReadbackMarker}`);
 
-  const controllerChecksMarker = "    const controllerChecks = campaignProgressTask\n      ? runCampaignProgressChecks(feature.session_record.worktree_path)\n      : runControllerChecks(feature.session_record.worktree_path, repairKind);";
-  assert(adapterSource.includes(controllerChecksMarker), "Controller recheck checkpoint is unavailable");
+  const controllerChecksMarkers = [
+    "    const controllerChecks = campaignProgressTask\n      ? runCampaignProgressChecks(feature.session_record.worktree_path)\n      : runControllerChecks(feature.session_record.worktree_path, repairKind);",
+    "    const controllerChecks = campaignProgressTask\n      ? runCampaignProgressChecks({scheduler: controllerScheduler, repositoryRoot, worktreePath: feature.session_record.worktree_path})\n      : runControllerChecks({scheduler: controllerScheduler, repositoryRoot, worktreePath: feature.session_record.worktree_path, taskKind: repairKind});",
+  ];
+  const controllerChecksMarker = controllerChecksMarkers.find((marker) => adapterSource.includes(marker));
+  assert(controllerChecksMarker !== undefined, "Controller recheck checkpoint is unavailable");
   const finalizerProgress = [
     "    writeControllerPlanningProgress({",
     "      campaignRoot,",
@@ -1177,10 +1259,12 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "import fs from \"node:fs\";",
     "import path from \"node:path\";",
     "import {execFileSync} from \"node:child_process\";",
+    "import {compileHybridSchedulerRequest, createHybridScheduler, opaqueSchedulerWorktreeRef} from \"./hybrid-scheduler.mjs\";",
     "",
     "const SHA256 = /^[0-9a-f]{64}$/u;",
     "const GIT_OBJECT = /^[0-9a-f]{40}$/u;",
     "const ISO_UTC = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$/u;",
+    "const MAX_OUTPUT_BYTES = 64 * 1024;",
     "",
     "function assert(condition, message) { if (!condition) throw new Error(message); }",
     "function canonicalize(value) { if (Array.isArray(value)) return value.map(canonicalize); if (value && typeof value === \"object\") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalize(value[key])])); return value; }",
@@ -1189,9 +1273,21 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "function requireSha(value, label) { assert(typeof value === \"string\" && SHA256.test(value), `${label} must be a SHA-256`); }",
     "function requireGitObject(value, label) { assert(typeof value === \"string\" && GIT_OBJECT.test(value), `${label} must be a Git object`); }",
     "function requireUtc(value, label) { assert(typeof value === \"string\" && ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`); }",
+    "function parseCheckCommand(command) {",
+    "  assert(typeof command === \"string\" && command.length > 0 && command.length <= 240 && !(/[\\r\\n\\0]/u.test(command)), \"check command is invalid\");",
+    "  const parts = command.trim().split(/\\s+/u);",
+    "  assert(parts[0] === \"node\" && (parts.length === 2 || (parts.length === 3 && parts[1] === \"--check\")), \"check executable or arguments are not authorized\");",
+    "  const script = parts.at(-1);",
+    "  assert(/^(?:control|tests)\\/[A-Za-z0-9._/-]+\\.mjs$/u.test(script) && !script.includes(\"..\"), \"check script is outside the authorized source areas\");",
+    "  return {program: process.execPath, args: parts.slice(1)};",
+    "}",
+    "function sourceIdentity(worktreePath) { const absolute = path.resolve(worktreePath); assert(!fs.lstatSync(absolute).isSymbolicLink(), \"check worktree may not be a symlink\"); const root = fs.realpathSync.native(absolute); const stat = fs.lstatSync(root); assert(stat.isDirectory() && !stat.isSymbolicLink(), \"check worktree must be a real directory\"); const commit = gitValue(root, [\"rev-parse\", \"HEAD\"]); const tree = gitValue(root, [\"rev-parse\", \"HEAD^{tree}\"]); requireGitObject(commit, \"observed source commit\"); requireGitObject(tree, \"observed source tree\"); return {root, commit, tree}; }",
+    "function schedulerId(prefix, value) { return prefix + \"-\" + crypto.createHash(\"sha256\").update(String(value), \"utf8\").digest(\"hex\").slice(0, 24).toUpperCase(); }",
+    "function gitValue(worktreePath, args, encoding = \"utf8\") { return execFileSync(\"git\", [\"-C\", worktreePath, ...args], {encoding}).toString().trim(); }",
+    "function candidateIdentity(worktreePath, sourceCommit, sourceTree) { try { const commit = gitValue(worktreePath, [\"rev-parse\", \"HEAD\"]); const tree = gitValue(worktreePath, [\"rev-parse\", \"HEAD^{tree}\"]); const status = gitValue(worktreePath, [\"status\", \"--porcelain\", \"--untracked-files=all\"]); if (status.length === 0) return {commit, tree, clean: true}; const diff = execFileSync(\"git\", [\"-C\", worktreePath, \"diff\", \"--binary\"], {encoding: \"buffer\"}); const untracked = gitValue(worktreePath, [\"ls-files\", \"--others\", \"--exclude-standard\", \"-z\"]); return {commit: \"PRELIMINARY_DIAGNOSTIC\", tree: crypto.createHash(\"sha256\").update(JSON.stringify({commit, tree, status, diff_sha256: crypto.createHash(\"sha256\").update(diff).digest(\"hex\"), untracked}), \"utf8\").digest(\"hex\"), clean: false}; } catch { return {commit: sourceCommit, tree: sourceTree, clean: false}; } }",
     "",
     "export function validateCheckFailureReceipt(receipt) {",
-    "  const keys = [\"schema\", \"version\", \"status\", \"task_id\", \"role\", \"source_commit\", \"source_tree\", \"check_index\", \"command\", \"exit_code\", \"signal\", \"stdout\", \"stderr\", \"observed_at_utc\", \"failure_sha256\"];",
+    "  const keys = [\"schema\", \"version\", \"status\", \"task_id\", \"role\", \"source_commit\", \"source_tree\", \"check_index\", \"command\", \"exit_code\", \"signal\", \"stdout_sha256\", \"stderr_sha256\", \"stdout_bytes\", \"stderr_bytes\", \"diagnostics_redacted\", \"observed_at_utc\", \"failure_sha256\"];",
     "  assert(JSON.stringify(Object.keys(receipt).sort()) === JSON.stringify([...keys].sort()), \"check failure receipt fields mismatch\");",
     "  assert(receipt.schema === \"agentos.local_check_failure_receipt.v1\" && receipt.version === 1 && receipt.status === \"FAILED\", \"check failure receipt identity is invalid\");",
     "  requireString(receipt.task_id, \"check failure task ID\");",
@@ -1202,7 +1298,11 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "  requireString(receipt.command, \"check failure command\");",
     "  assert(receipt.exit_code === null || (Number.isSafeInteger(receipt.exit_code) && receipt.exit_code !== 0), \"check failure exit code is invalid\");",
     "  assert(receipt.signal === null || typeof receipt.signal === \"string\", \"check failure signal is invalid\");",
-    "  assert(typeof receipt.stdout === \"string\" && typeof receipt.stderr === \"string\", \"check failure output is invalid\");",
+    "  requireSha(receipt.stdout_sha256, \"check failure stdout digest\");",
+    "  requireSha(receipt.stderr_sha256, \"check failure stderr digest\");",
+    "  assert(Number.isSafeInteger(receipt.stdout_bytes) && receipt.stdout_bytes >= 0 && receipt.stdout_bytes <= MAX_OUTPUT_BYTES, \"check failure stdout size is invalid\");",
+    "  assert(Number.isSafeInteger(receipt.stderr_bytes) && receipt.stderr_bytes >= 0 && receipt.stderr_bytes <= MAX_OUTPUT_BYTES, \"check failure stderr size is invalid\");",
+    "  assert(receipt.diagnostics_redacted === true, \"check failure diagnostics must be redacted\");",
     "  requireUtc(receipt.observed_at_utc, \"check failure time\");",
     "  requireSha(receipt.failure_sha256, \"check failure digest\");",
     "  assert(receipt.failure_sha256 === digestWithout(receipt, \"failure_sha256\"), \"check failure digest mismatch\");",
@@ -1210,28 +1310,40 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "}",
     "",
     "export function compileCheckFailureReceipt({taskId, role, sourceCommit, sourceTree, checkIndex, command, error, observedAtUtc = new Date().toISOString()}) {",
-    "  const receipt = {schema: \"agentos.local_check_failure_receipt.v1\", version: 1, status: \"FAILED\", task_id: taskId, role, source_commit: sourceCommit, source_tree: sourceTree, check_index: checkIndex, command, exit_code: Number.isSafeInteger(error?.status) ? error.status : null, signal: error?.signal ?? null, stdout: typeof error?.stdout === \"string\" ? error.stdout : String(error?.stdout ?? \"\"), stderr: typeof error?.stderr === \"string\" ? error.stderr : String(error?.stderr ?? \"\"), observed_at_utc: observedAtUtc, failure_sha256: null};",
+    "  const stdout = typeof error?.stdout === \"string\" ? error.stdout : String(error?.stdout ?? \"\"); const stderr = typeof error?.stderr === \"string\" ? error.stderr : String(error?.stderr ?? \"\");",
+    "  assert(Buffer.byteLength(stdout, \"utf8\") <= MAX_OUTPUT_BYTES && Buffer.byteLength(stderr, \"utf8\") <= MAX_OUTPUT_BYTES, \"check failure output exceeds the bounded evidence limit\");",
+    "  const receipt = {schema: \"agentos.local_check_failure_receipt.v1\", version: 1, status: \"FAILED\", task_id: taskId, role, source_commit: sourceCommit, source_tree: sourceTree, check_index: checkIndex, command, exit_code: Number.isSafeInteger(error?.status) ? error.status : null, signal: error?.signal ?? null, stdout_sha256: crypto.createHash(\"sha256\").update(stdout, \"utf8\").digest(\"hex\"), stderr_sha256: crypto.createHash(\"sha256\").update(stderr, \"utf8\").digest(\"hex\"), stdout_bytes: Buffer.byteLength(stdout, \"utf8\"), stderr_bytes: Buffer.byteLength(stderr, \"utf8\"), diagnostics_redacted: true, observed_at_utc: observedAtUtc, failure_sha256: null};",
     "  receipt.failure_sha256 = digestWithout(receipt, \"failure_sha256\");",
     "  return validateCheckFailureReceipt(receipt);",
     "}",
     "",
-    "function writeReceipt(target, receipt) {",
-    "  fs.mkdirSync(path.dirname(target), {recursive: true});",
+    "function writeReceipt(root, receipt) {",
+    "  const evidenceRoot = path.join(root, \"control\", \"check-failure-receipts\");",
+    "  fs.mkdirSync(path.join(root, \"control\"), {recursive: true, mode: 0o700});",
+    "  fs.mkdirSync(evidenceRoot, {recursive: true, mode: 0o700});",
+    "  assert(!fs.lstatSync(evidenceRoot).isSymbolicLink(), \"check evidence directory may not be a symlink\");",
+    "  const safeTaskId = receipt.task_id.replace(/[^A-Za-z0-9._-]/gu, \"_\");",
+    "  const target = path.join(evidenceRoot, `${safeTaskId}-${String(receipt.check_index).padStart(3, \"0\")}-${receipt.failure_sha256}.json`);",
     "  if (fs.existsSync(target)) { assert(!fs.lstatSync(target).isSymbolicLink(), \"check failure receipt may not be a symlink\"); assert(fs.readFileSync(target, \"utf8\") === `${JSON.stringify(receipt)}\\n`, \"check failure receipt changed\"); return; }",
     "  const temporary = `${target}.${process.pid}.stage`;",
     "  try { fs.writeFileSync(temporary, `${JSON.stringify(receipt)}\\n`, {flag: \"wx\", mode: 0o600}); fs.renameSync(temporary, target); } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }",
     "}",
     "",
-    "export function runChecksWithEvidence({worktreePath, checks, evidenceRoot, taskId, role, sourceCommit, sourceTree}) {",
+    "export function runChecksWithEvidence({worktreePath, checks, taskId, role, sourceCommit, sourceTree, schedulerRoot}) {",
     "  assert(fs.existsSync(worktreePath) && fs.statSync(worktreePath).isDirectory(), \"check worktree is unavailable\");",
-    "  assert(Array.isArray(checks) && checks.length > 0 && checks.every((check) => typeof check === \"string\" && check.length > 0), \"check list is invalid\");",
-    "  requireString(evidenceRoot, \"check evidence root\"); requireString(taskId, \"check task ID\"); requireString(role, \"check role\"); requireGitObject(sourceCommit, \"check source commit\"); requireGitObject(sourceTree, \"check source tree\");",
-    "  for (let checkIndex = 0; checkIndex < checks.length; checkIndex += 1) {",
-    "    const command = checks[checkIndex]; const [program, ...args] = command.split(\" \");",
-    "    try { execFileSync(program === \"node\" ? process.execPath : program, args, {cwd: worktreePath, encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]}); }",
-    "    catch (error) { const receipt = compileCheckFailureReceipt({taskId, role, sourceCommit, sourceTree, checkIndex, command, error}); const safeTaskId = taskId.replace(/[^A-Za-z0-9._-]/gu, \"_\"); writeReceipt(path.join(evidenceRoot, `${safeTaskId}-${String(checkIndex).padStart(3, \"0\")}-${receipt.failure_sha256}.json`), receipt); throw error; }",
-    "  }",
-    "  return checks;",
+    "  const observed = sourceIdentity(worktreePath);",
+    "  assert(Array.isArray(checks) && checks.length > 0 && checks.length <= 64 && checks.every((check) => typeof check === \"string\" && check.trim().length > 0), \"check list is invalid\");",
+    "  requireString(taskId, \"check task ID\"); requireString(role, \"check role\"); requireGitObject(sourceCommit, \"check source commit\"); requireGitObject(sourceTree, \"check source tree\"); requireString(schedulerRoot, \"check scheduler authority root\"); assert(path.isAbsolute(schedulerRoot), \"check scheduler authority root must be absolute\");",
+    "  assert(sourceCommit === observed.commit && sourceTree === observed.tree, \"check source identity differs from worktree HEAD\");",
+    "  const candidate = candidateIdentity(observed.root, sourceCommit, sourceTree);",
+    "  const execute = () => { for (let checkIndex = 0; checkIndex < checks.length; checkIndex += 1) {",
+    "    const command = checks[checkIndex]; const {program, args} = parseCheckCommand(command);",
+    "    try { execFileSync(program, args, {cwd: observed.root, encoding: \"utf8\", maxBuffer: MAX_OUTPUT_BYTES, stdio: [\"ignore\", \"pipe\", \"pipe\"]}); }",
+    "    catch (error) { const receipt = compileCheckFailureReceipt({taskId, role, sourceCommit, sourceTree, checkIndex, command, error}); writeReceipt(observed.root, receipt); throw error; }",
+    "  } return checks; };",
+    "  const scheduler = createHybridScheduler({authorityRoot: schedulerRoot});",
+    "  const request = compileHybridSchedulerRequest({requestId: `CHECK-${crypto.createHash(\"sha256\").update(JSON.stringify({taskId, role, candidate, checks}), \"utf8\").digest(\"hex\").slice(0, 32).toUpperCase()}`, requesterId: schedulerId(\"WORKER\", taskId), lane: schedulerId(\"CHECK\", `${role}:${taskId}`), repositoryId: \"AGENTOS_PROJECT\", worktreeId: schedulerId(\"WORKTREE\", observed.root), candidateCommit: candidate.commit, candidateTreeOrDigest: candidate.tree, cleanState: candidate.clean, resourceClass: checks.some((check) => /(?:build|compile|test|verify|integration|database|artifact)/iu.test(check)) ? \"COMPILE_HEAVY\" : \"LIGHTWEIGHT_SOURCE_CHECK\", workingDirectoryRef: opaqueSchedulerWorktreeRef(observed.root), commandArgv: [\"AGENTOS_CHECK_PLAN\", ...checks], toolchainProfile: \"NODE_HOST\", proofClass: \"TEST_BATCH\", whyNeeded: \"RUN_ADMITTED_CHECK_PLAN\", expectedProof: \"ALL_COMMANDS_EXIT_ZERO\", coverage: checks.map((check) => `CHECK-${crypto.createHash(\"sha256\").update(check, \"utf8\").digest(\"hex\").slice(0, 16).toUpperCase()}`).sort(), timeoutClass: \"BOUNDED\", cachePolicy: \"NO_SHARED_OUTPUT\", secretPolicy: \"REDACTED\"});",
+    "  return scheduler.runSync({request, admission: {effectiveArgv: request.command_argv, workingDirectory: observed.root, workingDirectoryRef: request.working_directory_ref, allowedScope: [\".\"], dependencyPreflight: () => ({status: \"READY\", identity: \"DEPENDENCY_\" + request.request_sha256.slice(0, 24).toUpperCase()}), runtimePreflight: () => ({status: \"READY\", identity: \"RUNTIME_\" + request.request_sha256.slice(0, 24).toUpperCase()})}, resolveCandidate: () => candidateIdentity(observed.root, sourceCommit, sourceTree), execute}).output ?? checks;",
     "}",
     "",
   ].join("\n");
@@ -1251,13 +1363,14 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "}",
   ].join("\n");
   assert(workerSource.includes(workerChecksMarker), "worker check runner is unavailable");
-  workerSource = workerSource.replace(workerChecksMarker, "function runChecks(worktreePath, checks) {\n  return runChecksWithEvidence({worktreePath, checks, evidenceRoot: path.join(worktreePath, \"control/check-failure-receipts\"), taskId, role, sourceCommit, sourceTree});\n}");
+  workerSource = workerSource.replace(workerChecksMarker, "function runChecks(worktreePath, checks) {\n  return runChecksWithEvidence({worktreePath, checks, taskId, role, sourceCommit, sourceTree, schedulerRoot});\n}");
   writeFileAtomic(workerPath, workerSource);
 
   let adapterSource = fs.readFileSync(adapterPath, "utf8");
   const adapterImportMarker = 'import {pathToFileURL} from "node:url";';
   assert(adapterSource.includes(adapterImportMarker), "adapter URL import is unavailable");
-  adapterSource = adapterSource.replace(adapterImportMarker, `${adapterImportMarker}\nimport {runChecksWithEvidence} from "./check-runner.mjs";`);
+  const adapterUsesSharedScheduler = adapterSource.includes("function runScheduledControllerChecks(");
+  if (!adapterUsesSharedScheduler) adapterSource = adapterSource.replace(adapterImportMarker, `${adapterImportMarker}\nimport {runChecksWithEvidence} from "./check-runner.mjs";`);
   const adapterChecksMarker = [
     "function runChecks(worktreePath, checks) {",
     "  for (const check of checks) {",
@@ -1267,8 +1380,24 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "  return checks;",
     "}",
   ].join("\n");
-  assert(adapterSource.includes(adapterChecksMarker), "adapter check runner is unavailable");
-  adapterSource = adapterSource.replace(adapterChecksMarker, "function runChecks(worktreePath, checks) {\n  const sourceCommit = git(worktreePath, [\"rev-parse\", \"HEAD\"]);\n  const sourceTree = git(worktreePath, [\"rev-parse\", \"HEAD^{tree}\"]);\n  return runChecksWithEvidence({worktreePath, checks, evidenceRoot: path.join(worktreePath, \"control/check-failure-receipts\"), taskId: \"CONTROLLER-RECHECK\", role: \"AGENTOS_CONTROLLER\", sourceCommit, sourceTree});\n}");
+  const adapterRunChecks = [
+    "function runChecks(worktreePath, checks) {",
+    "  const sourceCommit = git(worktreePath, [\"rev-parse\", \"HEAD\"]);",
+    "  const sourceTree = git(worktreePath, [\"rev-parse\", \"HEAD^{tree}\"]);",
+    "  return runChecksWithEvidence({worktreePath, checks, taskId: \"CONTROLLER-RECHECK\", role: \"AGENTOS_CONTROLLER\", sourceCommit, sourceTree, schedulerRoot: process.env.AGENTOS_SCHEDULER_ROOT});",
+    "}",
+  ].join("\n");
+  if (adapterUsesSharedScheduler) {
+    // The current Controller adapter already routes its check batches through
+    // the shared scheduler. Keep that source intact when this legacy repair
+    // generator runs against a current checkout.
+  } else if (adapterSource.includes(adapterChecksMarker)) {
+    adapterSource = adapterSource.replace(adapterChecksMarker, adapterRunChecks);
+  } else {
+    const adapterFunctionMarker = "function runControllerChecks(worktreePath, taskKind = \"CONTROLLER_SUPERVISOR_REPAIR\") {";
+    assert(adapterSource.includes(adapterFunctionMarker), "adapter check runner is unavailable");
+    adapterSource = adapterSource.replace(adapterFunctionMarker, adapterRunChecks + "\n\n" + adapterFunctionMarker);
+  }
   const campaignProgressChecksMarker = [
     "function runCampaignProgressChecks(worktreePath) {",
     "  const checks = [",
@@ -1284,17 +1413,27 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "  return checks;",
     "}",
   ].join("\n");
-  assert(adapterSource.includes(campaignProgressChecksMarker), "campaign progress check runner is unavailable");
-  adapterSource = adapterSource.replace(campaignProgressChecksMarker, [
-    "function runCampaignProgressChecks(worktreePath) {",
-    "  return runChecks(worktreePath, [",
-    "    \"node --check control/governance-decision-tree.mjs\",",
-    "    \"node tests/verify-governance-decision-tree.mjs\",",
-    "    \"node --check control/controller-supervisor.mjs\",",
-    "    \"node tests/verify-controller-supervisor.mjs\",",
-    "  ]);",
-    "}",
-  ].join("\n"));
+  if (adapterSource.includes(campaignProgressChecksMarker)) {
+    adapterSource = adapterSource.replace(campaignProgressChecksMarker, [
+      "function runCampaignProgressChecks(worktreePath) {",
+      "  return runChecks(worktreePath, [",
+      "    \"node --check control/governance-decision-tree.mjs\",",
+      "    \"node tests/verify-governance-decision-tree.mjs\",",
+      "    \"node --check control/controller-supervisor.mjs\",",
+      "    \"node tests/verify-controller-supervisor.mjs\",",
+      "  ]);",
+      "}",
+    ].join("\n"));
+  }
+  const adapterLoopMarker = [
+    "  for (const check of checks) {",
+    "    const [program, ...args] = check.split(\" \");",
+    "    execFileSync(program === \"node\" ? process.execPath : program, args, {cwd: worktreePath, encoding: \"utf8\", stdio: [\"ignore\", \"pipe\", \"pipe\"]});",
+    "  }",
+    "  return checks;",
+  ].join("\n");
+  const adapterLoopCount = adapterSource.split(adapterLoopMarker).length - 1;
+  if (adapterLoopCount >= 2) adapterSource = adapterSource.replaceAll(adapterLoopMarker, "  return runChecks(worktreePath, checks);");
   writeFileAtomic(adapterPath, adapterSource);
 
   const verifierSource = [
@@ -1307,22 +1446,36 @@ function applyOwnerFeedbackCheckRepair(worktreePath, feedbackId) {
     "import {compileCheckFailureReceipt, runChecksWithEvidence, validateCheckFailureReceipt} from \"../control/check-runner.mjs\";",
     "",
     "const root = fs.mkdtempSync(path.join(os.tmpdir(), \"agentos-check-repair-\"));",
+    "const schedulerRoot = path.join(root, \"scheduler\");",
+    "fs.mkdirSync(path.join(root, \"control\"), {recursive: true});",
+    "fs.mkdirSync(path.join(root, \"tests\"), {recursive: true});",
+    "fs.writeFileSync(path.join(root, \"tests\", \"always-fails.mjs\"), \"process.stdout.write('CHECK_STDOUT'); process.stderr.write('CHECK_STDERR'); process.exit(7);\\n\");",
+    "execFileSync(\"git\", [\"-C\", root, \"init\", \"-q\"]);",
+    "execFileSync(\"git\", [\"-C\", root, \"config\", \"user.email\", \"agentos@example.invalid\"]);",
+    "execFileSync(\"git\", [\"-C\", root, \"config\", \"user.name\", \"AgentOS Check Repair\"]);",
+    "execFileSync(\"git\", [\"-C\", root, \"add\", \"tests/always-fails.mjs\"]);",
+    "execFileSync(\"git\", [\"-C\", root, \"commit\", \"-qm\", \"fixture\"]);",
+    "const sourceCommit = execFileSync(\"git\", [\"-C\", root, \"rev-parse\", \"HEAD\"], {encoding: \"utf8\"}).trim();",
+    "const sourceTree = execFileSync(\"git\", [\"-C\", root, \"rev-parse\", \"HEAD^{tree}\"], {encoding: \"utf8\"}).trim();",
     "try {",
-    "  const receipt = compileCheckFailureReceipt({taskId: \"TASK-CHECK-1\", role: \"FEATURE_AGENT\", sourceCommit: \"a\".repeat(40), sourceTree: \"b\".repeat(40), checkIndex: 0, command: \"node -e failure\", error: {status: 7, signal: null, stdout: \"out\", stderr: \"err\"}, observedAtUtc: \"2026-08-04T12:00:00.000Z\"});",
+    "  const receipt = compileCheckFailureReceipt({taskId: \"TASK-CHECK-1\", role: \"FEATURE_AGENT\", sourceCommit: \"a\".repeat(40), sourceTree: \"b\".repeat(40), checkIndex: 0, command: \"node tests/always-fails.mjs\", error: {status: 7, signal: null, stdout: \"out\", stderr: \"err\"}, observedAtUtc: \"2026-08-04T12:00:00.000Z\"});",
     "  assert.doesNotThrow(() => validateCheckFailureReceipt(receipt));",
     "  assert.equal(receipt.exit_code, 7);",
-    "  assert.equal(receipt.stdout, \"out\");",
-    "  assert.equal(receipt.stderr, \"err\");",
-    "  assert.throws(() => runChecksWithEvidence({worktreePath: root, evidenceRoot: path.join(root, \"evidence\"), taskId: \"TASK-CHECK-2\", role: \"FEATURE_AGENT\", sourceCommit: \"c\".repeat(40), sourceTree: \"d\".repeat(40), checks: [\"node -e process.stdout.write('CHECK_STDOUT');process.stderr.write('CHECK_STDERR');process.exit(7)\"]}), /Command failed/u);",
-    "  const files = fs.readdirSync(path.join(root, \"evidence\"));",
+    "  assert.equal(receipt.stdout_bytes, 3);",
+    "  assert.equal(receipt.stderr_bytes, 3);",
+    "  assert.equal(receipt.diagnostics_redacted, true);",
+    "  assert.throws(() => runChecksWithEvidence({worktreePath: root, schedulerRoot, taskId: \"TASK-CHECK-2\", role: \"FEATURE_AGENT\", sourceCommit, sourceTree, checks: [\"node tests/always-fails.mjs\"]}));",
+    "  const files = fs.readdirSync(path.join(root, \"control\", \"check-failure-receipts\"));",
     "  assert.equal(files.length, 1);",
-    "  const retained = JSON.parse(fs.readFileSync(path.join(root, \"evidence\", files[0]), \"utf8\"));",
+    "  const retained = JSON.parse(fs.readFileSync(path.join(root, \"control\", \"check-failure-receipts\", files[0]), \"utf8\"));",
     "  assert.equal(retained.status, \"FAILED\");",
     "  assert.equal(retained.exit_code, 7);",
-    "  assert.match(retained.stdout, /CHECK_STDOUT/u);",
-    "  assert.match(retained.stderr, /CHECK_STDERR/u);",
+    "  assert.equal(retained.stdout_bytes, 11);",
+    "  assert.equal(retained.stderr_bytes, 11);",
+    "  assert.equal(retained.diagnostics_redacted, true);",
+    "  assert.doesNotMatch(JSON.stringify(retained), /CHECK_STDOUT|CHECK_STDERR/u);",
     "  assert.doesNotThrow(() => validateCheckFailureReceipt(retained));",
-    "  console.log(\"PASS failed checks retain exact command, output, source identity, and digest before handoff failure\");",
+    "  console.log(\"PASS failed checks retain command, output classes, output digests, source identity, and failure digest without raw output\");",
     "} finally { fs.rmSync(root, {recursive: true, force: true}); }",
   ].join("\n") + "\n";
   writeFileAtomic(verifierPath, verifierSource);
@@ -1355,6 +1508,7 @@ const featureWorktree = args.feature_worktree ? path.resolve(args.feature_worktr
 const evidenceWorktree = args.evidence_worktree ? path.resolve(args.evidence_worktree) : null;
 const decisionTreePath = args.decision_tree ? path.resolve(args.decision_tree) : null;
 const nowUtc = new Date().toISOString();
+const schedulerRootInput = args.scheduler_root ?? process.env.AGENTOS_SCHEDULER_ROOT;
 
 requireString(role, "worker role");
 requireString(sessionId, "worker session");
@@ -1364,13 +1518,26 @@ requireSha(candidateSha256, "worker candidate");
 requireGitObject(sourceCommit, "worker source commit");
 requireGitObject(sourceTree, "worker source tree");
 requireString(task, "worker task");
+requireString(schedulerRootInput, "worker scheduler authority root");
+assert(path.isAbsolute(schedulerRootInput), "worker scheduler authority root must be absolute");
+validateLocalTaskKindForRole({role, taskKind});
 requireUtc(nowUtc, "worker time");
 assert(fs.existsSync(worktreePath) && fs.statSync(worktreePath).isDirectory(), "worker worktree is unavailable");
+const schedulerRoot = path.resolve(schedulerRootInput);
+process.env.AGENTOS_SCHEDULER_ROOT = schedulerRoot;
+checkScheduler = createHybridScheduler({authorityRoot: schedulerRoot});
+checkSchedulerContext = {taskId, role};
 
 function writeFileAtomic(target, content) {
   fs.mkdirSync(path.dirname(target), {recursive: true});
   const temporary = `${target}.${process.pid}.stage`;
-  fs.writeFileSync(temporary, content, {flag: "wx", mode: 0o600});
+  const handle = fs.openSync(temporary, "wx", 0o600);
+  try {
+    fs.writeFileSync(handle, content, "utf8");
+    fs.fsyncSync(handle);
+  } finally {
+    fs.closeSync(handle);
+  }
   fs.renameSync(temporary, target);
 }
 
@@ -1426,7 +1593,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
   assert(fs.existsSync(decisionTreePath) && fs.statSync(decisionTreePath).isFile(), "Orchestrator decision tree record is unavailable");
   const decisionTree = JSON.parse(fs.readFileSync(decisionTreePath, "utf8"));
   const {evaluateGovernanceDecisionTree} = await import(pathToFileURL(path.join(worktreePath, "control/governance-decision-tree.mjs")).href);
-  const gateEvidence = collectGovernanceGateEvidence({worktreePath, tree: decisionTree});
+  const gateEvidence = collectGovernanceGateEvidence({worktreePath, tree: decisionTree, schedulerRoot});
   const evidence = (gate) => Object.fromEntries(gate.evidence_requirements.map((key) => [key, gateEvidence[gate.gate_id + ":" + key]]));
   const gateAnswers = Object.fromEntries(decisionTree.gates.map((gate) => [gate.gate_id, {answer: "YES", evidence: evidence(gate), failure: null, recheck: null}]));
   const gateEvaluation = evaluateGovernanceDecisionTree({tree: decisionTree, answers: gateAnswers});
@@ -1599,7 +1766,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: bind real governance gate evidence"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: bind real governance gate evidence");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1640,7 +1807,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: recover abruptly exited durable sessions"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: recover abruptly exited durable sessions");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1681,7 +1848,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: make durable-session verifier worktree-safe"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: make durable-session verifier worktree-safe");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1724,7 +1891,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: keep Bootstrap owner conversation casual"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: keep Bootstrap owner conversation casual");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1787,7 +1954,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...repair.changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", `Feature Agent: repair owner feedback ${feedbackId}`], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, `Project Worker: repair owner feedback ${feedbackId}`);
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1837,7 +2004,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", localBindingRepair ? "Feature Agent: refresh local session verifier binding" : "Feature Agent: refresh Controller supervisor binding"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, localBindingRepair ? "Project Worker: refresh local session verifier binding" : "Project Worker: refresh Controller supervisor binding");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1878,7 +2045,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: mint next autonomous campaign behavior"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: mint next autonomous campaign behavior");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1919,7 +2086,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: continue bounded campaigns automatically"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: continue bounded campaigns automatically");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -1982,7 +2149,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     const stagedPaths = [...changedByRepair, artifactName];
     execFileSync("git", ["add", ...stagedPaths], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: enforce supervisor boundary stops"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: enforce supervisor boundary stops");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);
@@ -2025,7 +2192,7 @@ if (role === "CAMPAIGN_ORCHESTRATOR" && taskKind === "CONTROLLER_SUPERVISOR_LIVE
     }, null, 2)});\n`;
     writeFileAtomic(path.join(worktreePath, artifactName), marker);
     execFileSync("git", ["add", "control/governance-decision-tree.mjs", artifactName], {cwd: worktreePath, encoding: "utf8"});
-    execFileSync("git", ["-c", "user.name=AgentOS Feature Agent", "-c", "user.email=agentos-feature-agent@localhost", "commit", "-m", "Feature Agent: implement governance repair receipt"], {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    commitProjectWorktree(worktreePath, "Project Worker: implement governance repair receipt");
     buildCommit = git(worktreePath, ["rev-parse", "HEAD"]);
     buildTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
     changedPaths = git(worktreePath, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]).split("\n").filter(Boolean);

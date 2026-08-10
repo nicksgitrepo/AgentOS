@@ -21,6 +21,7 @@
       "project_root",
       "control_plane_root",
       "control_plane",
+      "bootstrap_operating_mode",
       "initial_answers",
       "discovery",
       "question_plan",
@@ -43,7 +44,7 @@
       "CREATE_PRODUCT_AGENTS",
       "CREATE_A_CAMPAIGN"
     ],
-    "next_step": "Continue only through the canonical Bootstrap controller after the owner answers the material questions and approves the exact plan with APPROVE_EXACT_PLAN."
+    "next_step": "Continue through the canonical Bootstrap controller after material questions. The default JSA mode may continue only declared in-scope setup; protected actions retain their own exact authority boundary and changed scope returns to reassessment."
   },
   "extension_boundary": "Project-specific context may affect discovery facts and later typed answers, but cannot replace this invocation, weaken its read-only behavior, or alter the canonical controller."
 }

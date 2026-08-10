@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.proof_carrying_work.v1",
+  "title": "AgentOS proof-carrying work capsule",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "reference": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "tree", "working_tree_sha256", "clean", "pushed"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/git"},
+        "tree": {"$ref": "#/$defs/git"},
+        "working_tree_sha256": {"$ref": "#/$defs/sha"},
+        "clean": {"type": "boolean"},
+        "pushed": {"type": "boolean"}
+      }
+    },
+    "generation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["generation_id", "repository_id", "lifecycle", "source_commit", "source_tree", "working_tree_sha256", "configuration_sha256", "toolchain_sha256", "supersedes_generation_id"],
+      "properties": {
+        "generation_id": {"$ref": "#/$defs/id"},
+        "repository_id": {"$ref": "#/$defs/id"},
+        "lifecycle": {"enum": ["SOURCE_OPEN", "CANDIDATE_FROZEN", "PROOF_QUEUED", "PROOF_RUNNING", "PROOF_TERMINAL"]},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "working_tree_sha256": {"$ref": "#/$defs/sha"},
+        "configuration_sha256": {"$ref": "#/$defs/sha"},
+        "toolchain_sha256": {"$ref": "#/$defs/sha"},
+        "supersedes_generation_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]}
+      }
+    },
+    "source_observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observed_at_utc", "observed_by_role", "repository_id", "source_commit", "source_tree", "working_tree_sha256", "clean", "pushed", "observation_sha256"],
+      "properties": {
+        "observed_at_utc": {"type": "string", "format": "date-time"},
+        "observed_by_role": {"enum": ["BUILDER", "AUDITOR", "INDEPENDENT_AUDITOR", "CAMPAIGN_ORCHESTRATOR"]},
+        "repository_id": {"$ref": "#/$defs/id"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "working_tree_sha256": {"$ref": "#/$defs/sha"},
+        "clean": {"type": "boolean"},
+        "pushed": {"type": "boolean"},
+        "observation_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["in_paths", "out_paths", "scope_sha256", "product_writes_allowed", "external_actions_allowed"],
+      "properties": {
+        "in_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "out_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "scope_sha256": {"$ref": "#/$defs/sha"},
+        "product_writes_allowed": {"const": false},
+        "external_actions_allowed": {"const": false}
+      }
+    },
+    "environment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["environment_id", "capability_sha256", "runtime_sha256", "source_commit", "source_tree"],
+      "properties": {
+        "environment_id": {"$ref": "#/$defs/id"},
+        "capability_sha256": {"$ref": "#/$defs/sha"},
+        "runtime_sha256": {"$ref": "#/$defs/sha"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"}
+      }
+    },
+    "dependency": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dependency_id", "kind", "reference", "source_commit", "source_tree", "dependency_sha256", "affects_claim_ids", "recheck_ids"],
+      "properties": {
+        "dependency_id": {"$ref": "#/$defs/id"},
+        "kind": {"$ref": "#/$defs/id"},
+        "reference": {"type": "string", "minLength": 1},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "dependency_sha256": {"$ref": "#/$defs/sha"},
+        "affects_claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "recheck_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "check": {
+      "type": "object", "additionalProperties": false,
+      "required": ["check_id", "check_ref", "status", "source_commit", "source_tree", "result_sha256", "evidence_kind", "evidence_ids"],
+      "properties": {
+        "check_id": {"$ref": "#/$defs/id"},
+        "check_ref": {"type": "string", "minLength": 1},
+        "status": {"enum": ["PASS", "FAIL", "UNAVAILABLE", "UNVERIFIED", "NOT_RUN"]},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "result_sha256": {"$ref": "#/$defs/sha"},
+        "evidence_kind": {"enum": ["DIRECT_OBSERVATION", "DERIVED_RESULT", "UNAVAILABLE_RESULT", "UNVERIFIED_ASSERTION"]},
+        "evidence_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "kind", "summary", "path", "source_commit", "source_tree", "evidence_sha256", "claim_ids"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["DIRECT_OBSERVATION", "DERIVED_RESULT", "UNAVAILABLE_RESULT", "UNVERIFIED_ASSERTION"]},
+        "summary": {"type": "string", "minLength": 1},
+        "path": {"$ref": "#/$defs/reference"},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "evidence_sha256": {"$ref": "#/$defs/sha"},
+        "claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "claim": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "status", "evidence_ids", "dependency_ids", "recheck_ids"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/id"},
+        "status": {"enum": ["VERIFIED", "PARTIAL", "UNAVAILABLE", "UNVERIFIED", "INVALIDATED"]},
+        "evidence_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "dependency_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "recheck_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "rollback": {
+      "type": "object", "additionalProperties": false,
+      "required": ["available", "plan_ref", "checkpoint_sha256", "owner_approval_required", "activation_allowed"],
+      "properties": {
+        "available": {"type": "boolean"},
+        "plan_ref": {"$ref": "#/$defs/reference"},
+        "checkpoint_sha256": {"$ref": "#/$defs/sha"},
+        "owner_approval_required": {"const": true},
+        "activation_allowed": {"const": false}
+      }
+    },
+    "risk": {
+      "type": "object", "additionalProperties": false,
+      "required": ["risk_id", "severity", "summary", "route"],
+      "properties": {
+        "risk_id": {"$ref": "#/$defs/id"},
+        "severity": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+        "summary": {"type": "string", "minLength": 1},
+        "route": {"enum": ["RECHECK", "OWNER", "HARD_STOP", "DEFERRED"]}
+      }
+    },
+    "seam_registration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["platform_lane_ids", "shared_path_refs", "changed_contract_ids", "opposite_consumer_ids", "migration_ids", "generated_output_refs", "ordering_requirements", "atomic_seam", "primary_owner", "disposition"],
+      "properties": {
+        "platform_lane_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "shared_path_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "changed_contract_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "opposite_consumer_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "migration_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "generated_output_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "ordering_requirements": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "atomic_seam": {"type": "boolean"},
+        "primary_owner": {"$ref": "#/$defs/id"},
+        "disposition": {"enum": ["NO_MATERIAL_SEAM", "ACCEPTED_AND_IMPLEMENTED", "ACCEPTED_PENDING_DEPENDENCY", "MODIFIED_BY_AGREEMENT", "REJECTED_WITH_SOURCE_REASON", "CENTRAL_SEQUENCE_REQUIRED", "OWNER_DECISION_REQUIRED"]}
+      }
+    },
+    "cross_feature_compatibility": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "shared_surface_ids", "check_ids", "source_commit", "source_tree", "proof_ceiling", "next_owner"],
+      "properties": {
+        "status": {"enum": ["NOT_APPLICABLE", "PENDING", "PASSED", "FAILED", "OUT_OF_SCOPE_PROOF_DEFERRED"]},
+        "shared_surface_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "check_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "source_commit": {"$ref": "#/$defs/git"},
+        "source_tree": {"$ref": "#/$defs/git"},
+        "proof_ceiling": {"type": "string", "minLength": 1},
+        "next_owner": {"$ref": "#/$defs/id"}
+      }
+    },
+    "current_state": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_generation_id", "lifecycle", "disposition", "superseded_generation_ids", "material_seams", "proof_ceiling", "next_action", "downstream_consumed"],
+      "properties": {
+        "candidate_generation_id": {"$ref": "#/$defs/id"},
+        "lifecycle": {"enum": ["SOURCE_OPEN", "CANDIDATE_FROZEN", "PROOF_QUEUED", "PROOF_RUNNING", "PROOF_TERMINAL"]},
+        "disposition": {"enum": ["WORKING_EXPECTED", "WAITING_WITH_RECEIPT", "TERMINAL_PRESERVED", "DORMANT_NOT_APPLICABLE", "BLOCKED_EXACT"]},
+        "superseded_generation_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "material_seams": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "proof_ceiling": {"type": "string", "minLength": 1},
+        "next_action": {"type": "string", "minLength": 1},
+        "downstream_consumed": {"const": false}
+      }
+    },
+    "invalidation_rule": {
+      "type": "object", "additionalProperties": false,
+      "required": ["rule_id", "trigger_kind", "trigger_ids", "affected_claim_ids", "required_recheck_ids"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/id"},
+        "trigger_kind": {"enum": ["SOURCE_CHANGE", "DEPENDENCY_CHANGE", "ENVIRONMENT_CHANGE", "SCOPE_CHANGE"]},
+        "trigger_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "affected_claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "required_recheck_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "invalidation_event": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id", "source_changed", "environment_changed", "scope_changed", "changed_dependency_ids", "affected_claim_ids", "required_recheck_ids", "prior_claims", "previous_capsule_sha256", "cause", "observed_at_utc", "event_sha256"],
+      "properties": {
+        "event_id": {"$ref": "#/$defs/id"},
+        "source_changed": {"type": "boolean"},
+        "environment_changed": {"type": "boolean"},
+        "scope_changed": {"type": "boolean"},
+        "changed_dependency_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "affected_claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "required_recheck_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "prior_claims": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["claim_id", "status"], "properties": {"claim_id": {"$ref": "#/$defs/id"}, "status": {"enum": ["VERIFIED", "PARTIAL", "UNAVAILABLE", "UNVERIFIED"]}}}},
+        "previous_capsule_sha256": {"$ref": "#/$defs/sha"},
+        "cause": {"type": "string", "minLength": 1},
+        "observed_at_utc": {"type": "string", "format": "date-time"},
+        "event_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "handoff": {
+      "type": "object", "additionalProperties": false,
+      "required": ["phase", "result", "next_handoff", "independent_check", "evidence_ids", "summary", "candidate_generation_id", "proof_ceiling", "downstream_consumed"],
+      "properties": {
+        "phase": {"$ref": "#/$defs/id"},
+        "result": {"enum": ["READY_FOR_INDEPENDENT_CLEARANCE", "OPEN_REPAIR", "UNAVAILABLE", "HARD_STOP", "INVALIDATED"]},
+        "next_handoff": {"enum": ["INDEPENDENT_AUDITOR", "CAMPAIGN_ORCHESTRATOR", "OWNER", "NONE"]},
+        "independent_check": {"type": "object", "additionalProperties": false, "required": ["status", "auditor_id", "evidence_sha256"], "properties": {"status": {"enum": ["PENDING", "PASSED", "FAILED", "UNAVAILABLE"]}, "auditor_id": {"$ref": "#/$defs/id"}, "evidence_sha256": {"$ref": "#/$defs/sha"}}},
+        "evidence_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "summary": {"type": "string", "minLength": 1},
+        "candidate_generation_id": {"$ref": "#/$defs/id"},
+        "proof_ceiling": {"type": "string", "minLength": 1},
+        "downstream_consumed": {"const": false}
+      }
+    }
+  },
+  "required": ["schema", "version", "contract_status", "status", "capsule_id", "project_governance_sha256", "builder_id", "auditor_id", "accepted_by", "source_before", "source_after", "candidate_generation", "source_observation", "claimed_scope", "changed_paths", "environment", "dependencies", "checks", "evidence", "claims", "rollback", "seam_registration", "cross_feature_compatibility", "current_state", "downstream_consumed", "invalidation", "residual_risks", "handoff", "protected_actions", "capsule_sha256"],
+  "properties": {
+    "schema": {"const": "governance.proof_carrying_work.v1"},
+    "version": {"const": 1},
+    "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "status": {"enum": ["PREPARED_NOT_ACTIVATED", "VERIFIED_NOT_ACTIVATED", "INVALIDATED"]},
+    "capsule_id": {"$ref": "#/$defs/id"},
+    "project_governance_sha256": {"$ref": "#/$defs/sha"},
+    "builder_id": {"$ref": "#/$defs/id"},
+    "auditor_id": {"$ref": "#/$defs/id"},
+    "accepted_by": {"$ref": "#/$defs/reference"},
+    "source_before": {"$ref": "#/$defs/source"},
+    "source_after": {"$ref": "#/$defs/source"},
+    "candidate_generation": {"$ref": "#/$defs/generation"},
+    "source_observation": {"$ref": "#/$defs/source_observation"},
+    "claimed_scope": {"$ref": "#/$defs/scope"},
+    "changed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "environment": {"$ref": "#/$defs/environment"},
+    "dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependency"}},
+    "checks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/check"}},
+    "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
+    "claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/claim"}},
+    "rollback": {"$ref": "#/$defs/rollback"},
+    "seam_registration": {"$ref": "#/$defs/seam_registration"},
+    "cross_feature_compatibility": {"$ref": "#/$defs/cross_feature_compatibility"},
+    "current_state": {"$ref": "#/$defs/current_state"},
+    "downstream_consumed": {"const": false},
+    "invalidation": {"type": "object", "additionalProperties": false, "required": ["rules", "events"], "properties": {"rules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/invalidation_rule"}}, "events": {"type": "array", "items": {"$ref": "#/$defs/invalidation_event"}}}},
+    "residual_risks": {"type": "array", "items": {"$ref": "#/$defs/risk"}},
+    "handoff": {"$ref": "#/$defs/handoff"},
+    "protected_actions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["acceptance", "activation", "deletion", "deployment", "external_release", "external_publish", "external_push", "merge", "product_writes", "secrets", "spend", "authority_change"],
+      "properties": {"acceptance": {"const": false}, "activation": {"const": false}, "deletion": {"const": false}, "deployment": {"const": false}, "external_release": {"const": false}, "external_publish": {"const": false}, "external_push": {"const": false}, "merge": {"const": false}, "product_writes": {"const": false}, "secrets": {"const": false}, "spend": {"const": false}, "authority_change": {"const": false}}
+    },
+    "capsule_sha256": {"$ref": "#/$defs/sha"}
+  }
+}

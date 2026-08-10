@@ -7,8 +7,8 @@
   "scope": "PROJECT_PERSISTENT",
   "role_display": {
     "machine_role": "AGENTOS_CONTROLLER",
-    "public_name": "AgentOS Controller",
-    "ongoing_rule": "Current status and control-plane records identify the persistent role as AgentOS Controller; Bootstrap is reserved for first-run discovery and setup.",
+    "public_name": "Intent Regulator",
+    "ongoing_rule": "Current status and control-plane records identify the persistent role as Intent Regulator; Bootstrap is reserved for first-run discovery and setup.",
     "history_rule": "Older accepted Controller state may omit the display fields and remains readable; newly compiled state always writes them."
   },
   "storage_scope": "CONTROL_PLANE_PERSISTENT",
@@ -35,7 +35,7 @@
     "role": "DETERMINISTIC_EVENT_LOOP_AND_STATE_TRANSACTIONS",
     "consequential_transition_rule": "No external action is complete until a project-bound adapter performs it and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
     "persistent_state": "Compare-and-swap protected state with an append-only event head and readback receipts.",
-    "reconciliation_interval_minutes": 30
+    "reconciliation_interval_minutes": 15
   },
   "supervisor": {
     "controller": "control/controller-supervisor-runtime.mjs",
@@ -46,6 +46,15 @@
     "soft_boundary_rule": "Send changed scope or operating choices to campaign Orchestrator review while unrelated safe work continues.",
     "puzzle_rule": "Route one repairable engineering puzzle through campaign custody, then require Auditor and Controller rechecks.",
     "session_rule": "Campaign roles remain observable through durable local sessions, heartbeats, source-bound commands, and readbacks."
+  },
+  "operating_loop": {
+    "controller": "control/continuous-operating-loop.mjs",
+    "contract": "schemas/continuous-operating-loop.v1.json",
+    "default_meaningful_progress_window_minutes": 15,
+    "persistent_roles": ["INTENT_REGULATOR", "RUNTIME"],
+    "temporary_role_rule": "The Campaign Orchestrator starts named temporary workers, the independent Auditor checks the campaign, and the Intent Regulator audits workflow progress without becoming the worker.",
+    "repair_rule": "Preserve evidence, classify the finding, record root cause, apply the smallest admitted repair, refresh bindings, replace the predecessor with visible host receipts, and require independent clearance.",
+    "naming_rule": "Temporary role display names carry the exact version and two-digit test-build tag."
   },
   "event_types": [
     "BOOTSTRAP_REQUESTED",
@@ -73,6 +82,14 @@
     "rule": "Model, session, worktree, repository, provider, deployment, rollback, live-audit, and browser capabilities enter through typed project-bound adapters.",
     "missing_adapter": "UNAVAILABLE_AND_NOT_COMPLETE",
     "caller_claimed_identity": "NOT_ACCEPTED_AS_READBACK"
+  },
+  "architecture_repair_gate": {
+    "schema": "agentos.controller_architecture_repair_gate.v1",
+    "controller": "control/agentos-controller.mjs",
+    "operation": "validateControllerArchitectureRepairAdmission",
+    "required_layers": ["SHARED_GENERAL_GOVERNANCE", "GENERATED_ROLE_SPECIFIC_GOVERNANCE"],
+    "generation_source": "GENERAL_LIBRARY_PLUS_ROLE_DEFINITION_SOURCE_PLUS_COMPILED_QUESTION_TREE",
+    "rule": "An architecture repair candidate is admissible only when its acceptance contract is the digest of a validated shared-plus-generated architecture envelope bound to the same source and Bootstrap plan."
   },
   "activation": {
     "requires_explicit_owner_approval": true,

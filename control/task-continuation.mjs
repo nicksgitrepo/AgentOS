@@ -58,7 +58,9 @@ const AUDIT_REPORT_KEYS = [
   "campaign_version", "source_commit", "source_tree", "independent", "auditor_role", "checked_at_utc", "scope", "checks",
   "findings", "settled", "report_sha256",
 ];
-const AUDIT_CHECK_KEYS = ["command", "exit_code", "stdout", "stderr", "passed", "check_sha256"];
+const AUDIT_CHECK_KEYS = ["command", "exit_code", "stdout_class", "stdout_sha256", "stderr_class", "stderr_sha256", "passed", "check_sha256"];
+const LEGACY_AUDIT_CHECK_KEYS = ["command", "exit_code", "stdout", "stderr", "passed", "check_sha256"];
+const OUTPUT_CLASSES = new Set(["OUTPUT_EMPTY", "OUTPUT_PRESENT", "OUTPUT_REDACTED"]);
 const AUDIT_RECONCILIATION_KEYS = [
   "schema", "version", "status", "task_sha256", "parent_reconciliation_sha256", "campaign_id", "campaign_version",
   "source_commit", "source_tree", "complete_reports", "settled_disciplines", "report_sha256", "findings",
@@ -209,11 +211,19 @@ export function validateContinuationTask(task) {
 }
 
 function validateAuditCheck(check, label) {
-  exactKeys(check, AUDIT_CHECK_KEYS, label);
+  const typedOutput = exactKeysWithLegacy(check, AUDIT_CHECK_KEYS, LEGACY_AUDIT_CHECK_KEYS, label);
   requireString(check.command, `${label} command`);
   assert(Number.isInteger(check.exit_code), `${label} exit code is invalid`);
-  requireOutput(check.stdout, `${label} stdout`);
-  requireOutput(check.stderr, `${label} stderr`);
+  if (typedOutput) {
+    for (const field of ["stdout_class", "stderr_class"]) {
+      requireString(check[field], `${label} ${field}`);
+      assert(OUTPUT_CLASSES.has(check[field]), `${label} ${field} is invalid`);
+    }
+    for (const field of ["stdout_sha256", "stderr_sha256"]) requireSha(check[field], `${label} ${field}`);
+  } else {
+    requireOutput(check.stdout, `${label} stdout`);
+    requireOutput(check.stderr, `${label} stderr`);
+  }
   requireBoolean(check.passed, `${label} passed`);
   requireSha(check.check_sha256, `${label} digest`);
   assert(check.check_sha256 === digestWithout(check, "check_sha256"), `${label} digest mismatch`);
@@ -443,8 +453,8 @@ export function compileContinuationHandoff({task, completedHandoff, parentReconc
     audit_reconciliation: structuredClone(auditReconciliation),
     findings: [],
     next_action: phase === "START"
-      ? "AgentOS Controller will run only the selected control-plane task; keep the campaign inactive and do not spawn Product agents."
-      : "Review the exact completed AgentOS Controller handoff; keep the campaign inactive until a separate start boundary is authorized.",
+      ? "Intent Regulator will run only the selected control-plane task; keep the campaign inactive and do not spawn Product agents."
+      : "Review the exact completed Intent Regulator handoff; keep the campaign inactive until a separate start boundary is authorized.",
     stop_conditions: structuredClone(task.stop_conditions),
     undo: structuredClone(task.undo),
     recorded_at_utc: recordedAtUtc,

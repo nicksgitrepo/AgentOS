@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.persisted_record_privacy.v1",
+  "title": "AgentOS persisted-record privacy contract",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "source_digest",
+    "original_schema",
+    "original_digest",
+    "capability_labels",
+    "redaction_counts",
+    "content_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.persisted_record_privacy.v1"},
+    "version": {"const": 1},
+    "status": {"const": "REDACTED"},
+    "source_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "original_schema": {"type": "string", "minLength": 1},
+    "original_digest": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      ]
+    },
+    "capability_labels": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "redaction_counts": {
+      "type": "object",
+      "required": [
+        "ABSOLUTE_PATH",
+        "WORKTREE_PATH",
+        "ENVIRONMENT_VALUE",
+        "SECRET_LIKE_VALUE",
+        "SESSION_OR_TASK_IDENTITY",
+        "UNSAFE_PRIVATE_LINK"
+      ],
+      "properties": {
+        "ABSOLUTE_PATH": {"type": "integer", "minimum": 0},
+        "WORKTREE_PATH": {"type": "integer", "minimum": 0},
+        "ENVIRONMENT_VALUE": {"type": "integer", "minimum": 0},
+        "SECRET_LIKE_VALUE": {"type": "integer", "minimum": 0},
+        "SESSION_OR_TASK_IDENTITY": {"type": "integer", "minimum": 0},
+        "UNSAFE_PRIVATE_LINK": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "runtime_configuration_ref": {
+      "type": "object",
+      "required": ["schema", "location", "config_ref_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.host_local_runtime_config_ref.v1"},
+        "location": {"const": "HOST_LOCAL_CONFIGURATION_OUTSIDE_REPOSITORY"},
+        "config_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "protected_actions": {
+      "type": "object",
+      "properties": {
+        "activation": {"const": false},
+        "acceptance": {"const": false},
+        "publication": {"const": false},
+        "deletion": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

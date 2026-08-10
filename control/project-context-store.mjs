@@ -2,7 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import {canonicalDigest} from "./bootstrap-compiler.mjs";
+import {canonicalDigest} from "./content-addressing.mjs";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);

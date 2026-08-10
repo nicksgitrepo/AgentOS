@@ -1,0 +1,54 @@
+{
+  "schema": "agentos.workflow_auditor_drill_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-drill.mjs",
+  "record_schema": "agentos.workflow_auditor_drill.v1",
+  "protocol": "EIGHT_ORDERED_SOURCE_BOUND_QUESTIONS",
+  "roles": {
+    "learner": "APPRENTICESHIP_WORKER",
+    "auditor": "WORKFLOW_AUDITOR"
+  },
+  "question_count": 8,
+  "answer_states": ["ANSWERED", "UNKNOWN", "INCOMPLETE"],
+  "comparison_states": ["MATCHED", "UNKNOWN", "MISMATCH", "INCOMPLETE"],
+  "one_question_rule": "Only the current question may be answered; early finalization, skipping, or reordering is rejected.",
+  "unknown_rule": "Unknown binding, evidence, or identity transitions the drill to UNKNOWN_BLOCKED.",
+  "incomplete_rule": "Incomplete coverage transitions the drill to DRILL_INCOMPLETE and cannot succeed.",
+  "closure_receipts": [
+    "create_thread",
+    "pin",
+    "send",
+    "wait",
+    "read",
+    "unpin",
+    "archive",
+    "post_close_read",
+    "active_list_absent"
+  ],
+  "universal_closeout_receipts": [
+    "PRESERVE_HANDOFF",
+    "PERSIST_HANDOFF",
+    "AUDIT_CANDIDATE",
+    "INTEGRATE_ACCEPTED_WORK",
+    "UNPIN_SESSION",
+    "CLOSE_STALE_WORKTREE",
+    "REMOVE_ACTIVE_TASK_SCOPE",
+    "MARK_CHAT_OUT_OF_SCOPE",
+    "ARCHIVE_VISIBLE_TASK"
+  ],
+  "universal_closeout_receipt_rule": "The general governance closeout receipt contract is mandatory in APPRENTICESHIP mode; archive is invalid until every preceding receipt is present and authoritative.",
+  "receipt_rule": "Lifecycle receipts must be authoritative host readbacks; synthetic receipts are invalid.",
+  "terminal_statuses": [
+    "DRILL_INCOMPLETE",
+    "UNKNOWN_BLOCKED",
+    "DRILL_COMPLETE_NON_ACCEPTING",
+    "CLOSED_NON_ACCEPTING"
+  ],
+  "forbidden_statuses": ["PASS", "ACCEPTED", "ACTIVATED"],
+  "identity_rule": "Learner, Workflow Auditor, Orchestrator, sessions, source, goal, and model are independently bound.",
+  "activation": {
+    "active": false,
+    "automatic_activation": false
+  }
+}

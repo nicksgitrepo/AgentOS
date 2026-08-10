@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.persistent_intent_runtime_contract.v1",
+  "title": "AgentOS persistent Intent Regulator and Runtime contract",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "authority",
+    "storage",
+    "records",
+    "decisions",
+    "activation"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.persistent_intent_runtime_contract.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "authority": {
+      "type": "object",
+      "required": ["regulator_role", "runtime_role", "sole_state_writer", "regulator_mode", "protected_actions"],
+      "properties": {
+        "regulator_role": {"const": "INTENT_REGULATOR"},
+        "runtime_role": {"const": "RUNTIME"},
+        "sole_state_writer": {"const": "RUNTIME"},
+        "regulator_mode": {"const": "GUIDE_ONLY"},
+        "protected_actions": {
+          "type": "object",
+          "required": ["acceptance", "activation", "deployment", "merge", "publication", "push", "rollback", "secrets", "spend"],
+          "properties": {
+            "acceptance": {"const": false},
+            "activation": {"const": false},
+            "deployment": {"const": false},
+            "merge": {"const": false},
+            "publication": {"const": false},
+            "push": {"const": false},
+            "rollback": {"const": false},
+            "secrets": {"const": false},
+            "spend": {"const": false}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "storage": {
+      "type": "object",
+      "required": ["authority_root", "event_log", "snapshot_cas", "transaction_recovery", "fencing"],
+      "properties": {
+        "authority_root": {"const": "OUTSIDE_REPOSITORY"},
+        "event_log": {"const": "APPEND_ONLY_HASH_CHAIN"},
+        "snapshot_cas": {"const": "ATOMIC_RENAME_FSYNC"},
+        "transaction_recovery": {"const": "PREPARED_TRANSACTION_REPLAY_OR_FAIL_CLOSED"},
+        "fencing": {"const": "MONOTONIC_LEASE_EPOCH"}
+      },
+      "additionalProperties": false
+    },
+    "records": {
+      "type": "object",
+      "required": ["state", "persistent_roles", "lease", "event", "checkpoint", "transaction", "decision"],
+      "properties": {
+        "state": {"$ref": "#/$defs/state"},
+        "persistent_roles": {"type": "array", "items": {"$ref": "#/$defs/persistentRole"}, "minItems": 2, "maxItems": 2},
+        "lease": {"$ref": "#/$defs/lease"},
+        "event": {"$ref": "#/$defs/event"},
+        "checkpoint": {"$ref": "#/$defs/checkpoint"},
+        "transaction": {"$ref": "#/$defs/transaction"},
+        "decision": {"$ref": "#/$defs/decision"},
+        "owner_goal_replacement": {"$ref": "#/$defs/ownerGoalReplacement"}
+      },
+      "additionalProperties": false
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "CONTINUE_CAMPAIGN",
+          "STOP_HARD_BOUNDARY",
+          "REASSESS_AND_REPLACE_GOAL",
+          "ORCHESTRATOR_REVIEW",
+          "REPLACE_STALLED_WORKER",
+          "AWAIT_ACCEPTANCE"
+        ]
+      },
+      "minItems": 6,
+      "uniqueItems": true
+    },
+    "activation": {
+      "type": "object",
+      "required": ["status", "requires_explicit_owner_approval", "product_writes_allowed", "protected_actions_enabled"],
+      "properties": {
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "requires_explicit_owner_approval": {"const": true},
+        "product_writes_allowed": {"const": false},
+        "protected_actions_enabled": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sourceDigest": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "runtimeRef": {"type": "string", "pattern": "^RUNTIME_REF_[0-9a-f]{64}$"},
+    "leaseRef": {"type": "string", "pattern": "^LEASE_REF_[0-9a-f]{64}$"},
+    "transactionRef": {"type": "string", "pattern": "^TRANSACTION_REF_[0-9a-f]{64}$"},
+    "protectedActions": {
+      "type": "object",
+      "required": ["acceptance", "activation", "deployment", "merge", "publication", "push", "rollback", "secrets", "spend"],
+      "properties": {
+        "acceptance": {"const": false},
+        "activation": {"const": false},
+        "deployment": {"const": false},
+        "merge": {"const": false},
+        "publication": {"const": false},
+        "push": {"const": false},
+        "rollback": {"const": false},
+        "secrets": {"const": false},
+        "spend": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "schema", "version", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256", "source_commit", "source_tree",
+        "progress_status", "scope_changed", "intent_changed", "conditions_changed", "hard_boundary_detected", "soft_boundary_detected",
+        "evidence_identity_ok", "roster_exact", "acceptance_status"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.campaign_snapshot.v1"},
+        "version": {"const": 1},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "progress_status": {"enum": ["OPEN", "PROGRESS_RECORDED", "STALLED", "CLOSED"]},
+        "scope_changed": {"type": "boolean"},
+        "intent_changed": {"type": "boolean"},
+        "conditions_changed": {"type": "boolean"},
+        "hard_boundary_detected": {"type": "boolean"},
+        "soft_boundary_detected": {"type": "boolean"},
+        "evidence_identity_ok": {"type": "boolean"},
+        "roster_exact": {"type": "boolean"},
+        "acceptance_status": {"enum": ["NONE", "CANDIDATE", "ACCEPTED"]}
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "schema", "version", "activation_status", "actor_role", "authority_mode", "project_id", "campaign_id", "campaign_version",
+        "goal_id", "goal_sha256", "source_commit", "source_tree", "snapshot_sha256", "interval_minutes", "decision", "route",
+        "target_role", "reasons", "observed_at_utc", "protected_actions", "decision_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_decision.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "actor_role": {"const": "INTENT_REGULATOR"},
+        "authority_mode": {"const": "GUIDE_ONLY"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "interval_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+        "decision": {"enum": ["CONTINUE_CAMPAIGN", "STOP_HARD_BOUNDARY", "REASSESS_AND_REPLACE_GOAL", "ORCHESTRATOR_REVIEW", "REPLACE_STALLED_WORKER", "AWAIT_ACCEPTANCE"]},
+        "route": {"type": "string", "minLength": 1},
+        "target_role": {"type": "string", "minLength": 1},
+        "reasons": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "protected_actions": {"$ref": "#/$defs/protectedActions"},
+        "decision_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "ownerGoalReplacement": {
+      "type": "object",
+      "required": [
+        "schema", "version", "activation_status", "decision", "authority_mode", "project_id", "campaign_id", "campaign_version",
+        "prior_goal_id", "prior_goal_sha256", "goal_id", "goal_sha256", "source_commit", "source_tree", "owner_decision_ref",
+        "approved_at_utc", "protected_actions", "decision_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_owner_decision.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "decision": {"const": "REPLACE_GOAL"},
+        "authority_mode": {"const": "OWNER_REVIEW"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "prior_goal_id": {"$ref": "#/$defs/identifier"},
+        "prior_goal_sha256": {"$ref": "#/$defs/sha256"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "owner_decision_ref": {"$ref": "#/$defs/identifier"},
+        "approved_at_utc": {"$ref": "#/$defs/utc"},
+        "protected_actions": {"$ref": "#/$defs/protectedActions"},
+        "decision_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "schema", "version", "activation_status", "status", "project_id", "environment_id", "campaign_id", "campaign_version", "goal_id",
+        "goal_sha256", "source_commit", "source_tree", "review_interval_minutes", "intent_regulator_role", "runtime_role", "persistent_role_ids", "persistent_roles_sha256", "last_observation_sha256",
+        "last_decision_sha256", "last_decision", "last_idempotency_key", "route_status", "pending_owner_decision", "dependent_work_allowed",
+        "checkpoint_id", "checkpoint_sha256", "event_cursor", "event_ledger_head_sha256", "genesis_state_sha256", "protected_actions", "created_at_utc", "updated_at_utc", "state_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_runtime_state.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "status": {"enum": ["READY", "ACTIVE", "SOFT_REVIEW", "HARD_STOPPED", "REASSESSMENT_REQUIRED", "REPLACEMENT_REQUIRED", "AWAITING_ACCEPTANCE", "BLOCKED", "CLOSED"]},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "environment_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "review_interval_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+        "intent_regulator_role": {"const": "INTENT_REGULATOR"},
+        "runtime_role": {"const": "RUNTIME"},
+        "persistent_role_ids": {"const": ["INTENT_REGULATOR", "RUNTIME"]},
+        "persistent_roles_sha256": {"$ref": "#/$defs/sha256"},
+        "last_observation_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "last_decision_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "last_decision": {"anyOf": [{"type": "null"}, {"enum": ["CONTINUE_CAMPAIGN", "STOP_HARD_BOUNDARY", "REASSESS_AND_REPLACE_GOAL", "ORCHESTRATOR_REVIEW", "REPLACE_STALLED_WORKER", "AWAIT_ACCEPTANCE"]}]},
+        "last_idempotency_key": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "route_status": {"enum": ["WAITING", "CAMPAIGN_ORCHESTRATOR", "OWNER_REVIEW", "INDEPENDENT_AUDITOR"]},
+        "pending_owner_decision": {"anyOf": [{"type": "null"}, {"enum": ["REPLACE_GOAL", "HARD_BOUNDARY_REVIEW", "SOFT_BOUNDARY_REVIEW", "REPLACE_STALLED_WORKER"]}]},
+        "dependent_work_allowed": {"type": "boolean"},
+        "checkpoint_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "checkpoint_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "event_cursor": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "event_ledger_head_sha256": {"$ref": "#/$defs/sha256"},
+        "genesis_state_sha256": {"$ref": "#/$defs/sha256"},
+        "protected_actions": {"$ref": "#/$defs/protectedActions"},
+        "created_at_utc": {"$ref": "#/$defs/utc"},
+        "updated_at_utc": {"$ref": "#/$defs/utc"},
+        "state_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "persistentRole": {
+      "type": "object",
+      "required": ["schema", "version", "activation_status", "role_id", "display_name", "lifetime", "status", "binding_status", "project_id", "environment_id", "host_session_ref", "source_commit", "source_tree", "governance_digest", "created_at_utc", "updated_at_utc", "role_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.persistent_intent_runtime_role.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "role_id": {"enum": ["INTENT_REGULATOR", "RUNTIME"]},
+        "display_name": {"enum": ["Intent Regulator", "Runtime"]},
+        "lifetime": {"const": "PERSISTENT"},
+        "status": {"const": "CONTROL_PLANE_READY"},
+        "binding_status": {"const": "UNBOUND_HOST_SESSION"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "environment_id": {"$ref": "#/$defs/identifier"},
+        "host_session_ref": {"type": "null"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "governance_digest": {"$ref": "#/$defs/sha256"},
+        "created_at_utc": {"$ref": "#/$defs/utc"},
+        "updated_at_utc": {"$ref": "#/$defs/utc"},
+        "role_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "lease": {
+      "type": "object",
+      "required": ["schema", "version", "role", "status", "runtime_ref", "lease_id", "fencing_epoch", "acquired_at_utc", "renewed_at_utc", "expires_at_utc", "released_at_utc", "lease_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_runtime_lease.v1"},
+        "version": {"const": 1},
+        "role": {"const": "RUNTIME"},
+        "status": {"enum": ["ACTIVE", "RELEASED"]},
+        "runtime_ref": {"$ref": "#/$defs/runtimeRef"},
+        "lease_id": {"$ref": "#/$defs/leaseRef"},
+        "fencing_epoch": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "acquired_at_utc": {"$ref": "#/$defs/utc"},
+        "renewed_at_utc": {"$ref": "#/$defs/utc"},
+        "expires_at_utc": {"$ref": "#/$defs/utc"},
+        "released_at_utc": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/utc"}]},
+        "lease_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "meaningfulProgress": {
+      "type": "object",
+      "required": ["result_type", "artifact_sha256", "evidence_sha256", "handoff_sha256", "summary_sha256"],
+      "properties": {
+        "result_type": {"enum": ["ARTIFACT", "VERIFIED_BEHAVIOR", "BOUNDED_HANDOFF"]},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_sha256": {"$ref": "#/$defs/sha256"},
+        "summary_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "required": [
+        "schema", "version", "activation_status", "checkpoint_id", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256",
+        "source_commit", "source_tree", "phase_index", "lane_index", "step", "next_action", "progress_status", "meaningful_progress",
+        "last_meaningful_progress_at_utc", "evidence_identity_ok", "created_at_utc", "checkpoint_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_checkpoint.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "checkpoint_id": {"$ref": "#/$defs/identifier"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "phase_index": {"type": "integer", "minimum": 0},
+        "lane_index": {"type": "integer", "minimum": 0},
+        "step": {"$ref": "#/$defs/identifier"},
+        "next_action": {"enum": ["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR", "OWNER_REVIEW", "REPLACE_STALLED_WORKER", "STOPPED", "COMPLETE"]},
+        "progress_status": {"enum": ["OPEN", "PROGRESS_RECORDED", "STALLED", "CLOSED"]},
+        "meaningful_progress": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/meaningfulProgress"}]},
+        "last_meaningful_progress_at_utc": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/utc"}]},
+        "evidence_identity_ok": {"type": "boolean"},
+        "created_at_utc": {"$ref": "#/$defs/utc"},
+        "checkpoint_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "event": {
+      "type": "object",
+      "required": ["schema", "version", "sequence", "event_id", "event_type", "actor_role", "committed_by_role", "fencing_epoch", "idempotency_key", "parent_state_sha256", "parent_event_ledger_head_sha256", "next_state_sha256", "payload", "payload_sha256", "occurred_at_utc", "event_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_runtime_event.v1"},
+        "version": {"const": 1},
+        "sequence": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "event_id": {"$ref": "#/$defs/identifier"},
+        "event_type": {"enum": ["REGULATOR_DECISION_COMMITTED", "CHECKPOINT_RECORDED", "OWNER_GOAL_REPLACEMENT_COMMITTED"]},
+        "actor_role": {"enum": ["INTENT_REGULATOR", "RUNTIME"]},
+        "committed_by_role": {"const": "RUNTIME"},
+        "fencing_epoch": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "idempotency_key": {"$ref": "#/$defs/identifier"},
+        "parent_state_sha256": {"$ref": "#/$defs/sha256"},
+        "parent_event_ledger_head_sha256": {"$ref": "#/$defs/sha256"},
+        "next_state_sha256": {"$ref": "#/$defs/sha256"},
+        "payload": {"type": "object"},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "occurred_at_utc": {"$ref": "#/$defs/utc"},
+        "event_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "transaction": {
+      "type": "object",
+      "required": ["schema", "version", "status", "transaction_id", "expected_current_state_sha256", "expected_event_head_sha256", "expected_checkpoint_sha256", "event", "next_state", "next_checkpoint", "prepared_at_utc", "committed_at_utc", "transaction_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.intent_regulator_runtime_transaction.v1"},
+        "version": {"const": 1},
+        "status": {"enum": ["PREPARED", "COMMITTED"]},
+        "transaction_id": {"$ref": "#/$defs/transactionRef"},
+        "expected_current_state_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_event_head_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_checkpoint_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "event": {"$ref": "#/$defs/event"},
+        "next_state": {"$ref": "#/$defs/state"},
+        "next_checkpoint": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/checkpoint"}]},
+        "prepared_at_utc": {"$ref": "#/$defs/utc"},
+        "committed_at_utc": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/utc"}]},
+        "transaction_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

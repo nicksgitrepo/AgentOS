@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.release_migration_plan.v1",
+  "title": "Release migration plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "migration_id", "source_schema_version", "target_schema_version", "backfill_strategy", "cutover_strategy", "reconciliation_strategy", "irreversible_point", "rollback_strategy", "migration_journal_status", "migration_source_sha256", "journal_entry_key", "journal_entry_checksum_sha256", "journal_entry_sha256", "load_bearing_fingerprints", "steps", "plan_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.release_migration_plan.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED"},
+    "migration_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "source_schema_version": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "target_schema_version": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "backfill_strategy": {"enum": ["NONE", "ONLINE", "OFFLINE", "BATCHED"]},
+    "cutover_strategy": {"enum": ["ATOMIC", "PAUSED", "DUAL_READ", "DUAL_WRITE"]},
+    "reconciliation_strategy": {"enum": ["REPLAY_AND_COMPARE", "CHECKSUM_AND_REPAIR", "OWNER_REVIEW"]},
+    "irreversible_point": {"enum": ["NONE", "AFTER_BACKFILL", "AT_CUTOVER", "AFTER_RECONCILIATION"]},
+    "rollback_strategy": {"enum": ["RESTORE_CHECKPOINT", "FORWARD_FIX", "OWNER_HOLD"]},
+    "migration_journal_status": {"enum": ["JOURNALED", "INTENTIONALLY_JOURNALLESS", "MISSING_OR_UNPROVEN"]},
+    "migration_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "journal_entry_key": {"anyOf": [{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}, {"type": "null"}]},
+    "journal_entry_checksum_sha256": {"anyOf": [{"type": "string", "pattern": "^[0-9a-f]{64}$"}, {"type": "null"}]},
+    "journal_entry_sha256": {"anyOf": [{"type": "string", "pattern": "^[0-9a-f]{64}$"}, {"type": "null"}]},
+    "load_bearing_fingerprints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["object_kind", "object_id", "fingerprint_sha256"],
+        "properties": {
+          "object_kind": {"enum": ["FUNCTION_BODY", "FUNCTION_SIGNATURE", "GRANT", "INDEX", "POLICY", "REVOKE", "RLS_POSTURE", "SCHEMA_OBJECT", "TRIGGER"]},
+          "object_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["step_id", "phase", "order", "reversible", "required", "evidence_sha256"],
+        "properties": {
+          "step_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "phase": {"enum": ["BACKFILL", "CUTOVER", "RECONCILIATION", "ROLLBACK"]},
+          "order": {"type": "integer", "minimum": 1},
+          "reversible": {"type": "boolean"},
+          "required": {"type": "boolean"},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

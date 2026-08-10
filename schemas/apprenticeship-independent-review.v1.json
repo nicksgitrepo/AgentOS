@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_independent_review.v1",
+  "title": "AgentOS apprenticeship independent review",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": ["schema", "version", "review_id", "review_ref", "status", "verdict", "reviewer_role", "proposal_digest", "drill_digest", "packet_digest", "reproduction_digest", "provenance", "checks", "findings", "owner_approval", "activation_allowed", "reviewed_at", "protected_actions", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_independent_review.v1"},
+    "version": {"const": 1},
+    "review_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "review_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "status": {"const": "COMPLETED"},
+    "verdict": {"enum": ["ACCEPT_FOR_OWNER_REVIEW", "REJECT", "REPAIR_REQUIRED"]},
+    "reviewer_role": {"const": "INDEPENDENT_AUDITOR"},
+    "proposal_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "drill_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "packet_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "reproduction_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "provenance": {"$ref": "apprenticeship-common.v1.json#/$defs/provenance"},
+    "checks": {"$ref": "#/$defs/checks"},
+    "findings": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "owner_approval": {"const": null},
+    "activation_allowed": {"const": false},
+    "reviewed_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"},
+    "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "$defs": {
+    "checks": {
+      "type": "object",
+      "required": ["process_fidelity", "boundary_compliance", "evidence_completeness", "outcome", "provenance", "quality"],
+      "properties": {
+        "process_fidelity": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "boundary_compliance": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "evidence_completeness": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "outcome": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "provenance": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "quality": {"enum": ["PASS", "FAIL", "UNKNOWN"]}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

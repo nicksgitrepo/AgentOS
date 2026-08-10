@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_common.v1",
+  "title": "AgentOS apprenticeship common definitions",
+  "x-schema-kind": "definitions",
+  "$defs": {
+    "reference": {
+      "type": "string",
+      "pattern": "^(?:opaque|ref|sha1|sha256|digest):[A-Za-z0-9._:-]+$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9._:-]*$"
+    },
+    "schemaId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._:-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "mode": {
+      "const": "APPRENTICESHIP"
+    },
+    "version": {
+      "const": 1
+    },
+    "nullableReference": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/reference"}
+      ]
+    },
+    "nullableSha256": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/sha256"}
+      ]
+    },
+    "referenceList": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/reference"},
+      "uniqueItems": true
+    },
+    "identifierList": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identifier"},
+      "uniqueItems": true
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "project_ref",
+        "campaign_ref",
+        "goal_ref",
+        "source_ref",
+        "tree_ref",
+        "workspace_ref",
+        "environment_ref",
+        "worker_ref",
+        "worker_session_ref",
+        "orchestrator_ref",
+        "orchestrator_session_ref",
+        "learner_ref",
+        "learner_session_ref",
+        "auditor_ref",
+        "auditor_session_ref",
+        "reproduction_ref",
+        "reproduction_session_ref",
+        "reviewer_ref",
+        "reviewer_session_ref",
+        "model_ref",
+        "predecessor_handoff_ref"
+      ],
+      "properties": {
+        "project_ref": {"$ref": "#/$defs/reference"},
+        "campaign_ref": {"$ref": "#/$defs/reference"},
+        "goal_ref": {"$ref": "#/$defs/reference"},
+        "source_ref": {"$ref": "#/$defs/reference"},
+        "tree_ref": {"$ref": "#/$defs/reference"},
+        "workspace_ref": {"$ref": "#/$defs/reference"},
+        "environment_ref": {"$ref": "#/$defs/reference"},
+        "worker_ref": {"$ref": "#/$defs/nullableReference"},
+        "worker_session_ref": {"$ref": "#/$defs/nullableReference"},
+        "orchestrator_ref": {"$ref": "#/$defs/nullableReference"},
+        "orchestrator_session_ref": {"$ref": "#/$defs/nullableReference"},
+        "learner_ref": {"$ref": "#/$defs/nullableReference"},
+        "learner_session_ref": {"$ref": "#/$defs/nullableReference"},
+        "auditor_ref": {"$ref": "#/$defs/nullableReference"},
+        "auditor_session_ref": {"$ref": "#/$defs/nullableReference"},
+        "reproduction_ref": {"$ref": "#/$defs/nullableReference"},
+        "reproduction_session_ref": {"$ref": "#/$defs/nullableReference"},
+        "reviewer_ref": {"$ref": "#/$defs/nullableReference"},
+        "reviewer_session_ref": {"$ref": "#/$defs/nullableReference"},
+        "model_ref": {"$ref": "#/$defs/nullableReference"},
+        "predecessor_handoff_ref": {"$ref": "#/$defs/nullableReference"}
+      },
+      "additionalProperties": false
+    },
+    "protectedActions": {
+      "type": "object",
+      "required": [
+        "activation",
+        "acceptance",
+        "publication",
+        "deletion",
+        "product_writes",
+        "external_actions",
+        "secrets",
+        "spend"
+      ],
+      "properties": {
+        "activation": {"const": false},
+        "acceptance": {"const": false},
+        "publication": {"const": false},
+        "deletion": {"const": false},
+        "product_writes": {"const": false},
+        "external_actions": {"const": false},
+        "secrets": {"const": false},
+        "spend": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "consentDecision": {
+      "type": "object",
+      "required": ["required", "recorded", "reference"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "recorded": {"type": "boolean"},
+        "reference": {"$ref": "#/$defs/nullableReference"}
+      },
+      "allOf": [
+        {"if": {"properties": {"required": {"const": true}}}, "then": {"properties": {"recorded": {"const": true}, "reference": {"not": {"const": null}}}}},
+        {"if": {"properties": {"required": {"const": false}}}, "then": {"properties": {"recorded": {"const": false}, "reference": {"const": null}}}}
+      ],
+      "additionalProperties": false
+    },
+    "revocationState": {
+      "type": "object",
+      "required": ["revocable", "status", "reference"],
+      "properties": {
+        "revocable": {"type": "boolean"},
+        "status": {"enum": ["NOT_REVOKED", "REVOKED"]},
+        "reference": {"$ref": "#/$defs/nullableReference"}
+      },
+      "allOf": [
+        {"if": {"properties": {"status": {"const": "REVOKED"}}}, "then": {"properties": {"revocable": {"const": true}, "reference": {"not": {"const": null}}}}},
+        {"if": {"properties": {"status": {"const": "NOT_REVOKED"}}}, "then": {"properties": {"reference": {"const": null}}}}
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.dynamic_lane_manifest.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "project_id",
+    "campaign_id",
+    "goal_id",
+    "source_commit",
+    "source_tree",
+    "bootstrap_plan_sha256",
+    "project_governance_sha256",
+    "lanes",
+    "dependency_graph",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.dynamic_lane_manifest.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "campaign_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "goal_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "bootstrap_plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_governance_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "lanes": {"type": "array", "minItems": 1},
+    "dependency_graph": {"$ref": "agentos.dynamic_lane_dependency_graph.v1"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "lane_rules": [
+    "Each admitted capability version creates exactly one lane.",
+    "Lane identity is derived from kind, capability identity, and human-readable version.",
+    "Write scopes must not overlap without explicit primary custody.",
+    "Project, campaign, goal, and source bindings must match the current admission context."
+  ]
+}

@@ -8,6 +8,7 @@ import {
   compileAuditWorkerBinding,
   compileAuditReport,
   compileCheckpointAuditLedger,
+  compileCascadeUniversalTaskCloseoutReceipts,
   compileDeltaAudit,
   compileNonApplicabilityEvidence,
   compileFirstPassCandidate,
@@ -35,6 +36,16 @@ import {
 import {compileControllerCampaignCandidate} from "../control/agentos-controller.mjs";
 
 const SHA = "a".repeat(64);
+const cascadeCloseout = compileCascadeUniversalTaskCloseoutReceipts({
+  receiptRefs: Object.fromEntries([
+    "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
+    "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK",
+  ].map((step) => [step, `opaque:cascade-${step}`])),
+  observedAt: "2026-08-03T00:00:00.000Z",
+});
+assert.equal(cascadeCloseout.length, 9);
+assert.equal(cascadeCloseout[0].step, "PRESERVE_HANDOFF");
+assert.equal(cascadeCloseout.at(-1).step, "ARCHIVE_VISIBLE_TASK");
 function pathBinding(path, candidateId, commit, tree, references) {
   const observation = {
     schema: "governance.path_scope_observation.v1", path, candidate_id: candidateId, commit, tree,

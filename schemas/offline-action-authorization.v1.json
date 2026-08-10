@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.offline_action_authorization.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "action", "policy_digest", "workspace_binding_digest", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.offline_action_authorization.v1"},
+    "version": {"const": 1},
+    "status": {"const": "ALLOWED"},
+    "action": {"$ref": "#/$defs/action"},
+    "policy_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "action": {"enum": ["LOCAL_READ", "LOCAL_GIT_READ", "CONTROL_WRITE", "CONTROL_EXPORT", "CONTROL_IMPORT", "RELEASE_CANDIDATE_VERIFY", "GOVERNANCE_PRESERVE", "GOVERNANCE_RESET", "NETWORK_READ", "AUTHENTICATE", "PROVIDER_ACTION", "PUBLISH", "PUSH", "MERGE", "DEPLOY", "SPEND", "DELETE"]}
+  }
+}

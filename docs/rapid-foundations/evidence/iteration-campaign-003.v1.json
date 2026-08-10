@@ -1,0 +1,118 @@
+{
+  "schema": "agentos.iteration_campaign.v1",
+  "version": 1,
+  "campaign_id": "ITER-003-CASCADE-FINALIZER-GATE",
+  "mode": "NORMAL_ITERATION",
+  "status": "CLOSED_HANDOFF_PRESERVED",
+  "source": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "continuation_repair": "docs/rapid-foundations/evidence/continuation-repair.v1.json",
+    "transition_record": "docs/rapid-foundations/evidence/iteration-transition.v1.json"
+  },
+  "selection": {
+    "backlog_id": "ITER-003",
+    "kind": "CAMPAIGN_EXPANSION",
+    "reason": "The standing scope admits internal AgentOS governance work; the previous continuation gate incorrectly treated broader internal work as an owner decision.",
+    "scope": "Implement and test a source-bound admission gate that distinguishes in-scope internal campaign cascade and Finalizer governance work from a real external, authority, destructive, product, or unresolved-owner boundary.",
+    "out_of_scope": [
+      "no provider, remote, publication, deployment, production, rollback, or activation action",
+      "no authority change or owner decision on behalf of the owner",
+      "no product-specific behavior or private project context",
+      "no campaign Finalizer completion, push, or self-acceptance",
+      "no generic or recursive worker role",
+      "no unrelated feature work"
+    ]
+  },
+  "campaign_role": {
+    "admitted_role": "ITERATION_CASCADE_FINALIZER_GATE_BUILDER",
+    "public_name": "Iteration Cascade and Finalizer Gate Builder",
+    "fresh_sibling_required": true,
+    "environment": "LOCAL_PROJECT",
+    "pre_write_identity_check": true,
+    "write_scope": [
+      "control/iteration-campaign-expansion.mjs",
+      "tests/verify-iteration-campaign-expansion.mjs"
+    ],
+    "generic_feature_agent_admitted": false
+  },
+  "progress": {
+    "meaningful_progress_window_minutes": 15,
+    "stalled_action": "CLOSE_WITH_EXACT_STALL_RECEIPT_AND_REFRAME_ONCE_WITHIN_SAME_SCOPE",
+    "liveness_is_not_completion": true
+  },
+  "check": {
+    "focused_commands": ["node tests/verify-iteration-campaign-expansion.mjs"],
+    "required_hostile_cases": [
+      "missing source binding",
+      "scope mismatch",
+      "external action",
+      "authority change",
+      "destructive action",
+      "new product scope",
+      "unresolved owner intent",
+      "deterministic admitted internal scope"
+    ],
+    "independent_parent_check_required": true
+  },
+  "acceptance": {
+    "required": ["exact source readback", "exact two-file scope readback", "meaningful implementation result", "focused test result", "typed handoff", "independent parent check", "automatic closure"],
+    "no_acceptance_claim_without_independent_check": true,
+    "launch_gate_is_not_owner_approval": true,
+    "real_boundary_rule": "Stop only for an actual external or authority boundary, destructive action, new product scope, unresolved owner intent, or verified host capability failure."
+  },
+  "result": {
+    "status": "INDEPENDENT_CHECK_PASS_HANDOFF_PRESERVED",
+    "source_readback": {
+      "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+      "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9"
+    },
+    "changed_paths": [
+      "control/iteration-campaign-expansion.mjs",
+      "tests/verify-iteration-campaign-expansion.mjs"
+    ],
+    "path_hashes": {
+      "control/iteration-campaign-expansion.mjs": "0e69a1c55ac8ed03e3dc242427e6948841e86ee5cab24049e9a868c7d35706a7",
+      "tests/verify-iteration-campaign-expansion.mjs": "79cb918a0e5db269c16e5151ae3641cbb5c6ca600354e62a920f02f9155a76dd"
+    },
+    "focused_test": "node tests/verify-iteration-campaign-expansion.mjs",
+    "focused_test_result": "PASS",
+    "implementation": "Deterministic source-bound internal continuation admission with fail-closed identity, capability, dependency, owner-intent, role, context, protected-action, and inactive-release boundaries; no side effects.",
+    "hostile_coverage": [
+      "missing or untyped input",
+      "invalid or mismatched source binding",
+      "identity mismatch",
+      "unavailable capability",
+      "unsatisfied dependency",
+      "unresolved owner intent",
+      "generic Feature Agent role",
+      "private context",
+      "all protected actions",
+      "scope and campaign mismatch",
+      "active release candidate",
+      "repeatability and precedence"
+    ],
+    "residual": "Caller wiring beyond this pure gate remains deferred by the exact two-file scope.",
+    "independent_parent_check": "PASS",
+    "independent_checks": [
+      "node tests/verify-iteration-campaign-expansion.mjs",
+      "node --check control/iteration-campaign-expansion.mjs",
+      "node --check tests/verify-iteration-campaign-expansion.mjs",
+      "external/private-context scan"
+    ],
+    "acceptance_decision": "ACCEPTED_BY_INDEPENDENT_PARENT_CHECK",
+    "acceptance_claimed": true,
+    "acceptance_actor": "Intent Regulator independent parent check",
+    "typed_handoff": "Iteration Cascade and Finalizer Gate Builder -> Intent Regulator"
+  },
+  "lifecycle": {
+    "status": "CLOSED_HANDOFF_PRESERVED",
+    "handoff_preserved": "PASS",
+    "sequence": ["PRESERVE_TYPED_HANDOFF", "UNPIN", "ARCHIVE", "REMOVE_FROM_ACTIVE_ROSTER", "VERIFY_ZERO_ACTIVE"],
+    "unpin": "PASS",
+    "archive": "PASS",
+    "roster_removal": "PASS",
+    "host_readback": "PASS_NOT_LOADED_ARCHIVED",
+    "active_roster_after_close": 0
+  }
+}

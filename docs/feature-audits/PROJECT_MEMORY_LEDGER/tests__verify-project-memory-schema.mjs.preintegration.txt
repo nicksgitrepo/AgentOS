@@ -1,0 +1,355 @@
+#!/usr/bin/env node
+
+/* Focused contract/parity tests for the memory-owned JSON Schema registry. */
+
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {
+  compileDecisionRecord,
+  compileGoalRecord,
+  compileHandoffRecord,
+  compileMemoryConflictRecord,
+  compileMemoryEvent,
+  compileMemoryInvalidationRecord,
+  compileMemorySnapshot,
+  compilePolicyReference,
+  compileProjectContextRecord,
+  compileRepositoryMapReference,
+  compileRoleContextCapsule,
+  replayMemoryLedger,
+  validateMemoryEvent,
+  validateMemoryRecord,
+  validateMemorySnapshot,
+} from "../control/project-memory.mjs";
+import {GENESIS_EVENT_SHA256} from "../control/project-memory.mjs";
+import {canonicalDigest, scanPersistedRecord} from "../control/content-addressing.mjs";
+import {compileDerivedIndex} from "../control/derived-index.mjs";
+import {compileProjectMap} from "../control/project-map.mjs";
+
+const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const schema = JSON.parse(fs.readFileSync(path.join(root, "schemas/project-memory.v1.json"), "utf8"));
+
+function stable(value) {
+  if (Array.isArray(value)) return value.map(stable);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stable(value[key])]));
+  }
+  return value;
+}
+
+function same(left, right) {
+  return JSON.stringify(stable(left)) === JSON.stringify(stable(right));
+}
+
+function typeMatches(value, type) {
+  if (type === "object") return value !== null && typeof value === "object" && !Array.isArray(value);
+  if (type === "array") return Array.isArray(value);
+  if (type === "string") return typeof value === "string";
+  if (type === "integer") return Number.isInteger(value);
+  if (type === "number") return typeof value === "number" && Number.isFinite(value);
+  if (type === "boolean") return typeof value === "boolean";
+  if (type === "null") return value === null;
+  throw new Error(`unsupported schema type ${type}`);
+}
+
+function resolveRef(ref) {
+  assert.ok(ref.startsWith("#/$defs/"), `only local memory schema refs are allowed: ${ref}`);
+  const definition = schema.$defs[ref.slice("#/$defs/".length)];
+  assert.ok(definition, `schema reference is missing: ${ref}`);
+  return definition;
+}
+
+function validateSchemaInstance(definition, value, location = "$", stack = new Set()) {
+  if (definition.$ref) {
+    const refKey = definition.$ref;
+    const marker = `${refKey}|${location}`;
+    if (!stack.has(marker)) {
+      const next = new Set(stack);
+      next.add(marker);
+      validateSchemaInstance(resolveRef(refKey), value, location, next);
+    }
+  }
+  if (definition.const !== undefined) assert.ok(same(value, definition.const), `${location} does not equal its schema constant`);
+  if (definition.enum) assert.ok(definition.enum.some((candidate) => same(value, candidate)), `${location} is outside its schema enum`);
+  if (definition.type) assert.ok(typeMatches(value, definition.type), `${location} has the wrong type`);
+  if (definition.minLength !== undefined) assert.ok(value.length >= definition.minLength, `${location} is shorter than its schema bound`);
+  if (definition.maxLength !== undefined) assert.ok(value.length <= definition.maxLength, `${location} is longer than its schema bound`);
+  if (definition.minimum !== undefined) assert.ok(value >= definition.minimum, `${location} is below its schema bound`);
+  if (definition.maximum !== undefined) assert.ok(value <= definition.maximum, `${location} is above its schema bound`);
+  if (definition.pattern) assert.ok(new RegExp(definition.pattern, "u").test(value), `${location} does not match its schema pattern`);
+  if (definition.not) assert.throws(() => validateSchemaInstance(definition.not, value, location, stack), `${location} unexpectedly matched a prohibited schema`);
+  if (definition.format === "date-time") {
+    const parsed = new Date(value);
+    assert.ok(!Number.isNaN(parsed.valueOf()), `${location} is not a date-time`);
+  }
+  if (definition.required) {
+    for (const key of definition.required) assert.ok(Object.hasOwn(value, key), `${location}.${key} is required by the schema`);
+  }
+  if (definition.properties) {
+    for (const [key, child] of Object.entries(definition.properties)) {
+      if (Object.hasOwn(value, key)) validateSchemaInstance(child, value[key], `${location}.${key}`, stack);
+    }
+  }
+  if (definition.additionalProperties === false && definition.type === "object") {
+    const known = new Set(Object.keys(definition.properties ?? {}));
+    for (const key of Object.keys(value)) assert.ok(known.has(key), `${location}.${key} is not allowed by the schema`);
+  }
+  if (definition.items) {
+    for (const [index, item] of value.entries()) validateSchemaInstance(definition.items, item, `${location}[${index}]`, stack);
+  }
+  if (definition.uniqueItems) {
+    const encoded = value.map((item) => JSON.stringify(stable(item)));
+    assert.equal(new Set(encoded).size, encoded.length, `${location} contains duplicate items`);
+  }
+  for (const keyword of ["allOf", "anyOf", "oneOf"]) {
+    if (!definition[keyword]) continue;
+    const matches = definition[keyword].filter((candidate) => {
+      try {
+        validateSchemaInstance(candidate, value, location, stack);
+        return true;
+      } catch {
+        return false;
+      }
+    }).length;
+    if (keyword === "allOf") assert.equal(matches, definition[keyword].length, `${location} failed an allOf schema`);
+    if (keyword === "anyOf") assert.ok(matches > 0, `${location} failed every anyOf schema`);
+    if (keyword === "oneOf") assert.equal(matches, 1, `${location} did not match exactly one oneOf schema`);
+  }
+  if (definition.if) {
+    let conditionMatched = true;
+    try {
+      validateSchemaInstance(definition.if, value, location, stack);
+    } catch {
+      // The condition did not match; JSON Schema therefore skips its then branch.
+      conditionMatched = false;
+    }
+    if (conditionMatched && definition.then) validateSchemaInstance(definition.then, value, location, stack);
+  }
+}
+
+function digest(seed) {
+  return canonicalDigest({seed});
+}
+
+const binding = {
+  project_ref: "PROJECT-1",
+  campaign_ref: "CAMPAIGN-1",
+  goal_ref: "GOAL-1",
+  role_ref: "ORCHESTRATOR",
+  source_commit: "a".repeat(40),
+  source_tree: "b".repeat(40),
+  source_snapshot_sha256: "c".repeat(64),
+  policy_sha256: "d".repeat(64),
+  handoff_sha256: "e".repeat(64),
+};
+
+const records = [
+  compileProjectContextRecord({
+    recordId: "CONTEXT-1",
+    binding,
+    contextInputSha256: digest("context-input"),
+    intentSha256: digest("intent"),
+    planSha256: digest("plan"),
+    governanceSha256: digest("governance"),
+    boundarySha256: digest("boundary"),
+  }),
+  compileGoalRecord({
+    recordId: "GOAL-1",
+    binding,
+    goalSha256: digest("goal"),
+    goalKind: "BOUNDED_LANE",
+    scopeSha256: digest("scope"),
+    acceptanceSha256: digest("acceptance"),
+  }),
+  compileDecisionRecord({
+    recordId: "DECISION-1",
+    binding,
+    decisionSha256: digest("decision"),
+    decisionKind: "OWNER_CHOICE",
+    selectionRef: "KEEP_CONTROL_SPACE",
+    effectScope: ["PROJECT_MEMORY", "ROLE_CAPSULE"],
+    rationaleSha256: digest("rationale"),
+  }),
+  compileRepositoryMapReference({
+    recordId: "MAP-REF-1",
+    binding,
+    mapSha256: digest("map"),
+    mapStatus: "READY",
+    mapSourceSnapshotSha256: binding.source_snapshot_sha256,
+  }),
+  compileHandoffRecord({
+    recordId: "HANDOFF-1",
+    binding,
+    handoffKind: "MEMORY_LANE",
+    nextActionRef: "INDEPENDENT_AUDITOR",
+    resultSha256: digest("result"),
+  }),
+  compilePolicyReference({
+    recordId: "POLICY-1",
+    binding,
+    policyEpoch: 1,
+    policyKind: "CURRENT_POLICY",
+  }),
+  compileMemoryInvalidationRecord({
+    recordId: "INVALIDATION-1",
+    binding,
+    trigger: "SOURCE_CHANGED",
+    reasonCode: "SOURCE_READBACK_CHANGED",
+    affectedRecordSha256s: [digest("context")],
+    affectedCapsuleSha256s: [],
+    action: "STOP",
+    oldValueSha256: binding.source_snapshot_sha256,
+    newValueSha256: "f".repeat(64),
+  }),
+  compileMemoryConflictRecord({
+    recordId: "CONFLICT-1",
+    binding,
+    conflictKey: "GOAL:GOAL-1:1",
+    leftRecordSha256: digest("left"),
+    rightRecordSha256: digest("right"),
+  }),
+];
+
+const baseRecords = records.slice(0, 6);
+const events = [];
+for (const [sequence, record] of baseRecords.entries()) {
+  events.push(compileMemoryEvent({
+    eventId: `EVENT-${sequence}`,
+    idempotencyKey: `APPEND-${sequence}`,
+    sequence,
+    record,
+    priorEventSha256: sequence === 0 ? GENESIS_EVENT_SHA256 : events[sequence - 1].event_sha256,
+  }));
+}
+const replay = replayMemoryLedger(events, {binding});
+const projectMap = compileProjectMap({
+  mapId: "MAP-1",
+  projectRef: binding.project_ref,
+  campaignRef: binding.campaign_ref,
+  goalRef: binding.goal_ref,
+  mapKind: "COMPOSITE",
+  roleScope: [binding.role_ref],
+  sourceCommit: binding.source_commit,
+  sourceTree: binding.source_tree,
+  sourceSnapshotSha256: binding.source_snapshot_sha256,
+  policySha256: binding.policy_sha256,
+  nodes: [{
+    node_id: "PROJECT-1",
+    node_kind: "PROJECT",
+    label: "Project root",
+    status: "CURRENT",
+    source_record_digests: [records[0].record_sha256],
+    epistemic_class: "DIRECT",
+    role_scope: [binding.role_ref],
+  }],
+  edges: [],
+  selectedRoots: ["PROJECT-1"],
+});
+const derivedIndex = compileDerivedIndex({
+  indexId: "INDEX-1",
+  projectRef: binding.project_ref,
+  sourceSnapshotSha256: binding.source_snapshot_sha256,
+  policySha256: binding.policy_sha256,
+  documents: [{
+    document_id: "DOC-1",
+    document_kind: "OTHER",
+    source_record_digests: [records[0].record_sha256],
+    role_scope: [binding.role_ref],
+    content: "project context",
+  }],
+});
+const snapshot = compileMemorySnapshot({
+  binding,
+  replay,
+  projectMap,
+  derivedIndex,
+  observedAtUtc: "2026-08-06T12:00:00.000Z",
+});
+const capsule = compileRoleContextCapsule({
+  snapshot,
+  roleRef: binding.role_ref,
+  laneRef: "PROJECT_MEMORY",
+  selectedRecordSha256s: [records[0].record_sha256, records[1].record_sha256].sort(),
+  allowedScopeRefs: ["PROJECT_MEMORY"],
+  prohibitedScopeRefs: ["ACTIVATION", "PRODUCT_WRITE", "TRANSCRIPT"],
+});
+
+const sampleByDefinition = [
+  ["memoryRecord", records[0]],
+  ["memoryEvent", events[0]],
+  ["memorySnapshot", snapshot],
+  ["roleContextCapsule", capsule],
+  ["invalidationRecord", records[6]],
+  ["conflictRecord", records[7]],
+  ["conflictDescriptor", {conflict_key: "GOAL:GOAL-1:1", left_record_sha256: digest("left"), right_record_sha256: digest("right")}],
+];
+
+assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+assert.equal(schema.$id, "agentos.project_memory_contract.v1");
+assert.equal(schema.status, "PREPARED_NOT_ACTIVATED");
+assert.equal(schema.activation.active, false);
+assert.deepEqual(schema.required_binding, Object.keys(binding));
+assert.deepEqual(Object.keys(schema.instance_schemas).sort(), [
+  "capsule",
+  "conflict_descriptor",
+  "conflict_record",
+  "event",
+  "invalidation_record",
+  "record",
+  "snapshot",
+].sort());
+
+for (const [definitionName, sample] of sampleByDefinition) {
+  validateSchemaInstance(schema.$defs[definitionName], sample, `$defs.${definitionName}`);
+  assert.equal(scanPersistedRecord(sample).safe, true, `${definitionName} sample must remain privacy-safe`);
+}
+
+const supersededRecord = compileDecisionRecord({
+  recordId: records[2].record_id,
+  recordVersion: 2,
+  binding,
+  status: "SUPERSEDED",
+  supersedesRecordSha256: records[2].record_sha256,
+  decisionSha256: digest("decision-superseded"),
+  decisionKind: "OWNER_CHOICE",
+  selectionRef: "KEEP_CONTROL_SPACE",
+  effectScope: ["PROJECT_MEMORY"],
+  rationaleSha256: digest("rationale-superseded"),
+});
+const supersededEvent = compileMemoryEvent({
+  eventId: "EVENT-SUPERSEDED",
+  idempotencyKey: "APPEND-SUPERSEDED",
+  sequence: 1,
+  eventType: "RECORD_SUPERSEDED",
+  record: supersededRecord,
+  priorEventSha256: events[0].event_sha256,
+});
+validateSchemaInstance(schema.$defs.memoryRecord, supersededRecord, "$defs.memoryRecord.superseded");
+validateSchemaInstance(schema.$defs.memoryEvent, supersededEvent, "$defs.memoryEvent.superseded");
+
+assert.deepEqual(schema.$defs.memoryRecord.required.sort(), Object.keys(records[0]).sort());
+assert.deepEqual(schema.$defs.memoryEvent.required.sort(), Object.keys(events[0]).sort());
+assert.deepEqual(schema.$defs.memorySnapshot.required.sort(), Object.keys(snapshot).sort());
+assert.deepEqual(schema.$defs.roleContextCapsule.required.sort(), Object.keys(capsule).sort());
+for (const record of records) {
+  const bodyDefinition = {
+    PROJECT_CONTEXT: "projectContextBody",
+    GOAL: "goalBody",
+    DECISION: "decisionBody",
+    REPOSITORY_MAP_REF: "repositoryMapRefBody",
+    HANDOFF: "handoffBody",
+    POLICY_REF: "policyRefBody",
+    INVALIDATION: "invalidationBody",
+    CONFLICT: "conflictBody",
+  }[record.record_type];
+  assert.deepEqual(schema.$defs[bodyDefinition].required.sort(), Object.keys(record.body).sort(), `${record.record_type} body keys must match its schema`);
+}
+
+assert.throws(() => validateSchemaInstance(schema.$defs.memoryRecord, {...records[0], transcript: "forbidden"}, "memory record"));
+assert.throws(() => validateSchemaInstance(schema.$defs.memoryRecord, {...records[0], project_ref: "/private/project"}, "memory record"));
+assert.throws(() => validateMemoryRecord({...records[0], transcript: "forbidden"}));
+assert.throws(() => validateMemoryEvent({...events[0], record: {...events[0].record, record_sha256: "1".repeat(64)}}));
+assert.throws(() => validateMemorySnapshot({...snapshot, acceptance_authority: true}));
+
+console.log("PASS project memory schema: machine-readable definitions, runtime key parity, instance validation, privacy, and hostile cases verified");

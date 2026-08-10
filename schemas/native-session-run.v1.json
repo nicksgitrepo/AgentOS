@@ -1,0 +1,61 @@
+{
+  "schema": "agentos.native_session_team_run.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/native-session-team.mjs",
+  "executor": "control/native-session-runner.mjs",
+  "host_attachment": {
+    "schema": "agentos.native_host_attachment.v1",
+    "controller": "control/native-host-attachment.mjs",
+    "loader": "control/native-host-loader.mjs",
+    "required_before_spawn": true,
+    "provider_implementation": "EXTERNAL_RUNTIME_ONLY"
+  },
+  "purpose": "Execute one bounded wave of true sibling sessions through an injected host adapter and close every temporary session before the next wave.",
+  "required_host_tools": [
+    "create_thread",
+    "list_threads",
+    "read_thread",
+    "send_message_to_thread",
+    "set_thread_archived",
+    "set_thread_pinned",
+    "wait_threads"
+  ],
+  "execution_profile": {
+    "source": "TYPED_PROJECT_CONFIGURATION",
+    "required_fields": ["model", "reasoning_effort"],
+    "host_readback_fields": ["host_model", "host_reasoning_effort"],
+    "mismatch": "BLOCKED",
+    "missing_readback": "REQUEST_ACCEPTED_NO_READBACK_ONLY_WHEN_EXPLICITLY_AUTHORIZED"
+  },
+  "checkpoint_binding": {
+    "schema": "agentos.digest_bound_checkpoint.v1",
+    "required_for": "TEAM_COMPLETED",
+    "source_fields": ["source_commit", "source_tree"],
+    "mismatch": "BLOCKED",
+    "missing": "BLOCKED_BEFORE_SPAWN"
+  },
+  "progress_review": {
+    "default_minutes": 15,
+    "minimum_minutes": 1,
+    "maximum_minutes": 240,
+    "timeout_is_meaningful_progress": false
+  },
+  "execution": {
+    "topology": "INDEPENDENT_SIBLING_SESSIONS",
+    "subagents_allowed": false,
+    "shell_workers_allowed": false,
+    "local_daemons_allowed": false,
+    "source_identity": ["project_id", "cwd", "git_top_level", "source_commit", "source_tree", "worktree_path", "build_identity", "environment_id"],
+    "completion_task_gate_fields": ["task_gate_catalog_sha256", "task_gate_answers"]
+  },
+  "lifecycle": "SPAWN_BIND_PIN_WORK_READBACK_UNPIN_ARCHIVE_REMOVE_VERIFY",
+  "task_gate_rule": "A session result is not accepted as governed work unless applicable task-start, change, proof, progress, acceptance, and closure questions have explicit evidence-backed answers.",
+  "closure_rule": "A completed run is valid only after every thread returns a source-bound meaningful result, its handoff is preserved, it is unpinned and archived, and the host list readback shows no active roster entry.",
+  "failure_rule": "Missing host tooling, a task/subagent identity, a wrong project or source, missing meaningful progress, missing completion evidence, or an unclosed thread returns TEAM_UNAVAILABLE or TEAM_FAILED and never counts as progress.",
+  "portability": {
+    "private_paths": "FORBIDDEN",
+    "credentials": "FORBIDDEN",
+    "provider_identity": "HOST_RUNTIME_ONLY"
+  }
+}

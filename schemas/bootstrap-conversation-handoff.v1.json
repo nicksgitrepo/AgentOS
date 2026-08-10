@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.bootstrap_conversation_handoff.v1",
+  "title": "AgentOS Bootstrap conversation typed handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "disposition",
+    "session_sha256",
+    "question_map_sha256",
+    "source_binding",
+    "answered_question_ids",
+    "unresolved_question_ids",
+    "next_action",
+    "replay_sha256",
+    "raw_owner_text_persisted",
+    "handoff_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.bootstrap_conversation_handoff.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["QUESTION_PENDING", "READY_FOR_CONTRACT"]},
+    "disposition": {"enum": ["ACTIVE", "UNAVAILABLE", "HARD_STOP"]},
+    "session_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "question_map_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "source_commit", "source_tree"],
+      "properties": {
+        "status": {"enum": ["BOUND", "PENDING_READBACK"]},
+        "source_commit": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "source_tree": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "answered_question_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"}},
+    "unresolved_question_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"}},
+    "next_action": {"type": "string", "pattern": "^[A-Z][A-Z0-9_:-]{1,95}$"},
+    "replay_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "raw_owner_text_persisted": {"const": false},
+    "handoff_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

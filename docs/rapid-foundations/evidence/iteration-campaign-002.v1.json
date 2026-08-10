@@ -1,0 +1,78 @@
+{
+  "schema": "agentos.iteration_campaign.v1",
+  "version": 1,
+  "campaign_id": "ITER-002-PORTABILITY-BOUNDARY",
+  "mode": "NORMAL_ITERATION",
+  "status": "CLOSED_HANDOFF_PRESERVED",
+  "source": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "continuation_repair": "docs/rapid-foundations/evidence/continuation-repair.v1.json",
+    "transition_record": "docs/rapid-foundations/evidence/iteration-transition.v1.json"
+  },
+  "selection": {
+    "backlog_id": "ITER-002",
+    "kind": "EXTENDED_HOSTILE_COVERAGE",
+    "reason": "The next safe deferred item has no dependency, owner boundary, or external effect.",
+    "scope": "Run the existing portability and accepted-slice checks within a 15-second bound, classify the two known fixture-scope findings, and produce evidence for the smallest safe follow-up.",
+    "out_of_scope": [
+      "no implementation changes",
+      "no fixture edits",
+      "no acceptance change",
+      "no deployment, publication, remote action, or activation",
+      "no indefinite wait"
+    ]
+  },
+  "campaign_role": {
+    "admitted_role": "ITERATION_PORTABILITY_BOUNDARY_VERIFIER",
+    "public_name": "Iteration Portability Boundary Verifier",
+    "fresh_sibling_required": true,
+    "environment": "LOCAL_PROJECT",
+    "pre_write_identity_check": true,
+    "write_scope": ["docs/rapid-foundations/evidence/iteration-002-portability-verifier.md"],
+    "generic_feature_agent_admitted": false
+  },
+  "progress": {
+    "meaningful_progress_window_minutes": 15,
+    "stalled_action": "CLOSE_WITH_EXACT_STALL_RECEIPT_AND_REFRAME_ONCE_WITHIN_SAME_SCOPE",
+    "liveness_is_not_completion": true
+  },
+  "check": {
+    "bounded_commands": ["node tests/verify-portability.mjs", "node tests/verify-rapid-prototype.mjs", "node tests/verify-governance-library.mjs", "node tests/verify-role-governance-library.mjs"],
+    "bounded_timeout_seconds": 15,
+    "result_options": ["PASS", "FAIL", "TIMEOUT_NO_RESULT", "PUZZLE_DEFERRED"],
+    "residual_process_check": true,
+    "independent_parent_check_required": true
+  },
+  "acceptance": {
+    "required": ["exact source readback", "exact write-scope readback", "meaningful result", "bounded check result", "typed handoff", "independent parent check", "automatic closure"],
+    "no_acceptance_claim_without_independent_check": true,
+    "next_item_rule": "A remaining puzzle becomes a typed successor item; it is not silently fixed or closed."
+  },
+  "result": {
+    "status": "DEFERRED_ITERATION",
+    "bounded_portability_result": "FAIL",
+    "report": "docs/rapid-foundations/evidence/iteration-002-portability-verifier.md",
+    "report_sha256": "719acf8cc65c08e49c32163bec694a0b9cddcc084d9be0fad8fbd34e239bf294",
+    "focused_checks": {
+      "rapid_slice": "PASS",
+      "general_governance_library": "PASS",
+      "role_governance_library_and_controller_gate": "PASS",
+      "question_tree": "PASS"
+    },
+    "independent_parent_check": "PASS",
+    "acceptance_decision": "NOT_MADE",
+    "known_findings_preserved": true,
+    "typed_handoff": "Iteration Portability Boundary Verifier -> Intent Regulator"
+  },
+  "lifecycle": {
+    "status": "CLOSED_HANDOFF_PRESERVED",
+    "sequence": ["PRESERVE_TYPED_HANDOFF", "UNPIN", "ARCHIVE", "REMOVE_FROM_ACTIVE_ROSTER", "VERIFY_ZERO_ACTIVE"],
+    "active_roster_before_close": 1,
+    "unpin": "PASS",
+    "archive": "PASS",
+    "roster_removal": "PASS",
+    "host_readback": "PASS_NOT_LOADED_ARCHIVED",
+    "active_roster_after_close": 0
+  }
+}

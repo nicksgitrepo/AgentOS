@@ -1,0 +1,32 @@
+# Pyramid Authority Delta
+
+- authority: UPDATED_AUDIT_DRIVEN_INTEGRATION_PYRAMID
+- source_ref: PYRAMID_AUTHORITY_SOURCE_REF
+- readback_kind: READ_ONLY_WORKFLOW_DELTA
+- platform_admission:
+  - activate_only_source_backed_cross_feature_platform_lanes
+  - do_not_count_absent_or_dormant_roles_as_active_parity
+  - use_scheduler_only_for_resource_intensive_conflicting_or_queue_governed_work
+- shared_surface_ownership:
+  - record_contract_migrations_routes_generated_outputs_consumers_collisions_and_primary_owner_before_intake
+  - reject_competing_implementations
+- migration_parity:
+  - classify_each_migration_as_JOURNALED_INTENTIONALLY_JOURNALEDLESS_or_MISSING_OR_UNPROVEN
+  - require_immutable_hashes_object_fingerprints_and_compatibility_receipt_for_journal_less_migrations
+  - treat_missing_or_mismatched_proof_as_hard_stop
+- feature_admission:
+  - complete_platform_foundation_before_any_feature_lane_is_started
+  - independently_audit_and_merge_one_cumulative_platform_worktree
+  - admit_feature_lanes_only_from_the_accepted_platform_skeleton_and_routing
+- handoff_requirements:
+  - include_baseline_local_commit_consumed_candidates_accepted_modified_replaced_rejected_changes
+  - include_seams_dependencies_agreements_uncertainties_checks_and_next_action
+  - dirty_worktrees_are_not_ready
+- archival_order:
+  - preserve
+  - consume
+  - finish
+  - remove
+  - archive
+  - verify
+- current_effect: Platform foundation remains HELD; feature phase remains NOT_ADMITTED until these requirements are evidenced in the source-bound foundation checkpoint.

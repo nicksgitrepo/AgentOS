@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.task_context_selection.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "task_profile_sha256", "policy_sha256", "source_binding_sha256", "project_context_sha256", "task_ref_sha256", "goal_ref_sha256", "required_tokens", "selected_tokens", "unmet_tokens", "selected_items", "excluded_items", "reason_code", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.task_context_selection.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["SELECTED", "UNAVAILABLE"]},
+    "task_profile_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "task_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "goal_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "required_tokens": {"type": "integer", "minimum": 1},
+    "selected_tokens": {"type": "integer", "minimum": 0},
+    "unmet_tokens": {"type": "integer", "minimum": 0},
+    "selected_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_ref_sha256", "safe_label", "content_class", "authority", "token_count"],
+        "properties": {
+          "item_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "safe_label": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "content_class": {"enum": ["TASK_INPUT", "SOURCE_METADATA", "DERIVED_SUMMARY", "REDACTED_EVIDENCE", "MEMORY_RECORD", "RAW_PRIVATE_CONTENT", "SECRET_MATERIAL"]},
+          "authority": {"enum": ["GENERAL_AUTHORITY", "GOAL_AUTHORITY", "PROJECT_AUTHORITY", "TASK_AUTHORITY", "MEMORY_AUTHORITY"]},
+          "token_count": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "excluded_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_ref_sha256", "safe_label", "reasons"],
+        "properties": {
+          "item_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "safe_label": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "reasons": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"}}
+        }
+      }
+    },
+    "reason_code": {"enum": ["CONTEXT_SELECTED", "CONTEXT_INSUFFICIENT"]},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

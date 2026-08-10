@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.release_safety_gate.v1",
+  "title": "Pre-activation release safety gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "subject_candidate_sha256", "release_version", "migration_plan_sha256", "compatibility_evidence_sha256", "policy_replay_sha256", "model_check_sha256", "checker_role", "independent_checker_sha256", "owner_review_required", "activation", "checked_at_utc", "privacy", "safety_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.release_safety_gate.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PASS", "BLOCKED"]},
+    "subject_candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "release_version": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "migration_plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "compatibility_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_replay_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "model_check_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "checker_role": {"const": "INDEPENDENT_RELEASE_AUDITOR"},
+    "independent_checker_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "owner_review_required": {"const": true},
+    "activation": {"const": false},
+    "checked_at_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$"},
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["safe", "categories"],
+      "properties": {
+        "safe": {"const": true},
+        "categories": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ABSOLUTE_PATH", "WORKTREE_PATH", "ENVIRONMENT_VALUE", "SECRET_LIKE_VALUE", "SESSION_OR_TASK_IDENTITY", "UNSAFE_PRIVATE_LINK"],
+          "properties": {
+            "ABSOLUTE_PATH": {"const": 0},
+            "WORKTREE_PATH": {"const": 0},
+            "ENVIRONMENT_VALUE": {"const": 0},
+            "SECRET_LIKE_VALUE": {"const": 0},
+            "SESSION_OR_TASK_IDENTITY": {"const": 0},
+            "UNSAFE_PRIVATE_LINK": {"const": 0}
+          }
+        }
+      }
+    },
+    "safety_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

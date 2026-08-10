@@ -1,0 +1,23 @@
+{
+  "schema": "agentos.bootstrap_safety_analysis.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Bind Bootstrap's JSA-style in-scope continuation to explicit reassessment and protected activation boundaries.",
+  "operating_modes": ["JSA", "EXACT_PLAN_APPROVAL"],
+  "default_operating_mode": "JSA",
+  "jsa": {
+    "plan_status": "JSA_READY_WITHIN_SCOPE",
+    "rule": "Bootstrap may continue declared local setup work without a second approval prompt when the source, intent, scope, and host readbacks remain unchanged.",
+    "scope_change_rule": "A changed scope, changed intent, changed source observation, unresolved soft boundary, or protected action returns to reassessment before dependent work continues.",
+    "soft_boundary_rule": "A soft boundary pauses only the affected outcome for a fresh owner choice or Orchestrator review.",
+    "hard_boundary_rule": "A hard boundary stops the dependent outcome and preserves its evidence.",
+    "protected_activation_rule": "JSA never authorizes publication, push, merge, deployment, rollback, spending, authentication, secrets, destructive overwrite, Product custody, or the protected generic CAMPAIGN_ACTIVATION action; the recorded source-bound local AgentOS campaign start is separately in scope."
+  },
+  "exact_plan_approval": {
+    "plan_status": "AWAITING_EXACT_OWNER_APPROVAL",
+    "decision": "APPROVE_EXACT_PLAN",
+    "rule": "The exact approval route remains available when the owner or host requires a separate approval of the complete plan digest."
+  },
+  "binding": "The safety analysis is content-addressed and included in the exact Bootstrap plan and typed Project Context."
+}

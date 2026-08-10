@@ -104,9 +104,14 @@
     "durable_session_controller": "control/local-agent-session.mjs",
     "durable_session_contract": "schemas/local-agent-session.v1.json",
     "durable_session_rule": "Campaign roles remain alive and observable across bounded handoffs through source-bound heartbeats and one-command-at-a-time local sessions.",
+    "continuous_operating_loop": {
+      "controller": "control/continuous-operating-loop.mjs",
+      "contract": "schemas/continuous-operating-loop.v1.json",
+      "rule": "The Intent Regulator inspects every active worker on the meaningful-progress timer; the Orchestrator owns ordinary repair, the independent Auditor owns clearance, Runtime and Intent Regulator persist, and hard boundaries stop continuation."
+    },
     "campaign_orchestrator": "CAMPAIGN_SCOPED",
     "runtime_rule": "No consequential transition completes until a project-bound adapter performs the action and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
-    "reconciliation_interval_minutes": 30,
+    "reconciliation_interval_minutes": 15,
     "activation": "The controller remains PREPARED_NOT_ACTIVATED and cannot rebind an active Product campaign without explicit owner approval."
   },
   "campaign_policy": {
@@ -191,7 +196,7 @@
       "contract": "schemas/standards-registry.v1.json",
       "rule": "Standards have explicit version, source, applicability, role, requirement identity, and evidence; project extensions can only be stricter."
     },
-    "rule": "Discovery is read-only. Bootstrap compiles a complete exact creation plan, shows its digest, requires APPROVE_EXACT_PLAN, seals imported legacy.zip before replacement writes, and executes resumably.",
+    "rule": "Discovery is read-only. Bootstrap compiles a complete content-addressed creation plan, binds the default JSA safety scope, continues only declared local setup while its source, intent, scope, and conditions remain unchanged, preserves protected activation boundaries, keeps APPROVE_EXACT_PLAN available when separately required, seals imported legacy.zip before replacement writes, and executes resumably.",
     "delivery_policy": {
       "controller": "control/delivery-policy.mjs",
       "contract": "schemas/delivery-policy.v1.json",
@@ -202,7 +207,8 @@
         "contract": "schemas/repository-readback.v1.json",
         "rule": "A local Git checkpoint must be read back from the actual worktree and upstream before clean/pushed handoff is admitted."
       },
-      "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, cost, and owner-selected finish choices are typed project context. The selected finish is also bound into the campaign design and exact Bootstrap plan. Bootstrap asks for the finish in plain language, recommends route classes and target profiles, and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
+      "adapter_contract": "schemas/delivery-adapter.v1.json",
+      "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, adapter, cost, and owner-selected finish choices are typed project context. The selected finish is also bound into the campaign design and exact Bootstrap plan. Bootstrap asks for the finish in plain language, recommends route classes and target profiles, and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
     }
   },
   "platform_pool": {

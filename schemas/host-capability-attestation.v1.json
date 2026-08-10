@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.host_capability_attestation.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "source_binding_sha256", "project_context_sha256", "catalog_sha256", "host_ref_sha256", "observed_at_utc", "expires_at_utc", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.host_capability_attestation.v1"},
+    "version": {"const": 1},
+    "status": {"const": "HOST_ATTESTED"},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "host_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "expires_at_utc": {"type": "string", "format": "date-time"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

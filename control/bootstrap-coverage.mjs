@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
-import crypto from "node:crypto";
+import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {BOOTSTRAP_OUTPUT_DEFINITIONS} from "./bootstrap-output-definitions.mjs";
 import {projectLifeContractNeedsOwner} from "./project-life-contract.mjs";
+
+export {BOOTSTRAP_OUTPUT_DEFINITIONS};
 
 export const BOOTSTRAP_COVERAGE_SCHEMA = "agentos.bootstrap_coverage.v1";
 export const BOOTSTRAP_COVERAGE_STATUSES = Object.freeze([
@@ -33,6 +36,7 @@ export const BOOTSTRAP_REQUIRED_OUTPUT_GROUPS = Object.freeze([
   "STANDARDS_REGISTRY",
   "NORTH_STAR",
   "FIRST_USEFUL_WORKFLOW",
+  "DEVELOPMENT_PLAN",
   "PROJECT_LIFE_CONTRACT",
   "FUNCTION_REQUIREMENTS",
   "TECHNICAL_BASELINE",
@@ -45,6 +49,8 @@ export const BOOTSTRAP_REQUIRED_OUTPUT_GROUPS = Object.freeze([
   "AUTHORITY_CORPUS",
   "MODEL_POLICY",
   "GLOBAL_POLICY_STATE",
+  "CONTROLLER_SUPERVISION",
+  "BOOTSTRAP_SAFETY_ANALYSIS",
   "OWNER_REVIEW",
   "PERSISTENT_RUNTIME",
   "FIRST_CAMPAIGN",
@@ -75,19 +81,7 @@ function requireSha(value, label) {
   assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
 }
 
-function compareUtf8(left, right) {
-  return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
-}
-
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (isRecord(value)) return Object.fromEntries(Object.keys(value).sort(compareUtf8).map((key) => [key, canonicalize(value[key])]));
-  return value;
-}
-
-export function canonicalDigest(value) {
-  return crypto.createHash("sha256").update(JSON.stringify(canonicalize(value)), "utf8").digest("hex");
-}
+export {canonicalDigest};
 
 function answerPresent(answers, id) {
   return Object.hasOwn(answers, id) && answers[id] !== undefined;
@@ -152,281 +146,6 @@ function runtimeBound(answer) {
 function isBlocking(status) {
   return ["OWNER_REQUIRED", "DEPENDENCY_PENDING", "CONFLICT"].includes(status);
 }
-
-function definition(outputId, category, fields) {
-  return Object.freeze({
-    output_id: outputId,
-    category,
-    required: fields.required ?? true,
-    applicability: fields.applicability ?? "REQUIRED",
-    question_ids: Object.freeze(fields.question_ids ?? []),
-    dependency_output_ids: Object.freeze(fields.dependency_output_ids ?? []),
-    compiled_field_paths: Object.freeze(fields.compiled_field_paths ?? []),
-    safe_default: fields.safe_default ?? "NO_SAFE_DEFAULT",
-    probe_required: fields.probe_required ?? false,
-    owner_decision_required: fields.owner_decision_required ?? false,
-    unavailable_behavior: fields.unavailable_behavior,
-    reopen_triggers: Object.freeze(fields.reopen_triggers ?? []),
-  });
-}
-
-// This is the canonical inventory. It is deliberately broader than the
-// creation-plan groups so trust, recovery, data, and delivery obligations
-// cannot disappear merely because they do not need a separate user question.
-export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
-  definition("DISCOVERY_PERMISSION", "TRUST", {
-    question_ids: ["bootstrap.discovery.mode"],
-    compiled_field_paths: ["discovery_mode", "discovery_digest_sha256"],
-    safe_default: "RECOMMENDED_READ_ONLY_DISCOVERY",
-    owner_decision_required: true,
-    unavailable_behavior: "ASK_ONLY_OWNER_INPUT_AND_DO_NOT_INFER_MECHANICAL_FACTS",
-    reopen_triggers: ["discovery_mode_changed", "project_root_changed"],
-  }),
-  definition("PROJECT_DEFINITION", "CREATION", {
-    question_ids: ["project.boundary"],
-    compiled_field_paths: ["project_definition", "exact_creation_plan.repositories"],
-    owner_decision_required: true,
-    unavailable_behavior: "HOLD_PROJECT_CREATION_WITHOUT_WRITING_OR_BINDING_EXTERNAL_RESOURCES",
-    reopen_triggers: ["repository_scope_changed", "ownership_changed", "boundary_changed"],
-  }),
-  definition("PROJECT_IMPORT", "CREATION", {
-    applicability: "CONDITIONAL",
-    question_ids: ["project.import"],
-    dependency_output_ids: ["PROJECT_DEFINITION"],
-    compiled_field_paths: ["project_import", "exact_creation_plan.project_import_sha256"],
-    safe_default: "NOT_APPLICABLE_WITH_PROOF_WHEN_NO_EXISTING_PROJECT_SIGNAL;_OTHERWISE_ASK_ONE_TYPED_IMPORT_MODE",
-    unavailable_behavior: "DO_NOT_COPY_OR_REFACTOR_AN_EXISTING_PROJECT_WITHOUT_AN_EXPLICIT_MODE_AND_SEPARATE_SOURCE_DESTINATION",
-    reopen_triggers: ["source_root_changed", "destination_root_changed", "import_mode_changed", "existing_project_marker_added"],
-  }),
-  definition("SOURCE_PRESERVATION", "RECOVERY", {
-    applicability: "CONDITIONAL",
-    dependency_output_ids: ["PROJECT_IMPORT"],
-    compiled_field_paths: ["project_import.preservation", "exact_creation_plan.source_preservation_sha256"],
-    safe_default: "NOT_APPLICABLE_WITH_PROOF_WITHOUT_PROJECT_IMPORT;_OTHERWISE_ARCHIVE_SOURCE_BEFORE_MIGRATION",
-    probe_required: true,
-    unavailable_behavior: "DO_NOT_BUILD_OR_REFACTOR_AN_IMPORTED_PROJECT_BEFORE_SOURCE_PRESERVATION_AND_EXCLUSION_RECORD_VERIFICATION",
-    reopen_triggers: ["source_bytes_changed", "source_exclusions_changed", "preservation_root_changed"],
-  }),
-  definition("NORMALIZATION_POLICY", "CREATION", {
-    dependency_output_ids: ["PROJECT_IMPORT"],
-    compiled_field_paths: ["normalization_policy", "exact_creation_plan.normalization_sha256"],
-    safe_default: "COMPILE_COMPATIBILITY_FIRST_INTERNAL_NAMING_FALLBACKS;_FULL_REFACTOR_ONLY_IN_THE_FIRST_GOVERNED_CAMPAIGN",
-    unavailable_behavior: "DO_NOT_RENAME_PROJECT_SURFACES_WITHOUT_TYPED_PRECEDENCE_AND_EXTERNAL_COMPATIBILITY_RULES",
-    reopen_triggers: ["import_mode_changed", "framework_convention_changed", "accepted_glossary_changed", "external_contract_discovered"],
-  }),
-  definition("STANDARDS_REGISTRY", "TRUST", {
-    compiled_field_paths: ["standards_registry", "exact_creation_plan.standards_registry_sha256"],
-    safe_default: "USE_VERSION_PINNED_PORTABLE_BASELINE_AND_TYPED_PROJECT_OVERLAYS_ONLY",
-    unavailable_behavior: "FAIL_CLOSED_WITHOUT_PINNED_STANDARD_IDENTITY_SOURCE_APPLICABILITY_AND_EVIDENCE_RULE",
-    reopen_triggers: ["standard_version_changed", "standard_source_changed", "project_overlay_added", "baseline_coverage_changed"],
-  }),
-  definition("NORTH_STAR", "INTENT", {
-    question_ids: ["project.north_star"],
-    compiled_field_paths: ["north_star"],
-    owner_decision_required: true,
-    unavailable_behavior: "HOLD_PROJECT_CREATION_UNTIL_OWNER_OUTCOME_IS_EXPLICIT",
-    reopen_triggers: ["owner_outcome_changed", "primary_user_or_moment_changed"],
-  }),
-  definition("FIRST_USEFUL_WORKFLOW", "INTENT", {
-    question_ids: ["project.first_workflow"],
-    compiled_field_paths: ["first_useful_workflow", "first_campaign.first_useful_workflow"],
-    owner_decision_required: true,
-    unavailable_behavior: "HOLD_FIRST_CAMPAIGN_WITHOUT_A_SMALL_VERIFIABLE_WORKFLOW",
-    reopen_triggers: ["success_condition_changed", "first_workflow_changed"],
-  }),
-  definition("PROJECT_LIFE_CONTRACT", "INTENT", {
-    applicability: "REQUIRED",
-    question_ids: ["project.life_contract"],
-    compiled_field_paths: ["project_life_contract"],
-    safe_default: "PRIVATE_PROTOTYPE_OWNER_ONLY_SYNTHETIC_OR_EXPLICIT_DATA_CAMPAIGN_BOUNDED",
-    unavailable_behavior: "DEFAULT_TO_PRIVATE_PROTOTYPE_ONLY_WHEN_NO_ROUTE_DATA_AUDIENCE_OR_LIFETIME_SIGNAL_EXISTS",
-    reopen_triggers: ["maturity_changed", "audience_changed", "data_posture_changed", "expected_lifetime_changed", "maintenance_posture_changed"],
-  }),
-  definition("AUTHORITY_BOUNDARIES", "TRUST", {
-    question_ids: ["project.protected_boundaries"],
-    compiled_field_paths: ["authority_boundaries", "exact_creation_plan.prohibited_actions"],
-    owner_decision_required: true,
-    unavailable_behavior: "FAIL_CLOSED_ON_PROTECTED_ACTIONS_AND_DO_NOT_ESCALATE_BY_GUESS",
-    reopen_triggers: ["owner_boundary_changed", "safety_or_legal_context_changed"],
-  }),
-  definition("AUTHORITY_CORPUS", "CREATION", {
-    question_ids: ["authority-corpus.source"],
-    compiled_field_paths: ["authority_corpus", "authority_corpus.roots"],
-    owner_decision_required: true,
-    unavailable_behavior: "CREATE_ONLY_THE_EMPTY_TYPED_CORPUS_AFTER_EXPLICIT_CREATE_OR_IMPORT_DECISION",
-    reopen_triggers: ["authority_source_changed", "article_numbering_or_root_changed"],
-  }),
-  definition("DESIGN_BIBLE", "PRODUCT_PROOF", {
-    applicability: "CONDITIONAL",
-    question_ids: ["project.design"],
-    compiled_field_paths: ["design_bible"],
-    safe_default: "NO_VISIBLE_SURFACE_ASSUMED; REOPEN_ON_VISIBLE_SURFACE_OR_DESIGN_AUTHORITY_SIGNAL",
-    unavailable_behavior: "DO_NOT_CLAIM_PERCEPTIBLE_DESIGN_BEHAVIOR_WITHOUT_DEPLOYED_LIVE_PROOF",
-    reopen_triggers: ["visible_surface_added", "design_authority_added", "protected_surface_changed"],
-  }),
-  definition("SECURITY_BASELINE", "TRUST", {
-    compiled_field_paths: ["security_baseline"],
-    safe_default: "PIN_PORTABLE_SECURITY_BASELINE_IDENTITY_VERSION_AND_REQUIREMENT_IDS",
-    unavailable_behavior: "FAIL_CLOSED_WITHOUT_A_CONTENT_ADDRESSED_SECURITY_STANDARD_AND_ATOMIC_REQUIREMENT_IDS",
-    reopen_triggers: ["security_standard_identity_changed", "security_requirement_ids_changed", "security_boundary_changed"],
-  }),
-  definition("TECHNICAL_BASELINE", "CREATION", {
-    question_ids: ["project.technical_baseline"],
-    compiled_field_paths: ["technical_baseline"],
-    safe_default: "USE_DISCOVERED_MARKERS_AND_TYPED_UNSELECTED_FIELDS",
-    unavailable_behavior: "KEEP_UNSELECTED_STACK_FIELDS_EXPLICIT_AND_DO_NOT_INVENT_A_PROVIDER_OR_RUNTIME",
-    reopen_triggers: ["stack_marker_changed", "authentication_or_data_signal_added", "testing_route_changed"],
-  }),
-  definition("DATA_AND_MIGRATION_POLICY", "DATA", {
-    applicability: "CONDITIONAL",
-    question_ids: ["project.technical_baseline"],
-    dependency_output_ids: ["TECHNICAL_BASELINE"],
-    compiled_field_paths: ["technical_baseline.data", "technical_baseline.constraints.data"],
-    safe_default: "NO_DURABLE_DATA_ASSUMED; REOPEN_ON_DATA_OR_MIGRATION_SIGNAL",
-    unavailable_behavior: "DO_NOT_CREATE_OR_MIGRATE_DURABLE_DATA_WITHOUT_A_TYPED_POLICY",
-    reopen_triggers: ["database_or_storage_marker_added", "migration_requested", "durable_data_entered"],
-  }),
-  definition("AUTHENTICATION_AND_ACCESS", "TRUST", {
-    applicability: "CONDITIONAL",
-    question_ids: ["project.technical_baseline"],
-    dependency_output_ids: ["TECHNICAL_BASELINE", "AUTHORITY_BOUNDARIES"],
-    compiled_field_paths: ["technical_baseline.authentication", "authority_boundaries"],
-    safe_default: "NO_AUTHENTICATED_ROUTE_ASSUMED; REOPEN_ON_AUTH_SIGNAL",
-    unavailable_behavior: "DO_NOT_CLAIM_AUTHORIZATION_OR_TENANT_SEPARATION_PROOF",
-    reopen_triggers: ["authentication_marker_added", "protected_route_added", "identity_boundary_changed"],
-  }),
-  definition("DELIVERY_POLICY", "DELIVERY", {
-    question_ids: ["project.delivery_finish"],
-    compiled_field_paths: ["delivery_policy", "exact_creation_plan.delivery_bindings"],
-    safe_default: "CHECKPOINTS_REMOTE_EQUAL_CENTRAL_MERGE_RUNTIME_DEPLOYMENT_ROLLBACK_REQUIRED",
-    probe_required: true,
-    owner_decision_required: true,
-    unavailable_behavior: "DO_NOT_PUSH_MERGE_AUTHENTICATE_SPEND_PREVIEW_DEPLOY_OR_ROLL_BACK",
-    reopen_triggers: ["provider_or_environment_changed", "runner_route_changed", "deployment_or_rollback_changed", "cost_boundary_changed"],
-  }),
-  definition("DELIVERY_TARGET", "DELIVERY", {
-    dependency_output_ids: ["DELIVERY_POLICY", "PROJECT_LIFE_CONTRACT"],
-    compiled_field_paths: ["delivery_target", "delivery_policy.delivery_target"],
-    safe_default: "DERIVE_TARGET_FAMILY_AND_PROTOTYPE_MODE_FROM_ROUTE_AND_PROJECT_LIFE_CONTRACT",
-    unavailable_behavior: "DO_NOT_CLAIM_A_PROTOTYPE_LIMITED_PRODUCT_OR_PRODUCTION_TARGET_WITHOUT_EXPLICIT_MODE_AND_CAPABILITY_BOUNDARIES",
-    reopen_triggers: ["delivery_target_changed", "adapter_capability_changed", "maturity_changed", "audience_or_data_posture_changed"],
-  }),
-  definition("BOUNDARY_CONTRACT", "TRUST", {
-    dependency_output_ids: ["AUTHORITY_BOUNDARIES", "PROJECT_LIFE_CONTRACT", "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET"],
-    compiled_field_paths: ["boundary_contract"],
-    safe_default: "IMMUTABLE_CONSTITUTIONAL_RULES_PLUS_OWNER_DERIVED_AND_PROBE_BOUNDARIES",
-    unavailable_behavior: "FAIL_CLOSED_ON_PROTECTED_ACTIONS_AND_RETAIN_UNAFFECTED_WORK_WITHOUT_GUESSING_AUTHORITY",
-    reopen_triggers: ["owner_boundary_changed", "life_contract_changed", "delivery_policy_changed", "technical_baseline_changed"],
-  }),
-  definition("DELIVERY_PROBES", "DELIVERY", {
-    dependency_output_ids: ["DELIVERY_POLICY", "PROJECT_DEFINITION"],
-    compiled_field_paths: ["delivery_probe_plan", "delivery.probe.results.json"],
-    safe_default: "RUN_ONLY_BOUND_LOCAL_READ_ONLY_PROBES",
-    probe_required: true,
-    unavailable_behavior: "LEAVE_OWNER_BOUNDARY_PROBES_NOT_RUN_AND_HOLD_EXTERNAL_SIDE_EFFECTS",
-    reopen_triggers: ["delivery_policy_changed", "project_root_changed", "discovery_changed"],
-  }),
-  definition("MODEL_POLICY", "CREATION", {
-    question_ids: ["project.model_economics"],
-    compiled_field_paths: ["model_policy"],
-    owner_decision_required: true,
-    unavailable_behavior: "FAIL_CLOSED_WITHOUT_AN_ELIGIBLE_MODEL_OR_FEASIBLE_BUDGET",
-    reopen_triggers: ["completion_floor_changed", "budget_or_duty_cycle_changed", "model_capability_changed"],
-  }),
-  definition("GLOBAL_POLICY_STATE", "TRUST", {
-    dependency_output_ids: ["MODEL_POLICY", "BOUNDARY_CONTRACT", "PROJECT_LIFE_CONTRACT"],
-    compiled_field_paths: ["global_policy_state", "policy_epoch", "policy_state_sha256"],
-    safe_default: "COMPILE_DECLARED_POLICY_VARIABLES_WITH_RECOMMENDED_DEFAULTS_AND_PREPARED_STATUS",
-    unavailable_behavior: "DO_NOT_CHANGE_CONTROLLER_BEHAVIOR_WITH_SCATTERED_RUNTIME_FLAGS_OR_UNBOUND_POLICY",
-    reopen_triggers: ["policy_variable_changed", "policy_dependency_changed", "governance_version_changed"],
-  }),
-  definition("OWNER_REVIEW", "INTENT", {
-    question_ids: ["review.user_review_mode"],
-    dependency_output_ids: ["GLOBAL_POLICY_STATE", "FIRST_CAMPAIGN"],
-    compiled_field_paths: ["owner_review_policy", "user_review_mode"],
-    safe_default: "RECOMMENDED_FOR_SUBSTANTIAL_OR_AMBIGUOUS_CAMPAIGNS;_PRIVATE_MARKDOWN;PROJECT_ONLY_MEMORY",
-    unavailable_behavior: "CONTINUE_ONLY_WHEN_THE_CAMPAIGN_IS_DETERMINISTIC_AND_NO_ROUTE_OR_INTENT_CHANGE_NEEDS_OWNER_REVIEW",
-    reopen_triggers: ["review_mode_changed", "review_transport_changed", "memory_posture_changed", "campaign_intent_changed"],
-  }),
-  definition("PERSISTENT_RUNTIME", "RUNTIME", {
-    question_ids: ["project.runtime"],
-    compiled_field_paths: ["persistent_runtime"],
-    owner_decision_required: true,
-    unavailable_behavior: "DO_NOT_PASS_SETUP_AUDIT_OR_DEPLOY_WITHOUT_EXACT_RUNTIME_AND_ENVIRONMENT_BINDING",
-    reopen_triggers: ["runtime_session_changed", "environment_identity_changed", "runtime_capabilities_changed"],
-  }),
-  definition("FUNCTION_REQUIREMENTS", "PRODUCT_PROOF", {
-    dependency_output_ids: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW"],
-    compiled_field_paths: ["function_requirements"],
-    safe_default: "COMPILE_ONE_ATOMIC_CLAUSE_FROM_THE_FIRST_USEFUL_WORKFLOW",
-    unavailable_behavior: "DO_NOT_CLAIM_FUNCTION_PASS_WITHOUT_A_BOUND_OWNER_OUTCOME_AND_SUCCESS_CONDITION",
-    reopen_triggers: ["north_star_changed", "first_useful_workflow_changed", "function_clause_changed"],
-  }),
-  definition("FIRST_CAMPAIGN", "CAMPAIGN", {
-    dependency_output_ids: ["NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "FUNCTION_REQUIREMENTS", "PERSISTENT_RUNTIME"],
-    compiled_field_paths: ["first_campaign"],
-    safe_default: "ONE_MINIMAL_SYNTHETIC_CAMPAIGN_ROOT_FROM_THE_FIRST_USEFUL_WORKFLOW",
-    unavailable_behavior: "DO_NOT_ADMIT_A_CAMPAIGN_WITHOUT_A_PERSISTENT_RUNTIME_AND_FIRST_USEFUL_WORKFLOW",
-    reopen_triggers: ["first_campaign_scope_changed", "feature_roster_changed", "runtime_binding_changed"],
-  }),
-  definition("RECOVERY_AND_ROLLBACK", "RECOVERY", {
-    dependency_output_ids: ["DELIVERY_POLICY", "PERSISTENT_RUNTIME"],
-    compiled_field_paths: ["delivery_policy.rollback", "exact_creation_plan.rollback", "persistent_runtime.rollback_identity"],
-    safe_default: "EXACT_LAST_ACCEPTED_DEPLOYMENT_WITH_RUNTIME_AND_OWNER_BOUNDARY",
-    unavailable_behavior: "DO_NOT_DEPLOY_OR_PROMOTE_WITHOUT_AN_EXACT_ROLLBACK_IDENTITY_AND_TEST",
-    reopen_triggers: ["deployment_identity_changed", "rollback_strategy_changed", "runtime_authority_changed"],
-  }),
-  definition("OBSERVABILITY_AND_RETENTION", "RECOVERY", {
-    dependency_output_ids: ["TECHNICAL_BASELINE", "MODEL_POLICY"],
-    compiled_field_paths: ["technical_baseline.observability", "model_policy.telemetry"],
-    safe_default: "COMPACT_CONTENT_ADDRESSED_EVENTS_WITH_TYPED_RETENTION_AND_NO_SECRET_LOGGING",
-    unavailable_behavior: "KEEP_EVIDENCE_COMPACT_AND_RETAIN_UNPROVEN_STATUS_WHEN_TELEMETRY_IS_UNAVAILABLE",
-    reopen_triggers: ["retention_preference_changed", "evidence_route_changed", "observability_signal_added"],
-  }),
-  definition("LEGACY_PRESERVATION", "RECOVERY", {
-    applicability: "CONDITIONAL",
-    dependency_output_ids: ["AUTHORITY_CORPUS"],
-    compiled_field_paths: ["authority_corpus.preservation", "authority_corpus.source_identity"],
-    safe_default: "NOT_REQUIRED_FOR_CREATE_NEW; SEAL_LEGACY_ARCHIVE_BEFORE_REPLACEMENT_WRITES_FOR_IMPORT_OR_REFACTOR",
-    probe_required: true,
-    unavailable_behavior: "DO_NOT_REPLACE_AN_IMPORTED_OR_REFACTORED_CORPUS_WITHOUT_VERIFIED_LEGACY_ARCHIVE",
-    reopen_triggers: ["authority_operation_changed", "legacy_source_bytes_changed", "legacy_source_root_changed"],
-  }),
-  definition("BOOTSTRAP_PROOF", "TRUST", {
-    dependency_output_ids: ["PROJECT_DEFINITION", "AUTHORITY_CORPUS", "DELIVERY_PROBES", "PERSISTENT_RUNTIME"],
-    compiled_field_paths: ["exact_creation_plan", "bootstrap_coverage"],
-    safe_default: "EXACT_DIGEST_TOCTOU_READBACK_INDEPENDENT_SETUP_AUDIT_AND_SEALED_INVENTORY",
-    probe_required: true,
-    unavailable_behavior: "FAIL_CLOSED_WITHOUT_EXACT_PLAN_APPROVAL_READBACK_AND_INDEPENDENT_AUDIT",
-    reopen_triggers: ["plan_digest_changed", "discovery_changed", "setup_audit_changed", "staging_inventory_changed"],
-  }),
-  definition("PROJECT_CONTEXT_SEPARATION", "TRUST", {
-    dependency_output_ids: ["AUTHORITY_CORPUS", "PROJECT_DEFINITION"],
-    compiled_field_paths: ["project_context", "extension_boundary"],
-    safe_default: "PROJECT_FACTS_ENTER_ONLY_THROUGH_TYPED_CONTEXT_AND_TEMPLATES",
-    unavailable_behavior: "REJECT_PROJECT_EXTENSIONS_THAT_WEAKEN_OR_SHADOW_PORTABLE_GOVERNANCE",
-    reopen_triggers: ["project_context_schema_changed", "extension_added", "portable_kernel_changed"],
-  }),
-  definition("ACTIVATION_BOUNDARY", "TRUST", {
-    compiled_field_paths: ["status", "activation"],
-    safe_default: "PREPARED_NOT_ACTIVATED",
-    unavailable_behavior: "DO_NOT_ACTIVATE_OR_REBIND_A_PRODUCT_CAMPAIGN",
-    reopen_triggers: ["explicit_owner_activation_decision", "product_campaign_rebind_requested"],
-  }),
-  definition("EXACT_CREATION_PLAN", "CREATION", {
-    dependency_output_ids: [
-      "DISCOVERY_PERMISSION", "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "AUTHORITY_BOUNDARIES",
-      "PROJECT_LIFE_CONTRACT", "AUTHORITY_CORPUS", "DESIGN_BIBLE", "SECURITY_BASELINE", "TECHNICAL_BASELINE", "DATA_AND_MIGRATION_POLICY",
-      "AUTHENTICATION_AND_ACCESS", "DELIVERY_POLICY", "DELIVERY_TARGET", "DELIVERY_PROBES", "MODEL_POLICY", "PERSISTENT_RUNTIME",
-      "FUNCTION_REQUIREMENTS", "FIRST_CAMPAIGN", "RECOVERY_AND_ROLLBACK", "OBSERVABILITY_AND_RETENTION",
-      "LEGACY_PRESERVATION", "BOUNDARY_CONTRACT", "BOOTSTRAP_PROOF", "PROJECT_CONTEXT_SEPARATION", "ACTIVATION_BOUNDARY",
-    ],
-    compiled_field_paths: ["exact_creation_plan", "plan_sha256"],
-    safe_default: "NO_SAFE_DEFAULT; DERIVE_ONLY_AFTER_ALL_MATERIAL_GAPS_CLOSE",
-    unavailable_behavior: "DO_NOT_COMPILE_OR_APPROVE_A_PARTIAL_CREATION_PLAN",
-    reopen_triggers: ["any_dependent_output_changed", "discovery_changed", "answer_changed"],
-  }),
-]);
 
 function rowBase(definitionRecord, overrides = {}) {
   return {
@@ -572,6 +291,22 @@ function compileRows(discovery, answers) {
     const answerId = definitionRecord.question_ids[0];
     rows.push(ownerRow(definitionRecord, answerId, answers, `${outputId}_OWNER_INPUT`));
   }
+  const developmentDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "DEVELOPMENT_PLAN");
+  rows.push(rowBase(developmentDefinition, answerPresent(answers, "project.development_mode")
+    ? {
+      source_kind: "OWNER_INPUT",
+      source_refs: ["project.development_mode"],
+      status: "OWNER_CONFIRMED",
+      blocking: false,
+      reason: "OWNER_SELECTED_DEVELOPMENT_MODE_BOUND_TO_PHASE_PLAN",
+    }
+    : {
+      source_kind: "PORTABLE_DEFAULT",
+      source_refs: ["RAPID_PROTOTYPING_DEFAULT"],
+      status: "DEFAULTED",
+      blocking: false,
+      reason: "RAPID_PROTOTYPING_DEFAULTS_TO_A_SMALL_WORKING_VERSION_BEFORE_ITERATION",
+    }));
   const lifeDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "PROJECT_LIFE_CONTRACT");
   if (answerPresent(answers, "project.life_contract")) {
     rows.push(ownerRow(lifeDefinition, "project.life_contract", answers, "PROJECT_LIFE_CONTRACT_OWNER_INPUT"));
@@ -800,6 +535,33 @@ function compileRows(discovery, answers) {
     status: "DERIVED",
     blocking: false,
     reason: "DECLARED_CONTENT_ADDRESSED_POLICY_VARIABLES_DERIVED_WITH_DEPENDENCY_IMPACT",
+  }));
+
+  const supervisionDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "CONTROLLER_SUPERVISION");
+  rows.push(rowBase(supervisionDefinition, answerPresent(answers, "project.audit_interval")
+    ? {
+      source_kind: "OWNER_INPUT",
+      source_refs: ["project.audit_interval", "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES"],
+      status: "OWNER_CONFIRMED",
+      blocking: false,
+      reason: "OWNER_AUDIT_INTERVAL_BOUND_TO_PERSISTENT_INTENT_REGULATOR_POLICY",
+      owner_decision_required: true,
+    }
+    : {
+      source_kind: "PORTABLE_DEFAULT",
+      source_refs: ["OPERATIONS.HEARTBEAT_INTERVAL_MINUTES", "PERSISTENT_INTENT_REGULATOR"],
+      status: "DEFAULTED",
+      blocking: false,
+      reason: "PERSISTENT_INTENT_REGULATOR_AND_SAFE_15_MINUTE_AUDIT_DEFAULT_BOUND",
+    }));
+
+  const safetyDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "BOOTSTRAP_SAFETY_ANALYSIS");
+  rows.push(rowBase(safetyDefinition, {
+    source_kind: "DERIVED_OUTPUT",
+    source_refs: ["AUTHORITY_BOUNDARIES", "DELIVERY_POLICY", "PROJECT_LIFE_CONTRACT"],
+    status: "DERIVED",
+    blocking: false,
+    reason: "JSA_SCOPE_AND_PROTECTED_ACTIVATION_BOUNDARIES_DERIVED_FROM_BOUND_PROJECT_CONDITIONS",
   }));
 
   const reviewDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "OWNER_REVIEW");

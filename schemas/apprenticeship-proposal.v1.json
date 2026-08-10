@@ -1,0 +1,65 @@
+{
+  "schema": "agentos.apprenticeship_proposal_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-observation.mjs",
+  "record_schemas": [
+    "agentos.apprenticeship_workflow_reconstruction.v1",
+    "agentos.apprenticeship_gate_source.v1",
+    "agentos.apprenticeship_governance_proposal.v1"
+  ],
+  "required_provenance": [
+    "project_ref",
+    "campaign_ref",
+    "goal_ref",
+    "source_ref",
+    "tree_ref",
+    "workspace_ref",
+    "environment_ref",
+    "worker_ref",
+    "worker_session_ref",
+    "orchestrator_ref",
+    "orchestrator_session_ref",
+    "model_ref"
+  ],
+  "proposal_fields": [
+    "task_pattern",
+    "bounded_scope",
+    "consent",
+    "observed_tools",
+    "revocation",
+    "reconstruction_digest",
+    "gate_source",
+    "role_behavior",
+    "review",
+    "owner_approval",
+    "activation_allowed"
+  ],
+  "gate_fields": [
+    "line_number",
+    "gate_id",
+    "name",
+    "question",
+    "allowed_answers",
+    "required_evidence",
+    "next_branch",
+    "repair_recovery_branch",
+    "terminal_state"
+  ],
+  "proposal_rule": "The worker may propose observable role behavior and deterministic gates; the proposal is never authority.",
+  "compiler_rule": "The Walkthrough Orchestrator compiles the proposal but cannot accept or activate it.",
+  "review": {
+    "required": true,
+    "reviewer_must_be_distinct_from_worker": true,
+    "reviewer_must_be_distinct_from_compiler": true,
+    "quality_check_required": true,
+    "owner_approval_is_separate": true
+  },
+  "allowed_statuses": ["PROPOSED", "REVOKED"],
+  "revocation_rule": "A revoked proposal retains its digest and safe reference but cannot enter drilling, reproduction, review, owner decision, handoff, or activation.",
+  "forbidden_terminal_states": ["PASS", "ACCEPTED", "ACTIVATED"],
+  "activation": {
+    "active": false,
+    "automatic_activation": false
+  }
+}

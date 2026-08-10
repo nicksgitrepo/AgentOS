@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.governance_binding.v1",
+  "title": "AgentOS four-library governance binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "policy_epoch", "library_digests", "ownership", "lineage", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.governance_binding.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["COMPILED", "INDEPENDENTLY_CHECKED", "OWNER_ACCEPTED", "PREPARED_NOT_ACTIVATED", "ACTIVE", "SUPERSEDED", "REJECTED", "BLOCKED"]},
+    "project_id": {"type": "string"},
+    "policy_epoch": {"type": "integer", "minimum": 1},
+    "library_digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_general", "base_role", "project_general", "generated_project_role"],
+      "properties": {
+        "base_general": {"$ref": "#/$defs/digest"},
+        "base_role": {"$ref": "#/$defs/digest"},
+        "project_general": {"$ref": "#/$defs/digest"},
+        "generated_project_role": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "ownership": {"$ref": "#/$defs/ownership"},
+    "lineage": {"$ref": "#/$defs/lineage"},
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_role", "authoring_role"],
+      "properties": {"owner_role": {"const": "PROJECT_OWNER"}, "authoring_role": {"const": "INTENT_REGULATOR"}}
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "supersedes", "owner_decision_digest", "independent_check_digest"],
+      "properties": {
+        "revision": {"type": "integer", "minimum": 1},
+        "supersedes": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "owner_decision_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "independent_check_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    }
+  }
+}

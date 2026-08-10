@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance.project_map.v1",
+  "title": "AgentOS Project Map Instance",
+  "description": "Strict portable instance contract for an advisory project map. Runtime validation remains authoritative for cross-field and digest rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "contract_status",
+    "visibility",
+    "advisory_only",
+    "acceptance_authority",
+    "map_id",
+    "project_ref",
+    "campaign_ref",
+    "goal_ref",
+    "map_kind",
+    "role_scope",
+    "source_commit",
+    "source_tree",
+    "source_snapshot_sha256",
+    "policy_sha256",
+    "compiler_sha256",
+    "status",
+    "coverage",
+    "bounds",
+    "stale_source_digests",
+    "nodes",
+    "edges",
+    "omissions",
+    "uncertainties",
+    "conflicts",
+    "map_sha256"
+  ],
+  "properties": {
+    "schema": { "const": "governance.project_map.v1" },
+    "version": { "const": 1 },
+    "contract_status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "visibility": { "const": "CONTROL_SPACE" },
+    "advisory_only": { "const": true },
+    "acceptance_authority": { "const": false },
+    "map_id": { "$ref": "#/$defs/id" },
+    "project_ref": { "$ref": "#/$defs/id" },
+    "campaign_ref": { "$ref": "#/$defs/nullableId" },
+    "goal_ref": { "$ref": "#/$defs/nullableId" },
+    "map_kind": {
+      "enum": [
+        "DEPENDENCY",
+        "AUTHORITY",
+        "WORKFLOW",
+        "FEATURE_COVERAGE",
+        "RECOVERY",
+        "COMPOSITE"
+      ]
+    },
+    "role_scope": { "$ref": "#/$defs/roleScope" },
+    "source_commit": { "$ref": "#/$defs/gitSha" },
+    "source_tree": { "$ref": "#/$defs/gitSha" },
+    "source_snapshot_sha256": { "$ref": "#/$defs/sha256" },
+    "policy_sha256": { "$ref": "#/$defs/sha256" },
+    "compiler_sha256": { "$ref": "#/$defs/sha256" },
+    "status": {
+      "enum": ["READY", "BOUNDED_PARTIAL", "STALE", "CONFLICT", "UNAVAILABLE"]
+    },
+    "coverage": {
+      "enum": ["COMPLETE", "BOUNDED_PARTIAL", "CONFLICT", "UNAVAILABLE"]
+    },
+    "bounds": { "$ref": "#/$defs/bounds" },
+    "stale_source_digests": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/sha256" }
+    },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "omissions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/notice" }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/notice" }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/notice" }
+    },
+    "map_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "nullableId": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/id" }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "roleScope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "notice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "subject_ref", "detail"],
+      "properties": {
+        "code": { "$ref": "#/$defs/id" },
+        "subject_ref": { "$ref": "#/$defs/nullableId" },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_nodes",
+        "max_edges",
+        "selected_roots",
+        "omitted_node_count",
+        "omitted_edge_count",
+        "truncated"
+      ],
+      "properties": {
+        "max_nodes": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "max_edges": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "selected_roots": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "omitted_node_count": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "omitted_edge_count": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "truncated": { "type": "boolean" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id",
+        "node_kind",
+        "label",
+        "status",
+        "source_record_digests",
+        "epistemic_class",
+        "role_scope"
+      ],
+      "properties": {
+        "node_id": { "$ref": "#/$defs/id" },
+        "node_kind": { "$ref": "#/$defs/id" },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "status": {
+          "enum": ["CURRENT", "BLOCKED", "COMPLETE", "UNKNOWN", "ARCHIVED"]
+        },
+        "source_record_digests": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sha256" }
+        },
+        "epistemic_class": {
+          "enum": ["DIRECT", "DERIVED", "INFERRED", "OWNER_STATED", "UNAVAILABLE"]
+        },
+        "role_scope": { "$ref": "#/$defs/roleScope" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_id",
+        "from_node_id",
+        "to_node_id",
+        "edge_kind",
+        "source_record_digests",
+        "epistemic_class",
+        "role_scope"
+      ],
+      "properties": {
+        "edge_id": { "$ref": "#/$defs/id" },
+        "from_node_id": { "$ref": "#/$defs/id" },
+        "to_node_id": { "$ref": "#/$defs/id" },
+        "edge_kind": { "$ref": "#/$defs/id" },
+        "source_record_digests": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sha256" }
+        },
+        "epistemic_class": {
+          "enum": ["DIRECT", "DERIVED", "INFERRED", "OWNER_STATED", "UNAVAILABLE"]
+        },
+        "role_scope": { "$ref": "#/$defs/roleScope" }
+      }
+    }
+  }
+}

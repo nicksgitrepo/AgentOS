@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_admission.v1",
+  "title": "AgentOS apprenticeship admission record",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "mode",
+    "admission_id",
+    "status",
+    "plan_ref",
+    "owner_intent_ref",
+    "provenance",
+    "allowed_scope",
+    "protected_actions",
+    "progress_window_minutes",
+    "required_roles",
+    "host_capability_ref",
+    "host_attestation_ref",
+    "activation_allowed",
+    "created_at",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_admission.v1"},
+    "version": {"const": 1},
+    "mode": {"const": "APPRENTICESHIP"},
+    "admission_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "status": {"enum": ["PREPARED", "ADMITTED", "BLOCKED", "REASSESS_REQUIRED"]},
+    "plan_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "owner_intent_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "provenance": {"$ref": "apprenticeship-common.v1.json#/$defs/provenance"},
+    "allowed_scope": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+    "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},
+    "progress_window_minutes": {"type": "integer", "minimum": 1, "maximum": 240},
+    "required_roles": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+    "host_capability_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/nullableReference"},
+    "host_attestation_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/nullableReference"},
+    "activation_allowed": {"const": false},
+    "created_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "ADMITTED"}}},
+      "then": {
+        "properties": {
+          "host_capability_ref": {"not": {"const": null}},
+          "host_attestation_ref": {"not": {"const": null}}
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.delivery_choice.v2",
+  "version": 2,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "An explicit owner-selected delivery or no-delivery outcome bound to one accepted campaign candidate.",
+  "outcomes": ["LOCAL_ONLY", "PREPARED", "PUSH", "MERGE", "DEPLOY", "RELEASE", "ROLLBACK"],
+  "required_fields": [
+    "schema", "version", "status", "choice_id", "outcome", "project_ref", "campaign_id",
+    "campaign_version", "goal_id", "accepted_result_digest", "final_audit_digest", "source_commit",
+    "source_tree", "worktree_ref", "environment_ref", "scope_digest", "policy_digest",
+    "rollback_target_digest", "owner_approval", "selected_at_utc", "digest"
+  ],
+  "owner_approval": {
+    "required": ["decision", "scope_digest", "approval_ref", "approved_at_utc", "digest"],
+    "decision": "APPROVE",
+    "rule": "Approval scope must equal the choice scope digest; approval is not a credential or activation.",
+    "reference_rule": "approval_ref is an opaque reference and must not contain a name, path, host identity, session identity, or secret."
+  },
+  "binding_rules": [
+    "Every non-PREPARED outcome requires accepted_result_digest and final_audit_digest.",
+    "DEPLOY, RELEASE, and ROLLBACK require an opaque environment_ref.",
+    "ROLLBACK requires rollback_target_digest naming the exact prior delivery receipt.",
+    "The source commit and tree are immutable for the choice.",
+    "A choice never authorizes a protected action by itself."
+  ],
+  "privacy": {
+    "allowed": ["logical project/campaign/goal IDs", "source identities", "content digests", "opaque references", "safe outcome codes"],
+    "forbidden": ["secrets", "credential-bearing URLs", "absolute paths", "raw host/session identities", "raw environment values"]
+  }
+}

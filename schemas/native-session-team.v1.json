@@ -1,0 +1,81 @@
+{
+  "schema": "agentos.native_session_team.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "scope": "PORTABLE_CONTROL_PLANE",
+  "purpose": "Bind temporary campaign workers to real host-created sessions and keep their lifecycle fail-closed.",
+  "host_attachment": {
+    "schema": "agentos.native_host_attachment.v1",
+    "controller": "control/native-host-attachment.mjs",
+    "loader": "control/native-host-loader.mjs",
+    "required_before_spawn": true,
+    "provider_implementation": "EXTERNAL_RUNTIME_ONLY"
+  },
+  "host_operations": [
+    "create_thread",
+    "list_threads",
+    "read_thread",
+    "send_message_to_thread",
+    "set_thread_archived",
+    "set_thread_pinned",
+    "wait_threads"
+  ],
+  "progress_review": {
+    "default_minutes": 15,
+    "minimum_minutes": 1,
+    "maximum_minutes": 240,
+    "timeout_is_meaningful_progress": false
+  },
+  "required_identity": [
+    "team_id",
+    "project_id",
+    "campaign_id",
+    "campaign_version",
+    "role",
+    "thread_id",
+    "host_id",
+    "model",
+    "reasoning_effort",
+    "host_model",
+    "host_reasoning_effort",
+    "worktree_path",
+    "source_commit",
+    "source_tree"
+  ],
+  "task_gate_contract": {
+    "catalog_controller": "control/task-gate-questions.mjs",
+    "catalog_digest_field": "task_gate_catalog_sha256",
+    "question_map_field": "task_gate_question_ids_by_context",
+    "contexts": ["TASK_START", "CODE_CHANGE", "DOCUMENTATION", "HANDOFF", "RESPONSE", "CLOSURE"],
+    "prompt_rule": "Every spawned session receives the exact catalog questions and must answer the applicable safe question before acting and before returning work."
+  },
+  "rules": {
+    "host_unavailable": "Stop with a typed capability boundary; do not emulate a session with shell output, a local process, or a fabricated task ID.",
+    "host_execution_identity": {
+      "requested_fields": ["model", "reasoning_effort"],
+      "authoritative_host_fields": ["host_model", "host_reasoning_effort"],
+      "rule": "The external host request is the execution-policy authority for this attachment. If the host returns model/reasoning fields, they must match the request. If the host omits those fields or returns UNKNOWN, the adapter may bind the requested values as REQUEST_ACCEPTED_NO_READBACK only when its typed contract explicitly permits that state; it must never label them as host readback. Explicit conflicting values still produce agentos.native_session_host_identity_boundary.v1 with acceptance false and protected_actions_enabled false.",
+      "unavailable_reason_code": "HOST_MODEL_REASONING_READBACK_UNAVAILABLE",
+      "mismatch_reason_code": "HOST_MODEL_REASONING_MISMATCH",
+      "boundary_status": "BLOCKED"
+    },
+    "spawn": "A client thread ID is setup-pending only. An active session requires a host-bound thread, project, model, reasoning, worktree, and exact source readback.",
+    "execution_mode_binding": {
+      "PROJECT_LOCAL_SESSION": "The host create target must use environment type local and the returned cwd/Git top level must bind to the admitted saved project.",
+      "ISOLATED_WORKTREE": "The host create target must use environment type worktree and the returned worktree identity must be preserved as a separate admitted worktree."
+    },
+    "predecessor": "A predecessor must be active and bound to the same project, campaign, model, reasoning, and source identity.",
+    "closure": [
+      "PRESERVE_TYPED_HANDOFF",
+      "UNPIN",
+      "ARCHIVE",
+      "REMOVE_FROM_ACTIVE_ROSTER",
+      "VERIFY_ZERO_ACTIVE"
+    ],
+    "roster": "A session is removed only after verified archive and unpin; duplicate archive and remaining roster entries stop the operation."
+  },
+  "controller": "control/native-session-team.mjs",
+  "executor": "control/native-session-runner.mjs",
+  "executor_contract": "schemas/native-session-run.v1.json",
+  "tests": "tests/verify-native-session-team.mjs"
+}

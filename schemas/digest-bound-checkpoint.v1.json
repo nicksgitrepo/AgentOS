@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.digest_bound_checkpoint.v1",
+  "title": "AgentOS digest-bound checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "checkpoint_id", "source_commit", "source_tree", "evidence_sha256", "candidate_sha256", "clean", "pushed", "checkpoint_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.digest_bound_checkpoint.v1"},
+    "version": {"const": 1},
+    "status": {"const": "VERIFIED"},
+    "checkpoint_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "clean": {"const": true},
+    "pushed": {"const": false},
+    "checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

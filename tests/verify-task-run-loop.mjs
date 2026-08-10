@@ -58,8 +58,8 @@ const boundary = () => ({
 const candidate = (taskId) => ({
   task_id: taskId,
   controller_role: "AGENTOS_CONTROLLER",
-  controller_display_name: "AgentOS Controller",
-  display_title: `AgentOS Controller — ${taskId}`,
+  controller_display_name: "Intent Regulator",
+  display_title: `Intent Regulator — ${taskId}`,
   version: 1,
   goal: "Run one further bounded control-plane readback iteration.",
   scope: "CONTROL_PLANE_ONLY",
@@ -78,8 +78,8 @@ const task = {
   status: "IN_PROGRESS_INACTIVE",
   task_id: "TASK-CONTROLLER-RUN-LOOP-TEST",
   controller_role: "AGENTOS_CONTROLLER",
-  controller_display_name: "AgentOS Controller",
-  display_title: "AgentOS Controller — TASK-CONTROLLER-RUN-LOOP-TEST",
+  controller_display_name: "Intent Regulator",
+  display_title: "Intent Regulator — TASK-CONTROLLER-RUN-LOOP-TEST",
   project_id: "PROJECT-PORTABLE",
   campaign_id: "CAMPAIGN-CONTROL-PLANE-TEST",
   campaign_version: "v1",
@@ -144,7 +144,7 @@ const currentStatus = {
   active_campaign: false,
   controller_status: "PREPARED_NOT_ACTIVATED",
   controller_role: "AGENTOS_CONTROLLER",
-  controller_display_name: "AgentOS Controller",
+  controller_display_name: "Intent Regulator",
   current_reconciliation_sha256: PARENT_RECONCILIATION,
   continuation_completion_handoff_sha256: PARENT_HANDOFF,
 };
@@ -212,8 +212,10 @@ const promotionReports = AUDIT_DISCIPLINES.map((discipline) => {
   const check = {
     command: `node tests/verify-${discipline.toLowerCase()}.mjs`,
     exit_code: 0,
-    stdout: "PASS synthetic promotion audit",
-    stderr: "",
+    stdout_class: "OUTPUT_PRESENT",
+    stdout_sha256: SHA,
+    stderr_class: "OUTPUT_EMPTY",
+    stderr_sha256: SHA,
     passed: true,
     check_sha256: null,
   };

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.generated_project_role_library.v1",
+  "title": "AgentOS generated project role governance library",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "library_kind", "governance_version", "ownership", "lineage", "project_id", "base_general_library_digest", "base_role_library_digest", "project_general_library_digest", "generation", "role_packets", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.generated_project_role_library.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["COMPILED", "INDEPENDENTLY_CHECKED", "OWNER_ACCEPTED", "PREPARED_NOT_ACTIVATED", "ACTIVE", "SUPERSEDED", "REJECTED", "BLOCKED"]},
+    "library_kind": {"const": "GENERATED_PROJECT_ROLE"},
+    "governance_version": {"const": "3.0"},
+    "ownership": {"$ref": "#/$defs/ownership"},
+    "lineage": {"$ref": "#/$defs/lineage"},
+    "project_id": {"type": "string"},
+    "base_general_library_digest": {"$ref": "#/$defs/digest"},
+    "base_role_library_digest": {"$ref": "#/$defs/digest"},
+    "project_general_library_digest": {"$ref": "#/$defs/digest"},
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compiler", "compiler_version", "input_digests"],
+      "properties": {
+        "compiler": {"type": "string"},
+        "compiler_version": {"type": "string"},
+        "input_digests": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+      }
+    },
+    "role_packets": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/rolePacket"}},
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_role", "authoring_role"],
+      "properties": {"owner_role": {"const": "GOVERNANCE_COMPILER"}, "authoring_role": {"const": "GOVERNANCE_COMPILER"}}
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "supersedes", "owner_decision_digest", "independent_check_digest"],
+      "properties": {
+        "revision": {"type": "integer", "minimum": 1},
+        "supersedes": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "owner_decision_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "independent_check_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    },
+    "rolePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role_id", "display_name", "role_kind", "lifetime", "lane_id", "base_role_packet_digest", "project_general_library_digest", "graph_ids", "project_graph_ids", "effective_graph_digests", "allowed_authority", "prohibited_authority", "required_evidence", "digest"],
+      "properties": {
+        "role_id": {"type": "string"},
+        "display_name": {"type": "string"},
+        "role_kind": {"type": "string"},
+        "lifetime": {"enum": ["CAMPAIGN", "PERSISTENT"]},
+        "lane_id": {"anyOf": [{"type": "null"}, {"type": "string"}]},
+        "base_role_packet_digest": {"$ref": "#/$defs/digest"},
+        "project_general_library_digest": {"$ref": "#/$defs/digest"},
+        "graph_ids": {"type": "array", "items": {"type": "string"}},
+        "project_graph_ids": {"type": "array", "items": {"type": "string"}},
+        "effective_graph_digests": {"type": "array", "items": {"$ref": "#/$defs/effectiveGraph"}},
+        "allowed_authority": {"type": "array", "items": {"type": "string"}},
+        "prohibited_authority": {"type": "array", "items": {"type": "string"}},
+        "required_evidence": {"type": "array", "items": {"type": "string"}},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "effectiveGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["graph_id", "graph_sha256", "source"],
+      "properties": {"graph_id": {"type": "string"}, "graph_sha256": {"$ref": "#/$defs/digest"}, "source": {"type": "string"}}
+    }
+  }
+}

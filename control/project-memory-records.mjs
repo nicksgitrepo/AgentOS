@@ -1,0 +1,814 @@
+#!/usr/bin/env node
+
+/*
+ * Canonical project-memory records and deterministic context projections.
+ *
+ * This module deliberately has no host, repository, transcript, Bootstrap,
+ * Runtime, or governance side effects. The event ledger is the rebuildable
+ * authority; snapshots, invalidation projections, and role capsules are
+ * content-addressed views over that authority.
+ */
+
+import {
+  canonicalDigest,
+  assertPersistedRecordSafe,
+  compareUtf8,
+} from "./content-addressing.mjs";
+import {
+  CONTRACT_STATUS,
+  CONTROL_SPACE,
+  assert as commonAssert,
+  assertSafeRecord,
+  exactKeys,
+  requireGitObject,
+  requireIdentifier,
+  requireRecord,
+  requireSafeInteger,
+  requireSafeText,
+  requireSha,
+  requireSortedUniqueDigests,
+  requireSortedUniqueStrings,
+  validateSortedNotices,
+} from "./map-memory-common.mjs";
+
+export const PROJECT_MEMORY_SCHEMA = "agentos.project_memory_record.v1";
+export const PROJECT_MEMORY_VERSION = 1;
+export const PROJECT_MEMORY_EVENT_SCHEMA = "agentos.project_memory_event.v1";
+export const PROJECT_MEMORY_SNAPSHOT_SCHEMA = "agentos.project_memory_snapshot.v1";
+export const PROJECT_MEMORY_CAPSULE_SCHEMA = "agentos.role_context_capsule.v1";
+export const PROJECT_MEMORY_CONTRACT_STATUS = CONTRACT_STATUS;
+export const GENESIS_EVENT_SHA256 = "0".repeat(64);
+
+export const MEMORY_RECORD_TYPES = Object.freeze([
+  "PROJECT_CONTEXT",
+  "GOAL",
+  "DECISION",
+  "REPOSITORY_MAP_REF",
+  "HANDOFF",
+  "POLICY_REF",
+  "INVALIDATION",
+  "CONFLICT",
+]);
+
+export const MEMORY_RECORD_STATUSES = Object.freeze([
+  "CURRENT",
+  "UNKNOWN",
+  "STALE",
+  "SUPERSEDED",
+  "INVALIDATED",
+  "CONFLICT",
+  "ARCHIVED",
+]);
+
+export const MEMORY_EVENT_TYPES = Object.freeze([
+  "RECORD_APPENDED",
+  "RECORD_SUPERSEDED",
+  "RECORD_INVALIDATED",
+  "CONFLICT_RECORDED",
+]);
+
+export const MEMORY_SNAPSHOT_STATUSES = Object.freeze([
+  "READY",
+  "PARTIAL",
+  "STALE",
+  "CONFLICT",
+  "UNAVAILABLE",
+]);
+
+export const MEMORY_CAPSULE_STATUSES = Object.freeze([
+  "READY",
+  "PARTIAL",
+  "STALE",
+  "CONFLICT",
+  "INVALIDATED",
+  "UNAVAILABLE",
+]);
+
+export const INVALIDATION_TRIGGERS = Object.freeze([
+  "OWNER_INTENT_CHANGED",
+  "SCOPE_CHANGED",
+  "SOURCE_CHANGED",
+  "POLICY_CHANGED",
+  "HANDOFF_CHANGED",
+  "DECISION_SUPERSEDED",
+  "CAPABILITY_CHANGED",
+  "CONTEXT_CHANGED",
+  "EVIDENCE_STALE",
+  "LEDGER_CONFLICT",
+]);
+
+export const INVALIDATION_ACTIONS = Object.freeze([
+  "REBUILD",
+  "REVIEW",
+  "STOP",
+  "ARCHIVE",
+]);
+
+export class MemoryConflictError extends Error {
+  constructor(code, message, details = {}) {
+    super(message);
+    this.name = "MemoryConflictError";
+    this.code = code;
+    this.details = details;
+  }
+}
+
+const BINDING_KEYS = [
+  "project_ref",
+  "campaign_ref",
+  "goal_ref",
+  "role_ref",
+  "source_commit",
+  "source_tree",
+  "source_snapshot_sha256",
+  "policy_sha256",
+  "handoff_sha256",
+];
+
+const RECORD_KEYS = [
+  "schema",
+  "version",
+  "contract_status",
+  "visibility",
+  "canonical_authority",
+  "record_type",
+  "record_id",
+  "record_version",
+  ...BINDING_KEYS,
+  "status",
+  "supersedes_record_sha256",
+  "dependencies",
+  "uncertainties",
+  "body",
+  "record_sha256",
+];
+
+const EVENT_KEYS = [
+  "schema",
+  "version",
+  "contract_status",
+  "visibility",
+  "canonical_authority",
+  "event_id",
+  "idempotency_key",
+  "sequence",
+  "event_type",
+  ...BINDING_KEYS,
+  "record_type",
+  "record_sha256",
+  "record",
+  "prior_event_sha256",
+  "event_sha256",
+];
+
+const BODY_KEYS = Object.freeze({
+  PROJECT_CONTEXT: [
+    "context_input_sha256",
+    "intent_sha256",
+    "plan_sha256",
+    "governance_sha256",
+    "boundary_sha256",
+    "project_map_sha256",
+    "derived_index_sha256",
+  ],
+  GOAL: ["goal_sha256", "goal_kind", "scope_sha256", "acceptance_sha256"],
+  DECISION: ["decision_sha256", "decision_kind", "selection_ref", "effect_scope", "rationale_sha256", "supersedes_decision_sha256"],
+  REPOSITORY_MAP_REF: ["map_sha256", "map_status", "map_source_snapshot_sha256"],
+  HANDOFF: ["handoff_sha256", "handoff_kind", "next_action_ref", "result_sha256", "uncertainty_sha256"],
+  POLICY_REF: ["policy_sha256", "policy_epoch", "policy_kind"],
+  INVALIDATION: ["trigger", "reason_code", "affected_record_sha256s", "affected_capsule_sha256s", "action", "old_value_sha256", "new_value_sha256"],
+  CONFLICT: ["conflict_key", "left_record_sha256", "right_record_sha256", "resolution_status", "resolution_sha256", "reason_code"],
+});
+
+const BODY_MAP_STATUSES = ["READY", "BOUNDED_PARTIAL", "STALE", "CONFLICT", "UNAVAILABLE"];
+const CONFLICT_RESOLUTION_STATUSES = ["UNRESOLVED", "RESOLVED"];
+
+export function assert(condition, message) {
+  commonAssert(condition, message);
+}
+
+export function requireNullableSha(value, label) {
+  assert(value === null || typeof value === "string", `${label} must be a SHA-256 or null`);
+  if (value !== null) requireSha(value, label);
+  return value;
+}
+
+export function requireUtc(value, label) {
+  requireSafeText(value, label, {maxLength: 32});
+  const parsed = new Date(value);
+  assert(!Number.isNaN(parsed.valueOf()) && parsed.toISOString() === value, `${label} must be canonical UTC`);
+  return value;
+}
+
+export function requireEnum(value, values, label) {
+  requireIdentifier(value, label);
+  assert(values.includes(value), `${label} is invalid`);
+  return value;
+}
+
+export function validateBinding(binding, label = "memory binding") {
+  exactKeys(binding, BINDING_KEYS, label);
+  requireIdentifier(binding.project_ref, `${label} project reference`);
+  requireIdentifier(binding.campaign_ref, `${label} campaign reference`);
+  requireIdentifier(binding.goal_ref, `${label} goal reference`);
+  requireIdentifier(binding.role_ref, `${label} role reference`);
+  requireGitObject(binding.source_commit, `${label} source commit`);
+  requireGitObject(binding.source_tree, `${label} source tree`);
+  requireSha(binding.source_snapshot_sha256, `${label} source snapshot`);
+  requireSha(binding.policy_sha256, `${label} policy digest`);
+  requireSha(binding.handoff_sha256, `${label} handoff digest`);
+  assertSafeRecord(binding, label);
+  return binding;
+}
+
+export function bindingFrom(value, label) {
+  return validateBinding({
+    project_ref: value.project_ref,
+    campaign_ref: value.campaign_ref,
+    goal_ref: value.goal_ref,
+    role_ref: value.role_ref,
+    source_commit: value.source_commit,
+    source_tree: value.source_tree,
+    source_snapshot_sha256: value.source_snapshot_sha256,
+    policy_sha256: value.policy_sha256,
+    handoff_sha256: value.handoff_sha256,
+  }, label);
+}
+
+export function assertSameBinding(left, right, label = "memory binding") {
+  const leftBinding = BINDING_KEYS.every((key) => Object.hasOwn(left, key))
+    ? bindingFrom(left, `${label} left`)
+    : validateBinding(left, `${label} left`);
+  const rightBinding = BINDING_KEYS.every((key) => Object.hasOwn(right, key))
+    ? bindingFrom(right, `${label} right`)
+    : validateBinding(right, `${label} right`);
+  for (const key of BINDING_KEYS) assert(leftBinding[key] === rightBinding[key], `${label} mismatch at ${key}`);
+  return right;
+}
+
+function validateBody(recordType, body) {
+  requireRecord(body, `${recordType} body`);
+  assertSafeRecord(body, `${recordType} body`);
+  exactKeys(body, BODY_KEYS[recordType], `${recordType} body`);
+  if (recordType === "PROJECT_CONTEXT") {
+    for (const field of ["context_input_sha256", "intent_sha256", "plan_sha256", "governance_sha256", "boundary_sha256"]) requireSha(body[field], `${recordType} ${field}`);
+    requireNullableSha(body.project_map_sha256, `${recordType} project map digest`);
+    requireNullableSha(body.derived_index_sha256, `${recordType} derived index digest`);
+  } else if (recordType === "GOAL") {
+    requireSha(body.goal_sha256, `${recordType} goal digest`);
+    requireIdentifier(body.goal_kind, `${recordType} kind`);
+    requireSha(body.scope_sha256, `${recordType} scope digest`);
+    requireSha(body.acceptance_sha256, `${recordType} acceptance digest`);
+  } else if (recordType === "DECISION") {
+    requireSha(body.decision_sha256, `${recordType} decision digest`);
+    requireIdentifier(body.decision_kind, `${recordType} kind`);
+    requireIdentifier(body.selection_ref, `${recordType} selection reference`);
+    requireSortedUniqueStrings(body.effect_scope, `${recordType} effect scope`, {validator: requireIdentifier});
+    requireSha(body.rationale_sha256, `${recordType} rationale digest`);
+    requireNullableSha(body.supersedes_decision_sha256, `${recordType} superseded decision digest`);
+  } else if (recordType === "REPOSITORY_MAP_REF") {
+    requireSha(body.map_sha256, `${recordType} map digest`);
+    requireEnum(body.map_status, BODY_MAP_STATUSES, `${recordType} status`);
+    requireSha(body.map_source_snapshot_sha256, `${recordType} source snapshot digest`);
+  } else if (recordType === "HANDOFF") {
+    requireSha(body.handoff_sha256, `${recordType} handoff digest`);
+    requireIdentifier(body.handoff_kind, `${recordType} kind`);
+    requireIdentifier(body.next_action_ref, `${recordType} next action reference`);
+    requireSha(body.result_sha256, `${recordType} result digest`);
+    requireNullableSha(body.uncertainty_sha256, `${recordType} uncertainty digest`);
+  } else if (recordType === "POLICY_REF") {
+    requireSha(body.policy_sha256, `${recordType} policy digest`);
+    requireSafeInteger(body.policy_epoch, `${recordType} policy epoch`, {min: 0, max: 1000000000});
+    requireIdentifier(body.policy_kind, `${recordType} kind`);
+  } else if (recordType === "INVALIDATION") {
+    requireEnum(body.trigger, INVALIDATION_TRIGGERS, `${recordType} trigger`);
+    requireIdentifier(body.reason_code, `${recordType} reason code`);
+    requireSortedUniqueDigests(body.affected_record_sha256s, `${recordType} affected records`, {allowEmpty: true});
+    requireSortedUniqueDigests(body.affected_capsule_sha256s, `${recordType} affected capsules`, {allowEmpty: true});
+    requireEnum(body.action, INVALIDATION_ACTIONS, `${recordType} action`);
+    requireNullableSha(body.old_value_sha256, `${recordType} old value digest`);
+    requireNullableSha(body.new_value_sha256, `${recordType} new value digest`);
+    assert(body.affected_record_sha256s.length > 0 || body.affected_capsule_sha256s.length > 0, `${recordType} must affect a record or capsule`);
+  } else if (recordType === "CONFLICT") {
+    requireIdentifier(body.conflict_key, `${recordType} key`);
+    requireSha(body.left_record_sha256, `${recordType} left record digest`);
+    requireSha(body.right_record_sha256, `${recordType} right record digest`);
+    assert(body.left_record_sha256 !== body.right_record_sha256, `${recordType} records must differ`);
+    requireEnum(body.resolution_status, CONFLICT_RESOLUTION_STATUSES, `${recordType} resolution status`);
+    requireNullableSha(body.resolution_sha256, `${recordType} resolution digest`);
+    requireIdentifier(body.reason_code, `${recordType} reason code`);
+    if (body.resolution_status === "UNRESOLVED") assert(body.resolution_sha256 === null, `${recordType} unresolved conflict has a resolution`);
+    if (body.resolution_status === "RESOLVED") assert(body.resolution_sha256 !== null, `${recordType} resolved conflict lacks a resolution`);
+  }
+  return body;
+}
+
+export function validateNoticeList(notices, label) {
+  assert(Array.isArray(notices), `${label} must be an array`);
+  validateSortedNotices(notices, label);
+  return notices;
+}
+
+export function mergeNotices(...lists) {
+  const byKey = new Map();
+  for (const list of lists) {
+    for (const notice of list ?? []) {
+      const key = `${notice.code}\u0000${notice.subject_ref ?? ""}\u0000${notice.detail}`;
+      byKey.set(key, structuredClone(notice));
+    }
+  }
+  return [...byKey.values()].sort((left, right) => compareUtf8(
+    `${left.code}\u0000${left.subject_ref ?? ""}\u0000${left.detail}`,
+    `${right.code}\u0000${right.subject_ref ?? ""}\u0000${right.detail}`,
+  ));
+}
+
+function validateRecordBodyReference(record, field, expected, label) {
+  assert(record.body[field] === expected, `${label} ${field} does not match its binding`);
+}
+
+export function memoryRecordLogicalKey(record) {
+  validateMemoryRecord(record);
+  return `${record.record_type}:${record.record_id}:${record.record_version}`;
+}
+
+export function compileMemoryRecord({
+  recordType,
+  recordId,
+  recordVersion = 1,
+  binding,
+  status = "CURRENT",
+  supersedesRecordSha256 = null,
+  dependencies = [],
+  uncertainties = [],
+  body,
+  ...unknown
+}) {
+  assert(Object.keys(unknown).length === 0, `memory record options are not permitted: ${Object.keys(unknown).sort(compareUtf8).join(",")}`);
+  validateBinding(binding);
+  requireEnum(recordType, MEMORY_RECORD_TYPES, "memory record type");
+  requireIdentifier(recordId, "memory record ID");
+  requireSafeInteger(recordVersion, "memory record version", {min: 1, max: 1000000000});
+  requireEnum(status, MEMORY_RECORD_STATUSES, "memory record status");
+  requireNullableSha(supersedesRecordSha256, "memory record superseded digest");
+  if (status === "SUPERSEDED") assert(supersedesRecordSha256 !== null, "superseded memory record lacks its superseded digest");
+  requireSortedUniqueDigests(dependencies, "memory record dependencies", {allowEmpty: true});
+  validateNoticeList(uncertainties, "memory record uncertainties");
+  validateBody(recordType, body);
+  const record = {
+    schema: PROJECT_MEMORY_SCHEMA,
+    version: PROJECT_MEMORY_VERSION,
+    contract_status: CONTRACT_STATUS,
+    visibility: CONTROL_SPACE,
+    canonical_authority: true,
+    record_type: recordType,
+    record_id: recordId,
+    record_version: recordVersion,
+    ...structuredClone(binding),
+    status,
+    supersedes_record_sha256: supersedesRecordSha256,
+    dependencies: [...dependencies],
+    uncertainties: structuredClone(uncertainties),
+    body: structuredClone(body),
+    record_sha256: null,
+  };
+  record.record_sha256 = canonicalDigest({...record, record_sha256: null});
+  assertSafeRecord(record, "compiled memory record");
+  return validateMemoryRecord(record);
+}
+
+export function validateMemoryRecord(record) {
+  requireRecord(record, "memory record");
+  exactKeys(record, RECORD_KEYS, "memory record");
+  assert(record.schema === PROJECT_MEMORY_SCHEMA, "memory record schema mismatch");
+  assert(record.version === PROJECT_MEMORY_VERSION, "memory record version mismatch");
+  assert(record.contract_status === CONTRACT_STATUS, "memory record activation status is invalid");
+  assert(record.visibility === CONTROL_SPACE, "memory record visibility is invalid");
+  assert(record.canonical_authority === true, "memory record must be canonical authority");
+  requireEnum(record.record_type, MEMORY_RECORD_TYPES, "memory record type");
+  requireIdentifier(record.record_id, "memory record ID");
+  requireSafeInteger(record.record_version, "memory record version", {min: 1, max: 1000000000});
+  bindingFrom(record, "memory record binding");
+  requireEnum(record.status, MEMORY_RECORD_STATUSES, "memory record status");
+  requireNullableSha(record.supersedes_record_sha256, "memory record superseded digest");
+  if (record.status === "SUPERSEDED") assert(record.supersedes_record_sha256 !== null, "superseded memory record lacks its superseded digest");
+  requireSortedUniqueDigests(record.dependencies, "memory record dependencies", {allowEmpty: true});
+  validateNoticeList(record.uncertainties, "memory record uncertainties");
+  validateBody(record.record_type, record.body);
+  requireSha(record.record_sha256, "memory record digest");
+  assert(record.record_sha256 === canonicalDigest({...record, record_sha256: null}), "memory record digest mismatch");
+  if (record.record_type === "HANDOFF") validateRecordBodyReference(record, "handoff_sha256", record.handoff_sha256, "memory record");
+  if (record.record_type === "POLICY_REF") validateRecordBodyReference(record, "policy_sha256", record.policy_sha256, "memory record");
+  if (record.record_type === "CONFLICT") assert(record.status === "CONFLICT", "conflict record must remain in conflict status");
+  assertPersistedRecordSafe(record);
+  return record;
+}
+
+export function compileProjectContextRecord({
+  recordId,
+  binding,
+  contextInputSha256,
+  intentSha256,
+  planSha256,
+  governanceSha256,
+  boundarySha256,
+  projectMapSha256 = null,
+  derivedIndexSha256 = null,
+  ...options
+}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "PROJECT_CONTEXT",
+    recordId,
+    binding,
+    body: {
+      context_input_sha256: contextInputSha256,
+      intent_sha256: intentSha256,
+      plan_sha256: planSha256,
+      governance_sha256: governanceSha256,
+      boundary_sha256: boundarySha256,
+      project_map_sha256: projectMapSha256,
+      derived_index_sha256: derivedIndexSha256,
+    },
+  });
+}
+
+export function compileGoalRecord({recordId, binding, goalSha256, goalKind, scopeSha256, acceptanceSha256, ...options}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "GOAL",
+    recordId,
+    binding,
+    body: {goal_sha256: goalSha256, goal_kind: goalKind, scope_sha256: scopeSha256, acceptance_sha256: acceptanceSha256},
+  });
+}
+
+export function compileDecisionRecord({recordId, binding, decisionSha256, decisionKind, selectionRef, effectScope, rationaleSha256, supersedesDecisionSha256 = null, ...options}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "DECISION",
+    recordId,
+    binding,
+    body: {
+      decision_sha256: decisionSha256,
+      decision_kind: decisionKind,
+      selection_ref: selectionRef,
+      effect_scope: effectScope,
+      rationale_sha256: rationaleSha256,
+      supersedes_decision_sha256: supersedesDecisionSha256,
+    },
+  });
+}
+
+export function compileRepositoryMapReference({recordId, binding, mapSha256, mapStatus, mapSourceSnapshotSha256, ...options}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "REPOSITORY_MAP_REF",
+    recordId,
+    binding,
+    body: {map_sha256: mapSha256, map_status: mapStatus, map_source_snapshot_sha256: mapSourceSnapshotSha256},
+  });
+}
+
+export function compileHandoffRecord({recordId, binding, handoffKind, nextActionRef, resultSha256, uncertaintySha256 = null, ...options}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "HANDOFF",
+    recordId,
+    binding,
+    body: {
+      handoff_sha256: binding.handoff_sha256,
+      handoff_kind: handoffKind,
+      next_action_ref: nextActionRef,
+      result_sha256: resultSha256,
+      uncertainty_sha256: uncertaintySha256,
+    },
+  });
+}
+
+export function compilePolicyReference({recordId, binding, policyEpoch, policyKind, ...options}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "POLICY_REF",
+    recordId,
+    binding,
+    body: {policy_sha256: binding.policy_sha256, policy_epoch: policyEpoch, policy_kind: policyKind},
+  });
+}
+
+export function compileMemoryInvalidationRecord({
+  recordId,
+  binding,
+  trigger,
+  reasonCode,
+  affectedRecordSha256s = [],
+  affectedCapsuleSha256s = [],
+  action,
+  oldValueSha256 = null,
+  newValueSha256 = null,
+  ...options
+}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "INVALIDATION",
+    recordId,
+    binding,
+    body: {
+      trigger,
+      reason_code: reasonCode,
+      affected_record_sha256s: [...affectedRecordSha256s].sort(compareUtf8),
+      affected_capsule_sha256s: [...affectedCapsuleSha256s].sort(compareUtf8),
+      action,
+      old_value_sha256: oldValueSha256,
+      new_value_sha256: newValueSha256,
+    },
+  });
+}
+
+export function compileMemoryConflictRecord({recordId, binding, conflictKey, leftRecordSha256, rightRecordSha256, reasonCode = "DIVERGENT_RECORD_VERSION", ...options}) {
+  return compileMemoryRecord({
+    ...options,
+    recordType: "CONFLICT",
+    recordId,
+    binding,
+    status: "CONFLICT",
+    body: {
+      conflict_key: conflictKey,
+      left_record_sha256: leftRecordSha256,
+      right_record_sha256: rightRecordSha256,
+      resolution_status: "UNRESOLVED",
+      resolution_sha256: null,
+      reason_code: reasonCode,
+    },
+  });
+}
+
+export function compileMemoryEvent({
+  eventId,
+  idempotencyKey,
+  sequence,
+  eventType = "RECORD_APPENDED",
+  record,
+  priorEventSha256,
+}) {
+  validateMemoryRecord(record);
+  requireIdentifier(eventId, "memory event ID");
+  requireIdentifier(idempotencyKey, "memory event idempotency key");
+  requireSafeInteger(sequence, "memory event sequence", {min: 0, max: 1000000000});
+  requireEnum(eventType, MEMORY_EVENT_TYPES, "memory event type");
+  requireSha(priorEventSha256, "memory event prior head");
+  if (eventType === "RECORD_SUPERSEDED") assert(record.status === "CURRENT", "supersede event requires a current successor record");
+  if (eventType === "RECORD_SUPERSEDED") assert(record.supersedes_record_sha256 !== null, "supersede event requires a superseded digest");
+  if (eventType === "RECORD_INVALIDATED") assert(record.status === "INVALIDATED", "invalidate event requires an invalidated record");
+  if (eventType === "CONFLICT_RECORDED") assert(record.record_type === "CONFLICT" && record.status === "CONFLICT", "conflict event requires a conflict record");
+  const event = {
+    schema: PROJECT_MEMORY_EVENT_SCHEMA,
+    version: PROJECT_MEMORY_VERSION,
+    contract_status: CONTRACT_STATUS,
+    visibility: CONTROL_SPACE,
+    canonical_authority: true,
+    event_id: eventId,
+    idempotency_key: idempotencyKey,
+    sequence,
+    event_type: eventType,
+    ...bindingFrom(record, "memory event binding"),
+    record_type: record.record_type,
+    record_sha256: record.record_sha256,
+    record: structuredClone(record),
+    prior_event_sha256: priorEventSha256,
+    event_sha256: null,
+  };
+  event.event_sha256 = canonicalDigest({...event, event_sha256: null});
+  assertSafeRecord(event, "compiled memory event");
+  return validateMemoryEvent(event);
+}
+
+export function validateMemoryEvent(event) {
+  requireRecord(event, "memory event");
+  exactKeys(event, EVENT_KEYS, "memory event");
+  assert(event.schema === PROJECT_MEMORY_EVENT_SCHEMA, "memory event schema mismatch");
+  assert(event.version === PROJECT_MEMORY_VERSION, "memory event version mismatch");
+  assert(event.contract_status === CONTRACT_STATUS, "memory event activation status is invalid");
+  assert(event.visibility === CONTROL_SPACE, "memory event visibility is invalid");
+  assert(event.canonical_authority === true, "memory event must be canonical authority");
+  requireIdentifier(event.event_id, "memory event ID");
+  requireIdentifier(event.idempotency_key, "memory event idempotency key");
+  requireSafeInteger(event.sequence, "memory event sequence", {min: 0, max: 1000000000});
+  requireEnum(event.event_type, MEMORY_EVENT_TYPES, "memory event type");
+  if (event.event_type === "RECORD_SUPERSEDED") assert(event.record.status === "CURRENT", "supersede event requires a current successor record");
+  if (event.event_type === "RECORD_SUPERSEDED") assert(event.record.supersedes_record_sha256 !== null, "supersede event requires a superseded digest");
+  if (event.event_type === "RECORD_INVALIDATED") assert(event.record.status === "INVALIDATED", "invalidate event requires an invalidated record");
+  if (event.event_type === "CONFLICT_RECORDED") assert(event.record.record_type === "CONFLICT" && event.record.status === "CONFLICT", "conflict event requires a conflict record");
+  bindingFrom(event, "memory event binding");
+  requireEnum(event.record_type, MEMORY_RECORD_TYPES, "memory event record type");
+  validateMemoryRecord(event.record);
+  assert(event.record_type === event.record.record_type, "memory event record type mismatch");
+  assert(event.record_sha256 === event.record.record_sha256, "memory event record digest mismatch");
+  assertSameBinding(event, event.record, "memory event record binding");
+  requireSha(event.prior_event_sha256, "memory event prior head");
+  requireSha(event.event_sha256, "memory event digest");
+  assert(event.event_sha256 === canonicalDigest({...event, event_sha256: null}), "memory event digest mismatch");
+  assertPersistedRecordSafe(event);
+  return event;
+}
+
+function validateConflictDescriptor(conflict, index, label = "memory conflict") {
+  exactKeys(conflict, ["conflict_key", "left_record_sha256", "right_record_sha256"], `${label} ${index}`);
+  requireIdentifier(conflict.conflict_key, `${label} ${index} key`);
+  requireSha(conflict.left_record_sha256, `${label} ${index} left record`);
+  requireSha(conflict.right_record_sha256, `${label} ${index} right record`);
+  assert(conflict.left_record_sha256 !== conflict.right_record_sha256, `${label} ${index} records must differ`);
+  return conflict;
+}
+
+export function validateConflictList(conflicts, label = "memory conflicts") {
+  assert(Array.isArray(conflicts), `${label} must be an array`);
+  conflicts.forEach((conflict, index) => validateConflictDescriptor(conflict, index, label));
+  const sorted = [...conflicts].sort((left, right) => compareUtf8(left.conflict_key, right.conflict_key));
+  assert(JSON.stringify(conflicts) === JSON.stringify(sorted), `${label} must be UTF-8 sorted`);
+  assert(new Set(conflicts.map((conflict) => conflict.conflict_key)).size === conflicts.length, `${label} contains duplicates`);
+  return conflicts;
+}
+
+export function validateMemoryLedger(events, {binding = null} = {}) {
+  assert(Array.isArray(events), "memory ledger must be an array");
+  if (binding !== null) validateBinding(binding, "memory ledger binding");
+  let prior = GENESIS_EVENT_SHA256;
+  let ledgerBinding = binding === null ? null : structuredClone(binding);
+  const eventIds = new Set();
+  const idempotencyKeys = new Set();
+  for (let index = 0; index < events.length; index += 1) {
+    const event = events[index];
+    validateMemoryEvent(event);
+    assert(event.sequence === index, `memory ledger sequence gap at ${index}`);
+    assert(event.prior_event_sha256 === prior, `memory ledger prior head mismatch at ${index}`);
+    assert(!eventIds.has(event.event_id), `memory ledger duplicate event ${event.event_id}`);
+    assert(!idempotencyKeys.has(event.idempotency_key), `memory ledger duplicate idempotency key ${event.idempotency_key}`);
+    eventIds.add(event.event_id);
+    idempotencyKeys.add(event.idempotency_key);
+    if (ledgerBinding === null) ledgerBinding = bindingFrom(event, "memory ledger inferred binding");
+    else assertSameBinding(ledgerBinding, event, "memory ledger scope");
+    prior = event.event_sha256;
+  }
+  return {
+    event_count: events.length,
+    head_sha256: prior,
+    first_event_sha256: events[0]?.event_sha256 ?? null,
+  };
+}
+
+function conflictDescriptorFor(left, right) {
+  const leftKey = memoryRecordLogicalKey(left);
+  const rightKey = memoryRecordLogicalKey(right);
+  assert(leftKey === rightKey, "memory conflict records must share a logical key");
+  const digests = [left.record_sha256, right.record_sha256].sort(compareUtf8);
+  return {
+    conflict_key: leftKey,
+    left_record_sha256: digests[0],
+    right_record_sha256: digests[1],
+  };
+}
+
+function conflictDescriptorFromRecord(record) {
+  assert(record.record_type === "CONFLICT", "explicit memory conflict must use a conflict record");
+  return {
+    conflict_key: record.body.conflict_key,
+    left_record_sha256: record.body.left_record_sha256,
+    right_record_sha256: record.body.right_record_sha256,
+  };
+}
+
+function validateReplayLifecycle(events, recordsByDigest, eventSequenceByDigest) {
+  const explicitConflicts = [];
+  for (const event of events) {
+    const record = event.record;
+    if (record.supersedes_record_sha256 !== null) {
+      const superseded = recordsByDigest.get(record.supersedes_record_sha256);
+      if (superseded === undefined) {
+        throw new MemoryConflictError(
+          "MISSING_SUPERSEDED_RECORD",
+          "memory record supersedes a record absent from the canonical ledger",
+          {record_sha256: record.record_sha256, supersedes_record_sha256: record.supersedes_record_sha256},
+        );
+      }
+      const supersededSequence = eventSequenceByDigest.get(record.supersedes_record_sha256);
+      if (supersededSequence === undefined || supersededSequence >= event.sequence) {
+        throw new MemoryConflictError(
+          "SUPERSESSION_TARGET_NOT_PRIOR",
+          "memory record supersession must reference an earlier ledger record",
+          {record_sha256: record.record_sha256, supersedes_record_sha256: record.supersedes_record_sha256},
+        );
+      }
+      const recordKey = `${record.record_type}:${record.record_id}`;
+      const supersededKey = `${superseded.record_type}:${superseded.record_id}`;
+      if (recordKey !== supersededKey) {
+        throw new MemoryConflictError(
+          "SUPERSESSION_LOGICAL_KEY_MISMATCH",
+          "memory record supersession crosses logical record identities",
+          {record_sha256: record.record_sha256, supersedes_record_sha256: superseded.record_sha256},
+        );
+      }
+      if (record.record_version <= superseded.record_version) {
+        throw new MemoryConflictError(
+          "SUPERSESSION_VERSION_ORDER",
+          "memory record supersession does not advance the record version",
+          {record_sha256: record.record_sha256, supersedes_record_sha256: superseded.record_sha256},
+        );
+      }
+    }
+    if (record.record_type === "CONFLICT") {
+      const conflict = conflictDescriptorFromRecord(record);
+      const left = recordsByDigest.get(conflict.left_record_sha256);
+      const right = recordsByDigest.get(conflict.right_record_sha256);
+      if (left === undefined && right === undefined) {
+        throw new MemoryConflictError(
+          "CONFLICT_REFERENCES_UNAVAILABLE",
+          "explicit memory conflict does not name a known record",
+          {conflict_key: conflict.conflict_key},
+        );
+      }
+      for (const candidate of [left, right].filter(Boolean)) {
+        if (memoryRecordLogicalKey(candidate) !== conflict.conflict_key) {
+          throw new MemoryConflictError(
+            "CONFLICT_LOGICAL_KEY_MISMATCH",
+            "explicit memory conflict does not match the logical key of a referenced record",
+            {conflict_key: conflict.conflict_key, record_sha256: candidate.record_sha256},
+          );
+        }
+      }
+      explicitConflicts.push(conflict);
+    }
+  }
+  return explicitConflicts;
+}
+
+export function replayMemoryLedger(events, {binding = null} = {}) {
+  const ledger = validateMemoryLedger(events, {binding});
+  const recordsByDigest = new Map();
+  const eventSequenceByDigest = new Map();
+  const latestByLogicalKey = new Map();
+  const conflictsByKey = new Map();
+  const notices = [];
+  for (const event of events) {
+    const record = event.record;
+    recordsByDigest.set(record.record_sha256, structuredClone(record));
+    if (!eventSequenceByDigest.has(record.record_sha256)) eventSequenceByDigest.set(record.record_sha256, event.sequence);
+    const key = memoryRecordLogicalKey(record);
+    const previous = latestByLogicalKey.get(key);
+    if (previous !== undefined && previous.record.record_sha256 !== record.record_sha256) {
+      const conflict = conflictDescriptorFor(previous.record, record);
+      const existing = conflictsByKey.get(conflict.conflict_key);
+      const digests = [
+        ...(existing === undefined ? [] : [existing.left_record_sha256, existing.right_record_sha256]),
+        conflict.left_record_sha256,
+        conflict.right_record_sha256,
+      ].sort(compareUtf8);
+      conflictsByKey.set(conflict.conflict_key, {
+        conflict_key: conflict.conflict_key,
+        left_record_sha256: digests[0],
+        right_record_sha256: digests.at(-1),
+      });
+    }
+    latestByLogicalKey.set(key, {record, sequence: event.sequence});
+  }
+  const explicitConflicts = validateReplayLifecycle(events, recordsByDigest, eventSequenceByDigest);
+  for (const conflict of explicitConflicts) {
+    const existing = conflictsByKey.get(conflict.conflict_key);
+    if (existing === undefined) {
+      conflictsByKey.set(conflict.conflict_key, conflict);
+    } else {
+      const digests = [
+        existing.left_record_sha256,
+        existing.right_record_sha256,
+        conflict.left_record_sha256,
+        conflict.right_record_sha256,
+      ].sort(compareUtf8);
+      conflictsByKey.set(conflict.conflict_key, {
+        conflict_key: conflict.conflict_key,
+        left_record_sha256: digests[0],
+        right_record_sha256: digests.at(-1),
+      });
+    }
+  }
+  const conflicts = [...conflictsByKey.values()].sort((left, right) => compareUtf8(left.conflict_key, right.conflict_key));
+  for (const conflict of conflicts) notices.push({code: "LEDGER_CONFLICT", subject_ref: null, detail: `Ledger contains divergent records for ${conflict.conflict_key}.`});
+  const latestRecords = [...latestByLogicalKey.values()]
+    .sort((left, right) => left.sequence - right.sequence || compareUtf8(left.record.record_sha256, right.record.record_sha256))
+    .map((entry) => structuredClone(entry.record));
+  const conflictedKeys = new Set(conflicts.map((conflict) => conflict.conflict_key));
+  const supersededDigests = new Set(latestRecords.map((record) => record.supersedes_record_sha256).filter((digest) => digest !== null));
+  const currentRecords = latestRecords.filter((record) => !supersededDigests.has(record.record_sha256) && !conflictedKeys.has(memoryRecordLogicalKey(record)) && !["SUPERSEDED", "INVALIDATED", "ARCHIVED"].includes(record.status));
+  const records = [...recordsByDigest.values()].sort((left, right) => compareUtf8(left.record_sha256, right.record_sha256));
+  return {
+    status: conflicts.length > 0 ? "CONFLICT" : (events.length > 0 ? "READY" : "UNAVAILABLE"),
+    binding: events[0] ? bindingFrom(events[0], "replayed memory binding") : (binding === null ? null : structuredClone(binding)),
+    events: structuredClone(events),
+    event_count: ledger.event_count,
+    head_sha256: ledger.head_sha256,
+    records,
+    latest_records: latestRecords,
+    current_records: currentRecords,
+    conflicts,
+    uncertainties: mergeNotices(notices, ...records.map((record) => record.uncertainties)),
+  };
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.native_controller_worker_readback.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "role", "display_name", "session_id", "host_id", "project_id",
+    "campaign_id", "campaign_version", "model", "reasoning_effort", "source_commit", "source_tree",
+    "worktree_ref", "progress_window_minutes", "meaningful_progress", "progress_sha256", "handoff_sha256",
+    "pinned", "archived", "active", "protected_actions", "observed_at_utc", "readback_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.native_controller_worker_readback.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["ACTIVE", "CLOSED"]},
+    "role": {"type": "string", "minLength": 1},
+    "display_name": {"type": "string", "minLength": 1},
+    "session_id": {"type": "string", "minLength": 1},
+    "host_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "campaign_version": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "reasoning_effort": {"type": "string", "minLength": 1},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "worktree_ref": {"type": "string", "pattern": "^opaque:worktree:[0-9a-f]{64}$"},
+    "progress_window_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+    "meaningful_progress": {"type": "boolean"},
+    "progress_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "handoff_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "pinned": {"type": "boolean"},
+    "archived": {"type": "boolean"},
+    "active": {"type": "boolean"},
+    "protected_actions": {"type": "object", "additionalProperties": {"const": false}},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "readback_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

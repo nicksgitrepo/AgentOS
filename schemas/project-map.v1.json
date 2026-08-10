@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance.project_map_contract.v1",
+  "title": "AgentOS portable project map contract",
+  "schema": "governance.project_map_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/project-map.mjs",
+  "purpose": "A deterministic, bounded, source-bound graph projection for optional visual maps. It is rebuildable from typed input and never becomes acceptance authority.",
+  "project_map": {
+    "schema": "governance.project_map.v1",
+    "instance_schema": "schemas/project-map-instance.v1.json",
+    "required_fields": [
+      "schema",
+      "version",
+      "contract_status",
+      "visibility",
+      "advisory_only",
+      "acceptance_authority",
+      "map_id",
+      "project_ref",
+      "campaign_ref",
+      "goal_ref",
+      "map_kind",
+      "role_scope",
+      "source_commit",
+      "source_tree",
+      "source_snapshot_sha256",
+      "policy_sha256",
+      "compiler_sha256",
+      "status",
+      "coverage",
+      "bounds",
+      "stale_source_digests",
+      "nodes",
+      "edges",
+      "omissions",
+      "uncertainties",
+      "conflicts",
+      "map_sha256"
+    ],
+    "visibility": "CONTROL_SPACE",
+    "advisory_only": true,
+    "acceptance_authority": false,
+    "map_kinds": [
+      "DEPENDENCY",
+      "AUTHORITY",
+      "WORKFLOW",
+      "FEATURE_COVERAGE",
+      "RECOVERY",
+      "COMPOSITE"
+    ],
+    "state_rules": [
+      "READY requires complete coverage and no omissions, uncertainties, conflicts, or stale source digests.",
+      "BOUNDED_PARTIAL requires explicit bounded or uncertain coverage and remains advisory.",
+      "STALE requires one or more stale source digests and is rejected when current source binding is supplied.",
+      "CONFLICT requires one or more conflict notices and cannot be presented as complete.",
+      "UNAVAILABLE contains no graph data and records why the projection could not be built."
+    ],
+    "source_binding": "Validation can require exact source commit, tree, source snapshot, and policy digests. A mismatch is a stale projection, not a reason to accept it.",
+    "bounds": {
+      "required_fields": [
+        "max_nodes",
+        "max_edges",
+        "selected_roots",
+        "omitted_node_count",
+        "omitted_edge_count",
+        "truncated"
+      ],
+      "silent_truncation": false
+    },
+    "node": {
+      "required_fields": [
+        "node_id",
+        "node_kind",
+        "label",
+        "status",
+        "source_record_digests",
+        "epistemic_class",
+        "role_scope"
+      ],
+      "source_record_digests_required": true
+    },
+    "edge": {
+      "required_fields": [
+        "edge_id",
+        "from_node_id",
+        "to_node_id",
+        "edge_kind",
+        "source_record_digests",
+        "epistemic_class",
+        "role_scope"
+      ],
+      "dangling_references_rejected": true
+    },
+    "privacy": {
+      "input_mode": "typed_snapshot_only",
+      "persisted_text": "safe labels and bounded notices only",
+      "forbidden": [
+        "secrets",
+        "raw paths",
+        "transcripts",
+        "host identifiers",
+        "session identifiers",
+        "environment values",
+        "private links"
+      ],
+      "final_record_scan_required": true
+    }
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "active": false,
+    "protected_actions_allowed": false
+  }
+}

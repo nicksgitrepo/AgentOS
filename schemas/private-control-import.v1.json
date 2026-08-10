@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.private_control_import.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "bundle_id", "import_mode", "source_bundle_digest", "source_workspace_binding_digest", "destination_workspace_binding_digest", "imported_file_count", "owner_decision_digest", "imported_control_snapshot_digest", "project_tree_touched", "published_paths", "rolled_back_paths", "failure_code", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.private_control_import.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["IMPORTED", "ROLLED_BACK", "RECOVERY_REQUIRED"]},
+    "bundle_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "import_mode": {"enum": ["NEW_CONTROL", "MERGE_EXACT"]},
+    "source_bundle_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "destination_workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "imported_file_count": {"type": "integer", "minimum": 0},
+    "owner_decision_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "imported_control_snapshot_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_tree_touched": {"const": false},
+    "published_paths": {"type": "array", "items": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"}},
+    "rolled_back_paths": {"type": "array", "items": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"}},
+    "failure_code": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9_:-]*$"}]},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

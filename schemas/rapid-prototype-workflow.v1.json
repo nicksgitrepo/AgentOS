@@ -1,0 +1,77 @@
+{
+  "schema": "agentos.audit_driven_integration_pyramid.v1",
+  "version": 1,
+  "controller": "control/audit-driven-integration-pyramid.mjs",
+  "compatibility_entrypoint": "control/rapid-prototype-workflow.mjs",
+  "purpose": "Project-agnostic rapid prototyping through project setup, platform foundation, Controller-owned platform merge, feature audit waves, central integration, and final source-level repair.",
+  "project_modes": ["NEW_PROJECT", "IMPORTED_PROJECT"],
+  "project_setup": {
+    "new_project": "The Controller records the owner-selected technology stack, repository plan, and relative directory plan before work begins.",
+    "imported_project": "The Controller binds the imported source readback and requires explicit owner approval before rapid development.",
+    "approval_without_import": "not_required",
+    "storage": "external_control_authority",
+    "absolute_paths_in_reports": false
+  },
+  "migration": {
+    "record": "docs/rapid-prototype-migration.v1.json",
+    "contract": "schemas/rapid-prototype-migration.v1.json",
+    "rule": "Existing feature worktrees and reports are adopted only after preservation and source-bound intake; missing platform parity remains an explicit hold.",
+    "physical_move_required": false,
+    "destructive_cleanup_allowed": false
+  },
+  "pyramid": [
+    {
+      "phase": "PLATFORM_FOUNDATION",
+      "purpose": "Platform agents establish the project skeleton, repositories, directories, technology baseline, routing, shared contracts, design direction, questions, and platform boundaries in isolated worktrees.",
+      "handoff": "PLATFORM_DOMAIN_CANDIDATE_READY"
+    },
+    {
+      "phase": "PLATFORM_INTEGRATION",
+      "purpose": "The Controller independently audits and repairs the platform candidates, integrates one cumulative platform worktree, and emits the source-bound feature-admission receipt.",
+      "handoff": "PLATFORM_MERGE_COMPLETE"
+    },
+    {
+      "phase": "FEATURE_AUDIT_REPAIR",
+      "purpose": "Feature agents audit, repair, self-audit, and re-audit their isolated scopes from the accepted platform skeleton in rolling waves.",
+      "handoff": "FEATURE_CANDIDATE_READY"
+    },
+    {
+      "phase": "CENTRAL_INTEGRATION",
+      "purpose": "Central integrates compatible feature candidates into one fresh worktree, repairs the complete system, and owns the final merge.",
+      "handoff": "INTEGRATED_PRE_VALIDATION_CANDIDATE"
+    }
+  ],
+  "inventory_parity": {
+    "feature": ["inventory", "visible_task", "isolated_worktree", "audit_report", "persistent_goal"],
+    "governance": ["inventory", "visible_task", "isolated_worktree", "audit_report", "persistent_goal"],
+    "platform": ["inventory", "derived_domain_alias", "source_bound_handoff"],
+    "mismatch": "active orchestration work; platform domains reuse an existing feature task and worktree; never fabricate a duplicate task or report; fail closed when any feature or governance lane is absent",
+    "visible_task_readback": {
+      "schema": "agentos.visible_task_parity_readback.v1",
+      "authority": "HOST_LIST_THREADS",
+      "rule": "A shaped registry is not parity evidence. Every admitted visible task and worktree must also appear in an exact host list_threads readback bound to the project and campaign; missing, duplicated, archived, or synthetic identities hold admission. A task may be idle or not loaded, but it must remain visible and unarchived.",
+      "bootstrap_rule": "Bootstrap obtains the readback directly from the bound host before workflow validation; caller-supplied lookalike receipts are ignored."
+    }
+  },
+  "rosters": ["feature_roster", "governance_roster", "platform_roster"],
+  "feature_wave": {
+    "default_size": 6,
+    "backpressure": ["storage", "memory", "worktree_count", "platform_intake_backlog", "shared_contract_churn", "integration_conflicts", "host_concurrency"]
+  },
+  "lifecycle": [
+    "CREATED",
+    "AUDITING",
+    "REPAIRING",
+    "RE_AUDITING",
+    "READY_FOR_HANDOFF",
+    "CONSUMED",
+    "FINISHED",
+    "ARCHIVED",
+    "CONTEXT_NEEDED",
+    "BLOCKED"
+  ],
+  "archive_rule": "Preserve the handoff, prove downstream integration and stale-worktree closure, remove active scope, prove chat out of scope, then archive. If any condition is false, leave the task and worktree intact.",
+  "verification_rule": "Use only project-declared checks. If automated verification is prohibited, report SOURCE_AUDITED_PROTOTYPE and do not claim mechanical readiness.",
+  "protected_actions": false,
+  "final_state": "PRODUCTION_CANDIDATE_PENDING_TESTS"
+}

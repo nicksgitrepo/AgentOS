@@ -1,0 +1,29 @@
+{
+  "schema": "agentos.delivery_state.v1",
+  "version": 1,
+  "purpose": "Compare-and-swap delivery state that prevents campaign completion before an explicit selected result or prepared/no-delivery closure.",
+  "statuses": [
+    "CHOICE_REQUIRED", "CHOICE_SELECTED", "RUNTIME_AUTHORIZED", "ACTION_IN_FLIGHT",
+    "RECEIPT_VERIFIED", "LIVE_AUDIT_PENDING", "CLOSURE_PENDING", "ROLLBACK_REQUIRED",
+    "CLOSED", "FAILED", "UNKNOWN"
+  ],
+  "required_fields": [
+    "schema", "version", "state_id", "project_ref", "campaign_id", "campaign_version", "goal_id",
+    "status", "choice_digest", "outcome", "runtime_request_digest", "receipt_digest",
+    "live_audit_digest", "rollback_receipt_digest", "closure_digest", "final_handoff_digest",
+    "revision", "updated_at_utc", "digest"
+  ],
+  "transitions": {
+    "CHOICE_REQUIRED": ["SELECT_CHOICE"],
+    "CHOICE_SELECTED": ["MARK_PREPARED", "AUTHORIZE_RUNTIME", "NO_EXTERNAL_ACTION"],
+    "RUNTIME_AUTHORIZED": ["DISPATCH"],
+    "ACTION_IN_FLIGHT": ["RECONCILE_RECEIPT"],
+    "LIVE_AUDIT_PENDING": ["REGISTER_LIVE_AUDIT"],
+    "ROLLBACK_REQUIRED": ["SELECT_CHOICE"],
+    "FAILED": ["REOPEN_AFTER_FAILURE"],
+    "UNKNOWN": ["REOPEN_AFTER_FAILURE"],
+    "CLOSURE_PENDING": ["REGISTER_ROLLBACK_RECEIPT", "CLOSE"]
+  },
+  "completion_rule": "Only CLOSED with a selected outcome, or CLOSED with PREPARED_NO_DELIVERY, is campaign-completion eligible.",
+  "unknown_rule": "UNKNOWN and FAILED are never completion-eligible. Re-entry preserves the failed or unknown receipt, clears active execution evidence, and requires a fresh owner-selected choice before authorization can resume."
+}

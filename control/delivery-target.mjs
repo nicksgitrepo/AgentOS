@@ -132,7 +132,7 @@ export function compileDeliveryTarget({answer = undefined, route = "PROJECT_DEFI
   if (answer !== undefined) {
     requireRecord(answer, "delivery target answer");
     secretFree(answer, "delivery target answer");
-    rejectUnknown(answer, ["family", "adapter_id", "mode", "audience", "data_posture", "authentication", "custom_domain", "limitations", "capability_ids"], "delivery target answer");
+    rejectUnknown(answer, ["family", "adapter_id", "mode", "audience", "data_posture", "authentication", "custom_domain", "limitations", "capability_ids", "supported_scope", "operating_envelope", "rollback_path"], "delivery target answer");
   }
   requireRecord(projectLifeContract, "delivery target project life contract");
   const input = answer ?? {};
@@ -150,9 +150,18 @@ export function compileDeliveryTarget({answer = undefined, route = "PROJECT_DEFI
   const dataPosture = enumValue(input.data_posture, DELIVERY_TARGET_DATA_POSTURES, "delivery target data posture", projectLifeContract.data_posture);
   const authentication = enumValue(input.authentication, DELIVERY_TARGET_AUTHENTICATION, "delivery target authentication", "NONE");
   const customDomain = enumValue(input.custom_domain, ["NOT_REQUIRED", "OWNER_DEFINED", "PROJECT_DEFINED"], "delivery target custom domain", "NOT_REQUIRED");
+  const supportedScope = stringArray(input.supported_scope, "delivery target supported scope");
+  const operatingEnvelope = stringArray(input.operating_envelope, "delivery target operating envelope");
+  const rollbackPath = input.rollback_path ?? null;
+  assert(rollbackPath === null || rollbackPath === "EXACT_LAST_ACCEPTED_DEPLOYMENT", "delivery target rollback path is invalid");
   assert(mode === "PROTOTYPE" || projectLifeContract.maturity !== "CONCEPT", "a concept cannot claim a working delivery target");
   if (mode === "PROTOTYPE") assert(dataPosture === "NONE_OR_SYNTHETIC", "prototype delivery target cannot use durable or sensitive data by default");
   if (mode === "STANDARD_PRODUCTION") assert(projectLifeContract.maturity === "STANDARD_PRODUCTION" || projectLifeContract.maturity === "HIGH_CONSEQUENCE_PRODUCTION", "standard production target requires a production life contract");
+  if (mode !== "PROTOTYPE") {
+    assert(supportedScope.length > 0, "non-prototype delivery target requires an explicit supported scope");
+    assert(operatingEnvelope.length > 0, "non-prototype delivery target requires an explicit operating envelope");
+    assert(rollbackPath === "EXACT_LAST_ACCEPTED_DEPLOYMENT", "non-prototype delivery target requires an exact rollback path");
+  }
   const target = {
     schema: DELIVERY_TARGET_SCHEMA,
     version: 1,
@@ -165,6 +174,9 @@ export function compileDeliveryTarget({answer = undefined, route = "PROJECT_DEFI
     data_posture: dataPosture,
     authentication,
     custom_domain: customDomain,
+    supported_scope: supportedScope,
+    operating_envelope: operatingEnvelope,
+    rollback_path: rollbackPath,
     production_claim: productionClaimForMode(mode),
     limitations: stringArray(input.limitations, "delivery target limitations", defaultLimitations(mode)),
     capability_ids: stringArray(input.capability_ids, "delivery target capability IDs"),
@@ -207,6 +219,9 @@ export function validateDeliveryTarget(target) {
   assert(DELIVERY_TARGET_DATA_POSTURES.includes(target.data_posture), "delivery target data posture is invalid");
   assert(DELIVERY_TARGET_AUTHENTICATION.includes(target.authentication), "delivery target authentication is invalid");
   assert(["NOT_REQUIRED", "OWNER_DEFINED", "PROJECT_DEFINED"].includes(target.custom_domain), "delivery target custom domain is invalid");
+  assert(Array.isArray(target.supported_scope) && target.supported_scope.every((value) => typeof value === "string" && value.trim().length > 0), "delivery target supported scope is invalid");
+  assert(Array.isArray(target.operating_envelope) && target.operating_envelope.every((value) => typeof value === "string" && value.trim().length > 0), "delivery target operating envelope is invalid");
+  assert(target.rollback_path === null || target.rollback_path === "EXACT_LAST_ACCEPTED_DEPLOYMENT", "delivery target rollback path is invalid");
   assert(DELIVERY_TARGET_PRODUCTION_CLAIMS.includes(target.production_claim), "delivery target production claim is invalid");
   assert(target.production_claim === productionClaimForMode(target.mode), "delivery target production claim does not match target mode");
   assert(Array.isArray(target.limitations) && target.limitations.length > 0 && target.limitations.every((value) => typeof value === "string"), "delivery target limitations are invalid");
@@ -221,6 +236,11 @@ export function validateDeliveryTarget(target) {
     assert(["PROTOTYPE", "LIMITED_PRODUCT"].includes(target.mode), "generic managed-site adapter mode is outside its profiled support");
   }
   if (target.mode === "PROTOTYPE") assert(target.data_posture === "NONE_OR_SYNTHETIC", "prototype target data posture is unsafe");
+  if (target.mode !== "PROTOTYPE") {
+    assert(target.supported_scope.length > 0, "non-prototype delivery target lacks supported scope");
+    assert(target.operating_envelope.length > 0, "non-prototype delivery target lacks operating envelope");
+    assert(target.rollback_path === "EXACT_LAST_ACCEPTED_DEPLOYMENT", "non-prototype delivery target lacks exact rollback path");
+  }
   const body = structuredClone(target);
   delete body.target_sha256;
   requireSha(target.target_sha256, "delivery target digest");

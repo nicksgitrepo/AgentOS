@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance.derived_index.v1",
+  "title": "AgentOS Derived Index Instance",
+  "description": "Strict portable instance contract for an advisory derived index. Persisted entries contain only privacy-safe digests and metadata.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "contract_status",
+    "visibility",
+    "advisory_only",
+    "acceptance_authority",
+    "index_id",
+    "project_ref",
+    "memory_role",
+    "index_kind",
+    "tokenization",
+    "token_digest_algorithm",
+    "source_snapshot_sha256",
+    "policy_sha256",
+    "compiler_sha256",
+    "status",
+    "bounds",
+    "documents",
+    "postings",
+    "index_sha256"
+  ],
+  "properties": {
+    "schema": { "const": "governance.derived_index.v1" },
+    "version": { "const": 1 },
+    "contract_status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "visibility": { "const": "CONTROL_SPACE" },
+    "advisory_only": { "const": true },
+    "acceptance_authority": { "const": false },
+    "index_id": { "$ref": "#/$defs/id" },
+    "project_ref": { "$ref": "#/$defs/id" },
+    "memory_role": { "const": "DERIVED_INDEX_ONLY" },
+    "index_kind": { "const": "LEXICAL_HASHED" },
+    "tokenization": { "const": "UNICODE_WORDS_NFKC_LOWER_V1" },
+    "token_digest_algorithm": { "const": "SHA256_CANONICAL_TOKEN_V1" },
+    "source_snapshot_sha256": { "$ref": "#/$defs/sha256" },
+    "policy_sha256": { "$ref": "#/$defs/sha256" },
+    "compiler_sha256": { "$ref": "#/$defs/sha256" },
+    "status": { "enum": ["READY", "STALE"] },
+    "bounds": { "$ref": "#/$defs/bounds" },
+    "documents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/document" }
+    },
+    "postings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/posting" }
+    },
+    "index_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "roleScope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_documents", "max_tokens_per_document", "truncated"],
+      "properties": {
+        "max_documents": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "max_tokens_per_document": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "truncated": { "type": "boolean" }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "document_kind",
+        "source_record_digests",
+        "role_scope",
+        "content_sha256",
+        "token_count"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "document_kind": {
+          "enum": [
+            "OWNER_DECISION",
+            "GOAL",
+            "BOUNDARY",
+            "PLAN_PHASE",
+            "HANDOFF",
+            "EVIDENCE_METADATA",
+            "MAP_SOURCE",
+            "OTHER"
+          ]
+        },
+        "source_record_digests": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sha256" }
+        },
+        "role_scope": { "$ref": "#/$defs/roleScope" },
+        "content_sha256": { "$ref": "#/$defs/sha256" },
+        "token_count": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "posting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token_sha256", "document_ids"],
+      "properties": {
+        "token_sha256": { "$ref": "#/$defs/sha256" },
+        "document_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        }
+      }
+    }
+  }
+}

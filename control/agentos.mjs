@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+/* Stable public kernel surface for the complete AgentOS runtime. */
+
+export * from "./intent-regulator-runtime.mjs";
+export * from "./codex-native-host-adapter.mjs";
+export * from "./native-self-development-adapter.mjs";
+export {createCampaignStatePersistence, createWorkflowStatePersistence, createQuestionQueuePersistence, bootstrapAndStartAgentOS} from "./bootstrap-runtime.mjs";
+export {compileRapidPrototypeWorkflow, compileRapidPrototypeWorkflowFromInventory} from "./rapid-prototype-workflow.mjs";
+export {compileFeatureLaneGoal, validateFeatureLaneGoal, assertFeatureLaneGoalBinding} from "./feature-lane-goal.mjs";
+export {compileVisibleTaskParityReadback, compileVisibleTaskRegistryFromHost, validateVisibleTaskParity} from "./canonical-feature-inventory.mjs";
+export {runCanonicalCampaign, inspectCanonicalCampaignRuntime} from "./canonical-campaign-orchestration-adapter.mjs";
+export {compileGeneratedProjectRoleLibrary, compileGeneratedTaskRolePacket, compileGovernanceBinding, prepareGovernanceUpgrade} from "./four-library-governance.mjs";
+export {compileLayeredGovernanceContract, validateLayeredGovernanceContract, activateLayeredGovernance, compareLayeredGovernanceEvidence, validateLayeredGovernanceEvidence} from "./layered-governance-contract.mjs";
+export {compileProjectContract, compileProjectContractWithReceipt, reassessProjectContract} from "./bootstrap-project-contract.mjs";
+export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
+export {
+  compileTaskProfile,
+  compileTaskModelPolicy,
+  compileHostCapabilityCatalog,
+  compileHostCapabilityAttestation,
+  compileRoutingUnavailable,
+  selectExecutionRoute,
+  selectFallbackRoute,
+} from "./task-model-routing.mjs";
+export {compileTaskContextPolicy, compileTaskContextItem, selectTaskContext} from "./task-context-firewall.mjs";
+export {admitExecutionRoute, runAdmittedTask} from "./task-routing-admission.mjs";
+export {compileTaskRoutingEvaluation, replayTaskRouting} from "./task-routing-evaluation.mjs";
+export {openPersistentIntentRuntime, inspectPersistentIntentRuntime} from "./persistent-intent-runtime.mjs";
+export {compilePersistentRuntimeObservation, compilePersistentRuntimeRoute} from "./persistent-intent-runtime-integration.mjs";
+export {compileContinuousOperatingLoop, runContinuousOperatingLoop, runContinuousOperatingLoopIteration} from "./continuous-operating-loop.mjs";
+export {readProjectMemoryLedger, reconstructProjectMemory, appendProjectMemoryEvent, readProjectMemorySnapshot, writeProjectMemorySnapshotCompareAndSwap} from "./project-memory-store.mjs";
+export {compileOfflinePolicy, authorizeOfflineAction, transitionOfflinePolicy} from "./private-offline-mode.mjs";
+export {compileProviderNeutralDiscovery, findOfflineUsableAdapters} from "./private-provider-discovery.mjs";
+export {allocateTestBuild, formatTestBuildTag, parseTestBuildTag, buildReleaseArtifactManifest} from "./release-lifecycle.mjs";
+export {compileReleasePromotionGate, compileBlockedDevelopmentPromotionGate} from "./release-promotion-gate.mjs";
+export {advanceDeliveryState, assertCampaignCompletionEligible} from "./delivery-closure-transitions.mjs";
+export {startLocalSelfDevelopment} from "./start-local-self-development.mjs";
+export * as apprenticeship from "./apprenticeship-contracts.mjs";
+
+/*
+ * Namespaced authorities keep the public kernel complete without flattening
+ * unrelated compiler vocabularies into one collision-prone export list.
+ * Each namespace is still the same portable code used by the active paths;
+ * these are not alternate implementations or compatibility shims.
+ */
+export * as bootstrap from "./bootstrap-compiler.mjs";
+export * as bootstrapConversation from "./bootstrap-conversation.mjs";
+export * as bootstrapRuntime from "./bootstrap-runtime.mjs";
+export * as projectContract from "./bootstrap-project-contract.mjs";
+export * as decisionTree from "./governance-decision-tree.mjs";
+export * as gateCatalog from "./gate-catalog-compiler.mjs";
+export * as universalResponseGating from "./universal-response-gating.mjs";
+export * as generalGovernance from "./governance-library.mjs";
+export * as roleGovernance from "./role-governance-library.mjs";
+export * as fourLibraries from "./four-library-governance.mjs";
+export * as layeredGovernance from "./layered-governance-contract.mjs";
+export * as hostAttachment from "./native-host-attachment.mjs";
+export * as hostContract from "./native-host-contract.mjs";
+export * as nativeSessions from "./native-session-team.mjs";
+export * as nativeRunner from "./native-session-runner.mjs";
+export * as controller from "./agentos-controller.mjs";
+export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
+export * as dynamicLanes from "./dynamic-project-lanes.mjs";
+export * as featureInventory from "./canonical-feature-inventory.mjs";
+export * as projectMemory from "./project-memory.mjs";
+export * as projectMemoryStore from "./project-memory-store.mjs";
+export * as projectMap from "./project-map.mjs";
+export * as projectContext from "./project-context-store.mjs";
+export * as privateControlBundle from "./private-control-bundle.mjs";
+export * as privateControlStorage from "./private-control-storage.mjs";
+export * as privateReleaseUpdate from "./private-release-update.mjs";
+export * as releaseLifecycle from "./release-lifecycle.mjs";
+export * as releasePromotion from "./release-promotion-gate.mjs";
+export * as modelRouting from "./task-model-routing.mjs";
+export * as taskContext from "./task-context-firewall.mjs";
+export * as taskRoutingAdmission from "./task-routing-admission.mjs";
+export * as taskRoutingEvaluation from "./task-routing-evaluation.mjs";
+export * as offlinePolicy from "./private-offline-mode.mjs";
+export * as providerDiscovery from "./private-provider-discovery.mjs";
+export * as rapidPrototype from "./rapid-prototype/index.mjs";
+export * as rapidPrototypeWorkflow from "./rapid-prototype-workflow.mjs";
+export * as platformFoundationMerge from "./platform-foundation-merge.mjs";
+export * as deliveryClosure from "./delivery-closure-foundation.mjs";
+export * as repairRecovery from "./repair-recovery.mjs";
+export * as continuousLoop from "./continuous-operating-loop.mjs";
+export * as apprenticeshipRunner from "./apprenticeship-native-runner.mjs";

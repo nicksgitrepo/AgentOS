@@ -8,7 +8,7 @@ The normative map is [schemas/naming-and-terminology.v1.json](../../schemas/nami
 
 - `Bootstrap` is the read-only discovery, compact question, exact-plan, approval, and resumable setup controller.
 - `Authority Corpus` is the project-bound source of truth compiled from governance and typed Project Context.
-- `AgentOS Controller` is project-persistent. Its Controller Agent handles judgment and routing; its Controller Runtime performs deterministic events, state transactions, timers, and adapter readbacks.
+- `Intent Regulator` (`AGENTOS_CONTROLLER`) is project-persistent. It handles judgment and routing while its Controller Runtime performs deterministic events, state transactions, timers, and adapter readbacks.
 - `Campaign Orchestrator` owns campaign admission, shared custody, recovery, and closure; it does not manage routine feature work.
 - `Feature Agent` owns one bounded feature outcome and directly supervises its work.
 - `Platform Agent` is a campaign-local logical capability with one stable worktree and sequential Feature-Agent supervision leases.

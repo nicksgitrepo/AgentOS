@@ -38,7 +38,9 @@ const answers = {
   "project.runtime": {session_id: "RUNTIME-001", environment_identity: "ENV-001", capabilities: ["persistent-navigation"]},
 };
 const plan = dynamic.compileBootstrapPlan({discovery: discovery.facts, answers, projectRoot: root});
-assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");
+assert.equal(plan.status, "JSA_READY_WITHIN_SCOPE");
+assert.equal(plan.bootstrap_operating_mode, "JSA");
+assert.equal(plan.bootstrap_safety_analysis.operating_mode, "JSA");
 assert.equal(plan.question_slice.join(","), "FUNCTION_REQUIREMENTS,DESIGN_BIBLE,SECURITY");
 assert.equal(dynamic.executeBootstrapPlan !== undefined, true);
 for (const legacyExport of ["applyBootstrapAnswer", "appendConfigurationSnapshot", "changePreference", "compileWorkerActivation", "nextBootstrapQuestion"]) {

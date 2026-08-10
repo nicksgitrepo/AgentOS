@@ -43,6 +43,13 @@
     "failure_rule": "A route failure is retained as an exact repairable record; it does not become an owner question unless it crosses a hard boundary or remains materially ambiguous.",
     "history_rule": "Each observation has its own goal and tick record; a changed observation preserves the prior failed route under a source-bound failure RCA before a new route is attempted."
   },
+  "cadence": {
+    "default_interval_minutes": 15,
+    "owner_configured_policy_variable": "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES",
+    "meaningful_progress_window_minutes": 15,
+    "heartbeat_is_not_progress": true,
+    "rule": "The running supervisor uses the bound policy interval for repeated observation and never treats a heartbeat without concrete result as progress."
+  },
   "activation": {
     "requires_explicit_owner_approval": true,
     "product_writes_allowed_by_default": false,

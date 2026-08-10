@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_respawn.v1",
+  "title": "AgentOS bounded respawn plan and receipt",
+  "oneOf": [{"$ref": "#/$defs/plan"}, {"$ref": "#/$defs/receipt"}],
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"},
+    "opaque": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,31}:[0-9a-f]{64}$"},
+    "checkpoint": {"$ref": "agentos.digest_bound_checkpoint.v1"},
+    "predecessor": {"type": "object", "additionalProperties": false, "required": ["worker_ref", "session_ref", "status", "source_commit", "source_tree", "evidence_sha256", "handoff_sha256"], "properties": {"worker_ref": {"$ref": "#/$defs/opaque"}, "session_ref": {"$ref": "#/$defs/opaque"}, "status": {"enum": ["FAILED", "STALLED", "SUPERSEDED"]}, "source_commit": {"$ref": "#/$defs/git"}, "source_tree": {"$ref": "#/$defs/git"}, "evidence_sha256": {"$ref": "#/$defs/sha"}, "handoff_sha256": {"$ref": "#/$defs/sha"}}},
+    "replacement": {"type": "object", "additionalProperties": false, "required": ["worker_ref", "session_ref", "source_commit", "source_tree", "checkpoint_sha256"], "properties": {"worker_ref": {"$ref": "#/$defs/opaque"}, "session_ref": {"$ref": "#/$defs/opaque"}, "source_commit": {"$ref": "#/$defs/git"}, "source_tree": {"$ref": "#/$defs/git"}, "checkpoint_sha256": {"$ref": "#/$defs/sha"}}},
+    "protected": {"type": "object", "additionalProperties": false, "required": ["acceptance", "activation", "deletion", "deployment", "external_release", "external_publish", "external_push", "merge", "product_writes", "secrets", "spend", "authority_change"], "properties": {"acceptance": {"const": false}, "activation": {"const": false}, "deletion": {"const": false}, "deployment": {"const": false}, "external_release": {"const": false}, "external_publish": {"const": false}, "external_push": {"const": false}, "merge": {"const": false}, "product_writes": {"const": false}, "secrets": {"const": false}, "spend": {"const": false}, "authority_change": {"const": false}}},
+    "failure": {"type": "object", "additionalProperties": false, "required": ["phase", "error_sha256", "retry_allowed"], "properties": {"phase": {"$ref": "#/$defs/id"}, "error_sha256": {"$ref": "#/$defs/sha"}, "retry_allowed": {"const": false}}},
+    "lifecycle": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"enum": ["PRESERVE_PREDECESSOR_EVIDENCE", "CREATE_DISTINCT_REPLACEMENT", "SEND_PREDECESSOR_HANDOFF", "READ_MEANINGFUL_RESULT", "CLOSE_PREDECESSOR", "VERIFY_ACTIVE_ROSTER"]}},
+    "progress": {"type": "array", "minItems": 1, "maxItems": 6, "items": {"enum": ["PRESERVE_PREDECESSOR_EVIDENCE", "CREATE_DISTINCT_REPLACEMENT", "SEND_PREDECESSOR_HANDOFF", "READ_MEANINGFUL_RESULT", "CLOSE_PREDECESSOR", "VERIFY_ACTIVE_ROSTER"]}},
+    "plan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "status", "plan_id", "repair_receipt_sha256", "predecessor", "resume_checkpoint", "attempt", "max_attempts", "lifecycle", "owner_approval_sha256", "owner_actor_ref", "protected_actions", "created_at_utc", "plan_sha256"],
+      "properties": {"schema": {"const": "agentos.bounded_respawn_plan.v1"}, "version": {"const": 1}, "status": {"const": "ADMITTED"}, "plan_id": {"$ref": "#/$defs/id"}, "repair_receipt_sha256": {"$ref": "#/$defs/sha"}, "predecessor": {"$ref": "#/$defs/predecessor"}, "resume_checkpoint": {"$ref": "#/$defs/checkpoint"}, "attempt": {"const": 1}, "max_attempts": {"const": 1}, "lifecycle": {"$ref": "#/$defs/lifecycle"}, "owner_approval_sha256": {"$ref": "#/$defs/sha"}, "owner_actor_ref": {"$ref": "#/$defs/opaque"}, "protected_actions": {"$ref": "#/$defs/protected"}, "created_at_utc": {"type": "string", "format": "date-time"}, "plan_sha256": {"$ref": "#/$defs/sha"}}
+    },
+    "receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "status", "plan_sha256", "repair_receipt_sha256", "predecessor", "resume_checkpoint", "replacement", "predecessor_evidence_preserved", "predecessor_handoff_sha256", "result_sha256", "result_evidence_sha256", "typed_handoff_sha256", "roster_sha256", "lifecycle", "completed_lifecycle", "failure", "owner_actor_ref", "protected_actions", "observed_at_utc", "receipt_sha256"],
+      "properties": {"schema": {"const": "agentos.bounded_respawn_receipt.v1"}, "version": {"const": 1}, "status": {"enum": ["RESPAWNED_AND_BOUND", "RESPAWN_BLOCKED"]}, "plan_sha256": {"$ref": "#/$defs/sha"}, "repair_receipt_sha256": {"$ref": "#/$defs/sha"}, "predecessor": {"$ref": "#/$defs/predecessor"}, "resume_checkpoint": {"$ref": "#/$defs/checkpoint"}, "replacement": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/replacement"}]}, "predecessor_evidence_preserved": {"const": true}, "predecessor_handoff_sha256": {"$ref": "#/$defs/sha"}, "result_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "result_evidence_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "typed_handoff_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "roster_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "lifecycle": {"$ref": "#/$defs/lifecycle"}, "completed_lifecycle": {"$ref": "#/$defs/progress"}, "failure": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/failure"}]}, "owner_actor_ref": {"$ref": "#/$defs/opaque"}, "protected_actions": {"$ref": "#/$defs/protected"}, "observed_at_utc": {"type": "string", "format": "date-time"}, "receipt_sha256": {"$ref": "#/$defs/sha"}}
+    }
+  }
+}

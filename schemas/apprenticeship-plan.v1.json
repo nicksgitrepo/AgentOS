@@ -1,0 +1,61 @@
+{
+  "schema": "agentos.apprenticeship_plan_contract.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/apprenticeship-contracts.mjs",
+  "mode": "APPRENTICESHIP",
+  "required_fields": [
+    "schema",
+    "schema_version",
+    "mode",
+    "owner_intent_ref",
+    "learning_objective",
+    "bounded_exercise",
+    "project_binding",
+    "source_identity",
+    "allowed_scope",
+    "protected_actions",
+    "progress_window_minutes",
+    "required_roles",
+    "acceptance_policy",
+    "privacy_policy"
+  ],
+  "roles": [
+    "INTENT_REGULATOR",
+    "RUNTIME",
+    "WALKTHROUGH_ORCHESTRATOR",
+    "APPRENTICESHIP_WORKER",
+    "WORKFLOW_AUDITOR",
+    "INDEPENDENT_AUDITOR"
+  ],
+  "progress": {
+    "minimum_minutes": 1,
+    "maximum_minutes": 240,
+    "default_minutes": 15,
+    "heartbeat_is_not_meaningful": true,
+    "failure_list_is_not_meaningful": true,
+    "plan_is_not_meaningful": true
+  },
+  "admission_rules": [
+    "Owner intent, source, goal, workspace, and scope bindings are required.",
+    "Consent is explicitly recorded when project authority requires it.",
+    "Prepared role packets carry an explicit revocation state and safe reference.",
+    "Protected actions are false by default.",
+    "A real bounded result and typed handoff are required before proposal compilation.",
+    "A missing authoritative host attachment blocks admission."
+  ],
+  "activation": {
+    "active": false,
+    "requires_independent_review": true,
+    "requires_explicit_owner_approval_for_intent_or_authority_change": true,
+    "automatic_activation": false
+  },
+  "privacy": {
+    "raw_paths_persisted": false,
+    "secrets_persisted": false,
+    "raw_environment_values_persisted": false,
+    "hidden_reasoning_persisted": false,
+    "private_transcripts_persisted": false,
+    "identity_rule": "Opaque references or content-addressed digests only."
+  }
+}

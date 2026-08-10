@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.universal_response_handoff.v1",
+  "title": "AgentOS universal response and handoff envelope",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "context", "graph_id", "graph_sha256",
+    "gate_evaluation", "gate_evaluation_sha256", "trace_sha256", "claims",
+    "public_text", "limitation", "next_action", "independent_check", "handoff",
+    "close_readiness", "evidence_digests", "envelope_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.universal_response_handoff.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["COMPLETE", "HARD_STOP", "SOFT_REVIEW", "UNPROVEN"]},
+    "context": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "graph_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "graph_sha256": {"$ref": "#/$defs/sha256"},
+    "gate_evaluation": {"type": "object"},
+    "gate_evaluation_sha256": {"$ref": "#/$defs/sha256"},
+    "trace_sha256": {"$ref": "#/$defs/sha256"},
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "gate_id", "text", "evidence_digests"],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+          "gate_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+          "text": {"type": "string", "minLength": 1},
+          "evidence_digests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}}
+        }
+      }
+    },
+    "public_text": {"type": "string", "minLength": 1},
+    "limitation": {"type": "string", "minLength": 1},
+    "next_action": {"type": "string", "minLength": 1},
+    "independent_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewer_ref", "evidence_digest"],
+      "properties": {
+        "status": {"enum": ["PASS", "PENDING", "UNAVAILABLE"]},
+        "reviewer_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^REF_[A-Z0-9._:-]+$"}]},
+        "evidence_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "handoff_sha256", "next_action", "limitation", "failure_classification", "repair_route"],
+      "properties": {
+        "status": {"enum": ["PRESERVED", "NOT_PRESERVED"]},
+        "handoff_sha256": {"$ref": "#/$defs/sha256"},
+        "next_action": {"type": "string", "minLength": 1},
+        "limitation": {"type": "string", "minLength": 1},
+        "failure_classification": {"anyOf": [{"type": "null"}, {"enum": ["OWNER_OR_HARD_BLOCKER", "REPAIRABLE_ENGINEERING_PUZZLE", "SOFT_BOUNDARY_REVIEW"]}]},
+        "repair_route": {"anyOf": [{"type": "null"}, {"enum": ["BOUNDED_REPAIR", "HARD_STOP", "HOLD_FOR_EVIDENCE", "ORCHESTRATOR_REVIEW"]}]}
+      }
+    },
+    "close_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "temporary_work_closed", "active_temporary_count", "roster_readback_sha256"],
+      "properties": {
+        "status": {"enum": ["READY", "NOT_READY"]},
+        "temporary_work_closed": {"type": "boolean"},
+        "active_temporary_count": {"type": "integer", "minimum": 0},
+        "roster_readback_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}
+      }
+    },
+    "evidence_digests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+    "envelope_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "rules": [
+    "Only YES may produce COMPLETE.",
+    "UNKNOWN and NOT_APPLICABLE never complete without their declared evidence.",
+    "COMPLETE requires independent_check.status PASS.",
+    "CLOSURE COMPLETE requires preserved handoff, host roster readback, and zero active temporary work.",
+    "Public text and claims must not carry private paths, credentials, or provider-bound content.",
+    "The envelope digest, handoff digest, gate evaluation digest, and trace digest are recomputable."
+  ]
+}

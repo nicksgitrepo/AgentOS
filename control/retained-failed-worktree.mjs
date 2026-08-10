@@ -5,6 +5,7 @@ import path from "node:path";
 export const RETAINED_FAILED_ATTEMPT_MARKER = ".agentos-retained-failed-attempt.json";
 const SHA256 = /^[0-9a-f]{64}$/u;
 const TASK_ID = /^[A-Z0-9][A-Z0-9:_-]*$/u;
+const OPAQUE_ERROR = /^opaque:error:[0-9a-f]{64}$/u;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -62,7 +63,7 @@ export function validateRetainedFailedAttemptMarker(marker, {directory, root}) {
   const rca = JSON.parse(rcaBytes.toString("utf8"));
   assert(rca && rca.status === "OPEN_REPAIR_REQUIRED", "retained failure RCA is not open");
   assert(typeof rca.failed_command === "string" && rca.failed_command.length > 0, "retained failure RCA has no failed command");
-  assert(typeof rca.error_message_exact === "string" && rca.error_message_exact.length > 0, "retained failure RCA has no exact error");
+  assert(typeof rca.error_message_exact === "string" && OPAQUE_ERROR.test(rca.error_message_exact), "retained failure RCA error must be opaque");
   return marker;
 }
 

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.routing_fallback_boundary.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "reason_code", "predecessor_route_sha256", "trigger", "attempted_models", "acceptance", "protected_actions_enabled", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.routing_fallback_boundary.v1"},
+    "version": {"const": 1},
+    "status": {"const": "BLOCKED"},
+    "reason_code": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+    "predecessor_route_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "trigger": {"enum": ["MODEL_UNAVAILABLE", "RATE_LIMITED", "CAPACITY_UNAVAILABLE", "CONTEXT_UNAVAILABLE", "BUDGET_EXCEEDED", "READBACK_UNKNOWN", "READBACK_MISMATCH", "PERMISSION_MISMATCH", "SCOPE_MISMATCH", "PRIVACY_BOUNDARY", "VERIFIER_TOO_WEAK", "SOURCE_MISMATCH"]},
+    "attempted_models": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["model", "reasoning_effort"],
+        "properties": {"model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}, "reasoning_effort": {"enum": ["low", "medium", "high", "max"]}}
+      }
+    },
+    "acceptance": {"const": false},
+    "protected_actions_enabled": {"const": false},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

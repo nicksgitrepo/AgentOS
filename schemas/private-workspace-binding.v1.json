@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.private_workspace_binding.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "layout", "release_root_ref", "projects_root_ref", "project_root_ref",
+    "control_root_ref", "worktrees_root_ref", "control_repository_policy", "project_state_policy",
+    "agent_worktree_policy", "references_policy", "project_write_policy", "project_write_authorization_digest",
+    "runtime_binding_digest", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.private_workspace_binding.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "layout": {"enum": ["SIBLING_RELEASE_PROJECTS_CONTROL", "EXPLICIT_IN_PROJECT_CONTROL"]},
+    "release_root_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "projects_root_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "project_root_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "control_root_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "worktrees_root_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "control_repository_policy": {"const": "PRIVATE_INDEPENDENT_GIT_REPOSITORY_NO_REMOTE_REQUIRED"},
+    "project_state_policy": {"enum": ["NEVER_WRITE_OR_STORE_CONTROL_ARTIFACTS_IN_PROJECT", "CONTROL_ARTIFACTS_ALLOWED_ONLY_WITH_EXPLICIT_OWNER_AUTHORIZATION"]},
+    "agent_worktree_policy": {"const": "ISOLATED_CHECKOUTS_ONLY_UNDER_CONTROL_REPOSITORY"},
+    "references_policy": {"const": "NO_RESOLVED_PATHS_OR_CONTROL_REFERENCES_IN_PROJECT_RECORDS"},
+    "project_write_policy": {"enum": ["EXTERNAL_ONLY", "IN_PROJECT_EXPLICIT"]},
+    "project_write_authorization_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "runtime_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

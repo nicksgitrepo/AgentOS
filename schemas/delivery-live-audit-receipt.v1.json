@@ -1,0 +1,17 @@
+{
+  "schema": "agentos.delivery_live_audit_receipt.v1",
+  "version": 1,
+  "purpose": "Independent evidence for the exact deployed or released candidate.",
+  "statuses": ["PASS", "FAIL", "UNKNOWN"],
+  "required_fields": [
+    "schema", "version", "audit_id", "choice_digest", "action_receipt_digest", "outcome", "source_commit",
+    "source_tree", "environment_ref", "deployed_result_ref", "runtime_ref", "independent_auditor_ref",
+    "status", "evidence_digest", "audited_at_utc", "digest"
+  ],
+  "rules": [
+    "Only DEPLOY and RELEASE require this record.",
+    "independent_auditor_ref must differ from runtime_ref.",
+    "The audit must match the successful action receipt, its adapter contract, source, environment, result identity, and choice digest.",
+    "FAIL requires rollback review; UNKNOWN is a hard evidence boundary."
+  ]
+}

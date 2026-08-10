@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.private_control_repository.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "workspace_binding_digest", "runtime_binding_digest", "git_repository", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.private_control_repository.v1"},
+    "version": {"const": 1},
+    "status": {"const": "BOUND"},
+    "workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "runtime_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git_repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["topology", "commit", "tree", "clean"],
+      "properties": {
+        "topology": {"const": "INDEPENDENT_GIT"},
+        "commit": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}$"}]},
+        "tree": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}$"}]},
+        "clean": {"type": "boolean"}
+      }
+    },
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

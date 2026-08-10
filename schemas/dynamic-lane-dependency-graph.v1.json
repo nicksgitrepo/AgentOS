@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.dynamic_lane_dependency_graph.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "project_id",
+    "campaign_id",
+    "goal_id",
+    "source_commit",
+    "source_tree",
+    "lane_set_sha256",
+    "nodes",
+    "edges",
+    "waves",
+    "dependency_order",
+    "graph_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.dynamic_lane_dependency_graph.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "campaign_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "goal_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "lane_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nodes": {"type": "array", "minItems": 1},
+    "edges": {"type": "array"},
+    "waves": {"type": "array", "minItems": 1},
+    "dependency_order": {"type": "array", "minItems": 1},
+    "graph_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "ordering_rules": [
+    "Edges point from prerequisite to dependent.",
+    "Waves and dependency order are UTF-8 sorted and deterministic.",
+    "Cycles require an owner decision or an explicit shared-contract lane."
+  ]
+}

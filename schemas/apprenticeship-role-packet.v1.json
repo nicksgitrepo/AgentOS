@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_role_packet.v1",
+  "title": "AgentOS apprenticeship worker role packet",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "mode",
+    "packet_id",
+    "status",
+    "role_id",
+    "owner_intent_ref",
+    "task_request_ref",
+    "provenance",
+    "task_pattern",
+    "bounded_scope",
+    "consent",
+    "revocation",
+    "role_behavior",
+    "host_contract",
+    "predecessor_handoff_ref",
+    "runtime_only_inputs",
+    "activation_allowed",
+    "protected_actions",
+    "created_at",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_role_packet.v1"},
+    "version": {"const": 1},
+    "mode": {"const": "APPRENTICESHIP"},
+    "packet_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "status": {"enum": ["READY_FOR_NATIVE_OBSERVATION", "REVOKED"]},
+    "role_id": {"const": "APPRENTICESHIP_WORKER"},
+    "owner_intent_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "task_request_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "provenance": {"$ref": "apprenticeship-common.v1.json#/$defs/provenance"},
+    "task_pattern": {"type": "string", "minLength": 1},
+    "bounded_scope": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+    "consent": {"$ref": "apprenticeship-common.v1.json#/$defs/consentDecision"},
+    "revocation": {"$ref": "apprenticeship-common.v1.json#/$defs/revocationState"},
+    "role_behavior": {"$ref": "#/$defs/roleBehavior"},
+    "host_contract": {"$ref": "#/$defs/hostContract"},
+    "predecessor_handoff_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/nullableReference"},
+    "runtime_only_inputs": {
+      "type": "array",
+      "const": ["task_instruction", "source_binding", "host_attachment"]
+    },
+    "activation_allowed": {"const": false},
+    "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},
+    "created_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "$defs": {
+    "roleBehavior": {
+      "type": "object",
+      "required": ["role_id", "scope", "authority", "prohibited_actions", "admitted_tools", "evidence_requirements", "failure_paths", "done_when"],
+      "properties": {
+        "role_id": {"const": "APPRENTICESHIP_WORKER"},
+        "scope": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+        "authority": {"type": "array", "uniqueItems": true, "items": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}},
+        "prohibited_actions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}},
+        "admitted_tools": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "evidence_requirements": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}},
+        "failure_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}},
+        "done_when": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "hostContract": {
+      "type": "object",
+      "required": ["required_tools", "lifecycle_operations", "universal_closeout_receipt_schema", "universal_closeout_sequence", "external_attachment_required", "local_process_fallback_allowed", "synthetic_receipts_allowed", "real_bounded_work_required", "meaningful_result_required"],
+      "properties": {
+        "required_tools": {"type": "array", "const": ["create_thread", "list_threads", "read_thread", "send_message_to_thread", "set_thread_archived", "set_thread_pinned", "wait_threads"]},
+        "lifecycle_operations": {"type": "array", "const": ["create_thread", "pin", "send", "wait", "read", "unpin", "archive", "post_close_read", "active_list_absent"]},
+        "universal_closeout_receipt_schema": {"const": "agentos.universal_task_closeout_receipts.v1"},
+        "universal_closeout_sequence": {"type": "array", "const": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"]},
+        "external_attachment_required": {"const": true},
+        "local_process_fallback_allowed": {"const": false},
+        "synthetic_receipts_allowed": {"const": false},
+        "real_bounded_work_required": {"const": true},
+        "meaningful_result_required": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

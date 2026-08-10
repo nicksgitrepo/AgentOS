@@ -8,6 +8,12 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/bootstrap-compiler.mjs";
+import {
+  assertSourceIdentity,
+  compileGuiHostReadbacks,
+  compileHostRuntimeReadback,
+  compileHostWorkspaceReadback,
+} from "../control/host-runtime-adapter.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const controller = path.join(root, "control/bootstrap-compiler.mjs");
@@ -30,6 +36,12 @@ try {
   assert.equal(output.control_plane_root, output.control_plane.control_plane_root);
   assert.notEqual(output.control_plane_root, output.project_root);
   assert.equal(output.initial_answers["bootstrap.discovery.mode"], "RECOMMENDED");
+  const startContract = JSON.parse(fs.readFileSync(path.join(root, "schemas/bootstrap-start.v1.json"), "utf8"));
+  assert(startContract.safety.next_step.includes("default JSA mode"));
+  assert(startContract.safety.next_step.includes("changed scope returns to reassessment"));
+  assert.equal(output.bootstrap_operating_mode, "JSA");
+  assert.equal(output.question_plan.status, "QUESTION_PENDING");
+  assert.equal(output.next_action, "ASK_ONLY_THE_NEXT_MATERIAL_BOOTSTRAP_QUESTION");
   assert.equal(output.discovery.operations.read_only, true);
   assert.equal(output.discovery.operations.authentication_attempted, false);
   assert.equal(output.discovery.operations.spending_attempted, false);
@@ -37,6 +49,131 @@ try {
   assert.equal(output.discovery.operations.deployment_attempted, false);
   assert.equal(output.discovery.operations.deletion_attempted, false);
   assert.equal(output.question_plan.schema, "agentos.bootstrap_question_plan.v1");
+  assert.deepEqual(output.question_plan.conversation_floor, {
+    language: "PLAIN_EVERYDAY",
+    questions_per_turn: 1,
+    internal_fields_hidden: true,
+    ask_only: "EARLIEST_MATERIAL_UNRESOLVED",
+    safe_discovery_defaults_allowed: true,
+    maximum_prompt_words: 20,
+    forbidden_user_terms: ["JSON", "authority corpus", "campaign", "digest", "policy state", "runtime", "schema", "worktree"],
+  });
+  assert.equal(output.question_plan.question_budget.presented, 1);
+  const projectRegistration = {
+    projectId: "PROJECT-BOOTSTRAP-READBACK",
+    projectKind: "local",
+    path: root,
+    hostId: "local",
+    isGitRepository: true,
+  };
+  const controllerThread = {
+    id: "CONTROLLER-THREAD-BOOTSTRAP",
+    hostId: "local",
+    status: "active",
+    cwd: root,
+  };
+  const runtimeThread = {
+    id: "RUNTIME-THREAD-BOOTSTRAP",
+    hostId: "local",
+    status: "idle",
+    cwd: root,
+  };
+  const hostThreadKind = ["co", "dex"].join("");
+  controllerThread.kind = hostThreadKind;
+  runtimeThread.kind = hostThreadKind;
+  const listThreadsReceipt = {schemaVersion: 2, threads: [controllerThread, runtimeThread]};
+  const controllerReadReceipt = {
+    schemaVersion: 1,
+    thread: {...controllerThread, status: {type: "active"}},
+    turns: [],
+  };
+  const runtimeTurnId = "RUNTIME-TURN-BOOTSTRAP";
+  const runtimeReadReceipt = {
+    schemaVersion: 1,
+    thread: {...runtimeThread, status: {type: "idle"}},
+    turns: [{id: runtimeTurnId, status: "completed"}],
+  };
+  const runtimeWaitReceipt = {
+    timedOut: false,
+    wake: {reason: "turnCompleted", turnId: runtimeTurnId, threadId: runtimeThread.id, hostId: "local"},
+    polls: [{
+      thread: {...runtimeThread, status: {type: "idle"}},
+      latestTurn: {id: runtimeTurnId, status: "completed", completedAt: 1785960302},
+    }],
+  };
+  const receipts = {
+    projectRoot: root,
+    projectRegistration,
+    listThreadsReceipt,
+    controllerThread,
+    runtimeThread,
+    controllerReadReceipt,
+    runtimeReadReceipt,
+    controllerPinReceipt: {threadId: controllerThread.id, pinned: true},
+    runtimePinReceipt: {threadId: runtimeThread.id, pinned: true},
+    runtimeSendReceipt: {threadId: runtimeThread.id},
+    runtimeWaitReceipt,
+    observedByRole: "BOOTSTRAP",
+  };
+  const guiReadbacks = compileGuiHostReadbacks(receipts);
+  assert.equal(guiReadbacks.workspace_readback.observed_by_session, runtimeThread.id);
+  assert.equal(guiReadbacks.runtime_readback.session_id, runtimeThread.id);
+  assert.equal(guiReadbacks.runtime_readback.observed_by_session, controllerThread.id);
+  assert.equal(guiReadbacks.runtime_readback.pinned, true);
+  assert.equal(guiReadbacks.runtime_readback.resume_readback, true);
+  assert.equal(guiReadbacks.controller_runtime_readback.project_id, projectRegistration.projectId);
+  assert.equal(guiReadbacks.controller_runtime_readback.controller_runtime_id, controllerThread.id);
+  assert.equal(guiReadbacks.controller_runtime_readback.runtime_id, runtimeThread.id);
+  assert.deepEqual(guiReadbacks.proof, {
+    listed_controller_thread_id: controllerThread.id,
+    listed_runtime_thread_id: runtimeThread.id,
+    controller_read_thread_id: controllerThread.id,
+    runtime_read_thread_id: runtimeThread.id,
+    controller_pinned: true,
+    runtime_pinned: true,
+    runtime_send_thread_id: runtimeThread.id,
+    runtime_resume_turn_id: runtimeTurnId,
+    controller_active: true,
+    runtime_resumed: true,
+  });
+  assert.equal(compileHostRuntimeReadback(receipts).session_id, runtimeThread.id);
+  assert.equal(compileHostWorkspaceReadback({
+    projectRoot: root,
+    projectRegistration,
+    observerThread: controllerThread,
+  }).observed_by_session, controllerThread.id);
+  const sourceIdentity = {source_commit: "a".repeat(40), source_tree: "b".repeat(40)};
+  assert.deepEqual(assertSourceIdentity(sourceIdentity), sourceIdentity);
+  assert.throws(() => assertSourceIdentity({...sourceIdentity, source_commit: "a".repeat(39)}), /commit is unavailable or invalid/u,
+    "shortened source commits must fail closed");
+  assert.throws(() => assertSourceIdentity({...sourceIdentity, source_tree: "b".repeat(39)}), /tree is unavailable or invalid/u,
+    "shortened source trees must fail closed");
+
+  const priorThreadEnv = process.env.AGENTOS_HOST_SESSION_ID;
+  process.env.AGENTOS_HOST_SESSION_ID = "USER-TYPED-SESSION-MUST-NOT-BIND";
+  try {
+    assert.throws(() => compileHostWorkspaceReadback({projectRoot: root, projectRegistration}), /thread receipts are required/u,
+      "environment session IDs must not substitute for host thread receipts");
+  } finally {
+    if (priorThreadEnv === undefined) delete process.env.AGENTOS_HOST_SESSION_ID;
+    else process.env.AGENTOS_HOST_SESSION_ID = priorThreadEnv;
+  }
+
+  const mismatchedProject = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-other-project-"));
+  try {
+    assert.throws(() => compileGuiHostReadbacks({...receipts, projectRegistration: {...projectRegistration, path: mismatchedProject}}), /project registration path differs/u,
+      "mismatched project registrations must fail closed");
+  } finally {
+    fs.rmSync(mismatchedProject, {recursive: true, force: true});
+  }
+  assert.throws(() => compileGuiHostReadbacks({...receipts, runtimePinReceipt: {threadId: controllerThread.id, pinned: true}}), /pin receipt belongs to the wrong thread/u,
+    "wrong-thread pin receipts must fail closed");
+  assert.throws(() => compileGuiHostReadbacks({...receipts, runtimePinReceipt: {threadId: runtimeThread.id, pinned: false}}), /does not prove pinning/u,
+    "missing pin proof must fail closed");
+  assert.throws(() => compileGuiHostReadbacks({...receipts, runtimeWaitReceipt: {...runtimeWaitReceipt, timedOut: true}}), /timed out; resume is unproven/u,
+    "missing resume proof must fail closed");
+  assert.throws(() => compileGuiHostReadbacks({...receipts, runtimeWaitReceipt: {...runtimeWaitReceipt, wake: {...runtimeWaitReceipt.wake, threadId: controllerThread.id}}}), /wrong thread or host/u,
+    "wrong-thread resume receipts must fail closed");
   assert.notEqual(output.question_plan.next, "bootstrap.discovery.mode", "the explicit start mode must not be asked again");
   assert.equal(output.question_plan.discovery_digest_sha256, canonicalDigest(output.discovery.facts), "the start result must expose the discovery binding");
   const startBody = structuredClone(output);

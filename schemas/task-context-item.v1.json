@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.task_context_item.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "item_ref_sha256", "source_binding_sha256", "project_context_sha256", "task_ref_sha256", "goal_ref_sha256", "authority", "content_class", "sensitivity", "captured_at_utc", "expires_at_utc", "token_count", "relation", "memory_authorized", "safe_label", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.task_context_item.v1"},
+    "version": {"const": 1},
+    "status": {"const": "VALIDATED"},
+    "item_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "task_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "goal_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority": {"enum": ["GENERAL_AUTHORITY", "GOAL_AUTHORITY", "PROJECT_AUTHORITY", "TASK_AUTHORITY", "MEMORY_AUTHORITY"]},
+    "content_class": {"enum": ["TASK_INPUT", "SOURCE_METADATA", "DERIVED_SUMMARY", "REDACTED_EVIDENCE", "MEMORY_RECORD", "RAW_PRIVATE_CONTENT", "SECRET_MATERIAL"]},
+    "sensitivity": {"enum": ["NORMAL", "SENSITIVE", "CRITICAL"]},
+    "captured_at_utc": {"type": "string", "format": "date-time"},
+    "expires_at_utc": {"type": ["string", "null"], "format": "date-time"},
+    "token_count": {"type": "integer", "minimum": 1},
+    "relation": {"enum": ["TASK_RELEVANT", "GOAL_RELEVANT", "PROJECT_RELEVANT", "UNRELATED"]},
+    "memory_authorized": {"type": "boolean"},
+    "safe_label": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

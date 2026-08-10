@@ -435,9 +435,14 @@ export function validateLocalCampaignActivation(activation) {
   assert(Array.isArray(activation.spawn_readbacks) && activation.spawn_readbacks.length === 3, "local activation requires three spawn readbacks");
   const roles = activation.spawn_readbacks.map((readback) => readback.role).sort();
   assert(JSON.stringify(roles) === JSON.stringify([...LOCAL_WORKER_ROLES].sort()), "local activation spawn roles are incomplete");
+  const sessionIds = activation.spawn_readbacks.map((readback) => readback.session_id);
+  assert(new Set(sessionIds).size === sessionIds.length, "local activation spawn session identities must be unique");
   for (const readback of activation.spawn_readbacks) {
     requireRecord(readback, "local activation spawn readback");
-    for (const field of ["role", "session_id", "pid", "worktree_path", "source_commit", "source_tree", "status", "build_status", "artifact_path", "observed_at_utc", "readback_sha256"]) requireString(String(readback[field]), `local activation spawn readback ${field}`);
+    for (const field of ["role", "session_id", "campaign_id", "campaign_version", "candidate_sha256", "pid", "worktree_path", "source_commit", "source_tree", "status", "build_status", "artifact_path", "observed_at_utc", "readback_sha256"]) requireString(String(readback[field]), `local activation spawn readback ${field}`);
+    assert(readback.campaign_id === activation.campaign_id && readback.campaign_version === activation.campaign_version, "local activation spawn readback campaign identity differs");
+    assert(readback.candidate_sha256 === activation.controller_candidate_sha256, "local activation spawn readback candidate differs");
+    assert(readback.source_commit === activation.source_commit && readback.source_tree === activation.source_tree, "local activation spawn readback source differs");
     assert(readback.status === "READY" || readback.status === "COMPLETED", "local activation spawn readback status is invalid");
     assert(["COMPLETED", "AUDIT_VERIFIED", "NOT_FEATURE_AGENT_BUILD"].includes(readback.build_status), "local activation spawn readback build status is invalid");
     if (readback.role === "FEATURE_AGENT") {

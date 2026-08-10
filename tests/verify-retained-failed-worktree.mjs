@@ -16,7 +16,7 @@ const rca = {
   schema: "agentos.controller_full_check_failure_rca.v1",
   status: "OPEN_REPAIR_REQUIRED",
   failed_command: "node tests/verify-all.mjs",
-  error_message_exact: "SyntaxError: Invalid or unexpected token",
+  error_message_exact: `opaque:error:${"a".repeat(64)}`,
 };
 const rcaBytes = Buffer.from(`${JSON.stringify(rca)}\n`, "utf8");
 fs.writeFileSync(rcaPath, rcaBytes, {flag: "wx", mode: 0o600});
@@ -36,6 +36,17 @@ fs.writeFileSync(path.join(failedWorktree, RETAINED_FAILED_ATTEMPT_MARKER), `${J
 })}\n`, {flag: "wx", mode: 0o600});
 fs.writeFileSync(path.join(failedWorktree, "invalid-worker.mjs"), "this is intentionally invalid (\n", {flag: "wx", mode: 0o600});
 assert.equal(isRetainedFailedAttempt(failedWorktree, root), true);
+
+const unsafeRca = {...rca, error_message_exact: "raw-error"};
+fs.writeFileSync(rcaPath, `${JSON.stringify(unsafeRca)}\n`, {mode: 0o600});
+const unsafeRcaDigest = crypto.createHash("sha256").update(fs.readFileSync(rcaPath)).digest("hex");
+const unsafeMarker = JSON.parse(fs.readFileSync(path.join(failedWorktree, RETAINED_FAILED_ATTEMPT_MARKER), "utf8"));
+unsafeMarker.failure_rca_sha256 = unsafeRcaDigest;
+fs.writeFileSync(path.join(failedWorktree, RETAINED_FAILED_ATTEMPT_MARKER), `${JSON.stringify(unsafeMarker)}\n`, {mode: 0o600});
+assert.throws(() => isRetainedFailedAttempt(failedWorktree, root), /error must be opaque/u);
+fs.writeFileSync(rcaPath, rcaBytes, {mode: 0o600});
+unsafeMarker.failure_rca_sha256 = rcaDigest;
+fs.writeFileSync(path.join(failedWorktree, RETAINED_FAILED_ATTEMPT_MARKER), `${JSON.stringify(unsafeMarker)}\n`, {mode: 0o600});
 
 const activeWorktree = path.join(root, "active-worktree");
 fs.mkdirSync(activeWorktree);

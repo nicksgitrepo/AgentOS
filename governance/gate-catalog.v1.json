@@ -1,0 +1,5224 @@
+{
+  "schema": "agentos.gate_catalog.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "source_kind": "DECLARATIVE_GOVERNANCE_DATA",
+  "answer_values": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "semantics": {
+    "pass_answer": "YES",
+    "unknown_behavior": "NEVER_PASSES",
+    "not_applicable_behavior": "REQUIRES_APPLICABILITY_JUSTIFICATION",
+    "agent_statement_alone": "NEVER_SUFFICIENT",
+    "repair_limit": "POSITIVE_VISIT_LIMIT_THEN_HARD_STOP"
+  },
+  "failure_classifications": [
+    "OWNER_OR_HARD_BLOCKER",
+    "REPAIRABLE_ENGINEERING_PUZZLE",
+    "SOFT_BOUNDARY_REVIEW"
+  ],
+  "categories": [
+    {
+      "category_id": "BOOTSTRAP_CONTEXT",
+      "display_name": "Bootstrap Context"
+    },
+    {
+      "category_id": "CODE_HYGIENE",
+      "display_name": "Code and Repository Hygiene"
+    },
+    {
+      "category_id": "DELIVERY",
+      "display_name": "Delivery and Closure"
+    },
+    {
+      "category_id": "EVIDENCE_IDENTITY",
+      "display_name": "Evidence and Identity"
+    },
+    {
+      "category_id": "FUNCTIONALITY",
+      "display_name": "Functionality"
+    },
+    {
+      "category_id": "SCOPE_BOUNDARIES",
+      "display_name": "Scope and Boundaries"
+    },
+    {
+      "category_id": "PROGRESS_HEALTH",
+      "display_name": "Progress and Health"
+    },
+    {
+      "category_id": "RECOVERY",
+      "display_name": "Recovery and Boundaries"
+    },
+    {
+      "category_id": "ROLE_ROUTING",
+      "display_name": "Role Routing"
+    },
+    {
+      "category_id": "SECURITY_PRIVACY",
+      "display_name": "Security and Privacy"
+    },
+    {
+      "category_id": "UI_UX_DESIGN_BIBLE",
+      "display_name": "UI/UX and Design Bible"
+    },
+    {
+      "category_id": "RESPONSE_HANDOFF",
+      "display_name": "Response and Handoff"
+    },
+    {
+      "category_id": "GENERAL_GOVERNANCE",
+      "display_name": "General Governance"
+    }
+  ],
+  "graphs": [
+    {
+      "graph_id": "GENERAL_CLOSURE",
+      "display_name": "General Closure",
+      "category": "GENERAL_GOVERNANCE",
+      "entry_gate_id": "GENERAL-CLOSE-001",
+      "gate_ids": [
+        "GENERAL-CLOSE-001",
+        "GENERAL-CLOSE-002"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_CLOSURE-GENERAL-COMPLETE",
+        "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "GENERAL_CONVERSATION",
+      "display_name": "General Conversation",
+      "category": "RESPONSE_HANDOFF",
+      "entry_gate_id": "GENERAL-CONV-001",
+      "gate_ids": [
+        "GENERAL-CONV-001",
+        "GENERAL-CONV-002",
+        "GENERAL-CONV-003"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_CONVERSATION-GENERAL-COMPLETE",
+        "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+        "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "CORE",
+      "display_name": "Core Work Admission",
+      "category": "SCOPE_BOUNDARIES",
+      "entry_gate_id": "CORE-001",
+      "gate_ids": [
+        "CORE-001",
+        "CORE-002",
+        "CORE-003"
+      ],
+      "terminal_ids": [
+        "TERM-CORE-COMPLETE",
+        "TERM-CORE-HARD-STOP-EVIDENCE",
+        "TERM-CORE-HARD-STOP-IDENTITY",
+        "TERM-CORE-HARD-STOP-SCOPE",
+        "TERM-CORE-SOFT-REVIEW",
+        "TERM-CORE-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "GENERAL_EVIDENCE",
+      "display_name": "General Evidence",
+      "category": "EVIDENCE_IDENTITY",
+      "entry_gate_id": "GENERAL-EVIDENCE-001",
+      "gate_ids": [
+        "GENERAL-EVIDENCE-001",
+        "GENERAL-EVIDENCE-002",
+        "GENERAL-EVIDENCE-003"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_EVIDENCE-GENERAL-COMPLETE",
+        "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "GENERAL_PROGRESS",
+      "display_name": "General Progress",
+      "category": "PROGRESS_HEALTH",
+      "entry_gate_id": "GENERAL-PROGRESS-001",
+      "gate_ids": [
+        "GENERAL-PROGRESS-001",
+        "GENERAL-PROGRESS-002",
+        "GENERAL-PROGRESS-003"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_PROGRESS-GENERAL-COMPLETE",
+        "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP",
+        "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+        "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "GENERAL_RECOVERY",
+      "display_name": "General Recovery",
+      "category": "RECOVERY",
+      "entry_gate_id": "GENERAL-RECOVERY-001",
+      "gate_ids": [
+        "GENERAL-RECOVERY-001",
+        "GENERAL-RECOVERY-002",
+        "GENERAL-RECOVERY-003"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_RECOVERY-GENERAL-COMPLETE",
+        "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+        "TERM-GENERAL_RECOVERY-GENERAL-SOFT-REVIEW",
+        "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "GENERAL_RESPONSE",
+      "display_name": "General Response",
+      "category": "RESPONSE_HANDOFF",
+      "entry_gate_id": "GENERAL-RESPONSE-001",
+      "gate_ids": [
+        "GENERAL-RESPONSE-001",
+        "GENERAL-RESPONSE-002",
+        "GENERAL-RESPONSE-003",
+        "GENERAL-RESPONSE-004"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-COMPLETE",
+        "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+        "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-SOFT-REVIEW",
+        "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "GENERAL_SECURITY",
+      "display_name": "General Security",
+      "category": "SECURITY_PRIVACY",
+      "entry_gate_id": "GENERAL-SECURITY-001",
+      "gate_ids": [
+        "GENERAL-SECURITY-001",
+        "GENERAL-SECURITY-002",
+        "GENERAL-SECURITY-003"
+      ],
+      "terminal_ids": [
+        "TERM-GENERAL_SECURITY-GENERAL-COMPLETE",
+        "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "BOOTSTRAP_CONTEXT",
+      "display_name": "Bootstrap Context",
+      "category": "BOOTSTRAP_CONTEXT",
+      "entry_gate_id": "BOOT-001",
+      "gate_ids": [
+        "BOOT-001",
+        "BOOT-002",
+        "BOOT-003",
+        "BOOT-004"
+      ],
+      "terminal_ids": [
+        "TERM-BOOTSTRAP_CONTEXT-COMPLETE",
+        "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+        "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-EVIDENCE",
+        "TERM-BOOTSTRAP_CONTEXT-SOFT-REVIEW",
+        "TERM-BOOTSTRAP_CONTEXT-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "CODE_HYGIENE",
+      "display_name": "Code and Repository Hygiene",
+      "category": "CODE_HYGIENE",
+      "entry_gate_id": "HYGIENE-001",
+      "gate_ids": [
+        "HYGIENE-001",
+        "HYGIENE-002",
+        "HYGIENE-003",
+        "HYGIENE-004",
+        "HYGIENE-005"
+      ],
+      "terminal_ids": [
+        "TERM-CODE_HYGIENE-COMPLETE",
+        "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE",
+        "TERM-CODE_HYGIENE-HARD-STOP-SCOPE",
+        "TERM-CODE_HYGIENE-SOFT-REVIEW",
+        "TERM-CODE_HYGIENE-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "DELIVERY_CLOSURE",
+      "display_name": "Delivery and Closure",
+      "category": "DELIVERY",
+      "entry_gate_id": "DELIVERY-001",
+      "gate_ids": [
+        "DELIVERY-001",
+        "DELIVERY-002",
+        "DELIVERY-003",
+        "DELIVERY-004"
+      ],
+      "terminal_ids": [
+        "TERM-DELIVERY_CLOSURE-COMPLETE",
+        "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+        "TERM-DELIVERY_CLOSURE-HARD-STOP-EVIDENCE",
+        "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+        "TERM-DELIVERY_CLOSURE-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "EVIDENCE_IDENTITY",
+      "display_name": "Evidence and Identity",
+      "category": "EVIDENCE_IDENTITY",
+      "entry_gate_id": "EVIDENCE-001",
+      "gate_ids": [
+        "EVIDENCE-001",
+        "EVIDENCE-002",
+        "EVIDENCE-003",
+        "EVIDENCE-004",
+        "EVIDENCE-005"
+      ],
+      "terminal_ids": [
+        "TERM-EVIDENCE_IDENTITY-COMPLETE",
+        "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "TERM-EVIDENCE_IDENTITY-HARD-STOP-IDENTITY"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "FUNCTIONALITY",
+      "display_name": "Functionality",
+      "category": "FUNCTIONALITY",
+      "entry_gate_id": "FUNC-001",
+      "gate_ids": [
+        "FUNC-001",
+        "FUNC-002",
+        "FUNC-003",
+        "FUNC-004",
+        "FUNC-005",
+        "FUNC-006",
+        "FUNC-007",
+        "FUNC-008",
+        "FUNC-009",
+        "FUNC-010",
+        "FUNC-011",
+        "FUNC-012"
+      ],
+      "terminal_ids": [
+        "TERM-FUNCTIONALITY-COMPLETE",
+        "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+        "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+        "TERM-FUNCTIONALITY-HARD-STOP-IDENTITY",
+        "TERM-FUNCTIONALITY-HARD-STOP-SCOPE",
+        "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "TERM-FUNCTIONALITY-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "INTENT_SCOPE",
+      "display_name": "Intent and Scope",
+      "category": "SCOPE_BOUNDARIES",
+      "entry_gate_id": "INTENT-001",
+      "gate_ids": [
+        "INTENT-001",
+        "INTENT-002",
+        "INTENT-003",
+        "INTENT-004"
+      ],
+      "terminal_ids": [
+        "TERM-INTENT_SCOPE-COMPLETE",
+        "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+        "TERM-INTENT_SCOPE-SOFT-REVIEW",
+        "TERM-INTENT_SCOPE-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "PROGRESS_HEALTH",
+      "display_name": "Progress and Health",
+      "category": "PROGRESS_HEALTH",
+      "entry_gate_id": "PROGRESS-001",
+      "gate_ids": [
+        "PROGRESS-001",
+        "PROGRESS-002",
+        "PROGRESS-003",
+        "PROGRESS-004"
+      ],
+      "terminal_ids": [
+        "TERM-PROGRESS_HEALTH-COMPLETE",
+        "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS",
+        "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+        "TERM-PROGRESS_HEALTH-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "RECOVERY_BOUNDARIES",
+      "display_name": "Recovery and Boundaries",
+      "category": "RECOVERY",
+      "entry_gate_id": "RECOVERY-001",
+      "gate_ids": [
+        "RECOVERY-001",
+        "RECOVERY-002",
+        "RECOVERY-003",
+        "RECOVERY-004",
+        "RECOVERY-005"
+      ],
+      "terminal_ids": [
+        "TERM-RECOVERY_BOUNDARIES-COMPLETE",
+        "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+        "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+        "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+        "TERM-RECOVERY_BOUNDARIES-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "ROLE_ROUTING",
+      "display_name": "Role Routing",
+      "category": "ROLE_ROUTING",
+      "entry_gate_id": "ROUTE-001",
+      "gate_ids": [
+        "ROUTE-001",
+        "ROUTE-002",
+        "ROUTE-003",
+        "ROUTE-004",
+        "ROUTE-005"
+      ],
+      "terminal_ids": [
+        "TERM-ROLE_ROUTING-COMPLETE",
+        "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+        "TERM-ROLE_ROUTING-SOFT-REVIEW",
+        "TERM-ROLE_ROUTING-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "SECURITY_PRIVACY",
+      "display_name": "Security and Privacy",
+      "category": "SECURITY_PRIVACY",
+      "entry_gate_id": "SECURITY-001",
+      "gate_ids": [
+        "SECURITY-001",
+        "SECURITY-002",
+        "SECURITY-003",
+        "SECURITY-004",
+        "SECURITY-005",
+        "SECURITY-006"
+      ],
+      "terminal_ids": [
+        "TERM-SECURITY_PRIVACY-COMPLETE",
+        "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "UI_UX",
+      "display_name": "UI/UX and Design Bible",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "entry_gate_id": "UI-001",
+      "gate_ids": [
+        "UI-001",
+        "UI-002",
+        "UI-003",
+        "UI-004",
+        "UI-005",
+        "UI-006"
+      ],
+      "terminal_ids": [
+        "TERM-UI_UX-COMPLETE",
+        "TERM-UI_UX-SOFT-REVIEW",
+        "TERM-UI_UX-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    },
+    {
+      "graph_id": "USER_CONVERSATION",
+      "display_name": "User Conversation",
+      "category": "RESPONSE_HANDOFF",
+      "entry_gate_id": "CONV-001",
+      "gate_ids": [
+        "CONV-001",
+        "CONV-002",
+        "CONV-003",
+        "CONV-004",
+        "CONV-005",
+        "CONV-006"
+      ],
+      "terminal_ids": [
+        "TERM-USER_CONVERSATION-COMPLETE",
+        "TERM-USER_CONVERSATION-HARD-STOP-EVIDENCE",
+        "TERM-USER_CONVERSATION-SOFT-REVIEW",
+        "TERM-USER_CONVERSATION-UNPROVEN"
+      ],
+      "repair_edges": [],
+      "repair_limit_terminal": null
+    }
+  ],
+  "terminals": [
+    {
+      "terminal_id": "TERM-GENERAL_CLOSURE-GENERAL-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "Temporary work is closed with host evidence."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+      "kind": "HARD_STOP",
+      "message": "Temporary work cannot be called closed without host readback."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_CONVERSATION-GENERAL-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The owner question is short, plain, and safely mappable."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The question needs conversation review."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The question meaning is not established."
+    },
+    {
+      "terminal_id": "TERM-CORE-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The governed work passed its applicable gates."
+    },
+    {
+      "terminal_id": "TERM-CORE-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "Required evidence is missing or unknown."
+    },
+    {
+      "terminal_id": "TERM-CORE-HARD-STOP-IDENTITY",
+      "kind": "HARD_STOP",
+      "message": "The work identity does not match its evidence."
+    },
+    {
+      "terminal_id": "TERM-CORE-HARD-STOP-SCOPE",
+      "kind": "HARD_STOP",
+      "message": "The scope or authority is not safe to continue."
+    },
+    {
+      "terminal_id": "TERM-CORE-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "An orchestrator review is required before continuing."
+    },
+    {
+      "terminal_id": "TERM-CORE-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The result is not proven by the available evidence."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_EVIDENCE-GENERAL-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The result evidence is real, matching, and traceable."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+      "kind": "HARD_STOP",
+      "message": "A result cannot be accepted without matching evidence."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_PROGRESS-GENERAL-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The worker produced meaningful progress."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP",
+      "kind": "HARD_STOP",
+      "message": "Progress cannot be established safely."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The stalled or weak result needs campaign review."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The progress claim lacks evidence."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RECOVERY-GENERAL-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "Recovery and goal reassessment are explicit."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+      "kind": "HARD_STOP",
+      "message": "The changed condition requires a new goal or authority."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RECOVERY-GENERAL-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The recovery route needs campaign review."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "Recovery behavior is not established."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The response is scoped, evidence-bound, truthful, and understandable."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+      "kind": "HARD_STOP",
+      "message": "The response cannot be trusted or safely disclosed."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The response needs review before it is shown or recorded."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The response claim is not established by independent evidence."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_SECURITY-GENERAL-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The security and authority boundary is satisfied."
+    },
+    {
+      "terminal_id": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+      "kind": "HARD_STOP",
+      "message": "Security or authority evidence failed."
+    },
+    {
+      "terminal_id": "TERM-BOOTSTRAP_CONTEXT-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "Bootstrap context is classified and traceable."
+    },
+    {
+      "terminal_id": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+      "kind": "HARD_STOP",
+      "message": "Bootstrap cannot read or cross the admitted boundary."
+    },
+    {
+      "terminal_id": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "Bootstrap context lacks required provenance evidence."
+    },
+    {
+      "terminal_id": "TERM-BOOTSTRAP_CONTEXT-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The context packet needs campaign review."
+    },
+    {
+      "terminal_id": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "Bootstrap context is not yet established."
+    },
+    {
+      "terminal_id": "TERM-CODE_HYGIENE-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The implementation is minimal, clear, and checked."
+    },
+    {
+      "terminal_id": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "The hygiene result cannot be established."
+    },
+    {
+      "terminal_id": "TERM-CODE_HYGIENE-HARD-STOP-SCOPE",
+      "kind": "HARD_STOP",
+      "message": "The change includes work outside its admitted scope."
+    },
+    {
+      "terminal_id": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The code hygiene result needs review."
+    },
+    {
+      "terminal_id": "TERM-CODE_HYGIENE-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The hygiene claim lacks sufficient evidence."
+    },
+    {
+      "terminal_id": "TERM-DELIVERY_CLOSURE-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The chosen delivery path and temporary-agent closure are complete."
+    },
+    {
+      "terminal_id": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+      "kind": "HARD_STOP",
+      "message": "Temporary work or delivery authority is not safely closed."
+    },
+    {
+      "terminal_id": "TERM-DELIVERY_CLOSURE-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "Closure cannot be claimed without host readback."
+    },
+    {
+      "terminal_id": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The chosen delivery result needs campaign review."
+    },
+    {
+      "terminal_id": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "Delivery or closure is not established."
+    },
+    {
+      "terminal_id": "TERM-EVIDENCE_IDENTITY-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The result evidence is real, matching, and traceable."
+    },
+    {
+      "terminal_id": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "A result cannot be accepted without real evidence."
+    },
+    {
+      "terminal_id": "TERM-EVIDENCE_IDENTITY-HARD-STOP-IDENTITY",
+      "kind": "HARD_STOP",
+      "message": "Evidence identities do not match the result."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The functionality slice passed its gates and is ready for campaign closure."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+      "kind": "HARD_STOP",
+      "message": "The behavior crossed or failed a required functional boundary."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "Functionality cannot proceed on unknown evidence."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-HARD-STOP-IDENTITY",
+      "kind": "HARD_STOP",
+      "message": "Functionality evidence does not match the active work identity."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-HARD-STOP-SCOPE",
+      "kind": "HARD_STOP",
+      "message": "The functionality request is outside the admitted scope."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The Functionality Worker must return the result for campaign review."
+    },
+    {
+      "terminal_id": "TERM-FUNCTIONALITY-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The functionality result needs evidence or a bounded repair."
+    },
+    {
+      "terminal_id": "TERM-INTENT_SCOPE-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The intent and scope are explicit and unchanged."
+    },
+    {
+      "terminal_id": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+      "kind": "HARD_STOP",
+      "message": "The work cannot continue outside its admitted intent or scope."
+    },
+    {
+      "terminal_id": "TERM-INTENT_SCOPE-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The Campaign Orchestrator must review the intent or scope."
+    },
+    {
+      "terminal_id": "TERM-INTENT_SCOPE-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The intent or scope needs evidence before work continues."
+    },
+    {
+      "terminal_id": "TERM-PROGRESS_HEALTH-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The worker produced meaningful progress."
+    },
+    {
+      "terminal_id": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS",
+      "kind": "HARD_STOP",
+      "message": "Progress cannot be established within the governed window."
+    },
+    {
+      "terminal_id": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The Campaign Orchestrator must review the stalled or weak result."
+    },
+    {
+      "terminal_id": "TERM-PROGRESS_HEALTH-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The progress claim is not supported by evidence."
+    },
+    {
+      "terminal_id": "TERM-RECOVERY_BOUNDARIES-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "Recovery and boundary handling are explicit."
+    },
+    {
+      "terminal_id": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "Failure classification is not evidenced."
+    },
+    {
+      "terminal_id": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+      "kind": "HARD_STOP",
+      "message": "The changed condition requires a new goal or authority."
+    },
+    {
+      "terminal_id": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The Campaign Orchestrator must review the recovery route."
+    },
+    {
+      "terminal_id": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "Recovery behavior is not established."
+    },
+    {
+      "terminal_id": "TERM-ROLE_ROUTING-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The work is routed to one correctly scoped role and lane."
+    },
+    {
+      "terminal_id": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+      "kind": "HARD_STOP",
+      "message": "The role or lane cannot be safely identified."
+    },
+    {
+      "terminal_id": "TERM-ROLE_ROUTING-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The Campaign Orchestrator must review role routing."
+    },
+    {
+      "terminal_id": "TERM-ROLE_ROUTING-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "Role routing lacks sufficient evidence."
+    },
+    {
+      "terminal_id": "TERM-SECURITY_PRIVACY-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The security and privacy boundary is satisfied."
+    },
+    {
+      "terminal_id": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "Security cannot proceed on unknown evidence."
+    },
+    {
+      "terminal_id": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+      "kind": "HARD_STOP",
+      "message": "Security, privacy, or authority evidence failed."
+    },
+    {
+      "terminal_id": "TERM-UI_UX-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The user-facing surface is understandable and usable."
+    },
+    {
+      "terminal_id": "TERM-UI_UX-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The UI and UX result needs design review."
+    },
+    {
+      "terminal_id": "TERM-UI_UX-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The UI and UX claim lacks observed evidence."
+    },
+    {
+      "terminal_id": "TERM-USER_CONVERSATION-COMPLETE",
+      "kind": "COMPLETE",
+      "message": "The owner question is short, plain, and safely mappable."
+    },
+    {
+      "terminal_id": "TERM-USER_CONVERSATION-HARD-STOP-EVIDENCE",
+      "kind": "HARD_STOP",
+      "message": "A user-facing response cannot be sent without a truthful evidence-bound check."
+    },
+    {
+      "terminal_id": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+      "kind": "SOFT_REVIEW",
+      "message": "The user-facing question needs conversation review."
+    },
+    {
+      "terminal_id": "TERM-USER_CONVERSATION-UNPROVEN",
+      "kind": "UNPROVEN",
+      "message": "The question meaning is not established."
+    }
+  ],
+  "gates": [
+    {
+      "gate_id": "GENERAL-CLOSE-001",
+      "graph_id": "GENERAL_CLOSURE",
+      "category": "GENERAL_GOVERNANCE",
+      "context": "CLOSURE",
+      "name": "Temporary Worker Closure",
+      "question": "Was the handoff preserved, the temporary worker unpinned and archived, and the active roster cleared by host readback?",
+      "evidence": [
+        "archive",
+        "handoff",
+        "roster"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-CLOSE-002",
+        "NO": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-CLOSE-002",
+      "graph_id": "GENERAL_CLOSURE",
+      "category": "GENERAL_GOVERNANCE",
+      "context": "CLOSURE",
+      "name": "Closure Record Match",
+      "question": "Does the final closure record match the host's archived state and contain the typed handoff for this exact result?",
+      "evidence": [
+        "archive",
+        "digest",
+        "handoff",
+        "roster"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_CLOSURE-GENERAL-COMPLETE",
+        "NO": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_CLOSURE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-CONV-001",
+      "graph_id": "GENERAL_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "One Real Owner Choice",
+      "question": "Does this ask for exactly one missing owner choice in short, ordinary words?",
+      "evidence": [
+        "missing_choice",
+        "question",
+        "wording"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-CONV-002",
+        "NO": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "GENERAL-CONV-002",
+      "graph_id": "GENERAL_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Simple Answer Mapping",
+      "question": "Can a numeric answer or yes or no answer be mapped without changing the owner's meaning?",
+      "evidence": [
+        "ambiguity",
+        "answer_map",
+        "context"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-CONV-003",
+        "NO": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "GENERAL-CONV-003",
+      "graph_id": "GENERAL_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "No Internal Vocabulary",
+      "question": "Can the owner understand and answer this without seeing role names, graph IDs, hashes, schemas, or other internal vocabulary?",
+      "evidence": [
+        "language",
+        "surface",
+        "wording"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_CONVERSATION-GENERAL-COMPLETE",
+        "NO": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_CONVERSATION-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CORE-001",
+      "graph_id": "CORE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "TASK_START",
+      "name": "Admitted Work Scope",
+      "question": "Is the admitted work one clear change with a known scope and owner?",
+      "evidence": [
+        "admission",
+        "scope"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CORE-002",
+        "NO": "TERM-CORE-HARD-STOP-SCOPE",
+        "UNKNOWN": "TERM-CORE-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-CORE-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CORE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CORE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CORE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "CORE-002",
+      "graph_id": "CORE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "TASK_START",
+      "name": "Matching Work Identity",
+      "question": "Do the source, worktree, session, goal, and environment all identify the same work?",
+      "evidence": [
+        "environment",
+        "goal",
+        "session",
+        "source",
+        "worktree"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CORE-003",
+        "NO": "TERM-CORE-HARD-STOP-IDENTITY",
+        "UNKNOWN": "TERM-CORE-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-CORE-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CORE-HARD-STOP-IDENTITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CORE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CORE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "CORE-003",
+      "graph_id": "CORE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "HANDOFF",
+      "name": "Boundary and Independent Review",
+      "question": "Did the work stay inside its boundary and receive the required independent review?",
+      "evidence": [
+        "changed_scope",
+        "review"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-CORE-COMPLETE",
+        "NO": "TERM-CORE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-CORE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-CORE-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CORE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-CORE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CORE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "GENERAL-EVIDENCE-001",
+      "graph_id": "GENERAL_EVIDENCE",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Real Evidence",
+      "question": "Does every claim point to a real readback or reproducible observation rather than a receipt or assertion alone?",
+      "evidence": [
+        "claim_map",
+        "observation",
+        "readback"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-EVIDENCE-002",
+        "NO": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-EVIDENCE-002",
+      "graph_id": "GENERAL_EVIDENCE",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Matching Evidence Identity",
+      "question": "Do all records name the same source, worktree, session, goal, graph, and environment as the claimed result?",
+      "evidence": [
+        "comparison",
+        "digest",
+        "identity"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-EVIDENCE-003",
+        "NO": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-EVIDENCE-003",
+      "graph_id": "GENERAL_EVIDENCE",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Independent Evidence Review",
+      "question": "Was the pass independently checked by host readback or a separate Auditor rather than asserted by the worker alone?",
+      "evidence": [
+        "issuer",
+        "readback",
+        "review"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_EVIDENCE-GENERAL-COMPLETE",
+        "NO": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_EVIDENCE-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-PROGRESS-001",
+      "graph_id": "GENERAL_PROGRESS",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Progress Within the Window",
+      "question": "Did the worker produce an observable result before the configured fifteen-minute window ended?",
+      "evidence": [
+        "observed_at",
+        "progress",
+        "window"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-PROGRESS-002",
+        "NO": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-PROGRESS-002",
+      "graph_id": "GENERAL_PROGRESS",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Meaningful Result",
+      "question": "Is the result a changed artifact, verified behavior, or bounded handoff rather than only a failure list?",
+      "evidence": [
+        "artifact_or_behavior",
+        "handoff",
+        "result"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-PROGRESS-003",
+        "NO": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-PROGRESS-003",
+      "graph_id": "GENERAL_PROGRESS",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Heartbeat Is Not Progress",
+      "question": "Is progress supported by a changed artifact, verified behavior, checkpoint, or typed handoff—not only a heartbeat or live process?",
+      "evidence": [
+        "checks",
+        "progress",
+        "result"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_PROGRESS-GENERAL-COMPLETE",
+        "NO": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_PROGRESS-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RECOVERY-001",
+      "graph_id": "GENERAL_RECOVERY",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Failure Classification",
+      "question": "Is each failure classified as an ordinary puzzle, soft review, hard stop, or true owner blocker?",
+      "evidence": [
+        "class",
+        "failure",
+        "route"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-RECOVERY-002",
+        "NO": "TERM-GENERAL_RECOVERY-GENERAL-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RECOVERY-002",
+      "graph_id": "GENERAL_RECOVERY",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Goal Reassessment",
+      "question": "When scope, intent, authority, or conditions changed, was the old goal closed and a replacement goal routed?",
+      "evidence": [
+        "goal_change",
+        "reassessment",
+        "replacement"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-RECOVERY-003",
+        "NO": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RECOVERY-003",
+      "graph_id": "GENERAL_RECOVERY",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Recovery Cleanup",
+      "question": "After a failure or replacement, were partial sessions, leases, worktrees, and evidence safely cleaned up or preserved?",
+      "evidence": [
+        "archive",
+        "cleanup",
+        "leases",
+        "roster"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_RECOVERY-GENERAL-COMPLETE",
+        "NO": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RECOVERY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RESPONSE-001",
+      "graph_id": "GENERAL_RESPONSE",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Scoped Agent Response",
+      "question": "Does this response stay inside the admitted task, role authority, current goal, and named boundary?",
+      "evidence": [
+        "authority",
+        "boundary",
+        "goal",
+        "scope"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-RESPONSE-002",
+        "NO": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RESPONSE-002",
+      "graph_id": "GENERAL_RESPONSE",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Named Pass Claim",
+      "question": "Does every claimed pass identify the human-readable gate, answer YES, and include the evidence needed by that gate?",
+      "evidence": [
+        "claim_map",
+        "question",
+        "readback",
+        "response"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-RESPONSE-003",
+        "NO": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RESPONSE-003",
+      "graph_id": "GENERAL_RESPONSE",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Independent Response Identity",
+      "question": "Does the response match the recorded source, worktree, session, goal, environment, and independent review instead of relying on a self-authored receipt?",
+      "evidence": [
+        "comparison",
+        "digest",
+        "identity",
+        "review"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-RESPONSE-004",
+        "NO": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-RESPONSE-004",
+      "graph_id": "GENERAL_RESPONSE",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Plain Repair Explanation",
+      "question": "Is the response plain enough for the owner while preserving the exact failure, repair route, and next authorized action?",
+      "evidence": [
+        "failure",
+        "language",
+        "route",
+        "wording"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-COMPLETE",
+        "NO": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-GENERAL_RESPONSE-GENERAL-RESPONSE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "GENERAL-SECURITY-001",
+      "graph_id": "GENERAL_SECURITY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CODE_CHANGE",
+      "name": "Security Boundary",
+      "question": "Are inputs, permissions, secrets, private data, and isolation handled within the admitted security boundary?",
+      "evidence": [
+        "isolation",
+        "permissions",
+        "secrets",
+        "threats"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-SECURITY-002",
+        "NO": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-SECURITY-002",
+      "graph_id": "GENERAL_SECURITY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CLOSURE",
+      "name": "Protected Action Authority",
+      "question": "Are destructive, external, and release actions held for Runtime authority with an exact bounded request?",
+      "evidence": [
+        "actions",
+        "authority",
+        "request"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "GENERAL-SECURITY-003",
+        "NO": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "GENERAL-SECURITY-003",
+      "graph_id": "GENERAL_SECURITY",
+      "category": "SECURITY_PRIVACY",
+      "context": "RESPONSE",
+      "name": "No Secret Echo",
+      "question": "Does every response, log, handoff, and evidence record avoid exposing secrets, private paths, credentials, or unapproved project content?",
+      "evidence": [
+        "content",
+        "response",
+        "secrets"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-GENERAL_SECURITY-GENERAL-COMPLETE",
+        "NO": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+        "UNKNOWN": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+        "NOT_APPLICABLE": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-GENERAL_SECURITY-GENERAL-HARD-STOP",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "BOOT-001",
+      "graph_id": "BOOTSTRAP_CONTEXT",
+      "category": "BOOTSTRAP_CONTEXT",
+      "context": "TASK_START",
+      "name": "Read-Only Source Discovery",
+      "question": "Can every named source be read inside the admitted boundary without writing or bypassing permission?",
+      "evidence": [
+        "boundary",
+        "read_capability",
+        "sources"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "BOOT-002",
+        "NO": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+        "UNKNOWN": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "BOOT-002",
+      "graph_id": "BOOTSTRAP_CONTEXT",
+      "category": "BOOTSTRAP_CONTEXT",
+      "context": "TASK_START",
+      "name": "Provenance Classification",
+      "question": "Is each retained fact labeled current, historical, decided, unresolved, or excluded with its provenance?",
+      "evidence": [
+        "classification",
+        "conflicts",
+        "provenance"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "BOOT-003",
+        "NO": "TERM-BOOTSTRAP_CONTEXT-SOFT-REVIEW",
+        "UNKNOWN": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-BOOTSTRAP_CONTEXT-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "BOOT-003",
+      "graph_id": "BOOTSTRAP_CONTEXT",
+      "category": "BOOTSTRAP_CONTEXT",
+      "context": "TASK_START",
+      "name": "External Control Plane",
+      "question": "Is AgentOS governance stored and operated outside the user's product repository unless an explicit development exception is recorded?",
+      "evidence": [
+        "boundary",
+        "isolation",
+        "provenance"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "BOOT-004",
+        "NO": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+        "UNKNOWN": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "BOOT-004",
+      "graph_id": "BOOTSTRAP_CONTEXT",
+      "category": "BOOTSTRAP_CONTEXT",
+      "context": "TASK_START",
+      "name": "Complete Bootstrap Plan",
+      "question": "Does the bootstrap packet show the chosen mode, every development phase, lane ownership, persistent roles, and the change into iteration mode?",
+      "evidence": [
+        "context",
+        "phases",
+        "plan",
+        "role"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-BOOTSTRAP_CONTEXT-COMPLETE",
+        "NO": "TERM-BOOTSTRAP_CONTEXT-SOFT-REVIEW",
+        "UNKNOWN": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-BOOTSTRAP_CONTEXT-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-BOOTSTRAP_CONTEXT-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-BOOTSTRAP_CONTEXT-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "HYGIENE-001",
+      "graph_id": "CODE_HYGIENE",
+      "category": "CODE_HYGIENE",
+      "context": "CODE_CHANGE",
+      "name": "Minimal Admitted Diff",
+      "question": "Is the implementation the smallest clear change that satisfies the admitted behavior without unrelated files?",
+      "evidence": [
+        "diff",
+        "non_goals",
+        "scope"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "HYGIENE-002",
+        "NO": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-CODE_HYGIENE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-CODE_HYGIENE-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-CODE_HYGIENE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CODE_HYGIENE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "HYGIENE-002",
+      "graph_id": "CODE_HYGIENE",
+      "category": "CODE_HYGIENE",
+      "context": "CLOSURE",
+      "name": "Clean Checked Workspace",
+      "question": "Did direct syntax and behavior checks pass with no unreviewed warnings or generated residue?",
+      "evidence": [
+        "checks",
+        "warnings",
+        "workspace"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "HYGIENE-003",
+        "NO": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-CODE_HYGIENE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-CODE_HYGIENE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "HYGIENE-003",
+      "graph_id": "CODE_HYGIENE",
+      "category": "CODE_HYGIENE",
+      "context": "CODE_CHANGE",
+      "name": "Concurrency and Race Safety",
+      "question": "Is the worktree diff free of potential race conditions, unsafe shared-state changes, and ordering bugs under the admitted concurrent use?",
+      "evidence": [
+        "concurrency",
+        "diff",
+        "ordering",
+        "shared_state"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "HYGIENE-004",
+        "NO": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-CODE_HYGIENE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-CODE_HYGIENE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "HYGIENE-004",
+      "graph_id": "CODE_HYGIENE",
+      "category": "CODE_HYGIENE",
+      "context": "CODE_CHANGE",
+      "name": "Dependency and Residue Hygiene",
+      "question": "Are dependency changes, generated files, temporary files, ignored artifacts, and repository metadata either required, bounded, and accounted for?",
+      "evidence": [
+        "dependencies",
+        "residue",
+        "warnings",
+        "workspace"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "HYGIENE-005",
+        "NO": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-CODE_HYGIENE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-CODE_HYGIENE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "HYGIENE-005",
+      "graph_id": "CODE_HYGIENE",
+      "category": "CODE_HYGIENE",
+      "context": "CLOSURE",
+      "name": "Reviewable Change History",
+      "question": "Does the worktree preserve a reviewable diff with no unrelated rewrites, hidden generated changes, or uncommitted required inputs?",
+      "evidence": [
+        "changed_paths",
+        "diff",
+        "scope",
+        "workspace"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-CODE_HYGIENE-COMPLETE",
+        "NO": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-CODE_HYGIENE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-CODE_HYGIENE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-CODE_HYGIENE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-CODE_HYGIENE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "DELIVERY-001",
+      "graph_id": "DELIVERY_CLOSURE",
+      "category": "DELIVERY",
+      "context": "CLOSURE",
+      "name": "Owner-Chosen Finish",
+      "question": "Does the accepted result match the finish the owner chose, such as handoff, merge, push, deployment, release, or stop?",
+      "evidence": [
+        "accepted",
+        "finish",
+        "owner_choice"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "DELIVERY-002",
+        "NO": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "DELIVERY-002",
+      "graph_id": "DELIVERY_CLOSURE",
+      "category": "DELIVERY",
+      "context": "CLOSURE",
+      "name": "Temporary Work Closure",
+      "question": "Were the handoff preserved, temporary worker unpinned and archived, and the active roster cleared by host readback?",
+      "evidence": [
+        "archive",
+        "handoff",
+        "roster"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "DELIVERY-003",
+        "NO": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+        "UNKNOWN": "TERM-DELIVERY_CLOSURE-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-DELIVERY_CLOSURE-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "DELIVERY-003",
+      "graph_id": "DELIVERY_CLOSURE",
+      "category": "DELIVERY",
+      "context": "CLOSURE",
+      "name": "Release Integrity",
+      "question": "Does the chosen finish have a clean source checkpoint, exact result digest, a push or deployment receipt when selected, and a rollback path when applicable?",
+      "evidence": [
+        "accepted",
+        "receipt",
+        "rollback",
+        "source"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "DELIVERY-004",
+        "NO": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "DELIVERY-004",
+      "graph_id": "DELIVERY_CLOSURE",
+      "category": "DELIVERY",
+      "context": "CLOSURE",
+      "name": "Independent Live Result Check",
+      "question": "If the owner chose deployment or release, did an independent live check confirm the intended version and behavior?",
+      "evidence": [
+        "accepted",
+        "environment",
+        "live_audit"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-DELIVERY_CLOSURE-COMPLETE",
+        "NO": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+        "UNKNOWN": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-DELIVERY_CLOSURE-HARD-STOP-CLOSURE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-DELIVERY_CLOSURE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-DELIVERY_CLOSURE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "EVIDENCE-001",
+      "graph_id": "EVIDENCE_IDENTITY",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Reproducible Claim",
+      "question": "Does every claim point to a real readback or reproducible observation instead of a receipt or assertion alone?",
+      "evidence": [
+        "claim_map",
+        "observation",
+        "readback"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "EVIDENCE-002",
+        "NO": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "UNKNOWN": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "EVIDENCE-002",
+      "graph_id": "EVIDENCE_IDENTITY",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Matching Result Identity",
+      "question": "Do all evidence records name the same source, worktree, session, goal, and environment as the claimed result?",
+      "evidence": [
+        "comparison",
+        "digest",
+        "identity"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "EVIDENCE-003",
+        "NO": "TERM-EVIDENCE_IDENTITY-HARD-STOP-IDENTITY",
+        "UNKNOWN": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-IDENTITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "EVIDENCE-003",
+      "graph_id": "EVIDENCE_IDENTITY",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Artifact Exists",
+      "question": "Does the claimed artifact or behavior exist at the recorded source, worktree, and environment rather than only in a receipt?",
+      "evidence": [
+        "artifact_or_behavior",
+        "environment",
+        "source",
+        "worktree"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "EVIDENCE-004",
+        "NO": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "UNKNOWN": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "EVIDENCE-004",
+      "graph_id": "EVIDENCE_IDENTITY",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "HANDOFF",
+      "name": "Auditor Result Review",
+      "question": "Did a different session or Independent Auditor inspect the same result and record a matching pass or failure?",
+      "evidence": [
+        "comparison",
+        "issuer",
+        "review"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "EVIDENCE-005",
+        "NO": "TERM-EVIDENCE_IDENTITY-HARD-STOP-IDENTITY",
+        "UNKNOWN": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-IDENTITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "EVIDENCE-005",
+      "graph_id": "EVIDENCE_IDENTITY",
+      "category": "EVIDENCE_IDENTITY",
+      "context": "RESPONSE",
+      "name": "Claimed Response Integrity",
+      "question": "Does every pass statement name the human-readable gate, answer YES, and match the question, identity, and evidence digest?",
+      "evidence": [
+        "claim_map",
+        "digest",
+        "identity",
+        "response"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-EVIDENCE_IDENTITY-COMPLETE",
+        "NO": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "UNKNOWN": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-EVIDENCE_IDENTITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "FUNC-001",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "TASK_START",
+      "name": "Observable Behavior Contract",
+      "question": "Is the assigned behavior observable with a baseline, success condition, and failure condition?",
+      "evidence": [
+        "assignment",
+        "baseline"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-002",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "FUNC-002",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Intended Path Runs",
+      "question": "Can the admitted behavior run through its intended path under the bound environment?",
+      "evidence": [
+        "environment",
+        "execution"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-003",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-HARD-STOP-IDENTITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-IDENTITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "FUNC-003",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Required Result and State",
+      "question": "Does the intended behavior produce the required result and state without an unhandled failure?",
+      "evidence": [
+        "result",
+        "state"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-004",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "FUNC-004",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Authoritative State Readback",
+      "question": "After the behavior reports success, does every state named by the contract persist and read back from its authoritative boundary?",
+      "evidence": [
+        "persistence",
+        "readback"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-005",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "FUNC-005",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Safe Restart or Recovery",
+      "question": "After a clean stop and restart or the named recovery event, does the behavior restore state or fail safely as specified?",
+      "evidence": [
+        "recovery",
+        "restart"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-006",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "FUNC-006",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Safe Retry and Idempotence",
+      "question": "When the same admitted input is retried, does the system produce the specified idempotent or safely repeated result without duplication?",
+      "evidence": [
+        "idempotence",
+        "retry"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-007",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "FUNC-007",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Invalid and Unauthorized Inputs",
+      "question": "Do invalid, duplicate, unauthorized, empty, and limit inputs fail or constrain exactly as the admitted contract requires?",
+      "evidence": [
+        "authorization",
+        "boundary",
+        "negative"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-008",
+        "NO": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+        "UNKNOWN": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "FUNC-008",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CLOSURE",
+      "name": "Regression and False-Success Check",
+      "question": "Does the focused regression check preserve unrelated accepted behavior and leave no false-success marker?",
+      "evidence": [
+        "false_success",
+        "regression",
+        "scope"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-009",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "FUNC-009",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CLOSURE",
+      "name": "Source-Bound Independent Review",
+      "question": "Is the result bound to the same source and independently reviewed before closure?",
+      "evidence": [
+        "closure",
+        "review",
+        "source"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-010",
+        "NO": "TERM-FUNCTIONALITY-HARD-STOP-IDENTITY",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-IDENTITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "FUNC-010",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Authoritative State Transitions",
+      "question": "For each state transition, does the system reject illegal transitions and preserve one authoritative state without split-brain updates?",
+      "evidence": [
+        "negative",
+        "persistence",
+        "state"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-011",
+        "NO": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+        "UNKNOWN": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "FUNC-011",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CODE_CHANGE",
+      "name": "Fail-Closed Interruption",
+      "question": "When a dependency, host, or permission disappears mid-operation, does the behavior fail closed without claiming success or leaving orphaned work?",
+      "evidence": [
+        "cleanup",
+        "false_success",
+        "recovery"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "FUNC-012",
+        "NO": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+        "UNKNOWN": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-BOUNDARY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-FUNCTIONALITY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "FUNC-012",
+      "graph_id": "FUNCTIONALITY",
+      "category": "FUNCTIONALITY",
+      "context": "CLOSURE",
+      "name": "Observed User Outcome",
+      "question": "Did a real observer see the intended user outcome at the bound source and record what happened, including any visible error or limitation?",
+      "evidence": [
+        "artifact_or_behavior",
+        "review",
+        "surface"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-FUNCTIONALITY-COMPLETE",
+        "NO": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+        "UNKNOWN": "TERM-FUNCTIONALITY-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-FUNCTIONALITY-UNPROVEN"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-FUNCTIONALITY-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-FUNCTIONALITY-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "UNPROVEN"
+      }
+    },
+    {
+      "gate_id": "INTENT-001",
+      "graph_id": "INTENT_SCOPE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "TASK_START",
+      "name": "Outcome Owner and Non-Goals",
+      "question": "Does the admitted task state one intended outcome, one owner, and explicit non-goals?",
+      "evidence": [
+        "intent",
+        "non_goals",
+        "owner"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "INTENT-002",
+        "NO": "TERM-INTENT_SCOPE-SOFT-REVIEW",
+        "UNKNOWN": "TERM-INTENT_SCOPE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-INTENT_SCOPE-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-INTENT_SCOPE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "INTENT-002",
+      "graph_id": "INTENT_SCOPE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "CODE_CHANGE",
+      "name": "Scope and Boundary Match",
+      "question": "Does the proposed change remain inside the recorded scope and hard and soft boundaries?",
+      "evidence": [
+        "boundaries",
+        "changed_paths",
+        "scope"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "INTENT-003",
+        "NO": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+        "UNKNOWN": "TERM-INTENT_SCOPE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-INTENT_SCOPE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "INTENT-003",
+      "graph_id": "INTENT_SCOPE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "CODE_CHANGE",
+      "name": "Current Intent Check",
+      "question": "At this checkpoint, does the result still serve the owner's intended outcome without silently adding a new objective?",
+      "evidence": [
+        "changed_scope",
+        "conflicts",
+        "intent"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "INTENT-004",
+        "NO": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+        "UNKNOWN": "TERM-INTENT_SCOPE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-INTENT_SCOPE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "INTENT-004",
+      "graph_id": "INTENT_SCOPE",
+      "category": "SCOPE_BOUNDARIES",
+      "context": "HANDOFF",
+      "name": "Boundary Review Trigger",
+      "question": "If scope, intent, or conditions changed, was the current goal closed or reassessed before more work was allowed?",
+      "evidence": [
+        "goal_change",
+        "reassessment",
+        "replacement"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-INTENT_SCOPE-COMPLETE",
+        "NO": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+        "UNKNOWN": "TERM-INTENT_SCOPE-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-INTENT_SCOPE-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-INTENT_SCOPE-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "PROGRESS-001",
+      "graph_id": "PROGRESS_HEALTH",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Worker Window Result",
+      "question": "Did the worker produce an observable result before the configured fifteen-minute window ended?",
+      "evidence": [
+        "observed_at",
+        "progress",
+        "window"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "PROGRESS-002",
+        "NO": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+        "UNKNOWN": "TERM-PROGRESS_HEALTH-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-PROGRESS_HEALTH-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "PROGRESS-002",
+      "graph_id": "PROGRESS_HEALTH",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Meaningful Worker Result",
+      "question": "Is the result a changed artifact, verified behavior, or bounded handoff rather than only a failure list?",
+      "evidence": [
+        "artifact_or_behavior",
+        "handoff",
+        "result"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "PROGRESS-003",
+        "NO": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+        "UNKNOWN": "TERM-PROGRESS_HEALTH-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-PROGRESS_HEALTH-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "PROGRESS-003",
+      "graph_id": "PROGRESS_HEALTH",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Heartbeat Is Not Progress",
+      "question": "Is progress supported by a changed artifact, verified behavior, checkpoint, or typed handoff—not only a heartbeat or live process?",
+      "evidence": [
+        "artifact_or_behavior",
+        "checks",
+        "progress",
+        "result"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "PROGRESS-004",
+        "NO": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+        "UNKNOWN": "TERM-PROGRESS_HEALTH-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-PROGRESS_HEALTH-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "PROGRESS-004",
+      "graph_id": "PROGRESS_HEALTH",
+      "category": "PROGRESS_HEALTH",
+      "context": "TASK_PROGRESS",
+      "name": "Stall Escalation",
+      "question": "When the worker missed its window or returned only failures, was it marked stalled and escalated or replaced?",
+      "evidence": [
+        "failure",
+        "progress",
+        "route",
+        "window"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-PROGRESS_HEALTH-COMPLETE",
+        "NO": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+        "UNKNOWN": "TERM-PROGRESS_HEALTH-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-PROGRESS_HEALTH-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-PROGRESS_HEALTH-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-PROGRESS_HEALTH-HARD-STOP-PROGRESS",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "RECOVERY-001",
+      "graph_id": "RECOVERY_BOUNDARIES",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Failure Route Classification",
+      "question": "Is each failure classified as an ordinary puzzle, soft-boundary review, hard stop, or true owner blocker?",
+      "evidence": [
+        "class",
+        "failure",
+        "route"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "RECOVERY-002",
+        "NO": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+        "UNKNOWN": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "RECOVERY-002",
+      "graph_id": "RECOVERY_BOUNDARIES",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Changed Goal Replacement",
+      "question": "When scope, intent, authority, or conditions changed, was the old goal closed and a replacement goal routed?",
+      "evidence": [
+        "goal_change",
+        "reassessment",
+        "replacement"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "RECOVERY-003",
+        "NO": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+        "UNKNOWN": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "RECOVERY-003",
+      "graph_id": "RECOVERY_BOUNDARIES",
+      "category": "RECOVERY",
+      "context": "CODE_CHANGE",
+      "name": "Hard Stop Before Mutation",
+      "question": "When a hard boundary was detected, did the agent stop before further writes, external actions, or new sessions?",
+      "evidence": [
+        "action",
+        "boundary",
+        "scope"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "RECOVERY-004",
+        "NO": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+        "UNKNOWN": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-SCOPE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "RECOVERY-004",
+      "graph_id": "RECOVERY_BOUNDARIES",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Soft Boundary Review",
+      "question": "When a soft boundary was detected, did the agent pause and send the exact evidence to the Campaign Orchestrator instead of deciding alone?",
+      "evidence": [
+        "boundary",
+        "review",
+        "route"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "RECOVERY-005",
+        "NO": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+        "UNKNOWN": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-RECOVERY_BOUNDARIES-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "RECOVERY-005",
+      "graph_id": "RECOVERY_BOUNDARIES",
+      "category": "RECOVERY",
+      "context": "HANDOFF",
+      "name": "Bounded Repair Attempt",
+      "question": "Was each repair attempted only within a bounded retry budget, with failed partial work preserved and cleaned up?",
+      "evidence": [
+        "cleanup",
+        "failure",
+        "retry"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-RECOVERY_BOUNDARIES-COMPLETE",
+        "NO": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+        "UNKNOWN": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-RECOVERY_BOUNDARIES-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-RECOVERY_BOUNDARIES-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "ROUTE-001",
+      "graph_id": "ROLE_ROUTING",
+      "category": "ROLE_ROUTING",
+      "context": "TASK_START",
+      "name": "Role and Lane Assignment",
+      "question": "Does the assignment name one persistent or campaign role and one specific lane?",
+      "evidence": [
+        "assignment",
+        "lane",
+        "role"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "ROUTE-002",
+        "NO": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+        "UNKNOWN": "TERM-ROLE_ROUTING-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-ROLE_ROUTING-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "ROUTE-002",
+      "graph_id": "ROLE_ROUTING",
+      "category": "ROLE_ROUTING",
+      "context": "TASK_START",
+      "name": "Tailored Role Authority",
+      "question": "Is the role packet limited to general rules plus the applicable lane rules and authority?",
+      "evidence": [
+        "authority",
+        "packet",
+        "selection"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "ROUTE-003",
+        "NO": "TERM-ROLE_ROUTING-SOFT-REVIEW",
+        "UNKNOWN": "TERM-ROLE_ROUTING-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-ROLE_ROUTING-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-ROLE_ROUTING-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "ROUTE-003",
+      "graph_id": "ROLE_ROUTING",
+      "category": "ROLE_ROUTING",
+      "context": "TASK_START",
+      "name": "One Lane Worker",
+      "question": "Does this builder own exactly one named lane and lack authority to work another lane or accept its own result?",
+      "evidence": [
+        "assignment",
+        "authority",
+        "lane"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "ROUTE-004",
+        "NO": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+        "UNKNOWN": "TERM-ROLE_ROUTING-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-ROLE_ROUTING-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "ROUTE-004",
+      "graph_id": "ROLE_ROUTING",
+      "category": "ROLE_ROUTING",
+      "context": "TASK_START",
+      "name": "Auditor Full Sweep",
+      "question": "For a full-project audit, does the Independent Auditor receive every lane and inspect the whole project rather than only the changed lane?",
+      "evidence": [
+        "lane",
+        "packet",
+        "review",
+        "role"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "ROUTE-005",
+        "NO": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+        "UNKNOWN": "TERM-ROLE_ROUTING-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-ROLE_ROUTING-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "ROUTE-005",
+      "graph_id": "ROLE_ROUTING",
+      "category": "ROLE_ROUTING",
+      "context": "CLOSURE",
+      "name": "True Session Lifecycle",
+      "question": "Was the role created as a true host session, pinned while active, handed off, unpinned, archived, and removed from the active roster?",
+      "evidence": [
+        "archive",
+        "handoff",
+        "roster",
+        "session"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-ROLE_ROUTING-COMPLETE",
+        "NO": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+        "UNKNOWN": "TERM-ROLE_ROUTING-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-ROLE_ROUTING-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-ROLE_ROUTING-HARD-STOP-ROUTING",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "SECURITY-001",
+      "graph_id": "SECURITY_PRIVACY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CODE_CHANGE",
+      "name": "Input and Privacy Boundary",
+      "question": "Are inputs, permissions, secrets, private data, and isolation handled according to the admitted security boundary?",
+      "evidence": [
+        "isolation",
+        "permissions",
+        "secrets",
+        "threats"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "SECURITY-002",
+        "NO": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+        "UNKNOWN": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "SECURITY-002",
+      "graph_id": "SECURITY_PRIVACY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CLOSURE",
+      "name": "Runtime Action Authority",
+      "question": "Are destructive, external, and release actions held for the Runtime authority with an exact bounded request?",
+      "evidence": [
+        "actions",
+        "authority",
+        "request"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "SECURITY-003",
+        "NO": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+        "UNKNOWN": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "SECURITY-003",
+      "graph_id": "SECURITY_PRIVACY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CODE_CHANGE",
+      "name": "Authentication and Authorization",
+      "question": "Does every protected operation require the right identity and reject missing, foreign, expired, or downgraded authority?",
+      "evidence": [
+        "authorization",
+        "negative",
+        "permissions"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "SECURITY-004",
+        "NO": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+        "UNKNOWN": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "SECURITY-004",
+      "graph_id": "SECURITY_PRIVACY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CODE_CHANGE",
+      "name": "Injection and Traversal Defense",
+      "question": "Do untrusted inputs fail safely against injection, path traversal, SSRF, unsafe commands, and cross-project access?",
+      "evidence": [
+        "inputs",
+        "isolation",
+        "negative",
+        "threats"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "SECURITY-005",
+        "NO": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+        "UNKNOWN": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "SECURITY-005",
+      "graph_id": "SECURITY_PRIVACY",
+      "category": "SECURITY_PRIVACY",
+      "context": "RESPONSE",
+      "name": "Response Privacy",
+      "question": "Do user-facing responses, logs, handoffs, and evidence redact secrets, private paths, credentials, and unrelated project content?",
+      "evidence": [
+        "content",
+        "response",
+        "secrets"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "SECURITY-006",
+        "NO": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+        "UNKNOWN": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "SECURITY-006",
+      "graph_id": "SECURITY_PRIVACY",
+      "category": "SECURITY_PRIVACY",
+      "context": "CLOSURE",
+      "name": "Safe External Action",
+      "question": "Are external, destructive, financial, deployment, merge, and release actions blocked until Runtime has a matching owner-approved request?",
+      "evidence": [
+        "actions",
+        "authority",
+        "permissions",
+        "request"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-SECURITY_PRIVACY-COMPLETE",
+        "NO": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+        "UNKNOWN": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-SECURITY_PRIVACY-HARD-STOP-SECURITY",
+          "terminal_behavior": "HARD_STOP"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "HARD_STOP"
+      }
+    },
+    {
+      "gate_id": "UI-001",
+      "graph_id": "UI_UX",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "context": "CODE_CHANGE",
+      "name": "Understandable User Surface",
+      "question": "Does the visible surface make the admitted action and result understandable without internal governance terms?",
+      "evidence": [
+        "language",
+        "surface",
+        "task"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "UI-002",
+        "NO": "TERM-UI_UX-SOFT-REVIEW",
+        "UNKNOWN": "TERM-UI_UX-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-UI_UX-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-UI_UX-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "UI-002",
+      "graph_id": "UI_UX",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "context": "CODE_CHANGE",
+      "name": "Accessible and Responsive Surface",
+      "question": "Does the surface preserve the required keyboard, accessibility, layout, and error behavior?",
+      "evidence": [
+        "accessibility",
+        "errors",
+        "layout"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "UI-003",
+        "NO": "TERM-UI_UX-SOFT-REVIEW",
+        "UNKNOWN": "TERM-UI_UX-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-UI_UX-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-UI_UX-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "UI-003",
+      "graph_id": "UI_UX",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "context": "CODE_CHANGE",
+      "name": "Design Bible Match",
+      "question": "Does the implemented surface match the project's design bible for hierarchy, wording, spacing, color, interaction, and states?",
+      "evidence": [
+        "design_bible",
+        "surface",
+        "task"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "UI-004",
+        "NO": "TERM-UI_UX-SOFT-REVIEW",
+        "UNKNOWN": "TERM-UI_UX-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-UI_UX-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-UI_UX-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "UI-004",
+      "graph_id": "UI_UX",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "context": "CODE_CHANGE",
+      "name": "Complete UI States",
+      "question": "Does every user action have understandable loading, empty, success, error, disabled, and recovery states?",
+      "evidence": [
+        "accessibility",
+        "errors",
+        "state"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "UI-005",
+        "NO": "TERM-UI_UX-SOFT-REVIEW",
+        "UNKNOWN": "TERM-UI_UX-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-UI_UX-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-UI_UX-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "UI-005",
+      "graph_id": "UI_UX",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "context": "CODE_CHANGE",
+      "name": "Keyboard and Assistive Use",
+      "question": "Can a keyboard and assistive technology complete the admitted task with visible focus, labels, roles, and announcements?",
+      "evidence": [
+        "accessibility",
+        "language",
+        "task"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "UI-006",
+        "NO": "TERM-UI_UX-SOFT-REVIEW",
+        "UNKNOWN": "TERM-UI_UX-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-UI_UX-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-UI_UX-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "UI-006",
+      "graph_id": "UI_UX",
+      "category": "UI_UX_DESIGN_BIBLE",
+      "context": "CODE_CHANGE",
+      "name": "Responsive Visual Stability",
+      "question": "Does the surface remain usable at the supported sizes without clipping, overlap, unreadable text, or layout-dependent failure?",
+      "evidence": [
+        "errors",
+        "layout",
+        "surface"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-UI_UX-COMPLETE",
+        "NO": "TERM-UI_UX-SOFT-REVIEW",
+        "UNKNOWN": "TERM-UI_UX-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-UI_UX-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-UI_UX-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-UI_UX-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CONV-001",
+      "graph_id": "USER_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Plain One-Question Conversation",
+      "question": "Does this question ask for exactly one missing owner choice in short, ordinary words?",
+      "evidence": [
+        "missing_choice",
+        "question",
+        "wording"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CONV-002",
+        "NO": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+        "UNKNOWN": "TERM-USER_CONVERSATION-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-USER_CONVERSATION-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-USER_CONVERSATION-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CONV-002",
+      "graph_id": "USER_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Answer Format and Meaning",
+      "question": "Can a numeric answer or yes or no answer be mapped without changing the owner's meaning?",
+      "evidence": [
+        "ambiguity",
+        "answer_map",
+        "context"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CONV-003",
+        "NO": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+        "UNKNOWN": "TERM-USER_CONVERSATION-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-USER_CONVERSATION-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-USER_CONVERSATION-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CONV-003",
+      "graph_id": "USER_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "No Internal Vocabulary",
+      "question": "Can the owner understand and answer this without seeing role names, graph IDs, hashes, schemas, or other AgentOS vocabulary?",
+      "evidence": [
+        "language",
+        "surface",
+        "wording"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CONV-004",
+        "NO": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+        "UNKNOWN": "TERM-USER_CONVERSATION-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-USER_CONVERSATION-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-USER_CONVERSATION-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CONV-004",
+      "graph_id": "USER_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "One Question Only",
+      "question": "Does the response contain one decision at a time rather than a form, bundle of questions, or hidden multi-part choice?",
+      "evidence": [
+        "ambiguity",
+        "missing_choice",
+        "question"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CONV-005",
+        "NO": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+        "UNKNOWN": "TERM-USER_CONVERSATION-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-USER_CONVERSATION-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-USER_CONVERSATION-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CONV-005",
+      "graph_id": "USER_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Honest Answer Parsing",
+      "question": "Are numeric choices and yes or no answers accepted only when they map to the displayed choices without guessing?",
+      "evidence": [
+        "ambiguity",
+        "answer_map",
+        "context"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "CONV-006",
+        "NO": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+        "UNKNOWN": "TERM-USER_CONVERSATION-UNPROVEN",
+        "NOT_APPLICABLE": "TERM-USER_CONVERSATION-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HOLD_FOR_EVIDENCE",
+          "target": "TERM-USER_CONVERSATION-UNPROVEN",
+          "terminal_behavior": "UNPROVEN"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "ADVANCE",
+        "NO": "SOFT_REVIEW",
+        "UNKNOWN": "UNPROVEN",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    },
+    {
+      "gate_id": "CONV-006",
+      "graph_id": "USER_CONVERSATION",
+      "category": "RESPONSE_HANDOFF",
+      "context": "RESPONSE",
+      "name": "Response Gate Check",
+      "question": "Before sending a user-facing response, did the response gate verify that it is truthful, scoped, plain-language, and supported by the required evidence?",
+      "evidence": [
+        "claim_map",
+        "readback",
+        "response"
+      ],
+      "not_applicable_requires": [
+        "applicability_justification"
+      ],
+      "transitions": {
+        "YES": "TERM-USER_CONVERSATION-COMPLETE",
+        "NO": "TERM-USER_CONVERSATION-HARD-STOP-EVIDENCE",
+        "UNKNOWN": "TERM-USER_CONVERSATION-HARD-STOP-EVIDENCE",
+        "NOT_APPLICABLE": "TERM-USER_CONVERSATION-SOFT-REVIEW"
+      },
+      "failure_policy": {
+        "NO": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-USER_CONVERSATION-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "UNKNOWN": {
+          "classification": "OWNER_OR_HARD_BLOCKER",
+          "route": "HARD_STOP",
+          "target": "TERM-USER_CONVERSATION-HARD-STOP-EVIDENCE",
+          "terminal_behavior": "HARD_STOP"
+        },
+        "NOT_APPLICABLE": {
+          "classification": "SOFT_BOUNDARY_REVIEW",
+          "route": "ORCHESTRATOR_REVIEW",
+          "target": "TERM-USER_CONVERSATION-SOFT-REVIEW",
+          "terminal_behavior": "SOFT_REVIEW"
+        }
+      },
+      "terminal_behavior": {
+        "YES": "COMPLETE",
+        "NO": "HARD_STOP",
+        "UNKNOWN": "HARD_STOP",
+        "NOT_APPLICABLE": "SOFT_REVIEW"
+      }
+    }
+  ],
+  "digest": null
+}

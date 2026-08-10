@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.task_routing_evaluation.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "task_class", "task_profile_sha256", "route_sha256", "context_selection_sha256", "evaluator_ref_sha256", "observed_at_utc", "quality_score", "expected_cost", "observed_latency_seconds", "context_sufficiency", "policy_compliant", "accepted_result", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.task_routing_evaluation.v1"},
+    "version": {"const": 1},
+    "status": {"const": "OBSERVED"},
+    "task_class": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "task_profile_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "route_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evaluator_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "quality_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "expected_cost": {"type": "number", "minimum": 0},
+    "observed_latency_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "context_sufficiency": {"type": "number", "minimum": 0, "maximum": 1},
+    "policy_compliant": {"type": "boolean"},
+    "accepted_result": {"type": "boolean"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

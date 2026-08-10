@@ -76,8 +76,10 @@
       "platform_worktree",
       "supervision",
       "request_queue",
-      "handoff_receipts"
-    ]
+      "handoff_receipts",
+      "universal_closeout_receipts"
+    ],
+    "closeout_rule": "A Platform Agent may enter ARCHIVED_UNPINNED only after the general nine-step universal closeout sequence is preserved in universal_closeout_receipts: PRESERVE_HANDOFF, PERSIST_HANDOFF, AUDIT_CANDIDATE, INTEGRATE_ACCEPTED_WORK, UNPIN_SESSION, CLOSE_STALE_WORKTREE, REMOVE_ACTIVE_TASK_SCOPE, MARK_CHAT_OUT_OF_SCOPE, ARCHIVE_VISIBLE_TASK. The Controller must dynamically archive only after the handoff and accepted worktree integration are preserved; accepted-live closure requires every campaign-local Platform Agent to be archived."
   },
   "checkpoint_ledger": {
     "rule": "Every checkpoint is immutable and binds its parent, commit, tree, worktree, clean/pushed proof, applicable audit plan, reports, reconciliation, and finding disposition. Audits may settle an earlier checkpoint while the first-pass builder advances a later checkpoint.",

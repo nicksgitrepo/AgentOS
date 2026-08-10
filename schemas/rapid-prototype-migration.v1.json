@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.audit_driven_migration.v1",
+  "title": "Audit-Driven Rapid Prototype Migration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "source_workflow",
+    "target_workflow",
+    "baseline_source_commit",
+    "migration_scope",
+    "preservation_policy",
+    "observed_parity",
+    "feature_adoptions",
+    "preserved_non_lane_worktrees",
+    "unresolved_platform_targets",
+    "next_action",
+    "no_private_paths_or_secrets",
+    "exact_visible_task_registry_required",
+    "archive_rule"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.audit_driven_migration.v1"},
+    "version": {"const": 1},
+    "status": {
+      "enum": [
+        "MIGRATED_WITH_PLATFORM_PARITY_HOLD",
+        "MIGRATION_INTAKE_READY",
+        "MIGRATION_RECONCILIATION_REQUIRED"
+      ]
+    },
+    "source_workflow": {"const": "FEATURE_AUDIT_THEN_PLATFORM_INTEGRATION_THEN_CENTRAL_INTEGRATION"},
+    "target_workflow": {"const": "AUDIT_DRIVEN_INTEGRATION_PYRAMID"},
+    "baseline_source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "migration_scope": {"type": "string", "pattern": "^[A-Z0-9_:-]+$"},
+    "preservation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "physical_move_performed",
+        "delete_or_reset_performed",
+        "dirty_worktrees_preserved",
+        "existing_reports_preserved",
+        "existing_handoff_history_preserved",
+        "private_paths_or_secrets_persisted",
+        "reason"
+      ],
+      "properties": {
+        "physical_move_performed": {"const": false},
+        "delete_or_reset_performed": {"const": false},
+        "dirty_worktrees_preserved": {"const": true},
+        "existing_reports_preserved": {"const": true},
+        "existing_handoff_history_preserved": {"const": true},
+        "private_paths_or_secrets_persisted": {"const": false},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "observed_parity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_inventory_count",
+        "feature_visible_task_count",
+        "feature_worktree_count",
+        "feature_report_count",
+        "feature_goal_count",
+        "platform_inventory_count",
+        "platform_visible_task_count",
+        "platform_worktree_count",
+        "platform_report_count",
+        "platform_goal_count",
+        "runtime_registry",
+        "parity_status",
+        "visible_status_snapshot"
+      ],
+      "properties": {
+        "feature_inventory_count": {"type": "integer", "minimum": 0},
+        "feature_visible_task_count": {"type": "integer", "minimum": 0},
+        "feature_worktree_count": {"type": "integer", "minimum": 0},
+        "feature_report_count": {"type": "integer", "minimum": 0},
+        "feature_goal_count": {"type": ["integer", "string"]},
+        "platform_inventory_count": {"type": "integer", "minimum": 0},
+        "platform_visible_task_count": {"type": "integer", "minimum": 0},
+        "platform_worktree_count": {"type": "integer", "minimum": 0},
+        "platform_report_count": {"type": "integer", "minimum": 0},
+        "platform_goal_count": {"type": ["integer", "string"]},
+        "runtime_registry": {"type": "string", "minLength": 1},
+        "parity_status": {"type": "string", "minLength": 1},
+        "visible_status_snapshot": {"type": "string", "minLength": 1}
+      }
+    },
+    "feature_adoptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target_id",
+          "visible_task_present",
+          "visible_task_registry_binding",
+          "worktree_id",
+          "location_ref",
+          "report_ref",
+          "source_commit",
+          "dirty_entry_count",
+          "preserved",
+          "downstream_consumed",
+          "lifecycle"
+        ],
+        "properties": {
+          "target_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+          "visible_task_present": {"const": true},
+          "visible_task_registry_binding": {"type": "string", "minLength": 1},
+          "worktree_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+          "location_ref": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+          "report_ref": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)[.][.](?:/|$)).*auditreport[.]md$"},
+          "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "dirty_entry_count": {"type": "integer", "minimum": 0},
+          "preserved": {"const": true},
+          "downstream_consumed": {"const": false},
+          "lifecycle": {"const": "MIGRATED_PENDING_INTAKE"}
+        }
+      }
+    },
+    "preserved_non_lane_worktrees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["worktree_id", "location_ref", "source_commit", "dirty_entry_count", "preserved", "downstream_consumed"],
+        "properties": {
+          "worktree_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+          "location_ref": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+          "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "dirty_entry_count": {"type": "integer", "minimum": 0},
+          "preserved": {"const": true},
+          "downstream_consumed": {"const": false}
+        }
+      }
+    },
+    "unresolved_platform_targets": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+      "uniqueItems": true
+    },
+    "next_action": {"type": "string", "pattern": "^[A-Z0-9_:-]+$"},
+    "no_private_paths_or_secrets": {"const": true},
+    "exact_visible_task_registry_required": {"const": true},
+    "archive_rule": {"type": "string", "minLength": 1}
+  }
+}

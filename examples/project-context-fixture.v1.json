@@ -6,7 +6,7 @@
     "project_identity": {
       "project_name": "Portable Fixture",
       "context_version": 1,
-      "exact_context_digest": "0da311abea9625bb61d420c9edad3db1441fd492b71dcc5b2c76c6952e18006f"
+      "exact_context_digest": "7cd5da2f6a49d9d6da53e15f92b3336c3f89f7342f41a4fb252de0596b08610c"
     },
     "authority": {
       "authority_repository": "https://example.invalid/authority.git",

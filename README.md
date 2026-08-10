@@ -23,6 +23,17 @@ conversations, owner handoffs, credentials, or runtime state from another
 project. A clean public distribution is prepared from the development copy
 only after the portability and hostile-boundary checks pass.
 
+Rapid prototyping follows the project-agnostic Audit-Driven Integration
+Pyramid. For a new project, the Controller records the selected stack,
+repository plan, and directory structure before work begins. For an imported
+project, it binds the source readback and waits for explicit owner approval
+before rapid development. The campaign first establishes and merges the
+platform foundation, then admits feature audit and repair waves from that
+accepted skeleton, and finally converges everything in one central integration
+tree.
+Temporary tasks are archived only after their handoffs are preserved and their
+worktrees are consumed downstream.
+
 As a maintainer-only development arrangement, AgentOS may use three separate
 repository roles:
 a baseline/source repository, an active development repository, and a sterile
@@ -32,29 +43,42 @@ candidate. See [repository roles](docs/repository-roles.md).
 
 ## Start in three steps
 
-1. Find the absolute paths for this AgentOS checkout and the project you want to create or import. They should be separate directories. Bootstrap chooses a separate control-plane folder automatically unless you explicitly choose another one.
-2. Start a fresh agent with the strongest economical coding model available. Do not choose a model below Bootstrap’s completion-reliability floor.
-3. Replace `<AGENTOS_ROOT>` and `<PROJECT_ROOT>` in the instruction below with those exact paths, then copy and paste it:
+1. Open the AgentOS checkout and the project you want to set up.
+2. Start a fresh agent using Bootstrap’s normal default.
+3. Send only this short message:
+
+```text
+Use Bootstrap to evaluate this project and guide me through setup.
+```
+
+Bootstrap owns the conversation rules: it keeps the owner conversation plain,
+asks one short question at a time, and asks only for the earliest material
+choice it cannot discover or safely decide. The startup message stays short so
+the governance, not a copied prompt, supplies that behavior.
+
+For a direct launch where the host does not already provide the two folders,
+replace `<AGENTOS_ROOT>` and `<PROJECT_ROOT>` in the instruction below with
+their exact paths, then copy and paste it:
 
 ```text
 You are Bootstrap 2.1rc. AgentOS root: <AGENTOS_ROOT>. Project root: <PROJECT_ROOT>.
 Use the AgentOS root only as the Bootstrap authority, not as the Product or its control plane. Read <AGENTOS_ROOT>/README.md, then <AGENTOS_ROOT>/bootstrap/start-here.md, verify <AGENTOS_ROOT>/schemas/bootstrap-binding.v1.json, and use the canonical controller at <AGENTOS_ROOT>/control/bootstrap-compiler.mjs.
 Run the first read-only Bootstrap invocation exactly:
 node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED
-Use the returned discovery and question plan, ask only one material question at a time, and do not write, spend, authenticate, publish, merge, or deploy until Bootstrap displays the exact creation plan and I approve it with APPROVE_EXACT_PLAN. If either path is missing or unclear, ask for that path before discovery.
+Use the returned discovery and question plan. The normal Bootstrap mode is JSA-style: after the material questions are answered, continue only the declared local setup work while the source, intent, scope, and host readbacks remain unchanged. Stop and reassess when scope changes or a protected action is requested. Publication, push, merge, deployment, rollback, spending, authentication, secrets, destructive overwrite, Product custody, and campaign activation always retain their own exact authority boundary. If either path is missing or unclear, ask for that path before discovery.
 ```
 
 Running Bootstrap as an agent uses the host’s agentic execution allowance. Use ordinary Chat or a private handoff-file exchange when you want advice without repository execution; use a public Git handoff only when public source exchange is intentional. Provider APIs and unattended automation may have separate billing and credentials.
 
 The prompt above is only for first-run Bootstrap discovery and setup. After
-setup, the ongoing project-persistent role is **AgentOS Controller**
+setup, the ongoing project-persistent role is **Intent Regulator**
 `AGENTOS_CONTROLLER`. It owns the control-plane conversation and safe
 campaign coordination; Bootstrap does not continue as that role.
 
 ## AgentOS in one minute
 
 You explain what you want. Bootstrap handles the first read-only discovery and
-setup plan. After setup, AgentOS Controller carries the project-persistent
+setup plan. After setup, Intent Regulator carries the project-persistent
 control-plane conversation and safe campaign coordination. Economical agents
 build the first pass, independent checkers inspect it, a stronger Finalizer
 repairs the retained code, and persistent Runtime handles release and
@@ -64,7 +88,7 @@ The Controller keeps moving by itself: it watches campaign handoffs and worker
 heartbeats, re-binds unchanged intent and acceptance records to the exact source
 it is observing, and chooses the next safe task from the active campaign. Before
 the first checkpoint, that means routing the bound first useful workflow through
-the Campaign Orchestrator, Feature Agent, Auditor, and Finalizer. After a
+the Campaign Orchestrator, named lane workers, Independent Auditor, and Finalizer. After a
 checkpoint, it rechecks the result and continues watching. Hard boundaries stop
 only the dependent work; soft boundaries go to campaign review. Routine puzzles
 do not wait for an outside prompt.
@@ -132,12 +156,14 @@ delete.
 - Fresh-agent start contract: replace the two path placeholders in the instruction above, then run `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED` for the first read-only discovery and question plan. The result includes the separately bound control-plane root.
 - Exact binding: [`schemas/bootstrap-binding.v1.json`](schemas/bootstrap-binding.v1.json)
 - User guide: [`docs/user-guide.md`](docs/user-guide.md)
+- Architecture: [`docs/architecture.md`](docs/architecture.md)
 - Repository roles: [`docs/repository-roles.md`](docs/repository-roles.md)
 - Maintainer guide: [`docs/maintainer-guide.md`](docs/maintainer-guide.md)
 
 From the repository root:
 
 ```text
+node tests/verify-source-hygiene.mjs
 node tests/verify-portability.mjs
 node tests/verify-all.mjs
 ```

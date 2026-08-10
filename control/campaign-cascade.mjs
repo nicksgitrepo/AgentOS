@@ -5,6 +5,11 @@ import {validateFinalizerRewriteAssessment} from "./cascade-economics.mjs";
 import {validateAcceptanceBinding} from "./campaign-acceptance-contract.mjs";
 import {verifyProductAcceptanceProof} from "./acceptance-bridge.mjs";
 import {validateClosureReceipt, validateDeploymentReceipt, validateLiveAuditReceipt, validateRepositoryCheckpointProof} from "./campaign-lifecycle.mjs";
+import {
+  assertUniversalDevelopmentMode,
+  compileUniversalTaskCloseoutReceipts,
+  validateUniversalTaskCloseoutForMode,
+} from "./governance-library.mjs";
 
 export const CASCADE_STAGES = Object.freeze([
   "FIRST_PASS_BUILDING",
@@ -1253,7 +1258,7 @@ function validateCascadeAcceptance(acceptance) {
 }
 
 const CASCADE_TRANSITION_KEYS = ["sequence", "from_state_sha256", "from_stage", "to_stage", "event_type", "payload", "at_utc", "event_sha256"];
-const CASCADE_STATE_KEYS = ["schema", "governance_version", "campaign_id", "campaign_version", "mode", "stage", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "first_pass", "checkpoint_ledger", "rolling_audits", "holds", "audit_plan", "audit_reconciliation", "finalizer", "delta_audit", "acceptance", "model_policy", "telemetry", "loop_control", "next_campaign_ledger", "transition_journal", "cascade_sha256"];
+const CASCADE_STATE_KEYS = ["schema", "governance_version", "campaign_id", "campaign_version", "mode", "stage", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "first_pass", "checkpoint_ledger", "rolling_audits", "holds", "audit_plan", "audit_reconciliation", "finalizer", "delta_audit", "acceptance", "model_policy", "telemetry", "loop_control", "next_campaign_ledger", "universal_closeout_receipts", "transition_journal", "cascade_sha256"];
 const LOOP_KEYS = ["max_finalization_passes", "max_delta_repair_passes", "max_supervisor_reframes", "equivalent_retry_policy"];
 const TELEMETRY_KEYS = ["records", "evidence_reuse_count", "escaped_finding_count", "owner_interruptions"];
 const NEXT_CAMPAIGN_ENTRY_KEYS = ["entry_id", "category", "summary", "references", "status", "created_at_utc", "entry_sha256"];
@@ -1363,12 +1368,14 @@ export function createCascadeState(input) {
     telemetry: structuredClone(input.telemetry),
     loop_control: structuredClone(input.loop_control),
     next_campaign_ledger: structuredClone(input.next_campaign_ledger ?? []),
+    universal_closeout_receipts: structuredClone(input.universal_closeout_receipts ?? []),
     transition_journal: [],
     cascade_sha256: "",
   });
 }
 
 export function validateCascadeState(state, options = {}) {
+  assertUniversalDevelopmentMode("CASCADE");
   exactKeys(state, CASCADE_STATE_KEYS, "campaign cascade state");
   assert(state.schema === "governance.campaign_cascade_state.v1" && state.governance_version === "2.1rc", "campaign cascade identity is invalid");
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id"]) requireString(state[field], `cascade ${field}`);
@@ -1382,6 +1389,10 @@ export function validateCascadeState(state, options = {}) {
   assert(state.first_pass.policy_epoch === state.policy_epoch && state.first_pass.policy_snapshot_sha256 === state.policy_state_sha256 && state.first_pass.acceptance_contract_sha256 === state.acceptance_contract_sha256, "cascade policy or acceptance binding differs from first-pass candidate");
   validateCheckpointAuditLedger(state.checkpoint_ledger, state.first_pass);
   validateNextCampaignLedger(state.next_campaign_ledger);
+  validateUniversalTaskCloseoutForMode("CASCADE", state.universal_closeout_receipts, {
+    closed: state.stage === "READY_FOR_ACCEPTANCE",
+    label: "campaign cascade universal closeout receipts",
+  });
   assert(Array.isArray(state.rolling_audits), "rolling audits are required");
   let previousRollingCandidate = null;
   for (const entry of state.rolling_audits) {
@@ -1447,6 +1458,7 @@ export function validateCascadeState(state, options = {}) {
     const finalCommit = state.finalizer?.final_commit ?? state.first_pass.commit;
     const finalTree = state.finalizer?.final_tree ?? state.first_pass.tree;
     assert(state.acceptance.final_candidate_commit === finalCommit && state.acceptance.final_candidate_tree === finalTree, "cascade acceptance does not bind final candidate");
+    assert(state.universal_closeout_receipts.length > 0, "ready cascade lacks universal temporary-task closeout");
     assert(options.productAcceptance !== undefined && options.productAcceptanceProof !== undefined, "ready cascade requires the executable Product acceptance proof");
     verifyProductAcceptanceProof(options.productAcceptance, options.productAcceptanceProof, state.campaign_id);
     assert(state.acceptance.product_acceptance_sha256 === cascadeDigest(options.productAcceptance), "ready cascade Product acceptance digest mismatch");
@@ -1464,6 +1476,15 @@ export function validateCascadeState(state, options = {}) {
   delete body.cascade_sha256;
   assert(state.cascade_sha256 === cascadeDigest(body), "campaign cascade digest is not content-addressed");
   return state;
+}
+
+export function compileCascadeUniversalTaskCloseoutReceipts({receiptRefs, observedAt, label = "campaign cascade universal closeout receipts"} = {}) {
+  return compileUniversalTaskCloseoutReceipts({
+    mode: "CASCADE",
+    receiptRefs,
+    observedAt,
+    label,
+  });
 }
 
 export function validateAcceptedLiveCascadeBinding({cascade, acceptedLive, productAcceptance, productAcceptanceProof}) {

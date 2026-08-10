@@ -1,0 +1,82 @@
+{
+  "schema": "governance.feature_completeness_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/feature-completeness.mjs",
+  "purpose": "A project-agnostic whole-project feature inventory, independent classification report, and fresh Auditor seed contract.",
+  "feature_map": {
+    "schema": "governance.feature_map.v1",
+    "visibility": "CONTROL_SPACE",
+    "required_fields": [
+      "schema",
+      "version",
+      "contract_status",
+      "visibility",
+      "map_id",
+      "project_id",
+      "campaign_id",
+      "build_id",
+      "source_commit",
+      "source_tree",
+      "project_governance_sha256",
+      "features",
+      "feature_map_sha256"
+    ],
+    "source_binding": "The map is valid only when its source commit and tree equal the exact current source identity supplied to validation."
+  },
+  "auditor_report": {
+    "schema": "governance.auditor_completeness_report.v1",
+    "visibility": "PUBLIC",
+    "allowed_statuses": [
+      "BUILT_AND_CHECKED",
+      "PARTLY_BUILT",
+      "NOT_BUILT",
+      "WAITING_FOR_OWNER_CHOICE",
+      "NOT_NEEDED"
+    ],
+    "required_rules": [
+      "Every mapped feature has exactly one classification.",
+      "Each classification has at least one source-bound evidence record.",
+      "Duplicate, missing, or unknown feature IDs are rejected.",
+      "PARTLY_BUILT and NOT_BUILT route to CAMPAIGN_ORCHESTRATOR.",
+      "WAITING_FOR_OWNER_CHOICE routes to OWNER.",
+      "The Auditor cannot be the builder or acceptor of the audited work."
+    ],
+    "public_reference_rule": "Paths and links are project-relative references only; absolute, outside-project, private, and chat references are rejected."
+  },
+  "auditor_seed": {
+    "schema": "governance.auditor_seed.v1",
+    "visibility": "CONTROL_SPACE",
+    "required_fields": [
+      "schema",
+      "version",
+      "contract_status",
+      "visibility",
+      "seed_id",
+      "binding",
+      "check",
+      "seed_sha256"
+    ],
+    "binding_fields": [
+      "project_id",
+      "campaign_id",
+      "build_id",
+      "source_commit",
+      "source_tree",
+      "project_governance_sha256",
+      "feature_map_sha256"
+    ],
+    "check_rule": "Only one CHECKED seed, content-addressed by seed_sha256 and checked by CAMPAIGN_ORCHESTRATOR, may create a fresh Auditor."
+  },
+  "auditor_seed_binding": {
+    "schema": "governance.auditor_seed_binding.v1",
+    "visibility": "CONTROL_SPACE",
+    "fresh_rule": "A fresh Auditor binding carries exactly one seed digest and the seed's unchanged project, campaign, build, source, and governance binding."
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "active": false,
+    "protected_actions_allowed": false
+  }
+}

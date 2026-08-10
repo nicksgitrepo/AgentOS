@@ -88,7 +88,8 @@ validateSupervisorGoal(routedResult.goal);
 
 const failedRoute = runSupervisorIteration({observation: puzzle, route: () => { throw new Error("route adapter unavailable"); }});
 assert.equal(failedRoute.tick.route_status, "ROUTE_FAILED");
-assert.match(failedRoute.tick.route_error, /route adapter unavailable/u);
+assert.match(failedRoute.tick.route_error, /^opaque:error:[0-9a-f]{64}$/u);
+assert.doesNotMatch(JSON.stringify(failedRoute.tick), /route adapter unavailable/u);
 
 const soft = observation({
   boundary: boundary({soft_review: true, scope_changed: true}),

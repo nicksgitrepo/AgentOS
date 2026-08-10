@@ -1,0 +1,19 @@
+{
+  "schema": "agentos.delivery_receipt.v1",
+  "version": 1,
+  "purpose": "A typed host readback for one Runtime delivery request, including explicit failure and unknown states.",
+  "actions": ["NONE", "PUSH", "MERGE", "DEPLOY", "RELEASE", "ROLLBACK"],
+  "statuses": ["IN_FLIGHT", "SUCCEEDED", "FAILED", "UNKNOWN", "NO_EXTERNAL_ACTION"],
+  "required_fields": [
+    "schema", "version", "receipt_id", "request_id", "request_digest", "choice_digest", "outcome", "action",
+    "status", "project_ref", "campaign_id", "campaign_version", "goal_id", "source_commit", "source_tree",
+    "environment_ref", "runtime_ref", "external_result_ref", "rollback_target_digest", "policy_digest", "adapter_contract_digest", "evidence_digest",
+    "error_code", "observed_at_utc", "digest"
+  ],
+  "rules": [
+    "SUCCEEDED requires an opaque external_result_ref and no error code.",
+    "FAILED and UNKNOWN require a safe error code and never imply completion.",
+    "NO_EXTERNAL_ACTION is valid only for LOCAL_ONLY and cannot contain a Runtime request or external result.",
+    "Every external receipt must match request ID, request digest, choice digest, action, policy, adapter contract, source, environment, and Runtime reference; it cannot be accepted without the corresponding prepared adapter contract."
+  ]
+}

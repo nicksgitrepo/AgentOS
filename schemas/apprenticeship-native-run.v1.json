@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_native_observation_run.v1",
+  "title": "AgentOS apprenticeship native observation run",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "mode",
+    "run_id",
+    "status",
+    "packet_digest",
+    "provenance",
+    "host_capability_ref",
+    "lifecycle_receipts",
+    "universal_closeout_receipts",
+    "evidence_attestation_refs",
+    "observation_digest",
+    "result_ref",
+    "active_roster_absent",
+    "activation_allowed",
+    "protected_actions",
+    "started_at",
+    "completed_at",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_native_observation_run.v1"},
+    "version": {"const": 1},
+    "mode": {"const": "APPRENTICESHIP"},
+    "run_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "status": {"enum": ["REAL_RESULT_OBSERVED", "NO_MEANINGFUL_RESULT"]},
+    "packet_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "provenance": {"$ref": "apprenticeship-common.v1.json#/$defs/provenance"},
+    "host_capability_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "lifecycle_receipts": {"type": "array", "minItems": 9, "items": {"$ref": "#/$defs/receipt"}},
+    "universal_closeout_receipts": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {"$ref": "#/$defs/universalCloseoutReceipt"}
+    },
+    "evidence_attestation_refs": {"$ref": "apprenticeship-common.v1.json#/$defs/referenceList"},
+    "observation_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "result_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+    "active_roster_absent": {"const": true},
+    "activation_allowed": {"const": false},
+    "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},
+    "started_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"},
+    "completed_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "$defs": {
+    "receipt": {
+      "type": "object",
+      "required": ["sequence", "operation", "receipt_ref", "evidence_attestation_ref", "evidence_ref", "authority", "status", "observed_at"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1},
+        "operation": {"enum": ["create_thread", "pin", "send", "wait", "read", "unpin", "archive", "post_close_read", "active_list_absent"]},
+        "receipt_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+        "evidence_attestation_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+        "evidence_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+        "authority": {"const": "HOST_READBACK"},
+        "status": {"const": "SUCCEEDED"},
+        "observed_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"}
+      },
+      "additionalProperties": false
+    },
+    "universalCloseoutReceipt": {
+      "type": "object",
+      "required": ["sequence", "step", "receipt_ref", "authority", "status", "observed_at"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1, "maximum": 9},
+        "step": {"enum": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"]},
+        "receipt_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
+        "authority": {"enum": ["CONTROLLER_READBACK", "CONTROLLER_RECORD", "INDEPENDENT_AUDITOR", "CONTROLLER_INTEGRATION", "HOST_READBACK"]},
+        "status": {"const": "PROVEN"},
+        "observed_at": {"$ref": "apprenticeship-common.v1.json#/$defs/timestamp"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

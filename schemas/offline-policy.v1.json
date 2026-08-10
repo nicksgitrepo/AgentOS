@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.offline_policy.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "mode", "network_allowed", "authentication_allowed", "external_writes_allowed",
+    "provider_discovery_mode", "allowed_actions", "denied_actions", "workspace_binding_digest", "owner_decision_digest",
+    "capability_digest", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.offline_policy.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["OFFLINE_ACTIVE", "ONLINE_REVIEW", "ONLINE_BOUND", "HARD_STOP"]},
+    "mode": {"enum": ["OFFLINE_ENFORCED", "ONLINE_READ_ONLY", "ONLINE_ACTIONS"]},
+    "network_allowed": {"type": "boolean"},
+    "authentication_allowed": {"type": "boolean"},
+    "external_writes_allowed": {"type": "boolean"},
+    "provider_discovery_mode": {"enum": ["LOCAL_CATALOG_ONLY", "HOST_CATALOG_READ_ONLY", "HOST_ATTESTED_CAPABILITIES"]},
+    "allowed_actions": {"type": "array", "items": {"$ref": "#/$defs/action"}, "uniqueItems": true},
+    "denied_actions": {"type": "array", "items": {"$ref": "#/$defs/action"}, "uniqueItems": true},
+    "workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "owner_decision_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "capability_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "OFFLINE_ACTIVE"}}, "required": ["status"]},
+      "then": {"properties": {"mode": {"const": "OFFLINE_ENFORCED"}, "network_allowed": {"const": false}, "authentication_allowed": {"const": false}, "external_writes_allowed": {"const": false}, "provider_discovery_mode": {"const": "LOCAL_CATALOG_ONLY"}, "allowed_actions": {"const": ["CONTROL_EXPORT", "CONTROL_IMPORT", "CONTROL_WRITE", "GOVERNANCE_PRESERVE", "GOVERNANCE_RESET", "LOCAL_GIT_READ", "LOCAL_READ", "RELEASE_CANDIDATE_VERIFY"]}, "denied_actions": {"const": ["AUTHENTICATE", "DELETE", "DEPLOY", "MERGE", "NETWORK_READ", "PROVIDER_ACTION", "PUBLISH", "PUSH", "SPEND"]}, "capability_digest": {"const": null}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "HARD_STOP"}}, "required": ["status"]},
+      "then": {"properties": {"mode": {"const": "OFFLINE_ENFORCED"}, "network_allowed": {"const": false}, "authentication_allowed": {"const": false}, "external_writes_allowed": {"const": false}, "provider_discovery_mode": {"const": "LOCAL_CATALOG_ONLY"}, "allowed_actions": {"const": []}, "denied_actions": {"const": ["AUTHENTICATE", "CONTROL_EXPORT", "CONTROL_IMPORT", "CONTROL_WRITE", "DELETE", "DEPLOY", "GOVERNANCE_PRESERVE", "GOVERNANCE_RESET", "LOCAL_GIT_READ", "LOCAL_READ", "MERGE", "NETWORK_READ", "PROVIDER_ACTION", "PUBLISH", "PUSH", "RELEASE_CANDIDATE_VERIFY", "SPEND"]}, "capability_digest": {"const": null}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "ONLINE_REVIEW"}}, "required": ["status"]},
+      "then": {"properties": {"mode": {"const": "ONLINE_READ_ONLY"}, "network_allowed": {"const": true}, "authentication_allowed": {"const": false}, "external_writes_allowed": {"const": false}, "provider_discovery_mode": {"const": "HOST_CATALOG_READ_ONLY"}, "allowed_actions": {"const": ["CONTROL_EXPORT", "CONTROL_IMPORT", "CONTROL_WRITE", "GOVERNANCE_PRESERVE", "GOVERNANCE_RESET", "LOCAL_GIT_READ", "LOCAL_READ", "NETWORK_READ", "RELEASE_CANDIDATE_VERIFY"]}, "denied_actions": {"const": ["AUTHENTICATE", "DELETE", "DEPLOY", "MERGE", "PROVIDER_ACTION", "PUBLISH", "PUSH", "SPEND"]}, "owner_decision_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "capability_digest": {"const": null}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "ONLINE_BOUND"}}, "required": ["status"]},
+      "then": {"properties": {"mode": {"const": "ONLINE_ACTIONS"}, "network_allowed": {"const": true}, "authentication_allowed": {"const": true}, "external_writes_allowed": {"const": true}, "provider_discovery_mode": {"const": "HOST_ATTESTED_CAPABILITIES"}, "allowed_actions": {"const": ["AUTHENTICATE", "CONTROL_EXPORT", "CONTROL_IMPORT", "CONTROL_WRITE", "DELETE", "DEPLOY", "GOVERNANCE_PRESERVE", "GOVERNANCE_RESET", "LOCAL_GIT_READ", "LOCAL_READ", "MERGE", "NETWORK_READ", "PROVIDER_ACTION", "PUBLISH", "PUSH", "RELEASE_CANDIDATE_VERIFY", "SPEND"]}, "denied_actions": {"const": []}, "owner_decision_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "capability_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}
+    }
+  ],
+  "$defs": {
+    "action": {"enum": ["LOCAL_READ", "LOCAL_GIT_READ", "CONTROL_WRITE", "CONTROL_EXPORT", "CONTROL_IMPORT", "RELEASE_CANDIDATE_VERIFY", "GOVERNANCE_PRESERVE", "GOVERNANCE_RESET", "NETWORK_READ", "AUTHENTICATE", "PROVIDER_ACTION", "PUBLISH", "PUSH", "MERGE", "DEPLOY", "SPEND", "DELETE"]}
+  }
+}

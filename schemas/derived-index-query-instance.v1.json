@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance.derived_index_query_result.v1",
+  "title": "AgentOS Derived Index Query Result Instance",
+  "description": "Strict portable instance contract for an advisory query result. It never persists raw query text or raw indexed content.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "contract_status",
+    "visibility",
+    "advisory_only",
+    "acceptance_authority",
+    "index_sha256",
+    "project_ref",
+    "role",
+    "query_sha256",
+    "status",
+    "limit",
+    "matches",
+    "omitted_match_count",
+    "result_sha256"
+  ],
+  "properties": {
+    "schema": { "const": "governance.derived_index_query_result.v1" },
+    "version": { "const": 1 },
+    "contract_status": { "const": "PREPARED_NOT_ACTIVATED" },
+    "visibility": { "const": "CONTROL_SPACE" },
+    "advisory_only": { "const": true },
+    "acceptance_authority": { "const": false },
+    "index_sha256": { "$ref": "#/$defs/sha256" },
+    "project_ref": { "$ref": "#/$defs/id" },
+    "role": { "$ref": "#/$defs/id" },
+    "query_sha256": { "$ref": "#/$defs/sha256" },
+    "status": { "enum": ["MATCHED", "NO_MATCH", "STALE"] },
+    "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+    "matches": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/match" }
+    },
+    "omitted_match_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "result_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "match_count"],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "match_count": { "type": "integer", "minimum": 1, "maximum": 100000 }
+      }
+    }
+  }
+}

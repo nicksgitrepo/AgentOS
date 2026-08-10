@@ -1,0 +1,92 @@
+{
+  "schema": "agentos.iteration_campaign.v1",
+  "version": 1,
+  "campaign_id": "ITER-001-BOUNDED-VERIFIER",
+  "mode": "NORMAL_ITERATION",
+  "status": "CAMPAIGN_RESULT_RECORDED",
+  "source": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "public_plan_sha256": "9169cac42f8908759dba042bb7c44f9bca1a7bb12c0cd760c68b4dce013c06a6",
+    "transition_record": "docs/rapid-foundations/evidence/iteration-transition.v1.json",
+    "transition_record_sha256": "c8ac35298a26e5c6b5b56dc00b724771be1b9c388d4137f7ad175043e8bf5517",
+    "lifecycle_reconciliation_evidence": "docs/rapid-foundations/evidence/lifecycle-reconciliation.v1.json"
+  },
+  "selection": {
+    "backlog_id": "ITER-001",
+    "kind": "BOUNDED_VERIFICATION",
+    "reason": "smallest deferred item and explicitly non-blocking",
+    "scope": "Run the existing full verifier for at most 15 seconds and record PASS, FAIL, or TIMEOUT_NO_RESULT.",
+    "out_of_scope": [
+      "no implementation changes",
+      "no acceptance change",
+      "no deployment or external action",
+      "no indefinite wait"
+    ]
+  },
+  "campaign_role": {
+    "admitted_role": "INDEPENDENT_AUDITOR",
+    "public_name": "Iteration Bounded Verifier",
+    "fresh_sibling_required": true,
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "max",
+    "environment": "LOCAL_PROJECT",
+    "pre_write_identity_check": true,
+    "write_scope": [
+      "docs/rapid-foundations/evidence/iteration-001-bounded-verifier.md"
+    ]
+  },
+  "check": {
+    "command": "node tests/verify-all.mjs",
+    "bounded_timeout_seconds": 15,
+    "result_options": ["PASS", "FAIL", "TIMEOUT_NO_RESULT"],
+    "residual_process_check": true,
+    "full_verifier_is_not_a_gate": true
+  },
+  "result": {
+    "status": "TIMEOUT_NO_RESULT",
+    "report": "docs/rapid-foundations/evidence/iteration-001-bounded-verifier.md",
+    "report_sha256": "c480019adfab66d6b6422a4c1ee9277a8a29795ce9426ea94676b4d0f97c0e35",
+    "elapsed_seconds_approximate": 15.031,
+    "residual_process_check": "PASS_NONE_REMAINED",
+    "focused_report_check": "PASS",
+    "independent_parent_check": "PASS",
+    "acceptance_decision": "NOT_MADE",
+    "typed_handoff": "Iteration Bounded Verifier -> Intent Regulator"
+  },
+  "execution_source_reconciliation": {
+    "worker_launch_readback": {
+      "public_plan_sha256": "93c1675260656abcc0e0cd6607558711e771faa76a52bcd946ae9232d5640015",
+      "transition_record_sha256": "111a8a37e13d831a2f3bcba531f8e0568af08b8bf94654738f397cc6c621baf0"
+    },
+    "current_record_readback": {
+      "public_plan_sha256": "9169cac42f8908759dba042bb7c44f9bca1a7bb12c0cd760c68b4dce013c06a6",
+      "transition_record_sha256": "c8ac35298a26e5c6b5b56dc00b724771be1b9c388d4137f7ad175043e8bf5517"
+    },
+    "reason": "The controller appended the bounded result and closeout reconciliation after the worker handoff; the worker snapshot remains preserved as historical launch evidence."
+  },
+  "supplemental_check": {
+    "command": "node tests/verify-portability.mjs",
+    "result": "DEFERRED_FIXTURE_SCOPE_MISMATCH",
+    "classification": "PUZZLE_DEFERRED_TO_ITER-002",
+    "observed_failures": [
+      "numeric account or deployment identity in tests/rapid-prototype/security-privacy.mjs",
+      "forbidden product identity in tests/rapid-prototype/ui-ux.mjs"
+    ],
+    "interpretation": "Both matches are deliberate hostile-test inputs. The broader scanner currently scans those focused fixtures as public payloads; this does not show a private leak or a bounded-campaign report failure.",
+    "campaign_scope_impact": "NONE",
+    "acceptance_decision": "NOT_MADE",
+    "next_backlog": "ITER-002"
+  },
+  "acceptance": {
+    "required": [
+      "exact source readback",
+      "bounded command result or timeout",
+      "residual process check",
+      "portable evidence report",
+      "typed handoff"
+    ],
+    "independent_check": "PASS",
+    "next": "keep later backlog items deferred unless a fresh condition changes"
+  }
+}

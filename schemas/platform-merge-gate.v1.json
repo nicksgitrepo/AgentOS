@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/platform-merge-gate.v1.json",
+  "title": "Platform Merge Gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "project_id", "worktree_id", "source_commit", "source_tree", "inventory_sha256",
+    "platform_foundation_merge_receipt", "receipt_sha256", "gate_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.platform_merge_gate.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PLATFORM_MERGE_COMPLETE"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "worktree_id": {"type": "string", "minLength": 1},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "platform_foundation_merge_receipt": {"type": "object"},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

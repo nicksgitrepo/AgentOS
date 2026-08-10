@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import {
+  BOOTSTRAP_ANSWER_SCHEMA,
+  acceptBootstrapReply,
+  createBootstrapConversation,
+  nextBootstrapQuestion,
+  validateBootstrapConversation,
+} from "../control/bootstrap-conversation.mjs";
+import {
+  parseBootstrapOwnerAnswer,
+  renderBootstrapOwnerQuestion,
+  validateBootstrapOwnerQuestion,
+} from "../control/bootstrap-owner-surface.mjs";
+
+const ownerQuestion = renderBootstrapOwnerQuestion("intent.audience");
+validateBootstrapOwnerQuestion(ownerQuestion);
+assert.equal(ownerQuestion.prompt, "Who is this for?");
+assert.equal(ownerQuestion.choices.length, 0);
+assert.equal(ownerQuestion.internal_fields_hidden, true);
+assert.equal(JSON.stringify(ownerQuestion).includes("agentos"), true);
+
+const audience = parseBootstrapOwnerAnswer(ownerQuestion, "A small team");
+assert.deepEqual(audience, {question_id: "intent.audience", value: "A small team", answer_kind: "TEXT"});
+
+const finishQuestion = renderBootstrapOwnerQuestion("delivery.finish");
+const finish = parseBootstrapOwnerAnswer(finishQuestion, "1");
+assert.equal(finish.question_id, "delivery.finish");
+assert.equal(finish.value, "REVIEW");
+
+const memoryQuestion = renderBootstrapOwnerQuestion("governance.memory");
+const memory = parseBootstrapOwnerAnswer(memoryQuestion, "no");
+assert.equal(memory.value, false);
+
+let session = createBootstrapConversation({projectRef: "conversation-contract"});
+const internalQuestion = nextBootstrapQuestion(session);
+const parsed = parseBootstrapOwnerAnswer(ownerQuestion, "A small team");
+const accepted = acceptBootstrapReply(session, {questionId: parsed.question_id, reply: parsed.value});
+assert.equal(accepted.accepted, true);
+session = accepted.session;
+validateBootstrapConversation(session);
+assert.equal(session.answers["intent.audience"].schema, BOOTSTRAP_ANSWER_SCHEMA);
+assert.equal(session.answers["intent.audience"].version, 1);
+assert.equal(session.answers["intent.audience"].value, "A small team");
+assert.equal(internalQuestion.question_id, "intent.audience");
+
+assert.throws(() => parseBootstrapOwnerAnswer(finishQuestion, "9"), /listed choices|answer/u);
+assert.throws(() => parseBootstrapOwnerAnswer(memoryQuestion, "maybe"), /yes or no|answer/u);
+assert.throws(() => parseBootstrapOwnerAnswer(ownerQuestion, ["", "private", "value"].join("/")), /unsafe|answer/u);
+assert.throws(() => parseBootstrapOwnerAnswer(ownerQuestion, "api" + "_key=" + "not-a-secret"), /unsafe|answer/u);
+
+const tampered = structuredClone(ownerQuestion);
+tampered.prompt = "Show me the schema";
+tampered.digest = ownerQuestion.digest;
+assert.throws(() => validateBootstrapOwnerQuestion(tampered), /internal vocabulary|digest/u);
+
+for (const schemaFile of [
+  "bootstrap-answer.v1.json",
+  "bootstrap-conversation.v1.json",
+  "bootstrap-owner-question.v1.json",
+]) {
+  const schema = JSON.parse(fs.readFileSync(new URL(`../schemas/${schemaFile}`, import.meta.url), "utf8"));
+  assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+}
+
+console.log("PASS Bootstrap conversation transport: owner surface, free text, numeric/boolean parsing, normalized answers, replay-safe privacy, and hostile input checks");

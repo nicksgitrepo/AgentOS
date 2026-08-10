@@ -60,6 +60,26 @@ function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+function expectRejected(action, message) {
+  try {
+    action();
+    fail(message);
+  } catch {
+    // Expected hostile state.
+  }
+}
+
+function bindPortableDigest(value) {
+  const body = structuredClone(value.portable_template_instance);
+  delete body.project_identity.exact_context_digest;
+  value.portable_template_instance.project_identity.exact_context_digest = sha256(canonicalCompactJson(body));
+  return value;
+}
+
+function canonicalPretty(value) {
+  return `${JSON.stringify(JSON.parse(canonicalCompactJson(value)), null, 2)}\n`;
+}
+
 const files = listFiles(root);
 for (const absolute of files.filter((entry) => entry.endsWith(".json"))) {
   try {
@@ -141,21 +161,94 @@ const importedContext = structuredClone(context);
 importedContext.portable_template_instance.authority.project_context_articles.push(
   "external-source/context.md",
 );
-const importedPlan = compileCorpusPlan(importedContext, workflow);
+expectRejected(
+  () => compileCorpusPlan(importedContext, workflow),
+  "stale portable context digest was accepted",
+);
+const reboundImportedContext = bindPortableDigest(importedContext);
+const importedPlan = compileCorpusPlan(reboundImportedContext, workflow);
 if (canonicalCompactJson(preparedPlan.pages) !== canonicalCompactJson(importedPlan.pages)
     || preparedPlan.context_identity.exact_context_digest
       === importedPlan.context_identity.exact_context_digest) {
-  fail("imported project context is not separate from the governed tree plan");
+  fail("rebound imported project context is not separate from the governed tree plan");
 }
+
+const wrapperOnlyContext = structuredClone(context);
+wrapperOnlyContext.project_name = "Wrapper Metadata Only";
+const wrapperOnlyPlan = compileCorpusPlan(wrapperOnlyContext, workflow);
+if (wrapperOnlyPlan.context_identity.exact_context_digest !== preparedPlan.context_identity.exact_context_digest) {
+  fail("wrapper metadata changed the portable context identity");
+}
+
+const rootEscapeContext = structuredClone(context);
+rootEscapeContext.authority_corpus_roots.authority_root = "authority";
+rootEscapeContext.portable_template_instance.authority_corpus_roots.authority_root = "authority";
+rootEscapeContext.authority_corpus_roots.evidence_library_root = "outside/evidence-library";
+rootEscapeContext.portable_template_instance.authority_corpus_roots.evidence_library_root = "outside/evidence-library";
+bindPortableDigest(rootEscapeContext);
+expectRejected(
+  () => compileCorpusPlan(rootEscapeContext, workflow),
+  "authority-root escape was accepted",
+);
+
+const windowsAbsoluteContext = structuredClone(context);
+windowsAbsoluteContext.authority_corpus_roots.authority_root = "C:\\authority";
+windowsAbsoluteContext.portable_template_instance.authority_corpus_roots.authority_root = "C:\\authority";
+bindPortableDigest(windowsAbsoluteContext);
+expectRejected(
+  () => compileCorpusPlan(windowsAbsoluteContext, workflow),
+  "Windows-style absolute authority root was accepted",
+);
+
+const rootOverlapContext = structuredClone(context);
+rootOverlapContext.authority_corpus_roots.project_context_root = ".";
+rootOverlapContext.portable_template_instance.authority_corpus_roots.project_context_root = ".";
+bindPortableDigest(rootOverlapContext);
+expectRejected(
+  () => compileCorpusPlan(rootOverlapContext, workflow),
+  "authority-root equality was accepted as a corpus root",
+);
+
+const projectionDriftContext = structuredClone(context);
+projectionDriftContext.authority_corpus_roots.features_root = "authority/other-features";
+expectRejected(
+  () => compileCorpusPlan(projectionDriftContext, workflow),
+  "wrapper root projection drift was accepted",
+);
 
 const overrideAttempt = structuredClone(context);
 overrideAttempt.kernel.override_allowed = true;
-try {
-  validateCorpusInputs(overrideAttempt, workflow);
-  fail("project-specific context extension overrode portable governance");
-} catch {
-  // Expected hostile state.
-}
+expectRejected(
+  () => validateCorpusInputs(overrideAttempt, workflow),
+  "project-specific context extension overrode portable governance",
+);
+
+const staleDigestContext = structuredClone(context);
+staleDigestContext.portable_template_instance.project_identity.exact_context_digest = "0".repeat(64);
+expectRejected(
+  () => compileCorpusPlan(staleDigestContext, workflow),
+  "declared portable context digest mismatch was accepted",
+);
+
+const workflowEscape = structuredClone(workflow);
+workflowEscape.authority_corpus_system.tree_template.project.push("../outside.md");
+expectRejected(
+  () => compileCorpusPlan(context, workflowEscape),
+  "authority workflow page escape was accepted",
+);
+
+const authorityWorkflowEscapeContext = structuredClone(context);
+authorityWorkflowEscapeContext.authority_corpus_roots.authority_root = "authority";
+authorityWorkflowEscapeContext.portable_template_instance.authority_corpus_roots.authority_root = "authority";
+authorityWorkflowEscapeContext.authority_corpus_roots.evidence_library_root = "authority/evidence-library";
+authorityWorkflowEscapeContext.portable_template_instance.authority_corpus_roots.evidence_library_root = "authority/evidence-library";
+bindPortableDigest(authorityWorkflowEscapeContext);
+const authorityWorkflowEscape = structuredClone(workflow);
+authorityWorkflowEscape.authority_corpus_system.tree_template.project.push("outside.md");
+expectRejected(
+  () => compileCorpusPlan(authorityWorkflowEscapeContext, authorityWorkflowEscape),
+  "authority workflow page outside authority_root was accepted",
+);
 
 const emptyProject = structuredClone(context);
 emptyProject.project_name = "Synthetic Empty Project";
@@ -184,6 +277,8 @@ try {
   fs.symlinkSync(symlinkExternal, path.join(symlinkRoot, "authority/features"), "dir");
   const activated = structuredClone(emptyProject);
   activated.authority_corpus_entities.feature_ids = ["feature"];
+  activated.portable_template_instance.authority_corpus_entities.feature_ids = ["feature"];
+  bindPortableDigest(activated);
   let rejected = false;
   try {
     applyCorpusPlan(symlinkRoot, activated, workflow);
@@ -199,9 +294,60 @@ try {
   fs.rmSync(symlinkExternal, {recursive: true, force: true});
 }
 
+const casRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-cas-root-"));
+try {
+  const first = applyCorpusPlan(casRoot, emptyProject, workflow);
+  const indexPath = path.join(casRoot, emptyProject.authority_corpus_roots.authority_index_path);
+  const originalIndexBytes = fs.readFileSync(indexPath);
+  const replay = applyCorpusPlan(casRoot, emptyProject, workflow);
+  if (replay.index_sha256 !== first.index_sha256 || !fs.readFileSync(indexPath).equals(originalIndexBytes)) {
+    fail("unchanged authority corpus replay was not an exact no-op");
+  }
+
+  const tamperedIndex = structuredClone(first.index);
+  tamperedIndex.context_identity.project_name = "Tampered Wrapper";
+  fs.writeFileSync(indexPath, canonicalPretty(tamperedIndex));
+  expectRejected(
+    () => applyCorpusPlan(casRoot, emptyProject, workflow),
+    "tampered authority index was silently overwritten without a parent digest",
+  );
+  fs.writeFileSync(indexPath, originalIndexBytes);
+
+  const metadataPage = first.plan.pages[0];
+  const metadataPath = path.join(casRoot, metadataPage.relative_path);
+  const originalMetadataBytes = fs.readFileSync(metadataPath);
+  fs.writeFileSync(metadataPath, originalMetadataBytes.toString("utf8").replace(
+    `page_id: ${metadataPage.page_id}`,
+    "page_id: tampered-page-id",
+  ));
+  expectRejected(
+    () => applyCorpusPlan(casRoot, emptyProject, workflow, {expectedParentDigest: first.index_sha256}),
+    "page-header/index parity drift was accepted",
+  );
+  fs.writeFileSync(metadataPath, originalMetadataBytes);
+
+  const changedWorkflow = structuredClone(workflow);
+  changedWorkflow.authority_corpus_system.tree_template.project.push(
+    "${project_goals_root}/additional-roadmap.md",
+  );
+  const beforeStaleCas = fs.readFileSync(indexPath);
+  expectRejected(
+    () => applyCorpusPlan(casRoot, emptyProject, changedWorkflow, {expectedParentDigest: "0".repeat(64)}),
+    "stale authority-index CAS parent was accepted",
+  );
+  if (!fs.readFileSync(indexPath).equals(beforeStaleCas)) fail("stale CAS rejection changed the authority index");
+  const replaced = applyCorpusPlan(casRoot, emptyProject, changedWorkflow, {expectedParentDigest: first.index_sha256});
+  if (replaced.index_sha256 === first.index_sha256
+      || !fs.existsSync(path.join(casRoot, emptyProject.authority_corpus_roots.project_goals_root, "additional-roadmap.md"))) {
+    fail("explicit authority-index CAS replacement did not read back the new identity");
+  }
+} finally {
+  fs.rmSync(casRoot, {recursive: true, force: true});
+}
+
 if (failures.length > 0) {
   for (const failure of failures) console.error(`FAIL: ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log(`PASS AgentOS 2.1rc portability: ${files.length} files scanned; ${boundPaths.length} bound paths; JSON and script syntax verified; deterministic empty-project, context-separation, extension-boundary, containment, and symlink cases passed`);
+  console.log(`PASS AgentOS 2.1rc portability: ${files.length} files scanned; ${boundPaths.length} bound paths; JSON and script syntax verified; deterministic empty-project, portable-context identity, extension-boundary, root containment, CAS, page metadata, and symlink cases passed`);
 }

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.bootstrap_conversation_replay.v1",
+  "title": "AgentOS Bootstrap conversation replay",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "session_sha256",
+    "question_map_sha256",
+    "outcome",
+    "first_useful_workflow",
+    "boundaries",
+    "unresolved_question_ids",
+    "disposition",
+    "unavailable_reason",
+    "next_action",
+    "owner_approval_required_for_protected_actions",
+    "replay_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.bootstrap_conversation_replay.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["INCOMPLETE", "READY_FOR_OWNER_CHECK"]},
+    "session_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "question_map_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome": {"type": ["string", "null"], "maxLength": 500},
+    "first_useful_workflow": {"type": ["string", "null"], "maxLength": 500},
+    "boundaries": {"type": "array", "items": {"type": "string", "minLength": 2, "maxLength": 500}},
+    "unresolved_question_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"}},
+    "disposition": {"enum": ["ACTIVE", "UNAVAILABLE", "HARD_STOP"]},
+    "unavailable_reason": {"type": ["string", "null"], "maxLength": 500},
+    "next_action": {"type": "string", "pattern": "^[A-Z][A-Z0-9_:-]{1,95}$"},
+    "owner_approval_required_for_protected_actions": {"const": true},
+    "replay_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

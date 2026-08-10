@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.rollback_receipt.v1",
+  "version": 1,
+  "purpose": "Evidence that an explicitly selected rollback targeted and verified the exact prior delivery.",
+  "statuses": ["SUCCEEDED", "FAILED", "UNKNOWN"],
+  "required_fields": [
+    "schema", "version", "rollback_id", "request_id", "request_digest", "choice_digest",
+    "target_receipt_digest", "target_external_result_ref", "restored_external_result_ref",
+    "status", "verified", "evidence_digest", "observed_at_utc", "digest"
+  ],
+  "rules": [
+    "target_receipt_digest must equal the owner-selected rollback target.",
+    "SUCCEEDED requires verified=true and a restored external result reference.",
+    "FAILED and UNKNOWN require verified=false and remain nonterminal for campaign completion."
+  ]
+}

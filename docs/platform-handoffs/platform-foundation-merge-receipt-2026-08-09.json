@@ -1,0 +1,163 @@
+{
+  "schema": "agentos.platform_foundation_merge_receipt.v1",
+  "version": 1,
+  "status": "PLATFORM_MERGE_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE",
+  "activation_status": "PREPARED_NOT_ACTIVATED",
+  "source": {
+    "commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "working_tree": "DIRTY"
+  },
+  "foundation_receipt_sha256": "bade4a617761758e17519a02574d16c036732545a9e5fd6f7e3f5c46ce663c8c",
+  "inventory_sha256": "7e5f003cfb25f707b1ad0760dcae9ee0f635e5a126a3f3c1e1869dafb1e8ce80",
+  "lane_handoffs": [
+    {
+      "lane_id": "PLATFORM_GATE_RESPONSE",
+      "handoff_path": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
+      "handoff_sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347",
+      "lane_file": "control/task-gate-questions.mjs",
+      "lane_sha256": "dac590ecb250f33415bcd4a48ce7d3261cf70f4c80a0321bd19f80b549b79fc6"
+    },
+    {
+      "lane_id": "PLATFORM_NATIVE_SESSION_EVIDENCE",
+      "handoff_path": "docs/platform-handoffs/native-session-evidence-platform-handoff.md",
+      "handoff_sha256": "5767da800cfdd64e185dd1845f4150db8e71c08e5357a27a59a547b31acd2f5a",
+      "lane_file": "control/native-session-runner.mjs",
+      "lane_sha256": "34de85f4ddf940ecc9e9b45d9309e3d14324ab8121a402c9292cc1e25e1b1ed4"
+    },
+    {
+      "lane_id": "PLATFORM_PRIVATE_CONTROL_MEMORY",
+      "handoff_path": "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md",
+      "handoff_sha256": "2a12996794a48e928d3560c86c0c0de2218dac8119b77d8febcf5abce1a3bfb9",
+      "lane_file": "control/private-control-storage.mjs",
+      "lane_sha256": "6a6748753b595c273dd3a735228c570ca7c2a03148b2a7d5f624fd4c91ea2310"
+    }
+  ],
+  "inventory": {
+    "feature_count": 37,
+    "feature_report_count": 37,
+    "governance_count": 12,
+    "governance_report_count": 12,
+    "parity": {
+      "features": 37,
+      "governance": 12
+    },
+    "active_lane_ids": [
+      "PLATFORM_GATE_RESPONSE",
+      "PLATFORM_NATIVE_SESSION_EVIDENCE",
+      "PLATFORM_PRIVATE_CONTROL_MEMORY"
+    ]
+  },
+  "candidate": {
+    "changed_paths": [
+      "control/gate-catalog-compiler.mjs",
+      "control/governance-decision-tree.mjs",
+      "control/native-host-attachment.mjs",
+      "control/native-host-contract.mjs",
+      "control/native-host-loader.mjs",
+      "control/native-session-host-attestation.mjs",
+      "control/native-session-runner.mjs",
+      "control/native-session-team.mjs",
+      "control/private-control-bundle.mjs",
+      "control/private-control-common.mjs",
+      "control/private-control-storage.mjs",
+      "control/private-offline-mode.mjs",
+      "control/private-provider-discovery.mjs",
+      "control/project-memory-capsule.mjs",
+      "control/project-memory-projections.mjs",
+      "control/project-memory-records.mjs",
+      "control/project-memory-store.mjs",
+      "control/project-memory.mjs",
+      "control/task-gate-questions.mjs",
+      "control/universal-response-gating.mjs",
+      "schemas/digest-bound-checkpoint.v1.json",
+      "schemas/gate-catalog.v1.json",
+      "schemas/host-capability-catalog.v1.json",
+      "schemas/native-host-attachment.v1.json",
+      "schemas/native-session-host-spawn-attestation.v1.json",
+      "schemas/native-session-run.v1.json",
+      "schemas/native-session-team.v1.json",
+      "schemas/offline-action-authorization.v1.json",
+      "schemas/offline-policy.v1.json",
+      "schemas/private-control-bundle.v1.json",
+      "schemas/private-control-import.v1.json",
+      "schemas/private-control-repository.v1.json",
+      "schemas/private-workspace-binding.v1.json",
+      "schemas/project-memory-capsule-import.v1.json",
+      "schemas/project-memory-capsule.v1.json",
+      "schemas/project-memory.v1.json",
+      "schemas/provider-discovery.v1.json",
+      "schemas/universal-response-handoff.v1.json"
+    ],
+    "path_sha256": {
+      "control/gate-catalog-compiler.mjs": "e55e7d3369227a955a1221e53ffa74678e79105c601d17ba8725e6fbd76cf2a8",
+      "control/governance-decision-tree.mjs": "ad804dfc11206a50aea2989168565794f9e2f6040dde767c7ceca9e9152c55a7",
+      "control/native-host-attachment.mjs": "82867c837f5b6261f5a2c04c650ac63e2c62dacd8cf10f2b366fd904b4ae98da",
+      "control/native-host-contract.mjs": "098a3890789581a37914cc08b583ea849fd9921f67bb373c87eaa0adeb56903d",
+      "control/native-host-loader.mjs": "43ee0859ff172d72308f121a282f1537ee2b5e81e2fc405368f7111a06a38b46",
+      "control/native-session-host-attestation.mjs": "49ae5ce3949803b70365aaacf8484c4a31258e21963adb9650d38fdc3cfd9545",
+      "control/native-session-runner.mjs": "34de85f4ddf940ecc9e9b45d9309e3d14324ab8121a402c9292cc1e25e1b1ed4",
+      "control/native-session-team.mjs": "518ed7f0e28d077aaa4f6825ccfe4b117601d46b5dcfc4f26a00d77d3f017a95",
+      "control/private-control-bundle.mjs": "8d46a6b0d87f6074d50134a5c64fe67a99ac54b4ae8d0d548472b9fe81ceecee",
+      "control/private-control-common.mjs": "54585c279385d1cdf9fc4ee5ca20ca5b51fa6187993500763221227f120af057",
+      "control/private-control-storage.mjs": "6a6748753b595c273dd3a735228c570ca7c2a03148b2a7d5f624fd4c91ea2310",
+      "control/private-offline-mode.mjs": "bfce981b0d5ca8b2d732c57f6595cbe00380c17c11f1b57960cb7c02074f069f",
+      "control/private-provider-discovery.mjs": "20bfbf6d483d34981aea31aa11cf48cfed58315aed71aa364ca489a76b0ccc2f",
+      "control/project-memory-capsule.mjs": "6d56d56d820da84b8b0420f6b4217069884bb87c70273be2a12393c73b5d335e",
+      "control/project-memory-projections.mjs": "68481d341e8add76f86dbc6d9a9b7838380e5a8f8e8002a4a078b93a196a65ae",
+      "control/project-memory-records.mjs": "b61eb054c58b13540ca2ac2fe50a8153b07289a80c501c82c355f79070aca707",
+      "control/project-memory-store.mjs": "499f26280a037c978138386fcbe4397751d716c78019fa94233b0007222038ea",
+      "control/project-memory.mjs": "73254256d7ff1c12174f81ab9bf344ff0fb7be3fbc00d8a3a8c9e67bd11cc426",
+      "control/task-gate-questions.mjs": "dac590ecb250f33415bcd4a48ce7d3261cf70f4c80a0321bd19f80b549b79fc6",
+      "control/universal-response-gating.mjs": "c34ea0a228ec92f1ab215ef7c009be9900830984aa7d50c0ea0b9d23db692032",
+      "schemas/digest-bound-checkpoint.v1.json": "f227b2a0654ef2db1fb8f820c35f0750f0e22a57851e31673bf86c12c303f153",
+      "schemas/gate-catalog.v1.json": "c5ab5030e74b1e36cc384355920f3d8113661baf081d49d7c0d0b746c45d0a5f",
+      "schemas/host-capability-catalog.v1.json": "840e5797f183e33314f2e2c33c0858f4929490a3c5fe033666689c5c9fccda4a",
+      "schemas/native-host-attachment.v1.json": "fa9ec13c6a544c30489fb3c4c1a9803681a9c90f86b22cb17217992d79132adc",
+      "schemas/native-session-host-spawn-attestation.v1.json": "02f9bdcc35fe943f8622accd6f80fc52b7cf0cc81869dedc342f1e76c3f2b5bf",
+      "schemas/native-session-run.v1.json": "85a09ddeb1e6c508a78c04678e86db5ba5500175221c1f558e07237b9a7a837e",
+      "schemas/native-session-team.v1.json": "1379ebb96b114180020f8936e5813f5d37e586559733139d0bee1622504ab902",
+      "schemas/offline-action-authorization.v1.json": "010fa4f1097113df2d4ff44fc8ee12bb1c6e52494ac3798acc9a6d4366c8a98d",
+      "schemas/offline-policy.v1.json": "b6ca1d4bd0f6c6ba18d7a0827f8d7bb919b3587a90d7e7747bd67830e6025902",
+      "schemas/private-control-bundle.v1.json": "1683c046eb16203b1ee92e3cd6307812c980ed4db1a6684bf75723bfd1394f15",
+      "schemas/private-control-import.v1.json": "7f76f41af5f463b3bc2bca4aa21cd10ec02961797975fb9e8b5c8832bdabf6bb",
+      "schemas/private-control-repository.v1.json": "5e87e8967dd73b9cb367c8ee1b44dc8638d965ec492cb2c59bb732da3dfa8d26",
+      "schemas/private-workspace-binding.v1.json": "d904e8801a460f7e61c282a12fd83534fbc4f4be36026a3d4741cda9705dc45c",
+      "schemas/project-memory-capsule-import.v1.json": "4d7a3e26c5d17c021d123342bbda254df416fb90d560f50942ed35a9e369ee6f",
+      "schemas/project-memory-capsule.v1.json": "a7662f1d2023d0877fef231b5400cf5655683c37dcfab36d28a2e7196a13a2d2",
+      "schemas/project-memory.v1.json": "813540f8125457b36ea6c62375903948bfb21482d731956d74cae841d504fef0",
+      "schemas/provider-discovery.v1.json": "a97aee5bfc5fa817372ad640476de1dc2d7d83ef6c1aaa84b017b5ba8703357a",
+      "schemas/universal-response-handoff.v1.json": "49452ea5d58e51f5b126b171a4e4f8e3fb0875dfb07a696c3b5eb4b1cd9938c8"
+    },
+    "question_queue_path": "questions.txt",
+    "implementation_started": true,
+    "candidate_sha256": "4371cc13674e6b67a943f059fa01c814196f0ea66a9180e1051e8e53949264dc"
+  },
+  "independent_audit": {
+    "status": "PENDING",
+    "receipt_ref": null,
+    "findings_ref": null
+  },
+  "integration": {
+    "status": "PENDING",
+    "receipt_ref": null,
+    "candidate_ref": null
+  },
+  "feature_admission": "HOLD",
+  "universal_closeout": {
+    "mode": "ALL_DEVELOPMENT_MODES",
+    "applies_to": ["APPRENTICESHIP", "BOOTSTRAP", "CAMPAIGN", "CASCADE", "ITERATION", "IMPORT", "RAPID_PROTOTYPE", "RAPID_PROTOTYPING", "ALL_DEVELOPMENT_MODES"],
+    "receipt_schema": "agentos.universal_task_closeout_receipts.v1",
+    "receipt_compiler": "compileUniversalTaskCloseoutReceipts",
+    "receipt_authorities": {"PRESERVE_HANDOFF":"CONTROLLER_READBACK","PERSIST_HANDOFF":"CONTROLLER_RECORD","AUDIT_CANDIDATE":"INDEPENDENT_AUDITOR","INTEGRATE_ACCEPTED_WORK":"CONTROLLER_INTEGRATION","UNPIN_SESSION":"HOST_READBACK","CLOSE_STALE_WORKTREE":"CONTROLLER_RECORD","REMOVE_ACTIVE_TASK_SCOPE":"CONTROLLER_RECORD","MARK_CHAT_OUT_OF_SCOPE":"CONTROLLER_RECORD","ARCHIVE_VISIBLE_TASK":"HOST_READBACK"},
+    "sequence": ["PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK", "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK"],
+    "required_evidence": ["ARCHIVE_RECEIPT", "CHAT_OUT_OF_SCOPE_RECEIPT", "CLOSURE_RECEIPT", "HANDOFF_PRESERVATION_RECEIPT", "INDEPENDENT_AUDIT_RECEIPT", "INTEGRATION_RECEIPT", "ROSTER_READBACK", "STALE_WORKTREE_CLOSURE_RECEIPT", "TASK_SCOPE_REMOVAL_RECEIPT", "TYPED_HANDOFF"],
+    "controller_must_wait_for_integration": true,
+    "archive_is_dynamic": true,
+    "archive_requires_chat_out_of_scope": true,
+    "archive_requires_active_scope_removal": true,
+    "archive_requires_stale_worktree_closed": true,
+    "archive_preconditions": ["HANDOFF_PRESERVED", "HANDOFF_PERSISTED", "CANDIDATE_INDEPENDENTLY_AUDITED", "WORKTREE_INTEGRATED", "STALE_WORKTREE_CLOSED", "ACTIVE_TASK_SCOPE_REMOVED", "CHAT_OUT_OF_SCOPE"]
+  },
+  "merge_sha256": "6e77937fdd4f97dd14ed0cd66dca912d12d2c1d46637f450bcfd4e8c10677646"
+}

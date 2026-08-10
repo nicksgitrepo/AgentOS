@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.task_profile.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "task_ref_sha256", "goal_ref_sha256", "project_context_sha256", "role", "lane",
+    "task_class", "sensitivity", "required_capabilities", "required_context_tokens", "required_tools",
+    "minimum_reasoning_effort", "verifier_strength", "required_permissions", "permission_ceiling", "max_expected_cost",
+    "deadline_seconds", "fallback_allowed", "fallback_triggers", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.task_profile.v1"},
+    "version": {"const": 1},
+    "status": {"const": "VALIDATED"},
+    "task_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "goal_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "role": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "lane": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "task_class": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "sensitivity": {"enum": ["NORMAL", "SENSITIVE", "CRITICAL"]},
+    "required_capabilities": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}},
+    "required_context_tokens": {"type": "integer", "minimum": 1},
+    "required_tools": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9._:-]*$"}},
+    "minimum_reasoning_effort": {"enum": ["low", "medium", "high", "max"]},
+    "verifier_strength": {"enum": ["NONE", "DETERMINISTIC", "INDEPENDENT_AUDITOR", "HIGH_ASSURANCE"]},
+    "required_permissions": {"type": "array", "items": {"enum": ["READ_SOURCE", "READ_ASSIGNED_WORKTREE", "WRITE_ASSIGNED_WORKTREE", "HOST_LIFECYCLE", "EMIT_EVIDENCE", "INDEPENDENT_REVIEW"]}},
+    "permission_ceiling": {"type": "array", "items": {"enum": ["READ_SOURCE", "READ_ASSIGNED_WORKTREE", "WRITE_ASSIGNED_WORKTREE", "HOST_LIFECYCLE", "EMIT_EVIDENCE", "INDEPENDENT_REVIEW"]}},
+    "max_expected_cost": {"type": ["number", "null"], "minimum": 0},
+    "deadline_seconds": {"type": ["number", "null"], "exclusiveMinimum": 0},
+    "fallback_allowed": {"type": "boolean"},
+    "fallback_triggers": {"type": "array", "items": {"enum": ["MODEL_UNAVAILABLE", "RATE_LIMITED", "CAPACITY_UNAVAILABLE", "CONTEXT_UNAVAILABLE", "BUDGET_EXCEEDED"]}},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

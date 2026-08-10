@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.base_role_library.v1",
+  "title": "AgentOS base role governance library",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "library_kind", "governance_version", "ownership", "lineage", "base_general_library_digest", "source", "role_graph_bindings", "role_packets", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.base_role_library.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["COMPILED", "INDEPENDENTLY_CHECKED", "OWNER_ACCEPTED", "PREPARED_NOT_ACTIVATED", "ACTIVE", "SUPERSEDED", "REJECTED", "BLOCKED"]},
+    "library_kind": {"const": "BASE_ROLE"},
+    "governance_version": {"const": "3.0"},
+    "ownership": {"$ref": "#/$defs/ownership"},
+    "lineage": {"$ref": "#/$defs/lineage"},
+    "base_general_library_digest": {"$ref": "#/$defs/digest"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane_manifest_digest", "role_selection_digest", "role_definition_source_digest"],
+      "properties": {
+        "lane_manifest_digest": {"$ref": "#/$defs/digest"},
+        "role_selection_digest": {"$ref": "#/$defs/digest"},
+        "role_definition_source_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "role_graph_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["graph_id", "path_ref", "graph_sha256", "scope_role_id", "lane_id"],
+        "properties": {
+          "graph_id": {"type": "string"},
+          "path_ref": {"type": "string"},
+          "graph_sha256": {"$ref": "#/$defs/digest"},
+          "scope_role_id": {"type": "string"},
+          "lane_id": {"anyOf": [{"type": "null"}, {"type": "string"}]}
+        }
+      }
+    },
+    "role_packets": {
+      "type": "array",
+      "minItems": 5,
+      "items": {"$ref": "#/$defs/rolePacket"}
+    },
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_role", "authoring_role"],
+      "properties": {"owner_role": {"const": "RELEASE_MAINTAINER"}, "authoring_role": {"const": "RELEASE_COMPILER"}}
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "supersedes", "owner_decision_digest", "independent_check_digest"],
+      "properties": {
+        "revision": {"type": "integer", "minimum": 1},
+        "supersedes": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "owner_decision_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "independent_check_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    },
+    "rolePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role_id", "display_name", "role_kind", "lifetime", "lane_id", "graph_ids", "allowed_authority", "prohibited_authority", "required_evidence", "digest"],
+      "properties": {
+        "role_id": {"type": "string"},
+        "display_name": {"type": "string"},
+        "role_kind": {"type": "string"},
+        "lifetime": {"enum": ["CAMPAIGN", "PERSISTENT"]},
+        "lane_id": {"anyOf": [{"type": "null"}, {"type": "string"}]},
+        "graph_ids": {"type": "array", "items": {"type": "string"}},
+        "allowed_authority": {"type": "array", "items": {"type": "string"}},
+        "prohibited_authority": {"type": "array", "items": {"type": "string"}},
+        "required_evidence": {"type": "array", "items": {"type": "string"}},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

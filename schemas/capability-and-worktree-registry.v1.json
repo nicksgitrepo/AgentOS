@@ -3,6 +3,91 @@
   "version": 1,
   "release_candidate": "2.1rc",
   "purpose": "Portable roles, capability catalog, worktree topology, custody, and handoff workflow for feature-led multi-agent software delivery.",
+  "native_session_team": {
+    "controller": "control/native-session-team.mjs",
+    "contract": "agentos.native_rapid_foundation_team_plan.v1",
+    "implementation_contract": "agentos.native_rapid_implementation_team_plan.v1",
+    "topology": "INDEPENDENT_SIBLING_SESSIONS",
+    "environment": "LOCAL_PROJECT",
+    "worktree_mode": "PROJECT_LOCAL_SESSION",
+    "pre_write_identity_check": true,
+    "required_tools": [
+      "create_thread",
+      "list_threads",
+      "send_message_to_thread",
+      "set_thread_archived",
+      "set_thread_pinned",
+      "wait_threads"
+    ],
+    "role_names": {
+      "FOUNDATION_INTENT_AND_SCOPE": "Intent and scope",
+      "FOUNDATION_BOOTSTRAP_AND_CONTEXT": "Bootstrap and context",
+      "FOUNDATION_USER_CONVERSATION": "User conversation",
+      "FOUNDATION_ROLE_ROUTING": "Role routing",
+      "FOUNDATION_PROGRESS_AND_HEALTH": "Progress and health",
+      "FOUNDATION_FUNCTIONALITY": "Functionality",
+      "FOUNDATION_UI_UX": "UI/UX",
+      "FOUNDATION_CODE_HYGIENE": "Code hygiene",
+      "FOUNDATION_SECURITY_AND_PRIVACY": "Security and privacy",
+      "FOUNDATION_EVIDENCE_AND_IDENTITY": "Evidence and identity",
+      "FOUNDATION_RECOVERY_AND_BOUNDARIES": "Recovery and boundaries",
+      "FOUNDATION_DELIVERY_AND_CLOSURE": "Delivery and closure",
+      "FOUNDATION_CLEARANCE_AUDITOR": "Foundation Clearance Auditor",
+      "RAPID_SLICE_BUILDER": "Rapid Slice Builder",
+      "INDEPENDENT_AUDITOR": "Independent Auditor"
+      ,"IMPLEMENTATION_INTENT_AND_SCOPE": "Intent and scope behavior"
+      ,"IMPLEMENTATION_BOOTSTRAP_AND_CONTEXT": "Bootstrap and context behavior"
+      ,"IMPLEMENTATION_USER_CONVERSATION": "User conversation behavior"
+      ,"IMPLEMENTATION_ROLE_ROUTING": "Role routing behavior"
+      ,"IMPLEMENTATION_PROGRESS_AND_HEALTH": "Progress and health behavior"
+      ,"IMPLEMENTATION_FUNCTIONALITY": "Functionality behavior"
+      ,"IMPLEMENTATION_UI_UX": "UI/UX behavior"
+      ,"IMPLEMENTATION_CODE_HYGIENE": "Code hygiene behavior"
+      ,"IMPLEMENTATION_SECURITY_AND_PRIVACY": "Security and privacy behavior"
+      ,"IMPLEMENTATION_EVIDENCE_AND_IDENTITY": "Evidence and identity behavior"
+      ,"IMPLEMENTATION_RECOVERY_AND_BOUNDARIES": "Recovery and boundaries behavior"
+      ,"IMPLEMENTATION_DELIVERY_AND_CLOSURE": "Delivery and closure behavior"
+    },
+    "persistent_coordinator": {
+      "machine_role": "AGENTOS_CONTROLLER",
+      "public_name": "Intent Regulator",
+      "runtime": "PERSISTENT_PROJECT_RUNTIME"
+    },
+    "foundation_rules": {
+      "lane_count": 12,
+      "one_fresh_sibling_per_lane": true,
+      "one_lane_file_per_lane": true,
+      "typed_handoff_required": true,
+      "hostile_coverage_required": true,
+      "independent_clearance_required": true,
+      "close_archive_remove_required": true,
+      "inherit_old_roster": false
+    },
+    "implementation_rules": {
+      "lane_count": 12,
+      "one_fresh_sibling_per_lane": true,
+      "one_module_and_one_focused_test_per_lane": true,
+      "shared_write_paths_forbidden": true,
+      "documentation_only_rejected": true,
+      "typed_handoff_required": true,
+      "hostile_coverage_required": true,
+      "automatic_preserve_unpin_archive_remove": true,
+      "automatic_lifecycle_status": "IMPLEMENTED_AND_INDEPENDENTLY_ACCEPTED",
+      "independent_assembly_and_audit_required": true,
+      "independent_acceptance_status": "RAPID_SLICE_ACCEPTED",
+      "temporary_roster_active_count": 0,
+      "iteration_mode": "ACTIVE_FROM_TYPED_TRANSITION"
+    },
+    "forbidden_substitutes": [
+      "SUBAGENT",
+      "SHELL_WORKER",
+      "LOCAL_DAEMON",
+      "FORKED_HISTORY_AS_ROLE"
+    ],
+    "source_binding": "A setup identifier is not a bound session. A role is ready only after the host returns a durable thread ID, the exact saved-project identity and cwd, and exact source readback before its declared module/test write.",
+    "default_execution": "control/native-session-team.mjs",
+    "user_override": "Bootstrap may replace the default model and reasoning effort only through an explicit owner preference before new sessions are created."
+  },
   "authority_corpus_system": {
     "purpose": "Bootstrap, generate, index, and maintain one project authority corpus from project-bound root variables without assuming a storage product or repository layout.",
     "root_variables": [
@@ -293,7 +378,7 @@
       "schema": "governance.campaign_cascade_state.v1",
       "required": true,
       "controller": "control/campaign-cascade.mjs",
-      "rule": "Every campaign snapshot carries the exact first-pass, four-lens audit, finalizer, delta, model-policy, and loop-control state."
+      "rule": "Every campaign snapshot carries the exact first-pass, four-lens audit, finalizer, delta, model-policy, loop-control, and universal temporary-task closeout state. A cascade cannot become READY_FOR_ACCEPTANCE until the nine general closeout receipts prove preserved handoffs, audited integration, stale-worktree closure, active-scope removal, chat-out-of-scope status, and host archival."
     },
     "authority_writer": {
       "role": "CAMPAIGN_ORCHESTRATOR",

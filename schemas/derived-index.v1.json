@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance.derived_index_contract.v1",
+  "title": "AgentOS privacy-safe derived index contract",
+  "schema": "governance.derived_index_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/derived-index.mjs",
+  "purpose": "A deterministic hybrid-memory lookup projection. It supports role-scoped lexical retrieval while canonical records remain the only source of truth.",
+  "derived_index": {
+    "schema": "governance.derived_index.v1",
+    "instance_schema": "schemas/derived-index-instance.v1.json",
+    "required_fields": [
+      "schema",
+      "version",
+      "contract_status",
+      "visibility",
+      "advisory_only",
+      "acceptance_authority",
+      "index_id",
+      "project_ref",
+      "memory_role",
+      "index_kind",
+      "tokenization",
+      "token_digest_algorithm",
+      "source_snapshot_sha256",
+      "policy_sha256",
+      "compiler_sha256",
+      "status",
+      "bounds",
+      "documents",
+      "postings",
+      "index_sha256"
+    ],
+    "memory_role": "DERIVED_INDEX_ONLY",
+    "index_kind": "LEXICAL_HASHED",
+    "tokenization": "UNICODE_WORDS_NFKC_LOWER_V1",
+    "token_digest_algorithm": "SHA256_CANONICAL_TOKEN_V1",
+    "visibility": "CONTROL_SPACE",
+    "advisory_only": true,
+    "acceptance_authority": false,
+    "document_rule": "The source text is transient compiler input. Persisted documents contain only document metadata, source-record digests, a content digest, role scope, and token count.",
+    "posting_rule": "Postings contain token digests and sorted logical document references; raw terms are never persisted.",
+    "role_rule": "A query returns a document only when the requested role is in that document's role scope.",
+    "staleness_rule": "Source snapshot or policy mismatch makes the index stale; callers must rebuild it before relying on retrieval.",
+    "bounds": {
+      "required_fields": [
+        "max_documents",
+        "max_tokens_per_document",
+        "truncated"
+      ],
+      "silent_truncation": false
+    }
+  },
+  "query_result": {
+    "schema": "governance.derived_index_query_result.v1",
+    "instance_schema": "schemas/derived-index-query-instance.v1.json",
+    "raw_query_persisted": false,
+    "raw_content_returned": false,
+    "statuses": [
+      "MATCHED",
+      "NO_MATCH",
+      "STALE"
+    ],
+    "acceptance_authority": false
+  },
+  "privacy": {
+    "forbidden": [
+      "secrets",
+      "raw paths",
+      "transcripts",
+      "host identifiers",
+      "session identifiers",
+      "environment values",
+      "private links"
+    ],
+    "final_record_scan_required": true
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "active": false,
+    "protected_actions_allowed": false
+  }
+}

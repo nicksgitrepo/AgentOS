@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.routing_unavailable.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "reason_code", "task_profile_sha256", "policy_sha256", "context_policy_sha256", "capability_catalog_sha256", "context_selection_sha256", "host_attestation_sha256", "source_binding_sha256", "rejected_candidates", "observed_at_utc", "acceptance", "protected_actions_enabled", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.routing_unavailable.v1"},
+    "version": {"const": 1},
+    "status": {"const": "UNAVAILABLE"},
+    "reason_code": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+    "task_profile_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "capability_catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "host_attestation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rejected_candidates": {"type": "array"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "acceptance": {"const": false},
+    "protected_actions_enabled": {"const": false},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

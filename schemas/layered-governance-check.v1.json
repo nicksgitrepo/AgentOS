@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.layered_governance_check.v1",
+  "title": "AgentOS independent layered governance evidence check",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "conversation_sha256",
+    "project_contract_sha256", "task_packet_sha256",
+    "layered_governance_sha256", "upgrade_result_sha256", "matches", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.layered_governance_check.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PASS", "PENDING_UPGRADE_EVIDENCE", "BLOCKED"]},
+    "conversation_sha256": {"$ref": "#/$defs/digest"},
+    "project_contract_sha256": {"$ref": "#/$defs/digest"},
+    "task_packet_sha256": {"$ref": "#/$defs/digest"},
+    "layered_governance_sha256": {"$ref": "#/$defs/digest"},
+    "upgrade_result_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "matches": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conversation_to_contract", "contract_to_task_packet", "task_to_layers", "upgrade_bound", "raw_owner_text_excluded"],
+      "properties": {
+        "conversation_to_contract": {"type": "boolean"},
+        "contract_to_task_packet": {"type": "boolean"},
+        "task_to_layers": {"type": "boolean"},
+        "upgrade_bound": {"type": "boolean"},
+        "raw_owner_text_excluded": {"type": "boolean"}
+      }
+    },
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

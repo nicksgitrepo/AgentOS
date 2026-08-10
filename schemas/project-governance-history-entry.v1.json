@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_governance_history_entry.v1",
+  "title": "AgentOS append-only project governance history entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_id", "event_type", "project_general_library_digest", "source_snapshot_digest", "supersedes", "revision", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.project_governance_history_entry.v1"},
+    "version": {"const": 1},
+    "status": {"const": "APPENDED"},
+    "project_id": {"type": "string"},
+    "event_type": {"enum": ["CREATED", "SUPERSEDED", "REBASED", "PRESERVED", "RESET_ARCHIVED"]},
+    "project_general_library_digest": {"$ref": "#/$defs/digest"},
+    "source_snapshot_digest": {"$ref": "#/$defs/digest"},
+    "supersedes": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "revision": {"type": "integer", "minimum": 1},
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

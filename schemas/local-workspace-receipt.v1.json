@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.local_workspace_receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "operation", "status", "adapter_ref", "workspace_binding_digest", "runtime_binding_digest",
+    "control_repository_readback", "source_readback", "expected_source", "mismatch_fields", "provider_readback",
+    "operations", "failure_code", "observed_at_utc", "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.local_workspace_receipt.v1"},
+    "version": {"const": 1},
+    "operation": {"enum": ["REGISTER", "REOPEN", "RECONCILE", "PRE_WORK", "HANDOFF"]},
+    "status": {"enum": ["MATCHED", "MISMATCH", "UNAVAILABLE"]},
+    "adapter_ref": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "runtime_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "control_repository_readback": {"$ref": "#/$defs/controlRepositoryReadback"},
+    "source_readback": {"$ref": "#/$defs/sourceReadback"},
+    "expected_source": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sourceIdentity"}]},
+    "mismatch_fields": {"type": "array", "items": {"enum": ["workspace_binding", "control_repository", "source_commit", "source_tree", "working_tree_digest", "detached"]}, "uniqueItems": true},
+    "provider_readback": {"$ref": "#/$defs/providerReadback"},
+    "operations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network_attempted", "authentication_attempted", "spending_attempted", "external_write_attempted"],
+      "properties": {
+        "network_attempted": {"const": false},
+        "authentication_attempted": {"const": false},
+        "spending_attempted": {"const": false},
+        "external_write_attempted": {"const": false}
+      }
+    },
+    "failure_code": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}]},
+    "observed_at_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "sourceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "source_tree", "working_tree_digest"],
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "working_tree_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "sourceReadback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "repository", "source_commit", "source_tree", "working_tree_digest", "clean", "detached", "failure_code"],
+      "properties": {
+        "status": {"enum": ["AVAILABLE", "UNAVAILABLE"]},
+        "repository": {"anyOf": [{"type": "null"}, {"const": "INDEPENDENT_GIT"}]},
+        "source_commit": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}$"}]},
+        "source_tree": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}$"}]},
+        "working_tree_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+        "clean": {"type": ["boolean", "null"]},
+        "detached": {"type": ["boolean", "null"]},
+        "failure_code": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}]}
+      }
+    },
+    "controlRepositoryReadback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "topology", "commit", "tree", "clean", "failure_code"],
+      "properties": {
+        "status": {"enum": ["AVAILABLE", "UNAVAILABLE"]},
+        "topology": {"anyOf": [{"type": "null"}, {"const": "INDEPENDENT_GIT"}]},
+        "commit": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}$"}]},
+        "tree": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}$"}]},
+        "clean": {"type": ["boolean", "null"]},
+        "failure_code": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}]}
+      }
+    },
+    "providerReadback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "discovery_digest", "catalog_digest", "unavailable_entry_count", "unverified_entry_count", "reason_code"],
+      "properties": {
+        "status": {"enum": ["NOT_REQUESTED", "AVAILABLE", "UNVERIFIED", "PARTIAL_FAILURE", "UNAVAILABLE"]},
+        "discovery_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+        "catalog_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+        "unavailable_entry_count": {"type": "integer", "minimum": 0},
+        "unverified_entry_count": {"type": "integer", "minimum": 0},
+        "reason_code": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}]}
+      }
+    }
+  }
+}
+

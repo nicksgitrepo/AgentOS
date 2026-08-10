@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.dynamic_lane_discovery.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project_id",
+    "campaign_id",
+    "goal_id",
+    "source_commit",
+    "source_tree",
+    "bootstrap_plan_sha256",
+    "project_governance_sha256",
+    "admitted_capabilities"
+  ],
+  "properties": {
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "campaign_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "goal_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "bootstrap_plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_governance_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "admitted_capabilities": {"type": "array"}
+  },
+  "capability_fields": [
+    "capability_id",
+    "lane_kind",
+    "name",
+    "version",
+    "admission_status",
+    "governance",
+    "scope",
+    "depends_on"
+  ],
+  "rules": [
+    "Only ADMITTED capability records create lanes.",
+    "A capability identity may create at most one lane in a campaign.",
+    "The generated display name contains the human-readable name and normalized version.",
+    "All generated records retain the exact project, campaign, goal, and source binding."
+  ]
+}

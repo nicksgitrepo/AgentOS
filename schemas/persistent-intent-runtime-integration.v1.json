@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.persistent_intent_runtime_integration.v1",
+  "title": "Persistent Intent Regulator and Runtime integration envelopes",
+  "oneOf": [
+    {"$ref": "#/$defs/observation"},
+    {"$ref": "#/$defs/route"}
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9._:-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "utc": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256",
+        "source_commit", "source_tree", "progress_status", "scope_changed", "intent_changed", "conditions_changed",
+        "hard_boundary_detected", "soft_boundary_detected", "evidence_identity_ok", "roster_exact", "acceptance_status"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.campaign_snapshot.v1"},
+        "version": {"const": 1},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "progress_status": {"enum": ["OPEN", "PROGRESS_RECORDED", "STALLED", "CLOSED"]},
+        "scope_changed": {"type": "boolean"},
+        "intent_changed": {"type": "boolean"},
+        "conditions_changed": {"type": "boolean"},
+        "hard_boundary_detected": {"type": "boolean"},
+        "soft_boundary_detected": {"type": "boolean"},
+        "evidence_identity_ok": {"type": "boolean"},
+        "roster_exact": {"type": "boolean"},
+        "acceptance_status": {"enum": ["NONE", "CANDIDATE", "ACCEPTED"]}
+      }
+    },
+    "observationEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_sha256", "identity_binding_sha256", "roster_sha256", "progress_sha256", "boundary_sha256",
+        "issuer_kind", "issuer_ref_sha256", "attestation_sha256"
+      ],
+      "properties": {
+        "evidence_sha256": {"$ref": "#/$defs/sha256"},
+        "identity_binding_sha256": {"$ref": "#/$defs/sha256"},
+        "roster_sha256": {"$ref": "#/$defs/sha256"},
+        "progress_sha256": {"$ref": "#/$defs/sha256"},
+        "boundary_sha256": {"$ref": "#/$defs/sha256"},
+        "issuer_kind": {"enum": ["HOST_READBACK", "INDEPENDENT_AUDITOR"]},
+        "issuer_ref_sha256": {"$ref": "#/$defs/sha256"},
+        "attestation_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "activation_status", "project_id", "campaign_id", "campaign_version", "goal_id", "goal_sha256",
+        "source_commit", "source_tree", "environment_id", "governance_digest", "review_interval_minutes", "snapshot", "snapshot_sha256",
+        "evidence", "observed_at_utc", "evidence_identity_ok", "roster_exact", "observation_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.persistent_intent_runtime_observation.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "goal_sha256": {"$ref": "#/$defs/sha256"},
+        "source_commit": {"$ref": "#/$defs/sourceDigest"},
+        "source_tree": {"$ref": "#/$defs/sourceDigest"},
+        "environment_id": {"$ref": "#/$defs/identifier"},
+        "governance_digest": {"$ref": "#/$defs/sha256"},
+        "review_interval_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+        "snapshot": {"$ref": "#/$defs/snapshot"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "evidence": {"$ref": "#/$defs/observationEvidence"},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "evidence_identity_ok": {"type": "boolean"},
+        "roster_exact": {"type": "boolean"},
+        "observation_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "activation_status", "project_id", "campaign_id", "campaign_version", "goal_id", "snapshot_sha256",
+        "evidence_sha256", "runtime_event_sha256", "runtime_state_sha256", "decision_sha256", "decision", "route", "target_role",
+        "route_action", "runtime_status", "route_status", "dependent_work_allowed", "idempotency_key", "reused", "routed_at_utc", "route_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.persistent_intent_runtime_route.v1"},
+        "version": {"const": 1},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"$ref": "#/$defs/identifier"},
+        "goal_id": {"$ref": "#/$defs/identifier"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"},
+        "runtime_event_sha256": {"$ref": "#/$defs/sha256"},
+        "runtime_state_sha256": {"$ref": "#/$defs/sha256"},
+        "decision_sha256": {"$ref": "#/$defs/sha256"},
+        "decision": {"enum": ["CONTINUE_CAMPAIGN", "STOP_HARD_BOUNDARY", "REASSESS_AND_REPLACE_GOAL", "ORCHESTRATOR_REVIEW", "REPLACE_STALLED_WORKER", "AWAIT_ACCEPTANCE"]},
+        "route": {"type": "string", "minLength": 1},
+        "target_role": {"type": "string", "minLength": 1},
+        "route_action": {"enum": ["CONTINUE_CAMPAIGN", "HARD_STOP", "REASSESS_GOAL", "SOFT_REVIEW", "REPLACE_STALLED_WORKER", "AWAIT_ACCEPTANCE"]},
+        "runtime_status": {"enum": ["READY", "ACTIVE", "SOFT_REVIEW", "HARD_STOPPED", "REASSESSMENT_REQUIRED", "REPLACEMENT_REQUIRED", "AWAITING_ACCEPTANCE", "BLOCKED", "CLOSED"]},
+        "route_status": {"enum": ["WAITING", "CAMPAIGN_ORCHESTRATOR", "OWNER_REVIEW", "INDEPENDENT_AUDITOR"]},
+        "dependent_work_allowed": {"type": "boolean"},
+        "idempotency_key": {"$ref": "#/$defs/identifier"},
+        "reused": {"type": "boolean"},
+        "routed_at_utc": {"$ref": "#/$defs/utc"},
+        "route_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

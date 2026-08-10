@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_rollback.v1",
+  "title": "AgentOS governance rollback plan and receipt",
+  "oneOf": [{"$ref": "#/$defs/plan"}, {"$ref": "#/$defs/receipt"}],
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"},
+    "opaque": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,31}:[0-9a-f]{64}$"},
+    "checkpoint": {"$ref": "agentos.digest_bound_checkpoint.v1"},
+    "protected": {"type": "object", "additionalProperties": false, "required": ["acceptance", "activation", "deletion", "deployment", "external_release", "external_publish", "external_push", "merge", "product_writes", "secrets", "spend", "authority_change"], "properties": {"acceptance": {"const": false}, "activation": {"const": false}, "deletion": {"const": false}, "deployment": {"const": false}, "external_release": {"const": false}, "external_publish": {"const": false}, "external_push": {"const": false}, "merge": {"const": false}, "product_writes": {"const": false}, "secrets": {"const": false}, "spend": {"const": false}, "authority_change": {"const": false}}},
+    "approval": {"type": "object", "additionalProperties": false, "required": ["schema", "version", "status", "decision_id", "decision", "actor_ref", "parent_digest", "decided_at_utc", "approval_sha256"], "properties": {"schema": {"const": "agentos.owner_repair_approval.v1"}, "version": {"const": 1}, "status": {"const": "APPROVED"}, "decision_id": {"$ref": "#/$defs/id"}, "decision": {"const": "APPROVE_ROLLBACK"}, "actor_ref": {"$ref": "#/$defs/opaque"}, "parent_digest": {"$ref": "#/$defs/sha"}, "decided_at_utc": {"type": "string", "format": "date-time"}, "approval_sha256": {"$ref": "#/$defs/sha"}}},
+    "lifecycle": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"enum": ["PRESERVE_CANDIDATE_EVIDENCE", "PREPARE_RESTORE", "RESTORE_CHECKPOINT", "READBACK_CHECKPOINT", "INDEPENDENT_ROLLBACK_AUDIT"]}},
+    "progress": {"type": "array", "minItems": 1, "maxItems": 5, "items": {"enum": ["PRESERVE_CANDIDATE_EVIDENCE", "PREPARE_RESTORE", "RESTORE_CHECKPOINT", "READBACK_CHECKPOINT", "INDEPENDENT_ROLLBACK_AUDIT"]}},
+    "failure": {"type": "object", "additionalProperties": false, "required": ["phase", "error_sha256", "retry_allowed"], "properties": {"phase": {"$ref": "#/$defs/id"}, "error_sha256": {"$ref": "#/$defs/sha"}, "retry_allowed": {"const": false}}},
+    "plan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "status", "rollback_id", "repair_receipt_sha256", "candidate_checkpoint", "restore_checkpoint", "reason", "max_attempts", "lifecycle", "owner_approval", "owner_approval_parent_sha256", "protected_actions", "external_actions_allowed", "created_at_utc", "plan_sha256"],
+      "properties": {"schema": {"const": "agentos.governance_rollback_plan.v1"}, "version": {"const": 1}, "status": {"enum": ["PENDING_OWNER_REVIEW", "ADMITTED"]}, "rollback_id": {"$ref": "#/$defs/id"}, "repair_receipt_sha256": {"$ref": "#/$defs/sha"}, "candidate_checkpoint": {"$ref": "#/$defs/checkpoint"}, "restore_checkpoint": {"$ref": "#/$defs/checkpoint"}, "reason": {"type": "string", "minLength": 1, "maxLength": 512}, "max_attempts": {"const": 1}, "lifecycle": {"$ref": "#/$defs/lifecycle"}, "owner_approval": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/approval"}]}, "owner_approval_parent_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "protected_actions": {"$ref": "#/$defs/protected"}, "external_actions_allowed": {"const": false}, "created_at_utc": {"type": "string", "format": "date-time"}, "plan_sha256": {"$ref": "#/$defs/sha"}}
+    },
+    "receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "status", "plan_sha256", "repair_receipt_sha256", "candidate_checkpoint", "restore_checkpoint", "lifecycle", "completed_lifecycle", "failure", "candidate_evidence_preserved", "previous_candidate_retained", "owner_actor_ref", "restored_readback_sha256", "independent_audit_ref", "independent_audit_evidence_sha256", "protected_actions", "observed_at_utc", "receipt_sha256"],
+      "properties": {"schema": {"const": "agentos.governance_rollback_receipt.v1"}, "version": {"const": 1}, "status": {"enum": ["ROLLED_BACK_AND_VERIFIED", "ROLLBACK_FAILED_RETAINED", "ROLLBACK_STATE_UNCERTAIN"]}, "plan_sha256": {"$ref": "#/$defs/sha"}, "repair_receipt_sha256": {"$ref": "#/$defs/sha"}, "candidate_checkpoint": {"$ref": "#/$defs/checkpoint"}, "restore_checkpoint": {"$ref": "#/$defs/checkpoint"}, "lifecycle": {"$ref": "#/$defs/lifecycle"}, "completed_lifecycle": {"$ref": "#/$defs/progress"}, "failure": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/failure"}]}, "candidate_evidence_preserved": {"const": true}, "previous_candidate_retained": {"type": "boolean"}, "owner_actor_ref": {"$ref": "#/$defs/opaque"}, "restored_readback_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "independent_audit_ref": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/opaque"}]}, "independent_audit_evidence_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "protected_actions": {"$ref": "#/$defs/protected"}, "observed_at_utc": {"type": "string", "format": "date-time"}, "receipt_sha256": {"$ref": "#/$defs/sha"}}
+    }
+  }
+}

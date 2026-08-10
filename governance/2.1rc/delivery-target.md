@@ -15,6 +15,8 @@ The target records:
   production;
 - audience, data posture, authentication route, custom-domain choice, and
   explicit limitations;
+- for every non-prototype target, the supported scope, operating envelope, and
+  exact `EXACT_LAST_ACCEPTED_DEPLOYMENT` rollback path;
 - an optional project-context adapter ID and its profiled capabilities.
 
 `MANAGED_SITE` is a first-class low-setup option. The portable kernel offers a

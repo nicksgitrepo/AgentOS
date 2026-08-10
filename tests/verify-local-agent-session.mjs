@@ -7,6 +7,7 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {
   compileDurableWorkerSessionCommand,
+  compileCommandResult,
   durableWorkerTaskStatus,
   startDurableWorkerSession,
   stopDurableWorkerSession,
@@ -27,6 +28,19 @@ let started = null;
 let worktreePath = null;
 
 try {
+  await assert.rejects(() => startDurableWorkerSession({
+    repoRoot: root,
+    runtimeRoot,
+    role: "FEATURE_AGENT",
+    campaignId,
+    campaignVersion: "v1",
+    candidateSha256: crypto.createHash("sha256").update(campaignId + "-initial-rejected").digest("hex"),
+    sourceCommit,
+    sourceTree,
+    task: "This must fail before a worktree or session is created.",
+    taskId: "SMOKE-INITIAL-REJECTED",
+    taskKind: "INITIAL",
+  }), /not admitted for FEATURE_AGENT/u);
   started = await startDurableWorkerSession({
     repoRoot: root,
     runtimeRoot,
@@ -38,7 +52,7 @@ try {
     sourceTree,
     task: "Run one bounded local durability test task.",
     taskId: "SMOKE-1",
-    taskKind: "INITIAL",
+    taskKind: "CONTROLLER_SUPERVISOR_LIVENESS",
   });
   validateLocalDurableSessionRecord(started.session_record);
   validateLocalWorkerHeartbeat(started.heartbeat, {
@@ -61,9 +75,25 @@ try {
     commandId: "COMMAND-SMOKE-1",
     task: "Observe the durable session without changing scope.",
     taskId: "COMMAND-SMOKE-1",
-    taskKind: "OBSERVE",
+    taskKind: "CONTROLLER_SUPERVISOR_LIVENESS",
   });
   validateDurableWorkerSessionCommand(command, started.session_record);
+  const safeCommandResult = compileCommandResult({
+    base: {
+      role: started.session_record.role,
+      sessionId: started.session_record.session_id,
+      campaignId,
+      campaignVersion: "v1",
+      candidateSha256: started.session_record.candidate_sha256,
+      sourceCommit,
+      sourceTree,
+    },
+    command,
+    status: "FAILED",
+    error: "host secret /private/project/token.txt",
+  });
+  assert.match(safeCommandResult.error, /^opaque:error:[0-9a-f]{64}$/u);
+  assert.doesNotMatch(JSON.stringify(safeCommandResult), /host secret|\/private\/project\/token\.txt/u);
   const tampered = structuredClone(command);
   tampered.source_tree = "f".repeat(40);
   assert.throws(() => validateDurableWorkerSessionCommand(tampered, started.session_record), /source differs/u);
@@ -85,7 +115,7 @@ try {
     sourceTree,
     task: "Run an abrupt session-exit durability test.",
     taskId: "SMOKE-UNEXPECTED-DEATH-1",
-    taskKind: "INITIAL",
+    taskKind: "CONTROLLER_SUPERVISOR_LIVENESS",
   });
   const unexpectedWorktreePath = unexpected.session_record.worktree_path;
   const unexpectedRecordPath = path.join(runtimeRoot, "sessions", campaignId + "-v1", "FEATURE_AGENT-SMOKE-UNEXPECTED-DEATH-1", "session.json");

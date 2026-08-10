@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.host_capability_catalog.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "attestation_mode", "attachment_ref_sha256", "observed_at_utc", "models", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.host_capability_catalog.v1"},
+    "version": {"const": 1},
+    "status": {"const": "HOST_ATTESTED"},
+    "attestation_mode": {"const": "HOST_READBACK"},
+    "attachment_ref_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["model", "reasoning_effort", "capabilities", "context_tokens", "tools", "verifier_strength", "permissions", "expected_cost", "estimated_wall_seconds", "estimated_success_probability", "cost_unit", "spawnable"],
+        "properties": {
+          "model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "reasoning_effort": {"enum": ["low", "medium", "high", "max"]},
+          "capabilities": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"}, "uniqueItems": true},
+          "context_tokens": {"type": "integer", "minimum": 1},
+          "tools": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9._:-]*$"}, "uniqueItems": true},
+          "verifier_strength": {"enum": ["NONE", "DETERMINISTIC", "INDEPENDENT_AUDITOR", "HIGH_ASSURANCE"]},
+          "permissions": {"type": "array", "items": {"enum": ["READ_SOURCE", "READ_ASSIGNED_WORKTREE", "WRITE_ASSIGNED_WORKTREE", "HOST_LIFECYCLE", "EMIT_EVIDENCE", "INDEPENDENT_REVIEW", "PROTECTED_EXTERNAL_ACTION"]}, "uniqueItems": true},
+          "expected_cost": {"type": "number", "minimum": 0},
+          "estimated_wall_seconds": {"type": "number", "exclusiveMinimum": 0},
+          "estimated_success_probability": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+          "cost_unit": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "spawnable": {"type": "boolean"}
+        }
+      }
+    },
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

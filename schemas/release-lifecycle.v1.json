@@ -1,0 +1,283 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.release_lifecycle.v1",
+  "title": "AgentOS release lifecycle records",
+  "description": "Content-addressed release identities, artifact manifests, owner decisions, rejection feedback, and non-activating promotion evidence.",
+  "oneOf": [
+    {"$ref": "#/$defs/versionAllocation"},
+    {"$ref": "#/$defs/versionAllocationLedger"},
+    {"$ref": "#/$defs/artifactManifest"},
+    {"$ref": "#/$defs/artifactIdentity"},
+    {"$ref": "#/$defs/releaseCandidate"},
+    {"$ref": "#/$defs/ownerDecision"},
+    {"$ref": "#/$defs/rejectionFeedback"},
+    {"$ref": "#/$defs/promotionRequest"},
+    {"$ref": "#/$defs/promotionReceipt"}
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "utc": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-rc\\.(?:[1-9][0-9]*))?$"
+    },
+    "testBuildTag": {
+      "type": "string",
+      "pattern": "^v(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-rc\\.(?:[1-9][0-9]*))?-tb-(?:0[1-9]|[1-9][0-9]*)$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit_sha256", "tree_sha256"],
+      "properties": {
+        "commit_sha256": {"$ref": "#/$defs/sha256"},
+        "tree_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "releaseIdentity": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["release_version", "artifact_sha256", "manifest_sha256"],
+      "properties": {
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "versionAllocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "release_version", "release_channel", "test_build_number", "test_build_tag", "campaign_version", "source", "normative_snapshot_sha256", "predecessor_candidate_sha256", "status", "allocated_at_utc", "allocation_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_version_allocation.v1"},
+        "version": {"const": 1},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "release_channel": {"enum": ["STABLE", "RELEASE_CANDIDATE"]},
+        "test_build_number": {"type": "integer", "minimum": 1},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "campaign_version": {"$ref": "#/$defs/testBuildTag"},
+        "source": {"$ref": "#/$defs/source"},
+        "normative_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "predecessor_candidate_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "status": {"const": "ALLOCATED"},
+        "allocated_at_utc": {"$ref": "#/$defs/utc"},
+        "allocation_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "versionAllocationLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "release_version", "release_channel", "allocations", "next_test_build_number", "ledger_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_version_allocation.v1"},
+        "version": {"const": 1},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "release_channel": {"enum": ["STABLE", "RELEASE_CANDIDATE"]},
+        "allocations": {"type": "array", "items": {"$ref": "#/$defs/versionAllocation"}},
+        "next_test_build_number": {"type": "integer", "minimum": 1},
+        "ledger_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "artifactFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "size", "mode", "sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+        "size": {"type": "integer", "minimum": 0},
+        "mode": {"type": "integer", "minimum": 0, "maximum": 4095},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["safe", "categories"],
+      "properties": {
+        "safe": {"const": true},
+        "categories": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ABSOLUTE_PATH", "WORKTREE_PATH", "ENVIRONMENT_VALUE", "SECRET_LIKE_VALUE", "SESSION_OR_TASK_IDENTITY", "UNSAFE_PRIVATE_LINK"],
+          "properties": {
+            "ABSOLUTE_PATH": {"const": 0},
+            "WORKTREE_PATH": {"const": 0},
+            "ENVIRONMENT_VALUE": {"const": 0},
+            "SECRET_LIKE_VALUE": {"const": 0},
+            "SESSION_OR_TASK_IDENTITY": {"const": 0},
+            "UNSAFE_PRIVATE_LINK": {"const": 0}
+          }
+        }
+      }
+    },
+    "artifactManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "root_binding", "release_version", "test_build_tag", "source", "files", "file_count", "artifact_sha256", "manifest_sha256", "privacy"],
+      "properties": {
+        "schema": {"const": "agentos.release_artifact_manifest.v1"},
+        "version": {"const": 1},
+        "status": {"const": "VERIFIED_EXACT"},
+        "root_binding": {"$ref": "#/$defs/identifier"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "source": {"$ref": "#/$defs/source"},
+        "files": {"type": "array", "items": {"$ref": "#/$defs/artifactFile"}},
+        "file_count": {"type": "integer", "minimum": 0},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "privacy": {"$ref": "#/$defs/privacy"}
+      }
+    },
+    "artifactIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "release_version", "test_build_tag", "artifact_sha256", "manifest_sha256", "identity_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_artifact_identity.v1"},
+        "version": {"const": 1},
+        "status": {"const": "VERIFIED_EXACT"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "identity_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "releaseCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "candidate_id", "release_version", "release_channel", "test_build_tag", "source", "normative_snapshot_sha256", "artifact_sha256", "manifest_sha256", "candidate_state", "independent_audit_sha256", "safety_evidence_sha256", "safety_subject_sha256", "owner_decision_sha256", "decision_candidate_sha256", "rejection_feedback_sha256", "predecessor_candidate_sha256", "activation", "candidate_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_candidate.v1"},
+        "version": {"const": 1},
+        "candidate_id": {"$ref": "#/$defs/identifier"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "release_channel": {"const": "RELEASE_CANDIDATE"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "source": {"$ref": "#/$defs/source"},
+        "normative_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "candidate_state": {"enum": ["ASSEMBLED", "STERILE_VERIFIED", "OWNER_REVIEW_PENDING", "OWNER_ACCEPTED", "KEEP_PREPARED", "OWNER_REJECTED", "PROMOTION_PENDING", "PROMOTED_PREPARED", "BLOCKED"]},
+        "independent_audit_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "safety_evidence_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "safety_subject_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "owner_decision_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "decision_candidate_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "rejection_feedback_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "predecessor_candidate_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "activation": {"const": false},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "ownerDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "decision_id", "candidate_sha256", "release_version", "test_build_tag", "artifact_sha256", "independent_audit_sha256", "decision", "actor_digest_sha256", "decided_at_utc", "feedback_sha256", "activation", "decision_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_owner_decision.v1"},
+        "version": {"const": 1},
+        "decision_id": {"$ref": "#/$defs/identifier"},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "independent_audit_sha256": {"$ref": "#/$defs/sha256"},
+        "decision": {"enum": ["APPROVE", "REJECT", "KEEP_PREPARED"]},
+        "actor_digest_sha256": {"$ref": "#/$defs/sha256"},
+        "decided_at_utc": {"$ref": "#/$defs/utc"},
+        "feedback_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "activation": {"const": false},
+        "decision_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "rejectionFeedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "feedback_id", "candidate_sha256", "release_version", "test_build_tag", "artifact_sha256", "classification", "summary", "required_change_ids", "route", "status", "created_at_utc", "successor_candidate_sha256", "feedback_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_rejection_feedback.v1"},
+        "version": {"const": 1},
+        "feedback_id": {"$ref": "#/$defs/identifier"},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "classification": {"enum": ["ARTIFACT_DEFECT", "GOVERNANCE_GAP", "TEST_FAILURE", "DOCUMENTATION", "OWNER_INTENT_CHANGE", "UNAVAILABLE_EVIDENCE"]},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "required_change_ids": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_.:-]*$"}},
+        "route": {"enum": ["REPAIR_SAME_CANDIDATE", "NEW_TEST_BUILD", "NEW_RELEASE_CANDIDATE", "OWNER_DECISION"]},
+        "status": {"const": "OPEN"},
+        "created_at_utc": {"$ref": "#/$defs/utc"},
+        "successor_candidate_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "feedback_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "promotionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "request_id", "candidate_sha256", "owner_decision_sha256", "release_version", "target_release_version", "test_build_tag", "artifact_sha256", "manifest_sha256", "target_binding", "current_release", "safety_gate_sha256", "safety_subject_sha256", "action", "project_action", "activation", "status", "requested_at_utc", "request_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_promotion_request.v1"},
+        "version": {"const": 1},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "owner_decision_sha256": {"$ref": "#/$defs/sha256"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "target_release_version": {"$ref": "#/$defs/releaseVersion"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "target_binding": {"$ref": "#/$defs/identifier"},
+        "current_release": {"$ref": "#/$defs/releaseIdentity"},
+        "safety_gate_sha256": {"$ref": "#/$defs/sha256"},
+        "safety_subject_sha256": {"$ref": "#/$defs/sha256"},
+        "action": {"const": "REPLACE_RELEASE_AT_SAME_ROOT"},
+        "project_action": {"const": "LEAVE_PROJECT_REPOSITORIES_UNCHANGED"},
+        "activation": {"const": false},
+        "status": {"const": "PROMOTION_PENDING"},
+        "requested_at_utc": {"$ref": "#/$defs/utc"},
+        "request_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "promotionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "request_id", "request_sha256", "candidate_sha256", "release_version", "target_release_version", "test_build_tag", "artifact_sha256", "manifest_sha256", "target_binding", "target_manifest_sha256", "host_receipt_sha256", "safety_gate_sha256", "previous_release_disposition", "previous_release_sha256", "status", "project_action", "activation", "promoted_at_utc", "receipt_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.release_promotion_receipt.v1"},
+        "version": {"const": 1},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "release_version": {"$ref": "#/$defs/releaseVersion"},
+        "target_release_version": {"$ref": "#/$defs/releaseVersion"},
+        "test_build_tag": {"$ref": "#/$defs/testBuildTag"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "target_binding": {"$ref": "#/$defs/identifier"},
+        "target_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "host_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "safety_gate_sha256": {"$ref": "#/$defs/sha256"},
+        "previous_release_disposition": {"enum": ["RETAINED", "NONE_EXISTED"]},
+        "previous_release_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "status": {"const": "PROMOTED_PREPARED"},
+        "project_action": {"const": "LEAVE_PROJECT_REPOSITORIES_UNCHANGED"},
+        "activation": {"const": false},
+        "promoted_at_utc": {"$ref": "#/$defs/utc"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

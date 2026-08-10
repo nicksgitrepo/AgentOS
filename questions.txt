@@ -1,0 +1,77 @@
+AgentOS controller questions
+Queue status: OPEN
+Purpose: unresolved owner decisions discovered during platform foundation.
+These questions are external control-plane state and are not product-source acceptance evidence.
+
+1. Which single shared Evidence-and-Identity/checkpoint contract should own native-session completion evidence?
+   Why it matters: the native runner currently carries opaque completion digests and cannot be cleared until the typed handoff/checkpoint owner is explicit.
+
+2. When the external host is available, which host-backed readback sequence is authoritative for source identity, meaningful progress, typed handoff, and zero-active-roster closure?
+   Why it matters: no live host capability or independent clearance proof has been exercised.
+
+3. Which response-envelope and task-gate contract is canonical for downstream feature work?
+   Why it matters: the catalog/compiler boundary and older four-root decision-tree compatibility reader are not yet reconciled.
+
+4. Is the inventory-named catalog schema the only supported catalog schema path?
+   Why it matters: the alternate governance catalog path is absent and must not be invented as a second authority.
+
+5. Should the platform phase record a technology-stack, directory/skeleton, routing, and UI/design decision for this existing project before feature lanes are admitted?
+   Why it matters: the platform foundation gate requires these outputs where applicable; they are not inferred from the current dirty source.
+
+6. Which platform-registry record is the accepted consumer for private control, project memory, maps, and capsule handoffs?
+   Why it matters: the memory/capsule candidate remains advisory-only and downstream consumption is false.
+
+Controller state: PLATFORM_FOUNDATION_HELD
+Feature phase: NOT_ADMITTED
+Required recovery: record owner answers, select bounded contract owners, obtain a clean source-bound checkpoint, independently audit the combined platform tree, then re-evaluate admission.
+
+Controller assessment — provisional, not owner approval
+
+Resolved from current authority and preserved handoffs:
+- Shared Evidence-and-Identity/checkpoint ownership is Controller/platform custody.
+- The canonical response boundary is the named gate catalog plus the universal response envelope; the four-root decision tree is compatibility-only.
+- The supported catalog schema is schemas/gate-catalog.v1.json; the absent alternate path is not an authority.
+- Platform-registry admission and downstream preservation are Controller-owned.
+
+Still externally unresolved before admission:
+- Which host-backed readback sequence and host capability will provide authoritative source, progress, handoff, and zero-roster evidence.
+- Whether the proposed Node/JSON kernel foundation, external control-plane boundary, no portable-kernel UI, and routing ownership are explicitly approved as the project foundation.
+
+These provisional resolutions reduce ambiguity but do not convert the queue to CLOSED or open the feature phase.
+
+Controller host readback — partial resolution
+
+The Codex visible host proves list, read, bounded wait, and existing-task message attachment for visible tasks through HOST_REF_LOCAL. It does not prove project-native create, pin, progress, typed handoff, unpin, archive, or active-roster removal. The remaining host decision is therefore native lifecycle authority and its exact readback sequence, not basic host attachment.
+
+Owner-derived foundation decisions recorded from the current project direction
+These are not host or functional proof. They are the current platform plan and
+must remain stricter than any project-specific extension.
+
+- foundation_stack: portable Node-style ES modules plus JSON/JSON-Schema
+  contracts; no package-manager or npm dependency is assumed.
+- repository_boundary: AgentOS release, external control/instance state, and
+  Product repositories remain separate; Product repositories are never used as
+  the AgentOS worktree.
+- project_layout: a new project receives its own repository and directory
+  skeleton beside the AgentOS release/control location; imported projects keep
+  their source custody and require explicit owner approval before rapid
+  development.
+- routing_owner: the deterministic Controller owns routing, phase admission,
+  shared seams, and integration; platform work is admitted before feature work.
+- user_surface: the portable kernel has no required GUI; owner questions are
+  plain-language control-plane records.
+- secret_boundary: credentials, environment secrets, resolved machine paths,
+  and provider tokens remain outside portable repositories and durable public
+  records.
+- lifecycle: preserve handoff and worktree evidence before downstream use;
+  archive a visible task only after integration, stale-worktree closure,
+  out-of-scope chat proof, and downstream preservation.
+
+Resolution status: PARTIAL_OWNER_DECISIONS_RECORDED
+Still unresolved before platform admission:
+
+- authoritative external host readback sequence and capability for source,
+  progress, typed handoff, and zero-roster closure;
+- final accepted platform-registry consumer for private control, memory, maps,
+  and capsule handoffs; and
+- a clean committed source-bound platform checkpoint.

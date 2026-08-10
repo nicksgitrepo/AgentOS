@@ -1,0 +1,45 @@
+{
+  "schema": "agentos.platform_visible_task_runtime_registry.v1",
+  "version": 1,
+  "registry_status": "HISTORICAL_GOVERNANCE_LANE_CUSTODY",
+  "record_kind": "PRESERVED_LEGACY_GOVERNANCE_LANE_CUSTODY",
+  "current_platform_registry_ref": "docs/platform-domain-runtime-registry.v1.json",
+  "inventory_ref": "docs/feature-inventory.v1.json",
+  "migration_ref": "docs/rapid-prototype-migration.v1.json",
+  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "authority_sha256": "a882a74b6a71ba1fbe59e1200b230ebbcf8331186cfaee9a1da50f6a9bec3e0d",
+  "scheduler_authority_ref": "AUDIT_DRIVEN_INTEGRATION_PYRAMID_WITH_HYBRID_SCHEDULER.md",
+  "scheduler_authority_sha256": "3cef7fcb7897ad44f7975c1c6cb50cd20ca82cfa1ce1c3c8849c18de9aedda10",
+  "expected_platform_lane_count": 0,
+  "discoverable_visible_task_count": 0,
+  "missing_visible_task_count": 0,
+  "preserved_governance_lane_count": 7,
+  "missing_governance_lane_count": 5,
+  "privacy": {
+    "persisted_identifiers": "OPAQUE_REFS_ONLY",
+    "private_paths_persisted": false,
+    "secrets_persisted": false,
+    "chat_links_persisted": false
+  },
+  "preserved_governance_lanes": [
+    {"lane_id":"LANE_01_INTENT_AND_SCOPE","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_001","worktree_ref":"WORKTREE_REF_038","handoff_ref":"docs/platform-handoffs/01-intent-and-scope-platform-handoff.md","report_ref":"docs/rapid-foundations/01-intent-and-scope-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_02_BOOTSTRAP_AND_CONTEXT","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_002","worktree_ref":"WORKTREE_REF_039","handoff_ref":"docs/platform-handoffs/02-bootstrap-and-context-platform-handoff.md","report_ref":"docs/rapid-foundations/02-bootstrap-and-context-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_03_USER_CONVERSATION","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_003","worktree_ref":"WORKTREE_REF_040","handoff_ref":"docs/platform-handoffs/03-user-conversation-platform-handoff.md","report_ref":"docs/rapid-foundations/03-user-conversation-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_04_ROLE_ROUTING","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_004","worktree_ref":"WORKTREE_REF_041","handoff_ref":"docs/platform-handoffs/04-role-routing-platform-handoff.md","report_ref":"docs/rapid-foundations/04-role-routing-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_05_PROGRESS_AND_HEALTH","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_005","worktree_ref":"WORKTREE_REF_042","handoff_ref":"docs/platform-handoffs/05-progress-and-health-platform-handoff.md","report_ref":"docs/rapid-foundations/05-progress-and-health-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_06_FUNCTIONALITY","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_006","worktree_ref":"WORKTREE_REF_043","handoff_ref":"docs/platform-handoffs/06-functionality-platform-handoff.md","report_ref":"docs/rapid-foundations/06-functionality-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_07_UI_UX","visible_task_ref":"VISIBLE_PLATFORM_TASK_REF_007","worktree_ref":"WORKTREE_REF_044","handoff_ref":"docs/platform-handoffs/07-ui-and-ux-platform-handoff.md","report_ref":"docs/rapid-foundations/07-ui-and-ux-auditreport.md","observed_state":"IDLE"},
+    {"lane_id":"LANE_08_CODE_HYGIENE","visible_task_ref":null,"worktree_ref":null,"handoff_ref":"docs/platform-handoffs/08-code-hygiene-platform-handoff.md","report_ref":"docs/rapid-foundations/08-code-hygiene-auditreport.md","observed_state":"MISSING_VISIBLE_TASK_PARITY_HOLD"},
+    {"lane_id":"LANE_09_SECURITY_PRIVACY","visible_task_ref":null,"worktree_ref":null,"handoff_ref":"docs/platform-handoffs/09-security-and-privacy-platform-handoff.md","report_ref":"docs/rapid-foundations/09-security-and-privacy-auditreport.md","observed_state":"MISSING_VISIBLE_TASK_PARITY_HOLD"},
+    {"lane_id":"LANE_10_EVIDENCE_IDENTITY","visible_task_ref":null,"worktree_ref":null,"handoff_ref":"docs/platform-handoffs/10-evidence-and-identity-platform-handoff.md","report_ref":"docs/rapid-foundations/10-evidence-and-identity-auditreport.md","observed_state":"MISSING_VISIBLE_TASK_PARITY_HOLD"},
+    {"lane_id":"LANE_11_RECOVERY_BOUNDARIES","visible_task_ref":null,"worktree_ref":null,"handoff_ref":"docs/platform-handoffs/11-recovery-and-boundaries-platform-handoff.md","report_ref":"docs/rapid-foundations/11-recovery-and-boundaries-auditreport.md","observed_state":"MISSING_VISIBLE_TASK_PARITY_HOLD"},
+    {"lane_id":"LANE_12_DELIVERY_CLOSURE","visible_task_ref":null,"worktree_ref":null,"handoff_ref":"docs/platform-handoffs/12-delivery-and-closure-platform-handoff.md","report_ref":"docs/rapid-foundations/12-delivery-and-closure-auditreport.md","observed_state":"MISSING_VISIBLE_TASK_PARITY_HOLD"}
+  ],
+  "admission": {
+    "platform_merge": "NOT_APPLICABLE_TO_THIS_HISTORICAL_RECORD",
+    "feature_admission": "NOT_OWNED_BY_THIS_RECORD",
+    "next_action": "USE_PLATFORM_DOMAIN_RUNTIME_REGISTRY_AND_DISCOVER_ONLY_SOURCE_BACKED_ACTIVE_DOMAINS",
+    "synthetic_task_creation": false
+  }
+}

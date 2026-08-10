@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.base_general_library.v1",
+  "title": "AgentOS base general governance library",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "library_kind", "governance_version", "ownership", "lineage", "release_identity", "source", "general_graph_bindings", "compatibility", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.base_general_library.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["COMPILED", "INDEPENDENTLY_CHECKED", "OWNER_ACCEPTED", "PREPARED_NOT_ACTIVATED", "ACTIVE", "SUPERSEDED", "REJECTED", "BLOCKED"]},
+    "library_kind": {"const": "BASE_GENERAL"},
+    "governance_version": {"const": "3.0"},
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_role", "authoring_role"],
+      "properties": {"owner_role": {"const": "RELEASE_MAINTAINER"}, "authoring_role": {"const": "RELEASE_COMPILER"}}
+    },
+    "lineage": {"$ref": "#/$defs/lineage"},
+    "release_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "source_commit", "source_tree", "release_digest"],
+      "properties": {
+        "version": {"type": "string"},
+        "source_commit": {"type": "string"},
+        "source_tree": {"type": "string"},
+        "release_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["general_manifest_digest", "question_catalog_digest", "coverage_manifest_digest"],
+      "properties": {
+        "general_manifest_digest": {"$ref": "#/$defs/digest"},
+        "question_catalog_digest": {"$ref": "#/$defs/digest"},
+        "coverage_manifest_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "general_graph_bindings": {"$ref": "#/$defs/graphBindings"},
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_role_schema", "project_general_schema", "generated_project_role_schema"],
+      "properties": {
+        "base_role_schema": {"const": "agentos.base_role_library.v1"},
+        "project_general_schema": {"const": "agentos.project_general_library.v1"},
+        "generated_project_role_schema": {"const": "agentos.generated_project_role_library.v1"}
+      }
+    },
+    "digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "supersedes", "owner_decision_digest", "independent_check_digest"],
+      "properties": {
+        "revision": {"type": "integer", "minimum": 1},
+        "supersedes": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "owner_decision_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "independent_check_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    },
+    "graphBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["graph_id", "path_ref", "graph_sha256", "domain", "precedence_class"],
+      "properties": {
+        "graph_id": {"type": "string"},
+        "path_ref": {"type": "string", "pattern": "^(?![\\\\/])(?!(?:.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))).+$"},
+        "graph_sha256": {"$ref": "#/$defs/digest"},
+        "domain": {"type": "string"},
+        "precedence_class": {"type": "string"}
+      }
+    },
+    "graphBindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/graphBinding"}
+    }
+  }
+}

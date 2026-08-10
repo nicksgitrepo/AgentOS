@@ -1,0 +1,32 @@
+{
+  "schema": "agentos.release_promotion_gate.v1",
+  "version": 1,
+  "release_candidate": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Record the development-to-sterile-release boundary without publishing, pushing, merging, deploying, or activating.",
+  "controller": "control/release-promotion-gate.mjs",
+  "source_role": "ACTIVE_DEVELOPMENT_CHECKOUT",
+  "target_role": "STERILE_RELEASE_CHECKOUT",
+  "verification": {
+    "names": ["ARCHITECTURE", "CANONICAL", "HYGIENE", "PORTABILITY", "RELEASE_SAFETY"],
+    "results": ["PASS", "PENDING"]
+  },
+  "checkout_identity_fields": ["commit_sha256", "tree_sha256", "artifact_sha256", "manifest_sha256", "verification_sha256"],
+  "safety_gate": {
+    "field": "safety_gate_sha256",
+    "required_for_ready": true,
+    "subject": "STERILE_VERIFIED_CANDIDATE",
+    "owner_review_required": true
+  },
+  "required_invariants": [
+    "source and sterile release identities are explicit",
+    "all required verification evidence is PASS",
+    "the release-safety gate is PASS and bound to the sterile-verified candidate",
+    "changed paths are sorted, unique, and contained",
+    "publishing, pushes, merges, deployment, and activation remain false",
+    "the artifact is content-addressed",
+    "a sterile release must be verified before explicit maintainer promotion",
+    "2.1rc remains prepared and inactive until an explicit owner activation decision"
+  ],
+  "blocker": "STERILE_RELEASE_NOT_PROMOTED"
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.apprenticeship_gate_source.v1",
+  "title": "AgentOS apprenticeship proposed gate source",
+  "x-schema-kind": "record",
+  "x-status": "PREPARED_NOT_ACTIVATED",
+  "x-activation": {"active": false, "automatic": false},
+  "type": "object",
+  "required": ["schema", "version", "source_id", "status", "reconstruction_digest", "gates", "terminal_states", "activation_allowed", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.apprenticeship_gate_source.v1"},
+    "version": {"const": 1},
+    "source_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+    "status": {"const": "PROPOSED"},
+    "reconstruction_digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"},
+    "gates": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/gate"}},
+    "terminal_states": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+    "activation_allowed": {"const": false},
+    "digest": {"$ref": "apprenticeship-common.v1.json#/$defs/sha256"}
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "required": ["line_number", "gate_id", "name", "question", "allowed_answers", "required_evidence", "next_branch", "repair_recovery_branch", "terminal_state"],
+      "properties": {
+        "line_number": {"type": "integer", "minimum": 1},
+        "gate_id": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+        "name": {"type": "string", "minLength": 1},
+        "question": {"type": "string", "minLength": 1},
+        "allowed_answers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}},
+        "required_evidence": {"$ref": "apprenticeship-common.v1.json#/$defs/identifierList"},
+        "next_branch": {"$ref": "#/$defs/branchMap"},
+        "repair_recovery_branch": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"},
+        "terminal_state": {"$ref": "apprenticeship-common.v1.json#/$defs/identifier"}
+      },
+      "additionalProperties": false
+    },
+    "branchMap": {
+      "type": "object",
+      "required": ["ANSWERED", "UNKNOWN", "INCOMPLETE"],
+      "properties": {
+        "ANSWERED": {"type": "string", "minLength": 1},
+        "UNKNOWN": {"type": "string", "minLength": 1},
+        "INCOMPLETE": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

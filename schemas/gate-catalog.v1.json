@@ -1,0 +1,111 @@
+{
+  "schema": "agentos.gate_catalog_schema.v1",
+  "version": 1,
+  "record_schema": "agentos.gate_catalog.v1",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "purpose": "Project-agnostic named governance gates with human-readable questions, explicit evidence, bounded failure routing, and terminal behavior.",
+  "required_catalog_fields": [
+    "schema",
+    "version",
+    "status",
+    "source_kind",
+    "answer_values",
+    "semantics",
+    "failure_classifications",
+    "categories",
+    "graphs",
+    "terminals",
+    "gates",
+    "digest"
+  ],
+  "answer_contract": {
+    "values": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+    "pass_answer": "YES",
+    "unknown_behavior": "NEVER_PASSES",
+    "not_applicable_behavior": "REQUIRES_APPLICABILITY_JUSTIFICATION",
+    "agent_statement_alone": "NEVER_SUFFICIENT"
+  },
+  "failure_contract": {
+    "classifications": [
+      "OWNER_OR_HARD_BLOCKER",
+      "REPAIRABLE_ENGINEERING_PUZZLE",
+      "SOFT_BOUNDARY_REVIEW"
+    ],
+    "routes": [
+      "BOUNDED_REPAIR",
+      "HARD_STOP",
+      "HOLD_FOR_EVIDENCE",
+      "ORCHESTRATOR_REVIEW"
+    ],
+    "terminal_behavior": [
+      "ADVANCE",
+      "COMPLETE",
+      "HARD_STOP",
+      "REPAIR_PENDING",
+      "SOFT_REVIEW",
+      "UNPROVEN"
+    ]
+  },
+  "required_graph_fields": [
+    "graph_id",
+    "display_name",
+    "category",
+    "entry_gate_id",
+    "gate_ids",
+    "terminal_ids",
+    "repair_edges",
+    "repair_limit_terminal"
+  ],
+  "required_gate_fields": [
+    "gate_id",
+    "graph_id",
+    "category",
+    "context",
+    "name",
+    "question",
+    "evidence",
+    "not_applicable_requires",
+    "transitions",
+    "failure_policy",
+    "terminal_behavior"
+  ],
+  "required_failure_policy_fields": [
+    "classification",
+    "route",
+    "target",
+    "terminal_behavior"
+  ],
+  "evidence_contract": {
+    "required_gate_slot": "Every gate declares at least one evidence slot.",
+    "not_applicable_slot": "Every NOT_APPLICABLE answer requires applicability_justification.",
+    "required_record_fields": [
+      "evidence_id",
+      "evidence_digest",
+      "issuer_kind",
+      "issuer_ref",
+      "source_kind",
+      "observed_identity",
+      "supports_answer"
+    ],
+    "issuer_kinds": ["HOST_READBACK", "INDEPENDENT_AUDITOR"],
+    "identity_fields": [
+      "source_ref",
+      "worktree_ref",
+      "session_ref",
+      "goal_ref",
+      "environment_ref"
+    ],
+    "self_acceptance": "The issuer_ref must differ from observed_identity.session_ref.",
+    "agent_statement_only": "A statement without an independent issuer and observed identity is rejected."
+  },
+  "validation_rules": [
+    "Every gate has one human-readable name and one question ending with a question mark.",
+    "Every transition names a gate in the same graph or a declared terminal.",
+    "Every non-YES transition has failure classification, repair or review route, and terminal behavior.",
+    "UNKNOWN cannot reach COMPLETE.",
+    "NOT_APPLICABLE cannot reach COMPLETE without applicability justification evidence.",
+    "Only YES may reach COMPLETE.",
+    "Repair cycles require positive visit limits and exceedance becomes HARD_STOP.",
+    "Gate evidence is independently identity-bound; an agent statement alone never passes."
+  ]
+}

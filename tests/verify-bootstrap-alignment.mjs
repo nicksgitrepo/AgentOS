@@ -82,9 +82,11 @@ assert.equal(planBootstrapQuestions({discovery, answers}).status, "READY_TO_COMP
 const inProjectStorage = (projectRoot) => ({controlPlaneRoot: projectRoot, controlPlaneMode: "IN_PROJECT_OPT_IN"});
 const plan = compileBootstrapPlan({discovery, answers, projectRoot, ...inProjectStorage(projectRoot)});
 validateBootstrapPlan(plan);
-assert.equal(plan.status, "AWAITING_EXACT_OWNER_APPROVAL");
+assert.equal(plan.status, "JSA_READY_WITHIN_SCOPE");
+assert.equal(plan.bootstrap_operating_mode, "JSA");
+assert.equal(plan.bootstrap_safety_analysis.operating_mode, "JSA");
 assert.deepEqual(plan.question_slice, ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]);
-for (const group of ["project_definition", "north_star", "first_useful_workflow", "technical_baseline", "delivery_policy", "delivery_probe_plan", "design_bible", "security_baseline", "authority_boundaries", "authority_corpus", "model_policy", "persistent_runtime", "first_campaign", "exact_creation_plan"]) assert(plan[group] !== undefined, `missing compiled group ${group}`);
+for (const group of ["project_definition", "north_star", "first_useful_workflow", "technical_baseline", "delivery_policy", "delivery_probe_plan", "design_bible", "security_baseline", "authority_boundaries", "authority_corpus", "model_policy", "persistent_runtime", "development_plan", "first_campaign", "governance_architecture", "exact_creation_plan"]) assert(plan[group] !== undefined, `missing compiled group ${group}`);
 assert.equal(plan.authority_corpus.numbering.bootstrap, "000");
 assert.equal(plan.authority_corpus.numbering.feature_allocation, "SPARSE_CAPSULES");
 assert.equal(plan.authority_corpus.numbering.allocation, "IMMUTABLE_NO_RENUMBER_LOWEST_UNUSED_ID_UNSIGNED_UTF8_ORDER");
@@ -92,6 +94,11 @@ assert.equal(plan.model_policy.work_slots, 20);
 assert.equal(plan.persistent_runtime.never_despawn_between_campaigns, true);
 assert.equal(plan.bootstrap_coverage.status, "READY_TO_COMPILE");
 assert.equal(plan.exact_creation_plan.bootstrap_coverage_sha256, plan.bootstrap_coverage.coverage_sha256);
+assert.equal(plan.development_plan.mode, "RAPID_PROTOTYPING");
+assert.deepEqual(plan.development_plan.phase_order, ["BOOTSTRAP_CONTEXT", "RAPID_FOUNDATION", "RAPID_IMPLEMENTATION", "INDEPENDENT_AUDIT", "ITERATION_HANDOFF"]);
+assert.equal(plan.governance_architecture.shared_general_library_required, true);
+assert.equal(plan.governance_architecture.generated_role_specific_library_required, true);
+assert.equal(plan.exact_creation_plan.governance_architecture_plan_sha256, plan.governance_architecture.digest);
 assert.equal(plan.delivery_policy.source_control.push_mode, "CHECKPOINTS_REMOTE_EQUAL");
 assert.equal(plan.delivery_policy.merge.authority, "CENTRAL_SERIALIZED");
 assert.equal(plan.delivery_policy.deployment.trigger, "EXACT_ACCEPTED_COMMIT");
@@ -106,6 +113,10 @@ legacyNamingAnswers["project.technical_constraints"] = legacyNamingAnswers["proj
 delete legacyNamingAnswers["project.technical_baseline"];
 const legacyNamingPlan = compileBootstrapPlan({discovery, answers: legacyNamingAnswers, projectRoot, ...inProjectStorage(projectRoot)});
 assert.equal(legacyNamingPlan.plan_sha256, plan.plan_sha256, "legacy technical answer alias changed the canonical plan");
+const iterationPlan = compileBootstrapPlan({discovery, answers: {...answers, "project.development_mode": "ITERATION"}, projectRoot, ...inProjectStorage(projectRoot)});
+assert.equal(iterationPlan.development_plan.mode, "ITERATION");
+assert.deepEqual(iterationPlan.development_plan.phase_order, ["CAMPAIGN_PLAN", "CAMPAIGN_BUILD", "INDEPENDENT_AUDIT", "CAMPAIGN_CLOSURE"]);
+assert.notEqual(iterationPlan.plan_sha256, plan.plan_sha256, "development mode must remain bound to the exact Bootstrap plan");
 
 assert.throws(() => approveBootstrapPlan(plan, {decision: "PROCEED", planSha256: plan.plan_sha256, discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO}));
 const approved = approveBootstrapPlan(plan, {decision: PLAN_APPROVAL, planSha256: plan.plan_sha256, discoveryDigestSha256: plan.discovery_digest_sha256, actor: "OWNER", approvedAtUtc: ISO});
@@ -158,7 +169,7 @@ assert.throws(() => validateDeliveryProbeResults(wrongBoundDeliveryResults, {pla
 const tamperedDeliveryPolicy = structuredClone(plan.delivery_policy);
 tamperedDeliveryPolicy.deployment.authority = "OWNER_DIRECT";
 tamperedDeliveryPolicy.policy_sha256 = plan.delivery_policy.policy_sha256;
-assert.throws(() => validateBootstrapPlan({...plan, delivery_policy: tamperedDeliveryPolicy}), /delivery policy deployment authority/u);
+assert.throws(() => validateBootstrapPlan({...plan, delivery_policy: tamperedDeliveryPolicy}), /delivery policy deployment authority|Bootstrap safety analysis is not bound to scope inputs/u);
 
 const observedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-discovery-"));
 try {

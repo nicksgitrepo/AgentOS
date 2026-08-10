@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_memory_capsule.v1",
+  "title": "AgentOS portable project-memory capsule instance",
+  "description": "A privacy-safe, versioned transport envelope for canonical project-memory events and advisory projections. Workspace bindings and raw project payloads are deliberately absent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "contract_status", "visibility", "advisory_only", "acceptance_authority",
+    "capsule_id", "binding", "events", "snapshot", "role_capsules", "artifact_refs", "capability_status",
+    "status", "capsule_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.project_memory_capsule.v1"},
+    "version": {"const": 1},
+    "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "visibility": {"const": "CONTROL_SPACE"},
+    "advisory_only": {"const": true},
+    "acceptance_authority": {"const": false},
+    "capsule_id": {"$ref": "#/$defs/id"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "events": {"type": "array", "items": {"type": "object"}},
+    "snapshot": {"anyOf": [{"type": "null"}, {"type": "object"}]},
+    "role_capsules": {"type": "array", "items": {"type": "object"}},
+    "artifact_refs": {"type": "array", "items": {"$ref": "#/$defs/artifactRef"}},
+    "capability_status": {"$ref": "#/$defs/capabilityStatus"},
+    "status": {"enum": ["PORTABLE_PARTIAL", "CONFLICT"]},
+    "capsule_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": {"pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"}
+    },
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_ref", "campaign_ref", "goal_ref", "role_ref", "source_commit", "source_tree", "source_snapshot_sha256", "policy_sha256", "handoff_sha256"],
+      "properties": {
+        "project_ref": {"$ref": "#/$defs/id"},
+        "campaign_ref": {"$ref": "#/$defs/id"},
+        "goal_ref": {"$ref": "#/$defs/id"},
+        "role_ref": {"$ref": "#/$defs/id"},
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_snapshot_sha256": {"$ref": "#/$defs/sha"},
+        "policy_sha256": {"$ref": "#/$defs/sha"},
+        "handoff_sha256": {"$ref": "#/$defs/sha"}
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_kind", "artifact_sha256", "transfer_status"],
+      "properties": {
+        "artifact_kind": {"enum": ["PROJECT_CONTRACT", "GOVERNANCE", "CAMPAIGN_HISTORY", "EVIDENCE_METADATA", "REGISTRATION"]},
+        "artifact_sha256": {"$ref": "#/$defs/sha"},
+        "transfer_status": {"const": "REFERENCE_ONLY"}
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason_code", "recovery_ref"],
+      "properties": {
+        "status": {"const": "UNAVAILABLE"},
+        "reason_code": {"$ref": "#/$defs/id"},
+        "recovery_ref": {"$ref": "#/$defs/id"}
+      }
+    },
+    "capabilityStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ENCRYPTION", "SYNCHRONIZATION", "MIGRATION", "ROLLBACK"],
+      "properties": {
+        "ENCRYPTION": {"$ref": "#/$defs/capability"},
+        "SYNCHRONIZATION": {"$ref": "#/$defs/capability"},
+        "MIGRATION": {"$ref": "#/$defs/capability"},
+        "ROLLBACK": {"$ref": "#/$defs/capability"}
+      }
+    }
+  }
+}

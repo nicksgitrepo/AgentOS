@@ -15,9 +15,15 @@ Bootstrap is controlled by `control/bootstrap-compiler.mjs` and
 `control/control-plane-root.mjs`:
 
 ```text
-discover -> plan -> display exact digests -> APPROVE_EXACT_PLAN
+discover -> plan -> bind JSA safety scope
         -> stage in control plane -> read back -> independent setup audit -> seal/promote
+        -> optional APPROVE_EXACT_PLAN route when separately required
 ```
+
+The normal JSA route continues only declared local setup work while its source,
+intent, scope, host readback, and conditions remain bound. A changed scope or
+protected action returns to reassessment. Exact approval remains available for
+hosts or owners that require a separate approval of the complete plan.
 
 The delivery-policy controller keeps pushes, serialized merges, CI runner
 routes, hosting/deployment bindings, rollback identity, and cost ceilings in

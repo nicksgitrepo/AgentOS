@@ -7,6 +7,7 @@ import os from "node:os";
 import path from "node:path";
 import {
   acquirePlatformLease,
+  archivePlatformAgent,
   appendLivingCampaignEvent,
   admitNextCampaign,
   applyLifecycleTransition,
@@ -42,6 +43,7 @@ import {
   writeStateCompareAndSwap,
 } from "../control/campaign-controller.mjs";
 import {compileProductAcceptanceProof} from "../control/acceptance-bridge.mjs";
+import {compileUniversalTaskCloseoutReceipts} from "../control/governance-library.mjs";
 import {compileQuestionTree, sha256} from "../control/question-tree.mjs";
 import {compileGlobalPolicyState} from "../control/global-policy-state.mjs";
 
@@ -184,6 +186,19 @@ platform = acquirePlatformLease(platform, {
 assert.equal(platform.supervision.feature_agent_id, "FEATURE-B");
 assert.equal(platform.platform_worktree.current_commit, "commit-2");
 validatePlatformAgent(platform);
+assert.throws(() => archivePlatformAgent(platform), /closeout/u);
+const platformCloseout = compileUniversalTaskCloseoutReceipts({
+  mode: "CAMPAIGN",
+  observedAt: nextIso,
+  receiptRefs: Object.fromEntries([
+    "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
+    "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
+    "ARCHIVE_VISIBLE_TASK",
+  ].map((step, index) => [step, `opaque:platform-closeout-${index + 1}`])),
+});
+const archivedPlatform = archivePlatformAgent(platform, {universalCloseoutReceipts: platformCloseout});
+assert.equal(archivedPlatform.state, "ARCHIVED_UNPINNED");
+assert.equal(archivedPlatform.universal_closeout_receipts.length, 9);
 
 const held = setHold(initial, {
   hold_id: "HOLD-1", kind: "EXTERNAL_DEPENDENCY", scope: "FEATURE-A", authority_boundary: "external access",

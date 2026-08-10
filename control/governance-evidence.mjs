@@ -3,6 +3,12 @@
 import crypto from "node:crypto";
 import {execFileSync} from "node:child_process";
 import {controllerDigest} from "./agentos-controller.mjs";
+import {redactPersistedText} from "./persisted-record-privacy.mjs";
+import {
+  compileHybridSchedulerRequest,
+  createHybridScheduler,
+  opaqueSchedulerWorktreeRef,
+} from "./hybrid-scheduler.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -35,8 +41,30 @@ function textDigest(value) {
   return crypto.createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+function safeEvidenceText(value) {
+  try {
+    return redactPersistedText(String(value)).text.replace(/\s+/gu, " ").trim().slice(0, 2000);
+  } catch {
+    return `opaque:error:${textDigest(String(value))}`;
+  }
+}
+
 function git(worktreePath, args) {
   return execFileSync("git", ["-C", worktreePath, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
+}
+
+function schedulerCandidateIdentity(worktreePath) {
+  const commit = git(worktreePath, ["rev-parse", "HEAD"]);
+  const tree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+  const status = git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]);
+  if (status.length === 0) return {commit, tree, clean: true};
+  const diff = execFileSync("git", ["-C", worktreePath, "diff", "--binary"], {encoding: "buffer", maxBuffer: 64 * 1024 * 1024});
+  const untracked = git(worktreePath, ["ls-files", "--others", "--exclude-standard", "-z"]);
+  return {
+    commit: "PRELIMINARY_DIAGNOSTIC",
+    tree: controllerDigest({commit, tree, status, diff_sha256: crypto.createHash("sha256").update(diff).digest("hex"), untracked}),
+    clean: false,
+  };
 }
 
 function nodeCommand(worktreePath, args) {
@@ -44,7 +72,7 @@ function nodeCommand(worktreePath, args) {
 }
 
 function gitCommand(worktreePath, args) {
-  return {program: "git", args: ["-C", worktreePath, ...args], display: "git -C " + worktreePath + " " + args.join(" ")};
+  return {program: "git", args: ["-C", worktreePath, ...args], display: "git " + args.join(" ")};
 }
 
 function commandForEvidence(worktreePath, key) {
@@ -83,7 +111,7 @@ function observe(worktreePath, evidenceKey, sourceCommit, sourceTree) {
     stderr_sha256: textDigest(stderr),
     status: exitCode === 0 ? "PASS" : "FAIL",
   };
-  assert(exitCode === 0, "governance evidence command failed for " + evidenceKey + ": " + command.display + " (" + stderr + ")");
+  assert(exitCode === 0, "governance evidence command failed for " + evidenceKey + ": " + command.display + " (" + safeEvidenceText(stderr) + ")");
   const evidence = {
     schema: "agentos.governance_gate_evidence.v1",
     version: 1,
@@ -99,15 +127,54 @@ function observe(worktreePath, evidenceKey, sourceCommit, sourceTree) {
   return evidence;
 }
 
-export function collectGovernanceGateEvidence({worktreePath, tree}) {
+export function collectGovernanceGateEvidence({worktreePath, tree, schedulerRoot = null}) {
   const sourceCommit = git(worktreePath, ["rev-parse", "HEAD"]);
   const sourceTree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
   requireGitObject(sourceCommit, "observed governance source commit");
   requireGitObject(sourceTree, "observed governance source tree");
   assert(sourceCommit === tree.source_commit && sourceTree === tree.source_tree, "governance evidence source differs from the decision tree");
-  const result = {};
-  for (const gate of tree.gates) {
-    for (const key of gate.evidence_requirements) result[gate.gate_id + ":" + key] = observe(worktreePath, key, sourceCommit, sourceTree);
-  }
-  return result;
+  assert(schedulerRoot !== null && schedulerRoot !== undefined, "governance evidence requires the shared durable scheduler");
+  const keys = tree.gates.flatMap((gate) => gate.evidence_requirements.map((key) => `${gate.gate_id}:${key}`)).sort();
+  const candidate = schedulerCandidateIdentity(worktreePath);
+  const scheduler = createHybridScheduler({authorityRoot: schedulerRoot});
+  const request = compileHybridSchedulerRequest({
+    requestId: `GOVERNANCE-EVIDENCE-${controllerDigest({candidate, keys}).slice(0, 32).toUpperCase()}`,
+    requesterId: "AGENTOS_GOVERNANCE_EVIDENCE",
+    lane: "GOVERNANCE_EVIDENCE",
+    repositoryId: `REPOSITORY-${controllerDigest(worktreePath).slice(0, 24).toUpperCase()}`,
+    worktreeId: `WORKTREE-${controllerDigest(worktreePath).slice(0, 24).toUpperCase()}`,
+    candidateCommit: candidate.commit,
+    candidateTreeOrDigest: candidate.tree,
+    cleanState: candidate.clean,
+    resourceClass: "COMPILE_HEAVY",
+    workingDirectoryRef: opaqueSchedulerWorktreeRef(worktreePath),
+    commandArgv: ["AGENTOS_GOVERNANCE_EVIDENCE_PLAN", ...keys],
+    toolchainProfile: "NODE_GOVERNANCE_EVIDENCE",
+    proofClass: "TEST_BATCH",
+    whyNeeded: "COLLECT_SOURCE_BOUND_GOVERNANCE_EVIDENCE",
+    expectedProof: "ALL_GOVERNANCE_EVIDENCE_PASS",
+    coverage: keys.map((key) => `EVIDENCE-${controllerDigest(key).slice(0, 16).toUpperCase()}`).sort(),
+    timeoutClass: "BOUNDED",
+    cachePolicy: "NO_SHARED_OUTPUT",
+    secretPolicy: "REDACTED",
+  });
+ return scheduler.runSync({
+   request,
+    admission: {
+      effectiveArgv: request.command_argv,
+      workingDirectory: worktreePath,
+      workingDirectoryRef: request.working_directory_ref,
+      allowedScope: ["."],
+      dependencyPreflight: () => ({status: "READY", identity: `DEPENDENCY_${request.request_sha256.slice(0, 24).toUpperCase()}`}),
+      runtimePreflight: () => ({status: "READY", identity: `RUNTIME_${request.request_sha256.slice(0, 24).toUpperCase()}`}),
+    },
+   resolveCandidate: () => schedulerCandidateIdentity(worktreePath),
+    execute: () => {
+      const result = {};
+      for (const gate of tree.gates) {
+        for (const key of gate.evidence_requirements) result[gate.gate_id + ":" + key] = observe(worktreePath, key, sourceCommit, sourceTree);
+      }
+      return result;
+    },
+  }).output;
 }

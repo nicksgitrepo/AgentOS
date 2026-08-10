@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.failure_classification.v1",
+  "title": "AgentOS failure classification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "finding_id", "classification", "action", "continuation_allowed", "owner_review_required", "preserve_predecessor_evidence", "shared_file_conflict", "reason", "observed_at_utc", "classification_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.failure_classification.v1"},
+    "version": {"const": 1},
+    "finding_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"},
+    "classification": {"enum": ["HARD_BOUNDARY", "SOURCE_DRIFT", "TRUE_BLOCKER", "SOFT_BOUNDARY", "REPAIRABLE_PUZZLE", "NONE"]},
+    "action": {"enum": ["STOP_HARD_BOUNDARY", "REASSESS_GOAL", "REVIEW_TRUE_BLOCKER", "REVIEW_SOFT_BOUNDARY", "PROPOSE_REPAIR", "CONTINUE"]},
+    "continuation_allowed": {"type": "boolean"},
+    "owner_review_required": {"type": "boolean"},
+    "preserve_predecessor_evidence": {"type": "boolean"},
+    "shared_file_conflict": {"type": "boolean"},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 512},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "classification_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

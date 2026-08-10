@@ -5,6 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {
   applyCorpusPlan,
   canonicalCompactJson,
@@ -74,11 +75,51 @@ import {
   validateControllerRuntimeReadback,
   writeAgentOSControllerStateCompareAndSwap,
 } from "./agentos-controller.mjs";
+import {
+  compileGovernanceArchitecturePlan,
+  validateGovernanceArchitecturePlan,
+} from "./governance-library.mjs";
+import {
+  compileDevelopmentPlan,
+  DEFAULT_DEVELOPMENT_MODE,
+  DEVELOPMENT_MODES,
+  validateDevelopmentPlan,
+} from "./development-plan.mjs";
+import {
+  BOOTSTRAP_OPERATING_MODES,
+  DEFAULT_BOOTSTRAP_OPERATING_MODE,
+  JSA_PLAN_STATUS,
+  compileBootstrapSafetyAnalysis,
+  isExactApprovalPlan,
+  isJsaPlan,
+  validateBootstrapActionScope,
+  validateBootstrapSafetyAnalysis,
+} from "./bootstrap-safety-analysis.mjs";
 
 export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY"]);
+export {DEVELOPMENT_MODES};
+export {BOOTSTRAP_OPERATING_MODES, DEFAULT_BOOTSTRAP_OPERATING_MODE, JSA_PLAN_STATUS};
 export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
 export const PLAN_APPROVAL = "APPROVE_EXACT_PLAN";
-export const EXECUTION_PHASES = Object.freeze(["PLANNED", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"]);
+export const DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES = 15;
+export const MEANINGFUL_PROGRESS_WINDOW_MINUTES = 15;
+export const CONTROLLER_SUPERVISION_STOP_ONLY = Object.freeze([
+  "HARD_BOUNDARY",
+  "REAL_OWNER_CHOICE",
+  "VERIFIED_HOST_CAPABILITY_FAILURE",
+]);
+const CONTROLLER_SUPERVISION_SCHEMA = "agentos.bootstrap_controller_supervision.v1";
+const CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE = "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES";
+export const BOOTSTRAP_CONVERSATION_FLOOR = Object.freeze({
+  language: "PLAIN_EVERYDAY",
+  questions_per_turn: 1,
+  internal_fields_hidden: true,
+  ask_only: "EARLIEST_MATERIAL_UNRESOLVED",
+  safe_discovery_defaults_allowed: true,
+  maximum_prompt_words: 20,
+  forbidden_user_terms: ["JSON", "schema", "digest", "runtime", "authority corpus", "policy state", "worktree", "campaign"].sort(),
+});
+export const EXECUTION_PHASES = Object.freeze(["PLANNED", "JSA_BOUND", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"]);
 export const MODEL_PROFILES = Object.freeze({
   ECO_CONTINUOUS: {window_hours: 168, work_slots: 20, max_concurrent_slots: 20, average_active_slots: null, task_volume_multiplier: 20, objective: "MINIMIZE_EXPECTED_COST_PER_ACCEPTED_RESULT"},
   STANDARD_WORKWEEK: {window_hours: 40, work_slots: 1, max_concurrent_slots: 1, average_active_slots: 1, task_volume_multiplier: 1, objective: "MINIMIZE_EXPECTED_COST_PER_ACCEPTED_RESULT"},
@@ -97,6 +138,12 @@ const RUNTIME_READBACK_KEYS = [
   "schema", "session_id", "environment_identity", "capabilities", "persistent", "pinned", "resume_readback",
   "observed_by_role", "observed_by_session", "observed_at_utc", "verification_method", "readback_sha256",
 ];
+const MODEL_ECONOMICS_CHOICES = Object.freeze([
+  Object.freeze({value: "ECO_CONTINUOUS", label: "Save effort", answer: Object.freeze({profile: "ECO_CONTINUOUS", completion_floor: 0.8})}),
+  Object.freeze({value: "PERFORMANCE", label: "Finish sooner", answer: Object.freeze({profile: "PERFORMANCE", completion_floor: 0.8})}),
+  Object.freeze({value: "CAREFUL", label: "Take extra care", answer: Object.freeze({profile: "STANDARD_WORKWEEK", completion_floor: 0.95})}),
+  Object.freeze({value: "STANDARD_WORKWEEK", label: "Recommend a balance", answer: Object.freeze({profile: "STANDARD_WORKWEEK", completion_floor: 0.8})}),
+]);
 
 export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
@@ -112,7 +159,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.north_star",
     class: "OWNER_INTENT",
-    prompt: "Who is this for, what would you like it to make easier, and what would a good result feel like?",
+    prompt: "Who is this for, and what should it make easier?",
     type: "JSON",
     output: "NORTH_STAR",
     required: true,
@@ -120,15 +167,27 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.first_workflow",
     class: "OWNER_INTENT",
-    prompt: "What is the first small thing you want people to be able to do, and how will you know it worked?",
+    prompt: "What should people do first, and what would count as working?",
     type: "JSON",
     output: "FIRST_USEFUL_WORKFLOW",
     required: true,
   },
   {
+    id: "project.development_mode",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "Should I make a quick first version, then improve it, or take the careful path from the start?",
+    type: "ENUM",
+    choices: DEVELOPMENT_MODES,
+    owner_choices: ["Quick first version, then improve it", "Careful path from the start"],
+    recommended: DEFAULT_DEVELOPMENT_MODE,
+    output: "DEVELOPMENT_PLAN",
+    required: false,
+    askWhen: "OWNER_REQUESTS_A_DIFFERENT_BUILD_PACE",
+  },
+  {
     id: "project.life_contract",
     class: "OWNER_INTENT",
-    prompt: "How real should the first version be: a rough try, a small working version, a beta, or something ready for everyday use? Who should use it, what information may it keep, and how long should it live?",
+    prompt: "How real should the first version be?",
     type: "JSON",
     output: "PROJECT_LIFE_CONTRACT",
     required: false,
@@ -145,7 +204,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.import",
     class: "CREATION_AUTHORIZATION",
-    prompt: "Should I leave the current project as it is, make a separate copy, tidy it up, or use it as a reference for a fresh version?",
+    prompt: "Should I keep this as-is, make a copy, tidy it up, or use it as a reference?",
     type: "JSON",
     output: "PROJECT_IMPORT",
     required: false,
@@ -154,7 +213,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.protected_boundaries",
     class: "OWNER_BOUNDARY",
-    prompt: "What must I never do, change, share, or spend without you?",
+    prompt: "What must I never do without you?",
     type: "JSON",
     output: "AUTHORITY_BOUNDARIES",
     required: true,
@@ -162,7 +221,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "authority-corpus.source",
     class: "CREATION_AUTHORIZATION",
-    prompt: "Are there notes, instructions, or an older version I should keep safe and use as background?",
+    prompt: "Are there notes or an older version I should keep safe?",
     type: "JSON",
     output: "AUTHORITY_CORPUS",
     required: true,
@@ -170,7 +229,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.design",
     class: "OWNER_INTENT",
-    prompt: "Who will use it, what will they use it on, and are there any important look-and-feel or accessibility needs?",
+    prompt: "What should it feel like to use, and where should it work?",
     type: "JSON",
     output: "DESIGN_BIBLE",
     required: false,
@@ -179,7 +238,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.technical_baseline",
     class: "MATERIAL_PREFERENCE",
-    prompt: "Is there anything you already want me to use or avoid? If not, I can choose a sensible starting point.",
+    prompt: "Is there anything you want me to use or avoid?",
     type: "JSON",
     output: "TECHNICAL_BASELINE",
     required: false,
@@ -188,7 +247,7 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
   {
     id: "project.delivery_policy",
     class: "MATERIAL_PREFERENCE",
-    prompt: "Is there anything special about how this should be saved, shared, or put online? If not, I can use the safest simple option.",
+    prompt: "How should I save or share it?",
     type: "JSON",
     output: "DELIVERY_POLICY",
     required: true,
@@ -210,18 +269,41 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     class: "MATERIAL_PREFERENCE",
     prompt: "Should I favor saving effort, finishing sooner, taking extra care, or should I recommend a balance?",
     type: "JSON",
+    owner_choices: MODEL_ECONOMICS_CHOICES.map(({label}) => label),
     output: "MODEL_POLICY",
     required: true,
   },
   {
+    id: "project.audit_interval",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "How often should I check on ongoing work?",
+    type: "JSON",
+    output: "CONTROLLER_SUPERVISION",
+    required: false,
+    askWhen: "OWNER_REQUESTS_AUDIT_INTERVAL",
+  },
+  {
     id: "project.runtime",
     class: "OWNER_BOUNDARY",
-    prompt: "Would you like me to remember this project between work sessions? If so, what should that memory be allowed to use?",
+    prompt: "Should I remember this between work sessions, and what may I remember?",
     type: "JSON",
     output: "PERSISTENT_RUNTIME",
     required: true,
   },
 ]);
+
+function validateBootstrapConversationFloor() {
+  const forbidden = BOOTSTRAP_CONVERSATION_FLOOR.forbidden_user_terms.map((term) => term.toLocaleLowerCase());
+  for (const question of BOOTSTRAP_QUESTIONS) {
+    assert(typeof question.prompt === "string" && question.prompt.trim().length > 0, `${question.id} has no owner prompt`);
+    const words = question.prompt.trim().split(/\s+/u).filter(Boolean);
+    assert(words.length <= BOOTSTRAP_CONVERSATION_FLOOR.maximum_prompt_words, `${question.id} prompt is too long for the conversation floor`);
+    assert((question.prompt.match(/\?/gu) ?? []).length === 1, `${question.id} must ask exactly one visible question`);
+    const lower = question.prompt.toLocaleLowerCase();
+    assert(!forbidden.some((term) => lower.includes(term)), `${question.id} exposes internal vocabulary`);
+  }
+  return true;
+}
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -424,20 +506,7 @@ export function recommendModels({economics: inputEconomics, candidates, role = n
   };
 }
 
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (isRecord(value)) return Object.fromEntries(Object.keys(value).sort(compareUtf8)
-    .map((key) => [key, canonicalize(value[key])]));
-  return value;
-}
-
-export function compareUtf8(left, right) {
-  return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
-}
-
-export function canonicalDigest(value) {
-  return crypto.createHash("sha256").update(JSON.stringify(canonicalize(value)), "utf8").digest("hex");
-}
+export {canonicalDigest, compareUtf8};
 
 function validateFact(fact) {
   requireRecord(fact, "discovery fact");
@@ -562,25 +631,27 @@ function deriveSecurityBaseline(discovery, answer) {
 function deriveAuthorityCorpus(answer) {
   const operation = answer?.operation ?? "CREATE_NEW";
   assert(["IMPORT", "REFACTOR_PREVIOUS_GOVERNANCE", "CREATE_NEW"].includes(operation), "authority corpus operation is invalid");
+  const authorityRoot = answer?.roots?.authority_root ?? ".agentos/authority";
+  const defaultRoot = (suffix) => path.posix.join(authorityRoot, suffix);
   return {
     operation,
     source_root: answer?.source_root ?? null,
     source_identity: null,
     preservation: operation === "CREATE_NEW" ? "NOT_REQUIRED" : "REQUIRED_BEFORE_REPLACEMENT_WRITES",
     roots: {
-      authority_root: answer?.roots?.authority_root ?? ".agentos/authority",
-      authority_index_path: answer?.roots?.authority_index_path ?? ".agentos/index.json",
-      project_context_root: answer?.roots?.project_context_root ?? "project/context",
-      project_goals_root: answer?.roots?.project_goals_root ?? "project/goals",
-      design_system_root: answer?.roots?.design_system_root ?? "design",
-      features_root: answer?.roots?.features_root ?? "features",
-      platform_capabilities_root: answer?.roots?.platform_capabilities_root ?? "platform",
-      campaigns_root: answer?.roots?.campaigns_root ?? "campaigns",
-      decisions_root: answer?.roots?.decisions_root ?? "decisions",
-      cases_root: answer?.roots?.cases_root ?? "cases",
-      evidence_index_root: answer?.roots?.evidence_index_root ?? "evidence",
-      archive_root: answer?.roots?.archive_root ?? "archive",
-      evidence_library_root: answer?.roots?.evidence_library_root ?? "evidence-library",
+      authority_root: authorityRoot,
+      authority_index_path: answer?.roots?.authority_index_path ?? defaultRoot("index.json"),
+      project_context_root: answer?.roots?.project_context_root ?? defaultRoot("project/context"),
+      project_goals_root: answer?.roots?.project_goals_root ?? defaultRoot("project/goals"),
+      design_system_root: answer?.roots?.design_system_root ?? defaultRoot("design"),
+      features_root: answer?.roots?.features_root ?? defaultRoot("features"),
+      platform_capabilities_root: answer?.roots?.platform_capabilities_root ?? defaultRoot("platform"),
+      campaigns_root: answer?.roots?.campaigns_root ?? defaultRoot("campaigns"),
+      decisions_root: answer?.roots?.decisions_root ?? defaultRoot("decisions"),
+      cases_root: answer?.roots?.cases_root ?? defaultRoot("cases"),
+      evidence_index_root: answer?.roots?.evidence_index_root ?? defaultRoot("evidence"),
+      archive_root: answer?.roots?.archive_root ?? defaultRoot("archive"),
+      evidence_library_root: answer?.roots?.evidence_library_root ?? defaultRoot("evidence-library"),
     },
     numbering: {
       bootstrap: "000",
@@ -686,7 +757,9 @@ function normalizeAnswers(answers) {
   }
   for (const [id, value] of Object.entries(normalized)) {
     const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === id);
-    if (question?.type === "ENUM") normalized[id] = normalizeBootstrapChoiceReply(id, value);
+    if (id === "project.audit_interval") normalized[id] = normalizeBootstrapAuditIntervalReply(value);
+    else if (id === "project.model_economics" && !isRecord(value)) normalized[id] = normalizeBootstrapModelEconomicsReply(value);
+    else if (question?.type === "ENUM") normalized[id] = normalizeBootstrapChoiceReply(id, value);
   }
   return normalized;
 }
@@ -706,6 +779,7 @@ function validateAnswers(discovery, answers) {
 }
 
 export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
+  validateBootstrapConversationFloor();
   const normalizedAnswers = validateAnswers(discovery, answers);
   const coverage = compileBootstrapCoverage({discovery, answers: normalizedAnswers});
   const visible = BOOTSTRAP_QUESTIONS.filter((question) => coverageForQuestion(coverage, question.id)
@@ -719,6 +793,7 @@ export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
     required_output_groups: BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
     coverage_sha256: coverage.coverage_sha256,
     coverage,
+    conversation_floor: BOOTSTRAP_CONVERSATION_FLOOR,
     question_budget: {
       visible: visible.length,
       answered: visible.length - unresolved.length,
@@ -775,16 +850,122 @@ export function normalizeBootstrapChoiceReply(questionId, reply) {
   return matches[0];
 }
 
+export function normalizeBootstrapModelEconomicsReply(reply) {
+  if (isRecord(reply)) return structuredClone(reply);
+  const numericReply = typeof reply === "number" && Number.isSafeInteger(reply)
+    ? reply
+    : typeof reply === "string" && /^\d+$/u.test(reply.trim())
+      ? Number(reply.trim())
+      : null;
+  let choice = null;
+  if (numericReply !== null) {
+    if (numericReply < 1 || numericReply > MODEL_ECONOMICS_CHOICES.length) throw new Error("choice number is outside the matching question choices: project.model_economics");
+    choice = MODEL_ECONOMICS_CHOICES[numericReply - 1];
+  } else if (typeof reply === "string") {
+    const normalizedReply = reply.trim().toLocaleLowerCase();
+    choice = MODEL_ECONOMICS_CHOICES.find((candidate) => candidate.value.toLocaleLowerCase() === normalizedReply || candidate.label.toLocaleLowerCase() === normalizedReply) ?? null;
+  }
+  if (choice === null) throw new Error("choice reply is ambiguous or unknown for the matching question: project.model_economics");
+  return structuredClone(choice.answer);
+}
+
+export function normalizeBootstrapAuditIntervalReply(reply) {
+  let value = reply;
+  if (isRecord(reply)) {
+    const keys = Object.keys(reply);
+    const allowed = ["audit_interval_minutes", "interval_minutes", "minutes"];
+    assert(keys.length === 1 && allowed.includes(keys[0]), "audit interval answer fields are invalid");
+    value = reply[keys[0]];
+  }
+  if (typeof value === "string" && /^\d+$/u.test(value.trim())) value = Number(value.trim());
+  assert(Number.isSafeInteger(value)
+    && value >= 1
+    && value <= 1440,
+  "audit interval must be an integer from 1 to 1440 minutes");
+  return {audit_interval_minutes: value};
+}
+
+export function compileControllerSupervision({auditIntervalMinutes = DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES, policyStateSha256}) {
+  const normalized = normalizeBootstrapAuditIntervalReply(auditIntervalMinutes);
+  requireSha(policyStateSha256, "controller supervision policy state digest");
+  const supervision = {
+    schema: CONTROLLER_SUPERVISION_SCHEMA,
+    version: 1,
+    status: "PREPARED_NOT_ACTIVATED",
+    controller_role: "AGENTOS_CONTROLLER",
+    controller_display_name: "Intent Regulator",
+    scope: "PROJECT_PERSISTENT",
+    lifetime: "PERSISTENT",
+    storage_scope: "CONTROL_PLANE_PERSISTENT",
+    owner_configurable_audit_interval: true,
+    audit_interval_policy_variable: CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE,
+    default_audit_interval_minutes: DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES,
+    audit_interval_minutes: normalized.audit_interval_minutes,
+    meaningful_progress_window_minutes: MEANINGFUL_PROGRESS_WINDOW_MINUTES,
+    heartbeat_is_not_meaningful_progress: true,
+    automatic_continuation: true,
+    automatic_repair: true,
+    continuation_scope: "BOUND_SOURCE_SCOPE_AND_OWNER_APPROVED_INTENT",
+    stop_only_for: CONTROLLER_SUPERVISION_STOP_ONLY,
+    policy_state_sha256: policyStateSha256,
+    supervision_sha256: null,
+  };
+  supervision.supervision_sha256 = canonicalDigest({...supervision, supervision_sha256: null});
+  return validateControllerSupervision(supervision);
+}
+
+export function validateControllerSupervision(supervision) {
+  exactKeys(supervision, [
+    "schema", "version", "status", "controller_role", "controller_display_name", "scope", "lifetime", "storage_scope",
+    "owner_configurable_audit_interval", "audit_interval_policy_variable", "default_audit_interval_minutes", "audit_interval_minutes",
+    "meaningful_progress_window_minutes", "heartbeat_is_not_meaningful_progress", "automatic_continuation", "automatic_repair",
+    "continuation_scope", "stop_only_for", "policy_state_sha256", "supervision_sha256",
+  ], "Bootstrap controller supervision");
+  assert(supervision.schema === CONTROLLER_SUPERVISION_SCHEMA && supervision.version === 1, "Bootstrap controller supervision identity is invalid");
+  assert(supervision.status === "PREPARED_NOT_ACTIVATED", "Bootstrap controller supervision cannot activate AgentOS");
+  assert(supervision.controller_role === "AGENTOS_CONTROLLER", "Bootstrap controller supervision role is invalid");
+  assert(supervision.controller_display_name === "Intent Regulator", "Bootstrap controller supervision display name is invalid");
+  assert(supervision.scope === "PROJECT_PERSISTENT" && supervision.lifetime === "PERSISTENT", "Bootstrap controller supervision is not persistent");
+  assert(supervision.storage_scope === "CONTROL_PLANE_PERSISTENT", "Bootstrap controller supervision storage scope is invalid");
+  assert(supervision.owner_configurable_audit_interval === true, "Bootstrap audit interval is not owner-configurable");
+  assert(supervision.audit_interval_policy_variable === CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE, "Bootstrap audit interval policy variable is invalid");
+  const defaultInterval = normalizeBootstrapAuditIntervalReply(supervision.default_audit_interval_minutes).audit_interval_minutes;
+  assert(defaultInterval === DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES, "Bootstrap audit interval default is unsafe");
+  const auditInterval = normalizeBootstrapAuditIntervalReply(supervision.audit_interval_minutes).audit_interval_minutes;
+  assert(auditInterval === supervision.audit_interval_minutes, "Bootstrap audit interval is not normalized");
+  assert(supervision.meaningful_progress_window_minutes === MEANINGFUL_PROGRESS_WINDOW_MINUTES, "Bootstrap meaningful-progress window is invalid");
+  assert(supervision.heartbeat_is_not_meaningful_progress === true, "Bootstrap heartbeat must not count as meaningful progress");
+  assert(supervision.automatic_continuation === true && supervision.automatic_repair === true, "Bootstrap continuation and repair are not automatic");
+  assert(supervision.continuation_scope === "BOUND_SOURCE_SCOPE_AND_OWNER_APPROVED_INTENT", "Bootstrap continuation scope is invalid");
+  assert(JSON.stringify(supervision.stop_only_for) === JSON.stringify(CONTROLLER_SUPERVISION_STOP_ONLY), "Bootstrap stop boundaries are invalid");
+  requireSha(supervision.policy_state_sha256, "controller supervision policy state digest");
+  requireSha(supervision.supervision_sha256, "controller supervision digest");
+  assert(supervision.supervision_sha256 === canonicalDigest({...supervision, supervision_sha256: null}), "Bootstrap controller supervision is not content-addressed");
+  return supervision;
+}
+
 export function validateBootstrapAnswer(questionId, value, discovery = []) {
   const normalizedQuestionId = ANSWER_ALIASES[questionId] ?? questionId;
   const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === normalizedQuestionId);
   if (!question) throw new Error(`unknown Bootstrap question: ${questionId}`);
-  const normalizedValue = question.type === "ENUM" ? normalizeBootstrapChoiceReply(normalizedQuestionId, value) : value;
+  const normalizedValue = normalizedQuestionId === "project.audit_interval"
+    ? normalizeBootstrapAuditIntervalReply(value)
+    : normalizedQuestionId === "project.model_economics"
+    ? normalizeBootstrapModelEconomicsReply(value)
+    : question.type === "ENUM" ? normalizeBootstrapChoiceReply(normalizedQuestionId, value) : value;
   validateAnswers(discovery, {[normalizedQuestionId]: normalizedValue});
   return question;
 }
 
-export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot = null, controlPlaneRoot = null, controlPlaneMode = null, controlPlaneStorage = "LOCAL"} = {}) {
+export function compileBootstrapPlan({
+  discovery = [],
+  answers = {},
+  projectRoot = null,
+  controlPlaneRoot = null,
+  controlPlaneMode = null,
+  controlPlaneStorage = "LOCAL",
+  bootstrapOperatingMode = DEFAULT_BOOTSTRAP_OPERATING_MODE,
+} = {}) {
   assert(projectRoot !== null, "Bootstrap plan requires an exact project root");
   const resolvedProjectRoot = fs.realpathSync.native(path.resolve(projectRoot));
   const controlPlane = resolveControlPlaneRoot({projectRoot: resolvedProjectRoot, controlPlaneRoot, controlPlaneMode, storageBackend: controlPlaneStorage});
@@ -815,6 +996,12 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     deliveryPolicy,
     technicalBaseline,
     discovery,
+  });
+  const bootstrapSafetyAnalysis = compileBootstrapSafetyAnalysis({
+    operatingMode: bootstrapOperatingMode,
+    authorityBoundaries: normalizedAnswers["project.protected_boundaries"],
+    deliveryPolicy,
+    projectLifeContract,
   });
   const authorityCorpus = deriveAuthorityCorpus(normalizedAnswers["authority-corpus.source"]);
   const sourceIdentity = authorityCorpus.preservation === "NOT_REQUIRED"
@@ -856,6 +1043,8 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     discovery_digest_sha256: canonicalDigest(discovery),
   };
   const modelEconomics = normalizedAnswers["project.model_economics"] ?? {};
+  const auditIntervalMinutes = normalizedAnswers["project.audit_interval"]?.audit_interval_minutes
+    ?? DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES;
   const modelClass = modelEconomics.profile === "ECO_CONTINUOUS" || modelEconomics.profile === "ECO" || modelEconomics.profile === "ECONOMICAL"
     ? "ECONOMICAL"
     : modelEconomics.profile === "PERFORMANCE" ? "PERFORMANCE" : "BALANCED";
@@ -865,6 +1054,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       "PROJECT.NORTH_STAR": JSON.stringify(normalizedAnswers["project.north_star"]),
       "PROJECT.FIRST_USEFUL_WORKFLOW": JSON.stringify(normalizedAnswers["project.first_workflow"]),
       "MODEL.PROFILE": modelClass,
+      [CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE]: auditIntervalMinutes,
     },
     nowUtc: "1970-01-01T00:00:00.000Z",
     timeBasis: "DETERMINISTIC_SYNTHETIC_EPOCH",
@@ -880,10 +1070,16 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     model_selection: getPolicyValue(globalPolicyState, "REVIEW.MODEL_SELECTION"),
     approval_route: getPolicyValue(globalPolicyState, "REVIEW.APPROVAL_ROUTE"),
   };
+  const controllerSupervision = compileControllerSupervision({
+    auditIntervalMinutes: getPolicyValue(globalPolicyState, CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE),
+    policyStateSha256: globalPolicyState.policy_state_sha256,
+  });
+  const governanceArchitecture = compileGovernanceArchitecturePlan();
   const output = {
     schema: "agentos.bootstrap_creation_plan.v1",
     governance_version: "2.1rc",
-    status: "AWAITING_EXACT_OWNER_APPROVAL",
+    status: bootstrapSafetyAnalysis.operating_mode === "JSA" ? JSA_PLAN_STATUS : "AWAITING_EXACT_OWNER_APPROVAL",
+    bootstrap_operating_mode: bootstrapSafetyAnalysis.operating_mode,
     project_root: resolvedProjectRoot,
     control_plane_root: controlPlane.control_plane_root,
     control_plane: controlPlane.binding,
@@ -901,6 +1097,7 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     delivery_policy: deliveryPolicy,
     delivery_target: deliveryPolicy.delivery_target,
     boundary_contract: boundaryContract,
+    bootstrap_safety_analysis: bootstrapSafetyAnalysis,
     design_bible: deriveDesignBible(discovery, normalizedAnswers["project.design"]),
     security_baseline: deriveSecurityBaseline(discovery, normalizedAnswers["security.baseline"]),
     authority_boundaries: normalizedAnswers["project.protected_boundaries"],
@@ -911,8 +1108,10 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     model_policy: deriveModelPolicy(normalizedAnswers["project.model_economics"]),
     global_policy_state: globalPolicyState,
     owner_review_policy: ownerReviewPolicy,
+    controller_supervision: controllerSupervision,
     persistent_runtime: deriveRuntime(normalizedAnswers["project.runtime"]),
     first_campaign: deriveFirstCampaign(discovery, normalizedAnswers),
+    governance_architecture: governanceArchitecture,
     exact_creation_plan: {
       repositories: normalizedAnswers["project.boundary"]?.repositories ?? [],
       branches: normalizedAnswers["project.boundary"]?.branches ?? [],
@@ -939,6 +1138,9 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
       boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
       global_policy_state_sha256: globalPolicyState.policy_state_sha256,
       owner_review_policy_sha256: canonicalDigest(ownerReviewPolicy),
+      controller_supervision_sha256: controllerSupervision.supervision_sha256,
+      bootstrap_safety_analysis_sha256: bootstrapSafetyAnalysis.safety_sha256,
+      governance_architecture_plan_sha256: governanceArchitecture.digest,
       expected_writes: ["control-plane/bootstrap.plan.json", "control-plane authority corpus roots", "control-plane typed project context", "control-plane delivery policy and probe bindings", "control-plane Bootstrap receipts", "control-plane source-preservation artifacts when PROJECT_IMPORT applies"],
       side_effects: ["CREATE_OR_UPDATE_CONTROL_PLANE_CONTEXT", "CREATE_AUTHORITY_CORPUS_OUTSIDE_PROJECT_ROOT_BY_DEFAULT", "CREATE_DESIGN_AUTHORITY_IN_CONTROL_PLANE", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
       prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
@@ -969,6 +1171,13 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
     delivery_finish: output.delivery_policy.finish.selected,
     design_bible_sha256: canonicalDigest(output.design_bible),
   };
+  output.development_plan = compileDevelopmentPlan({
+    mode: normalizedAnswers["project.development_mode"] ?? DEFAULT_DEVELOPMENT_MODE,
+    northStar: output.north_star,
+    firstWorkflow: output.first_useful_workflow,
+    protectedBoundaries: output.authority_boundaries,
+    firstCampaign: output.first_campaign,
+  });
   output.exact_creation_plan.campaign_design_sha256 = canonicalDigest({
     design_bible: output.design_bible,
     first_campaign: output.first_campaign,
@@ -987,11 +1196,22 @@ export function compileBootstrapPlan({discovery = [], answers = {}, projectRoot 
 export function validateBootstrapPlan(plan) {
   requireRecord(plan, "Bootstrap plan");
   assert(plan.schema === "agentos.bootstrap_creation_plan.v1" && plan.governance_version === "2.1rc", "Bootstrap plan identity is invalid");
-  assert(plan.status === "AWAITING_EXACT_OWNER_APPROVAL" || plan.status === "APPROVED_EXACT_DIGEST", "Bootstrap plan status is invalid");
+  assert([JSA_PLAN_STATUS, "AWAITING_EXACT_OWNER_APPROVAL", "APPROVED_EXACT_DIGEST"].includes(plan.status), "Bootstrap plan status is invalid");
   requireSha(plan.discovery_digest_sha256, "Bootstrap discovery digest");
   requireSha(plan.answers_sha256, "Bootstrap answers digest");
   requireString(plan.project_root, "Bootstrap project root");
   requireString(plan.control_plane_root, "Bootstrap control-plane root");
+  assert(BOOTSTRAP_OPERATING_MODES.includes(plan.bootstrap_operating_mode), "Bootstrap operating mode is invalid");
+  requireRecord(plan.bootstrap_safety_analysis, "Bootstrap safety analysis");
+  validateBootstrapSafetyAnalysis(plan.bootstrap_safety_analysis);
+  assert(plan.bootstrap_safety_analysis.operating_mode === plan.bootstrap_operating_mode, "Bootstrap operating mode and safety analysis differ");
+  assert(canonicalDigest({
+    authority_boundaries: plan.authority_boundaries,
+    delivery_policy: plan.delivery_policy,
+    project_life_contract: plan.project_life_contract,
+  }) === plan.bootstrap_safety_analysis.scope_inputs_sha256, "Bootstrap safety analysis is not bound to scope inputs");
+  if (plan.bootstrap_operating_mode === "JSA") assert([JSA_PLAN_STATUS, "APPROVED_EXACT_DIGEST"].includes(plan.status), "JSA Bootstrap plan has the wrong status");
+  if (plan.bootstrap_operating_mode === "EXACT_PLAN_APPROVAL") assert(["AWAITING_EXACT_OWNER_APPROVAL", "APPROVED_EXACT_DIGEST"].includes(plan.status), "exact-approval Bootstrap plan has the wrong status");
   validateControlPlaneBinding(plan.control_plane, {projectRoot: plan.project_root, controlPlaneRoot: plan.control_plane_root});
   assert(plan.control_plane.control_plane_root === plan.control_plane_root, "Bootstrap control-plane binding and root differ");
   assert(DISCOVERY_MODES.includes(plan.discovery_mode), "Bootstrap discovery mode is missing from the exact plan");
@@ -1021,6 +1241,11 @@ export function validateBootstrapPlan(plan) {
   requireRecord(plan.owner_review_policy, "owner review policy");
   assert(plan.owner_review_policy.policy_state_sha256 === plan.global_policy_state.policy_state_sha256, "Bootstrap owner review policy is not bound to global policy state");
   assert(canonicalDigest(plan.owner_review_policy) === plan.exact_creation_plan.owner_review_policy_sha256, "Bootstrap owner review policy digest is not bound to the exact plan");
+  requireRecord(plan.controller_supervision, "controller supervision");
+  validateControllerSupervision(plan.controller_supervision);
+  assert(plan.controller_supervision.policy_state_sha256 === plan.global_policy_state.policy_state_sha256, "Bootstrap controller supervision is not bound to global policy state");
+  assert(plan.controller_supervision.audit_interval_minutes === getPolicyValue(plan.global_policy_state, CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE), "Bootstrap audit interval is not bound to global policy state");
+  assert(plan.exact_creation_plan.controller_supervision_sha256 === plan.controller_supervision.supervision_sha256, "exact creation plan is not bound to controller supervision");
   requireRecord(plan.delivery_probe_plan, "delivery probe plan");
   validateDeliveryProbePlan(plan.delivery_probe_plan);
   assert(plan.delivery_probe_plan.policy_sha256 === plan.delivery_policy.policy_sha256, "delivery probe plan is not bound to delivery policy");
@@ -1031,6 +1256,13 @@ export function validateBootstrapPlan(plan) {
     design_bible: plan.design_bible,
     first_campaign: plan.first_campaign,
   }), "campaign design is not bound to the exact Bootstrap plan");
+  requireRecord(plan.development_plan, "development plan");
+  validateDevelopmentPlan(plan.development_plan, {
+    northStar: plan.north_star,
+    firstWorkflow: plan.first_useful_workflow,
+    protectedBoundaries: plan.authority_boundaries,
+    firstCampaign: plan.first_campaign,
+  });
   assert(plan.exact_creation_plan.delivery_bindings?.runner_provider_id === plan.delivery_policy.ci_runner.provider_id
     && plan.exact_creation_plan.delivery_bindings?.deployment_provider_id === plan.delivery_policy.deployment.provider_id
     && JSON.stringify(plan.exact_creation_plan.delivery_bindings?.environment_ids) === JSON.stringify(plan.delivery_policy.deployment.environment_ids)
@@ -1044,6 +1276,7 @@ export function validateBootstrapPlan(plan) {
   assert(plan.exact_creation_plan.delivery_target_sha256 === plan.delivery_target.target_sha256, "exact creation plan is not bound to delivery target");
   assert(plan.exact_creation_plan.project_life_contract_sha256 === plan.project_life_contract.life_contract_sha256, "exact creation plan is not bound to project life contract");
   assert(plan.exact_creation_plan.boundary_contract_sha256 === plan.boundary_contract.boundary_contract_sha256, "exact creation plan is not bound to boundary contract");
+  assert(plan.exact_creation_plan.bootstrap_safety_analysis_sha256 === plan.bootstrap_safety_analysis.safety_sha256, "exact creation plan is not bound to Bootstrap safety analysis");
   assert(plan.exact_creation_plan.delivery_probe_plan_sha256 === plan.delivery_probe_plan.probe_plan_sha256, "exact creation plan is not bound to delivery probes");
   assert(plan.exact_creation_plan.bootstrap_coverage_sha256 === plan.bootstrap_coverage.coverage_sha256, "exact creation plan is not bound to Bootstrap coverage");
   requireRecord(plan.authority_corpus, "authority corpus plan");
@@ -1066,6 +1299,9 @@ export function validateBootstrapPlan(plan) {
   assert(plan.exact_creation_plan.normalization_sha256 === plan.normalization_policy.normalization_sha256, "exact creation plan is not bound to normalization policy");
   requireRecord(plan.model_policy, "model policy");
   requireRecord(plan.persistent_runtime, "Runtime plan");
+  requireRecord(plan.governance_architecture, "governance architecture plan");
+  validateGovernanceArchitecturePlan(plan.governance_architecture);
+  assert(plan.exact_creation_plan.governance_architecture_plan_sha256 === plan.governance_architecture.digest, "exact creation plan is not bound to governance architecture");
   const body = structuredClone(plan);
   delete body.plan_sha256;
   assert(plan.plan_sha256 === canonicalDigest(body), "Bootstrap plan digest is not content-addressed");
@@ -1074,7 +1310,7 @@ export function validateBootstrapPlan(plan) {
 
 export function approveBootstrapPlan(plan, {decision, planSha256, discoveryDigestSha256, actor, approvedAtUtc}) {
   validateBootstrapPlan(plan);
-  assert(plan.status === "AWAITING_EXACT_OWNER_APPROVAL", "Bootstrap plan is not awaiting approval");
+  assert(plan.status === "AWAITING_EXACT_OWNER_APPROVAL" || isJsaPlan(plan), "Bootstrap plan is not awaiting approval");
   assert(decision === PLAN_APPROVAL, "Bootstrap requires approval of the exact displayed plan");
   assert(planSha256 === plan.plan_sha256, "owner approval digest does not match the displayed plan");
   assert(discoveryDigestSha256 === plan.discovery_digest_sha256, "owner approval discovery is stale");
@@ -1101,7 +1337,7 @@ function bootstrapApprovalSubject(plan) {
   const body = structuredClone(plan);
   delete body.plan_sha256;
   delete body.approval_receipt;
-  body.status = "AWAITING_EXACT_OWNER_APPROVAL";
+  body.status = plan.bootstrap_operating_mode === "JSA" ? JSA_PLAN_STATUS : "AWAITING_EXACT_OWNER_APPROVAL";
   return body;
 }
 
@@ -1128,6 +1364,17 @@ export function validateApprovedPlan(plan) {
   assert(receipt.receipt_sha256 === canonicalDigest(body), "approval receipt is not content-addressed");
 }
 
+export function validateBootstrapRunnablePlan(plan) {
+  validateBootstrapPlan(plan);
+  if (isJsaPlan(plan)) {
+    validateBootstrapActionScope(plan.bootstrap_safety_analysis.in_scope_actions, plan.bootstrap_safety_analysis);
+    return plan;
+  }
+  assert(isExactApprovalPlan(plan), "Bootstrap execution requires JSA scope binding or exact owner approval");
+  validateApprovedPlan(plan);
+  return plan;
+}
+
 function contextFromPlan(plan) {
   const roots = plan.authority_corpus.roots;
   const globalPolicyStatePath = `${roots.project_context_root}/global-policy-state.json`;
@@ -1138,6 +1385,8 @@ function contextFromPlan(plan) {
     governance_version: "2.1rc",
     status: "PREPARED_NOT_ACTIVATED",
     source_plan_sha256: plan.plan_sha256,
+    bootstrap_operating_mode: plan.bootstrap_operating_mode,
+    bootstrap_safety_analysis: plan.bootstrap_safety_analysis,
     control_plane_root: plan.control_plane_root,
     control_plane: plan.control_plane,
     agentos_home: plan.control_plane.home_policy,
@@ -1164,13 +1413,16 @@ function contextFromPlan(plan) {
     owner_review_policy: plan.owner_review_policy,
     global_policy_state_path: globalPolicyStatePath,
     owner_review_policy_path: ownerReviewPolicyPath,
+    controller_supervision: plan.controller_supervision,
     persistent_runtime: plan.persistent_runtime,
+    development_plan: plan.development_plan,
     agentos_controller_state_path: "agentos/controller-state.json",
     agentos_controller: {
       name: "AGENTOS_CONTROLLER",
       scope: "PROJECT_PERSISTENT",
       storage_scope: "CONTROL_PLANE_PERSISTENT",
       state_schema: "agentos.controller_state.v1",
+      supervision_sha256: plan.controller_supervision.supervision_sha256,
       initialization: "REQUIRES_PROJECT_BOUND_CONTROLLER_RUNTIME_READBACK",
     },
     first_campaign: plan.first_campaign,
@@ -1182,6 +1434,35 @@ function contextFromPlan(plan) {
     ...projectContextBody,
     exact_context_digest: canonicalDigest(projectContextBody),
   };
+  const portableTemplateInstance = {
+    project_identity: {
+      context_version: 1,
+      project_name: plan.project_definition.project_name,
+      exact_context_digest: null,
+    },
+    authority_corpus_roots: roots,
+    authority_corpus_entities: {feature_ids: [], capability_ids: [], campaign_ids: [], release_ids: []},
+    bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
+    standards_registry_sha256: plan.standards_registry.registry_sha256,
+    normalization_sha256: plan.normalization_policy.normalization_sha256,
+    global_policy_state_sha256: plan.global_policy_state.policy_state_sha256,
+    owner_review_policy_sha256: canonicalDigest(plan.owner_review_policy),
+    controller_supervision_sha256: plan.controller_supervision.supervision_sha256,
+    bootstrap_safety_analysis_sha256: plan.bootstrap_safety_analysis.safety_sha256,
+    project_import_sha256: plan.project_import?.plan_sha256 ?? null,
+    bootstrap_output_groups: [
+      "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "DEVELOPMENT_PLAN", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
+      "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
+      "AUTHORITY_CORPUS", "MODEL_POLICY", "GLOBAL_POLICY_STATE", "CONTROLLER_SUPERVISION", "BOOTSTRAP_SAFETY_ANALYSIS", "OWNER_REVIEW", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
+      "EXACT_CREATION_PLAN",
+    ],
+    project_life_contract_sha256: plan.project_life_contract.life_contract_sha256,
+    delivery_target_sha256: plan.delivery_target.target_sha256,
+    boundary_contract_sha256: plan.boundary_contract.boundary_contract_sha256,
+  };
+  const portableTemplateBody = structuredClone(portableTemplateInstance);
+  delete portableTemplateBody.project_identity.exact_context_digest;
+  portableTemplateInstance.project_identity.exact_context_digest = canonicalDigest(portableTemplateBody);
   return {
     schema: "governance.project_context_fixture.v1",
     project_name: plan.project_definition.project_name,
@@ -1192,28 +1473,7 @@ function contextFromPlan(plan) {
     authority_corpus_entities: {feature_ids: [], capability_ids: [], campaign_ids: [], release_ids: []},
     project_context_root: roots.project_context_root,
     project_context: projectContext,
-    portable_template_instance: {
-      project_identity: {
-        context_version: 1,
-        project_name: plan.project_definition.project_name,
-        exact_context_digest: projectContext.exact_context_digest,
-      },
-      bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
-      standards_registry_sha256: plan.standards_registry.registry_sha256,
-      normalization_sha256: plan.normalization_policy.normalization_sha256,
-      global_policy_state_sha256: plan.global_policy_state.policy_state_sha256,
-      owner_review_policy_sha256: canonicalDigest(plan.owner_review_policy),
-      project_import_sha256: plan.project_import?.plan_sha256 ?? null,
-      bootstrap_output_groups: [
-        "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
-        "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
-        "AUTHORITY_CORPUS", "MODEL_POLICY", "GLOBAL_POLICY_STATE", "OWNER_REVIEW", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
-        "EXACT_CREATION_PLAN",
-      ],
-      project_life_contract_sha256: plan.project_life_contract.life_contract_sha256,
-      delivery_target_sha256: plan.delivery_target.target_sha256,
-      boundary_contract_sha256: plan.boundary_contract.boundary_contract_sha256,
-    },
+    portable_template_instance: portableTemplateInstance,
   };
 }
 
@@ -1238,7 +1498,7 @@ export function compileBootstrapOwnerReviewHandoff({
   memoryPosture,
   voiceRecommended,
 }) {
-  validateApprovedPlan(plan);
+  validateBootstrapRunnablePlan(plan);
   assert(plan.owner_review_policy.user_review_mode !== "OFF", "Bootstrap owner review is disabled by the current policy");
   requireRecord(sourceBinding, "Bootstrap owner review source binding");
   const context = contextFromPlan(plan).project_context;
@@ -1327,12 +1587,12 @@ function validateExecutionState(executionState) {
   const expected = [...fields].sort(compareUtf8);
   assert(actual.length === expected.length && actual.every((key, index) => key === expected[index]), "Bootstrap execution state fields mismatch");
   assert(executionState.schema === "agentos.bootstrap_execution_state.v1", "Bootstrap execution state schema mismatch");
-  assert(["APPROVED", "PROMOTED"].includes(executionState.status), "Bootstrap execution state status is invalid");
+  assert(["JSA_BOUND", "APPROVED", "PROMOTED"].includes(executionState.status), "Bootstrap execution state status is invalid");
   requireId(executionState.bootstrap_session_id, "Bootstrap execution session");
   requireString(executionState.project_root, "Bootstrap execution project root");
   requireString(executionState.control_plane_root, "Bootstrap execution control-plane root");
   requireSha(executionState.plan_sha256, "Bootstrap execution plan");
-  assert(["APPROVED", "STAGING", "SEALED", "PROMOTED"].includes(executionState.phase), "Bootstrap execution phase is invalid");
+  assert(["JSA_BOUND", "APPROVED", "STAGING", "SEALED", "PROMOTED"].includes(executionState.phase), "Bootstrap execution phase is invalid");
   if (executionState.staging_root !== null) {
     requireString(executionState.staging_root, "Bootstrap staging root");
     assert(!path.isAbsolute(executionState.staging_root)
@@ -1369,7 +1629,9 @@ function validateExecutionState(executionState) {
     assert(executionState.status === "PROMOTED" && executionState.promotion_root !== null && executionState.promotion_receipt_sha256 !== null,
       "promoted Bootstrap state lacks promotion identity");
   } else {
-    assert(executionState.status === "APPROVED" && executionState.promotion_root === null && executionState.promotion_receipt_sha256 === null,
+    assert(["JSA_BOUND", "APPROVED"].includes(executionState.status)
+      && (executionState.phase !== "JSA_BOUND" || executionState.status === "JSA_BOUND")
+      && executionState.promotion_root === null && executionState.promotion_receipt_sha256 === null,
       "unpromoted Bootstrap state carries promotion identity");
   }
   return executionState;
@@ -1401,18 +1663,18 @@ function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, con
 }
 
 export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot, controlPlaneRoot = null, legacySourceRoot = null, nowUtc}) {
-  validateApprovedPlan(plan);
+  validateBootstrapRunnablePlan(plan);
   requireId(bootstrapSessionId, "Bootstrap session ID");
   requireUtc(nowUtc, "Bootstrap execution time");
   const {root, controlRoot} = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot);
   const state = {
     schema: "agentos.bootstrap_execution_state.v1",
-    status: "APPROVED",
+    status: isJsaPlan(plan) ? "JSA_BOUND" : "APPROVED",
     bootstrap_session_id: bootstrapSessionId,
     project_root: root,
     control_plane_root: controlRoot,
     plan_sha256: plan.plan_sha256,
-    phase: "APPROVED",
+    phase: isJsaPlan(plan) ? "JSA_BOUND" : "APPROVED",
     staging_root: null,
     staging_tree_sha256: null,
     staging_entries: [],
@@ -1444,8 +1706,16 @@ export function executeBootstrapPlan(plan, {
   controllerSessionId,
   logicalControllerId = "AGENTOS-CONTROLLER",
 }) {
-  validateApprovedPlan(plan);
+  validateBootstrapRunnablePlan(plan);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap execution requires the exact authority-corpus workflow");
+  if (isJsaPlan(plan)) {
+    validateBootstrapActionScope([
+      "CREATE_CONTROL_PLANE_STAGING",
+      "CREATE_SOURCE_PRESERVATION_RECORDS",
+      "RUN_LOCAL_READ_ONLY_PROBES",
+      "WRITE_TYPED_PROJECT_CONTEXT",
+    ], plan.bootstrap_safety_analysis);
+  }
   requireId(bootstrapSessionId, "Bootstrap session ID");
   requireUtc(nowUtc, "Bootstrap execution time");
   assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap execution requires an independent Controller Runtime readback");
@@ -1557,7 +1827,8 @@ export function executeBootstrapPlan(plan, {
 }
 
 export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, controlPlaneRoot = null, nowUtc}) {
-  validateApprovedPlan(plan);
+  validateBootstrapRunnablePlan(plan);
+  if (isJsaPlan(plan)) validateBootstrapActionScope(["PROMOTE_CONTROL_PLANE_STATE"], plan.bootstrap_safety_analysis);
   validateExecutionState(executionState);
   requireRecord(setupAudit, "Bootstrap setup audit");
   requireUtc(nowUtc, "Bootstrap promotion time");
@@ -1686,7 +1957,8 @@ export function auditBootstrapSetup({
   controllerSessionId,
   logicalControllerId = "AGENTOS-CONTROLLER",
 }) {
-  validateApprovedPlan(plan);
+  validateBootstrapRunnablePlan(plan);
+  if (isJsaPlan(plan)) validateBootstrapActionScope(["RUN_SETUP_AUDIT"], plan.bootstrap_safety_analysis);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap setup audit requires the exact authority-corpus workflow");
   requireId(auditorSessionId, "setup Auditor session");
   requireId(bootstrapSessionId, "Bootstrap session");
@@ -1779,6 +2051,10 @@ export function auditBootstrapSetup({
   const persistedOwnerPolicy = JSON.parse(fs.readFileSync(ownerPolicyPath, "utf8"));
   assert(canonicalDigest(persistedOwnerPolicy) === canonicalDigest(plan.owner_review_policy),
     "persisted owner review policy is not bound to the exact plan");
+  requireRecord(context.controller_supervision, "typed project context controller supervision");
+  validateControllerSupervision(context.controller_supervision);
+  assert(context.controller_supervision.supervision_sha256 === plan.controller_supervision.supervision_sha256,
+    "typed project context controller supervision is not bound to the exact plan");
   const controllerStatePath = assertContained(root, context.agentos_controller_state_path, "AgentOS Controller state readback");
   const controllerStateBytes = fs.readFileSync(controllerStatePath);
   assert(canonicalCompactJson(JSON.parse(controllerStateBytes.toString("utf8"))) + "\n" === controllerStateBytes.toString("utf8"), "AgentOS Controller state is not canonical JSON");
@@ -1828,11 +2104,12 @@ function bootstrapStartResult({discovery, questionPlan}) {
     project_root: discovery.project_root,
     control_plane_root: controlPlane.control_plane_root,
     control_plane: controlPlane.binding,
+    bootstrap_operating_mode: DEFAULT_BOOTSTRAP_OPERATING_MODE,
     initial_answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
     discovery,
     question_plan: questionPlan,
     next_action: questionPlan.next === null
-      ? "COMPILE_AND_DISPLAY_THE_EXACT_CREATION_PLAN"
+      ? "COMPILE_THE_JSA_PLAN_AND_CONTINUE_ONLY_WITHIN_ITS_DECLARED_SCOPE"
       : "ASK_ONLY_THE_NEXT_MATERIAL_BOOTSTRAP_QUESTION",
   };
   return {...body, start_sha256: canonicalDigest(body)};

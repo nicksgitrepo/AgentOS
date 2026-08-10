@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_contract.v1",
+  "title": "AgentOS typed project contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "project_ref",
+    "intent",
+    "goals",
+    "scope",
+    "boundaries",
+    "phase_plan",
+    "decisions",
+    "open_questions",
+    "governance_inputs",
+    "source_binding",
+    "discovery_binding",
+    "intent_scope_sha256",
+    "reassessment",
+    "privacy",
+    "contract_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.project_contract.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["DRAFT", "READY", "REASSESSMENT_REQUIRED"]},
+    "project_ref": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,63}$"},
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["audience", "outcome", "first_result", "summary"],
+      "properties": {
+        "audience": {"$ref": "#/$defs/typedValue"},
+        "outcome": {"$ref": "#/$defs/typedValue"},
+        "first_result": {"$ref": "#/$defs/typedValue"},
+        "summary": {"$ref": "#/$defs/typedValue"}
+      }
+    },
+    "goals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["goal_ref", "status", "objective", "audience", "first_result", "scope", "boundaries_ref", "success_conditions", "certainty", "provenance"],
+        "properties": {
+          "goal_ref": {"type": "string", "pattern": "^goal:[0-9a-f]{24}$"},
+          "status": {"enum": ["DRAFT", "OPEN"]},
+          "objective": {"$ref": "#/$defs/typedValue"},
+          "audience": {"$ref": "#/$defs/typedValue"},
+          "first_result": {"$ref": "#/$defs/typedValue"},
+          "scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["allowed", "non_goals"],
+            "properties": {
+              "allowed": {"$ref": "#/$defs/typedList"},
+              "non_goals": {"$ref": "#/$defs/typedList"}
+            }
+          },
+          "boundaries_ref": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "success_conditions": {"type": "array", "items": {"$ref": "#/$defs/typedValue"}},
+          "certainty": {"enum": ["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]},
+          "provenance": {"type": "string"}
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "non_goals", "product_repository_writes"],
+      "properties": {
+        "allowed": {"$ref": "#/$defs/typedList"},
+        "non_goals": {"$ref": "#/$defs/typedList"},
+        "product_repository_writes": {"$ref": "#/$defs/typedValue"}
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hard", "soft", "conflict_rule", "hard_boundary_behavior", "soft_boundary_behavior"],
+      "properties": {
+        "hard": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/typedValue"}},
+        "soft": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/typedValue"}},
+        "conflict_rule": {"const": "THE_MORE_RESTRICTIVE_BOUNDARY_WINS"},
+        "hard_boundary_behavior": {"const": "STOP_DEPENDENT_WORK_AND_PRESERVE_SAFE_STATE"},
+        "soft_boundary_behavior": {"const": "HOLD_DEPENDENT_WORK_FOR_OWNER_OR_ORCHESTRATOR_REVIEW"}
+      }
+    },
+    "phase_plan": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phase_id", "name", "goal_ref", "entry_conditions", "exit_conditions", "status", "certainty", "provenance"],
+        "properties": {
+          "phase_id": {"type": "string"},
+          "name": {"type": "string"},
+          "goal_ref": {"type": "string", "pattern": "^goal:[0-9a-f]{24}$"},
+          "entry_conditions": {"type": "array", "items": {"type": "string"}},
+          "exit_conditions": {"type": "array", "items": {"type": "string"}},
+          "status": {"const": "PLANNED"},
+          "certainty": {"enum": ["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]},
+          "provenance": {"type": "string"}
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["decision_ref", "question_id", "value", "status", "certainty", "authority", "provenance", "answer_sha256"],
+        "properties": {
+          "decision_ref": {"type": "string", "pattern": "^decision:[0-9a-f]{24}$"},
+          "question_id": {"type": "string"},
+          "value": {},
+          "status": {"const": "ACCEPTED"},
+          "certainty": {"const": "CONFIRMED"},
+          "authority": {"const": "OWNER"},
+          "provenance": {"const": "OWNER"},
+          "answer_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question_id", "prompt", "reason", "status", "blocking", "owner_required", "certainty", "provenance"],
+        "properties": {
+          "question_id": {"type": "string"},
+          "prompt": {"type": "string"},
+          "reason": {"type": "string"},
+          "status": {"enum": ["OPEN", "DEFERRED"]},
+          "blocking": {"type": "boolean"},
+          "owner_required": {"type": "boolean"},
+          "certainty": {"enum": ["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]},
+          "provenance": {"type": "string"}
+        }
+      }
+    },
+    "governance_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_interval_minutes", "memory_posture", "owner_approval_required_for_protected_actions", "question_policy", "unresolved_owner_decisions_fail_closed", "delivery_route", "source_posture"],
+      "properties": {
+        "review_interval_minutes": {"$ref": "#/$defs/typedValue"},
+        "memory_posture": {"$ref": "#/$defs/typedValue"},
+        "owner_approval_required_for_protected_actions": {"$ref": "#/$defs/typedValue"},
+        "question_policy": {"$ref": "#/$defs/typedValue"},
+        "unresolved_owner_decisions_fail_closed": {"$ref": "#/$defs/typedValue"},
+        "delivery_route": {"$ref": "#/$defs/typedValue"},
+        "source_posture": {"$ref": "#/$defs/typedValue"}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conversation_schema", "conversation_sha256", "discovery_sha256", "raw_owner_text_persisted", "host_binding_required"],
+      "properties": {
+        "conversation_schema": {"const": "agentos.bootstrap_conversation.v1"},
+        "conversation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "discovery_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "raw_owner_text_persisted": {"const": false},
+        "host_binding_required": {"const": true}
+      }
+    },
+    "discovery_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "fact_count", "fact_ids", "epistemic_counts", "discovery_sha256"],
+      "properties": {
+        "status": {"enum": ["NONE", "BOUND"]},
+        "fact_count": {"type": "integer", "minimum": 0},
+        "fact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"}
+        },
+        "epistemic_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["OBSERVED", "OWNER_CONFIRMED", "ACCEPTED_AUTHORITY", "INFERRED_CANDIDATE", "CONFLICT", "UNKNOWN", "DEFERRED_NONBLOCKING"],
+          "properties": {
+            "OBSERVED": {"type": "integer", "minimum": 0},
+            "OWNER_CONFIRMED": {"type": "integer", "minimum": 0},
+            "ACCEPTED_AUTHORITY": {"type": "integer", "minimum": 0},
+            "INFERRED_CANDIDATE": {"type": "integer", "minimum": 0},
+            "CONFLICT": {"type": "integer", "minimum": 0},
+            "UNKNOWN": {"type": "integer", "minimum": 0},
+            "DEFERRED_NONBLOCKING": {"type": "integer", "minimum": 0}
+          }
+        },
+        "discovery_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "intent_scope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reassessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "mode", "reason", "previous_contract_sha256", "prior_intent_scope_sha256", "current_intent_scope_sha256"],
+      "properties": {
+        "status": {"enum": ["NOT_REQUIRED", "REQUIRED"]},
+        "mode": {"enum": ["NONE", "JSA_REASSESSMENT_REQUIRED"]},
+        "reason": {"type": ["string", "null"]},
+        "previous_contract_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "prior_intent_scope_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "current_intent_scope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_conversation_persisted", "secrets_persisted", "paths_persisted", "host_session_identities_persisted"],
+      "properties": {
+        "raw_conversation_persisted": {"const": false},
+        "secrets_persisted": {"const": false},
+        "paths_persisted": {"const": false},
+        "host_session_identities_persisted": {"const": false}
+      }
+    },
+    "contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "typedValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "certainty", "provenance"],
+      "properties": {
+        "value": {},
+        "certainty": {"enum": ["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]},
+        "provenance": {"type": "string", "minLength": 1},
+        "source_question": {"type": ["string", "null"]}
+      }
+    },
+    "typedList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "certainty", "provenance"],
+      "properties": {
+        "value": {"type": "array"},
+        "certainty": {"enum": ["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]},
+        "provenance": {"type": "string", "minLength": 1},
+        "source_question": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

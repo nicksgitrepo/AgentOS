@@ -1,0 +1,285 @@
+{
+  "schema": "agentos.rapid_prototype_plan.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "COMPATIBILITY_LANE_MANIFEST_ONLY",
+  "mode": "RAPID_PROTOTYPING",
+  "purpose": "Retain the twelve rapid-prototype lane manifest and its handoff contracts for compatibility while the audit-driven integration pyramid owns orchestration.",
+  "canonical_controller": "control/audit-driven-integration-pyramid.mjs",
+  "superseded_orchestration": "PROJECT_INITIALIZATION_THEN_FEATURE_AUDIT_REPAIR_THEN_PLATFORM_INTEGRATION_THEN_CENTRAL_INTEGRATION",
+  "active_orchestration": "PROJECT_INITIALIZATION_THEN_PLATFORM_FOUNDATION_THEN_PLATFORM_INTEGRATION_THEN_FEATURE_AUDIT_REPAIR_THEN_CENTRAL_INTEGRATION",
+  "migration_rule": "This plan declares lane contracts only; it must not start, gate, or archive campaign work outside the canonical controller.",
+  "approval_boundary": {
+    "recorded_plan_is_launch_gate": true,
+    "separate_owner_approval_required": false,
+    "owner_instruction_recorded": true,
+    "reassessment_conditions": [
+      "SCOPE_CHANGE",
+      "INTENT_CHANGE",
+      "POLICY_CHANGE",
+      "CONDITION_CHANGE"
+    ],
+    "changed_condition_action": "CLOSE_CURRENT_GOAL_AND_MINT_FRESH_SOURCE_BOUND_GOAL"
+  },
+  "persistent_coordinator": {
+    "machine_role": "AGENTOS_CONTROLLER",
+    "public_name": "Intent Regulator",
+    "scope": "PROJECT_WIDE",
+    "lifetime": "PERSISTENT"
+  },
+  "runtime": {
+    "identity": "PERSISTENT_PROJECT_RUNTIME",
+    "lifetime": "PERSISTENT",
+    "source_bound_readback_required": true
+  },
+  "roster_boundary": {
+    "initial_roster": "EMPTY",
+    "inherit_old_records": false,
+    "count_old_records": false,
+    "generic_feature_slot_admitted": false,
+    "recursive_children_allowed": false,
+    "shell_stand_ins_allowed": false,
+    "unverified_identities_allowed": false,
+    "temporary_topology": "INDEPENDENT_SIBLING_SESSIONS",
+    "host_unavailable_action": "FAIL_CLOSED_AND_RECORD_EXACT_CAPABILITY"
+  },
+  "source_binding_gate": {
+    "saved_project_readback_required": true,
+    "identity_fields": [
+      "project_id",
+      "project_root",
+      "git_common_directory",
+      "source_commit",
+      "source_tree"
+    ],
+    "mismatch_status": "WRONG_SOURCE_REPOSITORY / SOURCE_BINDING_MISMATCH",
+    "mismatch_action": "INTERRUPT_ARCHIVE_REMOVE_NO_ACCEPTANCE",
+    "retry_requires": "FRESH_SOURCE_BOUND_GOAL_AND_VERIFIED_CREATION_METHOD",
+    "repaired_method": "DIRECT_PROJECT_LOCAL_SESSION_AGAINST_EXACT_SAVED_PROJECT_BINDING"
+  },
+  "temporary_worker_contract": {
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "max",
+    "environment": "LOCAL_PROJECT",
+    "worktree_mode": "PROJECT_LOCAL_SESSION",
+    "pre_write_identity_check": true,
+    "executor": "control/native-session-runner.mjs",
+    "executor_contract": "schemas/native-session-run.v1.json",
+    "meaningful_progress_required": true,
+    "required_tools": [
+      "create_thread",
+      "list_threads",
+      "read_thread",
+      "send_message_to_thread",
+      "set_thread_archived",
+      "set_thread_pinned",
+      "wait_threads"
+    ],
+    "required_readback": [
+      "real_session_identity",
+      "pinned_identity",
+      "model_and_reasoning_effort",
+      "exact_source_commit_and_tree",
+      "exact_task_and_goal",
+      "meaningful_progress",
+      "result",
+      "exact_write_scope",
+      "focused_test_result",
+      "independent_check",
+      "per_task_host_lifecycle_receipts",
+      "closure_or_exact_close_failure"
+    ],
+    "progress_observation_contract": {
+      "meaningful_progress_requires": ["task_id", "scope", "source_commit", "source_tree", "progress_evidence"],
+      "progress_evidence_fields": ["kind", "identity", "digest"],
+      "heartbeat_is_not_meaningful_progress": true,
+      "missing_evidence_default": "IN_PROGRESS_HEARTBEAT_ONLY"
+    },
+    "closure": ["PRESERVE_TYPED_HANDOFF", "UNPIN", "ARCHIVE", "REMOVE_FROM_ACTIVE_ROSTER", "VERIFY_ZERO_ACTIVE"],
+    "automatic_lifecycle": "PRESERVE_TYPED_HANDOFF_THEN_UNPIN_ARCHIVE_REMOVE_FROM_ACTIVE_ROSTER_AND_VERIFY",
+    "host_identity_rule": "A setup token or caller assertion is not a session identity; only host readback is accepted."
+  },
+  "creation_probe": {
+    "request_shape_finding": "CREATE_THREAD_REQUEST_SHAPE_REJECTED",
+    "exact_error": "create_thread received invalid arguments.",
+    "returned_thread_id": false,
+    "returned_client_thread_id": false,
+    "roster_entry_created": false,
+    "repair": "CORRECT_SUPPORTED_DIRECT_PROJECT_LOCAL_TARGET_AND_REQUIRE_ONE_REAL_THREAD_READBACK_BEFORE_REMAINING_LANES"
+  },
+  "phase_order": [
+    "PROJECT_INITIALIZATION",
+    "PLATFORM_FOUNDATION",
+    "PLATFORM_INTEGRATION",
+    "FEATURE_AUDIT_REPAIR",
+    "CENTRAL_INTEGRATION",
+    "FINAL_SECURITY_PRIVACY",
+    "CONTROLLER_REPAIR_LOOP"
+  ],
+  "foundation_phase": {
+    "status": "COMPATIBILITY_MANIFEST_ONLY",
+    "execution_owner": "control/audit-driven-integration-pyramid.mjs",
+    "phase": "ASSEMBLE_FOUNDATION_LANES",
+    "required_lane_count": 12,
+    "each_lane_requires_one_fresh_sibling": true,
+    "each_lane_requires_one_lane_file": true,
+    "each_lane_requires_typed_handoff": true,
+    "each_lane_requires_hostile_coverage": true,
+    "lanes": [
+      {"role": "FOUNDATION_INTENT_AND_SCOPE", "public_name": "Intent and scope", "lane_file": "docs/rapid-foundations/01-intent-and-scope.md"},
+      {"role": "FOUNDATION_BOOTSTRAP_AND_CONTEXT", "public_name": "Bootstrap and context", "lane_file": "docs/rapid-foundations/02-bootstrap-and-context.md"},
+      {"role": "FOUNDATION_USER_CONVERSATION", "public_name": "User conversation", "lane_file": "docs/rapid-foundations/03-user-conversation.md"},
+      {"role": "FOUNDATION_ROLE_ROUTING", "public_name": "Role routing", "lane_file": "docs/rapid-foundations/04-role-routing.md"},
+      {"role": "FOUNDATION_PROGRESS_AND_HEALTH", "public_name": "Progress and health", "lane_file": "docs/rapid-foundations/05-progress-and-health.md"},
+      {"role": "FOUNDATION_FUNCTIONALITY", "public_name": "Functionality", "lane_file": "docs/rapid-foundations/06-functionality.md"},
+      {"role": "FOUNDATION_UI_UX", "public_name": "UI/UX", "lane_file": "docs/rapid-foundations/07-ui-ux.md"},
+      {"role": "FOUNDATION_CODE_HYGIENE", "public_name": "Code hygiene", "lane_file": "docs/rapid-foundations/08-code-hygiene.md"},
+      {"role": "FOUNDATION_SECURITY_AND_PRIVACY", "public_name": "Security and privacy", "lane_file": "docs/rapid-foundations/09-security-and-privacy.md"},
+      {"role": "FOUNDATION_EVIDENCE_AND_IDENTITY", "public_name": "Evidence and identity", "lane_file": "docs/rapid-foundations/10-evidence-and-identity.md"},
+      {"role": "FOUNDATION_RECOVERY_AND_BOUNDARIES", "public_name": "Recovery and boundaries", "lane_file": "docs/rapid-foundations/11-recovery-and-boundaries.md"},
+      {"role": "FOUNDATION_DELIVERY_AND_CLOSURE", "public_name": "Delivery and closure", "lane_file": "docs/rapid-foundations/12-delivery-and-closure.md"}
+    ]
+  },
+  "foundation_clearance": {
+    "required_after_all_lanes": true,
+    "role": "FOUNDATION_CLEARANCE_AUDITOR",
+    "public_name": "Foundation Clearance Auditor",
+    "fresh_sibling_required": true,
+    "evidence_only": true,
+    "pass_rule": "All twelve lane files and typed handoffs independently clear their lane boundaries, hostile cases, source identity, portability, and evidence requirements.",
+    "accepted_receipt": "docs/rapid-foundations/evidence/foundation-receipts.v2.json",
+    "accepted_report": "docs/rapid-foundations/foundation-clearance.md",
+    "accepted_status": "FOUNDATION_CLEARANCE_ACCEPTED",
+    "accepted_lane_count": 12
+  },
+  "implementation_phase": {
+    "status": "COMPATIBILITY_MANIFEST_ONLY",
+    "execution_owner": "control/audit-driven-integration-pyramid.mjs",
+    "phase": "IMPLEMENT_FOUNDATION_LANES",
+    "required_lane_count": 12,
+    "each_lane_requires_one_fresh_sibling": true,
+    "each_lane_requires_one_module": true,
+    "each_lane_requires_one_focused_test": true,
+    "each_lane_requires_typed_handoff": true,
+    "each_lane_requires_hostile_coverage": true,
+    "each_lane_requires_pre_write_identity_check": true,
+    "lane_handoff_contract": {
+      "schema": "agentos.native_implementation_lane_handoff.v1",
+      "required_worker_profile": {
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "max"
+      },
+      "required_source_identity_fields": ["project_root", "cwd", "git_top_level", "source_commit", "source_tree"],
+      "git_object_pattern": "^[0-9a-f]{40}$",
+      "path_sha256_pattern": "^[0-9a-f]{64}$",
+      "shortened_or_ellipsized_values_rejected": true,
+      "required_host_receipts": ["create_thread", "pin", "send", "wait", "read", "unpin", "archive", "post_close_read", "active_list_absent"],
+      "self_acceptance_allowed": false
+    },
+    "verification_execution_contract": {
+      "source_snapshot_validator": "control/rapid-prototype/verification-handoff.mjs",
+      "source_snapshot_required": "CLEAN_EXACT_SOURCE",
+      "dirty_snapshot_action": "FAIL_CLOSED_BEFORE_CHECKS",
+      "node_executable_source": "process.execPath",
+      "bare_executable_path_lookup_forbidden": true,
+      "runtime_unavailable_code": "NODE_EXECUTABLE_UNAVAILABLE",
+      "sequence": ["SOURCE_SNAPSHOT", "BOUNDED_SCAN", "FOCUSED_HOSTILE", "FULL_DIRECT_NODE_SUITE"]
+    },
+    "supporting_checks": [
+      {
+        "check_id": "VERIFICATION_HANDOFF_FINALIZER",
+        "purpose": "Verify that a failed, stale, or unavailable bounded check still emits a typed terminal handoff.",
+        "controller": "control/rapid-prototype/verification-handoff.mjs",
+        "test": "tests/rapid-prototype/verification-handoff.mjs",
+        "phase": "POST_IMPLEMENTATION_LANE_FINALIZATION",
+        "counts_as_implementation_lane": false
+      }
+    ],
+    "shared_write_paths_forbidden": true,
+    "documentation_only_result_rejected": true,
+    "automatic_lifecycle_required": true,
+    "automatic_lifecycle_status": "IMPLEMENTED_AND_INDEPENDENTLY_ACCEPTED",
+    "lifecycle_owner_lane": "IMPLEMENTATION_DELIVERY_AND_CLOSURE",
+    "lifecycle_executable_contract": "control/rapid-prototype/delivery-closure.mjs",
+    "lifecycle_focused_test": "tests/rapid-prototype/delivery-closure.mjs",
+    "parent_implementation_check": {
+      "status": "IMPLEMENTATION_LANES_PARENT_CHECKED",
+      "lane_count": 12,
+      "focused_tests_passed": 12,
+      "exact_declared_paths": 24,
+      "active_temporary_workers": 0,
+      "independent_slice_acceptance": "PASS"
+    },
+    "independent_acceptance": {
+      "status": "RAPID_SLICE_ACCEPTED",
+      "decision": "RAPID_SLICE_ACCEPTED",
+      "auditor_report": "docs/rapid-foundations/evidence/implementation-audit.md",
+      "auditor_evidence_digest": "361f7ab87d14741139d2782ea2dfc822eba43f851246d3def0ad65479fd062d6",
+      "builder_acceptance_claimed": false,
+      "temporary_roster_active_count": 0
+    },
+    "lanes": [
+      {"role": "IMPLEMENTATION_INTENT_AND_SCOPE", "public_name": "Intent and scope behavior", "module": "control/rapid-prototype/intent-scope.mjs", "test": "tests/rapid-prototype/intent-scope.mjs"},
+      {"role": "IMPLEMENTATION_BOOTSTRAP_AND_CONTEXT", "public_name": "Bootstrap and context behavior", "module": "control/rapid-prototype/bootstrap-context.mjs", "test": "tests/rapid-prototype/bootstrap-context.mjs"},
+      {"role": "IMPLEMENTATION_USER_CONVERSATION", "public_name": "User conversation behavior", "module": "control/rapid-prototype/user-conversation.mjs", "test": "tests/rapid-prototype/user-conversation.mjs"},
+      {"role": "IMPLEMENTATION_ROLE_ROUTING", "public_name": "Role routing behavior", "module": "control/rapid-prototype/role-routing.mjs", "test": "tests/rapid-prototype/role-routing.mjs"},
+      {"role": "IMPLEMENTATION_PROGRESS_AND_HEALTH", "public_name": "Progress and health behavior", "module": "control/rapid-prototype/progress-health.mjs", "test": "tests/rapid-prototype/progress-health.mjs"},
+      {"role": "IMPLEMENTATION_FUNCTIONALITY", "public_name": "Functionality behavior", "module": "control/rapid-prototype/functionality.mjs", "test": "tests/rapid-prototype/functionality.mjs"},
+      {"role": "IMPLEMENTATION_UI_UX", "public_name": "UI/UX behavior", "module": "control/rapid-prototype/ui-ux.mjs", "test": "tests/rapid-prototype/ui-ux.mjs"},
+      {"role": "IMPLEMENTATION_CODE_HYGIENE", "public_name": "Code hygiene behavior", "module": "control/rapid-prototype/code-hygiene.mjs", "test": "tests/rapid-prototype/code-hygiene.mjs"},
+      {"role": "IMPLEMENTATION_SECURITY_AND_PRIVACY", "public_name": "Security and privacy behavior", "module": "control/rapid-prototype/security-privacy.mjs", "test": "tests/rapid-prototype/security-privacy.mjs"},
+      {"role": "IMPLEMENTATION_EVIDENCE_AND_IDENTITY", "public_name": "Evidence and identity behavior", "module": "control/rapid-prototype/evidence-identity.mjs", "test": "tests/rapid-prototype/evidence-identity.mjs"},
+      {"role": "IMPLEMENTATION_RECOVERY_AND_BOUNDARIES", "public_name": "Recovery and boundaries behavior", "module": "control/rapid-prototype/recovery-boundaries.mjs", "test": "tests/rapid-prototype/recovery-boundaries.mjs"},
+      {"role": "IMPLEMENTATION_DELIVERY_AND_CLOSURE", "public_name": "Delivery and closure behavior", "module": "control/rapid-prototype/delivery-closure.mjs", "test": "tests/rapid-prototype/delivery-closure.mjs"}
+    ]
+  },
+  "tailored_campaign": {
+    "derivation_gate": "IMPLEMENTATION_LANES_ACCEPTED_AND_AUDITED",
+    "minimal_roles": [
+      {"role": "RAPID_SLICE_BUILDER", "public_name": "Rapid Slice Builder"},
+      {"role": "INDEPENDENT_AUDITOR", "public_name": "Independent Auditor"}
+    ],
+    "no_role_without_foundation_clearance": true,
+    "no_unplanned_role_rule": "A new role requires a changed plan, a fresh goal, and a recorded boundary decision."
+  },
+  "deferred_work": {
+    "full_verifier": "BOUNDED_TIMEOUT_RECORDED_NO_RESULT",
+    "iteration_item_required": true,
+    "other_items_require_typed_scope_and_reopen_trigger": true,
+    "typed_backlog": "docs/rapid-foundations/evidence/iteration-transition.v1.json",
+    "transition_status": "NORMAL_ITERATION_MODE_ACTIVE",
+    "current_iteration_campaign": "docs/rapid-foundations/evidence/iteration-campaign-001.v1.json",
+    "current_iteration_campaign_status": "CAMPAIGN_RESULT_RECORDED",
+    "current_iteration_campaign_result": "TIMEOUT_NO_RESULT",
+    "current_iteration_campaign_evidence": "docs/rapid-foundations/evidence/iteration-001-bounded-verifier.md",
+    "lifecycle_reconciliation_evidence": "docs/rapid-foundations/evidence/lifecycle-reconciliation.v1.json",
+    "architecture_alignment_repair": {
+      "plan": "schemas/architecture-repair-plan.v1.json",
+      "record": "docs/rapid-foundations/evidence/architecture-repair-plan.v1.json",
+      "library_contract": "schemas/governance-library.v1.json",
+      "status": "REPAIR_ACCEPTED",
+      "kind": "ARCHITECTURE_ALIGNMENT_REPAIR",
+      "required_layers": ["SHARED_GENERAL_GOVERNANCE", "GENERATED_ROLE_SPECIFIC_GOVERNANCE"],
+      "generation_source": "GENERAL_LIBRARY_PLUS_ROLE_DEFINITION_SOURCE_PLUS_COMPILED_QUESTION_TREE",
+      "role_definition_source": "control/governance-role-definitions.mjs",
+      "controller_gate": "REPAIR_CAMPAIGN_ARCHITECTURE_ADMISSION",
+      "generic_feature_agent_admitted": false,
+      "unrelated_feature_work": "FORBIDDEN"
+    },
+    "autonomous_continuation": {
+      "repair_record": "docs/rapid-foundations/evidence/continuation-repair.v1.json",
+      "persistent_coordinator": "Intent Regulator",
+      "backlog_source": "docs/rapid-foundations/evidence/iteration-transition.v1.json",
+      "next_campaign": "docs/rapid-foundations/evidence/iteration-campaign-003.v1.json",
+      "next_campaign_status": "CAMPAIGN_CLOSED_HANDOFF_PRESERVED",
+      "fresh_role": "ITERATION_CASCADE_FINALIZER_GATE_BUILDER",
+      "meaningful_progress_window_minutes": 15,
+      "automatic_close_required": true,
+      "stop_only_for": ["HARD_BOUNDARY", "REAL_OWNER_CHOICE", "VERIFIED_HOST_CAPABILITY_FAILURE"],
+      "status": "CAMPAIGN_003_CLOSED_HANDOFF_PRESERVED",
+      "continuation_gate_repair": "BROADER_INTERNAL_AGENTOS_WORK_IS_IN_SCOPE; OWNER_APPROVAL_PAUSE_FALSE",
+      "next_real_boundary": "ITER-004_EXTERNAL_BOUNDARY_OWNER_CHOICE_REQUIRED",
+      "unrelated_feature_work": "FORBIDDEN"
+    }
+  }
+}

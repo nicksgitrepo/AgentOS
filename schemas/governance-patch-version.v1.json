@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.governance_patch_version.v1",
+  "title": "AgentOS governance patch version",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "opaque": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,31}:[0-9a-f]{64}$"},
+    "source": {"type": "object", "additionalProperties": false, "required": ["commit", "tree", "checkpoint_sha256", "clean", "pushed"], "properties": {"commit": {"$ref": "#/$defs/git"}, "tree": {"$ref": "#/$defs/git"}, "checkpoint_sha256": {"$ref": "#/$defs/sha"}, "clean": {"const": true}, "pushed": {"const": false}}},
+    "protected": {"type": "object", "additionalProperties": false, "required": ["acceptance", "activation", "deletion", "deployment", "external_release", "external_publish", "external_push", "merge", "product_writes", "secrets", "spend", "authority_change"], "properties": {"acceptance": {"const": false}, "activation": {"const": false}, "deletion": {"const": false}, "deployment": {"const": false}, "external_release": {"const": false}, "external_publish": {"const": false}, "external_push": {"const": false}, "merge": {"const": false}, "product_writes": {"const": false}, "secrets": {"const": false}, "spend": {"const": false}, "authority_change": {"const": false}}},
+    "verification": {"type": "object", "additionalProperties": false, "required": ["focused_checks_passed", "focused_checks_sha256", "independent_audit_passed", "auditor_ref", "evidence_sha256", "safety_floor_unchanged", "verified_at_utc"], "properties": {"focused_checks_passed": {"const": true}, "focused_checks_sha256": {"$ref": "#/$defs/sha"}, "independent_audit_passed": {"const": true}, "auditor_ref": {"$ref": "#/$defs/opaque"}, "evidence_sha256": {"$ref": "#/$defs/sha"}, "safety_floor_unchanged": {"const": true}, "verified_at_utc": {"type": "string", "format": "date-time"}}}
+  },
+  "required": ["schema", "version", "status", "governance_version", "test_build", "parent_proposal_sha256", "parent_rca_sha256", "source_before", "candidate_checkpoint", "changed_scope_sha256", "normative_digest", "safety_floor_sha256", "owner_approval_sha256", "owner_actor_ref", "verification", "activation", "recorded_at_utc", "patch_version_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.governance_patch_version.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_NOT_ACTIVATED", "VERIFIED_NOT_ACTIVATED"]},
+    "governance_version": {"type": "string", "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-(?:rc|tb)-[0-9]+)?$"},
+    "test_build": {"type": "string", "pattern": "^tb-[0-9]{2}$"},
+    "parent_proposal_sha256": {"$ref": "#/$defs/sha"},
+    "parent_rca_sha256": {"$ref": "#/$defs/sha"},
+    "source_before": {"$ref": "#/$defs/source"},
+    "candidate_checkpoint": {"$ref": "agentos.digest_bound_checkpoint.v1"},
+    "changed_scope_sha256": {"$ref": "#/$defs/sha"},
+    "normative_digest": {"$ref": "#/$defs/sha"},
+    "safety_floor_sha256": {"$ref": "#/$defs/sha"},
+    "owner_approval_sha256": {"$ref": "#/$defs/sha"},
+    "owner_actor_ref": {"$ref": "#/$defs/opaque"},
+    "verification": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/verification"}]},
+    "activation": {"const": false},
+    "recorded_at_utc": {"type": "string", "format": "date-time"},
+    "patch_version_sha256": {"$ref": "#/$defs/sha"}
+  }
+}

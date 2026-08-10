@@ -1,0 +1,18 @@
+{
+  "schema": "agentos.delivery_closure.v1",
+  "version": 1,
+  "purpose": "Final content-addressed delivery closure, including temporary-worker closure evidence.",
+  "required_fields": [
+    "schema", "version", "closure_id", "project_ref", "campaign_id", "campaign_version", "goal_id",
+    "choice_digest", "outcome", "preclosure_state_digest", "final_handoff_digest", "receipt_digest",
+    "live_audit_digest", "rollback_receipt_digest", "temporary_closure_digest", "temporary_roster_status",
+    "closed_at_utc", "digest"
+  ],
+  "temporary_roster_statuses": ["VERIFIED_ZERO_ACTIVE"],
+  "rules": [
+    "Closure binds the pre-closure state, exact choice, final handoff, prepared adapter contract, and any required receipts.",
+    "A temporary roster cannot be considered closed without host readback proving zero active temporary workers.",
+    "PREPARED has no action receipt; LOCAL_ONLY has a NO_EXTERNAL_ACTION receipt; DEPLOY and RELEASE require live audit; ROLLBACK requires a verified rollback receipt.",
+    "Closure is not activation and does not perform a protected action."
+  ]
+}

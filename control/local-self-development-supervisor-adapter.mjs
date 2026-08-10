@@ -28,14 +28,31 @@ import {
   selectAutonomousNextTask,
   supervisorDigest,
 } from "./controller-supervisor.mjs";
+import {
+  compileHybridSchedulerRequest,
+  createHybridScheduler,
+  opaqueSchedulerWorktreeRef,
+} from "./hybrid-scheduler.mjs";
+import {parseCheckCommand} from "./check-runner.mjs";
 
 const AUTONOMOUS_TASK_QUEUE_FILE = "autonomous-supervisor-task-queue.json";
 const CAMPAIGN_PROGRESS_FILE = "autonomous-supervisor-campaign-progress.json";
 const CONTROLLER_PLANNING_PROGRESS_FILE = "autonomous-supervisor-planning-progress.json";
 const OWNER_FEEDBACK_BACKLOG_FILE = "docs/owner-feedback-backlog.md";
+const REQUIRED_CAMPAIGN_ROLES = Object.freeze([
+  "CAMPAIGN_ORCHESTRATOR",
+  "FEATURE_AGENT",
+  "INDEPENDENT_AUDITOR",
+]);
+const MEANINGFUL_PROGRESS_WINDOW_MINUTES = 15;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function opaqueError(value) {
+  const raw = value?.message ?? String(value);
+  return `opaque:error:${controllerDigest(raw)}`;
 }
 
 function requireString(value, label) {
@@ -105,6 +122,17 @@ function safeRoot(root, label) {
   return resolved;
 }
 
+function assertNoSymlinkAncestors(root, target, label) {
+  let current = target;
+  while (true) {
+    if (fs.existsSync(current)) assert(!fs.lstatSync(current).isSymbolicLink(), `${label} contains a symbolic-link component`);
+    if (current === root) return;
+    const parent = path.dirname(current);
+    assert(parent !== current && parent.startsWith(`${root}${path.sep}`), `${label} escapes the bound root`);
+    current = parent;
+  }
+}
+
 function readJson(target) {
   const stat = fs.lstatSync(target);
   assert(stat.isFile() && !stat.isSymbolicLink(), `local supervisor record is not a regular file: ${target}`);
@@ -135,7 +163,9 @@ export function resolveAddressedRecordConflict({recordName, digestField, existin
 }
 
 function writeAddressed(root, name, value, field = "record_sha256") {
+  assert(!path.isAbsolute(name), "addressed record name must be relative");
   const target = path.join(root, name);
+  assertNoSymlinkAncestors(root, target, "addressed record path");
   const record = structuredClone(value);
   record[field] = null;
   record[field] = digestWithout(record, field);
@@ -147,7 +177,9 @@ function writeAddressed(root, name, value, field = "record_sha256") {
     const archiveDirectory = path.join(root, "autonomous-supervisor-stale-records");
     const archivePath = path.join(archiveDirectory, `${safeName}-${conflict.original_digest}.json`);
     const originalBytes = fs.readFileSync(target);
+    assertNoSymlinkAncestors(root, archiveDirectory, "stale record archive path");
     fs.mkdirSync(archiveDirectory, {recursive: true});
+    assertNoSymlinkAncestors(root, archivePath, "stale record archive path");
     if (!fs.existsSync(archivePath)) fs.writeFileSync(archivePath, originalBytes, {flag: "wx", mode: 0o600});
     else { assert(!fs.lstatSync(archivePath).isSymbolicLink(), "stale addressed record archive may not be a symlink"); assert(fs.readFileSync(archivePath).equals(originalBytes), "stale addressed record archive changed"); }
     const mismatch = {...conflict, schema: "agentos.controller_stale_completion_record_mismatch.v1", version: 1, original_evidence_path: path.relative(root, archivePath), observed_at_utc: new Date().toISOString(), mismatch_sha256: null};
@@ -156,6 +188,7 @@ function writeAddressed(root, name, value, field = "record_sha256") {
     if (!fs.existsSync(mismatchPath)) fs.writeFileSync(mismatchPath, `${JSON.stringify(mismatch)}\n`, {flag: "wx", mode: 0o600});
   }
   fs.mkdirSync(path.dirname(target), {recursive: true});
+  assertNoSymlinkAncestors(root, target, "addressed record path");
   const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
   try {
     fs.writeFileSync(temporary, `${JSON.stringify(record)}\n`, {flag: "wx", mode: 0o600});
@@ -210,14 +243,17 @@ function ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourc
   const ownerFeedbackTaskId = nextOwnerFeedback === null ? null : `CAMPAIGN-OWNER-FEEDBACK-${nextOwnerFeedback.id}-${sourceCommit.slice(0, 16).toUpperCase()}`;
   const sameSource = existing !== null && existing.source_commit === sourceCommit && existing.source_tree === sourceTree;
   const completedCurrentAudit = sameSource && existing.tasks.some((candidate) => candidate.task_id === auditTaskId && candidate.status === "COMPLETED");
-  const continuationCount = Number.isSafeInteger(campaignProgress?.autonomous_continuation_count) ? campaignProgress.autonomous_continuation_count : 0;
-  const continuationEligible = firstUsefulWorkflowCompleted && continuationCount < 1;
+  // A completed continuation is not a global stop condition. The source-bound
+  // task ID and compare-and-swap queue are the idempotency boundary: the same
+  // source cannot mint the same task twice, while a new adopted source may
+  // legitimately mint the next bounded internal campaign.
+  const continuationEligible = firstUsefulWorkflowCompleted;
   const task = continuationEligible
     ? {
       task_id: buildTaskId,
       status: "OPEN",
       priority: 0,
-      summary: `The Controller selected one bounded next control-plane behavior from the standing owner intent: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects its exact repair, the Feature Agent builds it, and the Auditor checks the same result.`,
+      summary: `The Controller selected one bounded next control-plane behavior from the standing owner intent: ${executionContext.firstUsefulWorkflow}. The Campaign Orchestrator selects its exact repair, the named lane worker builds it, and the Independent Auditor checks the same result.`,
       scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     }
@@ -226,7 +262,7 @@ function ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourc
       task_id: ownerFeedbackTaskId,
       status: "OPEN",
       priority: 0,
-      summary: `Continue from owner feedback ${nextOwnerFeedback.id}: ${nextOwnerFeedback.expected_behavior} The Controller will route this bounded repair through the Orchestrator, Feature Agent, and Auditor.`,
+      summary: `Continue from owner feedback ${nextOwnerFeedback.id}: ${nextOwnerFeedback.expected_behavior} The Controller will route this bounded repair through the Campaign Orchestrator, named lane worker, and Independent Auditor.`,
       scope: ["CONTROL_PLANE_CODE", "OWNER_FEEDBACK_BACKLOG", "FOCUSED_CHECKS", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     }
@@ -235,7 +271,7 @@ function ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourc
       task_id: completedTaskId,
       status: "HELD",
       priority: 0,
-      summary: "The owner-defined first useful workflow and one bounded autonomous continuation are complete at audited local checkpoints; no additional safe control-plane behavior is currently declared.",
+      summary: "The owner-defined first useful workflow and the current bounded continuation are complete at audited local checkpoints; the Controller will inspect the next source-bound internal item instead of treating completion as a permanent stop.",
       scope: ["ACCEPTANCE_CONTRACT", "CONTROLLER_STATE", "OWNER_INTENT", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     }
@@ -244,7 +280,7 @@ function ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourc
       task_id: buildTaskId,
       status: "OPEN",
       priority: 0,
-      summary: `Continue the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Orchestrator selects the next bounded control-plane behavior, the Feature Agent builds it, and the Auditor checks the same result.`,
+      summary: `Continue the owner-defined first useful workflow: ${executionContext.firstUsefulWorkflow}. The Campaign Orchestrator selects the next bounded control-plane behavior, the named lane worker builds it, and the Independent Auditor checks the same result.`,
       scope: ["ACCEPTANCE_CONTRACT", "DECISION_TREE", "OWNER_INTENT", "SCOPED_CONTROL_PLANE_CODE", "WORKER_RECEIPTS"].sort(),
       owner_decision_required: false,
     }
@@ -319,13 +355,16 @@ function ensureAutonomousTaskQueue({campaignRoot, repositoryRoot, handoff, sourc
 }
 
 function writeMutableAddressed(root, name, value, field, expectedDigest = null) {
+  assert(!path.isAbsolute(name), "mutable addressed record name must be relative");
   const target = path.join(root, name);
+  assertNoSymlinkAncestors(root, target, "mutable addressed record path");
   const existing = fs.existsSync(target) ? readJson(target) : null;
   if (expectedDigest !== null) assert(existing?.[field] === expectedDigest, `${name} compare-and-swap parent is stale`);
   const record = structuredClone(value);
   record[field] = null;
   record[field] = digestWithout(record, field);
   fs.mkdirSync(path.dirname(target), {recursive: true});
+  assertNoSymlinkAncestors(root, target, "mutable addressed record path");
   const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
   try {
     fs.writeFileSync(temporary, `${JSON.stringify(record)}\n`, {flag: "wx", mode: 0o600});
@@ -354,7 +393,7 @@ export function compileControllerPlanningProgress({goal, taskId, sourceCommit, s
     version: 1,
     status,
     controller_role: "AGENTOS_CONTROLLER",
-    controller_display_name: "AgentOS Controller",
+    controller_display_name: "Intent Regulator",
     project_id: goal.project_id,
     campaign_id: goal.campaign_id,
     campaign_version: goal.campaign_version,
@@ -521,15 +560,22 @@ function relativeChild(root, relativePath, label) {
   const resolvedRoot = fs.realpathSync.native(path.resolve(root));
   const target = path.resolve(resolvedRoot, relativePath);
   assert(target.startsWith(`${resolvedRoot}${path.sep}`), `${label} escapes the campaign root`);
+  assertNoSymlinkAncestors(resolvedRoot, target, label);
   return target;
 }
 
 function readCurrentHandoff(campaignRoot, legacyPath) {
   const pointer = readAddressed(campaignRoot, "autonomous-supervisor-current-handoff.json", "pointer_sha256");
-  if (pointer === null) return readJson(legacyPath);
+  if (pointer === null) {
+    const handoff = readJson(legacyPath);
+    requireSha(handoff.handoff_sha256, "legacy current handoff digest");
+    assert(handoff.handoff_sha256 === digestWithout(handoff, "handoff_sha256"), "legacy current handoff content digest is invalid");
+    return handoff;
+  }
   const handoffPath = relativeChild(campaignRoot, pointer.handoff_path, "current handoff path");
   const handoff = readJson(handoffPath);
   requireSha(handoff.handoff_sha256, "current handoff digest");
+  assert(handoff.handoff_sha256 === digestWithout(handoff, "handoff_sha256"), "current handoff content digest is invalid");
   assert(pointer.handoff_sha256 === handoff.handoff_sha256, "current handoff pointer differs from its content");
   return handoff;
 }
@@ -579,13 +625,26 @@ function sessionEntries(campaignRoot, handoff) {
   const discoveredEntries = discoverSupervisorSessions(campaignRoot, handoff.campaign_id).filter(({record}) => ["RUNNING", "STARTING"].includes(record.status));
   const combined = [...declaredEntries, ...discoveredEntries];
   const seen = new Set();
-  return combined
+  const entries = combined
     .map(({target, record}) => ({target, record: record ?? readJson(target)}))
     .filter(({target, record}) => {
       if (record === null || seen.has(target)) return false;
       seen.add(target);
       return true;
     });
+  const sessionIds = new Set();
+  const roles = new Set();
+  for (const {record} of entries) {
+    assert(record.campaign_id === handoff.campaign_id, "supervised session campaign identity differs from the current handoff");
+    assert(record.campaign_version === handoff.campaign_version, "supervised session campaign version differs from the current handoff");
+    assert(typeof record.session_id === "string" && record.session_id.length > 0, "supervised session identity is missing");
+    assert(!sessionIds.has(record.session_id), "supervised session identities are duplicated");
+    sessionIds.add(record.session_id);
+    assert(typeof record.role === "string" && record.role.length > 0, "supervised session role is missing");
+    assert(!roles.has(record.role), "supervised session roles are duplicated");
+    roles.add(record.role);
+  }
+  return entries;
 }
 
 function processAlive(pid) {
@@ -615,7 +674,64 @@ function reconcileExitedSessionRecords(entries) {
   });
 }
 
-function sessionIsHealthy({record, sourceCommit, sourceTree}) {
+function sessionProgressState(record, observedAtUtc = new Date().toISOString()) {
+  const candidates = [];
+  const initialReadback = record.initial_readback;
+  if (initialReadback?.status === "COMPLETED"
+    && initialReadback.session_id === record.session_id
+    && initialReadback.campaign_id === record.campaign_id
+    && initialReadback.campaign_version === record.campaign_version
+    && initialReadback.source_commit === record.source_commit
+    && initialReadback.source_tree === record.source_tree
+    && typeof initialReadback.observed_at_utc === "string"
+    && /^[0-9a-f]{64}$/u.test(initialReadback.readback_sha256 ?? "")) {
+    const evidenceSha256 = /^[0-9a-f]{64}$/u.test(initialReadback.build_checkpoint_sha256 ?? "")
+      ? initialReadback.build_checkpoint_sha256
+      : initialReadback.readback_sha256;
+    candidates.push({
+      observed_at_utc: initialReadback.observed_at_utc,
+      evidence_sha256: evidenceSha256,
+    });
+  }
+  try {
+    const commandResult = record.command_result_path ? readJson(record.command_result_path) : null;
+    if (commandResult?.status === "COMPLETED"
+      && commandResult.session_id === record.session_id
+      && commandResult.campaign_id === record.campaign_id
+      && commandResult.campaign_version === record.campaign_version
+      && commandResult.source_commit === record.source_commit
+      && commandResult.source_tree === record.source_tree
+      && commandResult.handshake?.source_commit === record.source_commit
+      && commandResult.handshake?.source_tree === record.source_tree
+      && typeof commandResult.observed_at_utc === "string"
+      && /^[0-9a-f]{64}$/u.test(commandResult.result_sha256 ?? "")) {
+      candidates.push({
+        observed_at_utc: commandResult.observed_at_utc,
+        evidence_sha256: commandResult.result_sha256,
+      });
+    }
+  } catch {
+    // A missing or malformed result is absent progress, not fresh liveness.
+  }
+  const latest = candidates
+    .filter((candidate) => Number.isFinite(Date.parse(candidate.observed_at_utc)) && /^[0-9a-f]{64}$/u.test(candidate.evidence_sha256 ?? ""))
+    .sort((left, right) => Date.parse(left.observed_at_utc) - Date.parse(right.observed_at_utc))
+    .at(-1) ?? null;
+  const observedAtMs = Date.parse(observedAtUtc);
+  const lastProgressMs = latest === null ? null : Date.parse(latest.observed_at_utc);
+  const stale = latest === null
+    || !Number.isFinite(observedAtMs)
+    || !Number.isFinite(lastProgressMs)
+    || observedAtMs - lastProgressMs >= MEANINGFUL_PROGRESS_WINDOW_MINUTES * 60 * 1000;
+  return {
+    meaningful_progress: latest !== null,
+    last_meaningful_progress_at_utc: latest?.observed_at_utc ?? null,
+    progress_evidence_sha256: latest?.evidence_sha256 ?? null,
+    progress_stale: stale,
+  };
+}
+
+function sessionIsHealthy({record, sourceCommit, sourceTree, observedAtUtc = new Date().toISOString()}) {
   try {
     validateLocalDurableSessionRecord(record);
     const heartbeat = readJson(record.heartbeat_path);
@@ -628,13 +744,14 @@ function sessionIsHealthy({record, sourceCommit, sourceTree}) {
       sourceCommit,
       sourceTree,
     });
-    return record.status === "RUNNING" && heartbeat.status === "RUNNING" && processAlive(record.pid);
+    const progress = sessionProgressState(record, observedAtUtc);
+    return record.status === "RUNNING" && heartbeat.status === "RUNNING" && processAlive(record.pid) && !progress.progress_stale;
   } catch {
     return false;
   }
 }
 
-function durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree}) {
+function durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree, observedAtUtc = new Date().toISOString()}) {
   const heartbeat = (() => {
     try {
       return readJson(record.heartbeat_path);
@@ -659,6 +776,7 @@ function durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCom
     heartbeatValid = false;
   }
   const processIsAlive = processAlive(record.pid);
+  const progress = sessionProgressState(record, observedAtUtc);
   return {
     role: record.role,
     session_id: record.session_id,
@@ -670,11 +788,72 @@ function durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCom
     heartbeat_status: heartbeat?.status ?? null,
     heartbeat_session_pid: heartbeat?.session_pid ?? null,
     heartbeat_valid: heartbeatValid,
+    meaningful_progress: progress.meaningful_progress,
+    last_meaningful_progress_at_utc: progress.last_meaningful_progress_at_utc,
+    progress_evidence_sha256: progress.progress_evidence_sha256,
+    progress_stale: progress.progress_stale,
     source_aligned: record.source_commit === sourceCommit && record.source_tree === sourceTree,
     session_record_path: path.relative(campaignRoot, target),
     source_commit: record.source_commit,
     source_tree: record.source_tree,
-    repair_required: !processIsAlive || !heartbeatValid || heartbeat?.status !== "RUNNING" || heartbeat?.session_pid !== record.pid,
+    repair_required: !processIsAlive
+      || !heartbeatValid
+      || heartbeat?.status !== "RUNNING"
+      || heartbeat?.session_pid !== record.pid
+      || record.source_commit !== sourceCommit
+      || record.source_tree !== sourceTree
+      || progress.progress_stale,
+  };
+}
+
+export function summarizeDurableSessionLiveness({snapshots, declaredSessionIds = [], requiredRoles = REQUIRED_CAMPAIGN_ROLES}) {
+  assert(Array.isArray(snapshots), "durable session liveness snapshots are required");
+  assert(Array.isArray(declaredSessionIds), "declared durable session IDs are required");
+  assert(Array.isArray(requiredRoles) && requiredRoles.length > 0, "required durable session roles are required");
+  assert(new Set(declaredSessionIds).size === declaredSessionIds.length, "declared durable session identities are duplicated");
+  const snapshotIds = new Set();
+  for (const snapshot of snapshots) {
+    assert(typeof snapshot.session_id === "string" && snapshot.session_id.length > 0, "durable session snapshot identity is missing");
+    assert(!snapshotIds.has(snapshot.session_id), "durable session snapshot identities are duplicated");
+    snapshotIds.add(snapshot.session_id);
+    assert(typeof snapshot.role === "string" && snapshot.role.length > 0, "durable session snapshot role is missing");
+  }
+  const declared = new Set(declaredSessionIds);
+  const unhealthy = snapshots
+    .filter((snapshot) => !declared.has(snapshot.session_id) || snapshot.repair_required)
+    .map((snapshot) => ({...snapshot, declared: declared.has(snapshot.session_id)}));
+  const declaredRoles = new Set(snapshots
+    .filter((snapshot) => declared.has(snapshot.session_id))
+    .map((snapshot) => snapshot.role));
+  const missingRoles = requiredRoles
+    .filter((role) => !declaredRoles.has(role))
+    .map((role) => ({
+      role,
+      session_id: null,
+      task_id: null,
+      pid: null,
+      process_alive: false,
+      record_status: "MISSING",
+      heartbeat_status: null,
+      heartbeat_session_pid: null,
+      heartbeat_valid: false,
+      meaningful_progress: false,
+      last_meaningful_progress_at_utc: null,
+      progress_evidence_sha256: null,
+      progress_stale: true,
+      source_aligned: false,
+      session_record_path: null,
+      source_commit: null,
+      source_tree: null,
+      repair_required: true,
+      declared: true,
+    }));
+  const allUnhealthy = [...unhealthy, ...missingRoles]
+    .sort((left, right) => `${left.role}:${left.session_id ?? ""}`.localeCompare(`${right.role}:${right.session_id ?? ""}`));
+  return {
+    unhealthy: allUnhealthy,
+    missing_roles: missingRoles.map((entry) => entry.role).sort(),
+    orphaned_session_ids: unhealthy.filter((entry) => entry.declared === false).map((entry) => entry.session_id).sort(),
   };
 }
 
@@ -687,7 +866,8 @@ function durableSessionFailureRepairPresent(repositoryRoot) {
   }
 }
 
-function sessionSummary(campaignRoot, entry) {
+function sessionSummary(campaignRoot, entry, observedAtUtc = new Date().toISOString()) {
+  const progress = sessionProgressState(entry.record, observedAtUtc);
   return {
     role: entry.record.role,
     session_id: entry.record.session_id,
@@ -697,6 +877,10 @@ function sessionSummary(campaignRoot, entry) {
     source_tree: entry.record.source_tree,
     status: entry.record.status,
     session_record_path: path.relative(campaignRoot, entry.target),
+    meaningful_progress: progress.meaningful_progress,
+    last_meaningful_progress_at_utc: progress.last_meaningful_progress_at_utc,
+    progress_evidence_sha256: progress.progress_evidence_sha256,
+    progress_stale: progress.progress_stale,
   };
 }
 
@@ -863,8 +1047,6 @@ function autonomousCampaignProgressStallFinding({campaignRoot, handoff, campaign
 
 function autonomousCampaignContinuationFinding({handoff, campaignProgress, checkpointOnCurrentSource, taskQueue, sourceCommit, sourceTree}) {
   if (handoff.campaign_active !== true || campaignProgress?.first_useful_workflow_completed !== true || checkpointOnCurrentSource !== true || taskQueue === null) return null;
-  const continuationCount = Number.isSafeInteger(campaignProgress.autonomous_continuation_count) ? campaignProgress.autonomous_continuation_count : 0;
-  if (continuationCount >= 1) return null;
   if (taskQueue.tasks.some((task) => task.status === "OPEN" || task.status === "IN_PROGRESS")) return null;
   const heldCompletion = taskQueue.tasks.find((task) => task.status === "HELD" && task.task_id.startsWith("CAMPAIGN-FIRST-USEFUL-WORKFLOW-COMPLETED-"));
   if (heldCompletion === undefined) return null;
@@ -900,30 +1082,48 @@ function durableSessionTestFinding(campaignRoot) {
   };
 }
 
-function durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree}) {
+function durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree, observedAtUtc = new Date().toISOString()}) {
   if (handoff.campaign_active !== true) return null;
   const entries = sessionEntries(campaignRoot, handoff);
-  const unhealthy = entries
-    .filter(({record}) => record.status === "RUNNING")
-    .map(({target, record}) => durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree}))
-    .filter((entry) => entry.repair_required)
-    .sort((left, right) => left.session_id.localeCompare(right.session_id));
-  if (unhealthy.length === 0) return null;
-  const sourceSha256 = supervisorDigest({source_commit: sourceCommit, source_tree: sourceTree, unhealthy_sessions: unhealthy});
-  const deadRoles = unhealthy.filter((entry) => entry.process_alive === false).map((entry) => entry.role).sort();
+  const declaredSessionIds = (Array.isArray(handoff.supervised_sessions) ? handoff.supervised_sessions : [])
+    .map((entry) => entry.session_id)
+    .filter((sessionId) => typeof sessionId === "string")
+    .sort();
+  const declaredTargets = new Set((Array.isArray(handoff.supervised_sessions) ? handoff.supervised_sessions : [])
+    .map((entry) => typeof entry?.session_record_path === "string" ? relativeChild(campaignRoot, entry.session_record_path, "declared supervised session path") : null)
+    .filter((target) => target !== null));
+  const snapshots = entries.map(({target, record}) => ({
+    ...durableSessionLivenessSnapshot({campaignRoot, target, record, sourceCommit, sourceTree, observedAtUtc}),
+    declared: declaredTargets.has(target),
+  }));
+  const liveness = summarizeDurableSessionLiveness({snapshots, declaredSessionIds});
+  if (liveness.unhealthy.length === 0) return null;
+  const sourceSha256 = supervisorDigest({
+    source_commit: sourceCommit,
+    source_tree: sourceTree,
+    unhealthy_sessions: liveness.unhealthy,
+    missing_roles: liveness.missing_roles,
+    orphaned_session_ids: liveness.orphaned_session_ids,
+  });
+  const deadRoles = [...new Set(liveness.unhealthy.filter((entry) => entry.process_alive === false).map((entry) => entry.role))].sort();
+  const progressStalledRoles = [...new Set(liveness.unhealthy.filter((entry) => entry.progress_stale === true).map((entry) => entry.role))].sort();
+  const staleRoles = [...new Set(liveness.unhealthy.map((entry) => entry.role))].sort();
   return {
     finding_id: "F-DURABLE-SESSION-LIVENESS",
     classification: "REPAIRABLE_ENGINEERING_PUZZLE",
     status: "OPEN_REPAIR_REQUIRED",
-    summary: deadRoles.length > 0
-      ? `The Controller found ${deadRoles.length} campaign role process${deadRoles.length === 1 ? "" : "es"} gone while its session record still says RUNNING: ${deadRoles.join(", ")}.`
-      : "A campaign role session record or heartbeat no longer matches a healthy source-bound live session.",
+    summary: progressStalledRoles.length > 0
+      ? `The Controller found campaign role${progressStalledRoles.length === 1 ? "" : "s"} with no source-bound meaningful progress within ${MEANINGFUL_PROGRESS_WINDOW_MINUTES} minutes: ${progressStalledRoles.join(", ")}.`
+      : deadRoles.length > 0
+      ? `The Controller found missing, stopped, or stale campaign role process${deadRoles.length === 1 ? "" : "es"}: ${staleRoles.join(", ")}.`
+      : `The Controller found missing, orphaned, or source-stale campaign roles: ${staleRoles.join(", ")}.`,
     source_sha256: sourceSha256,
   };
 }
 
 function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
   const failure = entry.record.failure ?? "durable session failed without an error message";
+  const safeFailure = opaqueError(failure);
   const rcaPath = `autonomous-supervisor-route-rcas/${entry.record.task_id}.json`;
   const existing = readOptional(campaignRoot, rcaPath);
   if (existing !== null) return existing;
@@ -941,7 +1141,7 @@ function recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree) {
     source_tree: entry.record.source_tree,
     observed_against_commit: sourceCommit,
     observed_against_tree: sourceTree,
-    error_message_exact: failure,
+    error_message_exact: safeFailure,
     evidence_path: path.relative(campaignRoot, entry.target),
     root_cause: failure.includes("Auditor liveness observed source changes")
       ? "The liveness Auditor compared the Feature-Agent commit diff with its parent instead of comparing the Feature-Agent checkpoint with the current source identity."
@@ -1035,7 +1235,21 @@ function isAncestor(root, ancestorCommit, descendantCommit) {
   }
 }
 
-function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REPAIR") {
+function schedulerCandidateIdentity(worktreePath) {
+  const commit = git(worktreePath, ["rev-parse", "HEAD"]);
+  const tree = git(worktreePath, ["rev-parse", "HEAD^{tree}"]);
+  const status = git(worktreePath, ["status", "--porcelain", "--untracked-files=all"]);
+  if (status.length === 0) return {commit, tree, clean: true};
+  const diff = execFileSync("git", ["-C", worktreePath, "diff", "--binary"], {encoding: "buffer", maxBuffer: 64 * 1024 * 1024});
+  const untracked = git(worktreePath, ["ls-files", "--others", "--exclude-standard", "-z"]);
+  return {
+    commit: "PRELIMINARY_DIAGNOSTIC",
+    tree: controllerDigest({commit, tree, status, diff_sha256: crypto.createHash("sha256").update(diff).digest("hex"), untracked}),
+    clean: false,
+  };
+}
+
+function controllerCheckList(taskKind = "CONTROLLER_SUPERVISOR_REPAIR") {
   const checks = [
     "node --check control/controller-supervisor.mjs",
     "node --check control/controller-supervisor-runtime.mjs",
@@ -1043,7 +1257,7 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
     "node tests/verify-controller-supervisor.mjs",
   ];
   if (taskKind === "LOCAL_AGENT_SESSION_BINDING_REPAIR") checks.push("node tests/verify-all.mjs");
-  if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") checks.push("node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs");
+  if (taskKind === "DURABLE_SESSION_LIVENESS_REPAIR") checks.push("node --check control/local-agent-runtime.mjs", "node tests/verify-local-agent-session.mjs", "node tests/verify-controller-supervisor-liveness.mjs");
   if (taskKind === "AUTONOMOUS_CAMPAIGN_PROGRESS_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs");
   if (taskKind === "AUTONOMOUS_CAMPAIGN_CONTINUATION_REPAIR") checks.push("node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-controller-supervisor.mjs");
   if (taskKind === "OWNER_FEEDBACK_REPAIR") checks.push("node --check control/check-runner.mjs", "node --check control/task-run-loop.mjs", "node --check control/local-agent-runtime.mjs", "node --check control/local-self-development-supervisor-adapter.mjs", "node tests/verify-task-run-loop.mjs", "node tests/verify-local-agent-session.mjs", "node tests/verify-owner-feedback-digest.mjs", "node tests/verify-owner-feedback-progress.mjs", "node tests/verify-owner-feedback-continuation.mjs", "node tests/verify-owner-feedback-execution-boundary.mjs", "node tests/verify-owner-feedback-check-repair.mjs", "node tests/verify-owner-feedback-backlog.mjs", "node tests/verify-all.mjs");
@@ -1055,39 +1269,80 @@ function runControllerChecks(worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REP
     "node tests/verify-governance-decision-tree.mjs",
     "node tests/verify-local-campaign-admission.mjs",
   );
-  for (const check of checks) {
-    const [program, ...args] = check.split(" ");
-    execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
-  }
   return checks;
 }
 
-function runControllerWorkflowAuditChecks(worktreePath) {
+function runScheduledControllerChecks({scheduler, repositoryRoot, worktreePath, checks, taskKind}) {
+  const candidate = schedulerCandidateIdentity(worktreePath);
+  const repositoryId = `REPOSITORY-${controllerDigest(repositoryRoot).slice(0, 24).toUpperCase()}`;
+  const worktreeId = `WORKTREE-${controllerDigest(worktreePath).slice(0, 24).toUpperCase()}`;
+  const request = compileHybridSchedulerRequest({
+    requestId: `CONTROLLER-CHECK-${controllerDigest({candidate, checks, taskKind}).slice(0, 32).toUpperCase()}`,
+    requesterId: "AGENTOS_CONTROLLER",
+    lane: "CONTROLLER_CHECKS",
+    repositoryId,
+    worktreeId,
+    candidateCommit: candidate.commit,
+    candidateTreeOrDigest: candidate.tree,
+    cleanState: candidate.clean,
+    resourceClass: checks.some((check) => /(?:build|compile|test|verify|integration|database|artifact|runtime)/iu.test(check))
+      ? "COMPILE_HEAVY"
+      : "LIGHTWEIGHT_SOURCE_CHECK",
+    workingDirectoryRef: opaqueSchedulerWorktreeRef(worktreePath),
+    commandArgv: ["AGENTOS_CONTROLLER_CHECK_PLAN", ...checks],
+    toolchainProfile: "NODE_CONTROLLER_CHECKS",
+    proofClass: "TEST_BATCH",
+    whyNeeded: "RUN_CONTROLLER_CHECK_PLAN",
+    expectedProof: "ALL_COMMANDS_EXIT_ZERO",
+    coverage: checks.map((check) => `CHECK-${controllerDigest(check).slice(0, 16).toUpperCase()}`).sort(),
+    timeoutClass: "BOUNDED",
+    cachePolicy: "NO_SHARED_OUTPUT",
+    secretPolicy: "REDACTED",
+  });
+  const execute = () => {
+    for (const check of checks) {
+      const {program, args} = parseCheckCommand(check);
+      execFileSync(program, args, {cwd: worktreePath, encoding: "utf8", maxBuffer: 64 * 1024, stdio: ["ignore", "pipe", "pipe"]});
+    }
+    return checks;
+  };
+  return scheduler.runSync({
+    request,
+    admission: {
+      effectiveArgv: request.command_argv,
+      workingDirectory: worktreePath,
+      workingDirectoryRef: request.working_directory_ref,
+      allowedScope: ["."],
+      dependencyPreflight: () => ({status: "READY", identity: `DEPENDENCY_${request.request_sha256.slice(0, 24).toUpperCase()}`}),
+      runtimePreflight: () => ({status: "READY", identity: `RUNTIME_${request.request_sha256.slice(0, 24).toUpperCase()}`}),
+    },
+    resolveCandidate: () => schedulerCandidateIdentity(worktreePath),
+    execute,
+  }).output ?? checks;
+}
+
+function runControllerChecks({scheduler, repositoryRoot, worktreePath, taskKind = "CONTROLLER_SUPERVISOR_REPAIR"}) {
+  return runScheduledControllerChecks({scheduler, repositoryRoot, worktreePath, checks: controllerCheckList(taskKind), taskKind});
+}
+
+function runControllerWorkflowAuditChecks({scheduler, repositoryRoot, worktreePath}) {
   const checks = [
-    ...runControllerChecks(worktreePath),
+    ...controllerCheckList(),
     "node tests/verify-owner-conversation-surface.mjs",
     "node tests/verify-owner-review.mjs",
     "node tests/verify-bootstrap-delivery-finish.mjs",
   ];
-  for (const check of checks) {
-    const [program, ...args] = check.split(" ");
-    execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
-  }
-  return checks;
+  return runScheduledControllerChecks({scheduler, repositoryRoot, worktreePath, checks, taskKind: "CONTROLLER_WORKFLOW_AUDIT"});
 }
 
-function runCampaignProgressChecks(worktreePath) {
+function runCampaignProgressChecks({scheduler, repositoryRoot, worktreePath}) {
   const checks = [
     "node --check control/governance-decision-tree.mjs",
     "node tests/verify-governance-decision-tree.mjs",
     "node --check control/controller-supervisor.mjs",
     "node tests/verify-controller-supervisor.mjs",
   ];
-  for (const check of checks) {
-    const [program, ...args] = check.split(" ");
-    execFileSync(program === "node" ? process.execPath : program, args, {cwd: worktreePath, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
-  }
-  return checks;
+  return runScheduledControllerChecks({scheduler, repositoryRoot, worktreePath, checks, taskKind: "CAMPAIGN_PROGRESS_CHECK"});
 }
 
 function permissionsFrom(handoff, activation) {
@@ -1140,7 +1395,7 @@ function compileSupervisorHandoff({previous, goal, status, sourceCommit, sourceT
     version: 1,
     status,
     controller_role: "AGENTOS_CONTROLLER",
-    controller_display_name: previous.controller_display_name ?? "AgentOS Controller",
+    controller_display_name: previous.controller_display_name ?? "Intent Regulator",
     project_id: previous.project_id ?? goal.project_id,
     campaign_id: goal.campaign_id,
     campaign_version: goal.campaign_version,
@@ -1201,9 +1456,12 @@ function compileLifecycleResolution({goal, finding, sourceCommit, sourceTree, ta
   };
 }
 
-export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot}) {
+export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, schedulerRoot = null, schedulerPolicy = null}) {
   const campaignRoot = safeRoot(runtimeRoot, "local supervisor campaign root");
   const repositoryRoot = safeRoot(repoRoot, "local supervisor repository root");
+  const schedulerOptions = {authorityRoot: schedulerRoot ?? path.join(campaignRoot, "scheduler-authority")};
+  if (schedulerPolicy !== null) schedulerOptions.policy = schedulerPolicy;
+  const controllerScheduler = createHybridScheduler(schedulerOptions);
   const handoffPath = path.join(campaignRoot, "autonomous-supervisor-handoff.json");
 
   function observe() {
@@ -1213,6 +1471,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const gateFinding = readOptional(campaignRoot, "gate-evidence-anti-drift-rca.json");
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    const observedAtUtc = new Date().toISOString();
     const executionContext = handoff.campaign_active
       ? readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree})
       : null;
@@ -1293,7 +1552,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         source_sha256: durableSessionFinding.source_sha256,
       });
     }
-    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree});
+    const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree, observedAtUtc});
     if (durableSessionLiveness !== null) findings.push(durableSessionLiveness);
     const campaignProgressStall = autonomousCampaignProgressStallFinding({
       campaignRoot,
@@ -1326,7 +1585,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     findings.sort((left, right) => compareFindingIds(left.finding_id, right.finding_id));
     const ownerDecisionRequired = handoff.owner_decision_required === true;
     return compileSupervisorObservation({
-      controllerDisplayName: handoff.controller_display_name ?? "AgentOS Controller",
+      controllerDisplayName: handoff.controller_display_name ?? "Intent Regulator",
       projectId: handoff.project_id ?? candidate?.project_id ?? "PROJECT",
       campaignId: handoff.campaign_id,
       campaignVersion: handoff.campaign_version,
@@ -1344,7 +1603,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       sourceCommit,
       sourceTree,
       parentHandoffSha256: handoff.handoff_sha256,
-      observedAtUtc: new Date().toISOString(),
+      observedAtUtc,
     });
   }
 
@@ -1355,6 +1614,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const lifecycleFinding = gateFinding.lifecycle_roi_finding;
     const sourceCommit = git(repositoryRoot, ["rev-parse", "HEAD"]);
     const sourceTree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
+    const observedAtUtc = new Date().toISOString();
     const executionContext = readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree});
     const candidate = executionContext.candidate;
     const autonomousTaskFindingId = goal.finding_ids.find((findingId) => findingId.startsWith("F-AUTONOMOUS-TASK-"));
@@ -1394,7 +1654,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const boundaryPrecedenceFinding = controllerBoundaryPrecedenceFinding(repositoryRoot);
     const durableSessionFinding = durableSessionTestFinding(campaignRoot);
     const durableSessionLiveness = durableSessionLivenessFinding({campaignRoot, handoff, repositoryRoot, sourceCommit, sourceTree});
-    if (durableSessionLiveness !== null && durableSessionFailureRepairPresent(repositoryRoot)) return routeLiveness(goal);
+    if (goal.finding_ids.includes("F-DURABLE-SESSION-LIVENESS") && durableSessionLiveness !== null) return routeLiveness(goal);
     const governanceEvidenceRepair = goal.finding_ids.includes(gateFinding.finding_id);
     const governanceEvidenceFinding = governanceEvidenceRepair ? {
       finding_id: gateFinding.finding_id,
@@ -1490,7 +1750,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       version: 1,
       status: "ROUTED_TO_DURABLE_CAMPAIGN_ROLES",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "AgentOS Controller",
+      controller_display_name: "Intent Regulator",
       project_id: goal.project_id,
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,
@@ -1686,8 +1946,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       nextAction: "The Controller Finalizer is checking the audited checkpoint; external actions remain closed.",
     });
     const controllerChecks = campaignProgressTask
-      ? runCampaignProgressChecks(feature.session_record.worktree_path)
-      : runControllerChecks(feature.session_record.worktree_path, repairKind);
+      ? runCampaignProgressChecks({scheduler: controllerScheduler, repositoryRoot, worktreePath: feature.session_record.worktree_path})
+      : runControllerChecks({scheduler: controllerScheduler, repositoryRoot, worktreePath: feature.session_record.worktree_path, taskKind: repairKind});
     const auditorReadback = auditor.readback;
     validateLocalWorkerReadback(featureReadback, repairKind);
     validateLocalWorkerReadback(auditorReadback, auditorTaskKind);
@@ -1826,7 +2086,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       sourceTree: finalizerResult.adopted_tree,
       nextAction: campaignProgressTask
         ? "The owner-defined first useful workflow is complete at an audited local checkpoint; the Controller will remain available for a new bounded intent without prompting for approval."
-        : "AgentOS Controller reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
+        : "Intent Regulator reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
       permissions,
         repair: {
         summary: campaignProgressTask
@@ -1930,7 +2190,11 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       .map((entry) => recordFailedSessionRca(campaignRoot, entry, sourceCommit, sourceTree).rca_sha256)
       .concat(unhealthySessionRca === null ? [] : [unhealthySessionRca.rca_sha256])
       .concat(orphanedSessionRca === null ? [] : [orphanedSessionRca.rca_sha256]);
-    if (existingSessions.length === 3 && existingSessions.every((entry) => sessionIsHealthy({record: entry.record, sourceCommit, sourceTree}))) {
+    const existingRoles = existingSessions.map((entry) => entry.record.role).sort();
+    const requiredRoles = [...REQUIRED_CAMPAIGN_ROLES].sort();
+    if (existingSessions.length === requiredRoles.length
+      && JSON.stringify(existingRoles) === JSON.stringify(requiredRoles)
+      && existingSessions.every((entry) => sessionIsHealthy({record: entry.record, sourceCommit, sourceTree, observedAtUtc}))) {
       return {
         status: "LIVENESS_HEALTHY",
         source_commit: sourceCommit,
@@ -1940,7 +2204,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
         stale_session_rca_sha256: orphanedSessionRca?.rca_sha256 ?? null,
         autonomous_task_queue_sha256: taskQueue.queue_sha256,
         retained_failure_rcas: retainedFailureRcas.sort(),
-        supervised_sessions: existingSessions.map((entry) => sessionSummary(campaignRoot, entry)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
+        supervised_sessions: existingSessions.map((entry) => sessionSummary(campaignRoot, entry, observedAtUtc)).sort((left, right) => left.session_id.localeCompare(right.session_id)),
         protected_boundaries: permissions,
       };
     }
@@ -1954,7 +2218,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       version: 1,
       status: "RECONCILING_DURABLE_CAMPAIGN_ROLES",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "AgentOS Controller",
+      controller_display_name: "Intent Regulator",
       project_id: goal.project_id,
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,
@@ -2009,7 +2273,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
       taskKind: "CONTROLLER_SUPERVISOR_LIVENESS",
       featureWorktree: feature.session_record.worktree_path,
     });
-    const controllerChecks = runControllerChecks(feature.session_record.worktree_path);
+    const controllerChecks = runControllerChecks({scheduler: controllerScheduler, repositoryRoot, worktreePath: feature.session_record.worktree_path});
     const featureReadback = feature.readback;
     const auditorReadback = auditor.readback;
     validateLocalWorkerReadback(featureReadback, "CONTROLLER_SUPERVISOR_LIVENESS");
@@ -2082,14 +2346,14 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot})
     const executionContext = readCampaignExecutionContext({campaignRoot, handoff, sourceCommit, sourceTree});
     const candidate = executionContext.candidate;
     assert(queue.source_commit === sourceCommit && queue.source_tree === sourceTree, "autonomous Controller task queue is stale for the current source");
-    const checks = runControllerWorkflowAuditChecks(repositoryRoot);
+    const checks = runControllerWorkflowAuditChecks({scheduler: controllerScheduler, repositoryRoot, worktreePath: repositoryRoot});
     const controllerState = readOptional(campaignRoot, "controller-state.json");
     const audit = writeAddressed(campaignRoot, `autonomous-supervisor-workflow-audits/${taskId}.json`, {
       schema: "agentos.controller_autonomous_workflow_audit.v1",
       version: 1,
       status: "PASS",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "AgentOS Controller",
+      controller_display_name: "Intent Regulator",
       project_id: goal.project_id,
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,

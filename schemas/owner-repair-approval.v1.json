@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.owner_repair_approval.v1",
+  "title": "AgentOS owner repair approval",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "decision_id", "decision", "actor_ref", "parent_digest", "decided_at_utc", "approval_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.owner_repair_approval.v1"},
+    "version": {"const": 1},
+    "status": {"const": "APPROVED"},
+    "decision_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._-]{0,95}$"},
+    "decision": {"enum": ["APPROVE_REPAIR", "APPROVE_ROLLBACK"]},
+    "actor_ref": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,31}:[0-9a-f]{64}$"},
+    "parent_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "decided_at_utc": {"type": "string", "format": "date-time"},
+    "approval_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

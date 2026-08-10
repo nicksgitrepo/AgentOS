@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.bootstrap_answer.v1",
+  "title": "AgentOS normalized Bootstrap answer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "question_id", "value", "certainty", "provenance", "answer_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.bootstrap_answer.v1"},
+    "version": {"const": 1},
+    "question_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"},
+    "value": {},
+    "certainty": {"enum": ["CONFIRMED", "INFERRED", "RECOMMENDED", "UNKNOWN"]},
+    "provenance": {"enum": ["OWNER", "DISCOVERY", "COMPILER", "UNRESOLVED_OWNER"]},
+    "answer_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

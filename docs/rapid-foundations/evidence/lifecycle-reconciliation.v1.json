@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.lifecycle_reconciliation.v1",
+  "version": 1,
+  "mode": "NORMAL_ITERATION",
+  "finding": {
+    "code": "CLOSEOUT_MISMATCH",
+    "observed": "Completed temporary Rapid tasks remained visible in the host task list after the earlier closeout reported an empty active roster.",
+    "scope": "Completed temporary Rapid tasks only; persistent Intent Regulator and Runtime were excluded."
+  },
+  "evidence": {
+    "sources": [
+      "Live host task-list readback",
+      "Saved temporary-task closeout records",
+      "Saved source-binding mismatch history"
+    ],
+    "completed_temporary_records_reconciled": 27,
+    "initial_visible_completed_task_count_in_current_project": 1
+  },
+  "reconciliation": {
+    "controls": [
+      "set_thread_pinned(false)",
+      "set_thread_archived(true)",
+      "read_thread()"
+    ],
+    "unpin_control": "PASS",
+    "archive_control": "PASS",
+    "readback_status": "NOT_LOADED",
+    "completed_records_with_readback": 27,
+    "current_project_visible_completed_temporary_tasks": 0,
+    "active_temporary_roster": 0,
+    "persistent_intent_regulator_preserved": true,
+    "persistent_runtime_preserved": true
+  },
+  "boundary": {
+    "public_payload_is_project_agnostic": true,
+    "session_ids_omitted": true,
+    "private_paths_omitted": true,
+    "external_projects_untouched": true,
+    "source_files_untouched_by_reconciliation": true
+  },
+  "result": "CLOSEOUT_RECONCILED",
+  "handoff": {
+    "from": "Intent Regulator",
+    "to": "Iteration Bounded Verifier",
+    "next": "Run the already-admitted bounded Iteration campaign.",
+    "blockers": []
+  }
+}

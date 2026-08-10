@@ -23,12 +23,15 @@ import {
   validateSupervisorTick,
   writeSupervisorRecordCompareAndSwap,
 } from "./controller-supervisor.mjs";
+import {redactPersistedText} from "./persisted-record-privacy.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 const RUNTIME_SCHEMA = "agentos.controller_supervisor_runtime.v1";
 const LEASE_SCHEMA = "agentos.controller_supervisor_lease.v1";
+export const DEFAULT_SUPERVISOR_INTERVAL_MINUTES = 15;
+const MAX_SUPERVISOR_INTERVAL_MINUTES = 24 * 60;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -53,6 +56,15 @@ function requireUtc(value, label) {
   assert(ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`);
 }
 
+function safeSupervisorText(value, fallback = null) {
+  if (value === null || value === undefined) return fallback;
+  try {
+    return redactPersistedText(String(value)).text.replace(/\s+/gu, " ").trim().slice(0, 2000);
+  } catch {
+    return `opaque:error:${crypto.createHash("sha256").update(String(value), "utf8").digest("hex")}`;
+  }
+}
+
 function canonicalRoot(root) {
   requireString(root, "supervisor runtime root");
   const resolved = fs.realpathSync.native(path.resolve(root));
@@ -61,12 +73,24 @@ function canonicalRoot(root) {
   return resolved;
 }
 
+function assertNoSymlinkAncestors(root, target, label) {
+  let current = target;
+  while (true) {
+    if (fs.existsSync(current)) assert(!fs.lstatSync(current).isSymbolicLink(), `${label} contains a symbolic-link component`);
+    if (current === root) return;
+    const parent = path.dirname(current);
+    assert(parent !== current && parent.startsWith(`${root}${path.sep}`), `${label} escapes the bound root`);
+    current = parent;
+  }
+}
+
 function safeChild(root, relativePath) {
   const resolvedRoot = canonicalRoot(root);
   requireString(relativePath, "supervisor runtime relative path");
   assert(!path.isAbsolute(relativePath), "supervisor runtime path must be relative");
   const target = path.resolve(resolvedRoot, relativePath);
   assert(target.startsWith(`${resolvedRoot}${path.sep}`), "supervisor runtime path escapes the runtime root");
+  assertNoSymlinkAncestors(resolvedRoot, target, "supervisor runtime path");
   return target;
 }
 
@@ -78,7 +102,6 @@ function readJson(target) {
 }
 
 function adapterSourceIdentity({adapterPath, repoRoot}) {
-  const stat = fs.statSync(adapterPath);
   let repositoryHead = "NO_REPOSITORY";
   if (repoRoot) {
     try {
@@ -87,11 +110,25 @@ function adapterSourceIdentity({adapterPath, repoRoot}) {
       repositoryHead = "UNAVAILABLE_REPOSITORY";
     }
   }
-  return `${repositoryHead}:${stat.mtimeMs}:${stat.size}`;
+  const sourceRoot = path.dirname(adapterPath);
+  const sourceFiles = [];
+  const collect = (directory) => {
+    for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((left, right) => left.name.localeCompare(right.name))) {
+      if (entry.isSymbolicLink()) continue;
+      const target = path.join(directory, entry.name);
+      if (entry.isDirectory()) collect(target);
+      else if (entry.isFile() && target.endsWith(".mjs")) sourceFiles.push(target);
+    }
+  };
+  collect(sourceRoot);
+  const content = sourceFiles.sort().map((target) => `${path.relative(sourceRoot, target)}\u0000${fs.readFileSync(target)}`).join("\u0001");
+  const sourceDigest = crypto.createHash("sha256").update(content).digest("hex");
+  return `${repositoryHead}:${sourceDigest}`;
 }
 
 function writeJsonAtomic(target, value) {
   fs.mkdirSync(path.dirname(target), {recursive: true});
+  assert(!fs.lstatSync(path.dirname(target)).isSymbolicLink(), "supervisor runtime record parent may not be a symlink");
   assert(!fs.existsSync(target) || !fs.lstatSync(target).isSymbolicLink(), `supervisor runtime target is a symlink: ${target}`);
   const temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
   try {
@@ -136,6 +173,7 @@ function acquireLease({runtimeRoot, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR",
   requireUtc(nowUtc, "supervisor lease time");
   const target = safeChild(runtimeRoot, "supervisor/lease.json");
   fs.mkdirSync(path.dirname(target), {recursive: true});
+  assert(!fs.lstatSync(path.dirname(target)).isSymbolicLink(), "supervisor lease parent may not be a symlink");
   const existing = readJson(target);
   if (existing !== null && pidAlive(existing.owner_pid)) throw new Error(`controller supervisor lease is held by PID ${existing.owner_pid}`);
   if (existing !== null) {
@@ -172,7 +210,7 @@ function compileRuntimeState({runtimeId, status, observation = null, goal = null
     goal_id: goal?.goal_id ?? null,
     goal_sha256: goal?.goal_sha256 ?? null,
     tick_sha256: tick?.tick_sha256 ?? null,
-    error,
+    error: safeSupervisorText(error),
     observed_at_utc: nowUtc,
     runtime_sha256: null,
   };
@@ -192,7 +230,7 @@ function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObserva
     prior_goal_sha256: priorGoal.goal_sha256,
     prior_observation_sha256: priorTick.observation_sha256,
     failed_route_status: priorTick.route_status,
-    error_message_exact: priorTick.route_error,
+    error_message_exact: safeSupervisorText(priorTick.route_error, "UNAVAILABLE"),
     current_observation_sha256: currentObservation.observation_sha256,
     required_action: "Retain the exact failed route, change the source-bound route or repair the stale boundary rule, then re-observe before retrying.",
     external_actions_attempted: false,
@@ -264,12 +302,26 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   return {...result, observation, reused: false};
 }
 
-function sleep(milliseconds) {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+function sleep(milliseconds, signal = null) {
+  if (signal?.aborted === true) return Promise.resolve();
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (signal) signal.removeEventListener("abort", finish);
+      resolve();
+    };
+    const timer = setTimeout(finish, milliseconds);
+    if (signal) signal.addEventListener("abort", finish, {once: true});
+  });
 }
 
-export async function runControllerSupervisor({runtimeRoot, adapter, adapterFactory = null, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMs = 30_000, once = false, signal = null}) {
-  assert(Number.isInteger(intervalMs) && intervalMs >= 250 && intervalMs <= 60_000, "supervisor interval must be between 250ms and 60s");
+export async function runControllerSupervisor({runtimeRoot, adapter, adapterFactory = null, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMinutes = DEFAULT_SUPERVISOR_INTERVAL_MINUTES, intervalMs = null, once = false, signal = null}) {
+  assert(Number.isSafeInteger(intervalMinutes) && intervalMinutes >= 1 && intervalMinutes <= MAX_SUPERVISOR_INTERVAL_MINUTES, "supervisor interval minutes must be between 1 and 1440");
+  const resolvedIntervalMs = intervalMs === null ? intervalMinutes * 60_000 : intervalMs;
+  assert(Number.isSafeInteger(resolvedIntervalMs) && resolvedIntervalMs >= 250 && resolvedIntervalMs <= MAX_SUPERVISOR_INTERVAL_MINUTES * 60_000, "supervisor interval is outside the safe range");
   assert(adapter && typeof adapter.observe === "function", "supervisor adapter must provide observe()");
   assert(adapterFactory === null || typeof adapterFactory === "function", "supervisor adapter factory must be callable");
   const root = canonicalRoot(runtimeRoot);
@@ -280,6 +332,7 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
   const results = [];
   try {
     do {
+      if (signal?.aborted === true || stopping) break;
       const nowUtc = new Date().toISOString();
       try {
         const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
@@ -291,10 +344,14 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
         }
         const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
         writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
-        if (once) throw error;
+        if (once) {
+          const safeError = new Error(safeSupervisorText(error?.message ?? String(error), "supervisor iteration failed"));
+          safeError.code = error?.code;
+          throw safeError;
+        }
       }
       if (once || stopping) break;
-      await sleep(intervalMs);
+      await sleep(resolvedIntervalMs, signal);
     } while (!stopping);
   } finally {
     releaseLease(leaseState);
@@ -304,7 +361,7 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
 }
 
 function parseArgs(argv) {
-  const result = {once: false, intervalMs: 30_000};
+  const result = {once: false, intervalMinutes: DEFAULT_SUPERVISOR_INTERVAL_MINUTES, intervalMs: null};
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
     if (value === "--once") result.once = true;
@@ -313,6 +370,7 @@ function parseArgs(argv) {
     else if (value === "--repo-root") result.repoRoot = argv[++index];
     else if (value === "--adapter") result.adapterPath = argv[++index];
     else if (value === "--runtime-id") result.runtimeId = argv[++index];
+    else if (value === "--interval-minutes") result.intervalMinutes = Number(argv[++index]);
     else if (value === "--interval-ms") result.intervalMs = Number(argv[++index]);
     else throw new Error(`unknown supervisor runtime argument: ${value}`);
   }
@@ -348,7 +406,7 @@ async function main() {
     return loadedAdapter;
   };
   const adapter = await loadAdapter();
-  const results = await runControllerSupervisor({runtimeRoot: args.runtimeRoot, adapter, adapterFactory: loadAdapter, runtimeId: args.runtimeId, intervalMs: args.intervalMs, once: args.once});
+  const results = await runControllerSupervisor({runtimeRoot: args.runtimeRoot, adapter, adapterFactory: loadAdapter, runtimeId: args.runtimeId, intervalMinutes: args.intervalMinutes, intervalMs: args.intervalMs, once: args.once});
   if (restartRequested && !args.once) {
     const child = spawn(process.execPath, [process.argv[1], ...process.argv.slice(2)], {detached: true, stdio: "ignore"});
     child.unref();

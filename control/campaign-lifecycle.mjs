@@ -10,6 +10,14 @@ import {
   validateContinuousAuditSentinel,
 } from "./continuous-audit-sentinel.mjs";
 import {getPolicyValue, validatePolicyState} from "./global-policy-state.mjs";
+import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
+import {
+  assertUniversalDevelopmentMode,
+  validateUniversalTaskCloseoutForMode,
+} from "./governance-library.mjs";
+
+export {canonicalJson, compareUtf8};
+export const lifecycleDigest = canonicalDigest;
 
 export const LIFECYCLE_STAGES = Object.freeze([
   "BUILDING",
@@ -112,27 +120,6 @@ function exactKeys(value, keys, label) {
   const expected = [...keys].sort(compareUtf8);
   assert(actual.length === expected.length
     && actual.every((key, index) => key === expected[index]), `${label} fields mismatch`);
-}
-
-export function compareUtf8(left, right) {
-  return Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
-}
-
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (isRecord(value)) {
-    return Object.fromEntries(Object.keys(value).sort(compareUtf8)
-      .map((key) => [key, canonicalize(value[key])]));
-  }
-  return value;
-}
-
-export function canonicalJson(value) {
-  return JSON.stringify(canonicalize(value));
-}
-
-export function lifecycleDigest(value) {
-  return crypto.createHash("sha256").update(canonicalJson(value), "utf8").digest("hex");
 }
 
 function validateSuccessorCandidatePacket(packet, label, state, {kind = null, campaignId = null, campaignVersion = null} = {}) {
@@ -538,7 +525,7 @@ function validateHandoffReceipts(receipts, label) {
 export function validatePlatformAgent(agent) {
   exactKeys(agent, [
     "logical_capability_id", "logical_agent_id", "execution_session_id", "state",
-    "platform_worktree", "supervision", "request_queue", "handoff_receipts",
+    "platform_worktree", "supervision", "request_queue", "handoff_receipts", "universal_closeout_receipts",
   ], "Platform Agent pool entry");
   for (const field of ["logical_capability_id", "logical_agent_id", "execution_session_id"]) {
     requireIdentifier(agent[field], `Platform Agent ${field}`);
@@ -548,6 +535,10 @@ export function validatePlatformAgent(agent) {
   validateSupervision(agent.supervision, "Platform Agent supervision");
   validateRequestQueue(agent.request_queue, "Platform Agent request queue");
   validateHandoffReceipts(agent.handoff_receipts, "Platform Agent handoff receipts");
+  validateUniversalTaskCloseoutForMode("CAMPAIGN", agent.universal_closeout_receipts, {
+    closed: agent.state === "ARCHIVED_UNPINNED",
+    label: "Platform Agent universal closeout receipts",
+  });
   if (agent.state === "UNSPAWNED") {
     assert(agent.supervision === null, "unspawned Platform Agent has a supervisor");
   }
@@ -566,6 +557,7 @@ export function compilePlatformAgent({
   executionSessionId,
   platformWorktree,
   state = "UNSPAWNED",
+  universalCloseoutReceipts = [],
 }) {
   const agent = {
     logical_capability_id: logicalCapabilityId,
@@ -576,6 +568,7 @@ export function compilePlatformAgent({
     supervision: null,
     request_queue: [],
     handoff_receipts: [],
+    universal_closeout_receipts: structuredClone(universalCloseoutReceipts),
   };
   validatePlatformAgent(agent);
   return agent;
@@ -672,11 +665,16 @@ export function releasePlatformLease(agent, atUtc) {
   return next;
 }
 
-export function archivePlatformAgent(agent) {
+export function archivePlatformAgent(agent, {universalCloseoutReceipts} = {}) {
   validatePlatformAgent(agent);
   assert(agent.state === "AVAILABLE", "only an available Platform Agent may be archived");
+  validateUniversalTaskCloseoutForMode("CAMPAIGN", universalCloseoutReceipts, {
+    closed: true,
+    label: "Platform Agent archive closeout receipts",
+  });
   const next = structuredClone(agent);
   next.state = "ARCHIVED_UNPINNED";
+  next.universal_closeout_receipts = structuredClone(universalCloseoutReceipts);
   validatePlatformAgent(next);
   return next;
 }
@@ -1075,6 +1073,7 @@ function appendTransition(next, previous, event) {
 }
 
 export function validateLifecycleState(state) {
+  assertUniversalDevelopmentMode("CAMPAIGN");
   exactKeys(state, ["schema", "governance_version", "status", "campaign_id", "campaign_version", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "stage", "root", "active_writer", "holds", "platform_pool", "checkpoint_ledger", "finalizer", "acceptance", "runtime", "roster", "continuous_audit_sentinel", "successor_orientation", "living_ledger", "transition_journal", "state_sha256"], "campaign lifecycle state");
   assert(state.schema === "governance.campaign_lifecycle_state.v1" && state.governance_version === "2.1rc", "campaign lifecycle identity is invalid");
   assert(state.status === "PREPARED_NOT_ACTIVATED", "campaign lifecycle must remain prepared and inactive");
@@ -1107,6 +1106,10 @@ export function validateLifecycleState(state) {
     assert(!agentIds.has(agent.logical_agent_id), "Platform logical agent is duplicated");
     capabilityIds.add(agent.logical_capability_id);
     agentIds.add(agent.logical_agent_id);
+  }
+  if (state.stage === "ACCEPTED_LIVE_CLOSED") {
+    assert(state.platform_pool.every((agent) => agent.state === "ARCHIVED_UNPINNED"),
+      "accepted-live closure left a campaign Platform Agent unarchived");
   }
   validateCheckpointLedger(state.checkpoint_ledger);
   const activeCheckpoint = state.checkpoint_ledger.entries.find((entry) => entry.candidate_id === state.checkpoint_ledger.active_candidate_id);

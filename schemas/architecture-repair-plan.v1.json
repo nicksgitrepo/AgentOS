@@ -1,0 +1,102 @@
+{
+  "schema": "agentos.architecture_repair_plan.v1",
+  "version": 1,
+  "purpose": "Repair the alignment gap between the accepted lane prototype and the intended shared-plus-generated governance architecture.",
+  "repair_kind": "ARCHITECTURE_ALIGNMENT_REPAIR",
+  "goal_boundary": {
+    "prior_goal": "ITER-001-BOUNDED-VERIFIER",
+    "prior_goal_status": "CLOSED_RECORDED",
+    "successor_goal": "SOURCE_BOUND_ARCHITECTURE_REPAIR",
+    "changed_condition": "ACCEPTED_SLICE_ARCHITECTURE_MISALIGNED",
+    "unrelated_feature_work": "FORBIDDEN"
+  },
+  "source_binding": {
+    "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+    "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+    "binding_rule": "Every repair output and check must identify the exact source checkpoint; a changed source closes this goal and requires a fresh source-bound successor."
+  },
+  "governance_tree": {
+    "required": true,
+    "source": "COMPILED_QUESTION_TREE",
+    "roots": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+    "role_definition_source": "control/governance-role-definitions.mjs",
+    "role_generation_rule": "ROLE_SPECIFIC_LIBRARY_MUST_BE_GENERATED_FROM_GENERAL_LIBRARY_ROLE_DEFINITION_SOURCE_AND_COMPILED_QUESTION_TREE"
+  },
+  "required_outputs": {
+    "bootstrap_plan_path": "control/bootstrap-compiler.mjs",
+    "bootstrap_contract_path": "schemas/bootstrap-plan.v1.json",
+    "controller_path": "control/agentos-controller.mjs",
+    "controller_contract_path": "schemas/agentos-controller.v1.json",
+    "library_contract_path": "schemas/governance-library.v1.json",
+    "general_library_path": "control/governance-library.mjs",
+    "role_specific_library_path": "control/role-governance-library.mjs",
+    "focused_test_paths": ["tests/verify-governance-library.mjs", "tests/verify-role-governance-library.mjs"],
+    "public_evidence_path": "docs/rapid-foundations/evidence/architecture-repair.v1.json"
+  },
+  "acceptance_requirements": [
+    "SHARED_GENERAL_GOVERNANCE_LIBRARY_PRESENT",
+    "ROLE_SPECIFIC_LIBRARY_GENERATED_FROM_GENERAL_LIBRARY_AND_GOVERNANCE_TREE",
+    "GENERAL_AND_ROLE_LIBRARIES_SHARE_SOURCE_BINDING",
+    "BOOTSTRAP_PLAN_ADMITS_BOTH_GOVERNANCE_LAYERS",
+    "CONTROLLER_REPAIR_ADMISSION_REQUIRES_ARCHITECTURE_GATE",
+    "ARCHITECTURE_GATE_REJECTS_MISSING_GENERAL_LIBRARY",
+    "ARCHITECTURE_GATE_REJECTS_ROLE_LIBRARY_WITHOUT_TREE_BINDING",
+    "PUBLIC_PORTABLE_AND_SECRET_FREE",
+    "NO_UNRELATED_PATHS_CHANGED"
+  ],
+  "phases": [
+    {
+      "id": "AR-01",
+      "name": "Close narrow verifier goal",
+      "owner": "Intent Regulator",
+      "produces": "Typed closure preserving the bounded timeout and accepted slice.",
+      "check": "iteration-001-closeout.v1.json binds the timeout evidence and successor reason.",
+      "status": "RECORDED"
+    },
+    {
+      "id": "AR-02",
+      "name": "Repair Bootstrap and controller gate",
+      "owner": "Intent Regulator",
+      "produces": "Typed plan fields and a controller admission gate for both governance layers.",
+      "check": "Focused Bootstrap and Controller tests reject incomplete architecture envelopes.",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "AR-03",
+      "name": "Build shared general governance library",
+      "owner": "General Governance Library",
+      "produces": "Portable, deterministic, source-bound shared governance clauses and focused tests.",
+      "check": "General library validation and hostile portability checks pass.",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "AR-04",
+      "name": "Build generated role-specific governance library",
+      "owner": "Role Governance Library",
+      "produces": "Deterministic role records generated from the shared library and compiled question tree.",
+      "check": "Role generation, digest binding, missing-tree, and missing-general-library cases pass.",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "AR-05",
+      "name": "Independently check and preserve repair",
+      "owner": "Intent Regulator",
+      "produces": "Independent repair evidence, changed-path check, and typed Iteration handoff for anything deferred.",
+      "check": "All focused checks pass; no private or unrelated content is introduced.",
+      "status": "COMPLETE"
+    }
+  ],
+  "temporary_roster": {
+    "admitted_roles": [],
+    "inherit_old_records": false,
+    "generic_feature_agent_admitted": false,
+    "worker_creation": "NOT_REQUIRED_FOR_THIS_REPAIR",
+    "persistent_owner": "Intent Regulator"
+  },
+  "launch_boundary": {
+    "recorded_plan_is_launch_gate": true,
+    "separate_owner_approval_required": false,
+    "reassess_on": ["SCOPE_CHANGE", "INTENT_CHANGE", "POLICY_CHANGE", "CONDITION_CHANGE"],
+    "changed_condition_action": "CLOSE_CURRENT_GOAL_AND_MINT_FRESH_SOURCE_BOUND_GOAL"
+  }
+}

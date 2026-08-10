@@ -35,6 +35,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function opaqueError(value) {
+  const raw = value?.message ?? String(value);
+  return `opaque:error:${controllerDigest(raw)}`;
+}
+
 function canonicalRoot(root) {
   const resolved = fs.realpathSync.native(path.resolve(root));
   const stat = fs.lstatSync(resolved);
@@ -126,8 +131,8 @@ function compileFailureRca({root, phase, command, error, task, featureReadback, 
     classification: "REPAIRABLE_ENGINEERING_PUZZLE",
     symptom: "The bounded source-bound governance evidence repair did not complete its assigned stage.",
     failed_command: command,
-    error_message_exact: error?.message ?? String(error),
-    error_stack_exact: error?.stack ?? null,
+    error_message_exact: opaqueError(error),
+    error_stack_exact: error?.stack === undefined ? null : opaqueError(error.stack),
     parent_task_sha256: task?.task_sha256 ?? null,
     feature_agent_readback: featureReadback,
     orchestrator_readback: orchestratorReadback,
@@ -346,7 +351,8 @@ async function run(repoRoot) {
       schema: "agentos.controller_gate_evidence_repair_handoff.v1",
       version: 1,
       status: "REPAIR_RECHECK_PASSED_ACCEPTANCE_STILL_OPEN",
-      controller_role: "AgentOS Controller",
+      controller_role: "AGENTOS_CONTROLLER",
+      controller_display_name: "Intent Regulator",
       campaign_id: CAMPAIGN_ID,
       campaign_version: CAMPAIGN_VERSION,
       candidate_sha256: candidate.candidate_sha256,
@@ -355,7 +361,7 @@ async function run(repoRoot) {
       repair_task_sha256: task.task_sha256,
       recheck_sha256: recheck.record.recheck_sha256,
       custody: {
-        controller: "AgentOS Controller routed and re-checked the repair; it did not claim Feature-Agent code completion.",
+        controller: "Intent Regulator routed and re-checked the repair; it did not claim Feature-Agent code completion.",
         feature_agent: {session_id: featureReadback.session_id, commit: featureReadback.build_commit, tree: featureReadback.build_tree},
         auditor: {session_id: auditorReadback.session_id, verified_commit: auditorReadback.build_commit, verified_tree: auditorReadback.build_tree},
       },

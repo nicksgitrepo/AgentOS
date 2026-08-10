@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.execution_admission.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "route_sha256", "readback_sha256", "reason_code", "execution_admitted", "product_acceptance", "protected_actions_enabled", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.execution_admission.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["ADMITTED", "UNAVAILABLE", "BLOCKED"]},
+    "route_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "readback_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reason_code": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+    "execution_admitted": {"type": "boolean"},
+    "product_acceptance": {"const": false},
+    "protected_actions_enabled": {"const": false},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
+

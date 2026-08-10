@@ -30,7 +30,15 @@ const limitedLife = compileProjectLifeContract({answer: {
 const sitesLimited = compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: limitedLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "LIMITED_PRODUCT", audience: "SELECTED_USERS"},
+  answer: {
+    family: "MANAGED_SITE",
+    adapter_id: "GENERIC_MANAGED_SITE",
+    mode: "LIMITED_PRODUCT",
+    audience: "SELECTED_USERS",
+    supported_scope: ["SELECTED_USER_WORKFLOWS"],
+    operating_envelope: ["OWNER_BOUNDED_AVAILABILITY", "SYNTHETIC_OR_ADMITTED_DATA"],
+    rollback_path: "EXACT_LAST_ACCEPTED_DEPLOYMENT",
+  },
 });
 assert.equal(sitesLimited.mode, "LIMITED_PRODUCT");
 assert.equal(sitesLimited.production_claim, "LIMITED_PRODUCT");
@@ -48,8 +56,21 @@ assert.throws(() => compileDeliveryTarget({
 assert.throws(() => compileDeliveryTarget({
   route: "MANAGED",
   projectLifeContract: prototypeLife,
-  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "LIMITED_PRODUCT"},
+  answer: {
+    family: "MANAGED_SITE",
+    adapter_id: "GENERIC_MANAGED_SITE",
+    mode: "LIMITED_PRODUCT",
+    supported_scope: ["SELECTED_USER_WORKFLOWS"],
+    operating_envelope: ["OWNER_BOUNDED_AVAILABILITY"],
+    rollback_path: "EXACT_LAST_ACCEPTED_DEPLOYMENT",
+  },
 }), /exceeds the project life maturity/u);
+
+assert.throws(() => compileDeliveryTarget({
+  route: "MANAGED",
+  projectLifeContract: limitedLife,
+  answer: {family: "MANAGED_SITE", adapter_id: "GENERIC_MANAGED_SITE", mode: "LIMITED_PRODUCT", audience: "SELECTED_USERS"},
+}), /explicit supported scope/u);
 
 const tampered = structuredClone(sitesLimited);
 tampered.production_claim = "STANDARD_PRODUCTION";

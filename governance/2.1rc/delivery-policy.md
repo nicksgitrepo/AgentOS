@@ -64,6 +64,24 @@ Runner and hosting route classes remain `PROJECT_DEFINED` until a project
 binds the route, provider, environment, quota, and cost boundary. A route
 recommendation is `CANDIDATE_ONLY`; it is not permission to use a provider.
 
+## Prepared adapter contract
+
+Remote delivery remains inactive until project context supplies a typed
+`schemas/delivery-adapter.v1.json` contract. The contract names only a safe
+adapter reference and protocol, and records the supported actions, required
+owner/Runtime authority, no-effect dry run, explicit `FAILED`/`UNKNOWN`
+handling, exact-last-accepted-deployment rollback, typed receipt verification,
+host-enforced spend boundary, host-local secret boundary, and project-bound
+environment. Its digest and the exact Delivery Policy digest are copied into
+every Runtime request and external receipt.
+
+The contract is a prepared capability description, not activation or a provider
+account. A missing project-bound adapter keeps the dependent remote outcome
+`UNAVAILABLE` or `NOT_RUN_OWNER_BOUNDARY`; it never authorizes invented
+credentials, a guessed provider, or a synthetic success receipt. After a
+failure or unknown result, re-entry preserves the evidence and requires a
+fresh owner-selected choice.
+
 ## Cost, speed, and continuity
 
 Bootstrap may compare route classes against the owner’s stated priority:

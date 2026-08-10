@@ -59,6 +59,12 @@
     "field": "delivery_policy.delivery_target",
     "rule": "Keep the product target separate from transport mechanics. A managed-site target can be PROTOTYPE or LIMITED_PRODUCT without a production claim. The optional adapter ID is project-context data and never supplies account authority or unproven capabilities."
   },
+  "adapter_contract": {
+    "contract": "schemas/delivery-adapter.v1.json",
+    "runtime_request_field": "adapter_contract_digest",
+    "status": "PREPARED_NOT_ACTIVATED",
+    "rule": "A project-bound adapter contract must enumerate the exact action capabilities, owner and Runtime permission boundary, dry-run behavior, partial-failure states, exact rollback identity, typed receipt, spend enforcement, secret boundary, and environment binding before any external receipt can be accepted."
+  },
   "rollback": {
     "required": true,
     "identity": "EXACT_LAST_ACCEPTED_DEPLOYMENT",
