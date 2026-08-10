@@ -26,6 +26,7 @@ PRODUCTION_READY_PENDING_REAL_HOST or PREPARED_NOT_ACTIVATED
 The durable amendment state is
 `docs/audit-repair-integration-state.v1.json`. The complete feature-to-platform
 map and deduplication roots are in `docs/platform-feature-map.v1.json`.
+The compact external pull record is `docs/orchestrator-current-state.md`.
 
 ## Feature lanes
 
