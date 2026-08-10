@@ -238,3 +238,17 @@ this audit.
 - changed_path_disposition: authority compiler, Bootstrap compiler, portable fixture, and portability verifier integrated; binding refresh intentionally deferred until the combined dirty source is settled
 - functional_status: NOT_RUN_BY_INSTRUCTION
 - archive_status: WITHHELD_UNTIL_DOWNSTREAM_REVIEW
+
+## Central integration intake — 2026-08-09 (accepted platform seed)
+
+- visible_task_ref: `TASK_REF_ROADMAP_01_VISIBLE`
+- isolated_worktree_ref: `WORKTREE_REF_EB84`
+- feature_base_commit: `590c07ddd4be7a8c24727c24b40808e44ca7357d`
+- accepted_platform_seed_commit: `fbd53ea211e1d181444fb460b7d0c610e2f0921b`
+- accepted_platform_seed_tree: `1fc49fcb55db20f8bd3095b96ca8d8622d883a46`
+- handoff_state: `FEATURE_CANDIDATE_READY_FOR_PLATFORM`
+- source_equivalence: The five feature implementation and verification paths reported by the visible lane are byte-identical to the accepted platform seed. No additional source delta was required in the cumulative integration worktree.
+- report_preservation: The earlier central intake record remains preserved above; this intake records the later visible lane re-audit and seed-equivalence readback.
+- central_disposition: `INTEGRATED_INTO_PLATFORM_SEED_PENDING_DOWNSTREAM_PLATFORM_REVIEW`
+- functional_status: `NOT_RUN_BY_INSTRUCTION`
+- archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
