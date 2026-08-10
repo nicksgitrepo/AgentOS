@@ -97,7 +97,7 @@
       "report_path": "docs/feature-audits/ROADMAP_01_PORTABLE_KERNEL/auditreport.md",
       "auditor_task_id": "019fdcf9-5cba-7042-9404-54e905f696a8",
       "worktree_id": "HOST_WORKTREE_EB84",
-      "status": "CENTRAL_INTEGRATION_PENDING"
+      "status": "CENTRAL_INTEGRATED_PENDING_PLATFORM_REVIEW"
     },
     {
       "feature_id": "ROADMAP_02_LAYERED_GOVERNANCE",
