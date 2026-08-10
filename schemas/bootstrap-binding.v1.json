@@ -774,7 +774,7 @@
     },
     "feature_inventory_contract": {
       "path": "docs/feature-inventory.v1.json",
-      "sha256": "51c54b6a0321d3cc6a5476100a0eed2ad71618247cae48c35ff2f9d0e0d9bdf3"
+      "sha256": "f7f7a6413d209892359243164db2d88a331e713970094b84adc03f8f4c3f9274"
     },
     "feature_inventory_article": {
       "path": "docs/feature-inventory.md",

@@ -252,3 +252,22 @@ this audit.
 - central_disposition: `INTEGRATED_INTO_PLATFORM_SEED_PENDING_DOWNSTREAM_PLATFORM_REVIEW`
 - functional_status: `NOT_RUN_BY_INSTRUCTION`
 - archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
+
+## Typed feature-wave handoff consumed — 2026-08-09
+
+- handoff_type: `FEATURE_WAVE_CANDIDATE_PENDING_TESTS`
+- feature_id: `ROADMAP_01_PORTABLE_KERNEL`
+- platform_baseline_status: `PLATFORM_MERGE_ACCEPTED`
+- platform_baseline_commit: `bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac`
+- platform_baseline_tree: `40d495f1599cd0b0f07de83748b74253b526b145`
+- candidate_status: `COHERENT_FEATURE_SCOPED_OVERLAY_PENDING_TESTS`
+- audit_status: `PASS_PENDING_FUNCTIONAL_TESTS`
+- resolved_findings: `PK-001`, `PK-002`, `PK-003`, `PK-004`, `PK-005`, `PK-006`
+- remaining_finding: `FUNCTIONAL_TESTS_PENDING`
+- activation_status: `PREPARED_NOT_ACTIVATED`
+- external_actions: `NONE`
+- changed_paths: `control/authority-corpus.mjs`, `control/bootstrap-compiler.mjs`, `examples/project-context-fixture.v1.json`, `schemas/bootstrap-binding.v1.json`, `tests/verify-portability.mjs`, `docs/feature-audits/ROADMAP_01_PORTABLE_KERNEL/auditreport.md`
+- downstream_disposition: `CONSUMED_BY_CENTRAL_PENDING_PLATFORM_REVIEW`
+- next_action: `RECEIVING_FUNCTIONAL_PRODUCT_ACCEPTANCE_THEN_EXPLICIT_OWNER_ACTIVATION_DECISION`
+
+This handoff was received from the existing visible task after the source-equivalence intake above. No functional test, npm command, commit, push, archive, or external action was performed by that lane.
