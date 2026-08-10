@@ -464,3 +464,32 @@ the evidence, a hostile test exposes a bypass, privacy material enters public
 source, or the implementation no longer matches the stated promise. Owner
 activation and other owner-only choices are never inferred from technical
 completion.
+
+## Current campaign amendment: Audit–Repair Integration Pyramid
+
+The active campaign now follows the canonical rolling workflow in
+`docs/audit-repair-integration-pyramid.md` and the durable state record in
+`docs/audit-repair-integration-state.v1.json`. This is an amendment to the
+roadmap sequence above, not a competing lifecycle.
+
+The Controller preserves the current coherent checkpoint, completes the
+Platform foundation, then maintains six visible feature slots while six or
+more eligible capabilities remain. The queue is the exact 37-entry inventory;
+overlapping entries share a canonical root-cause transaction recorded in
+`docs/platform-feature-map.v1.json`. Each feature owns audit, smallest repair,
+hostile self-audit, affected proof, and handoff. The Controller and Platform
+owners retain integration, acceptance, source custody, and archive authority.
+
+The six logical Platform domains are Portable Kernel/Gates/Contracts;
+Governance/Intent/Roles/Routing; Native Host/Workspace/Provider/Session;
+Campaign/Evidence/Handoffs/Recovery/Acceptance; Private Control/Memory/
+Projections/Capsules/Bounded Intelligence; and Release/Migration/
+Delivery/Security/Owner Surface. Existing visible Platform custodians remain
+explicit aliases until a separate visible host task and source-backed write
+scope exist. No synthetic Platform task is implied by the taxonomy.
+
+The Controller may archive a visible task only after the typed handoff is
+preserved and persisted, the candidate is independently audited and integrated,
+the stale worktree is closed, active scope is removed, the chat is out of scope,
+and the host archive readback is recorded. Before real-host proof, final states
+remain `PRODUCTION_READY_PENDING_REAL_HOST` or `PREPARED_NOT_ACTIVATED`.

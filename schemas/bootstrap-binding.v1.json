@@ -782,7 +782,7 @@
     },
     "feature_inventory_article": {
       "path": "docs/feature-inventory.md",
-      "sha256": "4d45a35cfe8655a44599717f371ef4fdf67604db23868beb0fdc91222b86b4be"
+      "sha256": "7aab083fa816f3637869b6784e72e6bc26288f24c109cd696fd500da05e52528"
     },
     "feature_lane_goal_controller": {
       "path": "control/feature-lane-goal.mjs",
@@ -934,7 +934,7 @@
     },
     "platform_handoff_index": {
       "path": "docs/platform-handoffs/index.md",
-      "sha256": "fa2833ec8566aa7612c45cda75fa1db46a4416ee8be8db8cd70f74e32af6b24b"
+      "sha256": "468204ffc66ae05d19308ae15a2ec498a680ecdaed728fe18bbcf2623366d10f"
     },
     "platform_native_session_evidence_audit": {
       "path": "docs/platform-audits/PLATFORM_NATIVE_SESSION_EVIDENCE/auditreport.md",
@@ -1330,7 +1330,7 @@
     },
     "platform_domain_runtime_registry": {
       "path": "docs/platform-domain-runtime-registry.v1.json",
-      "sha256": "e4d9526848cbc930d69a521218b5357e882e7fb30e3086d91e0a0c22b4c9d841"
+      "sha256": "243a5da6bb605016d3372ccbdfb2c58d24badf85d879ee77bd7e79c4c3561a28"
     },
     "platform_visible_task_runtime_registry": {
       "path": "docs/platform-visible-task-runtime-registry.v1.json",
@@ -1819,6 +1819,30 @@
     "restored_provider_discovery_contract": {
       "path": "schemas/provider-discovery.v1.json",
       "sha256": "a97aee5bfc5fa817372ad640476de1dc2d7d83ef6c1aaa84b017b5ba8703357a"
+    },
+    "audit_repair_integration_pyramid_controller": {
+      "path": "control/audit-repair-integration-pyramid.mjs",
+      "sha256": "b8c25cdd13574bc8f361190d1f8eef4d3ff086fb1f211392cfa3de8805297918"
+    },
+    "audit_repair_integration_state_contract": {
+      "path": "schemas/audit-repair-integration-state.v1.json",
+      "sha256": "8269e9a35cb80793d2c74543e12e0a94534a68df262aee0018ff3fc1275c123d"
+    },
+    "audit_repair_integration_state_record": {
+      "path": "docs/audit-repair-integration-state.v1.json",
+      "sha256": "f8210e0238450f73bfc2851642bb9d8327efd51b4a09a7a7ba9429e754f3bcca"
+    },
+    "platform_feature_map_record": {
+      "path": "docs/platform-feature-map.v1.json",
+      "sha256": "bcfe6885fffa18ddf8e367471965da286f26f234cdbb45b07c00a6e4373d95a2"
+    },
+    "audit_repair_integration_article": {
+      "path": "docs/audit-repair-integration-pyramid.md",
+      "sha256": "a3660d19a85b7b885a28d2062c76b55e6157b9dd7bb4542ae1da362be8e1fc9e"
+    },
+    "roadmap_amendment": {
+      "path": "docs/roadmap.md",
+      "sha256": "a7acbd58e99b031ce64cbc612956302262e5b0540cd2ce36862dfbbdc0c507c9"
     }
   },
   "compatibility_only": {

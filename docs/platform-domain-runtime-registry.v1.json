@@ -1,7 +1,7 @@
 {
   "schema": "agentos.platform_domain_runtime_registry.v1",
   "version": 1,
-  "registry_status": "SOURCE_BACKED_PLATFORM_DOMAIN_ALIASES_PENDING_CLEARANCE",
+  "registry_status": "SIX_LOGICAL_PLATFORM_DOMAINS_OVER_THREE_EXISTING_VISIBLE_CUSTODIANS",
   "inventory_ref": "docs/feature-inventory.v1.json",
   "migration_ref": "docs/rapid-prototype-migration.v1.json",
   "authority_ref": "pyramiddevelopment.md",
@@ -9,11 +9,12 @@
   "scheduler_authority_ref": "AUDIT_DRIVEN_INTEGRATION_PYRAMID_WITH_HYBRID_SCHEDULER.md",
   "scheduler_authority_sha256": "3cef7fcb7897ad44f7975c1c6cb50cd20ca82cfa1ce1c3c8849c18de9aedda10",
   "expected_active_platform_lane_count": 3,
+  "expected_logical_platform_domain_count": 6,
   "platform_task_mode": "EXISTING_FEATURE_TASK_ALIAS",
   "active_platform_lanes": [
     {
       "lane_id": "PLATFORM_NATIVE_SESSION_EVIDENCE",
-      "domain_ids": ["NATIVE_SESSION_AND_EVIDENCE_CUSTODY"],
+      "domain_ids": ["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION", "CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE", "RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],
       "visible_task_ref": "019fdcfa-43dc-76a3-befa-c93580a3c808",
       "worktree_ref": "HOST_WORKTREE_C22B",
       "handoff_ref": "docs/platform-handoffs/native-session-evidence-platform-handoff.md",
@@ -23,7 +24,7 @@
     },
     {
       "lane_id": "PLATFORM_GATE_RESPONSE",
-      "domain_ids": ["GATE_CATALOG_AND_RESPONSE_GATING"],
+      "domain_ids": ["PORTABLE_KERNEL_GATES_CONTRACTS", "GOVERNANCE_INTENT_ROLES_ROUTING"],
       "visible_task_ref": "019fdcfb-d827-7831-958a-470c2abbe6eb",
       "worktree_ref": "HOST_WORKTREE_C3BA",
       "handoff_ref": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
@@ -33,7 +34,7 @@
     },
     {
       "lane_id": "PLATFORM_PRIVATE_CONTROL_MEMORY",
-      "domain_ids": ["PRIVATE_CONTROL_AND_MEMORY_MAPS"],
+      "domain_ids": ["PRIVATE_CONTROL_MEMORY_PROJECTIONS"],
       "visible_task_ref": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
       "worktree_ref": "HOST_WORKTREE_7C07",
       "handoff_ref": "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md",
@@ -49,18 +50,18 @@
     "preserved_without_reuse_as_platform_custody": true
   },
   "parity": {
-    "platform_domains": 3,
+    "platform_domains": 6,
     "visible_platform_tasks": 0,
     "platform_worktrees": 0,
     "platform_reports": 3,
     "platform_goals": 3,
-    "status": "SOURCE_BACKED_PLATFORM_DOMAIN_ALIASES_PRESERVED_PENDING_INDEPENDENT_CLEARANCE"
+    "status": "SIX_LOGICAL_DOMAINS_PRESERVED_OVER_THREE_PHYSICAL_CUSTODIANS_PENDING_INDEPENDENT_CLEARANCE"
   },
   "privacy": {
     "private_paths_persisted": false,
     "secrets_persisted": false,
     "chat_links_persisted": false
   },
-  "next_action": "INDEPENDENTLY_AUDIT_AND_MERGE_ONE_CUMULATIVE_PLATFORM_WORKTREE_BEFORE_FEATURE_ADMISSION",
+  "next_action": "RESUME_SIX_VISIBLE_FEATURE_SLOTS_AND_ADVANCE_EXISTING_PLATFORM_CURSORS_WITHOUT_CREATING_DUPLICATE_TASKS",
   "synthetic_task_creation": false
 }

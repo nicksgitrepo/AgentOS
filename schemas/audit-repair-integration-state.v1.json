@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.audit_repair_integration_state.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "project_id",
+    "campaign_id",
+    "workflow_ref",
+    "inventory_ref",
+    "platform_feature_map_ref",
+    "inventory_sha256",
+    "platform_feature_map_sha256",
+    "current_candidate",
+    "roadmap_03_checkpoint",
+    "feature_lane_policy",
+    "feature_queue_order",
+    "active_feature_slots",
+    "platform_owners",
+    "platform_pipeline",
+    "persistence",
+    "final_pre_host_states",
+    "next_action",
+    "state_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.audit_repair_integration_state.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "campaign_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,127}$"},
+    "workflow_ref": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"},
+    "inventory_ref": {"type": "string", "const": "docs/feature-inventory.v1.json"},
+    "platform_feature_map_ref": {"type": "string", "const": "docs/platform-feature-map.v1.json"},
+    "inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "platform_feature_map_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "current_candidate": {"$ref": "#/$defs/candidate"},
+    "roadmap_03_checkpoint": {"$ref": "#/$defs/checkpoint"},
+    "feature_lane_policy": {"$ref": "#/$defs/policy"},
+    "feature_queue_order": {"type": "array", "minItems": 37, "items": {"type": "string"}},
+    "active_feature_slots": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/slot"}},
+    "platform_owners": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/owner"}},
+    "platform_pipeline": {"type": "object"},
+    "persistence": {"type": "object"},
+    "final_pre_host_states": {"type": "array", "const": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"]},
+    "next_action": {"type": "string"},
+    "state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worktree_id", "branch_ref", "commit", "tree", "working_tree", "status"],
+      "properties": {
+        "worktree_id": {"type": "string"},
+        "branch_ref": {"type": "string"},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "working_tree": {"const": "CLEAN"},
+        "status": {"type": "string"}
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feature_id", "handoff_ref", "report_ref", "status", "integrated_commit", "integrated_tree", "source_hygiene_status", "activation_status"],
+      "properties": {
+        "feature_id": {"const": "ROADMAP_03_CONTROLLER_INTENT"},
+        "handoff_ref": {"type": "string"},
+        "report_ref": {"type": "string"},
+        "status": {"type": "string"},
+        "integrated_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "integrated_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_hygiene_status": {"type": "string"},
+        "activation_status": {"const": "PREPARED_NOT_ACTIVATED"}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_active_slots", "fill_rule", "model", "reasoning_effort", "lane_cycle", "feature_self_merge", "feature_self_acceptance", "peer_worktree_edits", "protected_runtime_bypass", "report_rule", "archive_rule"],
+      "properties": {
+        "target_active_slots": {"const": 6},
+        "fill_rule": {"const": "MINIMUM_OF_SIX_ELIGIBLE_FEATURES"},
+        "model": {"const": "gpt-5.6-luna"},
+        "reasoning_effort": {"const": "max"},
+        "lane_cycle": {"type": "array", "const": ["AUDIT", "SMALLEST_REPAIR", "HOSTILE_SELF_AUDIT", "AFFECTED_PROOF", "HANDOFF"]},
+        "feature_self_merge": {"const": false},
+        "feature_self_acceptance": {"const": false},
+        "peer_worktree_edits": {"const": false},
+        "protected_runtime_bypass": {"const": false},
+        "report_rule": {"const": "APPEND_ONLY_ENDING_CURRENT_STATE"},
+        "archive_rule": {"type": "string"}
+      }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot_id", "feature_id", "task_id", "worktree_id", "branch_ref", "base_commit", "base_tree", "report_ref", "platform_return_owner", "cycle_goal_id", "cycle_goal_sha256", "observed_worktree_status", "admission_status"],
+      "properties": {
+        "slot_id": {"type": "string"},
+        "feature_id": {"type": "string"},
+        "task_id": {"type": "string"},
+        "worktree_id": {"type": "string"},
+        "branch_ref": {"type": "string"},
+        "base_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "base_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "report_ref": {"type": "string"},
+        "platform_return_owner": {"type": "string"},
+        "cycle_goal_id": {"type": "string"},
+        "cycle_goal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "observed_worktree_status": {"type": "string"},
+        "admission_status": {"type": "string"}
+      }
+    },
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane_id", "task_id", "worktree_id", "model", "reasoning_effort", "domain_ids", "cursor"],
+      "properties": {
+        "lane_id": {"type": "string"},
+        "task_id": {"type": "string"},
+        "worktree_id": {"type": "string"},
+        "model": {"const": "gpt-5.6-luna"},
+        "reasoning_effort": {"const": "max"},
+        "domain_ids": {"type": "array", "items": {"type": "string"}},
+        "cursor": {"type": "string"}
+      }
+    }
+  }
+}

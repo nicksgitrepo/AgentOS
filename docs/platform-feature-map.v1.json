@@ -1,0 +1,98 @@
+{
+  "schema": "agentos.platform_feature_map.v1",
+  "version": 1,
+  "status": "SOURCE_BOUND_PREPARED_NOT_ACTIVATED",
+  "inventory_ref": "docs/feature-inventory.v1.json",
+  "inventory_sha256": "ac147fceec305b4eb15d0ca3295d4b61499b5df15d7527faec674950b63c5bcc",
+  "deduplication_rule": "Features with the same canonical_root_cause_id share one root-cause transaction and may not create competing implementations. A feature keeps its own visible task and report, but its repair must consume the shared transaction record.",
+  "platform_domains": [
+    {
+      "domain_id": "PORTABLE_KERNEL_GATES_CONTRACTS",
+      "name": "Portable Kernel, Declarative Gates, and Typed Contracts",
+      "owner_lane_id": "PLATFORM_GATE_RESPONSE",
+      "owner_task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+      "owner_worktree_id": "HOST_WORKTREE_C3BA",
+      "source_refs": ["control/governance-decision-tree.mjs", "control/task-gate-questions.mjs", "control/four-library-governance.mjs", "docs/roadmap.md"]
+    },
+    {
+      "domain_id": "GOVERNANCE_INTENT_ROLES_ROUTING",
+      "name": "Governance Composition, Intent Regulation, Roles, and Task Routing",
+      "owner_lane_id": "PLATFORM_GATE_RESPONSE",
+      "owner_task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+      "owner_worktree_id": "HOST_WORKTREE_C3BA",
+      "source_refs": ["control/intent-regulator-runtime.mjs", "control/feature-lane-goal.mjs", "control/dynamic-project-lanes.mjs", "docs/roadmap.md"]
+    },
+    {
+      "domain_id": "NATIVE_HOST_WORKSPACE_PROVIDER_SESSION",
+      "name": "Native Host, Workspace Isolation, Provider Capability, and Session Boundary",
+      "owner_lane_id": "PLATFORM_NATIVE_SESSION_EVIDENCE",
+      "owner_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "owner_worktree_id": "HOST_WORKTREE_C22B",
+      "source_refs": ["control/native-host-attachment.mjs", "control/native-session-runner.mjs", "control/control-plane-root.mjs", "docs/platform-handoffs/native-session-evidence-platform-handoff.md"]
+    },
+    {
+      "domain_id": "CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE",
+      "name": "Campaign Lifecycle, Evidence Identity, Handoffs, Recovery, and Acceptance",
+      "owner_lane_id": "PLATFORM_NATIVE_SESSION_EVIDENCE",
+      "owner_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "owner_worktree_id": "HOST_WORKTREE_C22B",
+      "source_refs": ["control/audit-driven-integration-pyramid.mjs", "control/campaign-lifecycle.mjs", "control/platform-foundation-merge.mjs", "docs/platform-handoffs/native-session-evidence-platform-handoff.md"]
+    },
+    {
+      "domain_id": "PRIVATE_CONTROL_MEMORY_PROJECTIONS",
+      "name": "Private Control, Project Memory, Replay, Projections, Capsules, and Bounded Intelligence",
+      "owner_lane_id": "PLATFORM_PRIVATE_CONTROL_MEMORY",
+      "owner_task_id": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
+      "owner_worktree_id": "HOST_WORKTREE_7C07",
+      "source_refs": ["control/private-control-storage.mjs", "control/project-memory.mjs", "control/project-map.mjs", "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md"]
+    },
+    {
+      "domain_id": "RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE",
+      "name": "Release Compatibility, Migration, Delivery and Closure, Security and Privacy, and Owner/Public Surface",
+      "owner_lane_id": "PLATFORM_NATIVE_SESSION_EVIDENCE",
+      "owner_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "owner_worktree_id": "HOST_WORKTREE_C22B",
+      "source_refs": ["control/platform-foundation-merge.mjs", "control/campaign-acceptance-contract.mjs", "control/owner-review.mjs", "docs/roadmap.md"]
+    }
+  ],
+  "feature_mappings": [
+    {"feature_id":"ROADMAP_01_PORTABLE_KERNEL","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
+    {"feature_id":"ROADMAP_02_LAYERED_GOVERNANCE","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PRIVATE_CONTROL_MEMORY_PROJECTIONS"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
+    {"feature_id":"ROADMAP_03_CONTROLLER_INTENT","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PORTABLE_KERNEL_GATES_CONTRACTS","NATIVE_HOST_WORKSPACE_PROVIDER_SESSION"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"ROADMAP_05_LOCAL_ADAPTERS","primary_platform_domain":"NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_HOST_BOUNDARY"},
+    {"feature_id":"ROADMAP_06_CAMPAIGN_LIFECYCLE","primary_platform_domain":"CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","GOVERNANCE_INTENT_ROLES_ROUTING"],"canonical_root_cause_id":"ROOT_CAMPAIGN_PROOF"},
+    {"feature_id":"ROADMAP_07_PROOF_ACCEPTANCE","primary_platform_domain":"CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","affected_platform_domains":["PORTABLE_KERNEL_GATES_CONTRACTS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_CAMPAIGN_PROOF"},
+    {"feature_id":"ROADMAP_08_MEMORY_CAPSULES","primary_platform_domain":"PRIVATE_CONTROL_MEMORY_PROJECTIONS","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_MEMORY_PROJECTIONS"},
+    {"feature_id":"ROADMAP_09_RELEASE_MIGRATION","primary_platform_domain":"RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","PRIVATE_CONTROL_MEMORY_PROJECTIONS"],"canonical_root_cause_id":"ROOT_RELEASE_SURFACE"},
+    {"feature_id":"ROADMAP_10_MAPS_INTELLIGENCE","primary_platform_domain":"PRIVATE_CONTROL_MEMORY_PROJECTIONS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_MEMORY_PROJECTIONS"},
+    {"feature_id":"ROADMAP_11_WORKFLOW_DISTILLATION","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"ROADMAP_12_REMOTE_DELIVERY","primary_platform_domain":"RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_RELEASE_SURFACE"},
+    {"feature_id":"BOOTSTRAP_PROJECT_CONTRACT","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PRIVATE_CONTROL_MEMORY_PROJECTIONS"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
+    {"feature_id":"DYNAMIC_OWNER_CONVERSATION","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PORTABLE_KERNEL_GATES_CONTRACTS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"FOUR_LIBRARY_GOVERNANCE","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PRIVATE_CONTROL_MEMORY_PROJECTIONS"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
+    {"feature_id":"PROJECT_GOVERNANCE_PERSISTENCE","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"PERSISTENT_INTENT_RUNTIME","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"NATIVE_HOST_SESSION_LIFECYCLE","primary_platform_domain":"NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_HOST_BOUNDARY"},
+    {"feature_id":"DYNAMIC_PROJECT_LANES","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"PARALLEL_CAMPAIGN_LIFECYCLE","primary_platform_domain":"CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","NATIVE_HOST_WORKSPACE_PROVIDER_SESSION"],"canonical_root_cause_id":"ROOT_CAMPAIGN_PROOF"},
+    {"feature_id":"MODEL_TASK_ROUTING","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"PROJECT_MEMORY_LEDGER","primary_platform_domain":"PRIVATE_CONTROL_MEMORY_PROJECTIONS","affected_platform_domains":["PORTABLE_KERNEL_GATES_CONTRACTS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_MEMORY_PROJECTIONS"},
+    {"feature_id":"BOUNDED_PROJECT_MAPS","primary_platform_domain":"PRIVATE_CONTROL_MEMORY_PROJECTIONS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_MEMORY_PROJECTIONS"},
+    {"feature_id":"OFFLINE_LOCAL_MODE","primary_platform_domain":"NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_HOST_BOUNDARY"},
+    {"feature_id":"PROVIDER_DISCOVERY","primary_platform_domain":"NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_HOST_BOUNDARY"},
+    {"feature_id":"PRIVATE_CONTROL_INSTANCE","primary_platform_domain":"NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_HOST_BOUNDARY"},
+    {"feature_id":"RELEASE_CANDIDATE_ROLLOUT","primary_platform_domain":"RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_RELEASE_SURFACE"},
+    {"feature_id":"APPRENTICESHIP_WORKFLOW_LEARNING","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"NAMED_GATE_DECISION_TREE","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
+    {"feature_id":"EVIDENCE_IDENTITY_HANDOFFS","primary_platform_domain":"CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_CAMPAIGN_PROOF"},
+    {"feature_id":"REPAIR_RECOVERY_LOOP","primary_platform_domain":"CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","NATIVE_HOST_WORKSPACE_PROVIDER_SESSION"],"canonical_root_cause_id":"ROOT_CAMPAIGN_PROOF"},
+    {"feature_id":"DELIVERY_CLOSURE_BOUNDARY","primary_platform_domain":"CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","affected_platform_domains":["RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE","NATIVE_HOST_WORKSPACE_PROVIDER_SESSION"],"canonical_root_cause_id":"ROOT_CAMPAIGN_PROOF"},
+    {"feature_id":"SECURITY_PRIVACY_PERSISTENCE","primary_platform_domain":"RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","NATIVE_HOST_WORKSPACE_PROVIDER_SESSION"],"canonical_root_cause_id":"ROOT_RELEASE_SURFACE"},
+    {"feature_id":"OWNER_PUBLIC_SURFACE","primary_platform_domain":"RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE","affected_platform_domains":["PORTABLE_KERNEL_GATES_CONTRACTS","GOVERNANCE_INTENT_ROLES_ROUTING"],"canonical_root_cause_id":"ROOT_RELEASE_SURFACE"},
+    {"feature_id":"UNIVERSAL_RESPONSE_GATING","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
+    {"feature_id":"PORTABILITY_SOURCE_HYGIENE","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"}
+  ],
+  "map_sha256": "9e24e22e9e7056cd2c3dca0f799ac5f7cee44b53d351c31bd8566d1b3cec7bb0"
+}

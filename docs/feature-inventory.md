@@ -12,11 +12,14 @@ The inventory deliberately separates two kinds of work:
   security, evidence, recovery, and delivery.
 
 Platform domains are a separate, source-discovered table. They are not the
-governance audit lanes. An active platform domain is admitted only when the
-source proves a material cross-feature surface; dormant, absent, and parity-
-held domains do not receive active tasks, worktrees, reports, or goals. The
-current migration has no proven active platform domain, so the platform roster
-is intentionally empty rather than padded with placeholder tasks.
+governance audit lanes. The current amendment defines six logical domains in
+`docs/platform-feature-map.v1.json`: Portable Kernel/Gates/Contracts;
+Governance/Intent/Roles/Routing; Native Host/Workspace/Provider/Session;
+Campaign/Evidence/Handoffs/Recovery/Acceptance; Private Control/Memory/
+Projections/Capsules/Bounded Intelligence; and Release/Migration/Delivery/
+Security/Owner Surface. The three existing visible platform custodians remain
+explicit aliases over those domains. No duplicate platform task or worktree is
+created merely to satisfy the taxonomy.
 
 The required logical parity is therefore 49 assigned auditor tasks, 49
 isolated-worktree assignments, 49 append-only `auditreport.md` files, and 49
@@ -35,10 +38,11 @@ mismatched runtime records fail closed as visible-task parity failure.
 The current campaign has logical inventory parity: 37 feature assignments and
 37 feature reports are present, alongside the 12 governance-lane assignments
 and reports. The reports are not all clean; their individual audit and builder
-states remain the authoritative worklist for the next consolidation cycle.
+states remain the authoritative worklist for the rolling six-slot cycle.
 Runtime-visible task parity is not claimed until the external registry is
-provided and independently reconciled. The current campaign therefore remains
-held before workflow admission when that registry is absent.
+provided and independently reconciled. The six admitted feature slots remain
+source-bound and pending visible-task readback where the host has not yet
+rebound a stale worktree to the current candidate.
 
 Each feature auditor must use the current accepted merge worktree selected by
 the parent cycle as its read-only baseline, create its own visible task goal,

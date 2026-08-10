@@ -1,16 +1,18 @@
 # Preserved platform handoff index
 
 > Historical preservation index: these twelve records came from the former
-> governance-lane/platform-foundation batch. Current active platform domains
-> are discovered from `docs/feature-inventory.v1.json` and are distinct from
-> these preserved governance audit records. This index is evidence custody,
-> not an active platform roster or a feature-admission gate.
+> governance-lane/platform-foundation batch. Current logical Platform domains
+> are defined by `docs/platform-feature-map.v1.json` and are distinct from
+> these preserved governance audit records. This index is evidence custody;
+> the current feature-admission gate is the Audit–Repair Integration Pyramid.
 
 This index is the Controller-owned preservation receipt for the first
 platform-foundation phase. Twelve visible platform lanes handed off their
 records before their temporary tasks were removed from active scope, unpinned,
-and archived. Feature-lane admission remains on hold until the Controller
-independently audits and merges one compatible platform tree.
+and archived. Feature-lane admission now follows the accepted platform
+foundation and the rolling six-slot Controller state. Platform owners continue
+independent intake and cumulative repair while feature lanes work; central
+admission still waits for terminal feature disposition and current proof.
 
 | Lane | Preserved record | Closeout state |
 | --- | --- | --- |
