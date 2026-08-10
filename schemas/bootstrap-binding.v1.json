@@ -1206,15 +1206,15 @@
     },
     "roadmap03_controller_intent_audit_report": {
       "path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
-      "sha256": "98ccfc65e123a4381a49b6bfc4cadca01fd9c239a30edba01f98a2c86857c63a"
+      "sha256": "aeeaea94525d0174be0b2b43f8bdcd5bbe9157efcbc52fa7896f454b6dc99184"
     },
     "roadmap03_controller_intent_handoff": {
       "path": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
-      "sha256": "abed112a5faf8a4906c6b7df85c1dc888d894bb48a4e202304f33b352a982c7b"
+      "sha256": "2c3f77d3ce8a104855e093e447710acde4c00c12a4a6666640e0eadbacbe5d0a"
     },
     "feature_wave_intake_2026_08_09": {
       "path": "docs/platform-handoffs/feature-wave-intake-2026-08-09.md",
-      "sha256": "c3cca18771e803b4797b540a906b69a76af3af23d781365c73fd3ec7602d4207"
+      "sha256": "de60172bed3b1fef0a899781d56ec3807f247c5a707576fe52a4c4cd16291b37"
     },
     "bootstrap_safety_controller": {
       "path": "control/bootstrap-safety-analysis.mjs",

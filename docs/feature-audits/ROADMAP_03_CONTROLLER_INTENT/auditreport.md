@@ -294,3 +294,11 @@ verifier, and documentation are now part of the candidate binding. Functional
 execution remains intentionally pending. The same source-hygiene repair was
 applied to the role-governance validator and to generic synthetic fixtures in
 the portability, README, and aggregate verifiers.
+
+### Local cumulative preservation receipt
+
+- local_candidate_commit: `770f4ddff9afc73ec8795954bb6abaaeeff32873`
+- local_candidate_tree: `6c59dfbdbb1bb21102c6f6ace0f030d7477ffc23`
+- candidate_state: `LOCAL_INTEGRATION_COMMITTED_PENDING_FUNCTIONAL_TESTS`
+- push_state: `NOT_PUSHED`
+- activation_state: `PREPARED_NOT_ACTIVATED`

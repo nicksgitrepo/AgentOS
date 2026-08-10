@@ -63,6 +63,10 @@ must preserve that custody boundary before any binding refresh or activation.
 - source_baseline_tree: `7a3526b2d0d1718a69b2524a86bbfd5ba591687d`
 - downstream_domain_selection: `PENDING_CONTROLLER_MATRIX_REVIEW`
 - source_disposition: `CONTROLLER_INTENT_REPAIR_AND_GENERIC_SOURCE_HYGIENE_INTEGRATED`
+- local_candidate_commit: `770f4ddff9afc73ec8795954bb6abaaeeff32873`
+- local_candidate_tree: `6c59dfbdbb1bb21102c6f6ace0f030d7477ffc23`
+- candidate_state: `LOCAL_INTEGRATION_COMMITTED_PENDING_FUNCTIONAL_TESTS`
+- push_state: `NOT_PUSHED`
 - functional_status: `NOT_RUN_BY_INSTRUCTION`
 - activation_status: `PREPARED_NOT_ACTIVATED`
 - archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
