@@ -918,15 +918,15 @@
     },
     "platform_foundation_independent_audit": {
       "path": "docs/platform-foundation-independent-audit.md",
-      "sha256": "e32b6cf9bbe2d6624ac7b9b77475cb1f394684efedf2ce7b65db72aa0e184fe8"
+      "sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3"
     },
     "platform_foundation_merge_receipt": {
       "path": "docs/platform-foundation-merge-receipt.md",
-      "sha256": "6f869a43d38ddbfacfc6a9f929038f2b524fa9a7c14055e87f9e74d67f2d5cbf"
+      "sha256": "25ff5f02a8f2404ffa4d9228cedcd2d43985ebcb1ac388f602b4ff85a273df68"
     },
     "platform_foundation_merge_receipt_instance": {
       "path": "docs/platform-handoffs/platform-foundation-merge-receipt-2026-08-09.json",
-      "sha256": "b350f5eeace77e22f9cf7fc991dbf97bce9a63303dfd752177fc0872bec74d62"
+      "sha256": "202bf7ddc0d5272d8edd9d9a935400f20b3b715f1efdbd2adfa4d7b0f4b83319"
     },
     "platform_handoff_index": {
       "path": "docs/platform-handoffs/index.md",

@@ -229,4 +229,24 @@ The merge compiler now requires the full canonical feature-inventory digest
 instead of deriving a digest from the receipt's compact count summary. The
 executable receipt binds the current full-inventory digest and validates its
 own refreshed merge digest. This closes a real admission mismatch; it does not
-remove the dirty-source, independent-clearance, or functional-proof holds.
+remove the functional-proof hold.
+
+## Clean platform seed clearance — 2026-08-09
+
+The preserved dirty assembly was copied into a separate cumulative platform
+seed without changing the original evidence worktree. The seed is now the
+source-bound platform candidate:
+
+- Worktree: `AgentOS-platform-seed`
+- Commit: `bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac`
+- Tree: `40d495f1599cd0b0f07de83748b74253b526b145`
+- Working tree: `CLEAN`
+
+The Controller's independent static audit accepted the seed for feature-wave
+admission. Functional and live-host proof remain pending, so this is not a
+production release claim. The platform merge receipt records
+`PLATFORM_MERGE_ACCEPTED` with `feature_admission: READY` and binds all
+subsequent feature work to this exact seed.
+
+Integration receipt: `ref:platform-integration-2026-08-09`.
+Candidate receipt: `ref:platform-seed-bd6c462`.

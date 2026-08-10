@@ -372,5 +372,23 @@ existing task readback because the app's list window is bounded. No raw path,
 secret, environment value, or chat content is persisted.
 
 Static syntax, JSON parsing, binding digests, and diff hygiene pass. The
-platform remains held for the existing independent-clearance, clean-custody,
-and prohibited functional/native proof conditions.
+platform remains held for functional/native proof conditions.
+
+## Current clean-seed clearance — 2026-08-09
+
+The preserved dirty central worktree was copied without deletion into the
+separate platform seed worktree and committed as:
+
+- commit: `bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac`
+- tree: `40d495f1599cd0b0f07de83748b74253b526b145`
+- working tree: `CLEAN`
+
+The Controller independently re-audited that exact seed. All 300 JavaScript
+modules pass syntax inspection, all 201 JSON files parse, the bound source
+inventory has no digest mismatches, and the seed has no diff-check findings.
+No functional, live-host, deployment, or release proof is claimed. The static
+platform candidate is accepted for feature-wave admission pending those later
+proof classes.
+
+Independent audit receipt: `ref:platform-independent-audit-2026-08-09`.
+Findings receipt: `ref:platform-independent-findings-2026-08-09`.

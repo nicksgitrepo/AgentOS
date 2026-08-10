@@ -1,12 +1,12 @@
 {
   "schema": "agentos.platform_foundation_merge_receipt.v1",
   "version": 1,
-  "status": "PLATFORM_MERGE_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE",
+  "status": "PLATFORM_MERGE_ACCEPTED",
   "activation_status": "PREPARED_NOT_ACTIVATED",
   "source": {
-    "commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
-    "tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
-    "working_tree": "DIRTY"
+    "commit": "bd6c46253d921b94dd9b308ffaf93cfbcfe1bcac",
+    "tree": "40d495f1599cd0b0f07de83748b74253b526b145",
+    "working_tree": "CLEAN"
   },
   "foundation_receipt_sha256": "bade4a617761758e17519a02574d16c036732545a9e5fd6f7e3f5c46ce663c8c",
   "inventory_sha256": "7e5f003cfb25f707b1ad0760dcae9ee0f635e5a126a3f3c1e1869dafb1e8ce80",
@@ -134,16 +134,16 @@
     "candidate_sha256": "4371cc13674e6b67a943f059fa01c814196f0ea66a9180e1051e8e53949264dc"
   },
   "independent_audit": {
-    "status": "PENDING",
-    "receipt_ref": null,
-    "findings_ref": null
+    "status": "ACCEPTED",
+    "receipt_ref": "ref:platform-independent-audit-2026-08-09",
+    "findings_ref": "ref:platform-independent-findings-2026-08-09"
   },
   "integration": {
-    "status": "PENDING",
-    "receipt_ref": null,
-    "candidate_ref": null
+    "status": "ACCEPTED",
+    "receipt_ref": "ref:platform-integration-2026-08-09",
+    "candidate_ref": "ref:platform-seed-bd6c462"
   },
-  "feature_admission": "HOLD",
+  "feature_admission": "READY",
   "universal_closeout": {
     "mode": "ALL_DEVELOPMENT_MODES",
     "applies_to": ["APPRENTICESHIP", "BOOTSTRAP", "CAMPAIGN", "CASCADE", "ITERATION", "IMPORT", "RAPID_PROTOTYPE", "RAPID_PROTOTYPING", "ALL_DEVELOPMENT_MODES"],
@@ -159,5 +159,5 @@
     "archive_requires_stale_worktree_closed": true,
     "archive_preconditions": ["HANDOFF_PRESERVED", "HANDOFF_PERSISTED", "CANDIDATE_INDEPENDENTLY_AUDITED", "WORKTREE_INTEGRATED", "STALE_WORKTREE_CLOSED", "ACTIVE_TASK_SCOPE_REMOVED", "CHAT_OUT_OF_SCOPE"]
   },
-  "merge_sha256": "6e77937fdd4f97dd14ed0cd66dca912d12d2c1d46637f450bcfd4e8c10677646"
+  "merge_sha256": "a81e632b6928911d03542dbbc0dde7020120095f3a585b6ad9d40d8680c440ce"
 }
