@@ -635,3 +635,16 @@ The Controller consumed the typed handoff after checking its source checkpoint
 and changed-path list. Static syntax, schema parsing, module loading, privacy
 scan, and diff hygiene passed. Functional execution, activation, release,
 push, and archive remain outside this intake.
+
+## Local candidate preservation receipt — 2026-08-09
+
+- code_candidate_commit: `b9c1dcd524dabd8b3d7248e38693e9ce9cd915e1`
+- code_candidate_tree: `b31f00136f614d0b99676612550a17cd9dec4ce1`
+- candidate_state: `LOCAL_INTEGRATION_COMMITTED_PENDING_FUNCTIONAL_TESTS`
+- push_state: `NOT_PUSHED`
+- activation_state: `PREPARED_NOT_ACTIVATED`
+
+The layered feature code and its source-bound evidence are preserved in the
+new cumulative integration branch. This local commit is not a release or
+activation decision; functional execution and downstream platform review
+remain pending.

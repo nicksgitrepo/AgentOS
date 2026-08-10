@@ -43,3 +43,12 @@ The Layered Governance handoff is available for review by the existing
 platform-domain matrix. No new platform task was created. The Bootstrap
 question-map refresh remains an explicit owner-lane seam; downstream review
 must preserve that custody boundary before any binding refresh or activation.
+
+### Local cumulative preservation receipt
+
+- feature: `ROADMAP_02_LAYERED_GOVERNANCE`
+- local_candidate_commit: `b9c1dcd524dabd8b3d7248e38693e9ce9cd915e1`
+- local_candidate_tree: `b31f00136f614d0b99676612550a17cd9dec4ce1`
+- candidate_state: `LOCAL_INTEGRATION_COMMITTED_PENDING_FUNCTIONAL_TESTS`
+- push_state: `NOT_PUSHED`
+- activation_state: `PREPARED_NOT_ACTIVATED`
