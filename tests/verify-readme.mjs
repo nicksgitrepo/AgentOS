@@ -44,7 +44,7 @@ const startPrompt = "Use Bootstrap to evaluate this project and guide me through
 assert(readme.includes(startPrompt), "README is missing the canonical fresh-agent start instruction");
 
 const forbidden = [
-  ["Soc", "iuna"].join(""),
+  ["private", "-", "consumer"].join(""),
   ["/", "Users", "/"].join(""),
   ["nicks", "git", "repo"].join(""),
   ["chat", "gpt", "-conversation://"].join(""),

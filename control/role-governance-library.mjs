@@ -15,6 +15,7 @@ import {
   validateRoleDefinitionSource,
 } from "./governance-role-definitions.mjs";
 import {TASK_GATE_CATALOG_SHA256, TASK_GATE_QUESTIONS} from "./task-gate-questions.mjs";
+import {findPrivateContextLeaks} from "./private-context-detector.mjs";
 
 export const ROLE_GOVERNANCE_SCHEMA = "agentos.role_specific_governance_library.v1";
 export const ARCHITECTURE_SCHEMA = "agentos.governance_architecture.v1";
@@ -26,13 +27,8 @@ const UNIVERSAL_TASK_GATE_QUESTION_IDS = Object.freeze(TASK_GATE_QUESTIONS.map((
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
-const FORBIDDEN_PROJECT_LABEL = ["Soc", "iuna"].join("");
-const USER_PATH_SEGMENT = ["User", "s"].join("");
-const FORBIDDEN_ROLE_NAME = new RegExp(`(?:feature\\s*agent|generic|shell|recursive|provider|project|${FORBIDDEN_PROJECT_LABEL})`, "iu");
-const FORBIDDEN_ABSOLUTE_USER_PATH = ["/", "Users", "/"].join("");
-const FORBIDDEN_WINDOWS_USER_PATH = ["\\\\", USER_PATH_SEGMENT, "\\\\"].join("");
-const FORBIDDEN_HOME_PATH = ["/", "home", "/"].join("");
-const FORBIDDEN_PUBLIC_CONTENT = new RegExp(`(?:${FORBIDDEN_ABSOLUTE_USER_PATH}|${FORBIDDEN_WINDOWS_USER_PATH}|${FORBIDDEN_HOME_PATH}|[A-Za-z]:\\\\${USER_PATH_SEGMENT}\\\\|feature\\s*agent|generic|shell|recursive|provider|credential|password|secret|api[_-]?key|account[_-]?identity|deployment[_-]?identity)`, "iu");
+const FORBIDDEN_ROLE_NAME = /(?:feature\s*agent|generic|shell|recursive|provider|project)/iu;
+const FORBIDDEN_ROLE_CONTENT = /(?:feature\s*agent|generic|shell|recursive|provider|account[_-]?identity|deployment[_-]?identity)/iu;
 const ROLE_METADATA_KEYS = ["role_scope", "role_kind", "lane_id"];
 
 function assert(condition, message) {
@@ -102,7 +98,8 @@ function digestWithout(value, field) {
 }
 
 function assertPortable(value, label) {
-  assert(!FORBIDDEN_PUBLIC_CONTENT.test(JSON.stringify(value)), `${label} contains private, secret, provider-bound, or generic role content`);
+  const text = JSON.stringify(value);
+  assert(findPrivateContextLeaks(text).length === 0 && !FORBIDDEN_ROLE_CONTENT.test(text), `${label} contains private, secret, provider-bound, or generic role content`);
 }
 
 function defaultRoleScope(role) {
@@ -311,7 +308,7 @@ function normalizeWorkerLane(lane, index, template, questions) {
   ]});
   const rawLaneId = firstDefined(lane, ["lane_id", "laneId", "name", "id"]);
   requireString(rawLaneId, `worker lane ${index} ID`);
-  assert(!FORBIDDEN_PUBLIC_CONTENT.test(rawLaneId) && !FORBIDDEN_ROLE_NAME.test(rawLaneId), `worker lane ${index} is not an admitted named lane`);
+  assert(findPrivateContextLeaks(rawLaneId).length === 0 && !FORBIDDEN_ROLE_CONTENT.test(rawLaneId) && !FORBIDDEN_ROLE_NAME.test(rawLaneId), `worker lane ${index} is not an admitted named lane`);
   const normalizedLaneId = rawLaneId.trim().toUpperCase().replace(/[^A-Z0-9]+/gu, "_").replace(/^_+|_+$/gu, "");
   requireIdentifier(normalizedLaneId, `worker lane ${index} normalized ID`);
   const roleId = firstDefined(lane, ["role_id", "roleId"]) ?? `${template.role_id_prefix}${normalizedLaneId}`;

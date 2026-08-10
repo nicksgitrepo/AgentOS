@@ -2,6 +2,7 @@
 
 import crypto from "node:crypto";
 import {TASK_GATE_QUESTIONS, TASK_GATE_CATALOG_SHA256} from "./task-gate-questions.mjs";
+import {findPrivateContextLeaks} from "./private-context-detector.mjs";
 export {
   assertFeatureLaneGoalBinding,
   compileFeatureLaneGoal,
@@ -109,10 +110,6 @@ export const ARCHITECTURE_ACCEPTANCE_REQUIREMENTS = Object.freeze([
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
-const FORBIDDEN_PROJECT_LABEL = ["Soc", "iuna"].join("");
-const FORBIDDEN_ABSOLUTE_USER_PATH = ["/", "Users", "/"].join("");
-const FORBIDDEN_WINDOWS_USER_PATH = ["\\\\", "Users", "\\\\"].join("");
-const FORBIDDEN_PUBLIC_CONTENT = new RegExp(`(?:${FORBIDDEN_ABSOLUTE_USER_PATH}|${FORBIDDEN_WINDOWS_USER_PATH}|${FORBIDDEN_PROJECT_LABEL}|credential|password|api[_-]?key)`, "iu");
 const TASK_GATE_IDS = new Set(TASK_GATE_QUESTIONS.map((question) => question.question_id));
 
 const DEFAULT_CLAUSES = Object.freeze([
@@ -281,7 +278,7 @@ function sortedUniqueStrings(value, label, {allowEmpty = false} = {}) {
 
 function assertPortable(value, label) {
   const text = JSON.stringify(value);
-  assert(!FORBIDDEN_PUBLIC_CONTENT.test(text), `${label} contains private or provider-bound content`);
+  assert(findPrivateContextLeaks(text).length === 0, `${label} contains private or provider-bound content`);
 }
 
 export function universalTaskCloseoutPolicy(mode = "ALL_DEVELOPMENT_MODES") {

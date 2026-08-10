@@ -14,7 +14,7 @@
     },
     "readme_verifier": {
       "path": "tests/verify-readme.mjs",
-      "sha256": "97b2f653970bcc4eb91f7f7eb752ba5660551d89e8fdfdc8a413af173e120a4f"
+      "sha256": "f4ddec3183c26b9b3fb56b16d0ab8dc0ba73fc6d1f2036adda364e445a093f56"
     },
     "role_naming_verifier": {
       "path": "tests/verify-role-naming.mjs",
@@ -554,7 +554,7 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "fe06e3a53d9777d7c2f76828b6e874f3b7d6c5df63ce5158c82ca32f2c04ef66"
+      "sha256": "8f82a4c4d82176604b197d13c57a6830ecee304d310606362966f7b66b9f9f02"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
@@ -567,6 +567,10 @@
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
       "sha256": "d2ebe6a4c5f38cacfad88dd8875c0d28538bdee549411e776abc61fcc114b881"
+    },
+    "controller_intent_hardening_verifier": {
+      "path": "tests/verify-controller-intent-hardening.mjs",
+      "sha256": "a36b34bd2938f1a92c81c4b5df9f41ef513ac4d17afe4fe54afbb0c17b6d0513"
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",
@@ -774,7 +778,7 @@
     },
     "feature_inventory_contract": {
       "path": "docs/feature-inventory.v1.json",
-      "sha256": "1158a41164a39c4c24b6cf3aca38d44f6f2f976af4aa223c05add2f15d335d95"
+      "sha256": "c6c241df9075fd5bb9f324cc24ad83a239fa79a98bfe151ee11501279b659de2"
     },
     "feature_inventory_article": {
       "path": "docs/feature-inventory.md",
@@ -978,7 +982,7 @@
     },
     "governance_library_controller": {
       "path": "control/governance-library.mjs",
-      "sha256": "8b20ec5769573c9d96d1d73fdc433557326438fde36bd063f8a75e725f524dfa"
+      "sha256": "8d5f805dfbaa227517f0b71aa55fef1acc0d417fe0dd9c01d24dce2050eafce2"
     },
     "governance_library_contract": {
       "path": "schemas/governance-library.v1.json",
@@ -1036,13 +1040,29 @@
       "path": "tests/verify-governance-library.mjs",
       "sha256": "05775b089fef8a8e0115f35100fe69a83806381530b91eac04cad91def486546"
     },
+    "private_context_detector_controller": {
+      "path": "control/private-context-detector.mjs",
+      "sha256": "9164ae31f4182a1a46e9c4ccaa2b20e96c57cf41beabdf52e1254beb0a47b695"
+    },
+    "private_context_detector_contract": {
+      "path": "schemas/private-context-detector.v1.json",
+      "sha256": "849f0b408ecefff6b90bd60daefd9ee583927efac1027d788593632cd206a1bf"
+    },
+    "private_context_detector_verifier": {
+      "path": "tests/verify-private-context-detector.mjs",
+      "sha256": "2c1fc610fcbfdc5d5d7d0311765a548e89117b2f2b198d7bff9bb4c456811c11"
+    },
+    "private_context_detector_article": {
+      "path": "docs/private-context-detector.md",
+      "sha256": "f393e953786236bd4c63ffebf6d0c763be1fb87c23702d04754b68048bab0ea6"
+    },
     "governance_role_definitions_controller": {
       "path": "control/governance-role-definitions.mjs",
       "sha256": "963f0188da198c845c5c1a4fe9d267e8f370d4573ca86a163df0bf0fc2803e3e"
     },
     "role_governance_library_controller": {
       "path": "control/role-governance-library.mjs",
-      "sha256": "319a1ffb5a6d1b11c81687305221c577f85b19f31ac495eebec75a57d4bd420d"
+      "sha256": "0aa04b65588cce91f5b9562ef5eb331fcff3597c496fb3ac14a9ee08b8f9e55e"
     },
     "role_governance_library_verifier": {
       "path": "tests/verify-role-governance-library.mjs",
@@ -1142,7 +1162,7 @@
     },
     "portability_verifier": {
       "path": "tests/verify-portability.mjs",
-      "sha256": "5ad7ec6233016fb19945d314532c194702f3ecaa65aed0c35828ce9d34501265"
+      "sha256": "e076ee7967e896216a08426805dddc33bf6c6f193b51e50ebfc39826eafc5010"
     },
     "retained_failed_worktree_controller": {
       "path": "control/retained-failed-worktree.mjs",
@@ -1154,7 +1174,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "6e6aff4856cb96a3bb4dccc2ee2d2021cebacc6492091d65c13baf0be0696772"
+      "sha256": "b9002038d279a9d048059a766857ccb569981425c9af15fa64cd7605a6a655bb"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
@@ -1179,6 +1199,22 @@
     "source_hygiene_verifier": {
       "path": "tests/verify-source-hygiene.mjs",
       "sha256": "65c60cadf05a5f7323ce25e9e990db8492cacea3d01dcb6799924da8d58f1355"
+    },
+    "source_hygiene_repair_audit_2026_08_10": {
+      "path": "docs/source-hygiene-audit-2026-08-10.md",
+      "sha256": "a40e0857cacf7b15f61a81dbdbe29815d39d3f5cc4ff39d58cc0a321cca6a942"
+    },
+    "roadmap03_controller_intent_audit_report": {
+      "path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
+      "sha256": "98ccfc65e123a4381a49b6bfc4cadca01fd9c239a30edba01f98a2c86857c63a"
+    },
+    "roadmap03_controller_intent_handoff": {
+      "path": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
+      "sha256": "abed112a5faf8a4906c6b7df85c1dc888d894bb48a4e202304f33b352a982c7b"
+    },
+    "feature_wave_intake_2026_08_09": {
+      "path": "docs/platform-handoffs/feature-wave-intake-2026-08-09.md",
+      "sha256": "c3cca18771e803b4797b540a906b69a76af3af23d781365c73fd3ec7602d4207"
     },
     "bootstrap_safety_controller": {
       "path": "control/bootstrap-safety-analysis.mjs",

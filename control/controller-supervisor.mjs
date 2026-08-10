@@ -365,7 +365,8 @@ function actionGoal(action, observation) {
 export function compileSupervisorGoal({observation, goalId = null}) {
   validateSupervisorObservation(observation);
   const action = deriveSupervisorAction(observation);
-  const stableId = goalId ?? `CONTROLLER-GOAL-${observation.observation_sha256.slice(0, 16).toUpperCase()}`;
+  const stableId = `CONTROLLER-GOAL-${observation.observation_sha256.slice(0, 16).toUpperCase()}`;
+  if (goalId !== null) assert(goalId === stableId, "supervisor goal ID must be derived from the observation");
   requireIdentifier(stableId, "supervisor goal ID");
   const findings = observation.findings.filter((finding) => finding.status !== "RESOLVED").map((finding) => finding.finding_id).sort(compareUtf8);
   const goal = {

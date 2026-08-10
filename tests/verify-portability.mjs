@@ -98,11 +98,11 @@ for (const absolute of files.filter((entry) => entry.endsWith(".mjs"))) {
   }
 }
 
-const forbiddenProductIdentity = ["Soc", "iuna"].join("");
+const forbiddenProjectIdentityFixture = ["private", "-", "consumer"].join("");
 const forbiddenAbsolutePath = ["/", "Users", "/"].join("");
 const forbiddenRepositoryOwner = ["nicks", "git", "repo"].join("");
 const forbiddenStrings = [
-  forbiddenProductIdentity,
+  forbiddenProjectIdentityFixture,
   forbiddenAbsolutePath,
   forbiddenRepositoryOwner,
 ];

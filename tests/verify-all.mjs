@@ -12,8 +12,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HEX64 = /^[0-9a-f]{64}$/u;
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/iu;
 const PORTABLE_FORBIDDEN = [
-  new RegExp(["Soc", "iuna"].join(""), "iu"),
-  new RegExp(["soci", "una", "-canon"].join(""), "iu"),
+  new RegExp(["private", "-", "consumer"].join(""), "iu"),
+  new RegExp(["private", "-", "consumer", "-", "canon"].join(""), "iu"),
   new RegExp(["nicks", "git", "repo"].join(""), "iu"),
   new RegExp(["/", "Use", "rs", "/"].join(""), "u"),
   new RegExp(["chat", "gpt", "-conversation://"].join(""), "u"),

@@ -52,3 +52,23 @@ must preserve that custody boundary before any binding refresh or activation.
 - candidate_state: `LOCAL_INTEGRATION_COMMITTED_PENDING_FUNCTIONAL_TESTS`
 - push_state: `NOT_PUSHED`
 - activation_state: `PREPARED_NOT_ACTIVATED`
+
+## ROADMAP_03_CONTROLLER_INTENT
+
+- handoff_type: `FEATURE_WAVE_CANDIDATE_PENDING_TESTS`
+- candidate_status: `PRODUCTION_CANDIDATE_PENDING_FUNCTIONAL_AND_INDEPENDENT_CLEARANCE`
+- feature_report: `docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md`
+- feature_handoff: `docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md`
+- source_baseline_commit: `f0336c53ac5ffa63917891f481d56c4e5d6cce8f`
+- source_baseline_tree: `7a3526b2d0d1718a69b2524a86bbfd5ba591687d`
+- downstream_domain_selection: `PENDING_CONTROLLER_MATRIX_REVIEW`
+- source_disposition: `CONTROLLER_INTENT_REPAIR_AND_GENERIC_SOURCE_HYGIENE_INTEGRATED`
+- functional_status: `NOT_RUN_BY_INSTRUCTION`
+- activation_status: `PREPARED_NOT_ACTIVATED`
+- archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
+
+The existing visible Controller-Intent task was consumed directly. Its
+source-bound repair was integrated into the cumulative candidate, and the
+release-bound governance scanner now delegates public-context detection to the
+generic private-context detector. No new platform task was created and no
+unrelated worktree was modified.

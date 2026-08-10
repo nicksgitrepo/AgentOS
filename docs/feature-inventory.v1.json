@@ -117,7 +117,7 @@
       "report_path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
       "auditor_task_id": "019fdcf9-97f6-7200-bad2-6606d1259e99",
       "worktree_id": "HOST_WORKTREE_746B",
-      "status": "AUDIT_IN_PROGRESS"
+      "status": "FEATURE_HANDOFF_CONSUMED_PENDING_PLATFORM_REVIEW"
     },
     {
       "feature_id": "ROADMAP_04_TASK_ROUTING_CONTEXT",

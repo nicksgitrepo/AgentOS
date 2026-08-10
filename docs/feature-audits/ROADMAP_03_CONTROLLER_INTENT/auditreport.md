@@ -195,3 +195,102 @@ absent.
 - changed_path_disposition: continuous operating loop, schema, and focused verifier hardening integrated; binding refresh deferred until combined source is settled
 - functional_status: NOT_RUN_BY_INSTRUCTION
 - archive_status: WITHHELD_UNTIL_DOWNSTREAM_REVIEW
+Remaining findings: only F03-04. The next action is the clean-source functional and independent review handoff; until that evidence exists, keep the candidate prepared, inactive, and outside Product, deployment, publication, push, merge, release, credential, destructive, and external-action boundaries.
+
+## Cumulative wave-02 audit pass — 2026-08-09
+
+### Source authority and intent readback
+
+This pass audited the cumulative candidate on branch `codex/feature-integration-wave-02`, cumulative HEAD `f0336c53ac5ffa63917891f481d56c4e5d6cce8f`, cumulative tree `7a3526b2d0d1718a69b2524a86bbfd5ba591687d`, and the feature code candidate at commit `b9c1dcd524dabd8b3d7248e38693e9ce9cd915e1` with tree `b31f00136f614d0b99676612550a17cd9dec4ce1`. The cumulative candidate is the read-only source authority for this pass.
+
+The inventory still identifies `ROADMAP_03_CONTROLLER_INTENT` as `Controller-Owned Intent and Low-Chat Operation`, sourced from `docs/roadmap.md`, `schemas/controller-supervisor.v1.json`, and `schemas/continuous-operating-loop.v1.json`. The roadmap promise remains one Controller-owned goal/evidence/routing/repair/reassessment/closure authority, low-chat operation, bounded routine repair, hard owner boundaries, meaningful-progress distinction, and independent acceptance. `2.1rc` remains prepared and inactive.
+
+The wave-02 candidate adds or tightens the feature slice with shared canonical content addressing, privacy-safe persisted text, source-bound governance test-build identities, predecessor-bound repair evidence, exact host-receipt operation/session/source/progress bindings, source/intent stale-repair rejection, durable directory fsync after CAS rename, supervisor cadence documentation, and dedicated liveness/continuous-loop coverage. These are positive source changes and were read as authority; no Bootstrap or global binding file was cross-edited.
+
+### Wave finding F03-01-W02 — cumulative Controller still accepts a goal-ID override
+
+Severity: `HIGH`; classification: `REPAIRABLE_ENGINEERING_PUZZLE`; status before repair: `OPEN_REPAIR_REQUIRED`.
+
+Evidence: the cumulative candidate's `compileSupervisorGoal({observation, goalId})` still selected `goalId` when non-null, even though the schema and roadmap require one deterministic goal identity for an equivalent observation. The wave-02 focused verifier covered opaque route failure, liveness, and CAS behavior but did not supply a hostile mismatched goal ID.
+
+Why it matters: an outside caller could mint a second authoritative label for the same observation, weakening idempotency, predecessor custody, and low-chat continuation. This is a Controller-owned identity decision and cannot be delegated to a caller label.
+
+Recovery: derive `CONTROLLER-GOAL-<observation digest prefix>` unconditionally, reject a non-null mismatch, and preserve a hostile verifier. No shared policy, Bootstrap, binding-manifest, or platform file is needed for this repair.
+
+### Wave custody seam and evidence unknowns
+
+The new controller cadence schema names `OPERATIONS.HEARTBEAT_INTERVAL_MINUTES`, while the Bootstrap/global-policy and binding-manifest owners supply the typed policy value. This lane does not own those shared Bootstrap/binding files and made no semantic edit to them. Exact recovery is for the owning lane to refresh the settled policy/binding manifest, then the central Controller to rebind the supervisor cadence and source digest against that clean shared checkpoint. This is a custody seam, not a true blocker or permission to cross-edit.
+
+Owner-linked research records named by the inventory remain unavailable. Functional tests, schema-engine execution, clean isolated-tree acceptance, and independent clearance remain pending by instruction. No behavior is inferred from those unknowns.
+
+### Wave builder actions
+
+1. Preserve the prior report and materialize only the cumulative Controller Intent implementation, its exact schemas/verifiers, and the unchanged content-addressing/privacy support dependencies needed by that implementation.
+2. Repair F03-01-W02 in `control/controller-supervisor.mjs` and add the hostile mismatch case in the focused verifier.
+3. Reconcile the existing verifier expectations with the cumulative opaque route-error and privacy-safe host-failure shapes.
+4. Keep the Bootstrap/global-policy/binding-manifest seam explicit and untouched.
+5. Run static syntax/schema/whitespace/hygiene checks only; do not run functional tests or npm.
+
+## Wave-02 repair and self-audit
+
+The recorded repair is complete in the isolated worktree:
+
+- `compileSupervisorGoal` now derives the observation-bound goal ID unconditionally and rejects a mismatched caller value.
+- The cumulative loop's existing true-blocker guard, stale source/intent repair rejection, predecessor/test-build binding, exact host receipts, opaque error digest, privacy-safe text, and fsync-backed CAS persistence were preserved from authority without semantic alteration.
+- The cumulative supervisor's existing `opaque:error:<digest>` route-failure shape was preserved; the verifier now asserts raw route text is absent.
+- The feature hardening verifier now checks the repaired goal-ID rejection and the cumulative `error_digest` field.
+
+Changed paths in this wave are: `control/controller-supervisor.mjs`, `control/controller-supervisor-runtime.mjs`, `control/continuous-operating-loop.mjs`, `control/content-addressing.mjs`, `control/persisted-record-privacy.mjs`, `schemas/controller-supervisor.v1.json`, `schemas/continuous-operating-loop.v1.json`, `tests/verify-controller-supervisor.mjs`, `tests/verify-controller-intent-hardening.mjs`, `tests/verify-continuous-operating-loop.mjs`, `tests/verify-controller-supervisor-liveness.mjs`, and this append-only report. The two support modules are exact authority materializations; they were not semantically repaired. No unrelated or Bootstrap/binding file was changed.
+
+Static self-audit/re-audit evidence:
+
+- The Controller source differs from the cumulative code candidate only by the recorded goal-ID derivation/rejection.
+- The continuous loop, supervisor runtime, continuous-loop schema, focused continuous verifier, and liveness verifier match the cumulative source authority byte-for-byte.
+- The repaired goal ID is source-bound before goal validation/digesting; the hostile verifier supplies a valid-looking but mismatched override.
+- The wave-02 tests and schema now describe source-bound test-build identities, exact host receipts, opaque error digests, source/intent reassessment, true-blocker Intent Regulator routing, and directory-fsync persistence.
+- `node --check` passed for changed JavaScript files; changed JSON parsing passed; `git diff --check` passed. Functional verifiers were not run and no npm command was used.
+- No absolute machine paths, private links, credentials, provider tokens, task identities, deployment identities, or chat links were added to the report or handoff.
+
+Wave disposition:
+
+- F03-01-W02: `RESOLVED_PENDING_TESTS`.
+- Prior F03-02, F03-03, and F03-05: `RESOLVED_IN_CUMULATIVE_SOURCE_PENDING_TESTS`; the stronger wave-02 authority implementation preserves their repairs.
+- Prior F03-04: `OPEN_NEXT_REQUIRED_BEHAVIOR`; functional and independent acceptance evidence remains the only feature finding.
+- Bootstrap/global-policy/binding-manifest seam: `DEFERRED_TO_OWNER`; exact recovery is recorded above and no cross-edit was made.
+
+Wave lenses: quality `PASS_PENDING_TESTS`; hygiene/minimality `PASS` for the feature-owned repair and exact dependencies; security/privacy `PASS_STATICALLY`; durability `PASS_STATICALLY_PENDING_CLEAN-TREE_REVIEW`; regression `UNPROVEN`; custody `PASS` for Controller/Orchestrator/Auditor separation with the shared policy seam deferred; boundary `PASS_STATICALLY`; intent `ALIGNED_AFTER_REPAIR`.
+
+## Typed source-bound handoff — wave-02
+
+Handoff status: `PRODUCTION_CANDIDATE_PENDING_FUNCTIONAL_AND_INDEPENDENT_CLEARANCE`.
+
+The candidate is coherent for downstream consumption at the exact source authority recorded above. It is prepared but not functionally accepted, independently cleared, activated, released, merged, pushed, deployed, published, or archived. `2.1rc` remains `PREPARED_NOT_ACTIVATED`.
+
+The handoff record is `docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md`. It binds this feature, the cumulative/code-candidate commit and tree identities, the append-only audit report, the exact changed paths, the remaining F03-04 evidence requirement, and the Bootstrap/global-policy custody seam.
+
+Exact next action: on a clean candidate tree, run `tests/verify-controller-supervisor.mjs`, `tests/verify-controller-supervisor-liveness.mjs`, `tests/verify-continuous-operating-loop.mjs`, `tests/verify-controller-intent-hardening.mjs`, and the approved parent suite without npm; then have an independent checker inspect the source-bound records and append the results before any activation decision. The shared Bootstrap/binding owner must separately refresh the policy/manifests before cadence/source binding is claimed complete.
+
+## Central integration intake — 2026-08-10
+
+- visible_task_ref: `019fdcf9-97f6-7200-bad2-6606d1259e99`
+- isolated_worktree_ref: `WORKTREE_REF_746B`
+- source_baseline_head: `f0336c53ac5ffa63917891f481d56c4e5d6cce8f`
+- source_baseline_tree: `7a3526b2d0d1718a69b2524a86bbfd5ba591687d`
+- isolated_report_sha256: `8dbf0bdb903eef1190328eeaa49a53f5f95a8ebee54942698bb6c9f81421545e`
+- central_disposition: `SOURCE_BOUND_CONTROLLER_REPAIR_INTEGRATED_PENDING_STATIC_REVIEW`
+- changed_path_disposition: `CONTROLLER_INTENT_REPAIR_AND_GENERIC_PRIVATE_CONTEXT_BOUNDARY_INTEGRATED`
+- functional_status: `NOT_RUN_BY_INSTRUCTION`
+- activation_status: `PREPARED_NOT_ACTIVATED`
+- archive_status: `WITHHELD_UNTIL_DOWNSTREAM_REVIEW`
+
+The Controller repair was consumed from the existing visible task without
+duplicating the already-integrated support files. A release-bound governance
+scanner carried a consumer-specific literal in the candidate source. That
+literal was removed and replaced by the generic private-context detector at
+`control/private-context-detector.mjs`. The detector accepts project identity
+terms only as transient typed input, returns category and digest metadata, and
+never persists the matched value. The detector contract, source, focused
+verifier, and documentation are now part of the candidate binding. Functional
+execution remains intentionally pending. The same source-hygiene repair was
+applied to the role-governance validator and to generic synthetic fixtures in
+the portability, README, and aggregate verifiers.

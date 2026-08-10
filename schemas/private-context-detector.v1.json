@@ -1,0 +1,25 @@
+{
+  "schema": "agentos.private_context_detector.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/private-context-detector.mjs",
+  "categories": [
+    "PRIVATE_PATH",
+    "ENVIRONMENT_REFERENCE",
+    "SECRET_VALUE",
+    "PRIVATE_LINK",
+    "RAW_HOST_OR_SESSION_ID",
+    "RUNTIME_PROJECT_IDENTITY"
+  ],
+  "contract": {
+    "generic_rules_only": true,
+    "runtime_identity_terms": "TRANSIENT_INPUT_ONLY",
+    "returned_match_detail": "CATEGORY_AND_DIGEST_ONLY",
+    "persisted_private_values": "FORBIDDEN",
+    "external_product_names": "FORBIDDEN"
+  },
+  "activation": {
+    "requires_explicit_owner_approval": true,
+    "public_payload": "SECRET_FREE_PROJECT_AGNOSTIC"
+  }
+}
