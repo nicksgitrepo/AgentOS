@@ -1062,7 +1062,7 @@
     },
     "role_governance_library_controller": {
       "path": "control/role-governance-library.mjs",
-      "sha256": "0aa04b65588cce91f5b9562ef5eb331fcff3597c496fb3ac14a9ee08b8f9e55e"
+      "sha256": "371b9dab3e18f86e72f0602854deb05e3fef39e43c5ff8f728ae611ae6570d9c"
     },
     "role_governance_library_verifier": {
       "path": "tests/verify-role-governance-library.mjs",

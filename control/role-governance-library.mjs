@@ -28,7 +28,7 @@ const UNIVERSAL_TASK_GATE_QUESTION_IDS = Object.freeze(TASK_GATE_QUESTIONS.map((
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
 const FORBIDDEN_ROLE_NAME = /(?:feature\s*agent|generic|shell|recursive|provider|project)/iu;
-const FORBIDDEN_ROLE_CONTENT = /(?:feature\s*agent|generic|shell|recursive|provider|account[_-]?identity|deployment[_-]?identity)/iu;
+const FORBIDDEN_ROLE_CONTENT = /(?:feature\s*agent|generic|shell|recursive|provider|credential|password|secret|api[_-]?key|account[_-]?identity|deployment[_-]?identity)/iu;
 const ROLE_METADATA_KEYS = ["role_scope", "role_kind", "lane_id"];
 
 function assert(condition, message) {
