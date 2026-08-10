@@ -16,6 +16,9 @@ remain `docs/audit-repair-integration-state.v1.json` and
   source, audited-merge, feature, and Platform worktrees retain their existing
   dirty or clean state and must not be cleaned, rebased, copied wholesale, or
   treated as implicit acceptance.
+- Latest Central receipt: `docs/platform-handoffs/central-ordered-feature-intake-2026-08-10.md`;
+  its custody digest is recorded by the file itself and its publication is
+  receipt-only.
 
 ## Candidate and proof
 
@@ -54,8 +57,8 @@ committed source-bound handoff and must not be consumed early.
 
 | Platform owner | Task | Worktree | Authoritative cursor | Current disposition |
 | --- | --- | --- | --- | --- |
-| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | Active ordered review; consume ROADMAP_04 before later queue entries. |
-| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05 reviewed but not consumed; ROADMAP_06 awaits its exact handoff. |
+| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | Central ROADMAP_04 receipt recorded; re-audit and independent clearance remain pending. |
+| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | Central ROADMAP_05 receipt recorded; feature remains unconsumed pending owner clearance. |
 | `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | Position-16 handoff reviewed and deferred; no source consumed. |
 
 Platform-local review markers such as `FEATURE_CURSOR_003_LOCAL_APPEND_ONLY`
@@ -66,10 +69,9 @@ authoritative cursor.
 ## Blocker and next transition
 
 - True external blocker: `NONE`.
-- Current dependency: Central must record the ordered ROADMAP_04 -> ROADMAP_05
-  custody transition, or an explicit governed order waiver, before either
-  receipt can advance. ROADMAP_06 must finish its own committed typed handoff
-  before review.
+- Current dependency: Platform owners must re-audit the recorded ROADMAP_04 /
+  ROADMAP_05 receipts and obtain independent clearance. ROADMAP_06 must finish
+  its own committed typed handoff before review.
 - Slot refill rule: open the next pre-registered feature only after an exact
   Platform intake acknowledgment freezes and releases a slot. Do not create a
   replacement for an existing visible task.
@@ -80,7 +82,8 @@ authoritative cursor.
 
 ## CURRENT STATE
 
-`WORKING_EXPECTED`: candidate clean; six completed feature candidates frozen;
-ROADMAP_06 auditing; three existing Platform custodians preserved; Central
-cursors all at `FEATURE_CURSOR_000`; no true external blocker; next action is
-the exact ordered Platform intake receipt, followed by governed slot refill.
+`WORKING_EXPECTED`: candidate clean; Central receipt reconciles ROADMAP_04 then
+ROADMAP_05; six completed feature candidates remain frozen; ROADMAP_06 auditing;
+three existing Platform custodians preserved; Central cursors all remain
+`FEATURE_CURSOR_000`; no true external blocker; next action is Platform
+re-audit/independent clearance, followed by governed slot refill.
