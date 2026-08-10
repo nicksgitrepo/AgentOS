@@ -678,7 +678,7 @@
     },
     "rapid_prototype_workflow_controller": {
       "path": "control/rapid-prototype-workflow.mjs",
-      "sha256": "32563082991bb7c8593d4600a3a53864e5f56641c8687f426f92ab54f71fc5dd"
+      "sha256": "bc79d38c6cde0fb001804f1133ecd50730d23e0e4ef6c524383badd166f3b460"
     },
     "rapid_prototype_workflow_contract": {
       "path": "schemas/rapid-prototype-workflow.v1.json",
