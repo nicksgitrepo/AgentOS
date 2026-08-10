@@ -48,17 +48,20 @@ Platform intake; none is downstream-consumed or archive-eligible.
 | `FEATURE_COMPLETENESS_AUDITOR_SEED` | `019fdcfa-3e24-7ac1-bd30-a9ac136b34e6` | `HOST_WORKTREE_B7E0` | `1ebf952e6acfff6d5be83a67b868b745761a4571` / `474c8757ca0c2a1b7b4be4ff23facc02bbc35c9b` | `PLATFORM_GATE_RESPONSE` |
 | `DYNAMIC_PROJECT_LANES` | `019fdcfa-4873-7ea2-ae5d-f29729224d0c` | `HOST_WORKTREE_A790` | `4b2b210f1a5119c6d2e6a545e8675d02c6db392f` / `cf9be278dbb2a1a432b34a66cb838da2e2c4f623` | `PLATFORM_GATE_RESPONSE` |
 
-`ROADMAP_06_CAMPAIGN_LIFECYCLE` is the next active visible lane: task
-`019fedfd-1f3f-7c03-a483-8c9352ebabe1`, baseline `d885e733` / `5f6ed007`,
-return owner `PLATFORM_NATIVE_SESSION_EVIDENCE`. It has not yet returned a new
-committed source-bound handoff and must not be consumed early.
+`ROADMAP_06_CAMPAIGN_LIFECYCLE` has returned a clean committed candidate: task
+`019fedfd-1f3f-7c03-a483-8c9352ebabe1`, `HOST_WORKTREE_5962`, final
+`67687f8906705eb6b018814705cac6d60c6d4eda` / `c7db6a95d45bb25ab496220c8d1ecb8da85a371a`,
+baseline `d885e733` / `5f6ed007`, report SHA-256
+`dce9522471aa6a1be14def06c7d1d651358e4d1fcf5facdec30e9549952d9638`, return
+owner `PLATFORM_NATIVE_SESSION_EVIDENCE`. Its typed handoff is inline in the
+report; Native review is pending and it is not consumed early.
 
 ## Platform roster and cursors
 
 | Platform owner | Task | Worktree | Authoritative cursor | Current disposition |
 | --- | --- | --- | --- | --- |
-| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | Central ROADMAP_04 receipt recorded; re-audit and independent clearance remain pending. |
-| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | Central ROADMAP_05 receipt recorded; feature remains unconsumed pending owner clearance. |
+| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 independently acknowledged with no repair; local marker `FEATURE_CURSOR_001_LOCAL_APPEND_ONLY`; clearance remains pending. |
+| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | Central ROADMAP_05 receipt recorded; ROADMAP_06 final candidate is ready for ordered review. |
 | `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | Position-16 handoff reviewed and deferred; no source consumed. |
 
 Platform-local review markers such as `FEATURE_CURSOR_003_LOCAL_APPEND_ONLY`
@@ -69,9 +72,10 @@ authoritative cursor.
 ## Blocker and next transition
 
 - True external blocker: `NONE`.
-- Current dependency: Platform owners must re-audit the recorded ROADMAP_04 /
-  ROADMAP_05 receipts and obtain independent clearance. ROADMAP_06 must finish
-  its own committed typed handoff before review.
+- Current dependency: Native Session must complete ordered ROADMAP_05 /
+  ROADMAP_06 review and all Platform owners must obtain independent clearance.
+  Gate’s ROADMAP_04 acknowledgment is receipt-only; the central cursors remain
+  unchanged.
 - Slot refill rule: open the next pre-registered feature only after an exact
   Platform intake acknowledgment freezes and releases a slot. Do not create a
   replacement for an existing visible task.
@@ -83,7 +87,8 @@ authoritative cursor.
 ## CURRENT STATE
 
 `WORKING_EXPECTED`: candidate clean; Central receipt reconciles ROADMAP_04 then
-ROADMAP_05; six completed feature candidates remain frozen; ROADMAP_06 auditing;
-three existing Platform custodians preserved; Central cursors all remain
-`FEATURE_CURSOR_000`; no true external blocker; next action is Platform
-re-audit/independent clearance, followed by governed slot refill.
+ROADMAP_05; Gate independently acknowledges ROADMAP_04 with no repair;
+ROADMAP_06 is clean and ready for Native review; three existing Platform
+custodians preserved; Central cursors all remain `FEATURE_CURSOR_000`; no true
+external blocker; next action is ordered Native review and Platform independent
+clearance, followed by governed slot refill.
