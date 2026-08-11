@@ -12,10 +12,10 @@
   "current_candidate": {
     "worktree_id": "AGENTOS_FEATURE_MERGE_WAVE_03",
     "branch_ref": "FEATURE_INTEGRATION_WAVE_03",
-    "commit": "f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f",
-    "tree": "a3015ee42efcbf4f3770f33edac74c16435fec1f",
+    "commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+    "tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c",
     "working_tree": "CLEAN",
-    "status": "RECOVERY_20_PLATFORM_REBIND_CUSTODY_HOLD_PENDING_OWNER_RECEIPTS"
+    "status": "RECOVERY_22_LOCAL_FUNCTIONAL_PROOF_PASS_PLATFORM_REBIND_PENDING"
   },
   "roadmap_03_checkpoint": {
     "feature_id": "ROADMAP_03_CONTROLLER_INTENT",
@@ -1602,7 +1602,29 @@
       "true_external_blocker":"NONE",
       "next_action":"PLATFORM_REBIND_THEN_AUTHORIZED_PROOF_AND_CONTROLLER_SLOT_RELEASE"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_21_clean_source_readback_2026_08_11",
+    "recovery_22_local_functional_proof_2026_08_11": {
+      "record_layer": "CURRENT_CANDIDATE_ORDINARY_LOCAL_FUNCTIONAL_PROOF_REPAIR",
+      "transaction_status": "ORDINARY_LOCAL_COMPREHENSIVE_PROOF_PASS_PLATFORM_REBIND_AND_INDEPENDENT_CLEARANCE_PENDING",
+      "candidate_before": {"commit":"bc315615624e0c90d03fa7b198bbc85df5b8022c","tree":"dc91e36278bb3a1ebcacc99f0637f089980e2e9d"},
+      "candidate_after": {"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"},
+      "repairs": [
+        {"path":"control/delivery-adapter.mjs","status":"CONTENT_ADDRESSING_HASHES_DIGEST_FREE_BODY","sha256":"0e95769a1e974605829d81df5bc4cce6a067a1e81c742730edcb92c889e3c8a2"},
+        {"path":"control/delivery-closure-records.mjs","status":"PENDING_LIVE_AUDIT_AND_PREPARED_CLOSURE_INVARIANTS_REPAIRED","sha256":"99a232e891be2a65b9ec23d7aaba087cf8c0eb97546c65b66ce9313f02a12c7c"},
+        {"path":"control/delivery-closure-transitions.mjs","status":"COMPLETION_VALIDATES_PRE_CLOSURE_HANDOFF_BINDING","sha256":"751306c978974cdb4072a2153438ea9a51e90df3df7935d14fcb86b23222cdd8"},
+        {"path":"control/local-agent-runtime.mjs","status":"OPAQUE_PERSISTED_CUSTODY_REFS_AND_DURABLE_SESSION_API_REPAIRED","sha256":"0b795a0f9916f965556deead1f22a074254076d91ee9b088fc6876110532be0b"},
+        {"path":"tests/verify-delivery-closure-state.mjs","status":"DIGEST_WITHOUT_TAMPER_FIXTURES_BOUND","sha256":"5e26ab0c39d4c3d930990b0264bac11eaa89e96f0e4e8a78eb615f75af3baba2"}
+      ],
+      "focused_proof": "PASS_DELIVERY_ADAPTER_DELIVERY_CLOSURE_STATE_LOCAL_AGENT_SESSION_BOOTSTRAP_IMPORT_PROJECT_IMPORT_RELEASE_PROMOTION_CAMPAIGN_CONTROLLER_BOUNDARY_CONTROLLER_INTENT_CONTROLLER_SUPERVISOR",
+      "comprehensive_proof": "PASS_NODE_TESTS_VERIFY_ALL",
+      "binding_status": "PASS_ALL_467_BOOTSTRAP_BINDING_ENTRIES_MATCH",
+      "platform_receipts": {"gate":"REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR","native":"REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR","receipt_source_publication":{"commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","tree":"fe893e29e44014777bc025abeb589240834e03c7"},"current_candidate_publication":{"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"}},
+      "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "remaining_proof_residuals": ["PLATFORM_GATE_CURRENT_CANDIDATE_REBIND_RECEIPT_REQUIRED","PLATFORM_NATIVE_CURRENT_CANDIDATE_REBIND_RECEIPT_AND_CLEAN_CUSTODY_REQUIRED","AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_CONCURRENCY_CRASH_POWER_LOSS_RECOVERY_AND_INDEPENDENT_CLEARANCE_PENDING","EXACT_CONTROLLER_SLOT_RELEASE_RECEIPT_REQUIRED"],
+      "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_22_local_functional_proof_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1615,6 +1637,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_PROOF_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "55ecb7b6340e833d7e19330e4b72e058ff5780f312733360002c353b07326f60"
+  "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE",
+  "state_sha256": "d5203c1a71797a693ceb8591b4345637cf2c46a78adf050599ac4ef47dfa04da"
 }

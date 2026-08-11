@@ -1329,3 +1329,32 @@ was not contacted.
 Next action:
 `OBTAIN_SOURCE_BOUND_PLATFORM_REBIND_RECEIPTS_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 22 — ordinary local functional proof repair — 2026-08-11
+
+The repaired ordinary candidate is `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`. Focused proofs pass for the
+delivery adapter, delivery-closure state machine, durable local agent session,
+Bootstrap import bindings, project import, release promotion, campaign
+controller, boundary contract, controller intent hardening, and Controller
+supervisor. The comprehensive local proof `node tests/verify-all.mjs` also
+passes. The repairs correct digest-free content addressing, prepared/live-audit
+state invariants, pre-closure handoff validation, and opaque persisted custody
+path handling; no protected action was performed.
+
+Gate and Native remain `REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR`; their existing
+receipts are not rebound to this candidate and do not confer consumption,
+clearance, or slot release. Authorized functional, host/provider, concurrency,
+crash-power-loss/recovery, and independent-clearance evidence, followed by an
+exact Controller slot-release receipt, remain pending. Central clean-source
+readback remains required after this publication. These are proof/custody
+holds, not a true external blocker.
+
+Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, queue
+`32`, and zero Memory slots remain. Consumption, Platform clearance,
+independent clearance, and Controller slot release are false. The Memory
+controller remains receipt-only to this orchestrator and was not contacted.
+
+Next action:
+`PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
+True external blocker: `NONE`.
