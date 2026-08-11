@@ -854,6 +854,108 @@
       "true_external_blocker": "NONE",
       "next_action": "PROJECT_REPAIRED_GATE_RECEIPT_AND_CURRENT_ROADMAP06_INTAKE_THEN_OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER RECOVERY CLEAN_SOURCE INDEPENDENT CLEARANCE AND CONTROLLER SLOT RELEASE_BEFORE_NON_MEMORY_REFILL"
     },
+    "recovery_1_failed_2026_08_11": {
+      "record_layer": "CURRENT_OUTCOME_RECOVERY_1_TRANSACTION",
+      "transaction_status": "RECOVERY_1_FAILED",
+      "observed_central_publication": {
+        "commit": "5b2d8f9fd87d674f6d188ab604a8843a0f2d0a5c",
+        "tree": "229648e45613a23adecf1e6fc1874abe066da640"
+      },
+      "source_binding": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "authorized_receipt_projection": {
+        "status": "CENTRAL_PROJECTION_RECORDED_NO_DOWNSTREAM_CONSUMPTION",
+        "gate": {
+          "owner_task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+          "receipt_commit": "fce85668015788618408f1f6aa5040bbfffdce6f",
+          "receipt_tree": "10c8b08ebc7919476c608ed091d7b475b3a02708",
+          "platform_report_sha256": "edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a",
+          "platform_handoff_sha256": "37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38",
+          "source_bound": true,
+          "projected": true,
+          "consumed": false,
+          "clearance": false,
+          "slot_release": false
+        },
+        "roadmap_06": {
+          "owner_task_id": "019fedfd-1f3f-7c03-a483-8c9352ebabe1",
+          "candidate_commit": "67687f8906705eb6b018814705cac6d60c6d4eda",
+          "candidate_tree": "c7db6a95d45bb25ab496220c8d1ecb8da85a371a",
+          "evidence_commit": "67a48a74153626cd4773e2d3082cdc09252e0820",
+          "evidence_tree": "46c1ed06b3c21e6866a2c6a7423e61f7d8189cca",
+          "report_full_sha256": "c66accc99c8054cd5510f58f3a32322a1ad42ec323154ccfd12f96da5fa58c17",
+          "report_body_sha256": "dea6d88b47924948aa7086e4d1ad62b36a82795abb6727fc2553471b6ba35925",
+          "handoff_sha256": "43e9e3c24ba71f11d881f1b3489017a579c0aa24088047a71a2758ed8e741ffa",
+          "receipt_sha256": "096a2eef4503bb6b0e9170c99f5fb25c3d29f1b1292b6a60957cbdf87e4239d3",
+          "source_bound": true,
+          "projected": true,
+          "consumed": false,
+          "clearance": false,
+          "slot_release": false
+        }
+      },
+      "local_proof": {
+        "state_map_bootstrap_diff": "PASS",
+        "focused_functional_results": {
+          "verify_universal_response_gating": {
+            "status": "FAILURE",
+            "failure_identity": "ReferenceError_EXPECTED_IDENTITY_UNDEFINED"
+          },
+          "verify_continuous_operating_loop": {
+            "status": "FAILURE",
+            "failure_identity": "STALE_REASSESSMENT_REPAIR_GUARD_ASSERTION_NOT_REACHED"
+          },
+          "verify_local_adapters": {
+            "status": "FAILURE",
+            "failure_identity": "SYMLINK_COMPONENT_REJECTED_TEMPORARY_RELEASE_ROOT"
+          },
+          "verify_native_session_runner": {
+            "status": "FAILURE",
+            "failure_identity": "NATIVE_SESSION_MODEL_REQUIRED_BUT_TEST_OMITTED_EXPLICIT_LUNA_MAX"
+          }
+        },
+        "clean_source": "HOLD_SOURCE_BOUND_CANDIDATE_UNCHANGED",
+        "host_provider_capability": "NOT_OBSERVED",
+        "recovery_concurrency_crash_power_loss": "NOT_OBSERVED"
+      },
+      "independent_clearance": {
+        "task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "max",
+        "disposition": "HOLD",
+        "missing_evidence": "GATE_NATIVE_CONSUMPTION_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_CONCURRENCY_CRASH_POWER_LOSS_AND_CONTROLLER_SLOT_RELEASE",
+        "clearance": false,
+        "slot_release": false
+      },
+      "authoritative_cursors_before_after": {
+        "PLATFORM_GATE_RESPONSE": ["FEATURE_CURSOR_000", "FEATURE_CURSOR_000"],
+        "PLATFORM_NATIVE_SESSION_EVIDENCE": ["FEATURE_CURSOR_000", "FEATURE_CURSOR_000"],
+        "PLATFORM_PRIVATE_CONTROL_MEMORY": ["FEATURE_CURSOR_000", "FEATURE_CURSOR_000"]
+      },
+      "accounting": {
+        "ordinary_active_slot_count": 5,
+        "memory_slot_count": 0,
+        "ordinary_queue_count": 32,
+        "downstream_consumed": false,
+        "platform_clearance": false,
+        "independent_clearance": false,
+        "slot_release": false,
+        "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+        "memory_integration": false
+      },
+      "safe_remedies_applied": [
+        "EXACT_GATE_AND_ROADMAP06_RECEIPTS_PROJECTED_WITHOUT_SOURCE_OR_PEER_WORKTREE_EDIT",
+        "STATIC_STATE_MAP_BOOTSTRAP_467_ENTRY_AND_DIFF_PROOF_REPASSED",
+        "INDEPENDENT_CLEARANCE_HOLD_RECORDED_WITH_EXACT_MISSING_EVIDENCE",
+        "MEMORY_OWNER_NOT_CONTACTED_OR_DISPATCHED"
+      ],
+      "irreducible_dependency": "CURRENT_D885_5F_SOURCE_BOUND_CANDIDATE_FAILS_FOCUSED_FUNCTIONAL_PROOF; REPAIRING_THOSE_CONCRETE_DEFECTS_WOULD_CHANGE_THE_BOUND_SOURCE_AND_REQUIRE_FRESH_VISIBLE_OWNER_REBIND_RECEIPTS_BEFORE_ANY_CURSOR_OR_CLEARANCE_ADVANCE; AUTHORIZED_HOST_PROVIDER_RECOVERY_AND_CONTROLLER_SLOT_RELEASE_RECEIPTS_ARE_ALSO_ABSENT",
+      "true_external_blocker": "NONE",
+      "next_action": "REPAIR_OR_REBIND_THE_SOURCE_BOUND_FOCUSED_TEST_DEFECTS_THEN_REAUTHORIZE_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_1_failed_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -866,6 +968,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "PROOF_PENDING_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
-  "state_sha256": "519157be0160d31dacde84f682e6b8b8b0c7d783c6fbbb0c1035073063ba6a15"
+  "next_action": "RECOVERY_1_FAILED_SOURCE_BOUND_PROOF_AND_CONTROLLER_RELEASE",
+  "state_sha256": "4efaf4b865ea2eaf0712e7772b30e4c0a2db112b28cd1ff73e7aecccac366771"
 }

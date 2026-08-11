@@ -920,3 +920,40 @@ action is to project the repaired Gate receipt and current ROADMAP_06 intake,
 then obtain authorized functional/host/provider/recovery/clean-source proof,
 independent clearance, and an exact Controller slot-release receipt before
 any non-memory refill. True external blocker: `NONE`.
+
+## Outcome recovery 1 — bounded ordinary transaction — 2026-08-11
+
+The authorized Gate and ROADMAP_06 receipts were projected into the central
+record layer without editing peer worktrees or contacting the special Memory
+owner. Gate receipt `fce85668015788618408f1f6aa5040bbfffdce6f` /
+`10c8b08ebc7919476c608ed091d7b475b3a02708` carries report SHA
+`edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a` and
+handoff SHA `37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38`.
+ROADMAP_06 remains source-bound at candidate `67687f8906705eb6b018814705cac6d60c6d4eda` /
+`c7db6a95d45bb25ab496220c8d1ecb8da85a371a`, evidence
+`67a48a74153626cd4773e2d3082cdc09252e0820` /
+`46c1ed06b3c21e6866a2c6a7423e61f7d8189cca`, report SHA
+`c66accc99c8054cd5510f58f3a32322a1ad42ec323154ccfd12f96da5fa58c17`, handoff
+SHA `43e9e3c24ba71f11d881f1b3489017a579c0aa24088047a71a2758ed8e741ffa`, and
+typed receipt SHA `096a2eef4503bb6b0e9170c99f5fb25c3d29f1b1292b6a60957cbdf87e4239d3`.
+
+The smallest focused local proof was run. State/map/bootstrap (467 entries)
+and diff hygiene passed, but the current d885/5f source-bound candidate
+failed four focused checks: the universal-response verifier has an undefined
+fixture identity, the continuous-loop stale-reassessment guard is not reached,
+the local-adapter fixture uses a rejected symlinked temporary root, and the
+native-session fixture omits the required explicit Luna/max execution profile.
+These are recorded as exact proof identities, not clearance. Repairing them
+would change the source-bound candidate and therefore requires fresh visible
+owner rebind receipts before any cursor advance.
+
+Independent clearance remains `HOLD` (task
+`019fef0e-014d-7833-b4e3-cd40b5415b55`, gpt-5.6-luna/max); authorized
+host/provider, recovery, concurrency, crash/power-loss, clean-source, and
+Controller slot-release evidence is absent. Outcome is explicitly
+`RECOVERY_1_FAILED`; cursors remain `FEATURE_CURSOR_000`, five ordinary slots
+remain admitted, Memory slots remain zero, ROADMAP_07 remains held, and all
+consumption/clearance/release flags remain false. True external blocker:
+`NONE`. Next action is source-bound repair/rebind, followed by authorized
+host/provider and recovery proof, independent clearance, and the exact
+Controller slot-release receipt.

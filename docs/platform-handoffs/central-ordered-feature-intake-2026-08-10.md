@@ -855,3 +855,34 @@ project the repaired Gate receipt and current ROADMAP_06 intake, then obtain
 authorized functional/host/provider/recovery/clean-source proof, independent
 clearance, and an exact Controller slot-release receipt before non-memory
 refill. True external blocker: `NONE`.
+
+## Outcome recovery 1 — bounded ordinary transaction — 2026-08-11
+
+The authorized current Gate and ROADMAP_06 receipts are now projected in the
+central record layer, with no downstream consumption claim. Gate is receipt
+`fce85668015788618408f1f6aa5040bbfffdce6f` /
+`10c8b08ebc7919476c608ed091d7b475b3a02708`, report
+`edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a`, handoff
+`37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38`.
+ROADMAP_06 is candidate `67687f8906705eb6b018814705cac6d60c6d4eda` /
+`c7db6a95d45bb25ab496220c8d1ecb8da85a371a`, evidence
+`67a48a74153626cd4773e2d3082cdc09252e0820` /
+`46c1ed06b3c21e6866a2c6a7423e61f7d8189cca`, report
+`c66accc99c8054cd5510f58f3a32322a1ad42ec323154ccfd12f96da5fa58c17`, handoff
+`43e9e3c24ba71f11d881f1b3489017a579c0aa24088047a71a2758ed8e741ffa`, receipt
+`096a2eef4503bb6b0e9170c99f5fb25c3d29f1b1292b6a60957cbdf87e4239d3`.
+
+Focused proof passed central state/map/bootstrap (467 entries) and diff
+hygiene. The four remaining local failures are preserved as exact identities:
+undefined universal-response fixture identity, stale-reassessment guard not
+reached, symlink-rejected temporary adapter root, and omitted explicit
+gpt-5.6-luna/max native fixture profile. Repairing these defects changes the
+d885/5f source-bound candidate and requires new visible owner rebind receipts;
+no cursor, clearance, or slot release can be inferred from the projection.
+
+The bounded transaction disposition is `RECOVERY_1_FAILED`. Independent
+clearance is `HOLD`; authorized host/provider, recovery, concurrency,
+crash/power-loss, clean-source, and exact Controller slot-release evidence is
+still absent. Cursors remain `FEATURE_CURSOR_000`, five ordinary slots remain
+active, Memory remains at zero ordinary slots and read-only receipt routing,
+and ROADMAP_07 remains held. True external blocker: `NONE`.
