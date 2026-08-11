@@ -2075,3 +2075,28 @@ recovery record as `REPAIR_READY_FOR_INDEPENDENT_REAUDIT`, with repair
 REC-005 through REC-008, and deployed-candidate retest required. This is a lightweight
 metadata transition only; shared-host pressure still blocks new heavyweight proof
 admissions. Cursors, slots, clearance/release flags, and Memory routing remain unchanged.
+
+## Recovery 54 — independent-clearance rebind after host-policy correction — 2026-08-11
+
+The host-specific browser-custody policy was removed by forward corrective commit
+`2c52928247cc467e5487122cc7bff78aa5efaabf` / tree
+`ffb50243418dd990f2fd1bcf88bc041d31e5ec41`. Later Recovery 53 terminal-repair
+evidence remains preserved; the Chrome-only custody rule is external controller
+custody and is not an AgentOS repository or public-release contract.
+
+Existing independent-clearance task `019fef0e-014d-7833-b4e3-cd40b5415b55`
+was sent a metadata-only rebind against that exact Central publication, product
+candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`, and source `d885e733` /
+`5f6ed007`. The latest Gate receipt remains `48c8fe49` /
+`48d0e65b` with report `493df163…` and handoff `4b98bda2…`; the latest Native
+receipt remains `98db27f6` / `9f0a2b7b` with report `5e18be26…` and handoff
+`e79a3740…`. The typed rebind status is
+`REBIND_SENT_WAITING_PROOF_PRESSURE_CLEARANCE`; no proof/build/test job was
+started while shared-host pressure is active.
+
+Five ordinary slots, zero Memory slots, all authoritative cursors
+`FEATURE_CURSOR_000`, and consumption, Platform-clearance, independent-clearance,
+downstream, and slot-release flags remain false. Memory was not contacted. The
+next safe action is to run the existing typed independent-clearance re-audit only
+after pressure clears, against this exact publication and receipt set.

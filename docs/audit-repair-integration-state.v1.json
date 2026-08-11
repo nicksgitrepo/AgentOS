@@ -2177,6 +2177,54 @@
     "slot_release":false,
     "next_action":"RETAIN_TYPED_REPAIR; WAIT_FOR_PRESSURE_CLEARANCE_BEFORE_INDEPENDENT_REAUDIT"
   },
+  "independent_clearance_rebind_2026_08_11": {
+    "record_layer": "CURRENT_INDEPENDENT_CLEARANCE_REBIND_METADATA_RECEIPT",
+    "owner_task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "max",
+    "status": "REBIND_SENT_WAITING_PROOF_PRESSURE_CLEARANCE",
+    "central_publication": {
+      "commit": "2c52928247cc467e5487122cc7bff78aa5efaabf",
+      "tree": "ffb50243418dd990f2fd1bcf88bc041d31e5ec41"
+    },
+    "product_candidate": {
+      "commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+      "tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c"
+    },
+    "source_binding": {
+      "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+      "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+    },
+    "gate_receipt": {
+      "commit": "48c8fe499da60fa181236bad7c237e67459e06a8",
+      "tree": "48d0e65ba340ca7381fae4d62cfe1fe4910f764d",
+      "report_sha256": "493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620",
+      "handoff_sha256": "4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68"
+    },
+    "native_receipt": {
+      "commit": "98db27f63f9440e23768f28673fb8059704e90fd",
+      "tree": "9f0a2b7b91e5d1297656774722e1109ea189d653",
+      "report_sha256": "5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6",
+      "handoff_sha256": "e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d"
+    },
+    "shared_host_boundary": "NO_NEW_HEAVYWEIGHT_BUILD_TEST_OR_PROOF_ADMISSION_WHILE_PRESSURE_ACTIVE",
+    "proof_execution": "NOT_STARTED",
+    "central_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "downstream_consumed": false,
+    "slot_release": false,
+    "authoritative_cursors": {
+      "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+      "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+      "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+    },
+    "ordinary_active_slot_count": 5,
+    "memory_slot_count": 0,
+    "memory_boundary": "UNTOUCHED_READ_ONLY_RECEIPT_ONLY_OUTSIDE_ORDINARY_SLOTS_AND_CURSORS",
+    "true_external_blocker": "NONE",
+    "next_action": "WHEN_PRESSURE_CLEARS_RUN_TYPED_INDEPENDENT_CLEARANCE_REAUDIT_AGAINST_THIS_EXACT_PUBLICATION; RETAIN_FLAGS_FALSE_UNTIL_TERMINAL_RECEIPT"
+  },
   "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
@@ -2191,5 +2239,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "WAIT-FOR-SHARED-HOST-PRESSURE-CLEARANCE-THEN-REACTIVATE-INDEPENDENT-CLEARANCE; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "309e3eb296a3c8dff45c07f4773a21d35344d452031e170a966b31f1f4434839"
+  "state_sha256": "080467f2a06332ff43a6d65208886f99dca5c5ab43a78cf2e63f100e254ff83a"
 }
