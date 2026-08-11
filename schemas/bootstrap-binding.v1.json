@@ -1794,7 +1794,7 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "64ccc35bc65d652cf31f52b3ca5861106a087dcc2df12531a3de7ed39b568269"
+      "sha256": "7ef6ceedd955c82b6996b4b4e1b364e90c007d84d03c81b1ee702730ea924be8"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
