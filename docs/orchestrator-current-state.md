@@ -1585,3 +1585,17 @@ Next action: obtain current-candidate Gate/Native rebind receipts, then run the
 authorized functional host/provider, recovery, and clean-source proofs,
 obtain independent clearance, and record the exact Controller slot-release
 receipt before any non-memory refill.
+
+## Recovery 29 — clean-source readback — 2026-08-11
+
+The exact ordinary candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c` has a clean central readback and
+archive digest
+`e9660ff796ce995d1b903f853da45e61b3e55ae1fed696fa85d91802d8808f94`.
+The opaque host/provider registration remains typed and privacy-safe. This
+clean-source receipt does not confer Platform rebind, functional host/provider
+success, independent clearance, or Controller slot release. Five ordinary
+slots, zero Memory slots, queue `32`, cursors `FEATURE_CURSOR_000`, and all
+consumption/clearance/release flags remain unchanged. Next action is the
+source-bound Gate/Native rebind, then authorized proof and exact Controller
+slot-release receipt; Memory remains receipt-only and untouched.
