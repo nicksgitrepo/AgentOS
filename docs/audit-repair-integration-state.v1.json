@@ -2333,6 +2333,48 @@
     "ordinary_cursor_advance": false,
     "slot_release": false
   },
+  "readiness_stall_2026_08_11": {
+    "record_layer": "CURRENT_READINESS_BOUNDARY",
+    "status": "STALLED_READY_FOR_DEPLOY_OR_TEST",
+    "publication_candidate": {
+      "commit": "59860e96574416673c5a1dca19b6e06368f4de97",
+      "tree": "dd39662b87abec5d359863f6f1565d2792941d26"
+    },
+    "bound_central_identity": {
+      "commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
+      "tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"
+    },
+    "packet_id": "HOST_NEUTRAL_ACTIVATION_PACKET_59860E96_DD39662B",
+    "release_identity": "AGENTOS_STANDALONE_CANDIDATE_59860E96574416673F4DE97",
+    "rollback_identity": "AGENTOS_STANDALONE_ROLLBACK_0B68F431D62",
+    "rollback_target": {
+      "commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
+      "tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"
+    },
+    "activation_status": "PREPARED_NOT_ACTIVATED",
+    "release_status": "PROTECTED_DECISION_PENDING",
+    "restart_condition": "SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
+    "worker_leases": "NONE_OBSERVED",
+    "proof_jobs": "NONE_OBSERVED",
+    "mutable_leases": "NONE_OBSERVED",
+    "scheduler_queued_or_running": "NONE_OBSERVED",
+    "central_stale_test_sessions_closed": 3,
+    "writer_custody": "CENTRAL_CONTROLLER_ONLY_RELEASE_AT_TURN_END",
+    "authoritative_cursors": {
+      "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+      "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+      "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+    },
+    "ordinary_active_slot_count": 5,
+    "memory_slot_count": 0,
+    "downstream_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "slot_release": false,
+    "memory_contact": false,
+    "memory_integration": false,
+    "next_action": "READY_TIMER_STOP_REQUEST"
+  },
   "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
@@ -2346,6 +2388,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "CONSUME-LIGHTWEIGHT-INDEPENDENT-PREFLIGHT-THEN-ROUTE-ONLY-SERIALIZED-RUNTIME-REAL-HOST-CUSTODY-IF-REQUIRED; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "23f31193820407435627bd36c149075378bbb4c90bb4dcbfd2ebcb5968d89c91"
+  "next_action": "READY_TIMER_STOP_REQUEST_RESTART_ONLY_ON_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
+  "state_sha256": "e0aa869e1a1e6ed5b7ef0aabf4c7268758948f6c1acc187c85410efccdfe22a1"
 }

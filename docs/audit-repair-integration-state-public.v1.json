@@ -3,7 +3,7 @@
   "version": 1,
   "status": "PREPARED_NOT_ACTIVATED",
   "source_record_ref": "opaque:private-control-record:audit-repair-integration-state",
-  "source_record_sha256": "92a987793f985efac295bab902393c7bf84a463166af5a5184c0d0740a3e679c",
+  "source_record_sha256": "990122081d41e70c4b0a63add856928b74b3f82eef6fdee51baf804e0e7ef8d1",
   "compatibility_status": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION",
   "public_replacement": "docs/audit-repair-integration-state-public.v1.json",
   "current_product_candidate": {
@@ -27,7 +27,7 @@
   "independent_clearance": false,
   "slot_release": false,
   "memory_boundary": "SPECIAL_LANE_OUTSIDE_ORDINARY_SLOTS_AND_CURSORS_NO_DISPATCH",
-  "proof_boundary": "LOCAL_REPAIR_AND_STATIC_EVIDENCE_ONLY_REAL_HOST_PROVIDER_AND_RELEASE_PROOF_PENDING",
-  "next_action": "OBTAIN_PRESSURE_CLEARANCE_THEN_REACTIVATE_CURRENT_BOUND_INDEPENDENT_CLEARANCE",
+  "proof_boundary": "SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
+  "next_action": "READY_TIMER_STOP_REQUEST",
   "raw_private_payload_exported": false
 }
