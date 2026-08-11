@@ -510,3 +510,35 @@ all authoritative cursors remain `FEATURE_CURSOR_000`, and downstream
 consumption, Platform clearance, independent clearance, and slot release remain
 false. The next safe action is typed Platform receipt consumption followed by
 authorized proof and an exact Controller slot-release receipt.
+
+## Latest Platform-owner reconciliation — 2026-08-11T03:01:30Z
+
+Gate recorded a source-bound static intake hold against central publication
+`abab28815e74da5cfb98224ed312d7b8641acb57` /
+`17024f79d43e6ce055710cf96dd44f9c526e4521` and source d885/5f. Its receipt is
+commit/tree `3e300873d2963f75b111a27e18776bd06fe2223c` /
+`5f13214c0708e401222b07ea4ef6ae1eeeeae117`, Platform report SHA
+`bab37cb69ee6aaf5cb4554ec75ca1f9da46cc4531c523ab28a4dea8875c9d420`, and
+Platform handoff SHA
+`a9fd7b350f5e56bbfa147df0027842bccbf1e1319269bc7c429749f6148b1b9b`. It covers
+ROADMAP_04, FOUR_LIBRARY_GOVERNANCE, FEATURE_COMPLETENESS_AUDITOR_SEED, and
+DYNAMIC_PROJECT_LANES with disposition
+`PLATFORM_INTAKE_RECORDED_REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION`.
+Cursor remains `FEATURE_CURSOR_000`; no consumption, clearance, downstream
+acceptance, or slot release is claimed; blocker is `NONE`.
+
+Native’s exact ROADMAP_05 hold is preserved. The current owner-bound evidence
+is report `fc26d218931d463ee4a28a6b7e4efb3ddbe2a057303566733a2822038b3d8b35`
+and handoff `d5cd8eac127ba36d9664685f9f333b72678d563b0c400aebf3bdf1142b671a6c`.
+Central currently reads report
+`4fbd9afaed2db8a234c47f86cb434028fc1cdfefc69f6c2c307ff2dd28741a0d`, and the
+expected handoff path is absent from the central tree. This is recorded as
+`PLATFORM_INTAKE_HOLD_REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION` with
+`MISSING_FIELD_RECOVERY_RECORDED_NO_CURRENT_OWNER_BYTES_MATERIALIZED`; no
+inference of clearance is permitted.
+
+The safe next action is to materialize or obtain the exact current ROADMAP_05
+report/handoff byte projection, or append a typed missing-field recovery, then
+re-audit the central projection. Five ordinary slots, zero memory slots,
+ordinary queue `32`, dormant Memory owner `019fee1e-5e78-78c2-a788-ad7a27eba19e`,
+and all authoritative cursors `FEATURE_CURSOR_000` remain unchanged.
