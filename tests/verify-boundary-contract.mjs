@@ -14,6 +14,7 @@ const life = compileProjectLifeContract({answer: {maturity: "LIMITED_PRODUCT", a
 const delivery = compileDeliveryPolicy({answer: {
   ci_runner: {route: "LOCAL", weekly_minutes_budget: 100},
   deployment: {route: "LOCAL", environment_ids: ["test"]},
+  delivery_target: {supported_scope: ["synthetic"], operating_envelope: ["local-test"], rollback_path: "EXACT_LAST_ACCEPTED_DEPLOYMENT"},
 }, projectLifeContract: life});
 const ownerBoundaries = {owner_only: ["production promotion", "destructive cleanup"], protected: ["secrets", "accepted truth"]};
 const contract = compileBoundaryContract({

@@ -11,11 +11,11 @@ import {
 } from "../control/release-promotion-gate.mjs";
 
 const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
-const source = {role: "ACTIVE_DEVELOPMENT_CHECKOUT", status: "VERIFIED", tree_sha256: "a".repeat(64), verification_sha256: "b".repeat(64)};
-const target = {role: "STERILE_RELEASE_CHECKOUT", status: "VERIFIED", tree_sha256: "c".repeat(64), verification_sha256: "d".repeat(64)};
-const verification = {ARCHITECTURE: "PASS", CANONICAL: "PASS", HYGIENE: "PASS", PORTABILITY: "PASS"};
+const source = {role: "ACTIVE_DEVELOPMENT_CHECKOUT", status: "VERIFIED", commit_sha256: "e".repeat(64), tree_sha256: "a".repeat(64), artifact_sha256: "f".repeat(64), manifest_sha256: "0".repeat(64), verification_sha256: "b".repeat(64)};
+const target = {role: "STERILE_RELEASE_CHECKOUT", status: "VERIFIED", commit_sha256: "1".repeat(64), tree_sha256: "c".repeat(64), artifact_sha256: "2".repeat(64), manifest_sha256: "3".repeat(64), verification_sha256: "d".repeat(64)};
+const verification = {ARCHITECTURE: "PASS", CANONICAL: "PASS", HYGIENE: "PASS", PORTABILITY: "PASS", RELEASE_SAFETY: "PASS"};
 
-const ready = compileReleasePromotionGate({sourceEvidence: source, sterileReleaseEvidence: target, verification, changedPaths: ["control/example.mjs", "docs/example.md"]});
+const ready = compileReleasePromotionGate({sourceEvidence: source, sterileReleaseEvidence: target, verification, changedPaths: ["control/example.mjs", "docs/example.md"], safetyGateSha256: "9".repeat(64)});
 assert.equal(ready.status, "READY_FOR_EXPLICIT_PROMOTION");
 assert.equal(ready.publishing, false);
 assert.equal(ready.action_taken, "NONE");

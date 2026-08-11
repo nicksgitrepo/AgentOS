@@ -79,7 +79,7 @@ function assertNoSymlinkAncestors(root, target, label) {
     if (fs.existsSync(current)) assert(!fs.lstatSync(current).isSymbolicLink(), `${label} contains a symbolic-link component`);
     if (current === root) return;
     const parent = path.dirname(current);
-    assert(parent !== current && parent.startsWith(`${root}${path.sep}`), `${label} escapes the bound root`);
+    assert(parent !== current && (parent === root || parent.startsWith(`${root}${path.sep}`)), `${label} escapes the bound root`);
     current = parent;
   }
 }

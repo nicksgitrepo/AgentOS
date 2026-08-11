@@ -166,10 +166,10 @@ export function validateDeliveryState(state, expected = {}) {
       && state.closure_digest === null && state.final_handoff_digest === null, "choice-required state contains active delivery evidence");
   }
   if (["RUNTIME_AUTHORIZED", "ACTION_IN_FLIGHT"].includes(state.status)) assert(state.runtime_request_digest !== null, "active delivery state lacks Runtime request evidence");
-  if (["ACTION_IN_FLIGHT", "RECEIPT_VERIFIED", "LIVE_AUDIT_PENDING", "CLOSURE_PENDING", "ROLLBACK_REQUIRED", "FAILED", "UNKNOWN"].includes(state.status)) {
+  if (["ACTION_IN_FLIGHT", "RECEIPT_VERIFIED", "LIVE_AUDIT_PENDING", "ROLLBACK_REQUIRED", "FAILED", "UNKNOWN"].includes(state.status)) {
     assert(state.receipt_digest !== null, "delivery state lacks action receipt evidence");
   }
-  if (state.status === "LIVE_AUDIT_PENDING" || state.status === "ROLLBACK_REQUIRED") assert(state.live_audit_digest !== null, "live delivery state lacks live-audit evidence");
+  if (state.status === "ROLLBACK_REQUIRED") assert(state.live_audit_digest !== null, "rollback-required state lacks live-audit evidence");
   if (state.status === "CLOSURE_PENDING" && state.outcome !== "PREPARED") assert(state.receipt_digest !== null, "closure-pending state lacks action receipt evidence");
   contextMatches(state, expected, "delivery state");
   validateDigest(state.digest, "delivery state digest", state);

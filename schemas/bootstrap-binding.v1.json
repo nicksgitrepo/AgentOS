@@ -42,7 +42,7 @@
     },
     "bootstrap_compiler": {
       "path": "control/bootstrap-compiler.mjs",
-      "sha256": "39605421b5b3dc06d68503cc315495526358a0ab188e4d9a341e7a94d69be4cd"
+      "sha256": "111066e2de692ff017308330924369d2e7967926fdcb61e3fb3a1a83af7c547a"
     },
     "control_plane_controller": {
       "path": "control/control-plane-root.mjs",
@@ -54,7 +54,7 @@
     },
     "bootstrap_start_verifier": {
       "path": "tests/verify-bootstrap-start.mjs",
-      "sha256": "b65693a7a2d237e3f7eda0d5235a5519360620b1517da96a96f7219896845613"
+      "sha256": "b0f04bc4e03b63c93bc9cd1a6878e60beb024b8ca294589d7b1d291aa3b028d8"
     },
     "bootstrap_contract": {
       "path": "schemas/bootstrap-plan.v1.json",
@@ -162,7 +162,7 @@
     },
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
-      "sha256": "4e70d03f3f6e3f053ca7a746235cacad721786744b6a1c7b363da4acd27a2e97"
+      "sha256": "fc75901e949701117c9d8c865cfcd96ce2027b2cbd52067dbc4e955dad9ccecf"
     },
     "normalization_policy_controller": {
       "path": "control/normalization-policy.mjs",
@@ -198,7 +198,7 @@
     },
     "bootstrap_import_binding_verifier": {
       "path": "tests/verify-bootstrap-import-bindings.mjs",
-      "sha256": "7380fae9ccdbf40199b2443a9c80954a018cd65f3f65bb0d470237a1a99cc48e"
+      "sha256": "895df1adb66dc7cdcbfb2b6df47296ba39f4c8b8259b116ed01ec3be45be60a1"
     },
     "bootstrap_coverage_verifier": {
       "path": "tests/verify-bootstrap-coverage.mjs",
@@ -222,11 +222,11 @@
     },
     "delivery_closure_records_controller": {
       "path": "control/delivery-closure-records.mjs",
-      "sha256": "52e86d1fbbc4605737ccb42cfe4444759489f31a038c8b78151096e37411275d"
+      "sha256": "99a232e891be2a65b9ec23d7aaba087cf8c0eb97546c65b66ce9313f02a12c7c"
     },
     "delivery_closure_transitions_controller": {
       "path": "control/delivery-closure-transitions.mjs",
-      "sha256": "3ac7dc51dcf0707a17eb083d8fca2705f7dfa9639c731425bd1006105befae4f"
+      "sha256": "751306c978974cdb4072a2153438ea9a51e90df3df7935d14fcb86b23222cdd8"
     },
     "runtime_delivery_request_contract": {
       "path": "schemas/runtime-delivery-request.v1.json",
@@ -302,7 +302,7 @@
     },
     "boundary_contract_verifier": {
       "path": "tests/verify-boundary-contract.mjs",
-      "sha256": "25b128c4446dc12e94ca8487a63e86b86c9ac4e303b6d8724e2e095c91d260e2"
+      "sha256": "e0be6b34a5ff770d11d7ef81e61df4de36d370cecb32a327d27e5fe6826a39e7"
     },
     "delivery_probe_contract": {
       "path": "schemas/delivery-probes.v1.json",
@@ -390,7 +390,7 @@
     },
     "campaign_controller_verifier": {
       "path": "tests/verify-campaign-controller.mjs",
-      "sha256": "94e3e6722aa42fa95a59c726dab4c94581b2c4f4257538547dcdf886ea844110"
+      "sha256": "3edc7e4477dfa9cc5f5c12d8568ef4c95726a0765badca66fd91ac0c812ad82f"
     },
     "continuous_audit_sentinel_controller": {
       "path": "control/continuous-audit-sentinel.mjs",
@@ -558,7 +558,7 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "ac3b250dec5f82e52d21ed709b8a02b70d137897ce2522aad701c374f3caec7f"
+      "sha256": "afd9c70746bd96e8f7664e7b3b29795866e66b826a74f55af495b1131e9a176e"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
@@ -570,7 +570,7 @@
     },
     "controller_intent_hardening_verifier": {
       "path": "tests/verify-controller-intent-hardening.mjs",
-      "sha256": "a36b34bd2938f1a92c81c4b5df9f41ef513ac4d17afe4fe54afbb0c17b6d0513"
+      "sha256": "a728d39237f39fa5b21ddfae604362f446875e369e003bfc8477304a9dbf3819"
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",
@@ -602,7 +602,7 @@
     },
     "local_agent_runtime_controller": {
       "path": "control/local-agent-runtime.mjs",
-      "sha256": "49ad97438226cbd6d3fa4e8765b4f14ae3084c371ae92dbc7cbc9ea25a157a9e"
+      "sha256": "356a7bda0d822682c90276772dc7c2ad59756b675cd853afc72943308d17dfc0"
     },
     "local_campaign_admission_controller": {
       "path": "control/local-campaign-admission.mjs",
@@ -786,11 +786,11 @@
     },
     "feature_completeness_controller": {
       "path": "control/feature-completeness.mjs",
-      "sha256": "c19a8cccec8b348a7b453ccf23614aa9f1d4c2cfe6285dbfc1ec503d55d45458"
+      "sha256": "5d3fd4a6e8573459c40b46f17e096e5b9390a12034ad2b6ed35c6f9a1228e422"
     },
     "feature_completeness_verifier": {
       "path": "tests/verify-feature-completeness.mjs",
-      "sha256": "34643c838582babcf7c87e95dc3cae99322990911f3cf4c80b22a7bebb45c818"
+      "sha256": "df23d042ebaafd5eac8e6c4e6f450d1ebb3868c3059ad737b9cf216c373c4fba"
     },
     "feature_completeness_contract": {
       "path": "schemas/feature-completeness.v1.json",
@@ -798,7 +798,7 @@
     },
     "proof_carrying_work_controller": {
       "path": "control/proof-carrying-work.mjs",
-      "sha256": "3c582f6558c04867bc3fb544c8a2c52275fc85d69bc32f4dff053c6da3728d56"
+      "sha256": "04ab174b5f0e1d30f8f87c12f61106fe040f450c90c60d2d7cf81ce1a24d7a6d"
     },
     "proof_carrying_work_contract": {
       "path": "schemas/proof-carrying-work.v1.json",
@@ -1146,7 +1146,7 @@
     },
     "portability_verifier": {
       "path": "tests/verify-portability.mjs",
-      "sha256": "e076ee7967e896216a08426805dddc33bf6c6f193b51e50ebfc39826eafc5010"
+      "sha256": "59b07c8ea4f5c55d9a83732233efc1dbe240e5576305c7d2ace1d84f159d7926"
     },
     "retained_failed_worktree_controller": {
       "path": "control/retained-failed-worktree.mjs",
@@ -1214,7 +1214,7 @@
     },
     "release_promotion_gate_verifier": {
       "path": "tests/verify-release-promotion-gate.mjs",
-      "sha256": "870070bb88b5e684c61b77a6bf9edd861d8cd5fd3ae512123a1f56f60e36bc46"
+      "sha256": "f905bc7eb66324a1ffe3d11360d5e4d7db0bb56ea0ec6024e3cc77ceb72a9ab5"
     },
     "release_promotion_blocker": {
       "path": "docs/release-development-promotion-blocker.v1.json",
@@ -1510,7 +1510,7 @@
     },
     "delivery_adapter_controller": {
       "path": "control/delivery-adapter.mjs",
-      "sha256": "6184c7f98d2ef63199fdfe59e1fd85d1e67d9577aaab4ae446f6755a3da89853"
+      "sha256": "0e95769a1e974605829d81df5bc4cce6a067a1e81c742730edcb92c889e3c8a2"
     },
     "delivery_closure_state_controller": {
       "path": "control/delivery-closure-state.mjs",
@@ -1546,7 +1546,7 @@
     },
     "delivery_closure_state_verifier": {
       "path": "tests/verify-delivery-closure-state.mjs",
-      "sha256": "59ff013c0fb4c062b4d5fb8104233b74adac7ba9b2d683338ccd5d77335ad7f3"
+      "sha256": "5e26ab0c39d4c3d930990b0264bac11eaa89e96f0e4e8a78eb615f75af3baba2"
     },
     "roadmap12_remote_delivery_audit": {
       "path": "docs/feature-audits/ROADMAP_12_REMOTE_DELIVERY/auditreport.md",

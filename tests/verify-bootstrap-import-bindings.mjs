@@ -81,6 +81,7 @@ const approved = approveBootstrapPlan(plan, {
 const executed = executeBootstrapPlan(approved, {
   bootstrapSessionId: "BOOTSTRAP-IMPORT-001",
   projectRoot: destination,
+  projectImportSourceRoot: source,
   workflow,
   nowUtc: "2026-08-03T00:00:00.000Z",
   controllerRuntimeReadback: controllerReadbackFor(approved),
@@ -92,6 +93,7 @@ const setupAudit = auditBootstrapSetup({
   auditorSessionId: "AUDITOR-IMPORT-001",
   bootstrapSessionId: "BOOTSTRAP-IMPORT-001",
   stagingRoot: executed.staging_root,
+  projectImportSourceRoot: source,
   workflow,
   runtimeReadback: runtimeReadbackFor(approved),
   controllerRuntimeReadback: controllerReadbackFor(approved),
@@ -118,6 +120,7 @@ const adoptApproved = approveBootstrapPlan(adoptPlan, {
 const adoptExecuted = executeBootstrapPlan(adoptApproved, {
   bootstrapSessionId: "BOOTSTRAP-ADOPT-001",
   projectRoot: adoptRoot,
+  projectImportSourceRoot: adoptRoot,
   workflow,
   nowUtc: "2026-08-03T00:00:00.000Z",
   controllerRuntimeReadback: controllerReadbackFor(adoptApproved, "CONTROLLER-READBACK-ADOPT"),
@@ -129,6 +132,7 @@ const adoptAudit = auditBootstrapSetup({
   auditorSessionId: "AUDITOR-ADOPT-001",
   bootstrapSessionId: "BOOTSTRAP-ADOPT-001",
   stagingRoot: adoptExecuted.staging_root,
+  projectImportSourceRoot: adoptRoot,
   workflow,
   runtimeReadback: runtimeReadbackFor(adoptApproved),
   controllerRuntimeReadback: controllerReadbackFor(adoptApproved, "CONTROLLER-READBACK-ADOPT"),

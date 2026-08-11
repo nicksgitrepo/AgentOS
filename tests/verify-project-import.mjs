@@ -33,7 +33,9 @@ fs.writeFileSync(path.join(source, "scratch.tmp"), "temporary\n");
 const before = inspectProjectSource(source);
 const standards = compileStandardsRegistry();
 const normalization = compileNormalizationPolicy({importMode: "NORMALIZE_AND_AUDIT"});
+const projectId = "SYNTHETIC_IMPORT_PROJECT";
 const plan = compileProjectImportPlan({
+  projectId,
   mode: "NORMALIZE_AND_AUDIT",
   sourceRoot: source,
   destinationRoot: destination,
@@ -43,6 +45,7 @@ const plan = compileProjectImportPlan({
   normalizationPolicy: normalization,
 });
 const repeated = compileProjectImportPlan({
+  projectId,
   mode: "NORMALIZE_AND_AUDIT",
   sourceRoot: source,
   destinationRoot: destination,
@@ -68,6 +71,7 @@ for (const mode of ["ADOPT_IN_PLACE", "CLEAN_COPY", "RECONSTRUCT_FROM_INTENT"]) 
   const modeDestination = mode === "ADOPT_IN_PLACE" ? null : path.join(root, `${mode.toLowerCase()}-destination`);
   const modePolicy = compileNormalizationPolicy({importMode: mode});
   const modePlan = compileProjectImportPlan({
+    projectId,
     mode,
     sourceRoot: source,
     destinationRoot: modeDestination,
@@ -97,15 +101,18 @@ const recommendation = recommendProjectImportMode([{fact_id: "authority-corpus.c
 assert.equal(recommendation.recommended_mode, "NORMALIZE_AND_AUDIT");
 assert.equal(recommendation.status, "CANDIDATE_ONLY");
 assert.throws(() => compileProjectImportPlan({
+  projectId,
   mode: "NORMALIZE_AND_AUDIT", sourceRoot: source, destinationRoot: source,
   standardsRegistry: standards, normalizationPolicy: normalization,
 }), /separate non-overlapping roots/u);
 assert.throws(() => compileProjectImportPlan({
+  projectId,
   mode: "NORMALIZE_AND_AUDIT", sourceRoot: source, destinationRoot: destination,
   sourcePreservationRoot: path.join(source, ".agentos", "import"),
   standardsRegistry: standards, normalizationPolicy: normalization,
 }), /cannot be inside the imported source/u);
 assert.throws(() => compileProjectImportPlan({
+  projectId,
   mode: "NORMALIZE_AND_AUDIT", sourceRoot: source, destinationRoot: destination,
   sourcePreservationRoot: path.join(root, "unrelated-preservation"),
   standardsRegistry: standards, normalizationPolicy: normalization,

@@ -21,6 +21,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
+const COMMAND_RESULT_SCHEMA = "agentos.local_worker_session_command_result.v1";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -69,6 +70,34 @@ function digestWithout(value, field) {
   return crypto.createHash("sha256").update(JSON.stringify(canonicalize(body)), "utf8").digest("hex");
 }
 
+function opaqueError(value) {
+  const raw = value?.message ?? String(value);
+  if (/^opaque:error:[0-9a-f]{64}$/u.test(raw)) return raw;
+  return `opaque:error:${crypto.createHash("sha256").update(raw, "utf8").digest("hex")}`;
+}
+
+function compileCommandResult({base, command, status, handshake = null, error = null}) {
+  const result = {
+    schema: COMMAND_RESULT_SCHEMA,
+    version: 1,
+    status,
+    command_id: command.command_id,
+    role: base.role,
+    session_id: base.sessionId,
+    campaign_id: base.campaignId,
+    campaign_version: base.campaignVersion,
+    candidate_sha256: base.candidateSha256,
+    source_commit: base.sourceCommit,
+    source_tree: base.sourceTree,
+    handshake,
+    error: error === null ? null : opaqueError(error),
+    observed_at_utc: new Date().toISOString(),
+    result_sha256: null,
+  };
+  result.result_sha256 = digestWithout(result, "result_sha256");
+  return result;
+}
+
 const PERSISTED_DIGEST_FIELDS = new Set(["handshake_sha256", "readback_sha256", "session_sha256", "heartbeat_sha256", "command_sha256", "result_sha256", "initial_readback_sha256"]);
 const PRIVATE_PATH_TEXT = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[^\/\s"'`<>)}\]]+\/)+[^\/\s"'`<>)}\]]+|[A-Za-z]:[\\/]|\\\\)/u;
 
@@ -104,6 +133,7 @@ function assertNoSymlinkAncestors(root, target, label) {
     if (fs.existsSync(current)) assert(!fs.lstatSync(current).isSymbolicLink(), `${label} contains a symbolic-link component`);
     if (current === root) return;
     const parent = path.dirname(current);
+    if (parent === root) return;
     assert(parent !== current && parent.startsWith(`${root}${path.sep}`), `${label} escapes the bound root`);
     current = parent;
   }
@@ -1102,4 +1132,5 @@ export function createLocalSelfDevelopmentAdapters({repoRoot, runtimeRoot, autho
 }
 
 export {spawnWorker};
+export {compileCommandResult};
 export {createNativeSelfDevelopmentAdapters} from "./native-self-development-adapter.mjs";

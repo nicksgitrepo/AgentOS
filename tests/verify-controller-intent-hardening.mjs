@@ -43,7 +43,7 @@ function supervisorBoundary() {
 const observation = compileSupervisorObservation({
   projectId: "PROJECT-1",
   campaignId: "CAMPAIGN-1",
-  campaignVersion: "v1",
+  campaignVersion: "V1",
   activeCampaign: true,
   boundary: supervisorBoundary(),
   findings: [],
@@ -65,7 +65,7 @@ const loop = compileContinuousOperatingLoop({
   loopId: "LOOP-1",
   projectId: "PROJECT-1",
   campaignId: "CAMPAIGN-1",
-  campaignVersion: "v1",
+  campaignVersion: "V1",
   admittedScope: ["CONTROL_PLANE"],
   sourceCommit: COMMIT,
   sourceTree: TREE,

@@ -209,8 +209,9 @@ export function assertCampaignCompletionEligible({state, choice, final_handoff, 
   validateDeliveryState(state);
   validateDeliveryChoice(choice, stateContext(state));
   assert(choice.digest === state.choice_digest && choice.outcome === state.outcome, "completion choice differs from state");
-  validateFinalHandoff(final_handoff, {choice, state, receipt, live_audit, rollback_receipt, adapter_contract});
-  validateClosureRecord(closure, {state, choice, final_handoff, receipt, live_audit, rollback_receipt, adapter_contract});
+  validateFinalHandoff(final_handoff, {choice, receipt, live_audit, rollback_receipt, adapter_contract});
+  validateClosureRecord(closure, {choice, final_handoff, receipt, live_audit, rollback_receipt, adapter_contract});
+  assert(closure.preclosure_state_digest === final_handoff.state_digest, "completion closure and handoff pre-closure state differ");
   if (choice.outcome !== "PREPARED") assert(receipt !== null, "selected campaign completion requires the action receipt");
   if (LIVE_OUTCOMES.has(choice.outcome)) assert(live_audit !== null, "live campaign completion requires the live audit receipt");
   if (choice.outcome === "ROLLBACK") assert(rollback_receipt !== null, "rollback campaign completion requires the rollback receipt");

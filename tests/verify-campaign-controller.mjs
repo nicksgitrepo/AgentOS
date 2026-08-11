@@ -186,6 +186,9 @@ platform = acquirePlatformLease(platform, {
 assert.equal(platform.supervision.feature_agent_id, "FEATURE-B");
 assert.equal(platform.platform_worktree.current_commit, "commit-2");
 validatePlatformAgent(platform);
+const leasedPlatform = platform;
+platform = releasePlatformLease(platform, nextIso);
+assert.equal(platform.state, "AVAILABLE");
 assert.throws(() => archivePlatformAgent(platform), /closeout/u);
 const platformCloseout = compileUniversalTaskCloseoutReceipts({
   mode: "CAMPAIGN",
@@ -304,7 +307,17 @@ const closureReceipt = compileAcceptedLiveClosureReceipt({
   liveAuditReceipt,
   closedAtUtc: "2026-01-01T00:04:00.000Z",
 });
-const closed = applyLifecycleTransition(liveDelta, {...liveDelta, stage: "ACCEPTED_LIVE_CLOSED"}, {
+const closureAvailablePlatform = compilePlatformAgent({
+  logicalCapabilityId: liveDelta.platform_pool[0].logical_capability_id,
+  logicalAgentId: liveDelta.platform_pool[0].logical_agent_id,
+  executionSessionId: liveDelta.platform_pool[0].execution_session_id,
+  platformWorktree: liveDelta.platform_pool[0].platform_worktree,
+  state: "AVAILABLE",
+});
+const closurePlatform = archivePlatformAgent(closureAvailablePlatform, {universalCloseoutReceipts: platformCloseout});
+const closureReadyLiveDelta = sealLifecycleState({...liveDelta, platform_pool: [closurePlatform]});
+validateCampaignState(closureReadyLiveDelta);
+const closed = applyLifecycleTransition(closureReadyLiveDelta, {...closureReadyLiveDelta, stage: "ACCEPTED_LIVE_CLOSED"}, {
   type: "ACCEPTED_LIVE_CLOSURE", at_utc: "2026-01-01T00:04:00.000Z", payload: {closure_receipt: closureReceipt},
 });
 const finalCandidate = compileNextCampaignCandidate({
@@ -357,7 +370,7 @@ function hostileCase(label, operation) {
   assert.throws(operation, label);
   hostile += 1;
 }
-hostileCase("second supervisor", () => acquirePlatformLease(platform, {
+hostileCase("second supervisor", () => acquirePlatformLease(leasedPlatform, {
   featureAgentId: "FEATURE-C", featureSessionId: "SESSION-FEATURE-C", assignmentId: "ASSIGN-C", leaseId: "LEASE-C", writableScope: "API", acquiredAtUtc: ISO,
   goalSha256: SHA,
 }));

@@ -152,7 +152,7 @@ try {
   const priorThreadEnv = process.env.AGENTOS_HOST_SESSION_ID;
   process.env.AGENTOS_HOST_SESSION_ID = "USER-TYPED-SESSION-MUST-NOT-BIND";
   try {
-    assert.throws(() => compileHostWorkspaceReadback({projectRoot: root, projectRegistration}), /thread receipts are required/u,
+    assert.throws(() => compileHostWorkspaceReadback({projectRoot: root, projectRegistration}), /project registration and observer task receipts are required/u,
       "environment session IDs must not substitute for host thread receipts");
   } finally {
     if (priorThreadEnv === undefined) delete process.env.AGENTOS_HOST_SESSION_ID;

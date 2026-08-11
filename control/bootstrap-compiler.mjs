@@ -331,6 +331,12 @@ function requireId(value, label) {
   assert(SAFE_ID.test(value), `${label} contains an unsafe identifier`);
 }
 
+function projectImportIdentifier(projectName) {
+  const normalized = String(projectName ?? "").trim().replace(/[^A-Za-z0-9._:-]+/gu, "-");
+  const prefixed = /^[A-Za-z]/u.test(normalized) ? normalized : `PROJECT-${normalized}`;
+  return (prefixed || "PROJECT-IMPORT").slice(0, 128);
+}
+
 function requireFactId(value, label) {
   requireString(value, label);
   assert(SAFE_FACT_ID.test(value) && !value.split("/").includes("..") && !value.includes("//"), `${label} contains an unsafe identifier`);
@@ -1023,6 +1029,7 @@ export function compileBootstrapPlan({
   });
   const projectImport = importAnswer
     ? compileProjectImportPlan({
+      projectId: projectImportIdentifier(normalizedAnswers["project.boundary"]?.project_name),
       mode: importMode,
       sourceRoot: importAnswer.source_root,
       destinationRoot: importAnswer.destination_root ?? null,
@@ -1637,7 +1644,13 @@ function validateExecutionState(executionState) {
   return executionState;
 }
 
-function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot = null) {
+function resolveProjectImportPreservationRoot(plan, projectRoot, controlPlaneRoot, explicitRoot = null) {
+  if (explicitRoot !== null) return path.resolve(explicitRoot);
+  const base = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR" ? projectRoot : controlPlaneRoot;
+  return path.join(base, ".agentos", "import");
+}
+
+function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot = null, projectImportSourceRoot = null) {
   const root = fs.realpathSync.native(path.resolve(projectRoot));
   if (plan.project_root !== null) assert(path.resolve(plan.project_root) === root, "Bootstrap project root changed after exact-plan approval");
   const control = revalidateControlPlane(plan, root, controlPlaneRoot);
@@ -1654,7 +1667,8 @@ function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, con
     "legacy source contents changed after exact-plan approval");
   }
   if (plan.project_import !== null) {
-    const observedImportSource = inspectProjectSource(plan.project_import.source_root);
+    assert(projectImportSourceRoot !== null, "project import execution requires an exact source root readback");
+    const observedImportSource = inspectProjectSource(projectImportSourceRoot);
     assert(observedImportSource.source_content_sha256 === plan.project_import.source_identity.source_content_sha256
       && observedImportSource.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
     "project import source contents changed after exact-plan approval");
@@ -1662,11 +1676,11 @@ function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, con
   return {root, controlRoot: control, discovery: observedDiscovery.facts};
 }
 
-export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot, controlPlaneRoot = null, legacySourceRoot = null, nowUtc}) {
+export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot, controlPlaneRoot = null, legacySourceRoot = null, projectImportSourceRoot = null, nowUtc}) {
   validateBootstrapRunnablePlan(plan);
   requireId(bootstrapSessionId, "Bootstrap session ID");
   requireUtc(nowUtc, "Bootstrap execution time");
-  const {root, controlRoot} = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot);
+  const {root, controlRoot} = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot, projectImportSourceRoot);
   const state = {
     schema: "agentos.bootstrap_execution_state.v1",
     status: isJsaPlan(plan) ? "JSA_BOUND" : "APPROVED",
@@ -1699,6 +1713,8 @@ export function executeBootstrapPlan(plan, {
   projectRoot,
   controlPlaneRoot = null,
   legacySourceRoot = null,
+  projectImportSourceRoot = null,
+  projectImportPreservationRoot = null,
   workflow,
   nowUtc,
   ownerReview = null,
@@ -1721,12 +1737,12 @@ export function executeBootstrapPlan(plan, {
   assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap execution requires an independent Controller Runtime readback");
   validateControllerRuntimeReadback(controllerRuntimeReadback);
   requireId(controllerSessionId, "AgentOS Controller session ID");
-  const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot);
+  const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot, projectImportSourceRoot);
   const root = validation.root;
   const controlRoot = validation.controlRoot;
   assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
   assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
-  const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, controlPlaneRoot: controlRoot, legacySourceRoot, nowUtc});
+  const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, controlPlaneRoot: controlRoot, legacySourceRoot, projectImportSourceRoot, nowUtc});
   fs.mkdirSync(controlRoot, {recursive: true});
   validateControlPlaneStorage(controlRoot, plan.control_plane.storage_backend);
   const stagingRoot = fs.mkdtempSync(path.join(controlRoot, ".agentos-bootstrap-stage-"));
@@ -1751,12 +1767,12 @@ export function executeBootstrapPlan(plan, {
     verifyLegacyPreservation(destination);
   }
   if (plan.project_import !== null) {
-    const source = fs.realpathSync.native(path.resolve(plan.project_import.source_root));
+    assert(projectImportSourceRoot !== null, "project import execution requires an exact source root");
+    const source = fs.realpathSync.native(path.resolve(projectImportSourceRoot));
     const adoptIntoCurrentRoot = plan.project_import.mode === "ADOPT_IN_PLACE"
       && (source === root || source.startsWith(`${root}${path.sep}`));
     if (!adoptIntoCurrentRoot) assert(source !== root && !source.startsWith(`${root}${path.sep}`), "project import source must be outside the destination project root");
-    const preservationRoot = plan.project_import.preservation.root;
-    assert(preservationRoot !== null, "project import preservation root is required during Bootstrap execution");
+    const preservationRoot = resolveProjectImportPreservationRoot(plan, root, controlRoot, projectImportPreservationRoot);
     const preservationRelative = relativeControlPlanePath(controlRoot, preservationRoot, "project import preservation root");
     const projectSidecar = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR" && adoptIntoCurrentRoot;
     const destination = projectSidecar
@@ -1950,6 +1966,8 @@ export function auditBootstrapSetup({
   auditorSessionId,
   bootstrapSessionId,
   stagingRoot,
+  projectImportSourceRoot = null,
+  projectImportPreservationRoot = null,
   workflow,
   ownerReview = null,
   runtimeReadback = null,
@@ -2009,12 +2027,13 @@ export function auditBootstrapSetup({
     assert(receipt.status === "VERIFIED_EXACT", "setup Auditor could not verify legacy archive");
   }
   if (plan.project_import !== null) {
-    const preservationRoot = plan.project_import.preservation.root;
-    assert(preservationRoot !== null, "project import preservation root is required for setup audit");
+    assert(projectImportSourceRoot !== null, "project import setup audit requires an exact source root");
+    const preservationRoot = resolveProjectImportPreservationRoot(plan, executionState.project_root, controlRoot, projectImportPreservationRoot);
     const preservationRelative = relativeControlPlanePath(controlRoot, preservationRoot, "project import preservation root");
     const projectSidecar = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR"
       && (plan.project_import.mode === "ADOPT_IN_PLACE")
-      && (plan.project_import.source_root === executionState.project_root || plan.project_import.source_root.startsWith(`${executionState.project_root}${path.sep}`));
+      && (fs.realpathSync.native(path.resolve(projectImportSourceRoot)) === executionState.project_root
+        || fs.realpathSync.native(path.resolve(projectImportSourceRoot)).startsWith(`${executionState.project_root}${path.sep}`));
     const importRoot = projectSidecar
       ? assertContained(executionState.project_root, path.join(preservationRelative, "source-preservation"), "project import preservation readback root")
       : assertContained(root, path.join(preservationRelative, "source-preservation"), "project import preservation readback root");

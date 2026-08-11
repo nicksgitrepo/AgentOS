@@ -18,7 +18,8 @@ import {
   validateDeliveryChoice,
   validateRuntimeReceipt,
 } from "../control/delivery-closure-state.mjs";
-import {canonicalDigest as adapterDigest, compileDeliveryAdapterContract} from "../control/delivery-adapter.mjs";
+import {compileDeliveryAdapterContract} from "../control/delivery-adapter.mjs";
+import {digestWithout} from "../control/delivery-closure-foundation.mjs";
 
 const SOURCE_COMMIT = "1".repeat(40);
 const SOURCE_TREE = "2".repeat(40);
@@ -296,11 +297,11 @@ assert.equal(reopenedState.status, "CHOICE_REQUIRED");
 assert.equal(reopenedState.receipt_digest, failedReceipt.digest);
 
 const mismatchedRequest = {...pushRequest, source_commit: "3".repeat(40), digest: null};
-mismatchedRequest.digest = adapterDigest(mismatchedRequest);
+mismatchedRequest.digest = digestWithout(mismatchedRequest);
 assert.throws(() => authorizeRuntimeRequest(mismatchedRequest, {choice: pushChoice, adapter_contract: ADAPTER, authorized_at_utc: time(88)}), /source differs from selected choice/u);
 
 const omittedReceiptHandoff = {...push.handoff, receipt_digests: [OTHER_DIGEST], digest: null};
-omittedReceiptHandoff.digest = adapterDigest(omittedReceiptHandoff);
+omittedReceiptHandoff.digest = digestWithout(omittedReceiptHandoff);
 assert.throws(() => assertCampaignCompletionEligible({
   state: push.closed,
   choice: pushChoice,

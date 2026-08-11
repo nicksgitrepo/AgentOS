@@ -155,7 +155,9 @@ export function compileDeliveryAdapterContract({
     digest: null,
   };
   secretFree(contract, "delivery adapter contract");
-  contract.digest = canonicalDigest(contract);
+  const digestBody = structuredClone(contract);
+  delete digestBody.digest;
+  contract.digest = canonicalDigest(digestBody);
   return validateDeliveryAdapterContract(contract);
 }
 
@@ -169,4 +171,3 @@ export function validateDeliveryAdapterForAction(contract, action, policyDigest 
   }
   return contract;
 }
-
