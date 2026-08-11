@@ -442,7 +442,7 @@ function answerRecord(question, source) {
 
 function validateAnswer(question, answer) {
   assert(isRecord(answer), `Bootstrap answer is invalid: ${question.id}`);
-  assert(JSON.stringify(Object.keys(answer).sort()) === JSON.stringify(["answer_sha256", "certainty", "provenance", "question_id", "schema", "value", "version"]), `Bootstrap answer fields are invalid: ${question.id}`);
+  assert(JSON.stringify(Object.keys(answer).sort()) === JSON.stringify(["answer_sha256", "certainty", "provenance", "question_id", "schema", "value", "version"]), `Bootstrap answer keys are invalid: ${question.id}`);
   assert(answer.schema === BOOTSTRAP_ANSWER_SCHEMA && answer.version === BOOTSTRAP_ANSWER_VERSION, `Bootstrap answer identity is invalid: ${question.id}`);
   assert(answer.question_id === question.id, `Bootstrap answer question binding is invalid: ${question.id}`);
   const rebuilt = answerRecord(question, {
@@ -450,7 +450,7 @@ function validateAnswer(question, answer) {
     certainty: answer.certainty,
     provenance: answer.provenance,
   });
-  assert(canonicalDigest(rebuilt) === canonicalDigest(answer), `Bootstrap answer semantics are invalid: ${question.id}`);
+  assert(canonicalDigest(rebuilt) === canonicalDigest(answer), `Bootstrap answer semantics are not canonical: ${question.id}`);
   assert(SHA256.test(answer.answer_sha256) && answer.answer_sha256 === answerDigest(answer), `Bootstrap answer digest is invalid: ${question.id}`);
   return answer;
 }
@@ -578,8 +578,10 @@ export function acceptBootstrapReply(session, {questionId, reply} = {}) {
       };
     }
     const expected = nextQuestionId(session, true);
+    const expectedQuestion = expected === null ? null : bootstrapQuestionById(expected, session.question_map);
+    const optionalSkip = question.required === false && expectedQuestion?.required === false;
     const revision = previous !== undefined;
-    assert(revision || expected === question.id, "Bootstrap answers must follow the current question");
+    assert(revision || expected === question.id || optionalSkip, "Bootstrap answers must follow the current question");
     const answers = {...session.answers, [question.id]: answerRecord(question, value)};
     const answerOrder = revision ? [...session.answer_order] : [...session.answer_order, question.id];
     const reassessmentRequired = session.reassessment_required

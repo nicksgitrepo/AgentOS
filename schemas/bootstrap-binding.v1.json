@@ -62,7 +62,7 @@
     },
     "bootstrap_conversation_controller": {
       "path": "control/bootstrap-conversation.mjs",
-      "sha256": "b345550e896df6ef5b56953eedef2fa1839fead024463b4a83f2d8143014eca1"
+      "sha256": "03f0dd12e0a464bc687f669bfb6d9b9cb6144293c0552ac14033630106936b6f"
     },
     "bootstrap_owner_surface_controller": {
       "path": "control/bootstrap-owner-surface.mjs",
