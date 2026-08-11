@@ -1494,7 +1494,7 @@
     },
     "apprenticeship_native_observation_verifier": {
       "path": "tests/verify-apprenticeship-native-observation.mjs",
-      "sha256": "fbe615dee899c24a240bee283205948f939f09661415deb698a6cdc681532ae5"
+      "sha256": "be4b88c50ad11548db7048f9591f4a51cce3dfd451d32c8a167c190ea602cb28"
     },
     "roadmap11_workflow_distillation_audit": {
       "path": "docs/feature-audits/ROADMAP_11_WORKFLOW_DISTILLATION/auditreport.md",
@@ -1778,7 +1778,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "aa260c31c38c6dae08c8440293a6e808ac94c12169a12eb1a16aab630fbaf6d7"
+      "sha256": "9ba635254e46071cfa61d305114755f40ff7d4b14971e2d9652181ed8c2b8ac7"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1794,7 +1794,7 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "f0d78f4179e2ab2f8544c9c8eeb287ea0d112a0d7cc248672cba8147cd2b7849"
+      "sha256": "64ccc35bc65d652cf31f52b3ca5861106a087dcc2df12531a3de7ed39b568269"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",

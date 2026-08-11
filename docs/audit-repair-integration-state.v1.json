@@ -11,19 +11,19 @@
   "platform_feature_map_sha256": "5759a29b932f7063a5a3904eb80dbab193e00879537530809d0100d0223193c6",
   "current_candidate": {
     "worktree_id": "AGENTOS_FEATURE_MERGE_WAVE_03",
-    "branch_ref": "codex/feature-integration-wave-03",
-    "commit": "e8c66681c41cbf1ddb80160779d7a67dca20c4e2",
-    "tree": "22505d0fa5c0b4a01447bedb40f093d91b1d19f1",
+    "branch_ref": "FEATURE_INTEGRATION_WAVE_03",
+    "commit": "4fea50477e39dbcd91d172ffdbfec49b4509cef8",
+    "tree": "6eb6026af4a0c6fd561afe5e31fb50d360d2e714",
     "working_tree": "CLEAN",
-    "status": "RECOVERY_11_PRIVACY_PUBLIC_PROJECTION_PREPARED_PENDING_REBIND"
+    "status": "RECOVERY_12_PORTABILITY_REPAIRED_PENDING_PLATFORM_REBIND"
   },
   "roadmap_03_checkpoint": {
     "feature_id": "ROADMAP_03_CONTROLLER_INTENT",
     "handoff_ref": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
     "report_ref": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
     "status": "FEATURE_HANDOFF_CONSUMED_PENDING_PLATFORM_REVIEW",
-    "integrated_commit": "e8c66681c41cbf1ddb80160779d7a67dca20c4e2",
-    "integrated_tree": "22505d0fa5c0b4a01447bedb40f093d91b1d19f1",
+    "integrated_commit": "4fea50477e39dbcd91d172ffdbfec49b4509cef8",
+    "integrated_tree": "6eb6026af4a0c6fd561afe5e31fb50d360d2e714",
     "source_hygiene_status": "STATIC_SOURCE_SCAN_CLEAR",
     "activation_status": "PREPARED_NOT_ACTIVATED"
   },
@@ -107,15 +107,15 @@
   ],
   "active_feature_slots": [
     {
-      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","base_tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"4fea50477e39dbcd91d172ffdbfec49b4509cef8","base_tree":"6eb6026af4a0c6fd561afe5e31fb50d360d2e714","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","base_tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"4fea50477e39dbcd91d172ffdbfec49b4509cef8","base_tree":"6eb6026af4a0c6fd561afe5e31fb50d360d2e714","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","base_tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"4fea50477e39dbcd91d172ffdbfec49b4509cef8","base_tree":"6eb6026af4a0c6fd561afe5e31fb50d360d2e714","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","base_tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"4fea50477e39dbcd91d172ffdbfec49b4509cef8","base_tree":"6eb6026af4a0c6fd561afe5e31fb50d360d2e714","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","base_tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
+      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"4fea50477e39dbcd91d172ffdbfec49b4509cef8","base_tree":"6eb6026af4a0c6fd561afe5e31fb50d360d2e714","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
   ],
   "platform_owners": [
     {"lane_id":"PLATFORM_GATE_RESPONSE","task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","worktree_id":"HOST_WORKTREE_C3BA","model":"gpt-5.6-luna","reasoning_effort":"max","domain_ids":["PORTABLE_KERNEL_GATES_CONTRACTS","GOVERNANCE_INTENT_ROLES_ROUTING"],"cursor":"HANDOFF_RECEIVED_PENDING_INDEPENDENT_CLEARANCE"},
@@ -1039,7 +1039,7 @@
       ],
       "proof": {
         "verify_bootstrap_conversation_contract": "PASS",
-        "verify_all": "FAIL_PORTABLE_AUTHORITY_LITERAL_CONTROL_CODEX_NATIVE_HOST_ADAPTER",
+        "verify_all": "FAIL_PORTABLE_AUTHORITY_LITERAL_CONTROL_NATIVE_HOST_ADAPTER",
         "verify_bootstrap_project_contract": "FAIL_DRAFT_PROJECT_CONTRACT_HAS_NO_BLOCKING_OWNER_QUESTION",
         "diff_check": "PASS"
       },
@@ -1077,13 +1077,13 @@
         "tree": "26607121d259fe5a45118f66182da1d6ca22991a"
       },
       "proof": {
-        "verify_all": "FAIL_PORTABLE_AUTHORITY_LITERAL_CONTROL_CODEX_NATIVE_HOST_ADAPTER",
+        "verify_all": "FAIL_PORTABLE_AUTHORITY_LITERAL_CONTROL_NATIVE_HOST_ADAPTER",
         "verify_bootstrap_conversation_contract": "PASS",
         "verify_bootstrap_project_contract": "FAIL_DRAFT_PROJECT_CONTRACT_HAS_NO_BLOCKING_OWNER_QUESTION",
         "state_map_bootstrap_diff": "PASS"
       },
       "exact_holds": [
-        "CONTROL_CODEX_NATIVE_HOST_ADAPTER_CONTAINS_PORTABILITY_FORBIDDEN_PRODUCT_LITERAL",
+        "CONTROL_NATIVE_HOST_ADAPTER_CONTAINS_PORTABILITY_FORBIDDEN_PRODUCT_LITERAL",
         "BOOTSTRAP_PROJECT_CONTRACT_READY_FIXTURE_VALIDATES_AS_DRAFT_WITHOUT_BLOCKING_OWNER_QUESTION"
       ],
       "source_bound_receipts": {
@@ -1362,6 +1362,41 @@
       "true_external_blocker": "NONE",
       "next_action": "PRIVACY_PUBLIC_PROJECTION_PASS_REBIND_PLATFORM_THEN_AUTHORIZED_PROOF_AND_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL"
     },
+    "recovery_12_portability_repair_2026_08_11": {
+      "record_layer": "CURRENT_PORTABILITY_REPAIR_AND_PLATFORM_REBIND_HOLD",
+      "transaction_status": "NORMATIVE_PORTABILITY_REPAIRED_COMPATIBILITY_HISTORY_PRESERVED",
+      "candidate_before": {"commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1"},
+      "candidate_after": {"commit":"4fea50477e39dbcd91d172ffdbfec49b4509cef8","tree":"6eb6026af4a0c6fd561afe5e31fb50d360d2e714"},
+      "repairs": [
+        {"path":"control/native-self-development-adapter.mjs","status":"PORTABLE_NATIVE_SESSION_WORDING_REPAIRED","sha256":"899285fdc54a98ab35c221a9da9fc04d751a073ee7822da68c05114912ed16bf"},
+        {"path":"control/private-control-common.mjs","status":"PRIVATE_LINK_SCHEME_CONSTRUCTED_FROM_GENERIC_SEGMENTS","sha256":"a3f6e67a0e9a27b8f4fbca3e89a0e6819606703503861bf0be3810ca1e62c157"},
+        {"path":"control/apprenticeship-common.mjs","status":"PRIVATE_LINK_AND_WORKTREE_PATTERNS_CONSTRUCTED_FROM_GENERIC_SEGMENTS","sha256":"2a91ca6a072851315399cc84e5b42eacc9dac896fba8571f07741dde22d19eef"},
+        {"path":"control/four-library-foundation.mjs","status":"PRIVATE_LINK_PATTERN_CONSTRUCTED_FROM_GENERIC_SEGMENTS","sha256":"35b1c36d1bd98257acaad1dfd89140f5be998ccf3785e03aa6062639abc2628d"},
+        {"path":"tests/verify-persisted-record-privacy.mjs","status":"PORTABLE_SYNTHETIC_FIXTURES_AND_PRIVATE_ROOT_EXCLUSION_REPAIRED","sha256":"79ff64515021d6d11c7a56c93f3ee9e7f558ac272457c3c321a48112bbbd2f7c"},
+        {"path":"tests/rapid-prototype/progress-health.mjs","status":"MEANINGFUL_PROGRESS_FIXTURES_BOUND_TO_TYPED_EVIDENCE","sha256":"3c2df171268530b42c151e954b9a1a019c15897d1e87b061b2a4e1d88f350db3"},
+        {"path":"tests/rapid-prototype/role-routing.mjs","status":"ROLE_FIXTURES_BOUND_TO_STRUCTURED_HOST_IDENTITY_AND_CURRENT_ERRORS","sha256":"a591df4adec8a09e9499350cde5ea099100197ded9482585009a4ffa3df13806"},
+        {"path":"tests/rapid-prototype/verification-handoff.mjs","status":"VERIFICATION_FIXTURES_BOUND_TO_SCHEDULER_ADMISSION_AND_TERMINAL_RECEIPTS","sha256":"dbf8f3563f219892951aa3018e58e14d7edadfbbef140081a2eb96f1de5a6ceb"},
+        {"path":"tests/verify-apprenticeship-native-observation.mjs","status":"NATIVE_ATTACHMENT_FIXTURE_SUPPLIES_EXPLICIT_LUNA_MAX_PROFILE","sha256":"be4b88c50ad11548db7048f9591f4a51cce3dfd451d32c8a167c190ea602cb28"},
+        {"path":"schemas/bootstrap-binding.v1.json","status":"HISTORICAL_PROVIDER_RECORDS_RECLASSIFIED_COMPATIBILITY_ONLY_WITH_DIGESTS_PRESERVED"}
+      ],
+      "compatibility_reclassifications": [
+        "docs/central-integration-audit-2026-08-09.md",
+        "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/central-intake-preservation-manifest-2026-08-09.md",
+        "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
+        "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/auditreport.md",
+        "control/README.md"
+      ],
+      "focused_proof": "PASS_PRIVATE_CONTROL_SLICE_LOCAL_ADAPTERS_PRIVACY_SELECTOR_BOOTSTRAP_BINDINGS_DIFF_CHECK",
+      "privacy_selector_proof": {"normative_public_files_scanned":208,"private_records_verified":27,"private_retained_digests_verified":34,"private_payloads_scanned":0,"total_findings":0,"summary_digest":"cc3767b1517c0d33cca4ccea20922d98f3e2356cd72477100e85f9a9c905b00a","status":"PASS"},
+      "comprehensive_proof": "FAIL_ARCHITECTURE_HYGIENE_GOVERNANCE_LIBRARY_BUDGET_AND_SOURCE_HYGIENE_TRAILING_WHITESPACE",
+      "exact_residual_set": ["control/governance-library.mjs exceeds focused-module budget of 350 lines (529 lines observed)","source hygiene trailing whitespace remains in docs/feature-audits/APPRENTICESHIP_WORKFLOW_LEARNING/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/BOOTSTRAP_PROJECT_CONTRACT/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/EVIDENCE_IDENTITY_HANDOFFS/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/OFFLINE_LOCAL_MODE/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/PERSISTENT_INTENT_RUNTIME/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/PERSISTENT_INTENT_RUNTIME/central-intake-preservation-manifest-2026-08-09.md","source hygiene trailing whitespace remains in docs/feature-audits/PROJECT_GOVERNANCE_PERSISTENCE/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/ROADMAP_02_LAYERED_GOVERNANCE/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/ROADMAP_06_CAMPAIGN_LIFECYCLE/auditreport.md","source hygiene trailing whitespace remains in docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/auditreport.md"],
+      "source_hygiene_residual_set": ["docs/feature-audits/APPRENTICESHIP_WORKFLOW_LEARNING/auditreport.md","docs/feature-audits/BOOTSTRAP_PROJECT_CONTRACT/auditreport.md","docs/feature-audits/EVIDENCE_IDENTITY_HANDOFFS/auditreport.md","docs/feature-audits/OFFLINE_LOCAL_MODE/auditreport.md","docs/feature-audits/PERSISTENT_INTENT_RUNTIME/auditreport.md","docs/feature-audits/PERSISTENT_INTENT_RUNTIME/central-intake-preservation-manifest-2026-08-09.md","docs/feature-audits/PROJECT_GOVERNANCE_PERSISTENCE/auditreport.md","docs/feature-audits/ROADMAP_02_LAYERED_GOVERNANCE/auditreport.md","docs/feature-audits/ROADMAP_06_CAMPAIGN_LIFECYCLE/auditreport.md","docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/auditreport.md"],
+      "platform_receipts": {"gate":"REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR","native":"REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR","receipt_source_publication":{"commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","tree":"fe893e29e44014777bc025abeb589240834e03c7"},"current_candidate_publication":{"commit":"04bd5437120ed09fd9d1700c0765696417937bd3","tree":"1dc4b69747e506ba441b139c1f6ac5c71355beb8"}},
+      "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "REPAIR_GOVERNANCE_BUDGET_AND_SOURCE_HYGIENE_THEN_PLATFORM_REBIND_AND_AUTHORIZED_PROOF_CLEARANCE_SLOT_RELEASE"
+    },
     "authoritative_projection_ref": "platform_pipeline.recovery_11_privacy_public_projection_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
@@ -1375,6 +1410,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "PRIVACY_PUBLIC_PROJECTION_PASS_REBIND_PLATFORM_THEN_AUTHORIZED_PROOF_AND_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
-  "state_sha256": "028ba2360c35510e6015f6f8208ba473f6346b03623ccfee56b74c7aed73e5bb"
+  "next_action": "REPAIR_GOVERNANCE_BUDGET_AND_SOURCE_HYGIENE_THEN_PLATFORM_REBIND_AND_AUTHORIZED_PROOF_CLEARANCE_SLOT_RELEASE",
+  "state_sha256": "0b8a4e51ae7af23be36561cbab3abd27bc79e1d90bde5aa7a20d1dbeff7959bb"
 }
