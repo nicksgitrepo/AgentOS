@@ -12,8 +12,8 @@
     },
     {
       "path": "CURRENT_STATE.md",
-      "size": 8680,
-      "sha256": "ddc5d46177de9b606d89b6b83f2f0bf6af171a5745a55f838a5ccaa4200fa8be"
+      "size": 9719,
+      "sha256": "c6deb52c26d0565a9ffc3a27a44629e27c513bbc91088534c04ad7b4de08c407"
     },
     {
       "path": "agent-builder-adapter.mjs",
@@ -1331,6 +1331,6 @@
       "sha256": "481bdacae43f205519dd26f5d7cb6c65113af4251b7ae267b42b41029a6fe340"
     }
   ],
-  "bundle_sha256": "829650b87384faf8cfb2d3ca93407b9b8ef148158bebe8249c92823c8fb1a248",
+  "bundle_sha256": "26f26cadacf9d66507d93affc75faae04cf652826ea0722d29d921809fd4117b",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

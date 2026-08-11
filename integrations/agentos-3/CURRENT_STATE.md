@@ -59,3 +59,10 @@ task/session identity, credential, provider identity, or external project contex
 - The complete local integration proof passed: exact main-core source parity (`187` entries), main-core controller compile probe, Builder typed compilation with four denial classes, Memory initialize/verify/reopen replay under an externally verified test capability, sibling install and rollback with project Git/bytes/status unchanged, hostile foreign/changed/overlap cases, and synthetic purity.
 - Deterministic packaging passed with `265` canonical entries (including the scoped source-whitespace attribute), matching per-entry manifest hashes, inactive lifecycle, `OFF` activation, and identical consecutive regenerations. No provider activation, production deployment, public release, adoption, migration, or external messaging occurred.
 - Remaining ceilings are independent utility/harm evaluation, real-host NEW_PROJECT and generic import/adoption proof, provider activation, and public release. These are explicit pending ceilings, not local proof failures or acceptance claims.
+
+## Portfolio turn-bound recovery readback
+
+- Current committed custody is clean at `c3a90f4597a84cf989c7558c8764ebc0340421f0` / `0625148afc749da581b3b4633438a0904399d6ab`; uncommitted paths: none.
+- The repaired integration state and `MAIN_CORE_CONTROLLER_COMPILE_PASS` probe are committed. The earlier regenerated `264`-entry artifact is preserved as historical checkpoint evidence; the current committed artifact is `265` entries because the narrowly scoped source-whitespace attribute is included in the inactive bundle.
+- The serialized Rust `JOB-407` failure/host-pressure ceiling is recorded as a heavyweight-proof boundary. No heavyweight proof was launched in this bounded readback; no live scheduler process is present now. Prior local proof receipts remain the authoritative evidence for the committed candidate.
+- Next focused proof cursor: `INDEPENDENT_UTILITY_HARM_EVALUATION` against the exact inactive candidate; real-host, provider, activation, adoption, migration, and public-release actions remain outside this custody.
