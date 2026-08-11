@@ -32,8 +32,8 @@
     },
     {
       "path": "agent-builder/evaluation-plan.md",
-      "size": 13608,
-      "sha256": "80eae5bfd39a2426dae181260b9cc93e8f285bea1a31a67cb0e3230a553e66c9"
+      "size": 13607,
+      "sha256": "ded454b5fc8765b11a5a13bea0a2d2a1f1d4dd8004f3bbde69e30151eb83c274"
     },
     {
       "path": "agent-builder/fixtures/context-block/invalid-authority-grants.json",
@@ -102,23 +102,23 @@
     },
     {
       "path": "agent-builder/fixtures/task-ir/invalid-authority-escalation.json",
-      "size": 6626,
-      "sha256": "b85902df707bcea070b083131cb86d13a9c1ab2131460a229de33f7c644d24f0"
+      "size": 6625,
+      "sha256": "5bf4fc8767ce5cd7c11856e97181a3ae7936abd17b84a42d21655debb5a50020"
     },
     {
       "path": "agent-builder/fixtures/task-ir/invalid-context-budget-overflow.json",
-      "size": 6606,
-      "sha256": "ec67db3b371b0656fdbfc1f349c280e4ea88d7c674ff8bd8ff42b50c3717f354"
+      "size": 6605,
+      "sha256": "086de71878e7dc879591184b7f7212088fa4eedabc159f89d4dd8d54f5f3f450"
     },
     {
       "path": "agent-builder/fixtures/task-ir/invalid-contradiction.json",
-      "size": 6761,
-      "sha256": "0392f5fca426b56039c0a806527f313a33ce1fd8f9ed527692eeff80550e8d0a"
+      "size": 6760,
+      "sha256": "ebcd3664aeed7728d973b492e6089db9516b8c9126a9bafab135f66ffc478a49"
     },
     {
       "path": "agent-builder/fixtures/task-ir/invalid-missing-protected-decision.json",
-      "size": 6630,
-      "sha256": "7135363ce497038fb1b793810e21c2df7ea0a773a4941a7da8b166c10344eea0"
+      "size": 6629,
+      "sha256": "6104ae8a4271f2d88f92a31878ef7ec5882868033b8a6689cdb61335d2328911"
     },
     {
       "path": "agent-builder/fixtures/task-ir/invalid-omitted-unresolved.json",
@@ -127,23 +127,23 @@
     },
     {
       "path": "agent-builder/fixtures/task-ir/invalid-stale-block.json",
-      "size": 6606,
-      "sha256": "40390e07ab8f8376d209bbb5cc0c84a2a9dd01da47959d0f983f8774125c7937"
+      "size": 6605,
+      "sha256": "ceb26032f62ee3fba4cb8016238285b06abbb0c232535344859645d93a4eb0b5"
     },
     {
       "path": "agent-builder/fixtures/task-ir/valid-task-ir.json",
-      "size": 6605,
-      "sha256": "705866fb37591648b681a6c5c69088d076598978c97f2554de6900d4ee887c12"
+      "size": 6604,
+      "sha256": "05c893c3570ed9ffb98b8caa6e71b98f7294ee086e4f7779c3234df16654a80d"
     },
     {
       "path": "agent-builder/task-ir.interface.ts",
-      "size": 4936,
-      "sha256": "a868368998ca7a871cf159e86845a33a69cf1ba5b477aef299b91af04ebd58d6"
+      "size": 4935,
+      "sha256": "f8ef5afa5314531e8558ef02628ee7437e5f7c33c7a41483a3594880fd3b5ddd"
     },
     {
       "path": "agent-builder/task-ir.schema.json",
-      "size": 17905,
-      "sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d"
+      "size": 17904,
+      "sha256": "f2a969cd0a15f3317fefb8a43ef8382195adbe087182d63623db85802f37bd68"
     },
     {
       "path": "agent-builder/validate_context_blocks.py",
@@ -321,6 +321,6 @@
       "sha256": "5c9755d94ad2b37ceb1d9298147e550ef8f0bcc8426dbaa1c2f293174a049d40"
     }
   ],
-  "bundle_sha256": "880f37a06e5069eaae3e4bfbebd06727288abf037385c55fabd0dff5a53c3442",
+  "bundle_sha256": "c28e021557e7d2fcba6e96841dc2da5dc0a82f4656ff7345f67ae8557fcd99f1",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }
