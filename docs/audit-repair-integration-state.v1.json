@@ -2182,7 +2182,7 @@
     "owner_task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
     "model": "gpt-5.6-luna",
     "reasoning_effort": "max",
-    "status": "LIGHTWEIGHT_PREFLIGHT_ACTIVE_SERIALIZED_RUNTIME_CUSTODY_PENDING",
+    "status": "FOCUSED_RERUN_ACTIVE_AFTER_CURRENT_PUBLICATION_REBIND",
     "prior_rebind_publication": {
       "commit": "2c52928247cc467e5487122cc7bff78aa5efaabf",
       "tree": "ffb50243418dd990f2fd1bcf88bc041d31e5ec41",
@@ -2216,11 +2216,20 @@
     "proof_execution": "LIGHTWEIGHT_PREFLIGHT_ACTIVE_NO_HEAVYWEIGHT_PROOF",
     "preflight_dispatch": {
       "task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
-      "turn_id": "019ff293-c5a0-7ed2-bee3-70607b2f3a18",
-      "status": "ACTIVE",
+      "prior_turn_id": "019ff293-c5a0-7ed2-bee3-70607b2f3a18",
+      "turn_id": "019ff29e-6c45-7740-bca5-56c5e90460eb",
+      "status": "ACTIVE_FOCUSED_RERUN",
       "model": "gpt-5.6-luna",
       "reasoning_effort": "max",
       "scope": "LIGHTWEIGHT_LOCAL_SOURCE_BOUND_STATE_DIGEST_PRIVACY_RECEIPT_AND_FLAG_PREFLIGHT_ONLY",
+      "audited_central_publication": {
+        "commit": "59860e96574416673c5a1dca19b6e06368f4de97",
+        "tree": "dd39662b87abec5d359863f6f1565d2792941d26"
+      },
+      "projection_target": {
+        "commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
+        "tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"
+      },
       "heavyweight_or_real_host_actions": false,
       "memory_contact": false
     },
@@ -2252,8 +2261,8 @@
     "memory_slot_count": 0,
     "memory_boundary": "UNTOUCHED_READ_ONLY_RECEIPT_ONLY_OUTSIDE_ORDINARY_SLOTS_AND_CURSORS",
     "true_external_blocker": "NONE",
-    "remaining_dependency": "PREFLIGHT_MUST_CONFIRM_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_FOR_PROTECTED_CLEARANCE_LEG",
-    "next_action": "CONSUME_LIGHTWEIGHT_PREFLIGHT_RECEIPT; ROUTE_ONLY_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_IF_REQUIRED; RETAIN_FLAGS_FALSE"
+    "remaining_dependency": "FOCUSED_RERUN_RECEIPT_PENDING; SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_ONLY_IF_PROTECTED_CLEARANCE_LEG_REMAINS",
+    "next_action": "CONSUME_FOCUSED_RERUN_RECEIPT; ROUTE_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_ONLY_IF_REQUIRED; RETAIN_FLAGS_FALSE"
   },
   "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
@@ -2269,5 +2278,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "CONSUME-LIGHTWEIGHT-INDEPENDENT-PREFLIGHT-THEN-ROUTE-ONLY-SERIALIZED-RUNTIME-REAL-HOST-CUSTODY-IF-REQUIRED; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "73e7b62725be938fe38c7d4e6f85bc33353333fd40a8d3f25c6d97c3cd978934"
+  "state_sha256": "4b818f3498ca6616f57e2d4e1f2599abc6adbb4e08845c0ddac9d293995ad722"
 }

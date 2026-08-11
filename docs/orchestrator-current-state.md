@@ -2144,3 +2144,10 @@ downstream, and slot-release flags remain false. The same independent-clearance
 task must perform one focused rerun against the corrected publication after this
 metadata commit; no provider, host, build, test, release, or activation action is
 started.
+
+The same independent-clearance task was returned for a focused rerun on turn
+`019ff29e-6c45-7740-bca5-56c5e90460eb`, auditing the clean metadata successor
+`59860e96574416673c5a1dca19b6e06368f4de97` / tree
+`dd39662b87abec5d359863f6f1565d2792941d26` while expecting the corrected
+projection target `0b68f431 / 9afbf4f9`. The rerun remains lightweight and
+source-bound; no protected Runtime/real-host action is started.

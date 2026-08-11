@@ -3,7 +3,7 @@
   "version": 1,
   "status": "PREPARED_NOT_ACTIVATED",
   "source_record_ref": "opaque:private-control-record:audit-repair-integration-state",
-  "source_record_sha256": "3cd7e676bec5aac72f776253e5e311509eeb53798965a8ebd7aacaacfed8c78b",
+  "source_record_sha256": "b480d7d6c0118aafde41f83a87c918ea2588adee1cd2a3b2ef33fa701e1dea18",
   "compatibility_status": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION",
   "public_replacement": "docs/audit-repair-integration-state-public.v1.json",
   "current_product_candidate": {
