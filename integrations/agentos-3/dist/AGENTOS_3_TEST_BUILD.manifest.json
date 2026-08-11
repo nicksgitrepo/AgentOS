@@ -7,18 +7,18 @@
   "entries": [
     {
       "path": "CURRENT_STATE.md",
-      "size": 948,
-      "sha256": "dc1b93972ef43c1ee905c18d7bba0d17f469a0baa8efc221c8074ddbe723c4a2"
+      "size": 5608,
+      "sha256": "64487335bb51ed91f011aad46dcd8bd918572a04981ea42b25f4710f57575a23"
     },
     {
       "path": "agent-builder-adapter.mjs",
-      "size": 1091,
-      "sha256": "e3b38e5a676cee8fd49afb13332f145aba82c2db200fab3ed0089364d38d91a7"
+      "size": 4522,
+      "sha256": "292713069bdfb2b9721076077c4a72b04c073d1bc5afa1e982a95e899cbc302a"
     },
     {
       "path": "agent-builder/README.md",
-      "size": 333,
-      "sha256": "561dade76f75fe490f4fce21782615f8c9f9dd7561ebfcd891f378ba29c5cf42"
+      "size": 7248,
+      "sha256": "ad0446c73716701b01871a1b35aa665b0254cf78db93b52122c06644ceeec44b"
     },
     {
       "path": "agent-builder/context-block.interface.ts",
@@ -34,6 +34,11 @@
       "path": "agent-builder/evaluation-plan.md",
       "size": 13607,
       "sha256": "ded454b5fc8765b11a5a13bea0a2d2a1f1d4dd8004f3bbde69e30151eb83c274"
+    },
+    {
+      "path": "agent-builder/evaluation-receipt.md",
+      "size": 3352,
+      "sha256": "21e208243f4cbaeb771b77b60719dbdd24e67a3024d847de727f5cc6214aeb81"
     },
     {
       "path": "agent-builder/fixtures/context-block/invalid-authority-grants.json",
@@ -136,6 +141,26 @@
       "sha256": "05c893c3570ed9ffb98b8caa6e71b98f7294ee086e4f7779c3234df16654a80d"
     },
     {
+      "path": "agent-builder/package-manifest.json",
+      "size": 6267,
+      "sha256": "64a992b4daa3d2e0b5a2a71cd098ad886a678542ab534db6bfe598fa30e998b0"
+    },
+    {
+      "path": "agent-builder/product-layer-model.md",
+      "size": 8241,
+      "sha256": "4e4b4e51b6b111098d0e6539d4c7d16c42c68d8fe9825d336b07376c49cd82ce"
+    },
+    {
+      "path": "agent-builder/research-taxonomy.md",
+      "size": 22877,
+      "sha256": "4b0ce55fd18e685a7aa2666dfd29253ebeb890b34992cf1f99b50a65d6fb353d"
+    },
+    {
+      "path": "agent-builder/source-provenance-refresh-policy.md",
+      "size": 13033,
+      "sha256": "15240b8837e212e0db8501aa7986a997a52976f728b2ce8d9a2c0418ff8bd0a1"
+    },
+    {
       "path": "agent-builder/task-ir.interface.ts",
       "size": 4935,
       "sha256": "f8ef5afa5314531e8558ef02628ee7437e5f7c33c7a41483a3594880fd3b5ddd"
@@ -167,23 +192,998 @@
     },
     {
       "path": "contracts/agentos-3-integration.v1.json",
-      "size": 2870,
-      "sha256": "392e7bdb391a8722c432e9c8ec8b47a031c194009544961277687c36a0a5b40d"
+      "size": 3415,
+      "sha256": "044ca681b1dec4825ddbc7ad44ca1bc92bfd64352cee933ffeafad3adafeec23"
+    },
+    {
+      "path": "contracts/compatibility-map.v1.json",
+      "size": 1389,
+      "sha256": "e5efbc92c00637c0d8826be91cfd0985b79ec830a801bb35c0cbcabbaeb9332d"
     },
     {
       "path": "contracts/test-build-receipt.json",
-      "size": 2475,
-      "sha256": "43ac42f9a51344fa0db6b719f69e166259cc2b8ba35dcf7ade927c1ee72b5a90"
+      "size": 2987,
+      "sha256": "a55f9306f632a232035a6c1aeb1bc99536762a7f719b42eb0cecb411a87ce6a4"
+    },
+    {
+      "path": "custody.mjs",
+      "size": 9846,
+      "sha256": "a823a586d1819b59d3b382fdc53cd3fe8ce45e21c97332807b6b4bd0eb94a763"
+    },
+    {
+      "path": "entrypoint.mjs",
+      "size": 750,
+      "sha256": "99324995e80ccd86cbbb817eaaa2e55802297851ef26826a48ee6175509b3959"
+    },
+    {
+      "path": "fixtures/normalization-generic.json",
+      "size": 155,
+      "sha256": "24b82c3920051cb70a3615cdf1a84427b55f3f2ad00998134cb9a2cbdcc555a9"
     },
     {
       "path": "install.mjs",
-      "size": 1338,
-      "sha256": "425848730a21fcc8cde8abc440ddf90c82fe5dbec0f3d3b99645f6c63362e065"
+      "size": 2800,
+      "sha256": "d33a1402403a3b4f5f8d1e279c5504416b4e6ebbdfecb292a15e99ff10ec75f1"
+    },
+    {
+      "path": "main-core/control/README.md",
+      "size": 7796,
+      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394"
+    },
+    {
+      "path": "main-core/control/acceptance-bridge.mjs",
+      "size": 5813,
+      "sha256": "fc331f0b79feb75c68c120b58bd4bbdbe15e66c9586c1fc4f21b622db366a5ce"
+    },
+    {
+      "path": "main-core/control/agentos-controller.mjs",
+      "size": 72164,
+      "sha256": "3ad27f39fe3b1182dc40e8860d375071848dfff6e1a68784651597751f1511fc"
+    },
+    {
+      "path": "main-core/control/agentos.mjs",
+      "size": 6324,
+      "sha256": "d4d818bdc60ccf1fa7dfa263a3d1203dbcb469f9dfaeb0282924b625ae49545f"
+    },
+    {
+      "path": "main-core/control/apprenticeship-common.mjs",
+      "size": 17488,
+      "sha256": "2a91ca6a072851315399cc84e5b42eacc9dac896fba8571f07741dde22d19eef"
+    },
+    {
+      "path": "main-core/control/apprenticeship-contract-hardening.mjs",
+      "size": 31614,
+      "sha256": "c937966ce48ce33dae28e0073bd7a1988aa7d5b02a4cd76f4a775299fd486027"
+    },
+    {
+      "path": "main-core/control/apprenticeship-contracts.mjs",
+      "size": 370,
+      "sha256": "f3acd1dc28f918ba76c0db44af4032d901dc4a291211ad7469ef985c6dd0a5cd"
+    },
+    {
+      "path": "main-core/control/apprenticeship-drill.mjs",
+      "size": 26639,
+      "sha256": "c47c3e88a89fa204d33112471cbc9ce39fb3d51ac8b7dc4fdaa107580271661a"
+    },
+    {
+      "path": "main-core/control/apprenticeship-native-runner.mjs",
+      "size": 34877,
+      "sha256": "70f7f8794ecaf47f6249d2203cdb255181025775e0037521ba22773cba0481b2"
+    },
+    {
+      "path": "main-core/control/apprenticeship-observation.mjs",
+      "size": 30206,
+      "sha256": "d40737227b2a1f594b63474e97f8ec30756a54c7c846e1dc1b09c98276a6472c"
+    },
+    {
+      "path": "main-core/control/apprenticeship-reproduction.mjs",
+      "size": 44225,
+      "sha256": "2f917ea40706a5181bbd35dd929667f152ab0acc2e08f915d1df20d326d1d229"
+    },
+    {
+      "path": "main-core/control/apprenticeship-role-packet.mjs",
+      "size": 11915,
+      "sha256": "818075d98624174a553f3c2fbe6930f33e6f0d617e25dec388639407047b02ea"
+    },
+    {
+      "path": "main-core/control/assistant-exchange.mjs",
+      "size": 202,
+      "sha256": "72fe8ccc2727f78d9bb416d9cbd3e80dd8fbc9aaf4ffea85acea09259e7f2905"
+    },
+    {
+      "path": "main-core/control/audit-driven-integration-pyramid.mjs",
+      "size": 69482,
+      "sha256": "b06333f67c440ff35d8b845efeda0f62428dacc2cd148fff0d12760a7e0f9095"
+    },
+    {
+      "path": "main-core/control/audit-repair-integration-pyramid.mjs",
+      "size": 17955,
+      "sha256": "6c12e7cb4828b633e0513582499924fbca63d2870b596cc983b62cfc9fa36c04"
+    },
+    {
+      "path": "main-core/control/authority-corpus.mjs",
+      "size": 31135,
+      "sha256": "eb3a145436af47ffa0d4a39913f86664a4a7ee8561d341113cc49d9a755042c6"
+    },
+    {
+      "path": "main-core/control/autonomous-campaign-continuation-repair-receipt.mjs",
+      "size": 748,
+      "sha256": "6d2e96651a951a8704eab1f21905d6cdb760142430adca46bfea4bdd2ce0844f"
+    },
+    {
+      "path": "main-core/control/autonomous-campaign-progress-repair-receipt.mjs",
+      "size": 732,
+      "sha256": "5d02f6e80d3327a7af474f225e9691b2c1f003f8672fb580f82f93c54f54c799"
+    },
+    {
+      "path": "main-core/control/bootstrap-compile-receipt.mjs",
+      "size": 6495,
+      "sha256": "d50086ec966f970a404e6a1885a5259e446e8337bd0749c5ff0a61d49ef3d4ec"
+    },
+    {
+      "path": "main-core/control/bootstrap-compiler.mjs",
+      "size": 123862,
+      "sha256": "111066e2de692ff017308330924369d2e7967926fdcb61e3fb3a1a83af7c547a"
+    },
+    {
+      "path": "main-core/control/bootstrap-conversation.mjs",
+      "size": 41028,
+      "sha256": "03f0dd12e0a464bc687f669bfb6d9b9cb6144293c0552ac14033630106936b6f"
+    },
+    {
+      "path": "main-core/control/bootstrap-coverage.mjs",
+      "size": 41489,
+      "sha256": "a9c748d4404894361a93ed3235b6f17ac7f22600a93436942cd4275df0c5f916"
+    },
+    {
+      "path": "main-core/control/bootstrap-discovery.mjs",
+      "size": 12845,
+      "sha256": "51eb42c9da7e8a7c80cdbf36095c8163171e3a3e4b1eca9c5171c093e460f7a5"
+    },
+    {
+      "path": "main-core/control/bootstrap-interview.mjs",
+      "size": 489,
+      "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"
+    },
+    {
+      "path": "main-core/control/bootstrap-output-definitions.mjs",
+      "size": 20075,
+      "sha256": "3125b3d7b615ef8f39610d7721ca6b17d1c9f6e47a547375a66a73adb21d1a61"
+    },
+    {
+      "path": "main-core/control/bootstrap-owner-surface.mjs",
+      "size": 7773,
+      "sha256": "bf83c8bf10e384e20c4905a65cba2f799e5b62d833fbac531fb32f105a9d48a6"
+    },
+    {
+      "path": "main-core/control/bootstrap-project-contract.mjs",
+      "size": 49393,
+      "sha256": "48a8925e02122748beba85104eaede1d964f2086f85a1cd7ad7d3a5f4e12a6c5"
+    },
+    {
+      "path": "main-core/control/bootstrap-runtime.mjs",
+      "size": 19278,
+      "sha256": "a4b62b070242fb661386d0b3ef5bb7a96a5efeca4a70934fccb0188c70e06d39"
+    },
+    {
+      "path": "main-core/control/bootstrap-safety-analysis.mjs",
+      "size": 14507,
+      "sha256": "26d91857b2d036bb6513c80f620b18fa02cfb4c790f19d2d001ffe82a1c27aec"
+    },
+    {
+      "path": "main-core/control/boundary-contract.mjs",
+      "size": 23898,
+      "sha256": "de809abd8c675114466c0d86ded06d5b8210b5d6236dd588bbfaf29dd458dcca"
+    },
+    {
+      "path": "main-core/control/campaign-acceptance-contract.mjs",
+      "size": 7540,
+      "sha256": "476fa2651494e9571f7f3e8a071f83d1fa5bdac1211613c3b8e86d9505b4009b"
+    },
+    {
+      "path": "main-core/control/campaign-cascade.mjs",
+      "size": 109736,
+      "sha256": "12e93099bee6dae043c6d0b2158e914aeca6c97379f467b55bfd6bbc174901b0"
+    },
+    {
+      "path": "main-core/control/campaign-controller.mjs",
+      "size": 13805,
+      "sha256": "741977ac72a7545d6e76377df735a7b6c026b46ee9593f3c72babbf091c4dcc9"
+    },
+    {
+      "path": "main-core/control/campaign-lifecycle.mjs",
+      "size": 100692,
+      "sha256": "6e52aefc0a02ab0d20c7afdb7c3644c2a952f07d61e1ae01f8fdb78b66fb4b76"
+    },
+    {
+      "path": "main-core/control/campaign-policy-reconcile.mjs",
+      "size": 12202,
+      "sha256": "586a90711ada94470045a00ebcc4e227ce98595d17a6b5b35c3d82ed31be8ba9"
+    },
+    {
+      "path": "main-core/control/campaign-receipts.mjs",
+      "size": 24656,
+      "sha256": "f40a6c6274cf5c29a950fdfc576bd66064b98079c99d1978a92935e9c0205a1c"
+    },
+    {
+      "path": "main-core/control/campaign-state-bridge.mjs",
+      "size": 6232,
+      "sha256": "a30dc1c121de517813ef2a8af0e15424b1c2491a81058b0c97d9db72782d8025"
+    },
+    {
+      "path": "main-core/control/campaign-state-owner.mjs",
+      "size": 12270,
+      "sha256": "90b12a343b5389576765b8453d5f50eb5465108e93b5445f68b916fcfbcf5982"
+    },
+    {
+      "path": "main-core/control/canonical-campaign-orchestration-adapter.mjs",
+      "size": 25519,
+      "sha256": "de4bbfe8f7454e19d77627eb04663b5c0a163db526a7e9b4e82c78022498d400"
+    },
+    {
+      "path": "main-core/control/canonical-campaign-orchestration-support.mjs",
+      "size": 45057,
+      "sha256": "dbfef6ecd4b32f289f29f9e0b2b60fe9b29c31cd12cfea6cf791cf0a3614d074"
+    },
+    {
+      "path": "main-core/control/canonical-feature-inventory.mjs",
+      "size": 37212,
+      "sha256": "d4f99378d72a72ee174cf949698d529103bd0e1d16eebc5ed8cd7562c169849c"
+    },
+    {
+      "path": "main-core/control/cascade-economics.mjs",
+      "size": 22119,
+      "sha256": "d5a7710f1bb0b47db5bacf08c6817852441ea1638da89a242748172ac13f26cb"
+    },
+    {
+      "path": "main-core/control/check-runner.mjs",
+      "size": 13718,
+      "sha256": "29a5ba50324fb5f858cd1870e66989c19cb943aee554a5db12975e7e1976f217"
+    },
+    {
+      "path": "main-core/control/codex-native-host-adapter.mjs",
+      "size": 12450,
+      "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"
+    },
+    {
+      "path": "main-core/control/content-addressing.mjs",
+      "size": 1916,
+      "sha256": "421de352ad4db38a949b121884adc4a5a7ea9c6b1f8b8e6cf70ae7f7291dd37a"
+    },
+    {
+      "path": "main-core/control/continuous-audit-sentinel.mjs",
+      "size": 6050,
+      "sha256": "158e1742fb8525bcfca6850db4423eddf554ee8791b2ac2c605ba90bf2c8f4de"
+    },
+    {
+      "path": "main-core/control/continuous-operating-loop.mjs",
+      "size": 74297,
+      "sha256": "2e44f8aa4b6458612d1acf23273ca50e1763ea481fff180c6d52aae1afe2c653"
+    },
+    {
+      "path": "main-core/control/control-plane-root.mjs",
+      "size": 10073,
+      "sha256": "aeea889b69d5a261bc6ae2aab5fe24e280578f0ea8a53a546c837f8c3c56036e"
+    },
+    {
+      "path": "main-core/control/controller-role-display.mjs",
+      "size": 2374,
+      "sha256": "4ddb3bbbc0c6ce91b576ee3ca8de0eb30e1143e8d7d57b1482770e50102c14c6"
+    },
+    {
+      "path": "main-core/control/controller-supervisor-binding-repair-receipt.mjs",
+      "size": 697,
+      "sha256": "b53781acbad91d7aa3d306ebfaf998d345c723be8393915c4da689029308752f"
+    },
+    {
+      "path": "main-core/control/controller-supervisor-repair-receipt.mjs",
+      "size": 725,
+      "sha256": "1e1597c7679dd262556e63b5398408cf896c3191c20ce4aafa363c2cd8da2eae"
+    },
+    {
+      "path": "main-core/control/controller-supervisor-runtime.mjs",
+      "size": 19924,
+      "sha256": "afd9c70746bd96e8f7664e7b3b29795866e66b826a74f55af495b1131e9a176e"
+    },
+    {
+      "path": "main-core/control/controller-supervisor.mjs",
+      "size": 27601,
+      "sha256": "8f82a4c4d82176604b197d13c57a6830ecee304d310606362966f7b66b9f9f02"
+    },
+    {
+      "path": "main-core/control/delivery-adapter.mjs",
+      "size": 9613,
+      "sha256": "0e95769a1e974605829d81df5bc4cce6a067a1e81c742730edcb92c889e3c8a2"
+    },
+    {
+      "path": "main-core/control/delivery-closure-foundation.mjs",
+      "size": 10450,
+      "sha256": "1e580e39cd3df0406a458cf3f27473aaba2aa8351b56900189fa468026aefdc7"
+    },
+    {
+      "path": "main-core/control/delivery-closure-records.mjs",
+      "size": 42664,
+      "sha256": "99a232e891be2a65b9ec23d7aaba087cf8c0eb97546c65b66ce9313f02a12c7c"
+    },
+    {
+      "path": "main-core/control/delivery-closure-state.mjs",
+      "size": 1018,
+      "sha256": "9bde390fb6fb39b4e4cabd5c7263f7f05dbb6b974a90f62ae5ff6cd8becb460b"
+    },
+    {
+      "path": "main-core/control/delivery-closure-transitions.mjs",
+      "size": 14423,
+      "sha256": "751306c978974cdb4072a2153438ea9a51e90df3df7935d14fcb86b23222cdd8"
+    },
+    {
+      "path": "main-core/control/delivery-policy.mjs",
+      "size": 37677,
+      "sha256": "d0121c8142e5533f362a752fd5aa3f4530f9139990eb80e800c341947e1a951d"
+    },
+    {
+      "path": "main-core/control/delivery-target.mjs",
+      "size": 15523,
+      "sha256": "330c925fd3074b40b359560795e46b08f12cfb22b8835439435ad0ab936c61ce"
+    },
+    {
+      "path": "main-core/control/derived-index.mjs",
+      "size": 19976,
+      "sha256": "160c634a743cd7beef7d9c2569cbcbcb37ce4875461fa66067ccbbe2fe08ad49"
+    },
+    {
+      "path": "main-core/control/deterministic-zip.mjs",
+      "size": 8252,
+      "sha256": "9bf90b4648740bcc86ea8d8e52ad98654d4be1e1017c2f2a2bdd5ddad44b9398"
+    },
+    {
+      "path": "main-core/control/development-plan.mjs",
+      "size": 7831,
+      "sha256": "eb15ad7d224e6aacb59f782d352f71831897bc09f4d8060752ccc4511cd34707"
+    },
+    {
+      "path": "main-core/control/durable-session-liveness-repair-receipt.mjs",
+      "size": 738,
+      "sha256": "b3d521e7d2b77ff002d0fd3e4524a6a653addfdcc9734e7cac3c7cd21d695779"
+    },
+    {
+      "path": "main-core/control/durable-session-test-root-repair-receipt.mjs",
+      "size": 698,
+      "sha256": "15079e544a0515e73ed5aaaab0c65fbd69e686fa51bab0d7b1bbb14baa1d24e5"
+    },
+    {
+      "path": "main-core/control/dynamic-bootstrap.mjs",
+      "size": 415,
+      "sha256": "1fe67f564c2484cf9ca41019660d464278320626471f0e48c02251a3749c3626"
+    },
+    {
+      "path": "main-core/control/dynamic-project-lanes.mjs",
+      "size": 45179,
+      "sha256": "93e45310dd6f820e027de331faf7d432ef863f9cd8742e991327162481c8d435"
+    },
+    {
+      "path": "main-core/control/evidence-library.mjs",
+      "size": 20274,
+      "sha256": "76c2b4df13597c78bad3a5d36a972b6bf8274401b4d6627eeeac353b2a110617"
+    },
+    {
+      "path": "main-core/control/feature-agent-governance-evidence-repair-receipt.mjs",
+      "size": 797,
+      "sha256": "7d4b0b9cf4c7f01cd2c660a952aa7b46b7e0a957edfea4c4c28d10a1e699de19"
+    },
+    {
+      "path": "main-core/control/feature-agent-governance-evidence-repair.mjs",
+      "size": 27154,
+      "sha256": "4719de64d0d673fda9e25956f4670ae9139a59f1b282ea15c9a03471d455b825"
+    },
+    {
+      "path": "main-core/control/feature-agent-work-product.mjs",
+      "size": 578,
+      "sha256": "ddcc56d97189375a16f0a0274f703cc87aa94d9dce5be887a1af7d49b1b60927"
+    },
+    {
+      "path": "main-core/control/feature-completeness.mjs",
+      "size": 39030,
+      "sha256": "5d3fd4a6e8573459c40b46f17e096e5b9390a12034ad2b6ed35c6f9a1228e422"
+    },
+    {
+      "path": "main-core/control/feature-lane-goal.mjs",
+      "size": 6154,
+      "sha256": "983942fbb6292abbd4432281096b3f1b6fbd6865dedd8f49eeb31c7284b34d15"
+    },
+    {
+      "path": "main-core/control/four-library-foundation.mjs",
+      "size": 40505,
+      "sha256": "35b1c36d1bd98257acaad1dfd89140f5be998ccf3785e03aa6062639abc2628d"
+    },
+    {
+      "path": "main-core/control/four-library-governance.mjs",
+      "size": 2728,
+      "sha256": "333e594dbafa5a04f8b0c965b19ba2bf001a805995002fe47efeab80f30e7fd7"
+    },
+    {
+      "path": "main-core/control/four-library-history.mjs",
+      "size": 5784,
+      "sha256": "2d7f614f2f09b377c397b4785866f2e535220485220a87a857de67c9bd59ac64"
+    },
+    {
+      "path": "main-core/control/four-library-operations.mjs",
+      "size": 37340,
+      "sha256": "33d3fd8ebc3abd8d4afc849aadc9636fd23901d7d63135b01c45b8954de1d2cc"
+    },
+    {
+      "path": "main-core/control/gate-catalog-compiler.mjs",
+      "size": 25588,
+      "sha256": "e55e7d3369227a955a1221e53ffa74678e79105c601d17ba8725e6fbd76cf2a8"
+    },
+    {
+      "path": "main-core/control/global-policy-state.mjs",
+      "size": 42226,
+      "sha256": "46153caac42356589e3e0caa4af0a1f4914d91c4e7fccf103701b8ec494c369d"
+    },
+    {
+      "path": "main-core/control/global-policy-store.mjs",
+      "size": 4678,
+      "sha256": "274234371fc7491847d3bd77faa1ba04a09ac004865adb3da1bc03fd3b2e4f12"
+    },
+    {
+      "path": "main-core/control/governance-decision-tree.mjs",
+      "size": 47824,
+      "sha256": "ad804dfc11206a50aea2989168565794f9e2f6040dde767c7ceca9e9152c55a7"
+    },
+    {
+      "path": "main-core/control/governance-evidence.mjs",
+      "size": 8573,
+      "sha256": "a6a4f758bf45465974c7c9c00841aaa892c48929d9160ba9f4cfe90b0248e16f"
+    },
+    {
+      "path": "main-core/control/governance-library.mjs",
+      "size": 23231,
+      "sha256": "e9b772d30e3c91d48e9fe46f36847cd47b24daea350288475467d4e1a06a78b1"
+    },
+    {
+      "path": "main-core/control/governance-role-definitions.mjs",
+      "size": 10446,
+      "sha256": "963f0188da198c845c5c1a4fe9d267e8f370d4573ca86a163df0bf0fc2803e3e"
+    },
+    {
+      "path": "main-core/control/governance-universal.mjs",
+      "size": 8854,
+      "sha256": "91b8e82d70bf6d43ac783a2a9f03658e962f007a5b113e9f8f13bb46de8969cb"
+    },
+    {
+      "path": "main-core/control/gpt-assist.mjs",
+      "size": 31094,
+      "sha256": "fd61b14ef92bb49199da5e7920da0bb1c968d4465af5ee5463d0356df354d310"
+    },
+    {
+      "path": "main-core/control/guided-bootstrap.mjs",
+      "size": 431,
+      "sha256": "f8f8c8955907bfc207dcf0135d860f60b035930cf818410708224ea6a9052e88"
+    },
+    {
+      "path": "main-core/control/host-runtime-adapter.mjs",
+      "size": 16851,
+      "sha256": "3d145e843ae9c67cac75123791b4f5787e9ca1b39c328d15380b9cec1fef56a5"
+    },
+    {
+      "path": "main-core/control/hybrid-scheduler.mjs",
+      "size": 60149,
+      "sha256": "69e2c9e7935f64d0e0bd99b26519f63bdc2fbc496e4f8200c356f225a4d12752"
+    },
+    {
+      "path": "main-core/control/intent-regulator-runtime.mjs",
+      "size": 19232,
+      "sha256": "ab0cde4cf5d23b4949bb2f4bfb8dfe2cec6bb6b7d7914238cb048c1aacfd3bfc"
+    },
+    {
+      "path": "main-core/control/iteration-campaign-expansion.mjs",
+      "size": 33399,
+      "sha256": "ed8185b5ce11f154c1322a32abb0e28399ea112338d929eea836ce78826b5053"
+    },
+    {
+      "path": "main-core/control/layered-governance-binding.mjs",
+      "size": 22172,
+      "sha256": "40c5900c7809a5b68d3a09ae45acaeadc89d48ffd3bcf907e95f7d014cfd393e"
+    },
+    {
+      "path": "main-core/control/layered-governance-contract.mjs",
+      "size": 8227,
+      "sha256": "87e8ae8dfc7810d4eb0992217984c0f79f8563fd0ce5bd009aca72add4c3279e"
+    },
+    {
+      "path": "main-core/control/legacy-preservation.mjs",
+      "size": 20610,
+      "sha256": "985c1e63bd972f8c067a338bbf5f5c9163434a0c6efb9dd02f60759a00c56a9e"
+    },
+    {
+      "path": "main-core/control/local-agent-runtime.mjs",
+      "size": 71512,
+      "sha256": "0b795a0f9916f965556deead1f22a074254076d91ee9b088fc6876110532be0b"
+    },
+    {
+      "path": "main-core/control/local-agent-session-binding-repair-receipt.mjs",
+      "size": 693,
+      "sha256": "d74b44c401c146ba558497024f1e01cd986a23ddc4c9f6e5805cdc85c19a8dc9"
+    },
+    {
+      "path": "main-core/control/local-agent-session.mjs",
+      "size": 24912,
+      "sha256": "38582bb453daeb2c00773b9e617138083ad176f1c993c624aa8a4d230f11a16f"
+    },
+    {
+      "path": "main-core/control/local-agent-worker.mjs",
+      "size": 155643,
+      "sha256": "0045478d89590fb2d1f35e7dd7bfb093d7c65da6818e2d38890f3e0298b65b4c"
+    },
+    {
+      "path": "main-core/control/local-campaign-admission.mjs",
+      "size": 33666,
+      "sha256": "d839e58a10df4d5037cb4eb43140fab89928a99c1a75ccfcc4e8b8f7f593a428"
+    },
+    {
+      "path": "main-core/control/local-self-development-supervisor-adapter.mjs",
+      "size": 143003,
+      "sha256": "ad36e84fcabb31dbdbd39285468dd5ba85f8779c8be5cb0ad8cd0631249a092e"
+    },
+    {
+      "path": "main-core/control/local-task-kinds.mjs",
+      "size": 1591,
+      "sha256": "c5b71f3ad41de54b3618c8fdaacfd57e748a3e8a178fd6186ea401dadd0afbc6"
+    },
+    {
+      "path": "main-core/control/local-workspace-adapter.mjs",
+      "size": 19965,
+      "sha256": "c2d20cf0c57a43a705d9a03d31b7ac5b1193fd57d0fd9f302e6aef5aabd995e4"
+    },
+    {
+      "path": "main-core/control/map-memory-common.mjs",
+      "size": 5030,
+      "sha256": "918423e42480bb0e0a873d460406c27bf8530442d99e032151a7ab1cac03f3f2"
+    },
+    {
+      "path": "main-core/control/native-host-attachment.mjs",
+      "size": 10859,
+      "sha256": "82867c837f5b6261f5a2c04c650ac63e2c62dacd8cf10f2b366fd904b4ae98da"
+    },
+    {
+      "path": "main-core/control/native-host-contract.mjs",
+      "size": 684,
+      "sha256": "fd1d8d5214e023606644376162b4974e479914cfbde0b07a3aa084d32d465b03"
+    },
+    {
+      "path": "main-core/control/native-host-loader.mjs",
+      "size": 1116,
+      "sha256": "43ee0859ff172d72308f121a282f1537ee2b5e81e2fc405368f7111a06a38b46"
+    },
+    {
+      "path": "main-core/control/native-self-development-adapter.mjs",
+      "size": 20415,
+      "sha256": "899285fdc54a98ab35c221a9da9fc04d751a073ee7822da68c05114912ed16bf"
+    },
+    {
+      "path": "main-core/control/native-session-host-attestation.mjs",
+      "size": 15283,
+      "sha256": "49ae5ce3949803b70365aaacf8484c4a31258e21963adb9650d38fdc3cfd9545"
+    },
+    {
+      "path": "main-core/control/native-session-runner.mjs",
+      "size": 16060,
+      "sha256": "ed6bcb6ba63ee338a27e472de5bd144fe403d3685dd52cc149faf51686362be7"
+    },
+    {
+      "path": "main-core/control/native-session-team.mjs",
+      "size": 112439,
+      "sha256": "518ed7f0e28d077aaa4f6825ccfe4b117601d46b5dcfc4f26a00d77d3f017a95"
+    },
+    {
+      "path": "main-core/control/normalization-policy.mjs",
+      "size": 9312,
+      "sha256": "19fdff6c7005736be5208d46b8e7a1f86416831c5c423df3408ec4d32d64ecba"
+    },
+    {
+      "path": "main-core/control/owner-conversation-surface-repair-receipt.mjs",
+      "size": 849,
+      "sha256": "71bad7934cae19201c61a941ee58779c080adf55a94ca1d19340e39047801ea8"
+    },
+    {
+      "path": "main-core/control/owner-feedback-continuation-repair-receipt.mjs",
+      "size": 799,
+      "sha256": "ab073ece490aa61728586c8c519c55fa7b4d07c8d544065f3815114244a1b76f"
+    },
+    {
+      "path": "main-core/control/owner-feedback-digest-repair-receipt.mjs",
+      "size": 793,
+      "sha256": "acaeee279f569b980823633883f359c6ae05236f3da809eceb62c19a9f887621"
+    },
+    {
+      "path": "main-core/control/owner-feedback-execution-boundary-repair-receipt.mjs",
+      "size": 788,
+      "sha256": "ba57449f78aea6fc5c7fed0e185b4741cfd9d36e1e3fd86d479e7f25f4e1b886"
+    },
+    {
+      "path": "main-core/control/owner-feedback-inactive-explanation-repair-receipt.mjs",
+      "size": 686,
+      "sha256": "8016a63b163c36b4b3b4a8b1ccf318abbe13c17658f7a994ca656b01bf830d15"
+    },
+    {
+      "path": "main-core/control/owner-feedback-progress-repair-receipt.mjs",
+      "size": 795,
+      "sha256": "8e5949757797189312043372676ff2278ce53e7cbd04e7506fc46ce35a716cf6"
+    },
+    {
+      "path": "main-core/control/owner-feedback-status-reconciliation-repair-receipt.mjs",
+      "size": 810,
+      "sha256": "b109c3f0e6776122a5772fa116d1d248bb5ece79a647c50d581ceca1437232b9"
+    },
+    {
+      "path": "main-core/control/owner-review.mjs",
+      "size": 76458,
+      "sha256": "ecee14d43a7728656646eaef39d2aafbd6ebd0772b81d2d1c0967c24a59cb724"
+    },
+    {
+      "path": "main-core/control/parallel-campaign-lifecycle.mjs",
+      "size": 18922,
+      "sha256": "7ba567d970a2aaa514f1483ef1dd67fb4058eac16e70a05d81474a2858cb98df"
+    },
+    {
+      "path": "main-core/control/parallel-campaign-records.mjs",
+      "size": 36447,
+      "sha256": "627548ec38d042f7d3e74930bd95b3bdb517a53d3881269dc292e872922eaf1f"
+    },
+    {
+      "path": "main-core/control/persisted-record-privacy.mjs",
+      "size": 15899,
+      "sha256": "758fcb397aafa19807b43475ec2a596ba6d9ab6fb07eb335c3d3a798a5a7ce26"
+    },
+    {
+      "path": "main-core/control/persistent-intent-runtime-contract.mjs",
+      "size": 50806,
+      "sha256": "6d525e04615363676da64d69d129cb25a82cd5bdc477e89908a6909cc0983683"
+    },
+    {
+      "path": "main-core/control/persistent-intent-runtime-integration.mjs",
+      "size": 17553,
+      "sha256": "e19808f9e2332432b6c397ccec3b646bb46d2fc16bed7caba23e9f9fccf95f43"
+    },
+    {
+      "path": "main-core/control/persistent-intent-runtime-primitives.mjs",
+      "size": 4774,
+      "sha256": "a3dc2769cf7d55295f85d7684c87b3e298e5fc77b3065e2d2cc397df72a0bca0"
+    },
+    {
+      "path": "main-core/control/persistent-intent-runtime-storage.mjs",
+      "size": 33423,
+      "sha256": "1f3051f907d775eed6d333b4b4bf6882abd721c123d39fd6ea05dff64f2883b6"
+    },
+    {
+      "path": "main-core/control/persistent-intent-runtime.mjs",
+      "size": 12114,
+      "sha256": "18d8c6ffa14cec0c2553b100b686320925d26d2fe7e9fccbe52a2f3690eeb384"
+    },
+    {
+      "path": "main-core/control/platform-foundation-merge.mjs",
+      "size": 15706,
+      "sha256": "fc55995a338a4a55d05d58dc0465d12aeacf96c80b9bf52564a6448ece98daa4"
+    },
+    {
+      "path": "main-core/control/private-context-detector.mjs",
+      "size": 4867,
+      "sha256": "0aec9f2eca52c9254d4c6df3e27dfae51eb81f873d7cfdb6bf889303a52b74e4"
+    },
+    {
+      "path": "main-core/control/private-control-bundle.mjs",
+      "size": 25834,
+      "sha256": "8d46a6b0d87f6074d50134a5c64fe67a99ac54b4ae8d0d548472b9fe81ceecee"
+    },
+    {
+      "path": "main-core/control/private-control-common.mjs",
+      "size": 18700,
+      "sha256": "a3f6e67a0e9a27b8f4fbca3e89a0e6819606703503861bf0be3810ca1e62c157"
+    },
+    {
+      "path": "main-core/control/private-control-storage.mjs",
+      "size": 20293,
+      "sha256": "6a6748753b595c273dd3a735228c570ca7c2a03148b2a7d5f624fd4c91ea2310"
+    },
+    {
+      "path": "main-core/control/private-offline-mode.mjs",
+      "size": 11996,
+      "sha256": "bfce981b0d5ca8b2d732c57f6595cbe00380c17c11f1b57960cb7c02074f069f"
+    },
+    {
+      "path": "main-core/control/private-provider-discovery.mjs",
+      "size": 16690,
+      "sha256": "20bfbf6d483d34981aea31aa11cf48cfed58315aed71aa364ca489a76b0ccc2f"
+    },
+    {
+      "path": "main-core/control/private-release-update.mjs",
+      "size": 26729,
+      "sha256": "02a7b5a0d31f028423b5ef2f4eae2c947c84dd2b5f59485664026be969007971"
+    },
+    {
+      "path": "main-core/control/project-context-store.mjs",
+      "size": 5205,
+      "sha256": "f3955746f9c3ecc5ddd31d278eb84bb14b836f42f49ca69b6a390a4fba585249"
+    },
+    {
+      "path": "main-core/control/project-import.mjs",
+      "size": 42813,
+      "sha256": "fae9000d5a10c9c80b1a2807be55bd908a1871eca72a36f7ce35ac4c076d320e"
+    },
+    {
+      "path": "main-core/control/project-life-contract.mjs",
+      "size": 15157,
+      "sha256": "9bc91d36092603d6d308f90b827a09161b1b7847dff347b4b9fc9e61068ef439"
+    },
+    {
+      "path": "main-core/control/project-map.mjs",
+      "size": 21185,
+      "sha256": "00db72bf666cbc6f7d0da171212713506c16e6da7a3a6eb1b7e45cc741c9b3f8"
+    },
+    {
+      "path": "main-core/control/project-memory-capsule.mjs",
+      "size": 12014,
+      "sha256": "6d56d56d820da84b8b0420f6b4217069884bb87c70273be2a12393c73b5d335e"
+    },
+    {
+      "path": "main-core/control/project-memory-projections.mjs",
+      "size": 22724,
+      "sha256": "68481d341e8add76f86dbc6d9a9b7838380e5a8f8e8002a4a078b93a196a65ae"
+    },
+    {
+      "path": "main-core/control/project-memory-records.mjs",
+      "size": 33862,
+      "sha256": "b61eb054c58b13540ca2ac2fe50a8153b07289a80c501c82c355f79070aca707"
+    },
+    {
+      "path": "main-core/control/project-memory-store.mjs",
+      "size": 12795,
+      "sha256": "499f26280a037c978138386fcbe4397751d716c78019fa94233b0007222038ea"
+    },
+    {
+      "path": "main-core/control/project-memory.mjs",
+      "size": 271,
+      "sha256": "73254256d7ff1c12174f81ab9bf344ff0fb7be3fbc00d8a3a8c9e67bd11cc426"
+    },
+    {
+      "path": "main-core/control/proof-carrying-work.mjs",
+      "size": 56271,
+      "sha256": "04ab174b5f0e1d30f8f87c12f61106fe040f450c90c60d2d7cf81ce1a24d7a6d"
+    },
+    {
+      "path": "main-core/control/question-tree.mjs",
+      "size": 37735,
+      "sha256": "a1f7e88aad2dd1480f1350e3de19da1d105c9600d1a5ee7e279a71df3a290b29"
+    },
+    {
+      "path": "main-core/control/rapid-prototype-workflow.mjs",
+      "size": 653,
+      "sha256": "bc79d38c6cde0fb001804f1133ecd50730d23e0e4ef6c524383badd166f3b460"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/bootstrap-context.mjs",
+      "size": 13548,
+      "sha256": "4c73a1446811970c831052bb01a781caff39324fa422c4e4950929518724ff2c"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/code-hygiene.mjs",
+      "size": 15004,
+      "sha256": "48399db257fdb714983086855d9851a6fc0d3c4400bf05f6092aa8e2bdcc3566"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/delivery-closure.mjs",
+      "size": 26650,
+      "sha256": "76be75284e0dc2008a0a9a373fe02a894a1dfd8efba60e3dc971c6d9533d64aa"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/evidence-identity.mjs",
+      "size": 23827,
+      "sha256": "48d986844253cd6b5525d0951dbb88a9fab8243454d8060612aadddd9d920b04"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/functionality.mjs",
+      "size": 32592,
+      "sha256": "a0055bb998eec4998d654f533027133ab37650e2acdb41b9135852007b83207b"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/index.mjs",
+      "size": 35228,
+      "sha256": "448d1b541e722992b472bfce5a461cf53beb8dd64a1cecb2ab441c9508054b18"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/intent-scope.mjs",
+      "size": 15545,
+      "sha256": "04c9e85f9edd5744986d5e96ec01aba108c01eb7ead0aaefc58e58df128a84f9"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/progress-health.mjs",
+      "size": 8437,
+      "sha256": "f29b3ca8a3db3b90a6a4da33dd39bc6394160afeed61424817218bdad7c5cdc6"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/recovery-boundaries.mjs",
+      "size": 5703,
+      "sha256": "627ea927ba15b70d80ecd192ff0275d595987fa4e513f9e6ac82b3083247a8c7"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/role-routing.mjs",
+      "size": 10064,
+      "sha256": "88e50bf91aad431b0436bdd52fc7a6200c77ff4408b4acde5ccd1a5099c2d979"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/security-privacy.mjs",
+      "size": 10455,
+      "sha256": "8ec66eea75c687126c143cd6b52ff4d1919da29770da9fa01dc0255d55a3373d"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/ui-ux.mjs",
+      "size": 9706,
+      "sha256": "ad929e7d6677b46544e64745ee3bdd7fc2da3894955051aca6924925a439bf7a"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/user-conversation.mjs",
+      "size": 10690,
+      "sha256": "aaf0378cb810d3473cef0fabfc53f4e9b88d815ed238c86e57729aa77531611c"
+    },
+    {
+      "path": "main-core/control/rapid-prototype/verification-handoff.mjs",
+      "size": 17272,
+      "sha256": "237b5372889512f056975fcf75c6e443dd3e82a522df7347295560cebf83c782"
+    },
+    {
+      "path": "main-core/control/release-common.mjs",
+      "size": 6737,
+      "sha256": "ae25e94b542fa2b98f323d69e5cc6b02fb8929ad921bd8404e5caa34b13fcc60"
+    },
+    {
+      "path": "main-core/control/release-compatibility.mjs",
+      "size": 18312,
+      "sha256": "b0e3927c8bc896b341a168e14798271e6004740396fc550b415c1c291491a871"
+    },
+    {
+      "path": "main-core/control/release-lifecycle.mjs",
+      "size": 52262,
+      "sha256": "5e87f9766936ebe047433f466125a005e769532bbef4504c471772c0b108c899"
+    },
+    {
+      "path": "main-core/control/release-model-check.mjs",
+      "size": 12713,
+      "sha256": "06889618a79cfff9e3920e8122e28765bb4302b39528e339a843f517f0d2159e"
+    },
+    {
+      "path": "main-core/control/release-policy-replay.mjs",
+      "size": 7379,
+      "sha256": "709a6370592d78e23e15a8b34845878da2247bb6447837334309982484174634"
+    },
+    {
+      "path": "main-core/control/release-promotion-gate.mjs",
+      "size": 9795,
+      "sha256": "4550a4d245b51960dc25515108c510d6a996f92f2d9c06b0bca2bf2792618bb5"
+    },
+    {
+      "path": "main-core/control/release-safety-gate.mjs",
+      "size": 8161,
+      "sha256": "023358be712b0969477d142cf57d5f5cfdc2a5f1cbd39b5ab231722004832a01"
+    },
+    {
+      "path": "main-core/control/repair-governance.mjs",
+      "size": 44520,
+      "sha256": "e5a87f35dbaee0b917edf3fe0ff2686785d296dc70ed6e8004bc4d987b733be3"
+    },
+    {
+      "path": "main-core/control/repair-recovery.mjs",
+      "size": 35966,
+      "sha256": "c089ffca800536d099d78bc7737cc4ec92f5902607c387b30d4f20ab0a3539b7"
+    },
+    {
+      "path": "main-core/control/repository-readback.mjs",
+      "size": 3059,
+      "sha256": "2f46f8978f0bf8e3c49d286a2b2e60515afa558985cc6f292c390b3439e5cfe5"
+    },
+    {
+      "path": "main-core/control/retained-failed-worktree.mjs",
+      "size": 4270,
+      "sha256": "370b587954ae3fc93b8e1295fc7f9af1abbb7acec7e8419b2a026136704035e0"
+    },
+    {
+      "path": "main-core/control/role-governance-library.mjs",
+      "size": 32148,
+      "sha256": "371b9dab3e18f86e72f0602854deb05e3fef39e43c5ff8f728ae611ae6570d9c"
+    },
+    {
+      "path": "main-core/control/run-campaign-evidence-repair.mjs",
+      "size": 22405,
+      "sha256": "8118cde78be2f2f89768c41ded449b6726d00b7583ab9127419dca1394d74af8"
+    },
+    {
+      "path": "main-core/control/scheduler-admission.mjs",
+      "size": 4235,
+      "sha256": "2d8e8e11ff92123eb45465ec4133fd9945bb02ef5111e0f31e162dacc3401cb2"
+    },
+    {
+      "path": "main-core/control/standards-registry.mjs",
+      "size": 17746,
+      "sha256": "b09ee649710f6bd33d50bb60bed6ed921a753069272543386fea0673a7859c1c"
+    },
+    {
+      "path": "main-core/control/start-local-self-development.mjs",
+      "size": 41186,
+      "sha256": "42cbb36b811e52fbcc7d742c30071ae907a6f5e4a277b5d40d58d5ffb819e753"
+    },
+    {
+      "path": "main-core/control/task-context-firewall.mjs",
+      "size": 21324,
+      "sha256": "d9169fa5db2fca0a8c2801586f8aa342fc643afa22a03e28d6e11345ab61f6d3"
+    },
+    {
+      "path": "main-core/control/task-continuation.mjs",
+      "size": 40099,
+      "sha256": "41af2a042a036b8487d6c4428f0115504edb0d91146a2e00341ba0facfdd532a"
+    },
+    {
+      "path": "main-core/control/task-gate-questions.mjs",
+      "size": 19979,
+      "sha256": "dac590ecb250f33415bcd4a48ce7d3261cf70f4c80a0321bd19f80b549b79fc6"
+    },
+    {
+      "path": "main-core/control/task-model-routing-support.mjs",
+      "size": 18108,
+      "sha256": "f6f029e23e78aca837912345b36c936eea67d4461ab2dcd7a8ac943098f5bb2e"
+    },
+    {
+      "path": "main-core/control/task-model-routing.mjs",
+      "size": 60242,
+      "sha256": "44df418eb956b9d94f360ae1072367b9aa78c1ff8e1144468b989da4651d6a51"
+    },
+    {
+      "path": "main-core/control/task-role-packet.mjs",
+      "size": 14777,
+      "sha256": "fc1c75418b9d1e8fe36635bdcd2b0d61c2aa0348080f99dc64ca2377628466e3"
+    },
+    {
+      "path": "main-core/control/task-routing-admission.mjs",
+      "size": 5362,
+      "sha256": "b079e550f196a285312c4c8de110f706c2869749cd6b2ee9a89f61a32a6a6868"
+    },
+    {
+      "path": "main-core/control/task-routing-evaluation.mjs",
+      "size": 9887,
+      "sha256": "210d120629bcde8d75ba6387d31b44b415823ad5924b3db740ba125cb24ce373"
+    },
+    {
+      "path": "main-core/control/task-run-loop.mjs",
+      "size": 28835,
+      "sha256": "626ef06c0e59853f8e4805dab43a669241dbf39fbf67625f4adad30225d627c4"
+    },
+    {
+      "path": "main-core/control/universal-response-gating.mjs",
+      "size": 16528,
+      "sha256": "c34ea0a228ec92f1ab215ef7c009be9900830984aa7d50c0ea0b9d23db692032"
+    },
+    {
+      "path": "main-core/entrypoint.mjs",
+      "size": 669,
+      "sha256": "40a3756f803bc9303eead093d042b24e9c41fb1c5fcb1a14ea01b4b4707f32d3"
+    },
+    {
+      "path": "main-core/identity.mjs",
+      "size": 409,
+      "sha256": "1d8761189b4243306bd58fe3df86db5b5af1e2ddf3315135379165fca1960f22"
+    },
+    {
+      "path": "main-core/package.json",
+      "size": 117,
+      "sha256": "5960c87fed1df1572e43f1895fd3046aff9100ead3f35a944f0119515f69abe6"
+    },
+    {
+      "path": "main-core/source-manifest.json",
+      "size": 32235,
+      "sha256": "9448758df54fb1be93e16eca02d26dcad264739a8d4c7f65ffc05b90eb6f893a"
     },
     {
       "path": "memory-adapter.mjs",
-      "size": 1104,
-      "sha256": "15c6c5d501a725f92053a95a751c8a2418351b01afaa6d3360b816299745f1fd"
+      "size": 2304,
+      "sha256": "540ba9459ae55745ef3207d9aa308642f8bd69c079f59827d8ec33320e929bf3"
     },
     {
       "path": "memory-m2/LICENSE",
@@ -307,20 +1307,25 @@
     },
     {
       "path": "rollback.mjs",
-      "size": 307,
-      "sha256": "85b882e03a5111cf2603946914e732974b0fe3c43d1d8fdb5f0f8efab3d2fc1b"
+      "size": 3656,
+      "sha256": "3422a6442fa837a506f91c3304c08070988ee6bd43510b49038227b706070ae3"
     },
     {
       "path": "tests/integration-test.mjs",
-      "size": 2389,
-      "sha256": "aed0040b643655042df0b9d1e00af1d40f2dc1ebd78909277b8b225771c04bd4"
+      "size": 10756,
+      "sha256": "245deb8e8d11c11e2601be74f205a895e314144f23388cb6afaaf7451ef8e873"
     },
     {
       "path": "tools/build.mjs",
       "size": 1977,
       "sha256": "5c9755d94ad2b37ceb1d9298147e550ef8f0bcc8426dbaa1c2f293174a049d40"
+    },
+    {
+      "path": "tools/verify-main-core.mjs",
+      "size": 3515,
+      "sha256": "481bdacae43f205519dd26f5d7cb6c65113af4251b7ae267b42b41029a6fe340"
     }
   ],
-  "bundle_sha256": "c28e021557e7d2fcba6e96841dc2da5dc0a82f4656ff7345f67ae8557fcd99f1",
+  "bundle_sha256": "521fe4c87d455d1263c59a6a8353748aa750df4b8a38d2377f179fa144c0c57a",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

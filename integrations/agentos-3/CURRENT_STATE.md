@@ -32,3 +32,10 @@ task/session identity, credential, provider identity, or external project contex
 - Completed lightweight evidence is limited to immutable input identity checks, builder static validator baselines, changed-module syntax/JSON/purity checks, 187-entry main-core source parity, and an inactive bootstrap-runtime/controller import readback. These do not constitute final build, install, rollback, or independent clearance proof.
 - Heavyweight proof/build remains intentionally deferred while the canonical serialized scheduler Rust job is running and host pressure is elevated. No worker was contacted or dispatched, and no source input or Memory repository was modified.
 - Exact next cursor: after scheduler/resource clearance, run the already-scoped focused correction proof; if green, regenerate/reconcile the deterministic artifact and commit one clean candidate, otherwise preserve this receipt with the exact failing check. Only then resume independent evaluation; no release, activation, adoption, migration, or source mutation.
+
+## Lightweight artifact reconciliation
+
+- The prior artifact was stale against the repair tree (`262` recorded entries versus `264` current entries); no proof claim was made from that state.
+- Deterministic regeneration now records `264` entries with bundle SHA-256 `00689f32baf8cb500624ed54a39a6fdc08fd0c847feec08c52a8fc8ce733a3be` and manifest SHA-256 `fae58951f2a6a913e2343f6914f9dab9b45d9100673bd5d933202b9c79df769e`.
+- Bundle/manifest canonicality, entry hashes, inactive lifecycle, and `OFF` activation read back successfully. Full integration, install/rollback, recovery, and independent evaluation remain unrun after the audit repair.
+- The next cursor is unchanged: wait for the serialized scheduler/resource boundary, then execute the focused correction proof against this regenerated artifact before any readiness or final commit claim.
