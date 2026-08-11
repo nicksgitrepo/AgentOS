@@ -1703,7 +1703,22 @@
       "true_external_blocker": "NONE",
       "next_action": "CONSUME_THE_EXACT_FINAL_PRIVACY_DIGEST_PROOF_THEN_OBTAIN_GATE_NATIVE_CURRENT_CANDIDATE_REBIND_RECEIPTS_AND_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_24_privacy_selector_and_rebind_hold_2026_08_11",
+    "recovery_25_platform_rebind_readback_2026_08_11": {
+      "record_layer": "CURRENT_PLATFORM_REBIND_READBACK_CUSTODY_HOLD",
+      "transaction_status": "RECOVERY_25_PLATFORM_REBIND_READBACK_PRESERVED_NO_CURRENT_CANDIDATE_RECEIPTS",
+      "observed_central_publication": {"commit":"9ba72e0923f399bfbee787d6acef1537cc05d49b","tree":"585d0cca8491d45e27976ca4a47718a48f284183"},
+      "current_candidate": {"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"},
+      "source_baseline": {"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},
+      "gate_readback": {"owner_task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","worktree_id":"HOST_WORKTREE_C3BA","local_commit":"fce85668015788618408f1f6aa5040bbfffdce6f","local_tree":"10c8b08ebc7919476c608ed091d7b475b3a02708","working_tree":"CLEAN","platform_report_ref":"docs/platform-audits/PLATFORM_GATE_RESPONSE/auditreport.md","platform_report_sha256":"edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a","platform_handoff_ref":"docs/platform-handoffs/gate-catalog-response-platform-handoff.md","platform_handoff_sha256":"37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38","receipt_binding":"STALE_TO_B499_FE893","current_candidate_rebind_receipt":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false},
+      "native_readback": {"owner_task_id":"019fdcfa-43dc-76a3-befa-c93580a3c808","worktree_id":"HOST_WORKTREE_C22B","local_commit":"2da19d24c2be567ab2a28752b01b1c38820a1dd6","local_tree":"93f826e96f0272b1318488840a58548ea6fb3524","working_tree":"DIRTY_UNCOMMITTED_PRESERVATION","uncommitted_paths":["docs/feature-audits/"],"platform_report_ref":"docs/platform-audits/PLATFORM_NATIVE_SESSION_EVIDENCE/auditreport.md","platform_report_sha256":"fec81c9d7414312f7992729095d81368cea6fa8359a286937971493a37651f15","platform_handoff_ref":"docs/platform-handoffs/native-session-evidence-platform-handoff.md","platform_handoff_sha256":"0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9","receipt_binding":"D885_5F_SOURCE_BOUND_HISTORICAL_INTAKE","current_candidate_rebind_receipt":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false},
+      "proof_status": "RECOVERY_24_PRIVACY_SELECTOR_PASS_LOCAL_COMPREHENSIVE_AND_471_BINDINGS_PASS_AUTHORIZED_HOST_PROVIDER_RECOVERY_INDEPENDENT_PROOF_PENDING",
+      "central_consumption": false,
+      "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "OBTAIN_CURRENT_CANDIDATE_SOURCE_BOUND_GATE_NATIVE_REBIND_RECEIPTS_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_25_platform_rebind_readback_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1717,5 +1732,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "596d1f4616617fb1f26059285814bb182286f5261161d711414bc2bfc40a9d07"
+  "state_sha256": "042287c71db47d7bdffe89e95dc7236082c6fef755bc82f76ee885833c28a8c8"
 }

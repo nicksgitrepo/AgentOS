@@ -1444,3 +1444,40 @@ contacted. Comprehensive local `node tests/verify-all.mjs`, state validation,
 and all 471 binding entries pass with zero mismatches. Next action is the owner rebind, followed by authorized functional,
 host/provider, recovery, clean-source, independent-clearance, and exact
 Controller slot-release evidence. True external blocker: `NONE`.
+
+## Recovery 25 — Platform rebind readback custody hold — 2026-08-11
+
+The current central publication is clean at `9ba72e0923f399bfbee787d6acef1537cc05d49b` /
+`585d0cca8491d45e27976ca4a47718a48f284183`, with the ordinary code candidate
+`15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`. Source remains d885/5f.
+
+The Gate readback is clean at `fce85668015788618408f1f6aa5040bbfffdce6f` /
+`10c8b08ebc7919476c608ed091d7b475b3a02708`, with report digest
+`edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a` and
+handoff digest `37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38`.
+Its receipt remains stale to the earlier b499/fe893 publication and is not a
+current-candidate rebind, consumption, clearance, or slot-release receipt.
+
+The Native readback is preserved dirty at `2da19d24c2be567ab2a28752b01b1c38820a1dd6` /
+`93f826e96f0272b1318488840a58548ea6fb3524`, retaining the uncommitted
+`docs/feature-audits/` path. Its report digest is
+`fec81c9d7414312f7992729095d81368cea6fa8359a286937971493a37651f15` and its
+handoff digest is `0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9`.
+The source-bound historical intake is preserved, but clean custody and a
+current-candidate rebind receipt are absent; no consumption, clearance, or
+slot release is inferred.
+
+Recovery 24 privacy-selector proof remains passing (zero findings, no private
+payload scan), local comprehensive proof and 471 binding entries remain
+passing, and authorized host/provider/recovery and independent-clearance proof
+remain pending. Accounting is unchanged: five ordinary slots, zero Memory
+slots, queue `32`, all authoritative cursors `FEATURE_CURSOR_000`, and
+downstream, Platform clearance, independent clearance, and Controller
+slot-release flags false. Memory is receipt-only to this orchestrator and was
+not contacted. True external blocker: `NONE`.
+
+Next action: obtain source-bound Gate and Native rebind receipts for the current
+candidate, then obtain authorized functional/host/provider/recovery/clean-source
+evidence, independent clearance, and the exact Controller slot-release receipt
+before any non-memory slot refill.
