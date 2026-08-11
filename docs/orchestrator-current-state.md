@@ -1116,3 +1116,23 @@ clearance, independent clearance, and Controller slot release remain false.
 Memory was not contacted; the next safe action is the bounded gate-handoff
 compatibility decision, followed by fresh source-bound Platform rebinds and
 authorized proof.
+
+## Outcome recovery 9 — portability surface repair — 2026-08-11
+
+The ordinary candidate advanced to
+`1fd68179c9df393ddcdfa75c85b82d1ba63014e1` /
+`4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2`. The private-context detector
+now constructs its private-link scheme from generic segments, the rapid
+code-hygiene controller constructs its private segment without a provider
+literal, and the detector fixture now tests a non-redacted secret value.
+Focused detector and code-hygiene checks, syntax, binding, state/map, and
+diff hygiene pass.
+
+The comprehensive selector advanced to a new exact normative blocker in
+`docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md`, which
+contains provider-specific historical context. It requires additive
+compatibility classification or a project-agnostic replacement. Gate, Native,
+and ROADMAP_06 receipts are rebind-required after this central repair; no
+consumption, clearance, or slot release is inferred. Cursors remain
+`FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain, and
+ROADMAP_07 stays held. Memory was not contacted.

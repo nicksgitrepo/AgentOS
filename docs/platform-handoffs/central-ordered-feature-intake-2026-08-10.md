@@ -1017,3 +1017,23 @@ safe action is to resolve that handoff’s additive compatibility scope, then
 rebind Gate/Native receipts and obtain authorized functional, host/provider,
 recovery, clean-source, independent-clearance, and Controller slot-release
 evidence.
+
+## Central recovery 9 receipt — portability surface repair — 2026-08-11
+
+Candidate `1fd68179c9df393ddcdfa75c85b82d1ba63014e1` /
+`4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2` contains a bounded portability
+repair: the private-context detector and rapid code-hygiene controller no
+longer expose provider-specific literals, and the detector proof fixture now
+exercises a non-redacted value. Focused checks, syntax, binding, state/map,
+and diff hygiene pass.
+
+Comprehensive proof reaches the exact next blocker
+`docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md`, whose
+provider-specific historical context must be compatibility-classified or
+replaced project-agnostically. Existing Gate/Native/ROADMAP_06 receipts are
+rebind-required after this source change; no feature consumption, clearance,
+or Controller slot release is claimed. `FEATURE_CURSOR_000`, five ordinary
+slots, zero Memory slots, and ROADMAP_07 hold remain authoritative. Memory was
+not contacted. Next action: preserve the report and apply its bounded
+compatibility decision, then rerun comprehensive proof before fresh Platform
+rebind and authorized clearance evidence.
