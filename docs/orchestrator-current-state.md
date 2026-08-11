@@ -1505,3 +1505,26 @@ and was not contacted. True external blocker: `NONE`.
 Next action: obtain source-bound Gate and Native rebind receipts for the
 current candidate, then continue the authorized proof and exact Controller
 slot-release sequence before any non-memory slot refill.
+
+## Recovery 27 — local host-adapter and recovery proof — 2026-08-11
+
+Fresh local deterministic proofs pass for native host attachment and spawn
+attestation, local adapter custody, durable local sessions, persistent Runtime
+recovery, delivery adapter and closure state, release safety, and release
+lifecycle. These are fixture/contract proofs only; they are not registered
+real-host or provider-capability evidence and do not confer clearance.
+
+Gate and Native current-candidate rebind receipts remain absent. Native’s
+preserved dirty custody remains untouched. The remaining evidence ceiling is
+registered real-host/provider capability readback, authorized functional
+provider/host evidence, concurrency and crash/power-loss recovery, clean-source
+readback, independent clearance, and the exact Controller slot-release receipt.
+Accounting remains five ordinary slots, zero Memory slots, queue `32`, all
+cursors `FEATURE_CURSOR_000`, and downstream, Platform-clearance,
+independent-clearance, and slot-release flags false. Memory remained
+receipt-only and was not contacted. True external blocker: `NONE`.
+
+Next action: obtain current-candidate source-bound Gate and Native rebind
+receipts, then continue registered host/provider and authorized recovery proof,
+independent clearance, and exact Controller slot release before any
+non-memory slot refill.
