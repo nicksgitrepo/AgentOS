@@ -413,3 +413,30 @@ in this receipt.
 - The existing Gate/Native proof and custody hold remains unchanged; true
   external blocker is `NONE`, and ROADMAP_07 remains held until proof and an
   exact Controller slot-release receipt exist.
+
+## Five-slot current-publication custody reconciliation — 2026-08-11T02:17:02Z
+
+Central read-only custody was checked against publication
+`f1bbedbf1f6778c8a0498155da4fd4e85eaea0c2` /
+`66189ca0edf077decf834992b13843c014f2eb56`. The five existing isolated
+worktrees are clean and retain their frozen feature candidates, but each report
+still binds its source baseline to d885/5f and the machine-readable slot record
+therefore correctly remains `STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND`.
+
+| Feature / task | Worktree HEAD / tree | Report and typed-handoff evidence | Read-only result |
+| --- | --- | --- | --- |
+| `ROADMAP_04_TASK_ROUTING_CONTEXT` / `019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec` | `a3441789bec91829c8729b969d06df0b7dbe0165` / `ff36256deae8cb21a7c2639b6b0a5e559318e182` | report `e80e11037a12141b59d3c3be8e549935572c63d194704c0efed5b6e1dd164b`; typed handoff inline | clean; owner rebind receipt absent |
+| `ROADMAP_05_LOCAL_ADAPTERS` / `019fdcf9-9d12-7b93-835a-10aebdba1b94` | `691046fa75495732709a21cef2e5e37813065f3c` / `e643be4776c979d637001ed0d7308043cb2069e0` | report `fc26d218931d463ee4a28a6b7e4efb3ddbe2a057303566733a2822038b3d8b35`; handoff `a7b779101faaa087e733f687c8c220a8239c7f68b82f0c1bfdfeb1f1cfe092e2` | clean; owner rebind receipt absent |
+| `FOUR_LIBRARY_GOVERNANCE` / `019fdcf9-f611-7550-ae5e-e1dac246aa5b` | `5cb26e37f1bff09da50651ce61d4a5f3888d0c80` / `f7719febacc58220132354240ab786460d52e8dd` | report `49f0c28219e401a1424463ef3eff18e9539aa5d719beba62173755cac5194849`; preservation manifest `5ab23dcbe317c0233ae5efb6de0c957b3e97169e33a43a9569dc077f3e1a06a7` | clean; owner rebind receipt absent |
+| `FEATURE_COMPLETENESS_AUDITOR_SEED` / `019fdcfa-3e24-7ac1-bd30-a9ac136b34e6` | `1ebf952e6acfff6d5be83a67b868b745761a4571` / `474c8757ca0c2a1b7b4be4ff23facc02bbc35c9b` | report `e23ca33e7a5e481f2a19d1bfc207f693da588ae35605fefd083dcbb24d932f5e`; typed handoff contract inline | clean; owner rebind receipt absent |
+| `DYNAMIC_PROJECT_LANES` / `019fdcfa-4873-7ea2-ae5d-f29729224d0c` | `4b2b210f1a5119c6d2e6a545e8675d02c6db392f` / `cf9be278dbb2a1a432b34a66cb838da2e2c4f623` | report `0df85700369be913ded236d99464b6465867e171a020a010df1e52085bf8801c`; typed handoff owner inline | clean; owner rebind receipt absent |
+
+No peer worktree was edited, rebased, copied, cleaned, or discarded. No
+owner-authored non-destructive rebind checkpoint was present to consume, so
+Central makes no rebind, consumption, clearance, cursor, or slot-release claim.
+The exact custody condition is five clean but stale-base lanes awaiting their
+existing visible owners’ source-bound rebind receipts against the current
+publication. The next safe action is for those owners to append their own
+non-destructive rebind evidence, preserving each final feature identity and
+report history; Central may then consume only the typed receipts. Functional,
+host/provider, independent-clearance, and release proof remain pending.
