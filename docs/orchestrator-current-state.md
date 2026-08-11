@@ -1481,3 +1481,27 @@ Next action: obtain source-bound Gate and Native rebind receipts for the current
 candidate, then obtain authorized functional/host/provider/recovery/clean-source
 evidence, independent clearance, and the exact Controller slot-release receipt
 before any non-memory slot refill.
+
+## Recovery 26 — focused proof readback — 2026-08-11
+
+The current candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c` passed the available focused
+ROADMAP_07 proof-capsule and feature-completeness verifiers. The bounded
+privacy selector also passed: 208 normative public files scanned, 27 private
+records and 69 retained digests verified, zero private payloads scanned, and
+zero findings (`387a7b80d5534244eadb72baca744dcc46ba94788362c5a54ca03d37504160fb`).
+
+These local proofs do not create a Gate or Native current-candidate rebind,
+Platform clearance, independent clearance, or Controller slot release. The
+Gate receipt remains absent for this candidate; Native current-candidate
+receipt and clean custody remain absent while its preserved dirty state is
+untouched. Authorized functional/host/provider capability, concurrency and
+crash/power-loss recovery, clean-source, independent-clearance, and exact
+Controller slot-release evidence remain pending. Accounting remains five
+ordinary slots, zero Memory slots, queue `32`, all cursors `FEATURE_CURSOR_000`,
+and all consumption/clearance/release flags false. Memory remained receipt-only
+and was not contacted. True external blocker: `NONE`.
+
+Next action: obtain source-bound Gate and Native rebind receipts for the
+current candidate, then continue the authorized proof and exact Controller
+slot-release sequence before any non-memory slot refill.
