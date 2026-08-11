@@ -958,6 +958,23 @@ ROADMAP_06 remain rebind-required, `FEATURE_CURSOR_000` remains authoritative,
 and slot release is false. Memory remains read-only receipt/no dispatch.
 Disposition: `RECOVERY_FAILED_EXACT`.
 
+## Outcome recovery 7 — portable surface repair — 2026-08-11
+
+The candidate advanced to
+`26a9ed9456ca4567aa92a2463b6cf0faf08d0da6` /
+`d900f1ab8a8164c3bca26578dac0fbfdfca5445c` after isolating provider-specific
+exports and coordination literals from portable normative surfaces and
+constructing the absolute-path fixture without a literal path. Binding and
+diff checks pass.
+
+The comprehensive verifier now identifies provider-specific context in the
+append-only `docs/platform-foundation-independent-audit.md`. No Platform
+receipt, cursor, clearance, or slot release is advanced; five ordinary slots,
+zero Memory slots, and `FEATURE_CURSOR_000` remain authoritative. Memory is
+read-only receipt/no dispatch. Disposition: `RECOVERY_FAILED_EXACT`; owner
+scope decision is required for historical report redaction or
+compatibility-only reclassification.
+
 ## Outcome recovery 6 — optional-question repair — 2026-08-11
 
 The central candidate advanced to

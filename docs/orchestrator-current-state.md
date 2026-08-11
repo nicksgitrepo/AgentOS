@@ -1071,3 +1071,21 @@ proof. Gate, Native, and ROADMAP_06 receipts remain rebind-required; cursors
 stay `FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain,
 and all consumption/clearance/release flags remain false. Memory was not
 contacted. Disposition: `RECOVERY_FAILED_EXACT`.
+
+## Outcome recovery 7 — portable surface repair — 2026-08-11
+
+The bounded ordinary repair advanced the candidate to
+`26a9ed9456ca4567aa92a2463b6cf0faf08d0da6` /
+`d900f1ab8a8164c3bca26578dac0fbfdfca5445c`. Provider-specific exports were
+removed from the portable kernel surface, coordination literals were built
+without provider product names, and an absolute-path fixture was made
+project-agnostic. Binding and diff proofs pass.
+
+Comprehensive proof now reaches the historical
+`docs/platform-foundation-independent-audit.md`, which contains provider
+specific context. Redacting or reclassifying that append-only report requires
+an owner scope decision; it cannot be called passed or deferred real-proof.
+Gate, Native, and ROADMAP_06 receipts remain rebind-required. Cursors stay
+`FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain, and
+all consumption/clearance/release flags remain false. Memory was not
+contacted. Disposition: `RECOVERY_FAILED_EXACT`.

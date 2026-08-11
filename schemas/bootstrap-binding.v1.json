@@ -1818,7 +1818,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "5d563db28fcb444f128fda26fa4c847fc22eb6e93d1b62c7627bea0dd74ae65c"
+      "sha256": "f833c897ba66808e3b7a88444b2b2349dd998817bcae474ad08937f23bdece32"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
