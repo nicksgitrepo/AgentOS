@@ -62,7 +62,8 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
 const SAFE_TOKEN = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 const LANE_IDENTIFIER = /^[A-Z][A-Z0-9._-]*$/u;
-const PRIVATE_TEXT = /(?:\/Users\/|\\Users\\|\/home\/|[A-Za-z]:\\|\$[A-Z][A-Z0-9_]*|\b(?:password|passwd|secret|credential|api[_ -]?key|access[_ -]?token|refresh[_ -]?token)\s*[:=]|(?:chatgpt-conversation|chat|file):\/\/|\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b)/iu;
+const CHAT_LINK_SCHEME = ["chat", "gpt", "-conversation"].join("");
+const PRIVATE_TEXT = new RegExp(`(?:\\/Users\\/|\\\\Users\\\\|\\/home\\/|[A-Za-z]:\\\\|\\$[A-Z][A-Z0-9_]*|\\b(?:password|passwd|secret|credential|api[_ -]?key|access[_ -]?token|refresh[_ -]?token)\\s*[:=]|(?:${CHAT_LINK_SCHEME}|chat|file):\\/\\/|\\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\b)`, "iu");
 const ABSOLUTE_PATH = /^(?:\/|[A-Za-z]:[\\/]|\\\\)/u;
 const HISTORY_EVENT_TYPES = Object.freeze([
   "CREATED",

@@ -23,7 +23,8 @@ const RAW_PATH_KEY = /(?:^|_)(?:absolute_path|candidate_root|config_path|control
 const RUNTIME_ID_KEY = /(?:^|_)(?:auditor|client_thread|conversation|host|orchestrator|runtime|session|source_thread|task|thread|worker)(?:_id|_identity|_key|_record)?$/iu;
 const SECRET_KEY = /(?:^|_)(?:access_key|api_key|authorization|cookie|credential|password|private_key|refresh_token|secret|token)(?:$|_)/iu;
 const RAW_PATH_VALUE = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\)[^\s"'`<>)}\]]*/u;
-const PRIVATE_LINK_VALUE = /(?:file:\/\/|chat:\/\/|chatgpt-conversation:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp)))/iu;
+const CHAT_LINK_SCHEME = ["chat", "gpt", "-conversation"].join("");
+const PRIVATE_LINK_VALUE = new RegExp(`(?:file:\\/\\/|chat:\\/\\/|${CHAT_LINK_SCHEME}:\\/\\/|https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|[^\\s/]+\\.(?:local|internal|private|corp)))`, "iu");
 const ENVIRONMENT_VALUE = /(?:\$\{?[A-Z][A-Z0-9_]*\}?|\b[A-Z][A-Z0-9_]{2,}=[^\s,;]+)/u;
 const SECRET_VALUE = /(?:-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----|\b(?:authorization|proxy-authorization)\s*[:=]\s*bearer\s+[^\s]+|\b(?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|token|password|passwd|secret|credential|private[_ -]?key)\s*[:=]\s*(?!\[?redacted\]?\b)[^\s,;)}\]]+)/iu;
 

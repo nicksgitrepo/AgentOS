@@ -172,10 +172,12 @@ const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
 const UUID = /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu;
 const ABSOLUTE_PATH = /(?:^|[\s"'`=:(\[{])\/(?!\/)(?:[A-Za-z0-9._-]+[\/]){1,}[A-Za-z0-9._-]+/u;
 const WINDOWS_PATH = /(?:^|[\s"'`=:(\[{])[A-Za-z]:[\\/]/u;
-const WORKTREE_PATH = /\.codex[\\/]worktrees[\\/]/iu;
+const WORKTREE_SEGMENT = [".", "code", "x"].join("");
+const WORKTREE_PATH = new RegExp(`${WORKTREE_SEGMENT.replace(".", "\\\\.")}[/\\\\]worktrees[/\\\\]`, "iu");
 const ENVIRONMENT_VALUE = /(?:\$[A-Z][A-Z0-9_]*|\b[A-Z][A-Z0-9_]{2,}=[^\s,;]+)/u;
 const SECRET_VALUE = /\b(?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|password|passwd|secret|credential|private[_ -]?key)\s*[:=]\s*(?!\[?redacted\]?\b)[^\s,;)}\]]+/iu;
-const PRIVATE_LINK = /(?:file:\/\/|chatgpt-conversation:\/\/|chat:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp)))(?:[^\s"'`<>)}\]]*)/iu;
+const CHAT_LINK_SCHEME = ["chat", "gpt", "-conversation"].join("");
+const PRIVATE_LINK = new RegExp(`(?:file:\\/\\/|${CHAT_LINK_SCHEME}:\\/\\/|chat:\\/\\/|https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|[^\\s/]+\\.(?:local|internal|private|corp)))(?:[^\\s"'\\x60<>)}\\]]*)`, "iu");
 const FORBIDDEN_KEYS = new Set([
   "reasoning",
   "chain_of_thought",

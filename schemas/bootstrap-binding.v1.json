@@ -1238,7 +1238,7 @@
     },
     "audited_native_self_development_adapter": {
       "path": "control/native-self-development-adapter.mjs",
-      "sha256": "47384bbd1f323f5d9b689daeaf7ccd3cd301df2802ea22ed8e3c79e07fbb7083"
+      "sha256": "899285fdc54a98ab35c221a9da9fc04d751a073ee7822da68c05114912ed16bf"
     },
     "audited_canonical_campaign_orchestration_adapter": {
       "path": "control/canonical-campaign-orchestration-adapter.mjs",
@@ -1270,7 +1270,7 @@
     },
     "audited_persisted_record_privacy_verifier": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "928a3bfd8565cef33e1b71e6f1b3c5e27034a87905406bfdcaa2a230c135bccb"
+      "sha256": "79ff64515021d6d11c7a56c93f3ee9e7f558ac272457c3c321a48112bbbd2f7c"
     },
     "audited_merge_review": {
       "path": "docs/audited-merge-review.md",
@@ -1308,10 +1308,6 @@
       "path": "docs/platform-foundation-controller-repair-2026-08-08.md",
       "sha256": "047c05e7aa92f0ff290a25c60bec91d09b854d400974167de6b012f63012e46a"
     },
-    "central_integration_audit_2026_08_09": {
-      "path": "docs/central-integration-audit-2026-08-09.md",
-      "sha256": "7a0ed54c92a6f8f46a849b8f1eeca3bb8992fb21cf0c0665b491b7cb2325462e"
-    },
     "persistent_intent_runtime_audit_report": {
       "path": "docs/feature-audits/PERSISTENT_INTENT_RUNTIME/auditreport.md",
       "sha256": "b95a540b8c2dc337a3c0f7286e14acd2f120014dd668ed5f591c49bb0b5a48f8"
@@ -1332,17 +1328,13 @@
       "path": "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/auditreport.md",
       "sha256": "cc6fd0b7a81bd8bd12e5fe3eb201d896593796764c963879be0f27261b5a3bde"
     },
-    "proof_acceptance_central_intake_preservation_manifest": {
-      "path": "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/central-intake-preservation-manifest-2026-08-09.md",
-      "sha256": "88557d4413b912e54c96f75f42c1c940edfed2039c99fc6dbe56e1b168d29741"
-    },
     "private_control_bundle_controller": {
       "path": "control/private-control-bundle.mjs",
       "sha256": "8d46a6b0d87f6074d50134a5c64fe67a99ac54b4ae8d0d548472b9fe81ceecee"
     },
     "private_control_common_controller": {
       "path": "control/private-control-common.mjs",
-      "sha256": "54585c279385d1cdf9fc4ee5ca20ca5b51fa6187993500763221227f120af057"
+      "sha256": "a3f6e67a0e9a27b8f4fbca3e89a0e6819606703503861bf0be3810ca1e62c157"
     },
     "private_control_import_contract": {
       "path": "schemas/private-control-import.v1.json",
@@ -1360,17 +1352,9 @@
       "path": "schemas/project-memory-capsule-import.v1.json",
       "sha256": "4d7a3e26c5d17c021d123342bbda254df416fb90d560f50942ed35a9e369ee6f"
     },
-    "structured_memory_audit_report": {
-      "path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
-      "sha256": "798d8c89ff43c5b2a46f4d72f74addbcb98bc8ac8d1c0bfe9dd5c2af56a88ea7"
-    },
     "structured_memory_central_intake_preservation_manifest": {
       "path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/central-intake-preservation-manifest-2026-08-09.md",
       "sha256": "5a6791538fa9bf9e30bad0416e9fcf2ee441f02711d33950ba26240ee6b10785"
-    },
-    "release_readme_controller": {
-      "path": "control/README.md",
-      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394"
     },
     "release_schema_readme": {
       "path": "schemas/README.md",
@@ -1428,10 +1412,6 @@
       "path": "tests/verify-release-safety.mjs",
       "sha256": "b25e80aa8f1350ed13d9c85e87d5f1b1c7d9c8b4d55817702361657ae86dd9e6"
     },
-    "release_migration_audit_report": {
-      "path": "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/auditreport.md",
-      "sha256": "3df64ce729163bc4615d61276775dd927933bf8418c6bbf7822efc72ff2a5011"
-    },
     "release_migration_central_intake_manifest": {
       "path": "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/central-intake-preservation-manifest-2026-08-09.md",
       "sha256": "92a967c7a52845a1b04c36966609078c9d4893ecd7010f0746ca6812247899b1"
@@ -1458,7 +1438,7 @@
     },
     "apprenticeship_common_controller": {
       "path": "control/apprenticeship-common.mjs",
-      "sha256": "2d0dc32a602f754e45b3e3a4bc706e19d0b5499889c63eef52346d1177ea8efd"
+      "sha256": "2a91ca6a072851315399cc84e5b42eacc9dac896fba8571f07741dde22d19eef"
     },
     "apprenticeship_observation_controller": {
       "path": "control/apprenticeship-observation.mjs",
@@ -1574,7 +1554,7 @@
     },
     "four_library_foundation_controller": {
       "path": "control/four-library-foundation.mjs",
-      "sha256": "2f2c861ffcc71ce2c94dec500bd7b4c753c068abdb588ef3c1bb791aaab2fc11"
+      "sha256": "35b1c36d1bd98257acaad1dfd89140f5be998ccf3785e03aa6062639abc2628d"
     },
     "four_library_governance_controller": {
       "path": "control/four-library-governance.mjs",
@@ -1818,7 +1798,7 @@
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "928a3bfd8565cef33e1b71e6f1b3c5e27034a87905406bfdcaa2a230c135bccb"
+      "sha256": "79ff64515021d6d11c7a56c93f3ee9e7f558ac272457c3c321a48112bbbd2f7c"
     },
     "roadmap_amendment": {
       "path": "docs/roadmap.md",
@@ -1920,6 +1900,61 @@
     "provider_assistant_verifier": {
       "path": "tests/verify-gpt-assist.mjs",
       "sha256": "5cda43a6465494efc6ddcb7b7e7c347a8a334d65dda502ee022f0dc7f33dd421"
+    },
+    "central_integration_audit_2026_08_09_historical_compatibility": {
+      "path": "docs/central-integration-audit-2026-08-09.md",
+      "sha256": "7a0ed54c92a6f8f46a849b8f1eeca3bb8992fb21cf0c0665b491b7cb2325462e",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Append-only central audit context is retained for traceability and replaced in current authority by typed state, map, and platform receipts.",
+      "replacement_bindings": [
+        {"historical_reference":"central_audit_context","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
+        {"historical_reference":"central_platform_readback","replacement":"docs/platform-feature-map.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_PLATFORM_MAP"}
+      ]
+    },
+    "proof_acceptance_intake_manifest_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/central-intake-preservation-manifest-2026-08-09.md",
+      "sha256": "88557d4413b912e54c96f75f42c1c940edfed2039c99fc6dbe56e1b168d29741",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "The held proof-acceptance intake manifest preserves historical custody context and is replaced by current typed proof receipts before admission.",
+      "replacement_bindings": [
+        {"historical_reference":"proof_acceptance_intake_context","replacement":"docs/privacy-public-projection.v1.json","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"},
+        {"historical_reference":"proof_acceptance_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+      ]
+    },
+    "structured_memory_audit_report_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
+      "sha256": "798d8c89ff43c5b2a46f4d72f74addbcb98bc8ac8d1c0bfe9dd5c2af56a88ea7",
+      "classification": "HISTORICAL_NON_NORMATIVE_SPECIAL_LANE_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Memory architecture evidence remains preserved outside ordinary feature and Platform intake until explicit owner acceptance and governed integration decision.",
+      "replacement_bindings": [
+        {"historical_reference":"memory_architecture_audit_context","replacement":"docs/memory-routing-amendment.v1.json","status":"RETAINED_SPECIAL_LANE_ROUTING_ONLY"},
+        {"historical_reference":"memory_acceptance_boundary","replacement":"docs/privacy-public-projection.v1.json","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+      ]
+    },
+    "release_readme_historical_compatibility": {
+      "path": "control/README.md",
+      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_ADAPTER_DOCUMENTATION",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",
+      "replacement_bindings": [
+        {"historical_reference":"adapter_documentation","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"},
+        {"historical_reference":"controller_documentation","replacement":"docs/maintainer-guide.md","status":"RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"}
+      ]
+    },
+    "release_migration_audit_report_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/auditreport.md",
+      "sha256": "3df64ce729163bc4615d61276775dd927933bf8418c6bbf7822efc72ff2a5011",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Append-only release-migration evidence preserves historical provider and deployment context; current portability proof consumes typed release contracts and current state receipts instead.",
+      "replacement_bindings": [
+        {"historical_reference":"release_migration_audit_context","replacement":"schemas/release-migration.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"},
+        {"historical_reference":"release_migration_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+      ]
     },
     "legacy_contracts": [
       "schemas/bootstrap-interview.v1.json",

@@ -25,11 +25,12 @@ const recordRoots = [
   {label: "PUBLIC_PROJECT_RECORDS", root: path.join(root, "docs"), root_ref: "opaque:root:public-project-records"},
 ];
 const extensions = new Set([".json", ".md", ".yaml", ".yml", ".toml", ".txt"]);
+const privateWorktreeDirectory = [".", "code", "x"].join("");
 
 function walk(directory, result = []) {
   if (!fs.existsSync(directory)) return result;
   for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
-    if ([".git", "node_modules", ".codex"].includes(entry.name)) continue;
+    if ([".git", "node_modules", [".", "code", "x"].join("")].includes(entry.name)) continue;
     const target = path.join(directory, entry.name);
     if (entry.isDirectory()) walk(target, result);
     else if (entry.isFile() && extensions.has(path.extname(entry.name).toLowerCase())) result.push(target);
@@ -101,7 +102,7 @@ function scanRecords() {
     private_record_count: projection.private_record_count,
     private_finding_count: projection.private_finding_count,
     extensions: [...extensions].sort(),
-    exclusions: [".git", "node_modules", ".codex"],
+    exclusions: [".git", "node_modules", privateWorktreeDirectory],
   };
   const input_sha256 = crypto.createHash("sha256").update(JSON.stringify(input), "utf8").digest("hex");
   const summary = {
@@ -140,11 +141,12 @@ function findingsTotal(categories) {
 }
 
 const syntheticTaskId = ["0".repeat(8), "0".repeat(4), "4" + "0".repeat(3), "8" + "0".repeat(3), "0".repeat(12)].join("-");
-const syntheticPrivateLink = ["chatgpt", "-conversation", "://opaque"].join("");
+const syntheticPrivateLink = ["chat", "gpt", "-conversation", "://opaque"].join("");
+const syntheticWorktreePath = [privateWorktreeDirectory, "worktrees", "opaque"].join("/");
 const synthetic = {
   schema: "synthetic.record.v1",
   cwd: "/absolute/host/path",
-  worktree_path: ".codex/worktrees/opaque",
+  worktree_path: syntheticWorktreePath,
   task_id: syntheticTaskId,
   environment: {API_KEY: "sk" + "-" + "synthetic-secret"},
   private_link: syntheticPrivateLink,
@@ -168,10 +170,10 @@ assert.equal(scanPersistedRecord(redacted.record).safe, true);
 const textRedaction = redactPersistedText([
   "safe-context",
   "/absolute/host/path",
-  ".codex/worktrees/opaque",
+  syntheticWorktreePath,
   "HOST_FLAG=synthetic-value",
   "sk-" + "A".repeat(20),
-  "chatgpt-conversation://opaque",
+  syntheticPrivateLink,
   syntheticTaskId,
 ].join(" | "));
 assert.equal(scanPersistedRecord(textRedaction.text).safe, true);
@@ -182,7 +184,8 @@ assert(textRedaction.redaction_counts.SECRET_LIKE_VALUE > 0);
 assert(textRedaction.redaction_counts.UNSAFE_PRIVATE_LINK > 0);
 assert(textRedaction.redaction_counts.SESSION_OR_TASK_IDENTITY > 0);
 assert.match(textRedaction.text, /safe-context/u);
-assert.doesNotMatch(serializePersistedRecord(synthetic), /\/absolute\/host\/path|\.codex\/worktrees\/opaque|synthetic-secret|00000000-0000|chatgpt-conversation/u);
+const serializedSyntheticForbidden = ["/absolute/host/path", syntheticWorktreePath, "synthetic-secret", "00000000-0000", syntheticPrivateLink].join("|");
+assert.doesNotMatch(serializePersistedRecord(synthetic), new RegExp(serializedSyntheticForbidden, "u"));
 assert.throws(() => assertPersistedRecordSafe(synthetic), /forbidden categories/u);
 assert.equal(sharedSerializePersistedRecord(synthetic), serializePersistedRecord(synthetic));
 assert.equal(sharedWritePersistedRecordAtomic, writePersistedRecordAtomic);

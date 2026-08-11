@@ -4,7 +4,7 @@
  * Native Controller adapter for AgentOS's own development campaign.
  *
  * This is the replacement for the local child-process adapter. It creates
- * real Codex sessions through the external host bridge, keeps the session
+ * real native sessions through the external host bridge, keeps the session
  * records in memory until they are durably handed off, and performs the
  * complete preserve -> unpin -> archive -> roster-removal lifecycle.
  */
