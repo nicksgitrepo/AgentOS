@@ -1,0 +1,326 @@
+{
+  "schema": "agentos.integration.manifest.v1",
+  "build_id": "AGENTOS_3_TEST_BUILD",
+  "lifecycle": "CANDIDATE_INACTIVE",
+  "activation": "OFF",
+  "source_base": "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e",
+  "entries": [
+    {
+      "path": "CURRENT_STATE.md",
+      "size": 948,
+      "sha256": "dc1b93972ef43c1ee905c18d7bba0d17f469a0baa8efc221c8074ddbe723c4a2"
+    },
+    {
+      "path": "agent-builder-adapter.mjs",
+      "size": 1091,
+      "sha256": "e3b38e5a676cee8fd49afb13332f145aba82c2db200fab3ed0089364d38d91a7"
+    },
+    {
+      "path": "agent-builder/README.md",
+      "size": 333,
+      "sha256": "561dade76f75fe490f4fce21782615f8c9f9dd7561ebfcd891f378ba29c5cf42"
+    },
+    {
+      "path": "agent-builder/context-block.interface.ts",
+      "size": 9475,
+      "sha256": "af41918825cc0dbe773285ac9c4789e3620635f514ed16bb380410196f7fea8a"
+    },
+    {
+      "path": "agent-builder/context-block.schema.json",
+      "size": 24317,
+      "sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec"
+    },
+    {
+      "path": "agent-builder/evaluation-plan.md",
+      "size": 13608,
+      "sha256": "80eae5bfd39a2426dae181260b9cc93e8f285bea1a31a67cb0e3230a553e66c9"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-authority-grants.json",
+      "size": 4923,
+      "sha256": "626213a213b28a9a20c4159c9c4df56045c700e98c2a778211dc164765b12398"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-budget-overflow.json",
+      "size": 4902,
+      "sha256": "da25be07ea20e40963b753285dc26b7ac0b24ae0d433307e0ca0bb66c48e9cd7"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-duplicate-claim-id.json",
+      "size": 5661,
+      "sha256": "a704c10637d55520a673ce3b2063cc32937f9ee765d6a891302eccf90781c391"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-lifecycle-admitted.json",
+      "size": 4902,
+      "sha256": "40af9722fbdf4f69ec89a43a3c6bc735a0ac821c2f3dd7473b88c0a4cc2d7684"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-missing-digest.json",
+      "size": 4807,
+      "sha256": "bfd537801b0290005cbfb47531e69f1f0edccfb34cf910defa2b2d2ab6c20d5e"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-missing-provenance.json",
+      "size": 4216,
+      "sha256": "cd171809c0240d2afef527b1a0a3ba6055ee9af29bf406240f284b0149662654"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-missing-scope.json",
+      "size": 4754,
+      "sha256": "29f2cc58a335945ae21d348d15983af4cfaa55739c40fa93adb74227db43c48b"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-missing-version.json",
+      "size": 4879,
+      "sha256": "e9544b50ca5a08a0068bcb0fdb9305b162f916e97f320402833c22a08e956e85"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-progressive-loading.json",
+      "size": 4723,
+      "sha256": "e245ac2ddc36b364366f73e0d71e3f6ea69796e909c7f76fe3134ef2c6199068"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-protected-data.json",
+      "size": 4900,
+      "sha256": "c90adaea411cbb62002bd539f446d606fda8741f9d18ee336c19a154f92a0ad3"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-secrets-allowed.json",
+      "size": 4902,
+      "sha256": "3aa500dd7e076bc7f89d029963ef5e2d302fe4b48fe5c2b9993073661a78cbee"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/invalid-stale-source.json",
+      "size": 4906,
+      "sha256": "694d3eff1a36c5c685e973dedaf4812f75a7517992003fd3627408cb892ec609"
+    },
+    {
+      "path": "agent-builder/fixtures/context-block/valid-context-block.json",
+      "size": 4903,
+      "sha256": "67712f22905064af4eddd2df7a2f842ede09689d2b76a3ca62f2aba24677d6b7"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/invalid-authority-escalation.json",
+      "size": 6626,
+      "sha256": "b85902df707bcea070b083131cb86d13a9c1ab2131460a229de33f7c644d24f0"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/invalid-context-budget-overflow.json",
+      "size": 6606,
+      "sha256": "ec67db3b371b0656fdbfc1f349c280e4ea88d7c674ff8bd8ff42b50c3717f354"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/invalid-contradiction.json",
+      "size": 6761,
+      "sha256": "0392f5fca426b56039c0a806527f313a33ce1fd8f9ed527692eeff80550e8d0a"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/invalid-missing-protected-decision.json",
+      "size": 6630,
+      "sha256": "7135363ce497038fb1b793810e21c2df7ea0a773a4941a7da8b166c10344eea0"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/invalid-omitted-unresolved.json",
+      "size": 2809,
+      "sha256": "0b7d796e6648b1eceb67cbc774ce5c8f7b922698b68afd2d3e8831c5415c1610"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/invalid-stale-block.json",
+      "size": 6606,
+      "sha256": "40390e07ab8f8376d209bbb5cc0c84a2a9dd01da47959d0f983f8774125c7937"
+    },
+    {
+      "path": "agent-builder/fixtures/task-ir/valid-task-ir.json",
+      "size": 6605,
+      "sha256": "705866fb37591648b681a6c5c69088d076598978c97f2554de6900d4ee887c12"
+    },
+    {
+      "path": "agent-builder/task-ir.interface.ts",
+      "size": 4936,
+      "sha256": "a868368998ca7a871cf159e86845a33a69cf1ba5b477aef299b91af04ebd58d6"
+    },
+    {
+      "path": "agent-builder/task-ir.schema.json",
+      "size": 17905,
+      "sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d"
+    },
+    {
+      "path": "agent-builder/validate_context_blocks.py",
+      "size": 12084,
+      "sha256": "80b11bfaef10f17f8663994a7286d5251aa1143f1d3a4933fbfc747a9e868876"
+    },
+    {
+      "path": "agent-builder/validate_task_ir.py",
+      "size": 12117,
+      "sha256": "ed8cc986447ed3b8c8fae267ab62a828dc7a62c79ccea19d68b17659f0d611db"
+    },
+    {
+      "path": "bootstrap.mjs",
+      "size": 1026,
+      "sha256": "7f89e251345077b6e0b58ec72f026ad8c2476e4bb728a102a11699aed638b9aa"
+    },
+    {
+      "path": "contracts/agent-builder-candidate-receipt.json",
+      "size": 915,
+      "sha256": "a84774f8254246c2474660dbc93e4eb85fb83da551708118d2247bce06f7deaa"
+    },
+    {
+      "path": "contracts/agentos-3-integration.v1.json",
+      "size": 2870,
+      "sha256": "392e7bdb391a8722c432e9c8ec8b47a031c194009544961277687c36a0a5b40d"
+    },
+    {
+      "path": "contracts/test-build-receipt.json",
+      "size": 2475,
+      "sha256": "43ac42f9a51344fa0db6b719f69e166259cc2b8ba35dcf7ade927c1ee72b5a90"
+    },
+    {
+      "path": "install.mjs",
+      "size": 1338,
+      "sha256": "425848730a21fcc8cde8abc440ddf90c82fe5dbec0f3d3b99645f6c63362e065"
+    },
+    {
+      "path": "memory-adapter.mjs",
+      "size": 1104,
+      "sha256": "15c6c5d501a725f92053a95a751c8a2418351b01afaa6d3360b816299745f1fd"
+    },
+    {
+      "path": "memory-m2/LICENSE",
+      "size": 115,
+      "sha256": "8a286a5dd9e2f8056b7d494e8c5df20f65dd6d7d31ee12884ed2b42d07c76f8e"
+    },
+    {
+      "path": "memory-m2/README.md",
+      "size": 477,
+      "sha256": "a5d63beb891d59aeef9e69b5544ffeb90f1427f24ecdaf99a48eb968d5842739"
+    },
+    {
+      "path": "memory-m2/package.json",
+      "size": 387,
+      "sha256": "45d3a00bc5f003da1d06872d844b3c7e7411f9b33f767ae67ff7f48fb67b31b8"
+    },
+    {
+      "path": "memory-m2/src/canonical.mjs",
+      "size": 3370,
+      "sha256": "157e8b1597b95a1da015d657c84cc28ef526e022072dd07e791144b7af8b7fb2"
+    },
+    {
+      "path": "memory-m2/src/cli.mjs",
+      "size": 9769,
+      "sha256": "8da25c4b331700c989db718a4db75bc5cff7798d9f8e62911bcfc2758611a7f3"
+    },
+    {
+      "path": "memory-m2/src/custody-admission.mjs",
+      "size": 5175,
+      "sha256": "597e5078d6a10cb82b489fd0cd20f699c31ff09def741dbd70b6297d5e92be8f"
+    },
+    {
+      "path": "memory-m2/src/custody-envelope.mjs",
+      "size": 35078,
+      "sha256": "19e97084b28604f63cf8aadcec22b3e5c2684062bc69cd8b59e0f7c26000b468"
+    },
+    {
+      "path": "memory-m2/src/errors.mjs",
+      "size": 343,
+      "sha256": "3902d1c77eb9efe12fe110b6822ae36e97c1e5ece40f8b06a831dc357b7a6cc0"
+    },
+    {
+      "path": "memory-m2/src/export-bundle.mjs",
+      "size": 6759,
+      "sha256": "4b187125e8d767cf30ed9acb9e5085480ebfc2f8362889dff4769ef7ffa283ed"
+    },
+    {
+      "path": "memory-m2/src/export-manifest.mjs",
+      "size": 8485,
+      "sha256": "f0fe2a6f3e6cf8c02deeb7da28fc320addab038695add71a73eb7dc13bd3853a"
+    },
+    {
+      "path": "memory-m2/src/import-staging.mjs",
+      "size": 6905,
+      "sha256": "07cbb327e775f6608a9d44d337d066931d0c07871611114d40443918562e0a43"
+    },
+    {
+      "path": "memory-m2/src/index.mjs",
+      "size": 1956,
+      "sha256": "06283fa9fc9521390d5dae4a0ab577bf9da33d997dd7b221342eb0f7633cfa51"
+    },
+    {
+      "path": "memory-m2/src/io.mjs",
+      "size": 5093,
+      "sha256": "adfc1f07d7968e09318cd29dfdf21204d93383256b223f30f08a36b5b6fc763c"
+    },
+    {
+      "path": "memory-m2/src/key-lifecycle.mjs",
+      "size": 7911,
+      "sha256": "cacdfd0966658108eb3f5cdfb3f82f2b19bca50d0d6fadd01914c185e1ca7107"
+    },
+    {
+      "path": "memory-m2/src/key-recovery.mjs",
+      "size": 6462,
+      "sha256": "51d726ed7233fd96af43b27f321f238635dc78f4c0f4a755420610b31533ea3d"
+    },
+    {
+      "path": "memory-m2/src/memory.mjs",
+      "size": 25566,
+      "sha256": "a3707fcc80ea803f4ffd48eceb12e1ad732df5671caaf931c6584993082d8ff3"
+    },
+    {
+      "path": "memory-m2/src/project.mjs",
+      "size": 100083,
+      "sha256": "700299321f73d75e2c2a9ce46d58c431fe37f1324e72bd7ac0a86828e5605bb6"
+    },
+    {
+      "path": "memory-m2/src/projections.mjs",
+      "size": 2631,
+      "sha256": "5255310bdfb34223a70f7297b21a4a031a6ebff541d8a2fc7c82fbfdfaec3801"
+    },
+    {
+      "path": "memory-m2/src/recipient-authority.mjs",
+      "size": 5734,
+      "sha256": "2b2f6f4e5e1778d6e0dc523a8bcb1d6d9c47c988c5568da314448e96ff631999"
+    },
+    {
+      "path": "memory-m2/src/rosters.mjs",
+      "size": 27157,
+      "sha256": "7b3d6c9488db3167af8d5342c956916e6a3c290ae79c6a4d9d6ce77356ff201b"
+    },
+    {
+      "path": "memory-m2/src/runs.mjs",
+      "size": 17720,
+      "sha256": "0e38a17016661b7392d73e58b8771381dba5e00fc39ed24d34005769c84c2a20"
+    },
+    {
+      "path": "memory-m2/src/storage-profile.mjs",
+      "size": 10137,
+      "sha256": "addc8c7530ab1e5806b9fb24131d497f79425186c4a74a7edef2664b758d6c15"
+    },
+    {
+      "path": "memory-m2/src/transition-journal.mjs",
+      "size": 11007,
+      "sha256": "dd35a1c6d356fdc9cc46bf7d2908afd4b5816346eac8b19703dcdfe57609a360"
+    },
+    {
+      "path": "memory-m2/src/uuidv7.mjs",
+      "size": 742,
+      "sha256": "94a9791d9a202c56d0227d015178946d63ae306a62f4a58d5af03c8991179722"
+    },
+    {
+      "path": "rollback.mjs",
+      "size": 307,
+      "sha256": "85b882e03a5111cf2603946914e732974b0fe3c43d1d8fdb5f0f8efab3d2fc1b"
+    },
+    {
+      "path": "tests/integration-test.mjs",
+      "size": 2389,
+      "sha256": "aed0040b643655042df0b9d1e00af1d40f2dc1ebd78909277b8b225771c04bd4"
+    },
+    {
+      "path": "tools/build.mjs",
+      "size": 1977,
+      "sha256": "5c9755d94ad2b37ceb1d9298147e550ef8f0bcc8426dbaa1c2f293174a049d40"
+    }
+  ],
+  "bundle_sha256": "880f37a06e5069eaae3e4bfbebd06727288abf037385c55fabd0dff5a53c3442",
+  "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
+}
