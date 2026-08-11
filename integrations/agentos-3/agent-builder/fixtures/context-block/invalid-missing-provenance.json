@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "context-block.v0.1",
+  "blockId": "specialty.context.demo",
+  "blockClass": "specialty_procedure",
+  "revision": {
+    "version": "0.1.0",
+    "contentDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "createdAt": "2026-08-11T19:00:00Z",
+    "createdBy": "agent-builder-role-governance"
+  },
+  "lifecycleState": "candidate",
+  "purpose": {
+    "summary": "Bounded context for testing context-block packaging.",
+    "outcomes": [
+      "Provide scoped, provenance-bearing procedure context."
+    ],
+    "nonGoals": [
+      "Grant runtime capabilities.",
+      "Certify domain safety or compliance."
+    ]
+  },
+  "scope": {
+    "include": [
+      "context-block validation"
+    ],
+    "exclude": [
+      "activation",
+      "deployment"
+    ],
+    "roles": [
+      "context-builder"
+    ],
+    "taskFamilies": [
+      "agent_context_build"
+    ],
+    "jurisdictions": [
+      "none"
+    ],
+    "technologies": [
+      "schema-validation"
+    ],
+    "validFrom": "2026-08-11T00:00:00Z"
+  },
+  "claims": [
+    {
+      "claimId": "claim.demo",
+      "statement": "A candidate context block must remain scoped and provenance-bearing.",
+      "status": "candidate",
+      "evidenceClass": "AET",
+      "evidenceLabel": "C2_ACCEPTED_ENGINEERING",
+      "confidenceCeiling": "C2_ACCEPTED_ENGINEERING",
+      "sourceRefs": [
+        {
+          "refId": "source.demo",
+          "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "relation": "supports"
+        }
+      ],
+      "scope": {
+        "include": [
+          "context-block validation"
+        ],
+        "exclude": [
+          "activation"
+        ]
+      },
+      "prohibitedInference": [
+        "Do not infer runtime permission from this claim."
+      ]
+    }
+  ],
+  "authorityEffect": {
+    "grants": [],
+    "restrictions": [
+      "No capability grants from context."
+    ],
+    "obligations": [
+      "Return source and evaluation references."
+    ]
+  },
+  "loading": {
+    "advertisedSummary": "Use only for bounded context-block validation.",
+    "activationInstructions": "Load the summary first; retrieve the guide only when required.",
+    "lazyResources": [
+      {
+        "refId": "resource.guide",
+        "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "relation": "requires"
+      }
+    ],
+    "budget": {
+      "summaryTokens": 100,
+      "instructionTokens": 200,
+      "resourceTokens": 300,
+      "maxTokens": 1200
+    }
+  },
+  "resources": [
+    {
+      "resourceId": "resource.guide",
+      "uri": "https://example.invalid/context-guide",
+      "mediaType": "text/plain",
+      "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "loadPolicy": "on_demand",
+      "license": "candidate-test-data",
+      "redaction": "none"
+    }
+  ],
+  "provenance": {
+    "derivations": [],
+    "generatedBy": "agent-builder-role-governance",
+    "createdAt": "2026-08-11T19:00:00Z"
+  },
+  "evaluation": {
+    "status": "designed",
+    "suiteId": "context-block-semantic-v0.1",
+    "baseline": "no_block",
+    "conditions": [
+      "no_block",
+      "focused_block",
+      "overstuffed_block"
+    ],
+    "requiredOracles": [
+      "correctness",
+      "provenance",
+      "authority_boundary",
+      "staleness",
+      "privacy",
+      "security"
+    ],
+    "admissionGate": [
+      "Independent evaluator required.",
+      "No critical boundary failure."
+    ]
+  },
+  "refresh": {
+    "policy": "event_and_schedule",
+    "cadence": "on_source_change_or_review",
+    "triggers": [
+      "source_change",
+      "schema_change",
+      "evaluation_failure"
+    ],
+    "historicalPolicy": "immutable_revision",
+    "lastCheckedAt": "2026-08-11T19:00:00Z"
+  },
+  "security": {
+    "dataClasses": [
+      "public_reference"
+    ],
+    "secretsAllowed": false,
+    "redactionRules": [
+      "Never embed secrets or protected data."
+    ],
+    "integrityRequirements": [
+      "Verify content digest before use."
+    ],
+    "auditRequirements": [
+      "Retain candidate validation receipt."
+    ]
+  },
+  "notes": [
+    "Candidate-only fixture; not admitted authority."
+  ]
+}

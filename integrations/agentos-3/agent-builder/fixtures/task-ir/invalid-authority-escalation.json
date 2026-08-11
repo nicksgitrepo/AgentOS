@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "task-ir.v0.1",
+  "taskPacket": {
+    "identity": {
+      "taskId": "task.context.valid",
+      "requester": "owner",
+      "taskFamily": "agent_context_build"
+    },
+    "objective": "Compile a bounded candidate context block from admitted evidence.",
+    "reason": "Test typed Task IR compilation.",
+    "target": "context-block",
+    "scope": {
+      "include": [
+        "context-block"
+      ],
+      "exclude": [
+        "product-edit",
+        "activation"
+      ],
+      "project": "agent-builder",
+      "jurisdictions": [],
+      "technologies": [],
+      "versions": []
+    },
+    "exclusions": [
+      "Product edits",
+      "registry admission",
+      "activation",
+      "deployment"
+    ],
+    "currentState": "research_complete",
+    "desiredState": "candidate_package",
+    "acceptanceCriteria": [
+      "All claims have provenance.",
+      "No capability is granted by context.",
+      "The focused projection fits its budget."
+    ],
+    "requiredOutputs": [
+      "context-block",
+      "claim-ledger",
+      "evaluation-handoff"
+    ],
+    "requiredEvidence": [
+      "source-digests",
+      "schema-validation",
+      "evaluation-receipt"
+    ],
+    "preservedInvariants": [
+      "context grants no runtime capability",
+      "unknown owner decisions remain explicit"
+    ],
+    "stopConditions": [
+      "missing authority",
+      "contradictory requirements",
+      "stale block"
+    ],
+    "escalationConditions": [
+      "owner decision required",
+      "qualified review required"
+    ],
+    "handoff": {
+      "recipient": "admission-controller",
+      "requiredFields": [
+        "block-digest",
+        "claim-ledger",
+        "evaluation-receipt"
+      ],
+      "closure": "candidate is reviewed or quarantined"
+    },
+    "closureRequirements": [
+      "immutable digest",
+      "refresh triggers",
+      "archive state"
+    ]
+  },
+  "fieldLedger": [
+    {
+      "fieldId": "owner.role",
+      "name": "requested role",
+      "type": "string",
+      "sourceClass": "owner_supplied",
+      "status": "resolved",
+      "requiredBefore": "routing",
+      "inferencePolicy": "accept_owner_value",
+      "protected": true,
+      "value": "context-builder",
+      "sourceRefs": [
+        "owner-intent"
+      ]
+    },
+    {
+      "fieldId": "task.regulated",
+      "name": "regulated scope flag",
+      "type": "boolean",
+      "sourceClass": "registry_resolved",
+      "status": "resolved",
+      "requiredBefore": "routing",
+      "inferencePolicy": "resolve_registry",
+      "protected": false,
+      "value": false,
+      "sourceRefs": [
+        "project-snapshot"
+      ]
+    },
+    {
+      "fieldId": "registry.project",
+      "name": "project identity",
+      "type": "string",
+      "sourceClass": "registry_resolved",
+      "status": "resolved",
+      "requiredBefore": "routing",
+      "inferencePolicy": "resolve_registry",
+      "protected": false,
+      "value": "agent-builder",
+      "sourceRefs": [
+        "project-snapshot"
+      ]
+    },
+    {
+      "fieldId": "compiler.authority",
+      "name": "compiled authority ceiling",
+      "type": "string[]",
+      "sourceClass": "compiler_derived",
+      "status": "resolved",
+      "requiredBefore": "seed_compile",
+      "inferencePolicy": "derive_deterministically",
+      "protected": true,
+      "value": [
+        "read_sources",
+        "write_output",
+        "run_validator"
+      ],
+      "sourceRefs": [
+        "compiler-rule"
+      ]
+    },
+    {
+      "fieldId": "agent.root_cause",
+      "name": "root cause",
+      "type": "string",
+      "sourceClass": "agent_discoverable",
+      "status": "unresolved",
+      "requiredBefore": "acceptance",
+      "inferencePolicy": "research_agent",
+      "protected": false,
+      "sourceRefs": [
+        "task-contract"
+      ]
+    },
+    {
+      "fieldId": "owner.release.approval",
+      "name": "release approval",
+      "type": "decision",
+      "sourceClass": "prohibited_to_infer",
+      "status": "unresolved",
+      "requiredBefore": "side_effect",
+      "inferencePolicy": "must_not_infer",
+      "protected": true,
+      "sourceRefs": [
+        "owner-decision-gap"
+      ]
+    }
+  ],
+  "constraints": {
+    "requiredFields": [
+      "owner.role",
+      "registry.project",
+      "compiler.authority"
+    ],
+    "forbiddenActions": [
+      "activate",
+      "publish",
+      "deploy",
+      "release"
+    ],
+    "conditionalRules": [
+      {
+        "ruleId": "regulated-requires-review",
+        "when": {
+          "fieldId": "task.regulated",
+          "equals": true
+        },
+        "then": {
+          "requireFields": [
+            "owner.qualified.review"
+          ],
+          "requireApprovals": [
+            "qualified-review"
+          ],
+          "requireBlocks": [
+            "authority.regulated"
+          ]
+        }
+      }
+    ],
+    "contradictions": [],
+    "authorityCeiling": {
+      "allowedActions": [
+        "read_sources",
+        "write_output",
+        "run_validator"
+      ],
+      "forbiddenActions": [
+        "activate",
+        "publish",
+        "deploy",
+        "release"
+      ],
+      "allowedOutputPaths": [
+        "outputs/checkpoint-01-context-block-foundry"
+      ],
+      "maxContextTokens": 1200,
+      "approvalRefs": []
+    }
+  },
+  "compilation": {
+    "status": "compile_ready",
+    "stage": "seed_compile",
+    "selectedBlocks": [
+      {
+        "blockId": "specialty.context.demo",
+        "blockDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "current",
+        "sourceStatus": "current",
+        "authorityEffectGrants": [
+          "deploy"
+        ],
+        "projectedTokens": 500
+      }
+    ],
+    "projectedContextTokens": 500,
+    "maxContextTokens": 1200,
+    "requestedActions": [
+      "read_sources",
+      "write_output",
+      "deploy"
+    ],
+    "unresolvedFields": [
+      "agent.root_cause",
+      "owner.release.approval"
+    ]
+  },
+  "provenance": {
+    "ownerIntentRef": "owner-intent",
+    "sourceRefs": [
+      "owner-intent",
+      "project-snapshot",
+      "context-block-schema"
+    ],
+    "compilerVersion": "task-compiler.v0.1",
+    "taskDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "derivationRefs": [
+      "compiler-rule"
+    ]
+  },
+  "lifecycle": {
+    "state": "candidate",
+    "admission": "not_admitted",
+    "activation": "not_activated",
+    "refreshTriggers": [
+      "source_change",
+      "project_snapshot_change",
+      "model_harness_change"
+    ],
+    "archiveConditions": [
+      "rejected",
+      "superseded",
+      "owner_closed"
+    ]
+  }
+}

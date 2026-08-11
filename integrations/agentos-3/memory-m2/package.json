@@ -1,0 +1,17 @@
+{
+  "name": "@agentos/memory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Project-agnostic, local-first memory authority and context compiler for AgentOS.",
+  "bin": {
+    "agentos-memory": "./src/cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/*.mjs && node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

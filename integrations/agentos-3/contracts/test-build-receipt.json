@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.integration.test-build-receipt.v1",
+  "build_id": "AGENTOS_3_TEST_BUILD",
+  "disposition": "AGENTOS_3_TEST_BUILD_READY_FOR_INDEPENDENT_EVALUATION",
+  "candidate_lifecycle": "CANDIDATE_INACTIVE",
+  "activation": "OFF",
+  "authority_reference": {
+    "canon_object": "6e2b0aa00d7ea3107dc1119d9b59f69e7a6796b9",
+    "charter_digest": "e77b6d8124e6cefc49ad043c8fc9e637c28b000cdc91cbf3ca3095df07e126ff",
+    "bootstrap_digest": "501d32b6a013615c33030db1f12ce8ea4b2dc8ae2b45c40fedbefbb96b0e1f88",
+    "article_1186_digest": "a6680dc59d54e309467ff8e7482872600ef4c373ea9245e4aa58f00e110fc986",
+    "article_1187_digest": "163208ef3d2728ab0348a3359f7445d607afbae00c3c2d54894827a866bbb02a"
+  },
+  "inputs": [
+    {"id": "main-agentos", "source_commit": "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e", "candidate_commit": "59860e96574416673c5a1dca19b6e06368f4de97", "candidate_tree": "dd39662b87abec5d359863f6f1565d2792941d26", "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e", "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"},
+    {"id": "memory-m2", "source_commit": "16acbcdb0c414a541fa435be7942d6ce883042ef", "source_tree": "ee795fb24b2ecc9c1587b73a726ca2dec7817572", "proof_commit": "882ee0d", "proof_tree": "39d40d5", "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2"},
+    {"id": "agent-builder", "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626", "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833", "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec", "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d", "candidate_status": "EVALUATION_CANDIDATE_READY_FOR_INDEPENDENT_RERUN"}
+  ],
+  "proof": {
+    "node_syntax": "PASS",
+    "task_ir": "PASS 7/7",
+    "context_blocks": "PASS 13/13",
+    "default_off": "PASS",
+    "unauthorized_activation_denial": "PASS",
+    "memory_initialize_replay_restart": "PASS",
+    "install_and_rollback": "PASS",
+    "bundle_manifest_reconciliation": "PASS",
+    "reproducible_build": "PASS",
+    "private_or_external_context_leak": "NONE_FOUND"
+  },
+  "remaining_ceilings": ["independent_utility_harm_evaluation", "real_host_new_project", "real_host_import_adoption", "provider_activation", "public_release"],
+  "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK",
+  "source_mutation": "NONE",
+  "private_control_payload": "NOT_INCLUDED"
+}

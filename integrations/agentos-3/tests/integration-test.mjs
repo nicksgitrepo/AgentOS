@@ -1,0 +1,37 @@
+import assert from "node:assert/strict";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { combinedBootstrap, assertInactive } from "../bootstrap.mjs";
+import { createAgentOS3Runtime, AGENTOS_3_TEST_AUTHORITY } from "../memory-adapter.mjs";
+import { validateCandidateFixtures } from "../agent-builder-adapter.mjs";
+import { installBundle } from "../install.mjs";
+import { rollbackTestBuild } from "../rollback.mjs";
+
+const state = await combinedBootstrap();
+assertInactive(state);
+assert.equal(createAgentOS3Runtime().memory_enabled, false);
+assert.throws(() => createAgentOS3Runtime({ memoryEnabled: true }), /MEMORY_DEFAULT_OFF/);
+await assert.rejects(() => createAgentOS3Runtime().enableForTest("wrong"), /UNAUTHORIZED_MEMORY_ACTIVATION/);
+const builder = validateCandidateFixtures();
+assert.match(builder.task_ir, /RESULT PASS/);
+assert.match(builder.context_blocks, /RESULT PASS/);
+
+const root = await mkdtemp(join(tmpdir(), "agentos-3-test-") );
+const memoryRoot = join(root, "memory");
+const runtime = await createAgentOS3Runtime().enableForTest(AGENTOS_3_TEST_AUTHORITY);
+const first = await runtime.initialize(memoryRoot, "test-build");
+const proposed = await first.memory.propose({ record_id: "memory:test-record", family: "fact", statement: "A staged test fact", role: "test", lane: "local" });
+await first.memory.transition("memory:test-record", "RECORD_VERIFIED", { actor: "reviewer" });
+await first.memory.transition("memory:test-record", "RECORD_ACCEPTED", { actor: "controller" });
+assert.equal((await first.memory.projectState()).records.get("memory:test-record").effective_state, "ACCEPTED");
+await first.project.verify();
+const reopened = await runtime.reopen(memoryRoot);
+assert.equal((await reopened.memory.projectState()).records.get("memory:test-record").effective_state, "ACCEPTED");
+const bundlePath = join(process.cwd(), "integrations", "agentos-3", "dist", "AGENTOS_3_TEST_BUILD.bundle.json");
+const installRoot = join(root, "installed");
+const installed = await installBundle(bundlePath, installRoot);
+assert.equal(installed.activation, "OFF");
+await rollbackTestBuild(installRoot);
+await rm(root, { recursive: true, force: true });
+console.log("AGENTOS_3_TEST_PROOF PASS default-off unauthorized-activation builder-positive-negative memory-replay-restart install-rollback");

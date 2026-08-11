@@ -1,0 +1,995 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-foundry.invalid/schemas/context-block/v0.1",
+  "title": "Agent Foundry Context Block",
+  "description": "A versioned, provenance-bearing, progressively loadable context block. This schema is a packaging contract, not domain authority and not a capability grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "blockId",
+    "blockClass",
+    "revision",
+    "lifecycleState",
+    "purpose",
+    "scope",
+    "claims",
+    "authorityEffect",
+    "loading",
+    "provenance",
+    "refresh",
+    "evaluation",
+    "security"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "context-block.v0.1"
+    },
+    "blockId": {
+      "$ref": "#/$defs/identifier"
+    },
+    "blockClass": {
+      "type": "string",
+      "enum": [
+        "policy_governance",
+        "role_procedure",
+        "specialty_procedure",
+        "official_authority_pack",
+        "knowledge_reference",
+        "project_fact_snapshot",
+        "owner_decision",
+        "task_template",
+        "tool_runtime_adapter",
+        "evaluation_pack",
+        "handoff_evidence",
+        "lifecycle_invalidation",
+        "model_harness_profile"
+      ]
+    },
+    "revision": {
+      "$ref": "#/$defs/revision"
+    },
+    "lifecycleState": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "research_memo",
+        "evaluated",
+        "admitted",
+        "suspended",
+        "retired",
+        "archived"
+      ]
+    },
+    "purpose": {
+      "$ref": "#/$defs/purpose"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirement"
+      }
+    },
+    "prohibitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/prohibition"
+      }
+    },
+    "terms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/term"
+      }
+    },
+    "procedures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/procedure"
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/field"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/field"
+      }
+    },
+    "handoffs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/handoff"
+      }
+    },
+    "authorityEffect": {
+      "$ref": "#/$defs/authorityEffect"
+    },
+    "loading": {
+      "$ref": "#/$defs/loading"
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/resource"
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "evaluation": {
+      "$ref": "#/$defs/evaluation"
+    },
+    "refresh": {
+      "$ref": "#/$defs/refresh"
+    },
+    "security": {
+      "$ref": "#/$defs/security"
+    },
+    "regulatorySafety": {
+      "$ref": "#/$defs/regulatorySafety"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reference"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reference"
+      }
+    },
+    "invalidatedBy": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "supersedes": {
+      "$ref": "#/$defs/reference"
+    },
+    "supersededBy": {
+      "$ref": "#/$defs/reference"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{2,127}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refId"],
+      "properties": {
+        "refId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "requires",
+            "derived_from",
+            "supports",
+            "conflicts_with",
+            "supersedes",
+            "superseded_by",
+            "evaluated_by",
+            "invalidated_by",
+            "projects_to"
+          ]
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "contentDigest", "createdAt"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+        },
+        "contentDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "$ref": "#/$defs/identifier"
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewReceipt": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "outcomes", "nonGoals"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "nonGoals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["include", "exclude"],
+      "properties": {
+        "include": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "taskFamilies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "jurisdictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "technologies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimId",
+        "statement",
+        "status",
+        "evidenceClass",
+        "evidenceLabel",
+        "confidenceCeiling",
+        "sourceRefs",
+        "scope",
+        "prohibitedInference"
+      ],
+      "properties": {
+        "claimId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": ["candidate", "accepted", "disputed", "rejected", "superseded"]
+        },
+        "evidenceClass": {
+          "type": "string",
+          "enum": ["OPR", "AET", "PF", "OD", "RTF", "EE", "DER", "PAI"]
+        },
+        "evidenceLabel": {
+          "type": "string",
+          "enum": [
+            "C0_UNVERIFIED",
+            "C1_CONTEXTUAL",
+            "C2_ACCEPTED_ENGINEERING",
+            "C3_OFFICIAL_SCOPED",
+            "C4_OWNER_AUTHORIZED",
+            "C5_RUNTIME_OBSERVED",
+            "C6_EVALUATED"
+          ]
+        },
+        "confidenceCeiling": {
+          "type": "string",
+          "enum": [
+            "C0_UNVERIFIED",
+            "C1_CONTEXTUAL",
+            "C2_ACCEPTED_ENGINEERING",
+            "C3_OFFICIAL_SCOPED",
+            "C4_OWNER_AUTHORIZED",
+            "C5_RUNTIME_OBSERVED",
+            "C6_EVALUATED"
+          ]
+        },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "requiredBefore": {
+          "type": "string",
+          "enum": [
+            "routing",
+            "seed_compile",
+            "tool_use",
+            "side_effect",
+            "acceptance",
+            "closure"
+          ]
+        },
+        "prohibitedInference": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "derivedFrom": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementId", "text", "level", "evidenceRefs"],
+      "properties": {
+        "requirementId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "text": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string",
+          "enum": ["MUST", "MUST_NOT", "SHOULD", "SHOULD_NOT", "MAY", "ADVISORY"]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "requiredBefore": {
+          "type": "string",
+          "enum": ["routing", "seed_compile", "tool_use", "side_effect", "acceptance", "closure"]
+        }
+      }
+    },
+    "prohibition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prohibitionId", "action", "reason", "evidenceRefs"],
+      "properties": {
+        "prohibitionId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "action": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "escalateTo": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "term": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["termId", "preferred", "definition", "sourceRefs"],
+      "properties": {
+        "termId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "preferred": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "definition": {
+          "type": "string"
+        },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["procedureId", "preconditions", "steps", "stopConditions", "evidenceOutput"],
+      "properties": {
+        "procedureId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "decisionRules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stopConditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidenceOutput": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fieldId", "type", "evidenceClass", "requiredBefore", "inferencePolicy"],
+      "properties": {
+        "fieldId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "type": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "evidenceClass": {
+          "type": "string",
+          "enum": ["OPR", "AET", "PF", "OD", "RTF", "EE", "DER", "PAI"]
+        },
+        "requiredBefore": {
+          "type": "string",
+          "enum": ["routing", "seed_compile", "tool_use", "side_effect", "acceptance", "closure"]
+        },
+        "inferencePolicy": {
+          "type": "string",
+          "enum": ["may_resolve_deterministically", "must_research", "must_ask_owner", "must_observe_runtime", "must_not_infer"]
+        },
+        "redaction": {
+          "type": "string",
+          "enum": ["none", "sensitive", "secret", "personal_data", "regulated_data"]
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handoffId", "recipientRole", "requiredFields", "ownership", "closureCondition"],
+      "properties": {
+        "handoffId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "recipientRole": {
+          "$ref": "#/$defs/identifier"
+        },
+        "requiredFields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "ownership": {
+          "type": "string",
+          "enum": ["retain", "transfer", "shared_by_lease"]
+        },
+        "allowedTransformations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "closureCondition": {
+          "type": "string"
+        }
+      }
+    },
+    "authorityEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grants", "restrictions", "obligations"],
+      "properties": {
+        "grants": {
+          "type": "array",
+          "const": [],
+          "description": "Context blocks never grant runtime capability. Actual leases are compiled and enforced elsewhere."
+        },
+        "restrictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "obligations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ceilingRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "loading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["advertisedSummary", "activationInstructions", "lazyResources", "budget"],
+      "properties": {
+        "advertisedSummary": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "activationInstructions": {
+          "type": "string"
+        },
+        "lazyResources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["summaryTokens", "instructionTokens", "resourceTokens", "maxTokens"],
+          "properties": {
+            "summaryTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "instructionTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resourceTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxTokens": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resourceId", "mediaType", "digest", "loadPolicy"],
+      "properties": {
+        "resourceId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "mediaType": {
+          "type": "string"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "loadPolicy": {
+          "type": "string",
+          "enum": ["eager", "on_activation", "on_demand", "never_runtime"]
+        },
+        "license": {
+          "type": "string"
+        },
+        "redaction": {
+          "type": "string",
+          "enum": ["none", "sensitive", "secret", "personal_data", "regulated_data"]
+        }
+      }
+    },
+    "sourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "authorityClass", "title", "publisher", "retrievedAt", "digest", "scope", "status"],
+      "properties": {
+        "sourceId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "authorityClass": {
+          "type": "string",
+          "enum": ["owner_intent", "official_primary", "accepted_engineering", "project_record", "runtime_observation", "evaluation_result", "secondary_context", "unresolved_artifact"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "version": {
+          "type": "string"
+        },
+        "publicationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effectiveFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effectiveUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "jurisdiction": {
+          "type": "string"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["current", "superseded", "withdrawn", "unverified", "unresolved"]
+        },
+        "supersedes": {
+          "$ref": "#/$defs/reference"
+        },
+        "license": {
+          "type": "string"
+        },
+        "advisoryOnly": {
+          "type": "boolean"
+        },
+        "extractionMethod": {
+          "type": "string"
+        },
+        "signatureRef": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "derivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["derivationId", "derivedClaimId", "inputRefs", "rule", "compilerVersion"],
+      "properties": {
+        "derivationId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "derivedClaimId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "inputRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "rule": {
+          "type": "string"
+        },
+        "compilerVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRecords", "derivations", "generatedBy", "createdAt"],
+      "properties": {
+        "sourceRecords": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceRecord"
+          }
+        },
+        "derivations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/derivation"
+          }
+        },
+        "generatedBy": {
+          "$ref": "#/$defs/identifier"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "attestationRef": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "suiteId", "baseline", "conditions", "requiredOracles", "admissionGate"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_started", "designed", "running", "passed", "failed", "quarantined"]
+        },
+        "suiteId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "baseline": {
+          "type": "string",
+          "enum": ["no_block", "current_admitted_block", "task_specific_reference"]
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string",
+            "enum": ["no_block", "focused_block", "overstuffed_block", "stale_block", "mismatched_block", "self_authored_block", "adversarial_block"]
+          },
+          "uniqueItems": true
+        },
+        "requiredOracles": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "string",
+            "enum": ["utility", "correctness", "evidence", "provenance", "safety", "privacy", "security", "authority_boundary", "staleness", "handoff", "cost_latency"]
+          },
+          "uniqueItems": true
+        },
+        "modelProfile": {
+          "$ref": "#/$defs/reference"
+        },
+        "resultRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "admissionGate": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "refresh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "cadence", "triggers", "historicalPolicy"],
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enum": ["event_and_schedule", "event_only", "schedule_only", "manual_owner_review"]
+        },
+        "cadence": {
+          "type": "string"
+        },
+        "triggers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "historicalPolicy": {
+          "type": "string",
+          "enum": ["immutable_revision", "replace_before_use_only"]
+        },
+        "lastCheckedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nextDueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "watchRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["secretsAllowed"],
+      "properties": {
+        "dataClasses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "secretsAllowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "redactionRules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "integrityRequirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "auditRequirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "regulatorySafety": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicable": {
+          "type": "boolean"
+        },
+        "jurisdictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "advisoryOnly": {
+          "type": "boolean",
+          "const": true
+        },
+        "qualifiedReviewRequired": {
+          "type": "boolean"
+        },
+        "versionBound": {
+          "type": "boolean",
+          "const": true
+        },
+        "professionalBoundary": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

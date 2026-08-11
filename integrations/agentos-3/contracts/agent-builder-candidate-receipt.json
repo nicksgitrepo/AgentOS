@@ -1,0 +1,17 @@
+{
+  "schema": "agentos.integration.agent-builder-receipt.v1",
+  "component": "agent-builder",
+  "status": "EVALUATION_CANDIDATE_READY_FOR_INDEPENDENT_RERUN",
+  "admission": "NOT_ADMITTED",
+  "activation": "NOT_ACTIVATED",
+  "source_root": "OPAQUE_AGENT_BUILDER_PACKAGE_ROOT",
+  "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626",
+  "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833",
+  "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec",
+  "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d",
+  "static_validation": {"task_ir": "7/7", "context_blocks": "13/13"},
+  "independent_utility_harm": "PENDING",
+  "public_projection": "sanitized_relative_paths_only",
+  "authority_effect_grants": [],
+  "source_manifest": "verified_complete_before_selective_copy"
+}

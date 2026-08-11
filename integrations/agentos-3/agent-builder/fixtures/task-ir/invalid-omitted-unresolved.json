@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "task-ir.v0.1",
+  "taskPacket": {
+    "identity": {
+      "taskId": "task.hostile.omitted",
+      "requester": "owner",
+      "taskFamily": "agent_context_build"
+    },
+    "objective": "Prove unresolved ledger omission fails closed.",
+    "scope": {
+      "include": ["context-block"],
+      "exclude": ["activation"]
+    },
+    "exclusions": ["activation"],
+    "currentState": "research_complete",
+    "acceptanceCriteria": ["unresolved fields are exact"],
+    "requiredOutputs": ["validation-result"],
+    "requiredEvidence": ["validator-receipt"],
+    "preservedInvariants": ["unknown decisions remain explicit"],
+    "stopConditions": ["ledger mismatch"],
+    "escalationConditions": ["owner decision required"],
+    "handoff": {
+      "recipient": "admission-controller",
+      "requiredFields": ["validation-result"],
+      "closure": "reject on mismatch"
+    },
+    "closureRequirements": ["immutable result"]
+  },
+  "fieldLedger": [
+    {
+      "fieldId": "owner.role",
+      "name": "requested role",
+      "type": "string",
+      "sourceClass": "owner_supplied",
+      "status": "resolved",
+      "requiredBefore": "routing",
+      "inferencePolicy": "accept_owner_value",
+      "protected": true,
+      "value": "context-builder"
+    },
+    {
+      "fieldId": "owner.release.approval",
+      "name": "release approval",
+      "type": "decision",
+      "sourceClass": "prohibited_to_infer",
+      "status": "unresolved",
+      "requiredBefore": "side_effect",
+      "inferencePolicy": "must_not_infer",
+      "protected": true
+    }
+  ],
+  "constraints": {
+    "requiredFields": ["owner.role"],
+    "forbiddenActions": ["activate"],
+    "conditionalRules": [],
+    "contradictions": [],
+    "authorityCeiling": {
+      "allowedActions": ["read_sources"],
+      "forbiddenActions": ["activate"],
+      "maxContextTokens": 1200
+    }
+  },
+  "compilation": {
+    "status": "compile_ready",
+    "stage": "seed_compile",
+    "selectedBlocks": [
+      {
+        "blockId": "specialty.context.demo",
+        "blockDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "current",
+        "sourceStatus": "current",
+        "authorityEffectGrants": []
+      }
+    ],
+    "projectedContextTokens": 100,
+    "maxContextTokens": 1200,
+    "requestedActions": ["read_sources"],
+    "unresolvedFields": []
+  },
+  "provenance": {
+    "ownerIntentRef": "owner-intent",
+    "sourceRefs": ["owner-intent"],
+    "compilerVersion": "task-compiler.v0.1",
+    "taskDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "lifecycle": {
+    "state": "candidate",
+    "admission": "not_admitted",
+    "activation": "not_activated",
+    "refreshTriggers": ["source_change"],
+    "archiveConditions": ["rejected"]
+  }
+}
