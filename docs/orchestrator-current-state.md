@@ -1651,3 +1651,28 @@ provider lifecycle evidence, independent clearance, or the exact Controller
 slot-release receipt. Five ordinary slots, zero Memory slots, cursors
 `FEATURE_CURSOR_000`, and all consumption/clearance/release flags remain
 unchanged; Memory was not contacted.
+
+## Recovery 34 — additive portability custody compatibility — 2026-08-11
+
+The historical portability residual is resolved by an additive, history-preserving
+compatibility selector. `docs/portability-historical-compatibility.v1.json`
+retains 18 exact custody, routing, report, and handoff records by path and
+SHA-256, classifies each as preserved non-normative or project-local custody
+evidence, and explicitly excludes each from current portable-kernel input. Its
+canonical selector digest is recorded in the manifest and compatibility binding.
+No payload was redacted or rewritten; normative public artifacts remain fully
+scanned and private retained evidence remains digest-bound.
+
+The focused portability proof now passes: 724 files scanned, 475 bound paths,
+JSON and script syntax verified, and deterministic portability, context-boundary,
+root-containment, CAS, metadata, and symlink checks passed. This local proof
+resolves the UUID scan residual only; it does not claim real-host/provider
+success, Platform rebind, independent clearance, or Controller slot release.
+
+Accounting is unchanged: five ordinary slots, queue `32`, zero Memory slots,
+all ordinary cursors `FEATURE_CURSOR_000`, and downstream, consumption,
+Platform-clearance, independent-clearance, and slot-release flags false. Memory
+remains receipt-only to this orchestrator and was not contacted. Next action is
+the current-candidate Gate/Native rebind followed by authorized functional,
+host/provider, recovery, and clean-source evidence, independent clearance, and
+the exact Controller slot-release receipt before any non-memory refill.

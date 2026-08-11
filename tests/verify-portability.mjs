@@ -81,6 +81,44 @@ function canonicalPretty(value) {
 }
 
 const files = listFiles(root);
+const historicalCompatibility = readJson("docs/portability-historical-compatibility.v1.json");
+const historicalCompatibilityBody = structuredClone(historicalCompatibility);
+delete historicalCompatibilityBody.digest;
+if (historicalCompatibility.status !== "PRESERVED_APPEND_ONLY_CUSTODY_EVIDENCE"
+    || historicalCompatibility.selector_mode
+      !== "PORTABLE_KERNEL_EXCLUDES_PROJECT_LOCAL_CUSTODY_RECORDS"
+    || !Array.isArray(historicalCompatibility.records)
+    || historicalCompatibility.records.length !== 18) {
+  fail("historical compatibility selector is incomplete");
+}
+if (historicalCompatibility.digest !== sha256(canonicalCompactJson(historicalCompatibilityBody))) {
+  fail("historical compatibility selector digest mismatch");
+}
+const projectLocalEvidencePaths = new Set();
+for (const record of historicalCompatibility.records ?? []) {
+  const relative = record.path;
+  if (typeof relative !== "string" || path.isAbsolute(relative)
+      || relative.includes("\\")
+      || relative.split("/").some((segment) => segment === ".." || segment === "")) {
+    fail(`unsafe historical compatibility path: ${relative}`);
+    continue;
+  }
+  const absolute = path.join(root, relative);
+  if (!fs.existsSync(absolute) || !fs.lstatSync(absolute).isFile()) {
+    fail(`historical compatibility path is not a regular file: ${relative}`);
+    continue;
+  }
+  if (sha256(fs.readFileSync(absolute)) !== record.sha256) {
+    fail(`historical compatibility digest mismatch: ${relative}`);
+  }
+  if (record.current_portable_kernel_input !== false
+      || !["HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE", "PROJECT_LOCAL_CUSTODY_RECORD_NOT_PORTABLE_KERNEL"]
+        .includes(record.classification)
+      || record.replacement_ref !== "typed-project-agnostic-portable-kernel-contracts") {
+    fail(`historical compatibility record is not explicitly excluded: ${relative}`);
+  }
+  projectLocalEvidencePaths.add(relative);
+}
 const privacyProjection = readJson("docs/privacy-public-projection.v1.json");
 if (privacyProjection.selector_mode !== "NORMATIVE_PUBLIC_OBJECTS_PLUS_OPAQUE_PRIVATE_DIGESTS") {
   fail("portability privacy selector is not bound to normative objects plus opaque private digests");
@@ -125,6 +163,7 @@ const numericBinding = /\b(?:account|subscription|project|tenant|deployment|reso
 for (const absolute of files) {
   const text = fs.readFileSync(absolute, "utf8");
   const relative = path.relative(root, absolute);
+  if (projectLocalEvidencePaths.has(relative)) continue;
   if (privateRecordDigests.has(sha256(text))) continue;
   for (const token of forbiddenStrings) {
     if (text.includes(token)) fail(`forbidden product identity in ${relative}`);

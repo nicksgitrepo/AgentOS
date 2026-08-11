@@ -1146,7 +1146,7 @@
     },
     "portability_verifier": {
       "path": "tests/verify-portability.mjs",
-      "sha256": "59b07c8ea4f5c55d9a83732233efc1dbe240e5576305c7d2ace1d84f159d7926"
+      "sha256": "06215c3398696dfa752d3169ada99385d7c5c9a9647d9383b69e29273dd5d950"
     },
     "retained_failed_worktree_controller": {
       "path": "control/retained-failed-worktree.mjs",
@@ -1966,6 +1966,26 @@
       "replacement_bindings": [
         {"historical_reference":"release_migration_audit_context","replacement":"schemas/release-migration.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"},
         {"historical_reference":"release_migration_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+      ]
+    },
+    "portability_historical_compatibility_contract": {
+      "path": "schemas/portability-historical-compatibility.v1.json",
+      "sha256": "d8595c4e489ce8abcf4153134bebdcf996afe69502caa592f9dfe6ce6f966ef8",
+      "classification": "HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Additive selector contract preserves exact custody bytes and excludes project-local records from portable-kernel input.",
+      "replacement_bindings": [
+        {"historical_reference":"project_local_custody_records","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+      ]
+    },
+    "portability_historical_compatibility_record": {
+      "path": "docs/portability-historical-compatibility.v1.json",
+      "sha256": "ffc736e0b6b7a79fb47572ea9548ece6fe4d938236c92f65a44f326765fd1ef3",
+      "classification": "HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",
+      "replacement_bindings": [
+        {"historical_reference":"historical_custody_payload","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
       ]
     },
     "legacy_contracts": [

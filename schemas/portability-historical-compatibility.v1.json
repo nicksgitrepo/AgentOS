@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.portability_historical_compatibility.v1",
+  "title": "AgentOS historical custody compatibility selector",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "selector_mode", "records", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.portability_historical_compatibility.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PRESERVED_APPEND_ONLY_CUSTODY_EVIDENCE"},
+    "selector_mode": {"const": "PORTABLE_KERNEL_EXCLUDES_PROJECT_LOCAL_CUSTODY_RECORDS"},
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "classification", "current_portable_kernel_input", "replacement_ref", "reason"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "classification": {"enum": ["HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE", "PROJECT_LOCAL_CUSTODY_RECORD_NOT_PORTABLE_KERNEL"]},
+          "current_portable_kernel_input": {"const": false},
+          "replacement_ref": {"const": "typed-project-agnostic-portable-kernel-contracts"},
+          "reason": {"const": "Preserved custody or routing record; excluded from portable-kernel input while exact bytes and digest remain verified."}
+        }
+      }
+    },
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
