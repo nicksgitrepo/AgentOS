@@ -778,3 +778,26 @@ verifier seam repair; its previously recorded hold remains authoritative until
 the owner publishes a final receipt. The independent task remains
 `INDEPENDENT_CLEARANCE: HOLD`. No cursor, consumption, clearance, slot
 release, or Memory integration value changed.
+
+## Heartbeat snapshot — 2026-08-11T04:53:12Z
+
+- Gate completed the verifier repair and published receipt
+  `fce85668015788618408f1f6aa5040bbfffdce6f` /
+  `10c8b08ebc7919476c608ed091d7b475b3a02708` (report
+  `edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a`,
+  handoff `37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38`).
+  Deterministic checks pass; the receipt remains a HOLD because the Central
+  Gate projection is stale and proof/clearance/release are absent.
+- Native final readback remains `d24e153a653368e9fe0d743bde89c2f8c3902f51` /
+  `dc6d1a84eb63f599025172c456d64eefe0f8bc88`; ROADMAP_06 has a clean
+  d885/5f candidate but no separate owner receipt fields are available.
+- ROADMAP_06 continues its existing local proof cycle; no new task or slot was
+  created. The special Memory owner remains active-but-unaccepted and isolated
+  build/test-only. Independent clearance remains `HOLD`.
+- Cursors remain `FEATURE_CURSOR_000`; ordinary slots `5`; Memory slots `0`;
+  queue `32`; downstream, Platform clearance, independent clearance, and slot
+  release are all `false`. True external blocker: `NONE`.
+
+Next safe action: project the repaired Gate receipt and the exact ROADMAP_06
+owner-receipt fields, then continue authorized proof toward the Controller
+slot-release receipt; do not refill or integrate Memory before that contract.
