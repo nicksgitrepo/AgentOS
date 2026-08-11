@@ -1884,3 +1884,12 @@ Memory was not contacted or dispatched. Next action is to consume the Native
 delta when returned, then activate the ordinary functional, host/provider,
 recovery, clean-source, and independent-clearance proof wave without advancing
 any cursor or slot until exact receipts justify it.
+
+## Recovery 44 activation readback — 2026-08-11
+
+The existing visible Native namespace-delta owner and the existing visible
+independent-clearance owner were reactivated in parallel at the exact Luna/max
+boundary against Central publication `c2ac9a7924bebe34cdb9d8f252b1169bd32a82b1` /
+`847220338ae30098de567ef5f2d3cc4e5c0ac281`. Activation is not a receipt:
+neither owner has yet returned a typed source-bound result, and no feature,
+cursor, clearance, downstream, or slot-release state changed.

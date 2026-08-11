@@ -1980,7 +1980,7 @@
     },
     "portability_historical_compatibility_record": {
       "path": "docs/portability-historical-compatibility.v1.json",
-      "sha256": "fde06efd796cd60d5cfcf12b49af85e085c2c8c8780c213c90fc7d809ebb4394",
+      "sha256": "0102c6ac6ff5404031c9ad26e95197f08eb58b1b4e34c70f606ea944f35f990c",
       "classification": "HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE",
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",
