@@ -2209,6 +2209,20 @@
     },
     "shared_host_boundary": "NO_NEW_HEAVYWEIGHT_BUILD_TEST_OR_PROOF_ADMISSION_WHILE_PRESSURE_ACTIVE",
     "proof_execution": "NOT_STARTED",
+    "metadata_only": true,
+    "typed_readback": "RECEIVED_REBIND_SENT_WAITING_PROOF_PRESSURE_CLEARANCE",
+    "metadata_binding": {
+      "preservation_ref": "docs/platform-handoffs/current-platform-receipt-bytes-2026-08-11.md",
+      "preservation_sha256": "0e907c5d7e3cb90fe1cc1b63b8b59b6d49c54e13bf2bf2c0047cb6bd1c0c2422",
+      "owner_bytes_verified": true,
+      "prior_bytes_preserved": true,
+      "central_worktree": "CLEAN"
+    },
+    "proof_boundary": {
+      "tests_build_proof_jobs": "NOT_RUN",
+      "host_provider_actions": "NOT_RUN",
+      "remaining": "FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_PROOF_AND_CONTROLLER_SLOT_RELEASE"
+    },
     "central_consumed": false,
     "platform_clearance": false,
     "independent_clearance": false,
@@ -2239,5 +2253,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "WAIT-FOR-SHARED-HOST-PRESSURE-CLEARANCE-THEN-REACTIVATE-INDEPENDENT-CLEARANCE; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "080467f2a06332ff43a6d65208886f99dca5c5ab43a78cf2e63f100e254ff83a"
+  "state_sha256": "74dc45461f9eaff192f8f78a3f36ed8973611fe5536e6f44fcb25fa8cb352626"
 }

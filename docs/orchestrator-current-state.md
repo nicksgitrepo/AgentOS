@@ -2095,6 +2095,13 @@ receipt remains `98db27f6` / `9f0a2b7b` with report `5e18be26…` and handoff
 `REBIND_SENT_WAITING_PROOF_PRESSURE_CLEARANCE`; no proof/build/test job was
 started while shared-host pressure is active.
 
+The typed metadata readback is received with preservation reference
+`docs/platform-handoffs/current-platform-receipt-bytes-2026-08-11.md`, digest
+`0e907c5d7e3cb90fe1cc1b63b8b59b6d49c54e13bf2bf2c0047cb6bd1c0c2422`, owner
+bytes verified, prior bytes preserved, and the Central worktree clean. The
+remaining proof boundary is functional, host/provider, recovery, clean-source,
+independent proof, and the exact Controller slot-release receipt.
+
 Five ordinary slots, zero Memory slots, all authoritative cursors
 `FEATURE_CURSOR_000`, and consumption, Platform-clearance, independent-clearance,
 downstream, and slot-release flags remain false. Memory was not contacted. The
