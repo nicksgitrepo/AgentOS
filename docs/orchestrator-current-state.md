@@ -1309,3 +1309,23 @@ not contacted.
 Next action:
 `OBTAIN_SOURCE_BOUND_PLATFORM_REBIND_RECEIPTS_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 21 — central clean-source readback — 2026-08-11
+
+The central publication is clean at
+`2f27fad542095b1dab8158ed84dfd97df7ef61c6` /
+`5f143547f10412315ea2f46499a4dd04787ca517`. A clean-source readback passed
+against the current `f67f84d8` / `a3015ee4` candidate binding: the worktree
+has no tracked or staged changes, and the exact Git archive digest is
+`0d9153206dc28aa341872bdcfc68fd78035713ab3f4ed4a07c59cd37ed34f1a9`.
+This proves central clean-source custody only; it does not substitute for
+Gate/Native current-candidate rebind receipts or independent clearance.
+
+Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, queue
+`32`, and zero Memory slots remain, with downstream consumption, Platform
+clearance, independent clearance, and Controller slot release false. Memory
+was not contacted.
+
+Next action:
+`OBTAIN_SOURCE_BOUND_PLATFORM_REBIND_RECEIPTS_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
+True external blocker: `NONE`.
