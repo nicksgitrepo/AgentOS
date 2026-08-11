@@ -1616,7 +1616,7 @@
       ],
       "focused_proof": "PASS_DELIVERY_ADAPTER_DELIVERY_CLOSURE_STATE_LOCAL_AGENT_SESSION_BOOTSTRAP_IMPORT_PROJECT_IMPORT_RELEASE_PROMOTION_CAMPAIGN_CONTROLLER_BOUNDARY_CONTROLLER_INTENT_CONTROLLER_SUPERVISOR",
       "comprehensive_proof": "PASS_NODE_TESTS_VERIFY_ALL",
-      "binding_status": "PASS_ALL_467_BOOTSTRAP_BINDING_ENTRIES_MATCH",
+      "binding_status": "PASS_ALL_471_BOOTSTRAP_BINDING_ENTRIES_MATCH",
       "platform_receipts": {"gate":"REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR","native":"REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR","receipt_source_publication":{"commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","tree":"fe893e29e44014777bc025abeb589240834e03c7"},"current_candidate_publication":{"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"}},
       "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
       "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
@@ -1638,5 +1638,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "d5203c1a71797a693ceb8591b4345637cf2c46a78adf050599ac4ef47dfa04da"
+  "state_sha256": "628f766aca447e1d1cb1ff7e36c25a2800d30efef5f24d6504d12cc0115b5f26"
 }
