@@ -603,9 +603,9 @@ remains five ordinary slots, zero memory slots, ordinary queue `32`, and the
 canonical dormant Memory owner `019fee1e-5e78-78c2-a788-ad7a27eba19e`.
 Downstream consumption, Platform clearance, independent clearance, and
 Controller slot release remain false; ROADMAP_07 remains held. The next safe
-action is typed consumption of these exact current receipts, followed by
-authorized functional/host/provider/recovery/clean-source evidence,
-independent clearance, and an exact Controller slot-release receipt.
+action is authorized functional/host/provider/recovery/clean-source evidence,
+independent clearance, and an exact Controller slot-release receipt before any
+non-memory slot refill.
 
 ## Platform no-change readback reconciliation — 2026-08-11
 

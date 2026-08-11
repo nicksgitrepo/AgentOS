@@ -641,9 +641,10 @@ Native task `019fdcfa-43dc-76a3-befa-c93580a3c808`:
 
 The authoritative cursor remains `FEATURE_CURSOR_000` for Gate, Native, and
 Private Control Memory. Five ordinary slots, zero memory slots, queue `32`,
-and dormant Memory ownership remain unchanged. The next safe action is the
-authorized functional/host/provider/recovery/clean-source proof sequence,
-independent clearance, and exact Controller slot-release receipt.
+and dormant Memory ownership remain unchanged. The next safe action is
+authorized functional/host/provider/recovery/clean-source evidence,
+independent clearance, and the exact Controller slot-release receipt before
+any non-memory slot refill.
 
 ## Legacy receipt-projection consistency audit — 2026-08-11
 
