@@ -1221,3 +1221,33 @@ orchestrator, outside ordinary slots and cursors.
 Next action:
 `REPAIR_PORTABILITY_COMPATIBILITY_SELECTOR_AND_RELEASE_SAFETY_FIXTURE_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 18 — portability compatibility and completeness repair — 2026-08-11
+
+The ordinary candidate advanced with one bounded local repair transaction to
+`2718f1b8945cec1c0778633623d91242d65dae3f` /
+`f959889fe1b730c2e52a779b159916117b11559b`. The repair tightened the
+project-relative privacy boundaries (including private path segments and
+authorization-token summaries), validated report-path sorting without treating
+paths as identifier tokens, and made the hostile chat-identity fixture
+deterministically constructed rather than statically exporting an identity.
+The portability selector now skips only exact private-retained payload digests;
+the privacy proof remains responsible for verifying those digests without
+scanning their payload text.
+
+Focused portability, feature-completeness, proof-carrying-work, privacy,
+source-hygiene, map, and binding proofs pass against the published digest
+projection. The only remaining local normative proof defect is the
+release-lifecycle promotion fixture's missing release-safety evidence; it is
+actionable repair work and not deferred real-host proof. Gate and Native remain
+`REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR` against the new candidate. The state
+digest is `568f7d5ab4040e3f84f0001f66c7691a2f7580593d84814fc77648b54ca9675b`.
+
+Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, queue
+`32`, and zero Memory slots remain. Consumption, Platform clearance,
+independent clearance, and Controller slot release are all false. The Memory
+controller remains receipt-only to this orchestrator and was not contacted.
+
+Next action:
+`REPAIR_RELEASE_SAFETY_FIXTURE_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
+True external blocker: `NONE`.
