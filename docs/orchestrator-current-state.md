@@ -1192,6 +1192,32 @@ Next action:
 `REPAIR_PORTABILITY_COMPATIBILITY_SELECTOR_AND_PROOF_RELEASE_FIXTURES_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
 True external blocker: `NONE`.
 
+## Recovery 24 — privacy selector repair and current-candidate rebind hold — 2026-08-11
+
+The first Recovery 24 comprehensive proof readback found one concrete privacy
+residual: the newly published central state digest was scanned as normative and
+exposed a session/task identity. The state payload remains preserved in the
+private control-evidence boundary; only its opaque digest is admitted to the
+public selector, and no payload is exported or scanned.
+
+The current ordinary candidate remains
+`15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`; the central publication before
+this metadata transaction was `2b14a3231d4cee10867927e3ea1797bbe590d919` /
+`bb29946b06f8bb8f3bfe37701f6cbd8f6cb56f2f`. The five ordinary slot records
+still point at the prior `f67f84d8` / `a3015ee4` base and are explicitly
+`STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND` with admission held pending
+visible owner receipts. No feature was consumed and no clearance or slot
+release was inferred.
+
+The next safe action is to complete the final opaque privacy-digest projection
+proof, then obtain source-bound Gate and Native receipts for this candidate and
+continue authorized functional, host/provider, recovery, clean-source,
+independent-clearance, and exact Controller slot-release evidence. Cursors
+remain `FEATURE_CURSOR_000`; five ordinary slots, queue `32`, zero Memory slots,
+and all consumption/clearance/release flags remain unchanged. Memory was not
+contacted. True external blocker: `NONE`.
+
 ## Recovery 17 — ordinary execution and local proof repair — 2026-08-11
 
 The ordinary candidate advanced to
@@ -1359,6 +1385,26 @@ Next action:
 `PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
 True external blocker: `NONE`.
 
+## Recovery 24 proof addendum — privacy selector and rebind hold — 2026-08-11
+
+The bounded selector repair is now recorded as a passing privacy proof:
+`normative_public_files_scanned=209`, `private_records_verified=27`,
+`private_retained_digests_verified=63`, `private_payloads_scanned=0`, and
+`total_findings=0`. The final state raw digest is
+`c7db1b01d862e24e3c7c522bec54cd34658854a5bcf09aafe692592173beeb77`; the
+public projection raw digest is
+`73979d85a8b142de801a27383dfa2f892565b53a9c84206a09d28c74a14d6182`; and the
+private manifest digest is
+`deb455fe488772213e26f8cdad73dfacacfccbff77678edf88d0ee87517b87f1`.
+
+The five ordinary slot records remain explicitly stale against the repaired
+candidate and require visible owner rebind receipts. Cursors remain
+`FEATURE_CURSOR_000`; five ordinary slots, queue `32`, zero Memory slots, and
+all consumption/clearance/release flags remain false. Memory was not
+contacted. Next action: source-bound Gate/Native rebind, then authorized
+functional/host/provider/recovery/clean-source/independent-clearance proof and
+the exact Controller slot-release receipt. True external blocker: `NONE`.
+
 ## Recovery 23 — clean-source publication readback — 2026-08-11
 
 The Recovery 22 central publication is clean at
@@ -1378,3 +1424,23 @@ unchanged. Memory was not contacted.
 Next action:
 `PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 24 final proof addendum — 2026-08-11
+
+The bounded privacy selector repair passes with 208 normative public files
+scanned, 27 private records verified, 67 retained private digests verified,
+zero private payloads scanned, and zero findings. Final state raw digest:
+`2506360829675fa0a772eefc91d6609ba7757a93765872c5cdd05e5e2f447b1a`.
+Public projection raw digest:
+`ca994528451dfff55a99530b4ffffb7e1f7fe13e5db0334c1ea6179c1ad3e4ec`.
+Private manifest digest:
+`35057cf5f056ed01f40ce4835de2905e5318adae9e92f47d3846181801ef5dfa`.
+
+The five ordinary slots remain stale against the repaired candidate pending
+source-bound Gate/Native owner rebind receipts; cursors remain
+`FEATURE_CURSOR_000`, with five ordinary slots, queue `32`, zero Memory slots,
+and consumption, clearance, and slot-release flags false. Memory was not
+contacted. Comprehensive local `node tests/verify-all.mjs`, state validation,
+and all 471 binding entries pass with zero mismatches. Next action is the owner rebind, followed by authorized functional,
+host/provider, recovery, clean-source, independent-clearance, and exact
+Controller slot-release evidence. True external blocker: `NONE`.

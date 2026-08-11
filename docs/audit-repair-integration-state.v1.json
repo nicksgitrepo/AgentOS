@@ -22,8 +22,8 @@
     "handoff_ref": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
     "report_ref": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
     "status": "FEATURE_HANDOFF_CONSUMED_PENDING_PLATFORM_REVIEW",
-    "integrated_commit": "f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f",
-    "integrated_tree": "a3015ee42efcbf4f3770f33edac74c16435fec1f",
+    "integrated_commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+    "integrated_tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c",
     "source_hygiene_status": "STATIC_SOURCE_SCAN_CLEAR",
     "activation_status": "PREPARED_NOT_ACTIVATED"
   },
@@ -107,15 +107,15 @@
   ],
   "active_feature_slots": [
     {
-      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f","base_tree":"a3015ee42efcbf4f3770f33edac74c16435fec1f","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"15254f79096be8c5da58afdc4837456f6952d9f8","base_tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND","admission_status":"ADMITTED_PENDING_VISIBLE_TASK_RESUME"},
     {
-      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f","base_tree":"a3015ee42efcbf4f3770f33edac74c16435fec1f","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"15254f79096be8c5da58afdc4837456f6952d9f8","base_tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND","admission_status":"ADMITTED_PENDING_VISIBLE_TASK_RESUME"},
     {
-      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f","base_tree":"a3015ee42efcbf4f3770f33edac74c16435fec1f","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"15254f79096be8c5da58afdc4837456f6952d9f8","base_tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND","admission_status":"ADMITTED_PENDING_VISIBLE_TASK_RESUME"},
     {
-      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f","base_tree":"a3015ee42efcbf4f3770f33edac74c16435fec1f","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"15254f79096be8c5da58afdc4837456f6952d9f8","base_tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND","admission_status":"ADMITTED_PENDING_VISIBLE_TASK_RESUME"},
     {
-      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f","base_tree":"a3015ee42efcbf4f3770f33edac74c16435fec1f","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
+      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"15254f79096be8c5da58afdc4837456f6952d9f8","base_tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND","admission_status":"ADMITTED_PENDING_VISIBLE_TASK_RESUME"}
   ],
   "platform_owners": [
     {"lane_id":"PLATFORM_GATE_RESPONSE","task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","worktree_id":"HOST_WORKTREE_C3BA","model":"gpt-5.6-luna","reasoning_effort":"max","domain_ids":["PORTABLE_KERNEL_GATES_CONTRACTS","GOVERNANCE_INTENT_ROLES_ROUTING"],"cursor":"HANDOFF_RECEIVED_PENDING_INDEPENDENT_CLEARANCE"},
@@ -672,7 +672,7 @@
       "true_external_blocker": "NONE",
       "next_action": "PROJECT_GATE_NATIVE_AND_ROADMAP06_BYTES_IN_CENTRAL_RECORDS_THEN_CONTINUE_AUTHORIZED_PROOF_WITHOUT_CURSOR_ADVANCE"
     },
-    "receipt_projection_authoritative_ref":"platform_pipeline.current_receipt_projection",
+    "receipt_projection_authoritative_ref":"platform_pipeline.recovery_24_privacy_selector_and_rebind_hold_2026_08_11",
     "receipt_projection_historical_marker":{"object_ref":"platform_pipeline.receipt_projection","record_layer":"HISTORICAL_NON_CURRENT_RECEIPT_PROJECTION","historical_current_candidate":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed"},"superseded_by":"platform_pipeline.current_receipt_projection","supersession_reason":"The 8f/3e projection is preserved as history; current Gate/Native receipts bind to b499/fe893e29.","consumption":false,"clearance":false,"slot_release":false},
     "feature_rebind_projection": {
       "record_layer":"CURRENT_CENTRAL_SOURCE_BOUND_REBIND_PROJECTION",
@@ -1641,7 +1641,69 @@
       "true_external_blocker": "NONE",
       "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_23_clean_source_readback_2026_08_11",
+    "recovery_24_privacy_selector_and_rebind_hold_2026_08_11": {
+      "record_layer": "CURRENT_CANDIDATE_PRIVACY_SELECTOR_REPAIR_AND_PLATFORM_REBIND_HOLD",
+      "transaction_status": "RECOVERY_24_PRIVACY_SELECTOR_REPAIRED_CURRENT_CANDIDATE_REBIND_REQUIRED",
+      "observed_central_publication": {
+        "commit": "2b14a3231d4cee10867927e3ea1797bbe590d919",
+        "tree": "bb29946b06f8bb8f3bfe37701f6cbd8f6cb56f2f"
+      },
+      "candidate": {
+        "commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+        "tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c"
+      },
+      "source_baseline": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "proof_before_repair": {
+        "verify_all": "FAIL_PERSISTED_PRIVACY_SELECTOR_FOUND_ONE_SESSION_OR_TASK_IDENTITY",
+        "finding_path": "docs/audit-repair-integration-state.v1.json",
+        "finding_category": "SESSION_OR_TASK_IDENTITY",
+        "normative_public_files_scanned": 209,
+        "private_payloads_scanned": 0
+      },
+      "privacy_repair": {
+        "status": "CURRENT_STATE_RETAINED_AS_PRIVATE_OPAQUE_DIGEST_ONLY",
+        "public_payload_export": false,
+        "private_manifest_projection": "UPDATED_APPEND_ONLY_DIGEST_EXTENSION",
+        "selector_rule": "VERIFY_PRIVATE_DIGEST_WITHOUT_SCANNING_PAYLOAD; SCAN_NORMATIVE_PUBLIC_OBJECTS",
+        "proof_after_repair": {
+          "status": "PASS",
+          "total_findings": 0
+        }
+      },
+      "slot_rebind_hold": {
+        "status": "STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND",
+        "ordinary_active_slot_count": 5,
+        "current_candidate_commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+        "current_candidate_tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c",
+        "recorded_slot_base_commit": "f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f",
+        "recorded_slot_base_tree": "a3015ee42efcbf4f3770f33edac74c16435fec1f",
+        "owner_rebind_receipts_for_current_candidate": false,
+        "admission_status": "ADMITTED_PENDING_VISIBLE_TASK_RESUME"
+      },
+      "accounting": {
+        "ordinary_active_slot_count": 5,
+        "memory_slot_count": 0,
+        "ordinary_queue_count": 32,
+        "authoritative_cursors": {
+          "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+          "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+          "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+        },
+        "downstream_consumed": false,
+        "platform_clearance": false,
+        "independent_clearance": false,
+        "slot_release": false,
+        "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+        "memory_integration": false
+      },
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "CONSUME_THE_EXACT_FINAL_PRIVACY_DIGEST_PROOF_THEN_OBTAIN_GATE_NATIVE_CURRENT_CANDIDATE_REBIND_RECEIPTS_AND_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_24_privacy_selector_and_rebind_hold_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1655,5 +1717,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "dfced308584734782bbdcfa41361eac565942e4bad632fade416528bc4a4b3b6"
+  "state_sha256": "596d1f4616617fb1f26059285814bb182286f5261161d711414bc2bfc40a9d07"
 }
