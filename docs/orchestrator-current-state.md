@@ -1155,3 +1155,39 @@ compatibility scope with evidence preserved; they are not deferred real-host
 proof. Gate, Native, and ROADMAP_06 remain rebind-required, cursors stay
 `FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain, and
 all consumption/clearance/release flags are false. Memory was not contacted.
+
+## Recovery 16 — authority/native repair and privacy projection checkpoint — 2026-08-11
+
+The bounded ordinary repair published central metadata at
+`d1790438b9c81028b6a9813a8e0f3e1070060986` /
+`c03ab3868c80adbd4c5e956e2b6734914819d17a`. Its source candidate is
+`1140b0d220d76e22640f4fcf707bb9b54c8d7907` /
+`8425e684989640b1012fe63a09efda0914c8254d`, with status
+`RECOVERY_16_PORTABILITY_AND_FIXTURE_HOLDS_PENDING_REPAIR`.
+
+The repair corrected authority-corpus root-set use and bound native-host
+fixtures to the explicit `gpt-5.6-luna` / `max` profile. Focused authority,
+native-host, private-control, local-adapter, project-map, source-hygiene,
+architecture-hygiene, Bootstrap binding, privacy, and diff checks pass. The
+public privacy projection now carries the current state digest extension and
+the private manifest matches it; 208 normative files were scanned, 27 private
+records and 41 retained digests were verified, zero private payloads were
+scanned, and the result had zero findings. All 471 bootstrap path/digest
+entries match.
+
+The exact remaining local proof holds are unchanged and concrete: the
+portability selector still sees task/session identities in preserved
+historical records, the proof-carrying-work fixture supplies slash paths where
+portable identifiers are required, the release-lifecycle fixture lacks the
+required release-safety evidence, and a canonical campaign fixture still
+omits an explicit native-host model. These are repair items, not deferred
+real-host proof and not clearance. Gate/Native receipts therefore remain
+rebind-required after the candidate repair. Authoritative cursors remain
+`FEATURE_CURSOR_000`; five ordinary slots, zero Memory slots, queue `32`, and
+downstream, Platform clearance, independent clearance, and slot-release flags
+remain false. Memory remains active-development but unaccepted, outside all
+ordinary cursors and slots, and receipt-only to this orchestrator.
+
+Next action:
+`REPAIR_PORTABILITY_COMPATIBILITY_SELECTOR_AND_PROOF_RELEASE_FIXTURES_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
+True external blocker: `NONE`.
