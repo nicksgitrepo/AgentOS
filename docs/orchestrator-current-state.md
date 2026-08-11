@@ -1823,3 +1823,40 @@ matching rebind. Five ordinary slots, zero Memory slots, queue `32`, and all
 authoritative cursors `FEATURE_CURSOR_000` remain unchanged. Memory remains
 receipt-only and was not contacted. Next action is to consume the typed
 Gate/Native receipts when returned, then pursue authorized clearance proof.
+
+## Recovery 43 — identity namespace semantics — 2026-08-11
+
+The state schema and validator establish the top-level `current_candidate` as
+the product/feature candidate: feature-slot bases and the preserved ROADMAP_03
+checkpoint must match that object. The Platform pipeline is an open typed
+projection namespace and separately names Central publications and
+platform-observed receipt candidates. Historical records also consistently
+distinguish the ordinary candidate from the Central publication. Therefore the
+inequality between product candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c` and the Platform-observed b95/837
+publication is valid cross-namespace identity, not a mismatch.
+
+The authoritative projection now records three explicit roles: the top-level
+product/feature candidate, the controller Central metadata publication
+`9c085c7b44b2f6ed7967e26d462b3b3cf557c5d4` /
+`53e90d597092fe0a4db097829d94587429086f41`, and the Gate-observed Platform
+candidate `b95e3bb228a5390d9be59711741fc391ee8d3ee1` /
+`837ac18996a845c70ff13a83aa15d6f54dada1b7`. Cross-namespace equality is not
+required; all three identities are preserved and source-bound to d885/5f.
+
+Native is being reactivated once for a typed delta that adopts this explicit
+namespace disposition. No feature consumption, cursor advance, Platform or
+independent clearance, or slot release is inferred. Five ordinary slots, zero
+Memory slots, queue `32`, and all authoritative cursors `FEATURE_CURSOR_000`
+remain unchanged. Memory was not contacted. After the Native delta returns,
+activate the ordinary proof owners for functional, host/provider-capability,
+recovery, clean-source, and independent-clearance evidence.
+
+Checkpoint note: the bounded identity-namespace edit is retained with
+`FEATURE_CURSOR_000`, five ordinary slots, zero Memory slots, and all
+consumption/clearance/release flags false. The focused privacy command
+`node tests/verify-persisted-record-privacy.mjs` was run once after the digest
+cascade and returned one residual finding (`total_findings=1`); no privacy pass,
+clearance, or release claim is made. Native identity-semantic rebind remains
+pending. Memory was not contacted or dispatched. The next timer may inspect
+the exact residual and Native receipt without reopening this turn.
