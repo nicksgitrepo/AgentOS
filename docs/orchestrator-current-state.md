@@ -1613,3 +1613,14 @@ all cursors remain `FEATURE_CURSOR_000`, and consumption, clearance, and slot
 release remain false. Gate/Native current-candidate rebinds, authorized
 functional/provider and recovery evidence, independent clearance, and the
 exact Controller slot-release receipt remain pending. Memory was not contacted.
+
+## Recovery 31 — repository readback boundary — 2026-08-11
+
+The local repository readback proof passes for clean Git state, upstream
+equality, and hostile observation boundaries (`tests/verify-repository-readback.mjs`).
+This synthetic/local contract proof is bound to the prepared candidate
+`15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`, but does not claim an external
+remote, production host, provider action, Platform rebind, independent
+clearance, or slot release. Ordinary accounting and Memory receipt-only
+routing remain unchanged.
