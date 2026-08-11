@@ -1782,7 +1782,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "ee34fd44cf77295f374ecb3fc9d4285104daf00a5cb1965769185c9185f81b8d"
+      "sha256": "d4d43704fe645c41ad8be1d7a215b2112b5703bd31fe81423b316113dd8380f3"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1798,7 +1798,7 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "62914b0ec5eced1d7bccf289dfdc2af296cfae15815b59973e7cf9d462ef460e"
+      "sha256": "1c17e351be02c5e0f296de2104e530562a17aa0a41a692b867d1a82416841c94"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",

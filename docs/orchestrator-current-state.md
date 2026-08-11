@@ -1251,3 +1251,30 @@ controller remains receipt-only to this orchestrator and was not contacted.
 Next action:
 `REPAIR_RELEASE_SAFETY_FIXTURE_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 19 — release-safety fixture repair — 2026-08-11
+
+The ordinary candidate advanced to
+`f67f84d87ccf8f0843d7e9f3b665ec901e4e1d0f` /
+`a3015ee42efcbf4f3770f33edac74c16435fec1f`. The release-lifecycle fixture
+now constructs compatibility, policy-replay, finite-model, and release-safety
+evidence, rebinds that bundle to the approved candidate, and exercises the
+non-activating promotion request and receipt path. Release-lifecycle and
+release-safety proofs now pass alongside portability, privacy,
+feature-completeness, proof-carrying-work, source-hygiene, map, and binding
+proofs.
+
+The remaining ceiling is authorized functional, host/provider, concurrency,
+crash-power-loss/recovery, clean-source, and independent-clearance evidence,
+followed by an exact Controller slot-release receipt. These are not claimed
+passed or deferred-successful. Gate and Native remain
+`REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR`; no consumption, clearance, or slot
+release is inferred. The state digest is
+`9faad3b9873415a550eb9d35969cb81f556e7529445bdc8dcc0aa2b6d347f671`.
+
+Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, queue
+`32`, and zero Memory slots remain. The Memory controller was not contacted.
+
+Next action:
+`PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
+True external blocker: `NONE`.
