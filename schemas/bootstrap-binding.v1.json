@@ -1790,7 +1790,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state-public.v1.json",
-      "sha256": "33b9fe3f86dbfddcf8d4989f672dacd6b07ec3da0cd907bfd8da268552e8bcdd"
+      "sha256": "0911da1e63ebebdce98e450c12dbddaca11de6a1732222586eb7f2d6c73ab578"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1998,7 +1998,7 @@
     },
     "audit_repair_integration_state_private_payload": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "dab7603d0ef41b981f783da3f945688c5e986aa63bf36de64d852cc221e73226",
+      "sha256": "65682173a3e80f5a17a1edcdeaf45410d364ef8b60c053a238a8d6426ae1c9ac",
       "classification": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION",
       "current_portable_kernel_input": false,
       "supersession_reason": "The append-only state payload retains custody history and opaque source bindings; the public projection contains only project-agnostic fields.",
