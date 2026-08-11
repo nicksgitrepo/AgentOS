@@ -58,7 +58,25 @@ function scanRecords() {
     assert.match(record.public_replacement, new RegExp(`^opaque:public-record:${record.record_digest_sha256}$`, "u"));
     return record.record_digest_sha256;
   }));
-  assert.equal(privateDigests.size, projection.private_record_count);
+  for (const digest of projection.retained_payload_digest_extensions ?? []) assert.match(digest, /^[0-9a-f]{64}$/u);
+  for (const digest of projection.retained_payload_digest_extensions ?? []) privateDigests.add(digest);
+  assert.equal(privateDigests.size, projection.private_record_count + (projection.retained_payload_digest_extensions?.length ?? 0));
+
+  const privateManifestPath = path.join(controlRoot, "handoffs/privacy-public-projection-2026-08-11.json");
+  assert(fs.existsSync(privateManifestPath), "private control evidence manifest is unavailable");
+  const privateManifest = JSON.parse(fs.readFileSync(privateManifestPath, "utf8"));
+  assert.equal(privateManifest.schema, "agentos.private_control_evidence_projection_manifest.v1");
+  assert.equal(privateManifest.status, "PRESERVED_APPEND_ONLY_PRIVATE_EVIDENCE");
+  assert.equal(privateManifest.record_count, projection.private_record_count);
+  assert.equal(privateManifest.finding_count, projection.private_finding_count);
+  assert.equal(privateManifest.manifest_digest_sha256, crypto.createHash("sha256").update(JSON.stringify({...privateManifest, manifest_digest_sha256: null}), "utf8").digest("hex"));
+  const manifestDigests = new Set(privateManifest.payload_digests ?? privateManifest.records.map((record) => {
+    assert.equal(record.opaque_record_ref, `opaque:record:${record.payload_digest_sha256}`);
+    return record.payload_digest_sha256;
+  }));
+  for (const digest of privateManifest.supplemental_payload_digests ?? []) manifestDigests.add(digest);
+  assert.equal(manifestDigests.size, privateManifest.record_count + (privateManifest.supplemental_payload_digests?.length ?? 0));
+  assert.deepEqual([...manifestDigests].sort(), [...privateDigests].sort());
 
   const binding = JSON.parse(fs.readFileSync(path.join(root, "schemas/bootstrap-binding.v1.json"), "utf8"));
   const allFiles = recordRoots.flatMap(({root: recordRoot}) => walk(recordRoot));
@@ -69,7 +87,7 @@ function scanRecords() {
     files.push(file);
     filesByDigest.set(digest, files);
   }
-  for (const digest of privateDigests) assert(filesByDigest.has(digest), `private retained payload digest is unavailable: ${digest}`);
+  for (const digest of privateDigests) assert(manifestDigests.has(digest), `private retained payload digest is unavailable: ${digest}`);
 
   const normativeFiles = [...new Map(Object.values(binding.normative)
     .filter((entry) => entry && typeof entry.path === "string")
@@ -92,7 +110,8 @@ function scanRecords() {
     selector_mode: input.scope,
     roots: {},
     normative_public_files_scanned: 0,
-    private_records_verified: privateDigests.size,
+    private_records_verified: projection.private_record_count,
+    private_retained_digests_verified: privateDigests.size,
     private_payloads_scanned: 0,
     total_files: allFiles.length,
     total_findings: 0,
