@@ -957,3 +957,19 @@ choices, not grounds for inferred consumption or clearance. Gate, Native, and
 ROADMAP_06 remain rebind-required, `FEATURE_CURSOR_000` remains authoritative,
 and slot release is false. Memory remains read-only receipt/no dispatch.
 Disposition: `RECOVERY_FAILED_EXACT`.
+
+## Outcome recovery 6 — optional-question repair — 2026-08-11
+
+The central candidate advanced to
+`d675dd2401cfe10efab8b42d57b18b9041f0fe9a` /
+`e19abfc3c6b6719af2f7bfb0c7ebce62808f6c19` after repairing optional
+Bootstrap-question sequencing and preserving canonical answer-boundary
+errors. Both focused Bootstrap checks, binding, and diff hygiene pass.
+
+Comprehensive proof reaches the next exact product-specific literal in
+`control/start-local-self-development.mjs`; resolving that requires an owner
+decision on additional host-surface portability scope. No Platform receipt is
+consumed or cleared, no cursor advances, and no slot release is claimed.
+`FEATURE_CURSOR_000`, five ordinary slots, zero Memory slots, and all false
+consumption/clearance/release flags remain authoritative. Memory remains
+read-only receipt/no dispatch. Disposition: `RECOVERY_FAILED_EXACT`.

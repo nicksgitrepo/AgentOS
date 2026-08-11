@@ -1053,3 +1053,21 @@ receipts remain rebind-required; cursors stay `FEATURE_CURSOR_000`, five
 ordinary slots and zero Memory slots remain, and all consumption, clearance,
 and slot-release flags remain false. Memory was not contacted. Next action:
 `OWNER_ONLY_DECISION_ON_ADDITIONAL_HOST_SURFACE_PORTABILITY_SCOPE`.
+
+## Outcome recovery 6 — optional-question repair — 2026-08-11
+
+The bounded repair transaction produced candidate
+`d675dd2401cfe10efab8b42d57b18b9041f0fe9a` /
+`e19abfc3c6b6719af2f7bfb0c7ebce62808f6c19`. Optional Bootstrap questions may
+now be answered out of order when no required question is pending, while
+answer canonicality and key-boundary errors remain explicit.
+
+Focused Bootstrap project-contract and conversation checks, binding checks,
+and diff hygiene all pass. Comprehensive proof still stops at the exact
+product-specific literal in `control/start-local-self-development.mjs`.
+That additional host-surface portability scope is outside this bounded
+adapter repair and requires an owner decision; it is not deferred real-host
+proof. Gate, Native, and ROADMAP_06 receipts remain rebind-required; cursors
+stay `FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain,
+and all consumption/clearance/release flags remain false. Memory was not
+contacted. Disposition: `RECOVERY_FAILED_EXACT`.
