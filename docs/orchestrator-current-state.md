@@ -756,3 +756,25 @@ existing current-source ROADMAP_06 handoff through Native, continue safe local
 proof, obtain authorized host/provider/recovery/clean-source/concurrency
 evidence and independent clearance, then record the exact Controller slot-
 release receipt before any non-memory slot refill.
+
+## Latest Native custody readback — 2026-08-11T04:42Z
+
+Native’s latest owned receipt supersedes its earlier local hold: commit
+`d24e153a653368e9fe0d743bde89c2f8c3902f51`, tree
+`dc6d1a84eb63f599025172c456d64eefe0f8bc88`, report SHA
+`687e8d8e07b2854944e4791a71f4305699871a31bf1e4c0d92d6fad18938d4c1`, and
+handoff SHA
+`27851daf66f2c3fef9526803b5313ad625863c19ce72c3183fd1d7a68325874f`.
+ROADMAP_05 remains custody-reconciled pending typed consumption. The existing
+ROADMAP_06 owner candidate is available and clean at
+`67687f8906705eb6b018814705cac6d60c6d4eda` /
+`c7db6a95d45bb25ab496220c8d1ecb8da85a371a`, with report body SHA
+`095317fc353ad9004f993b5202c9b7697908ea0a5ff11e430d98da38373f4b16` and an
+inline handoff, but no separate owner receipt commit/tree/digest or current
+Central projection exists. This is a custody hold, not a blocker or clearance.
+
+The Gate repair/re-audit remains in progress in its own worktree after the
+verifier seam repair; its previously recorded hold remains authoritative until
+the owner publishes a final receipt. The independent task remains
+`INDEPENDENT_CLEARANCE: HOLD`. No cursor, consumption, clearance, slot
+release, or Memory integration value changed.

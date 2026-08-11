@@ -748,3 +748,22 @@ existing current-source ROADMAP_06 handoff through Native, continue safe local
 proof, obtain authorized host/provider/recovery/clean-source/concurrency
 evidence and independent clearance, then obtain the exact Controller
 slot-release receipt before any non-memory refill.
+
+## Native latest custody readback — 2026-08-11
+
+Native’s latest local receipt is
+`d24e153a653368e9fe0d743bde89c2f8c3902f51` /
+`dc6d1a84eb63f599025172c456d64eefe0f8bc88`, report SHA
+`687e8d8e07b2854944e4791a71f4305699871a31bf1e4c0d92d6fad18938d4c1`, handoff
+SHA `27851daf66f2c3fef9526803b5313ad625863c19ce72c3183fd1d7a68325874f`.
+ROADMAP_05 remains pending typed Central consumption. The existing ROADMAP_06
+candidate `67687f8906705eb6b018814705cac6d60c6d4eda` /
+`c7db6a95d45bb25ab496220c8d1ecb8da85a371a` is source-bound and clean, with
+report body SHA `095317fc353ad9004f993b5202c9b7697908ea0a5ff11e430d98da38373f4b16`
+and an inline handoff. Its separate owner receipt commit/tree/digest and
+current Central projection are absent, so Native records a custody hold only.
+
+Gate’s repaired verifier/re-audit and the fresh independent task remain
+pending final readback; the independent disposition is `HOLD`. All ordinary
+cursors remain `FEATURE_CURSOR_000`; five ordinary slots, zero Memory slots,
+and all consumption/clearance/slot-release flags remain unchanged.
