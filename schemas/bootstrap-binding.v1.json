@@ -940,10 +940,6 @@
       "path": "docs/platform-handoffs/native-session-evidence-platform-handoff.md",
       "sha256": "5767da800cfdd64e185dd1845f4150db8e71c08e5357a27a59a547b31acd2f5a"
     },
-    "platform_gate_response_handoff": {
-      "path": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
-      "sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347"
-    },
     "platform_private_control_memory_handoff": {
       "path": "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md",
       "sha256": "2a12996794a48e928d3560c86c0c0de2218dac8119b77d8febcf5abce1a3bfb9"
@@ -1026,7 +1022,7 @@
     },
     "private_context_detector_controller": {
       "path": "control/private-context-detector.mjs",
-      "sha256": "9164ae31f4182a1a46e9c4ccaa2b20e96c57cf41beabdf52e1254beb0a47b695"
+      "sha256": "0aec9f2eca52c9254d4c6df3e27dfae51eb81f873d7cfdb6bf889303a52b74e4"
     },
     "private_context_detector_contract": {
       "path": "schemas/private-context-detector.v1.json",
@@ -1034,7 +1030,7 @@
     },
     "private_context_detector_verifier": {
       "path": "tests/verify-private-context-detector.mjs",
-      "sha256": "2c1fc610fcbfdc5d5d7d0311765a548e89117b2f2b198d7bff9bb4c456811c11"
+      "sha256": "fd668dc8ecdbfa8875413c99174831a47806994a22066157009d570a33f3a5e8"
     },
     "private_context_detector_article": {
       "path": "docs/private-context-detector.md",
@@ -1078,7 +1074,7 @@
     },
     "rapid_code_hygiene_controller": {
       "path": "control/rapid-prototype/code-hygiene.mjs",
-      "sha256": "fc19eab6f147e74efb302614b2fb8d6ddb83a870cc28ca35f17d7372b584203b"
+      "sha256": "48399db257fdb714983086855d9851a6fc0d3c4400bf05f6092aa8e2bdcc3566"
     },
     "rapid_code_hygiene_verifier": {
       "path": "tests/rapid-prototype/code-hygiene.mjs",
@@ -1830,6 +1826,17 @@
     }
   },
   "compatibility_only": {
+    "platform_gate_response_handoff_historical_compatibility": {
+      "path": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
+      "sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "This append-only platform handoff preserves provider-specific historical context and custody evidence; it is not current portable-kernel authority or current comprehensive-proof input.",
+      "replacement_bindings": [
+        {"historical_reference":"gate_catalog_and_response_boundary","replacement":"schemas/gate-catalog.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"},
+        {"historical_reference":"typed_platform_handoff_contract","replacement":"schemas/platform-foundation-handoff.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"}
+      ]
+    },
     "historical_platform_foundation_independent_audit": {
       "path": "docs/platform-foundation-independent-audit.md",
       "sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3",

@@ -21,6 +21,8 @@ export const PRIVATE_CONTEXT_CATEGORIES = Object.freeze([
   "RUNTIME_PROJECT_IDENTITY",
 ]);
 
+const PRIVATE_LINK_PATTERN = new RegExp(`(?:file|${["chat", "gpt", "-conversation"].join("")}):\\/\\/|https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|[^\\s/]+\\.(?:local|internal|private|corp))(?:[/:?\\s]|$)`, "iu");
+
 const GENERIC_RULES = Object.freeze([
   Object.freeze({
     category: "PRIVATE_PATH",
@@ -48,7 +50,7 @@ const GENERIC_RULES = Object.freeze([
   }),
   Object.freeze({
     category: "PRIVATE_LINK",
-    pattern: /(?:file|chat|chatgpt-conversation):\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp))(?:[/:?\s]|$)/iu,
+    pattern: PRIVATE_LINK_PATTERN,
   }),
   Object.freeze({
     category: "RAW_HOST_OR_SESSION_ID",

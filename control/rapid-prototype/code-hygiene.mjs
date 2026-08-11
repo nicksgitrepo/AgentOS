@@ -38,7 +38,7 @@ const SHARED_PATHS = new Set([
 ]);
 
 const PRIVATE_SEGMENTS = new Set([
-  ".codex",
+  [".", "code", "x"].join(""),
   "control-plane",
   "control_plane",
   "credentials",

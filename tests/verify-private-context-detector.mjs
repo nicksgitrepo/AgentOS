@@ -15,7 +15,7 @@ assert.equal(publicContextDetectorContract().runtime_identity_terms, "TRANSIENT_
 assert.equal(publicContextDetectorContract().persisted_private_values, "FORBIDDEN");
 
 const syntheticPath = ["/", "private", "/", "project", "/", "token.txt"].join("");
-const syntheticSecret = ["access", "_", "token=", "redacted"].join("");
+const syntheticSecret = ["access", "_", "token=", "present-value"].join("");
 const pathLeaks = findPrivateContextLeaks(`Use ${syntheticPath}`);
 const secretLeaks = findPrivateContextLeaks(syntheticSecret);
 assert(pathLeaks.some((leak) => leak.category === "PRIVATE_PATH"));
