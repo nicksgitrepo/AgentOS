@@ -687,3 +687,64 @@ does not consume, integrate, migrate, release, or activate memory work.
   integration decision are recorded. Continue the existing non-memory proof,
   independent-clearance, and Controller slot-release sequence before any
   normal-slot refill.
+
+## Current proof-chain receipts and independent hold — 2026-08-11
+
+This append is the typed Central projection of the current Platform re-audits
+and one fresh independent readback. It preserves all prior receipt layers and
+does not claim feature consumption, Platform clearance, independent clearance,
+or Controller slot release.
+
+Central publication: `0abb0f2569e08b6f8824b3ee0f2c8b884dd8bedc` /
+`1a5dadaf704a4fddfae52a319d83b0f3013458e7`; source binding:
+`d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5`.
+
+- Gate `019fdcfb-d827-7831-958a-470c2abbe6eb`: local receipt
+  `c47f45d77c9b90530333af95029e6f3b8e20f939` /
+  `0daadc7106083eb11de42dfaf22def0d20bf5f90`; report SHA
+  `3c45c4188e8d8525df6b8b65f188deb453c9b4d47c68e2b029695365cf30b75f`;
+  handoff SHA
+  `b935699983336d2f4c4719d5dce94f100c745ee61741747a69bed32c13fa8db0`;
+  disposition
+  `HOLD_PENDING_UNIVERSAL_RESPONSE_VERIFIER_RECONCILIATION_AND_AUTHORIZED_INDEPENDENT_PROOF`.
+  Passed Gate syntax/governance/catalog-envelope/anti-lie checks, 467/467
+  central bindings, and active zero-slot Memory exclusion. The checked-in
+  universal-response verifier export seam and authorized functional/host/
+  provider/recovery/independent proof remain pending.
+- Native `019fdcfa-43dc-76a3-befa-c93580a3c808`: local receipt
+  `58e9c670d264710c3b9a22d0ad04b19ad69e10f1` /
+  `f93916cab60c6602cf4167b27d45e91c34e3633a`; report SHA
+  `da3a143bf223280e428f58ea3c34b6c0ec17fa74ba7d980824b8f2241909ec0f`;
+  handoff SHA
+  `49e619b35ef0b92ddb44ffd173ce84c44dfb0e016d8b2d58ce150fc055a40c66`;
+  disposition
+  `PLATFORM_NATIVE_ORDERED_INTAKE_HOLD_PENDING_ROADMAP06_SOURCE_BOUND_HANDOFF_AND_AUTHORIZED_PROOF`.
+  ROADMAP_05 custody is reconciled. ROADMAP_06 still lacks a projected current
+  d885/5f owner handoff; host/provider, concurrency, crash/power-loss,
+  clean-source, and independent proof remain pending.
+- Independent task `019fef0e-014d-7833-b4e3-cd40b5415b55`
+  (`gpt-5.6-luna / max`) returned `INDEPENDENT_CLEARANCE: HOLD` after passing
+  clean-tree, 467/467 bindings, map/state digest, privacy, five-slot/zero-
+  Memory, cursor, and active-unaccepted-Memory checks. It found no authorized
+  functional/host/provider/recovery/concurrency/crash/power-loss, clean-source,
+  or Controller slot-release evidence.
+
+Safe local proof already passes campaign-state, receipt, gate-question,
+repository-readback, bootstrap-binding, local-adapter (no-symlink temp root),
+syntax, source-archive, and diff checks. The full-suite verifier remains held
+by existing normative/provider and fixture drift; this is not a clearance.
+
+The authoritative cursors remain `FEATURE_CURSOR_000`; ordinary accounting is
+five active non-memory slots, zero Memory slots, queue `32`, and
+`ROADMAP_07_PROOF_ACCEPTANCE` held. Memory owner
+`019fee1e-5e78-78c2-a788-ad7a27eba19e` is
+`ACTIVE_DEVELOPMENT_UNACCEPTED`, build/test-only in its isolated repository,
+outside every ordinary cursor with no integration/migration/release/activation
+authority. True external blocker: `NONE`.
+
+Next action: repair the Gate verifier seam in the Gate worktree, recover the
+existing current-source ROADMAP_06 handoff through Native, continue safe local
+proof, obtain authorized host/provider/recovery/clean-source/concurrency
+evidence and independent clearance, then obtain the exact Controller
+slot-release receipt before any non-memory refill.

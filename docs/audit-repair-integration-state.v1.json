@@ -133,6 +133,183 @@
     "receipt_projection": {"status":"HOLD_CURRENT_GATE_NATIVE_RECEIPT_PROJECTION_AND_PROOF_PENDING","current_source_binding":{"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},"current_candidate":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed"},"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"independent_clearance":false,"slot_release":false,"true_external_blocker":"NONE","hold_reason":"UNRESOLVED_CUSTODY_PROJECTION_PLUS_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_AND_INDEPENDENT_PROOF_PENDING","next_action":"RECONCILE_CURRENT_GATE_NATIVE_CUSTODY_PROJECTIONS_THEN_OBTAIN_AUTHORIZED_NON_TEST_HOST_PROVIDER RECOVERY CLEAN_SOURCE INDEPENDENT_CLEARANCE AND CONTROLLER SLOT RELEASE BEFORE NON_MEMORY_SLOT_REFILL","historical_layers_preserved":true},
     "current_receipt_projection": {"record_layer":"CURRENT_CENTRAL_PLATFORM_RECEIPT_PROJECTION","current_central_publication":{"commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","tree":"fe893e29e44014777bc025abeb589240834e03c7"},"source_binding":{"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},"gate_receipt_ref":"platform_pipeline.gate_current_clearance_receipt","gate_receipt_commit":"3e300873d2963f75b111a27e18776bd06fe2223c","gate_receipt_tree":"5f13214c0708e401222b07ea4ef6ae1eeeeae117","gate_platform_report_sha256":"bab37cb69ee6aaf5cb4554ec75ca1f9da46cc4531c523ab28a4dea8875c9d420","gate_platform_handoff_sha256":"a9fd7b350f5e56bbfa147df0027842bccbf1e1319269bc7c429749f6148b1b9b","native_receipt_ref":"platform_pipeline.native_current_clearance_receipt","native_receipt_commit":"1e83502ee972e770e9fe8ee3f40ea304894f8fab","native_receipt_tree":"73d96061df61f801aaaa87b6b85b28afffa97633","native_platform_report_sha256":"b19c10f6f73fdc9d4fa099f1f7f87c55d24be53095f2fd44042e1e527f317acc","native_platform_handoff_sha256":"229923445a35f6b0d64514aeaee425cafd8a69c2208d28e28af630eb9010d1b7","native_preservation_record_sha256":"d44445731adc7c8f8025c02dcf90b21b5b4a9b84b0550b05869ee25a80533a8b","projection_status":"PLATFORM_RECEIPTS_SOURCE_BOUND_AND_EXACTLY_PROJECTED_PENDING_CONSUMPTION","authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"historical_projection_publication":{"commit":"f1bbedbf1f6778c8a0498155da4fd4e85eaea0c2","tree":"66189ca0edf077decf834992b13843c014f2eb56","status":"HISTORICAL_PRESERVED"},"prior_current_platform_publication":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed","status":"HISTORICAL_PRESERVED"},"true_external_blocker":"NONE","next_action":"Platform return owners consume the exact current Gate and Native receipts; then obtain authorized functional/host/provider/recovery/clean-source evidence, independent clearance, and an exact Controller slot-release receipt before any non-memory slot refill."},
     "no_change_readback_reconciliation": {"record_layer":"CENTRAL_METADATA_RECONCILIATION_NO_CHANGE_READBACKS","central_publication":{"commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","tree":"fe893e29e44014777bc025abeb589240834e03c7"},"source_binding":{"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},"gate":{"owner_task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","receipt_commit":"3e300873d2963f75b111a27e18776bd06fe2223c","receipt_tree":"5f13214c0708e401222b07ea4ef6ae1eeeeae117","platform_report_sha256":"bab37cb69ee6aaf5cb4554ec75ca1f9da46cc4531c523ab28a4dea8875c9d420","platform_handoff_sha256":"a9fd7b350f5e56bbfa147df0027842bccbf1e1319269bc7c429749f6148b1b9b","owner_readback":"NO_CHANGE_CONFIRMED","owner_report_binding":"467_OF_467_MATCHED","authoritative_cursor":"FEATURE_CURSOR_000"},"native":{"owner_task_id":"019fdcfa-43dc-76a3-befa-c93580a3c808","receipt_commit":"1e83502ee972e770e9fe8ee3f40ea304894f8fab","receipt_tree":"73d96061df61f801aaaa87b6b85b28afffa97633","platform_report_sha256":"b19c10f6f73fdc9d4fa099f1f7f87c55d24be53095f2fd44042e1e527f317acc","platform_handoff_sha256":"229923445a35f6b0d64514aeaee425cafd8a69c2208d28e28af630eb9010d1b7","preservation_record_sha256":"d44445731adc7c8f8025c02dcf90b21b5b4a9b84b0550b05869ee25a80533a8b","owner_readback":"NO_CHANGE_CONFIRMED","owner_report_binding":"467_OF_467_MATCHED","authoritative_cursor":"FEATURE_CURSOR_000"},"metadata_reconciliation_status":"CENTRAL_NO_CHANGE_READBACKS_RECONCILED","feature_consumed":false,"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"true_external_blocker":"NONE","historical_layers_preserved":true,"next_action":"Keep feature consumption, clearance, and slot release false; obtain authorized functional/host/provider/recovery/clean-source evidence, independent clearance, and an exact Controller slot-release receipt before any non-memory slot refill."},
+    "gate_current_proof_hold_receipt": {
+      "record_layer": "CURRENT_GATE_REAUDIT_PROOF_HOLD",
+      "owner_task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+      "local_commit": "c47f45d77c9b90530333af95029e6f3b8e20f939",
+      "local_tree": "0daadc7106083eb11de42dfaf22def0d20bf5f90",
+      "central_publication": {
+        "commit": "0abb0f2569e08b6f8824b3ee0f2c8b884dd8bedc",
+        "tree": "1a5dadaf704a4fddfae52a319d83b0f3013458e7"
+      },
+      "source_binding": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "platform_report_ref": "docs/platform-audits/PLATFORM_GATE_RESPONSE/auditreport.md",
+      "platform_report_sha256": "3c45c4188e8d8525df6b8b65f188deb453c9b4d47c68e2b029695365cf30b75f",
+      "platform_handoff_ref": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
+      "platform_handoff_sha256": "b935699983336d2f4c4719d5dce94f100c745ee61741747a69bed32c13fa8db0",
+      "disposition": "HOLD_PENDING_UNIVERSAL_RESPONSE_VERIFIER_RECONCILIATION_AND_AUTHORIZED_INDEPENDENT_PROOF",
+      "passed_evidence": [
+        "GATE_SYNTAX",
+        "GOVERNANCE_VERIFIER",
+        "BOOTSTRAP_BINDING_467_OF_467",
+        "CURRENT_CATALOG_ENVELOPE_COMPILATION_AND_ANTI_LIE_CHECK",
+        "CENTRAL_BINDING_467_OF_467",
+        "MEMORY_EXCLUSION_ACTIVE_ZERO_ORDINARY_CONSUMPTION"
+      ],
+      "hold_findings": [
+        "CHECKED_IN_UNIVERSAL_RESPONSE_VERIFIER_IMPORTS_STALE_EXPORTS_AND_STOPS",
+        "FEATURE_LANE_FUNCTIONAL_EXECUTION_REMAINS_UNRUN_IN_PEER_CUSTODY",
+        "AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CONCURRENCY_CLEAN_SOURCE_AND_INDEPENDENT_PROOF_PENDING"
+      ],
+      "authoritative_cursor": "FEATURE_CURSOR_000",
+      "downstream_consumed": false,
+      "platform_clearance": false,
+      "independent_clearance": false,
+      "slot_release": false,
+      "true_external_blocker": "NONE",
+      "next_action": "REPAIR_THE_OWNED_GATE_VERIFIER_API_SEAM_THEN_REAUDIT_CURRENT_SOURCE_BOUND_RECEIPTS_AND_ROUTE_AUTHORIZED_PROOF"
+    },
+    "native_current_proof_hold_receipt": {
+      "record_layer": "CURRENT_NATIVE_REAUDIT_PROOF_HOLD",
+      "owner_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "local_commit": "58e9c670d264710c3b9a22d0ad04b19ad69e10f1",
+      "local_tree": "f93916cab60c6602cf4167b27d45e91c34e3633a",
+      "central_publication": {
+        "commit": "0abb0f2569e08b6f8824b3ee0f2c8b884dd8bedc",
+        "tree": "1a5dadaf704a4fddfae52a319d83b0f3013458e7"
+      },
+      "source_binding": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "platform_report_ref": "docs/platform-audits/PLATFORM_NATIVE_SESSION_EVIDENCE/auditreport.md",
+      "platform_report_sha256": "da3a143bf223280e428f58ea3c34b6c0ec17fa74ba7d980824b8f2241909ec0f",
+      "platform_handoff_ref": "docs/platform-handoffs/native-session-evidence-platform-handoff.md",
+      "platform_handoff_sha256": "49e619b35ef0b92ddb44ffd173ce84c44dfb0e016d8b2d58ce150fc055a40c66",
+      "status": "PLATFORM_NATIVE_ORDERED_INTAKE_HOLD_PENDING_ROADMAP06_SOURCE_BOUND_HANDOFF_AND_AUTHORIZED_PROOF",
+      "roadmap_05_status": "CUSTODY_RECONCILED_PENDING_AUTHORIZED_CENTRAL_PUBLICATION_CONSUMPTION",
+      "roadmap_06_status": "ROADMAP_06_CURRENT_SOURCE_BOUND_HANDOFF_UNAVAILABLE",
+      "passed_evidence": [
+        "SIX_FOCUSED_LOCAL_HARNESSES",
+        "RECOVERY_AND_HOSTILE_PATH_CHECKS",
+        "MJS_SYNTAX_16_OF_16",
+        "SCHEMA_PARSE_10_OF_10",
+        "BOOTSTRAP_BINDING_467_OF_467"
+      ],
+      "hold_findings": [
+        "CENTRAL_ROADMAP06_REPORT_MANIFEST_BOUND_TO_SUPERSEDED_590C_F1",
+        "CURRENT_D885_5F_ROADMAP06_REPORT_HANDOFF_OWNER_RECEIPT_NOT_PROJECTED",
+        "REAL_HOST_PROVIDER_CONCURRENCY_CRASH_POWER_LOSS_INDEPENDENT_AND_FULL_CLEAN_SOURCE_PROOF_PENDING"
+      ],
+      "authoritative_cursor": "FEATURE_CURSOR_000",
+      "downstream_consumed": false,
+      "platform_clearance": false,
+      "independent_clearance": false,
+      "slot_release": false,
+      "true_external_blocker": "NONE",
+      "next_action": "OBTAIN_AND_PRESERVE_THE_EXISTING_ROADMAP06_D885_SOURCE_BOUND_HANDOFF_THEN_REAUDIT_ROADMAP05_AND_ROADMAP06"
+    },
+    "independent_clearance_receipt": {
+      "record_layer": "CURRENT_INDEPENDENT_CLEARANCE_HOLD",
+      "task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "max",
+      "execution_boundary": "VISIBLE_PROJECTLESS_READ_ONLY_TASK",
+      "central_publication": {
+        "commit": "0abb0f2569e08b6f8824b3ee0f2c8b884dd8bedc",
+        "tree": "1a5dadaf704a4fddfae52a319d83b0f3013458e7"
+      },
+      "source_binding": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "gate_receipt": {
+        "commit": "3e300873d2963f75b111a27e18776bd06fe2223c",
+        "tree": "5f13214c0708e401222b07ea4ef6ae1eeeeae117"
+      },
+      "native_receipt": {
+        "commit": "1e83502ee972e770e9fe8ee3f40ea304894f8fab",
+        "tree": "73d96061df61f801aaaa87b6b85b28afffa97633"
+      },
+      "receipt_projection": {
+        "commit": "b4999c9e1ceabeb256e307f8474c263577c3a727",
+        "tree": "fe893e29e44014777bc025abeb589240834e03c7"
+      },
+      "status": "INDEPENDENT_CLEARANCE_HOLD",
+      "passed_evidence": [
+        "CENTRAL_WORKTREE_CLEAN_AND_DIFF_CHECK",
+        "BOOTSTRAP_BINDINGS_467_OF_467",
+        "MAP_AND_STATE_DIGEST_RECOMPUTATION",
+        "FIVE_ORDINARY_SLOTS_MEMORY_ZERO_QUEUE_32",
+        "ALL_AUTHORITATIVE_CURSORS_FEATURE_CURSOR_000",
+        "TARGETED_PRIVACY_SCAN",
+        "MEMORY_SPECIAL_LANE_ACTIVE_BUILD_TEST_AUTHORIZED_UNACCEPTED_AND_EXCLUDED"
+      ],
+      "missing_evidence": [
+        "GATE_NATIVE_RECEIPT_CONSUMPTION_AND_PLATFORM_CLEARANCE",
+        "AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CONCURRENCY_CRASH_POWER_LOSS",
+        "CLEAN_SOURCE_PROOF",
+        "INDEPENDENT_CLEARANCE",
+        "EXACT_CONTROLLER_SLOT_RELEASE_RECEIPT"
+      ],
+      "downstream_consumed": false,
+      "platform_clearance": false,
+      "independent_clearance": false,
+      "slot_release": false,
+      "ordinary_slot_refill": false,
+      "memory_integration": false,
+      "true_external_blocker": "NONE",
+      "next_action": "CONTINUE_UNBLOCKED_LOCAL_PROOF_AND_OBTAIN_THE_EXACT_CONTROLLER_SLOT_RELEASE_RECEIPT"
+    },
+    "proof_evidence_checkpoint": {
+      "record_layer": "CURRENT_SAFE_LOCAL_PROOF_CHECKPOINT",
+      "central_publication": {
+        "commit": "0abb0f2569e08b6f8824b3ee0f2c8b884dd8bedc",
+        "tree": "1a5dadaf704a4fddfae52a319d83b0f3013458e7"
+      },
+      "source_binding": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "local_passes": [
+        "VERIFY_CAMPAIGN_STATE_OWNER",
+        "VERIFY_CAMPAIGN_STATE_BRIDGE",
+        "VERIFY_CAMPAIGN_RECEIPTS",
+        "VERIFY_TASK_GATE_QUESTIONS",
+        "VERIFY_REPOSITORY_READBACK",
+        "VERIFY_BOOTSTRAP_CONTRACT_BINDINGS",
+        "VERIFY_LOCAL_ADAPTERS_WITH_NO_SYMLINK_TMPDIR",
+        "SOURCE_COMMIT_TREE_AND_771_FILE_ARCHIVE_RECONCILED",
+        "MJS_SYNTAX_ALL_CONTROL_TEST_SCHEMA_FILES",
+        "GIT_DIFF_CHECK"
+      ],
+      "clean_source_status": "HOLD_PRESERVED_AUDIT_RECORD_TRAILING_WHITESPACE",
+      "full_suite_status": "HOLD_EXISTING_NORMATIVE_PROVIDER_AND_FIXTURE_DRIFT",
+      "authorized_host_provider_status": "PENDING_REGISTERED_CAPABILITY_READBACK",
+      "recovery_status": "LOCAL_BOUNDED_RECOVERY_PASSES_HOST_PROVIDER_AND_POWER_LOSS_PROOF_PENDING",
+      "concurrency_status": "PENDING_AUTHORIZED_EVIDENCE",
+      "independent_clearance_status": "HOLD",
+      "controller_slot_release_status": "NOT_RECEIVED",
+      "ordinary_active_slot_count": 5,
+      "memory_slot_count": 0,
+      "ordinary_queue_count": 32,
+      "authoritative_cursors": {
+        "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+        "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+        "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+      },
+      "downstream_consumed": false,
+      "platform_clearance": false,
+      "independent_clearance": false,
+      "slot_release": false,
+      "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+      "memory_special_lane_status": "ACTIVE_DEVELOPMENT_UNACCEPTED_BUILD_TEST_ONLY_OUTSIDE_ORDINARY_CURSORS",
+      "true_external_blocker": "NONE",
+      "next_action": "REPAIR_GATE_VERIFIER_SEAM_AND_RECOVER_ROADMAP06_CURRENT_HANDOFF_THEN_OBTAIN_AUTHORIZED_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_CONCURRENCY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+    },
     "receipt_projection_authoritative_ref":"platform_pipeline.current_receipt_projection",
     "receipt_projection_historical_marker":{"object_ref":"platform_pipeline.receipt_projection","record_layer":"HISTORICAL_NON_CURRENT_RECEIPT_PROJECTION","historical_current_candidate":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed"},"superseded_by":"platform_pipeline.current_receipt_projection","supersession_reason":"The 8f/3e projection is preserved as history; current Gate/Native receipts bind to b499/fe893e29.","consumption":false,"clearance":false,"slot_release":false},
     "feature_rebind_projection": {
@@ -252,6 +429,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_EVIDENCE_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_SLOT_REFILL",
-  "state_sha256": "f7fc5a398c4dc7df79725ad47da11ba0999c4b4e5375637e98ce36adc713eae2"
+  "next_action": "PROOF_PENDING_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
+  "state_sha256": "fa42111efe8537ec0fb7fb3f31109ca5da678065f543ac13f6785203de1c5fed"
 }

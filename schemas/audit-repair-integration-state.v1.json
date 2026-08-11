@@ -41,7 +41,7 @@
     "roadmap_03_checkpoint": {"$ref": "#/$defs/checkpoint"},
     "feature_lane_policy": {"$ref": "#/$defs/policy"},
     "feature_queue_order": {"type": "array", "minItems": 37, "items": {"type": "string"}},
-    "active_feature_slots": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/slot"}},
+    "active_feature_slots": {"type": "array", "minItems": 5, "maxItems": 6, "description": "Five ordinary slots are valid while the owner-authorized special Memory lane is excluded and the refill slot is held; otherwise the target is six.", "items": {"$ref": "#/$defs/slot"}},
     "platform_owners": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/owner"}},
     "platform_pipeline": {"type": "object"},
     "persistence": {"type": "object"},

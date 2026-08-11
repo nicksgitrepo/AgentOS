@@ -1822,15 +1822,15 @@
     },
     "audit_repair_integration_pyramid_controller": {
       "path": "control/audit-repair-integration-pyramid.mjs",
-      "sha256": "b8c25cdd13574bc8f361190d1f8eef4d3ff086fb1f211392cfa3de8805297918"
+      "sha256": "6c12e7cb4828b633e0513582499924fbca63d2870b596cc983b62cfc9fa36c04"
     },
     "audit_repair_integration_state_contract": {
       "path": "schemas/audit-repair-integration-state.v1.json",
-      "sha256": "8269e9a35cb80793d2c74543e12e0a94534a68df262aee0018ff3fc1275c123d"
+      "sha256": "d0530de190059b132c55771d9d75b7ea72c8cc406b687aa1d17bd34fcca2c875"
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "5d36b1bc4e310d6db26c2111b9ccda359feb54cbfdf5d43e10d36bc6bc763ca0"
+      "sha256": "abba19e683a9cb8c874429a05689a38c87e6ed299a95c74ed8380c40113fade9"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",

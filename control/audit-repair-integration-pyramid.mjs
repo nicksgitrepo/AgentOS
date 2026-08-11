@@ -213,7 +213,10 @@ export function validateAuditRepairIntegrationState(state, {inventory, platformF
     requireIdentifier(owner.cursor, `platform owner ${index} cursor`);
   }
   assert(JSON.stringify([...new Set(state.platform_owners.flatMap((owner) => owner.domain_ids))].sort(compareUtf8)) === JSON.stringify([...PLATFORM_DOMAIN_IDS].sort(compareUtf8)), "platform owner roster does not cover all six domains");
-  assert(Array.isArray(state.active_feature_slots) && state.active_feature_slots.length === ACTIVE_FEATURE_SLOT_COUNT, "exactly six feature slots are required while the queue has six or more entries");
+  const memoryRouting = state.feature_lane_policy.memory_routing;
+  const memoryExcludedSlotHold = memoryRouting?.special_lane_active === true && memoryRouting?.memory_slot_count === 0 && memoryRouting?.ordinary_platform_consumption === false && memoryRouting?.ordinary_cursor_advance === false;
+  const expectedActiveSlotCount = memoryExcludedSlotHold ? ACTIVE_FEATURE_SLOT_COUNT - 1 : ACTIVE_FEATURE_SLOT_COUNT;
+  assert(Array.isArray(state.active_feature_slots) && state.active_feature_slots.length === expectedActiveSlotCount, memoryExcludedSlotHold ? "five ordinary feature slots are required while the special Memory lane is excluded and the refill slot is held" : "exactly six feature slots are required while the queue has six or more entries");
   const slotIds = state.active_feature_slots.map((slot) => slot.slot_id);
   const slotFeatures = state.active_feature_slots.map((slot) => slot.feature_id);
   sortedUnique(slotIds, "feature slot IDs");
