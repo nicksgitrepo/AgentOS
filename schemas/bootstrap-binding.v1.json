@@ -62,7 +62,7 @@
     },
     "bootstrap_conversation_controller": {
       "path": "control/bootstrap-conversation.mjs",
-      "sha256": "d2966334fde76387d2139cba1963c31f7432cbe29b01240f26629b889edc420e"
+      "sha256": "b345550e896df6ef5b56953eedef2fa1839fead024463b4a83f2d8143014eca1"
     },
     "bootstrap_owner_surface_controller": {
       "path": "control/bootstrap-owner-surface.mjs",
@@ -106,7 +106,7 @@
     },
     "bootstrap_project_contract_controller": {
       "path": "control/bootstrap-project-contract.mjs",
-      "sha256": "ae7b74773ddf561d633c9766b9a3f72f798f85eb7dd8619ab33755b06e0e8cfa"
+      "sha256": "65bf4307b821676aaafc900c396ac2461af1d13159146030ee512582fb8586a7"
     },
     "bootstrap_project_contract": {
       "path": "schemas/bootstrap-project-contract.v1.json",

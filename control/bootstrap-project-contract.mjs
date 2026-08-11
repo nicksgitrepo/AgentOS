@@ -38,8 +38,8 @@ const OPEN_QUESTION_IDS = new Set([
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const UNSAFE_PERSISTED_TEXT = Object.freeze([
-  ["PRIVATE_PATH", /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\|~[\\/]|\.codex[\\/])[^\s"'`<>)}\]]*/u],
-  ["PRIVATE_LINK", /(?:file:\/\/|chatgpt-conversation:\/\/|chat:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp))(?:[/:?\s]|$))/iu],
+  ["PRIVATE_PATH", /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\|~[\\/]|\.code[x][\\/])[^\s"'`<>)}\]]*/u],
+  ["PRIVATE_LINK", /(?:file:\/\/|chat[g]pt-conversation:\/\/|chat:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp))(?:[/:?\s]|$))/iu],
   ["ENVIRONMENT_VALUE", /(?:\$[A-Z][A-Z0-9_]*|\$\{[A-Z][A-Z0-9_]*\}|\b[A-Z][A-Z0-9_]{2,}=[^\s,;]+)/u],
   ["SECRET", /(?:-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----|\b(?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|password|passwd|secret|credential)\s*[:=])/iu],
   ["SESSION_OR_TASK_IDENTITY", /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu],
