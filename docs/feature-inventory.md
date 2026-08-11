@@ -68,8 +68,12 @@ inventory order while excluding `ROADMAP_08_MEMORY_CAPSULES`,
 Platform consumption. Their existing source, reports, commits, worktrees, and
 proof remain historical/unaccepted. The single special lane is
 `SPECIAL_MEMORY_ARCHITECTURE`, owned by task
-`019fee1e-5e78-78c2-a788-ad7a27eba19e`, and is
-`DORMANT_DESIGN_PENDING` with no goal, worktree, product edit, integration, or
-release custody. The next eligible non-memory capability is
+`019fee1e-5e78-78c2-a788-ad7a27eba19e`, and is now
+`ACTIVE_DEVELOPMENT_UNACCEPTED` in an owner-isolated memory repository. The
+owner may build and repeatedly test the project-agnostic memory product; this
+special custody does not authorize integration, migration, release, or
+activation. The next eligible non-memory capability is
 `ROADMAP_07_PROOF_ACCEPTANCE`, but it is not selected until a normal slot and
-clean custody record are explicit.
+clean custody record are explicit. Existing memory reports, commits,
+worktrees, and design/research evidence remain historical/unaccepted and have
+no acceptance authority.

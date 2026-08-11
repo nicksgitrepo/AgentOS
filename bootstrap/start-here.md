@@ -133,7 +133,8 @@ pin, send, and wait receipts returned by the active host. It binds the returned
 task IDs to the canonical Git workspace, source commit/tree, and available
 filesystem/Git capabilities. It derives pin and resume proof from those host
 receipts and returns both the persistent Runtime and Controller readbacks.
-The host may be Codex, another collaboration host, or a non-graphical adapter;
+The host may be a collaboration host, another task coordinator, or a
+non-graphical adapter;
 the contract is about authoritative task and workspace receipts, not a GUI.
 Never read identity strings from environment variables, ask the owner to type
 them, or replace a missing host receipt with a caller-supplied value.

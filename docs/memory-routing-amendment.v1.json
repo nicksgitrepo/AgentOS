@@ -1,7 +1,7 @@
 {
   "schema": "agentos.memory_routing_amendment.v1",
   "version": 1,
-  "status": "DORMANT_DESIGN_PENDING",
+  "status": "ACTIVE_DEVELOPMENT_UNACCEPTED",
   "authority": "OWNER_ROUTING_AMENDMENT",
   "campaign_id": "AGENTOS_SELF_DEVELOPMENT_WAVE_03",
   "inventory_ref": "docs/feature-inventory.v1.json",
@@ -11,16 +11,36 @@
     "owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
     "model": "gpt-5.6-sol",
     "reasoning_effort": "medium",
-    "repository_ref": "CANONICAL_SAVED_AGENTOS_WORK_REPOSITORY",
-    "state": "DORMANT_DESIGN_PENDING",
+    "repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+    "state": "ACTIVE_DEVELOPMENT_UNACCEPTED",
     "custody": [
-      "NO_GOAL",
-      "NO_WORKTREE",
-      "NO_PRODUCT_EDIT",
+      "GOAL_ACTIVE",
+      "ISOLATED_WORKTREE",
+      "PRODUCT_EDIT_ALLOWED",
+      "TEST_EXECUTION_ALLOWED",
       "NO_INTEGRATION",
-      "NO_RELEASE"
+      "NO_MIGRATION",
+      "NO_RELEASE",
+      "NO_ACTIVATION"
     ],
-    "activation_gate": "EXPLICIT_OWNER_DESIGN_ACCEPTANCE_THEN_DEVELOPMENT_AUTHORIZATION"
+    "build_authorized": true,
+    "test_authorized": true,
+    "ordinary_cursor_excluded": true,
+    "integration_status": "PENDING_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION",
+    "activation_gate": "EXACT_OWNER_ACCEPTANCE_THEN_GOVERNED_INTEGRATION_DECISION",
+    "historical_dormant_state": {
+      "status": "DORMANT_DESIGN_PENDING",
+      "repository_ref": "CANONICAL_SAVED_AGENTOS_WORK_REPOSITORY",
+      "custody": [
+        "NO_GOAL",
+        "NO_WORKTREE",
+        "NO_PRODUCT_EDIT",
+        "NO_INTEGRATION",
+        "NO_RELEASE"
+      ],
+      "activation_gate": "EXPLICIT_OWNER_DESIGN_ACCEPTANCE_THEN_DEVELOPMENT_AUTHORIZATION",
+      "record_layer": "HISTORICAL_SUPERSEDED_ROUTING_STATE"
+    }
   },
   "memory_scope": {
     "feature_ids": [
@@ -40,7 +60,10 @@
     ],
     "normal_queue_eligible": false,
     "ordinary_platform_consumption": false,
-    "historical_inputs_only": true
+    "historical_inputs_only": true,
+    "ordinary_pyramid_uses_historical_inputs_only": true,
+    "special_lane_build_and_test_inputs_allowed": true,
+    "historical_evidence_acceptance_authority": false
   },
   "queue_accounting": {
     "canonical_inventory_order_preserved": true,
@@ -88,6 +111,13 @@
     ],
     "active_normal_slot_count": 5,
     "memory_slot_count": 0,
+    "special_lane_active": true,
+    "special_lane_owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+    "special_lane_repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+    "special_lane_build_and_test_authorized": true,
+    "special_lane_integration_allowed": false,
+    "special_lane_release_allowed": false,
+    "special_lane_activation_allowed": false,
     "next_eligible_non_memory_feature": "ROADMAP_07_PROOF_ACCEPTANCE",
     "next_selection_status": "SELECT_ONLY_AFTER_A_NORMAL_SLOT_OPENS",
     "no_disguised_memory_refill": true
@@ -104,9 +134,14 @@
       "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
     },
     "platform_private_control_memory": {
-      "status": "WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE",
+      "status": "SPECIAL_MEMORY_LANE_ACTIVE_DEVELOPMENT_UNACCEPTED",
       "local_marker": "FEATURE_CURSOR_004",
       "local_marker_is_non_authoritative": true,
+      "special_owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+      "special_lane_repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+      "special_lane_build_and_test_authorized": true,
+      "ordinary_cursor_excluded": true,
+      "integration_status": "PENDING_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION",
       "historical_candidates_preserved": true,
       "downstream_consumed": false,
       "updated_platform_handoff_sha256": "a0b6e6e8bbc24f1a937aeeba307237b382d18ea7453c80a6228dfb14ea0e0b89",
@@ -189,6 +224,7 @@
     }
   ],
   "routing_reconciliation": {
+    "record_layer": "HISTORICAL_DORMANT_ROUTING_RECONCILIATION",
     "feature_id": "PROJECT_GOVERNANCE_PERSISTENCE",
     "task_id": "019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd",
     "worktree_id": "HOST_WORKTREE_CC4B",
@@ -203,13 +239,54 @@
     "archive_or_removal": false,
     "recorded_at_utc": "2026-08-11T01:15:00Z"
   },
+  "special_lane_activation_reconciliation": {
+    "record_layer": "CURRENT_OWNER_AUTHORIZED_SPECIAL_LANE_ROUTING",
+    "recorded_at_utc": "2026-08-11T04:15:23Z",
+    "owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+    "state": "ACTIVE_DEVELOPMENT_UNACCEPTED",
+    "custody": [
+      "GOAL_ACTIVE",
+      "ISOLATED_WORKTREE",
+      "PRODUCT_EDIT_ALLOWED",
+      "TEST_EXECUTION_ALLOWED",
+      "NO_INTEGRATION",
+      "NO_MIGRATION",
+      "NO_RELEASE",
+      "NO_ACTIVATION"
+    ],
+    "ordinary_feature_slot_count": 5,
+    "memory_slot_count": 0,
+    "ordinary_queue_eligible": false,
+    "ordinary_platform_consumption": false,
+    "ordinary_cursor_advance": false,
+    "authoritative_cursors": {
+      "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+      "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+      "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+    },
+    "build_authorized": true,
+    "test_authorized": true,
+    "integration_status": "PENDING_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION",
+    "historical_evidence_acceptance_authority": false,
+    "downstream_consumed": false,
+    "release": false,
+    "activation": false,
+    "migration": false,
+    "next_action": "SPECIAL_OWNER_MAY_BUILD_AND_TEST_IN_ISOLATED_REPOSITORY; AWAIT_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION"
+  },
   "preservation_policy": {
     "source_reports_commits_worktrees_and_proof": "HISTORICAL_UNACCEPTED_INPUTS",
     "historical_artifacts_define_or_constrain_future_owner_design": false,
     "peer_worktree_edits": false,
     "archive_or_removal": "NOT_AUTHORIZED",
     "implementation_or_repair": "NOT_AUTHORIZED",
-    "special_lane_activation": "NOT_AUTHORIZED"
+    "special_lane_activation": "AUTHORIZED_FOR_ISOLATED_BUILD_AND_TEST_ONLY",
+    "special_lane_integration": "NOT_AUTHORIZED",
+    "special_lane_release_and_activation": "NOT_AUTHORIZED"
   },
-  "recorded_at_utc": "2026-08-11T00:04:32Z"
+  "recorded_at_utc": "2026-08-11T00:04:32Z",
+  "updated_at_utc": "2026-08-11T04:15:23Z"
 }

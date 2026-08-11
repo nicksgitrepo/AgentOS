@@ -6,8 +6,10 @@ authorization receipt. The canonical machine-readable campaign contracts
 remain `docs/audit-repair-integration-state.v1.json` and
 `docs/platform-feature-map.v1.json`.
 Memory routing is recorded in `docs/memory-routing-amendment.v1.json` as one
-dormant special lane inside this pyramid, not as a normal feature slot or a
-separate workflow.
+active-but-unaccepted special lane inside this pyramid, not as a normal
+feature slot or a separate workflow. Its owner may build and repeatedly test
+in an isolated repository; integration, migration, release, and activation
+remain separately gated.
 
 ## Custody
 
@@ -88,7 +90,7 @@ consumed early.
 | --- | --- | --- | --- | --- |
 | `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | Current visible receipt `9903ec9d` / `73e6d384`, report `792c506b…`, handoff `f3d82caa…`; hold `HOLD_PENDING_CENTRAL_REPORT_PROJECTION_AND_AUTHORIZED_FUNCTIONAL_INDEPENDENT_PROOF`; local marker `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`; no consumption, clearance, or slot release. |
 | `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | Current visible receipt is bound to d885/5f and central 8f/3e; report `c59229ea…`, handoff `8c6a0f70…`; hold `HOLD_PENDING_TESTS_PROOF_CUSTODY_SOURCE_MISMATCH`; historical 590c/f1 and bd6c/40d receipts cannot transfer clearance. |
-| `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; PROJECT_GOVERNANCE_PERSISTENCE is preserved in the dormant memory lane; historical candidates preserved; no source consumed. |
+| `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `SPECIAL_MEMORY_LANE_ACTIVE_DEVELOPMENT_UNACCEPTED`; local marker `FEATURE_CURSOR_004`; the canonical owner is isolated and build/test-authorized, while ordinary cursor consumption remains excluded; historical candidates preserved; no source consumed. |
 
 Native’s historical ordered receipt binds local HEAD/tree
 `590c07ddd4be7a8c24727c24b40808e44ca7357d` /
@@ -107,9 +109,14 @@ clearance/slot-release proof may change an authoritative cursor.
 ## Memory special lane and ordinary queue accounting
 
 - Canonical owner: `019fee1e-5e78-78c2-a788-ad7a27eba19e`, model/reasoning
-  `gpt-5.6-sol / medium`, repository `CANONICAL_SAVED_AGENTOS_WORK_REPOSITORY`.
-- State: `DORMANT_DESIGN_PENDING`; custody is `NO_GOAL / NO_WORKTREE /
-  NO_PRODUCT_EDIT / NO_INTEGRATION / NO_RELEASE`.
+  `gpt-5.6-sol / medium`, repository `OWNER_ISOLATED_MEMORY_REPOSITORY`.
+- State: `ACTIVE_DEVELOPMENT_UNACCEPTED`; custody is `GOAL_ACTIVE /
+  ISOLATED_WORKTREE / PRODUCT_EDIT_ALLOWED / TEST_EXECUTION_ALLOWED /
+  NO_INTEGRATION / NO_MIGRATION / NO_RELEASE / NO_ACTIVATION`.
+- The owner is authorized to build and repeatedly test the project-agnostic
+  memory product in its isolated repository. This is a special-lane custody
+  change only; no ordinary Platform cursor consumes it, and no integration,
+  migration, release, or activation is authorized.
 - Excluded from ordinary feature and Platform consumption:
   `ROADMAP_08_MEMORY_CAPSULES`, `PROJECT_GOVERNANCE_PERSISTENCE`,
   `PROJECT_MEMORY_LEDGER`,
@@ -123,8 +130,9 @@ clearance/slot-release proof may change an authoritative cursor.
   eligible non-memory capability is `ROADMAP_07_PROOF_ACCEPTANCE`, selectable
   only after a normal slot opens and custody is explicitly recorded.
 - Existing memory candidates, reports, commits, worktrees, and proof remain
-  historical/unaccepted inputs. Dirty custody is `WAITING_DESIGN_TRANSFER`;
-  no task or worktree is archived or removed.
+  historical/unaccepted inputs and have no acceptance authority. Preserved
+  dirty custody remains `WAITING_DESIGN_TRANSFER`; no task or worktree is
+  archived or removed.
 
 ## Blocker and next transition
 
@@ -643,3 +651,31 @@ candidate reference is superseded by the authoritative
 owner readbacks to b4999c9e / fe893e29. No historical bytes were deleted or
 rewritten, and no cursor, slot, consumption, clearance, or release value
 changed.
+
+## Memory special-lane activation amendment — 2026-08-11T04:15:23Z
+
+The canonical special Memory Architecture owner has explicit authorization to
+build and repeatedly test a project-agnostic memory product in its isolated
+repository. This is a routing and custody update only; no memory source,
+report, worktree, or historical proof was edited or promoted.
+
+- Owner: `019fee1e-5e78-78c2-a788-ad7a27eba19e`, `gpt-5.6-sol / medium`.
+- Special-lane state: `ACTIVE_DEVELOPMENT_UNACCEPTED`.
+- Custody: `GOAL_ACTIVE / ISOLATED_WORKTREE / PRODUCT_EDIT_ALLOWED /
+  TEST_EXECUTION_ALLOWED / NO_INTEGRATION / NO_MIGRATION / NO_RELEASE /
+  NO_ACTIVATION`.
+- Owner build and repeated testing are allowed in the isolated repository
+  referenced as `OWNER_ISOLATED_MEMORY_REPOSITORY`; the private filesystem
+  path is intentionally not persisted in project records.
+- Memory remains outside the ordinary feature queue and all ordinary Platform
+  consumption. `memory_slot_count` remains `0`; ordinary queue remains `32`;
+  authoritative cursors remain `FEATURE_CURSOR_000` for Gate, Native, and
+  Private Control Memory.
+- Existing memory design/research, reports, commits, worktrees, and proof are
+  historical/unaccepted evidence only and do not authorize acceptance. The
+  next non-memory capability remains `ROADMAP_07_PROOF_ACCEPTANCE`, held until
+  the existing proof, independent-clearance, and exact Controller slot-release
+  contract opens a normal slot.
+- Exact owner acceptance and a governed integration decision are required
+  before any memory consumption, migration, integration, release, or
+  activation. No ordinary cursor advanced and no external blocker was added.

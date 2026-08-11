@@ -60,16 +60,17 @@ and `ROADMAP_10_MAPS_INTELLIGENCE` remain in the canonical inventory for
 historical coverage but are excluded from the ordinary feature queue and
 ordinary Platform consumption. Structured memory, replay/projection, capsule,
 retention/retrieval/privacy, persistent project memory, and equivalent
-derived-memory semantics route to the single dormant
+derived-memory semantics route to the single active-but-unaccepted
 `SPECIAL_MEMORY_ARCHITECTURE` lane owned by canonical task
 `019fee1e-5e78-78c2-a788-ad7a27eba19e`; its state is
-`DORMANT_DESIGN_PENDING` with no goal, worktree, product edit, integration, or
-release custody. Existing reports, commits, worktrees, and proof remain
-historical/unaccepted inputs. The filtered ordinary queue's next non-memory
+`ACTIVE_DEVELOPMENT_UNACCEPTED` with owner-authorized isolated build and test
+custody, but no integration, migration, release, or activation authority.
+Existing reports, commits, worktrees, and proof remain historical/unaccepted
+inputs and do not constrain acceptance. The filtered ordinary queue's next non-memory
 capability is `ROADMAP_07_PROOF_ACCEPTANCE`, selectable only after a normal slot
 opens and custody is explicit. Five ordinary slots are currently admitted; the
-preserved CC4B custody record awaits design transfer and occupies zero normal
-memory slots.
+preserved CC4B custody record remains historical and occupies zero normal
+memory slots. Ordinary Platform cursors remain excluded from this special lane.
 
 Features with the same `canonical_root_cause_id` share one root-cause
 transaction. Their separate reports remain required, but they may not create

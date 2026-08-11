@@ -656,3 +656,34 @@ Native receipts to b4999c9e / fe893e29. This metadata marker preserves the
 prior layer without deleting or rewriting it. Cursors remain
 `FEATURE_CURSOR_000`; five ordinary slots, zero memory slots, and all
 consumption, clearance, and slot-release flags remain unchanged.
+
+## Memory special-lane activation amendment — 2026-08-11T04:15:23Z
+
+The canonical special Memory Architecture owner now has explicit owner
+authorization to build and repeatedly test a project-agnostic memory product
+in an isolated repository. This receipt changes routing and custody only; it
+does not consume, integrate, migrate, release, or activate memory work.
+
+- owner task: `019fee1e-5e78-78c2-a788-ad7a27eba19e`
+- model/reasoning: `gpt-5.6-sol / medium`
+- special-lane state: `ACTIVE_DEVELOPMENT_UNACCEPTED`
+- repository reference: `OWNER_ISOLATED_MEMORY_REPOSITORY` (private path not
+  persisted in project records)
+- custody: `GOAL_ACTIVE / ISOLATED_WORKTREE / PRODUCT_EDIT_ALLOWED /
+  TEST_EXECUTION_ALLOWED / NO_INTEGRATION / NO_MIGRATION / NO_RELEASE /
+  NO_ACTIVATION`
+- owner build and repeated testing: `AUTHORIZED`
+- ordinary feature queue eligibility: `false`
+- ordinary Platform consumption and ordinary cursor advancement: `false`
+- historical memory design/research, reports, commits, worktrees, and proof:
+  preserved as unaccepted evidence with no acceptance authority
+- memory slots: `0`; ordinary slots: `5`; ordinary queue: `32`
+- authoritative cursors: Gate, Native, and Private Control Memory all remain
+  `FEATURE_CURSOR_000`; local markers remain evidence-only
+- integration status:
+  `PENDING_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION`
+- next action: allow the isolated special owner to build/test; keep memory
+  outside ordinary intake until exact owner acceptance and the governed
+  integration decision are recorded. Continue the existing non-memory proof,
+  independent-clearance, and Controller slot-release sequence before any
+  normal-slot refill.

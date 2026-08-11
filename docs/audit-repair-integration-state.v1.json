@@ -7,8 +7,8 @@
   "workflow_ref": "control/audit-driven-integration-pyramid.mjs",
   "inventory_ref": "docs/feature-inventory.v1.json",
   "platform_feature_map_ref": "docs/platform-feature-map.v1.json",
-  "inventory_sha256": "1de99da895989b1c0dfa1d1a87f2fe7b77d50a86f4f2d55f2020b5f0182cfbe9",
-  "platform_feature_map_sha256": "39ab90efa4e0aca70eed87eff267c3af06d9c2143d58c9def54905f9360de1da",
+  "inventory_sha256": "f42a630bcd4c673551c4cb4ba5db6443d079d63855dbc85ff0f4e4ffedafa018",
+  "platform_feature_map_sha256": "5759a29b932f7063a5a3904eb80dbab193e00879537530809d0100d0223193c6",
   "current_candidate": {
     "worktree_id": "AGENTOS_FEATURE_MERGE_WAVE_03",
     "branch_ref": "codex/feature-integration-wave-03",
@@ -43,12 +43,27 @@
       "amendment_ref": "docs/memory-routing-amendment.v1.json",
       "special_lane_id": "SPECIAL_MEMORY_ARCHITECTURE",
       "special_owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
-      "special_lane_state": "DORMANT_DESIGN_PENDING",
+      "special_lane_state": "ACTIVE_DEVELOPMENT_UNACCEPTED",
+      "special_lane_repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+      "special_lane_custody": ["GOAL_ACTIVE", "ISOLATED_WORKTREE", "PRODUCT_EDIT_ALLOWED", "TEST_EXECUTION_ALLOWED", "NO_INTEGRATION", "NO_MIGRATION", "NO_RELEASE", "NO_ACTIVATION"],
+      "special_lane_build_authorized": true,
+      "special_lane_test_authorized": true,
+      "ordinary_platform_consumption": false,
+      "ordinary_cursor_advance": false,
+      "historical_evidence_acceptance_authority": false,
+      "integration_status": "PENDING_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION",
       "excluded_feature_ids": ["ROADMAP_08_MEMORY_CAPSULES", "PROJECT_GOVERNANCE_PERSISTENCE", "PROJECT_MEMORY_LEDGER", "BOUNDED_PROJECT_MAPS", "ROADMAP_10_MAPS_INTELLIGENCE"],
       "next_non_memory_feature": "ROADMAP_07_PROOF_ACCEPTANCE",
       "next_non_memory_selection": "SELECT_ONLY_AFTER_A_NORMAL_SLOT_OPENS",
       "active_normal_slot_count": 5,
-      "memory_slot_count": 0
+    "memory_slot_count": 0,
+    "special_lane_active": true,
+    "special_lane_owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+    "special_lane_repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+    "special_lane_build_and_test_authorized": true,
+    "special_lane_integration_allowed": false,
+    "special_lane_release_allowed": false,
+    "special_lane_activation_allowed": false
     }
   },
   "feature_queue_order": [
@@ -110,6 +125,7 @@
   "platform_pipeline": {
     "feature_consumption_cursors": {"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},
     "platform_local_markers": {"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_002_LOCAL_APPEND_ONLY","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_006_LOCAL_APPEND_ONLY","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_004"},
+    "special_memory_lane": {"record_layer":"CURRENT_OWNER_AUTHORIZED_SPECIAL_LANE_ROUTING","owner_task_id":"019fee1e-5e78-78c2-a788-ad7a27eba19e","repository_ref":"OWNER_ISOLATED_MEMORY_REPOSITORY","state":"ACTIVE_DEVELOPMENT_UNACCEPTED","build_authorized":true,"test_authorized":true,"ordinary_platform_consumption":false,"ordinary_cursor_advance":false,"memory_slot_count":0,"integration_status":"PENDING_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION","historical_evidence_acceptance_authority":false,"downstream_consumed":false,"release":false,"activation":false,"migration":false},
     "gate_cohesive_checkpoint": {"record_layer":"HISTORICAL_COHESIVE_CHECKPOINT_PRESERVED","local_commit":"36a4d85991d521ec890570fb8c419c555e40d77b","local_tree":"0d8b7012bda068015428d76f923c18554b473d30","source_commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","source_tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5","disposition":"LOCAL_COHESIVE_PLATFORM_CHECKPOINT_PENDING_FUNCTIONAL_TESTS_AND_INDEPENDENT_CLEARANCE","platform_audit_sha256":"e28be3c4399271a86e9d4bada533f5e9318207d7127a74ac1bdc37b9b0b14eac","platform_handoff_sha256":"7fdf40897b3aba5cb69611a89cf4299eafe9a04ea8bc25308d6f976b06685d0c","feature_audit_sha256":"d4046993e8d92f0d381b0cf637e0384af6087725ce3a306ffac04c8f717824c9","authoritative_cursor":"FEATURE_CURSOR_000","downstream_consumed":false,"independent_clearance":false,"slot_release":false,"current_receipt_ref":"platform_pipeline.gate_current_clearance_receipt"},
     "native_ordered_review": {"record_layer":"HISTORICAL_ORDERED_REVIEW_PRESERVED","local_head":"590c07ddd4be7a8c24727c24b40808e44ca7357d","local_tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9","roadmap_05_disposition":"REVIEWED_RECONCILED_NO_REPAIR_REQUEST","roadmap_06_disposition":"REVIEWED_SOURCE_BOUND_HELD_PENDING_NATIVE_CLEARANCE","no_source_schema_test_or_binding_changes_integrated":true,"updated_platform_handoff_sha256":"070be05d41de841e2b153c503b25f5e22ecfb4743ac301e55989be0d5f25f753","updated_platform_audit_sha256":"6ce1eb1f3d06773f54381870c1f437be12c9fde03148c355e88245579ed6a047","status":"PRODUCTION_CANDIDATE_PENDING_TESTS","held_pending":"COHESIVE_D885_SHARED_BASE_CHECKPOINT_AUTHORIZED_FUNCTIONAL_PROVIDER_HOST_EVIDENCE_AND_INDEPENDENT_CLEARANCE","central_consumed":false,"central_clearance":false,"cohesive_checkpoint":{"source_commit":"8d33383db1c457ec49bacf654aa63241c9bcfba7","source_tree":"d2a5b014ddd48ac157277efe1734fc13113bafb7","binding_repair_commit":"f588866fa6e4f01fe1a8cbb194b36e0fcd3ccd2f","binding_repair_tree":"f49683bb99ae501b792cd518698be2ea71ab9470","final_publication_commit":"2e979ccb283694f5100e0c2548796ee13db24b0a","final_publication_tree":"1826c37cf9212ae27d69104556f10e0d4454a4f3","platform_handoff_sha256":"7b052ca77a8382971d244b53dec8d407b90993b947cbec841c9708787b585ca6","platform_audit_sha256":"ccdffd7b7f58265eb747a23d6a93f64650b7cabf44173455970f7dabadd72573","roadmap_05_06_integrated_in_order":true,"binding_paths":37,"binding_mismatches":0,"changed_path_parity":"56/56","static_checks":"SYNTAX_JSON_PRIVACY_NUL_WHITESPACE_PASSED","status":"PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS","feature_admission":"HOLD_NOT_ADMITTED","remaining_proof":"AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_CONCURRENCY_CRASH_POWER_LOSS_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE_RECEIPT","authoritative_cursor":"FEATURE_CURSOR_000","downstream_consumed":false,"independent_clearance":false,"slot_release":false},"current_receipt_ref":"platform_pipeline.native_current_clearance_receipt"},
     "gate_current_clearance_receipt": {"record_layer":"CURRENT_VISIBLE_PLATFORM_RECEIPT_READBACK","owner_task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","local_commit":"3e300873d2963f75b111a27e18776bd06fe2223c","local_tree":"5f13214c0708e401222b07ea4ef6ae1eeeeae117","source_commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","source_tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5","central_candidate_commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","central_candidate_tree":"fe893e29e44014777bc025abeb589240834e03c7","audited_checkpoint_commit":"8b76be22a965e08fde2dd0ef8be090910b0bb4c8","audited_checkpoint_tree":"d3e2864987ee3ada48280ea571d58bc8b01701ce","platform_report_ref":"docs/platform-audits/PLATFORM_GATE_RESPONSE/auditreport.md","platform_report_sha256":"bab37cb69ee6aaf5cb4554ec75ca1f9da46cc4531c523ab28a4dea8875c9d420","platform_handoff_ref":"docs/platform-handoffs/gate-catalog-response-platform-handoff.md","platform_handoff_sha256":"a9fd7b350f5e56bbfa147df0027842bccbf1e1319269bc7c429749f6148b1b9b","disposition":"PLATFORM_INTAKE_RECORDED_REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION","routing":"PASS_FIVE_ORDINARY_SLOTS_MEMORY_ZERO_DORMANT","authoritative_cursor":"FEATURE_CURSOR_000","downstream_consumed":false,"independent_clearance":false,"slot_release":false,"historical_materialized_layer":{"source_commit":"590c07ddd4be7a8c24727c24b40808e44ca7357d","source_tree":"f1b358d87e6a969fb9631e202a3d478540edd4d9","platform_report_ref":"docs/platform-audits/PLATFORM_GATE_RESPONSE/auditreport.md","platform_report_sha256":"0dd700e320cae8f6a3af08591dd4ff55e225975ca5803de58a94249c179861d1","platform_handoff_ref":"docs/platform-handoffs/gate-catalog-response-platform-handoff.md","platform_handoff_sha256":"affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347","status":"HISTORICAL_NOT_CURRENT"},"prior_current_receipt_layer":{"local_commit":"9903ec9d5ac7dc187ebe38f46fc97e9cfbf6d23a","local_tree":"73e6d384f6ffa5e190a469011440334f4723a866","central_candidate_commit":"8f0815a214910141daeee27067139b6a2744761b","central_candidate_tree":"3e6ad35db20a2a90658b3641590b2defa02977ed","platform_report_sha256":"792c506b6f34176d919f4a99c0fd714f6b311c5c23d7aceba07e65f6b09216dd","platform_handoff_sha256":"f3d82caa771fe5584acc007125a71b7b81d5c0b0771fbf4f7eddf0a431e3f464","disposition":"HOLD_PENDING_CENTRAL_REPORT_PROJECTION_AND_AUTHORIZED_FUNCTIONAL_INDEPENDENT_PROOF","status":"HISTORICAL_CURRENT_RECEIPT_LAYER"},"projection_finding":"The current Gate receipt is source-bound to d885/5f and projected against b499/fe893e; prior 8f/3e, historical 590c/f1, and earlier cohesive/ordered layers remain preserved and non-clearance."},
@@ -237,5 +253,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_EVIDENCE_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_SLOT_REFILL",
-  "state_sha256": "e184d0c4ba908a6ae81b9fcfbd49b36797be0bccbf1faca69549f98ba9839e56"
+  "state_sha256": "f7fc5a398c4dc7df79725ad47da11ba0999c4b4e5375637e98ce36adc713eae2"
 }
