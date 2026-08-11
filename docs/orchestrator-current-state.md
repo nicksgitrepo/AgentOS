@@ -1029,3 +1029,27 @@ remain unchanged. Existing Platform receipts require rebind after the source
 repairs. Memory remains read-only receipt/no dispatch and was not contacted.
 True external blocker: `NONE`. Next action:
 `REPAIR_NORMATIVE_PORTABILITY_AND_BOOTSTRAP_CONTRACT_HOLDS_BEFORE_REBIND`.
+
+## Outcome recovery 5 — exact failure boundary — 2026-08-11
+
+The bounded repair transaction changed candidate
+`9b26528cd70742aa72156a48fd87ff241635a49b` /
+`5067adf2c25ebece1c599af48fc2156dc7bf1cda`. It corrected READY status
+calculation so optional context questions do not block a fully answered
+conversation, supplied a typed fallback for a draft phase with no first
+result, and moved the host-specific native adapter out of portable normative
+binding into the compatibility-only boundary.
+
+Bootstrap conversation, binding, and diff checks pass. The project-contract
+focused verifier now reaches a separate exact hold: the optional
+`governance.review_interval` reply is not present in the canonical Bootstrap
+question map. Comprehensive proof reaches the next product-specific literal
+in `control/start-local-self-development.mjs`. Resolving those requires an
+owner decision to expand the compatibility boundary or rewrite additional
+host-specific surfaces; no safe cursor or clearance transition is permitted.
+
+Disposition is `RECOVERY_FAILED_EXACT`. Existing Gate, Native, and ROADMAP_06
+receipts remain rebind-required; cursors stay `FEATURE_CURSOR_000`, five
+ordinary slots and zero Memory slots remain, and all consumption, clearance,
+and slot-release flags remain false. Memory was not contacted. Next action:
+`OWNER_ONLY_DECISION_ON_ADDITIONAL_HOST_SURFACE_PORTABILITY_SCOPE`.

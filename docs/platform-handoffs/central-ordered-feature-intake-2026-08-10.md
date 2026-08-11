@@ -939,3 +939,21 @@ Gate, Native, and ROADMAP_06 receipts remain rebind-required after the source
 repair. Cursors stay `FEATURE_CURSOR_000`, five ordinary slots and zero Memory
 slots remain, and Memory was not contacted. Next action:
 `REPAIR_NORMATIVE_PORTABILITY_AND_BOOTSTRAP_CONTRACT_HOLDS_BEFORE_REBIND`.
+
+## Outcome recovery 5 — exact failure boundary — 2026-08-11
+
+Central repaired the Bootstrap READY/draft status defect, made draft phase
+conditions typed when the first result is unresolved, and classified the
+host-specific native adapter as compatibility-only. Candidate
+`9b26528cd70742aa72156a48fd87ff241635a49b` /
+`5067adf2c25ebece1c599af48fc2156dc7bf1cda` is clean and source-bound.
+
+Focused Bootstrap conversation and binding proofs pass. The remaining
+project-contract check fails because `governance.review_interval` is an
+optional control absent from the canonical Bootstrap question map; the
+comprehensive proof then identifies the next product-specific literal in
+`control/start-local-self-development.mjs`. These are authority/scope
+choices, not grounds for inferred consumption or clearance. Gate, Native, and
+ROADMAP_06 remain rebind-required, `FEATURE_CURSOR_000` remains authoritative,
+and slot release is false. Memory remains read-only receipt/no dispatch.
+Disposition: `RECOVERY_FAILED_EXACT`.
