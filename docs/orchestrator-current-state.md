@@ -1714,3 +1714,19 @@ slots, queue `32`, and all cursors `FEATURE_CURSOR_000` remain unchanged;
 Roadmap07 remains held. The next action is authorized functional host/provider,
 recovery, clean-source, independent-clearance, and exact Controller slot-release
 evidence. Memory remains receipt-only and was not contacted.
+## Recovery 37 — comprehensive-proof binding repair — 2026-08-11
+
+The bounded comprehensive-proof attempt exposed and repaired one concrete
+metadata defect: `schemas/bootstrap-binding.v1.json` still held the prior
+digest for `docs/audit-repair-integration-state.v1.json`. The binding now
+matches the exact current state bytes. Focused Bootstrap-binding, portability,
+privacy, and state-validation proofs pass.
+
+The comprehensive suite was interrupted after this repair because its bounded
+runtime was exhausted; no comprehensive pass is claimed. Five ordinary slots,
+zero Memory slots, queue `32`, all cursors `FEATURE_CURSOR_000`, and all
+downstream/clearance/release flags remain unchanged. The next action is a
+bounded comprehensive proof from the repaired binding, followed by authorized
+functional host/provider, recovery, clean-source, independent-clearance, and
+Controller slot-release evidence. Memory remains receipt-only and was not
+contacted.

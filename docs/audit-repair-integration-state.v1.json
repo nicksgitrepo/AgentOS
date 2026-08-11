@@ -1772,6 +1772,27 @@
       "true_external_blocker": "NONE",
       "next_action": "OBTAIN_CURRENT_CANDIDATE_GATE_NATIVE_REBIND_RECEIPTS_THEN_RUN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_AND_CLEAN_SOURCE_PROOF_OBTAIN_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL"
     },
+  "recovery_37_comprehensive_binding_repair_2026_08_11": {
+    "record_layer": "CURRENT_CANDIDATE_COMPREHENSIVE_PROOF_BINDING_REPAIR",
+    "transaction_status": "BOUND_STATE_DIGEST_REPAIRED_FOCUSED_PROOFS_PASS_COMPREHENSIVE_SUITE_BOUNDED_PENDING",
+    "candidate": {"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"},
+    "observed_central_publication": {"commit":"9b37b2d45fe458dd8e805b25335f8ca1df18b0e6","tree":"6b9ef6543f22a9d93b462e9d4bd8648df4a30879"},
+    "repair": {"path":"schemas/bootstrap-binding.v1.json","binding":"audit_repair_integration_state_record","prior_sha256":"9292d2fbe28b31fb3967996d25a0f108a40edd07c2427b108717877bbac1e99f","corrected_sha256":"46525b01a190c9866f0998f9fee4ec916e8e132740661caff53b86f352bf1ac6"},
+    "focused_proofs": {"bootstrap_contract_bindings":"PASS","portability":"PASS","privacy":"PASS"},
+    "comprehensive_suite": "BOUNDED_ATTEMPT_INTERRUPTED_AFTER_BINDING_REPAIR_NO_PASS_CLAIM",
+    "ordinary_active_slot_count": 5,
+    "memory_slot_count": 0,
+    "ordinary_queue_count": 32,
+    "authoritative_cursors": {"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},
+    "downstream_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "slot_release": false,
+    "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+    "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+    "true_external_blocker": "NONE",
+    "next_action": "RUN_BOUNDED_COMPREHENSIVE_PROOF_FROM_REPAIRED_BINDING_THEN_OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+  },
   "recovery_36_platform_receipt_consumption_2026_08_11": {
     "record_layer": "CENTRAL_CURRENT_PLATFORM_RECEIPT_CONSUMPTION",
     "transaction_status": "CENTRAL_METADATA_ONLY_CONSUMPTION_RECORDED_NO_FEATURE_DOWNSTREAM_CONSUMPTION",
@@ -1813,7 +1834,7 @@
     "true_external_blocker": "NONE",
     "next_action": "CONSUME_TYPED_CURRENT_PLATFORM_RECEIPTS_THEN_OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE"
   },
-  "authoritative_projection_ref": "platform_pipeline.recovery_36_platform_receipt_consumption_2026_08_11",
+  "authoritative_projection_ref": "platform_pipeline.recovery_37_comprehensive_binding_repair_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1827,5 +1848,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "CONSUME_PLATFORM_RECEIPTS_THEN_PROOF_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "6ebf9af6ab65603989fc814cd732e9ac7aeb70e35f305fe531d86a02de98ea47"
+  "state_sha256": "b9dc52bca78796da054fcdf1ea7f2768f1df516b37c5859cf5fa410809dc6ba8"
 }
