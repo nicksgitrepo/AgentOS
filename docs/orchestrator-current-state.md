@@ -2151,3 +2151,23 @@ The same independent-clearance task was returned for a focused rerun on turn
 `dd39662b87abec5d359863f6f1565d2792941d26` while expecting the corrected
 projection target `0b68f431 / 9afbf4f9`. The rerun remains lightweight and
 source-bound; no protected Runtime/real-host action is started.
+
+## Recovery 57 — independent preflight pass and host-neutral activation packet — 2026-08-11
+
+The focused independent rerun returned `PREFLIGHT_PASS` for audited publication
+`59860e96574416673c5a1dca19b6e06368f4de97` / tree
+`dd39662b87abec5d359863f6f1565d2792941d26`, bound to Central
+`0b68f431 / 9afbf4f9`. Product/source identities, Gate/Native receipts, state,
+inventory/map, public/private/bootstrap/privacy/portability bindings, browser
+policy absence, clean worktree, five ordinary slots, zero Memory slots, and
+`FEATURE_CURSOR_000` all passed. Consumption, Platform clearance, independent
+clearance, downstream, and slot release remain false.
+
+The only parked protected leg is `SERIALIZED_RUNTIME_REAL_HOST_CUSTODY`. A
+host-neutral packet is prepared as
+`HOST_NEUTRAL_ACTIVATION_PACKET_59860E96_DD39662B` for generic NEW_PROJECT
+initialization and GENERIC_PROJECT_IMPORT_ADOPTION, with release identity
+`AGENTOS_STANDALONE_CANDIDATE_59860E96574416673F4DE97` and rollback identity
+`AGENTOS_STANDALONE_ROLLBACK_0B68F431D62`. It is prepared, not activated or
+released, and queued behind the serialized Runtime repair/proof/build owner;
+external project context is excluded.

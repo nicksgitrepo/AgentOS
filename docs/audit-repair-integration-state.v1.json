@@ -2182,7 +2182,7 @@
     "owner_task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
     "model": "gpt-5.6-luna",
     "reasoning_effort": "max",
-    "status": "FOCUSED_RERUN_ACTIVE_AFTER_CURRENT_PUBLICATION_REBIND",
+    "status": "PREFLIGHT_PASS_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_PENDING",
     "prior_rebind_publication": {
       "commit": "2c52928247cc467e5487122cc7bff78aa5efaabf",
       "tree": "ffb50243418dd990f2fd1bcf88bc041d31e5ec41",
@@ -2213,12 +2213,12 @@
       "handoff_sha256": "e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d"
     },
     "shared_host_boundary": "SERIALIZED_RUNTIME_CUSTODY_BLOCKS_ONLY_PROTECTED_REAL_HOST_CLEARANCE",
-    "proof_execution": "LIGHTWEIGHT_PREFLIGHT_ACTIVE_NO_HEAVYWEIGHT_PROOF",
+    "proof_execution": "LIGHTWEIGHT_PREFLIGHT_PASS_NO_HEAVYWEIGHT_PROOF",
     "preflight_dispatch": {
       "task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
       "prior_turn_id": "019ff293-c5a0-7ed2-bee3-70607b2f3a18",
       "turn_id": "019ff29e-6c45-7740-bca5-56c5e90460eb",
-      "status": "ACTIVE_FOCUSED_RERUN",
+      "status": "TERMINAL_PREFLIGHT_PASS",
       "model": "gpt-5.6-luna",
       "reasoning_effort": "max",
       "scope": "LIGHTWEIGHT_LOCAL_SOURCE_BOUND_STATE_DIGEST_PRIVACY_RECEIPT_AND_FLAG_PREFLIGHT_ONLY",
@@ -2233,6 +2233,26 @@
       "heavyweight_or_real_host_actions": false,
       "memory_contact": false
     },
+    "preflight_receipt": {
+      "result": "PREFLIGHT_PASS",
+      "turn_id": "019ff29e-6c45-7740-bca5-56c5e90460eb",
+      "audited_publication": {
+        "commit": "59860e96574416673c5a1dca19b6e06368f4de97",
+        "tree": "dd39662b87abec5d359863f6f1565d2792941d26"
+      },
+      "bound_central_identity": {
+        "commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
+        "tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"
+      },
+      "state_digest": "73e7b62725be938fe38c7d4e6f85bc33353333fd40a8d3f25c6d97c3cd978934",
+      "inventory_digest": "f42a630bcd4c673551c4cb4ba5db6443d079d63855dbc85ff0f4e4ffedafa018",
+      "platform_map_digest": "5759a29b932f7063a5a3904eb80dbab193e00879537530809d0100d0223193c6",
+      "portability_sha256": "7b8143a8ce0d933c3be2906590a871e7a2bf508abe2e7346f99a49b3a263f28d",
+      "working_tree": "CLEAN",
+      "remaining_dependency": "SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
+      "final_clearance": false,
+      "slot_release": false
+    },
     "metadata_only": true,
     "typed_readback": "RECEIVED_REBIND_SENT_WAITING_PROOF_PRESSURE_CLEARANCE",
     "metadata_binding": {
@@ -2245,7 +2265,7 @@
     "proof_boundary": {
       "tests_build_proof_jobs": "NOT_RUN",
       "host_provider_actions": "NOT_RUN",
-      "remaining": "FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_PROOF_AND_CONTROLLER_SLOT_RELEASE"
+      "remaining": "SERIALIZED_RUNTIME_REAL_HOST_CUSTODY"
     },
     "central_consumed": false,
     "platform_clearance": false,
@@ -2261,8 +2281,57 @@
     "memory_slot_count": 0,
     "memory_boundary": "UNTOUCHED_READ_ONLY_RECEIPT_ONLY_OUTSIDE_ORDINARY_SLOTS_AND_CURSORS",
     "true_external_blocker": "NONE",
-    "remaining_dependency": "FOCUSED_RERUN_RECEIPT_PENDING; SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_ONLY_IF_PROTECTED_CLEARANCE_LEG_REMAINS",
-    "next_action": "CONSUME_FOCUSED_RERUN_RECEIPT; ROUTE_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_ONLY_IF_REQUIRED; RETAIN_FLAGS_FALSE"
+    "remaining_dependency": "SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
+    "next_action": "PARK_PROTECTED_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY; RETAIN_FLAGS_FALSE"
+  },
+  "host_neutral_activation_packet_2026_08_11": {
+    "record_layer": "PREPARED_HOST_NEUTRAL_NEW_PROJECT_IMPORT_ACTIVATION_PACKET",
+    "packet_id": "HOST_NEUTRAL_ACTIVATION_PACKET_59860E96_DD39662B",
+    "candidate": {
+      "commit": "59860e96574416673c5a1dca19b6e06368f4de97",
+      "tree": "dd39662b87abec5d359863f6f1565d2792941d26"
+    },
+    "bound_central_identity": {
+      "commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
+      "tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"
+    },
+    "product_candidate": {
+      "commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+      "tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c"
+    },
+    "source_binding": {
+      "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+      "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+    },
+    "new_project_initialization": {
+      "mode": "NEW_PROJECT",
+      "context": "GENERIC_PROJECT_AGNOSTIC",
+      "identity": "NEW_PROJECT_INIT_59860E96",
+      "status": "PREPARED_PENDING_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY"
+    },
+    "generic_project_import_adoption": {
+      "mode": "GENERIC_PROJECT_IMPORT_ADOPTION",
+      "input_contract": "OPAQUE_GENERIC_PROJECT_DESCRIPTOR",
+      "identity": "GENERIC_IMPORT_ADOPTION_59860E96",
+      "status": "PREPARED_PENDING_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY"
+    },
+    "release_identity": "AGENTOS_STANDALONE_CANDIDATE_59860E96574416673F4DE97",
+    "rollback_identity": "AGENTOS_STANDALONE_ROLLBACK_0B68F431D62",
+    "rollback_target": {
+      "commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
+      "tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"
+    },
+    "activation_status": "PREPARED_NOT_ACTIVATED",
+    "release_decision": "PROTECTED_DECISION_PENDING",
+    "runtime_custody_queue": {
+      "status": "QUEUED_BEHIND_SERIALIZED_RUNTIME_REPAIR_PROOF_BUILD_TRANSACTION",
+      "external_project_context": "EXCLUDED",
+      "real_host_action_started": false,
+      "start_authority": "SERIALIZED_RUNTIME_CUSTODY_OWNER"
+    },
+    "memory_integration": false,
+    "ordinary_cursor_advance": false,
+    "slot_release": false
   },
   "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
@@ -2278,5 +2347,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "CONSUME-LIGHTWEIGHT-INDEPENDENT-PREFLIGHT-THEN-ROUTE-ONLY-SERIALIZED-RUNTIME-REAL-HOST-CUSTODY-IF-REQUIRED; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "4b818f3498ca6616f57e2d4e1f2599abc6adbb4e08845c0ddac9d293995ad722"
+  "state_sha256": "23f31193820407435627bd36c149075378bbb4c90bb4dcbfd2ebcb5968d89c91"
 }
