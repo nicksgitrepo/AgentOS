@@ -16,6 +16,8 @@ const attachment = compileNativeHostAttachment({
   hostId: "host-local-private",
   projectId: "public-project",
   environmentId: "local-test",
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
   attachedAtUtc: NOW,
 });
 
@@ -61,6 +63,8 @@ const differentAttachment = compileNativeHostAttachment({
   hostId: "host-local-private",
   projectId: "public-project",
   environmentId: "local-test",
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
   attachedAtUtc: NOW,
 });
 assert.throws(

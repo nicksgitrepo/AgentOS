@@ -322,7 +322,7 @@
     },
     "authority_corpus_compiler": {
       "path": "control/authority-corpus.mjs",
-      "sha256": "99c63018275cb3b555073cd9cae007a5251123af3303f3884413631efec303c2"
+      "sha256": "eb3a145436af47ffa0d4a39913f86664a4a7ee8561d341113cc49d9a755042c6"
     },
     "evidence_library_compiler": {
       "path": "control/evidence-library.mjs",

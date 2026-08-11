@@ -726,10 +726,11 @@ export function applyCorpusPlan(authorityRoot, context, workflow, {expectedParen
     throw new Error("authority corpus apply requires authority_corpus_activation=ACTIVATED");
   }
   if (expectedParentDigest !== null) requireSha(expectedParentDigest, "authority index expected parent digest");
+  const {roots} = validateCorpusInputs(context, workflow);
   const plan = compileCorpusPlan(context, workflow);
   const realRoot = canonicalAuthorityRoot(authorityRoot);
-  validatePhysicalLayout(realRoot, plan.roots);
-  ensureSafeDirectory(realRoot, plan.roots.authority_root, "authority root");
+  validatePhysicalLayout(realRoot, roots);
+  ensureSafeDirectory(realRoot, roots.authority_root, "authority root");
   const indexParentRelativePath = path.posix.dirname(plan.authority_index_path);
   ensureSafeDirectory(realRoot, indexParentRelativePath, "authority index parent");
   const releaseLock = acquireExclusiveLock(realRoot, plan.authority_index_path, "authority index");
