@@ -908,10 +908,6 @@
       "path": "docs/platform-foundation-auditreport.md",
       "sha256": "458bdf04720ee973016dcbdab5cde92241b0cc5fd82fd6af0892f4fe731adf94"
     },
-    "platform_foundation_independent_audit": {
-      "path": "docs/platform-foundation-independent-audit.md",
-      "sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3"
-    },
     "platform_foundation_merge_receipt": {
       "path": "docs/platform-foundation-merge-receipt.md",
       "sha256": "25ff5f02a8f2404ffa4d9228cedcd2d43985ebcb1ac388f602b4ff85a273df68"
@@ -1834,6 +1830,17 @@
     }
   },
   "compatibility_only": {
+    "historical_platform_foundation_independent_audit": {
+      "path": "docs/platform-foundation-independent-audit.md",
+      "sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Provider-specific historical paths and context are preserved for traceability and do not define the current portable-kernel contract.",
+      "replacement_bindings": [
+        {"historical_reference": "provider_specific_host_readback", "replacement": "schemas/visible-task-parity-readback.v1.json", "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"},
+        {"historical_reference": "provider_specific_native_host_bridge", "replacement": "schemas/native-host-attachment.v1.json", "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"}
+      ]
+    },
     "visible_task_parity_readback_contract": {
       "path": "schemas/visible-task-parity-readback.v1.json",
       "sha256": "60d0429786555cbcdaf58c341d26827cd77edc3c612bc2e227668f9bd79158aa"
