@@ -224,6 +224,7 @@ export async function runNativeSessionTeam({plan, host, hostAttachment = null, s
   requireUtc(observedAtUtc, "native session run time");
   assert(Number.isInteger(progressWindowMinutes) && progressWindowMinutes >= 1 && progressWindowMinutes <= 240, "native session progress window must be an integer from 1 to 240 minutes");
   const sessions = [];
+  const activeSessions = [];
   const completion = [];
   const attestations = [];
   let boundCheckpoint = null;
@@ -249,24 +250,25 @@ export async function runNativeSessionTeam({plan, host, hostAttachment = null, s
       const attestation = compileNativeSessionHostSpawnAttestation({request, hostResponse: spawned.host_readback, observedAtUtc});
       attestations.push(attestation);
       const pinned = await team.pin(spawned.session);
+      activeSessions.push(pinned.session);
       sessions.push({...pinned.session, spawn_attestation_sha256: attestation.attestation_sha256});
     }
-    for (let index = 0; index < sessions.length; index += 1) {
-      const session = sessions[index];
+    for (let index = 0; index < activeSessions.length; index += 1) {
+      const session = activeSessions[index];
       const waited = await team.wait(session, progressWindowMinutes * 60 * 1000);
       const waitedReadback = waited.readback.host_readback;
       const observed = await team.readback(session);
       const result = completionFrom(waitedReadback, observed.readback.host_readback, session, sourceBinding);
       completion.push(result);
     }
-    for (let index = 0; index < sessions.length; index += 1) {
-      const session = sessions[index];
+    for (let index = 0; index < activeSessions.length; index += 1) {
+      const session = activeSessions[index];
       await team.send(session, `Return the typed handoff for ${session.role} before closure.`);
       const finalReadback = await team.readback(session);
       const final = completionFrom(completion[index], finalReadback.readback.host_readback, session, sourceBinding);
       completion[index] = final;
       const closed = await team.close(session, handoffForClosure(final));
-      sessions[index] = closed.removal.session;
+      sessions[index] = {...closed.removal.session, spawn_attestation_sha256: sessions[index].spawn_attestation_sha256};
     }
     assert(team.roster().length === 0, "native session closure left an active roster entry");
     const record = compileRunRecord({plan, status: "TEAM_COMPLETED", sessions, completion, roster: [], checkpoint: boundCheckpoint, observedAtUtc});

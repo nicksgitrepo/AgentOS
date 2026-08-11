@@ -1000,17 +1000,17 @@ export function runContinuousOperatingLoopIteration({
 }) {
   const inspection = compileLoopInspection({loop, workers, observedAtUtc, observedSourceCommit, observedSourceTree, observedIntentSha256, continuationAfterHardStop, projectBinding});
   if (inspection.action === "STOP_HARD_BOUNDARY") return {inspection, status: "HARD_STOPPED", continuation_allowed: false, repair_record: null};
-  if (inspection.worker_reports.some((report) => report.finding_classification === "TRUE_BLOCKER")) {
-    return {inspection, status: "INTENT_REGULATOR_REVIEW_REQUIRED", continuation_allowed: false, repair_record: null};
-  }
-  if (inspection.action === "SOFT_BOUNDARY_REVIEW") return {inspection, status: "SOFT_REVIEW_REQUIRED", continuation_allowed: false, repair_record: null};
-  if (inspection.action === "CONTINUE") return {inspection, status: "CONTINUED", continuation_allowed: true, repair_record: null};
   if (inspection.action === "CLOSE_GOAL_SUCCEEDED_BY_REASSESSMENT") {
     assert(repair === null && predecessor === null && applyPatch === null && createReplacement === null && independentClearance === null,
       "source or intent reassessment cannot apply a stale repair or replacement");
     return {inspection, status: "SUCCEEDED_BY_REASSESSMENT", continuation_allowed: false, repair_record: null};
   }
-  if (inspection.action === "ORCHESTRATOR_REPAIR" && repair === null) return {inspection, status: "REPAIR_REQUIRED", continuation_allowed: false, repair_record: null};
+  if (inspection.worker_reports.some((report) => report.finding_classification === "TRUE_BLOCKER")) {
+    return {inspection, status: "INTENT_REGULATOR_REVIEW_REQUIRED", continuation_allowed: false, repair_record: null};
+  }
+  if (inspection.action === "SOFT_BOUNDARY_REVIEW") return {inspection, status: "SOFT_REVIEW_REQUIRED", continuation_allowed: false, repair_record: null};
+  if (inspection.action === "CONTINUE") return {inspection, status: "CONTINUED", continuation_allowed: true, repair_record: null};
+  if (inspection.action === "ORCHESTRATOR_REPAIR" && repair === null && typeof applyPatch !== "function") return {inspection, status: "REPAIR_REQUIRED", continuation_allowed: false, repair_record: null};
   assert(predecessor !== null, "replacement requires the predecessor typed handoff and session identity");
   validatePredecessor(predecessor);
   let repairReceipt = repair;

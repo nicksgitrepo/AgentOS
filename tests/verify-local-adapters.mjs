@@ -47,7 +47,7 @@ function sourceIdentity(readback) {
   };
 }
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-roadmap-05-"));
+const root = fs.mkdtempSync(path.join(fs.realpathSync.native(os.tmpdir()), "agentos-roadmap-05-"));
 try {
   const release = path.join(root, "release");
   const projects = path.join(root, "projects");
@@ -221,4 +221,3 @@ try {
 }
 
 console.log("PASS local adapter contract: register/reopen, source binding, handoff drift, detached mismatch, provider unavailable/partial readback, no-effects evidence, and privacy checks");
-

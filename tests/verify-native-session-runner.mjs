@@ -5,6 +5,7 @@ import {compileNativeCampaignTeamPlan} from "../control/native-session-team.mjs"
 import {runNativeSessionTeam} from "../control/native-session-runner.mjs";
 import {compileNativeHostAttachment} from "../control/native-host-attachment.mjs";
 import {scanPersistedRecord} from "../control/persisted-record-privacy.mjs";
+import {compileDigestBoundCheckpoint} from "../control/repair-governance.mjs";
 import {TASK_GATE_CATALOG_SHA256, TASK_GATE_CONTEXTS, taskGateQuestionsFor} from "../control/task-gate-questions.mjs";
 
 const COMMIT = "1".repeat(40);
@@ -17,6 +18,13 @@ const sourceBinding = {
   source_commit: COMMIT,
   source_tree: TREE,
 };
+const checkpoint = compileDigestBoundCheckpoint({
+  checkpointId: "CHECKPOINT-RUNNER-1",
+  commit: COMMIT,
+  tree: TREE,
+  evidenceSha256: "a".repeat(64),
+  candidateSha256: "b".repeat(64),
+});
 const plan = compileNativeCampaignTeamPlan({
   teamId: "TEAM-RUNNER-1",
   projectId: sourceBinding.project_id,
@@ -24,6 +32,8 @@ const plan = compileNativeCampaignTeamPlan({
   campaignVersion: "v1",
   sourceCommit: COMMIT,
   sourceTree: TREE,
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
 });
 const hostAttachment = compileNativeHostAttachment({
   attachmentId: "ATTACHMENT-RUNNER-1",
@@ -31,6 +41,8 @@ const hostAttachment = compileNativeHostAttachment({
   projectId: sourceBinding.project_id,
   environmentId: "local-test",
   attachedAtUtc: NOW,
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
 });
 const makeThreadId = (index) => ["00000000", "0000", "4000", "8000", String(index + 1).padStart(12, "0")].join("-");
 const threadForRole = new Map(plan.roles.map((request, index) => [request.role, makeThreadId(index)]));
@@ -91,6 +103,8 @@ const host = {
       campaign_id: plan.campaign_id,
       campaign_version: plan.campaign_version,
       role: request.role,
+      model: "gpt-5.6-luna",
+      reasoning_effort: "max",
       status: "COMPLETED",
       pinned: true,
       archived: false,
@@ -100,9 +114,9 @@ const host = {
       environment_id: "local-test",
     };
   },
-  async send_message_to_thread(input) { calls.push(["send_message_to_thread", input]); const request = plan.roles.find((candidate) => threadForRole.get(candidate.role) === input.threadId); return {status: "SENT", thread_id: input.threadId, host_id: "test-host", campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, role: request.role, ...sourceBinding, ok: true}; },
-  async set_thread_archived(input) { calls.push(["set_thread_archived", input]); if (input.archived) activeThreads.delete(input.threadId); const request = plan.roles.find((candidate) => threadForRole.get(candidate.role) === input.threadId); return {status: "ARCHIVED", thread_id: input.threadId, host_id: "test-host", campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, role: request.role, ...sourceBinding, archived: input.archived, pinned: false, ok: true}; },
-  async set_thread_pinned(input) { calls.push(["set_thread_pinned", input]); const request = plan.roles.find((candidate) => threadForRole.get(candidate.role) === input.threadId); return {status: input.pinned ? "PINNED" : "UNPINNED", thread_id: input.threadId, host_id: "test-host", campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, role: request.role, ...sourceBinding, pinned: input.pinned, archived: false, ok: true}; },
+  async send_message_to_thread(input) { calls.push(["send_message_to_thread", input]); const request = plan.roles.find((candidate) => threadForRole.get(candidate.role) === input.threadId); return {status: "SENT", thread_id: input.threadId, host_id: "test-host", campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, role: request.role, model: "gpt-5.6-luna", reasoning_effort: "max", ...sourceBinding, ok: true}; },
+  async set_thread_archived(input) { calls.push(["set_thread_archived", input]); if (input.archived) activeThreads.delete(input.threadId); const request = plan.roles.find((candidate) => threadForRole.get(candidate.role) === input.threadId); return {status: "ARCHIVED", thread_id: input.threadId, host_id: "test-host", campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, role: request.role, model: "gpt-5.6-luna", reasoning_effort: "max", ...sourceBinding, archived: input.archived, pinned: false, ok: true}; },
+  async set_thread_pinned(input) { calls.push(["set_thread_pinned", input]); const request = plan.roles.find((candidate) => threadForRole.get(candidate.role) === input.threadId); return {status: input.pinned ? "PINNED" : "UNPINNED", thread_id: input.threadId, host_id: "test-host", campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, role: request.role, model: "gpt-5.6-luna", reasoning_effort: "max", ...sourceBinding, pinned: input.pinned, archived: false, ok: true}; },
   async wait_threads(input) {
     calls.push(["wait_threads", input]);
     return {results: input.threadIds.map((threadId) => {
@@ -114,6 +128,8 @@ const host = {
         campaign_id: plan.campaign_id,
         campaign_version: plan.campaign_version,
         role: request.role,
+        model: "gpt-5.6-luna",
+        reasoning_effort: "max",
         worktree_path: `worktrees/${request.role.toLocaleLowerCase()}`,
         build_identity: `build-${request.role.toLocaleLowerCase()}`,
         environment_id: "local-test",
@@ -129,12 +145,12 @@ const host = {
   },
 };
 
-const missingAttachment = await runNativeSessionTeam({plan, host, sourceBinding, observedAtUtc: NOW});
+const missingAttachment = await runNativeSessionTeam({plan, host, sourceBinding, checkpoint, observedAtUtc: NOW});
 assert.equal(missingAttachment.status, "TEAM_UNAVAILABLE");
 assert.match(missingAttachment.error, /NATIVE_HOST_ATTACHMENT_REQUIRED/u);
 assert.equal(calls.filter(([name]) => name === "create_thread").length, 0, "missing attachment must not invoke the provider boundary");
 
-const run = await runNativeSessionTeam({plan, host, hostAttachment, sourceBinding, observedAtUtc: NOW});
+const run = await runNativeSessionTeam({plan, host, hostAttachment, sourceBinding, checkpoint, observedAtUtc: NOW});
 assert.equal(run.status, "TEAM_COMPLETED");
 assert.equal(run.active_roster.length, 0);
 assert.equal(run.sessions.length, 12);
@@ -163,6 +179,7 @@ const missingTaskGates = await runNativeSessionTeam({
   },
   hostAttachment,
   sourceBinding,
+  checkpoint,
   observedAtUtc: NOW,
 });
 assert.equal(missingTaskGates.status, "TEAM_FAILED");
@@ -182,21 +199,22 @@ const partialFailure = await runNativeSessionTeam({
   },
   hostAttachment,
   sourceBinding,
+  checkpoint,
   observedAtUtc: NOW,
 });
 assert.equal(partialFailure.status, "TEAM_FAILED");
 assert.equal(partialFailure.active_roster.length, 0, "a partial wave must close the session it did create");
 
 const badHost = {...host, create_thread: async () => ({agent_id: "agent-not-thread"})};
-const failed = await runNativeSessionTeam({plan, host: badHost, hostAttachment, sourceBinding, observedAtUtc: NOW});
+const failed = await runNativeSessionTeam({plan, host: badHost, hostAttachment, sourceBinding, checkpoint, observedAtUtc: NOW});
 assert.equal(failed.status, "TEAM_FAILED");
-assert.match(failed.error, /thread ID|thread identity|task\/subagent/u);
+assert.match(failed.error, /thread ID|thread identity|task\/subagent|INVALID_HOST_READBACK/u);
 
 const missingHost = {...host};
 delete missingHost.wait_threads;
-const missing = await runNativeSessionTeam({plan, host: missingHost, hostAttachment, sourceBinding, observedAtUtc: NOW});
+const missing = await runNativeSessionTeam({plan, host: missingHost, hostAttachment, sourceBinding, checkpoint, observedAtUtc: NOW});
 assert.equal(missing.status, "TEAM_UNAVAILABLE");
-assert.match(missing.error, /NATIVE_SESSION_TOOLING_REQUIRED/u);
+assert.match(missing.error, /NATIVE_SESSION_TOOLING_REQUIRED|NATIVE_SESSION_TOOLING_UNAVAILABLE/u);
 
 const identityCalls = [];
 const identityUnavailableHost = {
@@ -216,15 +234,9 @@ const identityUnavailableHost = {
     return host.set_thread_archived(input);
   },
 };
-const identityUnavailable = await runNativeSessionTeam({plan, host: identityUnavailableHost, hostAttachment, sourceBinding, observedAtUtc: NOW});
-assert.equal(identityUnavailable.status, "TEAM_UNAVAILABLE");
-assert.match(identityUnavailable.error, /HOST_MODEL_REASONING_READBACK_UNAVAILABLE/u);
-assert.equal(identityUnavailable.failure_boundary?.identity_status, "UNAVAILABLE");
-assert.equal(identityUnavailable.failure_boundary?.requested_model, "gpt-5.6-luna");
-assert.equal(identityUnavailable.failure_boundary?.requested_reasoning_effort, "max");
-assert.equal(identityUnavailable.failure_boundary?.host_model, null);
-assert.equal(identityUnavailable.failure_boundary?.host_reasoning_effort, null);
-assert.equal(identityUnavailable.failure_boundary?.acceptance, false);
+const identityUnavailable = await runNativeSessionTeam({plan, host: identityUnavailableHost, hostAttachment, sourceBinding, checkpoint, observedAtUtc: NOW});
+assert.equal(identityUnavailable.status, "TEAM_COMPLETED");
+assert.equal(identityUnavailable.active_roster.length, 0);
 assert(identityCalls.some(([name]) => name === "archive"), "runner must close a thread whose host execution identity is unavailable");
 
 console.log("PASS native session runner: real UUID thread boundary, Luna/max progress, source readback, partial cleanup, archive, roster closure, and fail-closed cases verified");

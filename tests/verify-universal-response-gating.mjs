@@ -75,11 +75,11 @@ const envelope = compileUniversalResponseEnvelope({
   closeReadiness: {status: "NOT_READY", temporary_work_closed: false, active_temporary_count: 0, roster_readback_sha256: null},
 });
 assert.equal(envelope.status, "COMPLETE");
-assert.equal(validateUniversalResponseEnvelope(envelope, {tree, answers, expectedIdentity}).envelope_sha256, envelope.envelope_sha256);
+assert.equal(validateUniversalResponseEnvelope(envelope, {tree, answers, expectedIdentity: identity}).envelope_sha256, envelope.envelope_sha256);
 
 const pendingIndependent = {...envelope, independent_check: {status: "PENDING", reviewer_ref: null, evidence_digest: null}, envelope_sha256: null};
 pendingIndependent.envelope_sha256 = canonicalDigest(pendingIndependent);
-assert.throws(() => validateUniversalResponseEnvelope(pendingIndependent, {tree, answers, expectedIdentity}), /COMPLETE requires independent PASS/u);
+assert.throws(() => validateUniversalResponseEnvelope(pendingIndependent, {tree, answers, expectedIdentity: identity}), /COMPLETE requires independent PASS/u);
 
 const unknown = structuredClone(answers);
 unknown[graph.entry_gate_id].answer = "UNKNOWN";

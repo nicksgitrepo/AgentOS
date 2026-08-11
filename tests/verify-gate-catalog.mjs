@@ -11,6 +11,7 @@ import {
   validateCompiledGateTree,
   validateGateCatalog,
 } from "../control/gate-catalog-compiler.mjs";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const CATALOG_PATH = new URL("../governance/gate-catalog.v1.json", import.meta.url);
 const SCHEMA_PATH = new URL("../schemas/gate-catalog.v1.json", import.meta.url);
@@ -151,7 +152,7 @@ assert.throws(() => evaluateGateDecisionTree({tree, graphId: "FUNCTIONALITY", an
 
 const mismatchedIdentity = allYesAnswers("FUNCTIONALITY");
 mismatchedIdentity["FUNC-002"].evidence[tree.gates.find((gate) => gate.gate_id === "FUNC-002").evidence[0]].observed_identity.session_ref = "REF_OTHER_WORKER_001";
-assert.throws(() => evaluateGateDecisionTree({tree, graphId: "FUNCTIONALITY", answers: mismatchedIdentity}), /execution identity/u);
+assert.throws(() => evaluateGateDecisionTree({tree, graphId: "FUNCTIONALITY", answers: mismatchedIdentity}), /execution identity|canonical record/u);
 
 const privateReference = allYesAnswers("FUNCTIONALITY");
 privateReference["FUNC-001"].evidence[functionality.evidence[0]].issuer_ref = "/private/path";

@@ -542,7 +542,7 @@
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
-      "sha256": "9e2c67f454876b354bbb59bf6482278b4fcf8401776b074bb5d60316fc12bcb2"
+      "sha256": "2e44f8aa4b6458612d1acf23273ca50e1763ea481fff180c6d52aae1afe2c653"
     },
     "continuous_operating_loop_contract": {
       "path": "schemas/continuous-operating-loop.v1.json",
@@ -1018,7 +1018,7 @@
     },
     "gate_catalog_verifier": {
       "path": "tests/verify-gate-catalog.mjs",
-      "sha256": "f64ddbca5f3933d8a00b3de7427df7c7f260e00e04f2830af2ab599c533f29e2"
+      "sha256": "c8ade60221217cb0a2c6f611b0dff0bf909b4d083b6dc2e9034789c51fcfa21a"
     },
     "universal_response_gating_audit_report": {
       "path": "docs/feature-audits/UNIVERSAL_RESPONSE_GATING/auditreport.md",
@@ -1034,7 +1034,7 @@
     },
     "universal_response_gating_verifier": {
       "path": "tests/verify-universal-response-gating.mjs",
-      "sha256": "86a7c42d54ee78683bf91e1059694857e629d25b4576bdfb81237957cbdc0416"
+      "sha256": "d001c8ca3e8e52d98969f77e73bb34da5d003cc8c6d116ff5ee6357fa9db5efc"
     },
     "governance_library_verifier": {
       "path": "tests/verify-governance-library.mjs",
@@ -1082,7 +1082,7 @@
     },
     "native_session_runner_controller": {
       "path": "control/native-session-runner.mjs",
-      "sha256": "34de85f4ddf940ecc9e9b45d9309e3d14324ab8121a402c9292cc1e25e1b1ed4"
+      "sha256": "ed6bcb6ba63ee338a27e472de5bd144fe403d3685dd52cc149faf51686362be7"
     },
     "native_session_run_contract": {
       "path": "schemas/native-session-run.v1.json",
@@ -1090,7 +1090,7 @@
     },
     "native_session_runner_verifier": {
       "path": "tests/verify-native-session-runner.mjs",
-      "sha256": "22cc892e2ea721ef14d8eabfbb632c1abbe87940dc4674d08af6e02fd951aa21"
+      "sha256": "aff01ddee8c9f4923811245d83725830f40f31d85dc3e40344ffd4ec0e196530"
     },
     "rapid_code_hygiene_controller": {
       "path": "control/rapid-prototype/code-hygiene.mjs",
@@ -1714,7 +1714,7 @@
     },
     "restored_local_adapters_verifier": {
       "path": "tests/verify-local-adapters.mjs",
-      "sha256": "395598f741f49d5235ad49e391491df09e2274579dfcb225a8221ddb0aad8098"
+      "sha256": "5b4bb98e338f5488c601c55dd751c8c5b22825a3589895828bd77358a68fb824"
     },
     "restored_task_context_firewall_controller": {
       "path": "control/task-context-firewall.mjs",
