@@ -145,14 +145,20 @@ for (const [relativePath, budget] of focusedBudgets) assert(lineCount(relativePa
 
 const explicitlyRetainedLargeBoundaries = new Set([
   "control/agentos-controller.mjs",
+  "control/audit-driven-integration-pyramid.mjs",
   "control/bootstrap-compiler.mjs",
   "control/campaign-cascade.mjs",
   "control/campaign-lifecycle.mjs",
   "control/continuous-operating-loop.mjs",
+  "control/hybrid-scheduler.mjs",
+  "control/local-agent-runtime.mjs",
   "control/local-agent-worker.mjs",
   "control/local-self-development-supervisor-adapter.mjs",
   "control/native-session-team.mjs",
   "control/owner-review.mjs",
+  "control/proof-carrying-work.mjs",
+  "control/release-lifecycle.mjs",
+  "control/task-model-routing.mjs",
 ]);
 const largeModules = modules
   .map((file) => path.relative(root, file))

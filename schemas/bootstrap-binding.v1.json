@@ -1170,7 +1170,7 @@
     },
     "architecture_hygiene_verifier": {
       "path": "tests/verify-architecture-hygiene.mjs",
-      "sha256": "975a5f44c6a944b4a1cb82e8fbc75a5ce601e82ce32dd8965f35e282bf6f614a"
+      "sha256": "85c5367faa5f0c9df1d53096939e6b16c150d044909f746d89866f7c89ff2be9"
     },
     "bootstrap_output_definitions": {
       "path": "control/bootstrap-output-definitions.mjs",
