@@ -25,8 +25,8 @@ separate workflow.
 
 ## Candidate and proof
 
-- Central publication tip: commit `a3e5188a9223b828010bd956277491fdfe7f4104`,
-  tree `d4f30dd52c8c00aa751001b81ec537668225e737`; clean.
+- Central publication tip: commit `5c4463f66efbb2442ec0cf66372f40a0d24e7244`,
+  tree `72138a8e3d8ad7373c3aaa7dfc0f88ff8175becb`; clean.
 - Source implementation candidate and preserved ROADMAP_03 checkpoint remain
   the d885/5f baseline recorded below; the publication tip is not a new
   integration or release candidate.
