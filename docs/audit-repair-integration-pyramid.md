@@ -144,7 +144,11 @@ states. Public release and activation remain separate owner decisions.
 ## Current checkpoint
 
 ROADMAP_03 is preserved in the cumulative candidate at the commit and tree
-recorded in `docs/audit-repair-integration-state.v1.json`. The next action is
-to resume the six existing visible feature tasks against that exact candidate,
-record their source-bound readbacks, and begin the rolling queue without
-archiving any stale task prematurely.
+recorded in `docs/audit-repair-integration-state.v1.json`. The current action
+is to obtain the remaining authorized functional/provider/host, recovery,
+clean-source, and independent-clearance evidence from the existing Platform
+owners, followed by an exact Controller slot-release receipt. Until that
+receipt exists, the five admitted ordinary lanes remain frozen and
+`ROADMAP_07_PROOF_ACCEPTANCE` is not admitted. The dormant Memory lane and
+its preserved task/worktree remain outside ordinary intake. No stale task is
+archived prematurely.

@@ -778,11 +778,11 @@
     },
     "feature_inventory_contract": {
       "path": "docs/feature-inventory.v1.json",
-      "sha256": "c6c241df9075fd5bb9f324cc24ad83a239fa79a98bfe151ee11501279b659de2"
+      "sha256": "f866f084ce3ac259853b3a72067bb74ec63993915947547ca8b6ce6fa74fb8ab"
     },
     "feature_inventory_article": {
       "path": "docs/feature-inventory.md",
-      "sha256": "7aab083fa816f3637869b6784e72e6bc26288f24c109cd696fd500da05e52528"
+      "sha256": "0e7194bff9f84830acde315c2ecd8cff451dec5ec270e075ed160b9a9134ad2a"
     },
     "feature_lane_goal_controller": {
       "path": "control/feature-lane-goal.mjs",
@@ -1830,15 +1830,15 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "1f2ad36e51a3cd38929b82ea07e34d044f54dda00f6c92929b9c1a40e65f75b8"
+      "sha256": "7ec254aa8394d62c79b6bad4296ea3adb79364bdb340f9657e2a34549f0f4efb"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
-      "sha256": "bcfe6885fffa18ddf8e367471965da286f26f234cdbb45b07c00a6e4373d95a2"
+      "sha256": "d436978ff7bb60a73cee36cd7715c43efc227de63d65c675c8d2e65a58ee1d81"
     },
     "audit_repair_integration_article": {
       "path": "docs/audit-repair-integration-pyramid.md",
-      "sha256": "a3660d19a85b7b885a28d2062c76b55e6157b9dd7bb4542ae1da362be8e1fc9e"
+      "sha256": "8236afea8b4083a07555adb0bc8eedf64d59eb5ef75ed0e7d2e4ed8bf9907261"
     },
     "roadmap_amendment": {
       "path": "docs/roadmap.md",
