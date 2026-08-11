@@ -2127,3 +2127,20 @@ The only possible remaining protected dependency is serialized Runtime/real-host
 custody for the clearance leg, to be recorded only if the typed preflight confirms
 that it is required. Five ordinary slots, zero Memory slots, all cursors
 `FEATURE_CURSOR_000`, and all consumption/clearance/release flags remain false.
+
+## Recovery 56 — current-publication binding correction — 2026-08-11
+
+The independent preflight found a solvable metadata mismatch: current receipt and
+proof-wave projections still named historical Central `ccb235d / 2e800a51`, while
+the audited publication is `0b68f431 / 9afbf4f9`. The canonical state now binds
+those current projections to `0b68f431 / 9afbf4f9` and preserves `ccb235d /
+2e800a51` as an explicit historical predecessor. The portability compatibility
+binding now records the actual file SHA-256
+`7b8143a8ce0d933c3be2906590a871e7a2bf508abe2e7346f99a49b3a263f28d` instead of
+the stale `27aea903…` value.
+
+No Memory or peer worktree was touched. Cursors and all consumption, clearance,
+downstream, and slot-release flags remain false. The same independent-clearance
+task must perform one focused rerun against the corrected publication after this
+metadata commit; no provider, host, build, test, release, or activation action is
+started.
