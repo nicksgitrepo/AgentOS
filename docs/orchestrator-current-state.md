@@ -1599,3 +1599,17 @@ slots, zero Memory slots, queue `32`, cursors `FEATURE_CURSOR_000`, and all
 consumption/clearance/release flags remain unchanged. Next action is the
 source-bound Gate/Native rebind, then authorized proof and exact Controller
 slot-release receipt; Memory remains receipt-only and untouched.
+
+## Recovery 30 — native session boundary proof — 2026-08-11
+
+Against candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`, the available native session team
+and session runner proofs pass, including typed host lifecycle, Luna/max
+defaults, exact identity binding, source readback, partial cleanup, archive,
+roster closure, and fail-closed capability cases. This is local deterministic
+contract evidence only; it is not real-host lifecycle success or clearance.
+The worktree remains clean, five ordinary slots and zero Memory slots remain,
+all cursors remain `FEATURE_CURSOR_000`, and consumption, clearance, and slot
+release remain false. Gate/Native current-candidate rebinds, authorized
+functional/provider and recovery evidence, independent clearance, and the
+exact Controller slot-release receipt remain pending. Memory was not contacted.
