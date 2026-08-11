@@ -1624,7 +1624,24 @@
       "remaining_proof_residuals": ["PLATFORM_GATE_CURRENT_CANDIDATE_REBIND_RECEIPT_REQUIRED","PLATFORM_NATIVE_CURRENT_CANDIDATE_REBIND_RECEIPT_AND_CLEAN_CUSTODY_REQUIRED","AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_CONCURRENCY_CRASH_POWER_LOSS_RECOVERY_AND_INDEPENDENT_CLEARANCE_PENDING","EXACT_CONTROLLER_SLOT_RELEASE_RECEIPT_REQUIRED"],
       "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_22_local_functional_proof_2026_08_11",
+    "recovery_23_clean_source_readback_2026_08_11": {
+      "record_layer": "CURRENT_CENTRAL_PUBLICATION_CLEAN_SOURCE_READBACK",
+      "transaction_status": "CENTRAL_RECOVERY_22_PUBLICATION_CLEAN_AND_ARCHIVE_VERIFIED",
+      "publication_commit": "b966e5e9ffa60cb0d88ba31cac736d3c135cfb98",
+      "publication_tree": "b684b2cad4544102b62dac9f024b7193a128a235",
+      "candidate_commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+      "candidate_tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c",
+      "working_tree": "CLEAN",
+      "git_archive_sha256": "b3021ee6b75c69566f6662cd78296bdda10d489455f5e9f583ef8ae352f339e7",
+      "proof": "PASS_CLEAN_SOURCE_PUBLICATION_ARCHIVE_READBACK",
+      "platform_rebind_status": "PENDING_GATE_NATIVE_CURRENT_CANDIDATE_RECEIPTS",
+      "independent_clearance_receipt": "NOT_RECEIVED",
+      "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_23_clean_source_readback_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1638,5 +1655,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "628f766aca447e1d1cb1ff7e36c25a2800d30efef5f24d6504d12cc0115b5f26"
+  "state_sha256": "dfced308584734782bbdcfa41361eac565942e4bad632fade416528bc4a4b3b6"
 }

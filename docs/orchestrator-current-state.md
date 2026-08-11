@@ -1358,3 +1358,23 @@ controller remains receipt-only to this orchestrator and was not contacted.
 Next action:
 `PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 23 — clean-source publication readback — 2026-08-11
+
+The Recovery 22 central publication is clean at
+`b966e5e9ffa60cb0d88ba31cac736d3c135cfb98` /
+`b684b2cad4544102b62dac9f024b7193a128a235`; its exact Git archive digest is
+`b3021ee6b75c69566f6662cd78296bdda10d489455f5e9f583ef8ae352f339e7`.
+This is a clean-source custody proof for the published central candidate, not
+Platform clearance or slot release.
+
+Gate and Native still require source-bound current-candidate rebind receipts;
+authorized functional, host/provider, recovery, and independent-clearance
+evidence plus the exact Controller slot-release receipt remain pending.
+Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, queue
+`32`, zero Memory slots, and all consumption/clearance/release flags remain
+unchanged. Memory was not contacted.
+
+Next action:
+`PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
+True external blocker: `NONE`.
