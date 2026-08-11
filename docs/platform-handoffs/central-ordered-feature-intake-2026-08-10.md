@@ -990,3 +990,30 @@ consumed or cleared, no cursor advances, and no slot release is claimed.
 `FEATURE_CURSOR_000`, five ordinary slots, zero Memory slots, and all false
 consumption/clearance/release flags remain authoritative. Memory remains
 read-only receipt/no dispatch. Disposition: `RECOVERY_FAILED_EXACT`.
+
+## Central owner-scope receipt — historical platform audit compatibility — 2026-08-11
+
+The append-only `docs/platform-foundation-independent-audit.md` remains
+preserved at SHA-256
+`f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3`.
+`schemas/bootstrap-binding.v1.json` now records it as
+`HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE`, with the historical
+host-readback and native-bridge references bound to the typed readback and
+portable host-attachment replacements. Compatibility and historical entries
+remain digest-verified for traceability but are excluded from current
+portable-kernel authority and current comprehensive-proof input.
+
+This additive record is bound to central candidate
+`1688f7240919eee528bdd8d6328cd9ff54bb6ddc` /
+`2ba926873959907de34ebc8c3e56f86edc77fd67`. The rerun reaches a new exact
+normative blocker: `docs/platform-handoffs/gate-catalog-response-platform-
+handoff.md` contains provider-specific context (SHA-256
+`affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347`) and
+requires a separate compatibility classification or project-agnostic
+replacement. No implementation, consumption, clearance, or slot release is
+claimed. Authoritative cursors remain `FEATURE_CURSOR_000`; ordinary active
+slots remain five, Memory slots zero, and ROADMAP_07 remains held. The next
+safe action is to resolve that handoff’s additive compatibility scope, then
+rebind Gate/Native receipts and obtain authorized functional, host/provider,
+recovery, clean-source, independent-clearance, and Controller slot-release
+evidence.

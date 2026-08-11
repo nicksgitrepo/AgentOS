@@ -1089,3 +1089,30 @@ Gate, Native, and ROADMAP_06 receipts remain rebind-required. Cursors stay
 `FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain, and
 all consumption/clearance/release flags remain false. Memory was not
 contacted. Disposition: `RECOVERY_FAILED_EXACT`.
+
+## Owner-scope disposition — historical platform audit compatibility — 2026-08-11
+
+The append-only `docs/platform-foundation-independent-audit.md` is preserved
+byte-for-byte at SHA-256
+`f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3` and is
+explicitly classified in `schemas/bootstrap-binding.v1.json` as
+`HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE`. Its provider-specific
+host readback and native bridge references are traceably bound to the typed
+readback and portable host-attachment replacements; they are not current
+portable-kernel or comprehensive-proof inputs. The proof selector continues
+to verify the historical digest while scanning normative entries only.
+
+The central record is published against candidate
+`1688f7240919eee528bdd8d6328cd9ff54bb6ddc` /
+`2ba926873959907de34ebc8c3e56f86edc77fd67`. The affected comprehensive proof
+now stops at the concrete provider-specific context in
+`docs/platform-handoffs/gate-catalog-response-platform-handoff.md` (SHA-256
+`affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347`); this
+handoff needs its own compatibility classification or a project-agnostic
+replacement before current normative proof can proceed. No provider receipt
+was reinterpreted as clearance. Cursors remain `FEATURE_CURSOR_000`, five
+ordinary slots and zero Memory slots remain, and downstream, Platform
+clearance, independent clearance, and Controller slot release remain false.
+Memory was not contacted; the next safe action is the bounded gate-handoff
+compatibility decision, followed by fresh source-bound Platform rebinds and
+authorized proof.

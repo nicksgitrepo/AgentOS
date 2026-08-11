@@ -12,8 +12,8 @@
   "current_candidate": {
     "worktree_id": "AGENTOS_FEATURE_MERGE_WAVE_03",
     "branch_ref": "codex/feature-integration-wave-03",
-    "commit": "26a9ed9456ca4567aa92a2463b6cf0faf08d0da6",
-    "tree": "d900f1ab8a8164c3bca26578dac0fbfdfca5445c",
+    "commit": "1688f7240919eee528bdd8d6328cd9ff54bb6ddc",
+    "tree": "2ba926873959907de34ebc8c3e56f86edc77fd67",
     "working_tree": "CLEAN",
     "status": "RECOVERY_2_REPAIRED_FOCUSED_PROOF_REBIND_PENDING"
   },
@@ -22,8 +22,8 @@
     "handoff_ref": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
     "report_ref": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
     "status": "FEATURE_HANDOFF_CONSUMED_PENDING_PLATFORM_REVIEW",
-    "integrated_commit": "26a9ed9456ca4567aa92a2463b6cf0faf08d0da6",
-    "integrated_tree": "d900f1ab8a8164c3bca26578dac0fbfdfca5445c",
+    "integrated_commit": "1688f7240919eee528bdd8d6328cd9ff54bb6ddc",
+    "integrated_tree": "2ba926873959907de34ebc8c3e56f86edc77fd67",
     "source_hygiene_status": "STATIC_SOURCE_SCAN_CLEAR",
     "activation_status": "PREPARED_NOT_ACTIVATED"
   },
@@ -107,15 +107,15 @@
   ],
   "active_feature_slots": [
     {
-      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"26a9ed9456ca4567aa92a2463b6cf0faf08d0da6","base_tree":"d900f1ab8a8164c3bca26578dac0fbfdfca5445c","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"1688f7240919eee528bdd8d6328cd9ff54bb6ddc","base_tree":"2ba926873959907de34ebc8c3e56f86edc77fd67","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"26a9ed9456ca4567aa92a2463b6cf0faf08d0da6","base_tree":"d900f1ab8a8164c3bca26578dac0fbfdfca5445c","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"1688f7240919eee528bdd8d6328cd9ff54bb6ddc","base_tree":"2ba926873959907de34ebc8c3e56f86edc77fd67","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"26a9ed9456ca4567aa92a2463b6cf0faf08d0da6","base_tree":"d900f1ab8a8164c3bca26578dac0fbfdfca5445c","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"1688f7240919eee528bdd8d6328cd9ff54bb6ddc","base_tree":"2ba926873959907de34ebc8c3e56f86edc77fd67","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"26a9ed9456ca4567aa92a2463b6cf0faf08d0da6","base_tree":"d900f1ab8a8164c3bca26578dac0fbfdfca5445c","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"1688f7240919eee528bdd8d6328cd9ff54bb6ddc","base_tree":"2ba926873959907de34ebc8c3e56f86edc77fd67","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"26a9ed9456ca4567aa92a2463b6cf0faf08d0da6","base_tree":"d900f1ab8a8164c3bca26578dac0fbfdfca5445c","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
+      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"1688f7240919eee528bdd8d6328cd9ff54bb6ddc","base_tree":"2ba926873959907de34ebc8c3e56f86edc77fd67","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
   ],
   "platform_owners": [
     {"lane_id":"PLATFORM_GATE_RESPONSE","task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","worktree_id":"HOST_WORKTREE_C3BA","model":"gpt-5.6-luna","reasoning_effort":"max","domain_ids":["PORTABLE_KERNEL_GATES_CONTRACTS","GOVERNANCE_INTENT_ROLES_ROUTING"],"cursor":"HANDOFF_RECEIVED_PENDING_INDEPENDENT_CLEARANCE"},
@@ -1261,7 +1261,44 @@
       "true_external_blocker": "NONE",
       "next_action": "OWNER_ONLY_DECISION_ON_HISTORICAL_REPORT_PORTABILITY_REDACTION"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_7_portable_surface_repair_2026_08_11",
+    "recovery_8_historical_compatibility_reclassification_2026_08_11": {
+      "record_layer": "CURRENT_HISTORICAL_COMPATIBILITY_RECLASSIFICATION",
+      "transaction_status": "HISTORICAL_EVIDENCE_PRESERVED_COMPATIBILITY_RECLASSIFIED",
+      "historical_record_ref": "docs/platform-foundation-independent-audit.md",
+      "historical_record_sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Provider-specific historical paths and context are preserved for traceability and do not define the current portable-kernel contract or current comprehensive-proof input.",
+      "replacement_bindings": [
+        {"historical_reference":"provider_specific_host_readback","replacement":"schemas/visible-task-parity-readback.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"},
+        {"historical_reference":"provider_specific_native_host_bridge","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"}
+      ],
+      "historical_integrity": "SHA256_BINDING_PRESERVED",
+      "current_portability_selector": "NORMATIVE_ENTRIES_ONLY; COMPATIBILITY_AND_HISTORICAL_ENTRIES_BIND_DIGESTS_BUT_ARE_NOT_PORTABLE_INPUT",
+      "affected_comprehensive_proof": "FAIL_PORTABLE_AUTHORITY_LITERAL_DOCS_PLATFORM_HANDOFFS_GATE_CATALOG_RESPONSE_PLATFORM_HANDOFF",
+      "exact_blocker": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md contains provider-specific context and requires additive compatibility classification or a project-agnostic replacement",
+      "blocked_record_sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347",
+      "accounting": {
+        "ordinary_active_slot_count": 5,
+        "memory_slot_count": 0,
+        "ordinary_queue_count": 32,
+        "authoritative_cursors": {
+          "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+          "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+          "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+        },
+        "downstream_consumed": false,
+        "platform_clearance": false,
+        "independent_clearance": false,
+        "slot_release": false,
+        "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+        "memory_integration": false
+      },
+      "memory_boundary": "READ_ONLY_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "CLASSIFY_GATE_HANDOFF_HISTORICAL_CONTEXT_OR_BIND_PROJECT_AGNOSTIC_REPLACEMENT"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_8_historical_compatibility_reclassification_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1274,6 +1311,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "RECOVERY_FAILED_EXACT_HISTORICAL_REPORT_PORTABILITY_REDACTION",
-  "state_sha256": "10c20057d0ec82dbd438cab374230f3df1c5af3da5921e5913b05e3e63ec9591"
+  "next_action": "HISTORICAL_COMPATIBILITY_RECLASSIFICATION_GATE_HANDOFF_PENDING",
+  "state_sha256": "fb788abccbcb031aed29334ee9e235e2fe85e5daedd337b7097f744f8b067f20"
 }
