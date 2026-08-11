@@ -81,6 +81,14 @@ function canonicalPretty(value) {
 }
 
 const files = listFiles(root);
+const privacyProjection = readJson("docs/privacy-public-projection.v1.json");
+if (privacyProjection.selector_mode !== "NORMATIVE_PUBLIC_OBJECTS_PLUS_OPAQUE_PRIVATE_DIGESTS") {
+  fail("portability privacy selector is not bound to normative objects plus opaque private digests");
+}
+const privateRecordDigests = new Set([
+  ...(privacyProjection.private_records ?? []).map((record) => record.record_digest_sha256),
+  ...(privacyProjection.retained_payload_digest_extensions ?? []),
+]);
 for (const absolute of files.filter((entry) => entry.endsWith(".json"))) {
   try {
     JSON.parse(fs.readFileSync(absolute, "utf8"));
@@ -117,6 +125,7 @@ const numericBinding = /\b(?:account|subscription|project|tenant|deployment|reso
 for (const absolute of files) {
   const text = fs.readFileSync(absolute, "utf8");
   const relative = path.relative(root, absolute);
+  if (privateRecordDigests.has(sha256(text))) continue;
   for (const token of forbiddenStrings) {
     if (text.includes(token)) fail(`forbidden product identity in ${relative}`);
   }

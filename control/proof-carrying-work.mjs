@@ -83,9 +83,9 @@ const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 const PRIVATE_TEXT = /(?:\bpassword\b|\bsecret(?:s)?\b|\bcredential(?:s)?\b|\bprivate[ _-]?key\b|\btoken\b|\bsk-[A-Za-z0-9])/iu;
-const PROTECTED_PUBLIC_SUMMARY = /(?:\/(?:Users|home|private|tmp|var|root|etc)\/|[A-Za-z]:[\\/](?:Users|home|private|tmp|var|root)[\\/]|(?:api|access|secret|auth|private)[ _-]?(?:key|token|credential)\s*[:=]|(?:access|refresh|bearer|session|auth)[ _-]?token\s*[:=]|(?:chat|conversation|thread)[\/:_ -])/iu;
+const PROTECTED_PUBLIC_SUMMARY = /(?:\/(?:Users|home|private|tmp|var|root|etc)\/|[A-Za-z]:[\\/](?:Users|home|private|tmp|var|root)[\\/]|(?:api|access|secret|auth|authorization|private)[ _-]?(?:key|token|credential)\s*[:=]|(?:access|refresh|bearer|session|auth|authorization)[ _-]?token\s*[:=]|(?:chat|conversation|thread)[\/:_ -])/iu;
 const PRIVATE_REFERENCE_TOKEN = /(?:^|[._-])(?:private|secret|secrets|credential|credentials|token)(?:[._-]|$)/iu;
-const PRIVATE_REFERENCE_SEGMENT = /^(?:\.git|\.env|tmp|var|home|root)$/iu;
+const PRIVATE_REFERENCE_SEGMENT = /^(?:\.git|\.env|private|tmp|var|home|root)$/iu;
 const CHAT_REFERENCE_TOKEN = /(?:^|[\/._-])(?:chat|conversation|thread)(?:[\/._-]|$)/iu;
 const SCHEME = /^[A-Za-z][A-Za-z0-9+.-]*:/u;
 

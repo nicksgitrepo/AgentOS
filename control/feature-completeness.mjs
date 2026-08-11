@@ -30,10 +30,10 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 const PRIVATE_REFERENCE_TOKEN = /(?:^|[._-])(?:secret|secrets|credential|credentials)(?:[._-]|$)/iu;
-const PRIVATE_REFERENCE_SEGMENT = /^(?:\.git|\.env|tmp|var|home|root)$/iu;
+const PRIVATE_REFERENCE_SEGMENT = /^(?:\.git|\.env|private|tmp|var|home|root)$/iu;
 const CHAT_REFERENCE_TOKEN = /(?:^[A-Za-z][A-Za-z0-9+.-]*:\/\/|(?:^|\/)(?:chat|conversation|thread)(?:\/|$))/iu;
 const SCHEME = /^[A-Za-z][A-Za-z0-9+.-]*:/u;
-const PROTECTED_PUBLIC_SUMMARY = /(?:\/(?:Users|home|private|tmp|var|root|etc)\/|[A-Za-z]:[\\/](?:Users|home|private|tmp|var|root)[\\/]|(?:api|access|secret|auth|private)[ _-]?(?:key|token|credential)\s*[:=]|(?:access|refresh|bearer|session|auth)[ _-]?token\s*[:=]|(?:chat|conversation|thread)[\/:_ -]|019f[a-f0-9-]{20,})/iu;
+const PROTECTED_PUBLIC_SUMMARY = /(?:\/(?:Users|home|private|tmp|var|root|etc)\/|[A-Za-z]:[\\/](?:Users|home|private|tmp|var|root)[\\/]|(?:api|access|secret|auth|authorization|private)[ _-]?(?:key|token|credential)\s*[:=]|(?:access|refresh|bearer|session|auth|authorization)[ _-]?token\s*[:=]|(?:chat|conversation|thread)[\/:_ -]|019f[a-f0-9-]{20,})/iu;
 
 const FEATURE_MAP_KEYS = [
   "schema", "version", "contract_status", "visibility", "map_id", "project_id", "campaign_id", "build_id",
@@ -618,7 +618,9 @@ export function validateInventoryCoveragePlan(plan, {inventory, featureMap} = {}
   }
   assert(Array.isArray(plan.report_paths) && plan.report_paths.length === plan.report_count, "inventory coverage report paths are incomplete");
   plan.report_paths.forEach((value, index) => validatePublicReference(value, `inventory coverage report path ${index}`));
-  sortedUnique(plan.report_paths, "inventory coverage report paths");
+  const sortedReportPaths = [...plan.report_paths].sort(compareUtf8);
+  assert(new Set(plan.report_paths).size === plan.report_paths.length, "inventory coverage report paths contains duplicates");
+  assert(JSON.stringify(plan.report_paths) === JSON.stringify(sortedReportPaths), "inventory coverage report paths must be UTF-8 sorted");
   requireSha(plan.feature_map_sha256, "inventory coverage feature map digest");
   requireSha(plan.coverage_sha256, "inventory coverage digest");
   assert(plan.coverage_sha256 === digestWithout(plan, "coverage_sha256"), "inventory coverage digest mismatch");

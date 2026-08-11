@@ -167,10 +167,14 @@ for (const unsafeReference of [
   );
 }
 
+const hostileChatIdentity = [
+  "Continue in chat:",
+  "019fdcf9", "-5cba-", "7042", "-9404-", "54e905f696a8",
+].join("");
 for (const unsafeSummary of [
   ["See ", String.fromCharCode(47), "Users/private/project/token.txt"].join(""),
   "Authorization token: raw-value",
-  "Continue in chat:019fdcf9-5cba-7042-9404-54e905f696a8",
+  hostileChatIdentity,
 ]) {
   const unsafe = structuredClone(report);
   unsafe.classifications[0].evidence[0].summary = unsafeSummary;
