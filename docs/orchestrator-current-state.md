@@ -25,8 +25,8 @@ separate workflow.
 
 ## Candidate and proof
 
-- Central publication tip: commit `9254e6656a8d9b79b9cbea5f2e4eea6737f59d44`,
-  tree `32c9ae671224ea58370bc317c7bf7a865b4d951d`; clean.
+- Central publication tip: commit `8b76be22a965e08fde2dd0ef8be090910b0bb4c8`,
+  tree `d3e2864987ee3ada48280ea571d58bc8b01701ce`; clean.
 - Source implementation candidate and preserved ROADMAP_03 checkpoint remain
   the d885/5f baseline recorded below; the publication tip is not a new
   integration or release candidate.
@@ -274,6 +274,38 @@ pre-clearance projection while preserving that append-only history.
 - Safe next action: obtain a clean durable design-transfer handoff for CC4B
   and the required Platform/independent proof before any slot-release decision;
   metadata alone does not release or clear the slot.
+
+## Central metadata-repair checkpoint — 2026-08-11
+
+The cumulative central checkpoint is commit
+`8b76be22a965e08fde2dd0ef8be090910b0bb4c8` / tree
+`d3e2864987ee3ada48280ea571d58bc8b01701ce`. It corrects the stale current-
+checkpoint instruction that said to resume six lanes and now records the
+actual five ordinary-slot / dormant-memory / proof-and-slot-release hold.
+
+- Changed paths in the checkpoint: `docs/audit-repair-integration-pyramid.md`
+  and `schemas/bootstrap-binding.v1.json` only.
+- Read-only evidence: all 467 path/digest entries in
+  `schemas/bootstrap-binding.v1.json` match; `git diff --check` passed before
+  the checkpoint commit. No npm, functional tests, merge, push, release,
+  activation, or archive occurred.
+- Refreshed binding digests: feature inventory contract
+  `f866f084ce3ac259853b3a72067bb74ec63993915947547ca8b6ce6fa74fb8ab`;
+  feature inventory article
+  `0e7194bff9f84830acde315c2ecd8cff451dec5ec270e075ed160b9a9134ad2a`;
+  integration-state record
+  `7ec254aa8394d62c79b6bad4296ea3adb79364bdb340f9657e2a34549f0f4efb`;
+  platform map record
+  `d436978ff7bb60a73cee36cd7715c43efc227de63d65c675c8d2e65a58ee1d81`;
+  integration article
+  `8236afea8b4083a07555adb0bc8eedf64d59eb5ef75ed0e7d2e4ed8bf9907261`.
+- Durable routing remains: five ordinary slots, `memory_slot_count: 0`,
+  ordinary queue 32, authoritative cursors `FEATURE_CURSOR_000`, canonical
+  owner `019fee1e-5e78-78c2-a788-ad7a27eba19e`, and CC4B preserved as
+  `WAITING_DESIGN_TRANSFER`. `ROADMAP_07_PROOF_ACCEPTANCE` remains held.
+- Exact next action: obtain authorized non-test/host/provider/recovery/
+  clean-source/independent-clearance evidence, then an exact Controller
+  slot-release receipt.
 
 ## CURRENT STATE
 

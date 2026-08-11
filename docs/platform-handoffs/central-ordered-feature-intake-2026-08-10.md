@@ -316,3 +316,30 @@ evidence and does not claim a slot release.
 - No peer edit, cleanup, archive, npm/test, merge, push, release, activation,
   or metadata-only slot-release claim was made. Next safe action is a clean
   durable design-transfer handoff plus the existing proof/clearance sequence.
+
+## Central metadata-repair checkpoint — 2026-08-11
+
+This append records the exact central metadata-repair checkpoint without
+changing peer custody or opening ROADMAP_07.
+
+- Central commit/tree: `8b76be22a965e08fde2dd0ef8be090910b0bb4c8` /
+  `d3e2864987ee3ada48280ea571d58bc8b01701ce`.
+- The stale “resume six lanes” checkpoint text now reflects five ordinary
+  slots, dormant memory, and the proof/slot-release hold.
+- Changed paths: `docs/audit-repair-integration-pyramid.md` and
+  `schemas/bootstrap-binding.v1.json` only.
+- All 467 bootstrap-binding path/digest entries match; `git diff --check`
+  passed before commit. No npm, functional tests, merge, push, release,
+  activation, or archive occurred.
+- Refreshed binding digests: `f866f084ce3ac259853b3a72067bb74ec63993915947547ca8b6ce6fa74fb8ab`,
+  `0e7194bff9f84830acde315c2ecd8cff451dec5ec270e075ed160b9a9134ad2a`,
+  `7ec254aa8394d62c79b6bad4296ea3adb79364bdb340f9657e2a34549f0f4efb`,
+  `d436978ff7bb60a73cee36cd7715c43efc227de63d65c675c8d2e65a58ee1d81`,
+  and `8236afea8b4083a07555adb0bc8eedf64d59eb5ef75ed0e7d2e4ed8bf9907261`.
+- Durable routing remains five ordinary slots, `memory_slot_count: 0`,
+  ordinary queue 32, cursors `FEATURE_CURSOR_000`, dormant owner
+  `019fee1e-5e78-78c2-a788-ad7a27eba19e`, CC4B
+  `WAITING_DESIGN_TRANSFER`, and ROADMAP_07 held.
+- Exact next action: obtain authorized non-test/host/provider/recovery/
+  clean-source/independent-clearance evidence, then an exact Controller
+  slot-release receipt.
