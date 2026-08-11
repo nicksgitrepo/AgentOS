@@ -907,3 +907,21 @@ and ROADMAP_07 held. Memory remains read-only receipt/no dispatch. The next
 safe action is `REBOUND_PLATFORM_REAUDIT_AND_AUTHORIZED_PROOF_PENDING`, followed
 by authorized host/provider, recovery, clean-source, independent-clearance,
 and exact Controller slot-release evidence.
+
+## Outcome recovery 3 — portability probe — 2026-08-11
+
+Central repaired the host-specific privacy pattern literals in the Bootstrap
+conversation and project-contract controllers and refreshed their binding
+digests. Candidate `d03bbb6bf0852d49712ecea3ecc0dbf8f14ecfb8` /
+`26607121d259fe5a45118f66182da1d6ca22991a` is source-bound history; no owner
+receipt or Platform intake is consumed by this change.
+
+Bootstrap conversation proof and diff hygiene pass. The full verifier remains
+held by a product-specific literal in `control/codex-native-host-adapter.mjs`
+and by the bootstrap project-contract assertion that a draft lacks a blocking
+owner question. These exact failures must be repaired or explicitly waived by
+the governing proof contract before fresh Gate/Native/ROADMAP_06 rebind.
+Ordinary cursors remain `FEATURE_CURSOR_000`, five slots and zero Memory slots
+remain, and downstream, clearance, and slot release remain false. Memory is
+read-only receipt/no dispatch. Next action:
+`REPAIR_REMAINING_PORTABILITY_AND_BOOTSTRAP_CONTRACT_PROOF_BEFORE_REBIND`.

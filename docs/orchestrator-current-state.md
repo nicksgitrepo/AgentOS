@@ -987,3 +987,26 @@ independent-clearance, and slot-release evidence remain pending. Memory is
 `READ_ONLY_RECEIPT_ONLY_NO_DISPATCH` and was not contacted. True external
 blocker: `NONE`. Next action:
 `REBOUND_PLATFORM_REAUDIT_AND_AUTHORIZED_PROOF_PENDING`.
+
+## Outcome recovery 3 — portability probe — 2026-08-11
+
+The next bounded ordinary proof lane repaired two host-specific privacy
+pattern literals while preserving their matching behavior. The candidate is
+`d03bbb6bf0852d49712ecea3ecc0dbf8f14ecfb8` /
+`26607121d259fe5a45118f66182da1d6ca22991a`; the d885/5f baseline remains
+historical. Bootstrap conversation proof passes and diff hygiene passes.
+
+The comprehensive verifier still stops at two pre-existing contract holds:
+portable-authority scanning identifies product-specific literals in
+`control/codex-native-host-adapter.mjs`, and the bootstrap project-contract
+verifier reports `draft project contract has no blocking owner question`.
+These are exact proof failures, not clearance. Gate, Native, and ROADMAP_06
+receipts therefore require another source-bound rebind; all functional,
+host/provider, recovery, clean-source, independent-clearance, and Controller
+slot-release boundaries remain closed.
+
+Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, zero
+Memory slots, queue `32`, and all consumption/clearance/release flags remain
+unchanged. Memory remains `READ_ONLY_RECEIPT_ONLY_NO_DISPATCH` and was not
+contacted. True external blocker: `NONE`. Next action:
+`REPAIR_REMAINING_PORTABILITY_AND_BOOTSTRAP_CONTRACT_PROOF_BEFORE_REBIND`.
