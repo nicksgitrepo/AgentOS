@@ -1182,7 +1182,7 @@
     },
     "source_hygiene_verifier": {
       "path": "tests/verify-source-hygiene.mjs",
-      "sha256": "65c60cadf05a5f7323ce25e9e990db8492cacea3d01dcb6799924da8d58f1355"
+      "sha256": "817b1363e074e6ee186c2829f60a723343b354cf71d2a9d65450df40848b00d8"
     },
     "source_hygiene_repair_audit_2026_08_10": {
       "path": "docs/source-hygiene-audit-2026-08-10.md",
