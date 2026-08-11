@@ -1730,3 +1730,26 @@ bounded comprehensive proof from the repaired binding, followed by authorized
 functional host/provider, recovery, clean-source, independent-clearance, and
 Controller slot-release evidence. Memory remains receipt-only and was not
 contacted.
+
+## Recovery 38 — comprehensive proof memory boundary — 2026-08-11
+
+The bounded comprehensive suite now reaches `tests/verify-project-memory-replay.mjs`
+after the current state binding repair, and stops on the concrete
+`CONFLICT_REFERENCES_UNAVAILABLE` failure: the explicit memory conflict
+`GOAL:GOAL-REPLAY:1` does not name a known record. This is an out-of-scope
+Memory replay contract failure; Memory remains on its independent
+Sol/medium controller and was not contacted, dispatched, repaired, or counted
+as an ordinary lane. No comprehensive pass or ordinary clearance is claimed.
+
+The owned central binding was refreshed from the prior state digest
+`46525b01a190c9866f0998f9fee4ec916e8e132740661caff53b86f352bf1ac6` to the
+current state bytes. Focused Bootstrap-binding, portability, privacy,
+state-validation, and diff-hygiene proofs pass. Five ordinary slots, zero
+Memory slots, queue `32`, and all authoritative cursors `FEATURE_CURSOR_000`
+remain unchanged; downstream consumption, Platform clearance, independent
+clearance, and Controller slot release remain false. Roadmap07 remains held.
+
+Next action is to preserve this exact Memory replay residual without contacting
+Memory, continue the ordinary proof boundary, then obtain current-candidate
+Platform rebinds, authorized functional host/provider/recovery/clean-source
+evidence, independent clearance, and the exact Controller slot-release receipt.
