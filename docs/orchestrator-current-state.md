@@ -1946,3 +1946,34 @@ The readback predates the current Native projection and therefore does not
 clear the current candidate. No cursor, consumption, clearance, or release
 flag changed; Memory was not contacted. Next action is to reconcile current
 typed receipts and obtain the authorized proof set before any slot release.
+flag changed; Memory was not contacted. Next action is to reconcile current
+typed receipts and obtain the authorized proof set before any slot release.
+
+## Recovery 47 — current Gate/Native byte projection and proof-wave activation — 2026-08-11
+
+Read-only verification against the existing visible Gate and Native owner
+worktrees confirmed the exact current receipt bytes:
+
+- Gate receipt `48c8fe499da60fa181236bad7c237e67459e06a8` /
+  `48d0e65ba340ca7381fae4d62cfe1fe4910f764d`, report
+  `493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620`,
+  handoff `4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68`.
+- Native receipt `98db27f63f9440e23768f28673fb8059704e90fd` /
+  `9f0a2b7b91e5d1297656774722e1109ea189d653`, report
+  `5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6`,
+  handoff `e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d`.
+
+The additive preservation reference is
+`docs/platform-handoffs/current-platform-receipt-bytes-2026-08-11.md`
+(`0e907c5d7e3cb90fe1cc1b63b8b59b6d49c54e13bf2bf2c0047cb6bd1c0c2422`).
+Prior canonical report/handoff bytes remain historical and untouched. The
+existing independent task was reactivated against the current Central
+publication; the prior HOLD against `3c4095f` remains historical only.
+
+Existing visible ordinary proof owners were activated in parallel for
+functional contracts, host/provider capability, recovery/concurrency/
+crash-power-loss, and clean-source/repository proof. All are bound to the
+current candidate/source and must return typed receipts; no cursor,
+consumption, clearance, or release flag changed. Five ordinary slots, zero
+Memory slots, queue `32`, and `FEATURE_CURSOR_000` remain. Memory was not
+contacted. Deferred real-host/provider legs remain evidence ceilings.
