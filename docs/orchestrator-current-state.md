@@ -1977,3 +1977,37 @@ current candidate/source and must return typed receipts; no cursor,
 consumption, clearance, or release flag changed. Five ordinary slots, zero
 Memory slots, queue `32`, and `FEATURE_CURSOR_000` remain. Memory was not
 contacted. Deferred real-host/provider legs remain evidence ceilings.
+## Recovery 49 — clean-source privacy manifest boundary and recovery repair — 2026-08-11
+
+- Fresh detached clean-source cache is bound to ordinary candidate
+  `ccb235d046b9d3d5ce902180457599bfd904fced` / tree
+  `2e800a51f469c47ad76ecfa8afd03cc1ba6a7a38`, parent Central
+  `73c7c84293755a2da88343ec8fbb46098773b9f1` / `6021358adc39381a2e7ab8f85cf46d637983209f`,
+  and source `d885e73382df26da596848d70dbb402d6a9cf8b8` / `5f6ed007168ba660ca6f224e632b1dedd02202a5`.
+- Source hygiene, syntax, whitespace, symlink, bootstrap-binding, and clean/untracked-free
+  checks passed. The initial privacy check held only because the external private-control
+  manifest was not present in the detached cache; no private bytes were copied.
+- The existing private-control manifest was verified read-only through opaque reference
+  `PRIVATE_CONTROL_EVIDENCE_MANIFEST`: raw SHA-256 `02d36647ea0f01759b1ae30e6737fa89f1e3ca961b82739ac80eb79ca9b1f905`,
+  manifest digest `a85959f1c5b8202aa2cc77dc42a5fd04babe9ca9d0c549fc26366b96241eda07`,
+  27 records, 29 findings. Its payloads were not copied or scanned. All manifest digests
+  are represented by the public projection with zero manifest digests missing from it,
+  but 41 projection-only retained digests are absent from the current manifest;
+  mismatch-set digest is `4a371b69f02af225ab585a237b3edd3e147535fda2c01b534ba9262845296413`.
+- Terminal host/provider receipt remains `LOCAL_FACTS_ONLY_EXTERNAL_BOUNDARY_UNPROVEN`:
+  filesystem/Git read is proven, offline/network/authentication/external writes are closed,
+  and native/provider catalog attestation is absent. No cursor or lifecycle flag changed.
+- Terminal independent readback remains a HOLD because the current publication still
+  materializes older Gate/Native bytes; latest verified Gate report/handoff are
+  `493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620` /
+  `4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68`, and Native
+  report/handoff are `5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6` /
+  `e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d`.
+- Recovery root batch is dispatched as one fresh visible Luna/max repair transaction,
+  with canonical root `RECOVERY_ROOT_001` and four deduplicated mechanics: follow-up poll
+  scope, orphan cleanup after corrupt readback, bounded stop await, and pre-run power-loss
+  recovery. The auditor lane remains untouched.
+- Ordinary state remains five slots, zero Memory slots, queue 32, all authoritative cursors
+  `FEATURE_CURSOR_000`, and consumption/clearance/release false. Next action: project the
+  exact current Gate/Native bytes, then re-run independent clearance after the recovery
+  repair returns a clean typed handoff.

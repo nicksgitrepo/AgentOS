@@ -1790,7 +1790,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "3c4ef9c8eeb6b857a7a8acec9733464196c03e55479312b71cba5dd7ca203e20"
+      "sha256": "0fbd2aa1279f4f9c750c573aa0c945fd63a413dd506ea1088c4f0bb2c25ed39b"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1806,7 +1806,7 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "9fb3be3d8d68b7dc18c1fce72b4637a9d68329181cff5ff44dc685aa4c7dae65"
+      "sha256": "04191821c53a8e325afb452c78b102914a6d8bb70f1174fae1de5830ae402e8b"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
@@ -1980,7 +1980,7 @@
     },
     "portability_historical_compatibility_record": {
       "path": "docs/portability-historical-compatibility.v1.json",
-      "sha256": "1335e8295984bcb8fa9faa5b8497ed119f8ccd792b44d6e35a51c1c995cdd0ae",
+      "sha256": "27aea903fb12352a13ce3bcc022c33caade1f4ba0bcbb1e1cfed5272be0099ad",
       "classification": "HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE",
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",
