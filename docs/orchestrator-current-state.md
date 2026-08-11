@@ -1780,3 +1780,26 @@ cursors `FEATURE_CURSOR_000` remain unchanged. Downstream consumption,
 Platform clearance, independent clearance, and Controller slot release remain
 false; Roadmap07 remains held. The next bounded turn preserves this proof
 residual, then continues Platform rebind and clearance/slot-release work.
+
+## Recovery 41 — Gate current-candidate hold receipt — 2026-08-11
+
+The existing Gate custodian returned a source-bound hold receipt for current
+central candidate `b95e3bb228a5390d9be59711741fc391ee8d3ee1` /
+`837ac18996a845c70ff13a83aa15d6f54dada1b7`, against source
+`d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5`. Its local receipt is
+`48c8fe499da60fa181236bad7c237e67459e06a8` /
+`48d0e65ba340ca7381fae4d62cfe1fe4910f764d`, Platform report digest
+`493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620`, and
+handoff digest `4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68`.
+The disposition is
+`HOLD_REBIND_PENDING_CURRENT_CANDIDATE_SOURCE_IDENTITY_RECONCILIATION_AND_AUTHORIZED_CLEARANCE_PROOF`.
+
+The prior Gate projection against `b4999c9e1ceabeb256e307f8474c263577c3a727` /
+`fe893e29e44014777bc025abeb589240834e03c7` remains preserved as historical;
+the Native receipt remains pending its own current-candidate rebind. Five
+ordinary slots, zero Memory slots, queue `32`, and all authoritative cursors
+`FEATURE_CURSOR_000` remain unchanged. Downstream consumption, Platform
+clearance, independent clearance, and Controller slot release remain false.
+The Gate and Native existing visible Luna/max owners are reactivated for
+source-bound rebind receipts; no Memory contact or dispatch occurred.
