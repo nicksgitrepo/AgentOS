@@ -1278,3 +1278,34 @@ Authoritative cursors remain `FEATURE_CURSOR_000`; five ordinary slots, queue
 Next action:
 `PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 20 — Platform rebind custody audit — 2026-08-11
+
+The clean Gate readback is
+`fce85668015788618408f1f6aa5040bbfffdce6f` /
+`10c8b08ebc7919476c608ed091d7b475b3a02708`, report
+`edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a`, and
+handoff `37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38`.
+It remains bound to historical/current `b4999c9e` / `fe893e29` and has no
+source-bound owner rebind receipt for the current `f67f84d8` /
+`a3015ee4` candidate. The Native readback is
+`2da19d24c2be567ab2a28752b01b1c38820a1dd6` /
+`93f826e96f0272b1318488840a58548ea6fb3524`, report
+`fec81c9d7414312f7992729095d81368cea6fa8359a286937971493a37651f15`, and
+handoff `0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9`.
+Its preservation state is dirty/uncommitted, source-bound to d885/5f, and it
+also lacks a clean current-candidate rebind receipt. No current Platform
+intake, consumption, clearance, or slot release can be claimed.
+
+Local comprehensive proofs remain PASS. The exact remaining holds are
+source-bound owner rebind receipts, authorized functional/host/provider,
+recovery/concurrency/crash-power-loss, clean-source, independent-clearance,
+and Controller slot-release evidence. No independent Luna/max clearance
+receipt is present and no worker claimed clearance. Authoritative cursors
+remain `FEATURE_CURSOR_000`; five ordinary slots, queue `32`, and zero Memory
+slots remain, with all downstream/clearance/release flags false. Memory was
+not contacted.
+
+Next action:
+`OBTAIN_SOURCE_BOUND_PLATFORM_REBIND_RECEIPTS_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE`.
+True external blocker: `NONE`.
