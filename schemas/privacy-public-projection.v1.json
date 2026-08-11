@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.privacy_public_projection.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "selector_mode", "private_payload_policy", "private_record_count", "private_finding_count", "private_records", "public_replacement_type", "digest"],
+  "properties": {
+    "schema": {"const": "agentos.privacy_public_projection.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "selector_mode": {"const": "NORMATIVE_PUBLIC_OBJECTS_PLUS_OPAQUE_PRIVATE_DIGESTS"},
+    "private_payload_policy": {"type": "string", "const": "PAYLOADS_RETAINED_IN_PRIVATE_CONTROL_EVIDENCE_STORE; DIGESTS_ONLY_CROSS_PUBLIC_BOUNDARY"},
+    "private_record_count": {"type": "integer", "const": 27},
+    "private_finding_count": {"type": "integer", "const": 29},
+    "private_records": {
+      "type": "array",
+      "minItems": 27,
+      "maxItems": 27,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["record_type", "stable_opaque_id", "record_digest_sha256", "finding_categories", "compatibility_status", "public_replacement"],
+        "properties": {
+          "record_type": {"const": "PRIVATE_RETAINED_EVIDENCE"},
+          "stable_opaque_id": {"type": "string", "pattern": "^opaque:record:[0-9a-f]{64}$"},
+          "record_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "finding_categories": {"type": "array", "minItems": 1, "items": {"enum": ["ABSOLUTE_PATH", "SESSION_OR_TASK_IDENTITY", "UNSAFE_PRIVATE_LINK", "ENVIRONMENT_VALUE", "SECRET_LIKE_VALUE", "WORKTREE_PATH"]}},
+          "compatibility_status": {"const": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION"},
+          "public_replacement": {"type": "string", "pattern": "^opaque:public-record:[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "public_replacement_type": {"const": "GENERIC_NORMATIVE_RECORD_PROJECTION"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

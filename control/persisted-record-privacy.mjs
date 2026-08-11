@@ -23,7 +23,7 @@ export const PRIVACY_CATEGORIES = Object.freeze([
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const UUID = /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu;
-const ABSOLUTE_PATH = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\)[^\s"'`<>)}\]]*/u;
+const ABSOLUTE_PATH = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+)[^\s"'`<>)}\]]*/u;
 const HOST_WORKTREE_SEGMENT = [".", "code", "x"].join("");
 const CHAT_LINK_SCHEME = ["chat", "gpt", "-conversation"].join("");
 const WORKTREE_PATH = new RegExp(

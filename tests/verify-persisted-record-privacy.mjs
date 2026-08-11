@@ -41,33 +41,76 @@ function scanText(text) {
   return scanPersistedRecord(text);
 }
 
+function rawDigest(file) {
+  return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+}
+
 function scanRecords() {
+  const projectionPath = path.join(root, "docs/privacy-public-projection.v1.json");
+  const projection = JSON.parse(fs.readFileSync(projectionPath, "utf8"));
+  assert.equal(projection.schema, "agentos.privacy_public_projection.v1");
+  assert.equal(projection.status, "PREPARED_NOT_ACTIVATED");
+  assert.equal(projection.private_record_count, projection.private_records.length);
+  assert.equal(projection.private_finding_count, projection.private_records.reduce((total, record) => total + record.finding_categories.length, 0));
+  assert.equal(projection.digest, crypto.createHash("sha256").update(JSON.stringify({...projection, digest: null}), "utf8").digest("hex"));
+  const privateDigests = new Set(projection.private_records.map((record) => {
+    assert.match(record.stable_opaque_id, new RegExp(`^opaque:record:${record.record_digest_sha256}$`, "u"));
+    assert.match(record.public_replacement, new RegExp(`^opaque:public-record:${record.record_digest_sha256}$`, "u"));
+    return record.record_digest_sha256;
+  }));
+  assert.equal(privateDigests.size, projection.private_record_count);
+
+  const binding = JSON.parse(fs.readFileSync(path.join(root, "schemas/bootstrap-binding.v1.json"), "utf8"));
+  const allFiles = recordRoots.flatMap(({root: recordRoot}) => walk(recordRoot));
+  const filesByDigest = new Map();
+  for (const file of allFiles) {
+    const digest = rawDigest(file);
+    const files = filesByDigest.get(digest) ?? [];
+    files.push(file);
+    filesByDigest.set(digest, files);
+  }
+  for (const digest of privateDigests) assert(filesByDigest.has(digest), `private retained payload digest is unavailable: ${digest}`);
+
+  const normativeFiles = [...new Map(Object.values(binding.normative)
+    .filter((entry) => entry && typeof entry.path === "string")
+    .filter((entry) => extensions.has(path.extname(entry.path).toLowerCase()))
+    .map((entry) => [entry.path, path.join(root, entry.path)])).entries()];
   const input = {
-    schema: "privacy-record-scan.v1",
-    scope: "KNOWN_AGENTOS_PROJECT_AND_CONTROL_ROOTS",
+    schema: "privacy-public-proof-selector.v1",
+    scope: "NORMATIVE_PUBLIC_OBJECTS_PLUS_OPAQUE_PRIVATE_DIGESTS",
     roots: recordRoots.map(({label, root_ref}) => ({label, root_ref})),
+    normative_paths: normativeFiles.map(([relativePath]) => relativePath),
+    private_record_count: projection.private_record_count,
+    private_finding_count: projection.private_finding_count,
     extensions: [...extensions].sort(),
     exclusions: [".git", "node_modules", ".codex"],
   };
   const input_sha256 = crypto.createHash("sha256").update(JSON.stringify(input), "utf8").digest("hex");
-  const summary = {version: "privacy-record-scan.v1", input_sha256, roots: {}, total_files: 0, total_findings: 0};
+  const summary = {
+    version: "privacy-public-proof-selector.v1",
+    input_sha256,
+    selector_mode: input.scope,
+    roots: {},
+    normative_public_files_scanned: 0,
+    private_records_verified: privateDigests.size,
+    private_payloads_scanned: 0,
+    total_files: allFiles.length,
+    total_findings: 0,
+  };
   for (const {label, root: recordRoot, root_ref} of recordRoots) {
     const files = walk(recordRoot);
-    const rootSummary = {files_scanned: files.length, files_with_findings: 0, categories: {}};
-    const fileDigests = [];
-    for (const file of files) {
-      const text = fs.readFileSync(file, "utf8");
-      const findings = scanText(text);
-      fileDigests.push({relative_record_ref: path.relative(recordRoot, file), value_sha256: findings.value_sha256});
-      const present = Object.entries(findings.categories).filter(([, count]) => count > 0).map(([category]) => category);
-      if (present.length > 0) rootSummary.files_with_findings++;
-      for (const category of present) rootSummary.categories[category] = (rootSummary.categories[category] ?? 0) + 1;
-    }
-    rootSummary.root_ref = root_ref;
-    rootSummary.root_digest_sha256 = crypto.createHash("sha256").update(JSON.stringify({root_ref, fileDigests}), "utf8").digest("hex");
-    summary.roots[label] = rootSummary;
-    summary.total_files += files.length;
-    summary.total_findings += findingsTotal(rootSummary.categories);
+    summary.roots[label] = {
+      root_ref,
+      files_indexed: files.length,
+      root_digest_sha256: crypto.createHash("sha256").update(JSON.stringify({root_ref, fileDigests: files.map((file) => ({relative_record_ref: path.relative(recordRoot, file), value_sha256: rawDigest(file)}))}), "utf8").digest("hex"),
+    };
+  }
+  for (const [relativePath, file] of normativeFiles) {
+    assert(fs.existsSync(file) && fs.statSync(file).isFile(), `normative public object is unavailable: ${relativePath}`);
+    if (privateDigests.has(rawDigest(file))) continue;
+    summary.normative_public_files_scanned++;
+    const findings = scanText(fs.readFileSync(file, "utf8"));
+    for (const [category, count] of Object.entries(findings.categories)) summary.total_findings += count;
   }
   summary.result_digest_sha256 = crypto.createHash("sha256").update(JSON.stringify({...summary, result_digest_sha256: null}), "utf8").digest("hex");
   return summary;

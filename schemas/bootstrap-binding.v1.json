@@ -1222,7 +1222,7 @@
     },
     "audited_persisted_record_privacy_controller": {
       "path": "control/persisted-record-privacy.mjs",
-      "sha256": "212b5bb83430c145823c91860119cffbe757903e886bf0d4973b3929eeb62cc4"
+      "sha256": "758fcb397aafa19807b43475ec2a596ba6d9ab6fb07eb335c3d3a798a5a7ce26"
     },
     "audited_governance_evidence_controller": {
       "path": "control/governance-evidence.mjs",
@@ -1270,7 +1270,7 @@
     },
     "audited_persisted_record_privacy_verifier": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "9e0ba4b70514e676b5869da10e4565d887d292dbf9d3dd1d6b83d6bc1c25922d"
+      "sha256": "a3890803dacc5ab39e9759ace038d416439cdb84aadf99149c17928a0d7099a8"
     },
     "audited_merge_review": {
       "path": "docs/audited-merge-review.md",
@@ -1807,6 +1807,18 @@
     "audit_repair_integration_article": {
       "path": "docs/audit-repair-integration-pyramid.md",
       "sha256": "e3c48b33a234d40d1de885a4084dafbf7e6bbc4fb43284ff133b06f50703dead"
+    },
+    "privacy_public_projection_contract": {
+      "path": "schemas/privacy-public-projection.v1.json",
+      "sha256": "d002451d55b405bbd04ee13ddb5de4af44c0e77636cd3729f28e7aa9ffe2b371"
+    },
+    "privacy_public_projection_record": {
+      "path": "docs/privacy-public-projection.v1.json",
+      "sha256": "055b0f1de789034f011d91d032147c7611a46206f63da250f405c3ee5936cec1"
+    },
+    "privacy_public_proof_selector": {
+      "path": "tests/verify-persisted-record-privacy.mjs",
+      "sha256": "a3890803dacc5ab39e9759ace038d416439cdb84aadf99149c17928a0d7099a8"
     },
     "roadmap_amendment": {
       "path": "docs/roadmap.md",
