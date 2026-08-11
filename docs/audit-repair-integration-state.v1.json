@@ -2375,6 +2375,19 @@
     "memory_integration": false,
     "next_action": "READY_TIMER_STOP_REQUEST"
   },
+  "serialized_runtime_custody_update_2026_08_11": {
+    "record_layer": "CURRENT_PROTECTED_CUSTODY_READBACK",
+    "status": "UNAVAILABLE_PENDING_ADMITTED_RUNTIME_ROUTE",
+    "read_only_cache_check": "NO_ADMITTED_BASE_IMAGE_CACHE_OR_OFFLINE_ROUTE",
+    "restart_condition": "SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
+    "real_host_action_started": false,
+    "activation_status": "PREPARED_NOT_ACTIVATED",
+    "release_status": "PROTECTED_DECISION_PENDING",
+    "ordinary_cursor_advance": false,
+    "slot_release": false,
+    "memory_contact": false,
+    "next_action": "REMAIN_PARKED_UNTIL_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_IS_AVAILABLE"
+  },
   "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
@@ -2389,5 +2402,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "READY_TIMER_STOP_REQUEST_RESTART_ONLY_ON_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
-  "state_sha256": "e0aa869e1a1e6ed5b7ef0aabf4c7268758948f6c1acc187c85410efccdfe22a1"
+  "state_sha256": "40a2c079c47c20edb937c0a22db2c9ef0c640c3ef28a18f947b1b614ef6a3c2f"
 }

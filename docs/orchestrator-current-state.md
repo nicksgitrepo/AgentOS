@@ -2193,3 +2193,14 @@ releases its writer custody at turn end. The sole restart condition is exactly
 all authoritative cursors `FEATURE_CURSOR_000`, and every consumption,
 clearance, downstream, and slot-release flag remain false. Memory was not
 contacted or dispatched. The durable next action is `READY_TIMER_STOP_REQUEST`.
+
+## Recovery 59 — serialized Runtime custody remains unavailable — 2026-08-11
+
+A read-only custody-cache check found no admitted base-image, cache, or offline
+route for the protected Runtime leg. The existing host-neutral candidate and
+activation packet remain parked and unchanged. No real-host action, activation,
+release, migration, or new work was started. The sole restart condition remains
+exactly `SERIALIZED_RUNTIME_REAL_HOST_CUSTODY`; the durable next action is to
+remain parked until that custody is genuinely available. Cursors, slots,
+consumption, clearance, and release flags remain unchanged, and Memory was not
+contacted.
