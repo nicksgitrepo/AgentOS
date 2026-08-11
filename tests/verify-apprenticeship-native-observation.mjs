@@ -98,6 +98,8 @@ const attachment = compileNativeHostAttachment({
   hostId: "host-runtime",
   projectId: "PROJECT",
   environmentId: "ENVIRONMENT",
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
   attachedAtUtc: time,
 });
 validateNativeHostAttachment(attachment);

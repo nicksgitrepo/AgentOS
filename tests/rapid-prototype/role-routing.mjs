@@ -51,9 +51,13 @@ assert.equal(Object.hasOwn(admitted, "sessionIdentity"), false);
 assert.equal(Object.hasOwn(admitted, "project"), false);
 assert.equal(Object.hasOwn(admitted, "cwd"), false);
 
-const positional = admitRole(role, admittedRoles, "SESSION-ROLE-ROUTING-2", expectedProject, expectedCwd, "INDEPENDENT_SIBLING_SESSIONS");
-assert.equal(positional.sessionIdentity, "SESSION-ROLE-ROUTING-2");
-assert.equal(positional.topology, "INDEPENDENT_SIBLING_SESSIONS");
+const alternateTopology = admitRole({
+  ...base,
+  sessionIdentity: {...sessionIdentity, sessionId: "SESSION-ROLE-ROUTING-2"},
+  topology: "INDEPENDENT_SIBLING_SESSIONS",
+});
+assert.equal(alternateTopology.identity_verified, true);
+assert.equal(alternateTopology.topology, "INDEPENDENT_SIBLING_SESSIONS");
 
 function rejects(label, overrides, pattern) {
   assert.throws(() => admitRole({...base, ...overrides}), pattern, label);
@@ -68,16 +72,16 @@ rejects("recursive child role", {role: "IMPLEMENTATION_ROLE_ROUTING_CHILD", admi
 rejects("shell stand-in role", {role: "SHELL_WORKER", admittedRoles: ["SHELL_WORKER"]}, /shell stand-in/u);
 rejects("missing session identity", {sessionIdentity: null}, /structured host identity/u);
 rejects("string session identity", {sessionIdentity: "SESSION-ROLE-ROUTING-2"}, /structured host identity/u);
-rejects("unverified session identity", {sessionIdentity: {sessionId: "SESSION-1", projectId: expectedProject, cwd: expectedCwd, verified: false}}, /not host-verified/u);
-rejects("project mismatch", {sessionIdentity: {...sessionIdentity, projectId: "PROJECT-BETA"}}, /project does not match/u);
-rejects("cwd mismatch", {sessionIdentity: {...sessionIdentity, cwd: "/workspace/project-beta"}}, /cwd does not match/u);
+rejects("unverified session identity", {sessionIdentity: {sessionId: "SESSION-1", projectId: expectedProject, cwd: expectedCwd, verified: false}}, /lacks verified host readback/u);
+rejects("project mismatch", {sessionIdentity: {...sessionIdentity, projectId: "PROJECT-BETA"}}, /does not match the expected source/u);
+rejects("cwd mismatch", {sessionIdentity: {...sessionIdentity, cwd: "/workspace/project-beta"}}, /does not match the expected source/u);
 rejects("missing phase", {phase: undefined}, /phase binding is required/u);
 rejects("missing source binding", {sourceBinding: undefined}, /source binding and host readback are required/u);
 rejects("missing capability binding", {requiredCapabilities: undefined}, /capability binding is required/u);
 rejects("foreign source readback", {hostReadback: {...hostReadback, projectId: "PROJECT-BETA"}}, /source binding does not match/u);
 rejects("capability mismatch", {hostReadback: {...hostReadback, capabilities: ["foreign_capability"]}}, /source capabilities differ/u);
-rejects("missing project readback", {sessionIdentity: {sessionId: "SESSION-1", cwd: expectedCwd}}, /project is missing/u);
-rejects("missing cwd readback", {sessionIdentity: {sessionId: "SESSION-1", projectId: expectedProject}}, /cwd is missing/u);
+rejects("missing project readback", {sessionIdentity: {sessionId: "SESSION-1", cwd: expectedCwd, verified: true, real: true, hostReadback: true}}, /project is missing/u);
+rejects("missing cwd readback", {sessionIdentity: {sessionId: "SESSION-1", projectId: expectedProject, verified: true, real: true, hostReadback: true}}, /cwd is missing/u);
 rejects("parent-child topology", {topology: "PARENT_CHILD"}, /forbidden topology/u);
 rejects("recursive topology", {topology: "RECURSIVE_CHILD"}, /forbidden topology/u);
 rejects("shell topology", {topology: "SHELL_WORKER"}, /forbidden topology/u);

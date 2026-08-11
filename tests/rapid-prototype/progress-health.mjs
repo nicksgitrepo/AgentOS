@@ -6,6 +6,11 @@ import {recordProgress} from "../../control/rapid-prototype/progress-health.mjs"
 const START = "2026-08-04T12:00:00.000Z";
 const OBSERVED = "2026-08-04T12:05:00.000Z";
 const DEADLINE = "2026-08-10T12:00:00.000Z";
+const TASK_ID = "task-Exact_01";
+const SCOPE = ["PORTABLE_PROGRESS_CONTRACT"];
+const SOURCE_COMMIT = "a".repeat(40);
+const SOURCE_TREE = "b".repeat(40);
+const PROGRESS_EVIDENCE = {digest: "c".repeat(64), identity: "evidence-Exact_01", kind: "LOCAL_DETERMINISTIC_CHECK"};
 
 function observation(overrides = {}) {
   return recordProgress({
@@ -18,6 +23,11 @@ function observation(overrides = {}) {
     deadline: DEADLINE,
     result: null,
     error: null,
+    taskId: TASK_ID,
+    scope: SCOPE,
+    sourceCommit: SOURCE_COMMIT,
+    sourceTree: SOURCE_TREE,
+    evidence: PROGRESS_EVIDENCE,
     ...overrides,
   });
 }
