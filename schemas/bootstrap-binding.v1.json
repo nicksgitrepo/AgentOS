@@ -714,7 +714,7 @@
     },
     "persistent_intent_runtime_storage_controller": {
       "path": "control/persistent-intent-runtime-storage.mjs",
-      "sha256": "7c55d7f6998cede5515088791bf97c26b1ad8e34b9917d87ca37be162a93b2ef"
+      "sha256": "1f3051f907d775eed6d333b4b4bf6882abd721c123d39fd6ea05dff64f2883b6"
     },
     "persistent_intent_runtime_controller": {
       "path": "control/persistent-intent-runtime.mjs",
@@ -798,7 +798,7 @@
     },
     "proof_carrying_work_controller": {
       "path": "control/proof-carrying-work.mjs",
-      "sha256": "009ec6f9eb4fe634a6b1f21aad624109edeb2ed68e617986122babe4898624d7"
+      "sha256": "3c582f6558c04867bc3fb544c8a2c52275fc85d69bc32f4dff053c6da3728d56"
     },
     "proof_carrying_work_contract": {
       "path": "schemas/proof-carrying-work.v1.json",
@@ -806,7 +806,7 @@
     },
     "proof_carrying_work_verifier": {
       "path": "tests/verify-proof-carrying-work.mjs",
-      "sha256": "ee4bd8a4da20295f3da0dbc1a0b66850450c2b3ce12247b14377be306aeb9100"
+      "sha256": "e625834435d08ec1808b5a772bbe06d039ae1d8803dc41dbb5b87ae7e77f2e89"
     },
     "digest_bound_checkpoint_contract": {
       "path": "schemas/digest-bound-checkpoint.v1.json",
@@ -1062,7 +1062,7 @@
     },
     "native_session_team_verifier": {
       "path": "tests/verify-native-session-team.mjs",
-      "sha256": "f0d76a996ded7a3462d28bad142f9cc6897be1df62dd70d8e3d976a153f07573"
+      "sha256": "7b4bdb23de2c68b28a9434b0daf1b0dc45a803bbce1ef3ddad7adc8c45403c56"
     },
     "native_session_runner_controller": {
       "path": "control/native-session-runner.mjs",
@@ -1246,7 +1246,7 @@
     },
     "audited_canonical_campaign_orchestration_adapter": {
       "path": "control/canonical-campaign-orchestration-adapter.mjs",
-      "sha256": "7c16239eaf6d006cf4988b6e02273d339bfa065e60532b25cf22c798f9a88854"
+      "sha256": "de4bbfe8f7454e19d77627eb04663b5c0a163db526a7e9b4e82c78022498d400"
     },
     "audited_canonical_campaign_orchestration_support": {
       "path": "control/canonical-campaign-orchestration-support.mjs",
@@ -1254,7 +1254,7 @@
     },
     "hybrid_scheduler_controller": {
       "path": "control/hybrid-scheduler.mjs",
-      "sha256": "84450210d41e3fc2f52f4162117ae678fb4ad66e0fa9e3b51b3b70262403d70f"
+      "sha256": "69e2c9e7935f64d0e0bd99b26519f63bdc2fbc496e4f8200c356f225a4d12752"
     },
     "hybrid_scheduler_contract": {
       "path": "schemas/hybrid-scheduler.v1.json",
@@ -1458,7 +1458,7 @@
     },
     "native_host_contract_controller": {
       "path": "control/native-host-contract.mjs",
-      "sha256": "098a3890789581a37914cc08b583ea849fd9921f67bb373c87eaa0adeb56903d"
+      "sha256": "fd1d8d5214e023606644376162b4974e479914cfbde0b07a3aa084d32d465b03"
     },
     "native_host_loader_controller": {
       "path": "control/native-host-loader.mjs",
@@ -1782,7 +1782,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "a456154c0111a23fccd47958a3a5b5634988b0071dbfc8f9dd27897c4745b52d"
+      "sha256": "7a1f792eb72660740d4a75feeaf836ed9ae448406bbc7e612f9e95110e6553a4"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1798,7 +1798,7 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "6f4e15e503c81d74521a8524b0ef5b07404054e4642326ad506a4f137921028b"
+      "sha256": "15c98ffc9f321ff470f29f8049beadc59490f75e599a675ac0ede2b3379fe013"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",

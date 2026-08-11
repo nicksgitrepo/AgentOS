@@ -1191,3 +1191,33 @@ ordinary cursors and slots, and receipt-only to this orchestrator.
 Next action:
 `REPAIR_PORTABILITY_COMPATIBILITY_SELECTOR_AND_PROOF_RELEASE_FIXTURES_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
 True external blocker: `NONE`.
+
+## Recovery 17 — ordinary execution and local proof repair — 2026-08-11
+
+The ordinary candidate advanced to
+`ab33b73e4685abd1cff6d33a6d96ad87e4602107` /
+`4fc4b429461789e6d9c2271773742510e4ba2984`. The bounded repair corrected
+ordinary `gpt-5.6-luna` / `max` execution bindings, uppercase digest
+identifier suffixes, persistent-intent null-checkpoint preservation, proof
+claim source bindings, canonical campaign model/reasoning and project
+binding fixtures, native-session attachment fixtures, and proof-carrying
+portable scope identifiers. The affected focused proofs passed, including
+canonical campaign, proof capsule, native-session team/host attachment,
+runner and attestation, persistent-intent runtime/integration/recovery, and
+the related static binding, state/map, privacy, source-hygiene, architecture,
+and diff checks.
+
+The exact remaining local proof holds are the 19 preserved historical/private
+record UUID findings from the portability selector and the release-lifecycle
+promotion fixture's missing release-safety evidence. Those records remain
+append-only evidence and are not treated as passed or clearance. Gate and
+Native receipts are explicitly `REBIND_REQUIRED_AFTER_CANDIDATE_REPAIR` for
+the new candidate; no feature consumption, Platform clearance, independent
+clearance, or Controller slot release is inferred. Authoritative cursors stay
+`FEATURE_CURSOR_000`; five ordinary slots, queue `32`, and zero Memory slots
+remain. Memory was not contacted and remains receipt-only to this
+orchestrator, outside ordinary slots and cursors.
+
+Next action:
+`REPAIR_PORTABILITY_COMPATIBILITY_SELECTOR_AND_RELEASE_SAFETY_FIXTURE_THEN_PLATFORM_REBIND_AND_AUTHORIZED_CLEARANCE_SLOT_RELEASE`.
+True external blocker: `NONE`.
