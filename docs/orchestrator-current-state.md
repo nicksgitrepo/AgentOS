@@ -1860,3 +1860,27 @@ cascade and returned one residual finding (`total_findings=1`); no privacy pass,
 clearance, or release claim is made. Native identity-semantic rebind remains
 pending. Memory was not contacted or dispatched. The next timer may inspect
 the exact residual and Native receipt without reopening this turn.
+
+## Recovery 44 — bounded public identity privacy repair — 2026-08-11
+
+The sole persisted-record privacy residual was the current state payload's
+session/task identity category. The exact prior state bytes remain preserved by
+the opaque private-control reference
+`opaque:record:4563cf7bebf527fede130cbff296bba6e0491e8cc3eea8767e7a05d478b37480`;
+the public projection carries only its matching opaque digest alias and exports
+no private payload. The private control manifest retains the same digest for
+exact source-bound verification.
+
+Focused privacy, portability, Bootstrap-binding, and diff checks now pass:
+210 normative public files scanned, 27 private records and 69 retained
+digests verified, zero payloads scanned, and zero findings. This repairs the
+stale digest projection without weakening the scanner or rewriting history.
+
+The Native namespace delta remains pending its typed source-bound readback.
+Five ordinary slots, zero Memory slots, queue `32`, and all authoritative
+cursors `FEATURE_CURSOR_000` remain unchanged; feature consumption, Platform
+clearance, independent clearance, and Controller slot release remain false.
+Memory was not contacted or dispatched. Next action is to consume the Native
+delta when returned, then activate the ordinary functional, host/provider,
+recovery, clean-source, and independent-clearance proof wave without advancing
+any cursor or slot until exact receipts justify it.
