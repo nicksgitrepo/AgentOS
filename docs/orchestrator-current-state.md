@@ -2011,3 +2011,34 @@ contacted. Deferred real-host/provider legs remain evidence ceilings.
   `FEATURE_CURSOR_000`, and consumption/clearance/release false. Next action: project the
   exact current Gate/Native bytes, then re-run independent clearance after the recovery
   repair returns a clean typed handoff.
+
+## Recovery 50 — historical digest reconciliation and current receipt binding — 2026-08-11
+
+- The 41 projection-only digests in mismatch set
+  `4a371b69f02af225ab585a237b3edd3e147535fda2c01b534ba9262845296413` were source-mapped
+  against the read-only private manifest (raw `02d36647ea0f01759b1ae30e6737fa89f1e3ca961b82739ac80eb79ca9b1f905`,
+  manifest `a85959f1c5b8202aa2cc77dc42a5fd04babe9ca9d0c549fc26366b96241eda07`,
+  27 records/29 findings). Every digest is classified
+  `EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST` with a Git-history origin in
+  `docs/privacy-digest-reconciliation-2026-08-11.json`; zero are unresolved, zero
+  manifest digests are missing, and no private payload was copied.
+- The typed privacy projection now distinguishes the 41 historical-control digests from
+  the 30 private-manifest digests. The proof selector validates the mapping and scans
+  normative public objects while verifying only opaque private digests.
+- Exact Gate/Native owner-byte identities are bound in
+  `docs/platform-handoffs/current-gate-native-receipt-materialization-2026-08-11.json`:
+  Gate report/handoff `493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620` /
+  `4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68`; Native
+  report/handoff `5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6` /
+  `e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d`. The owner bytes
+  were verified read-only; raw payload copying is withheld because those bytes contain
+  task/session identity fields, so no public privacy boundary is weakened.
+- The shared-host pressure directive freezes new heavyweight build/proof admissions.
+  Independent clearance is therefore not reactivated in this bounded turn; the exact
+  next action is to resume it only after pressure is cleared, against this clean Central
+  publication and the current Gate/Native byte bindings. Five ordinary slots, zero
+  Memory slots, queue 32, all authoritative cursors `FEATURE_CURSOR_000`, and every
+  consumption/clearance/release flag remain unchanged. Memory was not contacted.
+- The lightweight privacy selector invocation before the pressure freeze remained a HOLD
+  on one normative `SESSION_OR_TASK_IDENTITY` category in
+  `docs/audit-repair-integration-state.v1.json`; no privacy pass or clearance is claimed.

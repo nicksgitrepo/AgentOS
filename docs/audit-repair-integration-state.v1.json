@@ -2106,7 +2106,53 @@
     "slot_release": false,
     "next_action": "REPROJECT_CURRENT_GATE_NATIVE_BYTES_THEN_RE_RUN_INDEPENDENT_CLEARANCE"
   },
-  "authoritative_projection_ref": "platform_pipeline.native_namespace_rebind_receipt_2026_08_11",
+  "privacy_digest_reconciliation_2026_08_11": {
+    "record_layer": "CURRENT_PRIVACY_DIGEST_SOURCE_MAPPING",
+    "ref": "docs/privacy-digest-reconciliation-2026-08-11.json",
+    "manifest_raw_sha256": "02d36647ea0f01759b1ae30e6737fa89f1e3ca961b82739ac80eb79ca9b1f905",
+    "manifest_digest_sha256": "a85959f1c5b8202aa2cc77dc42a5fd04babe9ca9d0c549fc26366b96241eda07",
+    "manifest_record_count": 27,
+    "manifest_finding_count": 29,
+    "manifest_digests_missing_from_projection": 0,
+    "projection_only_digest_count": 41,
+    "unresolved_count": 0,
+    "mismatch_set_sha256": "4a371b69f02af225ab585a237b3edd3e147535fda2c01b534ba9262845296413",
+    "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGESTS_SOURCE_MAPPED",
+    "raw_private_payloads_exported": false,
+    "focused_privacy_proof_status": "HOLD_NORMATIVE_STATE_SESSION_OR_TASK_IDENTITY_REMAINS",
+    "focused_privacy_proof_residual": {
+      "path": "docs/audit-repair-integration-state.v1.json",
+      "category": "SESSION_OR_TASK_IDENTITY",
+      "count": 1
+    },
+    "authoritative_cursor": "FEATURE_CURSOR_000",
+    "ordinary_active_slot_count": 5,
+    "memory_slot_count": 0,
+    "downstream_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "slot_release": false,
+    "next_action": "RETAIN_OPAQUE_HISTORICAL_DIGEST_BINDINGS_AND_RESOLVE_NORMATIVE_STATE_IDENTITY_BEFORE_CLEARANCE"
+  },
+  "current_gate_native_receipt_materialization_2026_08_11": {
+    "record_layer": "CURRENT_PLATFORM_RECEIPT_BYTE_BINDINGS",
+    "ref": "docs/platform-handoffs/current-gate-native-receipt-materialization-2026-08-11.json",
+    "central_parent": {"commit":"79d83631de0eaae12f2e6c566cfab37a103fa045","tree":"63d8143000584cf1abbbb2f0f99599bbf0887a94"},
+    "source_binding": {"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},
+    "gate": {"owner_receipt_commit":"48c8fe499da60fa181236bad7c237e67459e06a8","owner_receipt_tree":"48d0e65ba340ca7381fae4d62cfe1fe4910f764d","report_sha256":"493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620","handoff_sha256":"4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68","bytes_verified":true},
+    "native": {"owner_receipt_commit":"98db27f63f9440e23768f28673fb8059704e90fd","owner_receipt_tree":"9f0a2b7b91e5d1297656774722e1109ea189d653","report_sha256":"5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6","handoff_sha256":"e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d","bytes_verified":true},
+    "materialization_status": "EXACT_OWNER_BYTE_BINDINGS_MATERIALIZED_PRIVACY_PAYLOAD_COPY_FORBIDDEN",
+    "raw_payload_copied_into_central_public_projection": false,
+    "authoritative_cursor": "FEATURE_CURSOR_000",
+    "ordinary_active_slot_count": 5,
+    "memory_slot_count": 0,
+    "downstream_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "slot_release": false,
+    "next_action": "WAIT_FOR_SHARED_HOST_PRESSURE_CLEARANCE_THEN_REACTIVATE_INDEPENDENT_CLEARANCE_AGAINST_THIS_PUBLICATION; RETAIN_FLAGS_FALSE"
+  },
+  "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -2119,6 +2165,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "REPROJECT-CURRENT-GATE-NATIVE-BYTES-THEN-RERUN-INDEPENDENT-CLEARANCE-AFTER-RECOVERY-REPAIR",
-  "state_sha256": "ea92e21ffd730ba9672ed578ab7c1c892124d19f041a05c43212f9ce060a555c"
+  "next_action": "WAIT-FOR-SHARED-HOST-PRESSURE-CLEARANCE-THEN-REACTIVATE-INDEPENDENT-CLEARANCE; RETAIN-CURSORS-AND-FLAGS-FALSE",
+  "state_sha256": "56e8e759577f8226570a1f6140b9c39f94ad58d598fb861c6af489447ff9d3ac"
 }

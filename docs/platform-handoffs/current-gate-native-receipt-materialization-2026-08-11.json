@@ -1,0 +1,44 @@
+{
+  "schema": "agentos.current_platform_receipt_materialization.v1",
+  "version": 1,
+  "status": "EXACT_OWNER_BYTE_BINDINGS_MATERIALIZED_PRIVACY_PAYLOAD_COPY_FORBIDDEN",
+  "central_parent": {
+    "commit": "79d83631de0eaae12f2e6c566cfab37a103fa045",
+    "tree": "63d8143000584cf1abbbb2f0f99599bbf0887a94"
+  },
+  "central_source_binding": {
+    "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+    "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+  },
+  "gate": {
+    "owner_receipt_commit": "48c8fe499da60fa181236bad7c237e67459e06a8",
+    "owner_receipt_tree": "48d0e65ba340ca7381fae4d62cfe1fe4910f764d",
+    "report_ref": "docs/platform-audits/PLATFORM_GATE_RESPONSE/auditreport.md",
+    "report_sha256": "493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620",
+    "report_bytes": 91518,
+    "handoff_ref": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
+    "handoff_sha256": "4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68",
+    "handoff_bytes": 78443,
+    "owner_bytes_read_only_verified": true
+  },
+  "native": {
+    "owner_receipt_commit": "98db27f63f9440e23768f28673fb8059704e90fd",
+    "owner_receipt_tree": "9f0a2b7b91e5d1297656774722e1109ea189d653",
+    "report_ref": "docs/platform-audits/PLATFORM_NATIVE_SESSION_EVIDENCE/auditreport.md",
+    "report_sha256": "5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6",
+    "report_bytes": 63304,
+    "handoff_ref": "docs/platform-handoffs/native-session-evidence-platform-handoff.md",
+    "handoff_sha256": "e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d",
+    "handoff_bytes": 87920,
+    "owner_bytes_read_only_verified": true
+  },
+  "public_boundary": {
+    "raw_payload_copied_into_central_public_projection": false,
+    "reason": "Owner bytes contain task/session identity fields; only opaque source-bound byte identities and lengths are materialized here.",
+    "private_sources_modified": false,
+    "downstream_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "slot_release": false
+  }
+}

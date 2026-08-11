@@ -1790,7 +1790,7 @@
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "0fbd2aa1279f4f9c750c573aa0c945fd63a413dd506ea1088c4f0bb2c25ed39b"
+      "sha256": "2a59306a825bdfea600f094af25dae333f282425fc87eef1493420c807613bcf"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1806,11 +1806,19 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "04191821c53a8e325afb452c78b102914a6d8bb70f1174fae1de5830ae402e8b"
+      "sha256": "89cd4b33a153c29c8f5278b0d12fc25b5f77f2894d7c9e0e118551fbd7a30bb1"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "79ff64515021d6d11c7a56c93f3ee9e7f558ac272457c3c321a48112bbbd2f7c"
+      "sha256": "66d75dadf9cf32d4f2bcab435d139f1afb9e823d71c534f945ef54c1207b6db1"
+    },
+    "privacy_digest_reconciliation_record": {
+      "path": "docs/privacy-digest-reconciliation-2026-08-11.json",
+      "sha256": "81b45a59675c642e5d3a8ab3bdb9e775bca511943159a74d9f3fa40978c83ee2"
+    },
+    "current_gate_native_receipt_materialization_record": {
+      "path": "docs/platform-handoffs/current-gate-native-receipt-materialization-2026-08-11.json",
+      "sha256": "66b789e124b2d824f3e3fa2d77cd8838df9d92008abfcfe7e56897d651bd87c3"
     },
     "roadmap_amendment": {
       "path": "docs/roadmap.md",

@@ -19,7 +19,7 @@ import {
 } from "../control/content-addressing.mjs";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const controlRoot = path.resolve(root, "../../AgentOS-control");
+const controlRoot = path.resolve(root, "../../../AgentOS-control");
 const recordRoots = [
   {label: "CONTROL_SPACE", root: controlRoot, root_ref: "opaque:root:control-space"},
   {label: "PUBLIC_PROJECT_RECORDS", root: path.join(root, "docs"), root_ref: "opaque:root:public-project-records"},
@@ -59,9 +59,31 @@ function scanRecords() {
     assert.match(record.public_replacement, new RegExp(`^opaque:public-record:${record.record_digest_sha256}$`, "u"));
     return record.record_digest_sha256;
   }));
+  const historicalControlDigests = new Set(projection.historical_control_digest_extensions ?? []);
+  for (const digest of historicalControlDigests) assert.match(digest, /^[0-9a-f]{64}$/u);
+  assert.equal(historicalControlDigests.size, projection.historical_control_digest_extensions?.length ?? 0);
   for (const digest of projection.retained_payload_digest_extensions ?? []) assert.match(digest, /^[0-9a-f]{64}$/u);
-  for (const digest of projection.retained_payload_digest_extensions ?? []) privateDigests.add(digest);
-  assert.equal(privateDigests.size, projection.private_record_count + (projection.retained_payload_digest_extensions?.length ?? 0));
+  for (const digest of projection.retained_payload_digest_extensions ?? []) {
+    if (!historicalControlDigests.has(digest)) privateDigests.add(digest);
+  }
+  assert.equal(privateDigests.size, projection.private_record_count + (projection.retained_payload_digest_extensions?.length ?? 0) - historicalControlDigests.size);
+  assert.equal(privateDigests.size + historicalControlDigests.size, projection.private_record_count + (projection.retained_payload_digest_extensions?.length ?? 0));
+  const reconciliationPath = path.join(root, "docs/privacy-digest-reconciliation-2026-08-11.json");
+  assert(fs.existsSync(reconciliationPath), "historical digest reconciliation is unavailable");
+  const reconciliation = JSON.parse(fs.readFileSync(reconciliationPath, "utf8"));
+  assert.equal(reconciliation.schema, "agentos.privacy_digest_reconciliation.v1");
+  assert.equal(reconciliation.status, "SOURCE_MAPPED_HISTORICAL_CONTROL_DIGESTS_NO_RAW_EXPORT");
+  assert.equal(reconciliation.counts.projection_only_digest_count, historicalControlDigests.size);
+  assert.equal(reconciliation.counts.unresolved_count, 0);
+  assert.deepEqual(
+    [...historicalControlDigests].sort(),
+    reconciliation.mapping.map((entry) => entry.digest).sort(),
+  );
+  for (const entry of reconciliation.mapping) {
+    assert.equal(entry.classification, "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST");
+    assert.equal(entry.payload_exported, false);
+    assert(entry.historical_origin?.commit);
+  }
 
   const privateManifestPath = path.join(controlRoot, "handoffs/privacy-public-projection-2026-08-11.json");
   assert(fs.existsSync(privateManifestPath), "private control evidence manifest is unavailable");

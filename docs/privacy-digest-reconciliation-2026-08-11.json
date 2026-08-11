@@ -1,0 +1,524 @@
+{
+  "schema": "agentos.privacy_digest_reconciliation.v1",
+  "version": 1,
+  "status": "SOURCE_MAPPED_HISTORICAL_CONTROL_DIGESTS_NO_RAW_EXPORT",
+  "manifest_binding": {
+    "ref": "PRIVATE_CONTROL_EVIDENCE_MANIFEST",
+    "raw_sha256": "02d36647ea0f01759b1ae30e6737fa89f1e3ca961b82739ac80eb79ca9b1f905",
+    "digest_sha256": "a85959f1c5b8202aa2cc77dc42a5fd04babe9ca9d0c549fc26366b96241eda07",
+    "record_count": 27,
+    "finding_count": 29
+  },
+  "projection_binding": {
+    "ref": "docs/privacy-public-projection.v1.json",
+    "digest_sha256": "a77c5f4d6745825832473b3264c84e18f515472ee7e8615e4eb5d3706f413fe0"
+  },
+  "counts": {
+    "manifest_digest_count": 30,
+    "manifest_digests_missing_from_projection": 0,
+    "projection_only_digest_count": 41,
+    "unresolved_count": 0
+  },
+  "mismatch_set_sha256": "4a371b69f02af225ab585a237b3edd3e147535fda2c01b534ba9262845296413",
+  "mapping": [
+    {
+      "digest": "2e80c665948598ce8db48d2376bc180872e7b0c3483b351cd9baa6d115dbc8ff",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "6e4415537dbc7f3991cc261f4ab18b5f5631ab24",
+        "subject": "record portability proof residuals and privacy projection"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "05836a307208b2ad41be8b988caa6a4e795d90a8e0627213aa38a52b64f4a82a",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "6e4415537dbc7f3991cc261f4ab18b5f5631ab24",
+        "subject": "record portability proof residuals and privacy projection"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "b9e898348c4bba74a2e8625263c7350804332215fe19c832c629b4612f904288",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "6e4415537dbc7f3991cc261f4ab18b5f5631ab24",
+        "subject": "record portability proof residuals and privacy projection"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "a1c6eb94d8f1212327818673d0f29f51319c1f7321ccde1d1f0b5c999874fc84",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "6e4415537dbc7f3991cc261f4ab18b5f5631ab24",
+        "subject": "record portability proof residuals and privacy projection"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "9ba635254e46071cfa61d305114755f40ff7d4b14971e2d9652181ed8c2b8ac7",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "6e4415537dbc7f3991cc261f4ab18b5f5631ab24",
+        "subject": "record portability proof residuals and privacy projection"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "337e74c8e7e2c9755b6286688ec70af505ee207eca176e07d52d5554661054fd",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "90895408947b4b92d1b45bd732852e24c6ce3ccc",
+        "subject": "record recovery 13 architecture proof hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "eb97917414565d076de0bd455dba07cede6085820c2ec5ea575c1f92766a84be",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "90895408947b4b92d1b45bd732852e24c6ce3ccc",
+        "subject": "record recovery 13 architecture proof hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "8343ddfaeb0d829e785afe46a046e7f911b49c1b62b59bf5e47efea9a3f60f09",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "90895408947b4b92d1b45bd732852e24c6ce3ccc",
+        "subject": "record recovery 13 architecture proof hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "b05828256612c7a777cfea1fe6e126477998aecb9e9859347898c592d322b530",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "8822d033c3008485aecbe17698fecccfbb4c0d7f",
+        "subject": "record architecture boundary classification hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "81013550d5a21202a4558836b4ac4f5861acb3ea92d3aecbb2fa149466df6ee7",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "7cbcdf05a0a5e8c6502b8bd09716fd24db5f2320",
+        "subject": "record source hygiene compatibility hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "a456154c0111a23fccd47958a3a5b5634988b0071dbfc8f9dd27897c4745b52d",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "d1790438b9c81028b6a9813a8e0f3e1070060986",
+        "subject": "record recovery16 candidate and privacy bindings"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "7a1f792eb72660740d4a75feeaf836ed9ae448406bbc7e612f9e95110e6553a4",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "bfeeb8489fe7b40c6fb8d1338b174b9a0f1558ea",
+        "subject": "record ordinary recovery 17 proof and rebind hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "a057391ea0c9d3f6c52554a12562c0ee62fc4b4dd5c1f5729213e833adf20e36",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "df645cd0add7d386bfd241511d645162b3bf9543318818fc89c1e58e441673d2",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "fa3eb8cdf998b2054cc5f828544c88130ef110db0daee52427d0b243d826641c",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "721e47a41f85889e9a7a8989256a9dbebc8a7ab9b49a9c44bf35e18d70275e3a",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "cc309550108b8dff4c75b4710a8bf081c475c8fcedf2451d7cc011854e750edc",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "feb11168c5cdbf32e8c9d6f7e013abf2fa96ef60873566c676351c3f7f796c35",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "1de6725818c89a1e216785dafa65c796f805dde18344f683dab6e2f9022cfe63",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "3798a9952f6bc040b8df299d804feda9b2e3bdfc001b70caa768ca24eaff9875",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "3de1ec3955a1cd8206e4a981fc70049654a662ed68abfbf9c28583925b02b7aa",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "ee34fd44cf77295f374ecb3fc9d4285104daf00a5cb1965769185c9185f81b8d",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "0b0fb0cff9d057039e70274fcdceef47ba752d34",
+        "subject": "record recovery 18 portability proof checkpoint"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "d4d43704fe645c41ad8be1d7a215b2112b5703bd31fe81423b316113dd8380f3",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "a78f2514bd2a2d90be9ef0443fddb458c61b525b",
+        "subject": "record recovery 19 release safety proof"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "5912f911a5ece9368d5acde5c298e7d93080b407b5c4c26d3edb08f6613ee135",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "a78f2514bd2a2d90be9ef0443fddb458c61b525b",
+        "subject": "record recovery 19 release safety proof"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "58964ca1714665d6994b8fe97ed38d5d152d2ba3acbc9ab0972609a67e8b5cd2",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "2f27fad542095b1dab8158ed84dfd97df7ef61c6",
+        "subject": "record recovery 20 platform rebind custody hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "1acc4cd69108251999c40366e81a4a22b24cae9cf6dad90b87dddd83db4eb0ee",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "2f27fad542095b1dab8158ed84dfd97df7ef61c6",
+        "subject": "record recovery 20 platform rebind custody hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "5cf3384242ddf94f1a1524a21cf890a0da2633ec45c2925948c330fe8c2d4de3",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "2f27fad542095b1dab8158ed84dfd97df7ef61c6",
+        "subject": "record recovery 20 platform rebind custody hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "7d55289707a8e204eb51f5c7c32c029a6d53c82c0219d8ca733db7c51aee414a",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "2f27fad542095b1dab8158ed84dfd97df7ef61c6",
+        "subject": "record recovery 20 platform rebind custody hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "9d3136e97572ca4665ac400437672c6de2cbd605f45ff3a742d4a0d58b25738f",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "bc315615624e0c90d03fa7b198bbc85df5b8022c",
+        "subject": "record recovery 21 clean source readback"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "256bdcacabc6acfdf74fb3812716541fb3be45eb0ada7a17d6f8695de4016b2f",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "bc315615624e0c90d03fa7b198bbc85df5b8022c",
+        "subject": "record recovery 21 clean source readback"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "bfb2bccc48ef287780a1ab0d45751982e405261e8831a52214e27af0a33ff393",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "7053b18afecd0ec3b368c206472cb642ef8079c0",
+        "subject": "record recovery 22 local functional proof"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "1fe10a907caa44de894574fb86799ec51dfcf1d235ee3ab1f249e08541a89693",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "7053b18afecd0ec3b368c206472cb642ef8079c0",
+        "subject": "record recovery 22 local functional proof"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "c7db1b01d862e24e3c7c522bec54cd34658854a5bcf09aafe692592173beeb77",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json",
+        "docs/orchestrator-current-state.md"
+      ],
+      "historical_origin": {
+        "commit": "9ba72e0923f399bfbee787d6acef1537cc05d49b",
+        "subject": "repair privacy projection and candidate rebind hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "327942ac23bd9812622d6f26b26d01b0bcb587a3fc8d16dd342260bf011a0168",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "9ba72e0923f399bfbee787d6acef1537cc05d49b",
+        "subject": "repair privacy projection and candidate rebind hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "c56f92becf2308db355606a9ac69ff925d940f8ca29e34e71cdbbc0c1d11c4b4",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "9ba72e0923f399bfbee787d6acef1537cc05d49b",
+        "subject": "repair privacy projection and candidate rebind hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "980e8669d9f8dd6b1f73a9ea713ede461314fbed335f8a69b89656b1f0aa1c9b",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "9ba72e0923f399bfbee787d6acef1537cc05d49b",
+        "subject": "repair privacy projection and candidate rebind hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "2506360829675fa0a772eefc91d6609ba7757a93765872c5cdd05e5e2f447b1a",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json",
+        "docs/orchestrator-current-state.md"
+      ],
+      "historical_origin": {
+        "commit": "9ba72e0923f399bfbee787d6acef1537cc05d49b",
+        "subject": "repair privacy projection and candidate rebind hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "1d26874fcd4704655b75c76b70ab827b72f9cf6ab4bcab90ec06f197d94bd411",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "022791f81503c4fa79efdeda38c48e8b927a7ab9",
+        "subject": "docs: record current platform rebind custody hold"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "b3ee0f0e8c15ad1e9630818373804748fdca1c2d4d6c0dd30e98fa055b6a351b",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "79d83631de0eaae12f2e6c566cfab37a103fa045",
+        "subject": "Record clean-source privacy and recovery holds"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "6329209fbbfe308e25a315eaf6aaaadf1b56afb455a045acdfbed2962353ded2",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "79d83631de0eaae12f2e6c566cfab37a103fa045",
+        "subject": "Record clean-source privacy and recovery holds"
+      },
+      "payload_exported": false
+    },
+    {
+      "digest": "540e5e9d47103b3e1c4f4da0ec03c3453959ad4b9f17c62d7467617c34fc541d",
+      "classification": "EXPECTED_RETAINED_HISTORICAL_CONTROL_DIGEST",
+      "source_refs": [
+        "docs/privacy-public-projection.v1.json"
+      ],
+      "historical_origin": {
+        "commit": "79d83631de0eaae12f2e6c566cfab37a103fa045",
+        "subject": "Record clean-source privacy and recovery holds"
+      },
+      "payload_exported": false
+    }
+  ],
+  "public_boundary": {
+    "raw_private_payloads_exported": false,
+    "opaque_digests_only": true,
+    "private_manifest_modified": false
+  }
+}
