@@ -20,13 +20,16 @@ separate workflow.
   dirty or clean state and must not be cleaned, rebased, copied wholesale, or
   treated as implicit acceptance.
 - Latest Central receipt: `docs/platform-handoffs/central-ordered-feature-intake-2026-08-10.md`;
-  its custody digest is recorded by the file itself and its publication is
-  receipt-only.
+  the current visible Gate/Native receipt projection is appended there and
+  remains receipt-only; its publication digest is recorded by the file itself.
 
 ## Candidate and proof
 
-- Central publication tip: commit `8b76be22a965e08fde2dd0ef8be090910b0bb4c8`,
-  tree `d3e2864987ee3ada48280ea571d58bc8b01701ce`; clean.
+- Central candidate readback base: commit `8f0815a214910141daeee27067139b6a2744761b`,
+  tree `3e6ad35db20a2a90658b3641590b2defa02977ed`; clean. The audited
+  metadata checkpoint remains `8b76be22a965e08fde2dd0ef8be090910b0bb4c8` /
+  `d3e2864987ee3ada48280ea571d58bc8b01701ce`; neither identity is a
+  clearance, consumption, release, or integration claim.
 - Source implementation candidate and preserved ROADMAP_03 checkpoint remain
   the d885/5f baseline recorded below; the publication tip is not a new
   integration or release candidate.
@@ -83,11 +86,11 @@ consumed early.
 
 | Platform owner | Task | Worktree | Authoritative cursor | Current disposition |
 | --- | --- | --- | --- | --- |
-| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 acknowledged with no repair; ordered intake recorded for FOUR_LIBRARY_GOVERNANCE, FEATURE_COMPLETENESS_AUDITOR_SEED, and DYNAMIC_PROJECT_LANES; local marker `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`; clearance remains pending. |
-| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05/06 integrated in order into a cohesive source-bound checkpoint, status `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`; local marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`; no central consumption or clearance. |
+| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | Current visible receipt `9903ec9d` / `73e6d384`, report `792c506b…`, handoff `f3d82caa…`; hold `HOLD_PENDING_CENTRAL_REPORT_PROJECTION_AND_AUTHORIZED_FUNCTIONAL_INDEPENDENT_PROOF`; local marker `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`; no consumption, clearance, or slot release. |
+| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | Current visible receipt is bound to d885/5f and central 8f/3e; report `c59229ea…`, handoff `8c6a0f70…`; hold `HOLD_PENDING_TESTS_PROOF_CUSTODY_SOURCE_MISMATCH`; historical 590c/f1 and bd6c/40d receipts cannot transfer clearance. |
 | `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; PROJECT_GOVERNANCE_PERSISTENCE is preserved in the dormant memory lane; historical candidates preserved; no source consumed. |
 
-Native’s exact ordered receipt binds local HEAD/tree
+Native’s historical ordered receipt binds local HEAD/tree
 `590c07ddd4be7a8c24727c24b40808e44ca7357d` /
 `f1b358d87e6a969fb9631e202a3d478540edd4d9`, ROADMAP_05
 `REVIEWED_RECONCILED_NO_REPAIR_REQUEST`, and ROADMAP_06
@@ -97,8 +100,9 @@ handoff/audit SHA-256 values are `070be05d41de841e2b153c503b25f5e22ecfb4743ac301
 
 Platform-local review markers such as `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`
 or `FEATURE_CURSOR_004` are evidence-only. They do not advance the Controller
-cursor. Only an exact Central-owned ordered intake receipt may change an
-authoritative cursor.
+cursor. The current visible Gate and Native receipts below also remain
+evidence-only: only an exact Central-owned ordered intake and separate
+clearance/slot-release proof may change an authoritative cursor.
 
 ## Memory special lane and ordinary queue accounting
 
@@ -125,20 +129,21 @@ authoritative cursor.
 ## Blocker and next transition
 
 - True external blocker: `NONE`.
-- Current dependency: Native has completed the cohesive d885-based checkpoint
-  for ROADMAP_05/06, but holds it pending authorized functional/provider/host
-  evidence, concurrency/crash-power-loss proof, clean-source proof,
-  independent clearance, and a Controller slot-release receipt. All Platform
-  owners still need independent clearance. Gate’s ROADMAP_04/remaining-candidate
-  ordered intake and Native marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY` are
-  receipt-only; central cursors remain unchanged.
+- Current dependency: the visible Gate and Native clearance receipts are now
+  projected explicitly, but the materialized central Platform report/handoff
+  layers remain historical and must not be read as current clearance. Native’s
+  d885/5f receipt also records the non-transferable bd6c/40d accepted-receipt
+  mismatch. Authorized functional/provider/host, concurrency/crash-power-loss,
+  clean-source, independent-clearance, and Controller slot-release evidence
+  remain pending; all authoritative cursors stay unchanged.
 - Slot refill rule: open the next pre-registered feature only after an exact
   Platform intake acknowledgment freezes and releases a slot. Do not create a
   replacement for an existing visible task.
 - Release boundary: queue terminality, final Platform cursors, cross-Platform
   seam resolution, complete integration, authorized proof, independent
   real-host verification, exact rollback identity, and owner release choice
-  all remain pending.
+  all remain pending. True external blocker is `NONE`; the hold is unresolved
+  custody projection plus proof pending.
 
 ## Normal-slot evaluation — 2026-08-11T00:16:09Z
 
@@ -307,6 +312,71 @@ actual five ordinary-slot / dormant-memory / proof-and-slot-release hold.
   clean-source/independent-clearance evidence, then an exact Controller
   slot-release receipt.
 
+## Current Gate/Native receipt projection — 2026-08-11
+
+This append consumes the two visible Platform clearance readbacks into Central
+custody. It preserves every earlier checkpoint and report identity, and it is
+not a claim of functional proof, independent clearance, downstream
+consumption, slot release, merge, push, release, activation, or archive.
+
+### Gate current receipt
+
+- Owner task: `019fdcfb-d827-7831-958a-470c2abbe6eb`; local commit/tree
+  `9903ec9d5ac7dc187ebe38f46fc97e9cfbf6d23a` /
+  `73e6d384f6ffa5e190a469011440334f4723a866`.
+- Current source binding: d885/5f; central candidate: `8f0815a214910141daeee27067139b6a2744761b` /
+  `3e6ad35db20a2a90658b3641590b2defa02977ed`; audited checkpoint: `8b76be22a965e08fde2dd0ef8be090910b0bb4c8` /
+  `d3e2864987ee3ada48280ea571d58bc8b01701ce`.
+- Visible Platform report SHA-256:
+  `792c506b6f34176d919f4a99c0fd714f6b311c5c23d7aceba07e65f6b09216dd`;
+  handoff SHA-256:
+  `f3d82caa771fe5584acc007125a71b7b81d5c0b0771fbf4f7eddf0a431e3f464`.
+- Disposition: `HOLD_PENDING_CENTRAL_REPORT_PROJECTION_AND_AUTHORIZED_FUNCTIONAL_INDEPENDENT_PROOF`;
+  routing is five ordinary slots, zero memory slots, dormant memory; cursor
+  `FEATURE_CURSOR_000`, downstream `false`, independent clearance `false`,
+  and slot release `false`.
+- The materialized central Gate report/handoff remain preserved historical
+  layers bound to 590c/f1 (central report SHA
+  `0dd700e320cae8f6a3af08591dd4ff55e225975ca5803de58a94249c179861d1`,
+  handoff SHA `affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347`).
+  The earlier cohesive 36a4/e28/7fdf and ordered 8acf/f165/ac77 receipts are
+  also preserved; none is a clearance or slot-release receipt.
+
+### Native current receipt
+
+- Owner task: `019fdcfa-43dc-76a3-befa-c93580a3c808`; current source binding
+  d885/5f and central candidate `8f0815a214910141daeee27067139b6a2744761b` /
+  `3e6ad35db20a2a90658b3641590b2defa02977ed`; audited checkpoint is
+  `8b76be22a965e08fde2dd0ef8be090910b0bb4c8` /
+  `d3e2864987ee3ada48280ea571d58bc8b01701ce`.
+- Visible Platform report SHA-256:
+  `c59229ea340bba4530c7ef2cde0a819520a479462278ac7feb7dcc138f929543`;
+  handoff SHA-256:
+  `8c6a0f70ce7832e28731a0ecb3899592db26d3f4eac5f1fe79733db14f2246ee`.
+- Disposition: `HOLD_PENDING_TESTS_PROOF_CUSTODY_SOURCE_MISMATCH`;
+  authoritative cursor `FEATURE_CURSOR_000`, downstream `false`, independent
+  clearance `false`, and slot release `false`.
+- The historical materialized Native report/handoff remain bound to 590c/f1
+  (central report SHA
+  `d2078fa961dd53d7c5a9b48ba9629d181d0a8d91ecc70aa652dbefe3764ae0f0`,
+  handoff SHA `5767da800cfdd64e185dd1845f4150db8e71c08e5357a27a59a547b31acd2f5a`).
+  The accepted platform-foundation receipt `202bf7ddc0d5272d8edd9d9a935400f20b3b715f1efdbd2adfa4d7b0f4b83319`
+  is bound to historical bd6c/40d and cannot transfer clearance to current
+  d885/5f custody.
+
+### Reconciled hold and next action
+
+The current source/candidate pair is d885/5f plus 8f/3e; historical 590c/f1
+and bd6c/40d identities remain preserved but are explicitly non-current and
+non-transferable. Ordinary accounting remains five slots, memory accounting
+zero, ordinary queue 32, and the canonical dormant memory owner remains
+`019fee1e-5e78-78c2-a788-ad7a27eba19e`. True external blocker is `NONE`.
+The exact hold is unresolved custody projection plus authorized functional,
+host/provider, recovery, clean-source, and independent proof pending. The next
+safe action is to reconcile the current Platform records, then obtain that
+proof and append the exact Controller slot-release receipt before any
+non-memory slot refill or ROADMAP_07 admission.
+
 ## CURRENT STATE
 
 `WORKING_EXPECTED`: candidate clean; five ordinary lanes remain admitted while
@@ -316,6 +386,8 @@ three remaining non-memory candidates; Native has integrated ROADMAP_05/06 in
 order into a source-bound checkpoint that remains pending tests and clearance;
 three existing Platform custodians are preserved;
 memory is routed to dormant special lane `019fee1e-5e78-78c2-a788-ad7a27eba19e`
-with no normal slot or consumption; all authoritative cursors remain
+with no normal slot or consumption; current Gate/Native receipts are explicit
+holds with historical layers preserved; all authoritative cursors remain
 `FEATURE_CURSOR_000`; no true external blocker; next non-memory capability is
-ROADMAP_07 only after a normal slot opens and Platform clearance is recorded.
+ROADMAP_07 only after custody projection, Platform proof, independent
+clearance, and an exact slot-release receipt are recorded.

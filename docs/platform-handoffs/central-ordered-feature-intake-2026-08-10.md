@@ -343,3 +343,74 @@ changing peer custody or opening ROADMAP_07.
 - Exact next action: obtain authorized non-test/host/provider/recovery/
   clean-source/independent-clearance evidence, then an exact Controller
   slot-release receipt.
+
+## Current Gate/Native clearance receipt projection — 2026-08-11
+
+This append consumes the two existing visible Platform clearance readbacks into
+Central custody. It preserves all historical checkpoint and report identities;
+it is not a functional, host/provider, independent-clearance, downstream
+consumption, slot-release, merge, push, release, activation, or archive receipt.
+
+### Gate current receipt
+
+- Owner task: `019fdcfb-d827-7831-958a-470c2abbe6eb`; local commit/tree:
+  `9903ec9d5ac7dc187ebe38f46fc97e9cfbf6d23a` /
+  `73e6d384f6ffa5e190a469011440334f4723a866`.
+- Current source binding: d885/5f; central candidate:
+  `8f0815a214910141daeee27067139b6a2744761b` /
+  `3e6ad35db20a2a90658b3641590b2defa02977ed`; audited checkpoint:
+  `8b76be22a965e08fde2dd0ef8be090910b0bb4c8` /
+  `d3e2864987ee3ada48280ea571d58bc8b01701ce`.
+- Visible Platform report SHA-256:
+  `792c506b6f34176d919f4a99c0fd714f6b311c5c23d7aceba07e65f6b09216dd`;
+  handoff SHA-256:
+  `f3d82caa771fe5584acc007125a71b7b81d5c0b0771fbf4f7eddf0a431e3f464`.
+- Disposition:
+  `HOLD_PENDING_CENTRAL_REPORT_PROJECTION_AND_AUTHORIZED_FUNCTIONAL_INDEPENDENT_PROOF`.
+  Routing is five ordinary slots, zero memory slots, dormant memory;
+  authoritative cursor `FEATURE_CURSOR_000`, downstream `false`, independent
+  clearance `false`, and slot release `false`.
+- The materialized central Gate report/handoff remain historical layers bound
+  to 590c/f1 (report SHA
+  `0dd700e320cae8f6a3af08591dd4ff55e225975ca5803de58a94249c179861d1`,
+  handoff SHA `affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347`).
+  Earlier cohesive 36a4/e28/7fdf and ordered 8acf/f165/ac77 receipts remain
+  preserved and are not clearance or slot-release receipts.
+
+### Native current receipt
+
+- Owner task: `019fdcfa-43dc-76a3-befa-c93580a3c808`; current source binding
+  d885/5f and central candidate:
+  `8f0815a214910141daeee27067139b6a2744761b` /
+  `3e6ad35db20a2a90658b3641590b2defa02977ed`; audited checkpoint:
+  `8b76be22a965e08fde2dd0ef8be090910b0bb4c8` /
+  `d3e2864987ee3ada48280ea571d58bc8b01701ce`.
+- Visible Platform report SHA-256:
+  `c59229ea340bba4530c7ef2cde0a819520a479462278ac7feb7dcc138f929543`;
+  handoff SHA-256:
+  `8c6a0f70ce7832e28731a0ecb3899592db26d3f4eac5f1fe79733db14f2246ee`.
+- Disposition: `HOLD_PENDING_TESTS_PROOF_CUSTODY_SOURCE_MISMATCH`;
+  authoritative cursor `FEATURE_CURSOR_000`, downstream `false`, independent
+  clearance `false`, and slot release `false`.
+- The materialized central Native report/handoff remain historical layers
+  bound to 590c/f1 (report SHA
+  `d2078fa961dd53d7c5a9b48ba9629d181d0a8d91ecc70aa652dbefe3764ae0f0`,
+  handoff SHA `5767da800cfdd64e185dd1845f4150db8e71c08e5357a27a59a547b31acd2f5a`).
+  The accepted platform-foundation receipt
+  `202bf7ddc0d5272d8edd9d9a935400f20b3b715f1efdbd2adfa4d7b0f4b83319` is
+  bound to historical bd6c/40d and cannot transfer clearance to current
+  d885/5f custody.
+
+### Reconciled hold
+
+The current source/candidate pair is d885/5f plus 8f/3e. Historical 590c/f1
+and bd6c/40d identities remain preserved but are explicitly non-current and
+non-transferable. Ordinary accounting remains five slots, memory accounting
+zero, ordinary queue 32, canonical dormant owner
+`019fee1e-5e78-78c2-a788-ad7a27eba19e`, and all authoritative cursors remain
+`FEATURE_CURSOR_000`. True external blocker is `NONE`; the exact hold is
+unresolved custody projection plus authorized functional, host/provider,
+recovery, clean-source, and independent proof pending. Next safe action is to
+reconcile the current Platform records, obtain that proof, and append the
+exact Controller slot-release receipt before any non-memory slot refill or
+ROADMAP_07 admission.
