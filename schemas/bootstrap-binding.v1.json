@@ -1806,7 +1806,7 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "02d46504f9af6361a024e3c5344b86e1073ff7db3c79436efb5720a3917a4686"
+      "sha256": "369b0de2cf82eee537a3fe7e6a9c32cd1d5e23f650637a66338ba09467b6bd1f"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
@@ -1980,7 +1980,7 @@
     },
     "portability_historical_compatibility_record": {
       "path": "docs/portability-historical-compatibility.v1.json",
-      "sha256": "73da9664d6ebb4ec3b2d4b316f44313f9f57103567905fe25a02ed35616306cc",
+      "sha256": "4a4218d9e5cca116a59a3d67007a525c9311a9ef5a57cb31cafc2b8dca980fba",
       "classification": "HISTORICAL_NON_NORMATIVE_CUSTODY_EVIDENCE",
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",

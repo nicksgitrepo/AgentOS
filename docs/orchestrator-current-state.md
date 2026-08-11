@@ -1697,3 +1697,20 @@ state-validation proofs pass. Next action is typed current Platform receipt
 consumption followed by authorized functional host/provider, recovery,
 clean-source, independent-clearance, and exact Controller slot-release
 evidence. Memory remains receipt-only and was not contacted.
+
+## Recovery 36 — typed Platform receipt consumption — 2026-08-11
+
+The exact current Gate and Native receipts are now recorded as a central
+metadata-only consumption transaction against source `d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5` and candidate
+`15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`. The exact report, handoff, and
+preservation digests remain bound; historical layers remain preserved.
+
+This transaction records central receipt consumption only. It does not consume
+features downstream, advance any authoritative cursor, grant Platform or
+independent clearance, or release a slot. Five ordinary slots, zero Memory
+slots, queue `32`, and all cursors `FEATURE_CURSOR_000` remain unchanged;
+Roadmap07 remains held. The next action is authorized functional host/provider,
+recovery, clean-source, independent-clearance, and exact Controller slot-release
+evidence. Memory remains receipt-only and was not contacted.
