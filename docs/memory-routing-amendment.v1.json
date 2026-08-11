@@ -25,6 +25,7 @@
   "memory_scope": {
     "feature_ids": [
       "ROADMAP_08_MEMORY_CAPSULES",
+      "PROJECT_GOVERNANCE_PERSISTENCE",
       "PROJECT_MEMORY_LEDGER",
       "BOUNDED_PROJECT_MAPS",
       "ROADMAP_10_MAPS_INTELLIGENCE"
@@ -46,6 +47,7 @@
     "canonical_inventory_feature_count": 37,
     "ordinary_queue_exclusions": [
       "ROADMAP_08_MEMORY_CAPSULES",
+      "PROJECT_GOVERNANCE_PERSISTENCE",
       "PROJECT_MEMORY_LEDGER",
       "BOUNDED_PROJECT_MAPS",
       "ROADMAP_10_MAPS_INTELLIGENCE"
@@ -64,7 +66,6 @@
       "BOOTSTRAP_PROJECT_CONTRACT",
       "DYNAMIC_OWNER_CONVERSATION",
       "FOUR_LIBRARY_GOVERNANCE",
-      "PROJECT_GOVERNANCE_PERSISTENCE",
       "FEATURE_COMPLETENESS_AUDITOR_SEED",
       "PERSISTENT_INTENT_RUNTIME",
       "NATIVE_HOST_SESSION_LIFECYCLE",
@@ -85,7 +86,7 @@
       "UNIVERSAL_RESPONSE_GATING",
       "PORTABILITY_SOURCE_HYGIENE"
     ],
-    "active_normal_slot_count": 6,
+    "active_normal_slot_count": 5,
     "memory_slot_count": 0,
     "next_eligible_non_memory_feature": "ROADMAP_07_PROOF_ACCEPTANCE",
     "next_selection_status": "SELECT_ONLY_AFTER_A_NORMAL_SLOT_OPENS",
@@ -130,6 +131,22 @@
       "downstream_consumed": false
     },
     {
+      "feature_id": "PROJECT_GOVERNANCE_PERSISTENCE",
+      "task_id": "019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd",
+      "worktree_id": "HOST_WORKTREE_CC4B",
+      "candidate_commit": "debd69f5ef7c966e9a929cb9d4f3b4e93f1df479",
+      "candidate_tree": "8eb8c902713bbb714a423ed0c8484ebdce689cf4",
+      "worktree_state": "PRESERVED_UNCHANGED_UNRELEASED",
+      "observed_worktree_status": "CLEAN_AT_RECONCILIATION",
+      "task_state": "WAITING_DESIGN_TRANSFER",
+      "custody_state": "WAITING_DESIGN_TRANSFER",
+      "report_ref": "docs/feature-audits/PROJECT_GOVERNANCE_PERSISTENCE/auditreport.md",
+      "report_sha256": "d6a7a539819fc00e1fce15de262fcf759ea5044967ddc11a90ebdd9a73b85451",
+      "handoff_ref": "docs/feature-handoffs/PROJECT_GOVERNANCE_PERSISTENCE-2026-08-10.md",
+      "handoff_sha256": "1d7f68f6fa00adba0b84f0e4d1d15f24be65bc3819c3021260b8249c29ccd5f6",
+      "downstream_consumed": false
+    },
+    {
       "feature_id": "PROJECT_MEMORY_LEDGER",
       "task_id": "019fdcfa-52b0-73f3-8fd4-4e3ef665e09c",
       "worktree_id": "HOST_WORKTREE_431F",
@@ -171,6 +188,21 @@
       "downstream_consumed": false
     }
   ],
+  "routing_reconciliation": {
+    "feature_id": "PROJECT_GOVERNANCE_PERSISTENCE",
+    "task_id": "019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd",
+    "worktree_id": "HOST_WORKTREE_CC4B",
+    "previous_admission_status": "ADMITTED_PENDING_VISIBLE_TASK_RESUME",
+    "new_custody_state": "WAITING_DESIGN_TRANSFER",
+    "new_feature_status": "SPECIAL_MEMORY_LANE_DORMANT_DESIGN_PENDING",
+    "active_normal_slot_count_before": 6,
+    "active_normal_slot_count_after": 5,
+    "memory_slot_count": 0,
+    "ordinary_consumption": false,
+    "slot_release": false,
+    "archive_or_removal": false,
+    "recorded_at_utc": "2026-08-11T01:15:00Z"
+  },
   "preservation_policy": {
     "source_reports_commits_worktrees_and_proof": "HISTORICAL_UNACCEPTED_INPUTS",
     "historical_artifacts_define_or_constrain_future_owner_design": false,

@@ -3,7 +3,7 @@
   "version": 1,
   "status": "SOURCE_BOUND_PREPARED_NOT_ACTIVATED",
   "inventory_ref": "docs/feature-inventory.v1.json",
-  "inventory_sha256": "2b7236f91245e1632f480b6bcc50a56207d96d4896cc6357bf9403522ce900d4",
+  "inventory_sha256": "1de99da895989b1c0dfa1d1a87f2fe7b77d50a86f4f2d55f2020b5f0182cfbe9",
   "deduplication_rule": "Features with the same canonical_root_cause_id share one root-cause transaction and may not create competing implementations. A feature keeps its own visible task and report, but its repair must consume the shared transaction record.",
   "platform_domains": [
     {
@@ -71,7 +71,7 @@
     {"feature_id":"BOOTSTRAP_PROJECT_CONTRACT","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PRIVATE_CONTROL_MEMORY_PROJECTIONS"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
     {"feature_id":"DYNAMIC_OWNER_CONVERSATION","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PORTABLE_KERNEL_GATES_CONTRACTS","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
     {"feature_id":"FOUR_LIBRARY_GOVERNANCE","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PRIVATE_CONTROL_MEMORY_PROJECTIONS"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
-    {"feature_id":"PROJECT_GOVERNANCE_PERSISTENCE","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["PRIVATE_CONTROL_MEMORY_PROJECTIONS","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
+    {"feature_id":"PROJECT_GOVERNANCE_PERSISTENCE","primary_platform_domain":"PRIVATE_CONTROL_MEMORY_PROJECTIONS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_MEMORY_ARCHITECTURE_DORMANT"},
     {"feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","PORTABLE_KERNEL_GATES_CONTRACTS"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
     {"feature_id":"PERSISTENT_INTENT_RUNTIME","primary_platform_domain":"GOVERNANCE_INTENT_ROLES_ROUTING","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_INTENT_ROUTING"},
     {"feature_id":"NATIVE_HOST_SESSION_LIFECYCLE","primary_platform_domain":"NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","affected_platform_domains":["CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_HOST_BOUNDARY"},
@@ -94,5 +94,5 @@
     {"feature_id":"UNIVERSAL_RESPONSE_GATING","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["GOVERNANCE_INTENT_ROLES_ROUTING","CAMPAIGN_EVIDENCE_HANDOFF_ACCEPTANCE"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"},
     {"feature_id":"PORTABILITY_SOURCE_HYGIENE","primary_platform_domain":"PORTABLE_KERNEL_GATES_CONTRACTS","affected_platform_domains":["NATIVE_HOST_WORKSPACE_PROVIDER_SESSION","RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE"],"canonical_root_cause_id":"ROOT_KERNEL_CONTRACTS"}
   ],
-  "map_sha256": "aa756ec6e428d4f12225a4b6b945eab958663379b2fa25330c41f97fa716f705"
+  "map_sha256": "39ab90efa4e0aca70eed87eff267c3af06d9c2143d58c9def54905f9360de1da"
 }

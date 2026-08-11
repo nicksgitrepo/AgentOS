@@ -40,9 +40,11 @@ The current campaign has logical inventory parity: 37 feature assignments and
 and reports. The reports are not all clean; their individual audit and builder
 states remain the authoritative worklist for the rolling six-slot cycle.
 Runtime-visible task parity is not claimed until the external registry is
-provided and independently reconciled. The six admitted feature slots remain
+provided and independently reconciled. Five ordinary feature slots remain
 source-bound and pending visible-task readback where the host has not yet
-rebound a stale worktree to the current candidate.
+rebound a stale worktree to the current candidate. The preserved CC4B custody
+record is routed to the dormant memory-design lane and does not occupy a normal
+slot.
 
 Each feature auditor must use the current accepted merge worktree selected by
 the parent cycle as its read-only baseline, create its own visible task goal,
@@ -61,7 +63,7 @@ delivery.
 
 `docs/memory-routing-amendment.v1.json` preserves the canonical 37-entry
 inventory order while excluding `ROADMAP_08_MEMORY_CAPSULES`,
-`PROJECT_MEMORY_LEDGER`, `BOUNDED_PROJECT_MAPS`, and
+`PROJECT_GOVERNANCE_PERSISTENCE`, `PROJECT_MEMORY_LEDGER`, `BOUNDED_PROJECT_MAPS`, and
 `ROADMAP_10_MAPS_INTELLIGENCE` from the ordinary feature queue and ordinary
 Platform consumption. Their existing source, reports, commits, worktrees, and
 proof remain historical/unaccepted. The single special lane is

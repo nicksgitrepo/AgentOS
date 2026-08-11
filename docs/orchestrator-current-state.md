@@ -41,18 +41,33 @@ separate workflow.
 
 ## Feature roster
 
-The first six lanes completed local audit -> smallest repair -> hostile
-self-audit -> static affected proof. They are frozen pending exact ordered
-Platform intake; none is downstream-consumed or archive-eligible.
+The five ordinary lanes shown below completed local audit -> smallest repair ->
+hostile self-audit -> static affected proof. They are frozen pending exact
+ordered Platform intake; none is downstream-consumed or archive-eligible. The
+former sixth custody record is preserved below as a dormant memory-design
+transfer and is not an ordinary slot.
 
 | Feature | Task | Worktree | Final commit / tree | Platform return owner |
 | --- | --- | --- | --- | --- |
 | `ROADMAP_04_TASK_ROUTING_CONTEXT` | `019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec` | `HOST_WORKTREE_D6FC` | `a3441789bec91829c8729b969d06df0b7dbe0165` / `ff36256deae8cb21a7c2639b6b0a5e559318e182` | `PLATFORM_GATE_RESPONSE` |
 | `ROADMAP_05_LOCAL_ADAPTERS` | `019fdcf9-9d12-7b93-835a-10aebdba1b94` | `HOST_WORKTREE_D986` | `691046fa75495732709a21cef2e5e37813065f3c` / `e643be4776c979d637001ed0d7308043cb2069e0` | `PLATFORM_NATIVE_SESSION_EVIDENCE` |
 | `FOUR_LIBRARY_GOVERNANCE` | `019fdcf9-f611-7550-ae5e-e1dac246aa5b` | `HOST_WORKTREE_4BB9` | `5cb26e37f1bff09da50651ce61d4a5f3888d0c80` / `f7719febacc58220132354240ab786460d52e8dd` | `PLATFORM_GATE_RESPONSE` |
-| `PROJECT_GOVERNANCE_PERSISTENCE` | `019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd` | `HOST_WORKTREE_CC4B` | `debd69f5ef7c966e9a929cb9d4f3b4e93f1df479` / `8eb8c902713bbb714a423ed0c8484ebdce689cf4` | `PLATFORM_PRIVATE_CONTROL_MEMORY` |
 | `FEATURE_COMPLETENESS_AUDITOR_SEED` | `019fdcfa-3e24-7ac1-bd30-a9ac136b34e6` | `HOST_WORKTREE_B7E0` | `1ebf952e6acfff6d5be83a67b868b745761a4571` / `474c8757ca0c2a1b7b4be4ff23facc02bbc35c9b` | `PLATFORM_GATE_RESPONSE` |
 | `DYNAMIC_PROJECT_LANES` | `019fdcfa-4873-7ea2-ae5d-f29729224d0c` | `HOST_WORKTREE_A790` | `4b2b210f1a5119c6d2e6a545e8675d02c6db392f` / `cf9be278dbb2a1a432b34a66cb838da2e2c4f623` | `PLATFORM_GATE_RESPONSE` |
+
+### Preserved memory-design transfer — PROJECT_GOVERNANCE_PERSISTENCE
+
+- Task `019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd`, worktree
+  `HOST_WORKTREE_CC4B`, candidate `debd69f5ef7c966e9a929cb9d4f3b4e93f1df479` /
+  `8eb8c902713bbb714a423ed0c8484ebdce689cf4`.
+- Report SHA-256:
+  `d6a7a539819fc00e1fce15de262fcf759ea5044967ddc11a90ebdd9a73b85451`;
+  handoff SHA-256:
+  `1d7f68f6fa00adba0b84f0e4d1d15f24be65bc3819c3021260b8249c29ccd5f6`.
+- Custody: `WAITING_DESIGN_TRANSFER`; historical/unaccepted input under the
+  canonical dormant memory owner. The peer worktree was read-only observed
+  clean at reconciliation and was not edited, cleaned, archived, or removed;
+  no durable design-transfer handoff or slot release is claimed.
 
 `ROADMAP_06_CAMPAIGN_LIFECYCLE` has returned a clean committed candidate: task
 `019fedfd-1f3f-7c03-a483-8c9352ebabe1`, `HOST_WORKTREE_5962`, final
@@ -70,7 +85,7 @@ consumed early.
 | --- | --- | --- | --- | --- |
 | `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 acknowledged with no repair; ordered intake recorded for FOUR_LIBRARY_GOVERNANCE, FEATURE_COMPLETENESS_AUDITOR_SEED, and DYNAMIC_PROJECT_LANES; local marker `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`; clearance remains pending. |
 | `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05/06 integrated in order into a cohesive source-bound checkpoint, status `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`; local marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`; no central consumption or clearance. |
-| `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; historical candidates preserved; no source consumed. |
+| `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; PROJECT_GOVERNANCE_PERSISTENCE is preserved in the dormant memory lane; historical candidates preserved; no source consumed. |
 
 Native’s exact ordered receipt binds local HEAD/tree
 `590c07ddd4be7a8c24727c24b40808e44ca7357d` /
@@ -92,12 +107,13 @@ authoritative cursor.
 - State: `DORMANT_DESIGN_PENDING`; custody is `NO_GOAL / NO_WORKTREE /
   NO_PRODUCT_EDIT / NO_INTEGRATION / NO_RELEASE`.
 - Excluded from ordinary feature and Platform consumption:
-  `ROADMAP_08_MEMORY_CAPSULES`, `PROJECT_MEMORY_LEDGER`,
+  `ROADMAP_08_MEMORY_CAPSULES`, `PROJECT_GOVERNANCE_PERSISTENCE`,
+  `PROJECT_MEMORY_LEDGER`,
   `BOUNDED_PROJECT_MAPS`, and `ROADMAP_10_MAPS_INTELLIGENCE`, including
   structured memory, replay/projection, capsule, retention/retrieval/privacy,
   and equivalent derived-memory semantics.
 - The canonical 37-entry inventory order remains preserved for historical
-  coverage. The ordinary queue is the filtered 33-entry order in the routing
+  coverage. The ordinary queue is the filtered 32-entry order in the routing
   amendment; authoritative cursors remain `FEATURE_CURSOR_000`.
 - No normal slot is occupied by memory (`memory_slot_count: 0`). The next
   eligible non-memory capability is `ROADMAP_07_PROOF_ACCEPTANCE`, selectable
@@ -125,6 +141,9 @@ authoritative cursor.
   all remain pending.
 
 ## Normal-slot evaluation — 2026-08-11T00:16:09Z
+
+This earlier projection is retained as append-only history; the memory-slot
+reconciliation below supersedes its six-slot accounting.
 
 - Decision: `NORMAL_SLOT_CLOSED_NO_ADMISSION`.
 - Six normal slots remain admitted and unreleased: ROADMAP_04, ROADMAP_05,
@@ -235,12 +254,35 @@ functional proof, independent clearance, or slot release.
   merge, push, release, activation, or archive occurred; true external
   blocker remains `NONE`.
 
+## Memory slot reconciliation — 2026-08-11
+
+The CC4B custody record is now outside ordinary active-slot admission. The
+canonical inventory/map and routing amendment classify
+`PROJECT_GOVERNANCE_PERSISTENCE` as a dormant memory-design transfer under
+`019fee1e-5e78-78c2-a788-ad7a27eba19e`. This supersedes the earlier
+pre-clearance projection while preserving that append-only history.
+
+- Active ordinary slots: `5` (`ROADMAP_04`, `ROADMAP_05`,
+  `FOUR_LIBRARY_GOVERNANCE`, `FEATURE_COMPLETENESS_AUDITOR_SEED`, and
+  `DYNAMIC_PROJECT_LANES`).
+- Memory slots: `0`; the CC4B task remains preserved custody, not a consumed
+  or released slot. Its state is `WAITING_DESIGN_TRANSFER` /
+  historical-unaccepted, with no archive or removal.
+- Authoritative Platform cursors remain `FEATURE_CURSOR_000`; local markers
+  are evidence-only. `ROADMAP_07_PROOF_ACCEPTANCE` remains the next eligible
+  non-memory capability but is not admitted or started.
+- Safe next action: obtain a clean durable design-transfer handoff for CC4B
+  and the required Platform/independent proof before any slot-release decision;
+  metadata alone does not release or clear the slot.
+
 ## CURRENT STATE
 
-`WORKING_EXPECTED`: candidate clean; Gate has acknowledged ROADMAP_04 and
-recorded ordered intake for three remaining non-memory candidates; Native has
-integrated ROADMAP_05/06 in order into a source-bound
-checkpoint that remains pending tests and clearance; three existing Platform custodians are preserved;
+`WORKING_EXPECTED`: candidate clean; five ordinary lanes remain admitted while
+PROJECT_GOVERNANCE_PERSISTENCE is preserved as a dormant memory-design
+transfer; Gate has acknowledged ROADMAP_04 and recorded ordered intake for
+three remaining non-memory candidates; Native has integrated ROADMAP_05/06 in
+order into a source-bound checkpoint that remains pending tests and clearance;
+three existing Platform custodians are preserved;
 memory is routed to dormant special lane `019fee1e-5e78-78c2-a788-ad7a27eba19e`
 with no normal slot or consumption; all authoritative cursors remain
 `FEATURE_CURSOR_000`; no true external blocker; next non-memory capability is

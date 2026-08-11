@@ -287,3 +287,32 @@ proof, independent clearance, or slot release.
   release remain pending. No npm/tests, peer or central worktree edits,
   merge, push, release, activation, or archive occurred; true external
   blocker remains `NONE`.
+
+## Memory slot reconciliation — 2026-08-11
+
+Central corrected an owned routing inconsistency: the CC4B
+`PROJECT_GOVERNANCE_PERSISTENCE` task was listed as an ordinary admitted slot
+even though the owner amendment routes its persistent-memory semantics to the
+dormant special lane. This append-only repair does not rewrite its report or
+evidence and does not claim a slot release.
+
+- Task `019fdcf9-f8aa-7cf2-9a93-7d0d54d187cd`, worktree
+  `HOST_WORKTREE_CC4B`, candidate `debd69f5ef7c966e9a929cb9d4f3b4e93f1df479` /
+  `8eb8c902713bbb714a423ed0c8484ebdce689cf4` is preserved unchanged.
+- Report SHA-256:
+  `d6a7a539819fc00e1fce15de262fcf759ea5044967ddc11a90ebdd9a73b85451`;
+  handoff SHA-256:
+  `1d7f68f6fa00adba0b84f0e4d1d15f24be65bc3819c3021260b8249c29ccd5f6`.
+- Routing: `PROJECT_GOVERNANCE_PERSISTENCE` is now a
+  `SPECIAL_MEMORY_LANE_DORMANT_DESIGN_PENDING` historical/unaccepted input;
+  custody is `WAITING_DESIGN_TRANSFER` under canonical owner
+  `019fee1e-5e78-78c2-a788-ad7a27eba19e`.
+- Active ordinary slot accounting is `5`; memory slot accounting remains `0`.
+  The five ordinary lanes remain admitted, while CC4B is not an ordinary
+  active-slot admission and is not archived or removed.
+- Inventory/map/routing digests were rebound; authoritative Platform cursors
+  remain `FEATURE_CURSOR_000`, downstream consumption and clearance remain
+  false, and `ROADMAP_07_PROOF_ACCEPTANCE` remains unstarted.
+- No peer edit, cleanup, archive, npm/test, merge, push, release, activation,
+  or metadata-only slot-release claim was made. Next safe action is a clean
+  durable design-transfer handoff plus the existing proof/clearance sequence.

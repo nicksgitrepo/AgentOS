@@ -43,8 +43,9 @@ AUDIT
 → HANDOFF
 ```
 
-The Controller maintains six materially active slots while at least six
-eligible queue entries remain. A clean candidate is frozen only after its
+The Controller targets six materially active ordinary slots while at least six
+eligible queue entries remain. A preserved special-lane custody hold may leave
+fewer ordinary admissions until explicit release. A clean candidate is frozen only after its
 source-bound handoff, committed checkpoint, affected proof, and exact Platform
 intake are acknowledged. The newly free slot then admits the next queue entry.
 
@@ -54,18 +55,21 @@ and end with `CURRENT STATE`.
 
 Memory routing is an owner-authorized queue amendment recorded in
 `docs/memory-routing-amendment.v1.json`. `ROADMAP_08_MEMORY_CAPSULES`,
-`PROJECT_MEMORY_LEDGER`, `BOUNDED_PROJECT_MAPS`, and
-`ROADMAP_10_MAPS_INTELLIGENCE` remain in the canonical inventory for historical
-coverage but are excluded from the ordinary feature queue and ordinary
-Platform consumption. Structured memory, replay/projection, capsule,
-retention/retrieval/privacy, and equivalent derived-memory semantics route to
-the single dormant `SPECIAL_MEMORY_ARCHITECTURE` lane owned by canonical task
+`PROJECT_GOVERNANCE_PERSISTENCE`, `PROJECT_MEMORY_LEDGER`, `BOUNDED_PROJECT_MAPS`,
+and `ROADMAP_10_MAPS_INTELLIGENCE` remain in the canonical inventory for
+historical coverage but are excluded from the ordinary feature queue and
+ordinary Platform consumption. Structured memory, replay/projection, capsule,
+retention/retrieval/privacy, persistent project memory, and equivalent
+derived-memory semantics route to the single dormant
+`SPECIAL_MEMORY_ARCHITECTURE` lane owned by canonical task
 `019fee1e-5e78-78c2-a788-ad7a27eba19e`; its state is
 `DORMANT_DESIGN_PENDING` with no goal, worktree, product edit, integration, or
 release custody. Existing reports, commits, worktrees, and proof remain
 historical/unaccepted inputs. The filtered ordinary queue's next non-memory
 capability is `ROADMAP_07_PROOF_ACCEPTANCE`, selectable only after a normal slot
-opens and custody is explicit.
+opens and custody is explicit. Five ordinary slots are currently admitted; the
+preserved CC4B custody record awaits design transfer and occupies zero normal
+memory slots.
 
 Features with the same `canonical_root_cause_id` share one root-cause
 transaction. Their separate reports remain required, but they may not create
