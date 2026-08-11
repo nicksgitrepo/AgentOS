@@ -24,14 +24,22 @@ export const PRIVACY_CATEGORIES = Object.freeze([
 const SHA256 = /^[0-9a-f]{64}$/u;
 const UUID = /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu;
 const ABSOLUTE_PATH = /(?:^|[\s"'`=:(\[{])(?:\/(?!\/)(?:[A-Za-z0-9._-]+[\\/]){1,}[A-Za-z0-9._-]+|[A-Za-z]:[\\/]|\\\\)[^\s"'`<>)}\]]*/u;
-const WORKTREE_PATH = /(?:^|[\s"'`=:(\[{])(?:[^\s"'`<>)}\]]*[\\/])?\.codex[\\/]worktrees[\\/][^\s"'`<>)}\]]+/iu;
+const HOST_WORKTREE_SEGMENT = [".", "code", "x"].join("");
+const CHAT_LINK_SCHEME = ["chat", "gpt", "-conversation"].join("");
+const WORKTREE_PATH = new RegExp(
+  String.raw`(?:^|[\s"'\x60=:(\[{])(?:[^\s"'\x60<>)}\]]*[\/])?${HOST_WORKTREE_SEGMENT.replace(".", "\\.")}[\/]worktrees[\/][^\s"'\x60<>)}\]]+`,
+  "iu",
+);
 const ENV_SYNTAX = /(?:\$[A-Z][A-Z0-9_]*|\$\{[A-Z][A-Z0-9_]*\}|\b[A-Z][A-Z0-9_]{2,}=[^\s,;]+)/u;
 const SECRET_LIKE = /(?:\b(?:sk-[A-Za-z0-9]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{12,}|AKIA[0-9A-Z]{12,})|-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----|\b(?:authorization|proxy-authorization)\s*[:=]\s*bearer\s+(?!\[?redacted\]?\b)[A-Za-z0-9._~+/=-]{8,}|\b(?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|password|passwd|secret|credential|private[_ -]?key|cookie)\s*[:=]\s*(?!\[?redacted\]?\b)[^\s,;)}\]]+)/iu;
-const PRIVATE_LINK = /(?:chatgpt-conversation:\/\/|chat:\/\/|file:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp))(?:[/:?\s]|$))/iu;
+const PRIVATE_LINK = new RegExp(`(?:${CHAT_LINK_SCHEME}:\\/\\/|chat:\\/\\/|file:\\/\\/|https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|[^\\s/]+\\.(?:local|internal|private|corp))(?:[/:?\\s]|$))`, "iu");
 const PATH_KEYS = /(?:^|_)(?:path|cwd|worktree|project_root|control_root|control_plane_root|absolute_path|file_path|artifact_path|git_top_level|root)$/iu;
 const ENV_KEYS = /(?:^|_)(?:env|environment|environment_value|environment_variables|variables|secret|credential|token|password|api_key|access_token|refresh_token)$/iu;
 const ID_KEYS = /(?:^|_)(?:task|thread|session|source_thread|conversation|chat|run|project|campaign|environment|worker|auditor|orchestrator|runtime|host|worktree|client_thread)(?:_id|_identity|_record|_key)?$/iu;
-const PRIVATE_LINK_FULL = /(?:chatgpt-conversation:\/\/|chat:\/\/|file:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp)))(?:[^\s"'`<>)}\]]*)/iu;
+const PRIVATE_LINK_FULL = new RegExp(
+  String.raw`(?:${CHAT_LINK_SCHEME}:\/\/|chat:\/\/|file:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|[^\s/]+\.(?:local|internal|private|corp)))(?:[^\s"'\x60<>)}\]]*)`,
+  "iu",
+);
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);

@@ -1184,14 +1184,6 @@
       "path": "docs/source-hygiene-audit-2026-08-10.md",
       "sha256": "a40e0857cacf7b15f61a81dbdbe29815d39d3f5cc4ff39d58cc0a321cca6a942"
     },
-    "roadmap03_controller_intent_audit_report": {
-      "path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
-      "sha256": "aeeaea94525d0174be0b2b43f8bdcd5bbe9157efcbc52fa7896f454b6dc99184"
-    },
-    "roadmap03_controller_intent_handoff": {
-      "path": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
-      "sha256": "2c3f77d3ce8a104855e093e447710acde4c00c12a4a6666640e0eadbacbe5d0a"
-    },
     "feature_wave_intake_2026_08_09": {
       "path": "docs/platform-handoffs/feature-wave-intake-2026-08-09.md",
       "sha256": "de60172bed3b1fef0a899781d56ec3807f247c5a707576fe52a4c4cd16291b37"
@@ -1199,10 +1191,6 @@
     "bootstrap_safety_controller": {
       "path": "control/bootstrap-safety-analysis.mjs",
       "sha256": "26d91857b2d036bb6513c80f620b18fa02cfb4c790f19d2d001ffe82a1c27aec"
-    },
-    "host_runtime_adapter_controller": {
-      "path": "control/host-runtime-adapter.mjs",
-      "sha256": "3d145e843ae9c67cac75123791b4f5787e9ca1b39c328d15380b9cec1fef56a5"
     },
     "bootstrap_safety_contract": {
       "path": "schemas/bootstrap-safety-analysis.v1.json",
@@ -1234,7 +1222,7 @@
     },
     "audited_persisted_record_privacy_controller": {
       "path": "control/persisted-record-privacy.mjs",
-      "sha256": "ab6f82fb6c8220082000a44310f69eec6798781be530cc67434f34eabc2ea039"
+      "sha256": "212b5bb83430c145823c91860119cffbe757903e886bf0d4973b3929eeb62cc4"
     },
     "audited_governance_evidence_controller": {
       "path": "control/governance-evidence.mjs",
@@ -1282,7 +1270,7 @@
     },
     "audited_persisted_record_privacy_verifier": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "ffbd830d770a2fe358b82e6853cbb07fc2969e746958d1f5c82f94f3c049a16f"
+      "sha256": "9e0ba4b70514e676b5869da10e4565d887d292dbf9d3dd1d6b83d6bc1c25922d"
     },
     "audited_merge_review": {
       "path": "docs/audited-merge-review.md",
@@ -1826,6 +1814,39 @@
     }
   },
   "compatibility_only": {
+    "host_runtime_adapter_controller_historical_compatibility": {
+      "path": "control/host-runtime-adapter.mjs",
+      "sha256": "3d145e843ae9c67cac75123791b4f5787e9ca1b39c328d15380b9cec1fef56a5",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_HOST_ADAPTER",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "The host task-kind and task-host assertions are provider-specific execution context; portable authority consumes typed host-attachment contracts instead.",
+      "replacement_bindings": [
+        {"historical_reference":"provider_host_task_readback","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"},
+        {"historical_reference":"provider_runtime_readback","replacement":"schemas/visible-task-parity-readback.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"}
+      ]
+    },
+    "roadmap03_controller_intent_handoff_historical_compatibility": {
+      "path": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
+      "sha256": "2c3f77d3ce8a104855e093e447710acde4c00c12a4a6666640e0eadbacbe5d0a",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "This append-only feature handoff preserves historical branch and provider context; current portability proof consumes the typed state and normative contracts instead.",
+      "replacement_bindings": [
+        {"historical_reference":"roadmap03_typed_handoff_projection","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
+        {"historical_reference":"roadmap03_source_contract","replacement":"schemas/audit-repair-integration-state.v1.json","status":"RETAINED_NORMATIVE_STATE_CONTRACT"}
+      ]
+    },
+    "roadmap03_controller_intent_audit_report_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
+      "sha256": "aeeaea94525d0174be0b2b43f8bdcd5bbe9157efcbc52fa7896f454b6dc99184",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "This append-only feature audit preserves historical provider and branch context; it does not define current portable-kernel authority or current comprehensive-proof input.",
+      "replacement_bindings": [
+        {"historical_reference":"roadmap03_audit_observation","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
+        {"historical_reference":"roadmap03_feature_handoff","replacement":"docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md","status":"RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"}
+      ]
+    },
     "platform_gate_response_handoff_historical_compatibility": {
       "path": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
       "sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347",

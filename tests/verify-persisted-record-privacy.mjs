@@ -127,7 +127,7 @@ assert.equal(sharedWritePersistedRecordAtomic, writePersistedRecordAtomic);
 assert.equal(scanPersistedRecord("task-" + "A".repeat(20)).safe, true);
 assert.equal(scanPersistedRecord("sk-" + "A".repeat(20)).safe, false);
 
-const outside = fs.mkdtempSync(path.join("/tmp", "agentos-host-config-"));
+const outside = fs.mkdtempSync(path.join(fs.realpathSync.native("/tmp"), "agentos-host-config-"));
 const config = path.join(outside, "runtime.json");
 fs.writeFileSync(config, "{}\n", {mode: 0o600});
 try {
