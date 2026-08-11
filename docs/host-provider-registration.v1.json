@@ -1,0 +1,242 @@
+{
+  "schema": "agentos.local_host_provider_registration.v1",
+  "version": 1,
+  "status": "HOST_READBACK_REGISTERED",
+  "observed_at_utc": "2026-08-11T15:01:11.566Z",
+  "expires_at_utc": "2026-08-11T16:01:11.566Z",
+  "opaque_host_ref": "HOST_REF_3c16980e0d94883b1784e4fd925442f0a394d49e099fa3daa833ffc9048ab93a",
+  "opaque_provider_ref": "PROVIDER_REF_be034b2418b73d133801f5aa24aca925b63a5721a2bf696f678a2db8642bae63",
+  "current_candidate": {
+    "commit": "15254f79096be8c5da58afdc4837456f6952d9f8",
+    "tree": "a3c38f7a6eb33926f59fd771653abf14ea12148c"
+  },
+  "source_baseline": {
+    "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+    "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+  },
+  "workspace_binding_digest": "5c8342f07b04808b7b4f0a38727a4416bb04bb46a6870620c418dbab6703363a",
+  "host_facts": {
+    "os_family": "darwin",
+    "architecture": "arm64",
+    "runtime": "node.v22",
+    "runtime_version": "22.22.0",
+    "tools": {
+      "git": true,
+      "node_check": true,
+      "json_parse": true,
+      "sha256": true
+    },
+    "workspace_root_class": "PROJECT_RELATIVE_ISOLATED_WORKTREE",
+    "supported_command_boundaries": [
+      "GIT_READ",
+      "GIT_WRITE",
+      "JSON_PARSE",
+      "NODE_CHECK",
+      "SHA256"
+    ],
+    "supported_session_boundaries": [
+      "LOCAL_SESSION_LIFECYCLE_FIXTURES",
+      "NATIVE_SESSION_TYPED_READBACK"
+    ],
+    "unavailable_capabilities": [
+      "AUTHENTICATION",
+      "DEPLOY",
+      "EXTERNAL_HOST_LIFECYCLE",
+      "MERGE",
+      "NETWORK_READ",
+      "NETWORK_WRITE",
+      "PUBLISH",
+      "SPEND"
+    ]
+  },
+  "native_host_attachment": {
+    "schema": "agentos.native_host_attachment.v1",
+    "version": 1,
+    "status": "BOUND",
+    "attachment_id": "ATTACHMENT_AGENTOS_EXECUTION_HOST",
+    "host_id": "HOST_REF_3c16980e0d94883b1784e4fd925442f0a394d49e099fa3daa833ffc9048ab93a",
+    "project_id": "AGENTOS_PROJECT",
+    "environment_id": "AGENTOS_EXECUTION",
+    "capabilities": [
+      "create_thread",
+      "list_threads",
+      "read_thread",
+      "send_message_to_thread",
+      "set_thread_archived",
+      "set_thread_pinned",
+      "wait_threads"
+    ],
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "max",
+    "attached_at_utc": "2026-08-11T15:01:11.566Z",
+    "digest": "535d823abd9dfa2639b5a3fb20259bbc9e38fb376c3799c515121a5ecbcc3039"
+  },
+  "host_capability_catalog": {
+    "schema": "agentos.host_capability_catalog.v1",
+    "version": 1,
+    "status": "HOST_ATTESTED",
+    "attestation_mode": "HOST_READBACK",
+    "attachment_ref_sha256": "535d823abd9dfa2639b5a3fb20259bbc9e38fb376c3799c515121a5ecbcc3039",
+    "observed_at_utc": "2026-08-11T15:01:11.566Z",
+    "models": [
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "max",
+        "capabilities": [
+          "LOCAL_COMMAND_EXECUTION",
+          "LOCAL_GIT_READ",
+          "LOCAL_GIT_WRITE",
+          "LOCAL_SESSION_READBACK",
+          "PROJECT_RELATIVE_WORKSPACE"
+        ],
+        "context_tokens": 1,
+        "tools": [
+          "git",
+          "json.parse",
+          "node.check",
+          "session.readback",
+          "sha256"
+        ],
+        "verifier_strength": "DETERMINISTIC",
+        "permissions": [
+          "EMIT_EVIDENCE",
+          "READ_ASSIGNED_WORKTREE",
+          "READ_SOURCE",
+          "WRITE_ASSIGNED_WORKTREE"
+        ],
+        "expected_cost": 0,
+        "estimated_wall_seconds": 1,
+        "estimated_success_probability": 0.5,
+        "cost_unit": "LOCAL_NO_COST",
+        "spawnable": false
+      }
+    ],
+    "digest": "0f9b30cd849a116c7d93af03b5e869a06e2ae65fcde6afc038290966603f60f3"
+  },
+  "offline_policy": {
+    "schema": "agentos.offline_policy.v1",
+    "version": 1,
+    "status": "ONLINE_REVIEW",
+    "mode": "ONLINE_READ_ONLY",
+    "network_allowed": true,
+    "authentication_allowed": false,
+    "external_writes_allowed": false,
+    "provider_discovery_mode": "HOST_CATALOG_READ_ONLY",
+    "allowed_actions": [
+      "CONTROL_EXPORT",
+      "CONTROL_IMPORT",
+      "CONTROL_WRITE",
+      "GOVERNANCE_PRESERVE",
+      "GOVERNANCE_RESET",
+      "LOCAL_GIT_READ",
+      "LOCAL_READ",
+      "NETWORK_READ",
+      "RELEASE_CANDIDATE_VERIFY"
+    ],
+    "denied_actions": [
+      "AUTHENTICATE",
+      "DELETE",
+      "DEPLOY",
+      "MERGE",
+      "PROVIDER_ACTION",
+      "PUBLISH",
+      "PUSH",
+      "SPEND"
+    ],
+    "workspace_binding_digest": "5c8342f07b04808b7b4f0a38727a4416bb04bb46a6870620c418dbab6703363a",
+    "owner_decision_digest": "181df40de80039eb0a859f4a2ef810e4c35a1916638e3a87bae0f6dbc4f0419d",
+    "capability_digest": null,
+    "digest": "e48515f4d16ba90b002b793b839d79fd70db68e06db7268502f4bb6792527afe"
+  },
+  "provider_discovery": {
+    "schema": "agentos.provider_discovery.v1",
+    "version": 1,
+    "status": "HOST_CATALOG_READ_ONLY",
+    "offline_mode": "ONLINE_READ_ONLY",
+    "provider_discovery_mode": "HOST_CATALOG_READ_ONLY",
+    "workspace_binding_digest": "5c8342f07b04808b7b4f0a38727a4416bb04bb46a6870620c418dbab6703363a",
+    "host_capability_catalog_digest": "0f9b30cd849a116c7d93af03b5e869a06e2ae65fcde6afc038290966603f60f3",
+    "catalog_digest": "21b14ae402ce3bf65566f4175cc16e2f52259a88798ab38a67c584d3e525a557",
+    "entries": [
+      {
+        "adapter_ref": "AGENTOS_AUTHENTICATION",
+        "protocol": "EXTERNAL_CAPABILITY_V1",
+        "capabilities": [],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "UNAVAILABLE"
+      },
+      {
+        "adapter_ref": "AGENTOS_DEPLOYMENT",
+        "protocol": "EXTERNAL_CAPABILITY_V1",
+        "capabilities": [],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "UNAVAILABLE"
+      },
+      {
+        "adapter_ref": "AGENTOS_LOCAL_WORKSPACE",
+        "protocol": "LOCAL_ADAPTER_V1",
+        "capabilities": [
+          "LOCAL_FILESYSTEM_READ",
+          "LOCAL_FILESYSTEM_WRITE",
+          "LOCAL_GIT_READ",
+          "LOCAL_GIT_WRITE"
+        ],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "TRUSTED_HOST_CATALOG"
+      },
+      {
+        "adapter_ref": "AGENTOS_NETWORK",
+        "protocol": "EXTERNAL_CAPABILITY_V1",
+        "capabilities": [],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "UNAVAILABLE"
+      },
+      {
+        "adapter_ref": "AGENTOS_PUBLISH",
+        "protocol": "EXTERNAL_CAPABILITY_V1",
+        "capabilities": [],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "UNAVAILABLE"
+      },
+      {
+        "adapter_ref": "AGENTOS_SESSION_BOUNDARY",
+        "protocol": "NATIVE_SESSION_V1",
+        "capabilities": [
+          "LOCAL_FILESYSTEM_READ",
+          "LOCAL_GIT_READ"
+        ],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "TRUSTED_HOST_CATALOG"
+      },
+      {
+        "adapter_ref": "AGENTOS_SPEND",
+        "protocol": "EXTERNAL_CAPABILITY_V1",
+        "capabilities": [],
+        "network_required": false,
+        "authentication_required": false,
+        "external_write_required": false,
+        "trust_status": "UNAVAILABLE"
+      }
+    ],
+    "operations": {
+      "network_attempted": false,
+      "authentication_attempted": false,
+      "spending_attempted": false,
+      "external_write_attempted": false
+    },
+    "digest": "87f31a332691b80cba33bc97b2bbd14407f981a01b5aeb5d12703910ca098600"
+  },
+  "digest": "0bd0c9ac16c742787aac06e375f711f3c6c4322d1bfc2f67bca83262ba66b080"
+}

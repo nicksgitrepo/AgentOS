@@ -1528,3 +1528,56 @@ Next action: obtain current-candidate source-bound Gate and Native rebind
 receipts, then continue registered host/provider and authorized recovery proof,
 independent clearance, and exact Controller slot release before any
 non-memory slot refill.
+
+## Recovery 28 — opaque local host/provider registration — 2026-08-11
+
+The current execution host now has one additive, project-agnostic typed
+readback registration at `docs/host-provider-registration.v1.json`, bound to
+candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`. Its file digest is
+`1fcd39ccb0927f95882d05ad0d4b7e0316890664e2c1271448d919a5868c01d2` and its
+content digest is
+`0bd0c9ac16c742787aac06e375f711f3c6c4322d1bfc2f67bca83262ba66b080`.
+Opaque host/provider references are recorded only as
+`HOST_REF_3c16980e0d94883b1784e4fd925442f0a394d49e099fa3daa833ffc9048ab93a`
+and
+`PROVIDER_REF_be034b2418b73d133801f5aa24aca925b63a5721a2bf696f678a2db8642bae63`;
+no username, absolute path, credential, private link, provider identity, or
+external project context is persisted.
+
+The registration records only portable facts: Darwin/arm64, Node 22.22.0,
+Git, syntax, JSON, and SHA-256 availability, the
+`PROJECT_RELATIVE_ISOLATED_WORKTREE` root class, supported local command and
+typed-session boundaries, and explicit unavailable authentication, network,
+publish, merge, deploy, spend, and external-host-lifecycle capabilities. The
+typed native attachment, host capability catalog, read-only offline policy,
+and provider-neutral discovery records validate with digests
+`535d823abd9dfa2639b5a3fb20259bbc9e38fb376c3799c515121a5ecbcc3039`,
+`0f9b30cd849a116c7d93af03b5e869a06e2ae65fcde6afc038290966603f60f3`,
+`e48515f4d16ba90b002b793b839d79fd70db68e06db7268502f4bb6792527afe`, and
+`87f31a332691b80cba33bc97b2bbd14407f981a01b5aeb5d12703910ca098600`.
+
+Typed registration, unavailable-capability negative proof, and privacy proof
+pass. The privacy selector scanned `210` normative public files, verified `27`
+private records and `69` retained digests, scanned zero private payloads, and
+found zero findings; result digest
+`06f360d8917d40968648ab55ed6b15f1c2f6db92472b51ae87f797eb719473d5`. The
+negative proof digest is
+`9581e6a4464a0f19fe62f67ce2255a7e2806e2102a6c65e89f76cdd84fd2feba`. No
+authentication, network, spending, publishing, merge, deploy, or external
+write was attempted. This is a local host readback and not a production,
+live-provider, or external-host-lifecycle success claim. Gate/Native
+current-candidate rebind receipts, authorized functional/provider and
+recovery evidence, clean-source readback, independent clearance, and the
+exact Controller slot-release receipt remain pending.
+
+Accounting is unchanged: five ordinary slots, queue `32`, zero Memory slots,
+all ordinary Platform cursors `FEATURE_CURSOR_000`, and downstream,
+Platform-clearance, independent-clearance, and slot-release flags false. The
+Memory controller remains receipt-only to this orchestrator and was not
+contacted. True external blocker: `NONE`.
+
+Next action: obtain current-candidate Gate/Native rebind receipts, then run the
+authorized functional host/provider, recovery, and clean-source proofs,
+obtain independent clearance, and record the exact Controller slot-release
+receipt before any non-memory refill.

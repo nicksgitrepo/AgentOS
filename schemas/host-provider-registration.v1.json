@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.local_host_provider_registration.v1",
+  "title": "AgentOS project-agnostic local host/provider readback registration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "observed_at_utc",
+    "expires_at_utc",
+    "opaque_host_ref",
+    "opaque_provider_ref",
+    "current_candidate",
+    "source_baseline",
+    "workspace_binding_digest",
+    "host_facts",
+    "native_host_attachment",
+    "host_capability_catalog",
+    "offline_policy",
+    "provider_discovery",
+    "digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.local_host_provider_registration.v1"},
+    "version": {"const": 1},
+    "status": {"const": "HOST_READBACK_REGISTERED"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "expires_at_utc": {"type": "string", "format": "date-time"},
+    "opaque_host_ref": {"type": "string", "pattern": "^HOST_REF_[0-9a-f]{64}$"},
+    "opaque_provider_ref": {"type": "string", "pattern": "^PROVIDER_REF_[0-9a-f]{64}$"},
+    "current_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree"],
+      "properties": {
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "source_baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree"],
+      "properties": {
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "workspace_binding_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "host_facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "os_family",
+        "architecture",
+        "runtime",
+        "runtime_version",
+        "tools",
+        "workspace_root_class",
+        "supported_command_boundaries",
+        "supported_session_boundaries",
+        "unavailable_capabilities"
+      ],
+      "properties": {
+        "os_family": {"type": "string", "pattern": "^[a-z][a-z0-9._:-]*$"},
+        "architecture": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+        "runtime": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+        "runtime_version": {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$"},
+        "tools": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["git", "node_check", "json_parse", "sha256"],
+          "properties": {
+            "git": {"const": true},
+            "node_check": {"const": true},
+            "json_parse": {"const": true},
+            "sha256": {"const": true}
+          }
+        },
+        "workspace_root_class": {"const": "PROJECT_RELATIVE_ISOLATED_WORKTREE"},
+        "supported_command_boundaries": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}, "uniqueItems": true},
+        "supported_session_boundaries": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}, "uniqueItems": true},
+        "unavailable_capabilities": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}, "uniqueItems": true}
+      }
+    },
+    "native_host_attachment": {"$ref": "./native-host-attachment.v1.json"},
+    "host_capability_catalog": {"$ref": "./host-capability-catalog.v1.json"},
+    "offline_policy": {"$ref": "./offline-policy.v1.json"},
+    "provider_discovery": {"$ref": "./provider-discovery.v1.json"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

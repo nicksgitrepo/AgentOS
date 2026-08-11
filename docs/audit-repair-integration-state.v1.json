@@ -1747,7 +1747,32 @@
       "true_external_blocker": "NONE",
       "next_action": "OBTAIN_CURRENT_CANDIDATE_SOURCE_BOUND_GATE_NATIVE_REBIND_RECEIPTS_THEN_REGISTERED_HOST_PROVIDER_AND_AUTHORIZED_RECOVERY_EVIDENCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_27_local_host_recovery_proof_2026_08_11",
+    "recovery_28_host_provider_registration_2026_08_11": {
+      "record_layer": "CURRENT_CANDIDATE_HOST_PROVIDER_REGISTRATION",
+      "transaction_status": "HOST_READBACK_REGISTERED_LOCAL_NO_SECRET_REAL_HOST_BOUNDARY_PROOF_PENDING",
+      "observed_central_publication": {"commit":"9b01a16d72927ee7389ee0a1cbbc894eca0d3e2a","tree":"cdfaf232e9032ac1d3c5d1484b6fd667b20185f9"},
+      "candidate": {"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"},
+      "source_baseline": {"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},
+      "registration_ref": "docs/host-provider-registration.v1.json",
+      "registration_sha256": "1fcd39ccb0927f95882d05ad0d4b7e0316890664e2c1271448d919a5868c01d2",
+      "registration_digest": "0bd0c9ac16c742787aac06e375f711f3c6c4322d1bfc2f67bca83262ba66b080",
+      "opaque_host_ref": "HOST_REF_3c16980e0d94883b1784e4fd925442f0a394d49e099fa3daa833ffc9048ab93a",
+      "opaque_provider_ref": "PROVIDER_REF_be034b2418b73d133801f5aa24aca925b63a5721a2bf696f678a2db8642bae63",
+      "workspace_binding_digest": "5c8342f07b04808b7b4f0a38727a4416bb04bb46a6870620c418dbab6703363a",
+      "typed_record_digests": {"native_host_attachment":"535d823abd9dfa2639b5a3fb20259bbc9e38fb376c3799c515121a5ecbcc3039","host_capability_catalog":"0f9b30cd849a116c7d93af03b5e869a06e2ae65fcde6afc038290966603f60f3","offline_policy":"e48515f4d16ba90b002b793b839d79fd70db68e06db7268502f4bb6792527afe","provider_discovery":"87f31a332691b80cba33bc97b2bbd14407f981a01b5aeb5d12703910ca098600","provider_catalog":"21b14ae402ce3bf65566f4175cc16e2f52259a88798ab38a67c584d3e525a557"},
+      "portable_facts": {"os_family":"darwin","architecture":"arm64","runtime":"node.v22","runtime_version":"22.22.0","tools":{"git":true,"node_check":true,"json_parse":true,"sha256":true},"workspace_root_class":"PROJECT_RELATIVE_ISOLATED_WORKTREE","supported_command_boundaries":["GIT_READ","GIT_WRITE","JSON_PARSE","NODE_CHECK","SHA256"],"supported_session_boundaries":["LOCAL_SESSION_LIFECYCLE_FIXTURES","NATIVE_SESSION_TYPED_READBACK"],"unavailable_capabilities":["AUTHENTICATION","DEPLOY","EXTERNAL_HOST_LIFECYCLE","MERGE","NETWORK_READ","NETWORK_WRITE","PUBLISH","SPEND"]},
+      "typed_registration_proof": {"native_attachment":"PASS_TYPED_OPAQUE_HOST_ATTACHMENT","host_capability_catalog":"PASS_HOST_READBACK_CATALOG_VALIDATION","offline_policy":"PASS_ONLINE_READ_ONLY_NO_EXTERNAL_WRITES","provider_discovery":"PASS_PROVIDER_NEUTRAL_CATALOG_VALIDATION","privacy":"PASS_OPAQUE_PROJECT_AGNOSTIC_REGISTRATION","negative_unavailable_capabilities":"PASS_NO_AUTH_NETWORK_PUBLISH_DEPLOY_SPEND_AND_NO_EXTERNAL_OPERATION_ATTEMPTED","negative_proof_digest":"9581e6a4464a0f19fe62f67ce2255a7e2806e2102a6c65e89f76cdd84fd2feba"},
+      "privacy_proof": {"status":"PASS","normative_public_files_scanned":210,"private_records_verified":27,"private_retained_digests_verified":69,"private_payloads_scanned":0,"total_findings":0,"result_digest_sha256":"06f360d8917d40968648ab55ed6b15f1c2f6db92472b51ae87f797eb719473d5"},
+      "focused_contract_proofs": {"tests/verify-native-host-attachment.mjs":"PASS","tests/verify-native-session-host-attestation.mjs":"PASS","tests/verify-local-adapters.mjs":"PASS","tests/verify-local-agent-session.mjs":"PASS","tests/verify-persistent-intent-runtime-recovery.mjs":"PASS","tests/verify-delivery-adapter.mjs":"PASS","tests/verify-delivery-closure-state.mjs":"PASS","tests/verify-release-safety.mjs":"PASS","tests/verify-release-lifecycle.mjs":"PASS","tests/verify-bootstrap-contract-bindings.mjs":"PASS","tests/verify-project-map.mjs":"PASS","tests/verify-map-memory-contracts.mjs":"PASS"},
+      "evidence_boundary": "LOCAL_EXECUTION_HOST_READBACK_BOUND_TO_TYPED_CONTRACTS; NO_EXTERNAL_PROVIDER_ACTION; EXTERNAL_HOST_LIFECYCLE_UNAVAILABLE; NOT_PRODUCTION_OR_LIVE_SUCCESS",
+      "platform_rebind_status": {"gate":"CURRENT_CANDIDATE_REBIND_RECEIPT_ABSENT","native":"CURRENT_CANDIDATE_REBIND_RECEIPT_ABSENT_AND_DIRTY_CUSTODY_PRESERVED"},
+      "remaining_evidence": ["PLATFORM_GATE_CURRENT_CANDIDATE_REBIND_RECEIPT","PLATFORM_NATIVE_CURRENT_CANDIDATE_REBIND_RECEIPT_AND_CLEAN_CUSTODY","AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_EVIDENCE","CONCURRENCY_CRASH_POWER_LOSS_RECOVERY","CLEAN_SOURCE_READBACK","INDEPENDENT_CLEARANCE","EXACT_CONTROLLER_SLOT_RELEASE_RECEIPT"],
+      "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "OBTAIN_CURRENT_CANDIDATE_GATE_NATIVE_REBIND_RECEIPTS_THEN_RUN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_AND_CLEAN_SOURCE_PROOF_OBTAIN_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_28_host_provider_registration_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1761,5 +1786,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PLATFORM_REBIND_THEN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE",
-  "state_sha256": "b03b184d4c45d16bc3e74c866f4fa99c2965d00f054acd2227e6d3cafefa150c"
+  "state_sha256": "50d96d5eb9f356323ce89529b99ddea1fc94d672e16055e6c309e9f0840f104b"
 }
