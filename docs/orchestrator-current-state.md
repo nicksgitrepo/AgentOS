@@ -1625,6 +1625,21 @@ remote, production host, provider action, Platform rebind, independent
 clearance, or slot release. Ordinary accounting and Memory receipt-only
 routing remain unchanged.
 
+## Recovery 33 — portability proof residual — 2026-08-11
+
+The available portability verifier produced a concrete failure before any
+cursor or release transition: `task/session UUID in
+docs/orchestrator-current-state.md`. A read-only inventory finds 288 such
+historical custody references across 18 preserved documentation/record files.
+No redaction or history rewrite was attempted because those records remain
+append-only custody evidence and the current privacy selector has not yet
+classified this full historical set as private retained evidence. This is a
+local proof residual, not an external blocker or a clearance claim. The safe
+next action is an additive compatibility/private-projection classification for
+the affected historical set, followed by portability proof; ordinary cursors,
+five slots, zero Memory slots, and all consumption/clearance/release flags stay
+unchanged. Memory was not contacted.
+
 ## Recovery 32 — architecture/import hygiene — 2026-08-11
 
 The available architecture-hygiene and Bootstrap-import binding proofs pass
