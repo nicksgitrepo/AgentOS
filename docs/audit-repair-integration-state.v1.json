@@ -587,6 +587,36 @@
       "ordinary_orchestration_next_action": "CONTINUE_ONLY_FIVE_ORDINARY_NON_MEMORY_SLOTS_AND_PLATFORM_BLOCKER_CHAIN",
       "special_lane_next_action": "READ_ONLY_COMPACT_DURABLE_RECEIPT_ONLY_UNTIL_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION"
     },
+    "ordinary_model_law_correction_2026_08_11": {
+      "record_layer": "CURRENT_ORDINARY_ROSTER_MODEL_LAW",
+      "ordinary_controller_model": "gpt-5.6-luna",
+      "ordinary_controller_reasoning_effort": "max",
+      "ordinary_task_model": "gpt-5.6-luna",
+      "ordinary_task_reasoning_effort": "max",
+      "ordinary_sol_task_count": 0,
+      "ordinary_roster_scope": [
+        "PERSISTENT_OWNER_019fca61-2083-78d0-adc4-1e29502fbfd9",
+        "PLATFORM_GATE_RESPONSE_019fdcfb-d827-7831-958a-470c2abbe6eb",
+        "PLATFORM_NATIVE_SESSION_EVIDENCE_019fdcfa-43dc-76a3-befa-c93580a3c808",
+        "PLATFORM_PRIVATE_CONTROL_MEMORY_019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
+        "INDEPENDENT_CLEARANCE_019fef0e-014d-7833-b4e3-cd40b5415b55",
+        "ROADMAP_06_CAMPAIGN_LIFECYCLE_019fedfd-1f3f-7c03-a483-8c9352ebabe1",
+        "VISIBLE_FEATURE_SLOTS_AND_EXISTING_NON_MEMORY_TASKS"
+      ],
+      "ordinary_roster_verification": "POLICY_AND_VISIBLE_CUSTODY_RECORDS_ALL_LUNA_MAX",
+      "special_memory_owner": {
+        "task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "medium",
+        "ordinary_roster": false,
+        "dispatch": false,
+        "message_control": false,
+        "read_only_receipt": true
+      },
+      "portfolio_overseer": "OUTSIDE_ORDINARY_AGENTOS_ROSTER",
+      "model_switch_authority": false,
+      "next_action": "CONTINUE_ORDINARY_LUNA_MAX_BLOCKER_CHAIN_WITHOUT_CONTACTING_SPECIAL_MEMORY_OWNER"
+    },
     "receipt_projection_authoritative_ref":"platform_pipeline.current_receipt_projection",
     "receipt_projection_historical_marker":{"object_ref":"platform_pipeline.receipt_projection","record_layer":"HISTORICAL_NON_CURRENT_RECEIPT_PROJECTION","historical_current_candidate":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed"},"superseded_by":"platform_pipeline.current_receipt_projection","supersession_reason":"The 8f/3e projection is preserved as history; current Gate/Native receipts bind to b499/fe893e29.","consumption":false,"clearance":false,"slot_release":false},
     "feature_rebind_projection": {
@@ -707,5 +737,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PROOF_PENDING_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
-  "state_sha256": "681ad73a0aad3199c3d8a3ba9ca128e6c5e570b1ae3b77c465f57c185c3ad7f3"
+  "state_sha256": "c992d342780a04c93b2f56562f242ae1c3a23b8e87a0b7def23d2a0239becda9"
 }

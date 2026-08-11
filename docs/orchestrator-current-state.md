@@ -859,3 +859,14 @@ receipt; it must not message, dispatch, redirect, recover, switch its model, or
 assign implementation work. The earlier heartbeat dispatch record is retained
 as superseded history. Ordinary orchestration continues only across the five
 non-memory slots and the existing Platform proof chain.
+
+## Ordinary model law correction — 2026-08-11
+
+The ordinary AgentOS controller, Platform custodians, independent-clearance
+task, ROADMAP_06 task, and all visible ordinary feature tasks are governed as
+`gpt-5.6-luna / max`. Durable roster policy and visible custody records show
+zero ordinary Sol tasks. Only the portfolio overseer and the special Memory
+controller are outside that ordinary law. The Memory owner remains exactly
+`gpt-5.6-sol / medium`, is not an ordinary roster member or dispatch target,
+and may only be represented by a read-only compact receipt. No model switch,
+message, redirect, recovery, or implementation assignment will be sent to it.

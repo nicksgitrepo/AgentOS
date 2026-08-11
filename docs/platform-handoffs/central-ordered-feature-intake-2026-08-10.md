@@ -801,3 +801,12 @@ but must not message, dispatch, redirect, recover, switch model, or assign
 implementation work. The prior dispatch marker is preserved as superseded
 history. Memory slots and ordinary cursor participation remain zero/false;
 ordinary orchestration continues only for the five non-memory slots.
+
+## Ordinary model law correction — 2026-08-11
+
+All ordinary AgentOS controller, feature, Platform, and independent-clearance
+custody is `gpt-5.6-luna / max`; durable roster policy records zero ordinary
+Sol tasks. The special Memory owner alone remains `gpt-5.6-sol / medium`,
+outside ordinary dispatch and slots. Central may read its durable receipt only;
+no message, redirect, recovery, model switch, or implementation assignment is
+authorized. The blocker chain continues through the ordinary non-memory lanes.
