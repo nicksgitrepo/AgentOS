@@ -2187,18 +2187,9 @@
     "reports_are_append_only": true,
     "worktree_paths_persisted": false,
     "secrets_persisted": false,
-    "chat_links_persisted": false,
-    "browser_custody": {
-      "authenticated_protected_project_work": "GOOGLE_CHROME_ONLY",
-      "os_default_browser_opener": "FORBIDDEN",
-      "cli_auth_flow": "NON_AUTO_OPENING_REMOTE_DEVICE_FLOW",
-      "exact_url_open": "EXPLICIT_GOOGLE_CHROME_ONLY",
-      "credential_boundary": "STOP_FOR_HUMAN_CREDENTIAL_ENTRY",
-      "safari_fallback": "FORBIDDEN",
-      "chrome_control_status": "NOT_INVOKED_DEPENDENCY_UNRESOLVED"
-    }
+    "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "WAIT-FOR-SHARED-HOST-PRESSURE-CLEARANCE-THEN-REACTIVATE-INDEPENDENT-CLEARANCE; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "c387a013c98e0dfbecb92cdd2a44138f8878719240b43bac387f8e5c1815bb65"
+  "state_sha256": "309e3eb296a3c8dff45c07f4773a21d35344d452031e170a966b31f1f4434839"
 }

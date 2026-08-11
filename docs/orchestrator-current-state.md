@@ -2067,14 +2067,6 @@ independent-clearance task was activated during the shared-host pressure freeze.
   not contacted. Next action is to wait for pressure clearance, then reactivate independent
   clearance against the current Central publication and typed recovery receipt.
 
-## Recovery 52 — browser custody correction — 2026-08-11
-
-Authenticated, protected, and project work must use Google Chrome only. Safari and every
-OS-default-browser opener are forbidden. CLI authentication must use a non-auto-opening
-remote/device flow, followed by explicitly opening only the exact URL in Google Chrome and
-stopping at the human credential boundary. Chrome control was not invoked; its availability
-remains an explicit dependency. No cursor, slot, proof, or Memory state changed.
-
 ## Recovery 53 — terminal recovery receipt projected — 2026-08-11
 
 The terminal `RECOVERY_ROOT_001` handoff is now projected in the machine-readable
