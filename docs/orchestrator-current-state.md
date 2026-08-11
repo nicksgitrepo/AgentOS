@@ -633,3 +633,13 @@ remains five ordinary slots, zero memory slots, queue `32`, and the canonical
 dormant Memory owner `019fee1e-5e78-78c2-a788-ad7a27eba19e`. The next action is
 the authorized proof sequence and exact Controller slot-release receipt; no
 non-memory slot refill is admitted from this readback.
+
+## Legacy receipt-projection consistency audit — 2026-08-11
+
+The older machine-readable `platform_pipeline.receipt_projection` object is
+preserved as a historical, non-current layer. Its 8f0815a2 / 3e6ad35d
+candidate reference is superseded by the authoritative
+`platform_pipeline.current_receipt_projection`, which binds both current
+owner readbacks to b4999c9e / fe893e29. No historical bytes were deleted or
+rewritten, and no cursor, slot, consumption, clearance, or release value
+changed.

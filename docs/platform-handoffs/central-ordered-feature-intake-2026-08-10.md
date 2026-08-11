@@ -644,3 +644,14 @@ Private Control Memory. Five ordinary slots, zero memory slots, queue `32`,
 and dormant Memory ownership remain unchanged. The next safe action is the
 authorized functional/host/provider/recovery/clean-source proof sequence,
 independent clearance, and exact Controller slot-release receipt.
+
+## Legacy receipt-projection consistency audit — 2026-08-11
+
+The older `platform_pipeline.receipt_projection` object is explicitly marked
+as `HISTORICAL_NON_CURRENT_RECEIPT_PROJECTION`. Its preserved 8f0815a2 /
+3e6ad35d candidate reference is superseded by the authoritative
+`platform_pipeline.current_receipt_projection`, which binds current Gate and
+Native receipts to b4999c9e / fe893e29. This metadata marker preserves the
+prior layer without deleting or rewriting it. Cursors remain
+`FEATURE_CURSOR_000`; five ordinary slots, zero memory slots, and all
+consumption, clearance, and slot-release flags remain unchanged.
