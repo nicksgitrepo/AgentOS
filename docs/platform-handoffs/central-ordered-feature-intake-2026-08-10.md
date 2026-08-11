@@ -925,3 +925,17 @@ Ordinary cursors remain `FEATURE_CURSOR_000`, five slots and zero Memory slots
 remain, and downstream, clearance, and slot release remain false. Memory is
 read-only receipt/no dispatch. Next action:
 `REPAIR_REMAINING_PORTABILITY_AND_BOOTSTRAP_CONTRACT_PROOF_BEFORE_REBIND`.
+
+## Full-suite audit — 2026-08-11
+
+The fresh comprehensive audit against candidate
+`d03bbb6bf0852d49712ecea3ecc0dbf8f14ecfb8` /
+`26607121d259fe5a45118f66182da1d6ca22991a` confirms state/map/bootstrap and
+diff hygiene, while preserving two exact repair holds: a portability-forbidden
+literal in `control/codex-native-host-adapter.mjs`, and the Bootstrap
+project-contract ready fixture validating as a draft without a blocking owner
+question. No Platform consumption, clearance, or slot release is inferred.
+Gate, Native, and ROADMAP_06 receipts remain rebind-required after the source
+repair. Cursors stay `FEATURE_CURSOR_000`, five ordinary slots and zero Memory
+slots remain, and Memory was not contacted. Next action:
+`REPAIR_NORMATIVE_PORTABILITY_AND_BOOTSTRAP_CONTRACT_HOLDS_BEFORE_REBIND`.

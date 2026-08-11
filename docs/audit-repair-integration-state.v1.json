@@ -1069,7 +1069,50 @@
       "true_external_blocker": "NONE",
       "next_action": "REPAIR_REMAINING_PORTABILITY_AND_BOOTSTRAP_CONTRACT_PROOF_BEFORE_REBIND"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_3_portability_probe_2026_08_11",
+    "recovery_4_full_suite_audit_2026_08_11": {
+      "record_layer": "CURRENT_FULL_SUITE_AUDIT",
+      "transaction_status": "FULL_SUITE_AUDIT_BLOCKED_BY_EXISTING_NORMATIVE_DEFECTS",
+      "candidate_observed": {
+        "commit": "d03bbb6bf0852d49712ecea3ecc0dbf8f14ecfb8",
+        "tree": "26607121d259fe5a45118f66182da1d6ca22991a"
+      },
+      "proof": {
+        "verify_all": "FAIL_PORTABLE_AUTHORITY_LITERAL_CONTROL_CODEX_NATIVE_HOST_ADAPTER",
+        "verify_bootstrap_conversation_contract": "PASS",
+        "verify_bootstrap_project_contract": "FAIL_DRAFT_PROJECT_CONTRACT_HAS_NO_BLOCKING_OWNER_QUESTION",
+        "state_map_bootstrap_diff": "PASS"
+      },
+      "exact_holds": [
+        "CONTROL_CODEX_NATIVE_HOST_ADAPTER_CONTAINS_PORTABILITY_FORBIDDEN_PRODUCT_LITERAL",
+        "BOOTSTRAP_PROJECT_CONTRACT_READY_FIXTURE_VALIDATES_AS_DRAFT_WITHOUT_BLOCKING_OWNER_QUESTION"
+      ],
+      "source_bound_receipts": {
+        "gate": "REBIND_REQUIRED_AFTER_CENTRAL_REPAIR",
+        "native": "REBIND_REQUIRED_AFTER_CENTRAL_REPAIR",
+        "roadmap06": "REBIND_REQUIRED_AFTER_CENTRAL_REPAIR",
+        "independent_clearance": "HOLD"
+      },
+      "accounting": {
+        "ordinary_active_slot_count": 5,
+        "memory_slot_count": 0,
+        "ordinary_queue_count": 32,
+        "authoritative_cursors": {
+          "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+          "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+          "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+        },
+        "downstream_consumed": false,
+        "platform_clearance": false,
+        "independent_clearance": false,
+        "slot_release": false,
+        "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+        "memory_integration": false
+      },
+      "memory_boundary": "READ_ONLY_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "REPAIR_NORMATIVE_PORTABILITY_AND_BOOTSTRAP_CONTRACT_HOLDS_BEFORE_REBIND"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_4_full_suite_audit_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1082,6 +1125,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "RECOVERY_3_PORTABILITY_PROBE_REPAIR_PENDING",
-  "state_sha256": "62cf13e5fabf96625674484761e3b5ac889112df9bd129f2a34f2da1af060a63"
+  "next_action": "RECOVERY_4_FULL_SUITE_AUDIT_HOLDS_PENDING_REPAIR",
+  "state_sha256": "f6ef9c771998c34eceb31e74fc85c69188f78a3f55572af6693baa49f924fd9b"
 }

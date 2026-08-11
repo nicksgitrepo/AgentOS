@@ -1010,3 +1010,22 @@ Memory slots, queue `32`, and all consumption/clearance/release flags remain
 unchanged. Memory remains `READ_ONLY_RECEIPT_ONLY_NO_DISPATCH` and was not
 contacted. True external blocker: `NONE`. Next action:
 `REPAIR_REMAINING_PORTABILITY_AND_BOOTSTRAP_CONTRACT_PROOF_BEFORE_REBIND`.
+
+## Full-suite audit — 2026-08-11
+
+A fresh full-suite attempt against candidate
+`d03bbb6bf0852d49712ecea3ecc0dbf8f14ecfb8` /
+`26607121d259fe5a45118f66182da1d6ca22991a` produced new bounded evidence.
+State/map/bootstrap and diff checks pass, as does the Bootstrap conversation
+contract. The comprehensive verifier stops on the exact portability-forbidden
+literal in `control/codex-native-host-adapter.mjs`; the focused Bootstrap
+project-contract verifier independently stops because its ready fixture is
+validated as a draft without a blocking owner question. These remain repair
+holds, not clearance or release evidence.
+
+The five ordinary slots, zero Memory slots, queue `32`, authoritative
+`FEATURE_CURSOR_000` cursors, and all consumption/clearance/slot-release flags
+remain unchanged. Existing Platform receipts require rebind after the source
+repairs. Memory remains read-only receipt/no dispatch and was not contacted.
+True external blocker: `NONE`. Next action:
+`REPAIR_NORMATIVE_PORTABILITY_AND_BOOTSTRAP_CONTRACT_HOLDS_BEFORE_REBIND`.
