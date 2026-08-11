@@ -26,6 +26,10 @@ import {
   verifyArtifactIdentity,
 } from "../control/release-lifecycle.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
+import {compileCompatibilityEvidence, compileMigrationPlan, requireCompatibilityPass} from "../control/release-compatibility.mjs";
+import {compilePolicyReplay} from "../control/release-policy-replay.mjs";
+import {compileReleaseModelCheck} from "../control/release-model-check.mjs";
+import {compileReleaseSafetyGate} from "../control/release-safety-gate.mjs";
 
 // Keep the fixture tree disposable and synthetic. No fixture value is a
 // persisted host path or an external identity.
@@ -194,6 +198,109 @@ const approvalDecision = compileOwnerDecision({
   decidedAtUtc: now,
 });
 const approvedCandidate = applyOwnerDecision({candidate: reviewPending, decision: approvalDecision});
+
+const safetyHash = (character) => character.repeat(64);
+const safetyMigration = compileMigrationPlan({
+  migrationId: "MIGRATION-3-4",
+  sourceSchemaVersion: "STATE-3",
+  targetSchemaVersion: "STATE-4",
+  backfillStrategy: "BATCHED",
+  cutoverStrategy: "DUAL_READ",
+  reconciliationStrategy: "REPLAY_AND_COMPARE",
+  irreversiblePoint: "AT_CUTOVER",
+  rollbackStrategy: "RESTORE_CHECKPOINT",
+  migrationJournalStatus: "INTENTIONALLY_JOURNALLESS",
+  migrationSourceSha256: safetyHash("a"),
+  loadBearingFingerprints: [
+    {object_kind: "FUNCTION_BODY", object_id: "public.calculate_total.body", fingerprint_sha256: safetyHash("2")},
+    {object_kind: "FUNCTION_SIGNATURE", object_id: "public.calculate_total.signature", fingerprint_sha256: safetyHash("3")},
+    {object_kind: "GRANT", object_id: "public.orders.read", fingerprint_sha256: safetyHash("4")},
+    {object_kind: "INDEX", object_id: "public.orders.by_owner", fingerprint_sha256: safetyHash("5")},
+    {object_kind: "POLICY", object_id: "public.orders.owner_access", fingerprint_sha256: safetyHash("6")},
+    {object_kind: "REVOKE", object_id: "public.orders.public_write", fingerprint_sha256: safetyHash("7")},
+    {object_kind: "RLS_POSTURE", object_id: "public.orders", fingerprint_sha256: safetyHash("8")},
+    {object_kind: "SCHEMA_OBJECT", object_id: "public.orders", fingerprint_sha256: safetyHash("9")},
+    {object_kind: "TRIGGER", object_id: "public.orders.audit", fingerprint_sha256: safetyHash("b")},
+  ],
+  steps: [
+    {step_id: "STEP-BACKFILL", phase: "BACKFILL", order: 1, reversible: true, required: true, evidence_sha256: safetyHash("d")},
+    {step_id: "STEP-CUTOVER", phase: "CUTOVER", order: 2, reversible: false, required: true, evidence_sha256: safetyHash("e")},
+    {step_id: "STEP-RECONCILE", phase: "RECONCILIATION", order: 3, reversible: true, required: true, evidence_sha256: safetyHash("f")},
+    {step_id: "STEP-ROLLBACK", phase: "ROLLBACK", order: 4, reversible: true, required: true, evidence_sha256: safetyHash("1")},
+  ],
+});
+const safetyCases = [
+  {case_id: "CASE-OLD", scenario: "OLD_STATE", source_state_sha256: safetyHash("3"), target_state_sha256: null, observed_state_sha256: null, rollback_state_sha256: null, result: "PASS", evidence_sha256: safetyHash("4")},
+  {case_id: "CASE-NEW", scenario: "NEW_STATE", source_state_sha256: null, target_state_sha256: safetyHash("5"), observed_state_sha256: null, rollback_state_sha256: null, result: "PASS", evidence_sha256: safetyHash("6")},
+  {case_id: "CASE-MIXED", scenario: "MIXED_VERSION", source_state_sha256: safetyHash("3"), target_state_sha256: safetyHash("5"), observed_state_sha256: null, rollback_state_sha256: null, result: "PASS", evidence_sha256: safetyHash("7")},
+  {case_id: "CASE-FAILED", scenario: "FAILED_MIGRATION", source_state_sha256: null, target_state_sha256: null, observed_state_sha256: safetyHash("8"), rollback_state_sha256: safetyHash("9"), result: "PASS", evidence_sha256: safetyHash("a")},
+  {case_id: "CASE-INTERRUPTED", scenario: "INTERRUPTED_CUTOVER", source_state_sha256: null, target_state_sha256: null, observed_state_sha256: safetyHash("b"), rollback_state_sha256: safetyHash("c"), result: "PASS", evidence_sha256: safetyHash("d")},
+  {case_id: "CASE-RECONCILE", scenario: "RECONCILIATION", source_state_sha256: null, target_state_sha256: null, observed_state_sha256: safetyHash("e"), rollback_state_sha256: null, result: "PASS", evidence_sha256: safetyHash("f")},
+  {case_id: "CASE-ROLLBACK", scenario: "ROLLBACK", source_state_sha256: null, target_state_sha256: null, observed_state_sha256: null, rollback_state_sha256: safetyHash("1"), result: "PASS", evidence_sha256: safetyHash("0")},
+];
+const safetyCompatibility = compileCompatibilityEvidence({
+  subjectCandidateSha256: safetyHash("2"),
+  releaseVersion: approvedCandidate.release_version,
+  migrationPlan: safetyMigration,
+  independentCheckerSha256: safetyHash("c"),
+  checkedAtUtc: now,
+  cases: safetyCases,
+});
+requireCompatibilityPass(safetyCompatibility, {migrationPlan: safetyMigration});
+const safetyPolicyReplay = compilePolicyReplay({
+  subjectCandidateSha256: safetyHash("2"),
+  beforePolicySha256: safetyHash("2"),
+  afterPolicySha256: safetyHash("3"),
+  independentCheckerSha256: safetyHash("c"),
+  replayedAtUtc: now,
+  cases: [
+    {case_id: "POLICY-001", input_sha256: safetyHash("4"), before_decision_sha256: safetyHash("5"), after_decision_sha256: safetyHash("6"), before_authority_sha256: safetyHash("7"), after_authority_sha256: safetyHash("8"), decision_changed: true, authority_changed: true, result: "PASS", evidence_sha256: safetyHash("9")},
+    {case_id: "POLICY-002", input_sha256: safetyHash("a"), before_decision_sha256: safetyHash("b"), after_decision_sha256: safetyHash("b"), before_authority_sha256: safetyHash("c"), after_authority_sha256: safetyHash("c"), decision_changed: false, authority_changed: false, result: "PASS", evidence_sha256: safetyHash("d")},
+  ],
+});
+const modelStates = [
+  {state_id: "ASSEMBLED", terminal: false, owner_controlled: false, requires_recovery: false, activation: false},
+  {state_id: "BLOCKED", terminal: true, owner_controlled: false, requires_recovery: false, activation: false},
+  {state_id: "INTERRUPTED", terminal: false, owner_controlled: false, requires_recovery: true, activation: false},
+  {state_id: "OWNER_ACCEPTED", terminal: false, owner_controlled: true, requires_recovery: false, activation: false},
+  {state_id: "OWNER_REVIEW_PENDING", terminal: false, owner_controlled: false, requires_recovery: false, activation: false},
+  {state_id: "PROMOTED_PREPARED", terminal: true, owner_controlled: false, requires_recovery: false, activation: false},
+  {state_id: "STERILE_VERIFIED", terminal: false, owner_controlled: false, requires_recovery: false, activation: false},
+];
+const modelEdge = (transition_id, from_state_id, to_state_id, action, requires_owner = false, protected_action = false) => ({transition_id, from_state_id, to_state_id, action, requires_owner, protected_action, evidence_sha256: safetyHash(transition_id.slice(-1))});
+const modelTransitions = [
+  modelEdge("T-01", "ASSEMBLED", "BLOCKED", "BLOCK"),
+  modelEdge("T-02", "ASSEMBLED", "STERILE_VERIFIED", "VERIFY"),
+  modelEdge("T-03", "STERILE_VERIFIED", "BLOCKED", "BLOCK"),
+  modelEdge("T-04", "STERILE_VERIFIED", "INTERRUPTED", "INTERRUPT"),
+  modelEdge("T-05", "STERILE_VERIFIED", "OWNER_REVIEW_PENDING", "AUDIT"),
+  modelEdge("T-06", "INTERRUPTED", "OWNER_REVIEW_PENDING", "ROLLBACK", true, true),
+  modelEdge("T-07", "OWNER_REVIEW_PENDING", "BLOCKED", "OWNER_REJECT", true, true),
+  modelEdge("T-08", "OWNER_REVIEW_PENDING", "OWNER_ACCEPTED", "OWNER_APPROVE", true, true),
+  modelEdge("T-09", "OWNER_ACCEPTED", "BLOCKED", "OWNER_HOLD", true, true),
+  modelEdge("T-10", "OWNER_ACCEPTED", "PROMOTED_PREPARED", "PREPARE_PROMOTION", true, true),
+];
+const safetyModelCheck = compileReleaseModelCheck({subjectCandidateSha256: safetyHash("2"), initialStateId: "ASSEMBLED", states: modelStates, transitions: modelTransitions, independentCheckerSha256: safetyHash("c"), checkedAtUtc: now});
+const safetyGate = compileReleaseSafetyGate({subjectCandidateSha256: safetyHash("2"), releaseVersion: approvedCandidate.release_version, compatibility: safetyCompatibility, policyReplay: safetyPolicyReplay, modelCheck: safetyModelCheck, independentCheckerSha256: safetyHash("c"), checkedAtUtc: now});
+const safetyEvidence = {gate: safetyGate, compatibility: safetyCompatibility, policyReplay: safetyPolicyReplay, modelCheck: safetyModelCheck};
+const safetySubject = sterileVerified.candidate_sha256;
+const boundSafety = {
+  gate: {...safetyGate, subject_candidate_sha256: safetySubject, safety_sha256: null},
+  compatibility: {...safetyCompatibility, subject_candidate_sha256: safetySubject, compatibility_sha256: null},
+  policyReplay: {...safetyPolicyReplay, subject_candidate_sha256: safetySubject, replay_sha256: null},
+  modelCheck: {...safetyModelCheck, subject_candidate_sha256: safetySubject, model_sha256: null},
+};
+boundSafety.compatibility.compatibility_sha256 = canonicalDigest({...boundSafety.compatibility, compatibility_sha256: null});
+boundSafety.policyReplay.replay_sha256 = canonicalDigest({...boundSafety.policyReplay, replay_sha256: null});
+boundSafety.modelCheck.model_sha256 = canonicalDigest({...boundSafety.modelCheck, model_sha256: null});
+boundSafety.gate.compatibility_evidence_sha256 = boundSafety.compatibility.compatibility_sha256;
+boundSafety.gate.policy_replay_sha256 = boundSafety.policyReplay.replay_sha256;
+boundSafety.gate.model_check_sha256 = boundSafety.modelCheck.model_sha256;
+boundSafety.gate.safety_sha256 = canonicalDigest({...boundSafety.gate, safety_sha256: null});
+const safetyBoundEvidence = boundSafety;
+const safetyBoundCandidate = transitionReleaseCandidate(sterileVerified, {nextState: "OWNER_REVIEW_PENDING", independentAuditSha256: auditDigest, safetyEvidenceSha256: safetyBoundEvidence.gate.safety_sha256, safetySubjectSha256: safetySubject});
+const safetyBoundDecision = compileOwnerDecision({decisionId: "DECISION-RC-003", candidate: safetyBoundCandidate, decision: "APPROVE", actorDigestSha256: actorDigest, decidedAtUtc: now});
+const safetyApprovedCandidate = applyOwnerDecision({candidate: safetyBoundCandidate, decision: safetyBoundDecision});
 const currentRelease = {
   release_version: "2.9.0",
   artifact_sha256: "1".repeat(64),
@@ -201,18 +308,20 @@ const currentRelease = {
 };
 const promotionRequest = compileReleasePromotionRequest({
   requestId: "PROMOTION-RC-001",
-  candidate: approvedCandidate,
-  ownerDecision: approvalDecision,
+  candidate: safetyApprovedCandidate,
+  ownerDecision: safetyBoundDecision,
+  safetyEvidence: safetyBoundEvidence,
   targetReleaseVersion: "3.0.0",
   targetBinding: "STABLE_RELEASE_ROOT",
   currentRelease,
   requestedAtUtc: now,
 });
-validatePromotionRequest(promotionRequest, {candidate: approvedCandidate, ownerDecision: approvalDecision});
+validatePromotionRequest(promotionRequest, {candidate: safetyApprovedCandidate, ownerDecision: safetyBoundDecision, safetyEvidence: safetyBoundEvidence});
 assert.throws(() => compileReleasePromotionRequest({
   requestId: "PROMOTION-RC-WRONG-TARGET",
-  candidate: approvedCandidate,
-  ownerDecision: approvalDecision,
+  candidate: safetyApprovedCandidate,
+  ownerDecision: safetyBoundDecision,
+  safetyEvidence: safetyBoundEvidence,
   targetReleaseVersion: "3.0.1",
   targetBinding: "STABLE_RELEASE_ROOT",
   requestedAtUtc: now,
@@ -228,8 +337,9 @@ assert.throws(() => validatePromotionRequest(promotionRequest, {candidate: stale
 
 const promotionReceipt = compileReleasePromotionReceipt({
   request: promotionRequest,
-  candidate: approvedCandidate,
-  ownerDecision: approvalDecision,
+  candidate: safetyApprovedCandidate,
+  ownerDecision: safetyBoundDecision,
+  safetyEvidence: safetyBoundEvidence,
   expectedManifest: sourceManifest,
   targetManifest: sterileManifest,
   hostReceiptSha256: "6".repeat(64),
