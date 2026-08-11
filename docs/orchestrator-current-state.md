@@ -1922,3 +1922,27 @@ independent-clearance custodian is still active; no independent receipt has
 been consumed. Five ordinary slots, zero Memory slots, queue `32`, all
 authoritative cursors `FEATURE_CURSOR_000`, and all consumption/clearance/
 release flags remain unchanged. Memory was not contacted.
+
+## Recovery 46 — independent clearance terminal hold consumed — 2026-08-11
+
+The existing visible independent-clearance owner returned a terminal
+`INDEPENDENT_CLEARANCE: HOLD` readback for Central publication
+`3c4095fbd325a5cc2022e27138380bd6bc7056f8` /
+`7995a60639a6513fd6414d232a9b12155e00c87f`, product candidate
+`15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`, and source `d885` / `5f`.
+The typed receipt was consumed as a historical hold layer; its observed
+Native receipt was `2da19d24c2be567ab2a28752b01b1c38820a1dd6` /
+`93f826e96f0272b1318488840a58548ea6fb3524` with report text
+`fec81c9d…651f15` and handoff text `0f807774…12ac9`.
+
+The owner verified clean publication/diff, 467/467 Bootstrap bindings,
+map/state recomputation, privacy scan, five ordinary slots, zero Memory
+slots, queue `32`, and all `FEATURE_CURSOR_000` cursors. The hold remains
+non-clearance because receipt projection, authorized functional,
+host/provider, recovery/concurrency/crash/power-loss, clean-source,
+independent, and exact Controller slot-release evidence are incomplete.
+The readback predates the current Native projection and therefore does not
+clear the current candidate. No cursor, consumption, clearance, or release
+flag changed; Memory was not contacted. Next action is to reconcile current
+typed receipts and obtain the authorized proof set before any slot release.
