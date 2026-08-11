@@ -1676,3 +1676,24 @@ remains receipt-only to this orchestrator and was not contacted. Next action is
 the current-candidate Gate/Native rebind followed by authorized functional,
 host/provider, recovery, and clean-source evidence, independent clearance, and
 the exact Controller slot-release receipt before any non-memory refill.
+
+## Recovery 35 — current-candidate slot metadata correction — 2026-08-11
+
+The central machine-readable state now reconciles all five ordinary slots to
+the exact prepared candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`: each slot is
+`CURRENT_CANDIDATE_BOUND` with admission still
+`ADMITTED_PENDING_VISIBLE_TASK_RESUME`. The correction is metadata-only and
+does not consume a feature or grant Platform, independent, or Controller
+clearance. The state digest is
+`3793de3eb4d93cd4dfdb09784e680c443559ad49088a566c92fbb7d28b8b1800` and the
+raw state binding remains exact.
+
+Five ordinary slots, zero Memory slots, queue `32`, and all authoritative
+cursors `FEATURE_CURSOR_000` remain unchanged. Downstream consumption,
+Platform clearance, independent clearance, and slot release remain false;
+Roadmap07 remains held. The portability, privacy, Bootstrap-binding, and
+state-validation proofs pass. Next action is typed current Platform receipt
+consumption followed by authorized functional host/provider, recovery,
+clean-source, independent-clearance, and exact Controller slot-release
+evidence. Memory remains receipt-only and was not contacted.
