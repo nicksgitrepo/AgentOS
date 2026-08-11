@@ -1893,3 +1893,32 @@ boundary against Central publication `c2ac9a7924bebe34cdb9d8f252b1169bd32a82b1` 
 `847220338ae30098de567ef5f2d3cc4e5c0ac281`. Activation is not a receipt:
 neither owner has yet returned a typed source-bound result, and no feature,
 cursor, clearance, downstream, or slot-release state changed.
+
+## Recovery 45 — Native namespace receipt consumed — 2026-08-11
+
+The existing Native custodian returned a terminal append-only receipt at
+`98db27f63f9440e23768f28673fb8059704e90fd` /
+`9f0a2b7b91e5d1297656774722e1109ea189d653`. Its platform report digest is
+`5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6` and its
+handoff digest is
+`e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d`.
+
+The receipt is source-bound to the requested Central privacy-repaired
+publication `c2ac9a7924bebe34cdb9d8f252b1169bd32a82b1` /
+`847220338ae30098de567ef5f2d3cc4e5c0ac281`, product candidate
+`15254f79096be8c5da58afdc4837456f6952d9f8` /
+`a3c38f7a6eb33926f59fd771653abf14ea12148c`, Platform-observed
+`b95e3bb228a5390d9be59711741fc391ee8d3ee1` /
+`837ac18996a845c70ff13a83aa15d6f54dada1b7`, and source
+`d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5`. Namespace equality is explicitly not required; the identity
+residual is cleared and privacy remains PASS (210 normative, 27 private, 69
+retained digests, zero findings).
+
+Disposition remains `PLATFORM_NATIVE_NAMESPACE_RECONCILED_PRIVACY_PASS_HOLD_AUTHORIZED_CLEARANCE_PROOF_PENDING`.
+Authorized functional, host/provider, recovery, concurrency, crash/power-loss,
+clean-source, and independent-clearance evidence remain pending. The
+independent-clearance custodian is still active; no independent receipt has
+been consumed. Five ordinary slots, zero Memory slots, queue `32`, all
+authoritative cursors `FEATURE_CURSOR_000`, and all consumption/clearance/
+release flags remain unchanged. Memory was not contacted.

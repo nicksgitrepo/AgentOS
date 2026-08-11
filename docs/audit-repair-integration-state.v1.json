@@ -171,6 +171,42 @@
       "true_external_blocker":"NONE",
       "next_action":"CONSUME-NATIVE-CURRENT-CANDIDATE-REBIND-THEN-ACTIVATE-PROOF-OWNERS"
     },
+    "native_namespace_rebind_receipt_2026_08_11": {
+      "record_layer": "CURRENT_NATIVE_NAMESPACE_REBIND_RECEIPT",
+      "transaction_status": "PLATFORM_NATIVE_NAMESPACE_RECONCILED_PRIVACY_PASS_HOLD_AUTHORIZED_CLEARANCE_PROOF_PENDING",
+      "owner_task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+      "native_receipt_commit": "98db27f63f9440e23768f28673fb8059704e90fd",
+      "native_receipt_tree": "9f0a2b7b91e5d1297656774722e1109ea189d653",
+      "platform_report_sha256": "5e18be26c2b38490762acecac27917596974c3d4dded1d4afbb3c844059499a6",
+      "platform_handoff_sha256": "e79a3740a27d54e42338c598b90d1ca9a63824ba879ac8e60afd9cc06aadcc3d",
+      "receipt_central_publication": {"commit":"c2ac9a7924bebe34cdb9d8f252b1169bd32a82b1","tree":"847220338ae30098de567ef5f2d3cc4e5c0ac281"},
+      "current_central_publication_after_receipt": {"commit":"3c4095fbd325a5cc2022e27138380bd6bc7056f8","tree":"7995a60639a6513fd6414d232a9b12155e00c87f"},
+      "product_feature_candidate": {"commit":"15254f79096be8c5da58afdc4837456f6952d9f8","tree":"a3c38f7a6eb33926f59fd771653abf14ea12148c"},
+      "platform_observed_publication": {"commit":"b95e3bb228a5390d9be59711741fc391ee8d3ee1","tree":"837ac18996a845c70ff13a83aa15d6f54dada1b7"},
+      "source_binding": {"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},
+      "current_central_publication_matches_requested": true,
+      "source_baseline_matches_requested": true,
+      "namespace_semantics": "PRODUCT_FEATURE_CANDIDATE_AND_PLATFORM_OBSERVED_PUBLICATION_ARE_DISTINCT",
+      "cross_namespace_equality_required": false,
+      "identity_residual": "CLEARED_CROSS_NAMESPACE_EQUALITY_NOT_REQUIRED",
+      "privacy_selector": "PASS_210_NORMATIVE_27_PRIVATE_69_RETAINED_DIGESTS_ZERO_FINDINGS",
+      "private_control_state_digest": "4563cf7bebf527fede130cbff296bba6e0491e8cc3eea8767e7a05d478b37480",
+      "gate_receipt": {"commit":"48c8fe499da60fa181236bad7c237e67459e06a8","tree":"48d0e65ba340ca7381fae4d62cfe1fe4910f764d","platform_report_sha256":"493df163c54d82c16a9b42236d97b3a2a88505cc00af43b469d226aa30bdf620","platform_handoff_sha256":"4b98bda22bcb314e777640e3bfc4df7ecbac6dd4655a204f38b4e116a517ce68"},
+      "historical_layers_preserved": true,
+      "clearance_proof_residual": "AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CONCURRENCY_CRASH_POWER_LOSS_CLEAN_SOURCE_INDEPENDENT_CLEARANCE",
+      "authoritative_cursors": {"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},
+      "ordinary_active_slot_count": 5,
+      "memory_slot_count": 0,
+      "ordinary_queue_count": 32,
+      "downstream_consumed": false,
+      "platform_clearance": false,
+      "independent_clearance": false,
+      "slot_release": false,
+      "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+      "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "exact_next_action": "AWAIT_INDEPENDENT_CLEARANCE_RECEIPT_THEN_ACTIVATE_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_PROOF"
+    },
     "no_change_readback_reconciliation": {"record_layer":"CENTRAL_METADATA_RECONCILIATION_NO_CHANGE_READBACKS","central_publication":{"commit":"b4999c9e1ceabeb256e307f8474c263577c3a727","tree":"fe893e29e44014777bc025abeb589240834e03c7"},"source_binding":{"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},"gate":{"owner_task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","receipt_commit":"3e300873d2963f75b111a27e18776bd06fe2223c","receipt_tree":"5f13214c0708e401222b07ea4ef6ae1eeeeae117","platform_report_sha256":"bab37cb69ee6aaf5cb4554ec75ca1f9da46cc4531c523ab28a4dea8875c9d420","platform_handoff_sha256":"a9fd7b350f5e56bbfa147df0027842bccbf1e1319269bc7c429749f6148b1b9b","owner_readback":"NO_CHANGE_CONFIRMED","owner_report_binding":"467_OF_467_MATCHED","authoritative_cursor":"FEATURE_CURSOR_000"},"native":{"owner_task_id":"019fdcfa-43dc-76a3-befa-c93580a3c808","receipt_commit":"1e83502ee972e770e9fe8ee3f40ea304894f8fab","receipt_tree":"73d96061df61f801aaaa87b6b85b28afffa97633","platform_report_sha256":"b19c10f6f73fdc9d4fa099f1f7f87c55d24be53095f2fd44042e1e527f317acc","platform_handoff_sha256":"229923445a35f6b0d64514aeaee425cafd8a69c2208d28e28af630eb9010d1b7","preservation_record_sha256":"d44445731adc7c8f8025c02dcf90b21b5b4a9b84b0550b05869ee25a80533a8b","owner_readback":"NO_CHANGE_CONFIRMED","owner_report_binding":"467_OF_467_MATCHED","authoritative_cursor":"FEATURE_CURSOR_000"},"metadata_reconciliation_status":"CENTRAL_NO_CHANGE_READBACKS_RECONCILED","feature_consumed":false,"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"true_external_blocker":"NONE","historical_layers_preserved":true,"next_action":"Keep feature consumption, clearance, and slot release false; obtain authorized functional/host/provider/recovery/clean-source evidence, independent clearance, and an exact Controller slot-release receipt before any non-memory slot refill."},
     "gate_current_proof_hold_receipt": {
       "record_layer": "CURRENT_GATE_REAUDIT_PROOF_HOLD",
@@ -1959,7 +1995,7 @@
     "true_external_blocker": "NONE",
     "next_action": "CONSUME_TYPED_CURRENT_PLATFORM_RECEIPTS_THEN_OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE"
   },
-  "authoritative_projection_ref": "platform_pipeline.current_receipt_projection_gate_delta_2026_08_11",
+  "authoritative_projection_ref": "platform_pipeline.native_namespace_rebind_receipt_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1972,6 +2008,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "REACTIVATE-GATE-NATIVE-CURRENT-CANDIDATE-REBIND-OWNERS-THEN-AUTHORIZED-CLEARANCE-PROOF",
-  "state_sha256": "4f546c98dc93b550630693141f47c3b856668c6dad90d307ea240871cb589d27"
+  "next_action": "AWAIT-INDEPENDENT-CLEARANCE-RECEIPT-THEN-ACTIVATE-AUTHORIZED-FUNCTIONAL-HOST-PROVIDER-RECOVERY-CLEAN-SOURCE-PROOF",
+  "state_sha256": "50c1d4fc95d70e3b443f56ca8a5234464613bef99ed9860dce63dcf11aea0fde"
 }
