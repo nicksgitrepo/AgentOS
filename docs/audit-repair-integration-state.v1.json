@@ -1340,6 +1340,7 @@
       "transaction_status": "PRIVATE_FINDINGS_CLASSIFIED_WITH_PUBLIC_NORMATIVE_SELECTOR_PASS",
       "candidate_before": {"commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","tree":"2a454af43f6f84f281b96657f6b308757b0ebec2"},
       "candidate_after": {"commit":"e8c66681c41cbf1ddb80160779d7a67dca20c4e2","tree":"22505d0fa5c0b4a01447bedb40f093d91b1d19f1"},
+      "central_publication": {"commit":"c6d49ec7f531e9f58a83b111ebf8e72f4e8e51a7","tree":"b582419216ceb268506c802f425c77395f6928a7","working_tree":"CLEAN"},
       "projection_ref": "docs/privacy-public-projection.v1.json",
       "private_control_manifest_ref": "PRIVATE_CONTROL_EVIDENCE_MANIFEST",
       "private_record_count": 27,
@@ -1375,5 +1376,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PRIVACY_PUBLIC_PROJECTION_PASS_REBIND_PLATFORM_THEN_AUTHORIZED_PROOF_AND_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
-  "state_sha256": "38d30acdf42e2a7112208076f7f2d9fa110de9481c8110a45f6787a0c93e3019"
+  "state_sha256": "028ba2360c35510e6015f6f8208ba473f6346b03623ccfee56b74c7aed73e5bb"
 }

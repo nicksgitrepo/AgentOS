@@ -35,7 +35,7 @@
     {"record_type":"PRIVATE_RETAINED_EVIDENCE","stable_opaque_id":"opaque:record:d44445731adc7c8f8025c02dcf90b21b5b4a9b84b0550b05869ee25a80533a8b","record_digest_sha256":"d44445731adc7c8f8025c02dcf90b21b5b4a9b84b0550b05869ee25a80533a8b","finding_categories":["SESSION_OR_TASK_IDENTITY"],"compatibility_status":"PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION","public_replacement":"opaque:public-record:d44445731adc7c8f8025c02dcf90b21b5b4a9b84b0550b05869ee25a80533a8b"},
     {"record_type":"PRIVATE_RETAINED_EVIDENCE","stable_opaque_id":"opaque:record:ee8d9783b3e6bb76ee43af6c0f7a85db9491fa415ce1788e4d558f9f58980a76","record_digest_sha256":"ee8d9783b3e6bb76ee43af6c0f7a85db9491fa415ce1788e4d558f9f58980a76","finding_categories":["SESSION_OR_TASK_IDENTITY"],"compatibility_status":"PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION","public_replacement":"opaque:public-record:ee8d9783b3e6bb76ee43af6c0f7a85db9491fa415ce1788e4d558f9f58980a76"}
   ],
-  "retained_payload_digest_extensions": ["f0d6fa300b075e669d14953f4596c74edb0f163f39049c3811575b23300f2fd2"],
+  "retained_payload_digest_extensions": ["aa260c31c38c6dae08c8440293a6e808ac94c12169a12eb1a16aab630fbaf6d7"],
   "public_replacement_type": "GENERIC_NORMATIVE_RECORD_PROJECTION",
-  "digest": "85772552575252f6034af670d538932b3181f0c7c33bc3f16dc86b04996c44ab"
+  "digest": "7f871867f588986bc4e568097f0e8f12b5eb8401570d48735b870b28c5da1cf1"
 }
