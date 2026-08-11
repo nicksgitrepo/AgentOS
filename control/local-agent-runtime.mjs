@@ -184,6 +184,22 @@ function readJson(target) {
   return JSON.parse(fs.readFileSync(target, "utf8"));
 }
 
+function restoreSessionPaths(sessionRecordPath, session) {
+  const sessionDirectory = path.dirname(path.resolve(sessionRecordPath));
+  const runtimeRoot = path.resolve(sessionDirectory, "../../..");
+  const runtimeKey = path.basename(path.dirname(sessionDirectory));
+  const workerKey = path.basename(sessionDirectory);
+  const restored = {
+    ...session,
+    worktree_path: path.join(runtimeRoot, "worktrees", runtimeKey, workerKey),
+    heartbeat_path: path.join(sessionDirectory, "heartbeat.json"),
+    command_path: path.join(sessionDirectory, "command.json"),
+    command_result_path: path.join(sessionDirectory, "command-result.json"),
+  };
+  restored.session_sha256 = digestWithout(restored, "session_sha256");
+  return restored;
+}
+
 function ensureWorktree({repoRoot, worktreePath, sourceCommit, sourceTree}) {
   const target = safeChild(repoRoot, path.relative(repoRoot, worktreePath));
   if (!fs.existsSync(target)) {
@@ -845,14 +861,15 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   const initialReadbackPath = path.join(sessionDirectory, "initial-readback.json");
   const existing = readJson(recordPath);
   if (existing !== null) {
-    validateLocalDurableSessionRecord(existing);
-    assert(existing.role === role && existing.session_id === durableSessionId && existing.task_id === taskId && existing.task_kind === taskKind && existing.campaign_id === campaignId && existing.candidate_sha256 === candidateSha256, "duplicate durable worker identity differs");
-    const heartbeat = readJson(existing.heartbeat_path);
-    if (existing.status === "RUNNING" && pidAlive(existing.pid) && heartbeat !== null) {
+    const restored = restoreSessionPaths(recordPath, existing);
+    validateLocalDurableSessionRecord(restored);
+    assert(restored.role === role && restored.session_id === durableSessionId && restored.task_id === taskId && restored.task_kind === taskKind && restored.campaign_id === campaignId && restored.candidate_sha256 === candidateSha256, "duplicate durable worker identity differs");
+    const heartbeat = readJson(restored.heartbeat_path);
+    if (restored.status === "RUNNING" && pidAlive(restored.pid) && heartbeat !== null) {
       validateLocalWorkerHeartbeat(heartbeat, {role, sessionId: durableSessionId, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree});
-      return {session_record: existing, heartbeat, readback: existing.initial_readback, reused: true};
+      return {session_record: restored, heartbeat, readback: restored.initial_readback, reused: true};
     }
-    throw new Error(`durable worker session ${durableSessionId} is ${existing.status} or stale; retain it and route a distinct repair task`);
+    throw new Error(`durable worker session ${durableSessionId} is ${restored.status} or stale; retain it and route a distinct repair task`);
   }
   const worktreePath = safeChild(runtime, path.join("worktrees", runtimeKey, workerKey));
   const worktree = ensureWorktree({repoRoot: root, worktreePath, sourceCommit, sourceTree});
@@ -934,7 +951,8 @@ export function issueDurableWorkerSessionCommand({sessionRecordPath, commandId, 
 }
 
 export function markDurableWorkerSessionFailed({sessionRecordPath, failure = "durable worker process exited before stop"}) {
-  const session = readJson(sessionRecordPath);
+  const persisted = readJson(sessionRecordPath);
+  const session = persisted === null ? null : restoreSessionPaths(sessionRecordPath, persisted);
   validateLocalDurableSessionRecord(session);
   requireString(failure, "durable worker failure");
   if (session.status !== "RUNNING") return session;
@@ -965,7 +983,8 @@ export function markDurableWorkerSessionFailed({sessionRecordPath, failure = "du
 }
 
 export async function stopDurableWorkerSession({sessionRecordPath, timeoutMs = 5_000}) {
-  const session = readJson(sessionRecordPath);
+  const persisted = readJson(sessionRecordPath);
+  const session = persisted === null ? null : restoreSessionPaths(sessionRecordPath, persisted);
   validateLocalDurableSessionRecord(session);
   if (!pidAlive(session.pid)) {
     return markDurableWorkerSessionFailed({sessionRecordPath, failure: "durable worker process exited before stop"});
