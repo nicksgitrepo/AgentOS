@@ -602,7 +602,7 @@
     },
     "local_agent_runtime_controller": {
       "path": "control/local-agent-runtime.mjs",
-      "sha256": "356a7bda0d822682c90276772dc7c2ad59756b675cd853afc72943308d17dfc0"
+      "sha256": "23e0760528b0aab03f1cc025008c28ee11da1fda17bf0b20342cb8d17c5b2c3f"
     },
     "local_campaign_admission_controller": {
       "path": "control/local-campaign-admission.mjs",

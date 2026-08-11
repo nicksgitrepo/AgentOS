@@ -413,7 +413,8 @@ function validateHandshake(handshake, expected) {
   if (expected.taskKind !== undefined) assert(handshake.task_kind === expected.taskKind, "local worker task kind differs");
   assert(handshake.campaign_id === expected.campaignId && handshake.campaign_version === expected.campaignVersion, "local worker campaign identity differs");
   assert(handshake.candidate_sha256 === expected.candidateSha256, "local worker candidate differs");
-  assert(handshake.worktree_path === expected.worktreePath, "local worker worktree differs");
+  assert(handshake.worktree_path === expected.worktreePath
+    || handshake.worktree_path === opaqueSchedulerWorktreeRef(expected.worktreePath), "local worker worktree differs");
   assert(handshake.source_commit === expected.sourceCommit && handshake.source_tree === expected.sourceTree, "local worker source differs");
   assert(/^\d+$/u.test(handshake.pid) && Number(handshake.pid) > 0, "local worker PID is invalid");
   requireSha(handshake.artifact_sha256, "local worker artifact");
