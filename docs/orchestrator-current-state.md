@@ -870,3 +870,18 @@ controller are outside that ordinary law. The Memory owner remains exactly
 `gpt-5.6-sol / medium`, is not an ordinary roster member or dispatch target,
 and may only be represented by a read-only compact receipt. No model switch,
 message, redirect, recovery, or implementation assignment will be sent to it.
+
+## Ordinary proof reconciliation — 2026-08-11T05:38:13Z
+
+Gate confirms a read-only HOLD because Central still projects the older
+`b4999c9e / fe893e29` receipt layer and stale report/handoff digests. Native
+marks ROADMAP_06 admissible for rebind pending authorized proof and supplies
+local intake commit/tree
+`2da19d24c2be567ab2a28752b01b1c38820a1dd6` /
+`93f826e96f0272b1318488840a58548ea6fb3524`, report SHA
+`fec81c9d7414312f7992729095d81368cea6fa8359a286937971493a37651f15`, and
+handoff SHA
+`0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9`.
+Independent clearance remains HOLD; no feature consumption, clearance, or
+slot release is claimed. All ordinary cursors remain `FEATURE_CURSOR_000`.
+Memory was not contacted or dispatched.

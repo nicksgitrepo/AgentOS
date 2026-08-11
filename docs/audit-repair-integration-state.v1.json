@@ -617,6 +617,61 @@
       "model_switch_authority": false,
       "next_action": "CONTINUE_ORDINARY_LUNA_MAX_BLOCKER_CHAIN_WITHOUT_CONTACTING_SPECIAL_MEMORY_OWNER"
     },
+    "ordinary_heartbeat_reconciliation_2026_08_11T0538Z": {
+      "record_layer": "CURRENT_ORDINARY_PROOF_RECONCILIATION",
+      "observed_central_publication": {
+        "commit": "2e68a304804e3d9036f4744b1f9ef09b39302c9d",
+        "tree": "73f7d155cf4029b68834eb59ed47c272a6b10d13"
+      },
+      "source_binding": {
+        "commit": "d885e73382df26da596848d70dbb402d6a9cf8b8",
+        "tree": "5f6ed007168ba660ca6f224e632b1dedd02202a5"
+      },
+      "gate": {
+        "task_id": "019fdcfb-d827-7831-958a-470c2abbe6eb",
+        "transition": "READ_ONLY_REAUDIT_HOLD",
+        "repaired_receipt_commit": "fce85668015788618408f1f6aa5040bbfffdce6f",
+        "repaired_receipt_tree": "10c8b08ebc7919476c608ed091d7b475b3a02708",
+        "report_sha256": "edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a",
+        "handoff_sha256": "37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38",
+        "projection_gap": "CENTRAL_STILL_B499_FE893_WITH_OLD_REPORT_HANDOFF_DIGESTS",
+        "consumed": false,
+        "clearance": false,
+        "slot_release": false
+      },
+      "native": {
+        "task_id": "019fdcfa-43dc-76a3-befa-c93580a3c808",
+        "transition": "ROADMAP06_INTAKE_ADMISSIBLE_REBIND_PENDING_AUTHORIZED_PROOF",
+        "local_intake_commit": "2da19d24c2be567ab2a28752b01b1c38820a1dd6",
+        "local_intake_tree": "93f826e96f0272b1318488840a58548ea6fb3524",
+        "platform_report_sha256": "fec81c9d7414312f7992729095d81368cea6fa8359a286937971493a37651f15",
+        "platform_handoff_sha256": "0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9",
+        "roadmap06_receipt_sha256": "096a2eef4503bb6b0e9170c99f5fb25c3d29f1b1292b6a60957cbdf87e4239d3",
+        "consumed": false,
+        "clearance": false,
+        "slot_release": false
+      },
+      "independent_clearance": {
+        "task_id": "019fef0e-014d-7833-b4e3-cd40b5415b55",
+        "transition": "HOLD_CONFIRMED",
+        "central_projection_gap": "B499_FE893_AND_OLDER_MATERIALIZED_PLATFORM_BYTES",
+        "roadmap06_materialization_gap": "OWNER_C66ACCC9_REPORT_AND_HANDOFF_NOT_PRESENT_AT_CENTRAL_PATH",
+        "missing_proof": "FUNCTIONAL_HOST_PROVIDER_RECOVERY_CONCURRENCY_CRASH_POWER_LOSS_PORTABILITY_CLEAN_SOURCE_INDEPENDENT_CONTROLLER_SLOT_RELEASE",
+        "clearance": false,
+        "slot_release": false
+      },
+      "ordinary_active_slot_count": 5,
+      "memory_slot_count": 0,
+      "ordinary_queue_count": 32,
+      "authoritative_cursors": {
+        "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+        "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+        "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+      },
+      "memory_control": "READ_ONLY_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "PROJECT_GATE_NATIVE_AND_ROADMAP06_BYTES_IN_CENTRAL_RECORDS_THEN_CONTINUE_AUTHORIZED_PROOF_WITHOUT_CURSOR_ADVANCE"
+    },
     "receipt_projection_authoritative_ref":"platform_pipeline.current_receipt_projection",
     "receipt_projection_historical_marker":{"object_ref":"platform_pipeline.receipt_projection","record_layer":"HISTORICAL_NON_CURRENT_RECEIPT_PROJECTION","historical_current_candidate":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed"},"superseded_by":"platform_pipeline.current_receipt_projection","supersession_reason":"The 8f/3e projection is preserved as history; current Gate/Native receipts bind to b499/fe893e29.","consumption":false,"clearance":false,"slot_release":false},
     "feature_rebind_projection": {
@@ -737,5 +792,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PROOF_PENDING_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
-  "state_sha256": "c992d342780a04c93b2f56562f242ae1c3a23b8e87a0b7def23d2a0239becda9"
+  "state_sha256": "44d897fc316fa7b548e85530d522a7dc239c86f6d2e18efe15e0902735b82eb7"
 }
