@@ -1789,8 +1789,8 @@
       "sha256": "d0530de190059b132c55771d9d75b7ea72c8cc406b687aa1d17bd34fcca2c875"
     },
     "audit_repair_integration_state_record": {
-      "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "2a59306a825bdfea600f094af25dae333f282425fc87eef1493420c807613bcf"
+      "path": "docs/audit-repair-integration-state-public.v1.json",
+      "sha256": "eb42a179f8b79e2e3e4f626829adaa7f126a08debf1c106f84663d60aa2ce2d9"
     },
     "platform_feature_map_record": {
       "path": "docs/platform-feature-map.v1.json",
@@ -1994,6 +1994,16 @@
       "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",
       "replacement_bindings": [
         {"historical_reference":"historical_custody_payload","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+      ]
+    },
+    "audit_repair_integration_state_private_payload": {
+      "path": "docs/audit-repair-integration-state.v1.json",
+      "sha256": "4022ff35cd6dd5c499c9951544a63c53021a3a765b68b0caddf28867533a7b8f",
+      "classification": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "The append-only state payload retains custody history and opaque source bindings; the public projection contains only project-agnostic fields.",
+      "replacement_bindings": [
+        {"historical_reference":"audit_repair_integration_state_payload","replacement":"docs/audit-repair-integration-state-public.v1.json","status":"CURRENT_PUBLIC_PROJECTION"}
       ]
     },
     "legacy_contracts": [

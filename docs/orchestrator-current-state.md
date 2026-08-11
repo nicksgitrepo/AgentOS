@@ -2047,3 +2047,22 @@ Publication readback for Recovery 50: Central commit
 `f148e11d16e81d201a20460b880fe9db242c368d`, tree
 `7fa1caded7cbc8a4d80cf61e5169cfc6d335c75c`. The worktree is clean. No
 independent-clearance task was activated during the shared-host pressure freeze.
+
+## Recovery 51 — RECOVERY_ROOT_001 terminal repair and privacy projection — 2026-08-11
+
+- The existing isolated recovery owner returned clean repair commit
+  `726de15b1db195d0def6c252ecd564338b5c47cc` / tree
+  `a0faafad60ae42dd2b16bfdeb5341f4b207422e4`, bound to candidate
+  `ccb235d046b9d3d5ce902180457599bfd904fced` / `2e800a51f469c47ad76ecfa8afd03cc1ba6a7a38`
+  and source `d885e73382df26da596848d70dbb402d6a9cf8b8` / `5f6ed007168ba660ca6f224e632b1dedd02202a5`.
+  REC-005 through REC-008 passed syntax, diff, hostile scheduler-crash, and bounded-stop
+  checks. Deployed-candidate retest remains required.
+- The normative state identity residual is now routed through
+  `docs/audit-repair-integration-state-public.v1.json`; the append-only full state remains
+  private retained evidence bound by digest. No raw task/session identity or private payload
+  is exported in the public projection.
+- Shared-host pressure permits lightweight integration only; no new build/test/proof
+  admission was started. Ordinary state remains five slots, zero Memory slots, queue 32,
+  `FEATURE_CURSOR_000`, and all consumption/clearance/release flags false. Memory was
+  not contacted. Next action is to wait for pressure clearance, then reactivate independent
+  clearance against the current Central publication and typed recovery receipt.
