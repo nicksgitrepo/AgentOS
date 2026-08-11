@@ -2060,12 +2060,17 @@
   },
   "recovery_repair_activation_2026_08_11": {
     "record_layer": "FRESH_ISOLATED_RECOVERY_REPAIR_TRANSACTION",
-    "transaction_status": "DISPATCHED_VISIBLE_LUNA_MAX_REPAIR",
+    "transaction_status": "REPAIR_READY_FOR_INDEPENDENT_REAUDIT",
     "candidate": {"commit":"ccb235d046b9d3d5ce902180457599bfd904fced","tree":"2e800a51f469c47ad76ecfa8afd03cc1ba6a7a38"},
     "source_baseline": {"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},
     "model":"gpt-5.6-luna",
     "reasoning_effort":"max",
     "canonical_root_finding_id":"RECOVERY_ROOT_001",
+    "repair_commit":"726de15b1db195d0def6c252ecd564338b5c47cc",
+    "repair_tree":"a0faafad60ae42dd2b16bfdeb5341f4b207422e4",
+    "repaired_findings":["REC-005_FOLLOW_UP_POLL_SCOPE","REC-006_ORPHAN_CLEANUP_AFTER_CORRUPT_READBACK","REC-007_BOUNDED_STOP_AWAIT","REC-008_PRE_RUN_POWER_LOSS_RECOVERY"],
+    "checks_passed":["SYNTAX","DIFF_CHECK","HOSTILE_SCHEDULER_CRASH","BOUNDED_STOP"],
+    "deployed_candidate_retest_required":true,
     "deduplicated_findings":["RECOVERY_ROOT_001A_FOLLOW_UP_POLL_SCOPE","RECOVERY_ROOT_001B_ORPHAN_CLEANUP_AFTER_CORRUPT_READBACK","RECOVERY_ROOT_001C_BOUNDED_STOP_AWAIT","RECOVERY_ROOT_001D_PRE_RUN_POWER_LOSS_RECOVERY"],
     "repair_scope":"ONE_COHESIVE_RECOVERY_BOUNDARIES_ROOT_BATCH",
     "auditor_lane_untouched": true,
@@ -2076,7 +2081,7 @@
     "platform_clearance": false,
     "independent_clearance": false,
     "slot_release": false,
-    "next_action":"REPAIR_HOSTILE_SELF_AUDIT_AFFECTED_PROOF_CLEAN_COMMIT_THEN_PLATFORM_INTAKE"
+    "next_action":"WAIT_FOR_SHARED_HOST_PRESSURE_CLEARANCE_THEN_REACTIVATE_INDEPENDENT_REAUDIT"
   },
   "clean_source_privacy_manifest_binding_2026_08_11": {
     "record_layer": "EXTERNAL_PRIVATE_CONTROL_MANIFEST_PROOF_INPUT",
@@ -2195,5 +2200,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "WAIT-FOR-SHARED-HOST-PRESSURE-CLEARANCE-THEN-REACTIVATE-INDEPENDENT-CLEARANCE; RETAIN-CURSORS-AND-FLAGS-FALSE",
-  "state_sha256": "4d4c2647a1a50f2a816002ad037a5f61e3ddf81b5eea4b059954f8ce73cfadd7"
+  "state_sha256": "c387a013c98e0dfbecb92cdd2a44138f8878719240b43bac387f8e5c1815bb65"
 }

@@ -2074,3 +2074,12 @@ OS-default-browser opener are forbidden. CLI authentication must use a non-auto-
 remote/device flow, followed by explicitly opening only the exact URL in Google Chrome and
 stopping at the human credential boundary. Chrome control was not invoked; its availability
 remains an explicit dependency. No cursor, slot, proof, or Memory state changed.
+
+## Recovery 53 — terminal recovery receipt projected — 2026-08-11
+
+The terminal `RECOVERY_ROOT_001` handoff is now projected in the machine-readable
+recovery record as `REPAIR_READY_FOR_INDEPENDENT_REAUDIT`, with repair
+`726de15b1db195d0def6c252ecd564338b5c47cc` / `a0faafad60ae42dd2b16bfdeb5341f4b207422e4`,
+REC-005 through REC-008, and deployed-candidate retest required. This is a lightweight
+metadata transition only; shared-host pressure still blocks new heavyweight proof
+admissions. Cursors, slots, clearance/release flags, and Memory routing remain unchanged.
