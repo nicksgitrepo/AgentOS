@@ -531,7 +531,7 @@ function nowUtc(clock) {
 }
 
 function jobId(request, observedAtUtc) {
-  return `JOB-${canonicalDigest({request_sha256: request.request_sha256, observed_at_utc: observedAtUtc, pid: process.pid}).slice(0, 40)}`;
+  return `JOB-${canonicalDigest({request_sha256: request.request_sha256, observed_at_utc: observedAtUtc, pid: process.pid}).slice(0, 40).toUpperCase()}`;
 }
 
 function writeJsonAtomic(filePath, value) {
@@ -1060,7 +1060,7 @@ function executeSync({root, policy, request, admission, execute, resolveCandidat
     job = markJob(root, job, {status: "QUEUED"});
     const lease = acquireFileLeaseSync(root, request, policy, waitMs, clock);
     try {
-      job = markJob(root, job, {status: "RUNNING", started_at_utc: nowUtc(clock), execution_unit_id: `EXEC-${process.pid}-${canonicalDigest(job.job_id).slice(0, 16)}`});
+      job = markJob(root, job, {status: "RUNNING", started_at_utc: nowUtc(clock), execution_unit_id: `EXEC-${process.pid}-${canonicalDigest(job.job_id).slice(0, 16).toUpperCase()}`});
       validateResolvedCandidate(request, resolveCandidate?.());
       const output = execute();
       assertCompletionCandidate(request);
@@ -1111,7 +1111,7 @@ async function executeAsync({root, policy, request, admission, execute, resolveC
     job = markJob(root, job, {status: "QUEUED"});
     const lease = await acquireFileLease(root, request, policy, waitMs, clock);
     try {
-      job = markJob(root, job, {status: "RUNNING", started_at_utc: nowUtc(clock), execution_unit_id: `EXEC-${process.pid}-${canonicalDigest(job.job_id).slice(0, 16)}`});
+      job = markJob(root, job, {status: "RUNNING", started_at_utc: nowUtc(clock), execution_unit_id: `EXEC-${process.pid}-${canonicalDigest(job.job_id).slice(0, 16).toUpperCase()}`});
       validateResolvedCandidate(request, resolveCandidate?.());
       const output = await execute();
       assertCompletionCandidate(request);

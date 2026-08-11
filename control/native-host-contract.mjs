@@ -2,10 +2,12 @@
 
 /* Shared host-boundary constants kept separate so the binder and team controller do not cycle. */
 
-// Execution identity is project configuration, not portable authority. The
-// null defaults intentionally force callers to supply a typed profile.
-export const DEFAULT_AGENT_MODEL = null;
-export const DEFAULT_AGENT_REASONING_EFFORT = null;
+// Ordinary AgentOS execution is pinned to the visible Luna/max profile. A
+// caller may still provide an explicit typed profile when a governed host
+// boundary requires it, but no ordinary path may fall back to an unspecified
+// or lower-tier identity.
+export const DEFAULT_AGENT_MODEL = "gpt-5.6-luna";
+export const DEFAULT_AGENT_REASONING_EFFORT = "max";
 export const NATIVE_SESSION_TOOLS = Object.freeze([
   "create_thread",
   "list_threads",

@@ -26,7 +26,7 @@ const NOW = "2026-08-07T12:00:00.000Z";
 
 const sourceBefore = compileSourceIdentity({commit: COMMIT, tree: TREE, workingTreeSha256: sha("1"), clean: true, pushed: false});
 const sourceAfter = compileSourceIdentity({commit: COMMIT, tree: TREE, workingTreeSha256: sha("2"), clean: true, pushed: false});
-const scope = compileClaimedScope({inPaths: ["control/proof-carrying-work.mjs", "schemas/proof-carrying-work.v1.json"], outPaths: ["README.md"]});
+const scope = compileClaimedScope({inPaths: ["control_proof_carrying_work_mjs", "schemas_proof_carrying_work_v1_json"], outPaths: ["README_md"]});
 const environment = compileProofEnvironment({environmentId: "ENV-LOCAL", capabilitySha256: sha("3"), runtimeSha256: sha("4"), sourceCommit: COMMIT, sourceTree: TREE});
 const evidence = [
   compileProofEvidence({evidenceId: "EVIDENCE-DIRECT", kind: "DIRECT_OBSERVATION", summary: "The named bounded check returned its observed result.", path: "tests/verify-proof-carrying-work.mjs", sourceCommit: COMMIT, sourceTree: TREE, claimIds: ["CLAIM-DIRECT"]}),
@@ -52,7 +52,7 @@ const capsule = compileProofCapsule({
   sourceAfter,
   observedAtUtc: NOW,
   claimedScope: scope,
-  changedPaths: ["control/proof-carrying-work.mjs", "schemas/proof-carrying-work.v1.json"],
+  changedPaths: ["control_proof_carrying_work_mjs", "schemas_proof_carrying_work_v1_json"],
   environment,
   dependencies: [dependency],
   checks,

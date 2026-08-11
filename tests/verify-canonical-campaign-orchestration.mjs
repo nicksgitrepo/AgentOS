@@ -180,11 +180,11 @@ function makeFakeHost({acceptAudits = true} = {}) {
   const host = {
     async create_thread(payload) {
       const id = threadId();
-      const isAuditor = payload.title === "Independent Auditor";
+      const isAuditor = payload.title.startsWith("Independent Auditor");
       const session = {
         thread_id: id,
         host_id: "local",
-        role: isAuditor ? "INDEPENDENT_AUDITOR" : payload.title === "Rapid Slice Builder" ? "RAPID_SLICE_BUILDER" : "IMPLEMENTATION_FUNCTIONALITY",
+        role: isAuditor ? "INDEPENDENT_AUDITOR" : payload.title.startsWith("Rapid Slice Builder") ? "RAPID_SLICE_BUILDER" : "IMPLEMENTATION_FUNCTIONALITY",
         model: payload.model,
         reasoning_effort: payload.thinking,
         pinned: false,
@@ -283,6 +283,8 @@ const attachment = compileNativeHostAttachment({
   hostId: "local",
   projectId: PROJECT_ID,
   environmentId: ENVIRONMENT_ID,
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
   attachedAtUtc: NOW,
 });
 const fake = makeFakeHost();
@@ -295,6 +297,7 @@ const result = await runCanonicalCampaign({
   hostAttachment: attachment,
   authorityRoot,
   repositoryRoot: fs.realpathSync(process.cwd()),
+  projectBinding: {project_id: PROJECT_ID},
   laneWork: laneWork(),
   persistCampaignState: recorder.persist,
   clock: () => NOW,
@@ -364,6 +367,7 @@ await assert.rejects(
     hostAttachment: attachment,
     authorityRoot: fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-host-unavailable-")),
     laneWork: laneWork(),
+    projectBinding: {project_id: PROJECT_ID},
     persistCampaignState: () => true,
     clock: () => NOW,
   }),
@@ -379,6 +383,7 @@ const rejectedResult = await runCanonicalCampaign({
   hostAttachment: attachment,
   authorityRoot: fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-rejected-")),
   laneWork: laneWork(),
+  projectBinding: {project_id: PROJECT_ID},
   persistCampaignState: rejectedRecorder.persist,
   clock: () => NOW,
 });

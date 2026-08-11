@@ -482,12 +482,14 @@ function writeOrVerifyCheckpoint(root, checkpoint, expectedCheckpointSha256 = nu
       assert(existing === null, "checkpoint record exists without an expected Runtime pointer", "RUNTIME_STATE_CORRUPT");
       return null;
     }
-    if (existing === null) return null;
+    assert(existing !== null, "checkpoint pointer has no checkpoint record", "RUNTIME_STATE_CORRUPT");
     validateIntentRegulatorCheckpoint(existing);
     assert(existing.checkpoint_sha256 === expectedCheckpointSha256,
       "checkpoint record differs before Runtime pointer removal", "RUNTIME_STATE_CORRUPT");
-    removeFileIfPresent(root, "checkpoint.json");
-    return null;
+    // A null next checkpoint means that this transaction does not replace the
+    // current checkpoint. Preserve the record while the state pointer remains
+    // bound to it; only a checkpoint-bearing transaction may advance it.
+    return existing;
   }
   const existing = readJson(root, "checkpoint.json");
   if (existing !== null) {

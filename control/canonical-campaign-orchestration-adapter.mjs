@@ -107,6 +107,8 @@ export async function runCanonicalCampaign({
     teamId: admission.team_id,
     campaignId: admission.campaign_id,
     campaignVersion: admission.campaign_version,
+    model: hostAttachment.model,
+    reasoningEffort: hostAttachment.reasoning_effort,
     projectBinding,
     acceptRequestedIdentityWithoutReadback: true,
     now: clock,
@@ -217,6 +219,8 @@ export async function runCanonicalCampaign({
         sourceCommit: admission.source.commit,
         sourceTree: admission.source.tree,
         worktreeMode: admission.lanes.find((lane) => lane.lane_id === assignment.lane_id).worktree_mode,
+        model: hostAttachment.model,
+        reasoningEffort: hostAttachment.reasoning_effort,
       });
       const schedulerRequest = compileHybridSchedulerRequest({
         requestId: `SCHEDULER-${canonicalDigest({campaign: admission.campaign_id, lane: assignment.lane_id, task: request.request_sha256, started_at_utc: initialTime}).slice(0, 32).toUpperCase()}`,
@@ -310,6 +314,8 @@ export async function runCanonicalCampaign({
         sourceCommit: admission.source.commit,
         sourceTree: admission.source.tree,
         worktreeMode: "PROJECT_LOCAL_SESSION",
+        model: hostAttachment.model,
+        reasoningEffort: hostAttachment.reasoning_effort,
       });
       const auditorSchedulerRequest = compileHybridSchedulerRequest({
         requestId: `AUDITOR-${canonicalDigest({campaign: admission.campaign_id, lane: worker.lane_id, handoff: handoff.handoff_sha256, started_at_utc: clock()}).slice(0, 32).toUpperCase()}`,
@@ -477,18 +483,29 @@ export async function runCanonicalCampaign({
     });
   } catch (error) {
     const cleanupErrors = await cleanupNativeSessions();
-    if (runtime.readState().status !== "CLOSED") await hardStopRuntime({error_code: error?.code ?? "CANONICAL_CAMPAIGN_FAILURE", cleanup_errors: cleanupErrors.length});
+    let runtimeState = null;
+    try {
+      runtimeState = runtime.readState();
+    } catch (readbackError) {
+      error.runtime_readback_error = readbackError?.message ?? "runtime readback unavailable";
+    }
+    if (runtimeState?.status !== "CLOSED") await hardStopRuntime({error_code: error?.code ?? "CANONICAL_CAMPAIGN_FAILURE", cleanup_errors: cleanupErrors.length});
     campaignState = lifecycle?.snapshot?.() ?? campaignState;
     if (campaignState?.status === "BLOCKED") {
-      return compileResult({
-        status: "BLOCKED",
-        admission,
-        runtimeResult: runtimeResult(runtime, boundRuntimeRef),
-        workers: campaignState.workers.map((worker) => workerEvidenceRecord(worker, closedNativeEvidence, auditorEvidence)),
-        acceptance: {status: "NOT_REACHED", accepted_worker_count: campaignState.workers.filter((worker) => worker.audit?.accepted === true).length, final_evidence_sha256: null},
-        delivery: blockedDelivery(admission),
-        closure: null,
-      });
+      try {
+        return compileResult({
+          status: "BLOCKED",
+          admission,
+          runtimeResult: runtimeResult(runtime, boundRuntimeRef),
+          workers: campaignState.workers.map((worker) => workerEvidenceRecord(worker, closedNativeEvidence, auditorEvidence)),
+          acceptance: {status: "NOT_REACHED", accepted_worker_count: campaignState.workers.filter((worker) => worker.audit?.accepted === true).length, final_evidence_sha256: null},
+          delivery: blockedDelivery(admission),
+          closure: null,
+        });
+      } catch (resultError) {
+        error.runtime_result_error = resultError?.message ?? "blocked runtime result unavailable";
+        throw error;
+      }
     }
     throw error;
   } finally {

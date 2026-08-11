@@ -40,6 +40,8 @@ const hostAttachment = compileNativeHostAttachment({
   hostId: "local",
   projectId: "project-context",
   environmentId: "local-test",
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
   attachedAtUtc: NOW,
 });
 
@@ -122,7 +124,7 @@ assert.throws(() => validateNativeImplementationLaneHandoff({...implementationHa
 assert.throws(() => validateNativeImplementationLaneHandoff({...implementationHandoff, host_receipts: {...implementationHandoff.host_receipts, archive: {thread_id: IMPLEMENTATION_TASK_ID, archived: false}}}), /archive receipt/u);
 
 const request = plan.roles.find(({role}) => role === "FOUNDATION_FUNCTIONALITY");
-assert.equal(request.display_name, "Functionality");
+assert.equal(request.display_name, "Functionality v1");
 assert.equal(request.lane_file, "docs/rapid-foundations/06-functionality.md");
 assert.equal(request.model, "gpt-5.6-luna");
 assert.equal(request.reasoning_effort, "max");
@@ -160,7 +162,7 @@ assert.equal(bound.host_model, "gpt-5.6-luna");
 assert.equal(bound.host_reasoning_effort, "max");
 const wrongName = structuredClone(bound);
 wrongName.display_name = "Unexpected Functionality";
-assert.throws(() => validateNativeSessionSpawnReadback(wrongName, {request}), /wrong display name|readback digest mismatch/u);
+assert.throws(() => validateNativeSessionSpawnReadback(wrongName, {request}), /wrong display name|does not identify|readback digest mismatch/u);
 assert.throws(() => compileNativeSessionSpawnRequest({
   teamId: "TEAM-1",
   projectId: "project-context",
@@ -231,7 +233,7 @@ delete disappearingHost.read_thread;
 await assert.rejects(() => disappearingTeam.readback(disappearingSpawn.session), (error) => error.code === "NATIVE_SESSION_TOOLING_UNAVAILABLE");
 assert.deepEqual(compileNativeSessionHostSpawnPayload(request), {
   target: {type: "project", projectId: "project-context", environment: {type: "local"}},
-  title: "Functionality",
+  title: "Functionality v1",
   prompt: request.prompt,
   model: request.model,
   thinking: "max",
