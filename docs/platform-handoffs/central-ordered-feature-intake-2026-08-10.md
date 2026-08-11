@@ -886,3 +886,24 @@ crash/power-loss, clean-source, and exact Controller slot-release evidence is
 still absent. Cursors remain `FEATURE_CURSOR_000`, five ordinary slots remain
 active, Memory remains at zero ordinary slots and read-only receipt routing,
 and ROADMAP_07 remains held. True external blocker: `NONE`.
+
+## Outcome recovery 2 — focused proof repair — 2026-08-11
+
+Central applied a bounded repair after the focused proof failures recorded in
+the Recovery 1 layer. The repaired candidate is
+`617220de742aa77d4ad1a0bc329de1d9963dc584` /
+`b5b5e2f001462c0e7ae1ebbc3410712eb9d4fd9f`, from pre-repair publication
+`247a78fecad279cbdb5de278a95eceb4de77039e` /
+`3bb3bfb3ed06f32fb52fdef1bee8ccf56cd15fca`; source baseline d885/5f is
+preserved. The changed paths are the continuous operating loop, native
+session runner, four focused verifiers, and bootstrap binding manifest.
+
+The five focused checks now pass. Because implementation and verifier bytes
+changed, prior Gate, Native, and ROADMAP_06 receipts are source-bound history
+and require fresh owner rebind/reaudit; no feature consumption, Platform
+clearance, independent clearance, or slot release is claimed. Cursors remain
+`FEATURE_CURSOR_000`, with five ordinary slots, zero Memory slots, queue `32`,
+and ROADMAP_07 held. Memory remains read-only receipt/no dispatch. The next
+safe action is `REBOUND_PLATFORM_REAUDIT_AND_AUTHORIZED_PROOF_PENDING`, followed
+by authorized host/provider, recovery, clean-source, independent-clearance,
+and exact Controller slot-release evidence.

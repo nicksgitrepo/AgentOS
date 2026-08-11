@@ -957,3 +957,33 @@ consumption/clearance/release flags remain false. True external blocker:
 `NONE`. Next action is source-bound repair/rebind, followed by authorized
 host/provider and recovery proof, independent clearance, and the exact
 Controller slot-release receipt.
+
+## Outcome recovery 2 — focused proof repair — 2026-08-11
+
+The ordinary recovery lane made a bounded source repair in the central
+worktree. The pre-repair publication was
+`247a78fecad279cbdb5de278a95eceb4de77039e` /
+`3bb3bfb3ed06f32fb52fdef1bee8ccf56cd15fca`; the repaired candidate is
+`617220de742aa77d4ad1a0bc329de1d9963dc584` /
+`b5b5e2f001462c0e7ae1ebbc3410712eb9d4fd9f`. The d885/5f source baseline is
+preserved as historical binding. Repairs are limited to the continuous-loop
+stale-reassessment guard, native-session active-record handling, and focused
+verifier fixtures for gate catalog, universal-response gating, local
+adapters, and native sessions; bootstrap bindings were refreshed.
+
+Focused local proof now passes for all five repaired checks:
+`verify-gate-catalog`, `verify-universal-response-gating`,
+`verify-continuous-operating-loop`, `verify-local-adapters`, and
+`verify-native-session-runner`. This is affected proof only, not Platform
+consumption or clearance. Existing Gate, Native, and ROADMAP_06 owner receipts
+must be freshly rebound to this repaired candidate before intake can advance.
+
+The authoritative ordinary cursors remain `FEATURE_CURSOR_000`; accounting
+remains five ordinary slots, zero Memory slots, queue `32`, and false
+downstream, platform-clearance, independent-clearance, and slot-release flags.
+ROADMAP_07 remains held until an exact Controller slot-release receipt.
+Authorized host/provider, recovery/concurrency/crash-power-loss, clean-source,
+independent-clearance, and slot-release evidence remain pending. Memory is
+`READ_ONLY_RECEIPT_ONLY_NO_DISPATCH` and was not contacted. True external
+blocker: `NONE`. Next action:
+`REBOUND_PLATFORM_REAUDIT_AND_AUTHORIZED_PROOF_PENDING`.
