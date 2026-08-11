@@ -264,3 +264,26 @@ provider, independent-clearance, slot-release, consumption, or release proof.
   concurrency/crash-power-loss, clean-source, independent-clearance, and
   Controller slot-release evidence. No Roadmap07 task, merge, push, release,
   activation, or archive action was performed.
+
+## Gate ordered intake receipt — 2026-08-11
+
+Gate recorded the ordered intake of the remaining non-memory candidates. This
+append preserves the receipt without claiming Central consumption, functional
+proof, independent clearance, or slot release.
+
+- Gate local commit/tree: `8acf5765b6a5e835b39a0748785b210bf24562fd` /
+  `1cbd2b9a36e5bb2867189c17b40ed033b0fe021d`.
+- Changed paths: Platform audit and Platform handoff records only; no shared
+  code or schema changes were required.
+- Ordered intake: `FOUR_LIBRARY_GOVERNANCE`,
+  `FEATURE_COMPLETENESS_AUDITOR_SEED`, and `DYNAMIC_PROJECT_LANES`.
+- Platform audit SHA-256:
+  `f165f83206421fa0f630fc9b81a5d990527fd0955d13ccd68974b0b55fe70ab4`.
+- Platform handoff SHA-256:
+  `ac77ee118d91708b52123f868df57b3c18a4727f75063f6ad2fa92fadbaf178f`.
+- Authoritative cursor remains `FEATURE_CURSOR_000`; local marker is
+  `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`.
+- Functional tests, independent clearance, downstream consumption, and slot
+  release remain pending. No npm/tests, peer or central worktree edits,
+  merge, push, release, activation, or archive occurred; true external
+  blocker remains `NONE`.

@@ -25,8 +25,8 @@ separate workflow.
 
 ## Candidate and proof
 
-- Central publication tip: commit `5c4463f66efbb2442ec0cf66372f40a0d24e7244`,
-  tree `72138a8e3d8ad7373c3aaa7dfc0f88ff8175becb`; clean.
+- Central publication tip: commit `a4d7f0fdf01b9f129ec321dcf8df3928c4ab1ead`,
+  tree `dfa50ea39a2cc6a98a89ef52b26c07d32effc411`; clean.
 - Source implementation candidate and preserved ROADMAP_03 checkpoint remain
   the d885/5f baseline recorded below; the publication tip is not a new
   integration or release candidate.
@@ -68,7 +68,7 @@ consumed early.
 
 | Platform owner | Task | Worktree | Authoritative cursor | Current disposition |
 | --- | --- | --- | --- | --- |
-| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 independently acknowledged with no repair; local marker `FEATURE_CURSOR_001_LOCAL_APPEND_ONLY`; clearance remains pending. |
+| `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 acknowledged with no repair; ordered intake recorded for FOUR_LIBRARY_GOVERNANCE, FEATURE_COMPLETENESS_AUDITOR_SEED, and DYNAMIC_PROJECT_LANES; local marker `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`; clearance remains pending. |
 | `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05/06 integrated in order into a cohesive source-bound checkpoint, status `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`; local marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`; no central consumption or clearance. |
 | `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; historical candidates preserved; no source consumed. |
 
@@ -80,7 +80,7 @@ Native’s exact ordered receipt binds local HEAD/tree
 handoff/audit SHA-256 values are `070be05d41de841e2b153c503b25f5e22ecfb4743ac301e55989be0d5f25f753` /
 `6ce1eb1f3d06773f54381870c1f437be12c9fde03148c355e88245579ed6a047`.
 
-Platform-local review markers such as `FEATURE_CURSOR_003_LOCAL_APPEND_ONLY`
+Platform-local review markers such as `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`
 or `FEATURE_CURSOR_004` are evidence-only. They do not advance the Controller
 cursor. Only an exact Central-owned ordered intake receipt may change an
 authoritative cursor.
@@ -113,9 +113,9 @@ authoritative cursor.
   for ROADMAP_05/06, but holds it pending authorized functional/provider/host
   evidence, concurrency/crash-power-loss proof, clean-source proof,
   independent clearance, and a Controller slot-release receipt. All Platform
-  owners still need independent clearance. Gate’s ROADMAP_04 acknowledgment and
-  Native marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY` are receipt-only; central
-  cursors remain unchanged.
+  owners still need independent clearance. Gate’s ROADMAP_04/remaining-candidate
+  ordered intake and Native marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY` are
+  receipt-only; central cursors remain unchanged.
 - Slot refill rule: open the next pre-registered feature only after an exact
   Platform intake acknowledgment freezes and releases a slot. Do not create a
   replacement for an existing visible task.
@@ -212,10 +212,34 @@ independent-clearance, and Controller slot-release proof remain pending.
   concurrency/crash-power-loss, clean-source, independent-clearance, and
   Controller slot-release sequence.
 
+## Gate ordered intake receipt — 2026-08-11
+
+Gate recorded the ordered intake of the remaining non-memory candidates. This
+is a source-bound receipt only; it does not claim Central consumption,
+functional proof, independent clearance, or slot release.
+
+- Gate local commit/tree: `8acf5765b6a5e835b39a0748785b210bf24562fd` /
+  `1cbd2b9a36e5bb2867189c17b40ed033b0fe021d`.
+- Changed paths: Platform audit and Platform handoff records only; no shared
+  code or schema changes were required.
+- Ordered intake: `FOUR_LIBRARY_GOVERNANCE`,
+  `FEATURE_COMPLETENESS_AUDITOR_SEED`, and `DYNAMIC_PROJECT_LANES`.
+- Platform audit SHA-256:
+  `f165f83206421fa0f630fc9b81a5d990527fd0955d13ccd68974b0b55fe70ab4`.
+- Platform handoff SHA-256:
+  `ac77ee118d91708b52123f868df57b3c18a4727f75063f6ad2fa92fadbaf178f`.
+- Authoritative cursor remains `FEATURE_CURSOR_000`; local marker is
+  `FEATURE_CURSOR_002_LOCAL_APPEND_ONLY`.
+- Functional tests, independent clearance, downstream consumption, and slot
+  release remain pending. No npm/tests, peer or central worktree edits,
+  merge, push, release, activation, or archive occurred; true external
+  blocker remains `NONE`.
+
 ## CURRENT STATE
 
-`WORKING_EXPECTED`: candidate clean; ROADMAP_04 is acknowledged with no Gate
-repair; Native has integrated ROADMAP_05/06 in order into a source-bound
+`WORKING_EXPECTED`: candidate clean; Gate has acknowledged ROADMAP_04 and
+recorded ordered intake for three remaining non-memory candidates; Native has
+integrated ROADMAP_05/06 in order into a source-bound
 checkpoint that remains pending tests and clearance; three existing Platform custodians are preserved;
 memory is routed to dormant special lane `019fee1e-5e78-78c2-a788-ad7a27eba19e`
 with no normal slot or consumption; all authoritative cursors remain
