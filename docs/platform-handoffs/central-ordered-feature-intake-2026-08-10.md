@@ -542,3 +542,33 @@ report/handoff byte projection, or append a typed missing-field recovery, then
 re-audit the central projection. Five ordinary slots, zero memory slots,
 ordinary queue `32`, dormant Memory owner `019fee1e-5e78-78c2-a788-ad7a27eba19e`,
 and all authoritative cursors `FEATURE_CURSOR_000` remain unchanged.
+
+## ROADMAP_05 custody-gap resolution — 2026-08-11T03:08:02Z
+
+Central re-read the clean D986 owner receipt without modifying that worktree.
+The exact identity is task `019fdcf9-9d12-7b93-835a-10aebdba1b94`, worktree
+`HOST_WORKTREE_D986`, receipt commit/tree
+`8e9cf44bd0062278149a9dd194483e2d1bec81a6` /
+`3589750c220f4a3644fd14e201946308dc8bfeaa`, receipt digest
+`aa6dad25215190e7c46fe5dc3eee0eb02acf780e263f0485dd830d32fddeb20a`, frozen
+candidate `691046fa75495732709a21cef2e5e37813065f3c` /
+`e643be4776c979d637001ed0d7308043cb2069e0`, and source d885/5f6.
+
+The owner handoff bytes are preserved exactly at
+`docs/feature-handoffs/ROADMAP_05_LOCAL_ADAPTERS-2026-08-10.md` with digest
+`d5cd8eac127ba36d9664685f9f333b72678d563b0c400aebf3bdf1142b671a6c`. The
+owner report bytes were verified with digest
+`fc26d218931d463ee4a28a6b7e4efb3ddbe2a057303566733a2822038b3d8b35` and are
+referenced in
+`docs/platform-handoffs/roadmap-05-owner-rebind-preservation-2026-08-11.md`;
+the historical central report (`4fbd9afa…`) remains intact.
+
+The missing-field recovery is resolved as
+`CENTRAL_OWNER_BYTES_PRESERVED_AND_EXACTLY_REFERENCED`. The resulting
+disposition is
+`PLATFORM_INTAKE_REBIND_CUSTODY_RECONCILED_PENDING_CENTRAL_PUBLICATION_CONSUMPTION`.
+No implementation merge, Platform consumption, clearance, independent
+clearance, or slot release is claimed. Cursor remains `FEATURE_CURSOR_000`;
+five ordinary slots, zero memory slots, queue `32`, and the dormant canonical
+Memory owner remain unchanged. Native’s next action is re-audit of the exact
+preserved handoff and referenced report, followed by authorized proof.

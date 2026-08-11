@@ -530,3 +530,36 @@ remains held. The canonical Memory owner remains dormant at
 `019fee1e-5e78-78c2-a788-ad7a27eba19e`. Next action: materialize or obtain an
 exact current ROADMAP_05 report/handoff byte projection, or append a typed
 missing-field recovery, then re-audit before any consumption or clearance claim.
+
+## ROADMAP_05 custody-gap resolution — 2026-08-11T03:08:02Z
+
+The clean D986 owner receipt was re-read without changing that worktree:
+
+- owner receipt commit/tree: `8e9cf44bd0062278149a9dd194483e2d1bec81a6` /
+  `3589750c220f4a3644fd14e201946308dc8bfeaa`
+- task/worktree: `019fdcf9-9d12-7b93-835a-10aebdba1b94` /
+  `HOST_WORKTREE_D986`
+- frozen candidate: `691046fa75495732709a21cef2e5e37813065f3c` /
+  `e643be4776c979d637001ed0d7308043cb2069e0`
+- source baseline: `d885e73382df26da596848d70dbb402d6a9cf8b8` /
+  `5f6ed007168ba660ca6f224e632b1dedd02202a5`
+- receipt digest: `aa6dad25215190e7c46fe5dc3eee0eb02acf780e263f0485dd830d32fddeb20a`
+- owner report digest: `fc26d218931d463ee4a28a6b7e4efb3ddbe2a057303566733a2822038b3d8b35`
+- owner handoff digest: `d5cd8eac127ba36d9664685f9f333b72678d563b0c400aebf3bdf1142b671a6c`
+
+The exact handoff bytes are now preserved at the canonical central path
+`docs/feature-handoffs/ROADMAP_05_LOCAL_ADAPTERS-2026-08-10.md` with an exact
+byte match. The owner report bytes were verified at the owner path and their
+exact digest is referenced in the append-only preservation record
+`docs/platform-handoffs/roadmap-05-owner-rebind-preservation-2026-08-11.md`;
+the historical central report bytes (`4fbd9afa…`) were not overwritten.
+
+The former Native gap is resolved as
+`CENTRAL_OWNER_BYTES_PRESERVED_AND_EXACTLY_REFERENCED`, with disposition
+`PLATFORM_INTAKE_REBIND_CUSTODY_RECONCILED_PENDING_CENTRAL_PUBLICATION_CONSUMPTION`.
+This is not Platform clearance or consumption: cursor remains
+`FEATURE_CURSOR_000`, and central/downstream consumption, independent
+clearance, and slot release remain false. Five ordinary slots, zero memory
+slots, queue `32`, and dormant Memory owner `019fee1e-5e78-78c2-a788-ad7a27eba19e`
+remain unchanged. Next action is Native re-audit of the exact preserved
+handoff and referenced report, then authorized proof.

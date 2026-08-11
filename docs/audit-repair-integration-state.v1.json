@@ -189,11 +189,16 @@
       "central_feature_report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md",
       "central_feature_report_sha256":"4fbd9afaed2db8a234c47f86cb434028fc1cdfefc69f6c2c307ff2dd28741a0d",
       "central_feature_handoff_ref":"docs/feature-handoffs/ROADMAP_05_LOCAL_ADAPTERS-2026-08-10.md",
-      "central_feature_handoff_present":false,
-      "central_feature_handoff_path_status":"ABSENT_FROM_CENTRAL_TREE",
-      "projection_mismatch":"CENTRAL_ROADMAP05_REPORT_AND_HANDOFF_DO_NOT_MATCH_THE_CURRENT_OWNER_SOURCE_BOUND_RECEIPT",
-      "recovery_status":"MISSING_FIELD_RECOVERY_RECORDED_NO_CURRENT_OWNER_BYTES_MATERIALIZED",
-      "disposition":"PLATFORM_INTAKE_HOLD_REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION",
+      "central_feature_handoff_present":true,
+      "central_feature_handoff_sha256":"d5cd8eac127ba36d9664685f9f333b72678d563b0c400aebf3bdf1142b671a6c",
+      "central_feature_handoff_path_status":"EXACT_OWNER_BYTES_PRESERVED_AT_CANONICAL_PATH",
+      "central_feature_report_path_status":"HISTORICAL_CENTRAL_BYTES_RETAINED_CURRENT_OWNER_DIGEST_REFERENCED",
+      "central_preservation_ref":"docs/platform-handoffs/roadmap-05-owner-rebind-preservation-2026-08-11.md",
+      "central_reconciliation_publication":{"commit":"8dc67e9ea1c6f79c6275f7856f9bd564e166a917","tree":"95b3394ed1151b436171fed572fcf590c0ed81fd"},
+      "projection_mismatch":"HISTORICAL_CENTRAL_REPORT_RETAINED_WHILE_CURRENT_OWNER_REPORT_IS_EXACTLY_REFERENCED_IN_CENTRAL_PRESERVATION_RECORD",
+      "prior_disposition":"PLATFORM_INTAKE_HOLD_REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION",
+      "recovery_status":"CENTRAL_OWNER_BYTES_PRESERVED_AND_EXACTLY_REFERENCED",
+      "disposition":"PLATFORM_INTAKE_REBIND_CUSTODY_RECONCILED_PENDING_CENTRAL_PUBLICATION_CONSUMPTION",
       "authoritative_cursor":"FEATURE_CURSOR_000",
       "central_consumed":false,
       "downstream_consumed":false,
@@ -201,8 +206,8 @@
       "slot_release":false,
       "code_changes":false,
       "true_external_blocker":"NONE",
-      "hold_reason":"The owner receipt is source-bound and structurally complete, but the central projection still exposes the stale 4fbd report and lacks the expected d5cd handoff path; no clearance may be inferred.",
-      "next_action":"Materialize or obtain an exact current Roadmap05 report/handoff byte projection, or append a typed missing-field recovery, then re-audit the central projection before any consumption or clearance claim."
+      "hold_reason":"The exact owner handoff is now preserved at the canonical central path and the exact current owner report digest is referenced without overwriting historical central report bytes; Platform consumption and clearance remain pending.",
+      "next_action":"Native re-audits the exact preserved handoff and referenced owner report, then obtains authorized proof; no consumption or clearance may be inferred from byte preservation."
     },
     "historical_central_admission": "QUEUE_TERMINAL_ALL_FEATURE_DISPOSITIONS_CURSORS_FINAL_SEAMS_RESOLVED_PROOF_CURRENT",
     "central_admission": "HOLD_CURRENT_GATE_NATIVE_RECEIPT_PROJECTION_AND_PROOF_PENDING",
@@ -221,5 +226,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "RECONCILE_CURRENT_GATE_NATIVE_CUSTODY_PROJECTIONS_THEN_OBTAIN_AUTHORIZED_NON_TEST_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_SLOT_REFILL",
-  "state_sha256": "fd44e266187ee425e4fa6ab60bd17daed5064acc72fa556b9bb43e055d68f551"
+  "state_sha256": "cf2e45b4149f9b93696928639a15d23c586fd3bad54e437f478f9aca16beccb2"
 }
