@@ -1803,3 +1803,23 @@ ordinary slots, zero Memory slots, queue `32`, and all authoritative cursors
 clearance, independent clearance, and Controller slot release remain false.
 The Gate and Native existing visible Luna/max owners are reactivated for
 source-bound rebind receipts; no Memory contact or dispatch occurred.
+
+## Recovery 42 — bounded Gate/Native rebind activation readback — 2026-08-11
+
+Activation of the existing visible Luna/max custodians was verified. Gate task
+`019fdcfb-d827-7831-958a-470c2abbe6eb` is active in turn
+`019ff21a-bfcb-76b3-803e-f65e148ee97f`; Native task
+`019fdcfa-43dc-76a3-befa-c93580a3c808` is active in turn
+`019ff219-1d17-78e3-9f73-fde1c7ee1d11`. Both are bounded to re-read central
+publication `9c085c7b44b2f6ed7967e26d462b3b3cf557c5d4` /
+`53e90d597092fe0a4db097829d94587429086f41`, preserve historical layers, and
+return typed source-bound receipts. No receipt has been consumed yet; no
+cursor, clearance, downstream, or slot-release flag advances from activation.
+
+The current Gate hold remains bound to candidate `b95e3bb228a5390d9be59711741fc391ee8d3ee1` /
+`837ac18996a845c70ff13a83aa15d6f54dada1b7` and source `d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5`; Native remains pending its
+matching rebind. Five ordinary slots, zero Memory slots, queue `32`, and all
+authoritative cursors `FEATURE_CURSOR_000` remain unchanged. Memory remains
+receipt-only and was not contacted. Next action is to consume the typed
+Gate/Native receipts when returned, then pursue authorized clearance proof.
