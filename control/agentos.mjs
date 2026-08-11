@@ -3,7 +3,6 @@
 /* Stable public kernel surface for the complete AgentOS runtime. */
 
 export * from "./intent-regulator-runtime.mjs";
-export * from "./codex-native-host-adapter.mjs";
 export * from "./native-self-development-adapter.mjs";
 export {createCampaignStatePersistence, createWorkflowStatePersistence, createQuestionQueuePersistence, bootstrapAndStartAgentOS} from "./bootstrap-runtime.mjs";
 export {compileRapidPrototypeWorkflow, compileRapidPrototypeWorkflowFromInventory} from "./rapid-prototype-workflow.mjs";

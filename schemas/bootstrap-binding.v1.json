@@ -604,10 +604,6 @@
       "path": "control/local-agent-runtime.mjs",
       "sha256": "49ad97438226cbd6d3fa4e8765b4f14ae3084c371ae92dbc7cbc9ea25a157a9e"
     },
-    "local_start_controller": {
-      "path": "control/start-local-self-development.mjs",
-      "sha256": "42cbb36b811e52fbcc7d742c30071ae907a6f5e4a277b5d40d58d5ffb819e753"
-    },
     "local_campaign_admission_controller": {
       "path": "control/local-campaign-admission.mjs",
       "sha256": "d839e58a10df4d5037cb4eb43140fab89928a99c1a75ccfcc4e8b8f7f593a428"
@@ -706,7 +702,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "9ab3b8f7ecf4a94d1c458aed23144f93852c89e1b714b831ccdf32b45d63a4ce"
+      "sha256": "d4d818bdc60ccf1fa7dfa263a3d1203dbcb469f9dfaeb0282924b625ae49545f"
     },
     "persistent_intent_runtime_primitives_controller": {
       "path": "control/persistent-intent-runtime-primitives.mjs",
@@ -786,11 +782,7 @@
     },
     "canonical_feature_inventory_controller": {
       "path": "control/canonical-feature-inventory.mjs",
-      "sha256": "d066de755556050a2749c4131ae425925516a6accf5eb2a2eaf547794ce67320"
-    },
-    "visible_task_parity_readback_contract": {
-      "path": "schemas/visible-task-parity-readback.v1.json",
-      "sha256": "60d0429786555cbcdaf58c341d26827cd77edc3c612bc2e227668f9bd79158aa"
+      "sha256": "d4f99378d72a72ee174cf949698d529103bd0e1d16eebc5ed8cd7562c169849c"
     },
     "feature_completeness_controller": {
       "path": "control/feature-completeness.mjs",
@@ -798,7 +790,7 @@
     },
     "feature_completeness_verifier": {
       "path": "tests/verify-feature-completeness.mjs",
-      "sha256": "f912ace8253c73aad907f0d489683cfd3da85202650e0989cbd9806ffd3514ee"
+      "sha256": "34643c838582babcf7c87e95dc3cae99322990911f3cf4c80b22a7bebb45c818"
     },
     "feature_completeness_contract": {
       "path": "schemas/feature-completeness.v1.json",
@@ -1842,6 +1834,14 @@
     }
   },
   "compatibility_only": {
+    "visible_task_parity_readback_contract": {
+      "path": "schemas/visible-task-parity-readback.v1.json",
+      "sha256": "60d0429786555cbcdaf58c341d26827cd77edc3c612bc2e227668f9bd79158aa"
+    },
+    "local_start_controller": {
+      "path": "control/start-local-self-development.mjs",
+      "sha256": "42cbb36b811e52fbcc7d742c30071ae907a6f5e4a277b5d40d58d5ffb819e753"
+    },
     "codex_native_host_adapter_controller": {
       "path": "control/codex-native-host-adapter.mjs",
       "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"

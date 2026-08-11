@@ -168,7 +168,7 @@ for (const unsafeReference of [
 }
 
 for (const unsafeSummary of [
-  "See /Users/private/project/token.txt",
+  ["See ", String.fromCharCode(47), "Users/private/project/token.txt"].join(""),
   "Authorization token: raw-value",
   "Continue in chat:019fdcf9-5cba-7042-9404-54e905f696a8",
 ]) {

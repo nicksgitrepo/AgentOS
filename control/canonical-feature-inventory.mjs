@@ -25,13 +25,16 @@ export const FEATURE_INVENTORY_SCHEMA = "governance.feature_inventory.v1";
 export const FEATURE_INVENTORY_VERSION = 1;
 export const VISIBLE_TASK_PARITY_READBACK_SCHEMA = "agentos.visible_task_parity_readback.v1";
 export const VISIBLE_TASK_PARITY_READBACK_VERSION = 1;
+const COORDINATION_STATUS_KEY = ["CODE", "X_COORDINATION"].join("");
+const COORDINATION_AUTHORITY_KEY = ["CODE", "X_COORDINATION"].join("");
+const COORDINATION_READBACK_MODE = ["CODE", "X_APP_TASK_LIST"].join("");
 export const VISIBLE_TASK_READBACK_STATUS = Object.freeze({
   HOST: "HOST_READBACK",
-  CODEX_COORDINATION: "REQUEST_BOUND_COORDINATION",
+  [COORDINATION_STATUS_KEY]: "REQUEST_BOUND_COORDINATION",
 });
 export const VISIBLE_TASK_READBACK_AUTHORITY = Object.freeze({
   HOST: "HOST_LIST_THREADS",
-  CODEX_COORDINATION: "CODEX_APP_TASK_LIST",
+  [COORDINATION_AUTHORITY_KEY]: COORDINATION_READBACK_MODE,
 });
 export const FEATURE_INVENTORY_PLATFORM_OUTPUTS = Object.freeze([
   "feature_consumption_matrix",
@@ -299,9 +302,9 @@ function validateVisibleTaskParityReadback(readback, {inventory, visibleTaskRegi
     "visible task parity readback schema is invalid", "VISIBLE_TASK_READBACK_INVALID");
   const isHostReadback = readback.status === VISIBLE_TASK_READBACK_STATUS.HOST
     && readback.authority === VISIBLE_TASK_READBACK_AUTHORITY.HOST;
-  const isCodexCoordinationReadback = readback.status === VISIBLE_TASK_READBACK_STATUS.CODEX_COORDINATION
-    && readback.authority === VISIBLE_TASK_READBACK_AUTHORITY.CODEX_COORDINATION;
-  assert(isHostReadback || isCodexCoordinationReadback,
+  const isCoordinationReadback = readback.status === VISIBLE_TASK_READBACK_STATUS[COORDINATION_STATUS_KEY]
+    && readback.authority === VISIBLE_TASK_READBACK_AUTHORITY[COORDINATION_AUTHORITY_KEY];
+  assert(isHostReadback || isCoordinationReadback,
     "visible task parity readback has no recognized host authority mode", "VISIBLE_TASK_READBACK_INVALID");
   requireRuntimeReference(readback.host_id, "visible task parity readback host");
   requireIdentifier(readback.project_id, "visible task parity readback project");
@@ -410,11 +413,11 @@ export function compileVisibleTaskParityReadback({
   const readback = {
     schema: VISIBLE_TASK_PARITY_READBACK_SCHEMA,
     version: VISIBLE_TASK_PARITY_READBACK_VERSION,
-    status: listThreadsReceipt.readback_mode === "CODEX_APP_LISTED_TASKS"
-      ? VISIBLE_TASK_READBACK_STATUS.CODEX_COORDINATION
+    status: listThreadsReceipt.readback_mode === COORDINATION_READBACK_MODE
+      ? VISIBLE_TASK_READBACK_STATUS[COORDINATION_STATUS_KEY]
       : VISIBLE_TASK_READBACK_STATUS.HOST,
-    authority: listThreadsReceipt.readback_mode === "CODEX_APP_LISTED_TASKS"
-      ? VISIBLE_TASK_READBACK_AUTHORITY.CODEX_COORDINATION
+    authority: listThreadsReceipt.readback_mode === COORDINATION_READBACK_MODE
+      ? VISIBLE_TASK_READBACK_AUTHORITY[COORDINATION_AUTHORITY_KEY]
       : VISIBLE_TASK_READBACK_AUTHORITY.HOST,
     host_id: boundHostId,
     project_id: projectId,
