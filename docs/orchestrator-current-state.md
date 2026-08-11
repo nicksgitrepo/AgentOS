@@ -1624,3 +1624,15 @@ This synthetic/local contract proof is bound to the prepared candidate
 remote, production host, provider action, Platform rebind, independent
 clearance, or slot release. Ordinary accounting and Memory receipt-only
 routing remain unchanged.
+
+## Recovery 32 — architecture/import hygiene — 2026-08-11
+
+The available architecture-hygiene and Bootstrap-import binding proofs pass
+against the prepared candidate and central records. They confirm the control
+module dependency boundary, rapid-lane wiring, typed import-context separation,
+and hostile cross-contract mutation checks. These local static proofs do not
+replace Gate/Native current-candidate rebind receipts, deferred real-host or
+provider lifecycle evidence, independent clearance, or the exact Controller
+slot-release receipt. Five ordinary slots, zero Memory slots, cursors
+`FEATURE_CURSOR_000`, and all consumption/clearance/release flags remain
+unchanged; Memory was not contacted.
