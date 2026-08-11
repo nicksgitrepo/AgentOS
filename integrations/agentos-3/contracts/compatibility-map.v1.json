@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.integration.compatibility-map.v1",
+  "routing_authority": "main-agentos-core",
+  "legacy_authorities": {
+    "project-memory": {"route": "LEGACY_MAIN_MEMORY_PRESERVED_OFF", "co_authority": false, "migration": false, "replacement": "memory-m2-typed-adapter"},
+    "project-memory-store": {"route": "LEGACY_MAIN_MEMORY_PRESERVED_OFF", "co_authority": false, "migration": false, "replacement": "memory-m2-typed-adapter"},
+    "project-memory-capsule": {"route": "LEGACY_MAIN_MEMORY_PRESERVED_OFF", "co_authority": false, "migration": false, "replacement": "memory-m2-typed-adapter"},
+    "role-governance": {"route": "MAIN_CORE_GOVERNANCE_AUTHORITY", "co_authority": false, "replacement": "agent-builder-typed-projection"},
+    "task-role": {"route": "MAIN_CORE_TASK_PACKET_AUTHORITY", "co_authority": false, "replacement": "agent-builder-typed-projection"}
+  },
+  "new_inputs": {
+    "memory-m2-typed-adapter": {"default": "OFF", "requires": "externally_verified_bound_test_capability", "scope": "test_only", "migration": "forbidden"},
+    "agent-builder-typed-projection": {"compiler": "main-agentos-core", "authority_effect_grants": [], "admission": "external_only", "activation": "external_only"}
+  },
+  "invariants": ["one_main_governance_compiler", "one_main_task_packet_authority", "legacy_memory_never_silently_coauthors", "memory_m2_never_replaces_custody"]
+}

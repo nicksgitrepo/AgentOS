@@ -1,0 +1,5 @@
+{
+  "schema": "agentos.synthetic.normalization-fixture.v1",
+  "project_glossary": ["generic-alpha", "generic-beta"],
+  "expected": "portable names only"
+}

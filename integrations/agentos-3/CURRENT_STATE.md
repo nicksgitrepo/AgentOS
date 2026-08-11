@@ -39,3 +39,23 @@ task/session identity, credential, provider identity, or external project contex
 - Deterministic regeneration now records `264` entries with bundle SHA-256 `00689f32baf8cb500624ed54a39a6fdc08fd0c847feec08c52a8fc8ce733a3be` and manifest SHA-256 `fae58951f2a6a913e2343f6914f9dab9b45d9100673bd5d933202b9c79df769e`.
 - Bundle/manifest canonicality, entry hashes, inactive lifecycle, and `OFF` activation read back successfully. Full integration, install/rollback, recovery, and independent evaluation remain unrun after the audit repair.
 - The next cursor is unchanged: wait for the serialized scheduler/resource boundary, then execute the focused correction proof against this regenerated artifact before any readiness or final commit claim.
+
+## Main-core entrypoint hardening
+
+- The combined entrypoint now invokes the copied main-core controller compiler with generic typed identities and returns `MAIN_CORE_CONTROLLER_COMPILE_PASS`, while preserving `CANDIDATE_INACTIVE` / `OFF` and producing no external side effect.
+- The focused integration test now requires that probe result; this is lightweight import/contract evidence only and does not replace the full post-repair integration proof.
+
+## Focused custody proof receipt
+
+- The sibling-only install/rollback proof now passes on a canonical temporary root: project Git identity and bytes/status remain unchanged; in-project, sidecar, foreign-file, changed-owned-file, changed-project, and ancestor rollback attempts fail closed; successful rollback removes only the owned payload and empty owned directories.
+- The prior two findings were repaired in the isolated worktree: recursive companion traversal is globally canonical-sorted, and empty-directory cleanup uses `rmdir` rather than recursive or ambiguous removal.
+- This receipt is still below final readiness: Memory replay/restart, the complete combined integration test, and independent evaluation remain pending; the serialized scheduler/resource boundary is unchanged.
+- Two consecutive deterministic regenerations of the current repair tree produced identical 264-entry bundle and manifest bytes; the exact content digests remain in the generated manifest/readback rather than being self-embedded in the bundle. This is reproducibility evidence for the current local artifact, not an independent acceptance claim.
+- Focused static evidence now includes Agent Builder `7/7` Task IR and `13/13` context cases, default-off and unauthorized-capability denial, synthetic purity scan, and the inactive main-core controller probe. Full Memory replay/restart and the complete post-repair integration suite remain pending.
+
+## Authoritative post-repair local proof checkpoint
+
+- Disposition: `AGENTOS_3_TEST_BUILD_READY_FOR_INDEPENDENT_EVALUATION`; lifecycle remains `CANDIDATE_INACTIVE` and activation remains `OFF`.
+- The complete local integration proof passed: exact main-core source parity (`187` entries), main-core controller compile probe, Builder typed compilation with four denial classes, Memory initialize/verify/reopen replay under an externally verified test capability, sibling install and rollback with project Git/bytes/status unchanged, hostile foreign/changed/overlap cases, and synthetic purity.
+- Deterministic packaging passed with `265` canonical entries (including the scoped source-whitespace attribute), matching per-entry manifest hashes, inactive lifecycle, `OFF` activation, and identical consecutive regenerations. No provider activation, production deployment, public release, adoption, migration, or external messaging occurred.
+- Remaining ceilings are independent utility/harm evaluation, real-host NEW_PROJECT and generic import/adoption proof, provider activation, and public release. These are explicit pending ceilings, not local proof failures or acceptance claims.

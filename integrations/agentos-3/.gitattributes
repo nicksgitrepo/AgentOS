@@ -1,0 +1,4 @@
+# The embedded main-core/control tree is byte-for-byte bound to the immutable
+# source distribution. Its upstream trailing blank lines are retained rather
+# than normalized; scope this metadata only to that embedded copy.
+main-core/control/** -whitespace

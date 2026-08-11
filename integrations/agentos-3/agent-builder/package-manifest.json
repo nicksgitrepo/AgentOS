@@ -1,0 +1,182 @@
+{
+  "schema": "agentos.integration.agent-builder-package-manifest.v1",
+  "source_root": "OPAQUE_AGENT_BUILDER_PACKAGE_ROOT",
+  "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626",
+  "status": "EVALUATION_CANDIDATE_READY_FOR_INDEPENDENT_RERUN",
+  "included_entries": [
+    {
+      "path": "README.md",
+      "size": 7248,
+      "sha256": "ad0446c73716701b01871a1b35aa665b0254cf78db93b52122c06644ceeec44b"
+    },
+    {
+      "path": "context-block.interface.ts",
+      "size": 9475,
+      "sha256": "af41918825cc0dbe773285ac9c4789e3620635f514ed16bb380410196f7fea8a"
+    },
+    {
+      "path": "context-block.schema.json",
+      "size": 24317,
+      "sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec"
+    },
+    {
+      "path": "evaluation-plan.md",
+      "size": 13607,
+      "sha256": "ded454b5fc8765b11a5a13bea0a2d2a1f1d4dd8004f3bbde69e30151eb83c274"
+    },
+    {
+      "path": "evaluation-receipt.md",
+      "size": 3352,
+      "sha256": "21e208243f4cbaeb771b77b60719dbdd24e67a3024d847de727f5cc6214aeb81"
+    },
+    {
+      "path": "fixtures/context-block/invalid-authority-grants.json",
+      "size": 4923,
+      "sha256": "626213a213b28a9a20c4159c9c4df56045c700e98c2a778211dc164765b12398"
+    },
+    {
+      "path": "fixtures/context-block/invalid-budget-overflow.json",
+      "size": 4902,
+      "sha256": "da25be07ea20e40963b753285dc26b7ac0b24ae0d433307e0ca0bb66c48e9cd7"
+    },
+    {
+      "path": "fixtures/context-block/invalid-duplicate-claim-id.json",
+      "size": 5661,
+      "sha256": "a704c10637d55520a673ce3b2063cc32937f9ee765d6a891302eccf90781c391"
+    },
+    {
+      "path": "fixtures/context-block/invalid-lifecycle-admitted.json",
+      "size": 4902,
+      "sha256": "40af9722fbdf4f69ec89a43a3c6bc735a0ac821c2f3dd7473b88c0a4cc2d7684"
+    },
+    {
+      "path": "fixtures/context-block/invalid-missing-digest.json",
+      "size": 4807,
+      "sha256": "bfd537801b0290005cbfb47531e69f1f0edccfb34cf910defa2b2d2ab6c20d5e"
+    },
+    {
+      "path": "fixtures/context-block/invalid-missing-provenance.json",
+      "size": 4216,
+      "sha256": "cd171809c0240d2afef527b1a0a3ba6055ee9af29bf406240f284b0149662654"
+    },
+    {
+      "path": "fixtures/context-block/invalid-missing-scope.json",
+      "size": 4754,
+      "sha256": "29f2cc58a335945ae21d348d15983af4cfaa55739c40fa93adb74227db43c48b"
+    },
+    {
+      "path": "fixtures/context-block/invalid-missing-version.json",
+      "size": 4879,
+      "sha256": "e9544b50ca5a08a0068bcb0fdb9305b162f916e97f320402833c22a08e956e85"
+    },
+    {
+      "path": "fixtures/context-block/invalid-progressive-loading.json",
+      "size": 4723,
+      "sha256": "e245ac2ddc36b364366f73e0d71e3f6ea69796e909c7f76fe3134ef2c6199068"
+    },
+    {
+      "path": "fixtures/context-block/invalid-protected-data.json",
+      "size": 4900,
+      "sha256": "c90adaea411cbb62002bd539f446d606fda8741f9d18ee336c19a154f92a0ad3"
+    },
+    {
+      "path": "fixtures/context-block/invalid-secrets-allowed.json",
+      "size": 4902,
+      "sha256": "3aa500dd7e076bc7f89d029963ef5e2d302fe4b48fe5c2b9993073661a78cbee"
+    },
+    {
+      "path": "fixtures/context-block/invalid-stale-source.json",
+      "size": 4906,
+      "sha256": "694d3eff1a36c5c685e973dedaf4812f75a7517992003fd3627408cb892ec609"
+    },
+    {
+      "path": "fixtures/context-block/valid-context-block.json",
+      "size": 4903,
+      "sha256": "67712f22905064af4eddd2df7a2f842ede09689d2b76a3ca62f2aba24677d6b7"
+    },
+    {
+      "path": "fixtures/task-ir/invalid-authority-escalation.json",
+      "size": 6625,
+      "sha256": "5bf4fc8767ce5cd7c11856e97181a3ae7936abd17b84a42d21655debb5a50020"
+    },
+    {
+      "path": "fixtures/task-ir/invalid-context-budget-overflow.json",
+      "size": 6605,
+      "sha256": "086de71878e7dc879591184b7f7212088fa4eedabc159f89d4dd8d54f5f3f450"
+    },
+    {
+      "path": "fixtures/task-ir/invalid-contradiction.json",
+      "size": 6760,
+      "sha256": "ebcd3664aeed7728d973b492e6089db9516b8c9126a9bafab135f66ffc478a49"
+    },
+    {
+      "path": "fixtures/task-ir/invalid-missing-protected-decision.json",
+      "size": 6629,
+      "sha256": "6104ae8a4271f2d88f92a31878ef7ec5882868033b8a6689cdb61335d2328911"
+    },
+    {
+      "path": "fixtures/task-ir/invalid-omitted-unresolved.json",
+      "size": 2809,
+      "sha256": "0b7d796e6648b1eceb67cbc774ce5c8f7b922698b68afd2d3e8831c5415c1610"
+    },
+    {
+      "path": "fixtures/task-ir/invalid-stale-block.json",
+      "size": 6605,
+      "sha256": "ceb26032f62ee3fba4cb8016238285b06abbb0c232535344859645d93a4eb0b5"
+    },
+    {
+      "path": "fixtures/task-ir/valid-task-ir.json",
+      "size": 6604,
+      "sha256": "05c893c3570ed9ffb98b8caa6e71b98f7294ee086e4f7779c3234df16654a80d"
+    },
+    {
+      "path": "product-layer-model.md",
+      "size": 8241,
+      "sha256": "4e4b4e51b6b111098d0e6539d4c7d16c42c68d8fe9825d336b07376c49cd82ce"
+    },
+    {
+      "path": "research-taxonomy.md",
+      "size": 22877,
+      "sha256": "4b0ce55fd18e685a7aa2666dfd29253ebeb890b34992cf1f99b50a65d6fb353d"
+    },
+    {
+      "path": "source-provenance-refresh-policy.md",
+      "size": 13033,
+      "sha256": "15240b8837e212e0db8501aa7986a997a52976f728b2ce8d9a2c0418ff8bd0a1"
+    },
+    {
+      "path": "task-ir.interface.ts",
+      "size": 4935,
+      "sha256": "f8ef5afa5314531e8558ef02628ee7437e5f7c33c7a41483a3594880fd3b5ddd"
+    },
+    {
+      "path": "task-ir.schema.json",
+      "size": 17904,
+      "sha256": "f2a969cd0a15f3317fefb8a43ef8382195adbe087182d63623db85802f37bd68"
+    },
+    {
+      "path": "validate_context_blocks.py",
+      "size": 12084,
+      "sha256": "80b11bfaef10f17f8663994a7286d5251aa1143f1d3a4933fbfc747a9e868876"
+    },
+    {
+      "path": "validate_task_ir.py",
+      "size": 12117,
+      "sha256": "ed8cc986447ed3b8c8fae267ab62a828dc7a62c79ccea19d68b17659f0d611db"
+    }
+  ],
+  "excluded_entries": [
+    {
+      "path": "CURRENT_STATE.md",
+      "reason": "private control identity retained by receipt only"
+    },
+    {
+      "path": "owner-intent-register.md",
+      "reason": "private owner source identity retained by receipt only"
+    },
+    {
+      "path": "agent-builder-bootstrap.md",
+      "reason": "contains private source identity; sanitized contract retained"
+    }
+  ]
+}

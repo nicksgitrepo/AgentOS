@@ -18,6 +18,8 @@
       "candidate_tree": "dd39662b87abec5d359863f6f1565d2792941d26",
       "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
       "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f",
+      "distribution": "main-core/source-manifest.json",
+      "entrypoint": "main-core/entrypoint.mjs",
       "state": "IMMUTABLE_INPUT"
     },
     {
@@ -50,7 +52,13 @@
   "contracts": {
     "memory": ["activation_off_by_default", "private_custody", "recipient_authority_required", "replay_verified", "staged_import_non_activating", "fail_closed"],
     "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial"],
-    "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK"
+    "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK",
+    "install": "EXTERNAL_SIBLING_ONLY",
+    "capability": "externally_supplied_bound_lease_verified_outside_artifact",
+    "compatibility_map": "contracts/compatibility-map.v1.json",
+    "main_core_distribution": "main-core/source-manifest.json",
+    "agent_builder_package": "agent-builder/package-manifest.json"
   },
+  "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
   "proof_ceiling": ["independent_utility_harm_evaluation", "real_host_new_project", "real_host_import_adoption", "provider_activation", "public_release"]
 }

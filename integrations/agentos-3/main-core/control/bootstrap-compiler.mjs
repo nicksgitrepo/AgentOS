@@ -1,0 +1,2166 @@
+#!/usr/bin/env node
+
+import crypto from "node:crypto";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {
+  applyCorpusPlan,
+  canonicalCompactJson,
+  compileCorpusPlan,
+} from "./authority-corpus.mjs";
+import {
+  compileLegacyPreservationPlan,
+  inspectLegacySource,
+  preserveLegacyCorpus,
+  verifyLegacyPreservation,
+} from "./legacy-preservation.mjs";
+import {discoverProject, EPISTEMIC_CLASSES} from "./bootstrap-discovery.mjs";
+import {
+  compileDeliveryPolicy,
+  createDeliveryProbePlan,
+  DELIVERY_FINISH_OPTIONS,
+  runDeliveryProbes,
+  validateDeliveryPolicy,
+  validateDeliveryProbePlan,
+  validateDeliveryProbeResults,
+} from "./delivery-policy.mjs";
+import {
+  BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
+  compileBootstrapCoverage,
+  coverageForQuestion,
+  validateBootstrapCoverage,
+} from "./bootstrap-coverage.mjs";
+import {
+  compileProjectLifeContract,
+  validateProjectLifeContract,
+} from "./project-life-contract.mjs";
+import {
+  compileBoundaryContract,
+  validateBoundaryContract,
+} from "./boundary-contract.mjs";
+import {validateDeliveryTarget, validateDeliveryTargetAgainstLife} from "./delivery-target.mjs";
+import {compileStandardsRegistry, validateStandardsRegistry} from "./standards-registry.mjs";
+import {compileNormalizationPolicy, validateNormalizationPolicy} from "./normalization-policy.mjs";
+import {
+  compileProjectImportPlan,
+  inspectProjectSource,
+  preserveProjectSource,
+  validateProjectImportPlan,
+  verifySourcePreservation,
+} from "./project-import.mjs";
+import {
+  relativeControlPlanePath,
+  resolveControlPlaneRoot,
+  validateControlPlaneBinding,
+  validateControlPlaneStorage,
+} from "./control-plane-root.mjs";
+import {
+  compileGlobalPolicyState,
+  getPolicyValue,
+  policyStateDigest,
+  validatePolicyState,
+} from "./global-policy-state.mjs";
+import {writePolicyStateCompareAndSwap} from "./global-policy-store.mjs";
+import {
+  compileOwnerReviewPacket,
+  renderOwnerReviewMarkdown,
+  validateOwnerReviewPacket,
+} from "./owner-review.mjs";
+import {
+  compileAgentOSControllerState,
+  validateAgentOSControllerState,
+  validateControllerRuntimeReadback,
+  writeAgentOSControllerStateCompareAndSwap,
+} from "./agentos-controller.mjs";
+import {
+  compileGovernanceArchitecturePlan,
+  validateGovernanceArchitecturePlan,
+} from "./governance-library.mjs";
+import {
+  compileDevelopmentPlan,
+  DEFAULT_DEVELOPMENT_MODE,
+  DEVELOPMENT_MODES,
+  validateDevelopmentPlan,
+} from "./development-plan.mjs";
+import {
+  BOOTSTRAP_OPERATING_MODES,
+  DEFAULT_BOOTSTRAP_OPERATING_MODE,
+  JSA_PLAN_STATUS,
+  compileBootstrapSafetyAnalysis,
+  isExactApprovalPlan,
+  isJsaPlan,
+  validateBootstrapActionScope,
+  validateBootstrapSafetyAnalysis,
+} from "./bootstrap-safety-analysis.mjs";
+
+export const DISCOVERY_MODES = Object.freeze(["RECOMMENDED", "GUIDED", "EXPERT", "LOCAL_ONLY"]);
+export {DEVELOPMENT_MODES};
+export {BOOTSTRAP_OPERATING_MODES, DEFAULT_BOOTSTRAP_OPERATING_MODE, JSA_PLAN_STATUS};
+export const QUESTION_CLASSES = Object.freeze(["DISCOVERY_PERMISSION", "OWNER_INTENT", "OWNER_BOUNDARY", "MATERIAL_PREFERENCE", "CREATION_AUTHORIZATION"]);
+export const PLAN_APPROVAL = "APPROVE_EXACT_PLAN";
+export const DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES = 15;
+export const MEANINGFUL_PROGRESS_WINDOW_MINUTES = 15;
+export const CONTROLLER_SUPERVISION_STOP_ONLY = Object.freeze([
+  "HARD_BOUNDARY",
+  "REAL_OWNER_CHOICE",
+  "VERIFIED_HOST_CAPABILITY_FAILURE",
+]);
+const CONTROLLER_SUPERVISION_SCHEMA = "agentos.bootstrap_controller_supervision.v1";
+const CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE = "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES";
+export const BOOTSTRAP_CONVERSATION_FLOOR = Object.freeze({
+  language: "PLAIN_EVERYDAY",
+  questions_per_turn: 1,
+  internal_fields_hidden: true,
+  ask_only: "EARLIEST_MATERIAL_UNRESOLVED",
+  safe_discovery_defaults_allowed: true,
+  maximum_prompt_words: 20,
+  forbidden_user_terms: ["JSON", "schema", "digest", "runtime", "authority corpus", "policy state", "worktree", "campaign"].sort(),
+});
+export const EXECUTION_PHASES = Object.freeze(["PLANNED", "JSA_BOUND", "APPROVED", "STAGING", "SEALED", "PROMOTED", "CANCELLED"]);
+export const MODEL_PROFILES = Object.freeze({
+  ECO_CONTINUOUS: {window_hours: 168, work_slots: 20, max_concurrent_slots: 20, average_active_slots: null, task_volume_multiplier: 20, objective: "MINIMIZE_EXPECTED_COST_PER_ACCEPTED_RESULT"},
+  STANDARD_WORKWEEK: {window_hours: 40, work_slots: 1, max_concurrent_slots: 1, average_active_slots: 1, task_volume_multiplier: 1, objective: "MINIMIZE_EXPECTED_COST_PER_ACCEPTED_RESULT"},
+  PERFORMANCE: {window_hours: 40, work_slots: 1, max_concurrent_slots: 1, average_active_slots: 1, task_volume_multiplier: 1, objective: "MINIMIZE_ELAPSED_TIME_AFTER_COMPLETION_FLOOR"},
+  CUSTOM: {window_hours: null, work_slots: null, max_concurrent_slots: null, average_active_slots: null, task_volume_multiplier: null, objective: "USE_TYPED_CUSTOM_CONDITIONS"},
+});
+const MODEL_ALIASES = new Map([["ECO", "ECO_CONTINUOUS"], ["ECONOMICAL", "ECO_CONTINUOUS"]]);
+const REASONING_ORDER = new Map([["LOW", 1], ["MEDIUM", 2], ["HIGH", 3], ["HIGHEST", 4]]);
+
+const SHA256 = /^[0-9a-f]{64}$/u;
+const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
+const SAFE_FACT_ID = /^[A-Za-z0-9][A-Za-z0-9._:/ -]*$/u;
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
+const SECRET_PATTERN = /(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret)\s*[:=]/iu;
+const RUNTIME_READBACK_KEYS = [
+  "schema", "session_id", "environment_identity", "capabilities", "persistent", "pinned", "resume_readback",
+  "observed_by_role", "observed_by_session", "observed_at_utc", "verification_method", "readback_sha256",
+];
+const MODEL_ECONOMICS_CHOICES = Object.freeze([
+  Object.freeze({value: "ECO_CONTINUOUS", label: "Save effort", answer: Object.freeze({profile: "ECO_CONTINUOUS", completion_floor: 0.8})}),
+  Object.freeze({value: "PERFORMANCE", label: "Finish sooner", answer: Object.freeze({profile: "PERFORMANCE", completion_floor: 0.8})}),
+  Object.freeze({value: "CAREFUL", label: "Take extra care", answer: Object.freeze({profile: "STANDARD_WORKWEEK", completion_floor: 0.95})}),
+  Object.freeze({value: "STANDARD_WORKWEEK", label: "Recommend a balance", answer: Object.freeze({profile: "STANDARD_WORKWEEK", completion_floor: 0.8})}),
+]);
+
+export const BOOTSTRAP_QUESTIONS = Object.freeze([
+  {
+    id: "bootstrap.discovery.mode",
+    class: "DISCOVERY_PERMISSION",
+    prompt: "May I take a quick look around without changing anything, so I can understand how to set things up?",
+    type: "ENUM",
+    choices: DISCOVERY_MODES,
+    owner_choices: ["Recommended read-only discovery", "Guided discovery", "Expert discovery", "Local-only discovery"],
+    recommended: "RECOMMENDED",
+    required: true,
+  },
+  {
+    id: "project.north_star",
+    class: "OWNER_INTENT",
+    prompt: "Who is this for, and what should it make easier?",
+    type: "JSON",
+    output: "NORTH_STAR",
+    required: true,
+  },
+  {
+    id: "project.first_workflow",
+    class: "OWNER_INTENT",
+    prompt: "What should people do first, and what would count as working?",
+    type: "JSON",
+    output: "FIRST_USEFUL_WORKFLOW",
+    required: true,
+  },
+  {
+    id: "project.development_mode",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "Should I make a quick first version, then improve it, or take the careful path from the start?",
+    type: "ENUM",
+    choices: DEVELOPMENT_MODES,
+    owner_choices: ["Quick first version, then improve it", "Careful path from the start"],
+    recommended: DEFAULT_DEVELOPMENT_MODE,
+    output: "DEVELOPMENT_PLAN",
+    required: false,
+    askWhen: "OWNER_REQUESTS_A_DIFFERENT_BUILD_PACE",
+  },
+  {
+    id: "project.life_contract",
+    class: "OWNER_INTENT",
+    prompt: "How real should the first version be?",
+    type: "JSON",
+    output: "PROJECT_LIFE_CONTRACT",
+    required: false,
+    askWhen: "MATURITY_AUDIENCE_DATA_LIFETIME_OR_MAINTENANCE_SIGNAL",
+  },
+  {
+    id: "project.boundary",
+    class: "OWNER_BOUNDARY",
+    prompt: "What should this project be allowed to touch, and what should stay off-limits?",
+    type: "JSON",
+    output: "PROJECT_DEFINITION",
+    required: true,
+  },
+  {
+    id: "project.import",
+    class: "CREATION_AUTHORIZATION",
+    prompt: "Should I keep this as-is, make a copy, tidy it up, or use it as a reference?",
+    type: "JSON",
+    output: "PROJECT_IMPORT",
+    required: false,
+    askWhen: "EXISTING_PROJECT_SIGNAL_OR_EXPLICIT_IMPORT",
+  },
+  {
+    id: "project.protected_boundaries",
+    class: "OWNER_BOUNDARY",
+    prompt: "What must I never do without you?",
+    type: "JSON",
+    output: "AUTHORITY_BOUNDARIES",
+    required: true,
+  },
+  {
+    id: "authority-corpus.source",
+    class: "CREATION_AUTHORIZATION",
+    prompt: "Are there notes or an older version I should keep safe?",
+    type: "JSON",
+    output: "AUTHORITY_CORPUS",
+    required: true,
+  },
+  {
+    id: "project.design",
+    class: "OWNER_INTENT",
+    prompt: "What should it feel like to use, and where should it work?",
+    type: "JSON",
+    output: "DESIGN_BIBLE",
+    required: false,
+    askWhen: "VISIBLE_SURFACE_OR_DESIGN_AUTHORITY",
+  },
+  {
+    id: "project.technical_baseline",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "Is there anything you want me to use or avoid?",
+    type: "JSON",
+    output: "TECHNICAL_BASELINE",
+    required: false,
+    askWhen: "CONFLICT_OR_MISSING_TECHNICAL_BASELINE",
+  },
+  {
+    id: "project.delivery_policy",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "How should I save or share it?",
+    type: "JSON",
+    output: "DELIVERY_POLICY",
+    required: true,
+    askWhen: "CONFLICT_OR_MISSING_DELIVERY_POLICY",
+  },
+  {
+    id: "project.delivery_finish",
+    class: "OWNER_BOUNDARY",
+    prompt: "When we're ready, what should I do with it?",
+    type: "ENUM",
+    choices: DELIVERY_FINISH_OPTIONS.map((option) => option.value),
+    owner_choices: DELIVERY_FINISH_OPTIONS.map((option) => option.label),
+    output: "DELIVERY_POLICY",
+    required: true,
+    askWhen: "ALWAYS_OWNER_CHOICE",
+  },
+  {
+    id: "project.model_economics",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "Should I favor saving effort, finishing sooner, taking extra care, or should I recommend a balance?",
+    type: "JSON",
+    owner_choices: MODEL_ECONOMICS_CHOICES.map(({label}) => label),
+    output: "MODEL_POLICY",
+    required: true,
+  },
+  {
+    id: "project.audit_interval",
+    class: "MATERIAL_PREFERENCE",
+    prompt: "How often should I check on ongoing work?",
+    type: "JSON",
+    output: "CONTROLLER_SUPERVISION",
+    required: false,
+    askWhen: "OWNER_REQUESTS_AUDIT_INTERVAL",
+  },
+  {
+    id: "project.runtime",
+    class: "OWNER_BOUNDARY",
+    prompt: "Should I remember this between work sessions, and what may I remember?",
+    type: "JSON",
+    output: "PERSISTENT_RUNTIME",
+    required: true,
+  },
+]);
+
+function validateBootstrapConversationFloor() {
+  const forbidden = BOOTSTRAP_CONVERSATION_FLOOR.forbidden_user_terms.map((term) => term.toLocaleLowerCase());
+  for (const question of BOOTSTRAP_QUESTIONS) {
+    assert(typeof question.prompt === "string" && question.prompt.trim().length > 0, `${question.id} has no owner prompt`);
+    const words = question.prompt.trim().split(/\s+/u).filter(Boolean);
+    assert(words.length <= BOOTSTRAP_CONVERSATION_FLOOR.maximum_prompt_words, `${question.id} prompt is too long for the conversation floor`);
+    assert((question.prompt.match(/\?/gu) ?? []).length === 1, `${question.id} must ask exactly one visible question`);
+    const lower = question.prompt.toLocaleLowerCase();
+    assert(!forbidden.some((term) => lower.includes(term)), `${question.id} exposes internal vocabulary`);
+  }
+  return true;
+}
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function requireRecord(value, label) {
+  assert(isRecord(value), `${label} must be an object`);
+}
+
+function exactKeys(value, expected, label) {
+  requireRecord(value, label);
+  assert(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...expected].sort()), `${label} fields mismatch`);
+}
+
+function requireString(value, label) {
+  assert(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
+}
+
+function requireId(value, label) {
+  requireString(value, label);
+  assert(SAFE_ID.test(value), `${label} contains an unsafe identifier`);
+}
+
+function projectImportIdentifier(projectName) {
+  const normalized = String(projectName ?? "").trim().replace(/[^A-Za-z0-9._:-]+/gu, "-");
+  const prefixed = /^[A-Za-z]/u.test(normalized) ? normalized : `PROJECT-${normalized}`;
+  return (prefixed || "PROJECT-IMPORT").slice(0, 128);
+}
+
+function requireFactId(value, label) {
+  requireString(value, label);
+  assert(SAFE_FACT_ID.test(value) && !value.split("/").includes("..") && !value.includes("//"), `${label} contains an unsafe identifier`);
+}
+
+function requireSha(value, label) {
+  assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+function requireUtc(value, label) {
+  requireString(value, label);
+  assert(ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`);
+}
+
+function validateRuntimeReadbackShape(readback) {
+  exactKeys(readback, RUNTIME_READBACK_KEYS, "Runtime readback");
+  assert(readback.schema === "agentos.runtime_readback.v1", "Runtime readback schema mismatch");
+  for (const field of ["session_id", "environment_identity", "observed_by_role", "observed_by_session", "verification_method"]) requireId(readback[field], `Runtime readback ${field}`);
+  assert(Array.isArray(readback.capabilities), "Runtime readback capabilities are invalid");
+  const capabilities = [...readback.capabilities].sort(compareUtf8);
+  assert(JSON.stringify(readback.capabilities) === JSON.stringify(capabilities)
+    && new Set(capabilities).size === capabilities.length
+    && capabilities.every((value) => SAFE_ID.test(value)), "Runtime readback capabilities are not unique and sorted");
+  assert(readback.persistent === true && readback.pinned === true && readback.resume_readback === true, "Runtime readback did not confirm persistent pinned resume continuity");
+  requireUtc(readback.observed_at_utc, "Runtime readback observation time");
+  assert(readback.verification_method === "RUNTIME_ADAPTER_READBACK", "Runtime readback method is invalid");
+  requireSha(readback.readback_sha256, "Runtime readback digest");
+  assert(readback.readback_sha256 === canonicalDigest({...readback, readback_sha256: null}), "Runtime readback is not content-addressed");
+  return readback;
+}
+
+export function compileRuntimeReadback({sessionId, environmentIdentity, capabilities = [], observedByRole, observedBySession, observedAtUtc}) {
+  const readback = {
+    schema: "agentos.runtime_readback.v1",
+    session_id: sessionId,
+    environment_identity: environmentIdentity,
+    capabilities: [...capabilities].sort(compareUtf8),
+    persistent: true,
+    pinned: true,
+    resume_readback: true,
+    observed_by_role: observedByRole,
+    observed_by_session: observedBySession,
+    observed_at_utc: observedAtUtc,
+    verification_method: "RUNTIME_ADAPTER_READBACK",
+    readback_sha256: null,
+  };
+  readback.readback_sha256 = canonicalDigest({...readback, readback_sha256: null});
+  return validateRuntimeReadbackShape(readback);
+}
+
+function validateRuntimeReadback(readback, runtime, label = "Runtime readback") {
+  validateRuntimeReadbackShape(readback);
+  assert(readback.session_id === runtime.session_id, `${label} session differs from the Bootstrap Runtime`);
+  assert(readback.environment_identity === runtime.environment_identity, `${label} environment differs from the Bootstrap Runtime`);
+  assert(JSON.stringify(readback.capabilities) === JSON.stringify([...runtime.capabilities].sort(compareUtf8)), `${label} capabilities differ from the Bootstrap Runtime`);
+  return readback;
+}
+
+function secretFree(value, label) {
+  const text = typeof value === "string" ? value : JSON.stringify(value);
+  assert(!SECRET_PATTERN.test(text) && !/https?:\/\/[^\s]+[?&](?:token|secret|key|signature)=/iu.test(text), `${label} contains secret material`);
+}
+
+export function normalizeModelProfile(value) {
+  requireString(value, "model economics profile");
+  const profile = MODEL_ALIASES.get(value) ?? value;
+  assert(Object.hasOwn(MODEL_PROFILES, profile), "unknown model economics profile");
+  return profile;
+}
+
+export function compileModelEconomics(input) {
+  requireRecord(input, "model economics");
+  const profile = normalizeModelProfile(input.profile);
+  const completionFloor = input.completion_floor ?? 0.8;
+  assert(typeof completionFloor === "number" && completionFloor > 0 && completionFloor <= 1, "completion floor is invalid");
+  if (profile === "CUSTOM") {
+    requireRecord(input.conditions ?? input.custom_conditions, "custom model conditions");
+  } else {
+    assert(input.conditions === undefined && input.custom_conditions === undefined, "non-custom economics cannot carry custom conditions");
+  }
+  const economics = {
+    profile,
+    profile_alias: profile === input.profile ? null : input.profile,
+    window_hours: MODEL_PROFILES[profile].window_hours ?? input.window_hours ?? null,
+    work_slots: MODEL_PROFILES[profile].work_slots ?? input.work_slots ?? null,
+    max_concurrent_slots: MODEL_PROFILES[profile].max_concurrent_slots ?? input.max_concurrent_slots ?? input.work_slots ?? null,
+    average_active_slots: MODEL_PROFILES[profile].average_active_slots ?? input.average_active_slots ?? null,
+    task_volume_multiplier: MODEL_PROFILES[profile].task_volume_multiplier ?? input.task_volume_multiplier ?? null,
+    completion_floor: completionFloor,
+    max_expected_cost: input.max_expected_cost ?? null,
+    weekly_budget_ceiling: input.weekly_budget_ceiling ?? null,
+    warning_threshold: input.warning_threshold ?? null,
+    concurrency_throttle: input.concurrency_throttle ?? "PAUSE_NEW_LOW_PRIORITY_WORK_AT_CAPACITY",
+    promotion_trigger: input.promotion_trigger ?? "PROMOTE_ONLY_AFTER_COMPLETION_FLOOR_OR_REWORK_SIGNAL",
+    below_floor_action: "REJECT",
+    no_eligible_model_action: "FAIL_CLOSED",
+    no_feasible_budget_action: "FAIL_CLOSED",
+    deadline_hours: input.deadline_hours ?? null,
+    conditions: input.conditions ?? input.custom_conditions ?? null,
+  };
+  for (const field of ["window_hours", "work_slots", "max_concurrent_slots", "average_active_slots", "task_volume_multiplier", "max_expected_cost", "weekly_budget_ceiling", "warning_threshold", "deadline_hours"]) {
+    if (economics[field] !== null) assert(typeof economics[field] === "number" && Number.isFinite(economics[field]) && economics[field] > 0, `${field} is invalid`);
+  }
+  if (economics.average_active_slots !== null && economics.max_concurrent_slots !== null) {
+    assert(economics.average_active_slots <= economics.max_concurrent_slots, "average active slots exceed maximum concurrency");
+  }
+  secretFree(economics, "model economics");
+  return economics;
+}
+
+function candidateExpectedCost(candidate) {
+  const overhead = (candidate.supervisor_cost ?? 0) + (candidate.repair_cost ?? 0) + (candidate.integration_cost ?? 0);
+  const completionProbability = candidate.estimated_success_probability;
+  const expected = (candidate.estimated_attempts * candidate.relative_unit_cost + overhead) / completionProbability;
+  return {
+    low: (candidate.estimated_attempts * (candidate.relative_unit_cost_low ?? candidate.relative_unit_cost) + overhead) / completionProbability,
+    expected,
+    high: (candidate.estimated_attempts * (candidate.relative_unit_cost_high ?? candidate.relative_unit_cost) + overhead) / completionProbability,
+    completion_probability: completionProbability,
+  };
+}
+
+export function recommendModels({economics: inputEconomics, candidates, role = null, requirements = {}}) {
+  const economics = compileModelEconomics(inputEconomics);
+  requireRecord(requirements, "model requirements");
+  assert(Array.isArray(candidates) && candidates.length > 0, "model candidates are required");
+  const eligible = [];
+  const excluded = [];
+  for (const [index, candidate] of candidates.entries()) {
+    try {
+      requireRecord(candidate, `model candidate ${index}`);
+      for (const field of ["model", "reasoning"]) requireString(candidate[field], `model candidate ${field}`);
+      assert(candidate.spawnable === true, "NOT_SPAWNABLE");
+      for (const field of ["estimated_success_probability", "estimated_attempts", "relative_unit_cost"]) assert(typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] > 0, `${field.toUpperCase()}_INVALID`);
+      assert(candidate.estimated_success_probability <= 1, "SUCCESS_PROBABILITY_INVALID");
+      for (const field of ["relative_unit_cost_low", "relative_unit_cost_high"]) {
+        if (candidate[field] !== undefined) assert(typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] > 0, `${field.toUpperCase()}_INVALID`);
+      }
+      for (const field of ["supervisor_cost", "repair_cost", "integration_cost"]) {
+        if (candidate[field] !== undefined) assert(typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] >= 0, `${field.toUpperCase()}_INVALID`);
+      }
+      if (candidate.estimated_wall_hours !== undefined) assert(typeof candidate.estimated_wall_hours === "number" && Number.isFinite(candidate.estimated_wall_hours) && candidate.estimated_wall_hours > 0, "ESTIMATED_WALL_HOURS_INVALID");
+      if (candidate.estimated_success_probability < economics.completion_floor) throw new Error("BELOW_COMPLETION_FLOOR");
+      if (requirements.required_context_window !== undefined) assert((candidate.context_window ?? 0) >= requirements.required_context_window, "CONTEXT_WINDOW_FLOOR");
+      if (requirements.required_tools !== undefined) assert(requirements.required_tools.every((tool) => (candidate.tools ?? []).includes(tool)), "REQUIRED_TOOL_UNAVAILABLE");
+      if (requirements.minimum_reasoning !== undefined) assert((REASONING_ORDER.get(candidate.reasoning.toUpperCase()) ?? 0) >= (REASONING_ORDER.get(String(requirements.minimum_reasoning).toUpperCase()) ?? Infinity), "REASONING_FLOOR");
+      const range = candidateExpectedCost(candidate);
+      if (economics.deadline_hours !== null && candidate.estimated_wall_hours !== undefined) assert(candidate.estimated_wall_hours <= economics.deadline_hours, "DEADLINE_UNMET");
+      if (economics.max_expected_cost !== null) assert(range.expected <= economics.max_expected_cost, "OVER_EXPECTED_COST_BUDGET");
+      const loadFactor = economics.task_volume_multiplier ?? 1;
+      const expectedWindowCost = range.expected * loadFactor;
+      if (economics.weekly_budget_ceiling !== null) assert(expectedWindowCost <= economics.weekly_budget_ceiling, "OVER_WINDOW_COST_BUDGET");
+      eligible.push({...candidate, expected_completion_cost: range.expected, expected_completion_cost_range: range, expected_window_cost: expectedWindowCost});
+    } catch (error) {
+      excluded.push({model: candidate?.model ?? `candidate-${index}`, reason: error.message});
+    }
+  }
+  if (eligible.length === 0) throw new Error(excluded.some((entry) => ["OVER_EXPECTED_COST_BUDGET", "OVER_WINDOW_COST_BUDGET"].includes(entry.reason)) ? "NO_FEASIBLE_MODEL_UNDER_BUDGET" : "NO_ELIGIBLE_MODEL");
+  eligible.sort((left, right) => (economics.profile === "PERFORMANCE"
+    ? (left.estimated_wall_hours ?? Infinity) - (right.estimated_wall_hours ?? Infinity)
+    : left.expected_completion_cost - right.expected_completion_cost)
+    || right.estimated_success_probability - left.estimated_success_probability
+    || compareUtf8(left.model, right.model));
+  return {
+    schema: "agentos.model_recommendation.v2",
+    role,
+    economics,
+    requirements,
+    recommended: eligible[0],
+    eligible,
+    excluded: excluded.sort((left, right) => compareUtf8(`${left.model}\0${left.reason}`, `${right.model}\0${right.reason}`)),
+    recommendation_sha256: canonicalDigest({role, economics, requirements, eligible, excluded}),
+  };
+}
+
+export {canonicalDigest, compareUtf8};
+
+function validateFact(fact) {
+  requireRecord(fact, "discovery fact");
+  requireFactId(fact.fact_id, "discovery fact ID");
+  requireString(fact.source_kind, "discovery fact source");
+  requireString(fact.source_locator, "discovery fact locator");
+  assert(["OBSERVED_FACT", "CANDIDATE_INTERPRETATION", "CONFLICT", "UNKNOWN"].includes(fact.status ?? "OBSERVED_FACT"), "discovery fact status is invalid");
+  requireString(fact.epistemic_class, "discovery fact epistemic class");
+  assert(EPISTEMIC_CLASSES.includes(fact.epistemic_class), "discovery fact epistemic class is invalid");
+  assert(fact.secret_free === true, "discovery fact must be secret-free");
+  secretFree(fact, "discovery fact");
+}
+
+function factsFor(discovery, predicate) {
+  return discovery.filter(predicate);
+}
+
+function hasObservedFact(discovery, pattern) {
+  return discovery.some((fact) => pattern.test(fact.fact_id) && fact.status === "OBSERVED_FACT");
+}
+
+function deriveTechnicalBaseline(discovery, answer) {
+  const markers = discovery.filter((fact) => fact.fact_id.startsWith("project.marker.") && fact.status === "OBSERVED_FACT")
+    .map((fact) => fact.fact_id.slice("project.marker.".length)).sort(compareUtf8);
+  const framework = discovery.find((fact) => /^stack\./u.test(fact.fact_id) && fact.status === "OBSERVED_FACT")?.value ?? "UNPROVEN_FROM_DISCOVERY";
+  const constraints = answer === undefined ? null : {
+    required: answer.required ?? [],
+    forbidden: answer.forbidden ?? [],
+    testing: answer.testing ?? null,
+    authentication: answer.authentication ?? null,
+    data: answer.data ?? null,
+    observability: answer.observability ?? null,
+  };
+  return {
+    status: framework === "UNPROVEN_FROM_DISCOVERY" && markers.length === 0 ? "REQUIRES_OWNER_CONFIRMATION" : "DISCOVERED_BASELINE",
+    detected_markers: markers,
+    framework,
+    stack: {
+      language: answer?.language ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      client: answer?.client ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      backend: answer?.backend ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      database: answer?.database ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      authentication: answer?.authentication ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      storage: answer?.storage ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      package_manager: answer?.package_manager ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+      observability: answer?.observability ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+    },
+    testing: {route: answer?.testing ?? "DISCOVERY_OR_OWNER_BOUND_CONFIGURATION", browser: "UNSELECTED_UNTIL_PROJECT_CONTEXT"},
+    authentication: {route: answer?.authentication ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT"},
+    data: {storage: answer?.storage ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT", backup_and_recovery: answer?.backup_and_recovery ?? "REQUIRED_EXACT_POLICY"},
+    observability: answer?.observability ?? "UNSELECTED_UNTIL_PROJECT_CONTEXT",
+    constraints,
+  };
+}
+
+function deriveFunctionRequirements(answers) {
+  const explicit = answers["project.function_requirements"]?.clauses;
+  const workflow = answers["project.first_workflow"];
+  const northStar = answers["project.north_star"];
+  const clauses = Array.isArray(explicit) && explicit.length > 0
+    ? explicit
+    : [{
+      question_id: "FR-001-FIRST-USEFUL-WORKFLOW",
+      proposition: `Can the project complete the owner-defined first useful workflow (${workflow?.name ?? "the first workflow"}) with the stated success condition?`,
+      source: "NORTH_STAR_AND_FIRST_USEFUL_WORKFLOW",
+      owner_outcome: northStar,
+      evidence: ["real_workflow_result", "accepted_result_receipt"],
+      status: "CANDIDATE_FOR_CAMPAIGN_COMPILATION",
+    }];
+  return {
+    status: "CANDIDATE_FOR_CAMPAIGN_COMPILATION",
+    source: "OWNER_NORTH_STAR_AND_FIRST_USEFUL_WORKFLOW",
+    clauses,
+    exact_root: "FUNCTION_REQUIREMENTS",
+  };
+}
+
+function deriveDesignBible(discovery, answer) {
+  const visible = hasObservedFact(discovery, /(?:ui|view|route|design|visual|browser)/iu) || answer !== undefined;
+  return {
+    status: visible ? (answer === undefined ? "REQUIRES_OWNER_INPUT" : "COMPILED_FROM_OWNER_AND_DISCOVERY") : "NOT_APPLICABLE_WITH_EXPLICIT_UNAVAILABLE_STATE",
+    page_families: answer?.page_families ?? [],
+    templates: answer?.templates ?? [],
+    tokens: answer?.tokens ?? [],
+    required_states: answer?.required_states ?? ["LOADING", "EMPTY", "UNAVAILABLE", "PERMISSION", "STALE", "CONFLICT", "PARTIAL", "ERROR"],
+    proof: answer?.proof ?? "DEPLOYED_LIVE_PROOF_WHEN_STATIC_PROOF_CANNOT_ESTABLISH_PERCEPTIBLE_BEHAVIOR",
+    protected_surfaces: answer?.protected_surfaces ?? [],
+  };
+}
+
+function deriveSecurityBaseline(discovery, answer) {
+  const identity = answer?.standard_identity ?? "agentos.security-baseline.v1";
+  const version = answer?.version ?? "1";
+  const clauses = answer?.clauses ?? [
+    "SEC-001-AUTHORITY_SCOPE",
+    "SEC-002-TENANT_OR_ACCOUNT_SEPARATION_WHEN_APPLICABLE",
+    "SEC-003-SECRET_AND_CREDENTIAL_BOUNDARY",
+    "SEC-004-REVOCATION_AND_UNAVAILABLE_BEHAVIOR",
+    "SEC-005-RELEASE_AND_ROLLBACK_IDENTITY",
+  ];
+  requireString(identity, "security standard identity");
+  requireString(version, "security standard version");
+  assert(Array.isArray(clauses) && clauses.length > 0 && clauses.every((value) => typeof value === "string" && value.trim().length > 0), "security requirement IDs are invalid");
+  const requirementIds = [...new Set(clauses)].sort(compareUtf8);
+  assert(requirementIds.length === clauses.length, "security requirement IDs are duplicated");
+  const standardBody = {standard_identity: identity, version, requirement_ids: requirementIds};
+  const standardSha256 = answer?.standard_sha256 ?? canonicalDigest(standardBody);
+  requireSha(standardSha256, "security standard digest");
+  assert(standardSha256 === canonicalDigest(standardBody), "security standard digest does not bind identity and requirements");
+  return {
+    status: "COMPILED_TYPED_BASELINE",
+    standard_identity: identity,
+    version,
+    standard_sha256: standardSha256,
+    requirement_ids: requirementIds,
+    source: answer ? "PROJECT_CONTEXT" : "PORTABLE_BASELINE",
+    stricter_overlays: [],
+    discovery_security_markers: factsFor(discovery, (fact) => /(?:auth|security|secret|permission|policy)/iu.test(fact.fact_id)).map((fact) => fact.fact_id).sort(compareUtf8),
+  };
+}
+
+function deriveAuthorityCorpus(answer) {
+  const operation = answer?.operation ?? "CREATE_NEW";
+  assert(["IMPORT", "REFACTOR_PREVIOUS_GOVERNANCE", "CREATE_NEW"].includes(operation), "authority corpus operation is invalid");
+  const authorityRoot = answer?.roots?.authority_root ?? ".agentos/authority";
+  const defaultRoot = (suffix) => path.posix.join(authorityRoot, suffix);
+  return {
+    operation,
+    source_root: answer?.source_root ?? null,
+    source_identity: null,
+    preservation: operation === "CREATE_NEW" ? "NOT_REQUIRED" : "REQUIRED_BEFORE_REPLACEMENT_WRITES",
+    roots: {
+      authority_root: authorityRoot,
+      authority_index_path: answer?.roots?.authority_index_path ?? defaultRoot("index.json"),
+      project_context_root: answer?.roots?.project_context_root ?? defaultRoot("project/context"),
+      project_goals_root: answer?.roots?.project_goals_root ?? defaultRoot("project/goals"),
+      design_system_root: answer?.roots?.design_system_root ?? defaultRoot("design"),
+      features_root: answer?.roots?.features_root ?? defaultRoot("features"),
+      platform_capabilities_root: answer?.roots?.platform_capabilities_root ?? defaultRoot("platform"),
+      campaigns_root: answer?.roots?.campaigns_root ?? defaultRoot("campaigns"),
+      decisions_root: answer?.roots?.decisions_root ?? defaultRoot("decisions"),
+      cases_root: answer?.roots?.cases_root ?? defaultRoot("cases"),
+      evidence_index_root: answer?.roots?.evidence_index_root ?? defaultRoot("evidence"),
+      archive_root: answer?.roots?.archive_root ?? defaultRoot("archive"),
+      evidence_library_root: answer?.roots?.evidence_library_root ?? defaultRoot("evidence-library"),
+    },
+    numbering: {
+      bootstrap: "000",
+      governance: [1, 100],
+      shared_project: [100, 200],
+      first_feature_start: 200,
+      feature_allocation: "SPARSE_CAPSULES",
+      allocation: "IMMUTABLE_NO_RENUMBER_LOWEST_UNUSED_ID_UNSIGNED_UTF8_ORDER",
+    },
+    article_taxonomy: ["PROJECT_CONTEXT", "NORTH_STAR", "DESIGN_BIBLE", "PROJECT_IMPORT", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "SOURCE_PRESERVATION", "FEATURE", "PLATFORM_CAPABILITY", "CAMPAIGN", "MIGRATION_CAMPAIGN", "DECISION", "CASE", "EVIDENCE_INDEX", "RELEASE_SUMMARY", "HANDOFF", "ARCHIVE_INDEX"],
+  };
+}
+
+function deriveModelPolicy(answer) {
+  const source = answer ?? {profile: "ECO_CONTINUOUS", completion_floor: 0.8};
+  const profile = source.profile === "ECO" || source.profile === "ECONOMICAL" ? "ECO_CONTINUOUS" : source.profile;
+  assert(["ECO_CONTINUOUS", "STANDARD_WORKWEEK", "PERFORMANCE", "CUSTOM"].includes(profile), "model economics profile is invalid");
+  const floor = source.completion_floor ?? 0.8;
+  assert(typeof floor === "number" && floor > 0 && floor <= 1, "completion floor is invalid");
+  if (source.market_snapshot_sha256 !== undefined && source.market_snapshot_sha256 !== null) requireSha(source.market_snapshot_sha256, "market snapshot digest");
+  if (profile === "CUSTOM") requireRecord(source.conditions, "custom model conditions");
+  return {
+    profile,
+    window_hours: profile === "ECO_CONTINUOUS" ? 168 : profile === "STANDARD_WORKWEEK" ? 40 : source.window_hours ?? 40,
+    work_slots: profile === "ECO_CONTINUOUS" ? 20 : source.work_slots ?? 1,
+    completion_floor: floor,
+    objective: profile === "PERFORMANCE" ? "MINIMIZE_ELAPSED_TIME_AFTER_COMPLETION_FLOOR" : "MINIMIZE_EXPECTED_COST_PER_ACCEPTED_RESULT",
+    conditions: source.conditions ?? null,
+    candidate_source: "BOOTSTRAP_INPUT_OR_CURRENT_MARKET_SNAPSHOT",
+    market_snapshot_sha256: source.market_snapshot_sha256 ?? null,
+    host_capacity: source.host_capacity ?? null,
+    rate_limit: source.rate_limit ?? null,
+    concurrency: source.concurrency ?? null,
+    duty_cycle: source.duty_cycle ?? null,
+    budget_throttle: source.budget_throttle ?? null,
+    below_floor: "REJECT",
+    no_eligible_model: "FAIL_CLOSED",
+    no_feasible_model_under_budget: "FAIL_CLOSED",
+    telemetry: ["accepted_result", "attempts", "rework", "evidence_reuse", "escaped_findings", "owner_interruptions"],
+  };
+}
+
+function deriveRuntime(answer) {
+  return {
+    status: answer?.session_id ? "BOUND" : "REQUIRES_ENVIRONMENT_BINDING",
+    persistent: true,
+    session_id: answer?.session_id ?? null,
+    environment_identity: answer?.environment_identity ?? null,
+    capabilities: answer?.capabilities ?? [],
+    deployment_identity: null,
+    rollback_identity: null,
+    never_despawn_between_campaigns: true,
+    proof_required: "EXACT_SESSION_ENVIRONMENT_CAPABILITY_AND_RESUME_READBACK",
+  };
+}
+
+function deriveFirstCampaign(discovery, answers) {
+  const roster = Array.isArray(answers?.["project.first_campaign"]?.features)
+    ? answers["project.first_campaign"].features
+    : [];
+  return {
+    status: answers?.["project.first_campaign"] ? "COMPILED" : "MINIMAL_EMPTY_SYNTHETIC_CAMPAIGN",
+    owner_outcome: answers?.["project.north_star"] ?? null,
+    first_useful_workflow: answers?.["project.first_workflow"] ?? null,
+    features: roster,
+    excluded_features: answers?.["project.first_campaign"]?.excluded_features ?? [],
+    dependency_graph: answers?.["project.first_campaign"]?.dependency_graph ?? [],
+    cumulative_root: "ONE_CAMPAIGN_ROOT",
+    feature_agent_roster: roster.map((feature, index) => ({
+      feature_id: feature.feature_id ?? feature.id ?? `FEATURE_${index + 1}`,
+      role: "FEATURE_AGENT",
+      status: "ADMIT_ON_CAMPAIGN_START",
+    })),
+    platform_pool: [],
+    campaign_orchestrator: "CAMPAIGN_ORCHESTRATOR",
+    independent_auditor: "INDEPENDENT_AUDITOR",
+    initial_question_slice: ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+    evidence_plan: answers?.["project.first_campaign"]?.evidence_plan ?? "COMPILE_FROM_APPLICABLE_QUESTION_SLICE",
+    release_stop: "THREE_ROOTS_PASS_AND_EXACT_RUNTIME_ROLLBACK_IDENTITY",
+    true_owner_boundaries: answers?.["project.protected_boundaries"] ?? null,
+    estimated_cost: answers?.["project.first_campaign"]?.estimated_cost ?? null,
+    runtime_binding: "PERSISTENT_RUNTIME",
+    discovery_inputs: discovery.filter((fact) => /(?:route|feature|workflow|project)/iu.test(fact.fact_id)).map((fact) => fact.fact_id).sort(compareUtf8),
+  };
+}
+
+const ANSWER_ALIASES = Object.freeze({
+  "project.technical_constraints": "project.technical_baseline",
+});
+
+function normalizeAnswers(answers) {
+  requireRecord(answers, "Bootstrap answers");
+  secretFree(answers, "Bootstrap answers");
+  const normalized = structuredClone(answers);
+  for (const [legacyId, canonicalId] of Object.entries(ANSWER_ALIASES)) {
+    if (Object.hasOwn(normalized, legacyId) && Object.hasOwn(normalized, canonicalId)) {
+      throw new Error(`Bootstrap answers contain both legacy and canonical IDs: ${legacyId}`);
+    }
+    if (Object.hasOwn(normalized, legacyId)) {
+      normalized[canonicalId] = normalized[legacyId];
+      delete normalized[legacyId];
+    }
+  }
+  for (const [id, value] of Object.entries(normalized)) {
+    const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === id);
+    if (id === "project.audit_interval") normalized[id] = normalizeBootstrapAuditIntervalReply(value);
+    else if (id === "project.model_economics" && !isRecord(value)) normalized[id] = normalizeBootstrapModelEconomicsReply(value);
+    else if (question?.type === "ENUM") normalized[id] = normalizeBootstrapChoiceReply(id, value);
+  }
+  return normalized;
+}
+
+function validateAnswers(discovery, answers) {
+  const normalized = normalizeAnswers(answers);
+  for (const [id, value] of Object.entries(normalized)) {
+    const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === id);
+    if (!question && !["project.first_campaign", "project.runtime", "project.function_requirements", "security.baseline"].includes(id)) throw new Error(`unknown Bootstrap answer: ${id}`);
+    if (question && question.type === "ENUM") assert(question.choices.includes(value), `${id} is outside its choices`);
+    if (question && question.type === "JSON") requireRecord(value, `${id} answer`);
+    if (!question && ["project.first_campaign", "project.function_requirements", "security.baseline"].includes(id)) requireRecord(value, `${id} answer`);
+  }
+  if (normalized["bootstrap.discovery.mode"] !== undefined) assert(DISCOVERY_MODES.includes(normalized["bootstrap.discovery.mode"]), "discovery mode is invalid");
+  assert(discovery.every((fact) => { validateFact(fact); return true; }), "discovery facts are invalid");
+  return normalized;
+}
+
+export function planBootstrapQuestions({discovery = [], answers = {}} = {}) {
+  validateBootstrapConversationFloor();
+  const normalizedAnswers = validateAnswers(discovery, answers);
+  const coverage = compileBootstrapCoverage({discovery, answers: normalizedAnswers});
+  const visible = BOOTSTRAP_QUESTIONS.filter((question) => coverageForQuestion(coverage, question.id)
+    .some((row) => row.status !== "NOT_APPLICABLE_WITH_PROOF"));
+  const unresolved = visible.filter((question) => coverage.pending_question_ids.includes(question.id));
+  return {
+    schema: "agentos.bootstrap_question_plan.v1",
+    governance_version: "2.1rc",
+    discovery_digest_sha256: canonicalDigest(discovery),
+    answers_digest_sha256: canonicalDigest(normalizedAnswers),
+    required_output_groups: BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
+    coverage_sha256: coverage.coverage_sha256,
+    coverage,
+    conversation_floor: BOOTSTRAP_CONVERSATION_FLOOR,
+    question_budget: {
+      visible: visible.length,
+      answered: visible.length - unresolved.length,
+      unresolved: unresolved.length,
+      presented: Math.min(unresolved.length, 1),
+      remaining_after_presented: Math.max(unresolved.length - 1, 0),
+      recommended_maximum: 1,
+    },
+    questions: unresolved.slice(0, 1).map((question) => {
+      const {choices: internalChoices, owner_choices: ownerChoices, ...ownerQuestion} = question;
+      return {
+        ...ownerQuestion,
+        choices: ownerChoices ?? internalChoices ?? null,
+        discovered_facts: discovery.filter((fact) => fact.fact_id === question.id || fact.fact_id.startsWith(`${question.id}.`)),
+        coverage_output_ids: coverageForQuestion(coverage, question.id).map((row) => row.output_id),
+        coverage_reasons: coverageForQuestion(coverage, question.id).filter((row) => row.blocking).map((row) => row.reason),
+      };
+    }),
+    owner_questions: unresolved.slice(0, 1).map((question) => ({
+      prompt: question.prompt,
+      choices: question.owner_choices ?? null,
+      reply_guidance: question.owner_choices === undefined ? "Reply in your own words." : "Reply with one number.",
+      optional: question.required !== true,
+    })),
+    next: unresolved[0]?.id ?? null,
+    status: coverage.status,
+  };
+}
+
+export const planBootstrapInterview = planBootstrapQuestions;
+
+export function normalizeBootstrapChoiceReply(questionId, reply) {
+  const normalizedQuestionId = ANSWER_ALIASES[questionId] ?? questionId;
+  const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === normalizedQuestionId);
+  if (!question || question.type !== "ENUM") throw new Error(`choice reply requires a matching enum question: ${questionId}`);
+  const values = question.choices;
+  const labels = question.owner_choices ?? values;
+  const numericReply = typeof reply === "number" && Number.isSafeInteger(reply)
+    ? reply
+    : typeof reply === "string" && /^\d+$/u.test(reply.trim())
+      ? Number(reply.trim())
+      : null;
+  if (numericReply !== null) {
+    if (numericReply < 1 || numericReply > values.length) throw new Error(`choice number is outside the matching question choices: ${questionId}`);
+    return values[numericReply - 1];
+  }
+  if (typeof reply !== "string") throw new Error(`choice reply is not understood for the matching question: ${questionId}`);
+  const normalizedReply = reply.trim().toLocaleLowerCase();
+  const matches = [];
+  for (let index = 0; index < values.length; index += 1) {
+    if (values[index].toLocaleLowerCase() === normalizedReply || labels[index].toLocaleLowerCase() === normalizedReply) matches.push(values[index]);
+  }
+  if (matches.length !== 1) throw new Error(`choice reply is ambiguous or unknown for the matching question: ${questionId}`);
+  return matches[0];
+}
+
+export function normalizeBootstrapModelEconomicsReply(reply) {
+  if (isRecord(reply)) return structuredClone(reply);
+  const numericReply = typeof reply === "number" && Number.isSafeInteger(reply)
+    ? reply
+    : typeof reply === "string" && /^\d+$/u.test(reply.trim())
+      ? Number(reply.trim())
+      : null;
+  let choice = null;
+  if (numericReply !== null) {
+    if (numericReply < 1 || numericReply > MODEL_ECONOMICS_CHOICES.length) throw new Error("choice number is outside the matching question choices: project.model_economics");
+    choice = MODEL_ECONOMICS_CHOICES[numericReply - 1];
+  } else if (typeof reply === "string") {
+    const normalizedReply = reply.trim().toLocaleLowerCase();
+    choice = MODEL_ECONOMICS_CHOICES.find((candidate) => candidate.value.toLocaleLowerCase() === normalizedReply || candidate.label.toLocaleLowerCase() === normalizedReply) ?? null;
+  }
+  if (choice === null) throw new Error("choice reply is ambiguous or unknown for the matching question: project.model_economics");
+  return structuredClone(choice.answer);
+}
+
+export function normalizeBootstrapAuditIntervalReply(reply) {
+  let value = reply;
+  if (isRecord(reply)) {
+    const keys = Object.keys(reply);
+    const allowed = ["audit_interval_minutes", "interval_minutes", "minutes"];
+    assert(keys.length === 1 && allowed.includes(keys[0]), "audit interval answer fields are invalid");
+    value = reply[keys[0]];
+  }
+  if (typeof value === "string" && /^\d+$/u.test(value.trim())) value = Number(value.trim());
+  assert(Number.isSafeInteger(value)
+    && value >= 1
+    && value <= 1440,
+  "audit interval must be an integer from 1 to 1440 minutes");
+  return {audit_interval_minutes: value};
+}
+
+export function compileControllerSupervision({auditIntervalMinutes = DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES, policyStateSha256}) {
+  const normalized = normalizeBootstrapAuditIntervalReply(auditIntervalMinutes);
+  requireSha(policyStateSha256, "controller supervision policy state digest");
+  const supervision = {
+    schema: CONTROLLER_SUPERVISION_SCHEMA,
+    version: 1,
+    status: "PREPARED_NOT_ACTIVATED",
+    controller_role: "AGENTOS_CONTROLLER",
+    controller_display_name: "Intent Regulator",
+    scope: "PROJECT_PERSISTENT",
+    lifetime: "PERSISTENT",
+    storage_scope: "CONTROL_PLANE_PERSISTENT",
+    owner_configurable_audit_interval: true,
+    audit_interval_policy_variable: CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE,
+    default_audit_interval_minutes: DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES,
+    audit_interval_minutes: normalized.audit_interval_minutes,
+    meaningful_progress_window_minutes: MEANINGFUL_PROGRESS_WINDOW_MINUTES,
+    heartbeat_is_not_meaningful_progress: true,
+    automatic_continuation: true,
+    automatic_repair: true,
+    continuation_scope: "BOUND_SOURCE_SCOPE_AND_OWNER_APPROVED_INTENT",
+    stop_only_for: CONTROLLER_SUPERVISION_STOP_ONLY,
+    policy_state_sha256: policyStateSha256,
+    supervision_sha256: null,
+  };
+  supervision.supervision_sha256 = canonicalDigest({...supervision, supervision_sha256: null});
+  return validateControllerSupervision(supervision);
+}
+
+export function validateControllerSupervision(supervision) {
+  exactKeys(supervision, [
+    "schema", "version", "status", "controller_role", "controller_display_name", "scope", "lifetime", "storage_scope",
+    "owner_configurable_audit_interval", "audit_interval_policy_variable", "default_audit_interval_minutes", "audit_interval_minutes",
+    "meaningful_progress_window_minutes", "heartbeat_is_not_meaningful_progress", "automatic_continuation", "automatic_repair",
+    "continuation_scope", "stop_only_for", "policy_state_sha256", "supervision_sha256",
+  ], "Bootstrap controller supervision");
+  assert(supervision.schema === CONTROLLER_SUPERVISION_SCHEMA && supervision.version === 1, "Bootstrap controller supervision identity is invalid");
+  assert(supervision.status === "PREPARED_NOT_ACTIVATED", "Bootstrap controller supervision cannot activate AgentOS");
+  assert(supervision.controller_role === "AGENTOS_CONTROLLER", "Bootstrap controller supervision role is invalid");
+  assert(supervision.controller_display_name === "Intent Regulator", "Bootstrap controller supervision display name is invalid");
+  assert(supervision.scope === "PROJECT_PERSISTENT" && supervision.lifetime === "PERSISTENT", "Bootstrap controller supervision is not persistent");
+  assert(supervision.storage_scope === "CONTROL_PLANE_PERSISTENT", "Bootstrap controller supervision storage scope is invalid");
+  assert(supervision.owner_configurable_audit_interval === true, "Bootstrap audit interval is not owner-configurable");
+  assert(supervision.audit_interval_policy_variable === CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE, "Bootstrap audit interval policy variable is invalid");
+  const defaultInterval = normalizeBootstrapAuditIntervalReply(supervision.default_audit_interval_minutes).audit_interval_minutes;
+  assert(defaultInterval === DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES, "Bootstrap audit interval default is unsafe");
+  const auditInterval = normalizeBootstrapAuditIntervalReply(supervision.audit_interval_minutes).audit_interval_minutes;
+  assert(auditInterval === supervision.audit_interval_minutes, "Bootstrap audit interval is not normalized");
+  assert(supervision.meaningful_progress_window_minutes === MEANINGFUL_PROGRESS_WINDOW_MINUTES, "Bootstrap meaningful-progress window is invalid");
+  assert(supervision.heartbeat_is_not_meaningful_progress === true, "Bootstrap heartbeat must not count as meaningful progress");
+  assert(supervision.automatic_continuation === true && supervision.automatic_repair === true, "Bootstrap continuation and repair are not automatic");
+  assert(supervision.continuation_scope === "BOUND_SOURCE_SCOPE_AND_OWNER_APPROVED_INTENT", "Bootstrap continuation scope is invalid");
+  assert(JSON.stringify(supervision.stop_only_for) === JSON.stringify(CONTROLLER_SUPERVISION_STOP_ONLY), "Bootstrap stop boundaries are invalid");
+  requireSha(supervision.policy_state_sha256, "controller supervision policy state digest");
+  requireSha(supervision.supervision_sha256, "controller supervision digest");
+  assert(supervision.supervision_sha256 === canonicalDigest({...supervision, supervision_sha256: null}), "Bootstrap controller supervision is not content-addressed");
+  return supervision;
+}
+
+export function validateBootstrapAnswer(questionId, value, discovery = []) {
+  const normalizedQuestionId = ANSWER_ALIASES[questionId] ?? questionId;
+  const question = BOOTSTRAP_QUESTIONS.find((candidate) => candidate.id === normalizedQuestionId);
+  if (!question) throw new Error(`unknown Bootstrap question: ${questionId}`);
+  const normalizedValue = normalizedQuestionId === "project.audit_interval"
+    ? normalizeBootstrapAuditIntervalReply(value)
+    : normalizedQuestionId === "project.model_economics"
+    ? normalizeBootstrapModelEconomicsReply(value)
+    : question.type === "ENUM" ? normalizeBootstrapChoiceReply(normalizedQuestionId, value) : value;
+  validateAnswers(discovery, {[normalizedQuestionId]: normalizedValue});
+  return question;
+}
+
+export function compileBootstrapPlan({
+  discovery = [],
+  answers = {},
+  projectRoot = null,
+  controlPlaneRoot = null,
+  controlPlaneMode = null,
+  controlPlaneStorage = "LOCAL",
+  bootstrapOperatingMode = DEFAULT_BOOTSTRAP_OPERATING_MODE,
+} = {}) {
+  assert(projectRoot !== null, "Bootstrap plan requires an exact project root");
+  const resolvedProjectRoot = fs.realpathSync.native(path.resolve(projectRoot));
+  const controlPlane = resolveControlPlaneRoot({projectRoot: resolvedProjectRoot, controlPlaneRoot, controlPlaneMode, storageBackend: controlPlaneStorage});
+  const normalizedAnswers = validateAnswers(discovery, answers);
+  const questionPlan = planBootstrapQuestions({discovery, answers: normalizedAnswers});
+  assert(questionPlan.status === "READY_TO_COMPILE", "Bootstrap still has unresolved material questions");
+  const bootstrapCoverage = questionPlan.coverage;
+  const rawDeliveryAnswer = normalizedAnswers["project.delivery_policy"];
+  const finishAnswer = normalizedAnswers["project.delivery_finish"];
+  if (rawDeliveryAnswer?.finish !== undefined && rawDeliveryAnswer.finish !== finishAnswer) throw new Error("delivery finish answer differs between the owner choice and typed policy");
+  const deliveryPolicyAnswer = rawDeliveryAnswer === undefined
+    ? (finishAnswer === undefined ? undefined : {finish: finishAnswer})
+    : {...rawDeliveryAnswer, ...(finishAnswer === undefined ? {} : {finish: finishAnswer})};
+  const projectLifeContract = compileProjectLifeContract({
+    answer: normalizedAnswers["project.life_contract"],
+    discovery,
+    deliveryAnswer: deliveryPolicyAnswer,
+  });
+  const technicalBaseline = deriveTechnicalBaseline(discovery, normalizedAnswers["project.technical_baseline"]);
+  const deliveryPolicy = compileDeliveryPolicy({
+    discovery,
+    answer: deliveryPolicyAnswer,
+    projectLifeContract,
+  });
+  const boundaryContract = compileBoundaryContract({
+    ownerBoundaries: normalizedAnswers["project.protected_boundaries"],
+    projectLifeContract,
+    deliveryPolicy,
+    technicalBaseline,
+    discovery,
+  });
+  const bootstrapSafetyAnalysis = compileBootstrapSafetyAnalysis({
+    operatingMode: bootstrapOperatingMode,
+    authorityBoundaries: normalizedAnswers["project.protected_boundaries"],
+    deliveryPolicy,
+    projectLifeContract,
+  });
+  const authorityCorpus = deriveAuthorityCorpus(normalizedAnswers["authority-corpus.source"]);
+  const sourceIdentity = authorityCorpus.preservation === "NOT_REQUIRED"
+    ? null
+    : inspectLegacySource(authorityCorpus.source_root);
+  const authorityCorpusPlan = {...authorityCorpus, source_identity: sourceIdentity};
+  const importAnswer = normalizedAnswers["project.import"];
+  const importMode = importAnswer?.mode ?? null;
+  const standardsRegistry = compileStandardsRegistry({
+    overlays: importAnswer?.standards_overlays ?? [],
+    requiredStandardIds: importAnswer?.required_standard_ids ?? [],
+  });
+  const normalizationPolicy = compileNormalizationPolicy({
+    importMode,
+    projectGlossary: importAnswer?.project_glossary ?? [],
+    frameworkConventions: importAnswer?.framework_conventions ?? {},
+    protectedContracts: importAnswer?.protected_contracts ?? [],
+    additionalRules: importAnswer?.additional_normalization_rules ?? {},
+  });
+  const projectImport = importAnswer
+    ? compileProjectImportPlan({
+      projectId: projectImportIdentifier(normalizedAnswers["project.boundary"]?.project_name),
+      mode: importMode,
+      sourceRoot: importAnswer.source_root,
+      destinationRoot: importAnswer.destination_root ?? null,
+      discoveryFacts: discovery,
+      standardsRegistry,
+      normalizationPolicy,
+      sourcePreservationRoot: importAnswer.source_preservation_root ?? path.join(controlPlane.control_plane_root, ".agentos", "import"),
+      preservationBoundaryRoot: controlPlane.control_plane_root,
+      preservationStorageMode: controlPlane.binding.mode === "IN_PROJECT_OPT_IN" ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE",
+    })
+    : null;
+  const context = {
+    project_name: normalizedAnswers["project.boundary"]?.project_name ?? "UNNAMED_PROJECT_CONTEXT",
+    project_boundary: normalizedAnswers["project.boundary"],
+    north_star: normalizedAnswers["project.north_star"],
+    first_workflow: normalizedAnswers["project.first_workflow"],
+    protected_boundaries: normalizedAnswers["project.protected_boundaries"],
+    discovery_digest_sha256: canonicalDigest(discovery),
+  };
+  const modelEconomics = normalizedAnswers["project.model_economics"] ?? {};
+  const auditIntervalMinutes = normalizedAnswers["project.audit_interval"]?.audit_interval_minutes
+    ?? DEFAULT_CONTROLLER_AUDIT_INTERVAL_MINUTES;
+  const modelClass = modelEconomics.profile === "ECO_CONTINUOUS" || modelEconomics.profile === "ECO" || modelEconomics.profile === "ECONOMICAL"
+    ? "ECONOMICAL"
+    : modelEconomics.profile === "PERFORMANCE" ? "PERFORMANCE" : "BALANCED";
+  const globalPolicyState = compileGlobalPolicyState({
+    projectId: context.project_name,
+    values: {
+      "PROJECT.NORTH_STAR": JSON.stringify(normalizedAnswers["project.north_star"]),
+      "PROJECT.FIRST_USEFUL_WORKFLOW": JSON.stringify(normalizedAnswers["project.first_workflow"]),
+      "MODEL.PROFILE": modelClass,
+      [CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE]: auditIntervalMinutes,
+    },
+    nowUtc: "1970-01-01T00:00:00.000Z",
+    timeBasis: "DETERMINISTIC_SYNTHETIC_EPOCH",
+  });
+  const ownerReviewPolicy = {
+    schema: "agentos.owner_review_policy.v1",
+    policy_epoch: globalPolicyState.policy_epoch,
+    policy_state_sha256: policyStateDigest(globalPolicyState),
+    user_review_mode: getPolicyValue(globalPolicyState, "REVIEW.USER_REVIEW_MODE"),
+    transport: getPolicyValue(globalPolicyState, "REVIEW.TRANSPORT"),
+    memory_posture: getPolicyValue(globalPolicyState, "REVIEW.MEMORY_POSTURE"),
+    voice_recommended: getPolicyValue(globalPolicyState, "REVIEW.VOICE_RECOMMENDED"),
+    model_selection: getPolicyValue(globalPolicyState, "REVIEW.MODEL_SELECTION"),
+    approval_route: getPolicyValue(globalPolicyState, "REVIEW.APPROVAL_ROUTE"),
+  };
+  const controllerSupervision = compileControllerSupervision({
+    auditIntervalMinutes: getPolicyValue(globalPolicyState, CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE),
+    policyStateSha256: globalPolicyState.policy_state_sha256,
+  });
+  const governanceArchitecture = compileGovernanceArchitecturePlan();
+  const output = {
+    schema: "agentos.bootstrap_creation_plan.v1",
+    governance_version: "2.1rc",
+    status: bootstrapSafetyAnalysis.operating_mode === "JSA" ? JSA_PLAN_STATUS : "AWAITING_EXACT_OWNER_APPROVAL",
+    bootstrap_operating_mode: bootstrapSafetyAnalysis.operating_mode,
+    project_root: resolvedProjectRoot,
+    control_plane_root: controlPlane.control_plane_root,
+    control_plane: controlPlane.binding,
+    discovery_mode: normalizedAnswers["bootstrap.discovery.mode"],
+    discovery_digest_sha256: canonicalDigest(discovery),
+    answers_sha256: canonicalDigest(normalizedAnswers),
+    required_output_groups: BOOTSTRAP_REQUIRED_OUTPUT_GROUPS,
+    bootstrap_coverage: bootstrapCoverage,
+    project_definition: context,
+    north_star: normalizedAnswers["project.north_star"],
+    first_useful_workflow: normalizedAnswers["project.first_workflow"],
+    project_life_contract: projectLifeContract,
+    function_requirements: deriveFunctionRequirements(normalizedAnswers),
+    technical_baseline: technicalBaseline,
+    delivery_policy: deliveryPolicy,
+    delivery_target: deliveryPolicy.delivery_target,
+    boundary_contract: boundaryContract,
+    bootstrap_safety_analysis: bootstrapSafetyAnalysis,
+    design_bible: deriveDesignBible(discovery, normalizedAnswers["project.design"]),
+    security_baseline: deriveSecurityBaseline(discovery, normalizedAnswers["security.baseline"]),
+    authority_boundaries: normalizedAnswers["project.protected_boundaries"],
+    authority_corpus: authorityCorpusPlan,
+    standards_registry: standardsRegistry,
+    normalization_policy: normalizationPolicy,
+    project_import: projectImport,
+    model_policy: deriveModelPolicy(normalizedAnswers["project.model_economics"]),
+    global_policy_state: globalPolicyState,
+    owner_review_policy: ownerReviewPolicy,
+    controller_supervision: controllerSupervision,
+    persistent_runtime: deriveRuntime(normalizedAnswers["project.runtime"]),
+    first_campaign: deriveFirstCampaign(discovery, normalizedAnswers),
+    governance_architecture: governanceArchitecture,
+    exact_creation_plan: {
+      repositories: normalizedAnswers["project.boundary"]?.repositories ?? [],
+      branches: normalizedAnswers["project.boundary"]?.branches ?? [],
+      files_and_roots: [controlPlane.control_plane_root, ...Object.values(authorityCorpusPlan.roots)],
+      delivery_bindings: {
+        runner_provider_id: null,
+        deployment_provider_id: null,
+        environment_ids: [],
+        target_family: null,
+        target_adapter_id: null,
+        target_mode: null,
+        finish: null,
+      },
+      campaign_design_sha256: null,
+      delivery_policy_sha256: null,
+      delivery_target_sha256: null,
+      delivery_probe_plan_sha256: null,
+      bootstrap_coverage_sha256: null,
+      standards_registry_sha256: standardsRegistry.registry_sha256,
+      normalization_sha256: normalizationPolicy.normalization_sha256,
+      project_import_sha256: projectImport?.plan_sha256 ?? null,
+      source_preservation_sha256: projectImport?.source_identity?.source_content_sha256 ?? null,
+      project_life_contract_sha256: projectLifeContract.life_contract_sha256,
+      boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
+      global_policy_state_sha256: globalPolicyState.policy_state_sha256,
+      owner_review_policy_sha256: canonicalDigest(ownerReviewPolicy),
+      controller_supervision_sha256: controllerSupervision.supervision_sha256,
+      bootstrap_safety_analysis_sha256: bootstrapSafetyAnalysis.safety_sha256,
+      governance_architecture_plan_sha256: governanceArchitecture.digest,
+      expected_writes: ["control-plane/bootstrap.plan.json", "control-plane authority corpus roots", "control-plane typed project context", "control-plane delivery policy and probe bindings", "control-plane Bootstrap receipts", "control-plane source-preservation artifacts when PROJECT_IMPORT applies"],
+      side_effects: ["CREATE_OR_UPDATE_CONTROL_PLANE_CONTEXT", "CREATE_AUTHORITY_CORPUS_OUTSIDE_PROJECT_ROOT_BY_DEFAULT", "CREATE_DESIGN_AUTHORITY_IN_CONTROL_PLANE", "BIND_TYPED_DELIVERY_POLICY_WITHOUT_EXTERNAL_SIDE_EFFECTS", "BIND_RUNTIME", "SEAL_BOOTSTRAP_STATE"],
+      prohibited_actions: ["SECRETS", "REMOTE_AUTHENTICATION", "PUSH", "MERGE", "UNAPPROVED_SPENDING", "PUBLICATION", "PREVIEW_CREATION", "DEPLOYMENT", "ROLLBACK", "DESTRUCTIVE_OVERWRITE", "PRODUCT_CUSTODY"],
+      rollback: "PRESERVE_STAGING_AND_LEGACY_RECEIPTS; PROMOTE_ONLY_AFTER_READBACK",
+      deferred_context: ["NON_ROUTE_CHANGING_PREFERENCES"],
+      legacy_gate: authorityCorpusPlan.preservation,
+      estimated_cost: normalizedAnswers["project.first_campaign"]?.estimated_cost ?? normalizedAnswers["project.model_economics"]?.max_expected_cost ?? null,
+      runtime_action: "VERIFY_OR_BIND_PERSISTENT_RUNTIME_WITHOUT_DEPLOYMENT",
+      legacy_archive_identity: authorityCorpusPlan.preservation === "NOT_REQUIRED" ? null : "SEALED_BEFORE_REPLACEMENT_WRITES",
+    },
+    question_slice: ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
+    extension_boundary: "PROJECT_CONTEXT_MAY_SPECIALIZE_STRICTER_RULES_ONLY",
+    plan_sha256: "",
+  };
+  output.delivery_probe_plan = createDeliveryProbePlan({policy: output.delivery_policy, discovery});
+  output.exact_creation_plan.deferred_context = ["NON_ROUTE_CHANGING_PREFERENCES", ...output.delivery_policy.unresolved];
+  output.exact_creation_plan.delivery_bindings = {
+    runner_provider_id: output.delivery_policy.ci_runner.provider_id,
+    deployment_provider_id: output.delivery_policy.deployment.provider_id,
+    environment_ids: output.delivery_policy.deployment.environment_ids,
+    target_family: output.delivery_target.family,
+    target_adapter_id: output.delivery_target.adapter_id,
+    target_mode: output.delivery_target.mode,
+    finish: output.delivery_policy.finish.selected,
+  };
+  output.first_campaign = {
+    ...output.first_campaign,
+    delivery_finish: output.delivery_policy.finish.selected,
+    design_bible_sha256: canonicalDigest(output.design_bible),
+  };
+  output.development_plan = compileDevelopmentPlan({
+    mode: normalizedAnswers["project.development_mode"] ?? DEFAULT_DEVELOPMENT_MODE,
+    northStar: output.north_star,
+    firstWorkflow: output.first_useful_workflow,
+    protectedBoundaries: output.authority_boundaries,
+    firstCampaign: output.first_campaign,
+  });
+  output.exact_creation_plan.campaign_design_sha256 = canonicalDigest({
+    design_bible: output.design_bible,
+    first_campaign: output.first_campaign,
+  });
+  output.exact_creation_plan.delivery_policy_sha256 = output.delivery_policy.policy_sha256;
+  output.exact_creation_plan.delivery_target_sha256 = output.delivery_target.target_sha256;
+  output.exact_creation_plan.delivery_probe_plan_sha256 = output.delivery_probe_plan.probe_plan_sha256;
+  output.exact_creation_plan.bootstrap_coverage_sha256 = output.bootstrap_coverage.coverage_sha256;
+  const planBody = structuredClone(output);
+  delete planBody.plan_sha256;
+  output.plan_sha256 = canonicalDigest(planBody);
+  validateBootstrapPlan(output);
+  return output;
+}
+
+export function validateBootstrapPlan(plan) {
+  requireRecord(plan, "Bootstrap plan");
+  assert(plan.schema === "agentos.bootstrap_creation_plan.v1" && plan.governance_version === "2.1rc", "Bootstrap plan identity is invalid");
+  assert([JSA_PLAN_STATUS, "AWAITING_EXACT_OWNER_APPROVAL", "APPROVED_EXACT_DIGEST"].includes(plan.status), "Bootstrap plan status is invalid");
+  requireSha(plan.discovery_digest_sha256, "Bootstrap discovery digest");
+  requireSha(plan.answers_sha256, "Bootstrap answers digest");
+  requireString(plan.project_root, "Bootstrap project root");
+  requireString(plan.control_plane_root, "Bootstrap control-plane root");
+  assert(BOOTSTRAP_OPERATING_MODES.includes(plan.bootstrap_operating_mode), "Bootstrap operating mode is invalid");
+  requireRecord(plan.bootstrap_safety_analysis, "Bootstrap safety analysis");
+  validateBootstrapSafetyAnalysis(plan.bootstrap_safety_analysis);
+  assert(plan.bootstrap_safety_analysis.operating_mode === plan.bootstrap_operating_mode, "Bootstrap operating mode and safety analysis differ");
+  assert(canonicalDigest({
+    authority_boundaries: plan.authority_boundaries,
+    delivery_policy: plan.delivery_policy,
+    project_life_contract: plan.project_life_contract,
+  }) === plan.bootstrap_safety_analysis.scope_inputs_sha256, "Bootstrap safety analysis is not bound to scope inputs");
+  if (plan.bootstrap_operating_mode === "JSA") assert([JSA_PLAN_STATUS, "APPROVED_EXACT_DIGEST"].includes(plan.status), "JSA Bootstrap plan has the wrong status");
+  if (plan.bootstrap_operating_mode === "EXACT_PLAN_APPROVAL") assert(["AWAITING_EXACT_OWNER_APPROVAL", "APPROVED_EXACT_DIGEST"].includes(plan.status), "exact-approval Bootstrap plan has the wrong status");
+  validateControlPlaneBinding(plan.control_plane, {projectRoot: plan.project_root, controlPlaneRoot: plan.control_plane_root});
+  assert(plan.control_plane.control_plane_root === plan.control_plane_root, "Bootstrap control-plane binding and root differ");
+  assert(DISCOVERY_MODES.includes(plan.discovery_mode), "Bootstrap discovery mode is missing from the exact plan");
+  assert(Array.isArray(plan.required_output_groups)
+    && JSON.stringify(plan.required_output_groups) === JSON.stringify(BOOTSTRAP_REQUIRED_OUTPUT_GROUPS), "Bootstrap required output groups are invalid");
+  requireRecord(plan.bootstrap_coverage, "Bootstrap coverage");
+  validateBootstrapCoverage(plan.bootstrap_coverage);
+  assert(plan.bootstrap_coverage.status === "READY_TO_COMPILE"
+    && plan.bootstrap_coverage.discovery_digest_sha256 === plan.discovery_digest_sha256
+    && plan.bootstrap_coverage.answers_sha256 === plan.answers_sha256,
+  "Bootstrap coverage is not bound to the exact plan inputs");
+  assert(Array.isArray(plan.question_slice) && JSON.stringify(plan.question_slice) === JSON.stringify(["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"]), "Bootstrap question slice is not the exact three-root slice");
+  requireRecord(plan.exact_creation_plan, "exact creation plan");
+  requireRecord(plan.project_life_contract, "project life contract");
+  validateProjectLifeContract(plan.project_life_contract);
+  requireRecord(plan.delivery_policy, "delivery policy");
+  validateDeliveryPolicy(plan.delivery_policy);
+  requireRecord(plan.delivery_target, "delivery target");
+  validateDeliveryTarget(plan.delivery_target);
+  validateDeliveryTargetAgainstLife(plan.delivery_target, plan.project_life_contract);
+  assert(plan.delivery_policy.delivery_target.target_sha256 === plan.delivery_target.target_sha256, "delivery policy and plan delivery target differ");
+  requireRecord(plan.boundary_contract, "boundary contract");
+  validateBoundaryContract(plan.boundary_contract);
+  requireRecord(plan.global_policy_state, "global policy state");
+  validatePolicyState(plan.global_policy_state);
+  assert(plan.global_policy_state.policy_state_sha256 === plan.exact_creation_plan.global_policy_state_sha256, "Bootstrap global policy digest is not bound to the exact plan");
+  requireRecord(plan.owner_review_policy, "owner review policy");
+  assert(plan.owner_review_policy.policy_state_sha256 === plan.global_policy_state.policy_state_sha256, "Bootstrap owner review policy is not bound to global policy state");
+  assert(canonicalDigest(plan.owner_review_policy) === plan.exact_creation_plan.owner_review_policy_sha256, "Bootstrap owner review policy digest is not bound to the exact plan");
+  requireRecord(plan.controller_supervision, "controller supervision");
+  validateControllerSupervision(plan.controller_supervision);
+  assert(plan.controller_supervision.policy_state_sha256 === plan.global_policy_state.policy_state_sha256, "Bootstrap controller supervision is not bound to global policy state");
+  assert(plan.controller_supervision.audit_interval_minutes === getPolicyValue(plan.global_policy_state, CONTROLLER_AUDIT_INTERVAL_POLICY_VARIABLE), "Bootstrap audit interval is not bound to global policy state");
+  assert(plan.exact_creation_plan.controller_supervision_sha256 === plan.controller_supervision.supervision_sha256, "exact creation plan is not bound to controller supervision");
+  requireRecord(plan.delivery_probe_plan, "delivery probe plan");
+  validateDeliveryProbePlan(plan.delivery_probe_plan);
+  assert(plan.delivery_probe_plan.policy_sha256 === plan.delivery_policy.policy_sha256, "delivery probe plan is not bound to delivery policy");
+  assert(plan.delivery_probe_plan.discovery_digest_sha256 === plan.discovery_digest_sha256, "delivery probe plan is not bound to Bootstrap discovery");
+  assert(plan.first_campaign.delivery_finish === plan.delivery_policy.finish.selected, "campaign design delivery finish differs from delivery policy");
+  assert(plan.first_campaign.design_bible_sha256 === canonicalDigest(plan.design_bible), "campaign design is not bound to the Design Bible");
+  assert(plan.exact_creation_plan.campaign_design_sha256 === canonicalDigest({
+    design_bible: plan.design_bible,
+    first_campaign: plan.first_campaign,
+  }), "campaign design is not bound to the exact Bootstrap plan");
+  requireRecord(plan.development_plan, "development plan");
+  validateDevelopmentPlan(plan.development_plan, {
+    northStar: plan.north_star,
+    firstWorkflow: plan.first_useful_workflow,
+    protectedBoundaries: plan.authority_boundaries,
+    firstCampaign: plan.first_campaign,
+  });
+  assert(plan.exact_creation_plan.delivery_bindings?.runner_provider_id === plan.delivery_policy.ci_runner.provider_id
+    && plan.exact_creation_plan.delivery_bindings?.deployment_provider_id === plan.delivery_policy.deployment.provider_id
+    && JSON.stringify(plan.exact_creation_plan.delivery_bindings?.environment_ids) === JSON.stringify(plan.delivery_policy.deployment.environment_ids)
+    && plan.exact_creation_plan.delivery_bindings?.target_family === plan.delivery_target.family
+    && plan.exact_creation_plan.delivery_bindings?.target_adapter_id === plan.delivery_target.adapter_id
+    && plan.exact_creation_plan.delivery_bindings?.target_mode === plan.delivery_target.mode
+    && plan.exact_creation_plan.delivery_bindings?.finish === plan.delivery_policy.finish.selected,
+  "exact creation plan delivery bindings do not match delivery policy");
+  assert(plan.delivery_policy.finish.selected !== null, "Bootstrap exact plan has no owner-selected delivery finish");
+  assert(plan.exact_creation_plan.delivery_policy_sha256 === plan.delivery_policy.policy_sha256, "exact creation plan is not bound to delivery policy");
+  assert(plan.exact_creation_plan.delivery_target_sha256 === plan.delivery_target.target_sha256, "exact creation plan is not bound to delivery target");
+  assert(plan.exact_creation_plan.project_life_contract_sha256 === plan.project_life_contract.life_contract_sha256, "exact creation plan is not bound to project life contract");
+  assert(plan.exact_creation_plan.boundary_contract_sha256 === plan.boundary_contract.boundary_contract_sha256, "exact creation plan is not bound to boundary contract");
+  assert(plan.exact_creation_plan.bootstrap_safety_analysis_sha256 === plan.bootstrap_safety_analysis.safety_sha256, "exact creation plan is not bound to Bootstrap safety analysis");
+  assert(plan.exact_creation_plan.delivery_probe_plan_sha256 === plan.delivery_probe_plan.probe_plan_sha256, "exact creation plan is not bound to delivery probes");
+  assert(plan.exact_creation_plan.bootstrap_coverage_sha256 === plan.bootstrap_coverage.coverage_sha256, "exact creation plan is not bound to Bootstrap coverage");
+  requireRecord(plan.authority_corpus, "authority corpus plan");
+  requireRecord(plan.standards_registry, "standards registry");
+  validateStandardsRegistry(plan.standards_registry);
+  requireRecord(plan.normalization_policy, "normalization policy");
+  validateNormalizationPolicy(plan.normalization_policy);
+  if (plan.project_import === null) {
+    assert(plan.normalization_policy.import_mode === null, "normalization policy carries an import mode without a project import plan");
+    assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null, "exact plan carries an unbound project import identity");
+  } else {
+    requireRecord(plan.project_import, "project import plan");
+    validateProjectImportPlan(plan.project_import);
+    assert(plan.project_import.standards_registry_sha256 === plan.standards_registry.registry_sha256, "project import is not bound to the standards registry");
+    assert(plan.project_import.normalization_sha256 === plan.normalization_policy.normalization_sha256, "project import is not bound to the normalization policy");
+    assert(plan.exact_creation_plan.project_import_sha256 === plan.project_import.plan_sha256, "exact creation plan is not bound to project import");
+    assert(plan.exact_creation_plan.source_preservation_sha256 === plan.project_import.source_identity.source_content_sha256, "exact creation plan is not bound to source preservation identity");
+  }
+  assert(plan.exact_creation_plan.standards_registry_sha256 === plan.standards_registry.registry_sha256, "exact creation plan is not bound to standards registry");
+  assert(plan.exact_creation_plan.normalization_sha256 === plan.normalization_policy.normalization_sha256, "exact creation plan is not bound to normalization policy");
+  requireRecord(plan.model_policy, "model policy");
+  requireRecord(plan.persistent_runtime, "Runtime plan");
+  requireRecord(plan.governance_architecture, "governance architecture plan");
+  validateGovernanceArchitecturePlan(plan.governance_architecture);
+  assert(plan.exact_creation_plan.governance_architecture_plan_sha256 === plan.governance_architecture.digest, "exact creation plan is not bound to governance architecture");
+  const body = structuredClone(plan);
+  delete body.plan_sha256;
+  assert(plan.plan_sha256 === canonicalDigest(body), "Bootstrap plan digest is not content-addressed");
+  return plan;
+}
+
+export function approveBootstrapPlan(plan, {decision, planSha256, discoveryDigestSha256, actor, approvedAtUtc}) {
+  validateBootstrapPlan(plan);
+  assert(plan.status === "AWAITING_EXACT_OWNER_APPROVAL" || isJsaPlan(plan), "Bootstrap plan is not awaiting approval");
+  assert(decision === PLAN_APPROVAL, "Bootstrap requires approval of the exact displayed plan");
+  assert(planSha256 === plan.plan_sha256, "owner approval digest does not match the displayed plan");
+  assert(discoveryDigestSha256 === plan.discovery_digest_sha256, "owner approval discovery is stale");
+  requireId(actor, "approval actor");
+  requireUtc(approvedAtUtc, "approval time");
+  const receiptBody = {
+    schema: "agentos.bootstrap_approval_receipt.v1",
+    decision,
+    plan_sha256: planSha256,
+    approval_subject_sha256: canonicalDigest(bootstrapApprovalSubject(plan)),
+    discovery_digest_sha256: discoveryDigestSha256,
+    actor,
+    approved_at_utc: approvedAtUtc,
+  };
+  const receipt = {...receiptBody, receipt_sha256: canonicalDigest(receiptBody)};
+  const approvedPlan = {...structuredClone(plan), status: "APPROVED_EXACT_DIGEST", approval_receipt: receipt};
+  delete approvedPlan.plan_sha256;
+  approvedPlan.plan_sha256 = canonicalDigest(approvedPlan);
+  validateApprovedPlan(approvedPlan);
+  return approvedPlan;
+}
+
+function bootstrapApprovalSubject(plan) {
+  const body = structuredClone(plan);
+  delete body.plan_sha256;
+  delete body.approval_receipt;
+  body.status = plan.bootstrap_operating_mode === "JSA" ? JSA_PLAN_STATUS : "AWAITING_EXACT_OWNER_APPROVAL";
+  return body;
+}
+
+export function validateApprovedPlan(plan) {
+  validateBootstrapPlan(plan);
+  assert(plan.status === "APPROVED_EXACT_DIGEST" && isRecord(plan.approval_receipt), "approved plan lacks approval receipt");
+  const receipt = plan.approval_receipt;
+  exactKeys(receipt, [
+    "schema", "decision", "plan_sha256", "approval_subject_sha256", "discovery_digest_sha256", "actor", "approved_at_utc", "receipt_sha256",
+  ], "Bootstrap approval receipt");
+  assert(receipt.schema === "agentos.bootstrap_approval_receipt.v1", "Bootstrap approval receipt schema mismatch");
+  assert(receipt.decision === PLAN_APPROVAL, "Bootstrap approval receipt decision is invalid");
+  requireSha(receipt.plan_sha256, "approval receipt plan digest");
+  requireSha(receipt.approval_subject_sha256, "approval receipt approval subject digest");
+  requireSha(receipt.discovery_digest_sha256, "approval receipt discovery digest");
+  requireId(receipt.actor, "approval receipt actor");
+  requireUtc(receipt.approved_at_utc, "approval receipt time");
+  requireSha(receipt.receipt_sha256, "approval receipt digest");
+  assert(receipt.plan_sha256 !== plan.plan_sha256, "approval receipt must bind the pre-approval plan digest");
+  assert(receipt.plan_sha256 === receipt.approval_subject_sha256, "approval receipt plan digest is not the exact approval subject");
+  assert(receipt.approval_subject_sha256 === canonicalDigest(bootstrapApprovalSubject(plan)), "approved Bootstrap plan changed after owner approval");
+  const body = structuredClone(receipt);
+  delete body.receipt_sha256;
+  assert(receipt.receipt_sha256 === canonicalDigest(body), "approval receipt is not content-addressed");
+}
+
+export function validateBootstrapRunnablePlan(plan) {
+  validateBootstrapPlan(plan);
+  if (isJsaPlan(plan)) {
+    validateBootstrapActionScope(plan.bootstrap_safety_analysis.in_scope_actions, plan.bootstrap_safety_analysis);
+    return plan;
+  }
+  assert(isExactApprovalPlan(plan), "Bootstrap execution requires JSA scope binding or exact owner approval");
+  validateApprovedPlan(plan);
+  return plan;
+}
+
+function contextFromPlan(plan) {
+  const roots = plan.authority_corpus.roots;
+  const globalPolicyStatePath = `${roots.project_context_root}/global-policy-state.json`;
+  const ownerReviewPolicyPath = `${roots.project_context_root}/owner-review-policy.json`;
+  const projectContextBody = {
+    schema: "agentos.project_context_binding.v1",
+    version: 1,
+    governance_version: "2.1rc",
+    status: "PREPARED_NOT_ACTIVATED",
+    source_plan_sha256: plan.plan_sha256,
+    bootstrap_operating_mode: plan.bootstrap_operating_mode,
+    bootstrap_safety_analysis: plan.bootstrap_safety_analysis,
+    control_plane_root: plan.control_plane_root,
+    control_plane: plan.control_plane,
+    agentos_home: plan.control_plane.home_policy,
+    project_definition: plan.project_definition,
+    north_star: plan.north_star,
+    first_useful_workflow: plan.first_useful_workflow,
+    project_life_contract: plan.project_life_contract,
+    function_requirements: plan.function_requirements,
+    bootstrap_coverage: plan.bootstrap_coverage,
+    technical_baseline: plan.technical_baseline,
+    delivery_policy: plan.delivery_policy,
+    delivery_target: plan.delivery_target,
+    boundary_contract: plan.boundary_contract,
+    delivery_probe_plan: plan.delivery_probe_plan,
+    design_bible: plan.design_bible,
+    security_baseline: plan.security_baseline,
+    authority_boundaries: plan.authority_boundaries,
+    authority_corpus: plan.authority_corpus,
+    standards_registry: plan.standards_registry,
+    normalization_policy: plan.normalization_policy,
+    project_import: plan.project_import,
+    model_policy: plan.model_policy,
+    global_policy_state: plan.global_policy_state,
+    owner_review_policy: plan.owner_review_policy,
+    global_policy_state_path: globalPolicyStatePath,
+    owner_review_policy_path: ownerReviewPolicyPath,
+    controller_supervision: plan.controller_supervision,
+    persistent_runtime: plan.persistent_runtime,
+    development_plan: plan.development_plan,
+    agentos_controller_state_path: "agentos/controller-state.json",
+    agentos_controller: {
+      name: "AGENTOS_CONTROLLER",
+      scope: "PROJECT_PERSISTENT",
+      storage_scope: "CONTROL_PLANE_PERSISTENT",
+      state_schema: "agentos.controller_state.v1",
+      supervision_sha256: plan.controller_supervision.supervision_sha256,
+      initialization: "REQUIRES_PROJECT_BOUND_CONTROLLER_RUNTIME_READBACK",
+    },
+    first_campaign: plan.first_campaign,
+    exact_creation_plan: plan.exact_creation_plan,
+    question_slice: plan.question_slice,
+    extension_boundary: plan.extension_boundary,
+  };
+  const projectContext = {
+    ...projectContextBody,
+    exact_context_digest: canonicalDigest(projectContextBody),
+  };
+  const portableTemplateInstance = {
+    project_identity: {
+      context_version: 1,
+      project_name: plan.project_definition.project_name,
+      exact_context_digest: null,
+    },
+    authority_corpus_roots: roots,
+    authority_corpus_entities: {feature_ids: [], capability_ids: [], campaign_ids: [], release_ids: []},
+    bootstrap_coverage_sha256: plan.bootstrap_coverage.coverage_sha256,
+    standards_registry_sha256: plan.standards_registry.registry_sha256,
+    normalization_sha256: plan.normalization_policy.normalization_sha256,
+    global_policy_state_sha256: plan.global_policy_state.policy_state_sha256,
+    owner_review_policy_sha256: canonicalDigest(plan.owner_review_policy),
+    controller_supervision_sha256: plan.controller_supervision.supervision_sha256,
+    bootstrap_safety_analysis_sha256: plan.bootstrap_safety_analysis.safety_sha256,
+    project_import_sha256: plan.project_import?.plan_sha256 ?? null,
+    bootstrap_output_groups: [
+      "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "DEVELOPMENT_PLAN", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
+      "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
+      "AUTHORITY_CORPUS", "MODEL_POLICY", "GLOBAL_POLICY_STATE", "CONTROLLER_SUPERVISION", "BOOTSTRAP_SAFETY_ANALYSIS", "OWNER_REVIEW", "PERSISTENT_RUNTIME", "FIRST_CAMPAIGN",
+      "EXACT_CREATION_PLAN",
+    ],
+    project_life_contract_sha256: plan.project_life_contract.life_contract_sha256,
+    delivery_target_sha256: plan.delivery_target.target_sha256,
+    boundary_contract_sha256: plan.boundary_contract.boundary_contract_sha256,
+  };
+  const portableTemplateBody = structuredClone(portableTemplateInstance);
+  delete portableTemplateBody.project_identity.exact_context_digest;
+  portableTemplateInstance.project_identity.exact_context_digest = canonicalDigest(portableTemplateBody);
+  return {
+    schema: "governance.project_context_fixture.v1",
+    project_name: plan.project_definition.project_name,
+    kernel: {override_allowed: false},
+    authority_corpus_activation: "ACTIVATED",
+    authority_corpus_roots: roots,
+    control_plane_root: plan.control_plane_root,
+    authority_corpus_entities: {feature_ids: [], capability_ids: [], campaign_ids: [], release_ids: []},
+    project_context_root: roots.project_context_root,
+    project_context: projectContext,
+    portable_template_instance: portableTemplateInstance,
+  };
+}
+
+export function projectContextFromBootstrapPlan(plan) {
+  validateBootstrapPlan(plan);
+  return contextFromPlan(plan);
+}
+
+export function compileBootstrapOwnerReviewHandoff({
+  plan,
+  reviewId,
+  createdAtUtc,
+  expiresAtUtc,
+  sourceBinding,
+  currentProject,
+  reviewScope,
+  questionIdsByRoot,
+  candidateCampaign,
+  modelCandidates,
+  reviewTransport,
+  transportBinding,
+  memoryPosture,
+  voiceRecommended,
+}) {
+  validateBootstrapRunnablePlan(plan);
+  assert(plan.owner_review_policy.user_review_mode !== "OFF", "Bootstrap owner review is disabled by the current policy");
+  requireRecord(sourceBinding, "Bootstrap owner review source binding");
+  const context = contextFromPlan(plan).project_context;
+  assert(sourceBinding.policy_epoch === plan.global_policy_state.policy_epoch
+    && sourceBinding.policy_state_sha256 === plan.global_policy_state.policy_state_sha256,
+  "Bootstrap owner review source binding policy is stale");
+  assert(sourceBinding.project_context_sha256 === context.exact_context_digest, "Bootstrap owner review source binding context differs from the exact Bootstrap context");
+  const packet = compileOwnerReviewPacket({
+    reviewId,
+    projectId: plan.project_definition.project_name,
+    createdAtUtc,
+    expiresAtUtc,
+    sourceBinding,
+    policyState: plan.global_policy_state,
+    questionIdsByRoot,
+    currentProject,
+    reviewScope,
+    candidateCampaign,
+    modelCandidates,
+    transport: reviewTransport,
+    transportBinding,
+    memoryPosture,
+    voiceRecommended,
+  });
+  validateOwnerReviewPacket(packet);
+  return {packet, markdown: renderOwnerReviewMarkdown(packet)};
+}
+
+function assertContained(root, candidate, label) {
+  const resolvedRoot = fs.realpathSync.native(path.resolve(root));
+  const resolved = path.resolve(resolvedRoot, candidate);
+  assert(resolved === resolvedRoot || resolved.startsWith(`${resolvedRoot}${path.sep}`), `${label} escapes project root`);
+  return resolved;
+}
+
+function revalidateControlPlane(plan, projectRoot, controlPlaneRoot = null) {
+  const resolved = resolveControlPlaneRoot({
+    projectRoot,
+    controlPlaneRoot: controlPlaneRoot ?? plan.control_plane_root,
+    controlPlaneMode: plan.control_plane.mode,
+    storageBackend: plan.control_plane.storage_backend,
+  });
+  assert(resolved.binding.binding_sha256 === plan.control_plane.binding_sha256, "Bootstrap control-plane binding changed after exact-plan approval");
+  assert(resolved.control_plane_root === plan.control_plane_root, "Bootstrap control-plane root changed after exact-plan approval");
+  return resolved.control_plane_root;
+}
+
+function writeCanonicalFile(target, bytes) {
+  const directory = path.dirname(target);
+  fs.mkdirSync(directory, {recursive: true});
+  const temp = path.join(directory, `.${path.basename(target)}.agentos-stage`);
+  fs.writeFileSync(temp, bytes, {flag: "w", mode: 0o644});
+  fs.renameSync(temp, target);
+}
+
+function directoryDigest(root) {
+  const realRoot = fs.realpathSync.native(path.resolve(root));
+  const entries = [];
+  function visit(current, relative = "") {
+    for (const entry of fs.readdirSync(current, {withFileTypes: true}).sort((left, right) => compareUtf8(left.name, right.name))) {
+      const child = path.join(current, entry.name);
+      const childRelative = relative ? `${relative}/${entry.name}` : entry.name;
+      const stat = fs.lstatSync(child);
+      assert(!stat.isSymbolicLink(), `promotion tree contains a symbolic link: ${childRelative}`);
+      if (stat.isDirectory()) visit(child, childRelative);
+      else {
+        assert(stat.isFile(), `promotion tree contains an unsafe object: ${childRelative}`);
+        entries.push({path: childRelative, sha256: crypto.createHash("sha256").update(fs.readFileSync(child)).digest("hex"), mode: stat.mode & 0o777});
+      }
+    }
+  }
+  visit(realRoot);
+  entries.sort((left, right) => compareUtf8(left.path, right.path));
+  return {root: realRoot, entries, sha256: canonicalDigest(entries)};
+}
+
+function validateExecutionState(executionState) {
+  requireRecord(executionState, "Bootstrap execution state");
+  const fields = [
+    "schema", "status", "bootstrap_session_id", "project_root", "control_plane_root", "plan_sha256", "phase", "staging_root",
+    "staging_tree_sha256", "staging_entries", "legacy_receipt_sha256", "authority_index_sha256",
+    "setup_audit_receipt_sha256", "promotion_receipt_sha256", "promotion_root", "created_at_utc",
+    "updated_at_utc", "state_sha256",
+  ];
+  const actual = Object.keys(executionState).sort(compareUtf8);
+  const expected = [...fields].sort(compareUtf8);
+  assert(actual.length === expected.length && actual.every((key, index) => key === expected[index]), "Bootstrap execution state fields mismatch");
+  assert(executionState.schema === "agentos.bootstrap_execution_state.v1", "Bootstrap execution state schema mismatch");
+  assert(["JSA_BOUND", "APPROVED", "PROMOTED"].includes(executionState.status), "Bootstrap execution state status is invalid");
+  requireId(executionState.bootstrap_session_id, "Bootstrap execution session");
+  requireString(executionState.project_root, "Bootstrap execution project root");
+  requireString(executionState.control_plane_root, "Bootstrap execution control-plane root");
+  requireSha(executionState.plan_sha256, "Bootstrap execution plan");
+  assert(["JSA_BOUND", "APPROVED", "STAGING", "SEALED", "PROMOTED"].includes(executionState.phase), "Bootstrap execution phase is invalid");
+  if (executionState.staging_root !== null) {
+    requireString(executionState.staging_root, "Bootstrap staging root");
+    assert(!path.isAbsolute(executionState.staging_root)
+      && !executionState.staging_root.split(path.sep).includes(".."), "Bootstrap staging root is unsafe");
+  }
+  if (executionState.staging_tree_sha256 !== null) requireSha(executionState.staging_tree_sha256, "Bootstrap staging tree");
+  assert(Array.isArray(executionState.staging_entries), "Bootstrap staging entries are invalid");
+  let previous = null;
+  for (const entry of executionState.staging_entries) {
+    const keys = Object.keys(entry).sort(compareUtf8);
+    assert(keys.length === 3 && keys.join("\0") === ["mode", "path", "sha256"].sort(compareUtf8).join("\0"), "Bootstrap staging entry fields mismatch");
+    requireString(entry.path, "Bootstrap staging entry path");
+    assert(!path.isAbsolute(entry.path) && !entry.path.split("/").includes(".."), "Bootstrap staging entry path is unsafe");
+    requireSha(entry.sha256, "Bootstrap staging entry digest");
+    assert(Number.isSafeInteger(entry.mode) && entry.mode >= 0 && entry.mode <= 0o777, "Bootstrap staging entry mode is invalid");
+    if (previous !== null) assert(compareUtf8(previous, entry.path) < 0, "Bootstrap staging entries are not sorted");
+    previous = entry.path;
+  }
+  if (executionState.staging_tree_sha256 !== null) assert(canonicalDigest(executionState.staging_entries) === executionState.staging_tree_sha256, "Bootstrap staging inventory digest mismatch");
+  if (["SEALED", "PROMOTED"].includes(executionState.phase)) {
+    assert(executionState.staging_root !== null && executionState.staging_tree_sha256 !== null, "sealed Bootstrap state lacks its staging inventory");
+  }
+  for (const field of ["legacy_receipt_sha256", "authority_index_sha256", "setup_audit_receipt_sha256", "promotion_receipt_sha256"]) {
+    if (executionState[field] !== null) requireSha(executionState[field], `Bootstrap execution ${field}`);
+  }
+  if (executionState.promotion_root !== null) requireString(executionState.promotion_root, "Bootstrap promotion root");
+  requireUtc(executionState.created_at_utc, "Bootstrap execution creation time");
+  requireUtc(executionState.updated_at_utc, "Bootstrap execution update time");
+  requireSha(executionState.state_sha256, "Bootstrap execution state digest");
+  const body = structuredClone(executionState);
+  delete body.state_sha256;
+  assert(executionState.state_sha256 === canonicalDigest(body), "Bootstrap execution state is not content-addressed");
+  if (executionState.phase === "PROMOTED") {
+    assert(executionState.status === "PROMOTED" && executionState.promotion_root !== null && executionState.promotion_receipt_sha256 !== null,
+      "promoted Bootstrap state lacks promotion identity");
+  } else {
+    assert(["JSA_BOUND", "APPROVED"].includes(executionState.status)
+      && (executionState.phase !== "JSA_BOUND" || executionState.status === "JSA_BOUND")
+      && executionState.promotion_root === null && executionState.promotion_receipt_sha256 === null,
+      "unpromoted Bootstrap state carries promotion identity");
+  }
+  return executionState;
+}
+
+function resolveProjectImportPreservationRoot(plan, projectRoot, controlPlaneRoot, explicitRoot = null) {
+  if (explicitRoot !== null) return path.resolve(explicitRoot);
+  const base = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR" ? projectRoot : controlPlaneRoot;
+  return path.join(base, ".agentos", "import");
+}
+
+function revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot = null, projectImportSourceRoot = null) {
+  const root = fs.realpathSync.native(path.resolve(projectRoot));
+  if (plan.project_root !== null) assert(path.resolve(plan.project_root) === root, "Bootstrap project root changed after exact-plan approval");
+  const control = revalidateControlPlane(plan, root, controlPlaneRoot);
+  const observedDiscovery = discoverProject(root, plan.discovery_mode);
+  assert(canonicalDigest(observedDiscovery.facts) === plan.discovery_digest_sha256, "Bootstrap discovery changed after exact-plan approval");
+  if (plan.authority_corpus.preservation !== "NOT_REQUIRED") {
+    assert(legacySourceRoot !== null, "imported authority corpus requires a legacy source root");
+    const expectedSource = fs.realpathSync.native(path.resolve(plan.authority_corpus.source_root));
+    const actualSource = fs.realpathSync.native(path.resolve(legacySourceRoot));
+    assert(expectedSource === actualSource, "legacy source changed after exact-plan approval");
+    const observedSource = inspectLegacySource(actualSource);
+    assert(observedSource.source_content_sha256 === plan.authority_corpus.source_identity.source_content_sha256
+      && observedSource.source_observation_sha256 === plan.authority_corpus.source_identity.source_observation_sha256,
+    "legacy source contents changed after exact-plan approval");
+  }
+  if (plan.project_import !== null) {
+    assert(projectImportSourceRoot !== null, "project import execution requires an exact source root readback");
+    const observedImportSource = inspectProjectSource(projectImportSourceRoot);
+    assert(observedImportSource.source_content_sha256 === plan.project_import.source_identity.source_content_sha256
+      && observedImportSource.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
+    "project import source contents changed after exact-plan approval");
+  }
+  return {root, controlRoot: control, discovery: observedDiscovery.facts};
+}
+
+export function createBootstrapExecution(plan, {bootstrapSessionId, projectRoot, controlPlaneRoot = null, legacySourceRoot = null, projectImportSourceRoot = null, nowUtc}) {
+  validateBootstrapRunnablePlan(plan);
+  requireId(bootstrapSessionId, "Bootstrap session ID");
+  requireUtc(nowUtc, "Bootstrap execution time");
+  const {root, controlRoot} = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot, projectImportSourceRoot);
+  const state = {
+    schema: "agentos.bootstrap_execution_state.v1",
+    status: isJsaPlan(plan) ? "JSA_BOUND" : "APPROVED",
+    bootstrap_session_id: bootstrapSessionId,
+    project_root: root,
+    control_plane_root: controlRoot,
+    plan_sha256: plan.plan_sha256,
+    phase: isJsaPlan(plan) ? "JSA_BOUND" : "APPROVED",
+    staging_root: null,
+    staging_tree_sha256: null,
+    staging_entries: [],
+    legacy_receipt_sha256: null,
+    authority_index_sha256: null,
+    setup_audit_receipt_sha256: null,
+    promotion_receipt_sha256: null,
+    promotion_root: null,
+    created_at_utc: nowUtc,
+    updated_at_utc: nowUtc,
+    state_sha256: "",
+  };
+  const body = structuredClone(state);
+  delete body.state_sha256;
+  state.state_sha256 = canonicalDigest(body);
+  validateExecutionState(state);
+  return state;
+}
+
+export function executeBootstrapPlan(plan, {
+  bootstrapSessionId,
+  projectRoot,
+  controlPlaneRoot = null,
+  legacySourceRoot = null,
+  projectImportSourceRoot = null,
+  projectImportPreservationRoot = null,
+  workflow,
+  nowUtc,
+  ownerReview = null,
+  controllerRuntimeReadback,
+  controllerSessionId,
+  logicalControllerId = "AGENTOS-CONTROLLER",
+}) {
+  validateBootstrapRunnablePlan(plan);
+  assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap execution requires the exact authority-corpus workflow");
+  if (isJsaPlan(plan)) {
+    validateBootstrapActionScope([
+      "CREATE_CONTROL_PLANE_STAGING",
+      "CREATE_SOURCE_PRESERVATION_RECORDS",
+      "RUN_LOCAL_READ_ONLY_PROBES",
+      "WRITE_TYPED_PROJECT_CONTEXT",
+    ], plan.bootstrap_safety_analysis);
+  }
+  requireId(bootstrapSessionId, "Bootstrap session ID");
+  requireUtc(nowUtc, "Bootstrap execution time");
+  assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap execution requires an independent Controller Runtime readback");
+  validateControllerRuntimeReadback(controllerRuntimeReadback);
+  requireId(controllerSessionId, "AgentOS Controller session ID");
+  const validation = revalidateBootstrapEnvironment(plan, projectRoot, legacySourceRoot, controlPlaneRoot, projectImportSourceRoot);
+  const root = validation.root;
+  const controlRoot = validation.controlRoot;
+  assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
+  assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
+  const state = createBootstrapExecution(plan, {bootstrapSessionId, projectRoot: root, controlPlaneRoot: controlRoot, legacySourceRoot, projectImportSourceRoot, nowUtc});
+  fs.mkdirSync(controlRoot, {recursive: true});
+  validateControlPlaneStorage(controlRoot, plan.control_plane.storage_backend);
+  const stagingRoot = fs.mkdtempSync(path.join(controlRoot, ".agentos-bootstrap-stage-"));
+  state.phase = "STAGING";
+  state.staging_root = path.relative(controlRoot, stagingRoot);
+  const deliveryProbeResults = runDeliveryProbes({
+    projectRoot: root,
+    policy: plan.delivery_policy,
+    discovery: validation.discovery,
+    planSha256: plan.plan_sha256,
+  });
+  const deliveryProbePath = assertContained(stagingRoot, "delivery.probe.results.json", "delivery probe results");
+  writeCanonicalFile(deliveryProbePath, Buffer.from(`${canonicalCompactJson(deliveryProbeResults)}\n`, "utf8"));
+  if (plan.authority_corpus.preservation !== "NOT_REQUIRED") {
+    assert(legacySourceRoot !== null, "imported authority corpus requires a legacy source root");
+    const source = fs.realpathSync.native(path.resolve(legacySourceRoot));
+    assert(source !== root && !source.startsWith(`${root}${path.sep}`), "legacy source must be outside the destination project root");
+    const destination = assertContained(stagingRoot, plan.authority_corpus.roots.authority_root, "legacy destination");
+    fs.mkdirSync(destination, {recursive: true});
+    const legacy = preserveLegacyCorpus(source, destination, nowUtc);
+    state.legacy_receipt_sha256 = legacy.receipt.receipt_sha256;
+    verifyLegacyPreservation(destination);
+  }
+  if (plan.project_import !== null) {
+    assert(projectImportSourceRoot !== null, "project import execution requires an exact source root");
+    const source = fs.realpathSync.native(path.resolve(projectImportSourceRoot));
+    const adoptIntoCurrentRoot = plan.project_import.mode === "ADOPT_IN_PLACE"
+      && (source === root || source.startsWith(`${root}${path.sep}`));
+    if (!adoptIntoCurrentRoot) assert(source !== root && !source.startsWith(`${root}${path.sep}`), "project import source must be outside the destination project root");
+    const preservationRoot = resolveProjectImportPreservationRoot(plan, root, controlRoot, projectImportPreservationRoot);
+    const preservationRelative = relativeControlPlanePath(controlRoot, preservationRoot, "project import preservation root");
+    const projectSidecar = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR" && adoptIntoCurrentRoot;
+    const destination = projectSidecar
+      ? assertContained(root, path.join(preservationRelative, "source-preservation"), "project import preservation destination")
+      : assertContained(stagingRoot, path.join(preservationRelative, "source-preservation"), "project import preservation destination");
+    const preserved = preserveProjectSource(source, destination, nowUtc, {allowDestinationInsideSource: adoptIntoCurrentRoot && destination.startsWith(`${source}${path.sep}`)});
+    assert(preserved.receipt.source_content_sha256 === plan.project_import.source_identity.source_content_sha256
+      && preserved.receipt.source_observation_sha256 === plan.project_import.source_identity.source_observation_sha256,
+    "project import preservation is not bound to the exact source identity");
+    verifySourcePreservation(destination);
+  }
+  const destination = assertContained(stagingRoot, plan.authority_corpus.roots.authority_root, "authority root");
+  fs.mkdirSync(destination, {recursive: true});
+  const context = contextFromPlan(plan);
+  const controllerState = compileAgentOSControllerState({
+    projectId: plan.project_definition.project_name,
+    logicalControllerId,
+    currentSessionId: controllerSessionId,
+    policyState: plan.global_policy_state,
+    controllerRuntimeReadback,
+    nowUtc,
+  });
+  writeAgentOSControllerStateCompareAndSwap({
+    authorityRoot: stagingRoot,
+    statePath: context.project_context.agentos_controller_state_path,
+    expectedStateSha256: null,
+    state: controllerState,
+  });
+  const ownerReviewHandoff = ownerReview === null ? null : compileBootstrapOwnerReviewHandoff({plan, ...ownerReview});
+  const projectContextPath = assertContained(
+    stagingRoot,
+    `${context.project_context_root}/project-context.json`,
+    "typed project context",
+  );
+  const projectContextBytes = Buffer.from(`${canonicalCompactJson(context.project_context)}\n`, "utf8");
+  writeCanonicalFile(projectContextPath, projectContextBytes);
+  assert(fs.readFileSync(projectContextPath).equals(projectContextBytes), "typed project context staging readback differs");
+  const globalPolicyPath = assertContained(stagingRoot, context.project_context.global_policy_state_path, "global policy state artifact");
+  writePolicyStateCompareAndSwap({
+    filePath: globalPolicyPath,
+    expectedPolicyStateSha256: null,
+    nextState: context.project_context.global_policy_state,
+  });
+  const ownerReviewPolicyPath = assertContained(stagingRoot, context.project_context.owner_review_policy_path, "owner review policy artifact");
+  writeCanonicalFile(ownerReviewPolicyPath, Buffer.from(`${canonicalCompactJson(context.project_context.owner_review_policy)}\n`, "utf8"));
+  if (ownerReviewHandoff !== null) {
+    const handoffRoot = assertContained(stagingRoot, `${context.project_context_root}/owner-review`, "owner review handoff root");
+    fs.mkdirSync(handoffRoot, {recursive: true});
+    writeCanonicalFile(path.join(handoffRoot, "packet.json"), Buffer.from(`${canonicalCompactJson(ownerReviewHandoff.packet)}\n`, "utf8"));
+    writeCanonicalFile(path.join(handoffRoot, "handoff.md"), Buffer.from(ownerReviewHandoff.markdown, "utf8"));
+  }
+  const corpusResult = applyCorpusPlan(stagingRoot, context, workflow);
+  if (corpusResult) state.authority_index_sha256 = corpusResult.index_sha256;
+  const planBytes = Buffer.from(`${canonicalCompactJson(plan)}\n`, "utf8");
+  writeCanonicalFile(path.join(stagingRoot, "bootstrap.plan.json"), planBytes);
+  const readback = fs.readFileSync(path.join(stagingRoot, "bootstrap.plan.json"));
+  assert(readback.equals(planBytes), "Bootstrap plan staging readback differs");
+  const staged = directoryDigest(stagingRoot);
+  state.staging_tree_sha256 = staged.sha256;
+  state.staging_entries = staged.entries;
+  state.phase = "SEALED";
+  state.updated_at_utc = nowUtc;
+  const body = structuredClone(state);
+  delete body.state_sha256;
+  state.state_sha256 = canonicalDigest(body);
+  validateExecutionState(state);
+  return {state, staging_root: stagingRoot, corpus: corpusResult, owner_review: ownerReviewHandoff, controller_state: controllerState};
+}
+
+export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, controlPlaneRoot = null, nowUtc}) {
+  validateBootstrapRunnablePlan(plan);
+  if (isJsaPlan(plan)) validateBootstrapActionScope(["PROMOTE_CONTROL_PLANE_STATE"], plan.bootstrap_safety_analysis);
+  validateExecutionState(executionState);
+  requireRecord(setupAudit, "Bootstrap setup audit");
+  requireUtc(nowUtc, "Bootstrap promotion time");
+  const root = fs.realpathSync.native(path.resolve(projectRoot));
+  const controlRoot = revalidateControlPlane(plan, root, controlPlaneRoot ?? executionState.control_plane_root);
+  assert(executionState.project_root === root, "Bootstrap promotion project root mismatch");
+  assert(executionState.control_plane_root === controlRoot, "Bootstrap promotion control-plane root mismatch");
+  assert(executionState.plan_sha256 === plan.plan_sha256, "Bootstrap promotion plan mismatch");
+  if (executionState.phase === "PROMOTED") {
+    assert(executionState.promotion_root === controlRoot, "Bootstrap promotion root changed on resume");
+    requireSha(executionState.promotion_receipt_sha256, "Bootstrap promotion receipt");
+    return {state: executionState, receipt: null, resumed: true};
+  }
+  assert(executionState.phase === "SEALED", "Bootstrap execution must be sealed before promotion");
+  assert(setupAudit.status === "PASS"
+    && setupAudit.plan_sha256 === plan.plan_sha256
+    && setupAudit.execution_state_sha256 === executionState.state_sha256,
+  "Bootstrap setup audit is not bound to the sealed execution");
+  requireSha(setupAudit.audit_sha256, "Bootstrap setup audit digest");
+  const stagingRoot = fs.realpathSync.native(path.resolve(controlRoot, executionState.staging_root));
+  assert(stagingRoot !== controlRoot && stagingRoot.startsWith(`${controlRoot}${path.sep}`), "Bootstrap staging root escapes control plane root");
+  const promotionReceiptName = "bootstrap.promotion.receipt.json";
+  const promotionReceiptDestination = path.join(controlRoot, promotionReceiptName);
+  const promotionReceiptStaging = path.join(stagingRoot, promotionReceiptName);
+  const expectedStagedEntries = executionState.staging_entries;
+  const expectedStagedTree = executionState.staging_tree_sha256;
+  const receiptMatches = (candidate) => {
+    if (!candidate || candidate.schema !== "agentos.bootstrap_promotion_receipt.v1") return false;
+    const body = structuredClone(candidate);
+    delete body.receipt_sha256;
+    return candidate.plan_sha256 === plan.plan_sha256
+      && candidate.sealed_state_sha256 === executionState.state_sha256
+      && candidate.setup_audit_sha256 === setupAudit.audit_sha256
+      && candidate.project_root === root
+      && candidate.control_plane_root === controlRoot
+      && candidate.staged_tree_sha256 === expectedStagedTree
+      && canonicalCompactJson(candidate.staged_entries) === canonicalCompactJson(expectedStagedEntries)
+      && SHA256.test(candidate.receipt_sha256)
+      && candidate.receipt_sha256 === canonicalDigest(body);
+  };
+  let receipt = null;
+  for (const candidatePath of [promotionReceiptDestination, promotionReceiptStaging]) {
+    if (!fs.existsSync(candidatePath)) continue;
+    const candidateBytes = fs.readFileSync(candidatePath);
+    const candidate = JSON.parse(candidateBytes.toString("utf8"));
+    assert(canonicalCompactJson(candidate) + "\n" === candidateBytes.toString("utf8"), "promotion receipt is not canonical JSON");
+    if (receiptMatches(candidate)) {
+      receipt = candidate;
+      break;
+    }
+    throw new Error("existing promotion receipt is bound to a different sealed execution");
+  }
+  if (receipt === null) {
+    const receiptBody = {
+      schema: "agentos.bootstrap_promotion_receipt.v1",
+      plan_sha256: plan.plan_sha256,
+      sealed_state_sha256: executionState.state_sha256,
+      setup_audit_sha256: setupAudit.audit_sha256,
+      project_root: root,
+      control_plane_root: controlRoot,
+      staged_tree_sha256: expectedStagedTree,
+      staged_entries: expectedStagedEntries,
+      promoted_at_utc: nowUtc,
+    };
+    receipt = {...receiptBody, receipt_sha256: canonicalDigest(receiptBody)};
+    writeCanonicalFile(promotionReceiptStaging, Buffer.from(`${canonicalCompactJson(receipt)}\n`, "utf8"));
+  }
+  const expectedTopLevel = [...new Set(executionState.staging_entries.map((entry) => entry.path.split("/")[0]))].sort(compareUtf8);
+  for (const entry of fs.readdirSync(stagingRoot).filter((entry) => entry !== promotionReceiptName).sort(compareUtf8)) {
+    const source = path.join(stagingRoot, entry);
+    const destination = path.join(controlRoot, entry);
+    const sourceStat = fs.lstatSync(source);
+    assert(!sourceStat.isSymbolicLink() && (sourceStat.isDirectory() || sourceStat.isFile()), `unsafe staged entry: ${entry}`);
+    if (fs.existsSync(destination)) {
+      const destinationStat = fs.lstatSync(destination);
+      assert(!destinationStat.isSymbolicLink(), `promotion destination is a symbolic link: ${entry}`);
+      assert((sourceStat.isDirectory() && destinationStat.isDirectory()) || (sourceStat.isFile() && destinationStat.isFile()), `promotion type mismatch: ${entry}`);
+      if (sourceStat.isDirectory()) {
+        assert(directoryDigest(source).sha256 === directoryDigest(destination).sha256, `promotion would overwrite a different existing entry: ${entry}`);
+      } else {
+        assert(crypto.createHash("sha256").update(fs.readFileSync(source)).digest("hex")
+          === crypto.createHash("sha256").update(fs.readFileSync(destination)).digest("hex")
+          && (sourceStat.mode & 0o777) === (destinationStat.mode & 0o777),
+        `promotion would overwrite a different existing entry: ${entry}`);
+      }
+    } else {
+      fs.renameSync(source, destination);
+    }
+  }
+  for (const entry of expectedTopLevel) {
+    assert(fs.existsSync(path.join(controlRoot, entry)), `promotion did not materialize staged entry: ${entry}`);
+  }
+  if (fs.existsSync(promotionReceiptStaging)) {
+    if (fs.existsSync(promotionReceiptDestination)) {
+      assert(fs.readFileSync(promotionReceiptStaging).equals(fs.readFileSync(promotionReceiptDestination)), "promotion receipt differs from existing destination receipt");
+    } else {
+      fs.renameSync(promotionReceiptStaging, promotionReceiptDestination);
+    }
+  }
+  const nextState = {...executionState,
+    status: "PROMOTED",
+    phase: "PROMOTED",
+    setup_audit_receipt_sha256: setupAudit.audit_sha256,
+    promotion_receipt_sha256: receipt.receipt_sha256,
+    promotion_root: controlRoot,
+    updated_at_utc: nowUtc,
+    state_sha256: "",
+  };
+  const stateBody = structuredClone(nextState);
+  delete stateBody.state_sha256;
+  nextState.state_sha256 = canonicalDigest(stateBody);
+  validateExecutionState(nextState);
+  return {state: nextState, receipt, resumed: false};
+}
+
+export function auditBootstrapSetup({
+  plan,
+  executionState,
+  auditorSessionId,
+  bootstrapSessionId,
+  stagingRoot,
+  projectImportSourceRoot = null,
+  projectImportPreservationRoot = null,
+  workflow,
+  ownerReview = null,
+  runtimeReadback = null,
+  controllerRuntimeReadback,
+  controllerSessionId,
+  logicalControllerId = "AGENTOS-CONTROLLER",
+}) {
+  validateBootstrapRunnablePlan(plan);
+  if (isJsaPlan(plan)) validateBootstrapActionScope(["RUN_SETUP_AUDIT"], plan.bootstrap_safety_analysis);
+  assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap setup audit requires the exact authority-corpus workflow");
+  requireId(auditorSessionId, "setup Auditor session");
+  requireId(bootstrapSessionId, "Bootstrap session");
+  assert(auditorSessionId !== bootstrapSessionId, "setup Auditor must be independent from Bootstrap");
+  validateExecutionState(executionState);
+  assert(executionState.phase === "SEALED" && executionState.plan_sha256 === plan.plan_sha256, "Bootstrap execution is not sealed to the exact plan");
+  assert(plan.persistent_runtime.persistent === true && plan.persistent_runtime.status === "BOUND"
+    && typeof plan.persistent_runtime.session_id === "string" && plan.persistent_runtime.environment_identity !== null,
+  "Bootstrap setup cannot pass without an exact persistent Runtime binding");
+  assert(runtimeReadback !== null, "Bootstrap setup requires an independent Runtime adapter readback");
+  validateRuntimeReadback(runtimeReadback, plan.persistent_runtime);
+  assert(controllerRuntimeReadback !== null && controllerRuntimeReadback !== undefined, "Bootstrap setup requires an independent Controller Runtime adapter readback");
+  validateControllerRuntimeReadback(controllerRuntimeReadback);
+  requireId(controllerSessionId, "AgentOS Controller session ID");
+  assert(controllerRuntimeReadback.project_id === plan.project_definition.project_name, "Controller Runtime readback project differs from Bootstrap project");
+  assert(controllerRuntimeReadback.environment_identity === plan.persistent_runtime.environment_identity, "Controller Runtime environment differs from the bound project Runtime environment");
+  const controlRoot = executionState.control_plane_root;
+  revalidateControlPlane(plan, executionState.project_root, controlRoot);
+  const suppliedStagingRoot = path.isAbsolute(stagingRoot)
+    ? path.resolve(stagingRoot)
+    : path.resolve(controlRoot, stagingRoot);
+  const root = fs.realpathSync.native(suppliedStagingRoot);
+  assert(root !== fs.realpathSync.native(path.resolve(controlRoot)) && root.startsWith(`${fs.realpathSync.native(path.resolve(controlRoot))}${path.sep}`), "setup Auditor staging root escapes control plane root");
+  const observedStaging = directoryDigest(root);
+  assert(observedStaging.sha256 === executionState.staging_tree_sha256
+    && canonicalCompactJson(observedStaging.entries) === canonicalCompactJson(executionState.staging_entries),
+  "setup Auditor staging inventory changed after sealing");
+  const planBytes = fs.readFileSync(path.join(root, "bootstrap.plan.json"));
+  const readbackPlan = JSON.parse(planBytes.toString("utf8"));
+  const readbackBody = structuredClone(readbackPlan);
+  delete readbackBody.plan_sha256;
+  assert(canonicalDigest(readbackBody) === plan.plan_sha256, "setup Auditor readback plan mismatch");
+  const deliveryProbePath = assertContained(root, "delivery.probe.results.json", "delivery probe result readback");
+  const deliveryProbeBytes = fs.readFileSync(deliveryProbePath);
+  assert(canonicalCompactJson(JSON.parse(deliveryProbeBytes.toString("utf8"))) + "\n" === deliveryProbeBytes.toString("utf8"), "delivery probe results are not canonical JSON");
+  const deliveryProbeResults = JSON.parse(deliveryProbeBytes.toString("utf8"));
+  validateDeliveryProbeResults(deliveryProbeResults, {
+    planSha256: plan.plan_sha256,
+    policySha256: plan.delivery_policy.policy_sha256,
+    discoveryDigestSha256: plan.discovery_digest_sha256,
+  });
+  assert(deliveryProbeResults.probe_plan_sha256 === plan.delivery_probe_plan.probe_plan_sha256
+    && deliveryProbeResults.binding.project_root === executionState.project_root,
+  "delivery probe results are not bound to the exact Bootstrap execution");
+  if (plan.authority_corpus.preservation !== "NOT_REQUIRED") {
+    const legacyRoot = assertContained(root, plan.authority_corpus.roots.authority_root, "legacy readback root");
+    const receipt = verifyLegacyPreservation(legacyRoot);
+    assert(receipt.status === "VERIFIED_EXACT", "setup Auditor could not verify legacy archive");
+  }
+  if (plan.project_import !== null) {
+    assert(projectImportSourceRoot !== null, "project import setup audit requires an exact source root");
+    const preservationRoot = resolveProjectImportPreservationRoot(plan, executionState.project_root, controlRoot, projectImportPreservationRoot);
+    const preservationRelative = relativeControlPlanePath(controlRoot, preservationRoot, "project import preservation root");
+    const projectSidecar = plan.project_import.preservation.storage_mode === "PROJECT_SIDE_CAR"
+      && (plan.project_import.mode === "ADOPT_IN_PLACE")
+      && (fs.realpathSync.native(path.resolve(projectImportSourceRoot)) === executionState.project_root
+        || fs.realpathSync.native(path.resolve(projectImportSourceRoot)).startsWith(`${executionState.project_root}${path.sep}`));
+    const importRoot = projectSidecar
+      ? assertContained(executionState.project_root, path.join(preservationRelative, "source-preservation"), "project import preservation readback root")
+      : assertContained(root, path.join(preservationRelative, "source-preservation"), "project import preservation readback root");
+    const receipt = verifySourcePreservation(importRoot);
+    assert(receipt.status === "VERIFIED_EXACT"
+      && receipt.manifest_sha256.length === 64
+      && receipt.excluded_paths >= 0,
+    "setup Auditor could not verify project source preservation");
+  }
+  const expectedContext = contextFromPlan(plan);
+  const corpus = compileCorpusPlan(expectedContext, workflow);
+  assert(corpus.plan_sha256.length === 64, "setup Auditor did not compile authority corpus");
+  const contextPath = assertContained(
+    root,
+    `${plan.authority_corpus.roots.project_context_root}/project-context.json`,
+    "typed project context readback",
+  );
+  const contextBytes = fs.readFileSync(contextPath);
+  const context = JSON.parse(contextBytes.toString("utf8"));
+  const contextBody = structuredClone(context);
+  delete contextBody.exact_context_digest;
+  assert(context.exact_context_digest === canonicalDigest(contextBody), "typed project context digest is invalid");
+  assert(context.source_plan_sha256 === plan.plan_sha256, "typed project context is not bound to the exact plan");
+  requireRecord(context.bootstrap_coverage, "typed project context Bootstrap coverage");
+  validateBootstrapCoverage(context.bootstrap_coverage);
+  assert(context.bootstrap_coverage.coverage_sha256 === plan.bootstrap_coverage.coverage_sha256,
+  "typed project context Bootstrap coverage is not bound to the exact plan");
+  const policyPath = assertContained(root, context.global_policy_state_path, "global policy state readback");
+  const persistedPolicy = JSON.parse(fs.readFileSync(policyPath, "utf8"));
+  validatePolicyState(persistedPolicy);
+  assert(persistedPolicy.policy_state_sha256 === plan.global_policy_state.policy_state_sha256,
+    "persisted global policy state is not bound to the exact plan");
+  const ownerPolicyPath = assertContained(root, context.owner_review_policy_path, "owner review policy readback");
+  const persistedOwnerPolicy = JSON.parse(fs.readFileSync(ownerPolicyPath, "utf8"));
+  assert(canonicalDigest(persistedOwnerPolicy) === canonicalDigest(plan.owner_review_policy),
+    "persisted owner review policy is not bound to the exact plan");
+  requireRecord(context.controller_supervision, "typed project context controller supervision");
+  validateControllerSupervision(context.controller_supervision);
+  assert(context.controller_supervision.supervision_sha256 === plan.controller_supervision.supervision_sha256,
+    "typed project context controller supervision is not bound to the exact plan");
+  const controllerStatePath = assertContained(root, context.agentos_controller_state_path, "AgentOS Controller state readback");
+  const controllerStateBytes = fs.readFileSync(controllerStatePath);
+  assert(canonicalCompactJson(JSON.parse(controllerStateBytes.toString("utf8"))) + "\n" === controllerStateBytes.toString("utf8"), "AgentOS Controller state is not canonical JSON");
+  const controllerState = JSON.parse(controllerStateBytes.toString("utf8"));
+  validateAgentOSControllerState(controllerState);
+  assert(controllerState.project_id === plan.project_definition.project_name
+    && controllerState.logical_controller_id === logicalControllerId
+    && controllerState.current_session_id === controllerSessionId
+    && controllerState.policy_state_sha256 === plan.global_policy_state.policy_state_sha256
+    && controllerState.controller_runtime_readback.readback_sha256 === controllerRuntimeReadback.readback_sha256,
+  "AgentOS Controller state is not bound to Bootstrap policy, session, or Runtime readback");
+  if (ownerReview !== null) {
+    const expectedHandoff = compileBootstrapOwnerReviewHandoff({plan, ...ownerReview});
+    const handoffRoot = assertContained(root, `${plan.authority_corpus.roots.project_context_root}/owner-review`, "owner review handoff readback root");
+    const packetPath = path.join(handoffRoot, "packet.json");
+    const markdownPath = path.join(handoffRoot, "handoff.md");
+    assert(fs.existsSync(packetPath) && fs.existsSync(markdownPath), "owner review handoff artifacts are missing");
+    const packetBytes = fs.readFileSync(packetPath);
+    const packet = JSON.parse(packetBytes.toString("utf8"));
+    assert(canonicalCompactJson(packet) + "\n" === packetBytes.toString("utf8"), "owner review packet is not canonical JSON");
+    validateOwnerReviewPacket(packet);
+    assert(packet.packet_sha256 === expectedHandoff.packet.packet_sha256, "owner review packet readback is not bound to the exact handoff");
+    assert(fs.readFileSync(markdownPath, "utf8") === expectedHandoff.markdown, "owner review Markdown readback differs from the exact handoff");
+  }
+  const reportBody = {
+    schema: "agentos.bootstrap_setup_audit.v1",
+    auditor_session_id: auditorSessionId,
+    bootstrap_session_id: bootstrapSessionId,
+    plan_sha256: plan.plan_sha256,
+    execution_state_sha256: executionState.state_sha256,
+    checks: ["EXACT_PLAN", "APPROVAL", "TOCTOU_READBACK", "CONTEXT_SEPARATION", "BOOTSTRAP_COVERAGE", "NO_SECRETS", "LEGACY_GATE", "PROJECT_IMPORT_SOURCE_PRESERVATION", "DELIVERY_PROBES", "AUTHORITY_CORPUS", "RUNTIME_BINDING", "RUNTIME_ADAPTER_READBACK", "AGENTOS_CONTROLLER_INITIALIZATION", "CONTROLLER_RUNTIME_ADAPTER_READBACK", "THREE_ROOT_SLICE", ...(ownerReview === null ? [] : ["OWNER_REVIEW_HANDOFF"])],
+    status: "PASS",
+  };
+  return {...reportBody, audit_sha256: canonicalDigest(reportBody)};
+}
+
+function bootstrapStartResult({discovery, questionPlan}) {
+  const agentosRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const controlPlane = resolveControlPlaneRoot({projectRoot: discovery.project_root});
+  const body = {
+    schema: "agentos.bootstrap_start_result.v1",
+    version: 1,
+    governance_version: "2.1rc",
+    status: "READ_ONLY_DISCOVERY_COMPLETE",
+    canonical_controller: "control/bootstrap-compiler.mjs",
+    agentos_root: agentosRoot,
+    project_root: discovery.project_root,
+    control_plane_root: controlPlane.control_plane_root,
+    control_plane: controlPlane.binding,
+    bootstrap_operating_mode: DEFAULT_BOOTSTRAP_OPERATING_MODE,
+    initial_answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
+    discovery,
+    question_plan: questionPlan,
+    next_action: questionPlan.next === null
+      ? "COMPILE_THE_JSA_PLAN_AND_CONTINUE_ONLY_WITHIN_ITS_DECLARED_SCOPE"
+      : "ASK_ONLY_THE_NEXT_MATERIAL_BOOTSTRAP_QUESTION",
+  };
+  return {...body, start_sha256: canonicalDigest(body)};
+}
+
+function runBootstrapStartCommand() {
+  const [command, projectRoot, mode = "RECOMMENDED", ...extra] = process.argv.slice(2);
+  if (command !== "start" || !projectRoot || extra.length > 0) {
+    throw new Error("usage: bootstrap-compiler start <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY]");
+  }
+  const discovery = discoverProject(projectRoot, mode);
+  const questionPlan = planBootstrapQuestions({
+    discovery: discovery.facts,
+    answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
+  });
+  process.stdout.write(`${canonicalCompactJson(bootstrapStartResult({discovery, questionPlan}))}\n`);
+}
+
+let invokedPath = null;
+if (process.argv[1]) {
+  try {
+    invokedPath = fs.realpathSync.native(path.resolve(process.argv[1]));
+  } catch {
+    invokedPath = null;
+  }
+}
+const modulePath = fs.realpathSync.native(fileURLToPath(import.meta.url));
+if (invokedPath === modulePath) {
+  try {
+    runBootstrapStartCommand();
+  } catch (error) {
+    process.stderr.write(`${error.message}\n`);
+    process.exitCode = 1;
+  }
+}

@@ -6,9 +6,14 @@
   "source_base": "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e",
   "entries": [
     {
+      "path": ".gitattributes",
+      "size": 255,
+      "sha256": "399447b1788749b98fb12e1a25c34c67d447628db8bb0e5efb11d34bbc86e52a"
+    },
+    {
       "path": "CURRENT_STATE.md",
-      "size": 5608,
-      "sha256": "64487335bb51ed91f011aad46dcd8bd918572a04981ea42b25f4710f57575a23"
+      "size": 8680,
+      "sha256": "ddc5d46177de9b606d89b6b83f2f0bf6af171a5745a55f838a5ccaa4200fa8be"
     },
     {
       "path": "agent-builder-adapter.mjs",
@@ -147,8 +152,8 @@
     },
     {
       "path": "agent-builder/product-layer-model.md",
-      "size": 8241,
-      "sha256": "4e4b4e51b6b111098d0e6539d4c7d16c42c68d8fe9825d336b07376c49cd82ce"
+      "size": 8240,
+      "sha256": "ab170dcec459699d1f11f7964fe850c7104b693acadc3b8ddf6080cdc6ddd8ae"
     },
     {
       "path": "agent-builder/research-taxonomy.md",
@@ -202,13 +207,13 @@
     },
     {
       "path": "contracts/test-build-receipt.json",
-      "size": 2987,
-      "sha256": "a55f9306f632a232035a6c1aeb1bc99536762a7f719b42eb0cecb411a87ce6a4"
+      "size": 2919,
+      "sha256": "6156e58b73de8ea90087c79d60d3a910fdab12efbd58ae4fd93a38668e0aa070"
     },
     {
       "path": "custody.mjs",
-      "size": 9846,
-      "sha256": "a823a586d1819b59d3b382fdc53cd3fe8ce45e21c97332807b6b4bd0eb94a763"
+      "size": 9853,
+      "sha256": "e6d8842439c07c8a082d51575102a8fc58fc6dc06badb257ed5ff04521730e62"
     },
     {
       "path": "entrypoint.mjs",
@@ -1162,8 +1167,8 @@
     },
     {
       "path": "main-core/entrypoint.mjs",
-      "size": 669,
-      "sha256": "40a3756f803bc9303eead093d042b24e9c41fb1c5fcb1a14ea01b4b4707f32d3"
+      "size": 1686,
+      "sha256": "2b2c8ff1c4af7f816a8aabb13980540b44fcb617b3c5ac0db890c34bb9aa1b3c"
     },
     {
       "path": "main-core/identity.mjs",
@@ -1307,13 +1312,13 @@
     },
     {
       "path": "rollback.mjs",
-      "size": 3656,
-      "sha256": "3422a6442fa837a506f91c3304c08070988ee6bd43510b49038227b706070ae3"
+      "size": 3597,
+      "sha256": "4db653a8c6b225453d000fcf02edb70f74b5ef673f0d378a2ba6a6f463acbca3"
     },
     {
       "path": "tests/integration-test.mjs",
-      "size": 10756,
-      "sha256": "245deb8e8d11c11e2601be74f205a895e314144f23388cb6afaaf7451ef8e873"
+      "size": 11022,
+      "sha256": "cfe40c1459119bebb0af77968a20c7f9453b04d0ee36cb54957fb3862234b85c"
     },
     {
       "path": "tools/build.mjs",
@@ -1326,6 +1331,6 @@
       "sha256": "481bdacae43f205519dd26f5d7cb6c65113af4251b7ae267b42b41029a6fe340"
     }
   ],
-  "bundle_sha256": "521fe4c87d455d1263c59a6a8353748aa750df4b8a38d2377f179fa144c0c57a",
+  "bundle_sha256": "829650b87384faf8cfb2d3ca93407b9b8ef148158bebe8249c92823c8fb1a248",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }
