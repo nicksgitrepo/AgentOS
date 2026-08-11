@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import {
   classifyIntentChange,
   compileIntentEnvelope,
@@ -43,7 +42,6 @@ export {
   VERIFICATION_HANDOFF_SCHEMA,
   VERIFICATION_HANDOFF_STATUSES,
 } from "./verification-handoff.mjs";
-
 export const RAPID_PROTOTYPE_SCHEMA = "agentos.rapid_prototype_slice.v1";
 export const RAPID_PROTOTYPE_ROLE = "RAPID_SLICE_BUILDER";
 export const RAPID_PROTOTYPE_CHANGED_PATHS = Object.freeze([
@@ -57,7 +55,6 @@ export const RAPID_PROTOTYPE_PLAN_DIGESTS = Object.freeze({
   workflow_registry: "e87401cd30edc55695660aa37216aae907453554759163c571d597e24af38325",
   native_session_controller: "6d410e6bfbb85f6a3a1e92ffdb30385dec4a77a328efae56fc976648a8a98370",
 });
-
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const DEFAULT_SOURCE_BINDING = Object.freeze({
@@ -127,15 +124,12 @@ const BOUNDARY_CASES = Object.freeze([
   {id: "HARD_STOP", condition: "HARD_STOP"},
   {id: "UNAVAILABLE", condition: "UNAVAILABLE"},
 ]);
-
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
-
 function clone(value) {
   return value === undefined ? undefined : structuredClone(value);
 }
-
 function firstDefined(record, names, fallback = undefined) {
   if (!isRecord(record)) return fallback;
   for (const name of names) {
@@ -143,15 +137,12 @@ function firstDefined(record, names, fallback = undefined) {
   }
   return fallback;
 }
-
 function sourceValue(source, names, fallback = undefined) {
   return firstDefined(source, names, fallback);
 }
-
 function publicDigest(value) {
   return typeof value === "string" && SHA256.test(value) ? value : null;
 }
-
 function safeDigestSet(input) {
   const supplied = isRecord(input) ? input : {};
   const aliases = {
@@ -175,7 +166,6 @@ function safeDigestSet(input) {
   }
   return {result, mismatches};
 }
-
 function sourceBindings(input) {
   const direct = input.source_binding ?? input.sourceBinding ?? input.source ?? {};
   const expected = firstDefined(direct, [
@@ -202,7 +192,6 @@ function sourceBindings(input) {
     observed: clone(DEFAULT_SOURCE_BINDING),
   };
 }
-
 function intentFields(value) {
   if (!isRecord(value)) return {};
   const fields = {};
@@ -221,14 +210,12 @@ function intentFields(value) {
   }
   return fields;
 }
-
 function compileIntent(value) {
   return compileIntentEnvelope({
     ...DEFAULT_INTENT,
     ...intentFields(value),
   });
 }
-
 function compileCandidateIntent(value, baseline) {
   if (value === undefined || value === null) return baseline;
   const candidate = compileIntentEnvelope({
@@ -270,7 +257,6 @@ function compileCandidateIntent(value, baseline) {
   }
   return candidate;
 }
-
 function roleOptions(input, source) {
   const supplied = input.role_admission ?? input.roleAdmission ?? {};
   const expectedProject = firstDefined(supplied, ["expectedProject", "expected_project"], sourceValue(source.expected, ["project_id", "projectId", "project"], DEFAULT_SOURCE_BINDING.project_id));
@@ -289,7 +275,6 @@ function roleOptions(input, source) {
     topology: supplied.topology ?? "INDEPENDENT_SIBLING_SESSION",
   };
 }
-
 function summarizeRoleAdmission(admission) {
   if (!admission) return {status: "NOT_ADMITTED", admitted: false, role: null, topology: null};
   return {
@@ -299,7 +284,6 @@ function summarizeRoleAdmission(admission) {
     topology: admission.topology,
   };
 }
-
 function progressOptions(input) {
   const supplied = input.progress_options ?? input.progressOptions ?? input.progress ?? {};
   const times = input.times ?? {};
@@ -320,7 +304,6 @@ function progressOptions(input) {
     progressEvidence: supplied.progressEvidence ?? supplied.progress_evidence ?? supplied.evidence ?? null,
   };
 }
-
 function summarizeProgress(progress) {
   if (!progress) return {status: "UNAVAILABLE", progress: "NO_PROGRESS", meaningful_progress: false, liveness: "UNKNOWN", completed: false, task_id: null, scope: null, source_commit: null, source_tree: null, last_concrete_progress_identity: null, progress_evidence_digest: null};
   return {
@@ -339,7 +322,6 @@ function summarizeProgress(progress) {
     progress_evidence_digest: progress.progress_evidence_digest,
   };
 }
-
 function workflowIntent(intent, classification) {
   return {
     goal: intent.goal,
@@ -351,7 +333,6 @@ function workflowIntent(intent, classification) {
     required_capabilities: ["local_check"],
   };
 }
-
 function sourceRecord(binding, verified) {
   if (!isRecord(binding)) return {verified};
   const record = {...clone(binding), verified};
@@ -363,7 +344,6 @@ function sourceRecord(binding, verified) {
   }
   return record;
 }
-
 function functionalityContext(source, bootstrap, capabilities) {
   return {
     source_readback: sourceRecord(source.observed, bootstrap.source_binding.status === "MATCH"),
@@ -372,7 +352,6 @@ function functionalityContext(source, bootstrap, capabilities) {
     capabilities,
   };
 }
-
 function laneRoleAdmission(role) {
   const admission = admitRole({
     role: FUNCTIONALITY_ROLE,
@@ -393,7 +372,6 @@ function laneRoleAdmission(role) {
     identity_verified: true,
   };
 }
-
 function decisionFor(classification, input) {
   const supplied = input.workflow_decision ?? input.workflowDecision ?? input.decision;
   if (supplied !== undefined) return isRecord(supplied) ? clone(supplied) : {status: supplied};
@@ -402,7 +380,6 @@ function decisionFor(classification, input) {
   if (classification === "HARD_STOP") return {status: "HARD_STOP"};
   return {status: "HARD_STOP", code: "WORKFLOW_DECISION_REQUIRED", check: {status: "UNPROVEN"}, independent_check: {status: "REQUIRED"}};
 }
-
 function outcomeStatus(outcome) {
   return {
     [THIN_WORKFLOW_OUTCOMES.READY]: "ready",
@@ -413,7 +390,6 @@ function outcomeStatus(outcome) {
     [THIN_WORKFLOW_OUTCOMES.HARD_STOP]: "hard-stop",
   }[outcome] ?? "hard-stop";
 }
-
 function conversationFor(outcome, input = {}) {
   const status = outcomeStatus(outcome);
   const openQuestions = input.open_questions ?? input.openQuestions ?? (
@@ -434,7 +410,6 @@ function conversationFor(outcome, input = {}) {
     decision,
   });
 }
-
 function publicSurfaceFor(outcome, conversation) {
   const status = conversation.status === "HARD_STOP"
     ? "hard-stop"
@@ -449,7 +424,6 @@ function publicSurfaceFor(outcome, conversation) {
     nextStep: status === "ready" ? "Review the local result." : undefined,
   });
 }
-
 function summarizeConversation(conversation) {
   return {
     status: conversation.status,
@@ -458,7 +432,6 @@ function summarizeConversation(conversation) {
     unavailable: conversation.unavailable,
   };
 }
-
 function summarizeSurface(surface) {
   return {
     schema: surface.schema,
@@ -472,7 +445,6 @@ function summarizeSurface(surface) {
     text: surface.text,
   };
 }
-
 function matrixConversation(caseId, functionality) {
   const outcome = functionality.outcome;
   const conversation = conversationFor(outcome, {
@@ -488,7 +460,6 @@ function matrixConversation(caseId, functionality) {
     surface: summarizeSurface(surface),
   };
 }
-
 function decisionMatrix({intent, context, roleAdmission, progress}) {
   return DECISION_CASES.map(({id, decision}) => {
     const functionality = evaluateThinWorkflow({
@@ -501,7 +472,6 @@ function decisionMatrix({intent, context, roleAdmission, progress}) {
     return matrixConversation(id, functionality);
   });
 }
-
 function boundarySummary(boundary) {
   return boundary === null ? null : {
     status: boundary.status,
@@ -513,7 +483,6 @@ function boundarySummary(boundary) {
     acceptance: boundary.acceptance,
   };
 }
-
 function boundaryExamples() {
   const base = {
     scopeChanged: false,
@@ -527,7 +496,6 @@ function boundaryExamples() {
     ...boundarySummary(routeBoundary({...base, condition})),
   }));
 }
-
 function selectedBoundary(classification, sourceStatus, capabilityAvailable) {
   if (sourceStatus !== "MATCH") {
     return routeBoundary({
@@ -552,13 +520,11 @@ function selectedBoundary(classification, sourceStatus, capabilityAvailable) {
     identityMatch: true,
   });
 }
-
 function publicPayloadCandidate({surface, functionality, changedPaths, handoffStatus}) {
   void functionality;
   void handoffStatus;
   return [surface.text, ...changedPaths].join("\n");
 }
-
 function hostileSecuritySummary() {
   const hostile = scanPublicPayload("authorization: Bearer synthetic-secret-value");
   return {
@@ -568,7 +534,6 @@ function hostileSecuritySummary() {
     payload_sha256: hostile.payload_sha256,
   };
 }
-
 function evidenceInputs(input, source, sourceStatus, digests, behaviorStatus, sourceCommit, sourceTree, authority) {
 const suppliedSource = authority?.sourceReadback ?? input.evidence_source_readback ?? input.evidenceSourceReadback;
 assert(suppliedSource !== null && typeof suppliedSource === "object" && !Array.isArray(suppliedSource), "authoritative source readback is required", "EVIDENCE_UNAVAILABLE");
@@ -642,7 +607,6 @@ focusedCheck: {
     source,
   };
 }
-
 function makeTypedHandoff({source, progress, functionality, evidenceDigest}) {
   return {
     schema: "DELIVERY_AND_CLOSURE_HANDOFF_V1",
@@ -684,7 +648,6 @@ function makeTypedHandoff({source, progress, functionality, evidenceDigest}) {
     clearance: "NOT_CLAIMED",
   };
 }
-
 function closureSummary(result) {
   if (!result) return {status: "NOT_RUN", code: "CLOSURE_NOT_REQUESTED", handoff_preserved: false, active_workers_for_worker: null, lifecycle: [], universal_closeout_receipts: null};
   return {
@@ -698,7 +661,6 @@ function closureSummary(result) {
     universal_closeout_receipts: result.universal_closeout_receipts ? structuredClone(result.universal_closeout_receipts) : null,
   };
 }
-
 function failureResult(code, digests = RAPID_PROTOTYPE_PLAN_DIGESTS) {
   return {
     schema: RAPID_PROTOTYPE_SCHEMA,
@@ -714,12 +676,10 @@ function failureResult(code, digests = RAPID_PROTOTYPE_PLAN_DIGESTS) {
     independent_check: "REQUESTED",
   };
 }
-
 async function runRapidPrototypeInternal(input) {
   assertUniversalDevelopmentMode("RAPID_PROTOTYPE");
   const {result: digests, mismatches} = safeDigestSet(input.digests ?? input.planDigests ?? {});
   if (mismatches.length > 0) return failureResult("CONTRACT_DIGEST_MISMATCH", digests);
-
   const source = sourceBindings(input);
   const intent = compileIntent(input.intent);
   const candidate = compileCandidateIntent(input.candidate_intent ?? input.candidateIntent ?? input.intent_candidate ?? input.intentCandidate, intent);
@@ -761,7 +721,6 @@ async function runRapidPrototypeInternal(input) {
   let roleAdmission = null;
   if (sourceMatch && roleBindingMatches) roleAdmission = admitRole(suppliedRole);
   const roleSummary = summarizeRoleAdmission(roleAdmission);
-
   const progress = recordProgress(progressOptions(input));
   const capabilities = input.capabilities ?? input.availableCapabilities ?? ["local_check"];
   const workflow = workflowIntent(intent, classification);
@@ -854,7 +813,6 @@ const coreReady = bootstrap.status === "READY"
       };
     }
   }
-
   let handoff = null;
   let closureResult = null;
   if (coreReady && evidence.verified) {
@@ -879,7 +837,6 @@ const coreReady = bootstrap.status === "READY"
       });
     }
   }
-
   const closure = closureSummary(closureResult);
   const ready = coreReady && evidence.verified && closure.status === "CLOSED";
   const status = ready
@@ -931,7 +888,6 @@ const coreReady = bootstrap.status === "READY"
     digests,
   };
 }
-
 export async function runRapidPrototype(input = {}) {
   try {
     return await runRapidPrototypeInternal(isRecord(input) ? input : {});
@@ -939,7 +895,6 @@ export async function runRapidPrototype(input = {}) {
     return failureResult("RAPID_PROTOTYPE_INPUT_INVALID");
   }
 }
-
 if (import.meta.url === `file://${process.argv[1]}`) {
   process.stdout.write("rapid prototype slice assembler loaded\n");
 }

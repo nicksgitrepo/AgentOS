@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-
 import crypto from "node:crypto";
 import {TASK_GATE_QUESTIONS, TASK_GATE_CATALOG_SHA256} from "./task-gate-questions.mjs";
 import {findPrivateContextLeaks} from "./private-context-detector.mjs";
+import * as universalGovernance from "./governance-universal.mjs";
+export * from "./governance-universal.mjs";
 export {
   assertFeatureLaneGoalBinding,
   compileFeatureLaneGoal,
@@ -11,16 +12,8 @@ export {
   FEATURE_LANE_GOAL_STATES,
   validateFeatureLaneGoal,
 } from "./feature-lane-goal.mjs";
-
 export const GENERAL_GOVERNANCE_SCHEMA = "agentos.general_governance_library.v1";
-export const GOVERNANCE_ARCHITECTURE_PLAN_SCHEMA = "agentos.governance_architecture_plan.v1";
 export const GENERAL_LIBRARY_KIND = "SHARED_GENERAL_GOVERNANCE";
-export const GOVERNANCE_ARCHITECTURE_PLAN_KIND = "ARCHITECTURE_ALIGNMENT_REPAIR";
-export const GOVERNANCE_TREE_ROOTS = Object.freeze([
-  "FUNCTION_REQUIREMENTS",
-  "DESIGN_BIBLE",
-  "SECURITY",
-]);
 export const GENERAL_GOVERNANCE_DOMAINS = Object.freeze([
   "INTENT_SCOPE",
   "SOURCE_BINDING",
@@ -34,84 +27,18 @@ export const GENERAL_GOVERNANCE_DOMAINS = Object.freeze([
   "RECOVERY_BOUNDARIES",
   "DELIVERY_CLOSURE",
 ]);
-export const UNIVERSAL_TASK_CLOSEOUT_SEQUENCE = Object.freeze([
-  "PRESERVE_HANDOFF",
-  "PERSIST_HANDOFF",
-  "AUDIT_CANDIDATE",
-  "INTEGRATE_ACCEPTED_WORK",
-  "UNPIN_SESSION",
-  "CLOSE_STALE_WORKTREE",
-  "REMOVE_ACTIVE_TASK_SCOPE",
-  "MARK_CHAT_OUT_OF_SCOPE",
-  "ARCHIVE_VISIBLE_TASK",
-]);
-export const UNIVERSAL_TASK_CLOSEOUT_EVIDENCE = Object.freeze([
-  "ARCHIVE_RECEIPT",
-  "CHAT_OUT_OF_SCOPE_RECEIPT",
-  "CLOSURE_RECEIPT",
-  "HANDOFF_PRESERVATION_RECEIPT",
-  "INDEPENDENT_AUDIT_RECEIPT",
-  "INTEGRATION_RECEIPT",
-  "ROSTER_READBACK",
-  "STALE_WORKTREE_CLOSURE_RECEIPT",
-  "TASK_SCOPE_REMOVAL_RECEIPT",
-  "TYPED_HANDOFF",
-]);
-export const UNIVERSAL_TASK_CLOSEOUT_RECEIPT_SCHEMA = "agentos.universal_task_closeout_receipts.v1";
-export const UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES = Object.freeze({
-  PRESERVE_HANDOFF: "CONTROLLER_READBACK",
-  PERSIST_HANDOFF: "CONTROLLER_RECORD",
-  AUDIT_CANDIDATE: "INDEPENDENT_AUDITOR",
-  INTEGRATE_ACCEPTED_WORK: "CONTROLLER_INTEGRATION",
-  UNPIN_SESSION: "HOST_READBACK",
-  CLOSE_STALE_WORKTREE: "CONTROLLER_RECORD",
-  REMOVE_ACTIVE_TASK_SCOPE: "CONTROLLER_RECORD",
-  MARK_CHAT_OUT_OF_SCOPE: "CONTROLLER_RECORD",
-  ARCHIVE_VISIBLE_TASK: "HOST_READBACK",
-});
-export const UNIVERSAL_TASK_CLOSEOUT_MODES = Object.freeze([
-  "APPRENTICESHIP",
-  "BOOTSTRAP",
-  "CAMPAIGN",
-  "CASCADE",
-  "ITERATION",
-  "IMPORT",
-  "RAPID_PROTOTYPE",
-  "RAPID_PROTOTYPING",
-]);
-export const UNIVERSAL_DEVELOPMENT_MODES = Object.freeze([...UNIVERSAL_TASK_CLOSEOUT_MODES]);
-export const UNIVERSAL_RESPONSE_GATING_POLICY = Object.freeze({
-  controller: "control/universal-response-gating.mjs",
-  contract: "schemas/universal-response-handoff.v1.json",
-  catalog_source: "governance/gate-catalog.v1.json",
-  catalog_compiler: "control/gate-catalog-compiler.mjs",
-  applies_to_modes: Object.freeze([...UNIVERSAL_DEVELOPMENT_MODES, "ALL_DEVELOPMENT_MODES"]),
-  applies_to: Object.freeze(["DOCUMENTATION", "HANDOFF", "PROGRESS", "RESPONSE", "CLOSURE"]),
-  complete_requires: Object.freeze(["CATALOG_GRAPH_COMPLETE", "INDEPENDENT_CHECK_PASS", "PRESERVED_TYPED_HANDOFF"]),
-  unknown_behavior: "NEVER_PASSES",
-  not_applicable_behavior: "REQUIRES_APPLICABILITY_JUSTIFICATION",
-  public_payload: "SECRET_FREE_PROJECT_AGNOSTIC",
-});
-export const UNIVERSAL_TASK_CLOSEOUT_APPLICABILITY = Object.freeze([
-  ...UNIVERSAL_DEVELOPMENT_MODES,
-  "ALL_DEVELOPMENT_MODES",
-]);
-export const ARCHITECTURE_ACCEPTANCE_REQUIREMENTS = Object.freeze([
-  "SHARED_GENERAL_GOVERNANCE_LIBRARY_PRESENT",
-  "ROLE_SPECIFIC_LIBRARY_GENERATED_FROM_GENERAL_LIBRARY_AND_GOVERNANCE_TREE",
-  "GENERAL_AND_ROLE_LIBRARIES_SHARE_SOURCE_BINDING",
-  "BOOTSTRAP_PLAN_ADMITS_BOTH_GOVERNANCE_LAYERS",
-  "CONTROLLER_REPAIR_ADMISSION_REQUIRES_ARCHITECTURE_GATE",
-  "ARCHITECTURE_GATE_REJECTS_MISSING_GENERAL_LIBRARY",
-  "ARCHITECTURE_GATE_REJECTS_ROLE_LIBRARY_WITHOUT_TREE_BINDING",
-  "PUBLIC_PORTABLE_AND_SECRET_FREE",
-  "NO_UNRELATED_PATHS_CHANGED",
-]);
-
+const {
+  GOVERNANCE_ARCHITECTURE_PLAN_SCHEMA, GOVERNANCE_ARCHITECTURE_PLAN_KIND, GOVERNANCE_TREE_ROOTS, ARCHITECTURE_ACCEPTANCE_REQUIREMENTS,
+  UNIVERSAL_TASK_CLOSEOUT_SEQUENCE, UNIVERSAL_TASK_CLOSEOUT_EVIDENCE, UNIVERSAL_TASK_CLOSEOUT_RECEIPT_SCHEMA,
+  UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES, UNIVERSAL_TASK_CLOSEOUT_MODES, UNIVERSAL_DEVELOPMENT_MODES,
+  UNIVERSAL_RESPONSE_GATING_POLICY, UNIVERSAL_TASK_CLOSEOUT_APPLICABILITY,
+  universalTaskCloseoutPolicy, validateUniversalTaskCloseoutReceipts, compileUniversalTaskCloseoutReceipts,
+  assertUniversalTaskCloseoutMode, assertUniversalResponseGatingMode, assertUniversalDevelopmentMode,
+  validateUniversalTaskCloseoutForMode,
+} = universalGovernance;
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
 const TASK_GATE_IDS = new Set(TASK_GATE_QUESTIONS.map((question) => question.question_id));
-
 const DEFAULT_CLAUSES = Object.freeze([
   {
     clause_id: "GENERAL_INTENT_SCOPE",
@@ -213,60 +140,48 @@ const DEFAULT_CLAUSES = Object.freeze([
     hard_stop: "UNABLE_TO_CLOSE_TEMPORARY_WORK",
   },
 ]);
-
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
-
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
-
 function requireRecord(value, label) {
   assert(isRecord(value), `${label} must be an object`);
 }
-
 function requireString(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
   assert(!/[\u0000-\u001f\u007f]/u.test(value), `${label} contains control characters`);
 }
-
 function requireSha(value, label) {
   assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
 }
-
 function requireIdentifier(value, label) {
   requireString(value, label);
   assert(IDENTIFIER.test(value), `${label} is not a stable identifier`);
 }
-
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
   if (isRecord(value)) return Object.fromEntries(Object.keys(value).sort((a, b) => Buffer.from(a).compare(Buffer.from(b))).map((key) => [key, canonicalize(value[key])]));
   return value;
 }
-
 export function canonicalJson(value) {
   return JSON.stringify(canonicalize(value));
 }
-
 export function sha256(value) {
   return crypto.createHash("sha256").update(typeof value === "string" ? value : canonicalJson(value), "utf8").digest("hex");
 }
-
 function digestWithout(value, field) {
   const body = structuredClone(value);
   body[field] = null;
   return sha256(body);
 }
-
 function exactKeys(value, keys, label) {
   requireRecord(value, label);
   const actual = Object.keys(value).sort((a, b) => Buffer.from(a).compare(Buffer.from(b)));
   const expected = [...keys].sort((a, b) => Buffer.from(a).compare(Buffer.from(b)));
   assert(JSON.stringify(actual) === JSON.stringify(expected), `${label} fields mismatch`);
 }
-
 function sortedUniqueStrings(value, label, {allowEmpty = false} = {}) {
   assert(Array.isArray(value), `${label} must be an array`);
   if (!allowEmpty) assert(value.length > 0, `${label} must not be empty`);
@@ -275,114 +190,10 @@ function sortedUniqueStrings(value, label, {allowEmpty = false} = {}) {
   assert(new Set(sorted).size === sorted.length && JSON.stringify(value) === JSON.stringify(sorted), `${label} must be sorted and unique`);
   return value;
 }
-
 function assertPortable(value, label) {
   const text = JSON.stringify(value);
   assert(findPrivateContextLeaks(text).length === 0, `${label} contains private or provider-bound content`);
 }
-
-export function universalTaskCloseoutPolicy(mode = "ALL_DEVELOPMENT_MODES") {
-  assert(UNIVERSAL_TASK_CLOSEOUT_APPLICABILITY.includes(mode), `universal task closeout mode is invalid: ${mode}`);
-  return {
-    mode,
-    applies_to: [...UNIVERSAL_TASK_CLOSEOUT_APPLICABILITY],
-    receipt_schema: UNIVERSAL_TASK_CLOSEOUT_RECEIPT_SCHEMA,
-    receipt_compiler: "compileUniversalTaskCloseoutReceipts",
-    receipt_authorities: {...UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES},
-    sequence: [...UNIVERSAL_TASK_CLOSEOUT_SEQUENCE],
-    required_evidence: [...UNIVERSAL_TASK_CLOSEOUT_EVIDENCE],
-    controller_must_wait_for_integration: true,
-    archive_is_dynamic: true,
-    archive_requires_chat_out_of_scope: true,
-    archive_requires_active_scope_removal: true,
-    archive_requires_stale_worktree_closed: true,
-    archive_preconditions: [
-      "HANDOFF_PRESERVED",
-      "HANDOFF_PERSISTED",
-      "CANDIDATE_INDEPENDENTLY_AUDITED",
-      "WORKTREE_INTEGRATED",
-      "STALE_WORKTREE_CLOSED",
-      "ACTIVE_TASK_SCOPE_REMOVED",
-      "CHAT_OUT_OF_SCOPE",
-    ],
-  };
-}
-
-const CLOSEOUT_RECEIPT_REF = /^(?:opaque|ref|sha1|sha256|digest):[A-Za-z0-9._:-]+$/u;
-const CLOSEOUT_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
-
-export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false, label = "universal task closeout receipts"} = {}) {
-  assert(Array.isArray(receipts), `${label} must be an array`);
-  assert(receipts.length <= UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.length, `${label} contains too many receipts`);
-  const seen = new Set();
-  receipts.forEach((receipt, index) => {
-    exactKeys(receipt, ["sequence", "step", "receipt_ref", "authority", "status", "observed_at"], `${label} ${index}`);
-    assert(Number.isSafeInteger(receipt.sequence) && receipt.sequence === index + 1, `${label} ${index} sequence is invalid`);
-    const expectedStep = UNIVERSAL_TASK_CLOSEOUT_SEQUENCE[index];
-    assert(receipt.step === expectedStep, `${label} ${index} must prove ${expectedStep}`);
-    assert(typeof receipt.receipt_ref === "string" && CLOSEOUT_RECEIPT_REF.test(receipt.receipt_ref), `${label} ${index} receipt reference is invalid`);
-    assert(receipt.authority === UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[receipt.step], `${label} ${index} authority is invalid for ${receipt.step}`);
-    assert(receipt.status === "PROVEN", `${label} ${index} is not proven`);
-    assert(typeof receipt.observed_at === "string" && CLOSEOUT_TIMESTAMP.test(receipt.observed_at) && Number.isFinite(Date.parse(receipt.observed_at)), `${label} ${index} timestamp is invalid`);
-    assert(!seen.has(receipt.receipt_ref), `${label} contains duplicate receipt references`);
-    seen.add(receipt.receipt_ref);
-    assertPortable(receipt, `${label} ${index}`);
-  });
-  if (closed) assert(receipts.length === UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.length, `${label} is incomplete before archive`);
-  return receipts;
-}
-
-export function compileUniversalTaskCloseoutReceipts({mode = "ALL_DEVELOPMENT_MODES", receiptRefs, observedAt, label = "universal task closeout receipts"} = {}) {
-  assertUniversalTaskCloseoutMode(mode);
-  exactKeys(receiptRefs, UNIVERSAL_TASK_CLOSEOUT_SEQUENCE, `${label} references`);
-  assert(typeof observedAt === "string" && CLOSEOUT_TIMESTAMP.test(observedAt) && Number.isFinite(Date.parse(observedAt)), `${label} observation time is invalid`);
-  const receipts = UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.map((step, index) => ({
-    sequence: index + 1,
-    step,
-    receipt_ref: receiptRefs[step],
-    authority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[step],
-    status: "PROVEN",
-    observed_at: observedAt,
-  }));
-  return validateUniversalTaskCloseoutReceipts(receipts, {closed: true, label});
-}
-
-export function assertUniversalTaskCloseoutMode(mode) {
-  return universalTaskCloseoutPolicy(mode);
-}
-
-export function assertUniversalResponseGatingMode(mode, contexts = UNIVERSAL_RESPONSE_GATING_POLICY.applies_to) {
-  assert(UNIVERSAL_DEVELOPMENT_MODES.includes(mode), `universal response-gating mode is invalid: ${mode}`);
-  assert(Array.isArray(contexts) && contexts.length > 0, "universal response-gating contexts must not be empty");
-  for (const context of contexts) {
-    assert(UNIVERSAL_RESPONSE_GATING_POLICY.applies_to.includes(context), `universal response-gating context is invalid: ${context}`);
-  }
-  return true;
-}
-
-export function assertUniversalDevelopmentMode(mode, contexts = UNIVERSAL_RESPONSE_GATING_POLICY.applies_to) {
-  assert(UNIVERSAL_DEVELOPMENT_MODES.includes(mode), `universal development mode is invalid: ${mode}`);
-  assertUniversalTaskCloseoutMode(mode);
-  assertUniversalResponseGatingMode(mode, contexts);
-  return {
-    mode,
-    closeout: universalTaskCloseoutPolicy(mode),
-    response_handoff_gating: {
-      ...structuredClone(UNIVERSAL_RESPONSE_GATING_POLICY),
-      applies_to_modes: [...UNIVERSAL_RESPONSE_GATING_POLICY.applies_to_modes],
-      applies_to: [...contexts],
-    },
-  };
-}
-
-export function validateUniversalTaskCloseoutForMode(mode, receipts, {closed = false, label = null} = {}) {
-  assertUniversalTaskCloseoutMode(mode);
-  return validateUniversalTaskCloseoutReceipts(receipts, {
-    closed,
-    label: label ?? `${mode} universal task closeout receipts`,
-  });
-}
-
 function validateClause(clause, index) {
   exactKeys(clause, ["clause_id", "domain", "rule", "required_evidence", "gate_question_ids", "decision_classes", "hard_stop"], `general clause ${index}`);
   requireIdentifier(clause.clause_id, `general clause ${index} ID`);
@@ -394,7 +205,6 @@ function validateClause(clause, index) {
   sortedUniqueStrings(clause.decision_classes, `general clause ${clause.clause_id} decisions`);
   requireIdentifier(clause.hard_stop, `general clause ${clause.clause_id} hard stop`);
 }
-
 export function validateGeneralGovernanceLibrary(library) {
   exactKeys(library, ["schema", "version", "library_kind", "source_commit", "source_tree", "bootstrap_plan_sha256", "task_gate_catalog_sha256", "required_domains", "universal_closeout", "response_handoff_gating", "clauses", "digest"]);
   assert(library.schema === GENERAL_GOVERNANCE_SCHEMA && library.version === 1, "general governance library identity is invalid");
@@ -459,7 +269,6 @@ export function validateGeneralGovernanceLibrary(library) {
   assertPortable(library, "general governance library");
   return library;
 }
-
 export function compileGeneralGovernanceLibrary({sourceCommit, sourceTree, bootstrapPlanSha256, clauses = DEFAULT_CLAUSES} = {}) {
   requireString(sourceCommit, "general governance source commit");
   requireString(sourceTree, "general governance source tree");
@@ -483,7 +292,6 @@ export function compileGeneralGovernanceLibrary({sourceCommit, sourceTree, boots
   library.digest = digestWithout(library, "digest");
   return validateGeneralGovernanceLibrary(library);
 }
-
 export function compileGovernanceArchitecturePlan({questionRoots = GOVERNANCE_TREE_ROOTS, acceptanceRequirements = ARCHITECTURE_ACCEPTANCE_REQUIREMENTS} = {}) {
   assert(JSON.stringify(questionRoots) === JSON.stringify(GOVERNANCE_TREE_ROOTS), "governance architecture roots must use the canonical question tree roots");
   assert(JSON.stringify(acceptanceRequirements) === JSON.stringify(ARCHITECTURE_ACCEPTANCE_REQUIREMENTS), "governance architecture acceptance requirements are incomplete or reordered");
@@ -505,7 +313,6 @@ export function compileGovernanceArchitecturePlan({questionRoots = GOVERNANCE_TR
   plan.digest = digestWithout(plan, "digest");
   return validateGovernanceArchitecturePlan(plan);
 }
-
 export function validateGovernanceArchitecturePlan(plan) {
   exactKeys(plan, ["schema", "version", "repair_kind", "shared_general_library_required", "generated_role_specific_library_required", "generation_source", "role_definition_source", "role_catalog_rule", "question_tree_roots", "controller_gate", "acceptance_requirements", "excluded_admission_roles", "digest"]);
   assert(plan.schema === GOVERNANCE_ARCHITECTURE_PLAN_SCHEMA && plan.version === 1, "governance architecture plan identity is invalid");
@@ -523,7 +330,6 @@ export function validateGovernanceArchitecturePlan(plan) {
   assertPortable(plan, "governance architecture plan");
   return plan;
 }
-
 export function defaultGeneralGovernanceClauses() {
   return structuredClone(DEFAULT_CLAUSES);
 }

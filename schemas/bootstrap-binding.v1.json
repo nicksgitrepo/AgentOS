@@ -962,7 +962,11 @@
     },
     "governance_library_controller": {
       "path": "control/governance-library.mjs",
-      "sha256": "8d5f805dfbaa227517f0b71aa55fef1acc0d417fe0dd9c01d24dce2050eafce2"
+      "sha256": "e9b772d30e3c91d48e9fe46f36847cd47b24daea350288475467d4e1a06a78b1"
+    },
+    "governance_universal_controller": {
+      "path": "control/governance-universal.mjs",
+      "sha256": "91b8e82d70bf6d43ac783a2a9f03658e962f007a5b113e9f8f13bb46de8969cb"
     },
     "governance_library_contract": {
       "path": "schemas/governance-library.v1.json",
@@ -1046,7 +1050,7 @@
     },
     "role_governance_library_verifier": {
       "path": "tests/verify-role-governance-library.mjs",
-      "sha256": "9aecf69208f03b6b8576bd9fcda1400079a40eac06f3b7604cf21f7fade1aea0"
+      "sha256": "8d4f46ee7fb1932555203a9b7a95d1b9d10afb46eef960c48dff4f8eda5fcd03"
     },
     "native_session_team_controller": {
       "path": "control/native-session-team.mjs",
@@ -1094,7 +1098,7 @@
     },
     "rapid_prototype_controller": {
       "path": "control/rapid-prototype/index.mjs",
-      "sha256": "adc3fdb5af208ab79b63112cfe13c7dfbdfa38c6ea6bbe86214b10104df41f9f"
+      "sha256": "448d1b541e722992b472bfce5a461cf53beb8dd64a1cecb2ab441c9508054b18"
     },
     "rapid_delivery_closure_controller": {
       "path": "control/rapid-prototype/delivery-closure.mjs",

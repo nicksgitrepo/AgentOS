@@ -146,13 +146,13 @@ const roleLibrary = generateRoleSpecificGovernanceLibrary({
       role_id: "BOUNDARY_REVIEWER",
       public_name: "Boundary Reviewer",
       question_ids: ["SEC-GENERAL-001"],
-      shared_clause_ids: [generalIds.find((id) => id === "GENERAL_RECOVERY_BOUNDARIES"), "GENERAL_RESPONSE_HANDOFF_GATING"].sort(),
+      shared_clause_ids: [generalIds.find((id) => id === "GENERAL_RECOVERY_BOUNDARIES"), "GENERAL_DELIVERY_CLOSURE", "GENERAL_RESPONSE_HANDOFF_GATING"].sort(),
     },
     {
       role_id: "INTENT_REGULATOR",
       public_name: "Intent Regulator",
       question_ids: ["DB-GENERAL-001", "FR-GENERAL-001"].sort(),
-      shared_clause_ids: ["GENERAL_INTENT_SCOPE", "GENERAL_RESPONSE_HANDOFF_GATING", "GENERAL_SOURCE_BINDING"].sort(),
+      shared_clause_ids: ["GENERAL_DELIVERY_CLOSURE", "GENERAL_INTENT_SCOPE", "GENERAL_RESPONSE_HANDOFF_GATING", "GENERAL_SOURCE_BINDING"].sort(),
     },
   ],
 });
