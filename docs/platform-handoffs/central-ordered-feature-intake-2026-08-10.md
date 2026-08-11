@@ -790,3 +790,14 @@ The special Memory owner’s isolated checkpoint is
 passing. It remains `ACTIVE_DEVELOPMENT_UNACCEPTED`, build/test-only, outside
 ordinary cursors, with integration, migration, release, and activation false.
 No ordinary cursor advanced; five ordinary slots and zero Memory slots remain.
+
+## Memory custody correction — 2026-08-11
+
+The special Memory owner `019fee1e-5e78-78c2-a788-ad7a27eba19e` is explicitly
+outside ordinary feature/Platform dispatch. Canonical model/reasoning is
+`gpt-5.6-sol / medium`; state remains `ACTIVE_DEVELOPMENT_UNACCEPTED` with
+isolated build/test custody only. Central may read its compact durable receipt,
+but must not message, dispatch, redirect, recover, switch model, or assign
+implementation work. The prior dispatch marker is preserved as superseded
+history. Memory slots and ordinary cursor participation remain zero/false;
+ordinary orchestration continues only for the five non-memory slots.

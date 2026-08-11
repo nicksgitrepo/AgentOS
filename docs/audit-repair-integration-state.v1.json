@@ -561,6 +561,32 @@
       "true_external_blocker": "NONE",
       "next_action": "LET_EXISTING_VISIBLE_TASKS_COMPLETE_BOUNDED_REAUDITS_THEN_PROJECT_TYPED_RESULTS_WITHOUT_CURSOR_ADVANCE"
     },
+    "memory_custody_correction_2026_08_11": {
+      "record_layer": "CURRENT_OWNER_CUSTODY_CORRECTION",
+      "correction_status": "SPECIAL_MEMORY_TASK_REMOVED_FROM_ORDINARY_DISPATCH_CONTROL",
+      "owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+      "canonical_model": "gpt-5.6-sol",
+      "canonical_reasoning_effort": "medium",
+      "repository_ref": "OWNER_ISOLATED_MEMORY_REPOSITORY",
+      "state": "ACTIVE_DEVELOPMENT_UNACCEPTED",
+      "read_only_durable_receipt_allowed": true,
+      "ordinary_feature_worker": false,
+      "ordinary_slot_count": 0,
+      "ordinary_cursor_participant": false,
+      "dispatch_target": false,
+      "message_or_redirect_authority": false,
+      "model_switch_authority": false,
+      "implementation_assignment_authority": false,
+      "integration": false,
+      "migration": false,
+      "release": false,
+      "activation": false,
+      "memory_slot_count": 0,
+      "supersedes_ref": "platform_pipeline.heartbeat_dispatch_2026_08_11T0523Z.dispatched_existing_tasks.SPECIAL_MEMORY_ARCHITECTURE",
+      "history_policy": "PRESERVE_PRIOR_RECEIPTS_AND_DISPATCH_HISTORY_AS_NON_AUTHORITATIVE",
+      "ordinary_orchestration_next_action": "CONTINUE_ONLY_FIVE_ORDINARY_NON_MEMORY_SLOTS_AND_PLATFORM_BLOCKER_CHAIN",
+      "special_lane_next_action": "READ_ONLY_COMPACT_DURABLE_RECEIPT_ONLY_UNTIL_EXACT_OWNER_ACCEPTANCE_AND_GOVERNED_INTEGRATION_DECISION"
+    },
     "receipt_projection_authoritative_ref":"platform_pipeline.current_receipt_projection",
     "receipt_projection_historical_marker":{"object_ref":"platform_pipeline.receipt_projection","record_layer":"HISTORICAL_NON_CURRENT_RECEIPT_PROJECTION","historical_current_candidate":{"commit":"8f0815a214910141daeee27067139b6a2744761b","tree":"3e6ad35db20a2a90658b3641590b2defa02977ed"},"superseded_by":"platform_pipeline.current_receipt_projection","supersession_reason":"The 8f/3e projection is preserved as history; current Gate/Native receipts bind to b499/fe893e29.","consumption":false,"clearance":false,"slot_release":false},
     "feature_rebind_projection": {
@@ -681,5 +707,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PROOF_PENDING_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL",
-  "state_sha256": "9cc1653397873027cd6341ad8b2ae108ecdc85906412df86e6da54760e3a3bd5"
+  "state_sha256": "681ad73a0aad3199c3d8a3ba9ca128e6c5e570b1ae3b77c465f57c185c3ad7f3"
 }

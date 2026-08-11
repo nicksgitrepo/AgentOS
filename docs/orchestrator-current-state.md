@@ -847,3 +847,15 @@ Existing visible tasks were reactivated for bounded, source-bound work:
 Dispatch activation was verified immediately; no duplicate or hidden worker
 was created. Cursors remain `FEATURE_CURSOR_000`, ordinary slots `5`, Memory
 slots `0`, and all consumption, clearance, and slot-release flags remain false.
+
+## Memory custody correction — 2026-08-11
+
+The special Memory task `019fee1e-5e78-78c2-a788-ad7a27eba19e` is not an
+ordinary feature worker or dispatch target. Its canonical custody is
+`gpt-5.6-sol / medium`, `ACTIVE_DEVELOPMENT_UNACCEPTED`, isolated build/test
+only, with no ordinary slot, cursor, integration, migration, release, or
+activation authority. Central orchestration may read only its compact durable
+receipt; it must not message, dispatch, redirect, recover, switch its model, or
+assign implementation work. The earlier heartbeat dispatch record is retained
+as superseded history. Ordinary orchestration continues only across the five
+non-memory slots and the existing Platform proof chain.
