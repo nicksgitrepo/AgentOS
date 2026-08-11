@@ -397,7 +397,7 @@ function compilePhases(goal, intent, delivery) {
       name: "Make the first useful result",
       goal_ref: goal.goal_ref,
       entry_conditions: ["SCOPE_BOUND", "HARD_BOUNDARIES_BOUND"],
-      exit_conditions: [intent.first_result.value],
+      exit_conditions: [intent.first_result.value ?? "FIRST_RESULT_BOUND"],
       status: "PLANNED",
       certainty: "INFERRED",
       provenance: "COMPILER",
@@ -581,7 +581,7 @@ function compileProjectContractInternal({conversation, discoveryFacts = [], disc
   const delivery = ownerField(conversation, "delivery.finish");
   const governanceInputs = compileGovernanceInputs(conversation);
   const blockingQuestions = compileOpenQuestions(conversation, discoveryBinding);
-  const statusBeforeReassessment = blockingQuestions.length === 0 ? "READY" : "DRAFT";
+  const statusBeforeReassessment = conversation.status === "READY_FOR_CONTRACT" && !blockingQuestions.some((question) => question.blocking) ? "READY" : "DRAFT";
   const parts = {intent, scope};
   const currentIntentScopeSha256 = intentScopeDigest(parts);
   const requiresJsa = changedIntentOrScope(previousContract, currentIntentScopeSha256);
