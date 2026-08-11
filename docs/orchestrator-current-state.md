@@ -2042,3 +2042,8 @@ contacted. Deferred real-host/provider legs remain evidence ceilings.
 - The lightweight privacy selector invocation before the pressure freeze remained a HOLD
   on one normative `SESSION_OR_TASK_IDENTITY` category in
   `docs/audit-repair-integration-state.v1.json`; no privacy pass or clearance is claimed.
+
+Publication readback for Recovery 50: Central commit
+`f148e11d16e81d201a20460b880fe9db242c368d`, tree
+`7fa1caded7cbc8a4d80cf61e5169cfc6d335c75c`. The worktree is clean. No
+independent-clearance task was activated during the shared-host pressure freeze.
