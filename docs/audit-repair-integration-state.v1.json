@@ -1309,6 +1309,7 @@
       "focused_proof": "PRIVATE_CONTEXT_DETECTOR_AND_RAPID_CODE_HYGIENE_PASS",
       "comprehensive_proof": "FAIL_PORTABLE_AUTHORITY_LITERAL_DOCS_FEATURE_AUDITS_ROADMAP_03_CONTROLLER_INTENT_AUDITREPORT",
       "exact_blocker": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md contains provider-specific context and requires additive compatibility classification or a project-agnostic replacement",
+      "blocked_record_sha256": "aeeaea94525d0174be0b2b43f8bdcd5bbe9157efcbc52fa7896f454b6dc99184",
       "source_bound_receipts": {"gate":"REBIND_REQUIRED_AFTER_CENTRAL_REPAIR","native":"REBIND_REQUIRED_AFTER_CENTRAL_REPAIR","roadmap06":"REBIND_REQUIRED_AFTER_CENTRAL_REPAIR","independent_clearance":"HOLD"},
       "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
       "memory_boundary": "READ_ONLY_RECEIPT_ONLY_NO_DISPATCH",
@@ -1329,5 +1330,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "PORTABILITY_REPAIR_ROADMAP03_AUDIT_COMPATIBILITY_PENDING",
-  "state_sha256": "6a84175b6ceaf151631419fd2911742bfcc0698a0d55cf5e572a188e4fe439e4"
+  "state_sha256": "06b09ab9ff2a376add8762be0068b5c39ca9b4dbd818544ea60a19a00600544d"
 }
