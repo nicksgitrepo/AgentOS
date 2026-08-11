@@ -1,0 +1,183 @@
+{
+  "schema": "agentos.memory_routing_amendment.v1",
+  "version": 1,
+  "status": "DORMANT_DESIGN_PENDING",
+  "authority": "OWNER_ROUTING_AMENDMENT",
+  "campaign_id": "AGENTOS_SELF_DEVELOPMENT_WAVE_03",
+  "inventory_ref": "docs/feature-inventory.v1.json",
+  "platform_feature_map_ref": "docs/platform-feature-map.v1.json",
+  "special_lane": {
+    "lane_id": "SPECIAL_MEMORY_ARCHITECTURE",
+    "owner_task_id": "019fee1e-5e78-78c2-a788-ad7a27eba19e",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "repository_ref": "CANONICAL_SAVED_AGENTOS_WORK_REPOSITORY",
+    "state": "DORMANT_DESIGN_PENDING",
+    "custody": [
+      "NO_GOAL",
+      "NO_WORKTREE",
+      "NO_PRODUCT_EDIT",
+      "NO_INTEGRATION",
+      "NO_RELEASE"
+    ],
+    "activation_gate": "EXPLICIT_OWNER_DESIGN_ACCEPTANCE_THEN_DEVELOPMENT_AUTHORIZATION"
+  },
+  "memory_scope": {
+    "feature_ids": [
+      "ROADMAP_08_MEMORY_CAPSULES",
+      "PROJECT_MEMORY_LEDGER",
+      "BOUNDED_PROJECT_MAPS",
+      "ROADMAP_10_MAPS_INTELLIGENCE"
+    ],
+    "semantic_capabilities": [
+      "STRUCTURED_MEMORY",
+      "PERSISTENT_PROJECT_MEMORY",
+      "REPLAY_AND_PROJECTION_SEMANTICS",
+      "CAPSULE_MEMORY_BEHAVIOR",
+      "RETENTION_RETRIEVAL_AND_PRIVACY_SEMANTICS",
+      "EQUIVALENT_MEMORY_OR_DERIVED_MEMORY_CAPABILITIES"
+    ],
+    "normal_queue_eligible": false,
+    "ordinary_platform_consumption": false,
+    "historical_inputs_only": true
+  },
+  "queue_accounting": {
+    "canonical_inventory_order_preserved": true,
+    "canonical_inventory_feature_count": 37,
+    "ordinary_queue_exclusions": [
+      "ROADMAP_08_MEMORY_CAPSULES",
+      "PROJECT_MEMORY_LEDGER",
+      "BOUNDED_PROJECT_MAPS",
+      "ROADMAP_10_MAPS_INTELLIGENCE"
+    ],
+    "ordinary_queue_order": [
+      "ROADMAP_01_PORTABLE_KERNEL",
+      "ROADMAP_02_LAYERED_GOVERNANCE",
+      "ROADMAP_03_CONTROLLER_INTENT",
+      "ROADMAP_04_TASK_ROUTING_CONTEXT",
+      "ROADMAP_05_LOCAL_ADAPTERS",
+      "ROADMAP_06_CAMPAIGN_LIFECYCLE",
+      "ROADMAP_07_PROOF_ACCEPTANCE",
+      "ROADMAP_09_RELEASE_MIGRATION",
+      "ROADMAP_11_WORKFLOW_DISTILLATION",
+      "ROADMAP_12_REMOTE_DELIVERY",
+      "BOOTSTRAP_PROJECT_CONTRACT",
+      "DYNAMIC_OWNER_CONVERSATION",
+      "FOUR_LIBRARY_GOVERNANCE",
+      "PROJECT_GOVERNANCE_PERSISTENCE",
+      "FEATURE_COMPLETENESS_AUDITOR_SEED",
+      "PERSISTENT_INTENT_RUNTIME",
+      "NATIVE_HOST_SESSION_LIFECYCLE",
+      "DYNAMIC_PROJECT_LANES",
+      "PARALLEL_CAMPAIGN_LIFECYCLE",
+      "MODEL_TASK_ROUTING",
+      "OFFLINE_LOCAL_MODE",
+      "PROVIDER_DISCOVERY",
+      "PRIVATE_CONTROL_INSTANCE",
+      "RELEASE_CANDIDATE_ROLLOUT",
+      "APPRENTICESHIP_WORKFLOW_LEARNING",
+      "NAMED_GATE_DECISION_TREE",
+      "EVIDENCE_IDENTITY_HANDOFFS",
+      "REPAIR_RECOVERY_LOOP",
+      "DELIVERY_CLOSURE_BOUNDARY",
+      "SECURITY_PRIVACY_PERSISTENCE",
+      "OWNER_PUBLIC_SURFACE",
+      "UNIVERSAL_RESPONSE_GATING",
+      "PORTABILITY_SOURCE_HYGIENE"
+    ],
+    "active_normal_slot_count": 6,
+    "memory_slot_count": 0,
+    "next_eligible_non_memory_feature": "ROADMAP_07_PROOF_ACCEPTANCE",
+    "next_selection_status": "SELECT_ONLY_AFTER_A_NORMAL_SLOT_OPENS",
+    "no_disguised_memory_refill": true
+  },
+  "platform_cursor_accounting": {
+    "authoritative_cursors_before": {
+      "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+      "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+      "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+    },
+    "authoritative_cursors_after": {
+      "PLATFORM_GATE_RESPONSE": "FEATURE_CURSOR_000",
+      "PLATFORM_NATIVE_SESSION_EVIDENCE": "FEATURE_CURSOR_000",
+      "PLATFORM_PRIVATE_CONTROL_MEMORY": "FEATURE_CURSOR_000"
+    },
+    "platform_private_control_memory": {
+      "status": "WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE",
+      "local_marker": "FEATURE_CURSOR_004",
+      "local_marker_is_non_authoritative": true,
+      "historical_candidates_preserved": true,
+      "downstream_consumed": false,
+      "updated_platform_handoff_sha256": "a0b6e6e8bbc24f1a937aeeba307237b382d18ea7453c80a6228dfb14ea0e0b89",
+      "updated_platform_audit_sha256": "9b6a3d0ab1dc259f296148913338f1a752f40288903b1cf9015b83305c0db986"
+    },
+    "memory_consumption_advanced": false
+  },
+  "preserved_workers": [
+    {
+      "feature_id": "ROADMAP_08_MEMORY_CAPSULES",
+      "task_id": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
+      "worktree_id": "HOST_WORKTREE_7C07",
+      "candidate_commit": "1fba3305c959df4de1b26c39441d8d7769e61686",
+      "candidate_tree": "bbc298bad534740a50e64acec910d81f459c790f",
+      "worktree_state": "DIRTY_PRESERVED",
+      "task_state": "IDLE",
+      "custody_state": "WAITING_DESIGN_TRANSFER",
+      "report_ref": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
+      "report_sha256": "254fbd01eae146acbce82b618cc1eb896478cd55a378064c6abcf618bfeb6c18",
+      "platform_handoff_ref": "docs/platform-handoffs/private-control-memory-maps-platform-handoff.md",
+      "platform_handoff_sha256": "a0b6e6e8bbc24f1a937aeeba307237b382d18ea7453c80a6228dfb14ea0e0b89",
+      "downstream_consumed": false
+    },
+    {
+      "feature_id": "PROJECT_MEMORY_LEDGER",
+      "task_id": "019fdcfa-52b0-73f3-8fd4-4e3ef665e09c",
+      "worktree_id": "HOST_WORKTREE_431F",
+      "candidate_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+      "candidate_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+      "worktree_state": "DIRTY_PRESERVED",
+      "task_state": "NOT_LOADED_TERMINAL_RECORD",
+      "custody_state": "WAITING_DESIGN_TRANSFER",
+      "report_ref": "docs/feature-audits/PROJECT_MEMORY_LEDGER/auditreport.md",
+      "report_sha256": "c2565d93d663b72e8a64bd2584ff042951c513abd03a47b56b25ad00de4dfac4",
+      "downstream_consumed": false
+    },
+    {
+      "feature_id": "BOUNDED_PROJECT_MAPS",
+      "task_id": "019fdcfa-55ac-7691-86b6-e11e9f47bd15",
+      "worktree_id": "HOST_WORKTREE_3596",
+      "candidate_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+      "candidate_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+      "worktree_state": "DIRTY_PRESERVED",
+      "task_state": "NOT_LOADED_TERMINAL_RECORD",
+      "custody_state": "WAITING_DESIGN_TRANSFER",
+      "report_ref": "docs/feature-audits/BOUNDED_PROJECT_MAPS/auditreport.md",
+      "report_sha256": "241fef1b080a5294c6aa8c116d111c35730b37d91b4027be113da5dcb1d91278",
+      "downstream_consumed": false
+    },
+    {
+      "feature_id": "ROADMAP_10_MAPS_INTELLIGENCE",
+      "task_id": "019fdcf9-e853-7bc0-b44b-d5269f982261",
+      "worktree_id": "HOST_WORKTREE_AB45",
+      "candidate_commit": "1d7619f52a037c71fbfd65d3186cede21e9823ad",
+      "candidate_tree": "1218c433f210963e1e0b08fc3cfaef45eb646c6a",
+      "worktree_state": "DIRTY_PRESERVED",
+      "task_state": "NOT_LOADED_TERMINAL_RECORD",
+      "custody_state": "WAITING_DESIGN_TRANSFER",
+      "report_ref": "docs/feature-audits/ROADMAP_10_MAPS_INTELLIGENCE/auditreport.md",
+      "report_sha256": "6ca9a05146af3e8487ceb4b5f1eee10d7d5c075327afa282b861dde959f72390",
+      "preservation_manifest_ref": "docs/feature-audits/ROADMAP_10_MAPS_INTELLIGENCE/central-intake-preservation-manifest-2026-08-09.md",
+      "preservation_manifest_sha256": "c5283e9e5b9ad43e2fe3801a84cb3c85a3a8a05d82cb4a995ddc5d8e09666496",
+      "downstream_consumed": false
+    }
+  ],
+  "preservation_policy": {
+    "source_reports_commits_worktrees_and_proof": "HISTORICAL_UNACCEPTED_INPUTS",
+    "historical_artifacts_define_or_constrain_future_owner_design": false,
+    "peer_worktree_edits": false,
+    "archive_or_removal": "NOT_AUTHORIZED",
+    "implementation_or_repair": "NOT_AUTHORIZED",
+    "special_lane_activation": "NOT_AUTHORIZED"
+  },
+  "recorded_at_utc": "2026-08-11T00:04:32Z"
+}

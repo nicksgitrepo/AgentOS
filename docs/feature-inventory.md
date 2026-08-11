@@ -56,3 +56,18 @@ and goal digest again at every handoff and closeout.
 The inventory is `PREPARED_NOT_ACTIVATED`; it is not a production acceptance
 record and does not authorize deployment, release activation, or external
 delivery.
+
+## Memory routing amendment
+
+`docs/memory-routing-amendment.v1.json` preserves the canonical 37-entry
+inventory order while excluding `ROADMAP_08_MEMORY_CAPSULES`,
+`PROJECT_MEMORY_LEDGER`, `BOUNDED_PROJECT_MAPS`, and
+`ROADMAP_10_MAPS_INTELLIGENCE` from the ordinary feature queue and ordinary
+Platform consumption. Their existing source, reports, commits, worktrees, and
+proof remain historical/unaccepted. The single special lane is
+`SPECIAL_MEMORY_ARCHITECTURE`, owned by task
+`019fee1e-5e78-78c2-a788-ad7a27eba19e`, and is
+`DORMANT_DESIGN_PENDING` with no goal, worktree, product edit, integration, or
+release custody. The next eligible non-memory capability is
+`ROADMAP_07_PROOF_ACCEPTANCE`, but it is not selected until a normal slot and
+clean custody record are explicit.

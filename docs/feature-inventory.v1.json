@@ -85,7 +85,7 @@
       "report_path": "docs/platform-audits/PLATFORM_PRIVATE_CONTROL_MEMORY/auditreport.md",
       "auditor_task_id": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
       "worktree_id": "HOST_WORKTREE_7C07",
-      "status": "HANDOFF_RECEIVED"
+      "status": "WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE"
     }
   ],
   "features": [
@@ -167,7 +167,7 @@
       "report_path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
       "auditor_task_id": "019fdcf9-a416-77f0-91a2-e3e2535eb2ec",
       "worktree_id": "HOST_WORKTREE_7C07",
-      "status": "CENTRAL_INTEGRATION_PENDING"
+      "status": "SPECIAL_MEMORY_LANE_DORMANT_DESIGN_PENDING"
     },
     {
       "feature_id": "ROADMAP_09_RELEASE_MIGRATION",
@@ -187,7 +187,7 @@
       "report_path": "docs/feature-audits/ROADMAP_10_MAPS_INTELLIGENCE/auditreport.md",
       "auditor_task_id": "019fdcf9-e853-7bc0-b44b-d5269f982261",
       "worktree_id": "HOST_WORKTREE_AB45",
-      "status": "CENTRAL_INTEGRATION_PENDING"
+      "status": "SPECIAL_MEMORY_LANE_DORMANT_DESIGN_PENDING"
     },
     {
       "feature_id": "ROADMAP_11_WORKFLOW_DISTILLATION",
@@ -317,7 +317,7 @@
       "report_path": "docs/feature-audits/PROJECT_MEMORY_LEDGER/auditreport.md",
       "auditor_task_id": "019fdcfa-52b0-73f3-8fd4-4e3ef665e09c",
       "worktree_id": "HOST_WORKTREE_431F",
-      "status": "CENTRAL_INTEGRATION_PENDING"
+      "status": "SPECIAL_MEMORY_LANE_DORMANT_DESIGN_PENDING"
     },
     {
       "feature_id": "BOUNDED_PROJECT_MAPS",
@@ -327,7 +327,7 @@
       "report_path": "docs/feature-audits/BOUNDED_PROJECT_MAPS/auditreport.md",
       "auditor_task_id": "019fdcfa-55ac-7691-86b6-e11e9f47bd15",
       "worktree_id": "HOST_WORKTREE_3596",
-      "status": "AUDIT_IN_PROGRESS"
+      "status": "SPECIAL_MEMORY_LANE_DORMANT_DESIGN_PENDING"
     },
     {
       "feature_id": "OFFLINE_LOCAL_MODE",

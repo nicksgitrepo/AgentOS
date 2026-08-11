@@ -5,6 +5,9 @@ operational readback, not an activation, acceptance, merge, release, or
 authorization receipt. The canonical machine-readable campaign contracts
 remain `docs/audit-repair-integration-state.v1.json` and
 `docs/platform-feature-map.v1.json`.
+Memory routing is recorded in `docs/memory-routing-amendment.v1.json` as one
+dormant special lane inside this pyramid, not as a normal feature slot or a
+separate workflow.
 
 ## Custody
 
@@ -54,28 +57,60 @@ Platform intake; none is downstream-consumed or archive-eligible.
 baseline `d885e733` / `5f6ed007`, report SHA-256
 `dce9522471aa6a1be14def06c7d1d651358e4d1fcf5facdec30e9549952d9638`, return
 owner `PLATFORM_NATIVE_SESSION_EVIDENCE`. Its typed handoff is inline in the
-report; Native review is pending and it is not consumed early.
+report; Native has reviewed it as source-bound and held it pending clearance;
+it is not consumed early.
 
 ## Platform roster and cursors
 
 | Platform owner | Task | Worktree | Authoritative cursor | Current disposition |
 | --- | --- | --- | --- | --- |
 | `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 independently acknowledged with no repair; local marker `FEATURE_CURSOR_001_LOCAL_APPEND_ONLY`; clearance remains pending. |
-| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | Central ROADMAP_05 receipt recorded; ROADMAP_06 final candidate is ready for ordered review. |
-| `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | Position-16 handoff reviewed and deferred; no source consumed. |
+| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05 reconciled with no repair; ROADMAP_06 source-bound and held pending Native clearance; local marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`; no central consumption. |
+| `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; historical candidates preserved; no source consumed. |
+
+Native’s exact ordered receipt binds local HEAD/tree
+`590c07ddd4be7a8c24727c24b40808e44ca7357d` /
+`f1b358d87e6a969fb9631e202a3d478540edd4d9`, ROADMAP_05
+`REVIEWED_RECONCILED_NO_REPAIR_REQUEST`, and ROADMAP_06
+`REVIEWED_SOURCE_BOUND_HELD_PENDING_NATIVE_CLEARANCE`; updated Platform
+handoff/audit SHA-256 values are `070be05d41de841e2b153c503b25f5e22ecfb4743ac301e55989be0d5f25f753` /
+`6ce1eb1f3d06773f54381870c1f437be12c9fde03148c355e88245579ed6a047`.
 
 Platform-local review markers such as `FEATURE_CURSOR_003_LOCAL_APPEND_ONLY`
 or `FEATURE_CURSOR_004` are evidence-only. They do not advance the Controller
 cursor. Only an exact Central-owned ordered intake receipt may change an
 authoritative cursor.
 
+## Memory special lane and ordinary queue accounting
+
+- Canonical owner: `019fee1e-5e78-78c2-a788-ad7a27eba19e`, model/reasoning
+  `gpt-5.6-sol / medium`, repository `CANONICAL_SAVED_AGENTOS_WORK_REPOSITORY`.
+- State: `DORMANT_DESIGN_PENDING`; custody is `NO_GOAL / NO_WORKTREE /
+  NO_PRODUCT_EDIT / NO_INTEGRATION / NO_RELEASE`.
+- Excluded from ordinary feature and Platform consumption:
+  `ROADMAP_08_MEMORY_CAPSULES`, `PROJECT_MEMORY_LEDGER`,
+  `BOUNDED_PROJECT_MAPS`, and `ROADMAP_10_MAPS_INTELLIGENCE`, including
+  structured memory, replay/projection, capsule, retention/retrieval/privacy,
+  and equivalent derived-memory semantics.
+- The canonical 37-entry inventory order remains preserved for historical
+  coverage. The ordinary queue is the filtered 33-entry order in the routing
+  amendment; authoritative cursors remain `FEATURE_CURSOR_000`.
+- No normal slot is occupied by memory (`memory_slot_count: 0`). The next
+  eligible non-memory capability is `ROADMAP_07_PROOF_ACCEPTANCE`, selectable
+  only after a normal slot opens and custody is explicitly recorded.
+- Existing memory candidates, reports, commits, worktrees, and proof remain
+  historical/unaccepted inputs. Dirty custody is `WAITING_DESIGN_TRANSFER`;
+  no task or worktree is archived or removed.
+
 ## Blocker and next transition
 
 - True external blocker: `NONE`.
-- Current dependency: Native Session must complete ordered ROADMAP_05 /
-  ROADMAP_06 review and all Platform owners must obtain independent clearance.
-  Gate’s ROADMAP_04 acknowledgment is receipt-only; the central cursors remain
-  unchanged.
+- Current dependency: Native reconciled ROADMAP_05 without a repair request and
+  holds ROADMAP_06 pending a cohesive d885-based shared-base checkpoint,
+  authorized functional/provider/host evidence, and independent clearance; all
+  Platform owners still need independent clearance. Gate’s ROADMAP_04
+  acknowledgment and Native marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY` are
+  receipt-only; central cursors remain unchanged.
 - Slot refill rule: open the next pre-registered feature only after an exact
   Platform intake acknowledgment freezes and releases a slot. Do not create a
   replacement for an existing visible task.
@@ -86,9 +121,10 @@ authoritative cursor.
 
 ## CURRENT STATE
 
-`WORKING_EXPECTED`: candidate clean; Central receipt reconciles ROADMAP_04 then
-ROADMAP_05; Gate independently acknowledges ROADMAP_04 with no repair;
-ROADMAP_06 is clean and ready for Native review; three existing Platform
-custodians preserved; Central cursors all remain `FEATURE_CURSOR_000`; no true
-external blocker; next action is ordered Native review and Platform independent
-clearance, followed by governed slot refill.
+`WORKING_EXPECTED`: candidate clean; ROADMAP_04 is acknowledged with no Gate
+repair; Native reconciles ROADMAP_05 with no repair and holds ROADMAP_06 for the
+shared-base/proof boundary; three existing Platform custodians are preserved;
+memory is routed to dormant special lane `019fee1e-5e78-78c2-a788-ad7a27eba19e`
+with no normal slot or consumption; all authoritative cursors remain
+`FEATURE_CURSOR_000`; no true external blocker; next non-memory capability is
+ROADMAP_07 only after a normal slot opens and Platform clearance is recorded.

@@ -105,3 +105,53 @@ advance or clearance decision.
 
 The next ordered custody remains Native Session review of ROADMAP_05 and the
 returned ROADMAP_06 candidate. No feature or Platform worktree was changed.
+
+## Native ordered review acknowledgment — ROADMAP_05 / ROADMAP_06 — 2026-08-11
+
+Native Session completed the ordered source-bound review. This append records
+the disposition only; it does not consume, clear, merge, or release either
+candidate. It supersedes the earlier pending-review wording while preserving
+that append-only history.
+
+- Native local HEAD/tree: `590c07ddd4be7a8c24727c24b40808e44ca7357d` /
+  `f1b358d87e6a969fb9631e202a3d478540edd4d9`
+- `ROADMAP_05_LOCAL_ADAPTERS` candidate `691046fa75495732709a21cef2e5e37813065f3c` /
+  `e643be4776c979d637001ed0d7308043cb2069e0`: `REVIEWED_RECONCILED_NO_REPAIR_REQUEST`
+- `ROADMAP_06_CAMPAIGN_LIFECYCLE` candidate `67687f8906705eb6b018814705cac6d60c6d4eda` /
+  `c7db6a95d45bb25ab496220c8d1ecb8da85a371a`: `REVIEWED_SOURCE_BOUND_HELD_PENDING_NATIVE_CLEARANCE`
+- source/schema/test/binding changes integrated: `NONE`
+- Native local marker: `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`
+- authoritative cursor: `FEATURE_CURSOR_000`
+- central consumption or clearance: `NOT_CLAIMED`
+- updated Platform handoff SHA-256: `070be05d41de841e2b153c503b25f5e22ecfb4743ac301e55989be0d5f25f753`
+- updated Platform audit SHA-256: `6ce1eb1f3d06773f54381870c1f437be12c9fde03148c355e88245579ed6a047`
+- static integrity: `PASSED`; status: `PRODUCTION_CANDIDATE_PENDING_TESTS`
+- held pending: cohesive d885-based shared-base checkpoint, authorized
+  functional/provider/host evidence, and independent clearance
+- commit/push/merge/release/activation/archive: `NOT_PERFORMED`
+
+## Memory special-lane routing receipt — 2026-08-11
+
+The memory routing amendment is recorded as a custody and queue disposition,
+not an implementation or acceptance event. The four memory/projection
+capabilities remain historical and unaccepted inputs; no ordinary Platform
+cursor consumes them.
+
+- amendment: `docs/memory-routing-amendment.v1.json`
+- special lane: `SPECIAL_MEMORY_ARCHITECTURE`
+- canonical owner: task `019fee1e-5e78-78c2-a788-ad7a27eba19e`
+- state: `DORMANT_DESIGN_PENDING`
+- custody: `NO_GOAL / NO_WORKTREE / NO_PRODUCT_EDIT / NO_INTEGRATION / NO_RELEASE`
+- ordinary memory disposition: `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`
+- Platform local marker: `FEATURE_CURSOR_004` (evidence-only)
+- authoritative Platform cursor: `FEATURE_CURSOR_000` (unchanged)
+- historical candidates, reports, commits, worktrees, and proof: preserved;
+  downstream consumption: `false`
+- ordinary memory implementation/integration/tests/npm/release/activation:
+  `NOT_AUTHORIZED`
+- next non-memory capability: `ROADMAP_07_PROOF_ACCEPTANCE`, selectable only
+  after a normal slot opens and its custody is explicitly recorded
+
+The memory lane remains inside this pyramid as one dormant special project
+lane; it is not a separate workflow and it does not occupy a normal feature
+slot. No peer or special-agent worktree was changed.
