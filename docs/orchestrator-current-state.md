@@ -1531,6 +1531,10 @@ non-memory slot refill.
 
 ## Recovery 28 — opaque local host/provider registration — 2026-08-11
 
+Publication of this bounded transaction is clean at commit
+`b2b20b357fe187ab80d7960bfdeddd21f5d30ff6` / tree
+`1a1c48141bedf5033cbee328322b1a08fd30efc8`.
+
 The current execution host now has one additive, project-agnostic typed
 readback registration at `docs/host-provider-registration.v1.json`, bound to
 candidate `15254f79096be8c5da58afdc4837456f6952d9f8` /
