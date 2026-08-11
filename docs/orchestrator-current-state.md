@@ -474,3 +474,21 @@ proof remain pending; true external blocker is `NONE`.
 The next safe action is for each typed return owner to consume its exact receipt
 against this central publication, after which authorized proof and an exact
 Controller slot-release receipt are required before any non-memory slot refill.
+
+## Slot metadata correction after owner rebind projection — 2026-08-11T02:45:36Z
+
+The five slot records now use the repository validator’s canonical labels:
+`observed_worktree_status: CURRENT_CANDIDATE_BOUND` and
+`admission_status: ACTIVE`. This replaces the stale-base and pre-resume labels
+because every slot’s d885/5f base matches the canonical current candidate and
+each visible owner has recorded a clean source-bound rebind receipt.
+
+`ACTIVE` here records visible-owner custody only. The separate receipt state
+remains `REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION` with
+`central_consumed: false`, `platform_clearance: false`,
+`independent_clearance: false`, and `slot_release: false`. Cursors remain
+`FEATURE_CURSOR_000`; ordinary accounting remains five slots, zero memory
+slots, and queue `32`. No implementation, task, peer worktree, proof, release,
+or activation boundary changed. The next action is typed Platform consumption,
+then authorized functional/host/provider/recovery/clean-source proof and an
+exact Controller slot-release receipt.

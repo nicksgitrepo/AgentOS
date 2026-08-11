@@ -493,3 +493,20 @@ on dormant owner `019fee1e-5e78-78c2-a788-ad7a27eba19e` and is excluded from
 ordinary intake. The next safe action is exact typed receipt consumption by the
 return owners, followed by authorized functional/host/provider/recovery/
 clean-source proof and independent clearance before slot refill.
+
+## Slot metadata correction after owner rebind projection — 2026-08-11T02:45:36Z
+
+Central corrected all five active slot records to the canonical validator
+vocabulary: `CURRENT_CANDIDATE_BOUND` for observed worktree status and `ACTIVE`
+for admission status. The prior `STALE_BASE_REQUIRES_CURRENT_CANDIDATE_REBIND`
+and `ADMITTED_PENDING_VISIBLE_TASK_RESUME` labels were superseded because all
+five d885/5f slot baselines match the canonical current candidate and all five
+visible owners supplied clean source-bound receipts.
+
+This is a custody metadata correction only. `ACTIVE` means the visible owner’s
+custody is recorded; it does not mean Platform consumption, clearance, or slot
+release. Receipt state remains `REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION`;
+all authoritative cursors remain `FEATURE_CURSOR_000`, and downstream
+consumption, Platform clearance, independent clearance, and slot release remain
+false. The next safe action is typed Platform receipt consumption followed by
+authorized proof and an exact Controller slot-release receipt.
