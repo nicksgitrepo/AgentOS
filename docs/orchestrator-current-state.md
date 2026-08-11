@@ -831,3 +831,19 @@ clearance, and Memory returned completed/idle snapshots; no duplicate or
 hidden task was created. Ordinary cursors remain `FEATURE_CURSOR_000`, with
 five ordinary slots, zero Memory slots, queue `32`, and all clearance/release
 flags false.
+
+## Heartbeat dispatch — 2026-08-11T05:23:13Z
+
+Existing visible tasks were reactivated for bounded, source-bound work:
+
+- Gate: read-only re-audit of the repaired receipt against the current Central
+  publication.
+- Native: ordered review of the exact ROADMAP_06 report, handoff, and typed
+  receipt.
+- Independent: read-only clearance recheck, HOLD unless every proof and the
+  Controller release receipt exists.
+- Memory: isolated build/test continuation only; no ordinary integration.
+
+Dispatch activation was verified immediately; no duplicate or hidden worker
+was created. Cursors remain `FEATURE_CURSOR_000`, ordinary slots `5`, Memory
+slots `0`, and all consumption, clearance, and slot-release flags remain false.
