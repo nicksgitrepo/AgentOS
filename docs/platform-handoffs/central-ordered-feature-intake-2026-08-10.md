@@ -462,3 +462,34 @@ owners to append the receipts against the current publication while preserving
 their feature identities and report history; Central may then consume only
 those typed receipts. Functional, host/provider, independent-clearance, and
 release proof remain pending.
+
+## Central projection of five owner rebind receipts — 2026-08-11T02:36:49Z
+
+The five existing visible owners supplied clean, append-only, source-bound
+rebind receipts against central publication
+`f1bbedbf1f6778c8a0498155da4fd4e85eaea0c2` /
+`66189ca0edf077decf834992b13843c014f2eb56`, with source baseline
+`d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5`. The central projection preserves
+each frozen candidate, receipt commit/tree, report or handoff digest, and all
+prior historical layers. No implementation merge or platform consumption is
+claimed.
+
+| Feature / worktree | Frozen candidate | Owner receipt | Receipt digest | Evidence | Return owner |
+| --- | --- | --- | --- | --- | --- |
+| `ROADMAP_04_TASK_ROUTING_CONTEXT` / `HOST_WORKTREE_D6FC` | `a3441789bec91829c8729b969d06df0b7dbe0165` / `ff36256deae8cb21a7c2639b6b0a5e559318e182` | `ef44dcc815566e48055f9de20bdfd924c9c3f904` / `a37ba122cfe3c0618a49647a02ebcc786eca3787` | `ea1e8bf62e9b2ab46342e996e8447bd755035f465df22bf2c80f6a9a0ca55f0c` | report `4a7f58b36ff587073f9c289c0282d8bb077ece7d5314c76a2cb2d6663213ccb6` (prior `e80e11037a12141b59d3c3be8e549935572c63d194704c0efed5b6e1dd164b`) | `PLATFORM_GATE_RESPONSE` |
+| `ROADMAP_05_LOCAL_ADAPTERS` / `HOST_WORKTREE_D986` | `691046fa75495732709a21cef2e5e37813065f3c` / `e643be4776c979d637001ed0d7308043cb2069e0` | `8e9cf44bd0062278149a9dd194483e2d1bec81a6` / `3589750c220f4a3644fd14e201946308dc8bfeaa` | `aa6dad25215190e7c46fe5dc3eee0eb02acf780e263f0485dd830d32fddeb20a` | report `fc26d218931d463ee4a28a6b7e4efb3ddbe2a057303566733a2822038b3d8b35`; handoff `d5cd8eac127ba36d9664685f9f333b72678d563b0c400aebf3bdf1142b671a6c` (prior `a7b779101faaa087e733f687c8c220a8239c7f68b82f0c1bfdfeb1f1cfe092e2`) | `PLATFORM_NATIVE_SESSION_EVIDENCE` |
+| `FOUR_LIBRARY_GOVERNANCE` / `HOST_WORKTREE_4BB9` | `5cb26e37f1bff09da50651ce61d4a5f3888d0c80` / `f7719febacc58220132354240ab786460d52e8dd` | `10963d0aaa3d056624a650d3b090aa052557b29e` / `d58abbde5b9546730ef029d683f31ad5b9baf344` | `612cdae2ddc86d40ea09afa789cd4d9216227604af566da7409a3757aabf69f5` | report `612cdae2ddc86d40ea09afa789cd4d9216227604af566da7409a3757aabf69f5`; manifest `5ab23dcbe317c0233ae5efb6de0c957b3e97169e33a43a9569dc077f3e1a06a7`; historical report `49f0c28219e401a1424463ef3eff18e9539aa5d719beba62173755cac5194849` | `PLATFORM_GATE_RESPONSE` |
+| `FEATURE_COMPLETENESS_AUDITOR_SEED` / `HOST_WORKTREE_B7E0` | `1ebf952e6acfff6d5be83a67b868b745761a4571` / `474c8757ca0c2a1b7b4be4ff23facc02bbc35c9b` | `0ef26e9bfd835c239d6089bdd757c53c09d8413b` / `3a2a7fe1444bc4221f67c502a072e1e3b2f91479` | `fb0fd8d40beb6707ea0b095d263ff979a3c207bc58d03b8a2f2a7a2aaf3873c8` | report `32081bfde2b5186b4037a33abb39ebdf0ca931243a8734a072aa5e22e72ac7bf` (prior `e23ca33e7a5e481f2a19d1bfc207f693da588ae35605fefd083dcbb24d932f5e`) | `PLATFORM_GATE_RESPONSE` |
+| `DYNAMIC_PROJECT_LANES` / `HOST_WORKTREE_A790` | `4b2b210f1a5119c6d2e6a545e8675d02c6db392f` / `cf9be278dbb2a1a432b34a66cb838da2e2c4f623` | `a732d96626f3b6654e1a981eebf4997a7dd0f084` / `23519c5b6b5c67b26813ca218d9207169b94f753` (final report append `aee6d000238c64cfca5550bfd6beae220c40c89a` / `b58eb93579ed5ec683f02d0f3de6fcb0ac0dbff6`) | `564565262f4b7b98962ec371066c76074e3d20a32e3423186a6b2671c1641eeb` | report `8440c5777e5b61eef414d06d64761471fef03c9dd62e9aaeb813763522f46fc4` | `PLATFORM_GATE_RESPONSE` |
+
+Projection status is `REBIND_PENDING_CENTRAL_PUBLICATION_CONSUMPTION`; all
+five receipts verified and none incomplete. Authoritative cursors remain
+`FEATURE_CURSOR_000` for all three Platform owners. Downstream consumption,
+Platform clearance, independent clearance, and Controller slot release are all
+`false`. Slot accounting remains five ordinary non-memory slots, zero memory
+slots, ordinary queue `32`; ROADMAP_07 is held and not started. Memory remains
+on dormant owner `019fee1e-5e78-78c2-a788-ad7a27eba19e` and is excluded from
+ordinary intake. The next safe action is exact typed receipt consumption by the
+return owners, followed by authorized functional/host/provider/recovery/
+clean-source proof and independent clearance before slot refill.
