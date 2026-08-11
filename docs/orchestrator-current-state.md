@@ -1753,3 +1753,30 @@ Next action is to preserve this exact Memory replay residual without contacting
 Memory, continue the ordinary proof boundary, then obtain current-candidate
 Platform rebinds, authorized functional host/provider/recovery/clean-source
 evidence, independent clearance, and the exact Controller slot-release receipt.
+
+## Recovery 39 — comprehensive proof scheduler dispatch — 2026-08-11
+
+The long comprehensive proof was routed off-controller through the file-backed
+hybrid scheduler rather than rerun synchronously. Activation was verified as
+`RUNNING`, then the job reached a terminal `FAILED` receipt for request
+`CHECK-RECOVERY39-COMPREHENSIVE-20260811`, request digest
+`8f17c734a3093b7320cbfbd1346d02a4a63dbefa7c7fa7ce96572bedab317b64`, semantic
+key `225758b382a5a4d0aaefe3bee5dbbaf5786746f9b0692a1de2d17538c7546789`, and
+job `JOB-D646060606F9B06F3A007C847346EAC29CEC53E6` with terminal job digest
+`daddefe83d031c37769c79c169f4b4afbdc89d1e015d3dacb20b99080c4f39d2`. The
+opaque scheduler-root reference is
+`opaque:scheduler-root:c8b050371ddb2a3e9bbdc0b0b61183c03660b97f888d520943f81973546609d9`.
+The job is bound to candidate `7795437ebb244c306c43a5b4b49507e7ae9f1bcd` /
+`773f11a0835e3ea5ea414bf99ac0f29f6e3063d3`, exact gpt-5.6-luna/max, and
+`node tests/verify-all.mjs`. The result receipt is `FAILED`, exit code `1`,
+result digest `e8c80f1e8e71326733fdbad90f1d02e4d6e6dc1345ef54ccff172be64d685d2b`,
+and diagnosis digest `2a5e8b3dced743d13b33eb1eab6f4b8b06605d9c83febbea5c358e1c695688a2`.
+It confirms the preserved Memory replay residual
+`CONFLICT_REFERENCES_UNAVAILABLE` for `GOAL:GOAL-REPLAY:1`; no pass or
+ordinary clearance is claimed. Memory was not contacted or dispatched.
+
+Five ordinary slots, zero Memory slots, queue `32`, and all authoritative
+cursors `FEATURE_CURSOR_000` remain unchanged. Downstream consumption,
+Platform clearance, independent clearance, and Controller slot release remain
+false; Roadmap07 remains held. The next bounded turn preserves this proof
+residual, then continues Platform rebind and clearance/slot-release work.

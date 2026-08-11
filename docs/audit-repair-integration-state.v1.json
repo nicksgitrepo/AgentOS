@@ -1772,6 +1772,27 @@
       "true_external_blocker": "NONE",
       "next_action": "OBTAIN_CURRENT_CANDIDATE_GATE_NATIVE_REBIND_RECEIPTS_THEN_RUN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_AND_CLEAN_SOURCE_PROOF_OBTAIN_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE_BEFORE_NON_MEMORY_REFILL"
     },
+  "recovery_39_comprehensive_proof_scheduler_dispatch_2026_08_11": {
+    "record_layer": "CURRENT_CANDIDATE_COMPREHENSIVE_PROOF_SCHEDULER_DISPATCH",
+    "transaction_status": "GOVERNED_SCHEDULER_JOB_TERMINAL_FAILED_OFF_CONTROLLER_MEMORY_REPLAY_RESIDUAL_PRESERVED",
+    "candidate": {"commit":"7795437ebb244c306c43a5b4b49507e7ae9f1bcd","tree":"773f11a0835e3ea5ea414bf99ac0f29f6e3063d3"},
+    "source_baseline": {"commit":"d885e73382df26da596848d70dbb402d6a9cf8b8","tree":"5f6ed007168ba660ca6f224e632b1dedd02202a5"},
+    "proof_dispatch": {"request_id":"CHECK-RECOVERY39-COMPREHENSIVE-20260811","request_sha256":"8f17c734a3093b7320cbfbd1346d02a4a63dbefa7c7fa7ce96572bedab317b64","semantic_key":"225758b382a5a4d0aaefe3bee5dbbaf5786746f9b0692a1de2d17538c7546789","job_id":"JOB-D646060606F9B06F3A007C847346EAC29CEC53E6","job_sha256":"daddefe83d031c37769c79c169f4b4afbdc89d1e015d3dacb20b99080c4f39d2","scheduler_root_ref":"opaque:scheduler-root:c8b050371ddb2a3e9bbdc0b0b61183c03660b97f888d520943f81973546609d9","status":"FAILED","activation":"VERIFIED_FILE_BACKED_SCHEDULER_TERMINAL_RECEIPT","proof_command":"node tests/verify-all.mjs","model":"gpt-5.6-luna","reasoning_effort":"max","exit_code":1,"terminal_reason":"EXECUTION_FAILED","finished_at_utc":"2026-08-11T18:07:42.600Z"},
+    "comprehensive_result": {"status":"FAIL","result_sha256":"e8c80f1e8e71326733fdbad90f1d02e4d6e6dc1345ef54ccff172be64d685d2b","diagnosis_sha256":"2a5e8b3dced743d13b33eb1eab6f4b8b06605d9c83febbea5c358e1c695688a2","residual":"CONFLICT_REFERENCES_UNAVAILABLE:GOAL:GOAL-REPLAY:1","pass_claim":false},
+    "ordinary_scope_boundary": "MEMORY_CAPABILITIES_OUTSIDE_ORDINARY_FEATURE_PLATFORM_CURSORS_NO_MEMORY_CONTACT_OR_DISPATCH",
+    "ordinary_active_slot_count": 5,
+    "memory_slot_count": 0,
+    "ordinary_queue_count": 32,
+    "authoritative_cursors": {"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},
+    "downstream_consumed": false,
+    "platform_clearance": false,
+    "independent_clearance": false,
+    "slot_release": false,
+    "roadmap_07_status": "HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE",
+    "memory_boundary": "READ_ONLY_COMPACT_RECEIPT_ONLY_NO_DISPATCH",
+    "true_external_blocker": "NONE",
+    "next_action": "PRESERVE_PROOF_RESIDUAL_PLATFORM_REBIND_CLEARANCE_SLOT_RELEASE"
+  },
   "recovery_38_comprehensive_proof_memory_boundary_2026_08_11": {
     "record_layer": "CURRENT_CANDIDATE_COMPREHENSIVE_PROOF_EXECUTION",
     "transaction_status": "COMPREHENSIVE_SUITE_STOPPED_ON_MEMORY_REPLAY_CONTRACT_FAILURE_OUTSIDE_ORDINARY_CUSTODY",
@@ -1858,7 +1879,7 @@
     "true_external_blocker": "NONE",
     "next_action": "CONSUME_TYPED_CURRENT_PLATFORM_RECEIPTS_THEN_OBTAIN_AUTHORIZED_FUNCTIONAL_HOST_PROVIDER_RECOVERY_CLEAN_SOURCE_INDEPENDENT_CLEARANCE_AND_EXACT_CONTROLLER_SLOT_RELEASE"
   },
-  "authoritative_projection_ref": "platform_pipeline.recovery_38_comprehensive_proof_memory_boundary_2026_08_11",
+  "authoritative_projection_ref": "platform_pipeline.recovery_39_comprehensive_proof_scheduler_dispatch_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1871,6 +1892,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "PRESERVE_MEMORY_REPLAY_RESIDUAL_CONTINUE_ORDINARY_PROOF_THEN_PLATFORM_REBIND_CLEARANCE_SLOT_RELEASE",
-  "state_sha256": "c7a8296473965dc9a155e1f5c0e4a6f3d549885071b6a733116060c6322ac85b"
+  "next_action": "PRESERVE_PROOF_RESIDUAL_PLATFORM_REBIND_CLEARANCE_SLOT_RELEASE",
+  "state_sha256": "5208430ce4f84b8addbcdb79f3403fb7ddbe204d51e1422462d22c3934fe8b5d"
 }
