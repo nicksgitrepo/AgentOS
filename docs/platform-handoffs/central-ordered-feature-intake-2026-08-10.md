@@ -767,3 +767,26 @@ Gate’s repaired verifier/re-audit and the fresh independent task remain
 pending final readback; the independent disposition is `HOLD`. All ordinary
 cursors remain `FEATURE_CURSOR_000`; five ordinary slots, zero Memory slots,
 and all consumption/clearance/slot-release flags remain unchanged.
+
+## ROADMAP_06 and special Memory checkpoint projection — 2026-08-11
+
+The existing ROADMAP_06 owner supplied a complete source-bound evidence
+handoff. Candidate `67687f8906705eb6b018814705cac6d60c6d4eda` /
+`c7db6a95d45bb25ab496220c8d1ecb8da85a371a`; evidence commit/tree
+`67a48a74153626cd4773e2d3082cdc09252e0820` /
+`46c1ed06b3c21e6866a2c6a7423e61f7d8189cca`; report full/body SHA
+`c66accc99c8054cd5510f58f3a32322a1ad42ec323154ccfd12f96da5fa58c17` /
+`dea6d88b47924948aa7086e4d1ad62b36a82795abb6727fc2553471b6ba35925`;
+handoff SHA `43e9e3c24ba71f11d881f1b3489017a579c0aa24088047a71a2758ed8e741ffa`;
+typed receipt SHA
+`096a2eef4503bb6b0e9170c99f5fb25c3d29f1b1292b6a60957cbdf87e4239d3`.
+Disposition is `FEATURE_AUDIT_READY_FOR_PLATFORM_REVIEW / REBIND_PENDING`.
+The candidate is not consumed or cleared; functional/host/concurrency/
+recovery/clean-source/independent/Controller proof remains pending.
+
+The special Memory owner’s isolated checkpoint is
+`7ee20d1b49f9994c2123b73520dc737ab22fc859` /
+`e34716d832c208c7b4f4fd94260f03adf00ef8fd`, clean with `36/36` local tests
+passing. It remains `ACTIVE_DEVELOPMENT_UNACCEPTED`, build/test-only, outside
+ordinary cursors, with integration, migration, release, and activation false.
+No ordinary cursor advanced; five ordinary slots and zero Memory slots remain.
