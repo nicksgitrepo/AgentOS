@@ -131,10 +131,11 @@ authoritative cursor.
   reconciliation and ROADMAP_06 review are also receipt-only. All authoritative
   Platform cursors remain `FEATURE_CURSOR_000`; no Central consumption or
   clearance is recorded.
-- ROADMAP_06 remains source-bound and held pending the cohesive d885-based
-  shared-base checkpoint, authorized functional/provider/host evidence, and
-  independent clearance. This is the immediate custody condition preventing a
-  normal-slot release.
+- ROADMAP_06 now has the cohesive d885-based source-bound checkpoint recorded,
+  but remains held pending authorized functional/provider/host evidence,
+  concurrency/crash-power-loss proof, clean-source proof, independent
+  clearance, and a Controller slot-release receipt. This is the immediate
+  custody condition preventing a normal-slot release.
 - Safe next action: obtain the required Platform/independent clearance and
   explicit slot-release receipt; only then admit the already-identified
   non-memory capability `ROADMAP_07_PROOF_ACCEPTANCE`. No Roadmap07 task or
@@ -146,11 +147,26 @@ authoritative cursor.
   It remains receipt-only: authoritative cursor `FEATURE_CURSOR_000`,
   downstream `false`, and no independent clearance or slot release.
 
+## Native cohesive checkpoint receipt — 2026-08-11
+
+Native’s final source-bound publication is
+`2e979ccb283694f5100e0c2548796ee13db24b0a` /
+`1826c37cf9212ae27d69104556f10e0d4454a4f3`, following source checkpoint
+`8d33383db1c457ec49bacf654aa63241c9bcfba7` /
+`d2a5b014ddd48ac157277efe1734fc13113bafb7` and binding repair
+`f588866fa6e4f01fe1a8cbb194b36e0fcd3ccd2f` /
+`f49683bb99ae501b792cd518698be2ea71ab9470`. ROADMAP_05/06 integrated in
+order; 37 binding paths have zero mismatches and changed-path parity is 56/56.
+Status is `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`; admission remains
+`HOLD / NOT_ADMITTED`, authoritative cursor `FEATURE_CURSOR_000`, downstream
+`false`. Functional/host/provider, concurrency/crash-power-loss, clean-source,
+independent-clearance, and Controller slot-release proof remain pending.
+
 ## CURRENT STATE
 
 `WORKING_EXPECTED`: candidate clean; ROADMAP_04 is acknowledged with no Gate
-repair; Native reconciles ROADMAP_05 with no repair and holds ROADMAP_06 for the
-shared-base/proof boundary; three existing Platform custodians are preserved;
+repair; Native has integrated ROADMAP_05/06 in order into a source-bound
+checkpoint that remains pending tests and clearance; three existing Platform custodians are preserved;
 memory is routed to dormant special lane `019fee1e-5e78-78c2-a788-ad7a27eba19e`
 with no normal slot or consumption; all authoritative cursors remain
 `FEATURE_CURSOR_000`; no true external blocker; next non-memory capability is

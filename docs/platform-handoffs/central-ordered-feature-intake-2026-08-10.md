@@ -197,3 +197,34 @@ worktree identity without consuming, clearing, or releasing any feature slot.
 The six ordinary slots therefore remain closed to refill despite this cohesive
 local checkpoint. The authoritative cursor and the memory special-lane routing
 remain unchanged.
+
+## Native cohesive checkpoint receipt — 2026-08-11
+
+Native completed the cohesive d885-based checkpoint and its binding repair.
+This is a source-bound receipt only; it does not claim clearance, Central
+consumption, or a Controller slot release.
+
+- source checkpoint commit/tree: `8d33383db1c457ec49bacf654aa63241c9bcfba7` /
+  `d2a5b014ddd48ac157277efe1734fc13113bafb7`
+- binding repair commit/tree: `f588866fa6e4f01fe1a8cbb194b36e0fcd3ccd2f` /
+  `f49683bb99ae501b792cd518698be2ea71ab9470`
+- final publication commit/tree: `2e979ccb283694f5100e0c2548796ee13db24b0a` /
+  `1826c37cf9212ae27d69104556f10e0d4454a4f3`
+- Platform handoff SHA-256: `7b052ca77a8382971d244b53dec8d407b90993b947cbec841c9708787b585ca6`
+- Platform audit SHA-256: `ccdffd7b7f58265eb747a23d6a93f64650b7cabf44173455970f7dabadd72573`
+- ROADMAP_05 and ROADMAP_06: `INTEGRATED_IN_ORDER`
+- binding paths: `37`; mismatches: `0`; changed-path parity: `56/56`
+- syntax/JSON/privacy/NUL/whitespace checks: `PASSED`
+- status: `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`
+- feature admission: `HOLD / NOT_ADMITTED`
+- authoritative cursor: `FEATURE_CURSOR_000`; downstream: `false`
+- remaining proof: authorized functional/host/provider, concurrency/crash-
+  power-loss, clean-source, independent-clearance, and Controller slot-release
+  receipt
+- functional tests/npm/push/merge/release/activation/archive: `NOT_PERFORMED`
+
+This Native receipt is reconciled with the prior Gate checkpoint
+`36a4d85991d521ec890570fb8c419c555e40d77b` /
+`0d8b7012bda068015428d76f923c18554b473d30`; both remain pre-clearance. The
+six ordinary slots remain unreleased, Roadmap07 remains unstarted, and the
+dormant memory amendment remains unchanged.
