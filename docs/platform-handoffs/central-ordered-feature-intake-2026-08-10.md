@@ -170,3 +170,30 @@ clearance. Therefore ROADMAP_07 is not admitted, and no task or worktree was
 created or changed. The next safe action is the required Platform/independent
 clearance followed by an explicit slot-release receipt; only then may the
 already-identified non-memory ROADMAP_07 capability enter the normal queue.
+
+## Gate cohesive checkpoint receipt — 2026-08-11
+
+This is a source-bound local Platform candidate receipt. It preserves the Gate
+worktree identity without consuming, clearing, or releasing any feature slot.
+
+- local commit/tree: `36a4d85991d521ec890570fb8c419c555e40d77b` /
+  `0d8b7012bda068015428d76f923c18554b473d30`
+- source identity: `d885e73382df26da596848d70dbb402d6a9cf8b8` /
+  `5f6ed007168ba660ca6f224e632b1dedd02202a5`
+- disposition: `LOCAL_COHESIVE_PLATFORM_CHECKPOINT_PENDING_FUNCTIONAL_TESTS_AND_INDEPENDENT_CLEARANCE`
+- authoritative cursor: `FEATURE_CURSOR_000`; downstream: `false`
+- ROADMAP_04: acknowledged without repair; ROADMAP_05/06: unconsumed
+- Platform audit SHA-256: `e28be3c4399271a86e9d4bada533f5e9318207d7127a74ac1bdc37b9b0b14eac`
+- Platform handoff SHA-256: `7fdf40897b3aba5cb69611a89cf4299eafe9a04ea8bc25308d6f976b06685d0c`
+- feature audit SHA-256: `d4046993e8d92f0d381b0cf637e0384af6087725ce3a306ffac04c8f717824c9`
+- static syntax/JSON/source-parity/hygiene/privacy: `PASSED`
+- functional tests/npm and independent clearance: `PENDING`
+- changed paths are limited to the Gate compiler/questions/response/decision
+  surfaces, their gate/universal-response schemas, the focused verifier, and
+  three preserved audit/handoff records; no peer worktree was edited
+- Central consumption, clearance, slot release, merge, push, release,
+  activation, and archive: `NOT_CLAIMED`
+
+The six ordinary slots therefore remain closed to refill despite this cohesive
+local checkpoint. The authoritative cursor and the memory special-lane routing
+remain unchanged.

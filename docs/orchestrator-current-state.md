@@ -139,6 +139,12 @@ authoritative cursor.
   explicit slot-release receipt; only then admit the already-identified
   non-memory capability `ROADMAP_07_PROOF_ACCEPTANCE`. No Roadmap07 task or
   worktree was created, started, or changed.
+- Gate now has a cohesive local checkpoint at
+  `36a4d85991d521ec890570fb8c419c555e40d77b` /
+  `0d8b7012bda068015428d76f923c18554b473d30`, bound to d885/5f and
+  `LOCAL_COHESIVE_PLATFORM_CHECKPOINT_PENDING_FUNCTIONAL_TESTS_AND_INDEPENDENT_CLEARANCE`.
+  It remains receipt-only: authoritative cursor `FEATURE_CURSOR_000`,
+  downstream `false`, and no independent clearance or slot release.
 
 ## CURRENT STATE
 
