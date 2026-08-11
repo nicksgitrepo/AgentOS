@@ -25,8 +25,11 @@ separate workflow.
 
 ## Candidate and proof
 
-- Control tip: commit `23006419b4aea32e951eed5d64066f7783e44981`, tree
-  `c9b38b3830ea1bf982053d5b840b21389cdba6a0`; clean.
+- Central publication tip: commit `a3e5188a9223b828010bd956277491fdfe7f4104`,
+  tree `d4f30dd52c8c00aa751001b81ec537668225e737`; clean.
+- Source implementation candidate and preserved ROADMAP_03 checkpoint remain
+  the d885/5f baseline recorded below; the publication tip is not a new
+  integration or release candidate.
 - Source implementation baseline and preserved ROADMAP_03 checkpoint: commit
   `d885e73382df26da596848d70dbb402d6a9cf8b8`, tree
   `5f6ed007168ba660ca6f224e632b1dedd02202a5`.
@@ -57,15 +60,16 @@ Platform intake; none is downstream-consumed or archive-eligible.
 baseline `d885e733` / `5f6ed007`, report SHA-256
 `dce9522471aa6a1be14def06c7d1d651358e4d1fcf5facdec30e9549952d9638`, return
 owner `PLATFORM_NATIVE_SESSION_EVIDENCE`. Its typed handoff is inline in the
-report; Native has reviewed it as source-bound and held it pending clearance;
-it is not consumed early.
+report; Native has integrated it in order into the source-bound cohesive
+checkpoint recorded below, still pending proof and clearance; it is not
+consumed early.
 
 ## Platform roster and cursors
 
 | Platform owner | Task | Worktree | Authoritative cursor | Current disposition |
 | --- | --- | --- | --- | --- |
 | `PLATFORM_GATE_RESPONSE` | `019fdcfb-d827-7831-958a-470c2abbe6eb` | `HOST_WORKTREE_C3BA` | `FEATURE_CURSOR_000` | ROADMAP_04 independently acknowledged with no repair; local marker `FEATURE_CURSOR_001_LOCAL_APPEND_ONLY`; clearance remains pending. |
-| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05 reconciled with no repair; ROADMAP_06 source-bound and held pending Native clearance; local marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`; no central consumption. |
+| `PLATFORM_NATIVE_SESSION_EVIDENCE` | `019fdcfa-43dc-76a3-befa-c93580a3c808` | `HOST_WORKTREE_C22B` | `FEATURE_CURSOR_000` | ROADMAP_05/06 integrated in order into a cohesive source-bound checkpoint, status `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`; local marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY`; no central consumption or clearance. |
 | `PLATFORM_PRIVATE_CONTROL_MEMORY` | `019fdcf9-a416-77f0-91a2-e3e2535eb2ec` | `HOST_WORKTREE_7C07` | `FEATURE_CURSOR_000` | `WAITING_EXPLICIT_OWNER_DESIGN_ACCEPTANCE`; local marker `FEATURE_CURSOR_004`; historical candidates preserved; no source consumed. |
 
 Native’s exact ordered receipt binds local HEAD/tree
@@ -105,12 +109,13 @@ authoritative cursor.
 ## Blocker and next transition
 
 - True external blocker: `NONE`.
-- Current dependency: Native reconciled ROADMAP_05 without a repair request and
-  holds ROADMAP_06 pending a cohesive d885-based shared-base checkpoint,
-  authorized functional/provider/host evidence, and independent clearance; all
-  Platform owners still need independent clearance. Gate’s ROADMAP_04
-  acknowledgment and Native marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY` are
-  receipt-only; central cursors remain unchanged.
+- Current dependency: Native has completed the cohesive d885-based checkpoint
+  for ROADMAP_05/06, but holds it pending authorized functional/provider/host
+  evidence, concurrency/crash-power-loss proof, clean-source proof,
+  independent clearance, and a Controller slot-release receipt. All Platform
+  owners still need independent clearance. Gate’s ROADMAP_04 acknowledgment and
+  Native marker `FEATURE_CURSOR_006_LOCAL_APPEND_ONLY` are receipt-only; central
+  cursors remain unchanged.
 - Slot refill rule: open the next pre-registered feature only after an exact
   Platform intake acknowledgment freezes and releases a slot. Do not create a
   replacement for an existing visible task.
@@ -161,6 +166,51 @@ Status is `PLATFORM_CHECKPOINT_SOURCE_BOUND_PENDING_TESTS`; admission remains
 `HOLD / NOT_ADMITTED`, authoritative cursor `FEATURE_CURSOR_000`, downstream
 `false`. Functional/host/provider, concurrency/crash-power-loss, clean-source,
 independent-clearance, and Controller slot-release proof remain pending.
+
+## Pre-clearance central audit — 2026-08-11
+
+- Publication under audit: central tip `a3e5188a9223b828010bd956277491fdfe7f4104`
+  / `d4f30dd52c8c00aa751001b81ec537668225e737`; source baseline remains
+  `d885e73382df26da596848d70dbb402d6a9cf8b8` / `5f6ed007168ba660ca6f224e632b1dedd02202a5`.
+- Gate receipt reconciles to `36a4d85991d521ec890570fb8c419c555e40d77b` /
+  `0d8b7012bda068015428d76f923c18554b473d30`, source d885/5f, audit
+  `e28be3c4399271a86e9d4bada533f5e9318207d7127a74ac1bdc37b9b0b14eac`,
+  handoff `7fdf40897b3aba5cb69611a89cf4299eafe9a04ea8bc25308d6f976b06685d0c`,
+  and pending functional/independent proof; no consumption or slot release.
+- Native receipt reconciles source checkpoint `8d33383db1c457ec49bacf654aa63241c9bcfba7` /
+  `d2a5b014ddd48ac157277efe1734fc13113bafb7`, binding repair `f588866fa6e4f01fe1a8cbb194b36e0fcd3ccd2f` /
+  `f49683bb99ae501b792cd518698be2ea71ab9470`, final `2e979ccb283694f5100e0c2548796ee13db24b0a` /
+  `1826c37cf9212ae27d69104556f10e0d4454a4f3`, handoff
+  `7b052ca77a8382971d244b53dec8d407b90993b947cbec841c9708787b585ca6`,
+  audit `ccdffd7b7f58265eb747a23d6a93f64650b7cabf44173455970f7dabadd72573`,
+  37/0 bindings, and 56/56 changed-path parity; proof and clearance remain
+  pending.
+- Inventory/map/state reconcile at 37/37, with inventory
+  `2b7236f91245e1632f480b6bcc50a56207d96d4896cc6357bf9403522ce900d4`, map
+  `aa756ec6e428d4f12225a4b6b945eab958663379b2fa25330c41f97fa716f705`, and
+  state `e11247c96fb9f358c32ac6256a757ac69d007e248bc64904e0be516ea1e21685`.
+  Six normal slots remain admitted pending visible-task resume and unreleased;
+  authoritative cursors remain `FEATURE_CURSOR_000` for all three Platform
+  lanes, with no downstream consumption.
+- Memory routing reconciles to canonical dormant owner
+  `019fee1e-5e78-78c2-a788-ad7a27eba19e`; its four capabilities remain outside
+  ordinary intake with `memory_slot_count: 0`, and the obsolete owner identity
+  is absent. Existing memory artifacts remain historical/unaccepted.
+- Source-reference repair: the ROADMAP_05 handoff digest
+  `a7b779101faaa087e733f687c8c220a8239c7f68b82f0c1bfdfeb1f1cfe092e2` was
+  revalidated in the preserved `HOST_WORKTREE_D986` source worktree. The same
+  relative path is not materialized in this cumulative worktree; this record
+  now treats it as a peer-preserved source reference only and makes no local
+  file, copy, consumption, or clearance claim.
+- Project-agnostic path/privacy scan is clear for persisted records; only
+  generic policy/validator examples were found. No actual private path,
+  credential, provider token, chat link, or external-project identifier was
+  persisted.
+- Disposition: `PRE_CLEARANCE_HOLD_PENDING_TESTS_AND_INDEPENDENT_CLEARANCE`.
+  No release, activation, merge, push, archive, or Roadmap07 admission is
+  implied. Safe next action is the authorized functional/host/provider,
+  concurrency/crash-power-loss, clean-source, independent-clearance, and
+  Controller slot-release sequence.
 
 ## CURRENT STATE
 

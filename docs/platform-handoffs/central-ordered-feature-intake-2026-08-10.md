@@ -228,3 +228,39 @@ This Native receipt is reconciled with the prior Gate checkpoint
 `0d8b7012bda068015428d76f923c18554b473d30`; both remain pre-clearance. The
 six ordinary slots remain unreleased, Roadmap07 remains unstarted, and the
 dormant memory amendment remains unchanged.
+
+## Pre-clearance central audit — 2026-08-11
+
+This append-only audit reconciles the clean cumulative publication and owned
+records. It does not rewrite earlier receipts or claim functional, host,
+provider, independent-clearance, slot-release, consumption, or release proof.
+
+- Central publication audited: `a3e5188a9223b828010bd956277491fdfe7f4104` /
+  `d4f30dd52c8c00aa751001b81ec537668225e737`; source baseline remains d885/5f.
+- Gate checkpoint identity, source binding, audit/handoff digests, and pending
+  disposition match the current state. Native’s ROADMAP_05/06 cohesive
+  checkpoint identity, ordered intake, 37/0 binding result, 56/56 changed-path
+  parity, report digests, and pending-proof disposition also match the current
+  state. Neither Platform lane has central consumption or clearance.
+- Inventory/map/state bindings reconcile at 37/37. All six ordinary slots are
+  still admitted and unreleased; authoritative cursors remain
+  `FEATURE_CURSOR_000` for Gate, Native, and Private Control Memory. ROADMAP_07
+  remains identified but unstarted.
+- The canonical memory lane remains dormant under
+  `019fee1e-5e78-78c2-a788-ad7a27eba19e`, outside ordinary intake with zero
+  normal slots; historical memory artifacts remain preserved/unaccepted and the
+  obsolete owner identity is absent.
+- Source-reference repair: ROADMAP_05 handoff SHA-256
+  `a7b779101faaa087e733f687c8c220a8239c7f68b82f0c1bfdfeb1f1cfe092e2` was
+  revalidated in preserved `HOST_WORKTREE_D986`. Its relative handoff path is
+  not present in the cumulative worktree, so this central receipt treats it as
+  a peer-preserved source reference only; no duplicate copy or local-file
+  identity is claimed.
+- Persisted-record path/privacy review found no actual private paths,
+  credentials, provider tokens, chat links, or external-project identifiers;
+  generic policy/validator examples remain non-secret source text.
+- Result: `PRE_CLEARANCE_HOLD_PENDING_TESTS_AND_INDEPENDENT_CLEARANCE`. The
+  remaining safe transition is authorized functional/host/provider,
+  concurrency/crash-power-loss, clean-source, independent-clearance, and
+  Controller slot-release evidence. No Roadmap07 task, merge, push, release,
+  activation, or archive action was performed.
