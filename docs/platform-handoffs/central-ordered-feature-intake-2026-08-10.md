@@ -824,3 +824,34 @@ handoff SHA
 `0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9`.
 Independent clearance remains HOLD; no feature consumption, clearance, or
 slot release is claimed. All ordinary cursors remain `FEATURE_CURSOR_000`.
+
+## Ordinary heartbeat checkpoint — 2026-08-11T05:53:13Z
+
+Central readback observes publication
+`63020136f16edf3c827bd1380f1f8e39186fc56f` /
+`8e46211f65ba95e054c21a1f3635cd57f05d215b`, source-bound to
+`d885e73382df26da596848d70dbb402d6a9cf8b8` /
+`5f6ed007168ba660ca6f224e632b1dedd02202a5`.
+
+The Gate owner’s repaired receipt
+`fce85668015788618408f1f6aa5040bbfffdce6f` /
+`10c8b08ebc7919476c608ed091d7b475b3a02708` (report
+`edfef744008ceb80777c5c3297570ba2bb7b22ca5094e898789b888ff7b4e45a`, handoff
+`37e6a8d5fb7afe6a9f3ca06aa7aa74d42935c2a22a223588c6d17806fa5dea38`) remains
+an unprojected read-only hold. Native’s ordered ROADMAP_06 intake remains
+admissible but rebind/proof pending (local intake
+`2da19d24c2be567ab2a28752b01b1c38820a1dd6` /
+`93f826e96f0272b1318488840a58548ea6fb3524`, report
+`fec81c9d7414312f7992729095d81368cea6fa8359a286937971493a37651f15`, handoff
+`0f807774c7727363d1808a8b37d688a546b8b5bd59dc285adcd660681bc12ac9`).
+Independent clearance is `HOLD`; no consumption, clearance, or slot release is
+claimed. Visible ordinary dispatch is verified idle with no duplicate or
+hidden worker. Memory remains read-only receipt/no dispatch.
+
+Authoritative cursors remain `FEATURE_CURSOR_000`; accounting remains five
+ordinary slots, zero Memory slots, queue `32`, and all downstream, platform
+clearance, independent-clearance, and slot-release flags false. Next action:
+project the repaired Gate receipt and current ROADMAP_06 intake, then obtain
+authorized functional/host/provider/recovery/clean-source proof, independent
+clearance, and an exact Controller slot-release receipt before non-memory
+refill. True external blocker: `NONE`.
