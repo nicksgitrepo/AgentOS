@@ -1136,3 +1136,22 @@ and ROADMAP_06 receipts are rebind-required after this central repair; no
 consumption, clearance, or slot release is inferred. Cursors remain
 `FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain, and
 ROADMAP_07 stays held. Memory was not contacted.
+
+## Outcome recovery 10 — privacy scan boundary — 2026-08-11
+
+The candidate advanced to
+`a562a66e2a573ec585097e72a9dd37b5d86ae2bd` /
+`2a454af43f6f84f281b96657f6b308757b0ebec2`. Provider link and worktree
+patterns in the privacy controller are now constructed from generic segments,
+and the local privacy fixture uses the real temporary root so symlink safety
+is tested without a path-alias failure. Syntax, binding, state/map, and diff
+hygiene pass.
+
+The bounded persisted-record scan remains a concrete local hold: across 462
+known control/project record files it finds 29 findings (18 session/task
+identity, 6 absolute-path, 5 unsafe-private-link) in public project records.
+These historical records require targeted additive redaction or a governed
+compatibility scope with evidence preserved; they are not deferred real-host
+proof. Gate, Native, and ROADMAP_06 remain rebind-required, cursors stay
+`FEATURE_CURSOR_000`, five ordinary slots and zero Memory slots remain, and
+all consumption/clearance/release flags are false. Memory was not contacted.

@@ -12,18 +12,18 @@
   "current_candidate": {
     "worktree_id": "AGENTOS_FEATURE_MERGE_WAVE_03",
     "branch_ref": "codex/feature-integration-wave-03",
-    "commit": "1fd68179c9df393ddcdfa75c85b82d1ba63014e1",
-    "tree": "4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2",
+    "commit": "a562a66e2a573ec585097e72a9dd37b5d86ae2bd",
+    "tree": "2a454af43f6f84f281b96657f6b308757b0ebec2",
     "working_tree": "CLEAN",
-    "status": "RECOVERY_3_PORTABILITY_REPAIR_REBIND_PENDING"
+    "status": "RECOVERY_4_PRIVACY_PORTABILITY_REBIND_PENDING"
   },
   "roadmap_03_checkpoint": {
     "feature_id": "ROADMAP_03_CONTROLLER_INTENT",
     "handoff_ref": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
     "report_ref": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
     "status": "FEATURE_HANDOFF_CONSUMED_PENDING_PLATFORM_REVIEW",
-    "integrated_commit": "1fd68179c9df393ddcdfa75c85b82d1ba63014e1",
-    "integrated_tree": "4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2",
+    "integrated_commit": "a562a66e2a573ec585097e72a9dd37b5d86ae2bd",
+    "integrated_tree": "2a454af43f6f84f281b96657f6b308757b0ebec2",
     "source_hygiene_status": "STATIC_SOURCE_SCAN_CLEAR",
     "activation_status": "PREPARED_NOT_ACTIVATED"
   },
@@ -107,15 +107,15 @@
   ],
   "active_feature_slots": [
     {
-      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"1fd68179c9df393ddcdfa75c85b82d1ba63014e1","base_tree":"4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_01","feature_id":"ROADMAP_04_TASK_ROUTING_CONTEXT","task_id":"019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","worktree_id":"HOST_WORKTREE_D6FC","branch_ref":"DETACHED_HEAD","base_commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","base_tree":"2a454af43f6f84f281b96657f6b308757b0ebec2","report_ref":"docs/feature-audits/ROADMAP_04_TASK_ROUTING_CONTEXT/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-9a91-70d3-9a70-e3b5cfc3e9ec","cycle_goal_sha256":"20664c954c08e45b996812045a4b638366582a01a788e5a2b2e079525eaa0c33","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"1fd68179c9df393ddcdfa75c85b82d1ba63014e1","base_tree":"4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_02","feature_id":"ROADMAP_05_LOCAL_ADAPTERS","task_id":"019fdcf9-9d12-7b93-835a-10aebdba1b94","worktree_id":"HOST_WORKTREE_D986","branch_ref":"DETACHED_HEAD","base_commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","base_tree":"2a454af43f6f84f281b96657f6b308757b0ebec2","report_ref":"docs/feature-audits/ROADMAP_05_LOCAL_ADAPTERS/auditreport.md","platform_return_owner":"PLATFORM_NATIVE_SESSION_EVIDENCE","cycle_goal_id":"GOAL_019fdcf9-9d12-7b93-835a-10aebdba1b94","cycle_goal_sha256":"726c1a94b94197a758915dea6e4c9c149c443a7ab5c347a3231b7bd2a7be0681","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"1fd68179c9df393ddcdfa75c85b82d1ba63014e1","base_tree":"4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_03","feature_id":"FOUR_LIBRARY_GOVERNANCE","task_id":"019fdcf9-f611-7550-ae5e-e1dac246aa5b","worktree_id":"HOST_WORKTREE_4BB9","branch_ref":"DETACHED_HEAD","base_commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","base_tree":"2a454af43f6f84f281b96657f6b308757b0ebec2","report_ref":"docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcf9-f611-7550-ae5e-e1dac246aa5b","cycle_goal_sha256":"f350a4d0e94ebbb9d575a22a3523a80ad5b9010018797cd44ca28c3fc05c5ea7","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"1fd68179c9df393ddcdfa75c85b82d1ba63014e1","base_tree":"4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
+      "slot_id":"FEATURE_SLOT_05","feature_id":"FEATURE_COMPLETENESS_AUDITOR_SEED","task_id":"019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","worktree_id":"HOST_WORKTREE_B7E0","branch_ref":"DETACHED_HEAD","base_commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","base_tree":"2a454af43f6f84f281b96657f6b308757b0ebec2","report_ref":"docs/feature-audits/FEATURE_COMPLETENESS_AUDITOR_SEED/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-3e24-7ac1-bd30-a9ac136b34e6","cycle_goal_sha256":"6a86932d0f5d2fcf777e5fec96a17197e3203d49b92d24d7ecdc1be66a097b85","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"},
     {
-      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"1fd68179c9df393ddcdfa75c85b82d1ba63014e1","base_tree":"4a8c4bcd6ae028589a1659c9c7a754e6ec82b8c2","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
+      "slot_id":"FEATURE_SLOT_06","feature_id":"DYNAMIC_PROJECT_LANES","task_id":"019fdcfa-4873-7ea2-ae5d-f29729224d0c","worktree_id":"HOST_WORKTREE_A790","branch_ref":"DETACHED_HEAD","base_commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","base_tree":"2a454af43f6f84f281b96657f6b308757b0ebec2","report_ref":"docs/feature-audits/DYNAMIC_PROJECT_LANES/auditreport.md","platform_return_owner":"PLATFORM_GATE_RESPONSE","cycle_goal_id":"GOAL_019fdcfa-4873-7ea2-ae5d-f29729224d0c","cycle_goal_sha256":"6997561124af524f2e56199803e6b684451ad9906941cd5d66e0ec424635e506","observed_worktree_status":"CURRENT_CANDIDATE_BOUND","admission_status":"ACTIVE"}
   ],
   "platform_owners": [
     {"lane_id":"PLATFORM_GATE_RESPONSE","task_id":"019fdcfb-d827-7831-958a-470c2abbe6eb","worktree_id":"HOST_WORKTREE_C3BA","model":"gpt-5.6-luna","reasoning_effort":"max","domain_ids":["PORTABLE_KERNEL_GATES_CONTRACTS","GOVERNANCE_INTENT_ROLES_ROUTING"],"cursor":"HANDOFF_RECEIVED_PENDING_INDEPENDENT_CLEARANCE"},
@@ -1316,7 +1316,26 @@
       "true_external_blocker": "NONE",
       "next_action": "CLASSIFY_ROADMAP03_AUDIT_HISTORICAL_CONTEXT_OR_BIND_PROJECT_AGNOSTIC_REPLACEMENT"
     },
-    "authoritative_projection_ref": "platform_pipeline.recovery_9_portability_surface_repair_2026_08_11",
+    "recovery_10_privacy_scan_boundary_2026_08_11": {
+      "record_layer": "CURRENT_PRIVACY_SCAN_HOLD",
+      "candidate": {"commit":"a562a66e2a573ec585097e72a9dd37b5d86ae2bd","tree":"2a454af43f6f84f281b96657f6b308757b0ebec2"},
+      "repairs": [
+        {"path":"control/persisted-record-privacy.mjs","status":"PROVIDER_LINK_AND_WORKTREE_PATTERNS_CONSTRUCTED_FROM_GENERIC_SEGMENTS","sha256":"212b5bb83430c145823c91860119cffbe757903e886bf0d4973b3929eeb62cc4"},
+        {"path":"tests/verify-persisted-record-privacy.mjs","status":"MACOS_SYMLINK_SAFE_TEMP_ROOT_FIXTURE","sha256":"9e0ba4b70514e676b5869da10e4565d887d292dbf9d3dd1d6b83d6bc1c25922d"}
+      ],
+      "comprehensive_proof": "FAIL_PERSISTED_PRIVACY_BOUND_SCAN",
+      "privacy_scan_scope": "KNOWN_AGENTOS_PROJECT_AND_CONTROL_ROOTS",
+      "privacy_scan_files": 462,
+      "privacy_scan_findings": 29,
+      "privacy_scan_categories": {"SESSION_OR_TASK_IDENTITY":18,"ABSOLUTE_PATH":6,"UNSAFE_PRIVATE_LINK":5},
+      "exact_blocker": "The bounded persisted-record scan still finds 29 identity/path/private-link findings across public project records; historical records require additive redaction or compatibility scope without deleting evidence.",
+      "source_bound_receipts": {"gate":"REBIND_REQUIRED_AFTER_CENTRAL_REPAIR","native":"REBIND_REQUIRED_AFTER_CENTRAL_REPAIR","roadmap06":"REBIND_REQUIRED_AFTER_CENTRAL_REPAIR","independent_clearance":"HOLD"},
+      "accounting": {"ordinary_active_slot_count":5,"memory_slot_count":0,"ordinary_queue_count":32,"authoritative_cursors":{"PLATFORM_GATE_RESPONSE":"FEATURE_CURSOR_000","PLATFORM_NATIVE_SESSION_EVIDENCE":"FEATURE_CURSOR_000","PLATFORM_PRIVATE_CONTROL_MEMORY":"FEATURE_CURSOR_000"},"downstream_consumed":false,"platform_clearance":false,"independent_clearance":false,"slot_release":false,"roadmap_07_status":"HELD_UNTIL_EXACT_CONTROLLER_SLOT_RELEASE","memory_integration":false},
+      "memory_boundary": "READ_ONLY_RECEIPT_ONLY_NO_DISPATCH",
+      "true_external_blocker": "NONE",
+      "next_action": "IDENTIFY_AND_REDACT_OR_COMPATIBILITY_CLASSIFY_THE_29_PERSISTED_RECORD_FINDINGS_WITH_HISTORY_PRESERVED"
+    },
+    "authoritative_projection_ref": "platform_pipeline.recovery_10_privacy_scan_boundary_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -1329,6 +1348,6 @@
     "chat_links_persisted": false
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
-  "next_action": "PORTABILITY_REPAIR_ROADMAP03_AUDIT_COMPATIBILITY_PENDING",
-  "state_sha256": "06b09ab9ff2a376add8762be0068b5c39ca9b4dbd818544ea60a19a00600544d"
+  "next_action": "PERSISTED_PRIVACY_SCAN_29_FINDINGS_SCOPE_PENDING",
+  "state_sha256": "bb632b092940131d2b71f20badea7e5c80817ba3cc18c1c7ecd1bdaf97e59b17"
 }

@@ -1018,6 +1018,24 @@ rebind Gate/Native receipts and obtain authorized functional, host/provider,
 recovery, clean-source, independent-clearance, and Controller slot-release
 evidence.
 
+## Central recovery 10 receipt — privacy scan boundary — 2026-08-11
+
+Candidate `a562a66e2a573ec585097e72a9dd37b5d86ae2bd` /
+`2a454af43f6f84f281b96657f6b308757b0ebec2` keeps privacy detection
+project-agnostic by constructing provider-link and worktree patterns from
+generic segments; its macOS temporary-root fixture now resolves the real
+temporary directory before exercising no-symlink custody. Syntax, binding,
+state/map, and diff hygiene pass.
+
+The affected privacy proof still finds 29 findings across 462 known control
+and project record files: 18 session/task identities, 6 absolute paths, and 5
+unsafe private links. This is an actionable persisted-record scope decision,
+not deferred real-host proof. Preserve every historical record while applying
+targeted additive redaction or a governed compatibility classification; do
+not infer Platform consumption or clearance. `FEATURE_CURSOR_000`, five
+ordinary slots, zero Memory slots, and all downstream/clearance/slot-release
+flags remain unchanged. Memory was not contacted.
+
 ## Central recovery 9 receipt — portability surface repair — 2026-08-11
 
 Candidate `1fd68179c9df393ddcdfa75c85b82d1ba63014e1` /
@@ -1037,3 +1055,16 @@ slots, zero Memory slots, and ROADMAP_07 hold remain authoritative. Memory was
 not contacted. Next action: preserve the report and apply its bounded
 compatibility decision, then rerun comprehensive proof before fresh Platform
 rebind and authorized clearance evidence.
+
+## Current recovery 10 readback — privacy scan boundary — 2026-08-11
+
+The current central candidate is `a562a66e2a573ec585097e72a9dd37b5d86ae2bd`
+/
+`2a454af43f6f84f281b96657f6b308757b0ebec2`. Privacy pattern construction and
+the real-temporary-root fixture are repaired and focused/static checks pass.
+The comprehensive persisted-record scan remains held by 29 findings across
+462 known records (18 session/task identities, 6 absolute paths, 5 unsafe
+private links). Preserve history and resolve by targeted additive redaction or
+governed compatibility scope; do not infer consumption or clearance. All
+authoritative cursors and five-slot/zero-memory accounting remain unchanged;
+Memory was not contacted.
