@@ -89,6 +89,7 @@ content-addressed by `d6c427d0ec39f79a297b8de5f7c4cace7b3d8d9d8146cf307db432832a
 | `specialist.standard.aws-iam-current` | `delivery-operations / P1` | [AWS IAM policy elements](https://docs.aws.amazon.com/us_en/IAM/latest/UserGuide/reference_policies_elements.html) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.aws-iam-current.v1` | 12 gates; external provider/account overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.cloudflare-dns-current` | `delivery-operations / P1` | [Cloudflare DNS records](https://developers.cloudflare.com/dns/manage-dns-records/) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-dns-current.v1` | 12 gates; external zone overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.cloudflare-cache-current` | `delivery-operations / P1` | [Cloudflare Cache Rules](https://developers.cloudflare.com/cache/how-to/cache-rules/) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-cache-current.v1` | 12 gates; external edge overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.wcag-2-2` | `product-client / P4` | [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/) `2.2`, Recommendation republished 2024-12-12; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.wcag-2-2.v1` | 12 gates; external jurisdiction/content applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 
 Each standard row is content-addressed by its `block_sha256` and binds
 `requirements.json`, `compatibility.json`, and `supersession.json` by digest.
@@ -224,12 +225,13 @@ P0 is the only active priority wave. It has six lanes: `AGENT.BOOTSTRAP`,
 `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
 `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
 `AGENT.INDEPENDENT_AUDITOR`. All P1–P6 entries remain planned until the
-foundation and preceding wave receipts exist; the P1/P2 packages above are
+foundation and preceding wave receipts exist; the P1–P4 packages above are
 candidate library records, not active lanes.
 
 The full inventory retains 625 role mentions and 619 unique titles, with 10
 explicit duplicate/alias mappings. Priority changes sequencing, not existence.
-P3 packages are compiled candidates only; P0 remains the sole active wave.
+P3 and P4 packages are compiled candidates only; P0 remains the sole active
+wave.
 
 ## Atomicity counts
 

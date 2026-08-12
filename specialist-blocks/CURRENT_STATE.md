@@ -59,11 +59,10 @@ standalone contract.
 
 Current materialized role-kind counts are `ROUTER: 633`,
 `CONTROL_PLANE: 16`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
-`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`, and
-`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `13` routers,
-`81` atomic specialists, and `16` control-plane roles in the complete
-backlog; the current overlay contains `14` routers, `86` atomic specialists,
-and `16` control-plane roles after the P4 client/UX source-backed slice.
+`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 86`, and
+`COMPILED_AGENT_PACKAGE: 0`. The current typed atomic overlay contains `14`
+routers, `86` atomic specialists, and `16` control-plane roles after the P4
+client/UX source-backed slice.
 
 The compiled candidate package count is separate from the backlog materialized
 count: `107` packages are validated (`16` `CONTROL_PLANE`, `18`
