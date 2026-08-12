@@ -315,7 +315,7 @@ assert.throws(
     allowedScopeRefs: ["PROJECT_MEMORY"],
     prohibitedScopeRefs: ["PROJECT_MEMORY"],
   }),
-  /scopes overlap/u,
+  /scopes must be disjoint/u,
 );
 
 const forgedReplaySnapshot = compileMemorySnapshot({

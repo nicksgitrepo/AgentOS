@@ -16,11 +16,11 @@ import {
   bindingFrom,
   memoryRecordLogicalKey,
   replayMemoryLedger,
-  requireSha,
   validateMemoryEvent,
   validateMemoryLedger,
   validateMemorySnapshot,
 } from "./project-memory.mjs";
+import {requireSha} from "./map-memory-common.mjs";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);

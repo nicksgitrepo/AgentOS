@@ -720,13 +720,10 @@ function validateReplayLifecycle(events, recordsByDigest, eventSequenceByDigest)
       const conflict = conflictDescriptorFromRecord(record);
       const left = recordsByDigest.get(conflict.left_record_sha256);
       const right = recordsByDigest.get(conflict.right_record_sha256);
-      if (left === undefined && right === undefined) {
-        throw new MemoryConflictError(
-          "CONFLICT_REFERENCES_UNAVAILABLE",
-          "explicit memory conflict does not name a known record",
-          {conflict_key: conflict.conflict_key},
-        );
-      }
+      // Conflict records are durable observations of divergent candidates.
+      // Either candidate may live outside this canonical ledger (for example,
+      // a rejected concurrent append), so absence is not corruption. When a
+      // referenced record is present, its logical identity remains fail-closed.
       for (const candidate of [left, right].filter(Boolean)) {
         if (memoryRecordLogicalKey(candidate) !== conflict.conflict_key) {
           throw new MemoryConflictError(

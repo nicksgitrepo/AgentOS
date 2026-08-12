@@ -283,6 +283,21 @@ assert.deepEqual(explicitConflictReplay.conflicts, [{
   right_record_sha256: digest("missing-candidate"),
 }]);
 
+const mismatchedConflict = compileMemoryConflictRecord({
+  recordId: "CONFLICT-MISMATCHED-KEY",
+  binding,
+  conflictKey: "DECISION:DECISION-REPLAY:1",
+  leftRecordSha256: goal.record_sha256,
+  rightRecordSha256: digest("external-candidate"),
+});
+assert.throws(
+  () => replayMemoryLedger([
+    ...baseEvents,
+    makeEvent(mismatchedConflict, baseEvents.length, baseEvents.at(-1).event_sha256, "CONFLICT_RECORDED", "MISMATCHED-CONFLICT"),
+  ], {binding}),
+  (error) => error.code === "CONFLICT_LOGICAL_KEY_MISMATCH",
+);
+
 assert.throws(
   () => compileMemoryConflictRecord({
     recordId: "CONFLICT-SAME",

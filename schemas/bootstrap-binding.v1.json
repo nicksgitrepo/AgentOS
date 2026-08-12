@@ -838,7 +838,7 @@
     },
     "project_memory_records_controller": {
       "path": "control/project-memory-records.mjs",
-      "sha256": "b61eb054c58b13540ca2ac2fe50a8153b07289a80c501c82c355f79070aca707"
+      "sha256": "9e5c227dec4fec950d0da2b2600de41f43d0ad7872f9501dd689772730a89d31"
     },
     "project_memory_projections_controller": {
       "path": "control/project-memory-projections.mjs",
@@ -846,7 +846,7 @@
     },
     "project_memory_store_controller": {
       "path": "control/project-memory-store.mjs",
-      "sha256": "499f26280a037c978138386fcbe4397751d716c78019fa94233b0007222038ea"
+      "sha256": "a4e872f5d19350de44ac920cd37ce1106496863ad600003c1c466c6b46fc3b2d"
     },
     "project_memory_common_controller": {
       "path": "control/map-memory-common.mjs",
@@ -898,11 +898,11 @@
     },
     "project_memory_verifier": {
       "path": "tests/verify-project-memory.mjs",
-      "sha256": "cc8dbaea1a0ca287aea6b0a52cc8b51fa38e26c1f60134d7cea263e663791581"
+      "sha256": "1a65fec38c8e21db13d8b1954bd74b2170a704c3112b0165a0afa01edcc584f4"
     },
     "project_memory_replay_verifier": {
       "path": "tests/verify-project-memory-replay.mjs",
-      "sha256": "908c9be9fb7702e1b739fe9b75704bb330fa6a7ad5f35f7d42baac1d3d8733c7"
+      "sha256": "b71e53e576884764e53f2e875e5b58714869c40d2748d36b9a3c4d001b067919"
     },
     "project_memory_schema_verifier": {
       "path": "tests/verify-project-memory-schema.mjs",
@@ -1282,7 +1282,7 @@
     },
     "audited_persisted_record_privacy_verifier": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "66d75dadf9cf32d4f2bcab435d139f1afb9e823d71c534f945ef54c1207b6db1"
+      "sha256": "e3cdb3a285444c3c00eb65588c621c5255a3547eab19754b474c3762691b2362"
     },
     "audited_merge_review": {
       "path": "docs/audited-merge-review.md",
@@ -1818,7 +1818,7 @@
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "66d75dadf9cf32d4f2bcab435d139f1afb9e823d71c534f945ef54c1207b6db1"
+      "sha256": "e3cdb3a285444c3c00eb65588c621c5255a3547eab19754b474c3762691b2362"
     },
     "privacy_digest_reconciliation_record": {
       "path": "docs/privacy-digest-reconciliation-2026-08-11.json",

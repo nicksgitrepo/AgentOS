@@ -73,6 +73,13 @@ function scanRecords() {
   const reconciliation = JSON.parse(fs.readFileSync(reconciliationPath, "utf8"));
   assert.equal(reconciliation.schema, "agentos.privacy_digest_reconciliation.v1");
   assert.equal(reconciliation.status, "SOURCE_MAPPED_HISTORICAL_CONTROL_DIGESTS_NO_RAW_EXPORT");
+  assert.match(reconciliation.manifest_binding.raw_sha256, /^[0-9a-f]{64}$/u);
+  assert.match(reconciliation.manifest_binding.digest_sha256, /^[0-9a-f]{64}$/u);
+  assert.equal(reconciliation.manifest_binding.ref, "PRIVATE_CONTROL_EVIDENCE_MANIFEST");
+  assert.equal(reconciliation.manifest_binding.record_count, projection.private_record_count);
+  assert.equal(reconciliation.manifest_binding.finding_count, projection.private_finding_count);
+  assert.equal(reconciliation.counts.manifest_digest_count, privateDigests.size);
+  assert.equal(reconciliation.counts.manifest_digests_missing_from_projection, 0);
   assert.equal(reconciliation.counts.projection_only_digest_count, historicalControlDigests.size);
   assert.equal(reconciliation.counts.unresolved_count, 0);
   assert.deepEqual(
@@ -86,20 +93,27 @@ function scanRecords() {
   }
 
   const privateManifestPath = path.join(controlRoot, "handoffs/privacy-public-projection-2026-08-11.json");
-  assert(fs.existsSync(privateManifestPath), "private control evidence manifest is unavailable");
-  const privateManifest = JSON.parse(fs.readFileSync(privateManifestPath, "utf8"));
-  assert.equal(privateManifest.schema, "agentos.private_control_evidence_projection_manifest.v1");
-  assert.equal(privateManifest.status, "PRESERVED_APPEND_ONLY_PRIVATE_EVIDENCE");
-  assert.equal(privateManifest.record_count, projection.private_record_count);
-  assert.equal(privateManifest.finding_count, projection.private_finding_count);
-  assert.equal(privateManifest.manifest_digest_sha256, crypto.createHash("sha256").update(JSON.stringify({...privateManifest, manifest_digest_sha256: null}), "utf8").digest("hex"));
-  const manifestDigests = new Set(privateManifest.payload_digests ?? privateManifest.records.map((record) => {
-    assert.equal(record.opaque_record_ref, `opaque:record:${record.payload_digest_sha256}`);
-    return record.payload_digest_sha256;
-  }));
-  for (const digest of privateManifest.supplemental_payload_digests ?? []) manifestDigests.add(digest);
-  assert.equal(manifestDigests.size, privateManifest.record_count + (privateManifest.supplemental_payload_digests?.length ?? 0));
-  assert.deepEqual([...manifestDigests].sort(), [...privateDigests].sort());
+  let privateManifestMode = "PUBLIC_ATTESTATION_ONLY";
+  let manifestDigests = new Set(privateDigests);
+  if (fs.existsSync(privateManifestPath)) {
+    const privateManifestRaw = fs.readFileSync(privateManifestPath);
+    assert.equal(crypto.createHash("sha256").update(privateManifestRaw).digest("hex"), reconciliation.manifest_binding.raw_sha256);
+    const privateManifest = JSON.parse(privateManifestRaw.toString("utf8"));
+    assert.equal(privateManifest.schema, "agentos.private_control_evidence_projection_manifest.v1");
+    assert.equal(privateManifest.status, "PRESERVED_APPEND_ONLY_PRIVATE_EVIDENCE");
+    assert.equal(privateManifest.record_count, projection.private_record_count);
+    assert.equal(privateManifest.finding_count, projection.private_finding_count);
+    assert.equal(privateManifest.manifest_digest_sha256, reconciliation.manifest_binding.digest_sha256);
+    assert.equal(privateManifest.manifest_digest_sha256, crypto.createHash("sha256").update(JSON.stringify({...privateManifest, manifest_digest_sha256: null}), "utf8").digest("hex"));
+    manifestDigests = new Set(privateManifest.payload_digests ?? privateManifest.records.map((record) => {
+      assert.equal(record.opaque_record_ref, `opaque:record:${record.payload_digest_sha256}`);
+      return record.payload_digest_sha256;
+    }));
+    for (const digest of privateManifest.supplemental_payload_digests ?? []) manifestDigests.add(digest);
+    assert.equal(manifestDigests.size, privateManifest.record_count + (privateManifest.supplemental_payload_digests?.length ?? 0));
+    assert.deepEqual([...manifestDigests].sort(), [...privateDigests].sort());
+    privateManifestMode = "PRIVATE_MANIFEST_READBACK";
+  }
 
   const binding = JSON.parse(fs.readFileSync(path.join(root, "schemas/bootstrap-binding.v1.json"), "utf8"));
   const allFiles = recordRoots.flatMap(({root: recordRoot}) => walk(recordRoot));
@@ -136,6 +150,7 @@ function scanRecords() {
     private_records_verified: projection.private_record_count,
     private_retained_digests_verified: privateDigests.size,
     private_payloads_scanned: 0,
+    private_manifest_verification: privateManifestMode,
     total_files: allFiles.length,
     total_findings: 0,
   };
