@@ -18,12 +18,13 @@ Each block package contains:
 Each reusable `STANDARD_BLOCK` additionally contains `requirements.json`,
 `compatibility.json`, and `supersession.json`. Their digests are bound into
 `block.json`; applicability, jurisdiction, project facts, and freshness
-overlays remain external. The current candidate has seventeen source-locked
+overlays remain external. The current candidate has eighteen source-locked
 standard packages under `specialist-blocks/standards/`: NIST SP 800-218 SSDF
 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten exact authorities reused
 by the first P1 atomic slice, the OWASP Top 10:2025 and OWASP API Security
 Top 10:2023 indexes, plus reusable Semantic Versioning 2.0.0 and Conventional
-Commits 1.0.0 authorities for release governance.
+Commits 1.0.0 authorities for release governance, and W3C WCAG 2.2 for
+accessibility applicability and evidence mapping.
 
 The first P1 atomic slice under `specialist-blocks/wave-02/` contains six
 classification-only routers and ten narrow candidates for Rust, TypeScript,
@@ -47,6 +48,12 @@ These candidates reuse the existing NIST SSDF and SLSA standard hashes where
 applicable; the observability router remains classification-only and does not
 replace its narrower atomic specialist.
 
+The P4 client/UX slice under `specialist-blocks/wave-05/` adds one
+desktop/offline/realtime classification router and five atomic specialists for
+product interaction, WCAG accessibility, responsive web, iOS/SwiftUI, and
+Android/Kotlin. The accessibility atom reuses the exact WCAG 2.2 standard hash;
+the router does not substitute for narrower atoms.
+
 Atomicity is normative: broad family labels are routers only, atomic blocks own
 one failure mode or evidence domain, and control-plane blocks own governance
 mechanics. The atomicity overlay in `registry/atomic-inventory.v1.json` keeps
@@ -69,7 +76,7 @@ materializes one stable recipe for every retained inventory role and marks
 unbuilt role recipes explicitly `PLANNED` and non-compileable.
 
 `registry/recipe-catalog.v1.json` contains one stable recipe for every retained
-inventory role: six P0 recipes are compileable candidates, 612 are explicit
+inventory role: eleven recipes are compileable candidates (`6` P0 and `5` P4), 607 are explicit
 planned, non-compileable recipes awaiting role-specific source research, gates,
 evaluation, and admission, and the protected Memory lane is `NOT_APPLICABLE`
 and external-only. `registry/integration-handoff.v1.json` and

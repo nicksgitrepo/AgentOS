@@ -43,6 +43,7 @@ const sourceCatalog = {
   awsIam: {source_id: "source.aws-iam-policy-elements", title: "IAM JSON Policy Elements Reference", publisher: "Amazon Web Services", url: "https://docs.aws.amazon.com/us_en/IAM/latest/UserGuide/reference_policies_elements.html", version: "current", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "aws-iam-policy-elements-current-2026-08-11", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "AWS IAM policy element semantics at retrieval."},
   cloudflareDns: {source_id: "source.cloudflare-dns-records", title: "Cloudflare DNS Records", publisher: "Cloudflare", url: "https://developers.cloudflare.com/dns/manage-dns-records/", version: "current", effective_date: "2026-06-24", retrieved_date: SOURCE_DATE, immutable_identity: "cloudflare-dns-records-current-2026-06-24", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Cloudflare DNS record management semantics."},
   cloudflareCache: {source_id: "source.cloudflare-cache-rules", title: "Cloudflare Cache Rules", publisher: "Cloudflare", url: "https://developers.cloudflare.com/cache/how-to/cache-rules/", version: "current", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "cloudflare-cache-rules-current-2026-08-11", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Cloudflare cache-rule matching and behavior."},
+  wcag22: {source_id: "source.w3c-wcag-2-2", title: "Web Content Accessibility Guidelines (WCAG) 2.2", publisher: "W3C", url: "https://www.w3.org/TR/2024/REC-WCAG22-20241212/", version: "2.2", effective_date: "2024-12-12", retrieved_date: SOURCE_DATE, immutable_identity: "w3c-wcag-2.2-recommendation-republished-20241212", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound web accessibility success criteria and conformance model; applicability and legal requirements remain external."},
 };
 
 const specs = [
@@ -388,6 +389,27 @@ const specs = [
     requirements: [
       {requirement_id: "CF.CACHE.current.rules", statement: "Bind cache findings to the exact current Cloudflare Cache Rules documentation snapshot and declared rule scope.", source_ref: "Cloudflare.Cache.current", evidence: "Rule, scope, provider, and source-lock receipt."},
       {requirement_id: "CF.CACHE.current.boundary", statement: "Do not transfer cache semantics to another provider or infer purge/deployment authority.", source_ref: "Cloudflare.Cache.current:scope", evidence: "Provider identity and custody boundary."}
+    ]
+  },
+  {
+    slug: "wcag-2-2",
+    blockId: "specialist.standard.wcag-2-2",
+    title: "W3C Web Content Accessibility Guidelines 2.2",
+    family: "product-client",
+    standardIdentity: {publisher: "W3C", identifier: "Web Content Accessibility Guidelines", edition: "2.2"},
+    source: sourceCatalog.wcag22,
+    supersessionStatus: "CURRENT_RECOMMENDATION_REPUBLISHED_2024-12-12",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["WCAG", "WCAG 2.2", "web accessibility", "accessibility conformance"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "content_scope"],
+    applicabilityInputs: ["content or user-interface scope", "requested conformance level and evaluation purpose", "publisher/version/publication/effective/supersession status", "external jurisdiction and applicability overlay"],
+    exceptions: ["This block maps the exact WCAG 2.2 edition and does not certify conformance or determine legal applicability.", "Platform-specific accessibility APIs and native UI guidance remain separate specialist authorities."],
+    requirements: [
+      {requirement_id: "WCAG22.1.1.1", statement: "Map non-text content to the WCAG 2.2 Non-text Content success criterion and preserve its exception conditions.", source_ref: "WCAG22:1.1.1", evidence: "Versioned success-criterion mapping and content-scope evidence."},
+      {requirement_id: "WCAG22.2.4.11", statement: "Map focus-visibility findings to the WCAG 2.2 Focus Not Obscured (Minimum) success criterion when the declared content scope applies.", source_ref: "WCAG22:2.4.11", evidence: "Keyboard/focus evidence and versioned criterion mapping."},
+      {requirement_id: "WCAG22.2.5.8", statement: "Map pointer-target findings to the WCAG 2.2 Target Size (Minimum) success criterion when the declared content scope applies.", source_ref: "WCAG22:2.5.8", evidence: "Target-size evidence and versioned criterion mapping."},
+      {requirement_id: "WCAG22.conformance", statement: "Evaluate conformance only against the WCAG 2.2 conformance requirements, full-page scope, and declared conformance level; never infer a certification claim.", source_ref: "WCAG22:5.2", evidence: "Conformance-level, full-page, alternate-version, and external applicability evidence."}
     ]
   }
 ];

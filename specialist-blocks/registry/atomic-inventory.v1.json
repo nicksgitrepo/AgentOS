@@ -52,6 +52,16 @@
       "evaluator_receipt": "specialist-eval.product-client-router.v1"
     },
     {
+      "generic_id": "CLIENT.DESKTOP_OFFLINE_REALTIME",
+      "title": "Desktop/Offline/Realtime Client Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "block_id": "specialist.product-client.desktop-offline-realtime-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.desktop-offline-realtime-router.v1"
+    },
+    {
       "generic_id": "DATA.DATA_ROUTER",
       "block_id": "specialist.data.router",
       "title": "Data and Database Router",
@@ -273,6 +283,36 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.openapi-contracts.v1"
+    },
+    {
+      "generic_id": "CLIENT.ANDROID_KOTLIN",
+      "title": "Android/Kotlin",
+      "version": "1.0.0",
+      "router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.android-kotlin",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.android-kotlin.v1"
+    },
+    {
+      "generic_id": "CLIENT.IOS_SWIFTUI",
+      "title": "iOS SwiftUI",
+      "version": "1.0.0",
+      "router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.ios-swiftui",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.ios-swiftui.v1"
+    },
+    {
+      "generic_id": "CLIENT.RESPONSIVE_WEB",
+      "title": "Responsive Web",
+      "version": "1.0.0",
+      "router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.responsive-web",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.responsive-web.v1"
     },
     {
       "generic_id": "CLOUD.AWS_COMPUTE",
@@ -963,11 +1003,31 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.observability-incident.v1"
+    },
+    {
+      "generic_id": "UX.ACCESSIBILITY_WCAG",
+      "title": "Accessibility/WCAG",
+      "version": "1.0.0",
+      "router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.accessibility-wcag",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.accessibility-wcag.v1"
+    },
+    {
+      "generic_id": "UX.PRODUCT_INTERACTION",
+      "title": "Product Interaction",
+      "version": "1.0.0",
+      "router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.product-interaction",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.product-interaction.v1"
     }
   ],
   "counts": {
-    "ROUTER": 13,
-    "ATOMIC_SPECIALIST": 81,
+    "ROUTER": 14,
+    "ATOMIC_SPECIALIST": 86,
     "CONTROL_PLANE": 16
   },
   "evaluator_failure_classes": [

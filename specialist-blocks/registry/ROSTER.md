@@ -49,24 +49,24 @@ The materialized roster distinguishes these role kinds:
 - `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
   roster agent.
 
-Current materialized counts are `ROUTER: 632`, `CONTROL_PLANE: 16`,
+Current materialized counts are `ROUTER: 633`, `CONTROL_PLANE: 16`,
 `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`, and
+`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 86`, and
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
-`13` routers, `81` atomic specialists, and `16` control-plane roles.
+`14` routers, `86` atomic specialists, and `16` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `100` packages total, consisting of `13` `ROUTER`, `16`
-`CONTROL_PLANE`, `54` `ATOMIC_SPECIALIST`, and `17` `STANDARD_BLOCK` packages.
-All 100 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
+backlog: `107` packages total, consisting of `14` `ROUTER`, `16`
+`CONTROL_PLANE`, `59` `ATOMIC_SPECIALIST`, and `18` `STANDARD_BLOCK` packages.
+All 107 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 The on-demand recipe catalog now covers all `619` retained inventory roles:
-`6` P0 recipes are `CANDIDATE` and compileable, `612` recipes are `PLANNED`,
+`11` recipes are `CANDIDATE` and compileable (`6` P0 and `5` P4), `607` recipes are `PLANNED`,
 explicitly non-compileable, and require a role-specific block with its own
 source lock, twelve gates, hostile fixtures, independent evaluation, and
 admission receipt. The protected Memory lane is retained as `NOT_APPLICABLE`
 and external-only. The catalog preserves all `10` alias mappings and is
-content-addressed by `525213cc43afaba3819518859ce84ca31d3617ba8efa85d58b2d0e6251f0024b`.
+content-addressed by `d6c427d0ec39f79a297b8de5f7c4cace7b3d8d9d8146cf307db432832aeefd7a`.
 
 ## Source-locked standard candidates
 
@@ -235,8 +235,8 @@ P3 packages are compiled candidates only; P0 remains the sole active wave.
 
 The current typed atomicity overlay reports exactly:
 
-- `13` routers;
-- `81` atomic specialists;
+- `14` routers;
+- `86` atomic specialists;
 - `16` control-plane blocks.
 
 Routers may classify and assemble context but may not write Product or accept a
@@ -257,14 +257,30 @@ evidence remain external overlays. New editions, material errata, or normative
 gate corrections create new block versions with compatibility/supersession
 metadata. A non-material publisher refresh creates a freshness receipt only.
 
-The current candidate contains seventeen such source-locked standard packages:
+The current candidate contains eighteen such source-locked standard packages:
 NIST SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten P1 language,
 framework, data, API, identity, and provider authorities, OWASP Top 10:2025,
 and OWASP API Security Top 10:2023, Semantic Versioning 2.0.0, and Conventional
-Commits 1.0.0. Their static receipts do not change the
+Commits 1.0.0, and W3C WCAG 2.2. Their static receipts do not change the
 backlog's `STANDARD_BLOCK: 0` materialization count; that count records roles
 not yet expanded into packages.
 
 The aggregate typed handoff is `registry/integration-handoff.v1.json` with its
 human-readable companion `INTEGRATION_HANDOFF.md`; its current disposition is
 `WAITING_WITH_RECEIPT`.
+
+## P4 client/UX candidates — current receipt
+
+These six packages are candidate-only, use exact twelve-gate packs, and have
+not activated a lane. The desktop/offline/realtime package is a router/index;
+the five narrower atoms remain distinct and must be selected when their
+failure mode, evidence, or authority is implicated.
+
+| Generic ID | Block ID / kind | Source lock / dependency | Build / evaluator | Intake / lifecycle |
+|---|---|---|---|---|
+| `CLIENT.DESKTOP_OFFLINE_REALTIME` | `specialist.product-client.desktop-offline-realtime-router` / `ROUTER` | [W3C WebRTC](https://www.w3.org/TR/2025/REC-webrtc-20250313/); [W3C Service Workers](https://www.w3.org/TR/service-workers/); atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.desktop-offline-realtime-router.v1` | router-only; `NOT_ADMITTED / OFF` |
+| `UX.PRODUCT_INTERACTION` | `specialist.product-client.product-interaction` / `ATOMIC_SPECIALIST` | [W3C ARIA APG](https://www.w3.org/WAI/ARIA/apg/); upstream `specialist.product-client.router` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.product-interaction.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `UX.ACCESSIBILITY_WCAG` | `specialist.product-client.accessibility-wcag` / `ATOMIC_SPECIALIST` | [WCAG 2.2](https://www.w3.org/TR/WCAG22/); exact `specialist.standard.wcag-2-2` hash; upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.accessibility-wcag.v1` | 12 gates; external applicability overlay; `NOT_ADMITTED / OFF` |
+| `CLIENT.RESPONSIVE_WEB` | `specialist.product-client.responsive-web` / `ATOMIC_SPECIALIST` | [MDN Responsive Design](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design); upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.responsive-web.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `CLIENT.IOS_SWIFTUI` | `specialist.product-client.ios-swiftui` / `ATOMIC_SPECIALIST` | [Apple SwiftUI](https://developer.apple.com/documentation/swiftui/); upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.ios-swiftui.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `CLIENT.ANDROID_KOTLIN` | `specialist.product-client.android-kotlin` / `ATOMIC_SPECIALIST` | [Jetpack Compose](https://developer.android.com/develop/ui/compose/documentation), [Kotlin](https://kotlinlang.org/docs/home.html); upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.android-kotlin.v1` | 12 gates; `NOT_ADMITTED / OFF` |

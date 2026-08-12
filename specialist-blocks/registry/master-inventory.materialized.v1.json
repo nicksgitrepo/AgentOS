@@ -4,13 +4,13 @@
   "status": "COMPILED_CANDIDATE",
   "activation": "OFF",
   "counts": {
-    "ROUTER": 632,
+    "ROUTER": 633,
     "CONTROL_PLANE": 16,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
     "STANDARD_BLOCK": 0,
     "CONTEXT_BLOCK": 0,
-    "ATOMIC_SPECIALIST": 81,
+    "ATOMIC_SPECIALIST": 86,
     "COMPILED_AGENT_PACKAGE": 0
   },
   "entries": [
@@ -26412,6 +26412,152 @@
       "block_id": "specialist.product-client.router"
     },
     {
+      "canonical_id": "CLIENT.ANDROID_KOTLIN",
+      "title": "Android/Kotlin",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Android/Kotlin under its version lock.",
+      "triggers": [
+        "upstream router selects CLIENT.ANDROID_KOTLIN"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.android-kotlin.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.android-kotlin",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLIENT.DESKTOP_OFFLINE_REALTIME",
+      "title": "Desktop/Offline/Realtime Client Router",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Desktop/Offline/Realtime Client Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.desktop-offline-realtime-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.product-client.desktop-offline-realtime-router"
+    },
+    {
+      "canonical_id": "CLIENT.IOS_SWIFTUI",
+      "title": "iOS SwiftUI",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "atomic",
+      "purpose": "Analyze only iOS SwiftUI under its version lock.",
+      "triggers": [
+        "upstream router selects CLIENT.IOS_SWIFTUI"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.ios-swiftui.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.ios-swiftui",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLIENT.RESPONSIVE_WEB",
+      "title": "Responsive Web",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Responsive Web under its version lock.",
+      "triggers": [
+        "upstream router selects CLIENT.RESPONSIVE_WEB"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.responsive-web.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.responsive-web",
+      "block_ids": []
+    },
+    {
       "canonical_id": "CLOUD.AWS_COMPUTE",
       "title": "Cloud Compute Controls",
       "aliases": [],
@@ -30034,17 +30180,91 @@
       "required_upstream_router": "specialist.delivery-operations.observability-router",
       "block_id": "specialist.delivery-operations.observability-incident",
       "block_ids": []
+    },
+    {
+      "canonical_id": "UX.ACCESSIBILITY_WCAG",
+      "title": "Accessibility/WCAG",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Accessibility/WCAG under its version lock.",
+      "triggers": [
+        "upstream router selects UX.ACCESSIBILITY_WCAG"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.accessibility-wcag.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.accessibility-wcag",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "UX.PRODUCT_INTERACTION",
+      "title": "Product Interaction",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Product Interaction under its version lock.",
+      "triggers": [
+        "upstream router selects UX.PRODUCT_INTERACTION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.product-interaction.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.product-interaction",
+      "block_ids": []
     }
   ],
   "typed_overlay_counts": {
-    "ROUTER": 13,
+    "ROUTER": 14,
     "CONTROL_PLANE": 16,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
     "STANDARD_BLOCK": 0,
     "CONTEXT_BLOCK": 0,
-    "ATOMIC_SPECIALIST": 81,
+    "ATOMIC_SPECIALIST": 86,
     "COMPILED_AGENT_PACKAGE": 0
   },
-  "inventory_sha256": "6a87400727d843dad7813762683e6c507457263912c5b5f12479ce40849b11ae"
+  "inventory_sha256": "80cf4e2e22a583d6853f3734233c7b71c142a24dd6b6b3f31de71c7e58a41624"
 }

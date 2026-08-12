@@ -36,12 +36,22 @@ assert.equal(recipeCatalog.aliases.length, 10, "recipe catalog must preserve eve
 assert.equal(recipeCatalog.recipes_sha256, canonicalDigest({...recipeCatalog, recipes_sha256: null}), "recipe catalog digest must be deterministic");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 619, "recipe source inventory IDs must be unique");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 619, "recipe IDs must be unique");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 6, "only the six P0 recipes may be compiled candidates");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 612, "unbuilt inventory roles must remain planned recipes");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 11, "only the six P0 and five source-backed P4 recipes may be compiled candidates");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 607, "unbuilt inventory roles must remain planned recipes");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").length, 1, "the protected Memory lane must remain not applicable");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PLANNED_RECIPE_ONLY"), "planned recipes must not be compileable");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PROTECTED_EXTERNAL_LANE" && recipe.source_title === "Memory Systems (protected lane)"), "protected Memory lane must not become a portable recipe");
-assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "P0 recipes must remain compileable candidates");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "P0/P4 recipes must remain compileable candidates");
+const p4RecipeIds = ["recipe.client.product-interaction", "recipe.client.accessibility-wcag", "recipe.client.responsive-web", "recipe.client.ios-swiftui", "recipe.client.android-kotlin"];
+for (const recipeId of p4RecipeIds) {
+  const recipe = recipeCatalog.recipes.find((candidate) => candidate.recipe_id === recipeId);
+  assert(recipe, `${recipeId} must be addressable in the durable recipe catalog`);
+  assert.equal(recipe.lifecycle, "CANDIDATE");
+  assert.equal(recipe.compile_allowed, true);
+  assert(recipe.required_atomic_blocks.length === 1 && recipe.required_block_ids.includes(recipe.required_atomic_blocks[0]), `${recipeId} must name one narrow atom in its required closure`);
+}
+const p4AccessibilityRecipe = recipeCatalog.recipes.find((recipe) => recipe.recipe_id === "recipe.client.accessibility-wcag");
+assert(p4AccessibilityRecipe.required_standard_blocks.includes("specialist.standard.wcag-2-2"), "P4 accessibility recipe must reuse the exact WCAG 2.2 standard block");
 assert(recipeCatalog.aliases.every((alias) => recipeCatalog.recipes.some((recipe) => recipe.recipe_id === alias.canonical_recipe_id && recipe.source_inventory_id === alias.source_inventory_id)), "aliases must resolve to covered canonical recipes");
 const integrationHandoff = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/integration-handoff.v1.json"), "utf8"));
 assert.equal(integrationHandoff.schema, "agentos.specialist_library_integration_handoff.v1");
@@ -165,6 +175,16 @@ try {
   assert(p2LockIds.has(p2Atom.required_upstream_router), "P2 package lock must include the atomic upstream router");
   assert(p2LockIds.has("specialist.standard.owasp-asvs") && p2LockIds.has(p2WebStandard.block_id), "P2 package lock must include both reusable OWASP standards");
   assert.equal(p2Package.documents.blockLock.blocks.find((block) => block.block_id === p2WebStandard.block_id).hash, p2WebStandard.hash, "P2 package must reuse the immutable OWASP index hash");
+
+  const p4Recipe = recipeCatalog.recipes.find((recipe) => recipe.recipe_id === "recipe.client.accessibility-wcag");
+  const p4Task = {...TASKS.web, lane: "fixture.actual-p4-accessibility", goal: "compile one narrow WCAG-bound client candidate", outcome: "typed-client-handoff", non_goals: ["certification", "deployment", "legal applicability"]};
+  const p4Package = compile("actual-p4-accessibility", p4Recipe, p4Task, makeExternal("actual-p4-accessibility", {contextFields: p4Recipe.required_context_fields}), portableCatalog);
+  assert.equal(validateTaskShapedAgentPackage(p4Package.packageDir, {repositoryRoot: root}).status, "PASS");
+  const p4LockIds = new Set(p4Package.documents.blockLock.blocks.map((block) => block.block_id));
+  assert(p4LockIds.has("specialist.product-client.accessibility-wcag"), "P4 package lock must include the narrow accessibility atom");
+  assert(p4LockIds.has("specialist.product-client.router"), "P4 package lock must include the product/client upstream router");
+  assert(p4LockIds.has("specialist.standard.wcag-2-2"), "P4 package lock must include the reusable WCAG 2.2 standard block");
+  assert.equal(p4Package.documents.blockLock.blocks.find((block) => block.block_id === "specialist.standard.wcag-2-2").hash, portableCatalog.find((block) => block.block_id === "specialist.standard.wcag-2-2").hash, "P4 package must reuse the immutable WCAG 2.2 hash");
 
   assert.equal(validateTaskShapedAgentPackage(rustA.packageDir, {repositoryRoot: root}).status, "PASS");
   assert.equal(validateTaskShapedAgentPackage(web.packageDir, {repositoryRoot: root}).status, "PASS");

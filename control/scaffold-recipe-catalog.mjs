@@ -24,6 +24,7 @@ const FOUNDATION_BLOCKS = Object.freeze([
 const BASE_LAYERS = Object.freeze([
   "owner-intent-and-authority",
   "agentos-governance",
+  "external-project-governance",
   "task-role-authority",
   "exact-project-context",
 ]);
@@ -38,6 +39,49 @@ const P0_SOURCE_BY_RECIPE = Object.freeze({
   "recipe.agent.resource-scheduler": "inventory.permanent-governance-control.scheduler-hardware-resource-governor",
   "recipe.agent.runtime-deployment": "inventory.permanent-governance-control.runtime-deployment-operator",
   "recipe.agent.independent-auditor": "inventory.permanent-governance-control.independent-auditor",
+});
+
+const P4_RECIPE_OVERRIDES = Object.freeze({
+  "inventory.product-client-experience.interaction-designer": {
+    recipe_id: "recipe.client.product-interaction",
+    required_block_ids: ["specialist.product-client.router", "specialist.product-client.product-interaction"],
+    required_atomic_blocks: ["specialist.product-client.product-interaction"],
+    required_standard_blocks: [],
+    context_fields: ["interaction.scope", "interaction.states", "candidate.identity"],
+    reason: "Select the named product-interaction atom under the product/client router.",
+  },
+  "inventory.product-client-experience.accessibility-wcag": {
+    recipe_id: "recipe.client.accessibility-wcag",
+    required_block_ids: ["specialist.product-client.router", "specialist.product-client.accessibility-wcag", "specialist.standard.wcag-2-2"],
+    required_atomic_blocks: ["specialist.product-client.accessibility-wcag"],
+    required_standard_blocks: ["specialist.standard.wcag-2-2"],
+    context_fields: ["accessibility.scope", "accessibility.criteria", "standard.edition", "candidate.identity", "jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "content_scope"],
+    reason: "Select the version-bound WCAG atom and reuse the immutable WCAG 2.2 standard block.",
+  },
+  "inventory.product-client-experience.responsive-web": {
+    recipe_id: "recipe.client.responsive-web",
+    required_block_ids: ["specialist.product-client.router", "specialist.product-client.responsive-web"],
+    required_atomic_blocks: ["specialist.product-client.responsive-web"],
+    required_standard_blocks: [],
+    context_fields: ["web.scope", "web.viewports", "web.layout", "candidate.identity"],
+    reason: "Select the named responsive-web atom under the product/client router.",
+  },
+  "inventory.software-language-runtime.swift-swiftui": {
+    recipe_id: "recipe.client.ios-swiftui",
+    required_block_ids: ["specialist.product-client.router", "specialist.product-client.ios-swiftui"],
+    required_atomic_blocks: ["specialist.product-client.ios-swiftui"],
+    required_standard_blocks: [],
+    context_fields: ["client.platform", "client.swiftui", "client.lifecycle", "candidate.identity"],
+    reason: "Select the named SwiftUI client atom under the product/client router.",
+  },
+  "inventory.software-language-runtime.kotlin": {
+    recipe_id: "recipe.client.android-kotlin",
+    required_block_ids: ["specialist.product-client.router", "specialist.product-client.android-kotlin"],
+    required_atomic_blocks: ["specialist.product-client.android-kotlin"],
+    required_standard_blocks: [],
+    context_fields: ["client.platform", "client.kotlin", "client.compose", "candidate.identity"],
+    reason: "Select the named Android/Kotlin client atom under the product/client router.",
+  },
 });
 
 function readJson(filePath, label) {
@@ -175,6 +219,49 @@ function plannedRecipe(entry) {
   });
 }
 
+function compiledRecipe(entry, override) {
+  const requiredBlockIds = sortedUnique([
+    ...FOUNDATION_BLOCKS,
+    ...override.required_block_ids,
+    ...override.required_atomic_blocks,
+    ...override.required_standard_blocks,
+  ]);
+  const reasons = {
+    ...genericReasons(entry),
+    ...Object.fromEntries(override.required_block_ids.map((blockId) => [blockId, override.reason])),
+    ...Object.fromEntries(override.required_standard_blocks.map((blockId) => [blockId, "Reuse the exact content-addressed standard block; applicability remains an external overlay."])),
+  };
+  return finalizeRecipe({
+    schema: "agentos.specialist_recipe.v1",
+    version: 1,
+    recipe_id: override.recipe_id,
+    recipe_version: "1.0.0",
+    source_inventory_id: entry.canonical_id,
+    source_title: entry.title,
+    source_role_kind: entry.role_kind,
+    aliases: entry.aliases,
+    priority: "P4",
+    lane: `P4.${override.recipe_id}`,
+    family: entry.family,
+    purpose: `Compile a bounded ${entry.title} task-shaped agent from the smallest dependency-complete client/UX block set.`,
+    required_layers: BASE_LAYERS,
+    required_block_ids: requiredBlockIds,
+    required_context_fields: [...BASE_CONTEXT, "signals", ...override.context_fields],
+    non_goals: [...BASE_NON_GOALS, "product acceptance", "platform or standard scope expansion"],
+    selection_rule: "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
+    external_overlay_rule: "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
+    lifecycle: "CANDIDATE",
+    compile_allowed: true,
+    materialization: {status: "COMPILED_CANDIDATE", role_specific_block_required: false, package_ids: requiredBlockIds},
+    required_atomic_blocks: override.required_atomic_blocks,
+    required_standard_blocks: override.required_standard_blocks,
+    optional_block_ids: [],
+    reasons,
+    source_requirements: entry.source_requirements,
+    freshness_policy: entry.freshness_policy,
+  });
+}
+
 export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGenerated = true} = {}) {
   const libraryRoot = path.join(repositoryRoot, "specialist-blocks");
   const compiled = compileSpecialistLibrary({repositoryRoot, writeGenerated: true});
@@ -196,7 +283,8 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
   }
   for (const entry of inventoryEntries) {
     if (covered.has(entry.canonical_id)) continue;
-    recipes.push(plannedRecipe(entry));
+    const p4Override = P4_RECIPE_OVERRIDES[entry.canonical_id];
+    recipes.push(p4Override ? compiledRecipe(entry, p4Override) : plannedRecipe(entry));
     covered.add(entry.canonical_id);
   }
   recipes.sort((left, right) => left.source_inventory_id.localeCompare(right.source_inventory_id));

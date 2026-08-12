@@ -853,6 +853,139 @@
       "priority": 2
     },
     {
+      "route_id": "route.product-client.accessibility-wcag",
+      "family": "product-client",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "Accessibility/WCAG",
+        "UX.ACCESSIBILITY_WCAG",
+        "WCAG",
+        "web accessibility"
+      ],
+      "required_context": [
+        "accessibility.criteria",
+        "accessibility.scope",
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "standard.edition"
+      ],
+      "select": [
+        "specialist.product-client.accessibility-wcag"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved platform or version",
+        "unsafe action"
+      ],
+      "priority": 4
+    },
+    {
+      "route_id": "route.product-client.android-kotlin",
+      "family": "product-client",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "Android Kotlin",
+        "Android client",
+        "CLIENT.ANDROID_KOTLIN",
+        "Jetpack Compose"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "client.compose",
+        "client.kotlin",
+        "client.platform",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.product-client.android-kotlin"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved platform or version",
+        "unsafe action"
+      ],
+      "priority": 4
+    },
+    {
+      "route_id": "route.product-client.desktop-offline-realtime-router",
+      "family": "product-client",
+      "role_kind": "ROUTER",
+      "signals": [
+        "CLIENT.DESKTOP_OFFLINE_REALTIME",
+        "desktop client",
+        "offline-first",
+        "realtime client"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "client.mode",
+        "client.surface",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.product-client.desktop-offline-realtime-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 4
+    },
+    {
+      "route_id": "route.product-client.ios-swiftui",
+      "family": "product-client",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "CLIENT.IOS_SWIFTUI",
+        "SwiftUI",
+        "iOS SwiftUI",
+        "iOS client"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "client.lifecycle",
+        "client.platform",
+        "client.swiftui",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.product-client.ios-swiftui"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved platform or version",
+        "unsafe action"
+      ],
+      "priority": 4
+    },
+    {
       "route_id": "route.product-client.openapi-contracts",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
@@ -882,6 +1015,74 @@
         "unsafe action"
       ],
       "priority": 1
+    },
+    {
+      "route_id": "route.product-client.product-interaction",
+      "family": "product-client",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "UX.PRODUCT_INTERACTION",
+        "interaction flow",
+        "interaction state",
+        "product interaction"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "interaction.scope",
+        "interaction.states",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.product-client.product-interaction"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved platform or version",
+        "unsafe action"
+      ],
+      "priority": 4
+    },
+    {
+      "route_id": "route.product-client.responsive-web",
+      "family": "product-client",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "CLIENT.RESPONSIVE_WEB",
+        "Responsive Web",
+        "media query",
+        "responsive layout",
+        "viewport"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "web.layout",
+        "web.scope",
+        "web.viewports"
+      ],
+      "select": [
+        "specialist.product-client.responsive-web"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved platform or version",
+        "unsafe action"
+      ],
+      "priority": 4
     },
     {
       "route_id": "route.product-client.router",
@@ -3050,8 +3251,39 @@
         "stale or superseded source"
       ],
       "priority": 1
+    },
+    {
+      "route_id": "route.standard.wcag-2-2",
+      "family": "product-client",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "WCAG",
+        "WCAG 2.2",
+        "accessibility conformance",
+        "web accessibility"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "content_scope",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.wcag-2-2"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "7b3501f76001891366c9067b4ba0b81fd872cf989782773494614194f54c1f36"
+  "routing_sha256": "fcc31e1b995377fd680b295c2b7e84415f85c61991bcd85f3806c11359d8a53f"
 }

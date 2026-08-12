@@ -57,24 +57,24 @@ generated `bootstrap.md` view. Generated instances are external companion
 artifacts only; `bootstrap.md` is never the authority and cannot be edited as a
 standalone contract.
 
-Current materialized role-kind counts are `ROUTER: 632`,
+Current materialized role-kind counts are `ROUTER: 633`,
 `CONTROL_PLANE: 16`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
 `STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`, and
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `13` routers,
 `81` atomic specialists, and `16` control-plane roles in the complete
-backlog; thirteen router packages, fifty-four atomic packages, and sixteen
-control-plane packages are compiled candidates in the current library slice.
+backlog; the current overlay contains `14` routers, `86` atomic specialists,
+and `16` control-plane roles after the P4 client/UX source-backed slice.
 
 The compiled candidate package count is separate from the backlog materialized
-count: `100` packages are validated (`16` `CONTROL_PLANE`, `17`
-`STANDARD_BLOCK`, `13` `ROUTER`, and `54` `ATOMIC_SPECIALIST`). These are
+count: `107` packages are validated (`16` `CONTROL_PLANE`, `18`
+`STANDARD_BLOCK`, `14` `ROUTER`, and `59` `ATOMIC_SPECIALIST`). These are
 source-locked inactive candidates and do not change the unexpanded backlog
 count.
 
 The on-demand recipe catalog is now complete for the retained backlog: `619`
 stable recipes map one-to-one to the `619` inventory titles and preserve all
-`10` alias mappings. Six P0 recipes are `CANDIDATE`/compileable; `612` are
-`PLANNED`/non-compileable until a role-specific block has source evidence, the
+`10` alias mappings. Eleven recipes are `CANDIDATE`/compileable (`6` P0 and
+`5` P4); `607` are `PLANNED`/non-compileable until a role-specific block has source evidence, the
 exact twelve gates, hostile fixtures, independent evaluation, and an admission
 receipt. The protected Memory lane is retained as `NOT_APPLICABLE` and
 external-only.
@@ -113,8 +113,9 @@ remain external gates.
 
 1. Keep the exact six P0 lanes reserved while independent utility/harm and
    admission review remains external; no P3 package is an active lane.
-2. Continue the next queue from P4 only after the current P3 receipt is
-   independently reviewed and the host-pressure ceiling permits bounded work.
+2. Hold the P4 client/UX packages as static candidates; continue to P5 only
+   after this slice is independently reviewed and the host-pressure ceiling
+   permits bounded work.
 3. Send the exact isolated receipt to the main AgentOS 3.0 integration owner;
    do not merge, activate, deploy, or adopt a consumer project from this lane.
 
@@ -407,3 +408,36 @@ remain external gates.
 - Next cursor: source-backed P4 client/UX expansion only after independent
   review and host-pressure clearance; utility/harm, admission, and main
   integration-owner intake remain external gates.
+
+## Latest verified state — P4 client/UX source-backed slice — 2026-08-11
+
+- The bounded P4 slice adds six inactive candidate packages: the
+  `CLIENT.DESKTOP_OFFLINE_REALTIME` classification router plus atomic
+  `UX.PRODUCT_INTERACTION`, `UX.ACCESSIBILITY_WCAG`, `CLIENT.RESPONSIVE_WEB`,
+  `CLIENT.IOS_SWIFTUI`, and `CLIENT.ANDROID_KOTLIN` specialists. The desktop
+  router is classification-only and does not substitute for a narrower atom.
+- `specialist.standard.wcag-2-2` is a reusable source-locked `STANDARD_BLOCK`
+  for the W3C WCAG 2.2 Recommendation republished 2024-12-12. The accessibility
+  atom references that exact block by dependency/hash; applicability,
+  jurisdiction, and conformance evidence remain external overlays.
+- Official source locks include W3C WCAG 2.2 and ARIA APG, MDN Responsive Web
+  Design, Apple SwiftUI, Android Jetpack Compose/Kotlin, W3C WebRTC, and W3C
+  Service Workers. APG is used as guidance, not represented as a normative
+  standard block.
+- Verified totals are `107` compiled package candidates (`16` controls,
+  `18` standards, `14` routers, `59` atoms), `633` materialized router roles,
+  `86` materialized atomic roles, and `116` typed overlay entries
+  (`14` routers, `16` controls, `86` atoms). The recipe catalog remains `619`
+  entries: `11` candidates (`6` P0, `5` P4), `607` planned, `1`
+  `NOT_APPLICABLE`, and `10` aliases.
+- Focused library and task-shaped compiler checks pass; the independent
+  evaluator reports `STATIC_PASS_REVIEW_REQUIRED` over `107` packages,
+  `1,284` gates, and `1,819` hostile fixtures. Utility/harm and admission
+  remain external and pending.
+- Exactly the six P0 lanes remain reserved and are the only materially active
+  lanes. No P4 lane was activated or spawned. Host pressure remains the
+  recorded ceiling: canonical scheduler `JOB-407` is `RUNNING` with swap at
+  `5.5/6 GiB`; no heavyweight proof was run.
+- Next cursor: P5 source-backed expansion only after independent review and
+  host-pressure clearance; the exact isolated candidate receipt is ready for
+  the main integration owner to inspect.

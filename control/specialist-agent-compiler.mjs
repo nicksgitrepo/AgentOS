@@ -651,6 +651,13 @@ export function compileTaskShapedAgent({task, recipe, blocks, external, parent, 
   const recipeRef = recipeIdentity(normalizedRecipe);
   if (normalizedRecipe.required_layers.length > 0) {
     const selectedLayers = new Set(selectedBlocks.map((block) => block.layer));
+    // These layers are deliberately external bindings, not portable library
+    // blocks.  Their presence is proven by validateTask/validateExternal;
+    // requiring a duplicate portable block would contaminate the generic
+    // library with project governance or owner context.
+    if (normalizedTask.owner_intent) selectedLayers.add("owner-intent-and-authority");
+    if (boundExternal.projectGovernance.status === "COMPLETE") selectedLayers.add("external-project-governance");
+    if (boundExternal.context.completeness === "COMPLETE") selectedLayers.add("exact-project-context");
     const missingLayers = normalizedRecipe.required_layers.filter((layer) => !selectedLayers.has(layer));
     if (missingLayers.length > 0) fail("MISSING_REQUIRED_LAYER", "recipe selection does not cover required composition layers", {missing: missingLayers});
   }

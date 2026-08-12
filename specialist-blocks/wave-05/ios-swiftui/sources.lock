@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.ios-swiftui",
+  "sources": [
+    {
+      "source_id": "source.apple-swiftui-documentation",
+      "title": "SwiftUI Documentation",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/swiftui/",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "apple-swiftui-documentation-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "SwiftUI declarative UI, layout, interaction, accessibility, localization, and platform adaptation; no signing or deployment authority."
+    },
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "bd9444d6f36dc2cc5c531ebbeaf96ec7eeea08850c0ceb14f2407d256442bedb"
+}
