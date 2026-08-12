@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "02-authority-precedence",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: does the authority binding identify the owner and resolve precedence without treating chat as authority?",
+  "evidence": ["authority_binding", "candidate_digest", "gate.02-authority-precedence.answer", "gate.02-authority-precedence.evidence", "precedence_record"],
+  "next": {"YES": "03-scope-nongoals", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "03-scope-nongoals"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "202fc3e413412c0aa0c5f4e13cb55d2957d87bd8e5e8e9708aa409f75c98806e"
+}

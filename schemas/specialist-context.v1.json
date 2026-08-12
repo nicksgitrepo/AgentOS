@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-context.v1.json",
+  "title": "AgentOS Specialist Typed Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request", "signals", "authority", "source_lock", "custody", "requested_action"],
+  "properties": {
+    "request": {"type": "string", "minLength": 1},
+    "signals": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "authority": {"type": "object"},
+    "source_lock": {"type": "object"},
+    "custody": {"type": "object"},
+    "requested_action": {"type": "string", "minLength": 1}
+  }
+}

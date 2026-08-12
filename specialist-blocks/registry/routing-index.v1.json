@@ -1,0 +1,383 @@
+{
+  "schema": "agentos.specialist_routing.v1",
+  "version": 1,
+  "status": "COMPILED_CANDIDATE",
+  "routes": [
+    {
+      "route_id": "route.control.bootstrap-project-initializer",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "bootstrap",
+        "project initialization",
+        "project setup",
+        "repository discovery",
+        "runtime discovery"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.bootstrap-project-initializer"
+      ],
+      "deny_if": [
+        "ambiguous setup request",
+        "missing authority or custody",
+        "provider identity or credential request",
+        "stale or unverifiable source",
+        "unsafe write, adoption, activation, deployment, or migration action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.control.independent-auditor",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "candidate-evaluation",
+        "evidence-review",
+        "independence",
+        "proof-receipt",
+        "quality-assurance"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "requested_action",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.independent-auditor"
+      ],
+      "deny_if": [
+        "ambiguous candidate identity",
+        "missing source lock",
+        "unsafe write or activation request",
+        "unsupported tool or data access"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.control.intent-regulator",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "authority conflict",
+        "explicit owner-intent record",
+        "owner authority question",
+        "typed intent provenance"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "requested_action",
+        "signals",
+        "source_lock",
+        "typed_intent_provenance"
+      ],
+      "select": [
+        "specialist.control.intent-regulator"
+      ],
+      "deny_if": [
+        "authority binding is absent",
+        "chat-only assertion is presented as authority",
+        "missing custody",
+        "self-acceptance is requested",
+        "stale source",
+        "unsupported tool or data access"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.control.project-controller",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "control-plane lifecycle",
+        "fifteen-minute orchestration",
+        "governance checkpoint",
+        "typed handoff"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "lifecycle_intent",
+        "request",
+        "source_lock",
+        "timebox"
+      ],
+      "select": [
+        "specialist.control.project-controller"
+      ],
+      "deny_if": [
+        "ambiguous authority or routing target",
+        "missing custody or lifecycle evidence",
+        "Product write, deploy, publish, migrate, or runtime side effect",
+        "self-acceptance or activation request"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.control.resource-scheduler",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "admission",
+        "capacity",
+        "hardware",
+        "pressure",
+        "resource",
+        "scheduler"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "requested_action",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.resource-scheduler"
+      ],
+      "deny_if": [
+        "ambiguous resource identity or unit",
+        "missing authority or custody",
+        "requested execution, deployment, or external-state change",
+        "stale or unverifiable source"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.control.runtime-deployment-operator",
+      "family": "delivery-operations",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "artifact provenance",
+        "deployment evidence",
+        "release readiness",
+        "rollback",
+        "runtime target"
+      ],
+      "required_context": [
+        "artifact_identity",
+        "authority",
+        "custody",
+        "request",
+        "requested_action",
+        "rollback_target",
+        "runtime_target",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.runtime-deployment-operator"
+      ],
+      "deny_if": [
+        "ambiguous runtime or rollback request",
+        "missing artifact identity or provenance",
+        "missing custody or rollback target",
+        "requested execution or production write",
+        "stale or conflicting evidence"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.authority-jurisdiction-gate",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "applicability",
+        "authority",
+        "jurisdiction",
+        "precedence"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.authority-jurisdiction-gate"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.evaluation-admission-gate",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "admission",
+        "evaluation",
+        "harm",
+        "independence",
+        "utility"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.evidence-freshness-gate",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "freshness",
+        "provenance",
+        "source evidence"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.registry-alias-deduplicator",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "alias",
+        "canonical identity",
+        "deduplication",
+        "registry"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.registry-alias-deduplicator"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.role-intake-classifier",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "role signal",
+        "specialist selection",
+        "typed request"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.scope-non-goal-gate",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "atomicity",
+        "non-goal",
+        "scope",
+        "split"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.foundation.tool-custody-gate",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "capability",
+        "custody",
+        "resource",
+        "tool"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "deny_if": [
+        "missing authority",
+        "stale source",
+        "unsafe action"
+      ],
+      "priority": 0
+    }
+  ],
+  "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
+  "routing_sha256": "d1b1968956ce9e0730f6226f30a05a89e6a9cb2b1de9a6f21afef24ad7ff1085"
+}

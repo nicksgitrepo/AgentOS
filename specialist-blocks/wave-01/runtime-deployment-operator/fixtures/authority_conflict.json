@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "authority_conflict",
+  "expected": "ESCALATE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: typed owner authority and a source authority disagree; escalate and close only the dependent action."
+}

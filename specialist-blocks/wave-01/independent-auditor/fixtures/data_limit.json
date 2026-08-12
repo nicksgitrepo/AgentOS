@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "data_limit",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for data_limit; protected or unapproved data custody denies the dependent evaluation."
+}

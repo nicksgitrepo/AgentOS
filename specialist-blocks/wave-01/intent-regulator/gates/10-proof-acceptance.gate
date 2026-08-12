@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "10-proof-acceptance",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: does proof identify the candidate digest and independent reviewer requirement without self-acceptance?",
+  "evidence": ["candidate_digest", "gate.10-proof-acceptance.answer", "gate.10-proof-acceptance.evidence", "independent_reviewer_requirement", "proof_record"],
+  "next": {"YES": "11-lifecycle-recovery-archive", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "11-lifecycle-recovery-archive"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "762d1f8c1eb0d87a00b38f25e0f193fcd1d0865d51761308b7d9b6ae95dc84ba"
+}

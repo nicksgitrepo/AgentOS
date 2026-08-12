@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "missing_context",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request omits custody and lifecycle intent; deny rather than infer a control transition."
+}

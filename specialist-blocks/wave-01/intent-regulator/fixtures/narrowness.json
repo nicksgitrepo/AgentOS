@@ -1,0 +1,1 @@
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.intent-regulator","class":"narrowness","expected":"ROUTE","hostile":true,"note":"Synthetic hostile request asks only to preserve a typed owner-intent record and route one authority question."}

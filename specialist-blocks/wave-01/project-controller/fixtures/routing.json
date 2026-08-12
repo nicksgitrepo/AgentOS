@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "routing",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic typed checkpoint identifies a bounded control-plane route and leaves downstream work to the named specialist."
+}

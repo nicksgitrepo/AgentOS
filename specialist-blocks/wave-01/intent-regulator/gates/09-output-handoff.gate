@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "09-output-handoff",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: does the output contain the exact intent record, evidence, unknowns, dependent status, and typed handoff fields?",
+  "evidence": ["candidate_digest", "gate.09-output-handoff.answer", "gate.09-output-handoff.evidence", "handoff_fields", "output_record"],
+  "next": {"YES": "10-proof-acceptance", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "10-proof-acceptance"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "f15eb44579d5b8d488fba5fd34919f0d8440329f61b73162a89a08d53bde9276"
+}

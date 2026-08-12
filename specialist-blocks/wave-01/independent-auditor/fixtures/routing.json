@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "routing",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for routing; the smallest sufficient typed evidence-review route is selected without granting Product or acceptance authority."
+}

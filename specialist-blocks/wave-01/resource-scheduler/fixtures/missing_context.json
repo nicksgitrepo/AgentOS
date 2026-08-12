@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "missing_context",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request omits resource identity, unit, and requested action."
+}

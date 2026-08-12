@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "umbrella_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: a generic operations label is used as authority for runtime execution; deny umbrella authority."
+}

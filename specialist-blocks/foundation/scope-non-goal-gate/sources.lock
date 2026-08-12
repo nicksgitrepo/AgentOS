@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.foundation.scope-non-goal-gate",
+  "sources": [
+    {
+      "source_id": "source.agentskills-spec",
+      "title": "Agent Skills Specification",
+      "publisher": "Agent Skills",
+      "url": "https://agentskills.io/specification",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentskills-specification-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Progressive disclosure and typed skill-resource boundaries."
+    },
+    {
+      "source_id": "source.json-schema-2020-12",
+      "title": "JSON Schema 2020-12",
+      "publisher": "JSON Schema",
+      "url": "https://json-schema.org/draft/2020-12",
+      "version": "2020-12",
+      "effective_date": "2020-12-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "json-schema-draft-2020-12",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Machine-readable contract validation."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when source is stale, superseded, unverifiable, or missing effective/applicability identity; refresh or escalate.",
+  "manifest_sha256": "e17fd4d9c3878f289dd4aadf603c5d446d636949308c3a63b48b64d5e9aeaf45"
+}

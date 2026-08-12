@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.foundation.authority-jurisdiction-gate",
+  "sources": [
+    {
+      "source_id": "source.cedar-authorization",
+      "title": "Cedar Authorization Model",
+      "publisher": "AWS Cedar",
+      "url": "https://docs.cedarpolicy.com/auth/authorization.html",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "cedar-authorization-model-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Explicit authorization and forbid-overrides-permit reference pattern."
+    },
+    {
+      "source_id": "source.rfc2119",
+      "title": "Key words for use in RFCs",
+      "publisher": "IETF",
+      "url": "https://www.rfc-editor.org/rfc/rfc2119",
+      "version": "RFC 2119",
+      "effective_date": "1997-03-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "rfc2119-bcp14-1997",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Controlled normative language."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when source is stale, superseded, unverifiable, or missing effective/applicability identity; refresh or escalate.",
+  "manifest_sha256": "80ebe88ed07ffc391e2634ddd30457772e08b15cd5a575c41e082da03b70b96f"
+}

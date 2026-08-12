@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "01-applicability",
+  "block_id": "specialist.control.project-controller",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "If the transition claims regulated or versioned applicability, are jurisdiction, entity, activity, data class, version, effective date, and exceptions present; otherwise is NOT_APPLICABLE recorded?",
+  "evidence": ["applicability_context", "gate.01-applicability.answer", "source_lock_identity"],
+  "next": {"YES": "02-authority-precedence", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "02-authority-precedence"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "456cbb5278d8d540ae02779152b5bb3cd6ad4a54f6d0cdb0717a1977247bd104"
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "class": "broad_when_narrow_exists",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: a narrow setup-signal route exists but the initializer claims unrelated implementation authority; deny scope expansion."
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "authority_conflict",
+  "expected": "ESCALATE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for authority_conflict; conflicting authority is not resolved by inference and no consumer data or private context is supplied."
+}

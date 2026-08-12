@@ -1,0 +1,734 @@
+{
+  "schema": "agentos.specialist_roster.v1",
+  "version": 1,
+  "status": "COMPILED_CANDIDATE",
+  "governance_version": "2.1rc",
+  "blocks": [
+    {
+      "block_id": "specialist.control.bootstrap-project-initializer",
+      "candidate_digest": "11a185be1a8e886618fda5b7a3b06e1199e5fb3b95a6e1f216868fe352bb0d05",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Control-plane governance for bootstrap and project-initializer context discovery only; it does not implement Product work, create provider identity, authorize adoption, or accept itself.",
+      "permitted_decisions": [
+        "classify typed bootstrap readiness and missing evidence",
+        "deny or escalate unsupported setup authority or unsafe action",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when no bootstrap condition is present"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "authorize project adoption or provider identity creation",
+        "create, rotate, or handle credentials or secrets",
+        "direct protected Memory internals",
+        "infer missing authority, jurisdiction, entity, activity, data class, version, or effective date",
+        "publish, deploy, migrate, or write Product"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent bootstrap action",
+        "compose only with the declared portable bootstrap contract",
+        "preserve exact discovery provenance and custody identity"
+      ],
+      "escalation_target": "specialist.control.project-controller",
+      "split_required_when": [
+        "authority differs",
+        "data or secret custody differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source or version differs",
+        "tool, browser, build, or deploy custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.json-schema-2020-12",
+        "source.rfc2119",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.bootstrap-project-initializer.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.independent-auditor",
+      "candidate_digest": "b02d5aecfac19a63f4d6307b2893473a3e859defe761a75287c1ce7c3fb9570d",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Control-plane evidence review for one named candidate digest and its declared evaluation contract; it does not author the candidate or decide Product, legal, regulatory, financial, safety, or deployment outcomes.",
+      "permitted_decisions": [
+        "classify exact candidate evidence as sufficient, insufficient, conflicting, or not applicable",
+        "issue an independent evaluation receipt for the inspected candidate digest",
+        "record unknowns, residuals, and dependent-action closure",
+        "return NOT_APPLICABLE when no named candidate-evaluation request exists"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, merge, publish, deploy, migrate, or release a candidate",
+        "author, repair, rewrite, or delete the candidate or Product state",
+        "claim legal, regulatory, accounting, safety, or professional certification",
+        "infer missing jurisdiction, entity, activity, data class, version, effective date, or applicability",
+        "override source, custody, authority, or independent-reviewer conflicts",
+        "self-accept, self-admit, or treat its own receipt as admission authority"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_INDEPENDENT_EVALUATION_RECEIPT_AND_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent evaluation or admission action",
+        "a domain-specific claim requires its own named authority and source lock",
+        "compose with the evaluation/admission gate only through a typed receipt",
+        "inspect only the exact candidate digest named by the intake",
+        "the author and evaluator must be separate controlled identities"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "candidate digest or evidence domain differs",
+        "evaluation and remediation authority differ",
+        "jurisdiction, entity, activity, data class, version, or effective-date applicability differs",
+        "professional authority or licensing is required",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.iia-global-internal-audit-standards",
+        "source.iso-19011",
+        "source.json-schema-2020-12",
+        "source.nist-ai-rmf",
+        "source.nist-sp-800-53a",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.independent-auditor.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.intent-regulator",
+      "candidate_digest": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for preserving typed owner intent and routing true authority questions; it does not decide Product content, execute requested work, or accept its own candidate.",
+      "permitted_decisions": [
+        "classify an input as typed owner intent only when its authority binding is explicit",
+        "preserve the exact intent record and provenance without rewriting its meaning",
+        "record UNKNOWN and close only the dependent authority action",
+        "return NOT_APPLICABLE when no owner-intent condition is present",
+        "route a true authority question to the declared authority owner"
+      ],
+      "forbidden_decisions": [
+        "accept or admit any candidate",
+        "convert chat, preference, or suggestion into authority",
+        "direct protected Memory internals",
+        "execute, publish, deploy, migrate, or write Product",
+        "infer missing owner identity, scope, or authority",
+        "resolve jurisdictional applicability without typed evidence",
+        "self-accept its own candidate"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_INTENT_PRESERVATION_AND_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "accept no owner intent until independent authority confirms the authority binding",
+        "compose only with typed context, source lock, and explicit custody",
+        "preserve unrelated work when a dependent authority action is UNKNOWN",
+        "split a request when product execution, applicability determination, or candidate acceptance is also requested"
+      ],
+      "escalation_target": "Route true authority questions to the declared owner authority; if no declared owner authority exists, request typed context and close the dependent action.",
+      "split_required_when": [
+        "authority binding differs",
+        "candidate acceptance is requested",
+        "evidence domain or source version differs",
+        "legal or regulated applicability is requested",
+        "product execution is requested"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-portable-intent-control",
+        "source.json-schema-2020-12",
+        "source.rfc-2119"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.intent-regulator.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.project-controller",
+      "candidate_digest": "f64d87b164eb10c27acc20bde40eadae24f9ad47adf689229029265a75f80113",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for a typed Global Project Controller / 15-Minute Orchestrator request; it maintains intent and routing state but does not perform Product or deployment work.",
+      "permitted_decisions": [
+        "classify a typed control-plane request",
+        "maintain an explicit lifecycle intent without changing activation",
+        "record UNKNOWN and close only the dependent transition",
+        "return NOT_APPLICABLE when the request is outside control-plane lifecycle scope",
+        "route a bounded handoff to a named authority"
+      ],
+      "forbidden_decisions": [
+        "activate or admit any specialist or roster",
+        "change Product files, shared schemas, control files, or registry files",
+        "deploy, publish, migrate, build, or trigger runtime side effects",
+        "handle secrets, protected consumer data, or Memory internals",
+        "infer missing authority, applicability, or lifecycle evidence",
+        "self-accept or override independent evaluation"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "compose only with a typed request, declared authority, custody result, and exact candidate digest",
+        "keep each fifteen-minute checkpoint advisory until the independent authority accepts the transition",
+        "route Product, data, security, delivery, and assurance work to their narrow specialists",
+        "unknown closes only the dependent lifecycle transition"
+      ],
+      "escalation_target": "independent authority or owner review named by the typed control-plane contract",
+      "split_required_when": [
+        "authority or custody differs",
+        "domain work requires a narrow specialist",
+        "failure mode or evidence domain differs",
+        "request includes Product write, deploy, publish, migrate, or runtime actions",
+        "source version or effective-date applicability differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-portable-governance",
+        "source.json-schema-2020-12",
+        "source.rfc-2119",
+        "source.rfc-8174"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.project-controller.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.resource-scheduler",
+      "candidate_digest": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Control-plane classification of typed resource admission and pressure evidence; it does not schedule, execute, throttle, kill, evict, allocate, deploy, or change external state.",
+      "permitted_decisions": [
+        "classify declared capacity, allocatable-resource, or pressure evidence",
+        "classify whether a typed admission condition is sufficiently evidenced",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when no resource admission or pressure condition is in scope",
+        "route missing or conflicting evidence to typed escalation"
+      ],
+      "forbidden_decisions": [
+        "accept a build or release",
+        "change external state, resource limits, quotas, or scheduling",
+        "execute arbitrary processes, commands, or jobs",
+        "expose credentials, secrets, or protected telemetry",
+        "grant allocation, eviction, deployment, or production authority",
+        "infer missing capacity, pressure, version, provider, or hardware semantics",
+        "self-accept, activate, or publish this block"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_EXTERNAL_STATE_CHANGE;_NO_PROCESS_EXECUTION;_NO_BUILD_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "compose with an explicitly typed resource context and declared custody",
+        "do not treat platform-specific evidence as portable without applicability",
+        "preserve unrelated work and exact source identity",
+        "route execution, deployment, or external-state requests to their own control",
+        "unknown closes only the dependent admission or pressure classification"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate and the typed resource owner",
+      "split_required_when": [
+        "admission authority differs",
+        "capacity evidence differs from pressure evidence",
+        "execution, deployment, or external-state action is requested",
+        "hardware, provider, or version applicability differs",
+        "resource or telemetry custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.linux-psi",
+        "source.posix-resource-limits",
+        "source.posix-resource-usage",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.resource-scheduler.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.runtime-deployment-operator",
+      "candidate_digest": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Control-plane evidence preparation for runtime/deployment readiness and rollback custody; this block never executes or authorizes the runtime action.",
+      "permitted_decisions": [
+        "classify runtime/deployment readiness evidence",
+        "deny or escalate missing custody, provenance, or rollback evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when no runtime or rollback action is in scope"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "change runtime, platform, workload, network, or release state",
+        "create, publish, promote, or deploy an artifact",
+        "execute rollback, migration, incident repair, or production recovery",
+        "handle secrets or protected consumer data",
+        "infer missing approval, artifact identity, or target state",
+        "self-accept or certify the candidate"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_NO_MIGRATION;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared typed runtime/recovery contract",
+        "preserve exact artifact, target, custody, and rollback identities",
+        "route related repository, build, scheduler, observability, incident, or security work to the smallest sufficient sibling"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "source, version, or evidence domain differs",
+        "target or requested action differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "delivery-operations",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.git-worktree",
+        "source.kubernetes-deployment",
+        "source.oci-image-format",
+        "source.rfc2119",
+        "source.slsa-provenance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.runtime-deployment-operator.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.authority-jurisdiction-gate",
+      "candidate_digest": "710415cebb2f139c9bf4f836c011e902b61bcbf646d28e22af3181460ec5fe13",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Authority/Precedence/Jurisdiction Gate; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.cedar-authorization",
+        "source.rfc2119"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.authority-jurisdiction-gate.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.evaluation-admission-gate",
+      "candidate_digest": "74848ff89c84ef3c650887ba73acfab52f71a1e9b366defa35e97b7b543803d8",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Evaluation/Admission Gate; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.json-schema-2020-12",
+        "source.nist-ai-rmf",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.evaluation-admission-gate.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.evidence-freshness-gate",
+      "candidate_digest": "f75c2c3d1fa460bad66ac73c2d797b43e70ae58fbf1397c728f71ea671857206",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Source/Evidence/Freshness Gate; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.json-schema-2020-12",
+        "source.slsa-provenance",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.evidence-freshness-gate.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.registry-alias-deduplicator",
+      "candidate_digest": "c90492d0e3cf8b604aaf83ec9ae24f04c21fa4d6a6ea6dd0da434d5e2ecd6838",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Registry/Alias/Deduplication Controller; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.json-schema-2020-12",
+        "source.rfc2119",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.registry-alias-deduplicator.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.role-intake-classifier",
+      "candidate_digest": "08c96300ed6e976a94da7dce0e1931bc56499d952b79456bb08828654365eff4",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Universal Role-Intake Classifier; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentskills-spec",
+        "source.json-schema-2020-12"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.role-intake-classifier.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.scope-non-goal-gate",
+      "candidate_digest": "2c0839e0136ea166099434d65dbe70a296307379a9eac6744aa6dc8eba2f5c72",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Scope/Non-Goal Gate; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentskills-spec",
+        "source.json-schema-2020-12"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.scope-non-goal-gate.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.foundation.tool-custody-gate",
+      "candidate_digest": "dc1ffb9acfe16d7b60e94e29951ed70646a56a2d10bc5d3fae9cf8ed244d7511",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for Tool/Resource/Custody Gate; it does not perform the downstream specialist or Product action.",
+      "permitted_decisions": [
+        "classify the dependent governance condition",
+        "deny or escalate missing evidence",
+        "issue a typed candidate handoff",
+        "return NOT_APPLICABLE when the condition is absent"
+      ],
+      "forbidden_decisions": [
+        "activate or admit a block",
+        "direct protected Memory internals",
+        "grant Product-writing authority",
+        "infer missing authority or evidence",
+        "publish, deploy, migrate, or spend"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with the declared foundation contract",
+        "preserve exact source and custody identity"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority differs",
+        "failure mode differs",
+        "knowledge differs",
+        "source/version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.cedar-authorization",
+        "source.slsa-provenance"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.tool-custody-gate.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    }
+  ],
+  "aliases": [],
+  "routing_index": "routing-index.v1.json",
+  "activation": "OFF",
+  "roster_sha256": "7c23308e1cb574bb8e37a92e351ab10c8db46c1b06941e798b0f39df1121b2c0"
+}

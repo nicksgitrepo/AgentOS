@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "class": "routing",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: explicit bootstrap and project-setup signals with complete typed context select this control-plane block."
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "tool_limit",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request requires an unsupported external tool or side effect; deny because custody is limited to read-only sources and local candidate scope."
+}

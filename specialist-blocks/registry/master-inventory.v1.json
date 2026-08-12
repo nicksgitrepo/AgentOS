@@ -1,0 +1,207 @@
+{
+  "schema": "agentos.specialist_master_inventory.v1",
+  "version": 1,
+  "status": "PLANNED_MASTER",
+  "governance_version": "2.1rc",
+  "activation": "OFF",
+  "atomicity_overlay": "registry/atomic-inventory.v1.json",
+  "atomicity_rule": "Family labels route only. Routers classify and assemble context; atomic specialists own one narrow concern; control-plane blocks own governance mechanics. No router or family label receives Product-writing or acceptance authority.",
+  "role_kind_counts": {"ROUTER": 7, "ATOMIC_SPECIALIST": 79, "CONTROL_PLANE": 13},
+  "entry_defaults": {
+    "purpose": "Provide a narrow, evidence-bounded specialist route for the named responsibility.",
+    "triggers": ["typed request names the responsibility", "admitted context contains a matching capability signal"],
+    "exclusions": ["unrelated work", "authority invention", "unsafe or irreversible action", "consumer-project facts absent from typed context"],
+    "dependencies": ["specialist.foundation.role-intake-classifier", "specialist.foundation.evidence-freshness-gate", "specialist.foundation.authority-jurisdiction-gate", "specialist.foundation.scope-non-goal-gate", "specialist.foundation.tool-custody-gate", "specialist.foundation.evaluation-admission-gate"],
+    "conflicts": [],
+    "source_requirements": ["primary source or typed authority-corpus record", "publisher, version, effective date, retrieved date, and immutable identity", "content digest when obtainable"],
+    "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
+    "gate_status": "PLANNED",
+    "gate_path": null,
+    "schema_path": "schemas/specialist-block.v1.json",
+    "package_status": "UNPACKAGED",
+    "evaluator_status": "NOT_RUN",
+    "evaluator_receipt": null,
+    "lifecycle": "PLANNED"
+  },
+  "priority_bands": {
+    "P0": "portable control, authority, evidence, safety, and routing leverage",
+    "P1": "cross-project engineering, security, data, delivery, assurance, and client value",
+    "P2": "frequent narrow implementation and validation capability",
+    "P3": "specialized or regulated capability gated by proven applicability",
+    "P4": "long-tail domain/context capability retained for future research"
+  },
+  "families": [
+    {
+      "family": "permanent-governance-control",
+      "rank": "P0",
+      "subfamilies": [
+        {"name": "governance", "roles": [
+          "Bootstrap/Project Initializer", "Global Controller/15-minute Orchestrator", "Intent Regulator/Owner Voice", "Portfolio Overseer", "Agent Builder/Role Governance Compiler", "Specialist Registry Curator", "Scheduler/Hardware Resource Governor", "Runtime/Deployment Operator", "Release Manager", "Integration/Central Owner", "Worktree/Custody Manager", "Evidence/Receipt Curator", "Independent Auditor", "Cleanup/Hygiene Controller", "Incident/Emergency Coordinator", "Cost/FinOps Governor", "Human-Protected-Control Liaison", "Migration/Adoption Controller", "Rollback/Recovery Owner", "Agent Patcher/Repairer", "Conflict/Precedence Resolver", "Context Compiler", "Task Router", "Goal/Lifecycle Manager", "Roster/Archive Manager"
+        ]}
+      ]
+    },
+    {
+      "family": "software-architecture-engineering",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "architecture", "roles": [
+          "Enterprise Architect", "Solution Architect", "Software Architect", "Systems Architect", "Distributed Systems", "Event-Driven Architecture", "Microservices", "Modular Monolith", "Domain-Driven Design", "API Architect", "Integration Architect", "Backend", "Frontend", "Full Stack", "Web Platform", "Desktop", "Mobile", "Embedded/Firmware", "Realtime", "Offline-First", "Concurrency/Race Conditions", "Performance", "Reliability", "Resilience/Chaos", "Legacy Modernization", "Dependency/Package Management", "Build Systems", "Compiler/Toolchain", "Developer Experience", "Configuration", "Feature Flags", "Internationalization/Localization", "Date/Time/Timezone", "File/Document Processing", "Media/Streaming", "Payments", "Messaging/Notifications", "Search", "Geospatial/GIS", "Maps/Canvas", "3D/Graphics", "Game/Simulation", "Accessibility Engineering", "Technical Debt/Hygiene", "Code Review", "Refactoring", "Debugging", "Root-Cause Analysis"
+        ]}
+      ]
+    },
+    {
+      "family": "software-language-runtime",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "languages-frameworks-runtimes", "roles": [
+          "JavaScript", "TypeScript", "Node.js", "React", "Vue", "Angular", "Svelte", "HTML", "CSS", "Web Components", "Python", "Django", "Flask", "FastAPI", "Rust", "Go", "Java", "Kotlin", "Scala", "C#/.NET", "C", "C++", "Objective-C", "Swift/SwiftUI", "Dart/Flutter", "Ruby/Rails", "PHP/Laravel", "SQL", "PL/pgSQL", "Bash/POSIX Shell", "PowerShell", "Lua", "R", "MATLAB", "Julia", "Elixir/Erlang/BEAM", "Haskell", "F#", "Clojure", "Groovy", "Solidity", "WebAssembly", "CUDA/GPU", "Assembly", "Terraform/HCL", "Nix", "YAML/JSON/JSON Schema", "Protocol Buffers/gRPC", "GraphQL", "Regular Expressions"
+        ]}
+      ]
+    },
+    {
+      "family": "data-database-analytics-migration",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "data-platform", "roles": [
+          "Data Architect", "Data Modeler", "Database Engineer", "DBA", "PostgreSQL", "MySQL/MariaDB", "SQL Server", "Oracle", "SQLite", "Redis", "DynamoDB", "MongoDB/Document", "Cassandra/Wide Column", "Graph/Neo4j", "Vector Database", "Object Storage", "Data Lake/Warehouse", "ETL/ELT", "Streaming/Kafka", "Schema Registry", "Data Contracts", "Data Quality", "Master Data", "Metadata/Lineage", "Analytics Engineering", "BI", "Data Science", "Statistics", "Experimentation/A-B Testing", "Data Migration", "Schema Migration", "Backfill", "RLS/Tenant Isolation", "Backup/Restore", "Disaster Recovery", "Retention/Erasure", "Archival", "Query Optimization", "Indexing", "Replication", "Consistency/Transactions", "Privacy-Preserving Data", "Synthetic/Test Data"
+        ]}
+      ]
+    },
+    {
+      "family": "security",
+      "rank": "P0",
+      "subfamilies": [
+        {"name": "security-engineering", "roles": [
+          "Security Architect", "Application Security", "Product Security", "Cloud Security", "Infrastructure Security", "Network Security", "Container/Kubernetes Security", "Mobile Security", "API Security", "Web Security", "Desktop Security", "Embedded/IoT Security", "Identity Architecture", "Authentication", "Authorization/Access Control", "Session/Cookie", "Passkey/WebAuthn", "OAuth/OIDC/SAML", "RBAC/ABAC/ReBAC", "Tenant Isolation", "Secrets/Key Management", "Cryptography", "PKI/Certificates", "Encryption at Rest/In Transit", "Supply Chain/SBOM", "Dependency Vulnerabilities", "Code Signing", "Secure Build/Reproducibility", "Threat Modeling", "Abuse/Fraud", "Privacy Leakage", "Logging/Telemetry Leakage", "SSRF", "Injection", "XSS", "CSRF", "Deserialization", "Path Traversal", "File Upload", "Race/TOCTOU", "Memory Safety", "Denial of Service", "Rate Limiting", "Business Logic Abuse", "Penetration-Test Planning", "Vulnerability Remediation", "Incident Response", "Forensics", "Zero Trust", "Data Loss Prevention"
+        ]},
+        {"name": "security-standards", "roles": [
+          "OWASP Top 10", "OWASP API Security Top 10", "OWASP ASVS", "OWASP MASVS", "OWASP SAMM", "OWASP Testing Guide", "CWE", "CAPEC", "MITRE ATT&CK", "CIS Controls", "CIS Benchmarks", "NIST SSDF", "NIST Secure Software Development", "Language/Framework Security Guides"
+        ]}
+      ]
+    },
+    {
+      "family": "quality-test-proof-audit",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "quality-and-assurance", "roles": [
+          "QA Architect", "Test Strategy", "Unit Testing", "Integration Testing", "Contract Testing", "End-to-End Testing", "Browser Testing", "Mobile Testing", "Visual Regression", "Accessibility Testing", "Performance/Load/Stress", "Chaos/Recovery", "Security Testing", "Migration/Restore Testing", "Property-Based Testing", "Fuzzing", "Mutation Testing", "Determinism/Reproducibility", "Test Data", "Release Verification", "Independent Acceptance", "Evidence Identity", "Proof Integrity", "Requirements Traceability", "Feature Completeness Auditor", "Code Hygiene Auditor", "UX Auditor", "Security Auditor", "Privacy Auditor", "Data Auditor", "Runtime Auditor", "Deployment Auditor", "Compliance Auditor", "Recovery Auditor", "Supply-Chain Auditor", "Model/AI Auditor", "Adversarial/Hostile Reviewer"
+        ]}
+      ]
+    },
+    {
+      "family": "product-client-experience",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "product-and-ux", "roles": [
+          "Product Manager", "Product Operations", "Business Analyst", "Requirements Engineer", "UX Researcher", "Interaction Designer", "Information Architect", "UI Designer", "Visual Designer", "Design Systems", "Content Designer", "Technical Writer", "Accessibility/WCAG", "Inclusive Design", "Mobile UX", "Responsive Web", "Desktop UX", "Map/Canvas UX", "3D Interaction", "Forms", "Tables/Dense Data", "Dashboard", "Authentication UX", "Settings", "Notifications", "Onboarding", "Empty/Error/Offline/Permission/Conflict/Stale States", "Localization", "Usability Testing", "Customer Support/Feedback", "Product Analytics", "Growth/Experimentation", "Brand/Trademark Review"
+        ]}
+      ]
+    },
+    {
+      "family": "delivery-operations",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "platform-and-delivery", "roles": [
+          "Platform Engineer", "DevOps", "SRE", "CI/CD", "Git/GitHub", "Repository Governance", "Monorepo", "Build/Artifact", "Package Registry", "Container/Docker", "Kubernetes", "Linux", "macOS", "Windows", "Networking/DNS/TLS", "Reverse Proxy/Edge/CDN", "Cloudflare", "AWS", "Azure", "GCP", "Serverless", "Infrastructure as Code", "Configuration/Secrets", "Observability", "Logging", "Metrics", "Tracing", "Alerting", "Capacity Planning", "Performance/Cost", "Availability/SLO/SLA", "Incident Command", "Disaster Recovery", "Backup/Restore", "Runtime", "Deployment", "Blue-Green/Canary", "Database Release", "Migration Execution", "Rollback", "Environment Promotion", "Production Readiness", "Support/Runbooks", "Scheduler/Resource Admission", "Workspace Hygiene", "Storage Hygiene", "Process Provenance", "Browser/Protected-Control Operations"
+        ]}
+      ]
+    },
+    {
+      "family": "ai-search-intelligent-systems",
+      "rank": "P1",
+      "subfamilies": [
+        {"name": "ai-and-search", "roles": [
+          "AI Architect", "ML Engineer", "LLM Application Engineer", "Prompt/Instruction Engineer", "Agent Systems", "Agent Evaluator", "Model Routing", "Context Engineering", "RAG", "Search Relevance", "Information Retrieval", "Embeddings", "Vector Search", "Knowledge Graph", "NLP", "Speech/Voice", "Computer Vision", "OCR", "Recommendation", "Ranking", "Model Safety", "Prompt Injection", "Data Poisoning", "Hallucination/Truthfulness", "Evaluation Design", "Red Team", "Guardrails", "Human-in-the-Loop", "Model Privacy", "Training Data Governance", "Drift/Monitoring", "Explainability", "Token/Cost Optimization", "Memory Systems (protected lane)", "Bounded Intelligence", "Tool-Use Safety"
+        ]}
+      ]
+    },
+    {
+      "family": "three-dimensional-graphics-visual-assets",
+      "rank": "P2",
+      "subfamilies": [
+        {"name": "3d-and-visual-assets", "roles": [
+          "3D Technical Director", "3D Modeler", "Hard-Surface Modeler", "Industrial Equipment Modeler", "CAD/Dimensional Research", "Procedural Modeling", "Blender Automation", "Mesh Topology", "UV/Materials/PBR", "Texture Artist", "Rigging/Animation", "LOD/Optimization", "GLTF/GLB Pipeline", "Three.js/WebGL", "Rendering", "Lighting", "Physics/Simulation", "Spatial Placement", "Asset Identity/Semantic Mapping", "Visual Recognition Auditor", "Runtime Attachment", "Fallback/Unavailable-State", "Performance/Memory", "Source/OEM Research", "Brand-Neutral Representative Modeling", "Engineering-Truth/Safety Boundary Reviewer"
+        ]}
+      ]
+    },
+    {
+      "family": "finance-accounting-commercial-controls",
+      "rank": "P2",
+      "subfamilies": [
+        {"name": "finance-and-controls", "roles": [
+          "Controller/Accounting", "Bookkeeping", "Accounts Payable", "Accounts Receivable", "General Ledger", "Revenue Recognition", "Expense/Cost Accounting", "Job Costing", "Payroll", "Tax Research", "Sales Tax/VAT", "Treasury", "Cash Management", "Financial Reporting", "Management Accounting", "Budget/Forecast", "FP&A", "Audit/Internal Controls", "SOX", "Segregation of Duties", "Fraud Controls", "Procurement", "Vendor Management", "Contract Management", "Insurance/Risk", "Asset/Inventory Accounting", "Depreciation", "Lease Accounting", "GAAP", "IFRS", "SOC Reporting", "FinOps/Cloud Cost", "Billing/Subscriptions", "Payments/Reconciliation"
+        ]}
+      ]
+    },
+    {
+      "family": "law-regulation-standards-privacy-compliance",
+      "rank": "P0",
+      "subfamilies": [
+        {"name": "applicability-and-compliance", "roles": [
+          "Regulatory Applicability Router", "Jurisdiction/Entity/Activity/Data Classifier", "Legal Research", "Policy Mapping", "Records Management", "eDiscovery/Legal Hold", "Privacy Engineering", "Data Protection Officer Support", "Consent/Cookie", "Children/Minor Data", "Biometrics", "Health Data", "Financial Data", "Employment Data", "Cross-Border Transfer", "Retention/Deletion", "Accessibility Compliance", "Export Controls/Sanctions", "Anti-Bribery", "AML/KYC", "Consumer Protection", "Electronic Signatures", "Records/Evidence", "Intellectual Property/Open Source Licensing", "Other US State Privacy Laws"
+        ]},
+        {"name": "versioned-standards-and-regulations", "roles": [
+          "GDPR", "UK GDPR/DPA", "CCPA/CPRA", "PIPEDA", "LGPD", "HIPAA/HITECH", "42 CFR Part 2", "GLBA", "COPPA", "FERPA", "PCI DSS", "SOX", "SOC 1", "SOC 2", "ISO 27001/27002/27017/27018/27701", "ISO 9001", "ISO 22301", "ISO 31000", "NIST CSF", "NIST 800-53", "NIST 800-171", "NIST Privacy Framework", "FedRAMP", "FISMA", "CJIS", "CMMC", "HITRUST", "COBIT", "ITIL", "COSO", "CIS", "CSA CCM", "WCAG", "Section 508", "EN 301 549", "ADA Digital Accessibility Boundary", "FDA Software/Quality", "IEC 62304", "ISO 13485", "ISO 14971", "21 CFR Part 11", "GxP", "OSHA", "EPA", "DOT", "PHMSA", "FMCSA", "FAA", "SEC/FINRA", "State/Local Rules"
+        ]}
+      ]
+    },
+    {
+      "family": "fmcsatransport",
+      "rank": "P3",
+      "subfamilies": [
+        {"name": "transport-specific", "roles": [
+          "FMCSA Applicability", "Hours of Service", "ELD", "Driver Qualification", "CDL", "Drug and Alcohol Clearinghouse/Testing", "Vehicle Inspection/Repair/Maintenance", "Parts and Accessories", "Cargo Securement", "Hazardous Materials Boundary with PHMSA", "Accident Register/Reporting", "Electronic Records", "Roadside Inspection", "Commercial Vehicle Identification/Registration", "Insurance/Operating Authority", "Leasing", "Entry-Level Driver Training", "Passenger Carrier", "Agricultural/Oilfield Exemptions and Exceptions", "State Adoption/Variance", "Audit/Compliance Review", "Safety Measurement/CSA Interpretation"
+        ]}
+      ]
+    },
+    {
+      "family": "industry-domain",
+      "rank": "P4",
+      "subfamilies": [
+        {"name": "domain-context", "roles": [
+          "Safety Engineer", "Human Factors", "Reliability Engineer", "Quality Management", "Environmental", "Occupational Safety", "Transportation/Fleet", "Oil and Gas Operations Context", "Industrial Equipment", "Manufacturing", "Construction", "Healthcare", "Financial Services", "Insurance", "Government/Public Sector", "Education", "Retail/E-commerce", "Telecommunications", "Energy/Utilities", "Logistics/Warehouse", "Automotive", "Aviation", "Maritime", "Agriculture"
+        ]}
+      ]
+    },
+    {
+      "family": "mathematics-formal-reasoning",
+      "rank": "P2",
+      "subfamilies": [
+        {"name": "mathematics-and-proof", "roles": [
+          "Mathematician", "Applied Mathematics", "Statistics", "Probability", "Optimization/Operations Research", "Numerical Methods", "Linear Algebra", "Geometry", "Computational Geometry", "Graph Theory", "Cryptographic Mathematics", "Formal Methods", "Model Checking", "Constraint Solving", "Units/Dimensional Analysis", "Financial Mathematics", "Reliability/Survival Analysis", "Simulation", "Algorithm Analysis"
+        ]}
+      ]
+    },
+    {
+      "family": "documentation-knowledge-organizational",
+      "rank": "P2",
+      "subfamilies": [
+        {"name": "knowledge-and-organization", "roles": [
+          "Technical Writer", "API Documentation", "Architecture Decision Records", "Runbook Writer", "Training/Enablement", "Knowledge Management", "Taxonomy/Ontology", "Records/Evidence Curator", "Change Management", "Program Manager", "Project Manager", "PMO", "Business Continuity", "Vendor/Third-Party Risk", "Procurement", "Customer Support", "Sales Engineering", "Solutions Consulting", "HR/People Operations Boundaries", "Legal/Compliance Liaison", "Executive/Board Reporting"
+        ]}
+      ]
+    },
+    {
+      "family": "discovered-additions",
+      "rank": "P2",
+      "subfamilies": [
+        {"name": "research-discovered-gaps", "roles": [
+          "API Gateway/Edge Routing", "Web Performance/Core Web Vitals", "Accessibility Automation", "Secrets Detection", "Threat Intelligence", "Business Continuity Planner", "Data Governance", "API Lifecycle Management", "Service Catalog", "Feature Observability", "Release Evidence Engineer", "License Compliance", "Model Supply Chain", "AI Observability", "Agent Permission Broker", "Semantic Version Compatibility", "Public Contract Compatibility", "Content Moderation", "Digital Forensics Preservation", "Safety Case Engineer"
+        ]}
+      ]
+    }
+  ],
+  "alias_mappings": [
+    {"alias": "Security Testing (security family mention)", "canonical_title": "Security Testing", "reason": "Exact duplicate label; one quality/testing block owns the shared evaluation contract."},
+    {"alias": "Technical Writer (product/client mention)", "canonical_title": "Technical Writer", "reason": "Exact duplicate label; one documentation role owns the writing contract."},
+    {"alias": "Technical Writer (documentation mention)", "canonical_title": "Technical Writer", "reason": "Exact duplicate label; one documentation role owns the writing contract."},
+    {"alias": "Backup/Restore (platform mention)", "canonical_title": "Backup/Restore", "reason": "Exact duplicate label; data custody is canonical and platform execution remains a dependency."},
+    {"alias": "Disaster Recovery (platform mention)", "canonical_title": "Disaster Recovery", "reason": "Exact duplicate label; one recovery block owns the evidence contract."},
+    {"alias": "Performance (architecture mention)", "canonical_title": "Performance", "reason": "Exact duplicate label; runtime-specific performance blocks depend on the canonical performance contract."},
+    {"alias": "Statistics (mathematics mention)", "canonical_title": "Statistics", "reason": "Exact duplicate label; analytics and formal-reasoning routes share the same canonical specialist identity."},
+    {"alias": "SOX (regulatory mention)", "canonical_title": "SOX", "reason": "Exact versioned control standard; one canonical role owns the mapping."},
+    {"alias": "Procurement (documentation mention)", "canonical_title": "Procurement", "reason": "Exact duplicate label; commercial controls own the canonical procurement route."},
+    {"alias": "Customer Support (documentation mention)", "canonical_title": "Customer Support/Feedback", "reason": "Near-exact operational alias; the product support route is canonical."}
+  ],
+  "materialization_rule": "The deterministic inventory compiler expands every role into a canonical ID and a complete typed entry using the family/subfamily rank, root defaults, explicit alias mappings, and source/freshness requirements. No role string is discarded; exact duplicate labels are retained in alias_mappings."
+}

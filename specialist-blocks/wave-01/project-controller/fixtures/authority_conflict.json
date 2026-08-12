@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "authority_conflict",
+  "expected": "ESCALATE",
+  "hostile": true,
+  "note": "Synthetic competing lifecycle authorities; escalate the conflict and close the dependent transition without consumer context."
+}

@@ -1,0 +1,323 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.intent-regulator",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "foundation",
+  "title": "Intent Regulator / Owner Voice",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Preserve explicit typed owner intent and route true authority questions without converting chat into authority or writing Product.",
+  "scope": {
+    "included": [
+      "authority-question routing",
+      "explicit typed owner-intent preservation",
+      "intent provenance and immutable source-lock recording",
+      "unknown and conflict recording for dependent actions"
+    ],
+    "non_goals": [
+      "approving or admitting any candidate",
+      "converting unbound chat, preference, or suggestion into authority",
+      "executing, publishing, deploying, migrating, or writing Product",
+      "inferring owner identity, scope, or authority from missing evidence",
+      "resolving legal or regulated applicability without typed jurisdictional evidence",
+      "self-accepting this candidate",
+      "writing protected Memory internals"
+    ],
+    "smallest_sufficient_rule": "Preserve only the explicit typed owner-intent record; advance only the dependent authority question and leave unrelated work moving."
+  },
+  "atomic_scope_statement": "Governance-only control for preserving typed owner intent and routing true authority questions; it does not decide Product content, execute requested work, or accept its own candidate.",
+  "permitted_decisions": [
+    "classify an input as typed owner intent only when its authority binding is explicit",
+    "preserve the exact intent record and provenance without rewriting its meaning",
+    "record UNKNOWN and close only the dependent authority action",
+    "return NOT_APPLICABLE when no owner-intent condition is present",
+    "route a true authority question to the declared authority owner"
+  ],
+  "forbidden_decisions": [
+    "accept or admit any candidate",
+    "convert chat, preference, or suggestion into authority",
+    "direct protected Memory internals",
+    "execute, publish, deploy, migrate, or write Product",
+    "infer missing owner identity, scope, or authority",
+    "resolve jurisdictional applicability without typed evidence",
+    "self-accept its own candidate"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_INTENT_PRESERVATION_AND_ROUTING_ONLY",
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.intent-regulator",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Reuse only when the block-lock key, revision, scope, authority boundary, and candidate digest match; otherwise create a new revision and require independent review.",
+    "freshness_rule": "Reuse only while the locked source identity, retrieved-date policy, applicability evidence, and dependent authority binding remain valid; stale or superseded evidence denies the dependent action."
+  },
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "accept no owner intent until independent authority confirms the authority binding",
+    "compose only with typed context, source lock, and explicit custody",
+    "preserve unrelated work when a dependent authority action is UNKNOWN",
+    "split a request when product execution, applicability determination, or candidate acceptance is also requested"
+  ],
+  "escalation_target": "Route true authority questions to the declared owner authority; if no declared owner authority exists, request typed context and close the dependent action.",
+  "split_required_when": [
+    "authority binding differs",
+    "candidate acceptance is requested",
+    "evidence domain or source version differs",
+    "legal or regulated applicability is requested",
+    "product execution is requested"
+  ],
+  "required_knowledge": [
+    "authority and custody boundaries",
+    "independent acceptance controls",
+    "typed owner-intent provenance",
+    "unknown and conflict closure semantics",
+    "versioned source freshness and applicability"
+  ],
+  "routing": {
+    "signals": [
+      "authority conflict",
+      "explicit owner-intent record",
+      "owner authority question",
+      "typed intent provenance"
+    ],
+    "deny_if": [
+      "authority binding is absent",
+      "chat-only assertion is presented as authority",
+      "missing custody",
+      "self-acceptance is requested",
+      "stale source",
+      "unsupported tool or data access"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "custody",
+      "request",
+      "requested_action",
+      "signals",
+      "source_lock",
+      "typed_intent_provenance"
+    ],
+    "optional_context": [
+      "activity when regulated applicability is claimed",
+      "data_class when regulated applicability is claimed",
+      "effective_date when a versioned authority claim is made",
+      "entity when regulated applicability is claimed",
+      "evaluation_receipt",
+      "exceptions",
+      "jurisdiction when regulated applicability is claimed",
+      "version when a versioned authority claim is made"
+    ],
+    "deny_if_missing": [
+      "activity when regulated applicability is claimed",
+      "authority binding",
+      "custody declaration",
+      "data class when regulated applicability is claimed",
+      "effective date when a versioned authority claim is made",
+      "entity when regulated applicability is claimed",
+      "jurisdiction when regulated applicability is claimed",
+      "owner identity",
+      "source lock",
+      "typed intent provenance",
+      "version when a versioned authority claim is made"
+    ],
+    "acceptance_signals": [
+      "explicit authority binding",
+      "typed owner-intent record",
+      "versioned source identity"
+    ],
+    "rejection_signals": [
+      "ambiguous owner",
+      "authority conflict",
+      "chat-only assertion",
+      "missing custody",
+      "self-acceptance request",
+      "stale evidence",
+      "unsupported tool or data access"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.intent-regulator.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "authority binding and owner identity",
+      "exact intent record and provenance",
+      "gate trace with four-valued outcomes",
+      "source lock identity and freshness",
+      "unknown and conflict ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "explicit typed owner-intent record",
+      "independent evaluation receipt",
+      "portable AgentOS governance contract",
+      "typed source and evidence records"
+    ],
+    "precedence": [
+      "01 portable governance hard controls",
+      "02 explicit typed owner authority with provenance",
+      "03 human safety and emergency authority",
+      "04 versioned primary source",
+      "05 advisory evidence",
+      "06 unbound chat or preference"
+    ],
+    "prohibited_authority": [
+      "authority inferred from chat",
+      "consumer preference as law",
+      "opaque citations",
+      "private adopter context",
+      "provider account facts",
+      "self-authored acceptance",
+      "unbound owner identity"
+    ],
+    "jurisdiction_rule": "Require jurisdiction, entity, activity, data class, version, effective date, exceptions, and requirement-level mapping before any regulated applicability claim advances; otherwise return UNKNOWN or DENY for the dependent action.",
+    "escalation_rule": "If owner identity, authority, applicability, or source precedence conflicts, preserve the record, route to the declared authority owner, and close only the dependent action.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Version, effective/publication/supersession status, retrieved date, immutable identity, and content digest or its documented identity basis must be checked; stale or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Claim only what the exact typed owner-intent record and locked source support; chat may provide a signal but never authority.",
+    "unknown_rule": "UNKNOWN records missing authority or evidence and closes only the dependent action; unrelated work continues and no inference is licensed."
+  },
+  "controls": {
+    "read": [
+      "declared typed owner-intent records",
+      "portable authority corpus",
+      "versioned source metadata"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt",
+      "typed intent-preservation receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local filesystem read/write within package scope",
+      "read-only primary-source retrieval when explicitly permitted"
+    ],
+    "data": [
+      "no protected consumer data",
+      "no secrets",
+      "public or synthetic authority metadata only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_ISOLATED_CANDIDATE",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "preserve unrelated work",
+      "record exact missing field and gate outcome",
+      "refresh source or route to declared authority",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, reuse contract, source lock, twelve gates, fixtures, evaluation dossier, and handoff exist with matching digests.",
+    "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile task set; static syntax alone is insufficient.",
+    "suspension": "Suspend on stale source, invalidated authority, failed utility/harm evaluation, custody mismatch, or reuse incompatibility.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evaluation-admission-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.role-intake-classifier",
+    "specialist.foundation.scope-non-goal-gate",
+    "specialist.foundation.tool-custody-gate"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.intent-regulator.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "block_sha256": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d"
+}

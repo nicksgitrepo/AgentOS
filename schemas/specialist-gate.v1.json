@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-gate.v1.json",
+  "title": "AgentOS Specialist Gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "block_id", "status", "answer_type", "allowed_outcomes", "question", "evidence", "next", "rules", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"type": "string", "pattern": "^(00-intake|01-applicability|02-authority-precedence|03-scope-nongoals|04-source-evidence-freshness|05-context-completeness|06-tool-resource-custody|07-data-secret-privacy|08-build-browser-runtime|09-output-handoff|10-proof-acceptance|11-lifecycle-recovery-archive)$"},
+    "block_id": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "status": {"const": "EXECUTABLE"},
+    "answer_type": {"const": "FOUR_VALUED"},
+    "allowed_outcomes": {"type": "array", "items": {"enum": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]}, "minItems": 4, "maxItems": 4},
+    "question": {"type": "string", "minLength": 1},
+    "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "next": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+      "properties": {
+        "YES": {"type": "string", "minLength": 1},
+        "NO": {"type": "string", "minLength": 1},
+        "UNKNOWN": {"type": "string", "minLength": 1},
+        "NOT_APPLICABLE": {"type": "string", "minLength": 1}
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ambiguity", "missing_evidence", "stale_source", "authority_conflict", "unsafe_action", "unknown_scope"],
+      "properties": {
+        "ambiguity": {"const": "DENY"},
+        "missing_evidence": {"const": "DENY"},
+        "stale_source": {"const": "DENY"},
+        "authority_conflict": {"const": "ESCALATE"},
+        "unsafe_action": {"const": "DENY"},
+        "unknown_scope": {"const": "DEPENDENT_ACTION_ONLY"}
+      }
+    },
+    "gate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

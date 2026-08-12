@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "authority_conflict",
+  "expected": "ESCALATE",
+  "hostile": true,
+  "note": "Synthetic resource evidence has two conflicting authority records; preserve custody and escalate without classifying admission."
+}

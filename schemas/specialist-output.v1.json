@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-output.v1.json",
+  "title": "AgentOS Specialist Typed Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "scope", "findings", "evidence", "unknowns", "handoff"],
+  "properties": {
+    "status": {"enum": ["ROUTED", "DENIED", "ESCALATED", "NOT_APPLICABLE"]},
+    "scope": {"type": "string", "minLength": 1},
+    "findings": {"type": "array", "items": {"type": "object"}},
+    "evidence": {"type": "array", "items": {"type": "object"}},
+    "unknowns": {"type": "array", "items": {"type": "string"}},
+    "handoff": {"type": "object"}
+  }
+}

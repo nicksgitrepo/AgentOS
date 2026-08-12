@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "class": "narrowness",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: the request is limited to read-only setup discovery and typed bootstrap readiness; route the smallest sufficient control-plane block."
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "06-tool-resource-custody",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: are tools, data, and writes limited to portable evidence, the append-only candidate package, and a typed handoff?",
+  "evidence": ["candidate_digest", "custody_record", "gate.06-tool-resource-custody.answer", "gate.06-tool-resource-custody.evidence", "tool_scope"],
+  "next": {"YES": "07-data-secret-privacy", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "07-data-secret-privacy"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "d577d7447b1a57a07408354de2677171a5508f7fdfae1b82b503f798417065b9"
+}

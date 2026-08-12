@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "data_limit",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request includes protected consumer data; the controller accepts only public metadata and synthetic typed context."
+}

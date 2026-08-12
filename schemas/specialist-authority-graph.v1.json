@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-authority-graph.v1.json",
+  "title": "AgentOS Generated Authority Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "package_hash", "precedence", "nodes", "edges", "unresolved_rule", "acceptance_authority"],
+  "properties": {
+    "schema": {"const": "agentos.authority_graph.v1"},
+    "version": {"const": 1},
+    "package_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "precedence": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 4},
+    "nodes": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["node_id", "kind", "identity", "allowed", "forbidden", "maximum_authority"], "properties": {"node_id": {"type": "string", "minLength": 1}, "kind": {"type": "string", "minLength": 1}, "identity": {"type": "string", "minLength": 1}, "allowed": {"type": "array", "items": {"type": "string"}}, "forbidden": {"type": "array", "items": {"type": "string"}}, "maximum_authority": {"type": "string", "minLength": 1}}}, "minItems": 4},
+    "edges": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["from", "to", "relation"], "properties": {"from": {"type": "string", "minLength": 1}, "to": {"type": "string", "minLength": 1}, "relation": {"enum": ["PRECEDES", "DEPENDS_ON", "CONFLICTS", "DELEGATES"]}}}},
+    "unresolved_rule": {"const": "UNKNOWN_OR_CONFLICT_CLOSES_ONLY_THE_DEPENDENT_ACTION_AND_ESCALATES_UNRESOLVED_AUTHORITY"},
+    "acceptance_authority": {"const": "INDEPENDENT_AUTHORITY_ONLY"}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "03-scope-nongoals",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: is the requested control limited to preserving typed owner intent or routing a true authority question, with product work excluded?",
+  "evidence": ["candidate_digest", "gate.03-scope-nongoals.answer", "gate.03-scope-nongoals.evidence", "request_scope", "typed_intent_provenance"],
+  "next": {"YES": "04-source-evidence-freshness", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "04-source-evidence-freshness"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "2e54a40473db32bcd794d1521556cd966180b9612c930330464ae4683181b1f1"
+}

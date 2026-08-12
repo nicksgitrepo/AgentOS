@@ -1,0 +1,1 @@
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.intent-regulator","class":"stale_source","expected":"DENY","hostile":true,"note":"Synthetic hostile request supplies a superseded source identity for an authority claim."}

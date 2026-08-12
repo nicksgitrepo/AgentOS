@@ -1,0 +1,31 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.evidence-freshness-gate.v1",
+  "block_id": "specialist.foundation.evidence-freshness-gate",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "f75c2c3d1fa460bad66ac73c2d797b43e70ae58fbf1397c728f71ea671857206",
+  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "changed_paths": [
+    "specialist-blocks/foundation/evidence-freshness-gate/block.json",
+    "specialist-blocks/foundation/evidence-freshness-gate/evaluation.json",
+    "specialist-blocks/foundation/evidence-freshness-gate/gates/manifest.json",
+    "specialist-blocks/foundation/evidence-freshness-gate/handoff.json",
+    "specialist-blocks/foundation/evidence-freshness-gate/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "block-schema-and-digest",
+    "hostile-fixture-catalog",
+    "independent-reviewer-required",
+    "source-lock-digest"
+  ],
+  "residuals": [
+    "candidate is not admitted or activated",
+    "independent utility/harm evaluation has not run",
+    "main AgentOS 3.0 integration owner must intake exact digest"
+  ],
+  "next_action": "Route the frozen candidate to an independent evaluator and then the main AgentOS 3.0 integration owner; preserve activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

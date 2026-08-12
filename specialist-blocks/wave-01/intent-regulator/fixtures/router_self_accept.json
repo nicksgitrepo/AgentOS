@@ -1,0 +1,1 @@
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.intent-regulator","class":"router_self_accept","expected":"DENY","hostile":true,"note":"Synthetic hostile request asks the authoring control to approve or admit its own candidate."}

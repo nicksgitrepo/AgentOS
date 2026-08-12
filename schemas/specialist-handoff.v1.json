@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-handoff.v1.json",
+  "title": "AgentOS Specialist Block Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "handoff_id", "block_id", "disposition", "candidate_digest", "source_commit", "source_tree", "changed_paths", "proof", "residuals", "next_action", "authority"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_handoff.v1"},
+    "version": {"const": 1},
+    "handoff_id": {"type": "string", "pattern": "^specialist-handoff\\.[a-z0-9-]+\\.v[0-9]+$"},
+    "block_id": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "disposition": {"enum": ["CANDIDATE_READY", "WAITING_WITH_RECEIPT", "BLOCKED_EXACT"]},
+    "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "changed_paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "proof": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "residuals": {"type": "array", "items": {"type": "string"}},
+    "next_action": {"type": "string", "minLength": 1},
+    "authority": {"const": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"}
+  }
+}

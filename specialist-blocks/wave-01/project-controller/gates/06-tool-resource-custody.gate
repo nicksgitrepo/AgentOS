@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "06-tool-resource-custody",
+  "block_id": "specialist.control.project-controller",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Does the declared custody permit only typed read, local candidate-scope writing, and deterministic validation, with unsupported tools or external side effects denied?",
+  "evidence": ["custody_result", "gate.06-tool-resource-custody.answer", "tool_capability_declaration", "unrelated_work"],
+  "next": {"YES": "07-data-secret-privacy", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "07-data-secret-privacy"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "30d2cd419d8f0aca250fb24e93f34364483f5e336786ce645aea9e1c5ac114e6"
+}

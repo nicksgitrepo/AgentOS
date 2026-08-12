@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "handoff",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: complete read-only evidence is present and must produce a typed waiting handoff without execution."
+}

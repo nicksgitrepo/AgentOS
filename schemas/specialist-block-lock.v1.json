@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-block-lock.v1.json",
+  "title": "AgentOS Generated Reusable Block Lock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "package_hash", "library_identity", "recipe_identity", "blocks", "reuse_rule", "applicability_rule"],
+  "properties": {
+    "schema": {"const": "agentos.block_lock.v1"},
+    "version": {"const": 1},
+    "package_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "library_identity": {"$ref": "#/$defs/identity"},
+    "recipe_identity": {"$ref": "#/$defs/identity"},
+    "blocks": {"type": "array", "items": {"$ref": "#/$defs/block"}, "minItems": 1},
+    "reuse_rule": {"const": "RESOLVE_EXACT_ID_VERSION_HASH_ONCE;_COMPILED_AGENTS_REFERENCE_AND_NEVER_COPY_OR_RESEARCH_THE_BLOCK"},
+    "applicability_rule": {"const": "EVALUATE_TASK_OVERLAY_EXTERNALLY;_DO_NOT_MUTATE_THE_IMMUTABLE_BLOCK"}
+  },
+  "$defs": {
+    "identity": {"type": "object", "additionalProperties": false, "required": ["id", "version", "digest"], "properties": {"id": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "block": {"type": "object", "additionalProperties": false, "required": ["block_id", "version", "hash", "role_kind", "layer", "reason", "reuse_key", "source_lock_digest", "dependencies", "conflicts", "applicability", "source_state"], "properties": {"block_id": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}, "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "role_kind": {"enum": ["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]}, "layer": {"type": "string", "minLength": 1}, "reason": {"type": "string", "minLength": 1}, "reuse_key": {"type": "string", "minLength": 1}, "source_lock_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "dependencies": {"type": "array", "items": {"type": "string"}}, "conflicts": {"type": "array", "items": {"type": "string"}}, "applicability": {"enum": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]}, "source_state": {"enum": ["FRESH", "STALE", "UNKNOWN"]}}}
+  }
+}

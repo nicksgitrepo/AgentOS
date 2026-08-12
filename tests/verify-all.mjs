@@ -229,6 +229,7 @@ const run = (relativePath) => {
   assert.equal(result.status, 0, `${relativePath} failed\n${result.stdout}\n${result.stderr}`);
 };
 for (const relativePath of [
+  "tests/verify-specialist-block-library.mjs",
   "tests/verify-campaign-controller.mjs",
   "tests/verify-campaign-policy-reconcile.mjs",
   "tests/verify-campaign-cascade.mjs",

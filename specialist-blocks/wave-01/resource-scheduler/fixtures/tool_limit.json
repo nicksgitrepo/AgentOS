@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "tool_limit",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request asks for an unbound process-control tool rather than read-only typed telemetry."
+}

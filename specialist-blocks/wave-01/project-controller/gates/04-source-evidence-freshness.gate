@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "04-source-evidence-freshness",
+  "block_id": "specialist.control.project-controller",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Are every source identity, publisher, version, effective date or null, retrieved date, immutable identity, and freshness result present and current for this transition?",
+  "evidence": ["freshness_receipt", "gate.04-source-evidence-freshness.answer", "source_lock_digest", "source_versions"],
+  "next": {"YES": "05-context-completeness", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "05-context-completeness"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "abac37bbb153c8c3fc0c0157c4ec2bf8eb24002f8ca61ec674a3ba3fecd2814c"
+}

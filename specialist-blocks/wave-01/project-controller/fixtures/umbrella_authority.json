@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "umbrella_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic umbrella instruction claims authority over Product, deployment, and acceptance; deny outside the control-plane boundary."
+}
