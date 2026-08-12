@@ -288,7 +288,8 @@ remain external gates.
 - Exact six P0 lane identities/statuses remain candidate/inactive and no P1
   lane is active. Host ceiling remains canonical Rust scheduler `JOB-407`
   `RUNNING`, swap `5.5/6 GiB`.
-- Implementation commit `c2b4d5757653e7b4b223ddedf387b4df915a273e` with tree
-  `158152d279de4cf7aa4ff1743c16d3e770dc06f3` is pushed on the isolated
-  candidate branch. The receipt refresh is the next separate handoff commit;
-  the full 619-title master backlog and all P2–P6 roles remain planned.
+- Implementation commit `170bbf4ca705dce9de199172910c6c25e243e7fc` with tree
+  `aebfe743b8b460dd1ffb5c90cfc3342f93d18597` is pushed on the isolated
+  candidate branch. A separate handoff-receipt commit records this exact
+  candidate identity; the full 619-title master backlog and all P2–P6 roles
+  remain planned.
