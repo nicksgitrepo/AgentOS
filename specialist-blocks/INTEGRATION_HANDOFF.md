@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `df4dca769214a40541b8b7adac1d43ee1a23739d`
-- Candidate tree: `4928312e993829a95727279333ad44ac26237f08`
+- Candidate commit: `2c1011efef1d7eeb3f250f514aae2bcf8fcdfae0`
+- Candidate tree: `9d4692a7d89d597f5b5a71626d0bf16c0f52bcd2`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
@@ -29,6 +29,9 @@ attached as a separate immutable receipt commit.
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`,
   `COMPILED_AGENT_PACKAGE: 0`.
+- Compiled candidate package roster: `16` packages total — `13`
+  `CONTROL_PLANE` and `3` source-locked `STANDARD_BLOCK` candidates. This is
+  distinct from the unexpanded backlog materialization count above.
 - Atomic overlay: 7 routers, 79 atomic specialists, 13 control-plane roles.
 - P0 has exactly six candidate lanes, each with a package, source lock, exact
   twelve-gate pack, hostile fixtures, evaluation dossier, and typed handoff.
@@ -38,8 +41,11 @@ attached as a separate immutable receipt commit.
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS
   repository residue.
-- The separate read-only independent evaluator passes all 13 package candidates,
-  156 gate files, and 221 hostile fixtures. Its disposition is
+- The source-locked standard slice contains NIST SP 800-218 SSDF 1.1, OWASP
+  ASVS 5.0.0, and SLSA Specification 1.2. Each binds normalized requirements,
+  compatibility/supersession metadata, and its source manifest by digest.
+- The separate read-only independent evaluator passes all 16 package candidates,
+  192 gate files, and 272 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 
 ## Unfinished admission gates
@@ -47,9 +53,11 @@ attached as a separate immutable receipt commit.
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Source-backed `STANDARD_BLOCK` construction beyond synthetic fixture blocks;
-   the current materialized standard-block count is zero.
-4. Full hostile/utility evaluation and main AgentOS 3.0 integration-owner intake.
+3. Broader source-backed `STANDARD_BLOCK` expansion beyond the three current
+   candidates remains planned; the backlog materialized standard-block count is
+   zero because those roles are not yet expanded into packages.
+4. Independent utility/harm evaluation of the current standard candidates and
+   P0 packages, plus main AgentOS 3.0 integration-owner intake, remain external.
 
 The exact next action is to consume this receipt in the main integration owner,
 rerun independent evaluation, and admit only the blocks whose complete gate
