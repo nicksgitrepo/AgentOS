@@ -234,3 +234,29 @@ remain external gates.
 - Next cursor: refresh the exact machine/human integration handoff, then commit
   and push this coherent slice. Do not start broader standard/backlog expansion
   or heavyweight proof while the host-pressure ceiling remains in force.
+
+## Atomic composition enforcement slice — 2026-08-11
+
+- Implementation commit: `e35e055e7b1c198c820b6050302e7df1a1e19507`; tree:
+  `2bd879482553aef3223e08757cccca394cc8618f`; branch is pushed and clean at
+  this slice checkpoint.
+- The task-shaped compiler now preserves `required_upstream_router` and
+  `sibling_conflicts` in normalized catalogs and generated `block-lock.json`;
+  an `ATOMIC_SPECIALIST` must include a selected upstream `ROUTER` in its
+  dependency closure. Router-only substitution and duplicate sibling authority
+  are denied; missing upstream selection returns a closed error.
+- The route loader now returns the required router alongside the narrow atomic
+  selection, and closes `UNKNOWN` when that router is unavailable. Focused
+  compiler, library, and independent-evaluator checks pass.
+- Exact counts remain `625` raw mentions, `619` unique titles, `10` aliases;
+  materialized inventory remains `ROUTER:626`, `CONTROL_PLANE:13`,
+  `KNOWLEDGE_BLOCK:0`, `GOVERNANCE_BLOCK:0`, `STANDARD_BLOCK:0`,
+  `CONTEXT_BLOCK:0`, `ATOMIC_SPECIALIST:79`, `COMPILED_AGENT_PACKAGE:0`.
+  Compiled candidate packages remain `16` (`13` control-plane, `3` standard).
+- Six P0 lane identities/statuses remain unchanged and candidate/inactive;
+  no P1 lane is active. Host ceiling remains canonical Rust scheduler
+  `JOB-407 RUNNING`, swap `5.5/6 GiB`; no heavyweight proof or admission ran.
+- Next cursor: add source-locked narrow P1 router/atomic packages with explicit
+  generic mappings, then refresh counts, routing, evaluation receipts, and the
+  typed integration handoff. Keep activation `OFF` and admission
+  `NOT_ADMITTED`.

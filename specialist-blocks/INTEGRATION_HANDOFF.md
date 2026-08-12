@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `2c1011efef1d7eeb3f250f514aae2bcf8fcdfae0`
-- Candidate tree: `9d4692a7d89d597f5b5a71626d0bf16c0f52bcd2`
+- Candidate commit: `e35e055e7b1c198c820b6050302e7df1a1e19507`
+- Candidate tree: `2bd879482553aef3223e08757cccca394cc8618f`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
@@ -47,15 +47,18 @@ attached as a separate immutable receipt commit.
 - The separate read-only independent evaluator passes all 16 package candidates,
   192 gate files, and 272 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
+- Atomic composition enforcement is included in the candidate: an atomic block
+  must bind to and compile with its selected upstream `ROUTER`; router-only
+  substitution, missing upstream closure, and sibling-authority overlap deny.
 
 ## Unfinished admission gates
 
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Broader source-backed `STANDARD_BLOCK` expansion beyond the three current
-   candidates remains planned; the backlog materialized standard-block count is
-   zero because those roles are not yet expanded into packages.
+3. Broader source-backed `STANDARD_BLOCK` expansion and the first narrow P1
+   atomic package wave remain planned; the backlog materialized standard-block
+   count is zero because those roles are not yet expanded into packages.
 4. Independent utility/harm evaluation of the current standard candidates and
    P0 packages, plus main AgentOS 3.0 integration-owner intake, remain external.
 
