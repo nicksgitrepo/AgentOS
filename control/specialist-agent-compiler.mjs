@@ -64,6 +64,11 @@ const PRIVATE_PATH = /(?:^|[\\/])(?:Users|home|private|tmp|var)[\\/]/u;
 const SECRET = /(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret|credential)\s*[:=]/iu;
 const SORTED_OUTCOMES = [...GATE_OUTCOMES];
 
+const RECIPE_AUTHORITY_LAYERS = Object.freeze({
+  "recipe.agent.independent-auditor": ["testing-review"],
+  "recipe.agent.runtime-deployment": ["change-release-supply-chain"],
+});
+
 class CompositionError extends Error {
   constructor(code, message, details = {}) {
     super(`${code}: ${message}`);
@@ -258,7 +263,7 @@ function validateRecipe(recipe) {
   const recipeVersion = recipe.recipe_version ?? recipe.version;
   assertString(recipeVersion, "recipe.recipe_version");
   if (!/^[0-9]+\.[0-9]+\.[0-9]+$/u.test(recipeVersion)) fail("INVALID_RECIPE", "recipe_version must be semantic");
-  if (recipe.compile_allowed === false || recipe.lifecycle === "PLANNED" || recipe.materialization?.status === "PLANNED_RECIPE_ONLY") fail("PLANNED_RECIPE_NOT_COMPILEABLE", `${recipe.recipe_id} is a planned recipe and requires a role-specific admitted block before compilation`);
+  if (recipe.compile_allowed === false || recipe.lifecycle === "PLANNED" || recipe.lifecycle === "NOT_APPLICABLE" || recipe.materialization?.status === "PLANNED_RECIPE_ONLY" || recipe.materialization?.status === "PROTECTED_EXTERNAL_LANE") fail("RECIPE_NOT_COMPILEABLE", `${recipe.recipe_id} is not admitted for task-shaped compilation`);
   const required = [...(recipe.required_block_ids ?? recipe.block_ids ?? [])].sort();
   if (required.length === 0) fail("INVALID_RECIPE", "recipe has no required reusable blocks");
   sortedUnique(required, "recipe.required_block_ids", {minItems: 1});
@@ -272,6 +277,16 @@ function validateRecipe(recipe) {
   sortedUnique(optional, "recipe.optional_block_ids");
   const reasons = recipe.reasons ?? {};
   assertRecord(reasons, "recipe.reasons");
+  const roleProfile = recipe.role_profile ?? null;
+  if (roleProfile !== null) {
+    assertRecord(roleProfile, "recipe.role_profile");
+    for (const field of ["schema", "canonical_id", "title", "family", "purpose", "freshness_policy", "authority", "digest"]) assertString(roleProfile[field], `recipe.role_profile.${field}`);
+    assertDigest(roleProfile.digest, "recipe.role_profile.digest");
+    const expectedProfileDigest = stableDigest(Object.fromEntries(Object.entries(roleProfile).filter(([key]) => key !== "digest")));
+    if (roleProfile.digest !== expectedProfileDigest) fail("ROLE_PROFILE_DIGEST_MISMATCH", `${recipe.recipe_id} role profile is not bound to its exact context`);
+    for (const field of ["triggers", "exclusions", "source_requirements"]) sortedUnique(roleProfile[field], `recipe.role_profile.${field}`, {minItems: 1});
+    if (roleProfile.canonical_id !== recipe.source_inventory_id || roleProfile.family !== recipe.family) fail("ROLE_PROFILE_IDENTITY_MISMATCH", `${recipe.recipe_id} role profile does not match its inventory identity`);
+  }
   return {
     recipe_id: recipe.recipe_id,
     version: recipeVersion,
@@ -284,6 +299,8 @@ function validateRecipe(recipe) {
     optional_block_ids: optional,
     reasons,
     required_layers: [...(recipe.required_layers ?? [])].sort(),
+    source_inventory_id: recipe.source_inventory_id ?? recipe.recipe_id,
+    role_profile: roleProfile,
   };
 }
 
@@ -539,7 +556,7 @@ function buildEvaluationReceipt({recipe, task, selectedBlocks, packageHash = nul
 function buildAgentPlan({recipe, recipeRef, task, selectedBlocks, blockRefs, external, library, authorityGraph, decisionTree, proofMatrix, handoffSchema, evaluationReceipt, packageHash = null}) {
   const allowed = [...new Set(["typed task analysis", "read bound candidate/worktree context", ...selectedBlocks.flatMap((block) => block.permitted_decisions)])].sort();
   const forbidden = [...new Set(["write outside bound candidate/worktree custody", "write Product or portable library facts", "activate, deploy, publish, migrate, or spend", "handle secrets", "self-accept", "silently add blocks or authority", ...selectedBlocks.flatMap((block) => block.forbidden_decisions)])].sort();
-  return {schema: "agentos.agent_plan.v1", version: 1, package_hash: packageHash, compiler: COMPILER_IDENTITY, library, parent: task.parent, recipe: {recipe_id: recipe.recipe_id, version: recipe.version, family: recipe.family, purpose: recipe.purpose}, task: {lane: task.lane, goal: task.goal, outcome: task.outcome, non_goals: task.non_goals, owner_intent: task.owner_intent}, selected_blocks: blockRefs, external_bindings: external.binding, authority: {allowed, forbidden, acceptance_authority: "INDEPENDENT_AUTHORITY_ONLY", graph_ref: "authority-graph.json"}, gate_state: {status: "READY_CANDIDATE", outcomes: SORTED_OUTCOMES, unknown_rule: "UNKNOWN_CLOSES_ONLY_DEPENDENT_ACTION;_UNRELATED_WORK_CONTINUES", decision_tree_ref: "decision-tree.gate"}, proof: {matrix_ref: "proof-matrix.json", acceptance: "INDEPENDENT_REVIEW_REQUIRED", evidence_ceiling: "Only the exact block source locks and external companion evidence bound in context-manifest.json may support a claim."}, handoff: {schema_ref: "handoff.schema.json", status: "TYPED_HANDOFF_REQUIRED", next_action: handoffSchema.next_action}, lifecycle: {state: "GENERATED_CANDIDATE_UNFROZEN", archive_rule: handoffSchema.archive_rule, freeze_rule: "Freeze only after the exact package is validated and handoff is consumed; any changed lock or applicability creates a new package identity."}, failure: {missing_context: "CLOSE_DEPENDENT_ACTION", missing_authority: "CLOSE_DEPENDENT_ACTION", stale_source: "DENY_OR_REFRESH", conflict: "ESCALATE_AND_CLOSE_DEPENDENT_ACTION", unsafe_action: "DENY_AND_PRESERVE_CUSTODY"}, _references: {authority_graph: authorityGraph.schema, decision_tree: decisionTree.schema, proof_matrix: proofMatrix.schema, handoff: handoffSchema.schema, evaluation: evaluationReceipt.schema}};
+  return {schema: "agentos.agent_plan.v1", version: 1, package_hash: packageHash, compiler: COMPILER_IDENTITY, library, parent: task.parent, recipe: {recipe_id: recipe.recipe_id, version: recipe.version, family: recipe.family, purpose: recipe.purpose, source_inventory_id: recipe.source_inventory_id, role_profile: recipe.role_profile}, task: {lane: task.lane, goal: task.goal, outcome: task.outcome, non_goals: task.non_goals, owner_intent: task.owner_intent}, selected_blocks: blockRefs, external_bindings: external.binding, authority: {allowed, forbidden, acceptance_authority: "INDEPENDENT_AUTHORITY_ONLY", graph_ref: "authority-graph.json"}, gate_state: {status: "READY_CANDIDATE", outcomes: SORTED_OUTCOMES, unknown_rule: "UNKNOWN_CLOSES_ONLY_DEPENDENT_ACTION;_UNRELATED_WORK_CONTINUES", decision_tree_ref: "decision-tree.gate"}, proof: {matrix_ref: "proof-matrix.json", acceptance: "INDEPENDENT_REVIEW_REQUIRED", evidence_ceiling: "The role profile only narrows context. Claims require exact selected-block source locks plus external companion evidence bound in context-manifest.json."}, handoff: {schema_ref: "handoff.schema.json", status: "TYPED_HANDOFF_REQUIRED", next_action: handoffSchema.next_action}, lifecycle: {state: "GENERATED_CANDIDATE_UNFROZEN", archive_rule: handoffSchema.archive_rule, freeze_rule: "Freeze only after the exact package is validated and handoff is consumed; any changed lock or applicability creates a new package identity."}, failure: {missing_context: "CLOSE_DEPENDENT_ACTION", missing_authority: "CLOSE_DEPENDENT_ACTION", stale_source: "DENY_OR_REFRESH", conflict: "ESCALATE_AND_CLOSE_DEPENDENT_ACTION", unsafe_action: "DENY_AND_PRESERVE_CUSTODY"}, _references: {authority_graph: authorityGraph.schema, decision_tree: decisionTree.schema, proof_matrix: proofMatrix.schema, handoff: handoffSchema.schema, evaluation: evaluationReceipt.schema}};
 }
 
 function renderBootstrap({documents, packageHash}) {
@@ -561,6 +578,7 @@ function renderBootstrap({documents, packageHash}) {
     `Goal: ${plan.task.goal}`,
     `Outcome: ${plan.task.outcome}`,
     `Non-goals: ${plan.task.non_goals.join("; ")}`,
+    ...(plan.recipe.role_profile ? [`Role profile: ${plan.recipe.role_profile.title} (${plan.recipe.role_profile.canonical_id})#${plan.recipe.role_profile.digest}`, `Role triggers: ${plan.recipe.role_profile.triggers.join("; ")}`, `Role exclusions: ${plan.recipe.role_profile.exclusions.join("; ")}`, `Role source requirements: ${plan.recipe.role_profile.source_requirements.join("; ")}`, `Role-profile authority: ${plan.recipe.role_profile.authority}`] : []),
     "",
     "## Selected reusable blocks",
     "",
@@ -658,6 +676,11 @@ export function compileTaskShapedAgent({task, recipe, blocks, external, parent, 
     if (normalizedTask.owner_intent) selectedLayers.add("owner-intent-and-authority");
     if (boundExternal.projectGovernance.status === "COMPLETE") selectedLayers.add("external-project-governance");
     if (boundExternal.context.completeness === "COMPLETE") selectedLayers.add("exact-project-context");
+    // The exact recipe identity is itself the task-role authority node in the
+    // composed authority graph. A portable block must not be invented merely
+    // to duplicate that already-bound authority layer.
+    selectedLayers.add("task-role-authority");
+    for (const layer of RECIPE_AUTHORITY_LAYERS[normalizedRecipe.recipe_id] ?? []) selectedLayers.add(layer);
     const missingLayers = normalizedRecipe.required_layers.filter((layer) => !selectedLayers.has(layer));
     if (missingLayers.length > 0) fail("MISSING_REQUIRED_LAYER", "recipe selection does not cover required composition layers", {missing: missingLayers});
   }

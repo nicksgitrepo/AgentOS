@@ -2,9 +2,11 @@
 
 /*
  * Materialize one deterministic, project-agnostic recipe for every retained
- * master-inventory role. Planned recipes are addressable, but cannot be
- * compiled until a role-specific block has been researched, source-locked,
- * independently evaluated, and admitted by a separate authority.
+ * master-inventory role. A role profile is context, not a new authority: it
+ * narrows purpose, triggers, exclusions, and source requirements while the
+ * reusable block library supplies the actual gates. This lets the same
+ * source-locked standard or control govern many task-shaped agents without
+ * copying that authority into hundreds of role packages.
  */
 
 import fs from "node:fs";
@@ -31,6 +33,19 @@ const BASE_LAYERS = Object.freeze([
 
 const BASE_CONTEXT = Object.freeze(["authority", "candidate", "custody", "proof", "request", "source_lock", "worktree"]);
 const BASE_NON_GOALS = Object.freeze(["consumer Product writing", "activation", "deployment", "self-acceptance", "unrelated specialist scopes"]);
+
+const FAMILY_ROUTER = Object.freeze({
+  "ai-search-intelligent-systems": "specialist.ai.search-router",
+  "data-database-analytics-migration": "specialist.data.router",
+  "delivery-operations": "specialist.assurance-enterprise.router",
+  "finance-accounting-commercial-controls": "specialist.finance.accounting-router",
+  fmcsatransport: "specialist.regulatory.applicability-router",
+  "law-regulation-standards-privacy-compliance": "specialist.regulatory.applicability-router",
+  "product-client-experience": "specialist.product-client.router",
+  security: "specialist.security.router",
+  "software-language-runtime": "specialist.software-language-runtime.router",
+  "three-dimensional-graphics-visual-assets": "specialist.graphics.industrial-3d-router",
+});
 
 const P0_SOURCE_BY_RECIPE = Object.freeze({
   "recipe.agent.bootstrap": "inventory.permanent-governance-control.bootstrap-project-initializer",
@@ -213,7 +228,25 @@ function normalizeExistingRecipe(existing, entry) {
   });
 }
 
-function plannedRecipe(entry) {
+function roleProfile(entry) {
+  const profile = {
+    schema: "agentos.specialist_role_profile.v1",
+    version: 1,
+    canonical_id: entry.canonical_id,
+    title: entry.title,
+    family: entry.family,
+    subfamily: entry.subfamily,
+    purpose: entry.purpose,
+    triggers: sortedUnique(entry.triggers ?? []),
+    exclusions: sortedUnique(entry.exclusions ?? []),
+    source_requirements: sortedUnique(entry.source_requirements ?? []),
+    freshness_policy: entry.freshness_policy,
+    authority: "CONTEXT_ONLY;_NEVER_OVERRIDES_SELECTED_GATES_OR_EXTERNAL_PROJECT_AUTHORITY",
+  };
+  return {...profile, digest: canonicalDigest(profile)};
+}
+
+function contextualRecipe(entry) {
   if (isProtectedMemoryLane(entry)) {
     return finalizeRecipe({
       schema: "agentos.specialist_recipe.v1",
@@ -245,6 +278,9 @@ function plannedRecipe(entry) {
       freshness_policy: entry.freshness_policy,
     });
   }
+  const familyRouter = FAMILY_ROUTER[entry.family] ?? null;
+  const requiredBlockIds = sortedUnique([...FOUNDATION_BLOCKS, ...(familyRouter ? [familyRouter] : [])]);
+  const profile = roleProfile(entry);
   return finalizeRecipe({
     schema: "agentos.specialist_recipe.v1",
     version: 1,
@@ -259,18 +295,19 @@ function plannedRecipe(entry) {
     family: entry.family,
     purpose: `Compile a task-shaped ${entry.title} specialist only after applicability, authority, source, and context evidence are complete.`,
     required_layers: BASE_LAYERS,
-    required_block_ids: FOUNDATION_BLOCKS,
-    required_context_fields: BASE_CONTEXT,
+    required_block_ids: requiredBlockIds,
+    required_context_fields: [...BASE_CONTEXT, "role_profile", "signals"],
     non_goals: BASE_NON_GOALS,
     selection_rule: "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
     external_overlay_rule: "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-    lifecycle: "PLANNED",
-    compile_allowed: false,
-    materialization: {status: "PLANNED_RECIPE_ONLY", role_specific_block_required: true, package_ids: []},
+    lifecycle: "CANDIDATE",
+    compile_allowed: true,
+    materialization: {status: "CONTEXT_PROFILE_CANDIDATE", role_specific_block_required: false, package_ids: requiredBlockIds},
     required_atomic_blocks: [],
     required_standard_blocks: [],
     optional_block_ids: [],
-    reasons: genericReasons(entry),
+    reasons: {...genericReasons(entry), ...(familyRouter ? {[familyRouter]: `Route ${entry.title} through the narrowest reusable ${entry.family} family gate; the immutable role profile supplies context but no authority.`} : {})},
+    role_profile: profile,
     source_requirements: entry.source_requirements,
     freshness_policy: entry.freshness_policy,
   });
@@ -341,7 +378,7 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
   for (const entry of inventoryEntries) {
     if (covered.has(entry.canonical_id)) continue;
     const override = P5_RECIPE_OVERRIDES[entry.canonical_id] ?? P4_RECIPE_OVERRIDES[entry.canonical_id];
-    recipes.push(override ? compiledRecipe(entry, override) : plannedRecipe(entry));
+    recipes.push(override ? compiledRecipe(entry, override) : contextualRecipe(entry));
     covered.add(entry.canonical_id);
   }
   recipes.sort((left, right) => left.source_inventory_id.localeCompare(right.source_inventory_id));
@@ -365,7 +402,7 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
     selection_rule: "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
     external_overlay_rule: "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
     addressability_rule: "EVERY_RETAINED_MASTER_INVENTORY_ROLE_HAS_ONE_STABLE_RECIPE;_ALIASES_RESOLVE_TO_THE_CANONICAL_RECIPE",
-    planned_recipe_rule: "PLANNED_RECIPES_ARE_NOT_COMPILEABLE_UNTIL_ROLE_SPECIFIC_BLOCK_SOURCE_LOCK_EVALUATION_AND_ADMISSION_EXIST",
+    planned_recipe_rule: "ALL_NON_PROTECTED_ROLES_COMPILE_FROM_ONE_IMMUTABLE_CONTEXT_PROFILE_PLUS_THE_SMALLEST_DEPENDENCY_COMPLETE_REUSABLE_GATE_SET;_CONTEXT_NEVER_BECOMES_AUTHORITY",
     foundation_block_ids: FOUNDATION_BLOCKS,
     inventory: {raw_role_mentions: 627, unique_role_titles: inventoryEntries.length, alias_mappings: aliases.length},
     recipes,

@@ -26,11 +26,12 @@ attached as a separate immutable receipt commit.
 - Master inventory: 627 raw role mentions, 621 unique titles (the 619 baseline
   roles plus two generic discovered workflow additions), 10 explicit alias
   mappings, 621 materialized entries.
-- Recipe catalog: 621 stable role recipes, with 17 compileable candidates (6
-  P0, 5 P4, and 6 P5), 603 planned non-compileable recipes, and the protected Memory lane marked
-  `NOT_APPLICABLE`/external-only; all 10 aliases resolve to canonical recipe
-  IDs. Planned recipes cannot compile until role-specific block research, source
-  locking, evaluation, and admission exist.
+- Recipe catalog: 621 stable role recipes, with 620 compileable candidates and
+  the protected Memory lane marked `NOT_APPLICABLE`/external-only; all 10
+  aliases resolve to canonical recipe IDs. The 603 generic roles compile from
+  an immutable role-context profile plus the smallest dependency-complete
+  reusable gate set. A profile grants no authority and cannot replace a
+  source-locked gate or external project context.
 - Materialized role kinds: `ROUTER: 640`, `CONTROL_PLANE: 16`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`,
@@ -47,10 +48,10 @@ attached as a separate immutable receipt commit.
 - The on-demand compiler emits the eight required machine contracts plus a
   generated `bootstrap.md` view in an external companion workspace only.
 - The recipe catalog is complete for the retained backlog: `621` stable role
-  recipes, `17` compileable candidates (`6` P0, `5` P4, and `6` P5), `603` planned non-compileable
-  recipes, one protected `NOT_APPLICABLE` external lane, and `10` alias
-  resolutions. The planned entries cannot compile until role-specific blocks
-  satisfy the full source/gate/evaluation/admission law.
+  recipes, `620` compileable candidates, zero advertised-but-non-materializable
+  roles, one protected `NOT_APPLICABLE` external lane, and `10` alias
+  resolutions. Generic role profiles narrow purpose, triggers, exclusions, and
+  source requirements but never become authority.
 - The composition fixture generates three different task-shaped packages,
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS

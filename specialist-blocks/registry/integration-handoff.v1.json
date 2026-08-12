@@ -49,23 +49,23 @@
     },
     "recipe_counts": {
       "total": 621,
-      "CANDIDATE": 17,
-      "PLANNED": 603,
+      "CANDIDATE": 620,
+      "PLANNED": 0,
       "NOT_APPLICABLE": 1,
       "alias_mappings": 10,
-      "catalog_sha256": "e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74"
+      "catalog_sha256": "f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67"
     }
   },
   "lanes": {
     "active_count": 6,
     "wave": "P0",
     "entries": [
-      {"generic_id": "AGENT.BOOTSTRAP", "child_id": "019ff333-1cda-76f2-a43b-b44ec39bf088", "package_id": "specialist.control.bootstrap-project-initializer", "status": "CANDIDATE"},
-      {"generic_id": "AGENT.PROJECT_CONTROLLER", "child_id": "019ff333-1d4b-7082-8556-feab852e2d4a", "package_id": "specialist.control.project-controller", "status": "CANDIDATE"},
-      {"generic_id": "AGENT.INTENT_REGULATOR", "child_id": "019ff333-1dca-72c0-85a8-3c81a6715d6a", "package_id": "specialist.control.intent-regulator", "status": "CANDIDATE"},
-      {"generic_id": "AGENT.RESOURCE_SCHEDULER", "child_id": "019ff333-1e3f-7e43-8e2d-3c2ccfc17ee4", "package_id": "specialist.control.resource-scheduler", "status": "CANDIDATE"},
-      {"generic_id": "AGENT.RUNTIME_DEPLOYMENT", "child_id": "019ff333-1eb9-7ea1-a239-a5aae1d1bb35", "package_id": "specialist.control.runtime-deployment-operator", "status": "CANDIDATE"},
-      {"generic_id": "AGENT.INDEPENDENT_AUDITOR", "child_id": "019ff333-1f36-75e3-b7ab-f552edb9c438", "package_id": "specialist.control.independent-auditor", "status": "CANDIDATE"}
+      {"generic_id": "AGENT.BOOTSTRAP", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.bootstrap-project-initializer", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.PROJECT_CONTROLLER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.project-controller", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.INTENT_REGULATOR", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.intent-regulator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.RESOURCE_SCHEDULER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.resource-scheduler", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.RUNTIME_DEPLOYMENT", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.runtime-deployment-operator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.INDEPENDENT_AUDITOR", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.independent-auditor", "status": "CANDIDATE"}
     ]
   },
   "outputs": {
@@ -114,7 +114,7 @@
     {"receipt_id": "specialist-p2-security-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P2 routers, forty-one narrow security atoms, two reusable OWASP index standards, exact upstream-router closure, standard-hash reuse, and actual Web A01/API7 routing fixtures"},
     {"receipt_id": "specialist-p3-delivery-assurance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "three P3 governance controls, one observability router, two delivery/data atomic specialists, one assurance atomic specialist, exact upstream closure, and reuse of existing NIST SSDF/SLSA authorities"},
     {"receipt_id": "specialist-p4-client-ux-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "one P4 desktop/offline/realtime classification router, five narrow client/UX atoms, one reusable W3C WCAG 2.2 STANDARD_BLOCK, exact upstream closure, source locks, twelve-gate packs, and routing fixtures"},
-    {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "621 stable recipes for 621 retained inventory roles, seventeen compileable candidates (six P0, five P4, and six P5), 603 planned recipes, one protected external lane marked NOT_APPLICABLE, ten alias resolutions, and deterministic catalog digest"},
+    {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "621 stable recipes for 621 retained inventory roles, 620 compileable candidates, zero advertised-but-non-materializable roles, one protected external Memory lane marked NOT_APPLICABLE, ten alias resolutions, and deterministic catalog digest; 603 generic roles use immutable context profiles plus the smallest reusable gate set and receive no authority from profile text"},
     {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"},
     {"receipt_id": "specialist-p1-standard-reuse-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "implementation commit 170bbf4ca705dce9de199172910c6c25e243e7fc with tree aebfe743b8b460dd1ffb5c90cfc3342f93d18597; ten P1 atoms reuse ten immutable exact-edition standard blocks"},
     {"receipt_id": "specialist-p5-domain-ai-3d-reg-finance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P5 atomic candidates, five P5 classification routers, five reusable exact-edition STANDARD_BLOCK authorities, source locks, twelve-gate packs, hostile fixtures, upstream-router closure, and standard-hash reuse"},
@@ -125,7 +125,7 @@
     "The deterministic utility/harm pre-screen is receipt-backed but remains pending external independent utility/harm authority; it does not admit or activate any package.",
     "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
     "Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
-    "603 planned recipes still require role-specific source research, exact twelve-gate packages, hostile fixtures, independent evaluation, and admission before compilation; the protected Memory lane is NOT_APPLICABLE and remains external.",
+    "Context-profile recipes are compileable candidates, not independently admitted specialists: their role profile narrows context only, and every substantive claim still requires selected source-locked gates plus a complete external authority corpus.",
     "Full hostile/utility validation and main AgentOS 3.0 integration-owner intake remain external follow-up gates.",
     "No consumer adoption, migration, provider activation, public release, or protected Memory action is authorized by this receipt."
   ],

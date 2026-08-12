@@ -1,5 +1,20 @@
 # Specialist Block Library — Current State
 
+## 2026-08-12 on-demand roster materialization repair
+
+- The canonical 621-role roster now has 620 deterministic compileable
+  candidates and one deliberately non-compileable protected Memory lane.
+- The prior 603 `PLANNED` rows are historical. Each now carries an immutable
+  role profile composed with the smallest dependency-complete reusable gate
+  set.
+- Role profiles are context only. They grant no authority, do not copy a
+  standard, and cannot support a substantive claim without exact selected
+  source locks plus a complete external authority corpus.
+- Current recipe catalog digest:
+  `f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67`.
+- Admission and activation remain off pending focused and independent proof of
+  the repaired compiler and a typed AgentOS intake.
+
 Status: `SPECIALIST_BLOCK_LIBRARY_BUILD_ACTIVE`
 
 Lifecycle: `CANDIDATE_INACTIVE`
@@ -90,12 +105,12 @@ dossier, one hostile-fixture set, and one typed handoff.
 
 | Lane | Family | Append-only package scope | Goal | Status |
 |---|---|---|---|---|
-| L1 | `AGENT.BOOTSTRAP` | child `019ff333-1cda-76f2-a43b-b44ec39bf088` (`Bernoulli`) | Build `specialist.control.bootstrap-project-initializer`. | `CANDIDATE` |
-| L2 | `AGENT.PROJECT_CONTROLLER` | child `019ff333-1d4b-7082-8556-feab852e2d4a` (`Godel`) | Build `specialist.control.project-controller`. | `CANDIDATE` |
-| L3 | `AGENT.INTENT_REGULATOR` | child `019ff333-1dca-72c0-85a8-3c81a6715d6a` (`Franklin`) | Build `specialist.control.intent-regulator`. | `CANDIDATE` |
-| L4 | `AGENT.RESOURCE_SCHEDULER` | child `019ff333-1e3f-7e43-8e2d-3c2ccfc17ee4` (`Locke`) | Build `specialist.control.resource-scheduler`. | `CANDIDATE` |
-| L5 | `AGENT.RUNTIME_DEPLOYMENT` | child `019ff333-1eb9-7ea1-a239-a5aae1d1bb35` (`Hilbert`) | Build `specialist.control.runtime-deployment-operator`. | `CANDIDATE` |
-| L6 | `AGENT.INDEPENDENT_AUDITOR` | child `019ff333-1f36-75e3-b7ab-f552edb9c438` (`Darwin`) | Build `specialist.control.independent-auditor`. | `CANDIDATE` |
+| L1 | `AGENT.BOOTSTRAP` | child `ARCHIVED_SOURCE_TASK` (`Bernoulli`) | Build `specialist.control.bootstrap-project-initializer`. | `CANDIDATE` |
+| L2 | `AGENT.PROJECT_CONTROLLER` | child `ARCHIVED_SOURCE_TASK` (`Godel`) | Build `specialist.control.project-controller`. | `CANDIDATE` |
+| L3 | `AGENT.INTENT_REGULATOR` | child `ARCHIVED_SOURCE_TASK` (`Franklin`) | Build `specialist.control.intent-regulator`. | `CANDIDATE` |
+| L4 | `AGENT.RESOURCE_SCHEDULER` | child `ARCHIVED_SOURCE_TASK` (`Locke`) | Build `specialist.control.resource-scheduler`. | `CANDIDATE` |
+| L5 | `AGENT.RUNTIME_DEPLOYMENT` | child `ARCHIVED_SOURCE_TASK` (`Hilbert`) | Build `specialist.control.runtime-deployment-operator`. | `CANDIDATE` |
+| L6 | `AGENT.INDEPENDENT_AUDITOR` | child `ARCHIVED_SOURCE_TASK` (`Darwin`) | Build `specialist.control.independent-auditor`. | `CANDIDATE` |
 
 The previously attempted Wave 1 family lanes were interrupted as incompatible
 before reassignment; all six reported `changed paths: none`.
@@ -160,12 +175,12 @@ remain external gates.
   pack. Atomic evaluator failure classes are recorded in the overlay.
 - P0 priority correction remains authoritative. Six reserved children are
   unchanged and all remain `FROZEN_WAITING_FOUNDATION`: Bernoulli
-  `019ff333-1cda-76f2-a43b-b44ec39bf088`, Godel
-  `019ff333-1d4b-7082-8556-feab852e2d4a`, Franklin
-  `019ff333-1dca-72c0-85a8-3c81a6715d6a`, Locke
-  `019ff333-1e3f-7e43-8e2d-3c2ccfc17ee4`, Hilbert
-  `019ff333-1eb9-7ea1-a239-a5aae1d1bb35`, and Darwin
-  `019ff333-1f36-75e3-b7ab-f552edb9c438`.
+  `ARCHIVED_SOURCE_TASK`, Godel
+  `ARCHIVED_SOURCE_TASK`, Franklin
+  `ARCHIVED_SOURCE_TASK`, Locke
+  `ARCHIVED_SOURCE_TASK`, Hilbert
+  `ARCHIVED_SOURCE_TASK`, and Darwin
+  `ARCHIVED_SOURCE_TASK`.
 - Current worktree is `DIRTY_UNCOMMITTED_CONTROLLER_CANDIDATE` with `13`
   untracked path roots from this controller work. No external worktree or
   source package was mutated.
