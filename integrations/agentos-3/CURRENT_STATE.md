@@ -1,6 +1,6 @@
 # AgentOS 3.0 test-build current state
 
-Status: `REAL_HOST_TESTED_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE`
+Status: `INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE`
 
 ## Exact candidate
 
@@ -9,7 +9,7 @@ Status: `REAL_HOST_TESTED_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE`
 - Main core: commit `029ccdb40efaeeae38ec1adabc6d3b44f5316310`,
   tree `6f66883444f0340aac86905ab0e889832b420df6`, 203 exact
   control entries.
-- Bundle: 4,763 canonical entries containing the current main-core input,
+- Bundle: 4,768 canonical entries containing the current main-core input,
   Memory M2, Agent Builder, the specialist block library, and root schemas.
 - Bundle identity is recorded in the adjacent generated manifest so the
   bundle never embeds a self-referential digest.
@@ -29,9 +29,17 @@ Status: `REAL_HOST_TESTED_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE`
   capability. Initialize, propose, verify, accept, replay, reopen, and wrong-
   capability denial pass.
 - Agent Builder compiles a typed, non-admitted governance candidate and denies
-  unknown fields, contradictions, omissions, and stale sources.
+  unknown fields, contradictions, omissions, stale sources, overlapping scope,
+  duplicate provenance, malformed digests, ambiguous SemVer, invalid identity
+  fields, and context-budget overflow.
 - The specialist library materializes 620 compileable role recipes from 123
   reusable packages, while the protected Memory role remains external.
+- An independent read-only release review cleared all 68 specialist cases that
+  could not be decided by the deterministic pre-screen (12 route, 51 deny,
+  five escalate) and 14 Agent Builder utility/harm cases (four pass, ten
+  deny). Both clearances are digest-bound and grant no runtime authority.
+- Main AgentOS, Memory M2, Agent Builder, and the specialist library now appear
+  as explicit typed inputs in the inactive combined integration contract.
 - Sibling-only install, hostile bundle and path cases, foreign or changed file
   rollback denial, exact owned rollback, and zero Product trace pass.
 - Installed Bootstrap runs from the packaged sibling against both a fresh Git
@@ -46,15 +54,16 @@ Status: `REAL_HOST_TESTED_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE`
 
 ## Evidence ceiling
 
-- Structural specialist evaluation and deterministic utility/harm pre-screen
-  pass, but flexible authority/tool/data cases still require an independent
-  reviewer. The candidate cannot self-accept.
+- Independent clearance establishes deterministic compiler behavior and the
+  declared specialist authority boundaries. It does not establish provider or
+  model quality for an eventual activated configuration, domain certification,
+  or the fitness of a future consumer-specific context selection.
 - Provider activation, consumer adoption, real-data migration, deployment,
   public publication, license selection, and release promotion remain dormant
   and are not implied by the test-build proof.
-- The exact next gate is independent clearance of the combined candidate and
-  the remaining specialist utility/harm cases. After that clearance, the
-  candidate is ready for an explicit owner release/promotion decision.
+- The candidate is ready for an explicit owner release/promotion decision.
+  Provider/model evaluation, consumer-specific adoption, and any activated
+  configuration remain later bound gates.
 
 This record contains no private control payload, absolute consumer path,
 credential, provider identity, conversation identity, or external project

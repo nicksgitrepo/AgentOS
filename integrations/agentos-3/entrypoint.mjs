@@ -13,6 +13,7 @@ export async function createAgentOS3TestBuild(options = {}) {
     bootstrap,
     main_core: createCombinedMainCoreEntrypoint(),
     memory: createAgentOS3Runtime(options),
-    agent_builder: builder
+    agent_builder: builder,
+    specialist_library: bootstrap.specialist_library
   });
 }

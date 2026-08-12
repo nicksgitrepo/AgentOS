@@ -6,8 +6,8 @@
   "included_entries": [
     {
       "path": "README.md",
-      "size": 7248,
-      "sha256": "ad0446c73716701b01871a1b35aa665b0254cf78db93b52122c06644ceeec44b"
+      "size": 7273,
+      "sha256": "38665d8089158cd4b7920c6e7d6b9421c9c0ed50d0c6d2adfd21b44ecf942e45"
     },
     {
       "path": "context-block.interface.ts",
@@ -131,8 +131,8 @@
     },
     {
       "path": "product-layer-model.md",
-      "size": 8241,
-      "sha256": "4e4b4e51b6b111098d0e6539d4c7d16c42c68d8fe9825d336b07376c49cd82ce"
+      "size": 8240,
+      "sha256": "ab170dcec459699d1f11f7964fe850c7104b693acadc3b8ddf6080cdc6ddd8ae"
     },
     {
       "path": "research-taxonomy.md",

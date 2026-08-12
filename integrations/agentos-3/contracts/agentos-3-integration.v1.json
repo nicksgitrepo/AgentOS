@@ -30,7 +30,8 @@
       "proof_commit": "882ee0d",
       "proof_tree": "39d40d5",
       "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2",
-      "state": "IMMUTABLE_INPUT_UNACCEPTED",
+      "state": "IMMUTABLE_INPUT_ACCEPTED_FOR_INACTIVE_TEST_BUILD",
+      "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
       "default_enabled": false,
       "custody": "private_local_only",
       "migration": "forbidden"
@@ -38,20 +39,34 @@
     {
       "id": "agent-builder",
       "role": "typed_role_governance_adapter",
-      "candidate_state": "EVALUATION_CANDIDATE_READY_FOR_INDEPENDENT_RERUN",
+      "candidate_state": "INDEPENDENTLY_CLEARED_FOR_INACTIVE_TEST_BUILD_INTAKE",
       "candidate_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626",
       "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833",
       "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec",
       "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d",
-      "state": "IMMUTABLE_INPUT_UNACCEPTED",
-      "admission": "NOT_ADMITTED",
+      "state": "IMMUTABLE_INPUT_INDEPENDENTLY_CLEARED",
+      "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
       "activation": "NOT_ACTIVATED",
-      "utility_harm_evaluation": "PENDING"
+      "utility_harm_evaluation": "PASS_DETERMINISTIC_COMPILER_SCOPE",
+      "independent_clearance_sha256": "5cacf76b76e9dd9c34cb8df5e9138d346400543647180bb172e0f8c194df2e38"
+    },
+    {
+      "id": "specialist-block-library",
+      "role": "reusable_governance_gate_and_role_recipe_library",
+      "candidate_commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
+      "candidate_tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb",
+      "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08",
+      "state": "IMMUTABLE_INPUT_INDEPENDENTLY_CLEARED",
+      "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
+      "activation": "OFF",
+      "utility_harm_evaluation": "PASS_2023_PREDETERMINED_AND_68_INDEPENDENTLY_REVIEWED_CASES",
+      "independent_clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"
     }
   ],
   "contracts": {
-    "memory": ["activation_off_by_default", "private_custody", "recipient_authority_required", "replay_verified", "staged_import_non_activating", "fail_closed"],
-    "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial"],
+    "memory": ["activation_off_by_default", "private_custody", "recipient_authority_required", "replay_verified", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
+    "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial", "independent_deterministic_utility_harm_clearance"],
+    "specialist_block_library": ["123_reusable_packages", "620_compileable_role_recipes", "typed_gate_dependency_closure", "independent_utility_harm_clearance", "inactive_test_build_only"],
     "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK",
     "install": "EXTERNAL_SIBLING_ONLY",
     "capability": "externally_supplied_bound_lease_verified_outside_artifact",
@@ -60,5 +75,5 @@
     "agent_builder_package": "agent-builder/package-manifest.json"
   },
   "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
-  "proof_ceiling": ["independent_utility_harm_evaluation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"]
+  "proof_ceiling": ["provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"]
 }

@@ -1,7 +1,7 @@
 {
   "schema": "agentos.integration.test-build-receipt.v1",
   "build_id": "AGENTOS_3_TEST_BUILD",
-  "disposition": "REAL_HOST_TESTED_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE",
+  "disposition": "INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE",
   "candidate_lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
   "authority_reference": {
@@ -14,7 +14,8 @@
   "inputs": [
     {"id": "main-agentos", "source_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310", "candidate_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310", "candidate_tree": "6f66883444f0340aac86905ab0e889832b420df6", "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e", "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"},
     {"id": "memory-m2", "source_commit": "16acbcdb0c414a541fa435be7942d6ce883042ef", "source_tree": "ee795fb24b2ecc9c1587b73a726ca2dec7817572", "proof_commit": "882ee0d", "proof_tree": "39d40d5", "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2"},
-    {"id": "agent-builder", "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626", "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833", "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec", "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d", "candidate_status": "EVALUATION_CANDIDATE_READY_FOR_INDEPENDENT_RERUN"}
+    {"id": "agent-builder", "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626", "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833", "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec", "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d", "candidate_status": "INDEPENDENTLY_CLEARED_FOR_INACTIVE_TEST_BUILD_INTAKE", "independent_clearance_sha256": "5cacf76b76e9dd9c34cb8df5e9138d346400543647180bb172e0f8c194df2e38"},
+    {"id": "specialist-block-library", "candidate_commit": "edd6cb5012b052445d623923d304ff7e1906ca51", "candidate_tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb", "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08", "independent_clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"}
   ],
   "proof": {
     "node_syntax": "PASS_FULL_INTEGRATION_REAUDIT",
@@ -26,17 +27,20 @@
     "main_core_source_parity": "PASS_203_ENTRIES_EXACT_CURRENT_COMMIT",
     "main_core_combined_entrypoint": "PASS_CONTROLLER_COMPILE_PROBE",
     "agent_builder_candidate_compiler": "PASS_TYPED_COMPILER_AND_FOUR_DENIALS",
+    "agent_builder_independent_utility_harm": "PASS_14_CASES_4_PASS_10_DENY",
+    "specialist_independent_utility_harm": "PASS_68_CASES_12_ROUTE_51_DENY_5_ESCALATE",
+    "combined_typed_intake": "PASS_MAIN_MEMORY_AGENT_BUILDER_SPECIALIST_LIBRARY",
     "sibling_custody_static_contract": "PASS_SIBLING_AND_CANONICAL_ROOT_RULES",
     "install_and_rollback": "PASS_ZERO_TRACE_HOSTILE_ROLLBACK",
     "real_host_new_project": "PASS_INSTALLED_BOOTSTRAP_READ_ONLY_ZERO_TRACE_ROLLBACK",
     "real_host_import_adoption": "PASS_INSTALLED_BOOTSTRAP_READ_ONLY_ZERO_TRACE_ROLLBACK",
     "specialist_roster_materialization": "PASS_620_COMPILEABLE_ONE_PROTECTED_EXTERNAL",
     "memory_authority": "PASS_M2_ONLY_EXPOSED_ROOT_PROJECT_MEMORY_PRESERVED_OFF",
-    "bundle_manifest_reconciliation": "PASS_4763_ENTRIES_ALL_COMPONENTS",
+    "bundle_manifest_reconciliation": "PASS_4768_ENTRIES_ALL_COMPONENTS",
     "reproducible_build": "PASS_IDENTICAL_REGENERATIONS",
     "private_or_external_context_leak": "PASS_SYNTHETIC_SCAN"
   },
-  "remaining_ceilings": ["independent_utility_harm_evaluation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"],
+  "remaining_ceilings": ["provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"],
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK",
   "source_mutation": "NONE",
   "private_control_payload": "NOT_INCLUDED"

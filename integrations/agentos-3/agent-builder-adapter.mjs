@@ -27,20 +27,29 @@ const exactKeys = (value, keys, label) => {
   if (!value || typeof value !== "object" || Array.isArray(value) || JSON.stringify(Object.keys(value).sort()) !== JSON.stringify([...keys].sort())) throw new Error(`AGENT_BUILDER_${label}_SHAPE`);
 };
 
+const nonEmptyUniqueStrings = (values, label) => {
+  if (!Array.isArray(values) || values.some((value) => typeof value !== "string" || value.trim() !== value || value.length === 0) || new Set(values).size !== values.length) {
+    throw new Error(`AGENT_BUILDER_${label}_INVALID`);
+  }
+};
+
 export function compileGovernanceCandidate(request) {
   exactKeys(request, ["role_id", "role_name", "purpose", "scope", "source_refs", "budget", "version", "unknown_fields", "contradictions", "omissions", "stale_source"], "REQUEST");
-  if (!/^role\.[a-z0-9._-]+$/u.test(request.role_id) || typeof request.role_name !== "string" || request.role_name.length === 0 || typeof request.purpose !== "string" || request.purpose.length === 0) throw new Error("AGENT_BUILDER_ROLE_INVALID");
+  if (!/^role\.[a-z0-9]+(?:[._-][a-z0-9]+)*$/u.test(request.role_id) || typeof request.role_name !== "string" || request.role_name.trim() !== request.role_name || request.role_name.length === 0 || typeof request.purpose !== "string" || request.purpose.trim() !== request.purpose || request.purpose.length === 0) throw new Error("AGENT_BUILDER_ROLE_INVALID");
   exactKeys(request.scope, ["include", "exclude"], "SCOPE");
-  if (!Array.isArray(request.scope.include) || request.scope.include.length === 0 || !Array.isArray(request.scope.exclude)) throw new Error("AGENT_BUILDER_SCOPE_INVALID");
-  if (!Array.isArray(request.source_refs) || request.source_refs.length === 0 || request.source_refs.some((ref) => typeof ref !== "string" || !/^(?:source:|sha256:)[a-zA-Z0-9._:-]+$/u.test(ref))) throw new Error("AGENT_BUILDER_PROVENANCE_INVALID");
+  nonEmptyUniqueStrings(request.scope.include, "SCOPE_INCLUDE");
+  nonEmptyUniqueStrings(request.scope.exclude, "SCOPE_EXCLUDE");
+  if (request.scope.include.length === 0 || request.scope.include.some((value) => request.scope.exclude.includes(value))) throw new Error("AGENT_BUILDER_SCOPE_INVALID");
+  nonEmptyUniqueStrings(request.source_refs, "PROVENANCE");
+  if (request.source_refs.length === 0 || request.source_refs.some((ref) => !/^(?:source:[a-zA-Z0-9](?:[a-zA-Z0-9._:-]*[a-zA-Z0-9])?|sha256:[a-f0-9]{64})$/u.test(ref))) throw new Error("AGENT_BUILDER_PROVENANCE_INVALID");
   exactKeys(request.budget, ["max_tokens", "projected_tokens"], "BUDGET");
   if (!Number.isSafeInteger(request.budget.max_tokens) || request.budget.max_tokens <= 0 || !Number.isSafeInteger(request.budget.projected_tokens) || request.budget.projected_tokens < 0 || request.budget.projected_tokens > request.budget.max_tokens) throw new Error("AGENT_BUILDER_BUDGET_INVALID");
-  if (!/^\d+\.\d+\.\d+$/u.test(request.version)) throw new Error("AGENT_BUILDER_VERSION_INVALID");
+  if (!/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/u.test(request.version)) throw new Error("AGENT_BUILDER_VERSION_INVALID");
   if (!Array.isArray(request.unknown_fields) || !Array.isArray(request.contradictions) || !Array.isArray(request.omissions)) throw new Error("AGENT_BUILDER_LEDGER_INVALID");
   if (request.unknown_fields.length > 0) throw new Error("AGENT_BUILDER_UNKNOWN_FIELD");
   if (request.contradictions.length > 0) throw new Error("AGENT_BUILDER_CONTRADICTION");
   if (request.omissions.length > 0) throw new Error("AGENT_BUILDER_OMISSION");
-  if (request.stale_source === true) throw new Error("AGENT_BUILDER_STALE_SOURCE");
+  if (request.stale_source !== false) throw new Error("AGENT_BUILDER_STALE_SOURCE");
   return {
     kind: "governance_context_candidate",
     schema: "agentos.integration.governance-candidate.v1",

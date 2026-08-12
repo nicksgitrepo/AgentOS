@@ -39,6 +39,8 @@ async function createGitProject(parent, name, imported = false) {
 const bootstrap = await combinedBootstrap();
 assertInactive(bootstrap);
 assert.equal(bootstrap.activation, "OFF");
+assert.equal(bootstrap.specialist_library.admitted_for_test_build, true);
+assert.equal(bootstrap.specialist_library.activation, "OFF");
 assert.equal(createAgentOS3Runtime({ projectRef: "ref_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", controlPlaneRef: "ref_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }).memory_enabled, false);
 assert.throws(() => createAgentOS3Runtime({ memoryEnabled: true, projectRef: "ref_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", controlPlaneRef: "ref_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }), /MEMORY_DEFAULT_OFF/);
 
@@ -103,6 +105,8 @@ const combined = await createAgentOS3TestBuild({ projectRef, controlPlaneRef, ca
 assert.equal(combined.activation, "OFF");
 assert.equal(combined.bootstrap.memory.enabled, false);
 assert.equal(combined.agent_builder.activation, "NOT_ACTIVATED");
+assert.equal(combined.specialist_library.activation, "OFF");
+assert.equal(combined.specialist_library.roster_sha256, "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08");
 assert.equal(combined.main_core.identity.candidate_commit, "029ccdb40efaeeae38ec1adabc6d3b44f5316310");
 
 const installed = await installBundle(BUNDLE, { projectRoot, companionRoot });

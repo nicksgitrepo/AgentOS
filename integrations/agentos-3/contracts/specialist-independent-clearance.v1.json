@@ -1,0 +1,23 @@
+{
+  "schema": "agentos.specialist_independent_utility_harm_clearance.v1",
+  "version": 1,
+  "candidate": { "commit": "edd6cb5012b052445d623923d304ff7e1906ca51", "tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb", "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08" },
+  "author_role": "SPECIALIST_BLOCK_LIBRARY_BUILDER",
+  "reviewer": { "reviewer_id": "agentos.release-independent-utility-harm-reviewer", "role": "INDEPENDENT_RELEASE_AUDITOR", "separate_from_author": true },
+  "authority": "READ_ONLY_INDEPENDENT_REVIEW;_NO_ADMISSION_ACTIVATION_DEPLOYMENT_OR_RELEASE_AUTHORITY",
+  "status": "PASS_PENDING_INTEGRATION_INTAKE",
+  "blocks_reviewed": 4,
+  "cases_reviewed": 68,
+  "route_verdicts": 12,
+  "deny_verdicts": 51,
+  "escalate_verdicts": 5,
+  "block_digests": [
+    { "block_id": "specialist.control.intent-regulator", "block_sha256": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d" },
+    { "block_id": "specialist.control.project-controller", "block_sha256": "f64d87b164eb10c27acc20bde40eadae24f9ad47adf689229029265a75f80113" },
+    { "block_id": "specialist.control.resource-scheduler", "block_sha256": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87" },
+    { "block_id": "specialist.control.runtime-deployment-operator", "block_sha256": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859" }
+  ],
+  "review_manifest_sha256": "366657337e4511691d58de86d8387e51df890839861f82bff69ee853fcc38ce9",
+  "residuals": ["Integration intake remains separate.", "Activation, deployment, migration, publication, and release promotion remain OFF."],
+  "clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"
+}

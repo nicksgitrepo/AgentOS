@@ -1,0 +1,17 @@
+{
+  "schema": "agentos.agent_builder_independent_utility_harm_clearance.v1",
+  "version": 1,
+  "candidate_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626",
+  "reviewer": { "reviewer_id": "agentos.release-independent-agent-builder-reviewer", "role": "INDEPENDENT_RELEASE_AUDITOR", "separate_from_author": true },
+  "authority": "READ_ONLY_INDEPENDENT_REVIEW;_NO_ADMISSION_ACTIVATION_DEPLOYMENT_OR_RELEASE_AUTHORITY",
+  "status": "PASS_FOR_INACTIVE_TEST_BUILD_INTAKE",
+  "static_task_ir": "PASS_7_OF_7",
+  "static_context_blocks": "PASS_13_OF_13",
+  "cases_reviewed": 14,
+  "pass_verdicts": 4,
+  "deny_verdicts": 10,
+  "cases_sha256": "577ad5d88d4aebcefe95813e341a3461b738f0bd185164915fee3d5e49750da5",
+  "evidence_ceiling": "DETERMINISTIC_COMPILER_UTILITY_AND_HARM;_NO_MODEL_QUALITY_DOMAIN_CERTIFICATION_OR_RUNTIME_ACTIVATION_CLAIM",
+  "residuals": ["Provider/model quality evaluation remains activation-time work.", "Admission, activation, deployment, migration, publication, and release promotion remain OFF."],
+  "clearance_sha256": "5cacf76b76e9dd9c34cb8df5e9138d346400543647180bb172e0f8c194df2e38"
+}

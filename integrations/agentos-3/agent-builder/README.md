@@ -16,7 +16,10 @@ This checkpoint answers the owner’s latest question—what the Agent Builder m
 - [Typed context-block JSON Schema](./context-block.schema.json): machine-validation contract for candidate and admitted blocks.
 - [Typed interface](./context-block.interface.ts): readable TypeScript interface and typed handoff shapes.
 - [Source, provenance, and refresh policy](./source-provenance-refresh-policy.md): authority labels, confidence ceilings, provenance fields, refresh cadence, and invalidation rules.
-- [Agent Builder governance/bootstrap packet](./agent-builder-bootstrap.md): exact role, inputs, source authority, Task IR/block compilation, authority separation, capability ceilings, handoffs, lifecycle, refresh, and archive rules.
+- Agent Builder governance/bootstrap packet: retained only in the private source
+  package because it contains private source identity; the sanitized executable
+  boundary is represented by the typed schemas, adapter, and integration
+  receipts in this release candidate.
 - [Evaluation plan](./evaluation-plan.md): positive, negative, adversarial, stale, contradictory, bloat, compatibility, provenance, false-expertise, and skills-help-vs-harm tests with independent admission gates.
 - [Three-layer product model](./product-layer-model.md): one-way research dossier → admitted knowledge store → runtime context block provenance, admission, invalidation, privacy, and capability boundaries.
 - [Typed Task IR / Task Packet schema](./task-ir.schema.json): typed fields, conditional constraints, constraint-resolution milestones, and candidate-only lifecycle.
@@ -26,7 +29,8 @@ This checkpoint answers the owner’s latest question—what the Agent Builder m
 - [Context-block semantic validator](./validate_context_blocks.py): local fail-closed proof for authority grants, stale sources, provenance/scope/version/digest, duplicate IDs, candidate lifecycle, protected data, and progressive-loading budgets.
 - [Context-block fixtures](./fixtures/context-block/): one valid and twelve representative invalid instances.
 - [Evaluation receipt](./evaluation-receipt.md): exact correction results and independent-rerun boundary.
-- [Owner-intent register](./owner-intent-register.md): source-thread identity, preserved design decisions, and explicit treatment of non-authoritative chat artifacts.
+- Owner-intent register: deliberately excluded from this public projection;
+  owner source identity remains private and contributes no runtime authority.
 
 ## What this checkpoint does not do
 
