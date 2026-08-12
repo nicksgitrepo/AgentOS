@@ -100,8 +100,8 @@ function assertGitObject(value, label) {
   if (typeof value !== "string" || !GIT_OBJECT.test(value)) fail("INVALID_INPUT", `${label} must be a 40-character object identity`);
 }
 
-function sortedUnique(values, label) {
-  if (!Array.isArray(values) || values.some((value) => typeof value !== "string" || value.trim().length === 0)) fail("INVALID_INPUT", `${label} must be a nonempty string array`);
+function sortedUnique(values, label, {minItems = 0} = {}) {
+  if (!Array.isArray(values) || values.length < minItems || values.some((value) => typeof value !== "string" || value.trim().length === 0)) fail("INVALID_INPUT", `${label} must be a sorted string array with at least ${minItems} item(s)`);
   const sorted = [...values].sort();
   if (JSON.stringify(values) !== JSON.stringify(sorted) || new Set(values).size !== values.length) fail("INVALID_INPUT", `${label} must be sorted and unique`);
   return values;
@@ -132,16 +132,19 @@ function secretFree(value, label) {
 
 function identity(value, label, {allowStatus = false} = {}) {
   assertRecord(value, label);
-  for (const field of ["identity", "version", "digest"]) assertString(value[field], `${label}.${field}`);
+  const id = value.id ?? value.identity;
+  assertString(id, `${label}.id`);
+  assertString(value.version, `${label}.version`);
   assertDigest(value.digest, `${label}.digest`);
   if (allowStatus) {
     if (!["COMPLETE", "FRESH", "BOUND", "UNKNOWN"].includes(value.status)) fail("INVALID_INPUT", `${label}.status is invalid`);
   }
-  return {identity: value.identity, version: value.version, digest: value.digest, ...(allowStatus ? {authority: value.authority, status: value.status} : {})};
+  return {id, version: value.version, digest: value.digest, ...(allowStatus ? {authority: value.authority, status: value.status} : {})};
 }
 
 function refIdentity(value, label) {
-  return identity(value, label, {allowStatus: true});
+  const normalized = identity(value, label, {allowStatus: true});
+  return {identity: normalized.id, version: normalized.version, digest: normalized.digest, authority: normalized.authority, status: normalized.status};
 }
 
 function inferLayer(block) {
@@ -247,7 +250,7 @@ function validateRecipe(recipe) {
   if (!/^[0-9]+\.[0-9]+\.[0-9]+$/u.test(recipe.version)) fail("INVALID_RECIPE", "recipe.version must be semantic");
   const required = [...(recipe.required_block_ids ?? recipe.block_ids ?? [])].sort();
   if (required.length === 0) fail("INVALID_RECIPE", "recipe has no required reusable blocks");
-  sortedUnique(required, "recipe.required_block_ids");
+  sortedUnique(required, "recipe.required_block_ids", {minItems: 1});
   const atomic = [...(recipe.required_atomic_blocks ?? [])].sort();
   const standards = [...(recipe.required_standard_blocks ?? [])].sort();
   sortedUnique(atomic, "recipe.required_atomic_blocks");
@@ -277,7 +280,7 @@ function validateTask(task, recipe) {
   assertRecord(task, "task");
   for (const field of ["lane", "goal", "outcome"]) assertString(task[field], `task.${field}`);
   const nonGoals = [...(task.non_goals ?? [])].sort();
-  sortedUnique(nonGoals, "task.non_goals");
+  sortedUnique(nonGoals, "task.non_goals", {minItems: 1});
   const ownerIntent = identity(task.owner_intent, "task.owner_intent");
   const selected = [...(task.selected_block_ids ?? recipe.required_block_ids)].sort();
   sortedUnique(selected, "task.selected_block_ids");
@@ -295,7 +298,7 @@ function validateExternal(external, requiredContextFields) {
   if (projectGovernance.status !== "COMPLETE") fail("MISSING_PROJECT_GOVERNANCE", "external project governance is not complete");
   if (freshness.status !== "FRESH") fail("STALE_EXTERNAL_EVIDENCE", "external freshness overlay is not fresh");
   assertRecord(external.context, "external.context");
-  for (const field of ["identity", "version", "digest", "completeness", "corpus_authority"]) assertString(external.context[field], `external.context.${field}`);
+  for (const field of ["identity", "version", "completeness"]) assertString(external.context[field], `external.context.${field}`);
   assertDigest(external.context.digest, "external.context.digest");
   if (external.context.completeness !== "COMPLETE") fail("INCOMPLETE_CONTEXT", "external current context is incomplete");
   const contextFields = [...(external.context.field_ids ?? [])].sort();
@@ -324,7 +327,7 @@ function validateExternal(external, requiredContextFields) {
     custody,
     freshness,
   };
-  return {projectGovernance, candidate, freshness, worktree, custody, corpusAuthority, contextFields, binding, capabilities: external.capabilities};
+  return {projectGovernance, context: external.context, candidate, freshness, worktree, custody, corpusAuthority, contextFields, binding, capabilities: external.capabilities};
 }
 
 function recipeIdentity(recipe) {
@@ -427,7 +430,7 @@ function blockReference(block, reason) {
 
 function buildAuthorityGraph({task, recipe, selectedBlocks, external, library, recipeRef}) {
   const nodes = [
-    {node_id: "authority.owner-intent", kind: "OWNER_INTENT", identity: task.owner_intent.identity, allowed: ["define bounded task intent"], forbidden: ["override hard safety/custody controls", "self-accept the generated agent"], maximum_authority: "BOUNDED_OWNER_INTENT_ONLY"},
+    {node_id: "authority.owner-intent", kind: "OWNER_INTENT", identity: task.owner_intent.id, allowed: ["define bounded task intent"], forbidden: ["override hard safety/custody controls", "self-accept the generated agent"], maximum_authority: "BOUNDED_OWNER_INTENT_ONLY"},
     {node_id: "authority.agentos-governance", kind: "GENERAL_AGENTOS_GOVERNANCE", identity: library.id, allowed: ["portable governance and lifecycle constraints"], forbidden: ["consumer Product facts", "provider activation", "self-admission"], maximum_authority: "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE"},
     {node_id: "authority.external-project-governance", kind: "EXTERNAL_PROJECT_GOVERNANCE", identity: external.projectGovernance.identity, allowed: ["typed external project governance overlay"], forbidden: ["become portable-library normative content", "expand the recipe silently"], maximum_authority: "EXTERNAL_TYPED_OVERLAY_ONLY"},
     {node_id: "authority.task-role", kind: "TASK_ROLE_AUTHORITY", identity: recipeRef.id, allowed: ["select the declared task-shaped recipe"], forbidden: ["substitute a broad router for an atomic specialist", "add undeclared authority"], maximum_authority: "RECIPE_BOUNDED_SELECTION_ONLY"},

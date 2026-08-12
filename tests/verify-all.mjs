@@ -230,6 +230,7 @@ const run = (relativePath) => {
 };
 for (const relativePath of [
   "tests/verify-specialist-block-library.mjs",
+  "tests/verify-specialist-agent-compiler.mjs",
   "tests/verify-campaign-controller.mjs",
   "tests/verify-campaign-policy-reconcile.mjs",
   "tests/verify-campaign-cascade.mjs",

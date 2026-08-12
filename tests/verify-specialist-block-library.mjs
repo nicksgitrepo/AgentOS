@@ -24,13 +24,13 @@ const second = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: f
 assert.deepEqual(first.roster, second.roster, "specialist roster compilation is not deterministic");
 assert.deepEqual(first.routing, second.routing, "specialist routing compilation is not deterministic");
 assert.deepEqual(first.inventory, second.inventory, "specialist inventory materialization is not deterministic");
-assert.equal(first.records.length, 7, "Wave 0 foundation package count is wrong");
+assert.equal(first.records.length, 13, "foundation plus exact six P0 package count is wrong");
 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 assert.equal(library.roster.activation, "OFF");
 assert.equal(library.roster.lifecycle ?? "NOT_ADMITTED", "NOT_ADMITTED");
 assert.equal(library.roster.blocks.every((block) => block.lifecycle === "NOT_ADMITTED" && block.role_kind === "CONTROL_PLANE"), true);
-assert.deepEqual(library.inventory.counts, {ROUTER: 626, ATOMIC_SPECIALIST: 79, CONTROL_PLANE: 13});
+assert.deepEqual(library.inventory.counts, {ROUTER: 626, CONTROL_PLANE: 13, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 79, COMPILED_AGENT_PACKAGE: 0});
 assert.equal(library.inventory.entries.length, 619);
 
 for (const record of first.records) {

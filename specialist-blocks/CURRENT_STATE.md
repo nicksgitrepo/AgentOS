@@ -28,13 +28,40 @@ and the protected Memory lane are read-only or out of scope.
 
 - Raw role mentions retained: `625`.
 - Unique role titles retained: `619`.
-- Explicit duplicate/alias mappings: `9`.
+- Explicit duplicate/alias mappings: `10`.
 - Inventory source: `registry/master-inventory.v1.json`.
 - Required materialization fields: canonical ID, aliases, family/subfamily,
   purpose, triggers, exclusions, dependencies, conflicts, source requirements,
   freshness policy, priority score, gate status/path, schema/package status,
   evaluator status/receipt, and lifecycle.
 - No role is removed for priority; P0–P4 ranks control sequencing only.
+
+## On-demand compiler shape
+
+The library is a registry of addressable recipes and reusable immutable blocks;
+it does not contain a permanent flat catalog of finished agents. A task-shaped
+agent is compiled only when an external lane supplies owner intent, typed
+project governance, current context, candidate/worktree custody, capabilities,
+and proof overlay.
+
+Composition layers are ordered as: owner intent and authority; general AgentOS
+governance; external project governance; task/role authority;
+language/runtime/framework; architecture/platform; domain/capability;
+requirements/product quality; security/privacy/safety; testing/review;
+change/version/release/supply chain; and exact external project context.
+
+The deterministic compiler emits `agent-plan.json`, `block-lock.json`,
+`authority-graph.json`, `context-manifest.json`, `decision-tree.gate`,
+`proof-matrix.json`, `handoff.schema.json`, `evaluation-receipt.json`, and a
+generated `bootstrap.md` view. Generated instances are external companion
+artifacts only; `bootstrap.md` is never the authority and cannot be edited as a
+standalone contract.
+
+Current materialized role-kind counts are `ROUTER: 626`,
+`CONTROL_PLANE: 13`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
+`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`, and
+`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `7` routers,
+`79` atomic specialists, and `13` control-plane roles.
 
 ## Wave law
 
@@ -68,16 +95,15 @@ remain external gates.
 
 ## Next controller actions
 
-1. Compile Wave 0 foundation blocks and the deterministic loader.
-2. Activate the six lanes and collect typed handoffs.
-3. Run serialized hostile validation, materialize the roster and routing index,
-   and reject any block that fails narrowness, freshness, authority, custody,
-   applicability, or handoff checks.
-4. Commit only the clean candidate and issue the exact typed integration handoff.
+1. Run independent utility/harm evaluation over the six P0 candidate packages.
+2. Re-run the full admission matrix, including source freshness, authority,
+   custody, atomicity, routing, and typed-handoff checks.
+3. Send the exact isolated receipt to the main AgentOS 3.0 integration owner;
+   do not merge, activate, deploy, or adopt a consumer project from this lane.
 
 ## Turn-bound recovery checkpoint — 2026-08-11
 
-- Inventory receipt: `625` raw role mentions, `619` unique role titles, `9`
+- Inventory receipt: `625` raw role mentions, `619` unique role titles, `10`
   explicit alias mappings; no lower-priority role was discarded.
 - Shared schema changes persisted: specialist block, gate, roster, routing,
   evaluation, handoff, and source-manifest schemas; block controls now declare
@@ -144,3 +170,36 @@ remain external gates.
 - The exact six reserved child identities were reassigned to P0 with disjoint
   package scopes under `specialist-blocks/wave-01/`; no shared file is in their
   write set. P1–P6 remain planned and inactive.
+
+## Current verified receipt — composition and P0 candidate
+
+- `node control/specialist-block-compiler.mjs compile` validates `13` package
+  records: seven foundation packages plus the exact six P0 packages. The
+  generated roster remains `COMPILED_CANDIDATE` with activation `OFF`.
+- `node tests/verify-specialist-block-library.mjs` passes deterministic
+  materialization, inactive admission state, atomic routing, exact 12-gate
+  packs, four-valued gate behavior, and hostile fixture catalog checks.
+- `node tests/verify-specialist-agent-compiler.mjs` passes three external
+  task-shaped package generations, shared immutable standard hash reuse,
+  distinct lane/context package hashes, minimal dependency closure, missing
+  context/authority denial, stale-source denial, conflicting-edition denial,
+  atomic-over-router denial, unsafe-authority denial, machine/bootstrap
+  reflection, byte-stable recompile, package mutation detection, and zero
+  AgentOS repository residue.
+- The aggregate machine handoff is
+  `registry/integration-handoff.v1.json`; the human view is
+  `INTEGRATION_HANDOFF.md`. The disposition remains `WAITING_WITH_RECEIPT`.
+- The exact six P0 lanes each have a candidate package and typed handoff; their
+  independent utility/harm and admission receipts remain outstanding. No P1–P6
+  lane is active.
+- Reuse law is enforced by `block-lock.json`: exact block ID/version/hash and
+  source-lock identity are referenced once; task applicability stays in the
+  external context overlay. A material edition, erratum, or gate correction
+  requires a new immutable block version.
+- Host-pressure ceiling remains recorded: canonical scheduler `JOB-407` is
+  `RUNNING` at swap `5.5/6 GiB`; no heavyweight proof, activation, deployment,
+  provider action, consumer migration, or self-admission occurred.
+- The next cursor is independent utility/harm evaluation of the six P0 package
+  candidates, followed by main AgentOS 3.0 owner intake only if every required
+  admission gate passes. The source package, active integration worktree, and
+  protected Memory lane remain untouched.

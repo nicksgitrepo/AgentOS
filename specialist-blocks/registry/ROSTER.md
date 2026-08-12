@@ -1,9 +1,10 @@
 # Canonical Specialist Roster — Candidate Inactive
 
 The machine-readable source of the full backlog is
-`master-inventory.v1.json`. The generic adopter-neutral priority overlay is
-`priority-roster.v1.json`. The compiled canonical block roster and routing
-index are generated only after package validation.
+`master-inventory.v1.json`. The generic priority overlay is
+`priority-roster.v1.json`, and addressable on-demand recipes are in
+`recipe-catalog.v1.json`. The compiled canonical block roster and routing index
+are generated only after package validation.
 
 ## Status and activation
 
@@ -13,6 +14,46 @@ index are generated only after package validation.
   evaluation passes.
 - Memory Systems: protected lane; no ordinary block implementation or internal
   direction is included here.
+
+## Product shape: recipes and reusable blocks
+
+The primary product is the registry/compiler, not a set of permanent agents or
+hand-maintained prompt files. The on-demand compiler resolves the smallest
+dependency-complete set of immutable blocks, adds external typed project
+governance and current context, binds candidate/worktree custody and tools,
+builds a dependency-aware four-valued gate DAG, and emits a task-shaped
+instance only in an external companion workspace.
+
+Every generated instance contains the eight machine contracts
+`agent-plan.json`, `block-lock.json`, `authority-graph.json`,
+`context-manifest.json`, `decision-tree.gate`, `proof-matrix.json`,
+`handoff.schema.json`, and `evaluation-receipt.json`, plus generated
+`bootstrap.md`. The machine contracts and package hash are authoritative;
+`bootstrap.md` is a read-only generated view.
+
+The composition layers are, in order: owner intent and authority; general
+AgentOS governance; external project governance; task/role authority;
+language/runtime/framework; architecture/platform; domain/capability;
+requirements/product quality; security/privacy/safety; testing/review;
+change/version/release/supply chain; exact external project context.
+
+The materialized roster distinguishes these role kinds:
+
+- `ROUTER` — classifies and assembles context only;
+- `CONTROL_PLANE` — portable governance mechanics;
+- `KNOWLEDGE_BLOCK` — reusable scoped knowledge;
+- `GOVERNANCE_BLOCK` — reusable governance constraints;
+- `STANDARD_BLOCK` — immutable version-bound authority reused by hash;
+- `CONTEXT_BLOCK` — typed context contract only;
+- `ATOMIC_SPECIALIST` — one narrow failure/evidence domain;
+- `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
+  roster agent.
+
+Current materialized counts are `ROUTER: 626`, `CONTROL_PLANE: 13`,
+`KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
+`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`, and
+`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
+`7` routers, `79` atomic specialists, and `13` control-plane roles.
 
 ## Mandatory package contract
 
@@ -47,7 +88,7 @@ P0 is the only active priority wave. It has six lanes: `AGENT.BOOTSTRAP`,
 `AGENT.INDEPENDENT_AUDITOR`. All P1–P6 entries remain planned until the
 foundation and preceding wave receipts exist.
 
-The full inventory retains 625 role mentions and 619 unique titles, with
+The full inventory retains 625 role mentions and 619 unique titles, with 10
 explicit duplicate/alias mappings. Priority changes sequencing, not existence.
 
 ## Atomicity counts
@@ -65,3 +106,17 @@ tool/data custody, or failure mode differs. The overlay preserves distinct
 current-version OWASP web/API categories, access-control modes, concurrency
 hazards, supply-chain concerns, provider/edge capabilities, and the generic
 priority atomic candidates.
+
+## Reuse and applicability lock
+
+Each exact standard or stable authority is encoded once per exact version as a
+content-addressed reusable `STANDARD_BLOCK`. Compiled agents reference its
+exact ID/version/hash in `block-lock.json`; they do not copy or regenerate the
+block. Task applicability, freshness receipts, project facts, and current
+evidence remain external overlays. New editions, material errata, or normative
+gate corrections create new block versions with compatibility/supersession
+metadata. A non-material publisher refresh creates a freshness receipt only.
+
+The aggregate typed handoff is `registry/integration-handoff.v1.json` with its
+human-readable companion `INTEGRATION_HANDOFF.md`; its current disposition is
+`WAITING_WITH_RECEIPT`.

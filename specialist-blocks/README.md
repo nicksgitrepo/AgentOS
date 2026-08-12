@@ -27,6 +27,18 @@ content digests, materializes the master inventory, and emits the canonical
 roster and routing index. All generated records remain inactive until an
 independent authority admits them.
 
+The on-demand bootstrap compiler in
+`control/specialist-agent-compiler.mjs` composes recipes and immutable blocks
+into a task-shaped agent package. It writes only to an external companion or
+isolated governed agent workspace and emits the eight machine contracts plus a
+generated `bootstrap.md` view. The registry stores recipes and reusable block
+references, never permanent task agents.
+
+`registry/recipe-catalog.v1.json` contains the first six P0 control-plane
+recipes. `registry/integration-handoff.v1.json` and
+`INTEGRATION_HANDOFF.md` carry the exact isolated-candidate disposition and
+unfinished admission gates.
+
 `registry/master-inventory.v1.json` is the durable Fortune-500-scale backlog.
 Its raw role mentions are preserved, and alias mappings explain only exact or
 near-exact duplicates. The highest-value waves are sequenced by cross-project
