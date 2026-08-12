@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `ec68722f00508ee0842ffea86c79748797cc4fc3`
-- Candidate tree: `a4c410fd1e208f5b1b08f116911c6678fb86f529`
+- Candidate commit: `df4dca769214a40541b8b7adac1d43ee1a23739d`
+- Candidate tree: `4928312e993829a95727279333ad44ac26237f08`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
@@ -38,6 +38,9 @@ attached as a separate immutable receipt commit.
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS
   repository residue.
+- The separate read-only independent evaluator passes all 13 package candidates,
+  156 gate files, and 221 hostile fixtures. Its disposition is
+  `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 
 ## Unfinished admission gates
 
