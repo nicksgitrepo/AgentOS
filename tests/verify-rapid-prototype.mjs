@@ -258,6 +258,46 @@ assert.deepEqual(calls, [
   ["list_threads", {}],
 ]);
 
+const nestedCalls = [];
+const nestedAuthorityInput = baseInput(nestedCalls);
+nestedAuthorityInput.roleAdmission = {
+  ...ROLE_ADMISSION,
+  sessionIdentity: {
+    session_id: ROLE_ADMISSION.sessionIdentity.sessionId,
+    project_id: SOURCE.project_id,
+    cwd: SOURCE.cwd,
+    verified: true,
+    real: true,
+    hostReadback: true,
+  },
+};
+nestedAuthorityInput.host_authority = {
+  authority: "NATIVE_SESSION_HOST_READBACK",
+  status: "MATCH",
+  verified: true,
+  role: RAPID_PROTOTYPE_ROLE,
+  session_id: ROLE_ADMISSION.sessionIdentity.sessionId,
+  thread_id: THREAD_ID,
+  host_id: HOST_ID,
+  capabilities: ["local_check"],
+  source_readback: {
+    project_id: SOURCE.project_id,
+    cwd: SOURCE.cwd,
+    git_top_level: SOURCE.git_top_level,
+    source_commit: SOURCE.source_commit,
+    source_tree: SOURCE.source_tree,
+  },
+  project_identity: {
+    project_id: SOURCE.project_id,
+    project_root: SOURCE.cwd,
+    git_top_level: SOURCE.git_top_level,
+    environment: "LOCAL_PROJECT",
+  },
+};
+const nestedAuthorityReady = await runRapidPrototype(nestedAuthorityInput);
+assert.equal(nestedAuthorityReady.status, "READY_FOR_INDEPENDENT_CLEARANCE");
+assert.equal(nestedAuthorityReady.evidence_authority.status, "VERIFIED");
+
 const decisionIds = ready.decision_matrix.map(({id}) => id);
 assert.deepEqual(decisionIds, ["READY", "QUESTION", "PUZZLE", "SOFT_REVIEW", "UNAVAILABLE", "HARD_STOP"]);
 assert.equal(ready.decision_matrix[0].surface.status, "ready");

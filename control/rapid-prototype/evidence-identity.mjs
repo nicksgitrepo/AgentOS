@@ -122,7 +122,7 @@ export function verifyHostAuthority({input = {}, source = {}, suppliedRole = {}}
     ?? input.requiredCapabilities
     ?? ["local_check"];
   const expectedProject = suppliedRole.expectedProject;
-  const expectedSession = suppliedRole.sessionIdentity?.sessionId;
+  const expectedSession = firstDefined(suppliedRole.sessionIdentity ?? {}, ["sessionId", "session_id", "threadId", "thread_id", "hostId", "host_id", "id"]);
   const expectedThread = closure.threadId ?? closure.thread_id ?? input.threadId ?? input.thread_id;
   const expectedHost = closure.hostId ?? closure.host_id ?? input.hostId ?? input.host_id;
   const identifiers = [proofProject, proofRole, proofSession, proofThread, proofHost, ...sourceFields.map(([, names]) => firstDefined(sourceReadback, names))];

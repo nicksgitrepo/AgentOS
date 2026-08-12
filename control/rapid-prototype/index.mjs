@@ -254,6 +254,7 @@ function roleOptions(input, source) {
   const expectedCwd = firstDefined(supplied, ["expectedCwd", "expected_cwd"], sourceValue(source.expected, ["cwd", "working_directory", "workingDirectory"], DEFAULT_SOURCE_BINDING.cwd));
   const capabilities = input.capabilities ?? input.availableCapabilities ?? ["local_check"];
   const hostAuthority = input.host_authority ?? input.hostAuthority ?? input.nativeHostReadback ?? {};
+  const authoritySourceReadback = hostAuthority.source_readback ?? hostAuthority.sourceReadback ?? hostAuthority;
   const sessionIdentity = firstDefined(supplied, ["sessionIdentity", "session_identity"], {
     ...DEFAULT_ROLE_IDENTITY,
     projectId: expectedProject,
@@ -273,8 +274,8 @@ function roleOptions(input, source) {
       capabilities: [...capabilities],
     },
     hostReadback: supplied.hostReadback ?? supplied.host_readback ?? {
-      project_id: sourceValue(source.observed, ["project_id", "projectId", "project"]),
-      cwd: sourceValue(source.observed, ["cwd", "working_directory", "workingDirectory"]),
+      project_id: sourceValue(authoritySourceReadback, ["project_id", "projectId", "project"]),
+      cwd: sourceValue(authoritySourceReadback, ["cwd", "pwd", "working_directory", "workingDirectory"]),
       capabilities: Array.isArray(hostAuthority.capabilities) ? [...hostAuthority.capabilities] : [],
       status: hostAuthority.status,
       verified: hostAuthority.verified,

@@ -12,6 +12,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import {pathToFileURL} from "node:url";
 import {
   compileCampaignPolicyProjection,
   reconcileCampaignPolicy,
@@ -1196,7 +1197,7 @@ export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, s
   return {state, persistence, host_readbacks: Object.fromEntries(prepared)};
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] !== undefined && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync.native(path.resolve(process.argv[1]))).href) {
   const [command, statePath] = process.argv.slice(2);
   if (!command || !statePath || command !== "validate") throw new Error("usage: agentos-controller validate <state.json>");
   const state = JSON.parse(fs.readFileSync(statePath, "utf8"));

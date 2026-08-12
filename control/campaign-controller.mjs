@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import {pathToFileURL} from "node:url";
 import {
   acquirePlatformLease,
   adoptFinalizerRoot,
@@ -318,7 +319,7 @@ function main() {
   throw new Error(`unknown campaign controller command: ${command}`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] !== undefined && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync.native(path.resolve(process.argv[1]))).href) {
   try {
     main();
   } catch (error) {

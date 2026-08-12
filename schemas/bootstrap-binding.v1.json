@@ -322,7 +322,7 @@
     },
     "legacy_preservation": {
       "path": "control/legacy-preservation.mjs",
-      "sha256": "985c1e63bd972f8c067a338bbf5f5c9163434a0c6efb9dd02f60759a00c56a9e"
+      "sha256": "19ee3fd43e52a1ff1c6d03a0ed92fd5f07971493b4413a4f4115fd3753ae412b"
     },
     "legacy_preservation_contract": {
       "path": "schemas/legacy-preservation.v1.json",
@@ -338,7 +338,7 @@
     },
     "campaign_controller": {
       "path": "control/campaign-controller.mjs",
-      "sha256": "741977ac72a7545d6e76377df735a7b6c026b46ee9593f3c72babbf091c4dcc9"
+      "sha256": "c49bdf6caa186cee03dfe7e171b2fc64a83a7267854922f4c31ff49d81b6ea07"
     },
     "campaign_receipts_controller": {
       "path": "control/campaign-receipts.mjs",
@@ -538,7 +538,7 @@
     },
     "agentos_controller": {
       "path": "control/agentos-controller.mjs",
-      "sha256": "3ad27f39fe3b1182dc40e8860d375071848dfff6e1a68784651597751f1511fc"
+      "sha256": "f92131f04f515445ce18fdda9d31079f122dcdbe1ac0938270735d1844d0ff23"
     },
     "controller_role_display": {
       "path": "control/controller-role-display.mjs",
@@ -566,7 +566,7 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "afd9c70746bd96e8f7664e7b3b29795866e66b826a74f55af495b1131e9a176e"
+      "sha256": "ed3163e68c4156056ac8bd43676bfcef4348e5879c1ee6146ee7517332608859"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
@@ -582,7 +582,7 @@
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",
-      "sha256": "bd0328ebfa6c93e4543ef902871d440c1bf56db5c8ec245187eb5dcaaaa48c14"
+      "sha256": "026b64d18108d34d3208e259c5f14cb0f7a618c8d56a316fca7b4030008eb23f"
     },
     "local_agent_session_contract": {
       "path": "schemas/local-agent-session.v1.json",
@@ -678,7 +678,7 @@
     },
     "rapid_prototype_workflow_controller": {
       "path": "control/rapid-prototype-workflow.mjs",
-      "sha256": "bc79d38c6cde0fb001804f1133ecd50730d23e0e4ef6c524383badd166f3b460"
+      "sha256": "4c88698e66efcfff40bda7617df0f022b5c49a721a5a7fbd5bd65de02461bbcd"
     },
     "rapid_prototype_workflow_contract": {
       "path": "schemas/rapid-prototype-workflow.v1.json",
@@ -1142,7 +1142,7 @@
     },
     "rapid_prototype_controller": {
       "path": "control/rapid-prototype/index.mjs",
-      "sha256": "edac1b79d6478ac30537604b0f3e8129607ca15b6a47fc9d760836292d4e94ab"
+      "sha256": "6733fdb151c9131b2a4eff8baafe91231ada4310b7e3385e13f30aa9436e8c22"
     },
     "rapid_delivery_closure_controller": {
       "path": "control/rapid-prototype/delivery-closure.mjs",
@@ -1154,7 +1154,7 @@
     },
     "rapid_evidence_identity_controller": {
       "path": "control/rapid-prototype/evidence-identity.mjs",
-      "sha256": "7e9e393a13285741e330334fcca759da4866f0b96c8f6ac51d4e0d2584182e4e"
+      "sha256": "7fb258f7d25d85f03ae0a79c1db2e7f405065615d975f21b52d6dc2578c34caf"
     },
     "rapid_evidence_identity_verifier": {
       "path": "tests/rapid-prototype/evidence-identity.mjs",
@@ -1162,7 +1162,15 @@
     },
     "rapid_prototype_verifier": {
       "path": "tests/verify-rapid-prototype.mjs",
-      "sha256": "c4d45ac42545a0cbfdf1b58c9550b39ee7b081c3b3e5fa59756349f6a9895bcc"
+      "sha256": "68e04c41e1146b5c9b324f21ffe2f95d5203f5a0fb75d4dd7587ca1e29f681fb"
+    },
+    "public_kernel_surface_verifier": {
+      "path": "tests/verify-public-kernel-surface.mjs",
+      "sha256": "801f5524a3758ec51583b82b775a91f6b2be0c0d00c9f5087bfb7260dceee9f7"
+    },
+    "pre_live_fine_tooth_audit": {
+      "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
+      "sha256": "e3863d7ba1aced9a1dc32c87e9ce044ee92e9279c9af1faffef26d68147d19df"
     },
     "workflow_article": {
       "path": "governance/2.1rc/feature-platform-workflow.md",
@@ -1931,7 +1939,7 @@
     },
     "local_start_controller": {
       "path": "control/start-local-self-development.mjs",
-      "sha256": "42cbb36b811e52fbcc7d742c30071ae907a6f5e4a277b5d40d58d5ffb819e753"
+      "sha256": "a5118061b090c4af5527d98c4e5dd1f96688e8ab37493f05423ad6971fd0a34b"
     },
     "codex_native_host_adapter_controller": {
       "path": "control/codex-native-host-adapter.mjs",

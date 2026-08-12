@@ -80,6 +80,9 @@ rejects("missing source binding", {sourceBinding: undefined}, /source binding an
 rejects("missing capability binding", {requiredCapabilities: undefined}, /capability binding is required/u);
 rejects("foreign source readback", {hostReadback: {...hostReadback, projectId: "PROJECT-BETA"}}, /source binding does not match/u);
 rejects("capability mismatch", {hostReadback: {...hostReadback, capabilities: ["foreign_capability"]}}, /source capabilities differ/u);
+rejects("duplicate source capability", {sourceBinding: {...sourceBinding, capabilities: ["local_check", "local_check"]}}, /capabilities contain duplicates/u);
+rejects("duplicate host capability", {hostReadback: {...hostReadback, capabilities: ["local_check", "local_check"]}}, /capabilities contain duplicates/u);
+rejects("duplicate required capability", {requiredCapabilities: ["local_check", "local_check"]}, /capabilities contain duplicates/u);
 rejects("missing project readback", {sessionIdentity: {sessionId: "SESSION-1", cwd: expectedCwd, verified: true, real: true, hostReadback: true}}, /project is missing/u);
 rejects("missing cwd readback", {sessionIdentity: {sessionId: "SESSION-1", projectId: expectedProject, verified: true, real: true, hostReadback: true}}, /cwd is missing/u);
 rejects("parent-child topology", {topology: "PARENT_CHILD"}, /forbidden topology/u);

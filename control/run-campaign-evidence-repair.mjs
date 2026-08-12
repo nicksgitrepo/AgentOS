@@ -378,7 +378,7 @@ async function run(repoRoot) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] !== undefined && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync.native(path.resolve(process.argv[1]))).href) {
   const repoRoot = path.resolve(process.argv[2] ?? process.cwd());
   run(repoRoot).catch((error) => {
     process.stderr.write(`${error.stack ?? error.message}\n`);
