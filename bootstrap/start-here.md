@@ -99,7 +99,7 @@ explicitly approves rapid development. Existing worktrees are adopted only
 after their handoffs and dirty state are preserved; they are never silently
 deleted or treated as fresh clean candidates.
 
-Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, CI/hosting/deployment markers, local Git state, and available local tools. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
+Discovery is secret-free, read-only, root-contained, and deterministic. It may inspect repository shape, source markers, authority/design candidates, CI/hosting/deployment markers, local Git state, and available local tools. It also records nested Git repository topology without traversing Git object stores or following symlinks. A parent containing nested repositories is a multi-repository project root; it cannot be treated as a new project or silently marked import-not-applicable. Bootstrap asks for the project-composition/import decision before any source-preservation or import work. It never authenticates, stores credentials, spends money, publishes, deploys, deletes, or mutates the source.
 
 ## Questions
 

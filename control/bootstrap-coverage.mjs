@@ -183,7 +183,8 @@ function ownerRow(definitionRecord, answerId, answers, reason, gaps = []) {
 }
 
 function projectImportSignal(discovery) {
-  return hasSignal(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u);
+  return hasSignal(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u)
+    || discovery.some((fact) => fact && /^repositories\.nested\./u.test(fact.fact_id ?? ""));
 }
 
 function projectImportGaps(answer) {
@@ -224,7 +225,10 @@ function compileRows(discovery, answers) {
     ? {
       source_kind: answerPresent(answers, "project.import") ? "OWNER_INPUT" : "UNRESOLVED_OWNER_BOUNDARY",
       source_refs: ["project.import"],
-      discovery_inputs: factIds(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u),
+      discovery_inputs: [
+        ...factIds(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u),
+        ...factIds(discovery, /^repositories\.nested\./u, ["OBSERVED_FACT", "CONFLICT", "UNKNOWN"]),
+      ].sort(compareUtf8),
       status: importGaps.length === 0 ? "OWNER_CONFIRMED" : "OWNER_REQUIRED",
       blocking: importGaps.length > 0,
       reason: importGaps.length === 0 ? "PROJECT_IMPORT_MODE_AND_SEPARATE_SOURCE_CONTEXT_BOUND" : importGaps.join("+"),

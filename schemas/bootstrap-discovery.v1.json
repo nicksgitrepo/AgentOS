@@ -54,6 +54,7 @@
       "project-root containment",
       "filesystem shape and regular-file markers",
       "local Git repository identity and origin shape",
+      "nested Git repository topology without traversing Git metadata or following links",
       "installed local tool metadata without invoking provider authentication",
       "authority, design, stack, CI, hosting, deployment, source-control, and delivery-policy marker presence"
     ],

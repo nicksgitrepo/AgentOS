@@ -3,6 +3,12 @@
 Status: `PREPARED_NOT_ACTIVATED`
 
 Project import is one typed Bootstrap decision, not a second operating system.
+When discovery finds a parent containing nested Git repositories, the parent is
+treated as a multi-repository project composition. Bootstrap records each nested
+repository path as a separate observed identity and requires an explicit owner
+choice to govern the composition or split it into separate projects. It may not
+classify that parent as `PROJECT_IMPORT_NOT_APPLICABLE` merely because the parent
+directory itself is not a Git repository.
 The available modes are:
 
 | Mode | Meaning |

@@ -59,6 +59,19 @@ const DELIVERY_MARKERS = [
   ["policy", ".agentos/delivery-policy.json"],
 ];
 
+// Nested-repository discovery is deliberately shallow, bounded, and metadata-only.
+// Bootstrap must recognize a parent project containing several repositories without
+// walking Git object stores or following unsafe filesystem links.
+const NESTED_REPOSITORY_SCAN_LIMITS = Object.freeze({
+  max_depth: 8,
+  max_directories: 2048,
+  max_entries: 20000,
+});
+const TOPOLOGY_SCAN_IGNORED_DIRECTORIES = new Set([
+  "node_modules", ".pnpm-store", ".yarn", ".next", ".turbo", "dist", "build",
+  "coverage", ".cache", ".venv", "target", ".gradle",
+]);
+
 export const EPISTEMIC_CLASSES = Object.freeze([
   "OBSERVED",
   "OWNER_CONFIRMED",
@@ -210,13 +223,137 @@ function addPathFact(facts, root, factId, relativePath, sourceKind = "FILESYSTEM
   }
 }
 
+function factPathToken(relativePath) {
+  const bytes = Buffer.from(relativePath, "utf8").toString("hex");
+  return bytes.length > 0 ? bytes : "00";
+}
+
+function discoverNestedRepositories(root) {
+  const queue = [{absolute: root, relative: "", depth: 0}];
+  const repositories = [];
+  const issues = [];
+  let scannedDirectories = 0;
+  let scannedEntries = 0;
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    scannedDirectories += 1;
+    if (scannedDirectories > NESTED_REPOSITORY_SCAN_LIMITS.max_directories) {
+      issues.push({relative: current.relative || ".", reason: "DIRECTORY_SCAN_LIMIT_REACHED"});
+      break;
+    }
+
+    let entries;
+    try {
+      entries = fs.readdirSync(current.absolute, {withFileTypes: true})
+        .sort((left, right) => Buffer.compare(Buffer.from(left.name), Buffer.from(right.name)));
+    } catch {
+      issues.push({relative: current.relative || ".", reason: "DIRECTORY_READ_FAILED"});
+      continue;
+    }
+
+    for (const entry of entries) {
+      scannedEntries += 1;
+      const childRelative = current.relative ? `${current.relative}/${entry.name}` : entry.name;
+      if (scannedEntries > NESTED_REPOSITORY_SCAN_LIMITS.max_entries) {
+        issues.push({relative: childRelative, reason: "ENTRY_SCAN_LIMIT_REACHED"});
+        queue.length = 0;
+        break;
+      }
+
+      // The parent repository's own .git is handled by the Git readback above.
+      // Never traverse any Git metadata directory.
+      if (entry.name === ".git") {
+        if (current.relative.length === 0) continue;
+        const gitType = entry.isDirectory()
+          ? "DIRECTORY"
+          : entry.isFile()
+            ? "FILE"
+            : entry.isSymbolicLink()
+              ? "SYMBOLIC_LINK"
+              : "UNSAFE_OBJECT";
+        repositories.push({
+          relative_root: current.relative,
+          git_relative_path: childRelative,
+          git_type: gitType,
+          status: ["DIRECTORY", "FILE"].includes(gitType) ? "OBSERVED_FACT" : "CONFLICT",
+          reason: ["DIRECTORY", "FILE"].includes(gitType) ? null : "UNSAFE_GIT_OBJECT",
+        });
+        continue;
+      }
+
+      // Dependency and generated trees are not project repository boundaries.
+      // Skipping them prevents package-manager symlinks and build output from
+      // becoming false topology conflicts while preserving real source roots.
+      if (TOPOLOGY_SCAN_IGNORED_DIRECTORIES.has(entry.name)) continue;
+
+      if (entry.isSymbolicLink()) {
+        issues.push({relative: childRelative, reason: "SYMLINK_NOT_FOLLOWED"});
+        continue;
+      }
+      if (!entry.isDirectory()) continue;
+      if (current.depth >= NESTED_REPOSITORY_SCAN_LIMITS.max_depth) {
+        issues.push({relative: childRelative, reason: "DIRECTORY_DEPTH_LIMIT_REACHED"});
+        continue;
+      }
+      queue.push({absolute: path.join(current.absolute, entry.name), relative: childRelative, depth: current.depth + 1});
+    }
+  }
+
+  return {repositories, issues, scanned_directories: scannedDirectories, scanned_entries: scannedEntries};
+}
+
 export function discoverProject(projectRoot, mode = "RECOMMENDED") {
   requireString(mode, "discovery mode");
   if (!DISCOVERY_MODES.has(mode)) throw new Error("discovery mode is invalid");
   const root = canonicalRoot(projectRoot);
   const facts = [];
   const git = runLocal("git", ["rev-parse", "--show-toplevel"], root);
-  if (git.exit_code === 0) {
+  const nested = discoverNestedRepositories(root);
+  for (const repository of nested.repositories) {
+    addFact(
+      facts,
+      repository.status,
+      `repositories.nested.${factPathToken(repository.relative_root)}`,
+      repository.git_type,
+      "FILESYSTEM",
+      repository.git_relative_path,
+      repository.status === "CONFLICT" ? "CONFLICT" : "OBSERVED",
+      repository.reason,
+    );
+  }
+  if (nested.repositories.length > 0) {
+    addFact(facts, "OBSERVED_FACT", "repositories.nested.count", nested.repositories.length, "FILESYSTEM", root);
+  }
+  for (const issue of nested.issues) {
+    addFact(
+      facts,
+      "CONFLICT",
+      `repositories.nested.issue.${factPathToken(issue.relative)}`,
+      issue.reason,
+      "FILESYSTEM",
+      issue.relative,
+      "CONFLICT",
+      issue.reason,
+    );
+  }
+
+  const nestedRepositoryConflict = nested.repositories.some((repository) => repository.status === "CONFLICT");
+  const nestedTopologyComplete = nested.issues.length === 0 && !nestedRepositoryConflict;
+  if (nested.repositories.length > 0) {
+    addFact(
+      facts,
+      nestedTopologyComplete ? "OBSERVED_FACT" : "CONFLICT",
+      "repositories.topology",
+      nestedTopologyComplete ? "MULTI_REPOSITORY_PROJECT_ROOT" : "MULTI_REPOSITORY_SCAN_INCOMPLETE",
+      "FILESYSTEM",
+      root,
+      nestedTopologyComplete ? "OBSERVED" : "CONFLICT",
+      nestedTopologyComplete ? null : "NESTED_REPOSITORY_SCAN_INCOMPLETE",
+    );
+  } else if (nested.issues.length > 0) {
+    addFact(facts, "CONFLICT", "repositories.topology", undefined, "FILESYSTEM", root, "CONFLICT", "NESTED_REPOSITORY_SCAN_INCOMPLETE");
+  } else if (git.exit_code === 0) {
     let gitTopLevel = null;
     try {
       gitTopLevel = fs.realpathSync(git.stdout);

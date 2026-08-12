@@ -38,7 +38,7 @@
     },
     "bootstrap_entrypoint": {
       "path": "bootstrap/start-here.md",
-      "sha256": "233b833facb6edefd5a46e1948b1de1a62ffc971d5d86979f6eb3a0c7bf22af9"
+      "sha256": "8c9543c624a4f14b0d9fd9a00a48077af1eba37c56554e7fc9a685363fad3ea4"
     },
     "bootstrap_compiler": {
       "path": "control/bootstrap-compiler.mjs",
@@ -146,7 +146,7 @@
     },
     "bootstrap_coverage_controller": {
       "path": "control/bootstrap-coverage.mjs",
-      "sha256": "a9c748d4404894361a93ed3235b6f17ac7f22600a93436942cd4275df0c5f916"
+      "sha256": "d0f269acb7a687d4a57dcc177a70fe38ec96d8b0cb1f5e184746f131c715b6d1"
     },
     "bootstrap_coverage_contract": {
       "path": "schemas/bootstrap-coverage.v1.json",
@@ -166,7 +166,7 @@
     },
     "project_import_article": {
       "path": "governance/2.1rc/project-import.md",
-      "sha256": "a59d959829e4d0f5b3bf80a8544e386f732e5c930d34cd7722834955f8e8e24f"
+      "sha256": "78df871e04f6357659fdb48a218ec6319fc654ccccb4b128d41784f0e4b8b063"
     },
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
@@ -278,11 +278,15 @@
     },
     "bootstrap_discovery": {
       "path": "control/bootstrap-discovery.mjs",
-      "sha256": "51eb42c9da7e8a7c80cdbf36095c8163171e3a3e4b1eca9c5171c093e460f7a5"
+      "sha256": "183c7b2f33b5a955af9088912c8ef4035ec99fa7a64d0f1226b120ca35abd198"
     },
     "bootstrap_discovery_contract": {
       "path": "schemas/bootstrap-discovery.v1.json",
-      "sha256": "4fec273638e0468e5c023f6cc75c7ee5e976b0872c24bca9cd38f5bdb00f3969"
+      "sha256": "3c4eee71e57e2eb88dd065a9afa3c5a14783f1e62faf49e538f4149e376dae36"
+    },
+    "bootstrap_multirepo_discovery_verifier": {
+      "path": "tests/verify-bootstrap-multirepo-discovery.mjs",
+      "sha256": "d219eea08a1cbc23dc15559808971fa59fa0695f42832974ce47719ac1191dd2"
     },
     "delivery_policy_article": {
       "path": "governance/2.1rc/delivery-policy.md",
