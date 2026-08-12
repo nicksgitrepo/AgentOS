@@ -39,6 +39,12 @@ recipes. `registry/integration-handoff.v1.json` and
 `INTEGRATION_HANDOFF.md` carry the exact isolated-candidate disposition and
 unfinished admission gates.
 
+The read-only independent evaluator in
+`control/specialist-independent-evaluator.mjs` checks package immutability,
+source locks, all twelve gate digests, hostile fixtures, handoff custody, and
+self-admission denial. It issues a static receipt only; utility/harm and
+admission authority remain separate gates.
+
 `registry/master-inventory.v1.json` is the durable Fortune-500-scale backlog.
 Its raw role mentions are preserved, and alias mappings explain only exact or
 near-exact duplicates. The highest-value waves are sequenced by cross-project

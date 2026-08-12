@@ -186,6 +186,10 @@ remain external gates.
   atomic-over-router denial, unsafe-authority denial, machine/bootstrap
   reflection, byte-stable recompile, package mutation detection, and zero
   AgentOS repository residue.
+- `node tests/verify-specialist-independent-evaluator.mjs` passes the separate
+  read-only evaluator over all `13` inactive packages, `156` gate files, and
+  `221` hostile fixtures. Its disposition is static-pass/review-required;
+  utility/harm authority remains external and pending.
 - The aggregate machine handoff is
   `registry/integration-handoff.v1.json`; the human view is
   `INTEGRATION_HANDOFF.md`. The disposition remains `WAITING_WITH_RECEIPT`.
