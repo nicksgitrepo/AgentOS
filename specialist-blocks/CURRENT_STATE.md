@@ -302,7 +302,7 @@ remain external gates.
 
 - Implementation candidate: commit `38d8d5b36ecd9284c8d297d19a304b38660d76b5`,
   tree `1c781ad3dab822d040cf652433f63733ceadb26c`; the receipt-only metadata
-  commit will follow after focused validation.
+  commit followed after focused validation.
 - The current bounded slice adds six P2 routers, forty-one P2 atomic security
   candidates, and two reusable exact-version OWASP standards: OWASP Top
   10:2025 and OWASP API Security Top 10:2023. The six routers cover web Top 10,
@@ -338,6 +338,9 @@ remain external gates.
 
 ## Latest verified state — P3 delivery and assurance expansion — 2026-08-11
 
+- Implementation candidate: commit `e9a7f939f1afb0968377af19281fabb382f95b59`,
+  tree `23b2a400b8345434eeb84ec12592ebca9c450204`; the receipt-only metadata
+  commit follows this implementation commit.
 - The current bounded slice adds three P3 governance controls:
   `AGENT.CENTRAL_INTEGRATOR`, `AGENT.RELEASE_MANAGER`, and
   `AGENT.WORKTREE_CUSTODY`; one observability/incident router; and three

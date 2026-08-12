@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `38d8d5b36ecd9284c8d297d19a304b38660d76b5` (P2 baseline; receipt refresh follows the P3 commit)
-- Candidate tree: `1c781ad3dab822d040cf652433f63733ceadb26c` (P2 baseline)
+- Candidate commit: `e9a7f939f1afb0968377af19281fabb382f95b59`
+- Candidate tree: `23b2a400b8345434eeb84ec12592ebca9c450204`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
@@ -29,8 +29,8 @@ attached as a separate immutable receipt commit.
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `98` packages total — `13` `ROUTER`, `16`
-  `CONTROL_PLANE`, `54` `ATOMIC_SPECIALIST`, and `15` source-locked
+- Compiled candidate package roster: `100` packages total — `13` `ROUTER`, `16`
+  `CONTROL_PLANE`, `54` `ATOMIC_SPECIALIST`, and `17` source-locked
   `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
   materialization count above.
 - Atomic overlay: 13 routers, 81 atomic specialists, 16 control-plane roles;
@@ -51,8 +51,8 @@ attached as a separate immutable receipt commit.
   Versioning 2.0.0 and Conventional Commits 1.0.0. Each binds normalized
   requirements, compatibility/supersession metadata, and its source manifest
   by digest.
-- The separate read-only independent evaluator passes all 98 package candidates,
-  1,176 gate files, and 1,666 hostile fixtures. Its disposition is
+- The separate read-only independent evaluator passes all 100 package candidates,
+  1,200 gate files, and 1,700 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
