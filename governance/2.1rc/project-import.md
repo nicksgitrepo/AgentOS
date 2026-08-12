@@ -31,19 +31,28 @@ credential-bearing material, symlinks, and unsafe filesystem objects are
 excluded or rejected according to their type, and every exclusion is recorded.
 The source is re-observed before publication.
 
-`NORMALIZE_AND_AUDIT` and `RECONSTRUCT_FROM_INTENT` run the existing Campaign
-Cascade scheduler with these four read-only disciplines:
+`NORMALIZE_AND_AUDIT` and `RECONSTRUCT_FROM_INTENT` bind the canonical
+[`audit-first import procedure`](audit-first-import-procedure.md). Every
+registry, discovered, and owner-declared standard receives an independent
+source-freshness and applicability route before clause-level work. Applicable
+mandatory clauses enter traceability, atomic read-only audit, governed repair,
+Platform/Central integration, independent convergence, local proof, required
+real-use proof, and the final evidence pack.
+
+The existing Campaign Cascade coverage categories remain:
 
 1. `FUNCTIONALITY`
 2. `DESIGN_UI_SHELL_NAVIGATION`
 3. `SECURITY`
 4. `CODE_QUALITY_HYGIENE`
 
-The three Product roots remain exactly Function Requirements, Design Bible,
-and Security. Code quality is an audit discipline, not a fourth acceptance
-root. The first governed campaign owns the refactor; Bootstrap only discovers,
-asks for the material mode and boundaries, compiles the standards and
-normalization contracts, and seals the source-preservation gate.
+They are coverage categories, not umbrella substitutes for one standard/version
+or one narrow technical specialist. The three Product roots remain exactly
+Function Requirements, Design Bible, and Security. Code quality is an audit
+discipline, not a fourth acceptance root. The first governed campaign owns the
+refactor; Bootstrap discovers, asks for material intent and boundaries, compiles
+the standards inventory, dynamic seed specifications, normalization contract,
+and source-preservation gate, then hands the sealed package to Agent Spawner.
 
 Cutover requires exact source, destination, candidate, and rollback identity.
 Any material compatibility, Function, Design Bible, Security, or owner-boundary

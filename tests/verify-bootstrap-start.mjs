@@ -49,6 +49,9 @@ try {
   assert.equal(output.discovery.operations.deployment_attempted, false);
   assert.equal(output.discovery.operations.deletion_attempted, false);
   assert.equal(output.question_plan.schema, "agentos.bootstrap_question_plan.v1");
+  assert.equal(output.checkpoint_contract.immediate_handoff_after_bounded_action, true);
+  assert(output.checkpoint_contract.missing_field_rule.includes("FAILED_INCOMPLETE_HANDOFF"));
+  assert(output.checkpoint_contract.latency_rule.includes("EMIT_THE_HANDOFF_AND_END_THE_TURN"));
   assert.deepEqual(output.question_plan.conversation_floor, {
     language: "PLAIN_EVERYDAY",
     questions_per_turn: 1,
@@ -176,6 +179,20 @@ try {
     "wrong-thread resume receipts must fail closed");
   assert.notEqual(output.question_plan.next, "bootstrap.discovery.mode", "the explicit start mode must not be asked again");
   assert.equal(output.question_plan.discovery_digest_sha256, canonicalDigest(output.discovery.facts), "the start result must expose the discovery binding");
+
+  const explicitControlRoot = path.join(path.dirname(projectRoot), `${path.basename(projectRoot)}-explicit-control`);
+  const canonicalExplicitControlRoot = path.join(path.dirname(fs.realpathSync.native(projectRoot)), path.basename(explicitControlRoot));
+  const explicit = spawnSync(process.execPath, [controller, "start", projectRoot, "RECOMMENDED", "--control-plane-root", explicitControlRoot, "--control-plane-mode", "EXTERNAL_EXPLICIT", "--control-plane-storage", "LOCAL"], {cwd: root, encoding: "utf8"});
+  assert.equal(explicit.status, 0, `${explicit.stdout}\n${explicit.stderr}`);
+  const explicitOutput = JSON.parse(explicit.stdout);
+  assert.equal(explicitOutput.control_plane_root, canonicalExplicitControlRoot);
+  assert.equal(explicitOutput.control_plane.mode, "EXTERNAL_EXPLICIT");
+  assert.equal(explicitOutput.control_plane.storage_backend, "LOCAL");
+  assert.equal(fs.existsSync(explicitControlRoot), false, "read-only Bootstrap start created the explicit control plane");
+  const missingExplicitRoot = spawnSync(process.execPath, [controller, "start", projectRoot, "RECOMMENDED", "--control-plane-mode", "EXTERNAL_EXPLICIT"], {cwd: root, encoding: "utf8"});
+  assert.notEqual(missingExplicitRoot.status, 0, "explicit control-plane mode without a root must fail closed");
+  const duplicateRoot = spawnSync(process.execPath, [controller, "start", projectRoot, "--control-plane-root", explicitControlRoot, "--control-plane-root", explicitControlRoot], {cwd: root, encoding: "utf8"});
+  assert.notEqual(duplicateRoot.status, 0, "duplicate control-plane options must fail closed");
   const startBody = structuredClone(output);
   delete startBody.start_sha256;
   const canonicalize = (value) => Array.isArray(value)

@@ -236,7 +236,10 @@ assert.equal(kernel.bootstrap.start_contract, "schemas/bootstrap-start.v1.json")
 assert.equal(kernel.bootstrap.start_command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
 const bootstrapStart = JSON.parse(read("schemas/bootstrap-start.v1.json"));
 assert.equal(bootstrapStart.invocation.side_effects, "READ_ONLY_DISCOVERY_ONLY");
-assert.equal(bootstrapStart.invocation.command, "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED");
+assert.equal(
+  bootstrapStart.invocation.command,
+  "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED [--control-plane-root <CONTROL_PLANE_ROOT> --control-plane-mode EXTERNAL_EXPLICIT --control-plane-storage LOCAL]",
+);
 assert(bootstrapStart.result.required_fields.includes("bootstrap_operating_mode"));
 assert(bootstrapStart.safety.next_step.includes("default JSA mode"));
 assert(bootstrapStart.safety.next_step.includes("changed scope returns to reassessment"));

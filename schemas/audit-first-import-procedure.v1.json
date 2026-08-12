@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.audit_first_import_procedure_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/audit-first-import-procedure.mjs",
+  "result": "agentos.audit_first_import_procedure.v1",
+  "purpose": "Make evidence-backed standards applicability, clause traceability, atomic audit, governed repair, independent convergence, and real proof the canonical full project-import procedure.",
+  "applicability_outcomes": ["PENDING_APPLICABILITY", "APPLICABLE", "NOT_APPLICABLE_WITH_EVIDENCE", "UNKNOWN_BLOCKED", "SUPERSEDED"],
+  "identity_separation": "Applicability, audit, repair, and independent acceptance use distinct identities. Seeds remain idle and working clones never create subagents.",
+  "concurrency": "At most six isolated repair clones may be admitted concurrently, and every heavyweight or write action requires Scheduler custody.",
+  "completion_rule": "No fully-compliant recommendation is allowed while an applicable mandatory clause lacks traceability/current evidence/required proof/independent acceptance, or while UNKNOWN_BLOCKED, a dirty accepted candidate, an untested required real-host leg, an authority conflict, or missing rollback identity remains.",
+  "claim_boundary": "The evidence pack is not legal certification, regulatory approval, security perfection, or universal compliance."
+}

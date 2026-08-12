@@ -47,6 +47,12 @@
     "rule": "Imported projects remain discovery-only until the owner explicitly approves rapid development."
   },
   "audit_lanes": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
+  "canonical_full_import_procedure": {
+    "controller": "control/audit-first-import-procedure.mjs",
+    "contract": "schemas/audit-first-import-procedure.v1.json",
+    "required_for_modes": ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"],
+    "rule": "Broad audit lanes are coverage categories only. Every inventory standard receives an independent applicability outcome; every applicable mandatory clause receives atomic audit, traceability, governed repair when needed, independent acceptance, and required local/real-host proof."
+  },
   "audit_scheduler": "control/campaign-cascade.mjs",
   "governed_scheduler": "control/hybrid-scheduler.mjs",
   "universal_closeout": {

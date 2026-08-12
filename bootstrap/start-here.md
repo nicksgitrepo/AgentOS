@@ -26,6 +26,16 @@ be run with both roots bound:
 node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED
 ```
 
+When the owner binds an explicit external control plane, the canonical read-only
+start accepts and validates that exact selection without creating it:
+
+```text
+node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED \
+  --control-plane-root "<CONTROL_PLANE_ROOT>" \
+  --control-plane-mode EXTERNAL_EXPLICIT \
+  --control-plane-storage LOCAL
+```
+
 That command returns a content-addressed discovery result, the default
 control-plane binding, and the current output-gap question plan. It does not write the project, authenticate, spend,
 publish, merge, deploy, or create a campaign. The agent continues from that
@@ -33,6 +43,9 @@ returned plan through the exported functions in
 `control/bootstrap-compiler.mjs`; compatibility entrypoints are not substitutes
 for the canonical controller. If either root is missing, ambiguous, not a real
 directory, or changes after discovery, Bootstrap stops and asks for correction.
+After every bounded action, Bootstrap immediately emits the typed checkpoint
+handoff returned by start. Missing requested evidence is a failed incomplete
+handoff, not successful discovery deferred to another pass.
 
 ## Bootstrap path
 

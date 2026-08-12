@@ -14,6 +14,11 @@ import {validateStandardsRegistry} from "./standards-registry.mjs";
 import {readSourceControlBinding} from "./bootstrap-discovery.mjs";
 import {opaqueSchedulerWorktreeRef} from "./hybrid-scheduler.mjs";
 import {
+  AUDIT_FIRST_IMPORT_PHASES,
+  compileAuditFirstImportProcedure,
+  validateAuditFirstImportProcedure,
+} from "./audit-first-import-procedure.mjs";
+import {
   assertNoSymlinkComponents as assertSafePathComponents,
   ensureDirectory as ensureSafeDirectory,
 } from "./private-control-common.mjs";
@@ -457,8 +462,8 @@ export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allo
 function phaseNames(mode) {
   if (mode === "ADOPT_IN_PLACE") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "BIND_GOVERNANCE", "CUTOVER_OR_CONTINUE"];
   if (mode === "CLEAN_COPY") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "BIND_GOVERNANCE", "CUTOVER_OR_ROLLBACK"];
-  if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"];
-  return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"];
+  if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", ...AUDIT_FIRST_IMPORT_PHASES, "CUTOVER_OR_ROLLBACK"];
+  return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", ...AUDIT_FIRST_IMPORT_PHASES, "CUTOVER_OR_ROLLBACK"];
 }
 
 function auditSchedule(mode) {
@@ -487,7 +492,7 @@ export function recommendProjectImportMode(discoveryFacts = []) {
   };
 }
 
-export function compileProjectImportPlan({projectId, mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null, rapidDevelopmentApproved = false, rapidDevelopmentApproval = null} = {}) {
+export function compileProjectImportPlan({projectId, mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, specialistRosterSha256 = null, discoveredStandardIds = [], ownerDeclaredStandardIds = [], sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null, rapidDevelopmentApproved = false, rapidDevelopmentApproval = null} = {}) {
   assert(typeof projectId === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(projectId), "project import project ID is required", "PROJECT_BINDING_REQUIRED");
   if (rapidDevelopmentApproved) assert(rapidDevelopmentApproval !== null && typeof rapidDevelopmentApproval === "object", "imported rapid development requires a typed owner approval receipt", "OWNER_APPROVAL_REQUIRED");
   if (!rapidDevelopmentApproved) assert(rapidDevelopmentApproval === null, "unactivated imported owner approval cannot be retained", "IMPORTED_OWNER_APPROVAL_INVALID");
@@ -502,6 +507,7 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
   const roots = sourceDestination(sourceRoot, destinationRoot, {allowNullDestination: mode === "ADOPT_IN_PLACE"});
   const sourceIdentity = inspectProjectSource(roots.source);
   const fullAudit = ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(mode);
+  if (fullAudit) requireSha(specialistRosterSha256, "project import specialist roster binding");
   const storageMode = preservationStorageMode ?? (preservationBoundaryRoot === null ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE");
   assert(PROJECT_IMPORT_STORAGE_MODES.includes(storageMode), "project source preservation storage mode is invalid");
   let preservationRoot = sourcePreservationRoot ?? (roots.destination === null
@@ -570,6 +576,15 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
       acceptance: "FUNCTION_REQUIREMENTS_PASS_THEN_DESIGN_BIBLE_PASS_THEN_SECURITY_PASS;_CODE_QUALITY_HYGIENE_REMAINS_AUDIT_DISCIPLINE",
       writer_rule: "AUDITORS_READ_ONLY;_ONE_MIGRATION_WRITER_CUSTODY_AT_A_TIME",
     },
+    audit_first_procedure: fullAudit
+      ? compileAuditFirstImportProcedure({
+        standardsRegistrySha256: standardsRegistry.registry_sha256,
+        specialistRosterSha256,
+        registryStandardIds: standardsRegistry.required_standard_ids,
+        discoveredStandardIds,
+        ownerDeclaredStandardIds,
+      })
+      : null,
     universal_closeout: universalTaskCloseoutPolicy("IMPORT"),
     normalization: {
       execute_in_first_governed_campaign: fullAudit,
@@ -644,6 +659,13 @@ export function validateProjectImportPlan(plan) {
   assert(Array.isArray(plan.audit?.lanes) && plan.audit.lanes.length === IMPORT_AUDIT_LANES.length, "project import audit schedule is incomplete");
   const fullAudit = ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(plan.mode);
   assert(plan.audit.full_audit_required === fullAudit, "project import full-audit converse is invalid");
+  if (fullAudit) {
+    validateAuditFirstImportProcedure(plan.audit_first_procedure);
+    assert(plan.audit_first_procedure.standards_registry_sha256 === plan.standards_registry_sha256, "project import is not bound to the standards registry: audit-first procedure binding differs");
+    assert(JSON.stringify(plan.phases.slice(plan.mode === "NORMALIZE_AND_AUDIT" ? 4 : 3, -1)) === JSON.stringify(AUDIT_FIRST_IMPORT_PHASES), "project import does not execute the complete audit-first procedure before cutover");
+  } else {
+    assert(plan.audit_first_procedure === null, "non-full import mode unexpectedly activates the audit-first repair procedure");
+  }
   const seen = new Set();
   for (const lane of plan.audit.lanes) {
     assert(IMPORT_AUDIT_LANES.includes(lane.discipline) && !seen.has(lane.discipline), "project import audit lane is duplicate or unknown");

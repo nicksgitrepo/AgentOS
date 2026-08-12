@@ -51,6 +51,7 @@ import {
   validateProjectImportPlan,
   verifySourcePreservation,
 } from "./project-import.mjs";
+import {AUDIT_FIRST_CHECKPOINT_CONTRACT} from "./audit-first-import-procedure.mjs";
 import {
   relativeControlPlanePath,
   resolveControlPlaneRoot,
@@ -1036,6 +1037,9 @@ export function compileBootstrapPlan({
       discoveryFacts: discovery,
       standardsRegistry,
       normalizationPolicy,
+      specialistRosterSha256: JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../specialist-blocks/registry/roster.v1.json"), "utf8")).roster_sha256,
+      discoveredStandardIds: importAnswer.discovered_standard_ids ?? [],
+      ownerDeclaredStandardIds: importAnswer.owner_declared_standard_ids ?? [],
       sourcePreservationRoot: importAnswer.source_preservation_root ?? path.join(controlPlane.control_plane_root, ".agentos", "import"),
       preservationBoundaryRoot: controlPlane.control_plane_root,
       preservationStorageMode: controlPlane.binding.mode === "IN_PROJECT_OPT_IN" ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE",
@@ -2110,9 +2114,9 @@ export function auditBootstrapSetup({
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};
 }
 
-function bootstrapStartResult({discovery, questionPlan}) {
+function bootstrapStartResult({discovery, questionPlan, controlPlaneOptions = {}}) {
   const agentosRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-  const controlPlane = resolveControlPlaneRoot({projectRoot: discovery.project_root});
+  const controlPlane = resolveControlPlaneRoot({projectRoot: discovery.project_root, ...controlPlaneOptions});
   const body = {
     schema: "agentos.bootstrap_start_result.v1",
     version: 1,
@@ -2127,6 +2131,7 @@ function bootstrapStartResult({discovery, questionPlan}) {
     initial_answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
     discovery,
     question_plan: questionPlan,
+    checkpoint_contract: structuredClone(AUDIT_FIRST_CHECKPOINT_CONTRACT),
     next_action: questionPlan.next === null
       ? "COMPILE_THE_JSA_PLAN_AND_CONTINUE_ONLY_WITHIN_ITS_DECLARED_SCOPE"
       : "ASK_ONLY_THE_NEXT_MATERIAL_BOOTSTRAP_QUESTION",
@@ -2135,16 +2140,31 @@ function bootstrapStartResult({discovery, questionPlan}) {
 }
 
 function runBootstrapStartCommand() {
-  const [command, projectRoot, mode = "RECOMMENDED", ...extra] = process.argv.slice(2);
-  if (command !== "start" || !projectRoot || extra.length > 0) {
-    throw new Error("usage: bootstrap-compiler start <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY]");
+  const [command, projectRoot, ...args] = process.argv.slice(2);
+  if (command !== "start" || !projectRoot) throw new Error("usage: bootstrap-compiler start <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY] [--control-plane-root <absolute-path>] [--control-plane-mode EXTERNAL_EXPLICIT|IN_PROJECT_OPT_IN] [--control-plane-storage LOCAL|GIT|HYBRID]");
+  let mode = "RECOMMENDED";
+  let cursor = 0;
+  if (args[0] && !args[0].startsWith("--")) {
+    mode = args[0];
+    cursor = 1;
   }
+  const options = {};
+  while (cursor < args.length) {
+    const flag = args[cursor];
+    const value = args[cursor + 1];
+    if (!["--control-plane-root", "--control-plane-mode", "--control-plane-storage"].includes(flag) || value === undefined || value.startsWith("--")) throw new Error("invalid or incomplete Bootstrap control-plane option");
+    const key = flag === "--control-plane-root" ? "controlPlaneRoot" : flag === "--control-plane-mode" ? "controlPlaneMode" : "storageBackend";
+    if (Object.hasOwn(options, key)) throw new Error(`duplicate Bootstrap option: ${flag}`);
+    options[key] = value;
+    cursor += 2;
+  }
+  if ((options.controlPlaneMode === "EXTERNAL_EXPLICIT" || options.controlPlaneMode === "IN_PROJECT_OPT_IN") && !options.controlPlaneRoot) throw new Error("explicit Bootstrap control-plane mode requires --control-plane-root");
   const discovery = discoverProject(projectRoot, mode);
   const questionPlan = planBootstrapQuestions({
     discovery: discovery.facts,
     answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
   });
-  process.stdout.write(`${canonicalCompactJson(bootstrapStartResult({discovery, questionPlan}))}\n`);
+  process.stdout.write(`${canonicalCompactJson(bootstrapStartResult({discovery, questionPlan, controlPlaneOptions: options}))}\n`);
 }
 
 let invokedPath = null;

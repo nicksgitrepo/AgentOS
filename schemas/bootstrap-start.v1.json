@@ -5,9 +5,10 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "purpose": "Provide the one deterministic, read-only first invocation for a fresh AgentOS Bootstrap agent.",
   "invocation": {
-    "command": "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED",
+    "command": "node <AGENTOS_ROOT>/control/bootstrap-compiler.mjs start <PROJECT_ROOT> RECOMMENDED [--control-plane-root <CONTROL_PLANE_ROOT> --control-plane-mode EXTERNAL_EXPLICIT --control-plane-storage LOCAL]",
     "required_bindings": ["AGENTOS_ROOT", "PROJECT_ROOT"],
-    "path_rule": "Both roots are supplied by the user as exact absolute paths. PROJECT_ROOT is canonicalized and must be a real directory; AGENTOS_ROOT is the checkout containing this controller.",
+    "optional_bindings": ["CONTROL_PLANE_ROOT", "CONTROL_PLANE_MODE", "CONTROL_PLANE_STORAGE"],
+    "path_rule": "AGENTOS_ROOT and PROJECT_ROOT are exact absolute paths. PROJECT_ROOT is canonicalized and must be a real directory. An explicit control-plane mode requires an exact absolute CONTROL_PLANE_ROOT; read-only start validates but never creates it.",
     "side_effects": "READ_ONLY_DISCOVERY_ONLY"
   },
   "result": {
@@ -25,11 +26,12 @@
       "initial_answers",
       "discovery",
       "question_plan",
+      "checkpoint_contract",
       "next_action",
       "start_sha256"
     ],
     "status": "READ_ONLY_DISCOVERY_COMPLETE",
-    "binding": "start_sha256 is the SHA-256 of the complete result with start_sha256 omitted; discovery and question_plan retain their own exact digests; control_plane binds the default external storage decision without creating that folder."
+    "binding": "start_sha256 is the SHA-256 of the complete result with start_sha256 omitted; discovery and question_plan retain their own exact digests; control_plane binds either the validated explicit selection or the default external storage decision without creating that folder."
   },
   "safety": {
     "must_not": [
