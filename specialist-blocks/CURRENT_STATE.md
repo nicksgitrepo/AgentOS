@@ -260,3 +260,30 @@ remain external gates.
   generic mappings, then refresh counts, routing, evaluation receipts, and the
   typed integration handoff. Keep activation `OFF` and admission
   `NOT_ADMITTED`.
+
+## First P1 atomic package slice — 2026-08-11
+
+- The source-locked P1 slice adds `16` compiled candidates: `6` routers and
+  `10` atomic specialists. Generic IDs remain routing mappings; no family label
+  receives Product-writing or acceptance authority.
+- Atomic candidates are Rust backend language semantics, TypeScript compiler
+  semantics, React component runtime, PostgreSQL RLS, OpenAPI 3.1.1 contracts,
+  OAuth RFC 9700 security flow, OIDC Core 1.0 claims, AWS IAM policy elements,
+  Cloudflare DNS records, and Cloudflare Cache Rules. Each has a distinct
+  source lock, exact upstream router, 12 gates, 17 hostile fixtures,
+  evaluation dossier, and typed handoff.
+- Compiler proof currently reports `32` package records: `13` control-plane,
+  `3` standard, `6` router, and `10` atomic. Materialized counts are
+  `ROUTER:631`, `CONTROL_PLANE:13`, `KNOWLEDGE_BLOCK:0`,
+  `GOVERNANCE_BLOCK:0`, `STANDARD_BLOCK:0`, `CONTEXT_BLOCK:0`,
+  `ATOMIC_SPECIALIST:79`, `COMPILED_AGENT_PACKAGE:0`.
+- Independent static evaluator passes `32` inactive packages, `384` gate
+  files, and `544` hostile fixtures; utility/harm and admission remain
+  pending external authority. Focused library, compiler, and evaluator checks
+  pass; no heavyweight proof ran.
+- Exact six P0 lane identities/statuses remain candidate/inactive and no P1
+  lane is active. Host ceiling remains canonical Rust scheduler `JOB-407`
+  `RUNNING`, swap `5.5/6 GiB`.
+- Next cursor: commit/push this P1 package and registry slice, then add the
+  atomicity/routing positive and negative receipt to the clean handoff. Keep
+  the full 619-title master backlog and all P2–P6 roles planned.

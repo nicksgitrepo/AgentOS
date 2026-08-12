@@ -446,11 +446,13 @@ export function materializeMasterInventory(raw, atomicOverlay) {
       schema_path: "schemas/specialist-block.v1.json",
       package_status: item.package_status ?? "UNPACKAGED",
       evaluator_status: item.evaluator_status ?? "NOT_RUN",
-      evaluator_receipt: null,
+      evaluator_receipt: item.evaluator_receipt ?? null,
       lifecycle: item.lifecycle ?? "PLANNED",
       role_kind: "ATOMIC_SPECIALIST",
       version: item.version,
       required_upstream_router: item.router,
+      block_id: item.block_id ?? null,
+      block_ids: item.block_ids ?? [],
     });
   }
   const controlEntries = atomicOverlay.control_plane.map((item) => ({
@@ -494,12 +496,13 @@ export function materializeMasterInventory(raw, atomicOverlay) {
     gate_status: "PLANNED",
     gate_path: null,
     schema_path: "schemas/specialist-block.v1.json",
-    package_status: "UNPACKAGED",
-    evaluator_status: "NOT_RUN",
-    evaluator_receipt: null,
-    lifecycle: "PLANNED",
+    package_status: item.package_status ?? "UNPACKAGED",
+    evaluator_status: item.evaluator_status ?? "NOT_RUN",
+    evaluator_receipt: item.evaluator_receipt ?? null,
+    lifecycle: item.lifecycle ?? "PLANNED",
     role_kind: "ROUTER",
     required_upstream_router: null,
+    block_id: item.block_id ?? null,
   }));
   const all = [...entries, ...routers, ...atomicEntries, ...controlEntries];
   const seen = new Set();
@@ -509,10 +512,12 @@ export function materializeMasterInventory(raw, atomicOverlay) {
   }
   all.sort((left, right) => left.canonical_id.localeCompare(right.canonical_id));
   const counts = Object.fromEntries(ROLE_KINDS.map((kind) => [kind, all.filter((entry) => entry.role_kind === kind).length]));
+  const typedOverlayEntries = [...routers, ...atomicEntries, ...controlEntries].sort((left, right) => left.canonical_id.localeCompare(right.canonical_id));
+  const typedOverlayCounts = Object.fromEntries(ROLE_KINDS.map((kind) => [kind, typedOverlayEntries.filter((entry) => entry.role_kind === kind).length]));
   assert(counts.ROUTER >= raw.role_kind_counts.ROUTER, "master inventory router count regressed");
   assert(counts.ATOMIC_SPECIALIST === raw.role_kind_counts.ATOMIC_SPECIALIST, "atomic inventory count differs from declared count");
   assert(counts.CONTROL_PLANE === raw.role_kind_counts.CONTROL_PLANE, "control-plane inventory count differs from declared count");
-  return {schema: "agentos.specialist_materialized_inventory.v1", version: 1, status: "COMPILED_CANDIDATE", activation: "OFF", counts, entries, inventory_sha256: null};
+  return {schema: "agentos.specialist_materialized_inventory.v1", version: 1, status: "COMPILED_CANDIDATE", activation: "OFF", counts, entries, typed_overlay_entries: typedOverlayEntries, typed_overlay_counts: typedOverlayCounts, inventory_sha256: null};
 }
 
 function packageDirectories(libraryRoot) {

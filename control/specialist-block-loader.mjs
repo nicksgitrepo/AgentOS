@@ -50,7 +50,10 @@ export function loadSpecialistLibrary({repositoryRoot = process.cwd(), compileIf
     for (const blockId of route.select) {
       const block = byId.get(blockId);
       assert(block, `${route.route_id} selects an unknown block`);
-      if (block.role_kind === "ROUTER") assert(!/Product|accept|admit|write/iu.test(block.maximum_authority), `${route.route_id} gives router excessive authority`);
+      if (block.role_kind === "ROUTER") {
+        const positiveAuthority = String(block.maximum_authority).replace(/NO_[A-Z_]+/gu, "");
+        assert(!/(?:Product|accept|admit|write)/iu.test(positiveAuthority), `${route.route_id} gives router excessive authority`);
+      }
       if (block.role_kind === "ATOMIC_SPECIALIST") assert(block.required_upstream_router, `${route.route_id} selects atomic specialist without upstream router`);
     }
   }

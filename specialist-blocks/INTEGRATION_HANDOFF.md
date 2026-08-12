@@ -9,7 +9,7 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `e35e055e7b1c198c820b6050302e7df1a1e19507`
+- Candidate commit: `e35e05551aae24638abbef9c164ba994e56be1b9`
 - Candidate tree: `2bd879482553aef3223e08757cccca394cc8618f`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
@@ -25,14 +25,17 @@ attached as a separate immutable receipt commit.
 
 - Master inventory: 625 raw role mentions, 619 unique titles, 10 explicit alias
   mappings, 619 materialized entries.
-- Materialized role kinds: `ROUTER: 626`, `CONTROL_PLANE: 13`,
+- Materialized role kinds: `ROUTER: 631`, `CONTROL_PLANE: 13`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `16` packages total — `13`
-  `CONTROL_PLANE` and `3` source-locked `STANDARD_BLOCK` candidates. This is
-  distinct from the unexpanded backlog materialization count above.
-- Atomic overlay: 7 routers, 79 atomic specialists, 13 control-plane roles.
+- Compiled candidate package roster: `32` packages total — `6` `ROUTER`, `13`
+  `CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `3` source-locked
+  `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
+  materialization count above.
+- Atomic overlay: 12 routers, 79 atomic specialists, 13 control-plane roles;
+  the six P1 router packages are classification-only and carry no Product or
+  acceptance authority.
 - P0 has exactly six candidate lanes, each with a package, source lock, exact
   twelve-gate pack, hostile fixtures, evaluation dossier, and typed handoff.
 - The on-demand compiler emits the eight required machine contracts plus a
@@ -44,21 +47,26 @@ attached as a separate immutable receipt commit.
 - The source-locked standard slice contains NIST SP 800-218 SSDF 1.1, OWASP
   ASVS 5.0.0, and SLSA Specification 1.2. Each binds normalized requirements,
   compatibility/supersession metadata, and its source manifest by digest.
-- The separate read-only independent evaluator passes all 16 package candidates,
-  192 gate files, and 272 hostile fixtures. Its disposition is
+- The separate read-only independent evaluator passes all 32 package candidates,
+  384 gate files, and 544 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
   substitution, missing upstream closure, and sibling-authority overlap deny.
+- The first P1 atomic slice includes ten source-locked candidates: Rust,
+  TypeScript, React, PostgreSQL RLS, OpenAPI contracts, OAuth, OIDC, AWS IAM,
+  Cloudflare DNS, and Cloudflare Cache. Their generic P1 IDs remain routing
+  mappings; the packages are not admitted or activated.
 
 ## Unfinished admission gates
 
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Broader source-backed `STANDARD_BLOCK` expansion and the first narrow P1
-   atomic package wave remain planned; the backlog materialized standard-block
-   count is zero because those roles are not yet expanded into packages.
+3. Independent utility/harm evaluation of the first P1 router/atomic candidates
+   and broader source-backed `STANDARD_BLOCK` expansion remain pending; the
+   backlog materialized standard-block count is zero because those roles are
+   not yet expanded into packages.
 4. Independent utility/harm evaluation of the current standard candidates and
    P0 packages, plus main AgentOS 3.0 integration-owner intake, remain external.
 

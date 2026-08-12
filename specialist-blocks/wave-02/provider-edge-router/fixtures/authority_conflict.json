@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.platform.provider-edge-router",
+  "class": "authority_conflict",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for authority_conflict; all provider, project, consumer, and applicability facts remain external."
+}

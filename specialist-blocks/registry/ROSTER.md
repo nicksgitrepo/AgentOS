@@ -49,16 +49,16 @@ The materialized roster distinguishes these role kinds:
 - `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
   roster agent.
 
-Current materialized counts are `ROUTER: 626`, `CONTROL_PLANE: 13`,
+Current materialized counts are `ROUTER: 631`, `CONTROL_PLANE: 13`,
 `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
 `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`, and
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
-`7` routers, `79` atomic specialists, and `13` control-plane roles.
+`12` routers, `79` atomic specialists, and `13` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `16` packages total, consisting of `13` `CONTROL_PLANE` packages and
-`3` `STANDARD_BLOCK` packages. All 16 remain `CANDIDATE`, `NOT_ADMITTED`, and
-activation `OFF`.
+backlog: `32` packages total, consisting of `6` `ROUTER`, `13`
+`CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `3` `STANDARD_BLOCK` packages.
+All 32 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 ## Source-locked standard candidates
 
@@ -74,6 +74,27 @@ Dependencies are the foundation authority and evidence/freshness gates;
 conflicts are empty until an exact edition conflict is selected. The standard
 blocks may map only their exact versioned authority, never certify, provide
 legal advice, select applicability, or accept themselves.
+
+## First P1 router and atomic candidates
+
+| Block ID | Kind / upstream | Exact source lock | Build / evaluation | Gates / intake / lifecycle |
+|---|---|---|---|---|
+| `specialist.software-language-runtime.router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.software-language-runtime-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.software-language-runtime.rust-backend` | `ATOMIC_SPECIALIST`; `specialist.software-language-runtime.router` | [Rust Reference](https://doc.rust-lang.org/reference.html) `1.97.1`; immutable retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.rust-backend.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.software-language-runtime.typescript-language` | `ATOMIC_SPECIALIST`; `specialist.software-language-runtime.router` | [TypeScript 5.9 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html) `5.9` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.typescript-language.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.software-language-runtime.react-components` | `ATOMIC_SPECIALIST`; `specialist.software-language-runtime.router` | [React 19.2 release notes](https://react.dev/blog/2025/10/01/react-19-2) `19.2` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.react-components.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.data.router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.data-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.data.postgresql-rls` | `ATOMIC_SPECIALIST`; `specialist.data.router` | [PostgreSQL row security](https://www.postgresql.org/docs/17/ddl-rowsecurity.html) `17.10` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.postgresql-rls.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.product-client.router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.product-client-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.product-client.openapi-contracts` | `ATOMIC_SPECIALIST`; `specialist.product-client.router` | [OpenAPI 3.1.1](https://spec.openapis.org/oas/v3.1.1.html) `3.1.1` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.openapi-contracts.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.security.router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.security-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.security.oauth-identity` | `ATOMIC_SPECIALIST`; `specialist.security.router` | [OAuth Security BCP RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html) | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.oauth-identity.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.security.oidc-core` | `ATOMIC_SPECIALIST`; `specialist.security.router` | [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html) | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.oidc-core.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.platform.provider-edge-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.provider-edge-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.platform.aws-iam-policy` | `ATOMIC_SPECIALIST`; `specialist.platform.provider-edge-router` | [AWS IAM policy elements](https://docs.aws.amazon.com/us_en/IAM/latest/UserGuide/reference_policies_elements.html) current retrieval lock | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.aws-iam-policy.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.platform.cloudflare-dns` | `ATOMIC_SPECIALIST`; `specialist.platform.provider-edge-router` | [Cloudflare DNS records](https://developers.cloudflare.com/dns/manage-dns-records/) current retrieval lock | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-dns.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.platform.cloudflare-cache` | `ATOMIC_SPECIALIST`; `specialist.platform.provider-edge-router` | [Cloudflare Cache Rules](https://developers.cloudflare.com/cache/how-to/cache-rules/) current retrieval lock | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-cache.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.assurance-enterprise.router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.assurance-enterprise-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 
 ## Mandatory package contract
 

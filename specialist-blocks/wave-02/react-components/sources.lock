@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.react-components",
+  "sources": [
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.react-19-2",
+      "title": "React 19.2 Release Notes",
+      "publisher": "React",
+      "url": "https://react.dev/blog/2025/10/01/react-19-2",
+      "version": "19.2",
+      "effective_date": "2025-10-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "react-19.2-release-2025-10-01",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "React 19.2 runtime and component behavior; no product UX or acceptance authority."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "4475ddd7c048b6257e697ee748dbcb0e44b9d0da1c2fd7b07126ed819529654b"
+}

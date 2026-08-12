@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.rust-backend",
+  "sources": [
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.rust-reference",
+      "title": "The Rust Reference",
+      "publisher": "Rust Project",
+      "url": "https://doc.rust-lang.org/reference.html",
+      "version": "1.97.1",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "rust-reference-1.97.1-stable-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Rust language semantics and reference behavior; no project-specific framework or deployment claims."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "515bcc5a509e3ddc5fe8f0e98b5f704ebce773e0834dea079213202d04b06722"
+}

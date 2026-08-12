@@ -4,6 +4,33 @@
   "status": "COMPILED_CANDIDATE",
   "routes": [
     {
+      "route_id": "route.assurance-enterprise.router",
+      "family": "assurance-enterprise",
+      "role_kind": "ROUTER",
+      "signals": [
+        "QA.TEST_ARCHITECT",
+        "assurance",
+        "test architecture"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.assurance-enterprise.router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
       "route_id": "route.control.bootstrap-project-initializer",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -188,6 +215,66 @@
         "stale or conflicting evidence"
       ],
       "priority": 0
+    },
+    {
+      "route_id": "route.data.postgresql-rls",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "DATA.POSTGRES_RLS",
+        "postgresql RLS",
+        "row-level security",
+        "tenant isolation"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "data.tenant-boundary",
+        "database.engine",
+        "database.version",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.data.postgresql-rls"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.data.router",
+      "family": "data",
+      "role_kind": "ROUTER",
+      "signals": [
+        "DATA.POSTGRES_RLS",
+        "data",
+        "postgresql",
+        "row-level security"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.data.router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 1
     },
     {
       "route_id": "route.foundation.authority-jurisdiction-gate",
@@ -378,6 +465,399 @@
       "priority": 0
     },
     {
+      "route_id": "route.platform.aws-iam-policy",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "AWS policy",
+        "CLOUD.AWS_IAM",
+        "aws iam"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "iam.policy",
+        "provider.name",
+        "provider.region",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.platform.aws-iam-policy"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.platform.cloudflare-cache",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "EDGE.CLOUDFLARE_CACHE",
+        "cache rules",
+        "cloudflare cache"
+      ],
+      "required_context": [
+        "authority",
+        "cache.rule",
+        "cache.scope",
+        "candidate.identity",
+        "custody",
+        "provider.name",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.platform.cloudflare-cache"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.platform.cloudflare-dns",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "DNS records",
+        "EDGE.CLOUDFLARE_DNS",
+        "cloudflare dns"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "dns.records",
+        "dns.zone",
+        "provider.name",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.platform.cloudflare-dns"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.platform.provider-edge-router",
+      "family": "delivery-operations",
+      "role_kind": "ROUTER",
+      "signals": [
+        "PLATFORM.AWS_CLOUDFLARE_EDGE",
+        "aws",
+        "cloudflare",
+        "edge",
+        "provider-edge"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.product-client.openapi-contracts",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "API contract",
+        "ARCH.API_CONTRACTS",
+        "HTTP schema",
+        "openapi"
+      ],
+      "required_context": [
+        "api.contract",
+        "api.version",
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.product-client.openapi-contracts"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.product-client.router",
+      "family": "product-client",
+      "role_kind": "ROUTER",
+      "signals": [
+        "ARCH.API_CONTRACTS",
+        "api contract",
+        "openapi",
+        "product-client"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.product-client.router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.security.oauth-identity",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "OAuth security",
+        "SEC.AUTH_IDENTITY",
+        "authorization flow",
+        "oauth"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "identity.client-type",
+        "identity.flow",
+        "identity.protocol",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.security.oauth-identity"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.security.oidc-core",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "OIDC",
+        "identity claims",
+        "openid connect"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "identity.claims",
+        "identity.issuer",
+        "identity.protocol",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.security.oidc-core"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.security.router",
+      "family": "security",
+      "role_kind": "ROUTER",
+      "signals": [
+        "SEC.AUTH_IDENTITY",
+        "authentication",
+        "oauth",
+        "openid connect",
+        "security"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.security.router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.software-language-runtime.react-components",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "ENG.TYPESCRIPT_REACT_WEB",
+        "React component",
+        "react"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "component.boundary",
+        "custody",
+        "framework.version",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.software-language-runtime.react-components"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.software-language-runtime.router",
+      "family": "software-language-runtime",
+      "role_kind": "ROUTER",
+      "signals": [
+        "ENG.RUST_BACKEND",
+        "ENG.TYPESCRIPT_REACT_WEB",
+        "language-runtime",
+        "react",
+        "rust",
+        "typescript"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.software-language-runtime.router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.software-language-runtime.rust-backend",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "ENG.RUST_BACKEND",
+        "rust",
+        "rust backend"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "language.edition",
+        "request",
+        "runtime.toolchain",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.software-language-runtime.rust-backend"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.software-language-runtime.typescript-language",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "ENG.TYPESCRIPT_REACT_WEB",
+        "TypeScript compiler",
+        "typescript"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "compiler.options",
+        "custody",
+        "language.version",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.software-language-runtime.typescript-language"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unresolved provider or version",
+        "unsafe action"
+      ],
+      "priority": 1
+    },
+    {
       "route_id": "route.standard.nist-ssdf",
       "family": "security",
       "role_kind": "STANDARD_BLOCK",
@@ -467,5 +947,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "27d3fa2a6dd9e780be81d83263b83611061b0dacad1fcb4401bd646190c83c82"
+  "routing_sha256": "a231526859014de68b30b151e10f66a2b090ba5660f3892d5623390a216ec3c8"
 }

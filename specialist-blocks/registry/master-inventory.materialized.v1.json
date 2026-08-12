@@ -4,7 +4,7 @@
   "status": "COMPILED_CANDIDATE",
   "activation": "OFF",
   "counts": {
-    "ROUTER": 626,
+    "ROUTER": 631,
     "CONTROL_PLANE": 13,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
@@ -26032,5 +26032,3808 @@
       "role_kind": "ROUTER"
     }
   ],
-  "inventory_sha256": "d33047500077e156389f05a7ffa90ac7381892f12283c5828340a3b706c45aa6"
+  "typed_overlay_entries": [
+    {
+      "canonical_id": "AGENT.BOOTSTRAP",
+      "title": "Bootstrap/Project Initializer",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Bootstrap/Project Initializer.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "AGENT.INDEPENDENT_AUDITOR",
+      "title": "Independent Auditor",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Independent Auditor.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "AGENT.INTENT_REGULATOR",
+      "title": "Intent Regulator",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Intent Regulator.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "AGENT.PROJECT_CONTROLLER",
+      "title": "Global Project Controller",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Global Project Controller.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "AGENT.RESOURCE_SCHEDULER",
+      "title": "Resource Scheduler",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Resource Scheduler.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "AGENT.RUNTIME_DEPLOYMENT",
+      "title": "Runtime/Deployment Operator",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Runtime/Deployment Operator.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "ARCH.API_CONTRACTS",
+      "title": "API Contracts",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "atomic",
+      "purpose": "Analyze only API Contracts under its version lock.",
+      "triggers": [
+        "upstream router selects ARCH.API_CONTRACTS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.openapi-contracts.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.openapi-contracts",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "ARCH.PRODUCT_CLIENT_ROUTER",
+      "title": "Product and Client Contract Router",
+      "aliases": [],
+      "family": "product-client",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Product and Client Contract Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.product-client-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.product-client.router"
+    },
+    {
+      "canonical_id": "CLOUD.AWS_COMPUTE",
+      "title": "Cloud Compute Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Compute Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_COMPUTE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_COST",
+      "title": "Cloud Cost Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Cost Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_COST"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_DATABASE",
+      "title": "Cloud Database Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Database Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_DATABASE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_DEPLOYMENT",
+      "title": "Cloud Deployment Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Deployment Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_DEPLOYMENT"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_IAM",
+      "title": "Cloud Identity and Access Management",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Identity and Access Management under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_IAM"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.aws-iam-policy.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": "specialist.platform.aws-iam-policy",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_LOGGING",
+      "title": "Cloud Logging Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Logging Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_LOGGING"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_NETWORK",
+      "title": "Cloud Network Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Network Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_NETWORK"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_SECRETS",
+      "title": "Cloud Secret Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Secret Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_SECRETS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AWS_STORAGE",
+      "title": "Cloud Storage Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Storage Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AWS_STORAGE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_COMPUTE",
+      "title": "Cloud Compute Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Compute Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_COMPUTE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_COST",
+      "title": "Cloud Cost Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Cost Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_COST"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_DATABASE",
+      "title": "Cloud Database Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Database Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_DATABASE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_DEPLOYMENT",
+      "title": "Cloud Deployment Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Deployment Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_DEPLOYMENT"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_IDENTITY",
+      "title": "Cloud Identity and Access Management",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Identity and Access Management under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_IDENTITY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_LOGGING",
+      "title": "Cloud Logging Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Logging Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_LOGGING"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_NETWORK",
+      "title": "Cloud Network Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Network Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_NETWORK"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_SECRETS",
+      "title": "Cloud Secret Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Secret Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_SECRETS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "CLOUD.AZURE_STORAGE",
+      "title": "Cloud Storage Controls",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Cloud Storage Controls under its version lock.",
+      "triggers": [
+        "upstream router selects CLOUD.AZURE_STORAGE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "DATA.DATA_ROUTER",
+      "title": "Data and Database Router",
+      "aliases": [],
+      "family": "data",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Data and Database Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.data-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.data.router"
+    },
+    {
+      "canonical_id": "DATA.POSTGRES_RLS",
+      "title": "PostgreSQL Row-Level Security",
+      "aliases": [],
+      "family": "data",
+      "subfamily": "atomic",
+      "purpose": "Analyze only PostgreSQL Row-Level Security under its version lock.",
+      "triggers": [
+        "upstream router selects DATA.POSTGRES_RLS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.data.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.postgresql-rls.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.data.router",
+      "block_id": "specialist.data.postgresql-rls",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_CACHE",
+      "title": "Edge Cache",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Cache under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_CACHE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cloudflare-cache.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": "specialist.platform.cloudflare-cache",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_DNS",
+      "title": "Edge DNS",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge DNS under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_DNS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cloudflare-dns.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": "specialist.platform.cloudflare-dns",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_HEADERS",
+      "title": "Edge Security Headers",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Security Headers under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_HEADERS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_LOGGING",
+      "title": "Edge Logging",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Logging under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_LOGGING"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_PURGE",
+      "title": "Edge Cache Purge",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Cache Purge under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_PURGE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_R2",
+      "title": "Edge Object Storage",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Object Storage under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_R2"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_RATE_LIMITING",
+      "title": "Edge Rate Limiting",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Rate Limiting under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_RATE_LIMITING"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_TLS",
+      "title": "Edge TLS",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge TLS under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_TLS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_WAF",
+      "title": "Edge Web Application Firewall",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Web Application Firewall under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_WAF"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_WORKERS",
+      "title": "Edge Workers",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Workers under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_WORKERS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "EDGE.CLOUDFLARE_ZERO_TRUST",
+      "title": "Edge Zero Trust",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Edge Zero Trust under its version lock.",
+      "triggers": [
+        "upstream router selects EDGE.CLOUDFLARE_ZERO_TRUST"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "provider-bound",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "ENG.LANGUAGE_RUNTIME_ROUTER",
+      "title": "Software Language and Runtime Router",
+      "aliases": [],
+      "family": "software-language-runtime",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Software Language and Runtime Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.software-language-runtime.router"
+    },
+    {
+      "canonical_id": "ENG.RUST_BACKEND",
+      "title": "Rust Backend",
+      "aliases": [],
+      "family": "software-language-runtime",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Rust Backend under its version lock.",
+      "triggers": [
+        "upstream router selects ENG.RUST_BACKEND"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.software-language-runtime.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.rust-backend.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.software-language-runtime.router",
+      "block_id": "specialist.software-language-runtime.rust-backend",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "ENG.TYPESCRIPT_REACT_WEB",
+      "title": "TypeScript and React Web",
+      "aliases": [],
+      "family": "software-language-runtime",
+      "subfamily": "atomic",
+      "purpose": "Analyze only TypeScript and React Web under its version lock.",
+      "triggers": [
+        "upstream router selects ENG.TYPESCRIPT_REACT_WEB"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.software-language-runtime.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.typescript-language.v1;specialist-eval.react-components.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.software-language-runtime.router",
+      "block_id": null,
+      "block_ids": [
+        "specialist.software-language-runtime.typescript-language",
+        "specialist.software-language-runtime.react-components"
+      ]
+    },
+    {
+      "canonical_id": "FOUNDATION.AUTHORITY_JURISDICTION",
+      "title": "Authority/Precedence/Jurisdiction Gate",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Authority/Precedence/Jurisdiction Gate.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "FOUNDATION.EVALUATION_ADMISSION",
+      "title": "Evaluation/Admission Gate",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Evaluation/Admission Gate.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "FOUNDATION.EVIDENCE_FRESHNESS",
+      "title": "Source/Evidence/Freshness Gate",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Source/Evidence/Freshness Gate.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "FOUNDATION.REGISTRY_DEDUP",
+      "title": "Registry/Alias/Deduplication Controller",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Registry/Alias/Deduplication Controller.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "FOUNDATION.ROLE_INTAKE",
+      "title": "Universal Role-Intake Classifier",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Universal Role-Intake Classifier.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "FOUNDATION.SCOPE_NONGOAL",
+      "title": "Scope/Non-Goal Gate",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Scope/Non-Goal Gate.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "FOUNDATION.TOOL_CUSTODY",
+      "title": "Tool/Resource/Custody Gate",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Tool/Resource/Custody Gate.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "PLATFORM.AWS_CLOUDFLARE_EDGE",
+      "title": "Provider and Edge Capability Router",
+      "aliases": [],
+      "family": "platform",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Provider and Edge Capability Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.provider-edge-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.platform.provider-edge-router"
+    },
+    {
+      "canonical_id": "PRIVACY.DATA_LIFECYCLE",
+      "title": "Privacy Data-Lifecycle Router",
+      "aliases": [],
+      "family": "privacy",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Privacy Data-Lifecycle Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.privacy.data-lifecycle-router"
+    },
+    {
+      "canonical_id": "QA.ASSURANCE_ENTERPRISE_ROUTER",
+      "title": "Assurance and Enterprise Router",
+      "aliases": [],
+      "family": "assurance-enterprise",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Assurance and Enterprise Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "PLANNED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.assurance-enterprise.router"
+    },
+    {
+      "canonical_id": "QA.TEST_ARCHITECT",
+      "title": "Test Architecture",
+      "aliases": [],
+      "family": "assurance-enterprise",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Test Architecture under its version lock.",
+      "triggers": [
+        "upstream router selects QA.TEST_ARCHITECT"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.assurance-enterprise.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.assurance-enterprise.router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_ABAC",
+      "title": "Attribute-Based Access Control",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Attribute-Based Access Control under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_ABAC"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_CACHE_RESIDUE",
+      "title": "Authorization Cache Residue",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Authorization Cache Residue under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_CACHE_RESIDUE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_FUNCTION_SCOPE",
+      "title": "Function Scope Authorization",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Function Scope Authorization under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_FUNCTION_SCOPE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_OBJECT_SCOPE",
+      "title": "Object Scope Authorization",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Object Scope Authorization under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_OBJECT_SCOPE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_RBAC",
+      "title": "Role-Based Access Control",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Role-Based Access Control under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_RBAC"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_REBAC",
+      "title": "Relationship-Based Access Control",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Relationship-Based Access Control under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_REBAC"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_REVOCATION",
+      "title": "Authorization Revocation",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Authorization Revocation under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_REVOCATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.ACCESS_CONTROL_TENANT_ISOLATION",
+      "title": "Tenant Isolation Access Control",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Tenant Isolation Access Control under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.ACCESS_CONTROL_TENANT_ISOLATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.AUTH_IDENTITY",
+      "title": "Authentication and Identity",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Authentication and Identity under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.AUTH_IDENTITY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.oauth-identity.v1;specialist-eval.oidc-core.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.router",
+      "block_id": null,
+      "block_ids": [
+        "specialist.security.oauth-identity",
+        "specialist.security.oidc-core"
+      ]
+    },
+    {
+      "canonical_id": "SEC.CONCURRENT_AUTHORIZATION",
+      "title": "Concurrent Authorization",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Concurrent Authorization under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.CONCURRENT_AUTHORIZATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.CVE_APPLICABILITY",
+      "title": "CVE Applicability",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only CVE Applicability under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.CVE_APPLICABILITY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.supply-chain-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.supply-chain-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.CVE_INVENTORY",
+      "title": "CVE Inventory",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only CVE Inventory under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.CVE_INVENTORY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.supply-chain-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.supply-chain-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.DEADLOCK",
+      "title": "Deadlock",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Deadlock under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.DEADLOCK"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.DEPENDENCY_VULNERABILITY",
+      "title": "Dependency Vulnerability",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Dependency Vulnerability under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.DEPENDENCY_VULNERABILITY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.supply-chain-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.supply-chain-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.DOUBLE_SUBMISSION",
+      "title": "Double Submission",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Double Submission under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.DOUBLE_SUBMISSION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.IDEMPOTENCY",
+      "title": "Idempotency",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Idempotency under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.IDEMPOTENCY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_BROKEN_AUTHENTICATION",
+      "title": "OWASP API2 Broken Authentication",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API2 Broken Authentication under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_BROKEN_AUTHENTICATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_FUNCTION_AUTHORIZATION",
+      "title": "OWASP API5 Broken Function Level Authorization",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API5 Broken Function Level Authorization under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_FUNCTION_AUTHORIZATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_INVENTORY",
+      "title": "OWASP API9 Improper Inventory Management",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API9 Improper Inventory Management under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_INVENTORY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_MISCONFIGURATION",
+      "title": "OWASP API8 Security Misconfiguration",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API8 Security Misconfiguration under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_MISCONFIGURATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_OBJECT_AUTHORIZATION",
+      "title": "OWASP API1 Broken Object Level Authorization",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API1 Broken Object Level Authorization under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_OBJECT_AUTHORIZATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_PROPERTY_AUTHORIZATION",
+      "title": "OWASP API3 Broken Object Property Level Authorization",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API3 Broken Object Property Level Authorization under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_PROPERTY_AUTHORIZATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_RESOURCE_CONSUMPTION",
+      "title": "OWASP API4 Unrestricted Resource Consumption",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API4 Unrestricted Resource Consumption under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_RESOURCE_CONSUMPTION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_SENSITIVE_BUSINESS_FLOWS",
+      "title": "OWASP API6 Unrestricted Access to Sensitive Business Flows",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API6 Unrestricted Access to Sensitive Business Flows under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_SENSITIVE_BUSINESS_FLOWS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_SSRF",
+      "title": "OWASP API7 Server Side Request Forgery",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API7 Server Side Request Forgery under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_SSRF"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_2023_UNSAFE_API_CONSUMPTION",
+      "title": "OWASP API10 Unsafe Consumption of APIs",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP API10 Unsafe Consumption of APIs under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_API_2023_UNSAFE_API_CONSUMPTION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-api-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2023",
+      "required_upstream_router": "specialist.security.owasp-api-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_API_TOP10",
+      "title": "OWASP API Security Top 10 Router",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for OWASP API Security Top 10 Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.security.owasp-api-top10-router"
+    },
+    {
+      "canonical_id": "SEC.OWASP_ASVS",
+      "title": "OWASP ASVS Applicability Router",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for OWASP ASVS Applicability Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.security.owasp-asvs-router"
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2021_A01_ACCESS_CONTROL",
+      "title": "OWASP Web A01 Broken Access Control",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A01 Broken Access Control under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2021_A01_ACCESS_CONTROL"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2021",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2021_A02_CRYPTOGRAPHIC_FAILURES",
+      "title": "OWASP Web A02 Cryptographic Failures",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A02 Cryptographic Failures under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2021_A02_CRYPTOGRAPHIC_FAILURES"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2021",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2021_A03_INJECTION",
+      "title": "OWASP Web A03 Injection",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A03 Injection under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2021_A03_INJECTION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2021",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL",
+      "title": "OWASP Web A01 Broken Access Control",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A01 Broken Access Control under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION",
+      "title": "OWASP Web A02 Security Misconfiguration",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A02 Security Misconfiguration under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES",
+      "title": "OWASP Web A03 Software Supply Chain Failures",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A03 Software Supply Chain Failures under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES",
+      "title": "OWASP Web A04 Cryptographic Failures",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A04 Cryptographic Failures under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A05_INJECTION",
+      "title": "OWASP Web A05 Injection",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A05 Injection under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A05_INJECTION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A06_INSECURE_DESIGN",
+      "title": "OWASP Web A06 Insecure Design",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A06 Insecure Design under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A06_INSECURE_DESIGN"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES",
+      "title": "OWASP Web A07 Authentication Failures",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A07 Authentication Failures under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
+      "title": "OWASP Web A08 Software or Data Integrity Failures",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A08 Software or Data Integrity Failures under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
+      "title": "OWASP Web A09 Security Logging and Alerting Failures",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A09 Security Logging and Alerting Failures under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
+      "title": "OWASP Web A10 Mishandling of Exceptional Conditions",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only OWASP Web A10 Mishandling of Exceptional Conditions under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.owasp-web-top10-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "2025",
+      "required_upstream_router": "specialist.security.owasp-web-top10-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.OWASP_WEB_TOP10",
+      "title": "OWASP Web Top 10 Router",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for OWASP Web Top 10 Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.security.owasp-web-top10-router"
+    },
+    {
+      "canonical_id": "SEC.PATCH_REMEDIATION",
+      "title": "Patch Remediation",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Patch Remediation under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.PATCH_REMEDIATION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.supply-chain-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.supply-chain-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.RACE_CONDITION",
+      "title": "Race Condition",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Race Condition under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.RACE_CONDITION"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.REPLAY",
+      "title": "Replay Resistance",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Replay Resistance under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.REPLAY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.SBOM",
+      "title": "Software Bill of Materials",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Software Bill of Materials under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.SBOM"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.supply-chain-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.supply-chain-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.SECRETS_CRYPTO_SUPPLY_CHAIN",
+      "title": "Secrets, Cryptography, and Supply-Chain Router",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Secrets, Cryptography, and Supply-Chain Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.security.supply-chain-router"
+    },
+    {
+      "canonical_id": "SEC.SECURITY_ROUTER",
+      "title": "Security and Identity Router",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Security and Identity Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.security-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.security.router"
+    },
+    {
+      "canonical_id": "SEC.SUPPLY_CHAIN_PROVENANCE",
+      "title": "Supply-Chain Provenance",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Supply-Chain Provenance under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.SUPPLY_CHAIN_PROVENANCE"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.supply-chain-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "current",
+      "required_upstream_router": "specialist.security.supply-chain-router",
+      "block_id": null,
+      "block_ids": []
+    },
+    {
+      "canonical_id": "SEC.TENANT_ACCESS_CONTROL",
+      "title": "Access-Control Composition Router",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Access-Control Composition Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.security.access-control-router"
+    },
+    {
+      "canonical_id": "SEC.TOCTOU",
+      "title": "Time-of-Check/Time-of-Use",
+      "aliases": [],
+      "family": "security",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Time-of-Check/Time-of-Use under its version lock.",
+      "triggers": [
+        "upstream router selects SEC.TOCTOU"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.security.access-control-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1",
+      "required_upstream_router": "specialist.security.access-control-router",
+      "block_id": null,
+      "block_ids": []
+    }
+  ],
+  "typed_overlay_counts": {
+    "ROUTER": 12,
+    "CONTROL_PLANE": 13,
+    "KNOWLEDGE_BLOCK": 0,
+    "GOVERNANCE_BLOCK": 0,
+    "STANDARD_BLOCK": 0,
+    "CONTEXT_BLOCK": 0,
+    "ATOMIC_SPECIALIST": 79,
+    "COMPILED_AGENT_PACKAGE": 0
+  },
+  "inventory_sha256": "ca7cdbf0fb3b8e64123fb4a0a5ab193aef164b3d013c45499ff9a5e457d6dbd3"
 }

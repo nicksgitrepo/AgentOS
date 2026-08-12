@@ -22,6 +22,13 @@ overlays remain external. The current candidate has three source-locked
 standard packages under `specialist-blocks/standards/`:
 NIST SP 800-218 SSDF 1.1, OWASP ASVS 5.0.0, and SLSA Specification 1.2.
 
+The first P1 atomic slice under `specialist-blocks/wave-02/` contains six
+classification-only routers and ten narrow candidates for Rust, TypeScript,
+React, PostgreSQL RLS, OpenAPI contracts, OAuth, OIDC, AWS IAM, Cloudflare DNS,
+and Cloudflare Cache. Each atomic candidate is selected only through its
+required upstream router and remains inactive pending independent utility/harm
+and admission review.
+
 Atomicity is normative: broad family labels are routers only, atomic blocks own
 one failure mode or evidence domain, and control-plane blocks own governance
 mechanics. The atomicity overlay in `registry/atomic-inventory.v1.json` keeps

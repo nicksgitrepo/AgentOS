@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.platform.aws-iam-policy",
+  "class": "narrowness",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for narrowness; all provider, project, consumer, and applicability facts remain external."
+}

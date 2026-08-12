@@ -5,6 +5,59 @@
   "governance_version": "2.1rc",
   "blocks": [
     {
+      "block_id": "specialist.assurance-enterprise.router",
+      "candidate_digest": "78505abdafbc6791cd20465d7fde05cc178f334a148d8ecffc68bbb05690331b",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Assurance and Enterprise Router; it has no downstream Product or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named family signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with the declared foundation controls",
+        "never substitute for an atomic specialist"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "family": "assurance-enterprise",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.assurance-enterprise-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.control.bootstrap-project-initializer",
       "candidate_digest": "11a185be1a8e886618fda5b7a3b06e1199e5fb3b95a6e1f216868fe352bb0d05",
       "role_kind": "CONTROL_PLANE",
@@ -362,6 +415,117 @@
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "evaluator_receipt": "specialist-eval.runtime-deployment-operator.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.data.postgresql-rls",
+      "candidate_digest": "f896ac9c3a548b3acf02af84ddc70d5b55a16e1cdb6708660d7e1feda6cfe1a8",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: PostgreSQL Row-Level Security; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.data.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.postgresql-17-rls"
+      ],
+      "dependencies": [
+        "specialist.data.router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.postgresql-rls.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.data.router",
+      "candidate_digest": "9f83878248055699a9816e4132fcaaf15bfa9d261224487004ed4feda9afaea1",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Data and Database Router; it has no downstream Product or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named family signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with the declared foundation controls",
+        "never substitute for an atomic specialist"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "family": "data",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.data-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -727,6 +891,740 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.platform.aws-iam-policy",
+      "candidate_digest": "4f947edc9dce506d7c1831a715075f601dd76f1323d15959f52182fd383c0443",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: AWS IAM Policy Elements; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.aws-iam-policy-elements"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.aws-iam-policy.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.platform.cloudflare-cache",
+      "candidate_digest": "c526afbcdd0d0392940f148c74a89c097c4a1336e6018793ba8947a9c255d6da",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare Cache Rules; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.cloudflare-cache-rules"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.cloudflare-cache.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.platform.cloudflare-dns",
+      "candidate_digest": "14f96648137e9710caf5014eb41a7a807bbd2d8c394bfada8f1c67a33674ecef",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare DNS Records; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.platform.provider-edge-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.cloudflare-dns-records"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.platform.provider-edge-router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.cloudflare-dns.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.platform.provider-edge-router",
+      "candidate_digest": "e4b8b7db4f57a25a82ecb75124bb6d194053059be3fada0840b30e38da205925",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Provider and Edge Capability Router; it has no downstream Product or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named family signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with the declared foundation controls",
+        "never substitute for an atomic specialist"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "family": "delivery-operations",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.provider-edge-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.product-client.openapi-contracts",
+      "candidate_digest": "8df76e745ee57052418bc1482f5e9a9a275d5c5a3ca9772f8e66bea93d380c02",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: OpenAPI HTTP Contract; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.product-client.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.openapi-3-1-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.product-client.router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.openapi-contracts.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.product-client.router",
+      "candidate_digest": "909b0a2f5408292ed415383c7df3469f6f1aba28de1c2579219419390289b560",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Product and Client Contract Router; it has no downstream Product or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named family signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with the declared foundation controls",
+        "never substitute for an atomic specialist"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "family": "product-client",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.product-client-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.security.oauth-identity",
+      "candidate_digest": "05c203329c251230e377561a5e10db7721f40a3486e466575d13995a1d93c6fe",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: OAuth Security Identity Flow; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.security.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.rfc-9700"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.security.router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.oauth-identity.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.security.oidc-core",
+      "candidate_digest": "369a08f03366e0c94ed3b98620981fae9b2c511c382109a60178d010d4c6596d",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: OpenID Connect Core Claims; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.security.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.oidc-core"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.security.router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.oidc-core.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.security.router",
+      "candidate_digest": "c1c0cb8999e407c4524a3ac1913418b75e221becc89043cf3f44d158450c8a95",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Security and Identity Router; it has no downstream Product or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named family signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with the declared foundation controls",
+        "never substitute for an atomic specialist"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "family": "security",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.security-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.software-language-runtime.react-components",
+      "candidate_digest": "1c024e5426c71fd3ffb614ca87caef54bb267216d009570339b695028ed76489",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: React Component Runtime; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.software-language-runtime.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.react-19-2"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.software-language-runtime.router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.react-components.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.software-language-runtime.router",
+      "candidate_digest": "7bd4d8295523dd38fa34ab7ae360c4d3f366ab100b18be0818bded5ba4c7c133",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Software Language and Runtime Router; it has no downstream Product or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named family signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with the declared foundation controls",
+        "never substitute for an atomic specialist"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "family": "software-language-runtime",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.software-language-runtime.rust-backend",
+      "candidate_digest": "d1280a4e2c33edd15ef0a0daf32976333c657052df9990d3ca65a94b14059a5c",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Rust Backend Language Semantics; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.software-language-runtime.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.rust-reference"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.software-language-runtime.router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.rust-backend.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.software-language-runtime.typescript-language",
+      "candidate_digest": "ac884c0fec02628150aaa70e3511d1d3c8df41171d682826257fe83256ffb886",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: TypeScript Language and Compiler Semantics; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named atomic concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.software-language-runtime.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse the exact source lock and version"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "provider, framework, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P1",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.typescript-5-9"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.software-language-runtime.router"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.typescript-language.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.standard.nist-ssdf",
       "candidate_digest": "8475acafc2aab24903deae55734967f5a8098919276fc023b7d50b3257c35bbb",
       "role_kind": "STANDARD_BLOCK",
@@ -895,5 +1793,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "baaae3f18197699f435c06de47411e2f158a36a5dda884bd0e7ff5beb600a4b8"
+  "roster_sha256": "01f4790418195f41728ea34b0ac788d4fa30adff08cb0925dce5bf2442d975c5"
 }
