@@ -115,6 +115,12 @@ export function verifyHostAuthority({input = {}, source = {}, suppliedRole = {}}
   const proofSession = firstDefined(supplied, ["session_id", "sessionId", "real_session_id", "realSessionId"]);
   const proofThread = firstDefined(supplied, ["thread_id", "threadId"]);
   const proofHost = firstDefined(supplied, ["host_id", "hostId"]);
+  const proofCapabilities = firstDefined(supplied, ["capabilities", "available_capabilities", "availableCapabilities"]);
+  const requiredCapabilities = suppliedRole.requiredCapabilities
+    ?? suppliedRole.required_capabilities
+    ?? input.required_capabilities
+    ?? input.requiredCapabilities
+    ?? ["local_check"];
   const expectedProject = suppliedRole.expectedProject;
   const expectedSession = suppliedRole.sessionIdentity?.sessionId;
   const expectedThread = closure.threadId ?? closure.thread_id ?? input.threadId ?? input.thread_id;
@@ -132,6 +138,13 @@ export function verifyHostAuthority({input = {}, source = {}, suppliedRole = {}}
     && proofThread === expectedThread
     && expectedHost !== undefined
     && proofHost === expectedHost
+    && Array.isArray(proofCapabilities)
+    && Array.isArray(requiredCapabilities)
+    && proofCapabilities.every((capability) => typeof capability === "string" && capability.length > 0)
+    && requiredCapabilities.every((capability) => typeof capability === "string" && capability.length > 0)
+    && new Set(proofCapabilities).size === proofCapabilities.length
+    && new Set(requiredCapabilities).size === requiredCapabilities.length
+    && requiredCapabilities.every((capability) => proofCapabilities.includes(capability))
     && !hasPlaceholder;
   return {
     status: verified ? "VERIFIED" : "UNPROVEN",

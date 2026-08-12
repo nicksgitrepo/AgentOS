@@ -53,12 +53,11 @@ The focused operational verifier proves:
 ## Honest evidence ceiling
 
 All affected Memory, Bootstrap, routing, private-control, architecture,
-portability, source-hygiene, and README verifiers pass. The repository-wide
-canonical verifier advances through those checks and then stops at the
-pre-existing Rapid Prototype expectation mismatch: the verifier expects
-`UNAVAILABLE`, while the unchanged contract returns the stricter `HARD_STOP`.
-That mismatch was reproduced on the unchanged baseline and is outside this
-Memory candidate.
+portability, source-hygiene, README, and Rapid Prototype verifiers pass. A
+follow-up kernel audit repaired the Rapid Prototype fixture and integration
+drift that had previously stopped the repository-wide canonical verifier.
+The complete canonical verifier now passes without weakening its fail-closed
+source, host-authority, scheduler-proof, or evidence-identity contracts.
 
 The candidate does not claim encryption, provider synchronization,
 changed-binding migration, rollback, compaction, remote multi-host locking,

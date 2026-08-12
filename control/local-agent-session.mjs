@@ -462,6 +462,10 @@ async function runSession() {
     running = {childPid: initialChildPid, promise: initialPromise};
     const initial = await initialPromise;
     const handshake = validateHandshake(initial.handshake, base);
+    // Publish RUNNING before the completed readback. Consumers treat the
+    // readback as the startup barrier, so observing it must imply that the
+    // heartbeat has already left STARTING.
+    writeHeartbeat("RUNNING");
     writeJsonAtomic(initialReadbackPath, {
       schema: INITIAL_SCHEMA,
       version: 1,
@@ -475,7 +479,6 @@ async function runSession() {
     initialRecord.initial_readback_sha256 = digestWithout(initialRecord, "initial_readback_sha256");
     writeJsonAtomic(initialReadbackPath, initialRecord);
     process.stdout.write(`${JSON.stringify(handshake)}\n`);
-    writeHeartbeat("RUNNING");
   } catch (error) {
     const failure = {
       schema: INITIAL_SCHEMA,

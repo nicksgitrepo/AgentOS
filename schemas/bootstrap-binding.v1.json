@@ -582,7 +582,7 @@
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",
-      "sha256": "38582bb453daeb2c00773b9e617138083ad176f1c993c624aa8a4d230f11a16f"
+      "sha256": "bd0328ebfa6c93e4543ef902871d440c1bf56db5c8ec245187eb5dcaaaa48c14"
     },
     "local_agent_session_contract": {
       "path": "schemas/local-agent-session.v1.json",
@@ -914,7 +914,11 @@
     },
     "project_memory_operational_candidate_article": {
       "path": "docs/project-memory-operational-candidate-2026-08-11.md",
-      "sha256": "b3fa6535e01e589155285ff6026657bcb7190af3d23b98fc9c9d7240943dd311"
+      "sha256": "af93edb47c86aec5a9373572b814198d61f6d0a6e64d674b5b87fe4ba1790d02"
+    },
+    "kernel_personal_audit_repair_article": {
+      "path": "docs/kernel-personal-audit-repair-2026-08-12.md",
+      "sha256": "77e18d37549f0992c8c4ff97c15cd11211c5a18ee2b56c333d8418b1155e1f5e"
     },
     "project_memory_audit_report": {
       "path": "docs/feature-audits/PROJECT_MEMORY_LEDGER/auditreport.md",
@@ -1138,7 +1142,7 @@
     },
     "rapid_prototype_controller": {
       "path": "control/rapid-prototype/index.mjs",
-      "sha256": "448d1b541e722992b472bfce5a461cf53beb8dd64a1cecb2ab441c9508054b18"
+      "sha256": "edac1b79d6478ac30537604b0f3e8129607ca15b6a47fc9d760836292d4e94ab"
     },
     "rapid_delivery_closure_controller": {
       "path": "control/rapid-prototype/delivery-closure.mjs",
@@ -1150,7 +1154,7 @@
     },
     "rapid_evidence_identity_controller": {
       "path": "control/rapid-prototype/evidence-identity.mjs",
-      "sha256": "48d986844253cd6b5525d0951dbb88a9fab8243454d8060612aadddd9d920b04"
+      "sha256": "7e9e393a13285741e330334fcca759da4866f0b96c8f6ac51d4e0d2584182e4e"
     },
     "rapid_evidence_identity_verifier": {
       "path": "tests/rapid-prototype/evidence-identity.mjs",
@@ -1158,7 +1162,7 @@
     },
     "rapid_prototype_verifier": {
       "path": "tests/verify-rapid-prototype.mjs",
-      "sha256": "a0aa5ae923dc6875a2a54798181f8f5b8174f40466d1a3c5bbb597426fcbdb05"
+      "sha256": "c4d45ac42545a0cbfdf1b58c9550b39ee7b081c3b3e5fa59756349f6a9895bcc"
     },
     "workflow_article": {
       "path": "governance/2.1rc/feature-platform-workflow.md",

@@ -8,6 +8,8 @@ import {
   runRapidPrototype,
 } from "../control/rapid-prototype/index.mjs";
 import {scanPublicPayload} from "../control/rapid-prototype/security-privacy.mjs";
+import {compileSchedulerAdmissionReceipt} from "../control/scheduler-admission.mjs";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const SOURCE = Object.freeze({
   project_id: "rapid-slice-project",
@@ -25,6 +27,8 @@ const ROLE_ADMISSION = Object.freeze({
     projectId: SOURCE.project_id,
     cwd: SOURCE.cwd,
     verified: true,
+    real: true,
+    hostReadback: true,
   },
   expectedProject: SOURCE.project_id,
   expectedCwd: SOURCE.cwd,
@@ -41,6 +45,40 @@ const CLOSEOUT_EVIDENCE = Object.freeze({
   REMOVE_ACTIVE_TASK_SCOPE: `digest:${"5".repeat(64)}`,
   MARK_CHAT_OUT_OF_SCOPE: `digest:${"6".repeat(64)}`,
 });
+const REQUEST_ID = "rapid-slice-verification";
+const SCHEDULER_ADMISSION = Object.freeze(compileSchedulerAdmissionReceipt({
+  requestId: REQUEST_ID,
+  candidateCommit: SOURCE.source_commit,
+  candidateTree: SOURCE.source_tree,
+  candidateGeneration: 1,
+  effectiveArgv: ["node", "tests/verify-rapid-prototype.mjs"],
+  workingDirectoryRef: "opaque:rapid-slice-worktree",
+  dependencyPreflight: {closure_sha256: canonicalDigest({kind: "dependency-closure"})},
+  runtimePreflight: {closure_sha256: canonicalDigest({kind: "runtime-closure"})},
+  executionUnitId: "rapid-slice-node-unit",
+  laneCursorRef: "rapid-slice-lane-cursor",
+  queueCursorRef: "rapid-slice-queue-cursor",
+}));
+
+function schedulerTerminalReceipt() {
+  return {
+    status: "PASS",
+    request_id: REQUEST_ID,
+    source_commit: SOURCE.source_commit,
+    source_tree: SOURCE.source_tree,
+    checks: Object.fromEntries([
+      "bounded_scan",
+      "focused_hostile",
+      "full_direct_node_suite",
+    ].map((name) => [name, {
+      status: "PASS",
+      source_commit: SOURCE.source_commit,
+      source_tree: SOURCE.source_tree,
+      evidence_sha256: canonicalDigest({check: name}),
+      exit_code: 0,
+    }])),
+  };
+}
 
 function makeHost(calls) {
   return {
@@ -103,6 +141,26 @@ function baseInput(calls = []) {
       gitTopLevel: SOURCE.git_top_level,
       environment: "LOCAL_PROJECT",
     },
+    progress: {
+      meaningfulProgress: true,
+      result: "PASS",
+      taskId: "RAPID-SLICE-VERIFICATION",
+      scope: ["RAPID_SLICE"],
+      sourceCommit: SOURCE.source_commit,
+      sourceTree: SOURCE.source_tree,
+      progressEvidence: {
+        kind: "SCHEDULER_PROOF",
+        identity: "RAPID-SLICE-VERIFICATION",
+        digest: canonicalDigest({result: "rapid-slice-ready"}),
+      },
+    },
+    workflowDecision: {
+      status: "READY",
+      check: {status: "PASS"},
+      independent_check: {status: "PENDING"},
+    },
+    schedulerAdmissionReceipt: SCHEDULER_ADMISSION,
+    schedulerTerminalReceipt: schedulerTerminalReceipt(),
     host_authority: {
       authority: "NATIVE_SESSION_HOST_READBACK",
       status: "MATCH",
@@ -118,6 +176,7 @@ function baseInput(calls = []) {
       session_id: ROLE_ADMISSION.sessionIdentity.sessionId,
       thread_id: THREAD_ID,
       host_id: HOST_ID,
+      capabilities: ["local_check"],
     },
     closure: {
       threadId: THREAD_ID,
