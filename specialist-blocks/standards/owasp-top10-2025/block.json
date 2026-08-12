@@ -1,0 +1,319 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-top10-2025",
+  "revision": "1.0.0",
+  "priority": "P1",
+  "role_kind": "STANDARD_BLOCK",
+  "family": "security",
+  "title": "OWASP Top 10:2025",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Provide reusable, version-bound normalized requirements for OWASP Top 10:2025; do not certify applicability or compliance.",
+  "scope": {
+    "included": [
+      "exact edition identity",
+      "exceptions and supersession",
+      "external applicability overlay",
+      "normalized requirement mappings",
+      "source/effective-date lock"
+    ],
+    "non_goals": [
+      "automated certification",
+      "consumer Product writing",
+      "legal advice",
+      "provider activation",
+      "silently selecting a different edition"
+    ],
+    "smallest_sufficient_rule": "Reference this exact edition once and route unrelated or version-different authority to a separate block."
+  },
+  "atomic_scope_statement": "One immutable standard edition: OWASP Top 10:2025; no unrelated standard, jurisdiction, or certification authority.",
+  "permitted_decisions": [
+    "issue a typed evidence obligation",
+    "map a typed requirement to the exact locked edition",
+    "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+    "return UNKNOWN when applicability or evidence is incomplete"
+  ],
+  "forbidden_decisions": [
+    "activate, deploy, publish, or self-accept",
+    "automated certification",
+    "broaden into a different standard",
+    "claim another edition or publisher",
+    "infer jurisdiction/entity/activity/data applicability",
+    "legal advice"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN closes only the dependent requirement mapping",
+    "evaluate applicability only in the external overlay",
+    "new edition, material erratum, or gate correction creates a new block version",
+    "reuse exact ID/version/hash rather than copying requirements"
+  ],
+  "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+  "split_required_when": [
+    "edition or material erratum differs",
+    "jurisdiction or applicability rule differs",
+    "publisher differs",
+    "requirement authority differs",
+    "tool or evidence custody differs"
+  ],
+  "required_knowledge": [
+    "OWASP Top 10:2025",
+    "external applicability and exception overlay",
+    "publisher/effective/supersession metadata",
+    "versioned requirement identifiers"
+  ],
+  "routing": {
+    "signals": [
+      "A01:2025",
+      "A05:2025",
+      "OWASP Top 10",
+      "web application security"
+    ],
+    "deny_if": [
+      "certification request",
+      "missing jurisdiction/entity/activity/data applicability",
+      "missing publisher/version/effective identity",
+      "stale or superseded source"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "activity",
+      "applicability_decision",
+      "data_class",
+      "effective_date",
+      "entity",
+      "jurisdiction",
+      "standard_version",
+      "web_application_scope"
+    ],
+    "optional_context": [
+      "evidence_receipt",
+      "profile",
+      "project_context"
+    ],
+    "deny_if_missing": [
+      "applicability_decision",
+      "effective_date",
+      "standard_version"
+    ],
+    "acceptance_signals": [
+      "A01:2025",
+      "A05:2025",
+      "OWASP Top 10",
+      "web application security"
+    ],
+    "rejection_signals": [
+      "ambiguous edition",
+      "certification claim",
+      "missing applicability",
+      "stale source"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.owasp-top10-2025.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "applicability",
+      "exceptions",
+      "handoff",
+      "requirement_mappings",
+      "standard_identity",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "effective/supersession status",
+      "external applicability overlay",
+      "requirement-level mapping",
+      "sources.lock identity",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "applicability_status",
+      "block_id",
+      "block_sha256",
+      "residuals",
+      "revision",
+      "source_lock_identity"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "external applicability evidence",
+      "normalized requirement mappings",
+      "the exact source edition in sources.lock"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "exact primary standard source",
+      "explicit owner authority",
+      "external applicability overlay",
+      "human safety/emergency authority",
+      "portable governance hard controls"
+    ],
+    "prohibited_authority": [
+      "another publisher/edition",
+      "automated certification",
+      "legal conclusion",
+      "opaque citation",
+      "self-authored acceptance",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "Require jurisdiction, entity, activity, data class, version, effective date, exceptions, and requirement-level mapping before regulated or standards applicability advances.",
+    "escalation_rule": "Conflict or missing applicability escalates to the authority-jurisdiction gate and closes only the dependent mapping.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Exact publisher, identifier, edition, publication/effective/supersession status, retrieved date, immutable identity, and source digest must be checked; stale or unverifiable evidence denies the dependent mapping.",
+    "claim_rule": "Claims are limited to the exact normalized requirement and source identity; no certification or legal applicability claim is permitted.",
+    "unknown_rule": "UNKNOWN records missing applicability or evidence and closes only the dependent requirement mapping."
+  },
+  "controls": {
+    "read": [
+      "compatibility.json",
+      "external typed applicability overlay",
+      "requirements.json",
+      "sources.lock",
+      "supersession.json"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "local deterministic validator",
+      "source-lock reader"
+    ],
+    "data": [
+      "no secrets",
+      "public standard metadata",
+      "synthetic or externally supplied applicability fields only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_ISOLATED_CANDIDATE",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "preserve the immutable block",
+      "record exact missing applicability field",
+      "refresh or supersede the source lock",
+      "resume only after independent recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Block, source lock, normalized requirements, compatibility/supersession maps, twelve gates, fixtures, evaluation, and handoff have matching digests.",
+    "evaluation_entry": "Independent evaluator checks requirement-level mappings and applicability denial; static syntax is insufficient.",
+    "suspension": "Suspend on source supersession, material erratum, invalidated applicability, or failed utility/harm review.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the exact edition is retired; old compiled locks remain reproducible.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old edition."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evidence-freshness-gate"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.owasp-top10-2025.v1",
+    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "normalized_requirements_path": "requirements.json",
+  "applicability_inputs": [
+    "external applicability overlay",
+    "risk-category and assessment purpose",
+    "version/publication/supersession status",
+    "web application scope"
+  ],
+  "exceptions": [
+    "Category analysis is delegated to distinct atomic specialists; this block does not certify an application or accept a fix.",
+    "The Top 10 is an awareness/risk taxonomy and does not determine project-specific likelihood or impact."
+  ],
+  "supersession_status": "CURRENT_RELEASE_AT_RETRIEVAL",
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.standard-owasp-top10-2025",
+    "standard_identity": {
+      "publisher": "OWASP Foundation",
+      "identifier": "OWASP Top 10",
+      "edition": "2025"
+    },
+    "compatibility_map_path": "compatibility.json",
+    "supersession_path": "supersession.json",
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "A new edition, material erratum, or normative gate correction creates a new immutable block version plus compatibility/supersession map.",
+    "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this standard block."
+  },
+  "source_manifest_sha256": "948b51e2d7d11605c2664338f605fc6e4e9f17b8e00d70e438939934bc162971",
+  "normalized_requirements_sha256": "5503005aaf424634c0bdf4e63cd72441dafb2dc30873141d09b2737c6246f079",
+  "compatibility_sha256": "932256478f2fb23bc275707ec4fe71b3e6c557e004c7b91f9663537d9e7aa035",
+  "supersession_sha256": "23944decc00c13356f6d6b438b67b3e6faa826be11ed94dca0950db62834a1c4",
+  "block_sha256": "320aceff7a1b349f507d343cbdb3edc7ed24dcf5fda44a1f5a0bab08a671137d"
+}

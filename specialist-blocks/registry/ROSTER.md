@@ -56,9 +56,9 @@ Current materialized counts are `ROUTER: 631`, `CONTROL_PLANE: 13`,
 `12` routers, `79` atomic specialists, and `13` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `42` packages total, consisting of `6` `ROUTER`, `13`
-`CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `13` `STANDARD_BLOCK` packages.
-All 42 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
+backlog: `91` packages total, consisting of `12` `ROUTER`, `13`
+`CONTROL_PLANE`, `51` `ATOMIC_SPECIALIST`, and `15` `STANDARD_BLOCK` packages.
+All 91 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 ## Source-locked standard candidates
 
@@ -66,6 +66,8 @@ All 42 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 |---|---|---|---|---|
 | `specialist.standard.nist-ssdf` | `security / P1` | [NIST SP 800-218 SSDF](https://csrc.nist.gov/pubs/sp/800/218/final) `1.1`; `sources.lock`; immutable identity `nist-sp-800-218-v1.1-final-20220203` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.nist-ssdf.v1` | 12 gates; external applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.owasp-asvs` | `security / P1` | [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/) `5.0.0`; `sources.lock`; immutable identity `owasp-asvs-5.0.0-release-20250530` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-asvs.v1` | 12 gates; external applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.owasp-top10-2025` | `security / P2` | [OWASP Top 10:2025](https://owasp.org/Top10/) `2025`; `sources.lock`; immutable identity `owasp-top10-2025-release` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-top10-2025.v1` | 12 gates; external web-application applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.owasp-api-top10-2023` | `security / P2` | [OWASP API Security Top 10 2023](https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/) `2023`; `sources.lock`; immutable identity `owasp-api-security-top10-2023-release-20230703` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-top10-2023.v1` | 12 gates; external API applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.slsa` | `delivery-operations / P1` | [SLSA Specification](https://slsa.dev/spec/v1.2/) `1.2`; `sources.lock`; immutable identity `slsa-spec-v1.2-approved` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.slsa.v1` | 12 gates; external track/level overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.rust-reference` | `software-language-runtime / P1` | [Rust Reference](https://doc.rust-lang.org/reference.html) `1.97.1`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.rust-reference.v1` | 12 gates; external edition/toolchain overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.typescript-5-9` | `software-language-runtime / P1` | [TypeScript 5.9 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html) `5.9`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.typescript-5-9.v1` | 12 gates; external compiler overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
@@ -106,6 +108,64 @@ legal advice, select applicability, or accept themselves.
 | `specialist.platform.cloudflare-cache` | `ATOMIC_SPECIALIST`; `specialist.platform.provider-edge-router` | [Cloudflare Cache Rules](https://developers.cloudflare.com/cache/how-to/cache-rules/) current retrieval lock | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-cache.v1` | 12 gates; upstream router required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.assurance-enterprise.router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.assurance-enterprise-router.v1` | 12 gates; router-only; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 
+## P2 security routers and atomic specialists
+
+The P2 security slice is source-locked and candidate-only. The two OWASP
+indexes are reusable `STANDARD_BLOCK`s; the category packages reference their
+exact standard hashes and never copy the index authority. Every atomic row has
+one upstream router, its own gate pack, hostile fixture set, evaluator receipt,
+and typed handoff.
+
+| Block ID | Kind / upstream | Reusable standard dependencies | Build / evaluation | Gates / lifecycle |
+|---|---|---|---|---|
+| `specialist.privacy.data-lifecycle-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.data-lifecycle-router.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.access-control-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.access-control-router.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-top10-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-top10-router.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-top10-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-top10-router.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-asvs-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-asvs-router.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.supply-chain-router` | `ROUTER`; none | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.supply-chain-router.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.rbac` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.rbac.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.abac` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.abac.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.rebac` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.rebac.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.tenant-isolation` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.tenant-isolation.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.object-scope` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.object-scope.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.function-scope` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.function-scope.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.revocation` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.revocation.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.cache-residue` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cache-residue.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.race-condition` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.race-condition.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.toctou` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.toctou.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.deadlock` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.deadlock.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.idempotency` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.idempotency.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.replay` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.replay.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.double-submission` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.double-submission.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.concurrent-authorization` | `ATOMIC_SPECIALIST`; `specialist.security.access-control-router` | `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.concurrent-authorization.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.cve-inventory` | `ATOMIC_SPECIALIST`; `specialist.security.supply-chain-router` | `specialist.standard.nist-ssdf`, `specialist.standard.slsa` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cve-inventory.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.cve-applicability` | `ATOMIC_SPECIALIST`; `specialist.security.supply-chain-router` | `specialist.standard.nist-ssdf`, `specialist.standard.slsa` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cve-applicability.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.dependency-vulnerability` | `ATOMIC_SPECIALIST`; `specialist.security.supply-chain-router` | `specialist.standard.nist-ssdf`, `specialist.standard.slsa` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.dependency-vulnerability.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.sbom` | `ATOMIC_SPECIALIST`; `specialist.security.supply-chain-router` | `specialist.standard.nist-ssdf`, `specialist.standard.slsa` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.sbom.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.patch-remediation` | `ATOMIC_SPECIALIST`; `specialist.security.supply-chain-router` | `specialist.standard.nist-ssdf`, `specialist.standard.slsa` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.patch-remediation.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.supply-chain-provenance` | `ATOMIC_SPECIALIST`; `specialist.security.supply-chain-router` | `specialist.standard.nist-ssdf`, `specialist.standard.slsa` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.supply-chain-provenance.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a01-broken-access-control` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a01-broken-access-control.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a02-security-misconfiguration` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a02-security-misconfiguration.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a03-software-supply-chain-failures` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a03-software-supply-chain-failures.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a04-cryptographic-failures` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a04-cryptographic-failures.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a05-injection` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a05-injection.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a06-insecure-design` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a06-insecure-design.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a07-authentication-failures` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a07-authentication-failures.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a08-software-data-integrity-failures` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a08-software-data-integrity-failures.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a09-security-logging-alerting-failures` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a09-security-logging-alerting-failures.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-web-2025-a10-mishandling-exceptional-conditions` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-web-top10-router` | `specialist.standard.owasp-top10-2025`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-web-2025-a10-mishandling-exceptional-conditions.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api1-object-authorization` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api1-object-authorization.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api2-broken-authentication` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api2-broken-authentication.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api3-property-authorization` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api3-property-authorization.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api4-resource-consumption` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api4-resource-consumption.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api5-function-authorization` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api5-function-authorization.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api6-sensitive-business-flows` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api6-sensitive-business-flows.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api7-ssrf` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api7-ssrf.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api8-misconfiguration` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api8-misconfiguration.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api9-inventory` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api9-inventory.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.security.owasp-api-2023-api10-unsafe-api-consumption` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api10-unsafe-api-consumption.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+
 ## Mandatory package contract
 
 Every block has stable identity/version/aliases/lifecycle, narrow role context,
@@ -137,7 +197,8 @@ P0 is the only active priority wave. It has six lanes: `AGENT.BOOTSTRAP`,
 `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
 `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
 `AGENT.INDEPENDENT_AUDITOR`. All P1–P6 entries remain planned until the
-foundation and preceding wave receipts exist.
+foundation and preceding wave receipts exist; the P1/P2 packages above are
+candidate library records, not active lanes.
 
 The full inventory retains 625 role mentions and 619 unique titles, with 10
 explicit duplicate/alias mappings. Priority changes sequencing, not existence.
@@ -146,7 +207,7 @@ explicit duplicate/alias mappings. Priority changes sequencing, not existence.
 
 The current typed atomicity overlay reports exactly:
 
-- `7` routers;
+- `12` routers;
 - `79` atomic specialists;
 - `13` control-plane blocks.
 
@@ -168,10 +229,12 @@ evidence remain external overlays. New editions, material errata, or normative
 gate corrections create new block versions with compatibility/supersession
 metadata. A non-material publisher refresh creates a freshness receipt only.
 
-The current candidate contains thirteen such source-locked standard packages:
-NIST SSDF 1.1, OWASP ASVS 5.0.0, and SLSA Specification 1.2. Their static
-receipts do not change the backlog's `STANDARD_BLOCK: 0` materialization count;
-that count records roles not yet expanded into packages.
+The current candidate contains fifteen such source-locked standard packages:
+NIST SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten P1 language,
+framework, data, API, identity, and provider authorities, OWASP Top 10:2025,
+and OWASP API Security Top 10:2023. Their static receipts do not change the
+backlog's `STANDARD_BLOCK: 0` materialization count; that count records roles
+not yet expanded into packages.
 
 The aggregate typed handoff is `registry/integration-handoff.v1.json` with its
 human-readable companion `INTEGRATION_HANDOFF.md`; its current disposition is

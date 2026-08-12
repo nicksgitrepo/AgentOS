@@ -18,10 +18,11 @@ Each block package contains:
 Each reusable `STANDARD_BLOCK` additionally contains `requirements.json`,
 `compatibility.json`, and `supersession.json`. Their digests are bound into
 `block.json`; applicability, jurisdiction, project facts, and freshness
-overlays remain external. The current candidate has thirteen source-locked
+overlays remain external. The current candidate has fifteen source-locked
 standard packages under `specialist-blocks/standards/`: NIST SP 800-218 SSDF
-1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, and ten exact authorities
-reused by the first P1 atomic slice.
+1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten exact authorities reused
+by the first P1 atomic slice, and the OWASP Top 10:2025 and OWASP API Security
+Top 10:2023 indexes.
 
 The first P1 atomic slice under `specialist-blocks/wave-02/` contains six
 classification-only routers and ten narrow candidates for Rust, TypeScript,
@@ -29,6 +30,14 @@ React, PostgreSQL RLS, OpenAPI contracts, OAuth, OIDC, AWS IAM, Cloudflare DNS,
 and Cloudflare Cache. Each atomic candidate is selected only through its
 required upstream router and remains inactive pending independent utility/harm
 and admission review.
+
+The P2 security expansion under `specialist-blocks/wave-03/` contains six
+classification-only routers and forty-one narrow candidates covering every
+OWASP Web Top 10:2025 category, every OWASP API Security Top 10:2023 category,
+access-control models and boundaries, concurrency/replay/idempotency hazards,
+and CVE/SBOM/provenance domains. The two OWASP indexes are reusable standard
+blocks; category atoms reference their exact hashes rather than copying the
+index content.
 
 Atomicity is normative: broad family labels are routers only, atomic blocks own
 one failure mode or evidence domain, and control-plane blocks own governance

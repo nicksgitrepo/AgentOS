@@ -28,6 +28,8 @@ function sorted(values) {
 const sourceCatalog = {
   nist: {source_id: "source.nist-sp-800-218", title: "Secure Software Development Framework (SSDF) Version 1.1", publisher: "NIST", url: "https://csrc.nist.gov/pubs/sp/800/218/final", version: "1.1", effective_date: "2022-02-03", retrieved_date: SOURCE_DATE, immutable_identity: "nist-sp-800-218-v1.1-final-20220203", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound secure software development practices and task mappings."},
   asvs: {source_id: "source.owasp-asvs-5-0-0", title: "Application Security Verification Standard", publisher: "OWASP Foundation", url: "https://owasp.org/www-project-application-security-verification-standard/", version: "5.0.0", effective_date: "2025-05-30", retrieved_date: SOURCE_DATE, immutable_identity: "owasp-asvs-5.0.0-release-20250530", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound application security verification requirements and identifiers."},
+  owaspWebTop10: {source_id: "source.owasp-top10-2025", title: "OWASP Top 10:2025", publisher: "OWASP Foundation", url: "https://owasp.org/Top10/", version: "2025", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "owasp-top10-2025-release", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Version-bound web application security risk categories and category identity; not a certification or project-specific risk determination."},
+  owaspApiTop10: {source_id: "source.owasp-api-top10-2023", title: "OWASP API Security Top 10 2023", publisher: "OWASP Foundation", url: "https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/", version: "2023", effective_date: "2023-07-03", retrieved_date: SOURCE_DATE, immutable_identity: "owasp-api-security-top10-2023-release-20230703", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Version-bound API security risk categories and category identity; not a certification or project-specific risk determination."},
   slsa: {source_id: "source.slsa-spec-1-2", title: "SLSA Specification", publisher: "SLSA", url: "https://slsa.dev/spec/v1.2/", version: "1.2", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "slsa-spec-v1.2-approved", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Approved SLSA tracks, levels, attestations, and provenance references."},
   rustReference: {source_id: "source.rust-reference-1-97-1", title: "The Rust Reference", publisher: "Rust Project", url: "https://doc.rust-lang.org/reference.html", version: "1.97.1", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "rust-reference-1.97.1-stable-2026-08-11", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Rust language semantics and reference behavior."},
   typescript: {source_id: "source.typescript-5-9", title: "TypeScript 5.9 Release Notes", publisher: "Microsoft TypeScript", url: "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html", version: "5.9", effective_date: "2025-08-01", retrieved_date: SOURCE_DATE, immutable_identity: "typescript-5.9-release-notes-2025-08-01", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "TypeScript 5.9 language and compiler changes."},
@@ -79,6 +81,62 @@ const specs = [
     requirements: [
       {requirement_id: "v5.0.0-1.2.5", statement: "Verify protections against OS command injection and use parameterized OS queries or contextual output encoding.", source_ref: "OWASP.ASVS.5.0.0:1.2.5", evidence: "Requirement-level test or an explicit unknown ledger."},
       {requirement_id: "v5.0.0-2", statement: "Use the edition's versioned chapter, section, and requirement identifiers for traceability.", source_ref: "OWASP.ASVS.5.0.0:identifier-rule", evidence: "Versioned requirement mapping."}
+    ]
+  },
+  {
+    slug: "owasp-top10-2025",
+    blockId: "specialist.standard.owasp-top10-2025",
+    title: "OWASP Top 10:2025",
+    family: "security",
+    standardIdentity: {publisher: "OWASP Foundation", identifier: "OWASP Top 10", edition: "2025"},
+    source: sourceCatalog.owaspWebTop10,
+    supersessionStatus: "CURRENT_RELEASE_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["OWASP Top 10", "web application security", "A01:2025", "A05:2025"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "web_application_scope"],
+    applicabilityInputs: ["web application scope", "risk-category and assessment purpose", "version/publication/supersession status", "external applicability overlay"],
+    exceptions: ["The Top 10 is an awareness/risk taxonomy and does not determine project-specific likelihood or impact.", "Category analysis is delegated to distinct atomic specialists; this block does not certify an application or accept a fix."],
+    requirements: [
+      {requirement_id: "OWASP.TOP10.2025.index", statement: "Bind the route to the OWASP Top 10:2025 edition and preserve its category identity without silently selecting another edition.", source_ref: "OWASP.Top10.2025:index", evidence: "Edition, source-lock, and external applicability receipt."},
+      {requirement_id: "OWASP.TOP10.2025.A01", statement: "Route A01:2025 Broken Access Control to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A01", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A02", statement: "Route A02:2025 Security Misconfiguration to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A02", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A03", statement: "Route A03:2025 Software Supply Chain Failures to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A03", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A04", statement: "Route A04:2025 Cryptographic Failures to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A04", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A05", statement: "Route A05:2025 Injection to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A05", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A06", statement: "Route A06:2025 Insecure Design to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A06", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A07", statement: "Route A07:2025 Authentication Failures to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A07", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A08", statement: "Route A08:2025 Software or Data Integrity Failures to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A08", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A09", statement: "Route A09:2025 Security Logging and Alerting Failures to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A09", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.TOP10.2025.A10", statement: "Route A10:2025 Mishandling of Exceptional Conditions to its own atomic specialist.", source_ref: "OWASP.Top10.2025:A10", evidence: "Category route and atomic handoff."}
+    ]
+  },
+  {
+    slug: "owasp-api-top10-2023",
+    blockId: "specialist.standard.owasp-api-top10-2023",
+    title: "OWASP API Security Top 10 2023",
+    family: "security",
+    standardIdentity: {publisher: "OWASP Foundation", identifier: "OWASP API Security Top 10", edition: "2023"},
+    source: sourceCatalog.owaspApiTop10,
+    supersessionStatus: "CURRENT_RELEASE_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["OWASP API Security Top 10", "API security", "API1:2023", "API7:2023"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "api_scope"],
+    applicabilityInputs: ["API scope and protocol", "risk-category and assessment purpose", "version/publication/supersession status", "external applicability overlay"],
+    exceptions: ["The Top 10 is an awareness/risk taxonomy and does not determine project-specific likelihood or impact.", "Category analysis is delegated to distinct atomic specialists; this block does not certify an API or accept a fix."],
+    requirements: [
+      {requirement_id: "OWASP.API.TOP10.2023.index", statement: "Bind the route to the OWASP API Security Top 10 2023 edition and preserve its category identity without silently selecting another edition.", source_ref: "OWASP.API.Top10.2023:index", evidence: "Edition, source-lock, and external applicability receipt."},
+      {requirement_id: "OWASP.API.TOP10.2023.API1", statement: "Route API1:2023 Broken Object Level Authorization to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API1", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API2", statement: "Route API2:2023 Broken Authentication to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API2", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API3", statement: "Route API3:2023 Broken Object Property Level Authorization to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API3", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API4", statement: "Route API4:2023 Unrestricted Resource Consumption to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API4", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API5", statement: "Route API5:2023 Broken Function Level Authorization to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API5", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API6", statement: "Route API6:2023 Unrestricted Access to Sensitive Business Flows to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API6", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API7", statement: "Route API7:2023 Server Side Request Forgery to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API7", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API8", statement: "Route API8:2023 Security Misconfiguration to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API8", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API9", statement: "Route API9:2023 Improper Inventory Management to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API9", evidence: "Category route and atomic handoff."},
+      {requirement_id: "OWASP.API.TOP10.2023.API10", statement: "Route API10:2023 Unsafe Consumption of APIs to its own atomic specialist.", source_ref: "OWASP.API.Top10.2023:API10", evidence: "Category route and atomic handoff."}
     ]
   },
   {

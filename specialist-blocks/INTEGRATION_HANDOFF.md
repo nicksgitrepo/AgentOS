@@ -29,12 +29,12 @@ attached as a separate immutable receipt commit.
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `42` packages total — `6` `ROUTER`, `13`
-  `CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `13` source-locked
+- Compiled candidate package roster: `91` packages total — `12` `ROUTER`, `13`
+  `CONTROL_PLANE`, `51` `ATOMIC_SPECIALIST`, and `15` source-locked
   `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
   materialization count above.
 - Atomic overlay: 12 routers, 79 atomic specialists, 13 control-plane roles;
-  the six P1 router packages are classification-only and carry no Product or
+  all twelve packaged routers are classification-only and carry no Product or
   acceptance authority.
 - P0 has exactly six candidate lanes, each with a package, source lock, exact
   twelve-gate pack, hostile fixtures, evaluation dossier, and typed handoff.
@@ -44,11 +44,14 @@ attached as a separate immutable receipt commit.
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS
   repository residue.
-- The source-locked standard slice contains NIST SP 800-218 SSDF 1.1, OWASP
-  ASVS 5.0.0, and SLSA Specification 1.2. Each binds normalized requirements,
-  compatibility/supersession metadata, and its source manifest by digest.
-- The separate read-only independent evaluator passes all 42 package candidates,
-  504 gate files, and 714 hostile fixtures. Its disposition is
+- The source-locked standard slice contains fifteen reusable authorities:
+  NIST SP 800-218 SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten
+  P1 language/framework/data/API/identity/provider authorities, and the OWASP
+  Top 10:2025 and OWASP API Security Top 10:2023 indexes. Each binds normalized
+  requirements, compatibility/supersession metadata, and its source manifest
+  by digest.
+- The separate read-only independent evaluator passes all 91 package candidates,
+  1,092 gate files, and 1,547 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
@@ -62,14 +65,20 @@ attached as a separate immutable receipt commit.
   17 RLS, OpenAPI 3.1.1, OAuth RFC 9700, OIDC Core 1.0, AWS IAM, Cloudflare
   DNS, and Cloudflare Cache. Official source research is encoded once in those
   standard packages.
+- The P2 security slice adds six routers and forty-one atomic candidates under
+  `specialist-blocks/wave-03/`: all ten OWASP Web Top 10:2025 categories, all
+  ten OWASP API Security Top 10:2023 categories, eight access-control
+  modes/boundaries, seven concurrency/replay/idempotency hazards, and six
+  CVE/SBOM/provenance domains. The category atoms bind to their exact upstream
+  router and reuse the shared OWASP, ASVS, NIST SSDF, or SLSA block hash.
 
 ## Unfinished admission gates
 
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Independent utility/harm evaluation of the first P1 router/atomic candidates
-   and broader source-backed `STANDARD_BLOCK` expansion remain pending; the
+3. Independent utility/harm evaluation of the P1 and P2 router/atomic/standard
+   candidates and broader source-backed `STANDARD_BLOCK` expansion remain pending; the
    backlog materialized standard-block count is zero because those roles are
    not yet expanded into packages.
 4. Independent utility/harm evaluation of the current standard candidates and

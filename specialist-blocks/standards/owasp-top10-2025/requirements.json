@@ -1,0 +1,80 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-top10-2025",
+  "standard_identity": {
+    "publisher": "OWASP Foundation",
+    "identifier": "OWASP Top 10",
+    "edition": "2025"
+  },
+  "requirements": [
+    {
+      "requirement_id": "OWASP.TOP10.2025.index",
+      "statement": "Bind the route to the OWASP Top 10:2025 edition and preserve its category identity without silently selecting another edition.",
+      "source_ref": "OWASP.Top10.2025:index",
+      "evidence": "Edition, source-lock, and external applicability receipt."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A01",
+      "statement": "Route A01:2025 Broken Access Control to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A01",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A02",
+      "statement": "Route A02:2025 Security Misconfiguration to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A02",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A03",
+      "statement": "Route A03:2025 Software Supply Chain Failures to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A03",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A04",
+      "statement": "Route A04:2025 Cryptographic Failures to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A04",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A05",
+      "statement": "Route A05:2025 Injection to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A05",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A06",
+      "statement": "Route A06:2025 Insecure Design to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A06",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A07",
+      "statement": "Route A07:2025 Authentication Failures to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A07",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A08",
+      "statement": "Route A08:2025 Software or Data Integrity Failures to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A08",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A09",
+      "statement": "Route A09:2025 Security Logging and Alerting Failures to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A09",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.TOP10.2025.A10",
+      "statement": "Route A10:2025 Mishandling of Exceptional Conditions to its own atomic specialist.",
+      "source_ref": "OWASP.Top10.2025:A10",
+      "evidence": "Category route and atomic handoff."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

@@ -57,16 +57,19 @@ generated `bootstrap.md` view. Generated instances are external companion
 artifacts only; `bootstrap.md` is never the authority and cannot be edited as a
 standalone contract.
 
-Current materialized role-kind counts are `ROUTER: 626`,
+Current materialized role-kind counts are `ROUTER: 631`,
 `CONTROL_PLANE: 13`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
 `STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`, and
-`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `7` routers,
-`79` atomic specialists, and `13` control-plane roles.
+`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `12` routers,
+`79` atomic specialists, and `13` control-plane roles in the complete
+backlog; twelve router packages, fifty-one atomic packages, and thirteen
+control-plane packages are compiled candidates in the current library slice.
 
 The compiled candidate package count is separate from the backlog materialized
-count: `16` packages are validated (`13` `CONTROL_PLANE` and `3`
-`STANDARD_BLOCK`). The three standard packages are source-locked candidates;
-they do not change the unexpanded backlog count.
+count: `91` packages are validated (`13` `CONTROL_PLANE`, `15`
+`STANDARD_BLOCK`, `12` `ROUTER`, and `51` `ATOMIC_SPECIALIST`). These are
+source-locked inactive candidates and do not change the unexpanded backlog
+count.
 
 ## Wave law
 
@@ -100,9 +103,10 @@ remain external gates.
 
 ## Next controller actions
 
-1. Run independent utility/harm evaluation over the six P0 candidate packages.
-2. Re-run the full admission matrix, including source freshness, authority,
-   custody, atomicity, routing, and typed-handoff checks.
+1. Keep the exact six P0 lanes reserved while independent utility/harm and
+   admission review remains external; no P2 package is an active lane.
+2. Continue the next queue from P3 only after the current P2 receipt is
+   independently reviewed and the host-pressure ceiling permits bounded work.
 3. Send the exact isolated receipt to the main AgentOS 3.0 integration owner;
    do not merge, activate, deploy, or adopt a consumer project from this lane.
 
@@ -293,3 +297,38 @@ remain external gates.
   candidate branch. A separate handoff-receipt commit records this exact
   candidate identity; the full 619-title master backlog and all P2–P6 roles
   remain planned.
+
+## Latest verified state — P2 security expansion — 2026-08-11
+
+- The current bounded slice adds six P2 routers, forty-one P2 atomic security
+  candidates, and two reusable exact-version OWASP standards: OWASP Top
+  10:2025 and OWASP API Security Top 10:2023. The six routers cover web Top 10,
+  API Top 10, ASVS applicability, access-control composition, supply chain,
+  and privacy data-lifecycle classification.
+- The forty-one atoms remain distinct: all ten OWASP Web 2025 categories, all
+  ten OWASP API 2023 categories, eight access-control modes/boundaries, seven
+  concurrency/replay/idempotency hazards, and six CVE/SBOM/provenance domains.
+  Every atom has its own package, source lock, upstream router, standard-block
+  dependencies, twelve gates, hostile fixtures, evaluation, and handoff.
+- Compiler proof reports `91` package records: `13` control-plane, `15`
+  reusable standards, `12` routers, and `51` atomic specialists. Materialized
+  backlog counts remain `619` unique titles and role kinds
+  `ROUTER:631`, `CONTROL_PLANE:13`, `ATOMIC_SPECIALIST:79`, with the other
+  role kinds at zero as recorded in the machine receipt.
+- Independent read-only evaluation passes `91` inactive packages, `1,092`
+  gate files, and `1,547` hostile fixtures, including dependency closure,
+  atomic upstream-router binding, standard reuse, and anti-umbrella checks.
+  Utility/harm and admission remain external and pending.
+- Actual loader fixtures route OWASP Web A01 and API7 to the smallest
+  category-plus-router set, reject broad-router substitution during atomic
+  validation, and prove all ten web atoms reuse one immutable Top 10 hash and
+  all ten API atoms reuse one immutable API Top 10 hash.
+- Exactly six P0 lanes remain the only materially active lane set:
+  `AGENT.BOOTSTRAP`, `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
+  `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
+  `AGENT.INDEPENDENT_AUDITOR`; each is `CANDIDATE`/inactive. P1–P6 packages
+  are compiled candidates or planned backlog entries, not active lanes.
+- Host-pressure ceiling remains canonical scheduler `JOB-407` `RUNNING` with
+  swap at `5.5/6 GiB`; no heavyweight proof, activation, deployment, or
+  external-worktree mutation occurred. Next queue is P3 delivery/assurance
+  expansion after independent review of this P2 slice.

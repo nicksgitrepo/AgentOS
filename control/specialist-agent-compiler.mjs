@@ -383,7 +383,8 @@ function resolveSelection({recipe, task, catalog}) {
     if (block.source_state !== "FRESH") fail(block.source_state === "UNKNOWN" ? "SOURCE_FRESHNESS_UNKNOWN" : "STALE_SOURCE", `${block.block_id} cannot advance with source state ${block.source_state}`);
     if (block.role_kind === "ROUTER" && recipe.required_atomic_blocks.length > 0) {
       const isRequiredUpstream = recipe.required_atomic_blocks.some((atomicId) => byId.get(atomicId)?.required_upstream_router === block.block_id);
-      if (!isRequiredUpstream && !recipe.required_atomic_blocks.includes(block.block_id)) fail("BROAD_ROUTER_SUBSTITUTION", `${block.block_id} is a router and cannot replace the recipe's atomic specialists`);
+      const isDependencyRouter = selectedBlocks.some((candidate) => candidate.block_id !== block.block_id && candidate.dependencies.includes(block.block_id));
+      if (!isRequiredUpstream && !isDependencyRouter && !recipe.required_atomic_blocks.includes(block.block_id)) fail("BROAD_ROUTER_SUBSTITUTION", `${block.block_id} is a router and cannot replace the recipe's atomic specialists`);
     }
     if (block.role_kind === "ATOMIC_SPECIALIST") {
       if (block.required_upstream_router === null) fail("UPSTREAM_ROUTER_REQUIRED", `${block.block_id} has no required upstream router`);

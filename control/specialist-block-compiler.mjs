@@ -521,7 +521,7 @@ export function materializeMasterInventory(raw, atomicOverlay) {
 }
 
 function packageDirectories(libraryRoot) {
-  const roots = ["foundation", "standards", "wave-01", "wave-02"];
+  const roots = ["foundation", "standards", "wave-01", "wave-02", "wave-03", "wave-04", "wave-05", "wave-06"];
   const packages = [];
   for (const root of roots) {
     const rootPath = path.join(libraryRoot, root);

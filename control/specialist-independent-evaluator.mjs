@@ -120,12 +120,19 @@ function evaluatePackage(packageDir) {
   if (handoff.authority !== "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION") fail(`${block.block_id} handoff grants admission authority`);
   assertSortedUnique(block.dependencies, `${block.block_id}.dependencies`);
   assertSortedUnique(block.conflicts, `${block.block_id}.conflicts`);
-  return {block_id: block.block_id, role_kind: block.role_kind, candidate_digest: block.block_sha256, status: "PASS", checked_gate_count: SPECIALIST_GATE_IDS.length, checked_fixture_count: expectedClasses.length, independent_utility_harm: "PENDING_EXTERNAL_AUTHORITY"};
+  if (!Array.isArray(block.dependencies) || [...block.dependencies].sort().join("\u0000") !== block.dependencies.join("\u0000")) fail(`${block.block_id} dependencies are not sorted`);
+  if (!Array.isArray(block.sibling_conflicts) || [...block.sibling_conflicts].sort().join("\u0000") !== block.sibling_conflicts.join("\u0000")) fail(`${block.block_id} sibling conflicts are not sorted`);
+  if (block.role_kind === "ROUTER" && block.permitted_decisions.some((decision) => /(?:write|accept|admit|deploy|publish)/iu.test(decision))) fail(`${block.block_id} router has Product or acceptance authority`);
+  if (block.role_kind === "ATOMIC_SPECIALIST") {
+    if (typeof block.required_upstream_router !== "string" || block.required_upstream_router.length === 0) fail(`${block.block_id} atomic specialist lacks upstream router`);
+    if (!block.forbidden_decisions.some((decision) => /(?:broaden|sibling|family|provider|version)/iu.test(decision))) fail(`${block.block_id} atomic specialist lacks anti-broadening denial`);
+  }
+  return {block_id: block.block_id, role_kind: block.role_kind, candidate_digest: block.block_sha256, dependencies: block.dependencies, required_upstream_router: block.required_upstream_router, sibling_conflicts: block.sibling_conflicts, candidate_standard_dependencies: block.dependencies.filter((dependency) => dependency.startsWith("specialist.standard.")), status: "PASS", checked_gate_count: SPECIALIST_GATE_IDS.length, checked_fixture_count: expectedClasses.length, independent_utility_harm: "PENDING_EXTERNAL_AUTHORITY"};
 }
 
 function packageDirectories(libraryRoot) {
   const directories = [];
-  for (const rootName of ["foundation", "standards", "wave-01", "wave-02"]) {
+  for (const rootName of ["foundation", "standards", "wave-01", "wave-02", "wave-03", "wave-04", "wave-05", "wave-06"]) {
     const root = path.join(libraryRoot, rootName);
     if (!fs.existsSync(root)) continue;
     for (const entry of fs.readdirSync(root, {withFileTypes: true}).filter((item) => item.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -145,6 +152,21 @@ export function independentlyEvaluateSpecialistLibrary({repositoryRoot = process
   const rosterIds = new Set(roster.blocks.map((block) => block.block_id));
   for (const result of results) if (!rosterIds.has(result.block_id)) fail(`${result.block_id} is absent from the roster`);
   if (results.length !== roster.blocks.length) fail("roster/package count mismatch");
+  const byId = new Map(results.map((result) => [result.block_id, result]));
+  for (const result of results) {
+    for (const dependency of result.dependencies) {
+      if (!byId.has(dependency)) fail(`${result.block_id} depends on missing package ${dependency}`);
+    }
+    if (result.role_kind === "ATOMIC_SPECIALIST") {
+      const upstream = byId.get(result.required_upstream_router);
+      if (!upstream || upstream.role_kind !== "ROUTER") fail(`${result.block_id} upstream router closure is invalid`);
+      if (!result.dependencies.includes(result.required_upstream_router)) fail(`${result.block_id} does not declare its upstream router as a dependency`);
+      if (result.sibling_conflicts.some((conflict) => byId.has(conflict))) fail(`${result.block_id} has an admitted sibling conflict in the candidate closure`);
+    }
+    for (const dependency of result.candidate_standard_dependencies) {
+      if (byId.get(dependency)?.role_kind !== "STANDARD_BLOCK") fail(`${result.block_id} standard dependency ${dependency} is not a reusable STANDARD_BLOCK`);
+    }
+  }
   return {
     schema: "agentos.independent_specialist_evaluation_receipt.v1",
     version: 1,

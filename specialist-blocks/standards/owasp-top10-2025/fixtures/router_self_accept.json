@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-top10-2025",
+  "class": "router_self_accept",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for router_self_accept; standard applicability and requirement evidence remain external."
+}

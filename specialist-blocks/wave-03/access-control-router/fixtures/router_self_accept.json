@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.access-control-router",
+  "class": "router_self_accept",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for router_self_accept; provider, project, consumer, secret, and applicability facts remain external."
+}

@@ -12,122 +12,912 @@
     "package_status": "UNPACKAGED",
     "evaluator_status": "NOT_RUN",
     "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_CERTIFICATION_OR_LEGAL_ADVICE",
-    "permitted_decisions": ["classify the named atomic concern", "return evidence-bounded findings", "return NOT_APPLICABLE when the atomic concern is absent", "escalate missing authority or conflicting evidence"],
-    "forbidden_decisions": ["broaden to a family or sibling concern", "write Product or consumer state", "self-admit or accept a release", "claim another provider, standard, or version", "invent missing evidence"],
-    "composition_rules": ["must be selected by the required upstream router", "compose only with explicitly named sibling blocks", "select the smallest sufficient atomic set", "UNKNOWN closes only the dependent action"],
+    "permitted_decisions": [
+      "classify the named atomic concern",
+      "return evidence-bounded findings",
+      "return NOT_APPLICABLE when the atomic concern is absent",
+      "escalate missing authority or conflicting evidence"
+    ],
+    "forbidden_decisions": [
+      "broaden to a family or sibling concern",
+      "write Product or consumer state",
+      "self-admit or accept a release",
+      "claim another provider, standard, or version",
+      "invent missing evidence"
+    ],
+    "composition_rules": [
+      "must be selected by the required upstream router",
+      "compose only with explicitly named sibling blocks",
+      "select the smallest sufficient atomic set",
+      "UNKNOWN closes only the dependent action"
+    ],
     "escalation_target": "specialist.foundation.evaluation-admission-gate",
-    "split_required_when": ["required knowledge differs", "authority or source lock differs", "tool/data custody differs", "failure mode differs", "provider or standard version differs"]
+    "split_required_when": [
+      "required knowledge differs",
+      "authority or source lock differs",
+      "tool/data custody differs",
+      "failure mode differs",
+      "provider or standard version differs"
+    ]
   },
   "routers": [
-    {"generic_id": "SEC.OWASP_WEB_TOP10", "block_id": "specialist.security.owasp-web-top10-router", "title": "OWASP Web Top 10 Router", "version": "2025", "source_lock": "sources.lock"},
-    {"generic_id": "SEC.OWASP_API_TOP10", "block_id": "specialist.security.owasp-api-top10-router", "title": "OWASP API Security Top 10 Router", "version": "2023", "source_lock": "sources.lock"},
-    {"generic_id": "SEC.OWASP_ASVS", "block_id": "specialist.security.owasp-asvs-router", "title": "OWASP ASVS Applicability Router", "version": "5.0.0", "source_lock": "sources.lock"},
-    {"generic_id": "SEC.TENANT_ACCESS_CONTROL", "block_id": "specialist.security.access-control-router", "title": "Access-Control Composition Router", "version": "1", "source_lock": "sources.lock"},
-    {"generic_id": "SEC.SECRETS_CRYPTO_SUPPLY_CHAIN", "block_id": "specialist.security.supply-chain-router", "title": "Secrets, Cryptography, and Supply-Chain Router", "version": "1", "source_lock": "sources.lock"},
-    {"generic_id": "PRIVACY.DATA_LIFECYCLE", "block_id": "specialist.privacy.data-lifecycle-router", "title": "Privacy Data-Lifecycle Router", "version": "1", "source_lock": "sources.lock"},
-    {"generic_id": "PLATFORM.AWS_CLOUDFLARE_EDGE", "block_id": "specialist.platform.provider-edge-router", "title": "Provider and Edge Capability Router", "version": "1", "source_lock": "sources.lock", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.provider-edge-router.v1"},
-    {"generic_id": "ENG.LANGUAGE_RUNTIME_ROUTER", "block_id": "specialist.software-language-runtime.router", "title": "Software Language and Runtime Router", "version": "1.0.0", "source_lock": "sources.lock", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1"},
-    {"generic_id": "DATA.DATA_ROUTER", "block_id": "specialist.data.router", "title": "Data and Database Router", "version": "1.0.0", "source_lock": "sources.lock", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.data-router.v1"},
-    {"generic_id": "ARCH.PRODUCT_CLIENT_ROUTER", "block_id": "specialist.product-client.router", "title": "Product and Client Contract Router", "version": "1.0.0", "source_lock": "sources.lock", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.product-client-router.v1"},
-    {"generic_id": "SEC.SECURITY_ROUTER", "block_id": "specialist.security.router", "title": "Security and Identity Router", "version": "1.0.0", "source_lock": "sources.lock", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.security-router.v1"},
-    {"generic_id": "QA.ASSURANCE_ENTERPRISE_ROUTER", "block_id": "specialist.assurance-enterprise.router", "title": "Assurance and Enterprise Router", "version": "1.0.0", "source_lock": "sources.lock", "package_status": "PLANNED", "evaluator_status": "NOT_RUN"}
+    {
+      "generic_id": "ARCH.PRODUCT_CLIENT_ROUTER",
+      "block_id": "specialist.product-client.router",
+      "title": "Product and Client Contract Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.product-client-router.v1"
+    },
+    {
+      "generic_id": "DATA.DATA_ROUTER",
+      "block_id": "specialist.data.router",
+      "title": "Data and Database Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.data-router.v1"
+    },
+    {
+      "generic_id": "ENG.LANGUAGE_RUNTIME_ROUTER",
+      "block_id": "specialist.software-language-runtime.router",
+      "title": "Software Language and Runtime Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1"
+    },
+    {
+      "generic_id": "PLATFORM.AWS_CLOUDFLARE_EDGE",
+      "block_id": "specialist.platform.provider-edge-router",
+      "title": "Provider and Edge Capability Router",
+      "version": "1",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.provider-edge-router.v1"
+    },
+    {
+      "generic_id": "PRIVACY.DATA_LIFECYCLE",
+      "block_id": "specialist.privacy.data-lifecycle-router",
+      "title": "Privacy Data-Lifecycle Router",
+      "version": "1",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.data-lifecycle-router.v1"
+    },
+    {
+      "generic_id": "QA.ASSURANCE_ENTERPRISE_ROUTER",
+      "block_id": "specialist.assurance-enterprise.router",
+      "title": "Assurance and Enterprise Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "PLANNED",
+      "evaluator_status": "NOT_RUN"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_TOP10",
+      "block_id": "specialist.security.owasp-api-top10-router",
+      "title": "OWASP API Security Top 10 Router",
+      "version": "2023",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-top10-router.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_ASVS",
+      "block_id": "specialist.security.owasp-asvs-router",
+      "title": "OWASP ASVS Applicability Router",
+      "version": "5.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-asvs-router.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_TOP10",
+      "block_id": "specialist.security.owasp-web-top10-router",
+      "title": "OWASP Web Top 10 Router",
+      "version": "2025",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-top10-router.v1"
+    },
+    {
+      "generic_id": "SEC.SECRETS_CRYPTO_SUPPLY_CHAIN",
+      "block_id": "specialist.security.supply-chain-router",
+      "title": "Secrets, Cryptography, and Supply-Chain Router",
+      "version": "1",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.supply-chain-router.v1"
+    },
+    {
+      "generic_id": "SEC.SECURITY_ROUTER",
+      "block_id": "specialist.security.router",
+      "title": "Security and Identity Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.security-router.v1"
+    },
+    {
+      "generic_id": "SEC.TENANT_ACCESS_CONTROL",
+      "block_id": "specialist.security.access-control-router",
+      "title": "Access-Control Composition Router",
+      "version": "1",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.access-control-router.v1"
+    }
   ],
   "control_plane": [
-    {"generic_id": "AGENT.BOOTSTRAP", "block_id": "specialist.control.bootstrap-project-initializer", "title": "Bootstrap/Project Initializer"},
-    {"generic_id": "AGENT.PROJECT_CONTROLLER", "block_id": "specialist.control.project-controller", "title": "Global Project Controller"},
-    {"generic_id": "AGENT.INTENT_REGULATOR", "block_id": "specialist.control.intent-regulator", "title": "Intent Regulator"},
-    {"generic_id": "AGENT.RESOURCE_SCHEDULER", "block_id": "specialist.control.resource-scheduler", "title": "Resource Scheduler"},
-    {"generic_id": "AGENT.RUNTIME_DEPLOYMENT", "block_id": "specialist.control.runtime-deployment-operator", "title": "Runtime/Deployment Operator"},
-    {"generic_id": "AGENT.INDEPENDENT_AUDITOR", "block_id": "specialist.control.independent-auditor", "title": "Independent Auditor"},
-    {"generic_id": "FOUNDATION.ROLE_INTAKE", "block_id": "specialist.foundation.role-intake-classifier", "title": "Universal Role-Intake Classifier"},
-    {"generic_id": "FOUNDATION.EVIDENCE_FRESHNESS", "block_id": "specialist.foundation.evidence-freshness-gate", "title": "Source/Evidence/Freshness Gate"},
-    {"generic_id": "FOUNDATION.AUTHORITY_JURISDICTION", "block_id": "specialist.foundation.authority-jurisdiction-gate", "title": "Authority/Precedence/Jurisdiction Gate"},
-    {"generic_id": "FOUNDATION.SCOPE_NONGOAL", "block_id": "specialist.foundation.scope-non-goal-gate", "title": "Scope/Non-Goal Gate"},
-    {"generic_id": "FOUNDATION.TOOL_CUSTODY", "block_id": "specialist.foundation.tool-custody-gate", "title": "Tool/Resource/Custody Gate"},
-    {"generic_id": "FOUNDATION.EVALUATION_ADMISSION", "block_id": "specialist.foundation.evaluation-admission-gate", "title": "Evaluation/Admission Gate"},
-    {"generic_id": "FOUNDATION.REGISTRY_DEDUP", "block_id": "specialist.foundation.registry-alias-deduplicator", "title": "Registry/Alias/Deduplication Controller"}
+    {
+      "generic_id": "AGENT.BOOTSTRAP",
+      "block_id": "specialist.control.bootstrap-project-initializer",
+      "title": "Bootstrap/Project Initializer"
+    },
+    {
+      "generic_id": "AGENT.PROJECT_CONTROLLER",
+      "block_id": "specialist.control.project-controller",
+      "title": "Global Project Controller"
+    },
+    {
+      "generic_id": "AGENT.INTENT_REGULATOR",
+      "block_id": "specialist.control.intent-regulator",
+      "title": "Intent Regulator"
+    },
+    {
+      "generic_id": "AGENT.RESOURCE_SCHEDULER",
+      "block_id": "specialist.control.resource-scheduler",
+      "title": "Resource Scheduler"
+    },
+    {
+      "generic_id": "AGENT.RUNTIME_DEPLOYMENT",
+      "block_id": "specialist.control.runtime-deployment-operator",
+      "title": "Runtime/Deployment Operator"
+    },
+    {
+      "generic_id": "AGENT.INDEPENDENT_AUDITOR",
+      "block_id": "specialist.control.independent-auditor",
+      "title": "Independent Auditor"
+    },
+    {
+      "generic_id": "FOUNDATION.ROLE_INTAKE",
+      "block_id": "specialist.foundation.role-intake-classifier",
+      "title": "Universal Role-Intake Classifier"
+    },
+    {
+      "generic_id": "FOUNDATION.EVIDENCE_FRESHNESS",
+      "block_id": "specialist.foundation.evidence-freshness-gate",
+      "title": "Source/Evidence/Freshness Gate"
+    },
+    {
+      "generic_id": "FOUNDATION.AUTHORITY_JURISDICTION",
+      "block_id": "specialist.foundation.authority-jurisdiction-gate",
+      "title": "Authority/Precedence/Jurisdiction Gate"
+    },
+    {
+      "generic_id": "FOUNDATION.SCOPE_NONGOAL",
+      "block_id": "specialist.foundation.scope-non-goal-gate",
+      "title": "Scope/Non-Goal Gate"
+    },
+    {
+      "generic_id": "FOUNDATION.TOOL_CUSTODY",
+      "block_id": "specialist.foundation.tool-custody-gate",
+      "title": "Tool/Resource/Custody Gate"
+    },
+    {
+      "generic_id": "FOUNDATION.EVALUATION_ADMISSION",
+      "block_id": "specialist.foundation.evaluation-admission-gate",
+      "title": "Evaluation/Admission Gate"
+    },
+    {
+      "generic_id": "FOUNDATION.REGISTRY_DEDUP",
+      "block_id": "specialist.foundation.registry-alias-deduplicator",
+      "title": "Registry/Alias/Deduplication Controller"
+    }
   ],
   "atomic_specialists": [
-    {"generic_id": "SEC.OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL", "title": "OWASP Web A01 Broken Access Control", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION", "title": "OWASP Web A02 Security Misconfiguration", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES", "title": "OWASP Web A03 Software Supply Chain Failures", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES", "title": "OWASP Web A04 Cryptographic Failures", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A05_INJECTION", "title": "OWASP Web A05 Injection", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A06_INSECURE_DESIGN", "title": "OWASP Web A06 Insecure Design", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES", "title": "OWASP Web A07 Authentication Failures", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES", "title": "OWASP Web A08 Software or Data Integrity Failures", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES", "title": "OWASP Web A09 Security Logging and Alerting Failures", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS", "title": "OWASP Web A10 Mishandling of Exceptional Conditions", "version": "2025", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2021_A01_ACCESS_CONTROL", "title": "OWASP Web A01 Broken Access Control", "version": "2021", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2021_A02_CRYPTOGRAPHIC_FAILURES", "title": "OWASP Web A02 Cryptographic Failures", "version": "2021", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_WEB_2021_A03_INJECTION", "title": "OWASP Web A03 Injection", "version": "2021", "router": "specialist.security.owasp-web-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_OBJECT_AUTHORIZATION", "title": "OWASP API1 Broken Object Level Authorization", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_BROKEN_AUTHENTICATION", "title": "OWASP API2 Broken Authentication", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_PROPERTY_AUTHORIZATION", "title": "OWASP API3 Broken Object Property Level Authorization", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_RESOURCE_CONSUMPTION", "title": "OWASP API4 Unrestricted Resource Consumption", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_FUNCTION_AUTHORIZATION", "title": "OWASP API5 Broken Function Level Authorization", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_SENSITIVE_BUSINESS_FLOWS", "title": "OWASP API6 Unrestricted Access to Sensitive Business Flows", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_SSRF", "title": "OWASP API7 Server Side Request Forgery", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_MISCONFIGURATION", "title": "OWASP API8 Security Misconfiguration", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_INVENTORY", "title": "OWASP API9 Improper Inventory Management", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.OWASP_API_2023_UNSAFE_API_CONSUMPTION", "title": "OWASP API10 Unsafe Consumption of APIs", "version": "2023", "router": "specialist.security.owasp-api-top10-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_RBAC", "title": "Role-Based Access Control", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_ABAC", "title": "Attribute-Based Access Control", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_REBAC", "title": "Relationship-Based Access Control", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_TENANT_ISOLATION", "title": "Tenant Isolation Access Control", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_OBJECT_SCOPE", "title": "Object Scope Authorization", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_FUNCTION_SCOPE", "title": "Function Scope Authorization", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_REVOCATION", "title": "Authorization Revocation", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.ACCESS_CONTROL_CACHE_RESIDUE", "title": "Authorization Cache Residue", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.RACE_CONDITION", "title": "Race Condition", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.TOCTOU", "title": "Time-of-Check/Time-of-Use", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.DEADLOCK", "title": "Deadlock", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.IDEMPOTENCY", "title": "Idempotency", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.REPLAY", "title": "Replay Resistance", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.DOUBLE_SUBMISSION", "title": "Double Submission", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.CONCURRENT_AUTHORIZATION", "title": "Concurrent Authorization", "version": "1", "router": "specialist.security.access-control-router"},
-    {"generic_id": "SEC.CVE_INVENTORY", "title": "CVE Inventory", "version": "current", "router": "specialist.security.supply-chain-router"},
-    {"generic_id": "SEC.CVE_APPLICABILITY", "title": "CVE Applicability", "version": "current", "router": "specialist.security.supply-chain-router"},
-    {"generic_id": "SEC.DEPENDENCY_VULNERABILITY", "title": "Dependency Vulnerability", "version": "current", "router": "specialist.security.supply-chain-router"},
-    {"generic_id": "SEC.SBOM", "title": "Software Bill of Materials", "version": "current", "router": "specialist.security.supply-chain-router"},
-    {"generic_id": "SEC.PATCH_REMEDIATION", "title": "Patch Remediation", "version": "current", "router": "specialist.security.supply-chain-router"},
-    {"generic_id": "SEC.SUPPLY_CHAIN_PROVENANCE", "title": "Supply-Chain Provenance", "version": "current", "router": "specialist.security.supply-chain-router"},
-    {"generic_id": "CLOUD.AWS_IAM", "title": "Cloud Identity and Access Management", "version": "provider-bound", "router": "specialist.platform.provider-edge-router", "block_id": "specialist.platform.aws-iam-policy", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.aws-iam-policy.v1"},
-    {"generic_id": "CLOUD.AWS_NETWORK", "title": "Cloud Network Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_STORAGE", "title": "Cloud Storage Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_COMPUTE", "title": "Cloud Compute Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_DATABASE", "title": "Cloud Database Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_SECRETS", "title": "Cloud Secret Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_LOGGING", "title": "Cloud Logging Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_COST", "title": "Cloud Cost Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AWS_DEPLOYMENT", "title": "Cloud Deployment Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_IDENTITY", "title": "Cloud Identity and Access Management", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_NETWORK", "title": "Cloud Network Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_STORAGE", "title": "Cloud Storage Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_COMPUTE", "title": "Cloud Compute Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_DATABASE", "title": "Cloud Database Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_SECRETS", "title": "Cloud Secret Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_LOGGING", "title": "Cloud Logging Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_COST", "title": "Cloud Cost Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "CLOUD.AZURE_DEPLOYMENT", "title": "Cloud Deployment Controls", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_DNS", "title": "Edge DNS", "version": "provider-bound", "router": "specialist.platform.provider-edge-router", "block_id": "specialist.platform.cloudflare-dns", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.cloudflare-dns.v1"},
-    {"generic_id": "EDGE.CLOUDFLARE_TLS", "title": "Edge TLS", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_WAF", "title": "Edge Web Application Firewall", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_CACHE", "title": "Edge Cache", "version": "provider-bound", "router": "specialist.platform.provider-edge-router", "block_id": "specialist.platform.cloudflare-cache", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.cloudflare-cache.v1"},
-    {"generic_id": "EDGE.CLOUDFLARE_HEADERS", "title": "Edge Security Headers", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_WORKERS", "title": "Edge Workers", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_R2", "title": "Edge Object Storage", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_ZERO_TRUST", "title": "Edge Zero Trust", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_RATE_LIMITING", "title": "Edge Rate Limiting", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_PURGE", "title": "Edge Cache Purge", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "EDGE.CLOUDFLARE_LOGGING", "title": "Edge Logging", "version": "provider-bound", "router": "specialist.platform.provider-edge-router"},
-    {"generic_id": "ENG.RUST_BACKEND", "title": "Rust Backend", "version": "current", "router": "specialist.software-language-runtime.router", "block_id": "specialist.software-language-runtime.rust-backend", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.rust-backend.v1"},
-    {"generic_id": "ENG.TYPESCRIPT_REACT_WEB", "title": "TypeScript and React Web", "version": "current", "router": "specialist.software-language-runtime.router", "block_ids": ["specialist.software-language-runtime.typescript-language", "specialist.software-language-runtime.react-components"], "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.typescript-language.v1;specialist-eval.react-components.v1"},
-    {"generic_id": "DATA.POSTGRES_RLS", "title": "PostgreSQL Row-Level Security", "version": "current", "router": "specialist.data.router", "block_id": "specialist.data.postgresql-rls", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.postgresql-rls.v1"},
-    {"generic_id": "ARCH.API_CONTRACTS", "title": "API Contracts", "version": "current", "router": "specialist.product-client.router", "block_id": "specialist.product-client.openapi-contracts", "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.openapi-contracts.v1"},
-    {"generic_id": "SEC.AUTH_IDENTITY", "title": "Authentication and Identity", "version": "current", "router": "specialist.security.router", "block_ids": ["specialist.security.oauth-identity", "specialist.security.oidc-core"], "package_status": "COMPILED_CANDIDATE", "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED", "evaluator_receipt": "specialist-eval.oauth-identity.v1;specialist-eval.oidc-core.v1"},
-    {"generic_id": "QA.TEST_ARCHITECT", "title": "Test Architecture", "version": "current", "router": "specialist.assurance-enterprise.router"}
+    {
+      "generic_id": "ARCH.API_CONTRACTS",
+      "title": "API Contracts",
+      "version": "current",
+      "router": "specialist.product-client.router",
+      "block_id": "specialist.product-client.openapi-contracts",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.openapi-contracts.v1"
+    },
+    {
+      "generic_id": "CLOUD.AWS_COMPUTE",
+      "title": "Cloud Compute Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_COST",
+      "title": "Cloud Cost Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_DATABASE",
+      "title": "Cloud Database Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_DEPLOYMENT",
+      "title": "Cloud Deployment Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_IAM",
+      "title": "Cloud Identity and Access Management",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router",
+      "block_id": "specialist.platform.aws-iam-policy",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.aws-iam-policy.v1"
+    },
+    {
+      "generic_id": "CLOUD.AWS_LOGGING",
+      "title": "Cloud Logging Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_NETWORK",
+      "title": "Cloud Network Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_SECRETS",
+      "title": "Cloud Secret Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AWS_STORAGE",
+      "title": "Cloud Storage Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_COMPUTE",
+      "title": "Cloud Compute Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_COST",
+      "title": "Cloud Cost Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_DATABASE",
+      "title": "Cloud Database Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_DEPLOYMENT",
+      "title": "Cloud Deployment Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_IDENTITY",
+      "title": "Cloud Identity and Access Management",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_LOGGING",
+      "title": "Cloud Logging Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_NETWORK",
+      "title": "Cloud Network Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_SECRETS",
+      "title": "Cloud Secret Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "CLOUD.AZURE_STORAGE",
+      "title": "Cloud Storage Controls",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "DATA.POSTGRES_RLS",
+      "title": "PostgreSQL Row-Level Security",
+      "version": "current",
+      "router": "specialist.data.router",
+      "block_id": "specialist.data.postgresql-rls",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.postgresql-rls.v1"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_CACHE",
+      "title": "Edge Cache",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router",
+      "block_id": "specialist.platform.cloudflare-cache",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cloudflare-cache.v1"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_DNS",
+      "title": "Edge DNS",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router",
+      "block_id": "specialist.platform.cloudflare-dns",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cloudflare-dns.v1"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_HEADERS",
+      "title": "Edge Security Headers",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_LOGGING",
+      "title": "Edge Logging",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_PURGE",
+      "title": "Edge Cache Purge",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_R2",
+      "title": "Edge Object Storage",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_RATE_LIMITING",
+      "title": "Edge Rate Limiting",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_TLS",
+      "title": "Edge TLS",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_WAF",
+      "title": "Edge Web Application Firewall",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_WORKERS",
+      "title": "Edge Workers",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "EDGE.CLOUDFLARE_ZERO_TRUST",
+      "title": "Edge Zero Trust",
+      "version": "provider-bound",
+      "router": "specialist.platform.provider-edge-router"
+    },
+    {
+      "generic_id": "ENG.RUST_BACKEND",
+      "title": "Rust Backend",
+      "version": "current",
+      "router": "specialist.software-language-runtime.router",
+      "block_id": "specialist.software-language-runtime.rust-backend",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.rust-backend.v1"
+    },
+    {
+      "generic_id": "ENG.TYPESCRIPT_REACT_WEB",
+      "title": "TypeScript and React Web",
+      "version": "current",
+      "router": "specialist.software-language-runtime.router",
+      "block_ids": [
+        "specialist.software-language-runtime.typescript-language",
+        "specialist.software-language-runtime.react-components"
+      ],
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.typescript-language.v1;specialist-eval.react-components.v1"
+    },
+    {
+      "generic_id": "QA.TEST_ARCHITECT",
+      "title": "Test Architecture",
+      "version": "current",
+      "router": "specialist.assurance-enterprise.router"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_ABAC",
+      "title": "Attribute-Based Access Control",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.abac",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.abac.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_CACHE_RESIDUE",
+      "title": "Authorization Cache Residue",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.cache-residue",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cache-residue.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_FUNCTION_SCOPE",
+      "title": "Function Scope Authorization",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.function-scope",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.function-scope.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_OBJECT_SCOPE",
+      "title": "Object Scope Authorization",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.object-scope",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.object-scope.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_RBAC",
+      "title": "Role-Based Access Control",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.rbac",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.rbac.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_REBAC",
+      "title": "Relationship-Based Access Control",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.rebac",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.rebac.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_REVOCATION",
+      "title": "Authorization Revocation",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.revocation",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.revocation.v1"
+    },
+    {
+      "generic_id": "SEC.ACCESS_CONTROL_TENANT_ISOLATION",
+      "title": "Tenant Isolation Access Control",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.tenant-isolation",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.tenant-isolation.v1"
+    },
+    {
+      "generic_id": "SEC.AUTH_IDENTITY",
+      "title": "Authentication and Identity",
+      "version": "current",
+      "router": "specialist.security.router",
+      "block_ids": [
+        "specialist.security.oauth-identity",
+        "specialist.security.oidc-core"
+      ],
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.oauth-identity.v1;specialist-eval.oidc-core.v1"
+    },
+    {
+      "generic_id": "SEC.CONCURRENT_AUTHORIZATION",
+      "title": "Concurrent Authorization",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.concurrent-authorization",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.concurrent-authorization.v1"
+    },
+    {
+      "generic_id": "SEC.CVE_APPLICABILITY",
+      "title": "CVE Applicability",
+      "version": "current",
+      "router": "specialist.security.supply-chain-router",
+      "block_id": "specialist.security.cve-applicability",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cve-applicability.v1"
+    },
+    {
+      "generic_id": "SEC.CVE_INVENTORY",
+      "title": "CVE Inventory",
+      "version": "current",
+      "router": "specialist.security.supply-chain-router",
+      "block_id": "specialist.security.cve-inventory",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.cve-inventory.v1"
+    },
+    {
+      "generic_id": "SEC.DEADLOCK",
+      "title": "Deadlock",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.deadlock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.deadlock.v1"
+    },
+    {
+      "generic_id": "SEC.DEPENDENCY_VULNERABILITY",
+      "title": "Dependency Vulnerability",
+      "version": "current",
+      "router": "specialist.security.supply-chain-router",
+      "block_id": "specialist.security.dependency-vulnerability",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.dependency-vulnerability.v1"
+    },
+    {
+      "generic_id": "SEC.DOUBLE_SUBMISSION",
+      "title": "Double Submission",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.double-submission",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.double-submission.v1"
+    },
+    {
+      "generic_id": "SEC.IDEMPOTENCY",
+      "title": "Idempotency",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.idempotency",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.idempotency.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_BROKEN_AUTHENTICATION",
+      "title": "OWASP API2 Broken Authentication",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api2-broken-authentication",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api2-broken-authentication.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_FUNCTION_AUTHORIZATION",
+      "title": "OWASP API5 Broken Function Level Authorization",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api5-function-authorization",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api5-function-authorization.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_INVENTORY",
+      "title": "OWASP API9 Improper Inventory Management",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api9-inventory",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api9-inventory.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_MISCONFIGURATION",
+      "title": "OWASP API8 Security Misconfiguration",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api8-misconfiguration",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api8-misconfiguration.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_OBJECT_AUTHORIZATION",
+      "title": "OWASP API1 Broken Object Level Authorization",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api1-object-authorization.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_PROPERTY_AUTHORIZATION",
+      "title": "OWASP API3 Broken Object Property Level Authorization",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api3-property-authorization",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api3-property-authorization.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_RESOURCE_CONSUMPTION",
+      "title": "OWASP API4 Unrestricted Resource Consumption",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api4-resource-consumption",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api4-resource-consumption.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_SENSITIVE_BUSINESS_FLOWS",
+      "title": "OWASP API6 Unrestricted Access to Sensitive Business Flows",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api6-sensitive-business-flows",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api6-sensitive-business-flows.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_SSRF",
+      "title": "OWASP API7 Server Side Request Forgery",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api7-ssrf",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api7-ssrf.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_API_2023_UNSAFE_API_CONSUMPTION",
+      "title": "OWASP API10 Unsafe Consumption of APIs",
+      "version": "2023",
+      "router": "specialist.security.owasp-api-top10-router",
+      "block_id": "specialist.security.owasp-api-2023-api10-unsafe-api-consumption",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-api10-unsafe-api-consumption.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2021_A01_ACCESS_CONTROL",
+      "title": "OWASP Web A01 Broken Access Control",
+      "version": "2021",
+      "router": "specialist.security.owasp-web-top10-router"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2021_A02_CRYPTOGRAPHIC_FAILURES",
+      "title": "OWASP Web A02 Cryptographic Failures",
+      "version": "2021",
+      "router": "specialist.security.owasp-web-top10-router"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2021_A03_INJECTION",
+      "title": "OWASP Web A03 Injection",
+      "version": "2021",
+      "router": "specialist.security.owasp-web-top10-router"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL",
+      "title": "OWASP Web A01 Broken Access Control",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a01-broken-access-control",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a01-broken-access-control.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION",
+      "title": "OWASP Web A02 Security Misconfiguration",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a02-security-misconfiguration",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a02-security-misconfiguration.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES",
+      "title": "OWASP Web A03 Software Supply Chain Failures",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a03-software-supply-chain-failures",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a03-software-supply-chain-failures.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES",
+      "title": "OWASP Web A04 Cryptographic Failures",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a04-cryptographic-failures",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a04-cryptographic-failures.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A05_INJECTION",
+      "title": "OWASP Web A05 Injection",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a05-injection",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a05-injection.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A06_INSECURE_DESIGN",
+      "title": "OWASP Web A06 Insecure Design",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a06-insecure-design",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a06-insecure-design.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES",
+      "title": "OWASP Web A07 Authentication Failures",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a07-authentication-failures",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a07-authentication-failures.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
+      "title": "OWASP Web A08 Software or Data Integrity Failures",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a08-software-data-integrity-failures",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a08-software-data-integrity-failures.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
+      "title": "OWASP Web A09 Security Logging and Alerting Failures",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a09-security-logging-alerting-failures",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a09-security-logging-alerting-failures.v1"
+    },
+    {
+      "generic_id": "SEC.OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
+      "title": "OWASP Web A10 Mishandling of Exceptional Conditions",
+      "version": "2025",
+      "router": "specialist.security.owasp-web-top10-router",
+      "block_id": "specialist.security.owasp-web-2025-a10-mishandling-exceptional-conditions",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-web-2025-a10-mishandling-exceptional-conditions.v1"
+    },
+    {
+      "generic_id": "SEC.PATCH_REMEDIATION",
+      "title": "Patch Remediation",
+      "version": "current",
+      "router": "specialist.security.supply-chain-router",
+      "block_id": "specialist.security.patch-remediation",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.patch-remediation.v1"
+    },
+    {
+      "generic_id": "SEC.RACE_CONDITION",
+      "title": "Race Condition",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.race-condition",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.race-condition.v1"
+    },
+    {
+      "generic_id": "SEC.REPLAY",
+      "title": "Replay Resistance",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.replay",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.replay.v1"
+    },
+    {
+      "generic_id": "SEC.SBOM",
+      "title": "Software Bill of Materials",
+      "version": "current",
+      "router": "specialist.security.supply-chain-router",
+      "block_id": "specialist.security.sbom",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.sbom.v1"
+    },
+    {
+      "generic_id": "SEC.SUPPLY_CHAIN_PROVENANCE",
+      "title": "Supply-Chain Provenance",
+      "version": "current",
+      "router": "specialist.security.supply-chain-router",
+      "block_id": "specialist.security.supply-chain-provenance",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.supply-chain-provenance.v1"
+    },
+    {
+      "generic_id": "SEC.TOCTOU",
+      "title": "Time-of-Check/Time-of-Use",
+      "version": "1",
+      "router": "specialist.security.access-control-router",
+      "block_id": "specialist.security.toctou",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.toctou.v1"
+    }
   ],
-  "counts": {"ROUTER": 12, "ATOMIC_SPECIALIST": 79, "CONTROL_PLANE": 13},
-  "evaluator_failure_classes": ["umbrella_authority", "unrelated_scope", "silent_scope_expansion", "duplicate_sibling_authority", "router_self_accept", "broad_when_narrow_exists", "cross_provider_version_claim"]
+  "counts": {
+    "ROUTER": 12,
+    "ATOMIC_SPECIALIST": 79,
+    "CONTROL_PLANE": 13
+  },
+  "evaluator_failure_classes": [
+    "umbrella_authority",
+    "unrelated_scope",
+    "silent_scope_expansion",
+    "duplicate_sibling_authority",
+    "router_self_accept",
+    "broad_when_narrow_exists",
+    "cross_provider_version_claim"
+  ]
 }

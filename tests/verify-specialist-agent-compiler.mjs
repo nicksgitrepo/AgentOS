@@ -110,6 +110,40 @@ try {
   const actualStandardLock = actualStandardPackage.documents.blockLock.blocks.find((block) => block.block_id === actualStandard.block_id);
   assert.deepEqual(actualStandardLock, {block_id: actualStandard.block_id, version: actualStandard.version, hash: actualStandard.hash, role_kind: "STANDARD_BLOCK", layer: actualStandard.layer, reason: "reuse the exact source-locked ASVS edition", reuse_key: actualStandard.reuse_key, source_lock_digest: actualStandard.source_lock_digest, dependencies: actualStandard.dependencies, conflicts: actualStandard.conflicts, required_upstream_router: null, sibling_conflicts: [], applicability: "YES", source_state: "FRESH"});
 
+  const p2Atom = portableCatalog.find((block) => block.block_id === "specialist.security.owasp-web-2025-a01-broken-access-control");
+  const p2WebStandard = portableCatalog.find((block) => block.block_id === "specialist.standard.owasp-top10-2025");
+  assert(p2Atom && p2WebStandard, "the P2 OWASP Web atom and reusable index standard must be loadable");
+  const p2Closure = new Set([p2Atom.block_id]);
+  const p2Queue = [p2Atom.block_id];
+  while (p2Queue.length > 0) {
+    const currentId = p2Queue.shift();
+    const current = portableCatalog.find((block) => block.block_id === currentId);
+    assert(current, `loaded P2 dependency ${currentId} must exist in the portable catalog`);
+    for (const dependency of current.dependencies) if (!p2Closure.has(dependency)) { p2Closure.add(dependency); p2Queue.push(dependency); }
+  }
+  const p2ContextFields = [...new Set(["request.kind", ...[...p2Closure].flatMap((blockId) => portableCatalog.find((block) => block.block_id === blockId).required_context)])].sort();
+  const p2Recipe = {
+    recipe_id: "recipe.fixture.actual-owasp-web-a01",
+    version: "1.0.0",
+    family: "fixture-security-routing",
+    purpose: "Compile a bounded task-shaped agent from one exact OWASP Web category and its reusable authorities.",
+    required_block_ids: [p2Atom.block_id],
+    required_atomic_blocks: [p2Atom.block_id],
+    required_standard_blocks: ["specialist.standard.owasp-asvs", p2WebStandard.block_id],
+    required_context_fields: p2ContextFields,
+    optional_block_ids: [],
+    required_layers: [],
+    reasons: {[p2Atom.block_id]: "select only the evidenced OWASP Web A01 category", "specialist.standard.owasp-asvs": "reuse exact ASVS verification authority", [p2WebStandard.block_id]: "reuse exact OWASP Top 10:2025 category index"},
+  };
+  const p2Task = {lane: "fixture.actual-owasp-web-a01", goal: "compile one narrow category-bound security candidate", outcome: "typed-security-handoff", non_goals: ["certification", "deployment", "broad OWASP analysis"], owner_intent: {identity: "external.owner-intent.actual-owasp-web-a01", version: "1.0.0", digest: digest({owner: "actual-owasp-web-a01"})}};
+  const p2Package = compile("actual-owasp-web-a01", p2Recipe, p2Task, makeExternal("actual-owasp-web-a01", {contextFields: p2ContextFields}), portableCatalog);
+  assert.equal(validateTaskShapedAgentPackage(p2Package.packageDir, {repositoryRoot: root}).status, "PASS");
+  const p2LockIds = new Set(p2Package.documents.blockLock.blocks.map((block) => block.block_id));
+  assert(p2LockIds.has(p2Atom.block_id), "P2 package lock must include the selected atomic category");
+  assert(p2LockIds.has(p2Atom.required_upstream_router), "P2 package lock must include the atomic upstream router");
+  assert(p2LockIds.has("specialist.standard.owasp-asvs") && p2LockIds.has(p2WebStandard.block_id), "P2 package lock must include both reusable OWASP standards");
+  assert.equal(p2Package.documents.blockLock.blocks.find((block) => block.block_id === p2WebStandard.block_id).hash, p2WebStandard.hash, "P2 package must reuse the immutable OWASP index hash");
+
   assert.equal(validateTaskShapedAgentPackage(rustA.packageDir, {repositoryRoot: root}).status, "PASS");
   assert.equal(validateTaskShapedAgentPackage(web.packageDir, {repositoryRoot: root}).status, "PASS");
   assert.equal(validateTaskShapedAgentPackage(data.packageDir, {repositoryRoot: root}).status, "PASS");
