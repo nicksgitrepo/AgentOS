@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-ssdf",
+  "class": "tool_limit",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for tool_limit; standard applicability and requirement evidence remain external."
+}

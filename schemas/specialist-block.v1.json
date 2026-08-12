@@ -45,6 +45,12 @@
     "reuse",
     "block_sha256"
   ],
+  "allOf": [
+    {
+      "if": {"properties": {"role_kind": {"const": "STANDARD_BLOCK"}}, "required": ["role_kind"]},
+      "then": {"required": ["normalized_requirements_path", "applicability_inputs", "exceptions", "supersession_status", "source_manifest_sha256", "normalized_requirements_sha256", "compatibility_sha256", "supersession_sha256"]}
+    }
+  ],
   "properties": {
     "schema": {"const": "agentos.specialist_block.v1"},
     "version": {"const": 1},
@@ -216,6 +222,14 @@
         "fixture_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 5}
       }
     },
+    "normalized_requirements_path": {"type": "string", "pattern": "^requirements\\.json$"},
+    "applicability_inputs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "exceptions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "supersession_status": {"type": "string", "minLength": 1},
+    "source_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "normalized_requirements_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "compatibility_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "supersession_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "reuse": {
       "type": "object",
       "additionalProperties": false,

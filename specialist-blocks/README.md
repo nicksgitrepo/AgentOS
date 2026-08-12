@@ -15,6 +15,13 @@ Each block package contains:
 - `evaluation.json`: independent-evaluation dossier and hostile fixture classes;
 - `handoff.json`: exact candidate receipt and residuals.
 
+Each reusable `STANDARD_BLOCK` additionally contains `requirements.json`,
+`compatibility.json`, and `supersession.json`. Their digests are bound into
+`block.json`; applicability, jurisdiction, project facts, and freshness
+overlays remain external. The current candidate has three source-locked
+standard packages under `specialist-blocks/standards/`:
+NIST SP 800-218 SSDF 1.1, OWASP ASVS 5.0.0, and SLSA Specification 1.2.
+
 Atomicity is normative: broad family labels are routers only, atomic blocks own
 one failure mode or evidence domain, and control-plane blocks own governance
 mechanics. The atomicity overlay in `registry/atomic-inventory.v1.json` keeps

@@ -63,6 +63,11 @@ Current materialized role-kind counts are `ROUTER: 626`,
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `7` routers,
 `79` atomic specialists, and `13` control-plane roles.
 
+The compiled candidate package count is separate from the backlog materialized
+count: `16` packages are validated (`13` `CONTROL_PLANE` and `3`
+`STANDARD_BLOCK`). The three standard packages are source-locked candidates;
+they do not change the unexpanded backlog count.
+
 ## Wave law
 
 Wave 0 is controller-owned foundation. Wave 1 keeps exactly six materially
@@ -75,12 +80,12 @@ dossier, one hostile-fixture set, and one typed handoff.
 
 | Lane | Family | Append-only package scope | Goal | Status |
 |---|---|---|---|---|
-| L1 | `AGENT.BOOTSTRAP` | child `019ff333-1cda-76f2-a43b-b44ec39bf088` (`Bernoulli`) | Build `specialist.control.bootstrap-project-initializer`. | `ACTIVE_BUILDING` |
-| L2 | `AGENT.PROJECT_CONTROLLER` | child `019ff333-1d4b-7082-8556-feab852e2d4a` (`Godel`) | Build `specialist.control.project-controller`. | `ACTIVE_BUILDING` |
-| L3 | `AGENT.INTENT_REGULATOR` | child `019ff333-1dca-72c0-85a8-3c81a6715d6a` (`Franklin`) | Build `specialist.control.intent-regulator`. | `ACTIVE_BUILDING` |
-| L4 | `AGENT.RESOURCE_SCHEDULER` | child `019ff333-1e3f-7e43-8e2d-3c2ccfc17ee4` (`Locke`) | Build `specialist.control.resource-scheduler`. | `ACTIVE_BUILDING` |
-| L5 | `AGENT.RUNTIME_DEPLOYMENT` | child `019ff333-1eb9-7ea1-a239-a5aae1d1bb35` (`Hilbert`) | Build `specialist.control.runtime-deployment-operator`. | `ACTIVE_BUILDING` |
-| L6 | `AGENT.INDEPENDENT_AUDITOR` | child `019ff333-1f36-75e3-b7ab-f552edb9c438` (`Darwin`) | Build `specialist.control.independent-auditor`. | `ACTIVE_BUILDING` |
+| L1 | `AGENT.BOOTSTRAP` | child `019ff333-1cda-76f2-a43b-b44ec39bf088` (`Bernoulli`) | Build `specialist.control.bootstrap-project-initializer`. | `CANDIDATE` |
+| L2 | `AGENT.PROJECT_CONTROLLER` | child `019ff333-1d4b-7082-8556-feab852e2d4a` (`Godel`) | Build `specialist.control.project-controller`. | `CANDIDATE` |
+| L3 | `AGENT.INTENT_REGULATOR` | child `019ff333-1dca-72c0-85a8-3c81a6715d6a` (`Franklin`) | Build `specialist.control.intent-regulator`. | `CANDIDATE` |
+| L4 | `AGENT.RESOURCE_SCHEDULER` | child `019ff333-1e3f-7e43-8e2d-3c2ccfc17ee4` (`Locke`) | Build `specialist.control.resource-scheduler`. | `CANDIDATE` |
+| L5 | `AGENT.RUNTIME_DEPLOYMENT` | child `019ff333-1eb9-7ea1-a239-a5aae1d1bb35` (`Hilbert`) | Build `specialist.control.runtime-deployment-operator`. | `CANDIDATE` |
+| L6 | `AGENT.INDEPENDENT_AUDITOR` | child `019ff333-1f36-75e3-b7ab-f552edb9c438` (`Darwin`) | Build `specialist.control.independent-auditor`. | `CANDIDATE` |
 
 The previously attempted Wave 1 family lanes were interrupted as incompatible
 before reassignment; all six reported `changed paths: none`.
@@ -207,3 +212,25 @@ remain external gates.
   candidates, followed by main AgentOS 3.0 owner intake only if every required
   admission gate passes. The source package, active integration worktree, and
   protected Memory lane remain untouched.
+
+## Source-locked standard slice — 2026-08-11
+
+- Added three reusable `STANDARD_BLOCK` candidates: NIST SP 800-218 SSDF 1.1,
+  OWASP ASVS 5.0.0, and SLSA Specification 1.2. Each has a primary source
+  lock, normalized requirement mappings, external applicability inputs,
+  compatibility/supersession metadata, all twelve gates, 17 hostile fixtures,
+  an evaluation dossier, and a typed handoff.
+- Compiler proof: `node control/specialist-block-compiler.mjs compile` passes
+  `16` packages and binds every standard's source, requirements, compatibility,
+  and supersession digest to its block digest.
+- Focused library proof passes with `16` packages; the independent read-only
+  evaluator passes `16` packages, `192` gate files, and `272` hostile fixtures.
+  Disposition remains `STATIC_PASS_REVIEW_REQUIRED`; utility/harm and admission
+  are still external and pending.
+- Standard source facts are locked by publisher, edition, retrieved date,
+  effective-date status, immutable identity, and supersession status. Current
+  applicability and project facts remain external overlays; no certification,
+  legal advice, activation, deployment, or self-acceptance is authorized.
+- Next cursor: refresh the exact machine/human integration handoff, then commit
+  and push this coherent slice. Do not start broader standard/backlog expansion
+  or heavyweight proof while the host-pressure ceiling remains in force.

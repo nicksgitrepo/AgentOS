@@ -243,6 +243,14 @@ export function validateSpecialistBlock(block) {
     requireRecord(block.reuse.standard_identity, `${block.block_id} standard identity`);
     for (const field of ["publisher", "identifier", "edition"]) requireString(block.reuse.standard_identity[field], `${block.block_id} standard identity ${field}`);
     assert(typeof block.reuse.compatibility_map_path === "string" && typeof block.reuse.supersession_path === "string", `${block.block_id} standard reuse maps are missing`);
+    assert(block.normalized_requirements_path === "requirements.json", `${block.block_id} normalized requirements are missing`);
+    requireStringArray(block.applicability_inputs, `${block.block_id} applicability inputs`, {minItems: 1});
+    requireStringArray(block.exceptions, `${block.block_id} exceptions`, {minItems: 1});
+    requireString(block.supersession_status, `${block.block_id} supersession status`);
+    requireSha(block.source_manifest_sha256, `${block.block_id} source manifest digest`);
+    requireSha(block.normalized_requirements_sha256, `${block.block_id} normalized requirements digest`);
+    requireSha(block.compatibility_sha256, `${block.block_id} compatibility digest`);
+    requireSha(block.supersession_sha256, `${block.block_id} supersession digest`);
   }
   requireSha(block.block_sha256, `${block.block_id} block digest`);
   assert(block.block_sha256 === digestWithout(block, "block_sha256"), `${block.block_id} block digest mismatch`);
@@ -314,6 +322,33 @@ export function validateGatePack(packageDir, block) {
   requireSha(manifest.manifest_sha256, `${block.block_id} gate manifest digest`);
   assert(manifest.manifest_sha256 === digestWithout(manifest, "manifest_sha256"), `${block.block_id} gate manifest digest mismatch`);
   return manifest;
+}
+
+function validateStandardPackage(packageDir, block, sources) {
+  assert(block.role_kind === "STANDARD_BLOCK", `${block.block_id} standard package validator received a non-standard block`);
+  assert(block.source_manifest_sha256 === sources.manifest_sha256, `${block.block_id} source manifest binding mismatch`);
+  const lockedSource = sources.sources.find((source) => source.version === block.reuse.standard_identity.edition);
+  assert(lockedSource && lockedSource.publisher === block.reuse.standard_identity.publisher, `${block.block_id} source publisher/edition does not match the standard identity`);
+  assert(Object.prototype.hasOwnProperty.call(lockedSource, "effective_date"), `${block.block_id} source lock omits effective-date status`);
+  const requirements = readJson(path.join(packageDir, "requirements.json"), `${block.block_id} normalized requirements`);
+  assert(requirements.schema === "agentos.specialist_standard_requirements.v1" && requirements.version === 1, `${block.block_id} normalized requirements schema mismatch`);
+  assert(requirements.block_id === block.block_id, `${block.block_id} normalized requirements block mismatch`);
+  assert(canonicalDigest(requirements) === block.normalized_requirements_sha256, `${block.block_id} normalized requirements digest mismatch`);
+  assert(requirements.standard_identity && JSON.stringify(requirements.standard_identity) === JSON.stringify(block.reuse.standard_identity), `${block.block_id} normalized standard identity mismatch`);
+  assert(Array.isArray(requirements.requirements) && requirements.requirements.length > 0, `${block.block_id} normalized requirements are empty`);
+  const requirementIds = requirements.requirements.map((item) => item.requirement_id);
+  assert(requirementIds.every((item) => typeof item === "string" && item.length > 0), `${block.block_id} requirement identifier is missing`);
+  assert(new Set(requirementIds).size === requirementIds.length, `${block.block_id} requirement identifiers are duplicated`);
+  const compatibility = readJson(path.join(packageDir, block.reuse.compatibility_map_path), `${block.block_id} compatibility map`);
+  assert(compatibility.schema === "agentos.specialist_standard_compatibility.v1" && compatibility.version === 1, `${block.block_id} compatibility schema mismatch`);
+  assert(compatibility.block_id === block.block_id, `${block.block_id} compatibility block mismatch`);
+  assert(canonicalDigest(compatibility) === block.compatibility_sha256, `${block.block_id} compatibility digest mismatch`);
+  const supersession = readJson(path.join(packageDir, block.reuse.supersession_path), `${block.block_id} supersession map`);
+  assert(supersession.schema === "agentos.specialist_standard_supersession.v1" && supersession.version === 1, `${block.block_id} supersession schema mismatch`);
+  assert(supersession.block_id === block.block_id, `${block.block_id} supersession block mismatch`);
+  assert(canonicalDigest(supersession) === block.supersession_sha256, `${block.block_id} supersession digest mismatch`);
+  assert(supersession.status === block.supersession_status && Array.isArray(supersession.known_non_superseding), `${block.block_id} supersession status is not bound to the block`);
+  return {requirements, compatibility, supersession};
 }
 
 function validateEvaluation(evaluation, block) {
@@ -481,7 +516,7 @@ export function materializeMasterInventory(raw, atomicOverlay) {
 }
 
 function packageDirectories(libraryRoot) {
-  const roots = ["foundation", "wave-01", "wave-02"];
+  const roots = ["foundation", "standards", "wave-01", "wave-02"];
   const packages = [];
   for (const root of roots) {
     const rootPath = path.join(libraryRoot, root);
@@ -502,9 +537,10 @@ export function compileSpecialistLibrary({repositoryRoot = process.cwd(), writeG
     const block = validateSpecialistBlock(readJson(path.join(packageDir, "block.json"), `${packageDir}/block.json`));
     const sources = validateSourceLock(readJson(path.join(packageDir, "sources.lock"), `${block.block_id}/sources.lock`), block.block_id);
     validateGatePack(packageDir, block);
+    const standard = block.role_kind === "STANDARD_BLOCK" ? validateStandardPackage(packageDir, block, sources) : null;
     const evaluation = validateEvaluation(readJson(path.join(packageDir, "evaluation.json"), `${block.block_id}/evaluation.json`), block);
     const handoff = validateHandoff(readJson(path.join(packageDir, "handoff.json"), `${block.block_id}/handoff.json`), block, packageDir);
-    records.push({block, sources, evaluation, handoff, packageDir});
+    records.push({block, sources, standard, evaluation, handoff, packageDir});
   }
   records.sort((left, right) => left.block.block_id.localeCompare(right.block.block_id));
   const ids = new Set();

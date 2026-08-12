@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.slsa",
+  "standard_identity": {
+    "publisher": "SLSA",
+    "identifier": "SLSA Specification",
+    "edition": "1.2"
+  },
+  "requirements": [
+    {
+      "requirement_id": "SLSA.1.2.provenance",
+      "statement": "Bind verifiable provenance to the source, build, and artifact identities in the selected track.",
+      "source_ref": "SLSA.1.2:provenance",
+      "evidence": "Attestation identity and verification receipt."
+    },
+    {
+      "requirement_id": "SLSA.1.2.track-level",
+      "statement": "Evaluate the declared source or build track and level without silently broadening the claim.",
+      "source_ref": "SLSA.1.2:track-level",
+      "evidence": "Explicit track/level applicability overlay."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

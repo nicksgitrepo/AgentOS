@@ -1,0 +1,8 @@
+{
+  "schema": "agentos.specialist_standard_compatibility.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-ssdf",
+  "current_edition": "1.1",
+  "compatible_predecessors": [],
+  "rule": "No predecessor is silently interchangeable; add an explicit mapping for every material change."
+}

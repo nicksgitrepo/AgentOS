@@ -1,0 +1,32 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-ssdf",
+  "standard_identity": {
+    "publisher": "NIST",
+    "identifier": "NIST SP 800-218 SSDF",
+    "edition": "1.1"
+  },
+  "requirements": [
+    {
+      "requirement_id": "PO.1.1",
+      "statement": "Identify and maintain software security requirements for the development process.",
+      "source_ref": "NIST.SP.800-218:PO.1.1",
+      "evidence": "Bound requirement record and current review receipt."
+    },
+    {
+      "requirement_id": "PS.3.2",
+      "statement": "Collect and share provenance data for software components and releases.",
+      "source_ref": "NIST.SP.800-218:PS.3.2",
+      "evidence": "Immutable provenance or an explicit external unknown ledger."
+    },
+    {
+      "requirement_id": "PW.1.2",
+      "statement": "Track software security requirements, risks, and design decisions.",
+      "source_ref": "NIST.SP.800-218:PW.1.2",
+      "evidence": "Traceable requirements and decision records."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

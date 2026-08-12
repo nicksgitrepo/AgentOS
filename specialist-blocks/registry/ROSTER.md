@@ -55,6 +55,26 @@ Current materialized counts are `ROUTER: 626`, `CONTROL_PLANE: 13`,
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
 `7` routers, `79` atomic specialists, and `13` control-plane roles.
 
+The compiled candidate package roster is a separate count from the complete
+backlog: `16` packages total, consisting of `13` `CONTROL_PLANE` packages and
+`3` `STANDARD_BLOCK` packages. All 16 remain `CANDIDATE`, `NOT_ADMITTED`, and
+activation `OFF`.
+
+## Source-locked standard candidates
+
+| Block ID | Family / priority | Exact edition and source lock | Build / evaluation | Gates / intake / lifecycle |
+|---|---|---|---|---|
+| `specialist.standard.nist-ssdf` | `security / P1` | [NIST SP 800-218 SSDF](https://csrc.nist.gov/pubs/sp/800/218/final) `1.1`; `sources.lock`; immutable identity `nist-sp-800-218-v1.1-final-20220203` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.nist-ssdf.v1` | 12 gates; external applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.owasp-asvs` | `security / P1` | [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/) `5.0.0`; `sources.lock`; immutable identity `owasp-asvs-5.0.0-release-20250530` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-asvs.v1` | 12 gates; external applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.slsa` | `delivery-operations / P1` | [SLSA Specification](https://slsa.dev/spec/v1.2/) `1.2`; `sources.lock`; immutable identity `slsa-spec-v1.2-approved` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.slsa.v1` | 12 gates; external track/level overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+
+Each standard row is content-addressed by its `block_sha256` and binds
+`requirements.json`, `compatibility.json`, and `supersession.json` by digest.
+Dependencies are the foundation authority and evidence/freshness gates;
+conflicts are empty until an exact edition conflict is selected. The standard
+blocks may map only their exact versioned authority, never certify, provide
+legal advice, select applicability, or accept themselves.
+
 ## Mandatory package contract
 
 Every block has stable identity/version/aliases/lifecycle, narrow role context,
@@ -116,6 +136,11 @@ block. Task applicability, freshness receipts, project facts, and current
 evidence remain external overlays. New editions, material errata, or normative
 gate corrections create new block versions with compatibility/supersession
 metadata. A non-material publisher refresh creates a freshness receipt only.
+
+The current candidate contains three such source-locked standard packages:
+NIST SSDF 1.1, OWASP ASVS 5.0.0, and SLSA Specification 1.2. Their static
+receipts do not change the backlog's `STANDARD_BLOCK: 0` materialization count;
+that count records roles not yet expanded into packages.
 
 The aggregate typed handoff is `registry/integration-handoff.v1.json` with its
 human-readable companion `INTEGRATION_HANDOFF.md`; its current disposition is

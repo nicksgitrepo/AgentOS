@@ -376,8 +376,96 @@
         "unsafe action"
       ],
       "priority": 0
+    },
+    {
+      "route_id": "route.standard.nist-ssdf",
+      "family": "security",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "secure software development",
+        "software provenance",
+        "vulnerability prevention"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.nist-ssdf"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.owasp-asvs",
+      "family": "security",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "ASVS identifier",
+        "application security verification",
+        "web security requirements"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.owasp-asvs"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.slsa",
+      "family": "delivery-operations",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "attestation",
+        "build integrity",
+        "provenance",
+        "software supply chain"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.slsa"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "d1b1968956ce9e0730f6226f30a05a89e6a9cb2b1de9a6f21afef24ad7ff1085"
+  "routing_sha256": "27d3fa2a6dd9e780be81d83263b83611061b0dacad1fcb4401bd646190c83c82"
 }

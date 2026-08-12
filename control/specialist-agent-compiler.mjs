@@ -167,7 +167,7 @@ function sourceLockDigest(raw) {
 function normalizeBlock(raw, index) {
   assertRecord(raw, `blocks[${index}]`);
   const blockId = raw.block_id;
-  const version = raw.version ?? raw.revision;
+  const version = typeof raw.version === "string" ? raw.version : raw.revision;
   const hash = raw.hash ?? raw.block_sha256;
   assertString(blockId, `blocks[${index}].block_id`);
   assertString(version, `${blockId}.version`);

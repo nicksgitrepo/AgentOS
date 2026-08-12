@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.specialist_standard_supersession.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-ssdf",
+  "status": "CURRENT_FINAL;_NIST_SP_800-218_REV_1_V1.2_REMAINS_INITIAL_PUBLIC_DRAFT",
+  "superseded_by": null,
+  "known_non_superseding": [
+    {
+      "identifier": "NIST SP 800-218 Rev. 1",
+      "edition": "1.2",
+      "status": "INITIAL_PUBLIC_DRAFT",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/r1/ipd"
+    }
+  ],
+  "rule": "A new edition or material erratum creates a new block and leaves old compiled locks reproducible."
+}

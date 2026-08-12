@@ -8,6 +8,7 @@ import path from "node:path";
 import {
   compileTaskShapedAgent,
   freezeTaskShapedAgentPackage,
+  loadSpecialistBlockCatalog,
   validateTaskShapedAgentPackage,
 } from "../control/specialist-agent-compiler.mjs";
 import {
@@ -77,6 +78,37 @@ try {
   const rustB = compile("rust-search-b", RECIPES.rustSearch, TASKS.rustSearch, makeExternal("rust-search"));
   const web = compile("typescript-web", RECIPES.web, TASKS.web, makeExternal("typescript-web"));
   const data = compile("postgres-data", RECIPES.data, TASKS.data, makeExternal("postgres-data"));
+
+  const portableCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
+  const actualStandard = portableCatalog.find((block) => block.block_id === "specialist.standard.owasp-asvs");
+  assert(actualStandard, "the source-locked OWASP ASVS standard must be loadable by the task-shaped compiler");
+  const actualClosure = new Set([actualStandard.block_id]);
+  const closureQueue = [actualStandard.block_id];
+  while (closureQueue.length > 0) {
+    const currentId = closureQueue.shift();
+    const current = portableCatalog.find((block) => block.block_id === currentId);
+    assert(current, `loaded standard dependency ${currentId} must exist in the portable catalog`);
+    for (const dependency of current.dependencies) if (!actualClosure.has(dependency)) { actualClosure.add(dependency); closureQueue.push(dependency); }
+  }
+  const actualContextFields = [...new Set(["request.kind", ...[...actualClosure].flatMap((blockId) => portableCatalog.find((block) => block.block_id === blockId).required_context)])].sort();
+  const actualRecipe = {
+    recipe_id: "recipe.fixture.actual-standard-loader",
+    version: "1.0.0",
+    family: "fixture-standard-loader",
+    purpose: "Compile a bounded task-shaped agent from a real reusable standard package.",
+    required_block_ids: [actualStandard.block_id],
+    required_atomic_blocks: [],
+    required_standard_blocks: [actualStandard.block_id],
+    required_context_fields: actualContextFields,
+    optional_block_ids: [],
+    required_layers: [],
+    reasons: {[actualStandard.block_id]: "reuse the exact source-locked ASVS edition"},
+  };
+  const actualTask = {lane: "fixture.actual-standard-loader", goal: "compile a bounded standard-mapped candidate", outcome: "typed-candidate-handoff", non_goals: ["certification", "deployment"], owner_intent: {identity: "external.owner-intent.actual-standard-loader", version: "1.0.0", digest: digest({owner: "actual-standard-loader"})}};
+  const actualStandardPackage = compile("actual-standard-loader", actualRecipe, actualTask, makeExternal("actual-standard-loader", {contextFields: actualContextFields}), portableCatalog);
+  assert.equal(validateTaskShapedAgentPackage(actualStandardPackage.packageDir, {repositoryRoot: root}).status, "PASS");
+  const actualStandardLock = actualStandardPackage.documents.blockLock.blocks.find((block) => block.block_id === actualStandard.block_id);
+  assert.deepEqual(actualStandardLock, {block_id: actualStandard.block_id, version: actualStandard.version, hash: actualStandard.hash, role_kind: "STANDARD_BLOCK", layer: actualStandard.layer, reason: "reuse the exact source-locked ASVS edition", reuse_key: actualStandard.reuse_key, source_lock_digest: actualStandard.source_lock_digest, dependencies: actualStandard.dependencies, conflicts: actualStandard.conflicts, applicability: "YES", source_state: "FRESH"});
 
   assert.equal(validateTaskShapedAgentPackage(rustA.packageDir, {repositoryRoot: root}).status, "PASS");
   assert.equal(validateTaskShapedAgentPackage(web.packageDir, {repositoryRoot: root}).status, "PASS");

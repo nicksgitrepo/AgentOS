@@ -725,10 +725,175 @@
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.nist-ssdf",
+      "candidate_digest": "8475acafc2aab24903deae55734967f5a8098919276fc023b7d50b3257c35bbb",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: NIST Secure Software Development Framework 1.1; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "security",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.nist-sp-800-218"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.nist-ssdf.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.owasp-asvs",
+      "candidate_digest": "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: OWASP Application Security Verification Standard 5.0.0; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "security",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.owasp-asvs-5-0-0"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.owasp-asvs.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.slsa",
+      "candidate_digest": "73375f309a3164b311ad80d0846191b2b6dc7d743d35dfd31fd6db74744fe3da",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: SLSA Specification 1.2; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "delivery-operations",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.slsa-spec-1-2"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.slsa.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
     }
   ],
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "7c23308e1cb574bb8e37a92e351ab10c8db46c1b06941e798b0f39df1121b2c0"
+  "roster_sha256": "baaae3f18197699f435c06de47411e2f158a36a5dda884bd0e7ff5beb600a4b8"
 }

@@ -82,6 +82,30 @@ function evaluatePackage(packageDir) {
     assertDigest(gate.gate_sha256, `${block.block_id} ${gateId}.gate_sha256`);
     if (gate.gate_sha256 !== digest({...gate, gate_sha256: null})) fail(`${block.block_id} ${gateId} digest mismatch`);
   }
+  if (block.role_kind === "STANDARD_BLOCK") {
+    if (block.normalized_requirements_path !== "requirements.json") fail(`${block.block_id} normalized requirements path is missing`);
+    for (const field of ["source_manifest_sha256", "normalized_requirements_sha256", "compatibility_sha256", "supersession_sha256"]) assertDigest(block[field], `${block.block_id}.${field}`);
+    if (block.source_manifest_sha256 !== sourceLock.manifest_sha256) fail(`${block.block_id} source manifest is not bound to block`);
+    const lockedSource = sourceLock.sources.find((source) => source.version === block.reuse.standard_identity.edition);
+    if (!lockedSource || lockedSource.publisher !== block.reuse.standard_identity.publisher) fail(`${block.block_id} source publisher/edition does not match the standard identity`);
+    if (!("effective_date" in lockedSource)) fail(`${block.block_id} source lock omits effective-date status`);
+    const requirements = readJson(path.join(packageDir, "requirements.json"));
+    if (requirements.schema !== "agentos.specialist_standard_requirements.v1" || requirements.version !== 1 || requirements.block_id !== block.block_id) fail(`${block.block_id} normalized requirements contract is invalid`);
+    if (block.normalized_requirements_sha256 !== digest(requirements)) fail(`${block.block_id} normalized requirements digest mismatch`);
+    if (!Array.isArray(requirements.requirements) || requirements.requirements.length === 0) fail(`${block.block_id} normalized requirements are empty`);
+    const requirementIds = requirements.requirements.map((item) => item.requirement_id);
+    if (requirementIds.some((item) => typeof item !== "string" || item.length === 0) || new Set(requirementIds).size !== requirementIds.length) fail(`${block.block_id} normalized requirement IDs are invalid`);
+    if (JSON.stringify(requirements.standard_identity) !== JSON.stringify(block.reuse.standard_identity)) fail(`${block.block_id} normalized standard identity mismatch`);
+    const compatibility = readJson(path.join(packageDir, block.reuse.compatibility_map_path));
+    if (compatibility.schema !== "agentos.specialist_standard_compatibility.v1" || compatibility.version !== 1 || compatibility.block_id !== block.block_id) fail(`${block.block_id} compatibility map contract is invalid`);
+    if (block.compatibility_sha256 !== digest(compatibility)) fail(`${block.block_id} compatibility digest mismatch`);
+    const supersession = readJson(path.join(packageDir, block.reuse.supersession_path));
+    if (supersession.schema !== "agentos.specialist_standard_supersession.v1" || supersession.version !== 1 || supersession.block_id !== block.block_id) fail(`${block.block_id} supersession map contract is invalid`);
+    if (block.supersession_sha256 !== digest(supersession)) fail(`${block.block_id} supersession digest mismatch`);
+    if (supersession.status !== block.supersession_status || !Array.isArray(supersession.known_non_superseding)) fail(`${block.block_id} supersession status is not bound to the block`);
+    if (block.reuse.applicability_overlay !== "EXTERNAL_TYPED_COMPANION_ONLY") fail(`${block.block_id} stores applicability in the reusable block`);
+    if (block.forbidden_decisions.some((decision) => /certif|legal/iu.test(decision)) === false) fail(`${block.block_id} standard authority ceiling lacks certification/legal denial`);
+  }
   const evaluation = readJson(path.join(packageDir, "evaluation.json"));
   if (evaluation.schema !== EVALUATION_SCHEMA || evaluation.block_id !== block.block_id || evaluation.candidate_digest !== block.block_sha256) fail(`${block.block_id} evaluation is not bound to the candidate`);
   const expectedClasses = [...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES].sort();
@@ -101,7 +125,7 @@ function evaluatePackage(packageDir) {
 
 function packageDirectories(libraryRoot) {
   const directories = [];
-  for (const rootName of ["foundation", "wave-01", "wave-02"]) {
+  for (const rootName of ["foundation", "standards", "wave-01", "wave-02"]) {
     const root = path.join(libraryRoot, rootName);
     if (!fs.existsSync(root)) continue;
     for (const entry of fs.readdirSync(root, {withFileTypes: true}).filter((item) => item.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
