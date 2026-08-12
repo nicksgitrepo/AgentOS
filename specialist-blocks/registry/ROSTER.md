@@ -66,7 +66,7 @@ explicitly non-compileable, and require a role-specific block with its own
 source lock, twelve gates, hostile fixtures, independent evaluation, and
 admission receipt. The protected Memory lane is retained as `NOT_APPLICABLE`
 and external-only. The catalog preserves all `10` alias mappings and is
-content-addressed by `c484a6d63ed440fde38c88fafde7ce30bc54ae0eca743f5076d6fc063d4f5d49`.
+content-addressed by `e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74`.
 
 ## Source-locked standard candidates
 
@@ -254,7 +254,7 @@ P0 is the only active priority wave. It has six lanes: `AGENT.BOOTSTRAP`,
 foundation and preceding wave receipts exist; the P1–P5 packages above are
 candidate library records, not active lanes.
 
-The full inventory retains 625 role mentions and 621 unique titles (the 619
+The full inventory retains 627 role mentions and 621 unique titles (the 619
 baseline roles plus two generic discovered workflow additions), with 10
 explicit duplicate/alias mappings. Priority changes sequencing, not existence.
 P3, P4, and P5 packages are compiled candidates only; P0 remains the sole

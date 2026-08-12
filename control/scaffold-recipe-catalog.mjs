@@ -367,7 +367,7 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
     addressability_rule: "EVERY_RETAINED_MASTER_INVENTORY_ROLE_HAS_ONE_STABLE_RECIPE;_ALIASES_RESOLVE_TO_THE_CANONICAL_RECIPE",
     planned_recipe_rule: "PLANNED_RECIPES_ARE_NOT_COMPILEABLE_UNTIL_ROLE_SPECIFIC_BLOCK_SOURCE_LOCK_EVALUATION_AND_ADMISSION_EXIST",
     foundation_block_ids: FOUNDATION_BLOCKS,
-    inventory: {raw_role_mentions: 625, unique_role_titles: inventoryEntries.length, alias_mappings: aliases.length},
+    inventory: {raw_role_mentions: 627, unique_role_titles: inventoryEntries.length, alias_mappings: aliases.length},
     recipes,
     aliases,
     recipes_sha256: null,

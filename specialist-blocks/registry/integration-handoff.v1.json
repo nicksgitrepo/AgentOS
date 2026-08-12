@@ -26,7 +26,7 @@
     ]
   },
   "inventory": {
-    "raw_role_mentions": 625,
+    "raw_role_mentions": 627,
     "unique_role_titles": 621,
     "alias_mappings": 10,
     "materialized_entries": 621,
@@ -53,7 +53,7 @@
       "PLANNED": 603,
       "NOT_APPLICABLE": 1,
       "alias_mappings": 10,
-      "catalog_sha256": "c484a6d63ed440fde38c88fafde7ce30bc54ae0eca743f5076d6fc063d4f5d49"
+      "catalog_sha256": "e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74"
     }
   },
   "lanes": {

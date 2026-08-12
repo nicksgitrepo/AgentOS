@@ -17,7 +17,7 @@
     "specialist.foundation.tool-custody-gate"
   ],
   "inventory": {
-    "raw_role_mentions": 625,
+    "raw_role_mentions": 627,
     "unique_role_titles": 621,
     "alias_mappings": 10
   },
@@ -46341,5 +46341,5 @@
       "reason": "Exact duplicate label; one documentation role owns the writing contract."
     }
   ],
-  "recipes_sha256": "c484a6d63ed440fde38c88fafde7ce30bc54ae0eca743f5076d6fc063d4f5d49"
+  "recipes_sha256": "e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74"
 }

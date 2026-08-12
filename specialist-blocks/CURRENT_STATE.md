@@ -26,7 +26,7 @@ and the protected Memory lane are read-only or out of scope.
 
 ## Master inventory
 
-- Raw role mentions retained: `625`.
+- Raw role mentions retained: `627`.
 - Unique role titles retained: `621` (`619` baseline roles plus two source-backed generic workflow additions).
 - Explicit duplicate/alias mappings: `10`.
 - Inventory source: `registry/master-inventory.v1.json`.
@@ -458,7 +458,8 @@ remain external gates.
   routers, `16` controls, `92` atoms). The recipe catalog contains `621`
   entries: `17` candidates (`6` P0, `5` P4, `6` P5), `603` planned, `1`
   `NOT_APPLICABLE`, and `10` aliases. The two added workflow roles are
-  generic discovered additions; all 619 baseline roles remain retained.
+  generic discovered additions; all 619 baseline roles remain retained. The
+  regenerated catalog digest is `e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74`.
 - Focused library/compiler checks pass. The independent read-only evaluator
   reports `STATIC_PASS_REVIEW_REQUIRED` with all package-level checks passing:
   `123` packages, `1,476` twelve-gate files, and `2,091` hostile fixtures.

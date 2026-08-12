@@ -23,7 +23,7 @@ attached as a separate immutable receipt commit.
 
 ## Verified scope
 
-- Master inventory: 625 raw role mentions, 621 unique titles (the 619 baseline
+- Master inventory: 627 raw role mentions, 621 unique titles (the 619 baseline
   roles plus two generic discovered workflow additions), 10 explicit alias
   mappings, 621 materialized entries.
 - Recipe catalog: 621 stable role recipes, with 17 compileable candidates (6

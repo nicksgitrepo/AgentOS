@@ -19,7 +19,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["raw_role_mentions", "unique_role_titles", "alias_mappings"],
-      "properties": {"raw_role_mentions": {"const": 625}, "unique_role_titles": {"const": 621}, "alias_mappings": {"const": 10}}
+      "properties": {"raw_role_mentions": {"const": 627}, "unique_role_titles": {"const": 621}, "alias_mappings": {"const": 10}}
     },
     "recipes": {"type": "array", "minItems": 621, "items": {"$ref": "specialist-recipe.v1.json"}},
     "aliases": {
