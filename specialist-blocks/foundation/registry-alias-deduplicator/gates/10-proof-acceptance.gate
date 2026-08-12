@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "10-proof-acceptance",
+  "block_id": "specialist.foundation.registry-alias-deduplicator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Registry/Alias/Deduplication Controller: does the declared 10-proof-acceptance condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.10-proof-acceptance.answer",
+    "gate.10-proof-acceptance.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "11-lifecycle-recovery-archive",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "11-lifecycle-recovery-archive"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "84963aba711bb54e0b2befd38fc8df413cbb168154d6c9b6497b4d91b82e557f"
+}

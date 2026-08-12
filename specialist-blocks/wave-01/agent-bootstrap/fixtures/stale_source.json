@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "class": "stale_source",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: source freshness, supersession, or immutable identity cannot be verified; deny the dependent bootstrap action."
+}

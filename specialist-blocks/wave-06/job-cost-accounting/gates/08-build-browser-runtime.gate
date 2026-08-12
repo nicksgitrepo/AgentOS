@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "08-build-browser-runtime",
+  "block_id": "specialist.finance.job-cost-accounting",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Job-Cost Accounting: does the exact 08-build-browser-runtime condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.08-build-browser-runtime.answer",
+    "gate.08-build-browser-runtime.evidence",
+    "source_lock_identity",
+    "specialist.standard.gao-green-book-2025_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "09-output-handoff",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "09-output-handoff"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "00bd5003af426a065003a734c615c2466a4cbc3e59b32d3a906661d5e769cc2c"
+}

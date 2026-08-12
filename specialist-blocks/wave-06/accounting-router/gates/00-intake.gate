@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "00-intake",
+  "block_id": "specialist.finance.accounting-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Accounting and Job-Cost Router: does the exact 00-intake condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.00-intake.answer",
+    "gate.00-intake.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "1637c9272dcc21f5ec4f97a21d99f2f4abc3537c1a8b1b97b3112ed7c40eb926"
+}

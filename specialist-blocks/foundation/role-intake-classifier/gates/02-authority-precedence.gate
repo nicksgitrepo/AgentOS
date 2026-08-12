@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "02-authority-precedence",
+  "block_id": "specialist.foundation.role-intake-classifier",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Universal Role-Intake Classifier: does the declared 02-authority-precedence condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.02-authority-precedence.answer",
+    "gate.02-authority-precedence.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "03-scope-nongoals",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "03-scope-nongoals"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "ed33cee3ed1f0bd2f543831a0a5b6a17e66b31d30103d5bb72921f40e68f9af0"
+}

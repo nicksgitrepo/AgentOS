@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-handoff-schema.v1.json",
+  "title": "AgentOS Generated Task-Shaped Agent Handoff Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "package_hash", "handoff_id", "input_fields", "output_fields", "evidence_fields", "statuses", "residuals", "next_action", "archive_rule"],
+  "properties": {
+    "schema": {"const": "agentos.handoff_schema.v1"},
+    "version": {"const": 1},
+    "package_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "handoff_id": {"type": "string", "minLength": 1},
+    "input_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "output_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "evidence_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "statuses": {"const": ["CANDIDATE_READY", "WAITING_WITH_RECEIPT", "BLOCKED_EXACT", "FROZEN_ARCHIVED"]},
+    "residuals": {"type": "array", "items": {"type": "string"}},
+    "next_action": {"type": "string", "minLength": 1},
+    "archive_rule": {"type": "string", "minLength": 1}
+  }
+}

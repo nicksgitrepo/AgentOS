@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.oauth-identity",
+  "class": "duplicate_sibling_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for duplicate_sibling_authority; all provider, project, consumer, and applicability facts remain external."
+}

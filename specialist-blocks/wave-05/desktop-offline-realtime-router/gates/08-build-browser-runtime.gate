@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "08-build-browser-runtime",
+  "block_id": "specialist.product-client.desktop-offline-realtime-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Desktop/Offline/Realtime Client Router: does the exact 08-build-browser-runtime condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.08-build-browser-runtime.answer",
+    "gate.08-build-browser-runtime.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "09-output-handoff",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "09-output-handoff"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "a3cd33d57d2d3a855901e0859dc67292a5cddcc67df2800049c754bb15a0f4ec"
+}

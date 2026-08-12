@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.sbom",
+  "class": "authority_conflict",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for authority_conflict; provider, project, consumer, secret, and applicability facts remain external."
+}

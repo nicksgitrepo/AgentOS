@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.wcag-2-2",
+  "class": "missing_context",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for missing_context; standard applicability and requirement evidence remain external."
+}

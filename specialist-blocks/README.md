@@ -1,0 +1,115 @@
+# AgentOS Specialist Block Library
+
+This is the portable candidate library for narrow specialist-agent governance.
+It is a package ecosystem, not an activated roster. Project context is supplied
+through typed inputs and authority-corpus templates; the library contains no
+consumer project identity, private path, credential, deployment identity, or
+domain-specific private fact.
+
+Each block package contains:
+
+- `block.json`: role context, narrow scope, typed intake/output/handoff
+  contract, authority and non-goal boundary, and capability ceilings;
+- `sources.lock`: versioned primary-source manifest with freshness metadata;
+- `<block>.gate`: deterministic boolean decision tree with fail-closed rules;
+- `evaluation.json`: independent-evaluation dossier and hostile fixture classes;
+- `handoff.json`: exact candidate receipt and residuals.
+
+Each reusable `STANDARD_BLOCK` additionally contains `requirements.json`,
+`compatibility.json`, and `supersession.json`. Their digests are bound into
+`block.json`; applicability, jurisdiction, project facts, and freshness
+overlays remain external. The current candidate has twenty-three source-locked
+standard packages under `specialist-blocks/standards/`: NIST SP 800-218 SSDF
+1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten exact authorities reused
+by the first P1 atomic slice, the OWASP Top 10:2025 and OWASP API Security
+Top 10:2023 indexes, plus reusable Semantic Versioning 2.0.0 and Conventional
+Commits 1.0.0 authorities for release governance, W3C WCAG 2.2 for
+accessibility applicability and evidence mapping, NIST AI RMF 1.0, NIST AI
+600-1, glTF 2.0.1, FMCSA Part 390 (2025), and the GAO Green Book (2025).
+Each is immutable and reused by hash; task-specific applicability remains
+external.
+
+The first P1 atomic slice under `specialist-blocks/wave-02/` contains six
+classification-only routers and ten narrow candidates for Rust, TypeScript,
+React, PostgreSQL RLS, OpenAPI contracts, OAuth, OIDC, AWS IAM, Cloudflare DNS,
+and Cloudflare Cache. Each atomic candidate is selected only through its
+required upstream router and remains inactive pending independent utility/harm
+and admission review.
+
+The P2 security expansion under `specialist-blocks/wave-03/` contains six
+classification-only routers and forty-one narrow candidates covering every
+OWASP Web Top 10:2025 category, every OWASP API Security Top 10:2023 category,
+access-control models and boundaries, concurrency/replay/idempotency hazards,
+and CVE/SBOM/provenance domains. The two OWASP indexes are reusable standard
+blocks; category atoms reference their exact hashes rather than copying the
+index content.
+
+The P3 delivery/assurance expansion under `specialist-blocks/wave-04/` adds
+three governance controls, an observability router, and atomic candidates for
+test architecture, observability/incident evidence, and migration rollback.
+These candidates reuse the existing NIST SSDF and SLSA standard hashes where
+applicable; the observability router remains classification-only and does not
+replace its narrower atomic specialist.
+
+The P4 client/UX slice under `specialist-blocks/wave-05/` adds one
+desktop/offline/realtime classification router and five atomic specialists for
+product interaction, WCAG accessibility, responsive web, iOS/SwiftUI, and
+Android/Kotlin. The accessibility atom reuses the exact WCAG 2.2 standard hash;
+the router does not substitute for narrower atoms.
+
+The P5 domain/AI/3D/regulatory/finance slice under
+`specialist-blocks/wave-06/` adds five classification-only routers and six
+narrow atomic specialists for field and well workflows, industrial 3D,
+AI/Search/RAG, FMCSA applicability, and job-cost accounting. The atomic
+specialists bind to their required routers and, where applicable, reuse the
+exact NIST AI, glTF, FMCSA, and GAO standard hashes. All remain candidate-only.
+
+Atomicity is normative: broad family labels are routers only, atomic blocks own
+one failure mode or evidence domain, and control-plane blocks own governance
+mechanics. The atomicity overlay in `registry/atomic-inventory.v1.json` keeps
+routers, atomic specialists, and control-plane roles separate and reports exact
+counts. Every atomic package has its own `sources.lock`, twelve gate files,
+hostile fixtures, independent evaluation, and typed handoff.
+
+The controller compiler validates the packages, deduplicates aliases, computes
+content digests, materializes the master inventory, and emits the canonical
+roster and routing index. All generated records remain inactive until an
+independent authority admits them.
+
+The on-demand bootstrap compiler in
+`control/specialist-agent-compiler.mjs` composes recipes and immutable blocks
+into a task-shaped agent package. It writes only to an external companion or
+isolated governed agent workspace and emits the eight machine contracts plus a
+generated `bootstrap.md` view. The registry stores recipes and reusable block
+references, never permanent task agents. `control/scaffold-recipe-catalog.mjs`
+materializes one stable recipe for every retained inventory role and marks
+unbuilt role recipes explicitly `PLANNED` and non-compileable.
+
+`registry/recipe-catalog.v1.json` contains one stable recipe for every retained
+inventory role: `621` recipes total, with seventeen compileable candidates (`6`
+P0, `5` P4, and `6` P5), `603` explicit
+planned, non-compileable recipes awaiting role-specific source research, gates,
+evaluation, and admission, and the protected Memory lane is `NOT_APPLICABLE`
+and external-only. `registry/integration-handoff.v1.json` and
+`INTEGRATION_HANDOFF.md` carry the exact isolated-candidate disposition and
+unfinished admission gates.
+
+The read-only independent evaluator in
+`control/specialist-independent-evaluator.mjs` checks package immutability,
+source locks, all twelve gate digests, hostile fixtures, handoff custody, and
+self-admission denial. It issues a static receipt only; utility/harm and
+admission authority remain separate gates.
+
+The deterministic utility/harm pre-screen in
+`control/specialist-utility-harm-prescreen.mjs` validates every declared
+hostile fixture policy against its evaluation dossier and records the result
+at `registry/utility-harm-prescreen.v1.json`. The current receipt covers 123
+packages and 2,091 cases with zero failures, but 68 cases remain pending
+external review; this pre-screen never admits or activates a block.
+
+`registry/master-inventory.v1.json` is the durable Fortune-500-scale backlog.
+Its raw role mentions are preserved, and alias mappings explain only exact or
+near-exact duplicates. The highest-value waves are sequenced by cross-project
+value, risk reduction, frequency, and dependency leverage rather than novelty.
+
+The `2.1rc` posture remains `PREPARED_NOT_ACTIVATED`.

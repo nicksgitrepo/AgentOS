@@ -1,0 +1,138 @@
+{
+  "schema": "agentos.specialist_library_integration_handoff.v1",
+  "version": 1,
+  "status": "WAITING_WITH_RECEIPT",
+  "candidate": {
+    "branch": "codex/specialist-block-library-candidate",
+    "commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
+    "tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb",
+    "remote_ref": "origin/codex/specialist-block-library-candidate",
+    "activation": "OFF",
+    "admission": "NOT_ADMITTED"
+  },
+  "library": {
+    "governance_version": "2.1rc",
+    "lifecycle": "CANDIDATE_INACTIVE",
+    "generic_purity": true,
+    "compiler_outputs": [
+      "agent-plan.json",
+      "block-lock.json",
+      "authority-graph.json",
+      "context-manifest.json",
+      "decision-tree.gate",
+      "proof-matrix.json",
+      "handoff.schema.json",
+      "evaluation-receipt.json"
+    ]
+  },
+  "inventory": {
+    "raw_role_mentions": 627,
+    "unique_role_titles": 621,
+    "alias_mappings": 10,
+    "materialized_entries": 621,
+    "role_kind_counts": {
+      "ROUTER": 640,
+      "CONTROL_PLANE": 16,
+      "KNOWLEDGE_BLOCK": 0,
+      "GOVERNANCE_BLOCK": 0,
+      "STANDARD_BLOCK": 0,
+      "CONTEXT_BLOCK": 0,
+      "ATOMIC_SPECIALIST": 92,
+      "COMPILED_AGENT_PACKAGE": 0
+    },
+    "compiled_package_counts": {
+      "total": 123,
+      "ROUTER": 19,
+      "CONTROL_PLANE": 16,
+      "ATOMIC_SPECIALIST": 65,
+      "STANDARD_BLOCK": 23
+    },
+    "recipe_counts": {
+      "total": 621,
+      "CANDIDATE": 620,
+      "PLANNED": 0,
+      "NOT_APPLICABLE": 1,
+      "alias_mappings": 10,
+      "catalog_sha256": "f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67"
+    }
+  },
+  "lanes": {
+    "active_count": 6,
+    "wave": "P0",
+    "entries": [
+      {"generic_id": "AGENT.BOOTSTRAP", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.bootstrap-project-initializer", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.PROJECT_CONTROLLER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.project-controller", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.INTENT_REGULATOR", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.intent-regulator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.RESOURCE_SCHEDULER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.resource-scheduler", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.RUNTIME_DEPLOYMENT", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.runtime-deployment-operator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.INDEPENDENT_AUDITOR", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.independent-auditor", "status": "CANDIDATE"}
+    ]
+  },
+  "outputs": {
+    "block_compiler": "control/specialist-block-compiler.mjs",
+    "loader": "control/specialist-block-loader.mjs",
+    "bootstrap_compiler": "control/specialist-agent-compiler.mjs",
+    "recipe_catalog_compiler": "control/scaffold-recipe-catalog.mjs",
+    "schemas": [
+      "schemas/specialist-block.v1.json",
+      "schemas/specialist-gate.v1.json",
+      "schemas/specialist-recipe.v1.json",
+      "schemas/specialist-recipe-catalog.v1.json",
+      "schemas/specialist-agent-plan.v1.json",
+      "schemas/specialist-block-lock.v1.json",
+      "schemas/specialist-authority-graph.v1.json",
+      "schemas/specialist-context-manifest.v1.json",
+      "schemas/specialist-composed-gate.v1.json",
+      "schemas/specialist-proof-matrix.v1.json",
+      "schemas/specialist-handoff-schema.v1.json",
+      "schemas/specialist-evaluation-receipt.v1.json",
+      "schemas/specialist-integration-handoff.v1.json",
+      "schemas/specialist-standard-requirements.v1.json",
+      "schemas/specialist-standard-compatibility.v1.json",
+      "schemas/specialist-standard-supersession.v1.json",
+      "schemas/specialist-utility-harm-prescreen.v1.json"
+    ],
+    "registry": [
+      "specialist-blocks/registry/master-inventory.v1.json",
+      "specialist-blocks/registry/master-inventory.materialized.v1.json",
+      "specialist-blocks/registry/atomic-inventory.v1.json",
+      "specialist-blocks/registry/priority-roster.v1.json",
+      "specialist-blocks/registry/recipe-catalog.v1.json",
+      "specialist-blocks/registry/roster.v1.json",
+      "specialist-blocks/registry/routing-index.v1.json"
+    ],
+    "human_roster": "specialist-blocks/registry/ROSTER.md",
+    "utility_harm_prescreen": "specialist-blocks/registry/utility-harm-prescreen.v1.json"
+  },
+  "receipts": [
+    {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "123 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
+    {"receipt_id": "specialist-standard-reuse-v1", "status": "PASS", "scope": "twenty-three source-locked STANDARD_BLOCK candidates, normalized requirements, compatibility/supersession digests, 276 gate files, and 391 hostile fixtures"},
+    {"receipt_id": "specialist-task-composition-fixture-v1", "status": "PASS", "scope": "three external task-shaped packages, immutable standard reuse, minimal closure, negative denials, deterministic bootstrap output, zero repository residue"},
+    {"receipt_id": "specialist-independent-evaluator-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "read-only independent checks over 123 packages, 1476 gate files, and 2091 hostile fixtures; every package-level static check passed; utility/harm remains pending"},
+    {"receipt_id": "specialist-atomic-composition-v1", "status": "PASS", "scope": "atomic upstream-router dependency closure, router-plus-atomic routing, sibling-conflict denial, lock preservation, and missing-upstream hostile fixtures"},
+    {"receipt_id": "specialist-p1-atomic-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P1 routers, ten source-locked atomic candidates, and ten reusable exact-edition STANDARD_BLOCK authorities for language/runtime, data, API contracts, identity, AWS IAM, and Cloudflare DNS/cache"},
+    {"receipt_id": "specialist-p2-security-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P2 routers, forty-one narrow security atoms, two reusable OWASP index standards, exact upstream-router closure, standard-hash reuse, and actual Web A01/API7 routing fixtures"},
+    {"receipt_id": "specialist-p3-delivery-assurance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "three P3 governance controls, one observability router, two delivery/data atomic specialists, one assurance atomic specialist, exact upstream closure, and reuse of existing NIST SSDF/SLSA authorities"},
+    {"receipt_id": "specialist-p4-client-ux-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "one P4 desktop/offline/realtime classification router, five narrow client/UX atoms, one reusable W3C WCAG 2.2 STANDARD_BLOCK, exact upstream closure, source locks, twelve-gate packs, and routing fixtures"},
+    {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "621 stable recipes for 621 retained inventory roles, 620 compileable candidates, zero advertised-but-non-materializable roles, one protected external Memory lane marked NOT_APPLICABLE, ten alias resolutions, and deterministic catalog digest; 603 generic roles use immutable context profiles plus the smallest reusable gate set and receive no authority from profile text"},
+    {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"},
+    {"receipt_id": "specialist-p1-standard-reuse-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "implementation commit 170bbf4ca705dce9de199172910c6c25e243e7fc with tree aebfe743b8b460dd1ffb5c90cfc3342f93d18597; ten P1 atoms reuse ten immutable exact-edition standard blocks"},
+    {"receipt_id": "specialist-p5-domain-ai-3d-reg-finance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P5 atomic candidates, five P5 classification routers, five reusable exact-edition STANDARD_BLOCK authorities, source locks, twelve-gate packs, hostile fixtures, upstream-router closure, and standard-hash reuse"},
+    {"receipt_id": "specialist-utility-harm-prescreen-v1", "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW", "scope": "deterministic read-only comparison of 123 package dossiers and 2,091 hostile fixture policies; 2,023 observed passes, 68 pending, zero failures; external utility/harm authority remains required"}
+  ],
+  "unfinished_gates": [
+    "Independent utility/harm evaluation of the six P0 packages and Agent Builder input has not passed.",
+    "The deterministic utility/harm pre-screen is receipt-backed but remains pending external independent utility/harm authority; it does not admit or activate any package.",
+    "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
+    "Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
+    "Context-profile recipes are compileable candidates, not independently admitted specialists: their role profile narrows context only, and every substantive claim still requires selected source-locked gates plus a complete external authority corpus.",
+    "Full hostile/utility validation and main AgentOS 3.0 integration-owner intake remain external follow-up gates.",
+    "No consumer adoption, migration, provider activation, public release, or protected Memory action is authorized by this receipt."
+  ],
+  "authority": {
+    "scope": "ISOLATED_AGENTOS_LIBRARY_WORKTREE_ONLY",
+    "forbidden": ["merge into another worktree", "activate or deploy", "self-admit", "write secrets", "modify source packages or active integration worktree", "direct protected Memory internals", "assert legal applicability without complete current authority evidence"],
+    "independent_acceptance_required": true
+  },
+  "next_action": "Main AgentOS 3.0 integration owner may inspect the exact branch, commit, tree, package receipts, and unfinished gates; intake is permitted only after independent utility/harm and admission authority pass all dependent gates."
+}

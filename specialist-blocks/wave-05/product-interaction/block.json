@@ -1,0 +1,310 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.product-interaction",
+  "revision": "1.0.0",
+  "priority": "P4",
+  "role_kind": "ATOMIC_SPECIALIST",
+  "family": "product-client",
+  "title": "Product Interaction",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Analyze one named interaction-flow concern, including keyboard/focus and state-transition evidence where declared, without owning product requirements or acceptance.",
+  "scope": {
+    "included": [
+      "keyboard/focus interaction evidence when applicable",
+      "named interaction flow",
+      "state and transition evidence"
+    ],
+    "non_goals": [
+      "Product writing",
+      "acceptance",
+      "accessibility conformance certification",
+      "activation",
+      "product prioritization",
+      "self-admission",
+      "silent scope expansion",
+      "unrelated client platforms",
+      "visual design acceptance"
+    ],
+    "smallest_sufficient_rule": "Analyze only the named client/UX concern and return NOT_APPLICABLE when it is absent."
+  },
+  "atomic_scope_statement": "One narrow atomic evidence domain: Product Interaction; unrelated client, platform, or accessibility failure modes require sibling blocks.",
+  "permitted_decisions": [
+    "analyze the exact named client/UX concern",
+    "escalate missing authority or conflicting evidence",
+    "return NOT_APPLICABLE when the concern is absent",
+    "return evidence-bounded findings"
+  ],
+  "forbidden_decisions": [
+    "activate, admit, deploy, publish, or self-accept",
+    "broaden to a family or sibling concern",
+    "claim another provider, standard, or version",
+    "infer missing authority, applicability, or evidence",
+    "write Product or consumer state"
+  ],
+  "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+  "required_upstream_router": "specialist.product-client.router",
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN closes only the dependent action",
+    "compose only with explicitly named dependencies and siblings",
+    "must be selected by the required upstream router",
+    "reuse exact standard block IDs, versions, and hashes"
+  ],
+  "escalation_target": "specialist.foundation.evaluation-admission-gate",
+  "split_required_when": [
+    "authority or source lock differs",
+    "failure mode differs",
+    "knowledge differs",
+    "platform, provider, standard, or version differs",
+    "tool or data custody differs"
+  ],
+  "required_knowledge": [
+    "atomic specialization law",
+    "exact source lock",
+    "typed context contract"
+  ],
+  "routing": {
+    "signals": [
+      "UX.PRODUCT_INTERACTION",
+      "interaction flow",
+      "interaction state",
+      "product interaction"
+    ],
+    "deny_if": [
+      "missing authority",
+      "missing source lock",
+      "scope expansion",
+      "stale or superseded source",
+      "unresolved platform or version",
+      "unsafe action"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "candidate.identity",
+      "custody",
+      "interaction.scope",
+      "interaction.states",
+      "request",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "evaluation_receipt",
+      "project_context",
+      "runtime_readback"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "candidate.identity",
+      "custody",
+      "interaction.scope",
+      "interaction.states",
+      "source_lock"
+    ],
+    "acceptance_signals": [
+      "UX.PRODUCT_INTERACTION",
+      "interaction flow",
+      "interaction state",
+      "product interaction"
+    ],
+    "rejection_signals": [
+      "ambiguous request",
+      "missing context",
+      "scope expansion",
+      "stale source",
+      "unsafe action"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.product-interaction.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "exact source lock identity",
+      "gate trace",
+      "typed context",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "block_sha256",
+      "evidence",
+      "findings",
+      "next_action",
+      "residuals",
+      "revision",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "evidence-bounded analysis",
+      "exact source records in sources.lock",
+      "reusable standard block identities and requirement mappings",
+      "typed context within the declared scope"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "exact primary source or immutable standard block",
+      "explicit owner authority",
+      "external typed project context",
+      "human safety and emergency authority",
+      "portable governance hard controls"
+    ],
+    "prohibited_authority": [
+      "Product acceptance",
+      "another provider, standard, or version",
+      "opaque citations",
+      "provider/account mutation",
+      "self-authored admission",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "Require exact client/UX concern, platform or standard version, source scope, authority, and freshness evidence; regulated or legal applicability remains external.",
+    "escalation_rule": "Conflict or missing protected authority closes only the dependent action and escalates to the named control-plane owner.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Check publisher, identifier, version, publication/effective/supersession status, retrieved date, immutable identity, and digest when obtainable; stale or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Claims are limited to the exact source-backed client/UX concern and selected reusable standards; no cross-platform, cross-version, or cross-specialist claims.",
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared primary source metadata",
+      "typed authority corpus"
+    ],
+    "write": [
+      "own isolated candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "fixture evaluator",
+      "local deterministic validator",
+      "source-lock reader"
+    ],
+    "data": [
+      "no protected consumer data",
+      "no secrets",
+      "public source metadata",
+      "synthetic or externally supplied typed context only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_ISOLATED_CANDIDATE",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "preserve immutable candidate",
+      "record exact missing field",
+      "refresh or escalate source",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
+    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
+    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.role-intake-classifier",
+    "specialist.foundation.scope-non-goal-gate",
+    "specialist.foundation.tool-custody-gate",
+    "specialist.product-client.router"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.product-interaction.v1",
+    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.product-interaction",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
+    "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
+  },
+  "block_sha256": "73a220145aaf3e49a1821b178033fbe0aabcb878f9546a0d9c4b2e0d170439a3"
+}

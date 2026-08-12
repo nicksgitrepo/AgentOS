@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-standard-requirements.v1.json",
+  "title": "AgentOS Reusable Standard Block Requirements",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "standard_identity", "requirements", "applicability_rule", "exception_rule"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_standard_requirements.v1"},
+    "version": {"const": 1},
+    "block_id": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "standard_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publisher", "identifier", "edition"],
+      "properties": {
+        "publisher": {"type": "string", "minLength": 1},
+        "identifier": {"type": "string", "minLength": 1},
+        "edition": {"type": "string", "minLength": 1}
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requirement_id", "statement", "source_ref", "evidence"],
+        "properties": {
+          "requirement_id": {"type": "string", "minLength": 1},
+          "statement": {"type": "string", "minLength": 1},
+          "source_ref": {"type": "string", "minLength": 1},
+          "evidence": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "applicability_rule": {"type": "string", "minLength": 1},
+    "exception_rule": {"type": "string", "minLength": 1}
+  }
+}

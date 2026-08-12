@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "unrelated_scope",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request concerns an unrelated domain decision and has no resource admission or pressure condition."
+}

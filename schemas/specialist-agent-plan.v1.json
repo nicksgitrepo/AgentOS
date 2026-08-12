@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-agent-plan.v1.json",
+  "title": "AgentOS Generated Task-Shaped Agent Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "package_hash", "compiler", "library", "parent", "recipe", "task", "selected_blocks", "external_bindings", "authority", "gate_state", "proof", "handoff", "lifecycle", "failure"],
+  "properties": {
+    "schema": {"const": "agentos.agent_plan.v1"},
+    "version": {"const": 1},
+    "package_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "compiler": {"$ref": "#/$defs/identity"},
+    "library": {"$ref": "#/$defs/identity"},
+    "parent": {"$ref": "#/$defs/identity"},
+    "recipe": {"type": "object", "additionalProperties": false, "required": ["recipe_id", "version", "family", "purpose"], "properties": {"recipe_id": {"type": "string", "minLength": 1}, "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}, "family": {"type": "string", "minLength": 1}, "purpose": {"type": "string", "minLength": 1}}},
+    "task": {"type": "object", "additionalProperties": false, "required": ["lane", "goal", "outcome", "non_goals", "owner_intent"], "properties": {"lane": {"type": "string", "minLength": 1}, "goal": {"type": "string", "minLength": 1}, "outcome": {"type": "string", "minLength": 1}, "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}, "owner_intent": {"$ref": "#/$defs/identity"}}},
+    "selected_blocks": {"type": "array", "items": {"$ref": "#/$defs/block_ref"}, "minItems": 1},
+    "external_bindings": {"type": "object", "additionalProperties": false, "required": ["project_governance", "context", "candidate", "worktree", "custody", "freshness"], "properties": {"project_governance": {"$ref": "#/$defs/external_ref"}, "context": {"$ref": "#/$defs/external_ref"}, "candidate": {"$ref": "#/$defs/external_ref"}, "worktree": {"$ref": "#/$defs/external_ref"}, "custody": {"$ref": "#/$defs/external_ref"}, "freshness": {"$ref": "#/$defs/external_ref"}}},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["allowed", "forbidden", "acceptance_authority", "graph_ref"], "properties": {"allowed": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}, "forbidden": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}, "acceptance_authority": {"const": "INDEPENDENT_AUTHORITY_ONLY"}, "graph_ref": {"const": "authority-graph.json"}}},
+    "gate_state": {"type": "object", "additionalProperties": false, "required": ["status", "outcomes", "unknown_rule", "decision_tree_ref"], "properties": {"status": {"enum": ["READY_CANDIDATE", "UNKNOWN_DEPENDENT_ACTIONS_CLOSED"]}, "outcomes": {"type": "array", "items": {"enum": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]}, "minItems": 4, "maxItems": 4}, "unknown_rule": {"const": "UNKNOWN_CLOSES_ONLY_DEPENDENT_ACTION;_UNRELATED_WORK_CONTINUES"}, "decision_tree_ref": {"const": "decision-tree.gate"}}},
+    "proof": {"type": "object", "additionalProperties": false, "required": ["matrix_ref", "acceptance", "evidence_ceiling"], "properties": {"matrix_ref": {"const": "proof-matrix.json"}, "acceptance": {"const": "INDEPENDENT_REVIEW_REQUIRED"}, "evidence_ceiling": {"type": "string", "minLength": 1}}},
+    "handoff": {"type": "object", "additionalProperties": false, "required": ["schema_ref", "status", "next_action"], "properties": {"schema_ref": {"const": "handoff.schema.json"}, "status": {"const": "TYPED_HANDOFF_REQUIRED"}, "next_action": {"type": "string", "minLength": 1}}},
+    "lifecycle": {"type": "object", "additionalProperties": false, "required": ["state", "archive_rule", "freeze_rule"], "properties": {"state": {"const": "GENERATED_CANDIDATE_UNFROZEN"}, "archive_rule": {"type": "string", "minLength": 1}, "freeze_rule": {"type": "string", "minLength": 1}}},
+    "failure": {"type": "object", "additionalProperties": false, "required": ["missing_context", "missing_authority", "stale_source", "conflict", "unsafe_action"], "properties": {"missing_context": {"const": "CLOSE_DEPENDENT_ACTION"}, "missing_authority": {"const": "CLOSE_DEPENDENT_ACTION"}, "stale_source": {"const": "DENY_OR_REFRESH"}, "conflict": {"const": "ESCALATE_AND_CLOSE_DEPENDENT_ACTION"}, "unsafe_action": {"const": "DENY_AND_PRESERVE_CUSTODY"}}}
+  },
+  "$defs": {
+    "identity": {"type": "object", "additionalProperties": false, "required": ["id", "version", "digest"], "properties": {"id": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "external_ref": {"type": "object", "additionalProperties": false, "required": ["identity", "version", "digest", "authority", "status"], "properties": {"identity": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "authority": {"type": "string", "minLength": 1}, "status": {"enum": ["COMPLETE", "FRESH", "BOUND", "UNKNOWN"]}}},
+    "block_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["block_id", "version", "hash", "role_kind", "layer", "reason", "reuse_key", "source_lock_digest", "dependencies", "conflicts"],
+      "properties": {
+        "block_id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "role_kind": {"enum": ["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]},
+        "layer": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1},
+        "reuse_key": {"type": "string", "minLength": 1},
+        "source_lock_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "dependencies": {"type": "array", "items": {"type": "string"}},
+        "conflicts": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

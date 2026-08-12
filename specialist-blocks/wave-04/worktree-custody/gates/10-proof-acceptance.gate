@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "10-proof-acceptance",
+  "block_id": "specialist.control.worktree-custody",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Worktree/Custody Manager: does the exact 10-proof-acceptance condition pass without expanding this CONTROL_PLANE scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.10-proof-acceptance.answer",
+    "gate.10-proof-acceptance.evidence",
+    "source_lock_identity",
+    "specialist.standard.slsa_hash"
+  ],
+  "next": {
+    "YES": "11-lifecycle-recovery-archive",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "11-lifecycle-recovery-archive"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "7dcd5eb7a3a2fc0b727394804b27342ff478e89789be5bbae5e0fa64fe9e84f1"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.cloudflare-dns-current",
+  "standard_identity": {
+    "publisher": "Cloudflare",
+    "identifier": "Cloudflare DNS Records",
+    "edition": "current"
+  },
+  "requirements": [
+    {
+      "requirement_id": "CF.DNS.current.records",
+      "statement": "Bind DNS findings to the exact current Cloudflare DNS documentation snapshot and declared zone scope.",
+      "source_ref": "Cloudflare.DNS.current",
+      "evidence": "Zone, record, provider, and source-lock receipt."
+    },
+    {
+      "requirement_id": "CF.DNS.current.boundary",
+      "statement": "Do not transfer DNS semantics to another edge provider or infer account authority.",
+      "source_ref": "Cloudflare.DNS.current:scope",
+      "evidence": "Provider identity and custody boundary."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

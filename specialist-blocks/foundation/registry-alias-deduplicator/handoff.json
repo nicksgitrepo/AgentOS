@@ -1,0 +1,31 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.registry-alias-deduplicator.v1",
+  "block_id": "specialist.foundation.registry-alias-deduplicator",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "c90492d0e3cf8b604aaf83ec9ae24f04c21fa4d6a6ea6dd0da434d5e2ecd6838",
+  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
+  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "changed_paths": [
+    "specialist-blocks/foundation/registry-alias-deduplicator/block.json",
+    "specialist-blocks/foundation/registry-alias-deduplicator/evaluation.json",
+    "specialist-blocks/foundation/registry-alias-deduplicator/gates/manifest.json",
+    "specialist-blocks/foundation/registry-alias-deduplicator/handoff.json",
+    "specialist-blocks/foundation/registry-alias-deduplicator/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "block-schema-and-digest",
+    "hostile-fixture-catalog",
+    "independent-reviewer-required",
+    "source-lock-digest"
+  ],
+  "residuals": [
+    "candidate is not admitted or activated",
+    "independent utility/harm evaluation has not run",
+    "main AgentOS 3.0 integration owner must intake exact digest"
+  ],
+  "next_action": "Route the frozen candidate to an independent evaluator and then the main AgentOS 3.0 integration owner; preserve activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.foundation.evidence-freshness-gate",
+  "sources": [
+    {
+      "source_id": "source.json-schema-2020-12",
+      "title": "JSON Schema 2020-12",
+      "publisher": "JSON Schema",
+      "url": "https://json-schema.org/draft/2020-12",
+      "version": "2020-12",
+      "effective_date": "2020-12-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "json-schema-draft-2020-12",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Machine-readable contract validation."
+    },
+    {
+      "source_id": "source.slsa-provenance",
+      "title": "SLSA Provenance",
+      "publisher": "SLSA",
+      "url": "https://slsa.dev/spec/v1.2/provenance",
+      "version": "1.2",
+      "effective_date": "2023-06-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "slsa-provenance-v1.2",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Source-to-artifact provenance and build identity."
+    },
+    {
+      "source_id": "source.w3c-prov-dm",
+      "title": "PROV-DM",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/prov-dm/",
+      "version": "REC",
+      "effective_date": "2013-04-30",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "w3c-prov-dm-recommendation-20130430",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Evidence provenance and derivation identity."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when source is stale, superseded, unverifiable, or missing effective/applicability identity; refresh or escalate.",
+  "manifest_sha256": "e6c9b9ce9f14806a961f7e4376bec4c4d527b0e2a85cafbd5a54db347e710154"
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "05-context-completeness",
+  "block_id": "specialist.security.owasp-api-2023-api7-ssrf",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OWASP API API7:2023 Server Side Request Forgery: does the exact 05-context-completeness condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.05-context-completeness.answer",
+    "gate.05-context-completeness.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-api-top10-2023_hash",
+    "specialist.standard.owasp-asvs_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "06-tool-resource-custody",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "06-tool-resource-custody"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "c4e0014e62fb1a21b504406eb4da4e4126366a36c1250527abb1f969221cbc7c"
+}

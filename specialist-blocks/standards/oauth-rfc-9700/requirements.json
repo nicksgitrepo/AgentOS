@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.oauth-rfc-9700",
+  "standard_identity": {
+    "publisher": "IETF",
+    "identifier": "OAuth 2.0 Security Best Current Practice",
+    "edition": "RFC 9700"
+  },
+  "requirements": [
+    {
+      "requirement_id": "RFC9700.flow",
+      "statement": "Map OAuth flow findings to RFC 9700 and the declared client/authorization-server context.",
+      "source_ref": "RFC9700",
+      "evidence": "Flow, client type, and threat-mitigation mapping."
+    },
+    {
+      "requirement_id": "RFC9700.scope",
+      "statement": "Do not transfer an OAuth security claim to OIDC claims or provider administration without separate authority.",
+      "source_ref": "RFC9700:scope",
+      "evidence": "Narrow scope and sibling routing record."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "cross_provider_version_claim",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic evidence transfers a resource limit claim across unnamed providers and versions without applicability."
+}

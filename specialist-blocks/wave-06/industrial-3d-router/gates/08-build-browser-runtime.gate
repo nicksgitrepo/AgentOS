@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "08-build-browser-runtime",
+  "block_id": "specialist.graphics.industrial-3d-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Industrial 3D Asset Router: does the exact 08-build-browser-runtime condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.08-build-browser-runtime.answer",
+    "gate.08-build-browser-runtime.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "09-output-handoff",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "09-output-handoff"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "c55e6636c34fc57dddf92a63880425e7ca10ce32480845150b27c8f3453af82f"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-api-top10-2023",
+  "sources": [
+    {
+      "source_id": "source.owasp-api-top10-2023",
+      "title": "OWASP API Security Top 10 2023",
+      "publisher": "OWASP Foundation",
+      "url": "https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/",
+      "version": "2023",
+      "effective_date": "2023-07-03",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "owasp-api-security-top10-2023-release-20230703",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Version-bound API security risk categories and category identity; not a certification or project-specific risk determination."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "b255df8d09f55b94be42bd59f0d6e2a402b4c9ea32eeb5fd0debf75293ea938f"
+}

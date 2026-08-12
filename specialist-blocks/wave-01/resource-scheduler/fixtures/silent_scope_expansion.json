@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "silent_scope_expansion",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request appends throttling and process-control actions to an otherwise valid pressure classification."
+}

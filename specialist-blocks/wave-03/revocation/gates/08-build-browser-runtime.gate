@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "08-build-browser-runtime",
+  "block_id": "specialist.security.revocation",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Authorization Revocation: does the exact 08-build-browser-runtime condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.08-build-browser-runtime.answer",
+    "gate.08-build-browser-runtime.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-asvs_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "09-output-handoff",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "09-output-handoff"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "2f1fad973e2478e1c68fd61f41af355c3f8b34fef6bafa1d2dbcaa4081328463"
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.ai.search-rag",
+  "sources": [
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.nist-ai-100-1",
+      "title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+      "publisher": "NIST",
+      "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+      "version": "1.0",
+      "effective_date": "2023-01-26",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "nist-ai-100-1-ai-rmf-1.0-20230126",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Voluntary, cross-sector, use-case-agnostic AI risk-management framework; applicability and organizational decisions remain external."
+    },
+    {
+      "source_id": "source.nist-ai-600-1",
+      "title": "Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile",
+      "publisher": "NIST",
+      "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf",
+      "version": "NIST AI 600-1",
+      "effective_date": "2024-07-26",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "nist-ai-600-1-genai-profile-20240726",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound generative-AI risk-management profile; it does not certify a model, corpus, provider, or application."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "a05cf5b430434b2828a6af0ad6f6d1cdb74bece72bbae32d33635bed12a0b03d"
+}

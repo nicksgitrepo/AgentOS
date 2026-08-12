@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-genai-profile-1-0",
+  "class": "authority_conflict",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for authority_conflict; standard applicability and requirement evidence remain external."
+}

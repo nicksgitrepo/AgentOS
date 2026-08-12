@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "03-scope-nongoals",
+  "block_id": "specialist.security.supply-chain-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Secrets, Cryptography, and Supply-Chain Router: does the exact 03-scope-nongoals condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.03-scope-nongoals.answer",
+    "gate.03-scope-nongoals.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "04-source-evidence-freshness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "04-source-evidence-freshness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "2bc863417f7b9cc8c8d2ca49c0bf9b0a2ee7067e369a1a21c46619d209a3bea3"
+}

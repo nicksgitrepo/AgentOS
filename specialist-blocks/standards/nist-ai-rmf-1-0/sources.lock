@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-ai-rmf-1-0",
+  "sources": [
+    {
+      "source_id": "source.nist-ai-100-1",
+      "title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+      "publisher": "NIST",
+      "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+      "version": "1.0",
+      "effective_date": "2023-01-26",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "nist-ai-100-1-ai-rmf-1.0-20230126",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Voluntary, cross-sector, use-case-agnostic AI risk-management framework; applicability and organizational decisions remain external."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "fccb419ae2131d40d15a4a6329c6b9f3c69161e55115903bb842825d3ea029e3"
+}

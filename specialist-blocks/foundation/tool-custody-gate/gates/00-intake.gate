@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "00-intake",
+  "block_id": "specialist.foundation.tool-custody-gate",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Tool/Resource/Custody Gate: does the declared 00-intake condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.00-intake.answer",
+    "gate.00-intake.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "9ba1466c6ec144273ec416973eaf62f1367515e6652490ba41864841f9cfe4b7"
+}

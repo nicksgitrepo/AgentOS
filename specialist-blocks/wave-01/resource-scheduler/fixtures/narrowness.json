@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "narrowness",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic request contains only a typed capacity admission classification with no execution or allocation action."
+}

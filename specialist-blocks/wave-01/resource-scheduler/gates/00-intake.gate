@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "00-intake",
+  "block_id": "specialist.control.resource-scheduler",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Scheduler/Hardware Resource Governor: is the request typed as a resource-admission or pressure classification and bounded to this control-plane role?",
+  "evidence": [
+    "candidate_digest",
+    "gate.00-intake.answer",
+    "gate.00-intake.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "59ffbbe9e0c096978f0bedd59b569e7c9d936966e662e406e8298a9711868bd7"
+}

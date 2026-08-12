@@ -1,0 +1,1 @@
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.intent-regulator","class":"broad_when_narrow_exists","expected":"DENY","hostile":true,"note":"Synthetic hostile request asks this control to decide unrelated execution work when a narrower authority route is required."}

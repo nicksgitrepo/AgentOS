@@ -1,0 +1,8 @@
+{
+  "schema": "agentos.specialist_standard_compatibility.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-genai-profile-1-0",
+  "current_edition": "NIST AI 600-1",
+  "compatible_predecessors": [],
+  "rule": "No predecessor is silently interchangeable; add an explicit mapping for every material change."
+}

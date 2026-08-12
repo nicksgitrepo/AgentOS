@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "06-tool-resource-custody",
+  "block_id": "specialist.security.double-submission",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Double Submission: does the exact 06-tool-resource-custody condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.06-tool-resource-custody.answer",
+    "gate.06-tool-resource-custody.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-asvs_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "07-data-secret-privacy",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "07-data-secret-privacy"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "bf7598a7608b1391653932b25ab5f881a9b213001bcc7e63f575d44fe84c436e"
+}

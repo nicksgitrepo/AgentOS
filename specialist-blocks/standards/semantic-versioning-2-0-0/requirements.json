@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.semantic-versioning-2-0-0",
+  "standard_identity": {
+    "publisher": "Semantic Versioning",
+    "identifier": "Semantic Versioning",
+    "edition": "2.0.0"
+  },
+  "requirements": [
+    {
+      "requirement_id": "SEMVER.2.0.0.precedence",
+      "statement": "Compare version precedence using the exact Semantic Versioning 2.0.0 rules, including pre-release ordering.",
+      "source_ref": "SemVer.2.0.0:precedence",
+      "evidence": "Version strings, comparison result, and exact source-lock identity."
+    },
+    {
+      "requirement_id": "SEMVER.2.0.0.compatibility",
+      "statement": "Treat a major-version change as a compatibility signal only within the declared public API and evidence scope; do not infer compatibility from a version number alone.",
+      "source_ref": "SemVer.2.0.0:versioning",
+      "evidence": "Declared API scope and independent compatibility evidence."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

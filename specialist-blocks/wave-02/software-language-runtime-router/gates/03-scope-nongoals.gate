@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "03-scope-nongoals",
+  "block_id": "specialist.software-language-runtime.router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Software Language and Runtime Router: does the exact 03-scope-nongoals condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.03-scope-nongoals.answer",
+    "gate.03-scope-nongoals.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "04-source-evidence-freshness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "04-source-evidence-freshness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "54942d629053749e03a07c6f1b452b2203c6c414105e66b4eaa6ad78218ff67e"
+}

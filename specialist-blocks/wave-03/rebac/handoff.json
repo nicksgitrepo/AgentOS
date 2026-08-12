@@ -1,0 +1,33 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.rebac.v1",
+  "block_id": "specialist.security.rebac",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "fc36a8329889575872a55d06a53355212bf379cbba7af0c41edf668d99677a3e",
+  "source_commit": "170bbf4ca705dce9de199172910c6c25e243e7fc",
+  "source_tree": "aebfe743b8b460dd1ffb5c90cfc3342f93d18597",
+  "changed_paths": [
+    "specialist-blocks/wave-03/rebac/block.json",
+    "specialist-blocks/wave-03/rebac/evaluation.json",
+    "specialist-blocks/wave-03/rebac/gates/manifest.json",
+    "specialist-blocks/wave-03/rebac/handoff.json",
+    "specialist-blocks/wave-03/rebac/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "atomic-scope-and-upstream-router",
+    "hostile-fixture-catalog",
+    "independent-reviewer-required",
+    "reusable-standard-dependency-identities",
+    "source-lock-digest"
+  ],
+  "residuals": [
+    "applicability and project context remain external",
+    "candidate is not admitted or activated",
+    "independent utility/harm evaluation has not run",
+    "main AgentOS 3.0 integration owner must intake exact digest"
+  ],
+  "next_action": "Route the immutable P2 security candidate through its upstream router and independent evaluator; preserve activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

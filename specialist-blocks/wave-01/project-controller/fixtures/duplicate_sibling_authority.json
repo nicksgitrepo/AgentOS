@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "duplicate_sibling_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request grants the same lifecycle transition to duplicate sibling authorities; deny ambiguous ownership."
+}

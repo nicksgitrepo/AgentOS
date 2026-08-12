@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.router",
+  "class": "false_positive",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for false_positive; all provider, project, consumer, and applicability facts remain external."
+}

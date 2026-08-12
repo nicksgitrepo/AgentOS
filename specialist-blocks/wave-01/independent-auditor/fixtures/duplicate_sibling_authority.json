@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "duplicate_sibling_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for duplicate_sibling_authority; duplicate or competing acceptance authority is denied."
+}

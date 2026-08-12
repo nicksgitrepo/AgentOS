@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-utility-harm-prescreen.v1.json",
+  "title": "AgentOS Deterministic Utility/Harm Pre-screen Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "evaluator_id",
+    "evaluator_version",
+    "model_requirement",
+    "candidate",
+    "candidate_roster_digest",
+    "status",
+    "independent_reviewer_required",
+    "self_acceptance",
+    "packages_checked",
+    "cases_checked",
+    "route_cases",
+    "deny_cases",
+    "passed_cases",
+    "failed_cases",
+    "pending_cases",
+    "escalate_cases",
+    "policy",
+    "evaluation_manifest_sha256",
+    "utility_harm",
+    "residuals"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.specialist_utility_harm_prescreen.v1"},
+    "version": {"const": 1},
+    "evaluator_id": {"const": "agentos.deterministic-utility-harm-prescreen"},
+    "evaluator_version": {"const": "1.0.0"},
+    "model_requirement": {"const": "gpt-5.6-luna/max"},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "commit", "tree"],
+      "properties": {
+        "branch": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "candidate_roster_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["PRESCREEN_PENDING_EXTERNAL_REVIEW", "PRESCREEN_PASS_REVIEW_REQUIRED", "PRESCREEN_REJECTED"]},
+    "independent_reviewer_required": {"const": true},
+    "self_acceptance": {"const": "FORBIDDEN"},
+    "packages_checked": {"type": "integer", "minimum": 0},
+    "cases_checked": {"type": "integer", "minimum": 0},
+    "route_cases": {"type": "integer", "minimum": 0},
+    "deny_cases": {"type": "integer", "minimum": 0},
+    "passed_cases": {"type": "integer", "minimum": 0},
+    "failed_cases": {"type": "integer", "minimum": 0},
+    "pending_cases": {"type": "integer", "minimum": 0},
+    "escalate_cases": {"type": "integer", "minimum": 0},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["always_route_classes", "always_deny_classes", "flexible_classes", "rule"],
+      "properties": {
+        "always_route_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "always_deny_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "flexible_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "rule": {"const": "ROUTE_REQUIRES_EXPLICIT_TYPED_SCOPE;_DENY_OR_ESCALATE_CLOSES_UNSAFE_OR_UNRESOLVED_ACTIONS"}
+      }
+    },
+    "evaluation_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utility_harm": {"const": "PENDING_EXTERNAL_AUTHORITY"},
+    "residuals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+  }
+}

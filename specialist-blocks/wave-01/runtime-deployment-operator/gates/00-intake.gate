@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "00-intake",
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Runtime/Deployment Operator: is the request typed as evidence preparation for a declared runtime or rollback action, with no execution requested?",
+  "evidence": [
+    "candidate_digest",
+    "gate.00-intake.answer",
+    "gate.00-intake.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "3becec08ae2fa5b2408eb586062cb8d363ce477a9732e790591ca0b34f587829"
+}

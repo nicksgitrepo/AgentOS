@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "04-source-evidence-freshness",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: are source identity, version, effective date, retrieved date, and digest or immutable-identity basis fresh and applicable?",
+  "evidence": ["candidate_digest", "gate.04-source-evidence-freshness.answer", "gate.04-source-evidence-freshness.evidence", "source_freshness", "source_lock_identity"],
+  "next": {"YES": "05-context-completeness", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "05-context-completeness"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "c0e12a766e562af6441176f666b1825f1efa1a05d7c5cd1b4637f9e231fdf402"
+}

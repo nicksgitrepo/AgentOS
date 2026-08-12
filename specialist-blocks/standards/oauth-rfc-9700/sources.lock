@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.oauth-rfc-9700",
+  "sources": [
+    {
+      "source_id": "source.rfc-9700",
+      "title": "OAuth 2.0 Security Best Current Practice",
+      "publisher": "IETF",
+      "url": "https://www.rfc-editor.org/rfc/rfc9700.html",
+      "version": "RFC 9700",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "rfc-9700-oauth-security-bcp-2025",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "OAuth security requirements and threat mitigations."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "b9f1b87d17c7ef46dfe18bc81677a80916bf183b52b5c0a17cc64fec46e128f3"
+}

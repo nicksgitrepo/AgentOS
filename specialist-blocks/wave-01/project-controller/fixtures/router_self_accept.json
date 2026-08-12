@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "router_self_accept",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request asks the controller to accept its own candidate; deny and require independent authority."
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "09-output-handoff",
+  "block_id": "specialist.data.router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Data and Database Router: does the exact 09-output-handoff condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.09-output-handoff.answer",
+    "gate.09-output-handoff.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "10-proof-acceptance",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "10-proof-acceptance"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "9d7ad2808c4dfc6d04d1f0f60acb36522e35ff4dc264b9f47dedbb750b65f958"
+}

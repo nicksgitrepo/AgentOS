@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "05-context-completeness",
+  "block_id": "specialist.control.intent-regulator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Intent Regulator / Owner Voice: is all required typed context present, including custody, owner identity, provenance, and applicable jurisdictional fields?",
+  "evidence": ["candidate_digest", "context_completeness", "gate.05-context-completeness.answer", "gate.05-context-completeness.evidence", "typed_intent_provenance"],
+  "next": {"YES": "06-tool-resource-custody", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "06-tool-resource-custody"},
+  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
+  "gate_sha256": "eb85f211783214dc3fc7dd61591ef65e8b769202ba0c3b9167dafc8ab66fe79f"
+}

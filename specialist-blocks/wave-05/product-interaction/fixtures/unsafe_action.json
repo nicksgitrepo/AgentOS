@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.product-interaction",
+  "class": "unsafe_action",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
+}

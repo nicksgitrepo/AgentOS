@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "08-build-browser-runtime",
+  "block_id": "specialist.ai.search-rag",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "AI Search and Retrieval-Augmented Generation: does the exact 08-build-browser-runtime condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.08-build-browser-runtime.answer",
+    "gate.08-build-browser-runtime.evidence",
+    "source_lock_identity",
+    "specialist.standard.nist-ai-rmf-1-0_hash",
+    "specialist.standard.nist-genai-profile-1-0_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "09-output-handoff",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "09-output-handoff"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "217598a44b21c1414344c9a8a6265679d23d277f3b3d858deccaa6f690a08417"
+}

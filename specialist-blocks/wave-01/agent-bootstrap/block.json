@@ -1,0 +1,300 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "foundation",
+  "title": "Bootstrap/Project Initializer",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Discover and type project setup context while preserving uncertainty and custody boundaries, so downstream controllers receive a deterministic bootstrap handoff without Product or provider authority.",
+  "scope": {
+    "included": [
+      "bootstrap readiness signals",
+      "language, runtime, and toolchain presence signals",
+      "read-only repository and workspace topology facts",
+      "typed setup-context handoff"
+    ],
+    "non_goals": [
+      "authorize project adoption or provider identity creation",
+      "create, rotate, or handle credentials or secrets",
+      "infer regulated or provider-specific applicability without typed evidence",
+      "publish, deploy, migrate, or write Product",
+      "self-acceptance or admission",
+      "write implementation or modify Product data"
+    ],
+    "smallest_sufficient_rule": "Discover only the minimum setup signals required by the declared request; emit typed UNKNOWN for missing evidence and route only the dependent bootstrap transition while unrelated work continues."
+  },
+  "atomic_scope_statement": "Control-plane governance for bootstrap and project-initializer context discovery only; it does not implement Product work, create provider identity, authorize adoption, or accept itself.",
+  "permitted_decisions": [
+    "classify typed bootstrap readiness and missing evidence",
+    "deny or escalate unsupported setup authority or unsafe action",
+    "issue a typed candidate handoff",
+    "return NOT_APPLICABLE when no bootstrap condition is present"
+  ],
+  "forbidden_decisions": [
+    "activate or admit a block",
+    "authorize project adoption or provider identity creation",
+    "create, rotate, or handle credentials or secrets",
+    "direct protected Memory internals",
+    "infer missing authority, jurisdiction, entity, activity, data class, version, or effective date",
+    "publish, deploy, migrate, or write Product"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN closes only the dependent bootstrap action",
+    "compose only with the declared portable bootstrap contract",
+    "preserve exact discovery provenance and custody identity"
+  ],
+  "escalation_target": "specialist.control.project-controller",
+  "split_required_when": [
+    "authority differs",
+    "data or secret custody differs",
+    "failure mode differs",
+    "knowledge differs",
+    "source or version differs",
+    "tool, browser, build, or deploy custody differs"
+  ],
+  "required_knowledge": [
+    "bootstrap context typing",
+    "evidence provenance and freshness",
+    "least-authority custody",
+    "project setup signal discovery",
+    "typed UNKNOWN and NOT_APPLICABLE semantics"
+  ],
+  "routing": {
+    "signals": [
+      "bootstrap",
+      "project initialization",
+      "project setup",
+      "repository discovery",
+      "runtime discovery"
+    ],
+    "deny_if": [
+      "ambiguous setup request",
+      "missing authority or custody",
+      "provider identity or credential request",
+      "stale or unverifiable source",
+      "unsafe write, adoption, activation, deployment, or migration action"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "custody",
+      "request",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "evaluation_receipt",
+      "owner_constraints",
+      "project_context",
+      "runtime_readback"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "custody",
+      "request",
+      "source_lock"
+    ],
+    "acceptance_signals": [
+      "bootstrap",
+      "project initialization",
+      "project setup",
+      "repository discovery",
+      "runtime discovery"
+    ],
+    "rejection_signals": [
+      "ambiguous request",
+      "missing authority",
+      "provider identity or credentials",
+      "stale source",
+      "unsafe action"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.bootstrap-project-initializer.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "bootstrap_context",
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "custody and capability result",
+      "discovery fact provenance",
+      "exact gate trace",
+      "source lock identity",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "independent evaluation receipt",
+      "portable AgentOS governance contract",
+      "typed source and evidence records"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "project context",
+      "versioned primary source"
+    ],
+    "prohibited_authority": [
+      "consumer preference as authority",
+      "opaque citations",
+      "provider account or identity facts",
+      "self-authored acceptance",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "Require jurisdiction, entity, activity, data class, version, effective date, exceptions, and requirement-level mapping before regulated or provider-specific applicability advances; otherwise return UNKNOWN or escalate.",
+    "escalation_rule": "Conflict, unsupported tool or data access, missing adoption authority, or missing protected evidence escalates to the named control-plane owner and closes only the dependent bootstrap action.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Version, effective/publication/supersession status, retrieved date, immutable identity, and digest must be checked; stale or unverifiable evidence denies the dependent bootstrap action.",
+    "claim_rule": "Claims are limited to observed typed setup facts and exact scoped source identities; absence of source or provenance yields UNKNOWN rather than inference.",
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent bootstrap action; it never licenses an inference or expands custody."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared source records",
+      "portable authority corpus",
+      "read-only project setup surfaces supplied by typed context"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local read-only discovery tools",
+      "source metadata lookup"
+    ],
+    "data": [
+      "no protected or private project data",
+      "no secrets or credentials",
+      "public or synthetic source metadata only",
+      "typed setup facts only; no inferred Product facts"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_READ_ONLY",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "escalate exact unsupported capability or authority",
+      "preserve unrelated work",
+      "record exact missing field and evidence identity",
+      "refresh source or await owner evidence",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, source lock, twelve gates, hostile fixtures, evaluation dossier, reuse contract, and handoff exist with matching digests.",
+    "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile task set; static syntax alone is insufficient and utility/harm remains pending.",
+    "suspension": "Suspend on stale source, invalidated authority, failed utility/harm evaluation, reuse mismatch, or custody mismatch.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped bootstrap request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [],
+  "conflicts": [],
+  "aliases": [],
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.bootstrap-project-initializer.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.bootstrap-project-initializer",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Control-plane blocks are reused only by exact block-lock key and content digest; no standard edition identity is inferred.",
+    "freshness_rule": "Refresh and deny dependent reuse when source, authority, or typed setup contract is stale, superseded, or unverifiable."
+  },
+  "block_sha256": "11a185be1a8e886618fda5b7a3b06e1199e5fb3b95a6e1f216868fe352bb0d05"
+}

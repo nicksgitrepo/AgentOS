@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.oidc-core-1-0",
+  "standard_identity": {
+    "publisher": "OpenID Foundation",
+    "identifier": "OpenID Connect Core",
+    "edition": "1.0"
+  },
+  "requirements": [
+    {
+      "requirement_id": "OIDC.1.0.claims",
+      "statement": "Map claims findings to OpenID Connect Core 1.0 and the declared issuer/claims context.",
+      "source_ref": "OpenID.Connect.Core.1.0",
+      "evidence": "Issuer, claims, and flow mapping."
+    },
+    {
+      "requirement_id": "OIDC.1.0.scope",
+      "statement": "Keep claims semantics separate from OAuth threat analysis and account mutation.",
+      "source_ref": "OpenID.Connect.Core.1.0:scope",
+      "evidence": "Narrow scope and sibling routing record."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

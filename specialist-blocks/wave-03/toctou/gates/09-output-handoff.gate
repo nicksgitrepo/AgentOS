@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "09-output-handoff",
+  "block_id": "specialist.security.toctou",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Time-of-Check/Time-of-Use: does the exact 09-output-handoff condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.09-output-handoff.answer",
+    "gate.09-output-handoff.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-asvs_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "10-proof-acceptance",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "10-proof-acceptance"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "53c50605601c5519503db7adec693f47b433803e418ff7358b77c6a73f387510"
+}

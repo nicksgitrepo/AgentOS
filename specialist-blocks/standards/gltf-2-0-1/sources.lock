@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.gltf-2-0-1",
+  "sources": [
+    {
+      "source_id": "source.khronos-gltf-2-0-1",
+      "title": "glTF 2.0.1 Specification",
+      "publisher": "Khronos Group",
+      "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+      "version": "2.0.1",
+      "effective_date": "2023-07-29",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "khronos-gltf-2.0.1-specification-20230729",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound runtime 3D asset delivery structure and semantics; no engineering, dimensional, or safety truth is inferred."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "d72e32ea536e396e9b44e442dde3d3d5d2a3a573b6fa42d405a95ac5c46ffe66"
+}

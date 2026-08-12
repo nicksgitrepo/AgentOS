@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-evaluation-receipt.v1.json",
+  "title": "AgentOS Generated Agent Evaluation Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "package_hash", "receipt_id", "model_requirement", "independent_reviewer_required", "disposition", "tests", "self_acceptance", "mutation_rule"],
+  "properties": {
+    "schema": {"const": "agentos.evaluation_receipt.v1"},
+    "version": {"const": 1},
+    "package_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "receipt_id": {"type": "string", "minLength": 1},
+    "model_requirement": {"const": "gpt-5.6-luna/max"},
+    "independent_reviewer_required": {"const": true},
+    "disposition": {"enum": ["STATIC_PACKAGE_VALID;_INDEPENDENT_UTILITY_HARM_PENDING", "REJECTED", "BLOCKED_EXACT"]},
+    "tests": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["class", "expected", "observed"], "properties": {"class": {"type": "string", "minLength": 1}, "expected": {"enum": ["PASS", "DENY", "ESCALATE"]}, "observed": {"enum": ["PASS", "PENDING", "FAIL"]}}}, "minItems": 1},
+    "self_acceptance": {"const": "FORBIDDEN"},
+    "mutation_rule": {"const": "CHANGED_APPLICABILITY_OR_LOCK_REQUIRES_NEW_PACKAGE_IDENTITY"}
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "10-proof-acceptance",
+  "block_id": "specialist.security.owasp-web-2025-a01-broken-access-control",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OWASP Web A01:2025 Broken Access Control: does the exact 10-proof-acceptance condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.10-proof-acceptance.answer",
+    "gate.10-proof-acceptance.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-asvs_hash",
+    "specialist.standard.owasp-top10-2025_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "11-lifecycle-recovery-archive",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "11-lifecycle-recovery-archive"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "30a13b081c22ea658c893d1ae0dba387d6af62551fc8b2769d24d76679b8dab9"
+}

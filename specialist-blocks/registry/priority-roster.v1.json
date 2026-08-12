@@ -1,0 +1,46 @@
+{
+  "schema": "agentos.specialist_priority_roster.v1",
+  "version": 1,
+  "status": "CANDIDATE_INACTIVE",
+  "activation": "OFF",
+  "generic_purity": "No adopter identity, product, path, credential, task identity, or private context is recorded.",
+  "lane_rule": "Exactly six materially active lanes per priority wave; a lane is replaced only after its coherent candidate handoff.",
+  "contract_requirements": [
+    "stable ID/version/aliases/lifecycle",
+    "purpose/triggers/exclusions",
+    "exact read/write/tool/data/build/browser/deploy/communication/acceptance authority",
+    "prohibited actions and required knowledge",
+    "typed context/output schemas",
+    "primary-source/version/effective-date/freshness lock",
+    "mandatory 12-gate pack with YES/NO/UNKNOWN/NOT_APPLICABLE outcomes",
+    "resource/custody rules",
+    "evidence/handoff/proof contracts",
+    "lifecycle/recovery/archive",
+    "independent narrowness/routing/utility/harm evaluation"
+  ],
+  "mandatory_gate_pack": [
+    "00-intake.gate",
+    "01-applicability.gate",
+    "02-authority-precedence.gate",
+    "03-scope-nongoals.gate",
+    "04-source-evidence-freshness.gate",
+    "05-context-completeness.gate",
+    "06-tool-resource-custody.gate",
+    "07-data-secret-privacy.gate",
+    "08-build-browser-runtime.gate",
+    "09-output-handoff.gate",
+    "10-proof-acceptance.gate",
+    "11-lifecycle-recovery-archive.gate"
+  ],
+  "gate_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "waves": [
+    {"priority": "P0", "status": "ACTIVE_BUILDING", "lanes": ["AGENT.BOOTSTRAP", "AGENT.PROJECT_CONTROLLER", "AGENT.INTENT_REGULATOR", "AGENT.RESOURCE_SCHEDULER", "AGENT.RUNTIME_DEPLOYMENT", "AGENT.INDEPENDENT_AUDITOR"]},
+    {"priority": "P1", "status": "PLANNED", "lanes": ["ENG.RUST_BACKEND", "ENG.TYPESCRIPT_REACT_WEB", "DATA.POSTGRES_RLS", "ARCH.API_CONTRACTS", "SEC.AUTH_IDENTITY", "PLATFORM.AWS_CLOUDFLARE_EDGE"]},
+    {"priority": "P2", "status": "PLANNED", "lanes": ["SEC.OWASP_WEB_TOP10", "SEC.OWASP_API_TOP10", "SEC.OWASP_ASVS", "SEC.TENANT_ACCESS_CONTROL", "SEC.SECRETS_CRYPTO_SUPPLY_CHAIN", "PRIVACY.DATA_LIFECYCLE"]},
+    {"priority": "P3", "status": "PLANNED", "lanes": ["AGENT.CENTRAL_INTEGRATOR", "AGENT.RELEASE_MANAGER", "AGENT.WORKTREE_CUSTODY", "QA.TEST_ARCHITECT", "SRE.OBSERVABILITY_INCIDENT", "DATA.MIGRATION_ROLLBACK"]},
+    {"priority": "P4", "status": "PLANNED", "lanes": ["UX.PRODUCT_INTERACTION", "UX.ACCESSIBILITY_WCAG", "CLIENT.RESPONSIVE_WEB", "CLIENT.IOS_SWIFTUI", "CLIENT.ANDROID_KOTLIN", "CLIENT.DESKTOP_OFFLINE_REALTIME"]},
+    {"priority": "P5", "status": "PLANNED", "lanes": ["DOMAIN.FIELD_JOB_WORKFLOW", "DOMAIN.WELL_WORKFLOW", "GRAPHICS.INDUSTRIAL_3D", "AI.SEARCH_RAG", "REG.FMCSA_APPLICABILITY", "FIN.JOB_COST_ACCOUNTING"]},
+    {"priority": "P6", "status": "PLANNED", "lanes": ["REG.FMCSA_HOS_ELD", "REG.FMCSA_DRIVER_QUALIFICATION", "REG.FMCSA_VEHICLE_MAINTENANCE", "REG.FMCSA_DRUG_ALCOHOL_CLEARINGHOUSE", "REG.PHMSA_HAZMAT_BOUNDARY", "SAFETY.INDUSTRIAL_HUMAN_FACTORS", "COMPLIANCE.SOC2", "COMPLIANCE.ISO27001", "COMPLIANCE.NIST_CSF", "COMPLIANCE.PCI_DSS", "COMPLIANCE.PRIVACY_US", "COMPLIANCE.GDPR"]}
+  ],
+  "activation_rule": "Activate P0 only after the universal schema, compiler, loader, registry, and alias/deduplication proof are coherent. No P1-P6 block may be active before its priority wave is selected."
+}

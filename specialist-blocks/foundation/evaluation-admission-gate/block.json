@@ -1,0 +1,282 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.foundation.evaluation-admission-gate",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "foundation",
+  "title": "Evaluation/Admission Gate",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Require independent narrowness, routing, utility, harm, hostile, and handoff evaluation before any admission recommendation.",
+  "scope": {
+    "included": [
+      "evaluation receipt",
+      "self-admission denial",
+      "utility/harm ceiling"
+    ],
+    "non_goals": [
+      "activation",
+      "release or deployment",
+      "self-acceptance"
+    ],
+    "smallest_sufficient_rule": "Advance only the named dependent governance action; keep unrelated work moving."
+  },
+  "atomic_scope_statement": "Governance-only control for Evaluation/Admission Gate; it does not perform the downstream specialist or Product action.",
+  "permitted_decisions": [
+    "classify the dependent governance condition",
+    "deny or escalate missing evidence",
+    "issue a typed candidate handoff",
+    "return NOT_APPLICABLE when the condition is absent"
+  ],
+  "forbidden_decisions": [
+    "activate or admit a block",
+    "direct protected Memory internals",
+    "grant Product-writing authority",
+    "infer missing authority or evidence",
+    "publish, deploy, migrate, or spend"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN closes only the dependent action",
+    "compose only with the declared foundation contract",
+    "preserve exact source and custody identity"
+  ],
+  "escalation_target": "specialist.foundation.evaluation-admission-gate",
+  "split_required_when": [
+    "authority differs",
+    "failure mode differs",
+    "knowledge differs",
+    "source/version differs",
+    "tool or data custody differs"
+  ],
+  "required_knowledge": [
+    "candidate lifecycle",
+    "evaluation dossier",
+    "independent reviewer rule"
+  ],
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "custody",
+      "request",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "evaluation_receipt",
+      "project_context",
+      "runtime_readback"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "custody",
+      "request",
+      "source_lock"
+    ],
+    "acceptance_signals": [
+      "admission",
+      "evaluation",
+      "harm",
+      "independence",
+      "utility"
+    ],
+    "rejection_signals": [
+      "ambiguous request",
+      "missing authority",
+      "stale source",
+      "unsafe action"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.evaluation-admission-gate.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "custody and capability result",
+      "exact gate trace",
+      "source lock identity",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "independent evaluation receipt",
+      "portable AgentOS governance contract",
+      "typed source and evidence records"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "project context",
+      "versioned primary source"
+    ],
+    "prohibited_authority": [
+      "consumer preference as law",
+      "opaque citations",
+      "provider account facts",
+      "self-authored acceptance",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "Require jurisdiction, entity, activity, data class, version, effective date, exceptions, and requirement-level mapping before regulated applicability advances.",
+    "escalation_rule": "Conflict or missing protected authority escalates to the named control-plane owner and closes only the dependent action.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Version, effective/publication/supersession status, retrieved date, immutable identity, and digest must be checked; stale or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Claims are limited to the exact scoped source and evidence identity; no source identity means no authority claim.",
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses an inference."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared source records",
+      "typed authority corpus"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local filesystem read/write within package scope"
+    ],
+    "data": [
+      "no protected consumer data",
+      "no secrets",
+      "public or synthetic source metadata only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_ISOLATED_CANDIDATE",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "preserve unrelated work",
+      "record exact missing field",
+      "refresh source or escalate",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, source lock, twelve gates, fixtures, evaluation dossier, and handoff exist with matching digests.",
+    "evaluation_entry": "Independent evaluator reruns the exact candidate and task set; static syntax alone is insufficient.",
+    "suspension": "Suspend on stale source, invalidated authority, failed utility/harm evaluation, or custody mismatch.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [],
+  "conflicts": [],
+  "aliases": [],
+  "routing": {
+    "signals": [
+      "admission",
+      "evaluation",
+      "harm",
+      "independence",
+      "utility"
+    ],
+    "deny_if": [
+      "missing authority",
+      "stale source",
+      "unsafe action"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.evaluation-admission-gate.v1",
+    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.evaluation-admission-gate",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Changes to normative content, gate semantics, or publisher edition create a new immutable revision and compatibility/supersession record.",
+    "freshness_rule": "A publisher refresh without material change creates a freshness receipt only; it does not copy or fork the reusable block."
+  },
+  "block_sha256": "74848ff89c84ef3c650887ba73acfab52f71a1e9b366defa35e97b7b543803d8"
+}

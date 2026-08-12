@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.finance.accounting-router",
+  "sources": [
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.gao-green-book-2025",
+      "title": "Standards for Internal Control in the Federal Government (2025 Green Book)",
+      "publisher": "U.S. Government Accountability Office",
+      "url": "https://www.gao.gov/greenbook",
+      "version": "2025",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "gao-green-book-2025-effective-fy2026",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound federal internal-control principles; it is not a universal GAAP/IFRS or licensed-accounting conclusion."
+    },
+    {
+      "source_id": "source.irs-managerial-costing-2024",
+      "title": "IRS Managerial Costing Internal Revenue Manual",
+      "publisher": "Internal Revenue Service",
+      "url": "https://www.irs.gov/irm/part1/irm_01-033-005",
+      "version": "2024-10-18",
+      "effective_date": "2024-10-18",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "irs-irm-1.33.5-managerial-costing-20241018",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Descriptive federal managerial-costing context for cost recognition, responsibility segments, allocation, and internal controls; not universal GAAP/IFRS advice."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "c8e12e1333aa865daa53ca5720303a2fa4ccd8fc9bd264221c2ac89e190a2963"
+}

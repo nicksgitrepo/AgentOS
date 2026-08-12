@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "false_positive",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: a lookalike request has no runtime, deployment, or rollback evidence signal; deny false-positive routing."
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "09-output-handoff",
+  "block_id": "specialist.product-client.desktop-offline-realtime-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Desktop/Offline/Realtime Client Router: does the exact 09-output-handoff condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.09-output-handoff.answer",
+    "gate.09-output-handoff.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "10-proof-acceptance",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "10-proof-acceptance"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "99413629b0602e7f8ca278c6b3deb14be3357ce6484843b80f571507dbc29124"
+}

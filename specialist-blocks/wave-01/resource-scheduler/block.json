@@ -1,0 +1,317 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "foundation",
+  "title": "Scheduler/Hardware Resource Governor",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Classify typed resource-admission and resource-pressure conditions while preserving custody and stopping before execution, external-state change, credential exposure, or build acceptance.",
+  "scope": {
+    "included": [
+      "admission classification for declared resource requests",
+      "capacity and allocatable-resource evidence classification",
+      "hardware and resource identity normalization",
+      "pressure and saturation evidence classification",
+      "typed escalation when resource state is unknown or conflicting"
+    ],
+    "non_goals": [
+      "accepting or orchestrating a build",
+      "changing external state or resource limits",
+      "executing arbitrary processes or commands",
+      "exposing credentials or secrets",
+      "granting resource allocation, eviction, or deployment authority",
+      "inferring provider, hardware, version, or pressure semantics"
+    ],
+    "smallest_sufficient_rule": "Classify only the declared resource-admission or pressure condition; keep unrelated work moving and route execution or allocation authority to its named owner."
+  },
+  "atomic_scope_statement": "Control-plane classification of typed resource admission and pressure evidence; it does not schedule, execute, throttle, kill, evict, allocate, deploy, or change external state.",
+  "permitted_decisions": [
+    "classify declared capacity, allocatable-resource, or pressure evidence",
+    "classify whether a typed admission condition is sufficiently evidenced",
+    "issue a typed candidate handoff",
+    "return NOT_APPLICABLE when no resource admission or pressure condition is in scope",
+    "route missing or conflicting evidence to typed escalation"
+  ],
+  "forbidden_decisions": [
+    "accept a build or release",
+    "change external state, resource limits, quotas, or scheduling",
+    "execute arbitrary processes, commands, or jobs",
+    "expose credentials, secrets, or protected telemetry",
+    "grant allocation, eviction, deployment, or production authority",
+    "infer missing capacity, pressure, version, provider, or hardware semantics",
+    "self-accept, activate, or publish this block"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_EXTERNAL_STATE_CHANGE;_NO_PROCESS_EXECUTION;_NO_BUILD_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "compose with an explicitly typed resource context and declared custody",
+    "do not treat platform-specific evidence as portable without applicability",
+    "preserve unrelated work and exact source identity",
+    "route execution, deployment, or external-state requests to their own control",
+    "unknown closes only the dependent admission or pressure classification"
+  ],
+  "escalation_target": "specialist.foundation.evaluation-admission-gate and the typed resource owner",
+  "split_required_when": [
+    "admission authority differs",
+    "capacity evidence differs from pressure evidence",
+    "execution, deployment, or external-state action is requested",
+    "hardware, provider, or version applicability differs",
+    "resource or telemetry custody differs"
+  ],
+  "required_knowledge": [
+    "admission versus enforcement distinction",
+    "capacity, allocatable, and quota semantics",
+    "pressure and saturation indicators",
+    "resource identity, unit, and time-window semantics",
+    "typed authority, evidence, and custody ceilings"
+  ],
+  "routing": {
+    "signals": [
+      "admission",
+      "capacity",
+      "hardware",
+      "pressure",
+      "resource",
+      "scheduler"
+    ],
+    "deny_if": [
+      "ambiguous resource identity or unit",
+      "missing authority or custody",
+      "requested execution, deployment, or external-state change",
+      "stale or unverifiable source"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "custody",
+      "request",
+      "requested_action",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "evaluation_receipt",
+      "runtime_readback"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "authority.activity",
+      "authority.data_class",
+      "authority.entity",
+      "authority.jurisdiction",
+      "custody",
+      "request",
+      "requested_action",
+      "signals",
+      "source_lock",
+      "source_lock.effective_date",
+      "source_lock.version"
+    ],
+    "acceptance_signals": [
+      "admission request",
+      "capacity evidence",
+      "hardware resource signal",
+      "pressure evidence",
+      "scheduler request"
+    ],
+    "rejection_signals": [
+      "ambiguous resource identity",
+      "missing authority or custody",
+      "stale or unverifiable evidence",
+      "unsafe execution, deployment, or external-state request"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.resource-scheduler.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "authority and custody result",
+      "capacity and resource identity evidence",
+      "exact twelve-gate trace",
+      "pressure window and source identity",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "independent evaluation receipt",
+      "portable AgentOS governance contract",
+      "typed resource and pressure evidence",
+      "versioned primary source"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "project context",
+      "versioned primary source"
+    ],
+    "prohibited_authority": [
+      "adopter preference as authority",
+      "external process or deployment side effect",
+      "opaque or stale citation",
+      "provider account facts",
+      "self-authored acceptance",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "This generic resource-governance block does not decide regulated or provider-specific applicability; require jurisdiction, entity, activity, data class, version, effective date, exceptions, and requirement-level mapping before any such claim advances.",
+    "escalation_rule": "When authority conflicts or applicability is incomplete, preserve custody, deny the dependent classification, and escalate to typed independent authority; unrelated work continues.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Require source version, effective/publication/supersession status, retrieved date, immutable identity, and content digest when available; rolling sources with content_sha256 null are usable only while their immutable identity is sufficient and refreshable; stale or unknown evidence denies the dependent action.",
+    "claim_rule": "Claims are limited to the exact source identity and declared resource context; platform-specific rules do not generalize across providers, hardware, or versions.",
+    "unknown_rule": "UNKNOWN records missing resource identity, unit, capacity, pressure window, authority, or source evidence and closes only the dependent admission or pressure classification; unrelated work continues."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared source records",
+      "synthetic typed resource telemetry",
+      "typed authority corpus"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local filesystem read/write within package scope",
+      "read-only resource telemetry supplied in typed context"
+    ],
+    "data": [
+      "aggregate or synthetic resource telemetry only",
+      "no credentials, secrets, or protected consumer data",
+      "no external state or process control",
+      "public source metadata only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "DENY",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "close only the dependent admission or pressure classification",
+      "preserve unrelated work and custody",
+      "record the exact missing field or conflicting source",
+      "refresh evidence or escalate to typed authority",
+      "resume only after a fresh typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, reuse contract, source lock, twelve gates, seventeen hostile fixtures, evaluation dossier, and handoff exist with matching digests.",
+    "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile fixture set; static syntax is insufficient and utility/harm review remains pending.",
+    "suspension": "Suspend on stale source, invalidated authority, failed utility/harm evaluation, custody mismatch, or reuse-key incompatibility.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evaluation-admission-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.scope-non-goal-gate",
+    "specialist.foundation.tool-custody-gate"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.resource-scheduler",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Reuse only the exact block-lock key and revision when the block digest, source lock, gate pack, and typed authority context match; never infer cross-edition compatibility.",
+    "freshness_rule": "Revalidate source lock, immutable identity, effective date, and candidate digest before reuse; UNKNOWN closes the dependent action."
+  },
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.resource-scheduler.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "block_sha256": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87"
+}

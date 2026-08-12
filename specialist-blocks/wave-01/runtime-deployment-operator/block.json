@@ -1,0 +1,310 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "delivery-operations",
+  "title": "Runtime/Deployment Operator",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Prepare typed runtime and rollback evidence for an already-scoped release or recovery request without executing deployment, rollback, publication, migration, or activation.",
+  "scope": {
+    "included": [
+      "artifact identity and provenance readback",
+      "rollback target, custody, and recovery-evidence preparation",
+      "runtime target and release-context completeness",
+      "typed handoff of deployment-readiness findings"
+    ],
+    "non_goals": [
+      "activating or admitting a block",
+      "changing runtime, platform, workload, network, or release state",
+      "creating, publishing, promoting, or deploying an artifact",
+      "executing rollback, migration, incident repair, or production recovery",
+      "reading, writing, or handling secrets or protected consumer data"
+    ],
+    "smallest_sufficient_rule": "Advance only the named dependent evidence action; keep unrelated work moving and route execution to an explicitly authorized owner."
+  },
+  "atomic_scope_statement": "Control-plane evidence preparation for runtime/deployment readiness and rollback custody; this block never executes or authorizes the runtime action.",
+  "permitted_decisions": [
+    "classify runtime/deployment readiness evidence",
+    "deny or escalate missing custody, provenance, or rollback evidence",
+    "issue a typed candidate handoff",
+    "return NOT_APPLICABLE when no runtime or rollback action is in scope"
+  ],
+  "forbidden_decisions": [
+    "activate or admit a block",
+    "change runtime, platform, workload, network, or release state",
+    "create, publish, promote, or deploy an artifact",
+    "execute rollback, migration, incident repair, or production recovery",
+    "handle secrets or protected consumer data",
+    "infer missing approval, artifact identity, or target state",
+    "self-accept or certify the candidate"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_NO_MIGRATION;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN closes only the dependent action",
+    "compose only with the declared typed runtime/recovery contract",
+    "preserve exact artifact, target, custody, and rollback identities",
+    "route related repository, build, scheduler, observability, incident, or security work to the smallest sufficient sibling"
+  ],
+  "escalation_target": "specialist.foundation.evaluation-admission-gate",
+  "split_required_when": [
+    "authority differs",
+    "failure mode differs",
+    "source, version, or evidence domain differs",
+    "target or requested action differs",
+    "tool or data custody differs"
+  ],
+  "required_knowledge": [
+    "artifact identity and digest semantics",
+    "custody and rollback evidence",
+    "runtime target and release state",
+    "typed provenance and evidence freshness"
+  ],
+  "routing": {
+    "signals": [
+      "artifact provenance",
+      "deployment evidence",
+      "release readiness",
+      "rollback",
+      "runtime target"
+    ],
+    "deny_if": [
+      "ambiguous runtime or rollback request",
+      "missing artifact identity or provenance",
+      "missing custody or rollback target",
+      "requested execution or production write",
+      "stale or conflicting evidence"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "artifact_identity",
+      "authority",
+      "custody",
+      "request",
+      "requested_action",
+      "rollback_target",
+      "runtime_target",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "approval_receipt",
+      "observability_readback",
+      "project_context",
+      "release_readback",
+      "runtime_readback"
+    ],
+    "deny_if_missing": [
+      "artifact_identity",
+      "authority",
+      "custody",
+      "request",
+      "requested_action",
+      "rollback_target",
+      "runtime_target",
+      "source_lock"
+    ],
+    "acceptance_signals": [
+      "artifact digest",
+      "deployment readiness",
+      "rollback evidence",
+      "runtime target",
+      "typed custody"
+    ],
+    "rejection_signals": [
+      "ambiguous request",
+      "missing approval or custody",
+      "missing artifact identity",
+      "stale provenance",
+      "unsafe execution request"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.runtime-deployment-operator.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "artifact identity and provenance digest",
+      "custody and authorization result",
+      "exact four-valued gate trace",
+      "rollback target and restore-evidence record",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "independent evaluation receipt",
+      "portable AgentOS governance contract",
+      "typed runtime, artifact, custody, and rollback evidence"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "project context",
+      "versioned primary source"
+    ],
+    "prohibited_authority": [
+      "consumer preference as law",
+      "opaque citations",
+      "provider account facts",
+      "self-authored acceptance",
+      "unbound chat",
+      "unverified deployment command"
+    ],
+    "jurisdiction_rule": "This block does not decide legal or regulatory applicability; if a target is subject to such a requirement, require jurisdiction, entity, activity, data class, version, effective date, exceptions, and requirement mapping before any dependent action advances.",
+    "escalation_rule": "Conflicting authority, missing protected approval, or unverifiable custody escalates to the named control-plane owner and closes only the dependent action.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Artifact, runtime, rollback, and authority evidence must include version, effective/publication/supersession status when applicable, retrieved date, immutable identity, and digest; stale, conflicting, or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Make only claims supported by exact typed artifact, runtime, rollback, custody, and source identities; do not infer readiness from a name, tag, mutable pointer, or command.",
+    "unknown_rule": "UNKNOWN records the missing or conflicting field and closes only the dependent action; it never licenses execution, inference, or scope expansion."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared artifact and provenance records",
+      "declared runtime and rollback readback",
+      "typed authority and custody records"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local filesystem read/write within package scope",
+      "read-only runtime/status inspection when explicitly permitted"
+    ],
+    "data": [
+      "no protected consumer data",
+      "no secrets",
+      "public or synthetic artifact, runtime, and rollback metadata only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_READ_ONLY",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "preserve unrelated work",
+      "record exact missing or conflicting field",
+      "refresh source or escalate",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, source lock, twelve gates, fixtures, evaluation dossier, and handoff exist with matching digests.",
+    "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile task set; static syntax alone is insufficient.",
+    "suspension": "Suspend on stale or conflicting evidence, invalidated authority, failed utility/harm evaluation, custody mismatch, or any attempted execution.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.evaluation-admission-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.tool-custody-gate"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.runtime-deployment-operator.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.runtime-deployment-operator",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "CONTROL_PLANE_REUSE_IS_BOUND_TO_BLOCK_REVISION_AND_CANDIDATE_DIGEST;_NO_STANDARD_EDITION_CLAIM",
+    "freshness_rule": "REQUIRE_CURRENT_SOURCE_LOCK_AND_TYPED_RUNTIME_READBACK;_STALE_OR_SUPERSEDED_EVIDENCE_DENIES_DEPENDENT_ACTION"
+  },
+  "block_sha256": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859"
+}

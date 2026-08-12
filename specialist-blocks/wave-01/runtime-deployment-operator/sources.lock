@@ -1,0 +1,74 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "sources": [
+    {
+      "source_id": "source.git-worktree",
+      "title": "git-worktree Documentation",
+      "publisher": "Git Project",
+      "url": "https://git-scm.com/docs/git-worktree",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "git-worktree-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Multiple working-tree isolation and custody reference; content_sha256 is null because the immutable page identity, current retrieval date, and named scope are sufficient for this descriptive claim."
+    },
+    {
+      "source_id": "source.kubernetes-deployment",
+      "title": "Deployments",
+      "publisher": "Kubernetes Authors",
+      "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment",
+      "version": "v1.36",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "kubernetes-deployments-v1.36-rollback-section-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Deployment revision, rollout status, and rollback evidence reference; content_sha256 is null because the versioned page/section identity and retrieval date are sufficient for this descriptive claim."
+    },
+    {
+      "source_id": "source.oci-image-format",
+      "title": "OCI Image Format Specification",
+      "publisher": "Open Container Initiative",
+      "url": "https://github.com/opencontainers/image-spec/blob/v1.1.0/spec.md",
+      "version": "1.1.0",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "oci-image-spec-v1.1.0",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable image and artifact identity reference; content_sha256 is null because the immutable tagged specification identity is sufficient for this version-scoped claim."
+    },
+    {
+      "source_id": "source.rfc2119",
+      "title": "Key words for use in RFCs to Indicate Requirement Levels",
+      "publisher": "IETF",
+      "url": "https://www.rfc-editor.org/rfc/rfc2119",
+      "version": "RFC 2119",
+      "effective_date": "1997-03-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "rfc2119-bcp14-1997",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Controlled normative language reference; the RFC number and effective date provide sufficient immutable identity for this language claim."
+    },
+    {
+      "source_id": "source.slsa-provenance",
+      "title": "Provenance",
+      "publisher": "SLSA / Linux Foundation",
+      "url": "https://slsa.dev/spec/v1.2/provenance",
+      "version": "1.2",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "slsa-provenance-v1.2",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Build artifact provenance and verifiable origin reference; content_sha256 is null because the immutable versioned specification identity is sufficient for this version-scoped claim."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when source is stale, superseded, unverifiable, or missing effective/applicability identity; refresh or escalate.",
+  "manifest_sha256": "81d3b98754089ab54e3e82c4e616dc8aa17b81b2b48e47ffe8ded05e489eb06d"
+}

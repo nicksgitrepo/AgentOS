@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_standard_supersession.v1",
+  "version": 1,
+  "block_id": "specialist.standard.gao-green-book-2025",
+  "status": "CURRENT_2025_EDITION_EFFECTIVE_FY2026",
+  "superseded_by": null,
+  "known_non_superseding": [],
+  "rule": "A new edition or material erratum creates a new block and leaves old compiled locks reproducible."
+}

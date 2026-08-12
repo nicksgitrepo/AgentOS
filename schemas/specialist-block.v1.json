@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-block.v1.json",
+  "title": "AgentOS Specialist Block",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "block_id",
+    "revision",
+    "priority",
+    "role_kind",
+    "family",
+    "title",
+    "lifecycle",
+    "activation",
+    "purpose",
+    "scope",
+    "atomic_scope_statement",
+    "permitted_decisions",
+    "forbidden_decisions",
+    "maximum_authority",
+    "required_upstream_router",
+    "sibling_conflicts",
+    "composition_rules",
+    "escalation_target",
+    "split_required_when",
+    "required_knowledge",
+    "routing",
+    "intake",
+    "output",
+    "authority",
+    "evidence",
+    "controls",
+    "failure",
+    "lifecycle_rules",
+    "gate_path",
+    "gate_pack",
+    "schema_path",
+    "dependencies",
+    "conflicts",
+    "aliases",
+    "evaluation",
+    "reuse",
+    "block_sha256"
+  ],
+  "allOf": [
+    {
+      "if": {"properties": {"role_kind": {"const": "STANDARD_BLOCK"}}, "required": ["role_kind"]},
+      "then": {"required": ["normalized_requirements_path", "applicability_inputs", "exceptions", "supersession_status", "source_manifest_sha256", "normalized_requirements_sha256", "compatibility_sha256", "supersession_sha256"]}
+    }
+  ],
+  "properties": {
+    "schema": {"const": "agentos.specialist_block.v1"},
+    "version": {"const": 1},
+    "block_id": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "revision": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "priority": {"enum": ["P0", "P1", "P2", "P3", "P4", "P5", "P6"]},
+    "role_kind": {"enum": ["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]},
+    "family": {
+      "enum": [
+        "foundation",
+        "software-language-runtime",
+        "security",
+        "data",
+        "product-client",
+        "delivery-operations",
+        "assurance-enterprise"
+      ]
+    },
+    "title": {"type": "string", "minLength": 1},
+    "lifecycle": {"enum": ["PLANNED", "RESEARCHING", "CANDIDATE", "EVALUATED", "ADMITTED", "DEPRECATED", "NOT_APPLICABLE", "SUSPENDED", "ARCHIVED"]},
+    "activation": {"const": "OFF"},
+    "purpose": {"type": "string", "minLength": 1},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["included", "non_goals", "smallest_sufficient_rule"],
+      "properties": {
+        "included": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "smallest_sufficient_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "atomic_scope_statement": {"type": "string", "minLength": 1},
+    "permitted_decisions": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "forbidden_decisions": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "maximum_authority": {"type": "string", "minLength": 1},
+    "required_upstream_router": {"type": ["string", "null"], "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "sibling_conflicts": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
+    "composition_rules": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "escalation_target": {"type": "string", "minLength": 1},
+    "split_required_when": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signals", "deny_if", "selection_rule"],
+      "properties": {
+        "signals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "deny_if": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "selection_rule": {"const": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"}
+      }
+    },
+    "required_knowledge": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "intake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_schema", "required_context", "optional_context", "deny_if_missing", "acceptance_signals", "rejection_signals"],
+      "properties": {
+        "context_schema": {"type": "string", "pattern": "^schemas/.+\\.json$"},
+        "required_context": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "optional_context": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "deny_if_missing": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "acceptance_signals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "rejection_signals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_id", "typed_schema", "required_fields", "evidence_obligations", "handoff_fields"],
+      "properties": {
+        "contract_id": {"type": "string", "pattern": "^specialist-output\\.[a-z0-9-]+\\.v[0-9]+$"},
+        "typed_schema": {"type": "string", "pattern": "^schemas/.+\\.json$"},
+        "required_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "evidence_obligations": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "handoff_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_authority", "precedence", "prohibited_authority", "jurisdiction_rule", "escalation_rule", "acceptance_authority"],
+      "properties": {
+        "allowed_authority": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "precedence": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "prohibited_authority": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "jurisdiction_rule": {"type": "string", "minLength": 1},
+        "escalation_rule": {"type": "string", "minLength": 1},
+        "acceptance_authority": {"const": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_lock", "freshness_policy", "claim_rule", "unknown_rule"],
+      "properties": {
+        "source_lock": {"const": "sources.lock"},
+        "freshness_policy": {"type": "string", "minLength": 1},
+        "claim_rule": {"type": "string", "minLength": 1},
+        "unknown_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read", "write", "tools", "data", "secrets", "browser", "build", "deploy", "communication", "acceptance_authority"],
+      "properties": {
+        "read": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "write": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "tools": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "data": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "secrets": {"enum": ["DENY", "REDACT_AND_ESCALATE"]},
+        "browser": {"enum": ["DENY", "READ_ONLY_PRIMARY_SOURCES", "READ_ONLY_PROJECT_CONTEXT"]},
+        "build": {"enum": ["DENY", "LOCAL_READ_ONLY", "LOCAL_ISOLATED_CANDIDATE"]},
+        "deploy": {"const": "DENY"},
+        "communication": {"enum": ["NONE", "TYPED_HANDOFF_ONLY", "OWNER_REVIEW_ONLY"]},
+        "acceptance_authority": {"const": "INDEPENDENT_AUTHORITY_ONLY"}
+      }
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ambiguous", "missing_context", "stale_source", "authority_conflict", "unsafe_action", "recovery", "terminal_statuses"],
+      "properties": {
+        "ambiguous": {"const": "DENY_AND_REQUEST_TYPED_CONTEXT"},
+        "missing_context": {"const": "DENY_AND_REQUEST_TYPED_CONTEXT"},
+        "stale_source": {"const": "DENY_AND_REFRESH_OR_ESCALATE"},
+        "authority_conflict": {"const": "DENY_AND_ESCALATE"},
+        "unsafe_action": {"const": "DENY_AND_PRESERVE_CUSTODY"},
+        "recovery": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "terminal_statuses": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+      }
+    },
+    "lifecycle_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_entry", "evaluation_entry", "suspension", "archive", "reactivation"],
+      "properties": {
+        "candidate_entry": {"type": "string", "minLength": 1},
+        "evaluation_entry": {"type": "string", "minLength": 1},
+        "suspension": {"type": "string", "minLength": 1},
+        "archive": {"type": "string", "minLength": 1},
+        "reactivation": {"type": "string", "minLength": 1}
+      }
+    },
+    "gate_path": {"type": "string", "pattern": "^.+\\.gate$"},
+    "gate_pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_path", "ordered_gate_ids", "outcomes"],
+      "properties": {
+        "manifest_path": {"const": "gates/manifest.json"},
+        "ordered_gate_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 12},
+        "outcomes": {"type": "array", "items": {"enum": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]}, "minItems": 4, "maxItems": 4}
+      }
+    },
+    "schema_path": {"type": "string", "pattern": "^schemas/.+\\.json$"},
+    "dependencies": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
+    "conflicts": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
+    "aliases": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dossier_path", "receipt_id", "disposition", "independent_reviewer_required", "fixture_classes"],
+      "properties": {
+        "dossier_path": {"type": "string", "pattern": "^evaluation\\.json$"},
+        "receipt_id": {"type": "string", "pattern": "^specialist-eval\\.[a-z0-9-]+\\.v[0-9]+$"},
+        "disposition": {"enum": ["NOT_RUN", "STATIC_PASS_REVIEW_REQUIRED", "UTILITY_HARM_PENDING", "INTAKE_RECOMMENDED", "REJECTED", "SUSPENDED"]},
+        "independent_reviewer_required": {"const": true},
+        "fixture_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 5}
+      }
+    },
+    "normalized_requirements_path": {"type": "string", "pattern": "^requirements\\.json$"},
+    "applicability_inputs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "exceptions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "supersession_status": {"type": "string", "minLength": 1},
+    "source_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "normalized_requirements_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "compatibility_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "supersession_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reuse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content_addressed", "reuse_key", "standard_identity", "compatibility_map_path", "supersession_path", "applicability_overlay", "edition_rule", "freshness_rule"],
+      "properties": {
+        "content_addressed": {"const": true},
+        "reuse_key": {"type": "string", "pattern": "^block-lock\\.[a-z0-9-]+$"},
+        "standard_identity": {"type": ["object", "null"]},
+        "compatibility_map_path": {"type": ["string", "null"], "pattern": "^compatibility\\.json$"},
+        "supersession_path": {"type": ["string", "null"], "pattern": "^supersession\\.json$"},
+        "applicability_overlay": {"const": "EXTERNAL_TYPED_COMPANION_ONLY"},
+        "edition_rule": {"type": "string", "minLength": 1},
+        "freshness_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "block_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

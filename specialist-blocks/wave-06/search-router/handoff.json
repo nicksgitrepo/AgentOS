@@ -1,0 +1,34 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.search-router.v1",
+  "block_id": "specialist.ai.search-router",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "b119617edb8698d041d2cb788b71e8faf54794227bf386f45b0dffbd61b22ac2",
+  "source_commit": "7ba72b318dd7ee48fa64f7ee8bbb6e412524496e",
+  "source_tree": "050a8eea7c8e63cf97a164519d925943bc9eeba5",
+  "changed_paths": [
+    "specialist-blocks/wave-06/search-router/block.json",
+    "specialist-blocks/wave-06/search-router/evaluation.json",
+    "specialist-blocks/wave-06/search-router/gates/manifest.json",
+    "specialist-blocks/wave-06/search-router/handoff.json",
+    "specialist-blocks/wave-06/search-router/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "hostile-fixture-catalog",
+    "independent-reviewer-required",
+    "p5-domain-ai-3d-reg-finance-scope-and-authority",
+    "reusable-standard-dependency-identities",
+    "router-only-split-boundary",
+    "source-lock-digest"
+  ],
+  "residuals": [
+    "applicability and project context remain external",
+    "candidate is not admitted or activated",
+    "independent utility/harm evaluation has not run",
+    "main AgentOS 3.0 integration owner must intake exact digest"
+  ],
+  "next_action": "Route the immutable P5 router candidate through independent evaluation; preserve activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

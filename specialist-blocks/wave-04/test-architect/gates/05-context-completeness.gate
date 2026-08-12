@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "05-context-completeness",
+  "block_id": "specialist.assurance-enterprise.test-architect",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Test Architecture: does the exact 05-context-completeness condition pass without expanding this ATOMIC_SPECIALIST scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.05-context-completeness.answer",
+    "gate.05-context-completeness.evidence",
+    "source_lock_identity",
+    "specialist.standard.nist-ssdf_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "06-tool-resource-custody",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "06-tool-resource-custody"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "142a88850e13e786d9331b75eb84d79b54c555b174d97d0084e7a364953f98d6"
+}

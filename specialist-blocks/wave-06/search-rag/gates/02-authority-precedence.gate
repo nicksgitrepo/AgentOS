@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "02-authority-precedence",
+  "block_id": "specialist.ai.search-rag",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "AI Search and Retrieval-Augmented Generation: does the exact 02-authority-precedence condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.02-authority-precedence.answer",
+    "gate.02-authority-precedence.evidence",
+    "source_lock_identity",
+    "specialist.standard.nist-ai-rmf-1-0_hash",
+    "specialist.standard.nist-genai-profile-1-0_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "03-scope-nongoals",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "03-scope-nongoals"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "897f2cf43b0e054070ac3529b21cbc3f67ffc617094c26de05efd6ee712271f4"
+}

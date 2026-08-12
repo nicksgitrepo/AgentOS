@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "01-applicability",
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Runtime/Deployment Operator: does the request concern runtime target or rollback evidence within this block's narrow scope, with unrelated work separated?",
+  "evidence": [
+    "candidate_digest",
+    "gate.01-applicability.answer",
+    "gate.01-applicability.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "02-authority-precedence",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "02-authority-precedence"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "b880d3dce95a62ec64f731997d8da1948a3c0c3d97ded7b5f298423fe0d85e2b"
+}

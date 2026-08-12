@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.double-submission",
+  "class": "stale_source",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for stale_source; provider, project, consumer, secret, and applicability facts remain external."
+}

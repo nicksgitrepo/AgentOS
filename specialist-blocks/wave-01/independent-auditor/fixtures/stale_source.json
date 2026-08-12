@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "stale_source",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for stale_source; stale, superseded, or unverifiable evidence denies the dependent claim."
+}

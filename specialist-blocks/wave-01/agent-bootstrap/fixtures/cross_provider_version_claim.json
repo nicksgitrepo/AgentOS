@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "class": "cross_provider_version_claim",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: provider-specific setup is asserted without named provider, version, effective date, and applicability evidence; deny the claim."
+}

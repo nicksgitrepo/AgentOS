@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "class": "missing_context",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: authority, custody, request, or source-lock context is absent; deny and request typed context."
+}

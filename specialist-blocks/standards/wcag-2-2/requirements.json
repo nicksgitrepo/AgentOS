@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.wcag-2-2",
+  "standard_identity": {
+    "publisher": "W3C",
+    "identifier": "Web Content Accessibility Guidelines",
+    "edition": "2.2"
+  },
+  "requirements": [
+    {
+      "requirement_id": "WCAG22.1.1.1",
+      "statement": "Map non-text content to the WCAG 2.2 Non-text Content success criterion and preserve its exception conditions.",
+      "source_ref": "WCAG22:1.1.1",
+      "evidence": "Versioned success-criterion mapping and content-scope evidence."
+    },
+    {
+      "requirement_id": "WCAG22.2.4.11",
+      "statement": "Map focus-visibility findings to the WCAG 2.2 Focus Not Obscured (Minimum) success criterion when the declared content scope applies.",
+      "source_ref": "WCAG22:2.4.11",
+      "evidence": "Keyboard/focus evidence and versioned criterion mapping."
+    },
+    {
+      "requirement_id": "WCAG22.2.5.8",
+      "statement": "Map pointer-target findings to the WCAG 2.2 Target Size (Minimum) success criterion when the declared content scope applies.",
+      "source_ref": "WCAG22:2.5.8",
+      "evidence": "Target-size evidence and versioned criterion mapping."
+    },
+    {
+      "requirement_id": "WCAG22.conformance",
+      "statement": "Evaluate conformance only against the WCAG 2.2 conformance requirements, full-page scope, and declared conformance level; never infer a certification claim.",
+      "source_ref": "WCAG22:5.2",
+      "evidence": "Conformance-level, full-page, alternate-version, and external applicability evidence."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

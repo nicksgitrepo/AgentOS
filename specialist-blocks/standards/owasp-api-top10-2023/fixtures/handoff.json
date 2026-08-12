@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-api-top10-2023",
+  "class": "handoff",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for handoff; standard applicability and requirement evidence remain external."
+}

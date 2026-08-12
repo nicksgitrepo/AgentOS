@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.router",
+  "class": "cross_provider_version_claim",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for cross_provider_version_claim; all provider, project, consumer, and applicability facts remain external."
+}

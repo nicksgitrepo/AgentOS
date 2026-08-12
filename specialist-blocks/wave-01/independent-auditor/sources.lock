@@ -1,0 +1,87 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "sources": [
+    {
+      "source_id": "source.json-schema-2020-12",
+      "title": "JSON Schema Draft 2020-12",
+      "publisher": "JSON Schema",
+      "url": "https://json-schema.org/draft/2020-12",
+      "version": "2020-12",
+      "effective_date": "2022-06-16",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "json-schema-draft-2020-12-publication-20220616",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable typed contract structure validation only."
+    },
+    {
+      "source_id": "source.iia-global-internal-audit-standards",
+      "title": "Global Internal Audit Standards",
+      "publisher": "The Institute of Internal Auditors",
+      "url": "https://www.theiia.org/en/standards/2024-standards/global-internal-audit-standards/",
+      "version": "2024",
+      "effective_date": "2025-01-09",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "iia-ippf-2024-global-internal-audit-standards-effective-20250109",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Advisory independence, objectivity, evidence, and audit-quality framing; it does not grant licensing or applicability authority."
+    },
+    {
+      "source_id": "source.iso-19011",
+      "title": "ISO 19011:2026 Guidelines for auditing management systems",
+      "publisher": "International Organization for Standardization",
+      "url": "https://www.iso.org/standard/19011",
+      "version": "2026, Edition 4",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "iso-19011-2026-edition-4-published-2026-05",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Advisory audit principles, audit-program management, and auditor-competence guidance; it does not establish automatic applicability or certification authority."
+    },
+    {
+      "source_id": "source.nist-ai-rmf",
+      "title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+      "version": "1.0",
+      "effective_date": "2023-01-26",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "nist-ai-100-1-1.0-20230126",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Voluntary, non-sector-specific risk and trustworthiness evaluation framing; it is not legal applicability or certification authority."
+    },
+    {
+      "source_id": "source.nist-sp-800-53a",
+      "title": "SP 800-53A Rev. 5, Assessing Security and Privacy Controls in Information Systems and Organizations",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final",
+      "version": "Release 5.2.0",
+      "effective_date": "2025-08-27",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "nist-sp-800-53a-rev5-release5.2.0-20250827",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Assessment evidence and procedure framing only; it does not establish project, jurisdiction, entity, or control applicability."
+    },
+    {
+      "source_id": "source.w3c-prov-dm",
+      "title": "PROV-DM: The PROV Data Model",
+      "publisher": "World Wide Web Consortium",
+      "url": "https://www.w3.org/TR/prov-dm/",
+      "version": "Recommendation",
+      "effective_date": "2013-04-30",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "w3c-prov-dm-recommendation-20130430",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable provenance, derivation, and evidence-identity framing."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, missing an effective or publication identity, or missing typed applicability evidence; refresh or escalate."
+  ,"manifest_sha256": "0f59c13a819c5d47eba5de8660f0538bcf14a7023f6821f4b0194bc02751253b"
+}

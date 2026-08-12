@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "09-output-handoff",
+  "block_id": "specialist.product-client.accessibility-wcag",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Accessibility/WCAG: does the exact 09-output-handoff condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.09-output-handoff.answer",
+    "gate.09-output-handoff.evidence",
+    "source_lock_identity",
+    "specialist.standard.wcag-2-2_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "10-proof-acceptance",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "10-proof-acceptance"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "efca46f6a78beefaabab0ca81f69a72099e8a31ecffd0cd3326aadc3e191e13d"
+}

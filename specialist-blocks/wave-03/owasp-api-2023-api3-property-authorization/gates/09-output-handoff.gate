@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "09-output-handoff",
+  "block_id": "specialist.security.owasp-api-2023-api3-property-authorization",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OWASP API API3:2023 Broken Object Property Level Authorization: does the exact 09-output-handoff condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.09-output-handoff.answer",
+    "gate.09-output-handoff.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-api-top10-2023_hash",
+    "specialist.standard.owasp-asvs_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "10-proof-acceptance",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "10-proof-acceptance"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "1b57e24c25dc840acda0c568f319313ec2d098b42f7eae190a1e0077dace88c3"
+}

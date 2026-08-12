@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "04-source-evidence-freshness",
+  "block_id": "specialist.domain.field-job-workflow",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Field Job Workflow: does the exact 04-source-evidence-freshness condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.04-source-evidence-freshness.answer",
+    "gate.04-source-evidence-freshness.evidence",
+    "source_lock_identity",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "05-context-completeness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "05-context-completeness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "cdd5dfc12e3df9b86ea2a9a9f6ee95bec4f49a6f6109a47d38898efe974d6aa0"
+}

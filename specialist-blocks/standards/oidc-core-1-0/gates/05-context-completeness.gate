@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "05-context-completeness",
+  "block_id": "specialist.standard.oidc-core-1-0",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OpenID Connect Core 1.0: does the exact edition and external applicability condition pass with typed evidence?",
+  "evidence": [
+    "block_sha256",
+    "external_applicability_overlay",
+    "gate.05-context-completeness.answer",
+    "gate.05-context-completeness.evidence",
+    "source_manifest_sha256"
+  ],
+  "next": {
+    "YES": "06-tool-resource-custody",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "06-tool-resource-custody"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "ca00b17b45be13822fd713a5acbe60f1de64d0d70675c280c14b80a6d1675a2d"
+}

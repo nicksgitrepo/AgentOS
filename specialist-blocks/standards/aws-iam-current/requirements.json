@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.aws-iam-current",
+  "standard_identity": {
+    "publisher": "Amazon Web Services",
+    "identifier": "IAM JSON Policy Elements Reference",
+    "edition": "current"
+  },
+  "requirements": [
+    {
+      "requirement_id": "AWS.IAM.current.elements",
+      "statement": "Bind IAM policy findings to the exact current AWS documentation snapshot and declared policy scope.",
+      "source_ref": "AWS.IAM.Policy.Elements.current",
+      "evidence": "Policy, provider scope, and source-lock receipt."
+    },
+    {
+      "requirement_id": "AWS.IAM.current.boundary",
+      "statement": "Do not transfer AWS IAM semantics to another provider or grant account mutation authority.",
+      "source_ref": "AWS.IAM.Policy.Elements.scope",
+      "evidence": "Provider identity and authority boundary."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

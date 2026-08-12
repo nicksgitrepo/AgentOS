@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "silent_scope_expansion",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic checkpoint appends Product writing to a lifecycle route without a new typed authority; deny the expanded action."
+}

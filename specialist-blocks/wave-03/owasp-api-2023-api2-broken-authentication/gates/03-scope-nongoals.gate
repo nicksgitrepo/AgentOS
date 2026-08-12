@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "03-scope-nongoals",
+  "block_id": "specialist.security.owasp-api-2023-api2-broken-authentication",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OWASP API API2:2023 Broken Authentication: does the exact 03-scope-nongoals condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.03-scope-nongoals.answer",
+    "gate.03-scope-nongoals.evidence",
+    "source_lock_identity",
+    "specialist.standard.owasp-api-top10-2023_hash",
+    "specialist.standard.owasp-asvs_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "04-source-evidence-freshness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "04-source-evidence-freshness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "5e01e74b1b389de8165a05b1186962320205750ff1e457ccac6a22e74fbfe35d"
+}

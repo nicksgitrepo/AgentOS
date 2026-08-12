@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.gao-green-book-2025",
+  "sources": [
+    {
+      "source_id": "source.gao-green-book-2025",
+      "title": "Standards for Internal Control in the Federal Government (2025 Green Book)",
+      "publisher": "U.S. Government Accountability Office",
+      "url": "https://www.gao.gov/greenbook",
+      "version": "2025",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "gao-green-book-2025-effective-fy2026",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound federal internal-control principles; it is not a universal GAAP/IFRS or licensed-accounting conclusion."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "20909096b069fa9ad1a16fa1d0838673d5edd26229cf13fc5edeea7f122ecf82"
+}

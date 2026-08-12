@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.rust-reference",
+  "sources": [
+    {
+      "source_id": "source.rust-reference-1-97-1",
+      "title": "The Rust Reference",
+      "publisher": "Rust Project",
+      "url": "https://doc.rust-lang.org/reference.html",
+      "version": "1.97.1",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "rust-reference-1.97.1-stable-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Rust language semantics and reference behavior."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "d668348c8f631862a7c2c9a9370cc734d5f932fc67fd118d099aa8deabad9655"
+}

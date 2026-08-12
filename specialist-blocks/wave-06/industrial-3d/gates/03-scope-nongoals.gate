@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "03-scope-nongoals",
+  "block_id": "specialist.graphics.industrial-3d",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Industrial 3D Asset Pipeline: does the exact 03-scope-nongoals condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.03-scope-nongoals.answer",
+    "gate.03-scope-nongoals.evidence",
+    "source_lock_identity",
+    "specialist.standard.gltf-2-0-1_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "04-source-evidence-freshness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "04-source-evidence-freshness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "9da5bd4580aa22d639f2d51bb976e9865036d9114a44c3a828d99a7adb6ab351"
+}

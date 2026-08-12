@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.react-components",
+  "class": "silent_scope_expansion",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for silent_scope_expansion; all provider, project, consumer, and applicability facts remain external."
+}

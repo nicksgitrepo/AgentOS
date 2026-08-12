@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-routing.v1.json",
+  "title": "AgentOS Specialist Routing Index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "routes", "default_rule", "routing_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_routing.v1"},
+    "version": {"const": 1},
+    "status": {"const": "COMPILED_CANDIDATE"},
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route_id", "family", "role_kind", "signals", "required_context", "select", "deny_if", "priority"],
+        "properties": {
+          "route_id": {"type": "string", "pattern": "^route\\.[a-z0-9-]+$"},
+          "family": {"type": "string", "minLength": 1},
+          "role_kind": {"enum": ["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]},
+          "signals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+          "required_context": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "select": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}, "minItems": 1},
+          "deny_if": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+          "priority": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "default_rule": {"const": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY"},
+    "routing_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

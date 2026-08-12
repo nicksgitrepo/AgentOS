@@ -1,0 +1,305 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "foundation",
+  "title": "Global Project Controller / 15-Minute Orchestrator",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Route typed control-plane work and maintain lifecycle intent through bounded fifteen-minute checkpoints without granting Product, deployment, publication, or acceptance authority.",
+  "scope": {
+    "included": [
+      "fifteen-minute orchestration checkpoints",
+      "lifecycle intent maintenance",
+      "typed control-plane request routing"
+    ],
+    "non_goals": [
+      "activate or admit any specialist",
+      "change Product, shared schema, control, or registry artifacts",
+      "deploy, publish, migrate, build, or trigger runtime side effects",
+      "handle secrets, protected consumer data, or Memory internals",
+      "replace a narrow domain specialist"
+    ],
+    "smallest_sufficient_rule": "Advance only the declared control-plane transition; UNKNOWN closes that dependent action and leaves unrelated work untouched."
+  },
+  "atomic_scope_statement": "Governance-only control for a typed Global Project Controller / 15-Minute Orchestrator request; it maintains intent and routing state but does not perform Product or deployment work.",
+  "permitted_decisions": [
+    "classify a typed control-plane request",
+    "maintain an explicit lifecycle intent without changing activation",
+    "record UNKNOWN and close only the dependent transition",
+    "return NOT_APPLICABLE when the request is outside control-plane lifecycle scope",
+    "route a bounded handoff to a named authority"
+  ],
+  "forbidden_decisions": [
+    "activate or admit any specialist or roster",
+    "change Product files, shared schemas, control files, or registry files",
+    "deploy, publish, migrate, build, or trigger runtime side effects",
+    "handle secrets, protected consumer data, or Memory internals",
+    "infer missing authority, applicability, or lifecycle evidence",
+    "self-accept or override independent evaluation"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "compose only with a typed request, declared authority, custody result, and exact candidate digest",
+    "keep each fifteen-minute checkpoint advisory until the independent authority accepts the transition",
+    "route Product, data, security, delivery, and assurance work to their narrow specialists",
+    "unknown closes only the dependent lifecycle transition"
+  ],
+  "escalation_target": "independent authority or owner review named by the typed control-plane contract",
+  "split_required_when": [
+    "authority or custody differs",
+    "domain work requires a narrow specialist",
+    "failure mode or evidence domain differs",
+    "request includes Product write, deploy, publish, migrate, or runtime actions",
+    "source version or effective-date applicability differs"
+  ],
+  "required_knowledge": [
+    "candidate lifecycle semantics",
+    "control-plane custody boundaries",
+    "fifteen-minute orchestration checkpoint semantics",
+    "four-valued gate semantics",
+    "typed handoff and digest identity"
+  ],
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "custody",
+      "lifecycle_intent",
+      "request",
+      "source_lock",
+      "timebox"
+    ],
+    "optional_context": [
+      "applicability",
+      "checkpoint_history",
+      "escalation_target",
+      "unrelated_work",
+      "utility_harm_receipt"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "custody",
+      "lifecycle_intent",
+      "request",
+      "source_lock",
+      "timebox"
+    ],
+    "acceptance_signals": [
+      "bounded lifecycle intent",
+      "declared authority",
+      "typed control-plane request"
+    ],
+    "rejection_signals": [
+      "ambiguous routing target",
+      "missing custody",
+      "product write or external side effect",
+      "self-acceptance request",
+      "stale or unverifiable authority",
+      "unsupported data or tool access"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.project-controller.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "candidate_digest",
+      "evidence",
+      "gate_trace",
+      "handoff",
+      "lifecycle_intent",
+      "route",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "authority and custody result",
+      "exact four-valued gate trace",
+      "source lock identity and freshness result",
+      "typed request and lifecycle intent",
+      "unknown ledger with dependent action closure"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "independent evaluation receipt",
+      "owner-authorized lifecycle intent",
+      "portable AgentOS governance contract",
+      "typed source and evidence records"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "typed project context",
+      "versioned primary source"
+    ],
+    "prohibited_authority": [
+      "consumer or provider account facts",
+      "opaque citations",
+      "self-authored acceptance",
+      "unbound chat",
+      "unverified lifecycle preference"
+    ],
+    "jurisdiction_rule": "When a transition touches regulated applicability, require jurisdiction, entity, activity, data class, version, effective date, and exceptions before routing; otherwise return UNKNOWN and close only that transition.",
+    "escalation_rule": "On authority conflict, stale evidence, missing custody, or unsupported side effects, deny or escalate to the named independent authority and preserve unrelated work.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Version, effective/publication/supersession status, retrieved date, immutable identity, and digest must be checked; stale or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Claims are limited to the exact scoped source and typed evidence identity; no source identity, applicability mapping, or effective-date evidence means no authority claim.",
+    "unknown_rule": "UNKNOWN records the missing evidence and closes only the dependent action; it never licenses an inference or broadens routing."
+  },
+  "controls": {
+    "read": [
+      "declared authority corpus",
+      "own candidate package",
+      "typed control-plane request",
+      "versioned public source metadata"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local filesystem within own package scope",
+      "read-only source retrieval"
+    ],
+    "data": [
+      "no protected consumer data",
+      "no secrets",
+      "public source metadata only",
+      "synthetic typed context only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "DENY",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "close only the dependent transition",
+      "record the exact missing field or evidence identity",
+      "refresh source or escalate to named authority",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, source lock, twelve gates, fixtures, evaluation dossier, and handoff exist with matching digests.",
+    "evaluation_entry": "An independent evaluator reruns the exact candidate, gate pack, and hostile task set; static syntax alone is insufficient.",
+    "suspension": "Suspend on stale source, invalidated authority, failed utility/harm evaluation, custody mismatch, or an unsafe transition request.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.evaluation-admission-gate",
+    "specialist.foundation.role-intake-classifier"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "routing": {
+    "signals": [
+      "control-plane lifecycle",
+      "fifteen-minute orchestration",
+      "governance checkpoint",
+      "typed handoff"
+    ],
+    "deny_if": [
+      "ambiguous authority or routing target",
+      "missing custody or lifecycle evidence",
+      "Product write, deploy, publish, migrate, or runtime side effect",
+      "self-acceptance or activation request"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.project-controller.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.project-controller",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Changes to normative content, gate semantics, or publisher edition create a new immutable revision and compatibility or supersession record.",
+    "freshness_rule": "A publisher refresh without material change creates a freshness receipt only; it does not copy or fork the reusable block."
+  },
+  "block_sha256": "f64d87b164eb10c27acc20bde40eadae24f9ad47adf689229029265a75f80113"
+}

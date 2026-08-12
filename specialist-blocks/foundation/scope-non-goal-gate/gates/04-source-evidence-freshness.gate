@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "04-source-evidence-freshness",
+  "block_id": "specialist.foundation.scope-non-goal-gate",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Scope/Non-Goal Gate: does the declared 04-source-evidence-freshness condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.04-source-evidence-freshness.answer",
+    "gate.04-source-evidence-freshness.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "05-context-completeness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "05-context-completeness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "fcda7fd996f964211f22c40845eac53ec71d480fbcc6b0c1cb1c8ad504e0bc56"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "11-lifecycle-recovery-archive",
+  "block_id": "specialist.domain.well-workflow",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Well Workflow: does the exact 11-lifecycle-recovery-archive condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.11-lifecycle-recovery-archive.answer",
+    "gate.11-lifecycle-recovery-archive.evidence",
+    "source_lock_identity",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "OUTCOME:ROUTE",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "OUTCOME:ROUTE"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "be968875c7857fc393775f99107c2be2c5d90f6f2618ffbeed120cbffc26dcf9"
+}

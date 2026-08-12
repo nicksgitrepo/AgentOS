@@ -1,0 +1,80 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-api-top10-2023",
+  "standard_identity": {
+    "publisher": "OWASP Foundation",
+    "identifier": "OWASP API Security Top 10",
+    "edition": "2023"
+  },
+  "requirements": [
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.index",
+      "statement": "Bind the route to the OWASP API Security Top 10 2023 edition and preserve its category identity without silently selecting another edition.",
+      "source_ref": "OWASP.API.Top10.2023:index",
+      "evidence": "Edition, source-lock, and external applicability receipt."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API1",
+      "statement": "Route API1:2023 Broken Object Level Authorization to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API1",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API2",
+      "statement": "Route API2:2023 Broken Authentication to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API2",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API3",
+      "statement": "Route API3:2023 Broken Object Property Level Authorization to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API3",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API4",
+      "statement": "Route API4:2023 Unrestricted Resource Consumption to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API4",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API5",
+      "statement": "Route API5:2023 Broken Function Level Authorization to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API5",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API6",
+      "statement": "Route API6:2023 Unrestricted Access to Sensitive Business Flows to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API6",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API7",
+      "statement": "Route API7:2023 Server Side Request Forgery to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API7",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API8",
+      "statement": "Route API8:2023 Security Misconfiguration to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API8",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API9",
+      "statement": "Route API9:2023 Improper Inventory Management to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API9",
+      "evidence": "Category route and atomic handoff."
+    },
+    {
+      "requirement_id": "OWASP.API.TOP10.2023.API10",
+      "statement": "Route API10:2023 Unsafe Consumption of APIs to its own atomic specialist.",
+      "source_ref": "OWASP.API.Top10.2023:API10",
+      "evidence": "Category route and atomic handoff."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

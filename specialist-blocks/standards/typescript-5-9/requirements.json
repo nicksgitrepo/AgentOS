@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.typescript-5-9",
+  "standard_identity": {
+    "publisher": "Microsoft TypeScript",
+    "identifier": "TypeScript Release Notes",
+    "edition": "5.9"
+  },
+  "requirements": [
+    {
+      "requirement_id": "TS.5.9.version",
+      "statement": "Bind compiler findings to TypeScript 5.9 and the declared compiler options.",
+      "source_ref": "TypeScript.5.9.release-notes",
+      "evidence": "Version, options, and source-lock receipt."
+    },
+    {
+      "requirement_id": "TS.5.9.scope",
+      "statement": "Keep compiler-language claims separate from framework, browser, and UX claims.",
+      "source_ref": "TypeScript.5.9.scope",
+      "evidence": "Narrow scope and sibling routing record."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.react-19-2",
+  "sources": [
+    {
+      "source_id": "source.react-19-2",
+      "title": "React 19.2 Release Notes",
+      "publisher": "React",
+      "url": "https://react.dev/blog/2025/10/01/react-19-2",
+      "version": "19.2",
+      "effective_date": "2025-10-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "react-19.2-release-2025-10-01",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "React 19.2 runtime and component behavior."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "897b98e28408c121d199e52b7cd028de54d910ee7f81f95c74d0e50ac75f2834"
+}

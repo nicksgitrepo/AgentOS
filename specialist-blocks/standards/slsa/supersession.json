@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_standard_supersession.v1",
+  "version": 1,
+  "block_id": "specialist.standard.slsa",
+  "status": "CURRENT_APPROVED_SPECIFICATION",
+  "superseded_by": null,
+  "known_non_superseding": [],
+  "rule": "A new edition or material erratum creates a new block and leaves old compiled locks reproducible."
+}

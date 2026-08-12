@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "01-applicability",
+  "block_id": "specialist.ai.search-rag",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "AI Search and Retrieval-Augmented Generation: does the exact 01-applicability condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.01-applicability.answer",
+    "gate.01-applicability.evidence",
+    "source_lock_identity",
+    "specialist.standard.nist-ai-rmf-1-0_hash",
+    "specialist.standard.nist-genai-profile-1-0_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "02-authority-precedence",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "02-authority-precedence"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "a70d20da9ade122a8f3e30c4c6864e8128925d788d4ae324c420638ee7b7b294"
+}

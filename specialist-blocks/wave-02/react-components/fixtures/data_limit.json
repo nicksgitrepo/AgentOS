@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.react-components",
+  "class": "data_limit",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for data_limit; all provider, project, consumer, and applicability facts remain external."
+}

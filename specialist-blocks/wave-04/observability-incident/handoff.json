@@ -1,0 +1,33 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.observability-incident.v1",
+  "block_id": "specialist.delivery-operations.observability-incident",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "9bd0f42f2487e393e705547883f91e4f0b10d74c99fddf7a5ecf97eea04d52bf",
+  "source_commit": "a6407f4c991d1768596f43f2f29d5a91d8044c0c",
+  "source_tree": "2c392cf5d4f4a0fdb942c8d37fd09d3d836ef2f2",
+  "changed_paths": [
+    "specialist-blocks/wave-04/observability-incident/block.json",
+    "specialist-blocks/wave-04/observability-incident/evaluation.json",
+    "specialist-blocks/wave-04/observability-incident/gates/manifest.json",
+    "specialist-blocks/wave-04/observability-incident/handoff.json",
+    "specialist-blocks/wave-04/observability-incident/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "hostile-fixture-catalog",
+    "independent-reviewer-required",
+    "p3-scope-and-authority",
+    "source-lock-digest",
+    "upstream-router-closure"
+  ],
+  "residuals": [
+    "applicability and project context remain external",
+    "candidate is not admitted or activated",
+    "independent utility/harm evaluation has not run",
+    "main AgentOS 3.0 integration owner must intake exact digest"
+  ],
+  "next_action": "Route the immutable P3 atomic candidate through independent evaluation; preserve activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

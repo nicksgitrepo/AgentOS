@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "unrelated_scope",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request concerns a domain failure mode rather than lifecycle routing; return it to the narrow specialist."
+}

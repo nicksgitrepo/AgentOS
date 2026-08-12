@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.owasp-top10-2025",
+  "sources": [
+    {
+      "source_id": "source.owasp-top10-2025",
+      "title": "OWASP Top 10:2025",
+      "publisher": "OWASP Foundation",
+      "url": "https://owasp.org/Top10/",
+      "version": "2025",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "owasp-top10-2025-release",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Version-bound web application security risk categories and category identity; not a certification or project-specific risk determination."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "948b51e2d7d11605c2664338f605fc6e4e9f17b8e00d70e438939934bc162971"
+}

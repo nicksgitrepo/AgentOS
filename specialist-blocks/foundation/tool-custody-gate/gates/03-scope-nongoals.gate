@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "03-scope-nongoals",
+  "block_id": "specialist.foundation.tool-custody-gate",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Tool/Resource/Custody Gate: does the declared 03-scope-nongoals condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.03-scope-nongoals.answer",
+    "gate.03-scope-nongoals.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "04-source-evidence-freshness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "04-source-evidence-freshness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "b8df16a2a59ac90d9c0f86cff28bdf7a47ce136e8cf6278acaa620f3fe5ef3c1"
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "11-lifecycle-recovery-archive",
+  "block_id": "specialist.assurance-enterprise.test-architect",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Test Architecture: does the exact 11-lifecycle-recovery-archive condition pass without expanding this ATOMIC_SPECIALIST scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.11-lifecycle-recovery-archive.answer",
+    "gate.11-lifecycle-recovery-archive.evidence",
+    "source_lock_identity",
+    "specialist.standard.nist-ssdf_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "OUTCOME:ROUTE",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "OUTCOME:ROUTE"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "e5fb9c6ca70c07bf3c6ea477bb9f1e74dd33facaa1b5669036c1068d8b9ce7a2"
+}

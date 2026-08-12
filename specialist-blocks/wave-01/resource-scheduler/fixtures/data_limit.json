@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "data_limit",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic telemetry contains a protected data class outside the declared aggregate and synthetic data boundary."
+}

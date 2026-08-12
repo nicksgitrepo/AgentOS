@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.cache-residue",
+  "class": "false_positive",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
+}

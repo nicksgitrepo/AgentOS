@@ -1,0 +1,61 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "sources": [
+    {
+      "source_id": "source.linux-psi",
+      "title": "PSI - Pressure Stall Information",
+      "publisher": "Linux kernel development community",
+      "url": "https://docs.kernel.org/accounting/psi.html",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "linux-kernel-psi-current-page-retrieved-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Portable evidence vocabulary for CPU, memory, and I/O contention; the rolling documentation page has no content digest here, so its canonical URL, current label, and retrieval date are the sufficient immutable identity and require refresh before authority use."
+    },
+    {
+      "source_id": "source.posix-resource-limits",
+      "title": "getrlimit, setrlimit - control maximum resource consumption",
+      "publisher": "The Open Group",
+      "url": "https://pubs.opengroup.org/onlinepubs/9699919799/functions/getrlimit.html",
+      "version": "POSIX.1-2017 / Issue 7, 2018 edition",
+      "effective_date": "2018-01-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "the-open-group-posix-issue-7-2018-getrlimit",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable resource-limit terminology and soft/hard limit distinctions; the edition path and named function are sufficient immutable identity because content digest retrieval was unavailable, and no write operation is authorized by this block."
+    },
+    {
+      "source_id": "source.posix-resource-usage",
+      "title": "getrusage - get information about resource utilization",
+      "publisher": "The Open Group",
+      "url": "https://pubs.opengroup.org/onlinepubs/9699919799/functions/getrusage.html",
+      "version": "POSIX.1-2017 / Issue 7, 2018 edition",
+      "effective_date": "2018-01-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "the-open-group-posix-issue-7-2018-getrusage",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable resource-usage observation terminology; the edition path and named function are sufficient immutable identity because content digest retrieval was unavailable, and platform-specific counters require external typed applicability."
+    },
+    {
+      "source_id": "source.w3c-prov-dm",
+      "title": "PROV-DM",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/prov-dm/",
+      "version": "REC",
+      "effective_date": "2013-04-30",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "w3c-prov-dm-recommendation-20130430",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable provenance vocabulary for binding resource findings to source, activity, and entity evidence; the recommendation identity is sufficient without a retrieved content digest."
+    }
+  ],
+  "freshness_rule": "Deny the dependent action when a source is stale, superseded, unverifiable, missing version/effective-date applicability, or lacks sufficient immutable identity; refresh or escalate.",
+  "manifest_sha256": "d84d29a2fe3e11046de9310452f5a6d9b5cd6ef25da2767e89f1c11b83f126fe"
+}

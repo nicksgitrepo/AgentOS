@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "11-lifecycle-recovery-archive",
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Runtime/Deployment Operator: is the candidate kept CANDIDATE/OFF with recovery, suspension, archive, and reactivation rules recorded while utility/harm remains pending?",
+  "evidence": [
+    "candidate_digest",
+    "gate.11-lifecycle-recovery-archive.answer",
+    "gate.11-lifecycle-recovery-archive.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "OUTCOME:WAITING_WITH_RECEIPT",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "OUTCOME:WAITING_WITH_RECEIPT"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "4128e3022767576c5bf0617e40064f88bbbaedfb0a8ea1e05f2315549b719969"
+}

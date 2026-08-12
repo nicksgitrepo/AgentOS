@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "01-applicability",
+  "block_id": "specialist.control.bootstrap-project-initializer",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "question": "Bootstrap/Project Initializer: does the declared 01-applicability condition pass with exact typed evidence?",
+  "evidence": ["candidate_digest", "gate.01-applicability.answer", "gate.01-applicability.evidence", "source_lock_identity"],
+  "next": {
+    "YES": "02-authority-precedence",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "02-authority-precedence"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "cd970d101437707861578ff3b41f63bd9d4021384711d56418793877c191e540"
+}

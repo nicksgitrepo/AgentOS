@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "01-applicability",
+  "block_id": "specialist.foundation.evaluation-admission-gate",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Evaluation/Admission Gate: does the declared 01-applicability condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.01-applicability.answer",
+    "gate.01-applicability.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "02-authority-precedence",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "02-authority-precedence"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "27aa79432cb5e5b9c3d17a8706375a6f6e5e996bcc07da42b78b22010e1791ac"
+}

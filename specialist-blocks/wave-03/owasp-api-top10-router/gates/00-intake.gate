@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "00-intake",
+  "block_id": "specialist.security.owasp-api-top10-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OWASP API Security Top 10 Router: does the exact 00-intake condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.00-intake.answer",
+    "gate.00-intake.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "ac1e5cdc5ab04206f4a741282f78cba47a311695d8f8af88a0a1d01f7f9f14c4"
+}

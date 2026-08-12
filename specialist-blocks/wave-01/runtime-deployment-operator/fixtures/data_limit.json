@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "data_limit",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: the request requires protected or unapproved runtime data outside the declared metadata boundary; deny."
+}

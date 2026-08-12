@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "broad_when_narrow_exists",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic request asks for general operations authority when only a typed pressure classification is in scope."
+}

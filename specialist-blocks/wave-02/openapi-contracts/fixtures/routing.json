@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.openapi-contracts",
+  "class": "routing",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for routing; all provider, project, consumer, and applicability facts remain external."
+}

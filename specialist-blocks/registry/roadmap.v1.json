@@ -1,0 +1,68 @@
+{
+  "schema": "agentos.specialist_roadmap.v1",
+  "version": 1,
+  "status": "CANDIDATE_INACTIVE",
+  "activation": "OFF",
+  "ranking_rule": "cross_project_value + risk_reduction + frequency + dependency_leverage; novelty is not a ranking input",
+  "waves": [
+    {
+      "wave": 0,
+      "owner": "specialist-library-controller",
+      "status": "CONTROLLER_OWNED",
+      "blocks": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.registry-alias-deduplicator"
+      ],
+      "why_now": "Every later route depends on deterministic intake, evidence, authority, scope, custody, evaluation, and identity controls."
+    },
+    {
+      "wave": 1,
+      "owner": "six-lane-controller",
+      "status": "SIX_LANES_ACTIVE",
+      "blocks": [
+        "specialist.software-language-runtime.router",
+        "specialist.security.router",
+        "specialist.data.router",
+        "specialist.product-client.router",
+        "specialist.delivery-operations.router",
+        "specialist.assurance-enterprise.router"
+      ],
+      "why_now": "These families cover the broadest cross-project request surface while preserving narrow specialist expansion."
+    },
+    {
+      "wave": 2,
+      "owner": "library-controller-with-independent-review",
+      "status": "PLANNED",
+      "blocks": [
+        "language-and-framework-narrow-blocks",
+        "security-standard-versioned-blocks",
+        "database-and-migration-narrow-blocks",
+        "client-surface-and-accessibility-narrow-blocks",
+        "delivery-and-runtime-narrow-blocks",
+        "assurance-and-regulatory-applicability-narrow-blocks"
+      ],
+      "why_now": "Expand only from evidenced routing demand and source-backed failure-mode differences."
+    },
+    {
+      "wave": 3,
+      "owner": "independent-review-required",
+      "status": "PLANNED",
+      "blocks": [
+        "versioned-regulatory-specialists",
+        "FMCSA-and-transport-specialists",
+        "finance-and-accounting-controls",
+        "industry-domain-context",
+        "mathematics-and-formal-methods",
+        "AI-search-and-intelligent-systems",
+        "3D-graphics-CAD-and-visual-assets",
+        "documentation-and-organizational-functions"
+      ],
+      "why_now": "These blocks have higher applicability, authority, safety, or provenance risk and must follow the applicability router."
+    }
+  ]
+}

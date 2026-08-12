@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "router_self_accept",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic receipt asks this authoring lane to accept its own candidate."
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-recipe.v1.json",
+  "title": "AgentOS On-Demand Task-Shaped Agent Recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "recipe_id", "recipe_version", "source_inventory_id", "source_title", "source_role_kind", "aliases", "priority", "lane", "family", "purpose", "required_layers", "required_block_ids", "required_context_fields", "non_goals", "selection_rule", "external_overlay_rule", "lifecycle", "compile_allowed", "materialization", "source_requirements", "freshness_policy", "recipe_hash"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_recipe.v1"},
+    "version": {"const": 1},
+    "recipe_id": {"type": "string", "pattern": "^recipe\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "recipe_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "source_inventory_id": {"type": "string", "pattern": "^inventory\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "source_title": {"type": "string", "minLength": 1},
+    "source_role_kind": {"enum": ["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]},
+    "aliases": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "priority": {"enum": ["P0", "P1", "P2", "P3", "P4", "P5", "P6"]},
+    "lane": {"type": "string", "minLength": 1},
+    "family": {"type": "string", "minLength": 1},
+    "purpose": {"type": "string", "minLength": 1},
+    "required_layers": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "required_block_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "required_context_fields": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "selection_rule": {"const": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS"},
+    "external_overlay_rule": {"const": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL"},
+    "lifecycle": {"enum": ["PLANNED", "CANDIDATE", "EVALUATED", "ADMITTED", "DEPRECATED", "NOT_APPLICABLE", "ARCHIVED"]},
+    "compile_allowed": {"type": "boolean"},
+    "materialization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "role_specific_block_required", "package_ids"],
+      "properties": {
+        "status": {"enum": ["PLANNED_RECIPE_ONLY", "COMPILED_CANDIDATE", "PROTECTED_EXTERNAL_LANE"]},
+        "role_specific_block_required": {"type": "boolean"},
+        "package_ids": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}}
+      }
+    },
+    "required_atomic_blocks": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
+    "required_standard_blocks": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
+    "optional_block_ids": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
+    "reasons": {"type": "object", "additionalProperties": {"type": "string"}},
+    "source_requirements": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "freshness_policy": {"type": "string", "minLength": 1},
+    "recipe_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

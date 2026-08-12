@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "06-tool-resource-custody",
+  "block_id": "specialist.foundation.role-intake-classifier",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Universal Role-Intake Classifier: does the declared 06-tool-resource-custody condition pass with exact typed evidence?",
+  "evidence": [
+    "candidate_digest",
+    "gate.06-tool-resource-custody.answer",
+    "gate.06-tool-resource-custody.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "07-data-secret-privacy",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "07-data-secret-privacy"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "b51855a0c8c1d654b5ac2adf8bd5524ddb1979a756f5a8c3f3b2b96df727563f"
+}

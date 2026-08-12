@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "class": "stale_source",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic capacity rule is superseded or outside its freshness window and cannot support admission classification."
+}

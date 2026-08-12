@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "false_positive",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for false_positive; an unrelated or unsupported finding cannot become an evaluation receipt."
+}

@@ -1,0 +1,304 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.platform.cloudflare-cache",
+  "revision": "1.0.0",
+  "priority": "P1",
+  "role_kind": "ATOMIC_SPECIALIST",
+  "title": "Cloudflare Cache Rules",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Analyze Cloudflare cache-rule matching and behavior for the exact documentation snapshot without purging, deploying, or changing edge state.",
+  "scope": {
+    "included": [
+      "cache-rule semantics",
+      "edge behavior findings",
+      "rule matching evidence"
+    ],
+    "non_goals": [
+      "DNS/TLS/WAF",
+      "cache purge",
+      "deployment",
+      "provider account mutation",
+      "self-admission",
+      "silent scope expansion"
+    ],
+    "smallest_sufficient_rule": "Analyze only the named atomic concern and return NOT_APPLICABLE when it is absent."
+  },
+  "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare Cache Rules; unrelated failure modes require sibling blocks.",
+  "permitted_decisions": [
+    "analyze the exact named atomic concern",
+    "escalate missing authority or conflicting evidence",
+    "return NOT_APPLICABLE when the concern is absent",
+    "return evidence-bounded findings"
+  ],
+  "forbidden_decisions": [
+    "activate, admit, deploy, publish, or self-accept",
+    "broaden to a family or sibling concern",
+    "claim another provider, standard, or version",
+    "infer missing authority, applicability, or evidence",
+    "write Product or consumer state"
+  ],
+  "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+  "required_upstream_router": "specialist.platform.provider-edge-router",
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN closes only the dependent action",
+    "compose only with explicitly named dependencies and siblings",
+    "must be selected by the required upstream router",
+    "reuse the exact source lock and version"
+  ],
+  "escalation_target": "specialist.foundation.evaluation-admission-gate",
+  "split_required_when": [
+    "authority or source lock differs",
+    "failure mode differs",
+    "knowledge differs",
+    "provider, framework, or version differs",
+    "tool or data custody differs"
+  ],
+  "required_knowledge": [
+    "edge scope and purge boundary",
+    "matching and cache behavior",
+    "specialist.standard.cloudflare-cache-current"
+  ],
+  "routing": {
+    "signals": [
+      "EDGE.CLOUDFLARE_CACHE",
+      "cache rules",
+      "cloudflare cache"
+    ],
+    "deny_if": [
+      "missing authority",
+      "missing source lock",
+      "stale or superseded source",
+      "unresolved provider or version",
+      "unsafe action"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "cache.rule",
+      "cache.scope",
+      "candidate.identity",
+      "custody",
+      "provider.name",
+      "request",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "evaluation_receipt",
+      "project_context",
+      "runtime_readback"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "cache.rule",
+      "cache.scope",
+      "candidate.identity",
+      "custody",
+      "provider.name",
+      "source_lock"
+    ],
+    "acceptance_signals": [
+      "EDGE.CLOUDFLARE_CACHE",
+      "cache rules",
+      "cloudflare cache"
+    ],
+    "rejection_signals": [
+      "ambiguous request",
+      "missing context",
+      "scope expansion",
+      "stale source",
+      "unsafe action"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.cloudflare-cache.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "exact source lock identity",
+      "gate trace",
+      "typed context",
+      "unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "block_sha256",
+      "evidence",
+      "findings",
+      "next_action",
+      "residuals",
+      "revision",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "evidence-bounded analysis",
+      "exact source records in sources.lock",
+      "typed context within the declared scope"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "exact primary source",
+      "explicit owner authority",
+      "external typed project context",
+      "human safety and emergency authority",
+      "portable governance hard controls"
+    ],
+    "prohibited_authority": [
+      "Product acceptance",
+      "another provider or version",
+      "opaque citations",
+      "provider account mutation",
+      "self-authored admission",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "Require the exact provider, language, framework, database, protocol, version, scope, and effective/freshness evidence before a dependent action advances.",
+    "escalation_rule": "Conflict or missing protected authority closes only the dependent action and escalates to the named control-plane owner.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Check publisher, identifier, version, publication/effective/supersession status, retrieved date, immutable identity, and digest when obtainable; stale or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Claims are limited to the exact source and scoped concern; no cross-provider, cross-version, or cross-specialist claims.",
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared primary source metadata",
+      "typed authority corpus"
+    ],
+    "write": [
+      "own isolated candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "local deterministic validator",
+      "source-lock reader"
+    ],
+    "data": [
+      "no protected consumer data",
+      "no secrets",
+      "public source metadata",
+      "synthetic or externally supplied typed context only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_ISOLATED_CANDIDATE",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "preserve immutable candidate",
+      "record exact missing field",
+      "refresh or escalate source",
+      "resume only after typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
+    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
+    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.role-intake-classifier",
+    "specialist.foundation.scope-non-goal-gate",
+    "specialist.foundation.tool-custody-gate",
+    "specialist.platform.provider-edge-router",
+    "specialist.standard.cloudflare-cache-current"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.cloudflare-cache.v1",
+    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.cloudflare-cache",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
+    "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
+  },
+  "block_sha256": "f9e5bdccb6c797add9816b0b398a8aeb5622ea2a07a0af6e8f1e357d750f3981"
+}

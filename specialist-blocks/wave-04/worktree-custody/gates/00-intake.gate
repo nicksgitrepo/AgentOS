@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "00-intake",
+  "block_id": "specialist.control.worktree-custody",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Worktree/Custody Manager: does the exact 00-intake condition pass without expanding this CONTROL_PLANE scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.00-intake.answer",
+    "gate.00-intake.evidence",
+    "source_lock_identity",
+    "specialist.standard.slsa_hash"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "d4b39ac8564f35eb31406024dc9b6763be679604d0786f83ba8194dfa38720b8"
+}

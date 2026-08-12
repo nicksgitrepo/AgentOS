@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.wcag-2-2",
+  "sources": [
+    {
+      "source_id": "source.w3c-wcag-2-2",
+      "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/2024/REC-WCAG22-20241212/",
+      "version": "2.2",
+      "effective_date": "2024-12-12",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "w3c-wcag-2.2-recommendation-republished-20241212",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound web accessibility success criteria and conformance model; applicability and legal requirements remain external."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "400e99acf1ac2363ffa39cad2bcf2afb4362066dd1f7fdf0c471726ff62cc4be"
+}

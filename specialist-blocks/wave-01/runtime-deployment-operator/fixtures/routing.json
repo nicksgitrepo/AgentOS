@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "routing",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: typed artifact, runtime target, rollback, and custody signals select this narrow control-plane route."
+}

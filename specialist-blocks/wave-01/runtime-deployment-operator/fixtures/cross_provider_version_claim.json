@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "class": "cross_provider_version_claim",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: a version claim from one provider is applied to a different provider without exact source identity; deny."
+}

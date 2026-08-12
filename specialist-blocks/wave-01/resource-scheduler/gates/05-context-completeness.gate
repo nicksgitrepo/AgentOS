@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "05-context-completeness",
+  "block_id": "specialist.control.resource-scheduler",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Are resource identity, units, capacity or allocatable basis, pressure window, requested action, custody, and authority complete and unambiguous?",
+  "evidence": [
+    "candidate_digest",
+    "gate.05-context-completeness.answer",
+    "gate.05-context-completeness.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "06-tool-resource-custody",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "06-tool-resource-custody"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "af6ca0be0c7f83cf543d689eba439a8857a118afd5c077c623a610550ef4804a"
+}

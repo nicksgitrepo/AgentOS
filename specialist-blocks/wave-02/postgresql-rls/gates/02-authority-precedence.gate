@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "02-authority-precedence",
+  "block_id": "specialist.data.postgresql-rls",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "PostgreSQL Row-Level Security: does the exact 02-authority-precedence condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.02-authority-precedence.answer",
+    "gate.02-authority-precedence.evidence",
+    "source_lock_identity",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "03-scope-nongoals",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "03-scope-nongoals"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "e1b397876fb4e04a99735ace3f9332a754036ee5458df4ceb809edd94e188ff3"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "06-tool-resource-custody",
+  "block_id": "specialist.standard.fmcsa-part-390-2025",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "49 CFR Part 390 General Applicability and Definitions — 2025 Edition: does the exact edition and external applicability condition pass with typed evidence?",
+  "evidence": [
+    "block_sha256",
+    "external_applicability_overlay",
+    "gate.06-tool-resource-custody.answer",
+    "gate.06-tool-resource-custody.evidence",
+    "source_manifest_sha256"
+  ],
+  "next": {
+    "YES": "07-data-secret-privacy",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "07-data-secret-privacy"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "e478a5c7c93b17a91fdee7bc02fb2b3d25b383cc6b47022b825f342b027053e7"
+}

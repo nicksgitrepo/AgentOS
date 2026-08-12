@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.security.owasp-web-2025-a08-software-data-integrity-failures",
+  "class": "tool_limit",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+}

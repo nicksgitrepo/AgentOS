@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.data.migration-rollback",
+  "sources": [
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.postgresql-transactions",
+      "title": "PostgreSQL Transaction Isolation",
+      "publisher": "PostgreSQL Global Development Group",
+      "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "postgresql-transaction-isolation-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Transaction isolation and rollback evidence used as a database-specific example; no database mutation authority."
+    },
+    {
+      "source_id": "source.slsa-provenance",
+      "title": "SLSA Provenance",
+      "publisher": "SLSA",
+      "url": "https://slsa.dev/spec/v1.2/provenance",
+      "version": "1.2",
+      "effective_date": "2023-06-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "slsa-provenance-v1.2",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Source-to-artifact provenance and build identity; no deployment or release acceptance authority."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "fbc69600ac6a26c783d55b30684329029ba476ea70aea281e0aee08d85c13f8c"
+}

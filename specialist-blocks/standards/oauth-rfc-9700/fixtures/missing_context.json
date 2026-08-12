@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.oauth-rfc-9700",
+  "class": "missing_context",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for missing_context; standard applicability and requirement evidence remain external."
+}

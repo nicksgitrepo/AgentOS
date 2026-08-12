@@ -1,0 +1,38 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "02-authority-precedence",
+  "block_id": "specialist.finance.job-cost-accounting",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Job-Cost Accounting: does the exact 02-authority-precedence condition pass without expanding this atomic specialist scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.02-authority-precedence.answer",
+    "gate.02-authority-precedence.evidence",
+    "source_lock_identity",
+    "specialist.standard.gao-green-book-2025_hash",
+    "upstream_router_identity"
+  ],
+  "next": {
+    "YES": "03-scope-nongoals",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "03-scope-nongoals"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "8f9336d740f0a1fd98f667f6a7c7509a5f3dd2a71c06a7b220ecd62159d33809"
+}

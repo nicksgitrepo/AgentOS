@@ -1,0 +1,40 @@
+{
+  "schema": "agentos.specialist_gate_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.data.router",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "gate_paths": [
+    "gates/00-intake.gate",
+    "gates/01-applicability.gate",
+    "gates/02-authority-precedence.gate",
+    "gates/03-scope-nongoals.gate",
+    "gates/04-source-evidence-freshness.gate",
+    "gates/05-context-completeness.gate",
+    "gates/06-tool-resource-custody.gate",
+    "gates/07-data-secret-privacy.gate",
+    "gates/08-build-browser-runtime.gate",
+    "gates/09-output-handoff.gate",
+    "gates/10-proof-acceptance.gate",
+    "gates/11-lifecycle-recovery-archive.gate"
+  ],
+  "manifest_sha256": "2bb556f3f960a95bd05a5993d58e215628740fb0866626f52864590fbf5c126c"
+}

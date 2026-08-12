@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "10-proof-acceptance",
+  "block_id": "specialist.security.owasp-api-top10-router",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "OWASP API Security Top 10 Router: does the exact 10-proof-acceptance condition pass without expanding this router scope?",
+  "evidence": [
+    "block_sha256",
+    "gate.10-proof-acceptance.answer",
+    "gate.10-proof-acceptance.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "11-lifecycle-recovery-archive",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "11-lifecycle-recovery-archive"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "4812f0f018e7455fd8751f4fd6b03c9b1931c8f5e7fcfdaedc62cdad50d7fa2d"
+}

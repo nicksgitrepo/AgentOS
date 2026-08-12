@@ -1,0 +1,36 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "02-authority-precedence",
+  "block_id": "specialist.control.resource-scheduler",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Is authority precedence explicit, source-bound, and free of unresolved conflicts or self-acceptance?",
+  "evidence": [
+    "candidate_digest",
+    "gate.02-authority-precedence.answer",
+    "gate.02-authority-precedence.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "03-scope-nongoals",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "03-scope-nongoals"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "c85b570fece7f06a9d48233a94ef7a4aad2cbabc16fd4110d80bf6f7c69f6c05"
+}

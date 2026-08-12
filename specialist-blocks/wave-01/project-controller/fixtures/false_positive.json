@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.project-controller",
+  "class": "false_positive",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic domain-only request has no lifecycle-control signal; do not route it to this control-plane block."
+}

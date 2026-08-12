@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.openapi-3-1-1",
+  "sources": [
+    {
+      "source_id": "source.openapi-3-1-1",
+      "title": "OpenAPI Specification 3.1.1",
+      "publisher": "OpenAPI Initiative",
+      "url": "https://spec.openapis.org/oas/v3.1.1.html",
+      "version": "3.1.1",
+      "effective_date": "2024-10-24",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "openapi-spec-3.1.1-2024-10-24",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "OpenAPI HTTP contract syntax and semantics."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "a378fd4727af797beeb31f02f39e31addd67c5f97372d5c534d5b5a70a897122"
+}

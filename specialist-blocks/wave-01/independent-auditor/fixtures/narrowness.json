@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.independent-auditor",
+  "class": "narrowness",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for narrowness; the auditor accepts only a bounded review of one named candidate digest."
+}
