@@ -8,7 +8,7 @@
   "atomicity_rule": "Family labels route only. Routers classify and assemble context; atomic specialists own one narrow concern; control-plane blocks own governance mechanics. No router or family label receives Product-writing or acceptance authority.",
   "role_kind_counts": {
     "ROUTER": 7,
-    "ATOMIC_SPECIALIST": 86,
+    "ATOMIC_SPECIALIST": 92,
     "CONTROL_PLANE": 16
   },
   "entry_defaults": {
@@ -51,7 +51,9 @@
     "P1": "cross-project engineering, security, data, delivery, assurance, and client value",
     "P2": "frequent narrow implementation and validation capability",
     "P3": "specialized or regulated capability gated by proven applicability",
-    "P4": "long-tail domain/context capability retained for future research"
+    "P4": "long-tail domain/context capability retained for future research",
+    "P5": "source-backed domain, AI/search, 3D, regulatory, and finance routes gated by external applicability",
+    "P6": "later regulated, industry, and compliance expansion retained without activation"
   },
   "families": [
     {
@@ -779,6 +781,19 @@
             "Aviation",
             "Maritime",
             "Agriculture"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "domain-workflows",
+      "rank": "P5",
+      "subfamilies": [
+        {
+          "name": "field-and-well-workflow",
+          "roles": [
+            "Field Job Workflow",
+            "Well Workflow"
           ]
         }
       ]

@@ -84,6 +84,63 @@ const P4_RECIPE_OVERRIDES = Object.freeze({
   },
 });
 
+const P5_RECIPE_OVERRIDES = Object.freeze({
+  "inventory.domain-workflows.field-job-workflow": {
+    recipe_id: "recipe.domain.field-job-workflow",
+    priority: "P5",
+    required_block_ids: ["specialist.domain.workflow-router", "specialist.domain.field-job-workflow"],
+    required_atomic_blocks: ["specialist.domain.field-job-workflow"],
+    required_standard_blocks: [],
+    context_fields: ["workflow.domain", "workflow.phase", "workflow.task", "workflow.dependencies", "candidate.identity"],
+    reason: "Select the narrow field-job workflow atom under the domain workflow router; operational authority remains external.",
+  },
+  "inventory.domain-workflows.well-workflow": {
+    recipe_id: "recipe.domain.well-workflow",
+    priority: "P5",
+    required_block_ids: ["specialist.domain.workflow-router", "specialist.domain.well-workflow"],
+    required_atomic_blocks: ["specialist.domain.well-workflow"],
+    required_standard_blocks: [],
+    context_fields: ["workflow.domain", "workflow.phase", "workflow.task", "workflow.operation_scope", "candidate.identity"],
+    reason: "Select the narrow well-workflow atom under the domain workflow router; engineering and safety authority remain external.",
+  },
+  "inventory.three-dimensional-graphics-visual-assets.industrial-equipment-modeler": {
+    recipe_id: "recipe.graphics.industrial-3d",
+    priority: "P5",
+    required_block_ids: ["specialist.graphics.industrial-3d-router", "specialist.graphics.industrial-3d", "specialist.standard.gltf-2-0-1"],
+    required_atomic_blocks: ["specialist.graphics.industrial-3d"],
+    required_standard_blocks: ["specialist.standard.gltf-2-0-1"],
+    context_fields: ["asset.domain", "asset.stage", "asset.identity", "asset.format", "asset.evidence", "candidate.identity", "standard.edition", "standard_version", "effective_date", "applicability_decision"],
+    reason: "Select the industrial 3D atom and reuse the immutable glTF 2.0.1 standard block; engineering truth remains external.",
+  },
+  "inventory.ai-search-intelligent-systems.rag": {
+    recipe_id: "recipe.ai.search-rag",
+    priority: "P5",
+    required_block_ids: ["specialist.ai.search-router", "specialist.ai.search-rag", "specialist.standard.nist-ai-rmf-1-0", "specialist.standard.nist-genai-profile-1-0"],
+    required_atomic_blocks: ["specialist.ai.search-rag"],
+    required_standard_blocks: ["specialist.standard.nist-ai-rmf-1-0", "specialist.standard.nist-genai-profile-1-0"],
+    context_fields: ["ai.system_scope", "corpus.scope", "corpus.authority", "retrieval.task", "retrieval.evaluation", "candidate.identity", "standard.edition", "standard_version", "effective_date", "applicability_decision"],
+    reason: "Select the smallest search/RAG evidence atom and reuse the exact NIST AI RMF and GenAI profile blocks; corpus/provider authority remains external.",
+  },
+  "inventory.fmcsatransport.fmcsa-applicability": {
+    recipe_id: "recipe.regulatory.fmcsa-applicability",
+    priority: "P5",
+    required_block_ids: ["specialist.regulatory.applicability-router", "specialist.regulatory.fmcsa-applicability", "specialist.standard.fmcsa-part-390-2025"],
+    required_atomic_blocks: ["specialist.regulatory.fmcsa-applicability"],
+    required_standard_blocks: ["specialist.standard.fmcsa-part-390-2025"],
+    context_fields: ["regulation.jurisdiction", "regulation.entity", "regulation.activity", "regulation.commerce", "regulation.vehicle", "regulation.exception", "regulation.version", "candidate.identity", "standard_version", "effective_date", "applicability_decision"],
+    reason: "Select the version-bound FMCSA applicability atom and reuse the exact 2025 49 CFR Part 390 standard block; no legal conclusion is produced.",
+  },
+  "inventory.finance-accounting-commercial-controls.job-costing": {
+    recipe_id: "recipe.finance.job-cost-accounting",
+    priority: "P5",
+    required_block_ids: ["specialist.finance.accounting-router", "specialist.finance.job-cost-accounting", "specialist.standard.gao-green-book-2025"],
+    required_atomic_blocks: ["specialist.finance.job-cost-accounting"],
+    required_standard_blocks: ["specialist.standard.gao-green-book-2025"],
+    context_fields: ["accounting.entity", "accounting.objective", "accounting.period", "accounting.cost_object", "accounting.policy", "accounting.evidence", "candidate.identity", "standard.edition", "standard_version", "effective_date", "applicability_decision"],
+    reason: "Select the narrow job-cost control atom and reuse the exact GAO Green Book 2025 standard block; professional accounting authority remains external.",
+  },
+});
+
 function readJson(filePath, label) {
   if (!fs.existsSync(filePath)) throw new Error(`${label} is missing: ${filePath}`);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -240,10 +297,10 @@ function compiledRecipe(entry, override) {
     source_title: entry.title,
     source_role_kind: entry.role_kind,
     aliases: entry.aliases,
-    priority: "P4",
-    lane: `P4.${override.recipe_id}`,
+    priority: override.priority ?? "P4",
+    lane: `${override.priority ?? "P4"}.${override.recipe_id}`,
     family: entry.family,
-    purpose: `Compile a bounded ${entry.title} task-shaped agent from the smallest dependency-complete client/UX block set.`,
+    purpose: `Compile a bounded ${entry.title} task-shaped agent from the smallest dependency-complete ${override.priority ?? "P4"} block set.`,
     required_layers: BASE_LAYERS,
     required_block_ids: requiredBlockIds,
     required_context_fields: [...BASE_CONTEXT, "signals", ...override.context_fields],
@@ -283,8 +340,8 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
   }
   for (const entry of inventoryEntries) {
     if (covered.has(entry.canonical_id)) continue;
-    const p4Override = P4_RECIPE_OVERRIDES[entry.canonical_id];
-    recipes.push(p4Override ? compiledRecipe(entry, p4Override) : plannedRecipe(entry));
+    const override = P5_RECIPE_OVERRIDES[entry.canonical_id] ?? P4_RECIPE_OVERRIDES[entry.canonical_id];
+    recipes.push(override ? compiledRecipe(entry, override) : plannedRecipe(entry));
     covered.add(entry.canonical_id);
   }
   recipes.sort((left, right) => left.source_inventory_id.localeCompare(right.source_inventory_id));

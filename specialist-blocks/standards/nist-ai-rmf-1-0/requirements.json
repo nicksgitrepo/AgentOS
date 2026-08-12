@@ -1,0 +1,32 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-ai-rmf-1-0",
+  "standard_identity": {
+    "publisher": "NIST",
+    "identifier": "NIST AI 100-1",
+    "edition": "1.0"
+  },
+  "requirements": [
+    {
+      "requirement_id": "AI.RMF.1.0.GOVERN",
+      "statement": "Organize AI risk-management accountability, policies, and documentation under the exact AI RMF 1.0 Govern function when the external overlay selects this framework.",
+      "source_ref": "NIST.AI.100-1:Govern",
+      "evidence": "Declared AI system scope, responsibility record, and versioned source lock."
+    },
+    {
+      "requirement_id": "AI.RMF.1.0.MAP",
+      "statement": "Map intended context, risks, impacts, and affected groups before advancing an AI system activity under the selected AI RMF scope.",
+      "source_ref": "NIST.AI.100-1:Map",
+      "evidence": "Typed use-case, risk, impact, and unknown ledger."
+    },
+    {
+      "requirement_id": "AI.RMF.1.0.MEASURE-MANAGE",
+      "statement": "Keep measurement and risk-management evidence traceable to the declared AI system, evaluation purpose, and external authority overlay.",
+      "source_ref": "NIST.AI.100-1:Measure-Manage",
+      "evidence": "Evaluation receipt, residual-risk record, and exact applicability context."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

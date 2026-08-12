@@ -1,0 +1,32 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-genai-profile-1-0",
+  "standard_identity": {
+    "publisher": "NIST",
+    "identifier": "NIST AI 600-1",
+    "edition": "NIST AI 600-1"
+  },
+  "requirements": [
+    {
+      "requirement_id": "NIST.AI.600-1.profile-scope",
+      "statement": "Bind generative-AI risk findings to the exact NIST AI 600-1 profile and declared system lifecycle scope.",
+      "source_ref": "NIST.AI.600-1:profile-scope",
+      "evidence": "System identity, lifecycle boundary, version, and source-lock receipt."
+    },
+    {
+      "requirement_id": "NIST.AI.600-1.risk-actions",
+      "statement": "Map selected generative-AI risk actions to the profile and preserve the distinction between evidence, residual uncertainty, and organizational decision authority.",
+      "source_ref": "NIST.AI.600-1:risk-actions",
+      "evidence": "Requirement-level action mapping and unknown ledger."
+    },
+    {
+      "requirement_id": "NIST.AI.600-1.provenance",
+      "statement": "Treat data, content, and output provenance as an evidence obligation rather than an inferred property of a model or retrieval system.",
+      "source_ref": "NIST.AI.600-1:provenance",
+      "evidence": "Provenance record or explicit missing-evidence receipt."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

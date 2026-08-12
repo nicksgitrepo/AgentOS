@@ -18,7 +18,7 @@
   ],
   "inventory": {
     "raw_role_mentions": 625,
-    "unique_role_titles": 619,
+    "unique_role_titles": 621,
     "alias_mappings": 10
   },
   "recipes": [
@@ -1937,16 +1937,16 @@
     {
       "schema": "agentos.specialist_recipe.v1",
       "version": 1,
-      "recipe_id": "recipe.inventory.ai-search-intelligent-systems-rag",
+      "recipe_id": "recipe.ai.search-rag",
       "recipe_version": "1.0.0",
       "source_inventory_id": "inventory.ai-search-intelligent-systems.rag",
       "source_title": "RAG",
       "source_role_kind": "ROUTER",
       "aliases": [],
-      "priority": "P1",
-      "lane": "INVENTORY.inventory.ai-search-intelligent-systems.rag",
+      "priority": "P5",
+      "lane": "P5.recipe.ai.search-rag",
       "family": "ai-search-intelligent-systems",
-      "purpose": "Compile a task-shaped RAG specialist only after applicability, authority, source, and context evidence are complete.",
+      "purpose": "Compile a bounded RAG task-shaped agent from the smallest dependency-complete P5 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -1955,41 +1955,75 @@
         "task-role-authority"
       ],
       "required_block_ids": [
+        "specialist.ai.search-rag",
+        "specialist.ai.search-router",
         "specialist.foundation.authority-jurisdiction-gate",
         "specialist.foundation.evaluation-admission-gate",
         "specialist.foundation.evidence-freshness-gate",
         "specialist.foundation.registry-alias-deduplicator",
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
-        "specialist.foundation.tool-custody-gate"
+        "specialist.foundation.tool-custody-gate",
+        "specialist.standard.nist-ai-rmf-1-0",
+        "specialist.standard.nist-genai-profile-1-0"
       ],
       "required_context_fields": [
+        "ai.system_scope",
+        "applicability_decision",
         "authority",
         "candidate",
+        "candidate.identity",
+        "corpus.authority",
+        "corpus.scope",
         "custody",
+        "effective_date",
         "proof",
         "request",
+        "retrieval.evaluation",
+        "retrieval.task",
+        "signals",
         "source_lock",
+        "standard.edition",
+        "standard_version",
         "worktree"
       ],
       "non_goals": [
         "activation",
         "consumer Product writing",
         "deployment",
+        "platform or standard scope expansion",
+        "product acceptance",
         "self-acceptance",
         "unrelated specialist scopes"
       ],
       "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
       "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-      "lifecycle": "PLANNED",
-      "compile_allowed": false,
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
       "materialization": {
-        "status": "PLANNED_RECIPE_ONLY",
-        "role_specific_block_required": true,
-        "package_ids": []
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.ai.search-rag",
+          "specialist.ai.search-router",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evaluation-admission-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.registry-alias-deduplicator",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.standard.nist-ai-rmf-1-0",
+          "specialist.standard.nist-genai-profile-1-0"
+        ]
       },
-      "required_atomic_blocks": [],
-      "required_standard_blocks": [],
+      "required_atomic_blocks": [
+        "specialist.ai.search-rag"
+      ],
+      "required_standard_blocks": [
+        "specialist.standard.nist-ai-rmf-1-0",
+        "specialist.standard.nist-genai-profile-1-0"
+      ],
       "optional_block_ids": [],
       "reasons": {
         "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned RAG recipe.",
@@ -1998,7 +2032,11 @@
         "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned RAG recipe.",
         "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned RAG recipe.",
         "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned RAG recipe.",
-        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned RAG recipe."
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned RAG recipe.",
+        "specialist.ai.search-router": "Select the smallest search/RAG evidence atom and reuse the exact NIST AI RMF and GenAI profile blocks; corpus/provider authority remains external.",
+        "specialist.ai.search-rag": "Select the smallest search/RAG evidence atom and reuse the exact NIST AI RMF and GenAI profile blocks; corpus/provider authority remains external.",
+        "specialist.standard.nist-ai-rmf-1-0": "Reuse the exact content-addressed standard block; applicability remains an external overlay.",
+        "specialist.standard.nist-genai-profile-1-0": "Reuse the exact content-addressed standard block; applicability remains an external overlay."
       },
       "source_requirements": [
         "primary source or typed authority-corpus record",
@@ -2006,7 +2044,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "c41b900e1bcfec3405f2cb98466514a069c0530884932b52433f5871f6eb4fd6"
+      "recipe_hash": "bf6dceac57f0bc31f2cdc1dea647adac8820cc6533e5d6d318f2c1a7feb8e6d3"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -12155,6 +12193,202 @@
     {
       "schema": "agentos.specialist_recipe.v1",
       "version": 1,
+      "recipe_id": "recipe.domain.field-job-workflow",
+      "recipe_version": "1.0.0",
+      "source_inventory_id": "inventory.domain-workflows.field-job-workflow",
+      "source_title": "Field Job Workflow",
+      "source_role_kind": "ROUTER",
+      "aliases": [],
+      "priority": "P5",
+      "lane": "P5.recipe.domain.field-job-workflow",
+      "family": "domain-workflows",
+      "purpose": "Compile a bounded Field Job Workflow task-shaped agent from the smallest dependency-complete P5 block set.",
+      "required_layers": [
+        "agentos-governance",
+        "exact-project-context",
+        "external-project-governance",
+        "owner-intent-and-authority",
+        "task-role-authority"
+      ],
+      "required_block_ids": [
+        "specialist.domain.field-job-workflow",
+        "specialist.domain.workflow-router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.registry-alias-deduplicator",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "required_context_fields": [
+        "authority",
+        "candidate",
+        "candidate.identity",
+        "custody",
+        "proof",
+        "request",
+        "signals",
+        "source_lock",
+        "workflow.dependencies",
+        "workflow.domain",
+        "workflow.phase",
+        "workflow.task",
+        "worktree"
+      ],
+      "non_goals": [
+        "activation",
+        "consumer Product writing",
+        "deployment",
+        "platform or standard scope expansion",
+        "product acceptance",
+        "self-acceptance",
+        "unrelated specialist scopes"
+      ],
+      "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
+      "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
+      "materialization": {
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.domain.field-job-workflow",
+          "specialist.domain.workflow-router",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evaluation-admission-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.registry-alias-deduplicator",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate"
+        ]
+      },
+      "required_atomic_blocks": [
+        "specialist.domain.field-job-workflow"
+      ],
+      "required_standard_blocks": [],
+      "optional_block_ids": [],
+      "reasons": {
+        "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.foundation.evaluation-admission-gate": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.foundation.evidence-freshness-gate": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Field Job Workflow recipe.",
+        "specialist.domain.workflow-router": "Select the narrow field-job workflow atom under the domain workflow router; operational authority remains external.",
+        "specialist.domain.field-job-workflow": "Select the narrow field-job workflow atom under the domain workflow router; operational authority remains external."
+      },
+      "source_requirements": [
+        "primary source or typed authority-corpus record",
+        "publisher, version, effective date, retrieved date, and immutable identity",
+        "content digest when obtainable"
+      ],
+      "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
+      "recipe_hash": "c772b9b8239c96d561ccefba7621fc6342bd51459805386e315481857654b54b"
+    },
+    {
+      "schema": "agentos.specialist_recipe.v1",
+      "version": 1,
+      "recipe_id": "recipe.domain.well-workflow",
+      "recipe_version": "1.0.0",
+      "source_inventory_id": "inventory.domain-workflows.well-workflow",
+      "source_title": "Well Workflow",
+      "source_role_kind": "ROUTER",
+      "aliases": [],
+      "priority": "P5",
+      "lane": "P5.recipe.domain.well-workflow",
+      "family": "domain-workflows",
+      "purpose": "Compile a bounded Well Workflow task-shaped agent from the smallest dependency-complete P5 block set.",
+      "required_layers": [
+        "agentos-governance",
+        "exact-project-context",
+        "external-project-governance",
+        "owner-intent-and-authority",
+        "task-role-authority"
+      ],
+      "required_block_ids": [
+        "specialist.domain.well-workflow",
+        "specialist.domain.workflow-router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.registry-alias-deduplicator",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "required_context_fields": [
+        "authority",
+        "candidate",
+        "candidate.identity",
+        "custody",
+        "proof",
+        "request",
+        "signals",
+        "source_lock",
+        "workflow.domain",
+        "workflow.operation_scope",
+        "workflow.phase",
+        "workflow.task",
+        "worktree"
+      ],
+      "non_goals": [
+        "activation",
+        "consumer Product writing",
+        "deployment",
+        "platform or standard scope expansion",
+        "product acceptance",
+        "self-acceptance",
+        "unrelated specialist scopes"
+      ],
+      "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
+      "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
+      "materialization": {
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.domain.well-workflow",
+          "specialist.domain.workflow-router",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evaluation-admission-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.registry-alias-deduplicator",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate"
+        ]
+      },
+      "required_atomic_blocks": [
+        "specialist.domain.well-workflow"
+      ],
+      "required_standard_blocks": [],
+      "optional_block_ids": [],
+      "reasons": {
+        "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.foundation.evaluation-admission-gate": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.foundation.evidence-freshness-gate": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Well Workflow recipe.",
+        "specialist.domain.workflow-router": "Select the narrow well-workflow atom under the domain workflow router; engineering and safety authority remain external.",
+        "specialist.domain.well-workflow": "Select the narrow well-workflow atom under the domain workflow router; engineering and safety authority remain external."
+      },
+      "source_requirements": [
+        "primary source or typed authority-corpus record",
+        "publisher, version, effective date, retrieved date, and immutable identity",
+        "content digest when obtainable"
+      ],
+      "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
+      "recipe_hash": "a3eb451e2e37342f8cb1ea6f54b90123ba5e0d536455178d23d320b419743349"
+    },
+    {
+      "schema": "agentos.specialist_recipe.v1",
+      "version": 1,
       "recipe_id": "recipe.inventory.finance-accounting-commercial-controls-accounts-payable",
       "recipe_version": "1.0.0",
       "source_inventory_id": "inventory.finance-accounting-commercial-controls.accounts-payable",
@@ -13635,16 +13869,16 @@
     {
       "schema": "agentos.specialist_recipe.v1",
       "version": 1,
-      "recipe_id": "recipe.inventory.finance-accounting-commercial-controls-job-costing",
+      "recipe_id": "recipe.finance.job-cost-accounting",
       "recipe_version": "1.0.0",
       "source_inventory_id": "inventory.finance-accounting-commercial-controls.job-costing",
       "source_title": "Job Costing",
       "source_role_kind": "ROUTER",
       "aliases": [],
-      "priority": "P2",
-      "lane": "INVENTORY.inventory.finance-accounting-commercial-controls.job-costing",
+      "priority": "P5",
+      "lane": "P5.recipe.finance.job-cost-accounting",
       "family": "finance-accounting-commercial-controls",
-      "purpose": "Compile a task-shaped Job Costing specialist only after applicability, authority, source, and context evidence are complete.",
+      "purpose": "Compile a bounded Job Costing task-shaped agent from the smallest dependency-complete P5 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -13653,41 +13887,73 @@
         "task-role-authority"
       ],
       "required_block_ids": [
+        "specialist.finance.accounting-router",
+        "specialist.finance.job-cost-accounting",
         "specialist.foundation.authority-jurisdiction-gate",
         "specialist.foundation.evaluation-admission-gate",
         "specialist.foundation.evidence-freshness-gate",
         "specialist.foundation.registry-alias-deduplicator",
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
-        "specialist.foundation.tool-custody-gate"
+        "specialist.foundation.tool-custody-gate",
+        "specialist.standard.gao-green-book-2025"
       ],
       "required_context_fields": [
+        "accounting.cost_object",
+        "accounting.entity",
+        "accounting.evidence",
+        "accounting.objective",
+        "accounting.period",
+        "accounting.policy",
+        "applicability_decision",
         "authority",
         "candidate",
+        "candidate.identity",
         "custody",
+        "effective_date",
         "proof",
         "request",
+        "signals",
         "source_lock",
+        "standard.edition",
+        "standard_version",
         "worktree"
       ],
       "non_goals": [
         "activation",
         "consumer Product writing",
         "deployment",
+        "platform or standard scope expansion",
+        "product acceptance",
         "self-acceptance",
         "unrelated specialist scopes"
       ],
       "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
       "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-      "lifecycle": "PLANNED",
-      "compile_allowed": false,
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
       "materialization": {
-        "status": "PLANNED_RECIPE_ONLY",
-        "role_specific_block_required": true,
-        "package_ids": []
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.finance.accounting-router",
+          "specialist.finance.job-cost-accounting",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evaluation-admission-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.registry-alias-deduplicator",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.standard.gao-green-book-2025"
+        ]
       },
-      "required_atomic_blocks": [],
-      "required_standard_blocks": [],
+      "required_atomic_blocks": [
+        "specialist.finance.job-cost-accounting"
+      ],
+      "required_standard_blocks": [
+        "specialist.standard.gao-green-book-2025"
+      ],
       "optional_block_ids": [],
       "reasons": {
         "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Job Costing recipe.",
@@ -13696,7 +13962,10 @@
         "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Job Costing recipe.",
         "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Job Costing recipe.",
         "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Job Costing recipe.",
-        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Job Costing recipe."
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Job Costing recipe.",
+        "specialist.finance.accounting-router": "Select the narrow job-cost control atom and reuse the exact GAO Green Book 2025 standard block; professional accounting authority remains external.",
+        "specialist.finance.job-cost-accounting": "Select the narrow job-cost control atom and reuse the exact GAO Green Book 2025 standard block; professional accounting authority remains external.",
+        "specialist.standard.gao-green-book-2025": "Reuse the exact content-addressed standard block; applicability remains an external overlay."
       },
       "source_requirements": [
         "primary source or typed authority-corpus record",
@@ -13704,7 +13973,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "a9892b9e1863d73de7d7848ea1ca02c6582bb34e9334cdd6fe597c50804a492e"
+      "recipe_hash": "c86fba40747d86c4e8bb02845567f43924d23d7aa9c5abb61c270bc144478ce8"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -15489,16 +15758,16 @@
     {
       "schema": "agentos.specialist_recipe.v1",
       "version": 1,
-      "recipe_id": "recipe.inventory.fmcsatransport-fmcsa-applicability",
+      "recipe_id": "recipe.regulatory.fmcsa-applicability",
       "recipe_version": "1.0.0",
       "source_inventory_id": "inventory.fmcsatransport.fmcsa-applicability",
       "source_title": "FMCSA Applicability",
       "source_role_kind": "ROUTER",
       "aliases": [],
-      "priority": "P3",
-      "lane": "INVENTORY.inventory.fmcsatransport.fmcsa-applicability",
+      "priority": "P5",
+      "lane": "P5.recipe.regulatory.fmcsa-applicability",
       "family": "fmcsatransport",
-      "purpose": "Compile a task-shaped FMCSA Applicability specialist only after applicability, authority, source, and context evidence are complete.",
+      "purpose": "Compile a bounded FMCSA Applicability task-shaped agent from the smallest dependency-complete P5 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -15513,35 +15782,67 @@
         "specialist.foundation.registry-alias-deduplicator",
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
-        "specialist.foundation.tool-custody-gate"
+        "specialist.foundation.tool-custody-gate",
+        "specialist.regulatory.applicability-router",
+        "specialist.regulatory.fmcsa-applicability",
+        "specialist.standard.fmcsa-part-390-2025"
       ],
       "required_context_fields": [
+        "applicability_decision",
         "authority",
         "candidate",
+        "candidate.identity",
         "custody",
+        "effective_date",
         "proof",
+        "regulation.activity",
+        "regulation.commerce",
+        "regulation.entity",
+        "regulation.exception",
+        "regulation.jurisdiction",
+        "regulation.vehicle",
+        "regulation.version",
         "request",
+        "signals",
         "source_lock",
+        "standard_version",
         "worktree"
       ],
       "non_goals": [
         "activation",
         "consumer Product writing",
         "deployment",
+        "platform or standard scope expansion",
+        "product acceptance",
         "self-acceptance",
         "unrelated specialist scopes"
       ],
       "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
       "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-      "lifecycle": "PLANNED",
-      "compile_allowed": false,
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
       "materialization": {
-        "status": "PLANNED_RECIPE_ONLY",
-        "role_specific_block_required": true,
-        "package_ids": []
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evaluation-admission-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.registry-alias-deduplicator",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.regulatory.applicability-router",
+          "specialist.regulatory.fmcsa-applicability",
+          "specialist.standard.fmcsa-part-390-2025"
+        ]
       },
-      "required_atomic_blocks": [],
-      "required_standard_blocks": [],
+      "required_atomic_blocks": [
+        "specialist.regulatory.fmcsa-applicability"
+      ],
+      "required_standard_blocks": [
+        "specialist.standard.fmcsa-part-390-2025"
+      ],
       "optional_block_ids": [],
       "reasons": {
         "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned FMCSA Applicability recipe.",
@@ -15550,7 +15851,10 @@
         "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned FMCSA Applicability recipe.",
         "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned FMCSA Applicability recipe.",
         "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned FMCSA Applicability recipe.",
-        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned FMCSA Applicability recipe."
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned FMCSA Applicability recipe.",
+        "specialist.regulatory.applicability-router": "Select the version-bound FMCSA applicability atom and reuse the exact 2025 49 CFR Part 390 standard block; no legal conclusion is produced.",
+        "specialist.regulatory.fmcsa-applicability": "Select the version-bound FMCSA applicability atom and reuse the exact 2025 49 CFR Part 390 standard block; no legal conclusion is produced.",
+        "specialist.standard.fmcsa-part-390-2025": "Reuse the exact content-addressed standard block; applicability remains an external overlay."
       },
       "source_requirements": [
         "primary source or typed authority-corpus record",
@@ -15558,7 +15862,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "69c4bfd069f8f221151f484c0ef1f077f37207667434bcbb49a32aa812cbdff4"
+      "recipe_hash": "3e5c1f55c0981aeccb9f1d4173aae2444e21ecc4022bb02d0db7754bb7117089"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -26798,7 +27102,7 @@
       "priority": "P4",
       "lane": "P4.recipe.client.accessibility-wcag",
       "family": "product-client-experience",
-      "purpose": "Compile a bounded Accessibility/WCAG task-shaped agent from the smallest dependency-complete client/UX block set.",
+      "purpose": "Compile a bounded Accessibility/WCAG task-shaped agent from the smallest dependency-complete P4 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -26894,7 +27198,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "7efbba59de6d204e5c35fe36369eabeb3f464005968c36046699159e26ac55ad"
+      "recipe_hash": "abc3a4a84f99ba0928c837fb0ff32b1bd09f7499671f642bd688e3f7f8e98a06"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -27872,7 +28176,7 @@
       "priority": "P4",
       "lane": "P4.recipe.client.product-interaction",
       "family": "product-client-experience",
-      "purpose": "Compile a bounded Interaction Designer task-shaped agent from the smallest dependency-complete client/UX block set.",
+      "purpose": "Compile a bounded Interaction Designer task-shaped agent from the smallest dependency-complete P4 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -27954,7 +28258,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "3306eea798b413ccf15ff0c699fa533c5043764bf9fe23534af35b313662e366"
+      "recipe_hash": "a703a4c38dd4ba45e84097737bace4741424e39dac52d8d4c9b8819d21f54e48"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -28634,7 +28938,7 @@
       "priority": "P4",
       "lane": "P4.recipe.client.responsive-web",
       "family": "product-client-experience",
-      "purpose": "Compile a bounded Responsive Web task-shaped agent from the smallest dependency-complete client/UX block set.",
+      "purpose": "Compile a bounded Responsive Web task-shaped agent from the smallest dependency-complete P4 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -28717,7 +29021,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "939c3a674ee7f7381343172c30d3a1caaf654371beb213a86468b87b2263a03b"
+      "recipe_hash": "5a7134951586eb014d9507a78fab6ca49335e8477afb63a3149fd6acbf79ea8b"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -41984,7 +42288,7 @@
       "priority": "P4",
       "lane": "P4.recipe.client.android-kotlin",
       "family": "software-language-runtime",
-      "purpose": "Compile a bounded Kotlin task-shaped agent from the smallest dependency-complete client/UX block set.",
+      "purpose": "Compile a bounded Kotlin task-shaped agent from the smallest dependency-complete P4 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -42067,7 +42371,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "cdc1c9d6bfb6454f18a51c754dea9a0437bb6bfb9767ebad24035196c1b61580"
+      "recipe_hash": "5111d1c4f42935707fbb855fe9a4840c9d9904224fc7f45f24353cd2334ff67c"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -43487,7 +43791,7 @@
       "priority": "P4",
       "lane": "P4.recipe.client.ios-swiftui",
       "family": "software-language-runtime",
-      "purpose": "Compile a bounded Swift/SwiftUI task-shaped agent from the smallest dependency-complete client/UX block set.",
+      "purpose": "Compile a bounded Swift/SwiftUI task-shaped agent from the smallest dependency-complete P4 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -43570,7 +43874,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "7905d1b1d555086393674eca8ccdf495ba373ee045e804a4ae848387a59deb02"
+      "recipe_hash": "39a644dea4bff7c2815e5785947c991ec70b229bff8bca3cb8d6e1abc024a7ac"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -44759,16 +45063,16 @@
     {
       "schema": "agentos.specialist_recipe.v1",
       "version": 1,
-      "recipe_id": "recipe.inventory.three-dimensional-graphics-visual-assets-industrial-equipment-modeler",
+      "recipe_id": "recipe.graphics.industrial-3d",
       "recipe_version": "1.0.0",
       "source_inventory_id": "inventory.three-dimensional-graphics-visual-assets.industrial-equipment-modeler",
       "source_title": "Industrial Equipment Modeler",
       "source_role_kind": "ROUTER",
       "aliases": [],
-      "priority": "P2",
-      "lane": "INVENTORY.inventory.three-dimensional-graphics-visual-assets.industrial-equipment-modeler",
+      "priority": "P5",
+      "lane": "P5.recipe.graphics.industrial-3d",
       "family": "three-dimensional-graphics-visual-assets",
-      "purpose": "Compile a task-shaped Industrial Equipment Modeler specialist only after applicability, authority, source, and context evidence are complete.",
+      "purpose": "Compile a bounded Industrial Equipment Modeler task-shaped agent from the smallest dependency-complete P5 block set.",
       "required_layers": [
         "agentos-governance",
         "exact-project-context",
@@ -44783,35 +45087,66 @@
         "specialist.foundation.registry-alias-deduplicator",
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
-        "specialist.foundation.tool-custody-gate"
+        "specialist.foundation.tool-custody-gate",
+        "specialist.graphics.industrial-3d",
+        "specialist.graphics.industrial-3d-router",
+        "specialist.standard.gltf-2-0-1"
       ],
       "required_context_fields": [
+        "applicability_decision",
+        "asset.domain",
+        "asset.evidence",
+        "asset.format",
+        "asset.identity",
+        "asset.stage",
         "authority",
         "candidate",
+        "candidate.identity",
         "custody",
+        "effective_date",
         "proof",
         "request",
+        "signals",
         "source_lock",
+        "standard.edition",
+        "standard_version",
         "worktree"
       ],
       "non_goals": [
         "activation",
         "consumer Product writing",
         "deployment",
+        "platform or standard scope expansion",
+        "product acceptance",
         "self-acceptance",
         "unrelated specialist scopes"
       ],
       "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
       "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-      "lifecycle": "PLANNED",
-      "compile_allowed": false,
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
       "materialization": {
-        "status": "PLANNED_RECIPE_ONLY",
-        "role_specific_block_required": true,
-        "package_ids": []
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evaluation-admission-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.registry-alias-deduplicator",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.graphics.industrial-3d",
+          "specialist.graphics.industrial-3d-router",
+          "specialist.standard.gltf-2-0-1"
+        ]
       },
-      "required_atomic_blocks": [],
-      "required_standard_blocks": [],
+      "required_atomic_blocks": [
+        "specialist.graphics.industrial-3d"
+      ],
+      "required_standard_blocks": [
+        "specialist.standard.gltf-2-0-1"
+      ],
       "optional_block_ids": [],
       "reasons": {
         "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Industrial Equipment Modeler recipe.",
@@ -44820,7 +45155,10 @@
         "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Industrial Equipment Modeler recipe.",
         "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Industrial Equipment Modeler recipe.",
         "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Industrial Equipment Modeler recipe.",
-        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Industrial Equipment Modeler recipe."
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Industrial Equipment Modeler recipe.",
+        "specialist.graphics.industrial-3d-router": "Select the industrial 3D atom and reuse the immutable glTF 2.0.1 standard block; engineering truth remains external.",
+        "specialist.graphics.industrial-3d": "Select the industrial 3D atom and reuse the immutable glTF 2.0.1 standard block; engineering truth remains external.",
+        "specialist.standard.gltf-2-0-1": "Reuse the exact content-addressed standard block; applicability remains an external overlay."
       },
       "source_requirements": [
         "primary source or typed authority-corpus record",
@@ -44828,7 +45166,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "4b063a90ae85fa976fcfa11327ddd266620c0ca2209b8bd5d9498835c962bd80"
+      "recipe_hash": "53af580fe0326da901fd35751acbf3a640cdb5cf9bceb1be75f4043412fa41f1"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -46003,5 +46341,5 @@
       "reason": "Exact duplicate label; one documentation role owns the writing contract."
     }
   ],
-  "recipes_sha256": "d6c427d0ec39f79a297b8de5f7c4cace7b3d8d9d8146cf307db432832aeefd7a"
+  "recipes_sha256": "c484a6d63ed440fde38c88fafde7ce30bc54ae0eca743f5076d6fc063d4f5d49"
 }

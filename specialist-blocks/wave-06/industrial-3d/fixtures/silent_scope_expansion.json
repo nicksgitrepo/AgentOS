@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.graphics.industrial-3d",
+  "class": "silent_scope_expansion",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for silent_scope_expansion; provider, project, consumer, secret, and applicability facts remain external."
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.domain.field-job-workflow",
+  "sources": [
+    {
+      "source_id": "source.atomic-specialization-law",
+      "title": "Atomic Specialization Law",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-atomic-specialization-law-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.osha-oil-gas-site-preparation",
+      "title": "Oil and Gas Well Site Preparation",
+      "publisher": "U.S. Occupational Safety and Health Administration",
+      "url": "https://www.osha.gov/etools/oil-and-gas/site-preparation",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "osha-oil-gas-site-preparation-current-2026-06-10",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Public descriptive site-preparation and job-safety-analysis context; state plans and current requirements remain external."
+    },
+    {
+      "source_id": "source.osha-oil-gas-well-etool",
+      "title": "Oil and Gas Well Drilling and Servicing eTool",
+      "publisher": "U.S. Occupational Safety and Health Administration",
+      "url": "https://www.osha.gov/etools/oil-and-gas/",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "osha-oil-gas-well-etool-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Public descriptive work-phase, hazard-analysis, contractor-coordination, and stop-work context; expressly not a consensus standard, legal duty, or complete safety program."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
+  "manifest_sha256": "9705bb8fd93bc1ba58faaca9fb415e740c3e05de3916a4b014918a58c96eaa42"
+}

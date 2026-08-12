@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.regulatory.fmcsa-applicability",
+  "class": "data_limit",
+  "expected": "ROUTE",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external."
+}

@@ -29,19 +29,19 @@ const companion = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-specialist-comp
 const recipeCatalog = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/recipe-catalog.v1.json"), "utf8"));
 assert.equal(recipeCatalog.schema, "agentos.specialist_recipe_catalog.v1");
 assert.equal(recipeCatalog.inventory.raw_role_mentions, 625);
-assert.equal(recipeCatalog.inventory.unique_role_titles, 619);
+assert.equal(recipeCatalog.inventory.unique_role_titles, 621);
 assert.equal(recipeCatalog.inventory.alias_mappings, 10);
-assert.equal(recipeCatalog.recipes.length, 619, "recipe catalog must address every retained inventory role");
+assert.equal(recipeCatalog.recipes.length, 621, "recipe catalog must address every retained inventory role");
 assert.equal(recipeCatalog.aliases.length, 10, "recipe catalog must preserve every explicit alias mapping");
 assert.equal(recipeCatalog.recipes_sha256, canonicalDigest({...recipeCatalog, recipes_sha256: null}), "recipe catalog digest must be deterministic");
-assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 619, "recipe source inventory IDs must be unique");
-assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 619, "recipe IDs must be unique");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 11, "only the six P0 and five source-backed P4 recipes may be compiled candidates");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 607, "unbuilt inventory roles must remain planned recipes");
+assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 621, "recipe source inventory IDs must be unique");
+assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 621, "recipe IDs must be unique");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 17, "only the six P0, five P4, and six source-backed P5 recipes may be compiled candidates");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 603, "unbuilt inventory roles must remain planned recipes");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").length, 1, "the protected Memory lane must remain not applicable");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PLANNED_RECIPE_ONLY"), "planned recipes must not be compileable");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PROTECTED_EXTERNAL_LANE" && recipe.source_title === "Memory Systems (protected lane)"), "protected Memory lane must not become a portable recipe");
-assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "P0/P4 recipes must remain compileable candidates");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "P0/P4/P5 recipes must remain compileable candidates");
 const p4RecipeIds = ["recipe.client.product-interaction", "recipe.client.accessibility-wcag", "recipe.client.responsive-web", "recipe.client.ios-swiftui", "recipe.client.android-kotlin"];
 for (const recipeId of p4RecipeIds) {
   const recipe = recipeCatalog.recipes.find((candidate) => candidate.recipe_id === recipeId);

@@ -4,13 +4,13 @@
   "status": "COMPILED_CANDIDATE",
   "activation": "OFF",
   "counts": {
-    "ROUTER": 633,
+    "ROUTER": 640,
     "CONTROL_PLANE": 16,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
     "STANDARD_BLOCK": 0,
     "CONTEXT_BLOCK": 0,
-    "ATOMIC_SPECIALIST": 86,
+    "ATOMIC_SPECIALIST": 92,
     "COMPILED_AGENT_PACKAGE": 0
   },
   "entries": [
@@ -23638,6 +23638,90 @@
       "role_kind": "ROUTER"
     },
     {
+      "canonical_id": "inventory.domain-workflows.field-job-workflow",
+      "title": "Field Job Workflow",
+      "aliases": [],
+      "family": "domain-workflows",
+      "subfamily": "field-and-well-workflow",
+      "purpose": "Provide a narrow, evidence-bounded specialist route for the named responsibility.",
+      "triggers": [
+        "typed request names the responsibility",
+        "admitted context contains a matching capability signal"
+      ],
+      "exclusions": [
+        "unrelated work",
+        "authority invention",
+        "unsafe or irreversible action",
+        "consumer-project facts absent from typed context"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source or typed authority-corpus record",
+        "publisher, version, effective date, retrieved date, and immutable identity",
+        "content digest when obtainable"
+      ],
+      "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
+      "priority_score": "P5",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER"
+    },
+    {
+      "canonical_id": "inventory.domain-workflows.well-workflow",
+      "title": "Well Workflow",
+      "aliases": [],
+      "family": "domain-workflows",
+      "subfamily": "field-and-well-workflow",
+      "purpose": "Provide a narrow, evidence-bounded specialist route for the named responsibility.",
+      "triggers": [
+        "typed request names the responsibility",
+        "admitted context contains a matching capability signal"
+      ],
+      "exclusions": [
+        "unrelated work",
+        "authority invention",
+        "unsafe or irreversible action",
+        "consumer-project facts absent from typed context"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source or typed authority-corpus record",
+        "publisher, version, effective date, retrieved date, and immutable identity",
+        "content digest when obtainable"
+      ],
+      "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
+      "priority_score": "P5",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER"
+    },
+    {
       "canonical_id": "inventory.mathematics-formal-reasoning.mathematician",
       "title": "Mathematician",
       "aliases": [],
@@ -26340,6 +26424,78 @@
       "required_upstream_router": null
     },
     {
+      "canonical_id": "AI.SEARCH_RAG",
+      "title": "AI Search and Retrieval-Augmented Generation",
+      "aliases": [],
+      "family": "ai",
+      "subfamily": "atomic",
+      "purpose": "Analyze only AI Search and Retrieval-Augmented Generation under its version lock.",
+      "triggers": [
+        "upstream router selects AI.SEARCH_RAG"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.ai.search-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.search-rag.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.ai.search-router",
+      "block_id": "specialist.ai.search-rag",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "AI.SEARCH_ROUTER",
+      "title": "AI/Search/RAG Router",
+      "aliases": [],
+      "family": "ai",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for AI/Search/RAG Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.search-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.ai.search-router"
+    },
+    {
       "canonical_id": "ARCH.API_CONTRACTS",
       "title": "API Contracts",
       "aliases": [],
@@ -27333,6 +27489,115 @@
       "block_ids": []
     },
     {
+      "canonical_id": "DOMAIN.FIELD_JOB_WORKFLOW",
+      "title": "Field Job Workflow",
+      "aliases": [],
+      "family": "domain",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Field Job Workflow under its version lock.",
+      "triggers": [
+        "upstream router selects DOMAIN.FIELD_JOB_WORKFLOW"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.domain.workflow-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.field-job-workflow.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.domain.workflow-router",
+      "block_id": "specialist.domain.field-job-workflow",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "DOMAIN.WELL_WORKFLOW",
+      "title": "Well Workflow",
+      "aliases": [],
+      "family": "domain",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Well Workflow under its version lock.",
+      "triggers": [
+        "upstream router selects DOMAIN.WELL_WORKFLOW"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.domain.workflow-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.well-workflow.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.domain.workflow-router",
+      "block_id": "specialist.domain.well-workflow",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "DOMAIN.WORKFLOW_ROUTER",
+      "title": "Field and Well Workflow Router",
+      "aliases": [],
+      "family": "domain",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Field and Well Workflow Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.workflow-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.domain.workflow-router"
+    },
+    {
       "canonical_id": "EDGE.CLOUDFLARE_CACHE",
       "title": "Edge Cache",
       "aliases": [],
@@ -27852,6 +28117,78 @@
       ]
     },
     {
+      "canonical_id": "FIN.JOB_COST_ACCOUNTING",
+      "title": "Job-Cost Accounting",
+      "aliases": [],
+      "family": "finance",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Job-Cost Accounting under its version lock.",
+      "triggers": [
+        "upstream router selects FIN.JOB_COST_ACCOUNTING"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.finance.accounting-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.job-cost-accounting.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.finance.accounting-router",
+      "block_id": "specialist.finance.job-cost-accounting",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "FINANCE.ACCOUNTING_ROUTER",
+      "title": "Accounting and Job-Cost Router",
+      "aliases": [],
+      "family": "finance",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Accounting and Job-Cost Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.accounting-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.finance.accounting-router"
+    },
+    {
       "canonical_id": "FOUNDATION.AUTHORITY_JURISDICTION",
       "title": "Authority/Precedence/Jurisdiction Gate",
       "aliases": [],
@@ -28090,6 +28427,78 @@
       "required_upstream_router": null
     },
     {
+      "canonical_id": "GRAPHICS.INDUSTRIAL_3D",
+      "title": "Industrial 3D Asset Pipeline",
+      "aliases": [],
+      "family": "graphics",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Industrial 3D Asset Pipeline under its version lock.",
+      "triggers": [
+        "upstream router selects GRAPHICS.INDUSTRIAL_3D"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.graphics.industrial-3d-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.industrial-3d.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.graphics.industrial-3d-router",
+      "block_id": "specialist.graphics.industrial-3d",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "GRAPHICS.INDUSTRIAL_3D_ROUTER",
+      "title": "Industrial 3D Asset Router",
+      "aliases": [],
+      "family": "graphics",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Industrial 3D Asset Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.industrial-3d-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.graphics.industrial-3d-router"
+    },
+    {
       "canonical_id": "INTERNAL.SRE_OBSERVABILITY_ROUTER",
       "title": "Observability and Incident Router",
       "aliases": [],
@@ -28265,6 +28674,78 @@
       "required_upstream_router": "specialist.assurance-enterprise.router",
       "block_id": "specialist.assurance-enterprise.test-architect",
       "block_ids": []
+    },
+    {
+      "canonical_id": "REG.FMCSA_APPLICABILITY",
+      "title": "FMCSA Applicability",
+      "aliases": [],
+      "family": "regulatory",
+      "subfamily": "atomic",
+      "purpose": "Analyze only FMCSA Applicability under its version lock.",
+      "triggers": [
+        "upstream router selects REG.FMCSA_APPLICABILITY"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.regulatory.applicability-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.fmcsa-applicability.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.regulatory.applicability-router",
+      "block_id": "specialist.regulatory.fmcsa-applicability",
+      "block_ids": []
+    },
+    {
+      "canonical_id": "REGULATORY.APPLICABILITY_ROUTER",
+      "title": "Regulatory Applicability Router",
+      "aliases": [],
+      "family": "regulatory",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Regulatory Applicability Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.regulatory-applicability-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.regulatory.applicability-router"
     },
     {
       "canonical_id": "SEC.ACCESS_CONTROL_ABAC",
@@ -30257,14 +30738,14 @@
     }
   ],
   "typed_overlay_counts": {
-    "ROUTER": 14,
+    "ROUTER": 19,
     "CONTROL_PLANE": 16,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
     "STANDARD_BLOCK": 0,
     "CONTEXT_BLOCK": 0,
-    "ATOMIC_SPECIALIST": 86,
+    "ATOMIC_SPECIALIST": 92,
     "COMPILED_AGENT_PACKAGE": 0
   },
-  "inventory_sha256": "80cf4e2e22a583d6853f3734233c7b71c142a24dd6b6b3f31de71c7e58a41624"
+  "inventory_sha256": "dba276c6eba8b21d95b48f1463c5aee29fbc41169137a0b52ab9c3fd03a283d3"
 }

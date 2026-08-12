@@ -44,6 +44,11 @@ const sourceCatalog = {
   cloudflareDns: {source_id: "source.cloudflare-dns-records", title: "Cloudflare DNS Records", publisher: "Cloudflare", url: "https://developers.cloudflare.com/dns/manage-dns-records/", version: "current", effective_date: "2026-06-24", retrieved_date: SOURCE_DATE, immutable_identity: "cloudflare-dns-records-current-2026-06-24", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Cloudflare DNS record management semantics."},
   cloudflareCache: {source_id: "source.cloudflare-cache-rules", title: "Cloudflare Cache Rules", publisher: "Cloudflare", url: "https://developers.cloudflare.com/cache/how-to/cache-rules/", version: "current", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "cloudflare-cache-rules-current-2026-08-11", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Cloudflare cache-rule matching and behavior."},
   wcag22: {source_id: "source.w3c-wcag-2-2", title: "Web Content Accessibility Guidelines (WCAG) 2.2", publisher: "W3C", url: "https://www.w3.org/TR/2024/REC-WCAG22-20241212/", version: "2.2", effective_date: "2024-12-12", retrieved_date: SOURCE_DATE, immutable_identity: "w3c-wcag-2.2-recommendation-republished-20241212", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound web accessibility success criteria and conformance model; applicability and legal requirements remain external."},
+  nistAiRmf: {source_id: "source.nist-ai-100-1", title: "Artificial Intelligence Risk Management Framework (AI RMF 1.0)", publisher: "NIST", url: "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10", version: "1.0", effective_date: "2023-01-26", retrieved_date: SOURCE_DATE, immutable_identity: "nist-ai-100-1-ai-rmf-1.0-20230126", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Voluntary, cross-sector, use-case-agnostic AI risk-management framework; applicability and organizational decisions remain external."},
+  nistGenAi: {source_id: "source.nist-ai-600-1", title: "Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile", publisher: "NIST", url: "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf", version: "NIST AI 600-1", effective_date: "2024-07-26", retrieved_date: SOURCE_DATE, immutable_identity: "nist-ai-600-1-genai-profile-20240726", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound generative-AI risk-management profile; it does not certify a model, corpus, provider, or application."},
+  gltf: {source_id: "source.khronos-gltf-2-0-1", title: "glTF 2.0.1 Specification", publisher: "Khronos Group", url: "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html", version: "2.0.1", effective_date: "2023-07-29", retrieved_date: SOURCE_DATE, immutable_identity: "khronos-gltf-2.0.1-specification-20230729", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound runtime 3D asset delivery structure and semantics; no engineering, dimensional, or safety truth is inferred."},
+  fmcsaPart390: {source_id: "source.govinfo-cfr-title49-part390-2025", title: "49 CFR Part 390 — Federal Motor Carrier Safety Regulations, General Applicability and Definitions", publisher: "U.S. Department of Transportation / FMCSA", url: "https://www.govinfo.gov/content/pkg/CFR-2025-title49-vol5/pdf/CFR-2025-title49-vol5-part390.pdf", version: "2025-10-01", effective_date: "2025-10-01", retrieved_date: SOURCE_DATE, immutable_identity: "cfr-title49-vol5-part390-2025-10-01", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound federal motor-carrier applicability and definitions; jurisdiction, entity, activity, exceptions, and current law remain external."},
+  gaoGreenBook: {source_id: "source.gao-green-book-2025", title: "Standards for Internal Control in the Federal Government (2025 Green Book)", publisher: "U.S. Government Accountability Office", url: "https://www.gao.gov/greenbook", version: "2025", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "gao-green-book-2025-effective-fy2026", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound federal internal-control principles; it is not a universal GAAP/IFRS or licensed-accounting conclusion."},
 };
 
 const specs = [
@@ -410,6 +415,109 @@ const specs = [
       {requirement_id: "WCAG22.2.4.11", statement: "Map focus-visibility findings to the WCAG 2.2 Focus Not Obscured (Minimum) success criterion when the declared content scope applies.", source_ref: "WCAG22:2.4.11", evidence: "Keyboard/focus evidence and versioned criterion mapping."},
       {requirement_id: "WCAG22.2.5.8", statement: "Map pointer-target findings to the WCAG 2.2 Target Size (Minimum) success criterion when the declared content scope applies.", source_ref: "WCAG22:2.5.8", evidence: "Target-size evidence and versioned criterion mapping."},
       {requirement_id: "WCAG22.conformance", statement: "Evaluate conformance only against the WCAG 2.2 conformance requirements, full-page scope, and declared conformance level; never infer a certification claim.", source_ref: "WCAG22:5.2", evidence: "Conformance-level, full-page, alternate-version, and external applicability evidence."}
+    ]
+  },
+  {
+    slug: "nist-ai-rmf-1-0",
+    blockId: "specialist.standard.nist-ai-rmf-1-0",
+    title: "NIST Artificial Intelligence Risk Management Framework 1.0",
+    family: "ai-search",
+    priority: "P5",
+    standardIdentity: {publisher: "NIST", identifier: "NIST AI 100-1", edition: "1.0"},
+    source: sourceCatalog.nistAiRmf,
+    supersessionStatus: "CURRENT_FINAL;_REVISION_IN_PROGRESS_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["AI RMF", "AI risk management", "trustworthy AI", "model evaluation"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "ai.system_scope"],
+    applicabilityInputs: ["AI system lifecycle and use case", "risk-management purpose", "publisher/version/publication/effective/supersession status", "external applicability overlay"],
+    exceptions: ["AI RMF 1.0 is voluntary and use-case agnostic; it does not establish legal duties or certify an AI system.", "Sector-specific, provider-specific, model-specific, and regulatory requirements remain separate blocks."],
+    requirements: [
+      {requirement_id: "AI.RMF.1.0.GOVERN", statement: "Organize AI risk-management accountability, policies, and documentation under the exact AI RMF 1.0 Govern function when the external overlay selects this framework.", source_ref: "NIST.AI.100-1:Govern", evidence: "Declared AI system scope, responsibility record, and versioned source lock."},
+      {requirement_id: "AI.RMF.1.0.MAP", statement: "Map intended context, risks, impacts, and affected groups before advancing an AI system activity under the selected AI RMF scope.", source_ref: "NIST.AI.100-1:Map", evidence: "Typed use-case, risk, impact, and unknown ledger."},
+      {requirement_id: "AI.RMF.1.0.MEASURE-MANAGE", statement: "Keep measurement and risk-management evidence traceable to the declared AI system, evaluation purpose, and external authority overlay.", source_ref: "NIST.AI.100-1:Measure-Manage", evidence: "Evaluation receipt, residual-risk record, and exact applicability context."}
+    ]
+  },
+  {
+    slug: "nist-genai-profile-1-0",
+    blockId: "specialist.standard.nist-genai-profile-1-0",
+    title: "NIST Generative AI Profile NIST AI 600-1",
+    family: "ai-search",
+    priority: "P5",
+    standardIdentity: {publisher: "NIST", identifier: "NIST AI 600-1", edition: "NIST AI 600-1"},
+    source: sourceCatalog.nistGenAi,
+    supersessionStatus: "CURRENT_PROFILE_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["generative AI profile", "GenAI risk", "content provenance", "AI safety evaluation"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "ai.generative_system_scope"],
+    applicabilityInputs: ["generative-AI system and lifecycle scope", "selected risk-management purpose", "publisher/version/publication/effective/supersession status", "external applicability overlay"],
+    exceptions: ["The profile provides risk-management actions and does not certify truthfulness, safety, privacy, security, or legal compliance.", "Prompt, corpus, provider, model, and human-oversight controls remain distinct atomic blocks."],
+    requirements: [
+      {requirement_id: "NIST.AI.600-1.profile-scope", statement: "Bind generative-AI risk findings to the exact NIST AI 600-1 profile and declared system lifecycle scope.", source_ref: "NIST.AI.600-1:profile-scope", evidence: "System identity, lifecycle boundary, version, and source-lock receipt."},
+      {requirement_id: "NIST.AI.600-1.risk-actions", statement: "Map selected generative-AI risk actions to the profile and preserve the distinction between evidence, residual uncertainty, and organizational decision authority.", source_ref: "NIST.AI.600-1:risk-actions", evidence: "Requirement-level action mapping and unknown ledger."},
+      {requirement_id: "NIST.AI.600-1.provenance", statement: "Treat data, content, and output provenance as an evidence obligation rather than an inferred property of a model or retrieval system.", source_ref: "NIST.AI.600-1:provenance", evidence: "Provenance record or explicit missing-evidence receipt."}
+    ]
+  },
+  {
+    slug: "gltf-2-0-1",
+    blockId: "specialist.standard.gltf-2-0-1",
+    title: "Khronos glTF 2.0.1 Specification",
+    family: "3d-graphics",
+    priority: "P5",
+    standardIdentity: {publisher: "Khronos Group", identifier: "glTF Specification", edition: "2.0.1"},
+    source: sourceCatalog.gltf,
+    supersessionStatus: "CURRENT_PATCH_SPECIFICATION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["glTF", "GLB", "3D asset delivery", "PBR material", "runtime model"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "asset.scope"],
+    applicabilityInputs: ["asset format and runtime scope", "declared glTF version and extensions", "publisher/version/publication status", "external asset and engineering context"],
+    exceptions: ["glTF structure does not prove dimensional, engineering, physical, safety, or OEM truth.", "Blender, Three.js, WebGL, CAD, materials, and runtime performance concerns require separate authorities when implicated."],
+    requirements: [
+      {requirement_id: "GLTF.2.0.1.asset-structure", statement: "Bind asset-structure findings to the exact glTF 2.0.1 scene, node, mesh, material, accessor, buffer, and image semantics selected by the external overlay.", source_ref: "glTF.2.0.1:asset-structure", evidence: "Asset manifest, version, validator receipt, and source lock."},
+      {requirement_id: "GLTF.2.0.1.extensions", statement: "Record every selected extension and do not infer support or portability outside the declared runtime and extension evidence.", source_ref: "glTF.2.0.1:extensions", evidence: "Extension list, runtime support evidence, and unknown ledger."}
+    ]
+  },
+  {
+    slug: "fmcsa-part-390-2025",
+    blockId: "specialist.standard.fmcsa-part-390-2025",
+    title: "49 CFR Part 390 General Applicability and Definitions — 2025 Edition",
+    family: "regulatory",
+    priority: "P5",
+    standardIdentity: {publisher: "U.S. Department of Transportation / FMCSA", identifier: "49 CFR Part 390", edition: "2025-10-01"},
+    source: sourceCatalog.fmcsaPart390,
+    supersessionStatus: "CURRENT_PUBLISHED_EDITION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["FMCSA applicability", "49 CFR 390", "commercial motor vehicle", "motor carrier"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "transport.operation_scope", "exception_scope"],
+    applicabilityInputs: ["jurisdiction and commerce type", "entity/employer/driver/vehicle role", "transport activity and property/passenger scope", "part and section requested", "exceptions and effective edition", "external legal/applicability overlay"],
+    exceptions: ["This block maps a versioned federal source and never concludes that a law applies to a person, entity, vehicle, or activity.", "State adoption, variance, exemption, enforcement, and legal advice require separate current primary-source review."],
+    requirements: [
+      {requirement_id: "49CFR390.3.general-applicability", statement: "Map the declared operation to the exact 49 CFR 390.3 applicability language and preserve the interstate/intrastate, entity, and vehicle facts required by the source.", source_ref: "49CFR.390.3:general-applicability", evidence: "Jurisdiction, commerce, entity, activity, vehicle, and source-edition records."},
+      {requirement_id: "49CFR390.3.exceptions", statement: "Evaluate each asserted exception or exemption against the exact 49 CFR 390.3(f) text and record unresolved exceptions as UNKNOWN rather than inferring applicability.", source_ref: "49CFR.390.3(f):exceptions", evidence: "Exception identifier, facts, effective edition, and primary-source mapping."},
+      {requirement_id: "49CFR390.5.definitions", statement: "Use the exact 49 CFR 390.5 definitions for terms selected by the overlay and do not substitute a colloquial or provider-specific meaning.", source_ref: "49CFR.390.5:definitions", evidence: "Term-level mapping and current source identity."}
+    ]
+  },
+  {
+    slug: "gao-green-book-2025",
+    blockId: "specialist.standard.gao-green-book-2025",
+    title: "GAO Standards for Internal Control in the Federal Government — 2025 Green Book",
+    family: "finance",
+    priority: "P5",
+    standardIdentity: {publisher: "U.S. Government Accountability Office", identifier: "Standards for Internal Control in the Federal Government", edition: "2025"},
+    source: sourceCatalog.gaoGreenBook,
+    supersessionStatus: "CURRENT_2025_EDITION_EFFECTIVE_FY2026",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["Green Book", "internal control", "cost control", "financial evidence"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "control.objective_scope"],
+    applicabilityInputs: ["entity and control environment", "operations/reporting/compliance objective", "control activity and evidence scope", "publisher/version/effective status", "external accounting and applicability overlay"],
+    exceptions: ["The Green Book is federal internal-control guidance and does not by itself establish GAAP, IFRS, tax, contract, or licensed-accounting conclusions.", "Job-cost allocation methods, financial reporting, and segregation-of-duties decisions require entity-specific authority and professional review."],
+    requirements: [
+      {requirement_id: "GAO.GREENBOOK.2025.control-objectives", statement: "Tie internal-control evidence to a declared operation, reporting, or compliance objective and the exact 2025 Green Book edition.", source_ref: "GAO.GreenBook.2025:control-objectives", evidence: "Objective, control owner, evidence identity, and applicability receipt."},
+      {requirement_id: "GAO.GREENBOOK.2025.control-activities", statement: "Map preventive or detective control activities and data sources to the declared control objective without inferring operating effectiveness from design alone.", source_ref: "GAO.GreenBook.2025:control-activities", evidence: "Control description, operating evidence, exceptions, and unknown ledger."}
     ]
   }
 ];

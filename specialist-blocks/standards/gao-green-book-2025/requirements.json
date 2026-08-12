@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.gao-green-book-2025",
+  "standard_identity": {
+    "publisher": "U.S. Government Accountability Office",
+    "identifier": "Standards for Internal Control in the Federal Government",
+    "edition": "2025"
+  },
+  "requirements": [
+    {
+      "requirement_id": "GAO.GREENBOOK.2025.control-objectives",
+      "statement": "Tie internal-control evidence to a declared operation, reporting, or compliance objective and the exact 2025 Green Book edition.",
+      "source_ref": "GAO.GreenBook.2025:control-objectives",
+      "evidence": "Objective, control owner, evidence identity, and applicability receipt."
+    },
+    {
+      "requirement_id": "GAO.GREENBOOK.2025.control-activities",
+      "statement": "Map preventive or detective control activities and data sources to the declared control objective without inferring operating effectiveness from design alone.",
+      "source_ref": "GAO.GreenBook.2025:control-activities",
+      "evidence": "Control description, operating evidence, exceptions, and unknown ledger."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

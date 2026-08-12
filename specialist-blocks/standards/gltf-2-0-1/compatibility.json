@@ -1,0 +1,8 @@
+{
+  "schema": "agentos.specialist_standard_compatibility.v1",
+  "version": 1,
+  "block_id": "specialist.standard.gltf-2-0-1",
+  "current_edition": "2.0.1",
+  "compatible_predecessors": [],
+  "rule": "No predecessor is silently interchangeable; add an explicit mapping for every material change."
+}

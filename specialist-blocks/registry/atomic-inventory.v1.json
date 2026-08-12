@@ -42,6 +42,16 @@
   },
   "routers": [
     {
+      "generic_id": "AI.SEARCH_ROUTER",
+      "title": "AI/Search/RAG Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "block_id": "specialist.ai.search-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.search-router.v1"
+    },
+    {
       "generic_id": "ARCH.PRODUCT_CLIENT_ROUTER",
       "block_id": "specialist.product-client.router",
       "title": "Product and Client Contract Router",
@@ -72,6 +82,16 @@
       "evaluator_receipt": "specialist-eval.data-router.v1"
     },
     {
+      "generic_id": "DOMAIN.WORKFLOW_ROUTER",
+      "title": "Field and Well Workflow Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "block_id": "specialist.domain.workflow-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.workflow-router.v1"
+    },
+    {
       "generic_id": "ENG.LANGUAGE_RUNTIME_ROUTER",
       "block_id": "specialist.software-language-runtime.router",
       "title": "Software Language and Runtime Router",
@@ -80,6 +100,26 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1"
+    },
+    {
+      "generic_id": "FINANCE.ACCOUNTING_ROUTER",
+      "title": "Accounting and Job-Cost Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "block_id": "specialist.finance.accounting-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.accounting-router.v1"
+    },
+    {
+      "generic_id": "GRAPHICS.INDUSTRIAL_3D_ROUTER",
+      "title": "Industrial 3D Asset Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "block_id": "specialist.graphics.industrial-3d-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.industrial-3d-router.v1"
     },
     {
       "generic_id": "INTERNAL.SRE_OBSERVABILITY_ROUTER",
@@ -120,6 +160,16 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.assurance-enterprise-router.v1"
+    },
+    {
+      "generic_id": "REGULATORY.APPLICABILITY_ROUTER",
+      "title": "Regulatory Applicability Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "block_id": "specialist.regulatory.applicability-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.regulatory-applicability-router.v1"
     },
     {
       "generic_id": "SEC.OWASP_API_TOP10",
@@ -274,6 +324,16 @@
     }
   ],
   "atomic_specialists": [
+    {
+      "generic_id": "AI.SEARCH_RAG",
+      "title": "AI Search and Retrieval-Augmented Generation",
+      "version": "1.0.0",
+      "router": "specialist.ai.search-router",
+      "block_id": "specialist.ai.search-rag",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.search-rag.v1"
+    },
     {
       "generic_id": "ARCH.API_CONTRACTS",
       "title": "API Contracts",
@@ -447,6 +507,26 @@
       "evaluator_receipt": "specialist-eval.postgresql-rls.v1"
     },
     {
+      "generic_id": "DOMAIN.FIELD_JOB_WORKFLOW",
+      "title": "Field Job Workflow",
+      "version": "1.0.0",
+      "router": "specialist.domain.workflow-router",
+      "block_id": "specialist.domain.field-job-workflow",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.field-job-workflow.v1"
+    },
+    {
+      "generic_id": "DOMAIN.WELL_WORKFLOW",
+      "title": "Well Workflow",
+      "version": "1.0.0",
+      "router": "specialist.domain.workflow-router",
+      "block_id": "specialist.domain.well-workflow",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.well-workflow.v1"
+    },
+    {
       "generic_id": "EDGE.CLOUDFLARE_CACHE",
       "title": "Edge Cache",
       "version": "provider-bound",
@@ -544,6 +624,26 @@
       "evaluator_receipt": "specialist-eval.typescript-language.v1;specialist-eval.react-components.v1"
     },
     {
+      "generic_id": "FIN.JOB_COST_ACCOUNTING",
+      "title": "Job-Cost Accounting",
+      "version": "1.0.0",
+      "router": "specialist.finance.accounting-router",
+      "block_id": "specialist.finance.job-cost-accounting",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.job-cost-accounting.v1"
+    },
+    {
+      "generic_id": "GRAPHICS.INDUSTRIAL_3D",
+      "title": "Industrial 3D Asset Pipeline",
+      "version": "1.0.0",
+      "router": "specialist.graphics.industrial-3d-router",
+      "block_id": "specialist.graphics.industrial-3d",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.industrial-3d.v1"
+    },
+    {
       "generic_id": "QA.TEST_ARCHITECT",
       "title": "Test Architecture",
       "version": "1.0.0",
@@ -552,6 +652,16 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.test-architect.v1"
+    },
+    {
+      "generic_id": "REG.FMCSA_APPLICABILITY",
+      "title": "FMCSA Applicability",
+      "version": "1.0.0",
+      "router": "specialist.regulatory.applicability-router",
+      "block_id": "specialist.regulatory.fmcsa-applicability",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.fmcsa-applicability.v1"
     },
     {
       "generic_id": "SEC.ACCESS_CONTROL_ABAC",
@@ -1026,8 +1136,8 @@
     }
   ],
   "counts": {
-    "ROUTER": 14,
-    "ATOMIC_SPECIALIST": 86,
+    "ROUTER": 19,
+    "ATOMIC_SPECIALIST": 92,
     "CONTROL_PLANE": 16
   },
   "evaluator_failure_classes": [

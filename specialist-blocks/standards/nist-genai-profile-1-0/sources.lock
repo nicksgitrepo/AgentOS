@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.nist-genai-profile-1-0",
+  "sources": [
+    {
+      "source_id": "source.nist-ai-600-1",
+      "title": "Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile",
+      "publisher": "NIST",
+      "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf",
+      "version": "NIST AI 600-1",
+      "effective_date": "2024-07-26",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "nist-ai-600-1-genai-profile-20240726",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound generative-AI risk-management profile; it does not certify a model, corpus, provider, or application."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "dda0193d128f81073d1d0dd381cff5138f9d04f6a45e8166400b0784b45383d1"
+}

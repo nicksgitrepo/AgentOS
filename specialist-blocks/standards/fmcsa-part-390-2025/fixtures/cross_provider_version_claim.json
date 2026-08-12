@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.fmcsa-part-390-2025",
+  "class": "cross_provider_version_claim",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for cross_provider_version_claim; standard applicability and requirement evidence remain external."
+}

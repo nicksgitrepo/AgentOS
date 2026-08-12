@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.gltf-2-0-1",
+  "standard_identity": {
+    "publisher": "Khronos Group",
+    "identifier": "glTF Specification",
+    "edition": "2.0.1"
+  },
+  "requirements": [
+    {
+      "requirement_id": "GLTF.2.0.1.asset-structure",
+      "statement": "Bind asset-structure findings to the exact glTF 2.0.1 scene, node, mesh, material, accessor, buffer, and image semantics selected by the external overlay.",
+      "source_ref": "glTF.2.0.1:asset-structure",
+      "evidence": "Asset manifest, version, validator receipt, and source lock."
+    },
+    {
+      "requirement_id": "GLTF.2.0.1.extensions",
+      "statement": "Record every selected extension and do not infer support or portability outside the declared runtime and extension evidence.",
+      "source_ref": "glTF.2.0.1:extensions",
+      "evidence": "Extension list, runtime support evidence, and unknown ledger."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

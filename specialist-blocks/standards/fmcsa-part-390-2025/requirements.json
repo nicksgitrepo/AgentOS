@@ -1,0 +1,32 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.fmcsa-part-390-2025",
+  "standard_identity": {
+    "publisher": "U.S. Department of Transportation / FMCSA",
+    "identifier": "49 CFR Part 390",
+    "edition": "2025-10-01"
+  },
+  "requirements": [
+    {
+      "requirement_id": "49CFR390.3.general-applicability",
+      "statement": "Map the declared operation to the exact 49 CFR 390.3 applicability language and preserve the interstate/intrastate, entity, and vehicle facts required by the source.",
+      "source_ref": "49CFR.390.3:general-applicability",
+      "evidence": "Jurisdiction, commerce, entity, activity, vehicle, and source-edition records."
+    },
+    {
+      "requirement_id": "49CFR390.3.exceptions",
+      "statement": "Evaluate each asserted exception or exemption against the exact 49 CFR 390.3(f) text and record unresolved exceptions as UNKNOWN rather than inferring applicability.",
+      "source_ref": "49CFR.390.3(f):exceptions",
+      "evidence": "Exception identifier, facts, effective edition, and primary-source mapping."
+    },
+    {
+      "requirement_id": "49CFR390.5.definitions",
+      "statement": "Use the exact 49 CFR 390.5 definitions for terms selected by the overlay and do not substitute a colloquial or provider-specific meaning.",
+      "source_ref": "49CFR.390.5:definitions",
+      "evidence": "Term-level mapping and current source identity."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

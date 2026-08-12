@@ -4,6 +4,79 @@
   "status": "COMPILED_CANDIDATE",
   "routes": [
     {
+      "route_id": "route.ai.search-rag",
+      "family": "ai-search",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "AI.SEARCH_RAG",
+        "RAG",
+        "citation",
+        "permission filtering",
+        "ranking",
+        "retrieval",
+        "search relevance"
+      ],
+      "required_context": [
+        "ai.system_scope",
+        "authority",
+        "candidate.identity",
+        "corpus.authority",
+        "corpus.scope",
+        "custody",
+        "request",
+        "retrieval.evaluation",
+        "retrieval.task",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.ai.search-rag"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved jurisdiction, platform, provider, standard, or version",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.ai.search-router",
+      "family": "ai-search",
+      "role_kind": "ROUTER",
+      "signals": [
+        "AI.SEARCH_RAG",
+        "RAG",
+        "citation",
+        "ranking",
+        "retrieval",
+        "search"
+      ],
+      "required_context": [
+        "ai.system_scope",
+        "authority",
+        "candidate.identity",
+        "corpus.scope",
+        "custody",
+        "request",
+        "retrieval.task",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.ai.search-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
       "route_id": "route.assurance-enterprise.router",
       "family": "assurance-enterprise",
       "role_kind": "ROUTER",
@@ -511,6 +584,184 @@
       "priority": 3
     },
     {
+      "route_id": "route.domain.field-job-workflow",
+      "family": "domain",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "DOMAIN.FIELD_JOB_WORKFLOW",
+        "field job workflow",
+        "field task",
+        "job phase"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "workflow.dependencies",
+        "workflow.domain",
+        "workflow.phase",
+        "workflow.task"
+      ],
+      "select": [
+        "specialist.domain.field-job-workflow"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved jurisdiction, platform, provider, standard, or version",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.domain.well-workflow",
+      "family": "domain",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "DOMAIN.WELL_WORKFLOW",
+        "completion",
+        "drilling phase",
+        "servicing",
+        "well workflow",
+        "workover"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "workflow.domain",
+        "workflow.operation_scope",
+        "workflow.phase",
+        "workflow.task"
+      ],
+      "select": [
+        "specialist.domain.well-workflow"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved jurisdiction, platform, provider, standard, or version",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.domain.workflow-router",
+      "family": "domain",
+      "role_kind": "ROUTER",
+      "signals": [
+        "DOMAIN.FIELD_JOB_WORKFLOW",
+        "DOMAIN.WELL_WORKFLOW",
+        "field job workflow",
+        "job phase",
+        "well workflow"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "workflow.domain",
+        "workflow.phase",
+        "workflow.task"
+      ],
+      "select": [
+        "specialist.domain.workflow-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.finance.accounting-router",
+      "family": "finance",
+      "role_kind": "ROUTER",
+      "signals": [
+        "FIN.JOB_COST_ACCOUNTING",
+        "cost allocation",
+        "cost center",
+        "job cost accounting",
+        "managerial costing"
+      ],
+      "required_context": [
+        "accounting.entity",
+        "accounting.objective",
+        "accounting.period",
+        "accounting.policy",
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.finance.accounting-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.finance.job-cost-accounting",
+      "family": "finance",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "FIN.JOB_COST_ACCOUNTING",
+        "cost allocation",
+        "cost center",
+        "cost object",
+        "job cost accounting",
+        "managerial costing"
+      ],
+      "required_context": [
+        "accounting.cost_object",
+        "accounting.entity",
+        "accounting.evidence",
+        "accounting.objective",
+        "accounting.period",
+        "accounting.policy",
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.finance.job-cost-accounting"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved jurisdiction, platform, provider, standard, or version",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
       "route_id": "route.foundation.authority-jurisdiction-gate",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -697,6 +948,76 @@
         "unsafe action"
       ],
       "priority": 0
+    },
+    {
+      "route_id": "route.graphics.industrial-3d",
+      "family": "graphics",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "GLB",
+        "GRAPHICS.INDUSTRIAL_3D",
+        "asset pipeline",
+        "gltf",
+        "industrial 3D"
+      ],
+      "required_context": [
+        "asset.domain",
+        "asset.evidence",
+        "asset.format",
+        "asset.identity",
+        "asset.stage",
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.graphics.industrial-3d"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved jurisdiction, platform, provider, standard, or version",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.graphics.industrial-3d-router",
+      "family": "graphics",
+      "role_kind": "ROUTER",
+      "signals": [
+        "CAD asset",
+        "GLB",
+        "GRAPHICS.INDUSTRIAL_3D",
+        "gltf asset",
+        "industrial 3D"
+      ],
+      "required_context": [
+        "asset.domain",
+        "asset.identity",
+        "asset.stage",
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.graphics.industrial-3d-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 5
     },
     {
       "route_id": "route.platform.aws-iam-policy",
@@ -1111,6 +1432,77 @@
         "unsafe action"
       ],
       "priority": 1
+    },
+    {
+      "route_id": "route.regulatory.applicability-router",
+      "family": "regulatory",
+      "role_kind": "ROUTER",
+      "signals": [
+        "49 CFR Part 390",
+        "FMCSA",
+        "REG.FMCSA_APPLICABILITY",
+        "regulatory applicability"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "regulation.activity",
+        "regulation.entity",
+        "regulation.jurisdiction",
+        "regulation.version",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.regulatory.applicability-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.regulatory.fmcsa-applicability",
+      "family": "regulatory",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "49 CFR 390.3",
+        "49 CFR 390.5",
+        "FMCSA applicability",
+        "REG.FMCSA_APPLICABILITY"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "regulation.activity",
+        "regulation.commerce",
+        "regulation.entity",
+        "regulation.exception",
+        "regulation.jurisdiction",
+        "regulation.vehicle",
+        "regulation.version",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.regulatory.fmcsa-applicability"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved jurisdiction, platform, provider, standard, or version",
+        "unsafe action"
+      ],
+      "priority": 5
     },
     {
       "route_id": "route.security.abac",
@@ -2889,6 +3281,163 @@
       "priority": 3
     },
     {
+      "route_id": "route.standard.fmcsa-part-390-2025",
+      "family": "regulatory",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "49 CFR 390",
+        "FMCSA applicability",
+        "commercial motor vehicle",
+        "motor carrier"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "exception_scope",
+        "jurisdiction",
+        "standard_version",
+        "transport.operation_scope"
+      ],
+      "select": [
+        "specialist.standard.fmcsa-part-390-2025"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.standard.gao-green-book-2025",
+      "family": "finance",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "Green Book",
+        "cost control",
+        "financial evidence",
+        "internal control"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "control.objective_scope",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.gao-green-book-2025"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.standard.gltf-2-0-1",
+      "family": "3d-graphics",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "3D asset delivery",
+        "GLB",
+        "PBR material",
+        "glTF",
+        "runtime model"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "asset.scope",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.gltf-2-0-1"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.standard.nist-ai-rmf-1-0",
+      "family": "ai-search",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "AI RMF",
+        "AI risk management",
+        "model evaluation",
+        "trustworthy AI"
+      ],
+      "required_context": [
+        "activity",
+        "ai.system_scope",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.nist-ai-rmf-1-0"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 5
+    },
+    {
+      "route_id": "route.standard.nist-genai-profile-1-0",
+      "family": "ai-search",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "AI safety evaluation",
+        "GenAI risk",
+        "content provenance",
+        "generative AI profile"
+      ],
+      "required_context": [
+        "activity",
+        "ai.generative_system_scope",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.nist-genai-profile-1-0"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 5
+    },
+    {
       "route_id": "route.standard.nist-ssdf",
       "family": "security",
       "role_kind": "STANDARD_BLOCK",
@@ -3285,5 +3834,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "fcc31e1b995377fd680b295c2b7e84415f85c61991bcd85f3806c11359d8a53f"
+  "routing_sha256": "ea4fb1ab7c22de2cb149f37607a7026f00b09c861899b4bfc6e10c5a9e1828d1"
 }

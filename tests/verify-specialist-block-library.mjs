@@ -26,25 +26,25 @@ const second = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: f
 assert.deepEqual(first.roster, second.roster, "specialist roster compilation is not deterministic");
 assert.deepEqual(first.routing, second.routing, "specialist routing compilation is not deterministic");
 assert.deepEqual(first.inventory, second.inventory, "specialist inventory materialization is not deterministic");
-assert.equal(first.records.length, 107, "foundation, reusable standard, P0, P1, P2, P3, and P4 package count is wrong");
+assert.equal(first.records.length, 123, "foundation, reusable standard, P0, P1, P2, P3, P4, and P5 package count is wrong");
 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
-assert.equal(taskCompilerCatalog.length, 107, "task-shaped compiler catalog must load every compiled candidate package");
-assert.equal(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 18);
-assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.aws-iam-current", "specialist.standard.cloudflare-cache-current", "specialist.standard.cloudflare-dns-current", "specialist.standard.conventional-commits-1-0-0", "specialist.standard.nist-ssdf", "specialist.standard.oauth-rfc-9700", "specialist.standard.oidc-core-1-0", "specialist.standard.openapi-3-1-1", "specialist.standard.owasp-api-top10-2023", "specialist.standard.owasp-asvs", "specialist.standard.owasp-top10-2025", "specialist.standard.postgresql-17-rls", "specialist.standard.react-19-2", "specialist.standard.rust-reference", "specialist.standard.semantic-versioning-2-0-0", "specialist.standard.slsa", "specialist.standard.typescript-5-9", "specialist.standard.wcag-2-2"]);
+assert.equal(taskCompilerCatalog.length, 123, "task-shaped compiler catalog must load every compiled candidate package");
+assert.equal(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
+assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.aws-iam-current", "specialist.standard.cloudflare-cache-current", "specialist.standard.cloudflare-dns-current", "specialist.standard.conventional-commits-1-0-0", "specialist.standard.fmcsa-part-390-2025", "specialist.standard.gao-green-book-2025", "specialist.standard.gltf-2-0-1", "specialist.standard.nist-ai-rmf-1-0", "specialist.standard.nist-genai-profile-1-0", "specialist.standard.nist-ssdf", "specialist.standard.oauth-rfc-9700", "specialist.standard.oidc-core-1-0", "specialist.standard.openapi-3-1-1", "specialist.standard.owasp-api-top10-2023", "specialist.standard.owasp-asvs", "specialist.standard.owasp-top10-2025", "specialist.standard.postgresql-17-rls", "specialist.standard.react-19-2", "specialist.standard.rust-reference", "specialist.standard.semantic-versioning-2-0-0", "specialist.standard.slsa", "specialist.standard.typescript-5-9", "specialist.standard.wcag-2-2"]);
 assert(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").every((block) => block.standard_identity && /^[0-9a-f]{64}$/u.test(block.source_lock_digest)), "loaded standard blocks must retain exact reuse and source-lock identities");
 assert.equal(library.roster.activation, "OFF");
 assert.equal(library.roster.lifecycle ?? "NOT_ADMITTED", "NOT_ADMITTED");
 assert.equal(library.roster.blocks.every((block) => block.lifecycle === "NOT_ADMITTED" && block.activation === "OFF"), true);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "CONTROL_PLANE").length, 16);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 18);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ROUTER").length, 14);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST").length, 59);
-assert.deepEqual(library.inventory.counts, {ROUTER: 633, CONTROL_PLANE: 16, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 86, COMPILED_AGENT_PACKAGE: 0});
-assert.equal(library.inventory.entries.length, 619);
-assert.equal(library.inventory.typed_overlay_entries.length, 116, "typed router/atomic/control overlay must be inspectable alongside the 619-title backlog");
-assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 14, CONTROL_PLANE: 16, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 86, COMPILED_AGENT_PACKAGE: 0});
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ROUTER").length, 19);
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST").length, 65);
+assert.deepEqual(library.inventory.counts, {ROUTER: 640, CONTROL_PLANE: 16, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 92, COMPILED_AGENT_PACKAGE: 0});
+assert.equal(library.inventory.entries.length, 621);
+assert.equal(library.inventory.typed_overlay_entries.length, 127, "typed router/atomic/control overlay must be inspectable alongside the expanded backlog");
+assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 19, CONTROL_PLANE: 16, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 92, COMPILED_AGENT_PACKAGE: 0});
 
 for (const record of first.records) {
   const packageDir = record.packageDir;
@@ -191,11 +191,63 @@ assert.equal(p4DesktopRoute.status, "ROUTE");
 assert.deepEqual(p4DesktopRoute.selected, ["specialist.product-client.desktop-offline-realtime-router"]);
 assert.deepEqual(validateAtomicSelection({library, selected: p4DesktopRoute.selected}).status, "PASS");
 
-assert.deepEqual(overlay.counts, {ROUTER: 14, ATOMIC_SPECIALIST: 86, CONTROL_PLANE: 16});
+const p5BlockIds = [
+  "specialist.domain.workflow-router",
+  "specialist.domain.field-job-workflow",
+  "specialist.domain.well-workflow",
+  "specialist.graphics.industrial-3d-router",
+  "specialist.graphics.industrial-3d",
+  "specialist.ai.search-router",
+  "specialist.ai.search-rag",
+  "specialist.regulatory.applicability-router",
+  "specialist.regulatory.fmcsa-applicability",
+  "specialist.finance.accounting-router",
+  "specialist.finance.job-cost-accounting",
+];
+assert(p5BlockIds.every((blockId) => taskCompilerCatalog.some((block) => block.block_id === blockId)), "P5 domain/AI/3D/regulatory/finance candidates must be packaged");
+const p5Atoms = p5BlockIds.filter((blockId) => !blockId.endsWith("router")).map((blockId) => taskCompilerCatalog.find((block) => block.block_id === blockId));
+assert(p5Atoms.every((block) => block.role_kind === "ATOMIC_SPECIALIST" && block.required_upstream_router), "P5 atomic candidates must bind to upstream routers");
+assert(taskCompilerCatalog.find((block) => block.block_id === "specialist.graphics.industrial-3d")?.dependencies.includes("specialist.standard.gltf-2-0-1"));
+assert(taskCompilerCatalog.find((block) => block.block_id === "specialist.ai.search-rag")?.dependencies.includes("specialist.standard.nist-ai-rmf-1-0"));
+assert(taskCompilerCatalog.find((block) => block.block_id === "specialist.ai.search-rag")?.dependencies.includes("specialist.standard.nist-genai-profile-1-0"));
+assert(taskCompilerCatalog.find((block) => block.block_id === "specialist.regulatory.fmcsa-applicability")?.dependencies.includes("specialist.standard.fmcsa-part-390-2025"));
+assert(taskCompilerCatalog.find((block) => block.block_id === "specialist.finance.job-cost-accounting")?.dependencies.includes("specialist.standard.gao-green-book-2025"));
+const fieldRoute = routeSpecialists({library, signals: ["DOMAIN.FIELD_JOB_WORKFLOW"], context: {request: "typed", signals: ["DOMAIN.FIELD_JOB_WORKFLOW"], authority: "bound", source_lock: "fresh", custody: "bound", candidate: {identity: "candidate"}, workflow: {domain: "declared", phase: "declared", task: "declared", dependencies: "declared"}}});
+assert.equal(fieldRoute.status, "ROUTE");
+assert.deepEqual(fieldRoute.selected, ["specialist.domain.field-job-workflow", "specialist.domain.workflow-router"]);
+assert.deepEqual(validateAtomicSelection({library, selected: fieldRoute.selected}).status, "PASS");
+const wellRoute = routeSpecialists({library, signals: ["DOMAIN.WELL_WORKFLOW"], context: {request: "typed", signals: ["DOMAIN.WELL_WORKFLOW"], authority: "bound", source_lock: "fresh", custody: "bound", candidate: {identity: "candidate"}, workflow: {domain: "declared", phase: "declared", task: "declared", operation_scope: "declared"}}});
+assert.equal(wellRoute.status, "ROUTE");
+assert.deepEqual(wellRoute.selected, ["specialist.domain.well-workflow", "specialist.domain.workflow-router"]);
+assert.deepEqual(validateAtomicSelection({library, selected: wellRoute.selected}).status, "PASS");
+const industrialRoute = routeSpecialists({library, signals: ["GRAPHICS.INDUSTRIAL_3D"], context: {request: "typed", signals: ["GRAPHICS.INDUSTRIAL_3D"], authority: "bound", source_lock: "fresh", custody: "bound", candidate: {identity: "candidate"}, asset: {domain: "declared", stage: "declared", identity: "declared", format: "declared", evidence: "declared"}}});
+assert.equal(industrialRoute.status, "ROUTE");
+assert.deepEqual(industrialRoute.selected, ["specialist.graphics.industrial-3d", "specialist.graphics.industrial-3d-router"]);
+assert.deepEqual(validateAtomicSelection({library, selected: industrialRoute.selected}).status, "PASS");
+const searchRoute = routeSpecialists({library, signals: ["AI.SEARCH_RAG"], context: {request: "typed", signals: ["AI.SEARCH_RAG"], authority: "bound", source_lock: "fresh", custody: "bound", candidate: {identity: "candidate"}, ai: {system_scope: "declared"}, corpus: {scope: "declared", authority: "declared"}, retrieval: {task: "declared", evaluation: "declared"}}});
+assert.equal(searchRoute.status, "ROUTE");
+assert.deepEqual(searchRoute.selected, ["specialist.ai.search-rag", "specialist.ai.search-router"]);
+assert.deepEqual(validateAtomicSelection({library, selected: searchRoute.selected}).status, "PASS");
+const fmcsaRoute = routeSpecialists({library, signals: ["REG.FMCSA_APPLICABILITY"], context: {request: "typed", signals: ["REG.FMCSA_APPLICABILITY"], authority: "bound", source_lock: "fresh", custody: "bound", candidate: {identity: "candidate"}, regulation: {jurisdiction: "declared", entity: "declared", activity: "declared", commerce: "declared", vehicle: "declared", exception: "declared", version: "declared"}}});
+assert.equal(fmcsaRoute.status, "ROUTE");
+assert.deepEqual(fmcsaRoute.selected, ["specialist.regulatory.applicability-router", "specialist.regulatory.fmcsa-applicability"]);
+assert.deepEqual(validateAtomicSelection({library, selected: fmcsaRoute.selected}).status, "PASS");
+const costRoute = routeSpecialists({library, signals: ["FIN.JOB_COST_ACCOUNTING"], context: {request: "typed", signals: ["FIN.JOB_COST_ACCOUNTING"], authority: "bound", source_lock: "fresh", custody: "bound", candidate: {identity: "candidate"}, accounting: {entity: "declared", objective: "declared", period: "declared", cost_object: "declared", policy: "declared", evidence: "declared"}}});
+assert.equal(costRoute.status, "ROUTE");
+assert.deepEqual(costRoute.selected, ["specialist.finance.accounting-router", "specialist.finance.job-cost-accounting"]);
+assert.deepEqual(validateAtomicSelection({library, selected: costRoute.selected}).status, "PASS");
+
+assert.deepEqual(overlay.counts, {ROUTER: 19, ATOMIC_SPECIALIST: 92, CONTROL_PLANE: 16});
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "SEC.OWASP_API_2023_OBJECT_AUTHORIZATION"), true);
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "SEC.ACCESS_CONTROL_TENANT_ISOLATION"), true);
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "EDGE.CLOUDFLARE_ZERO_TRUST"), true);
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "UX.ACCESSIBILITY_WCAG"), true);
 assert.equal(overlay.routers.some((item) => item.generic_id === "CLIENT.DESKTOP_OFFLINE_REALTIME"), true);
+assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "DOMAIN.FIELD_JOB_WORKFLOW"), true);
+assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "DOMAIN.WELL_WORKFLOW"), true);
+assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "GRAPHICS.INDUSTRIAL_3D"), true);
+assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "AI.SEARCH_RAG"), true);
+assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "REG.FMCSA_APPLICABILITY"), true);
+assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "FIN.JOB_COST_ACCOUNTING"), true);
 
-console.log("PASS specialist block library: deterministic foundation/standard/P0/P1/P2/P3/P4 compile, inactive roster, reusable standard digests, 12-gate four-valued semantics, atomic routing, hostile fixture coverage, and exact overlay counts");
+console.log("PASS specialist block library: deterministic foundation/standard/P0/P1/P2/P3/P4/P5 compile, inactive roster, reusable standard digests, 12-gate four-valued semantics, atomic routing, hostile fixture coverage, and exact overlay counts");

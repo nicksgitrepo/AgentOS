@@ -5,6 +5,127 @@
   "governance_version": "2.1rc",
   "blocks": [
     {
+      "block_id": "specialist.ai.search-rag",
+      "candidate_digest": "c661430c0f7b9da3c833a914f9f3cb1d4b4e9fe3d02303dc6b3db9447eb2a3ce",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: AI Search and Retrieval-Augmented Generation; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named P5 concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.ai.search-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "ai-search",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.nist-ai-100-1",
+        "source.nist-ai-600-1"
+      ],
+      "dependencies": [
+        "specialist.ai.search-router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.standard.nist-ai-rmf-1-0",
+        "specialist.standard.nist-genai-profile-1-0"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.search-rag.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.ai.search-router",
+      "candidate_digest": "b119617edb8698d041d2cb788b71e8faf54794227bf386f45b0dffbd61b22ac2",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for AI/Search/RAG Router; it has no Product, operational, legal, financial, engineering, or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named P5 signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with declared foundation controls",
+        "never substitute for an atomic specialist",
+        "split the five P5 authority/failure domains when evidenced"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "ai-search",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.nist-ai-100-1",
+        "source.nist-ai-600-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.search-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.assurance-enterprise.router",
       "candidate_digest": "78505abdafbc6791cd20465d7fde05cc178f334a148d8ecffc68bbb05690331b",
       "role_kind": "ROUTER",
@@ -954,6 +1075,304 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.domain.field-job-workflow",
+      "candidate_digest": "d67ada3b085af8ceb93454d33830c15de9879b71ce1bb7be2a4097827071c814",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Field Job Workflow; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named P5 concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.domain.workflow-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "domain",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.osha-oil-gas-site-preparation",
+        "source.osha-oil-gas-well-etool"
+      ],
+      "dependencies": [
+        "specialist.domain.workflow-router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.field-job-workflow.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.domain.well-workflow",
+      "candidate_digest": "08a309b31add1454c2c09b4da951a37c292f9712af33813dfda172aed3a936ea",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Well Workflow; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named P5 concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.domain.workflow-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "domain",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.osha-oil-gas-well-etool"
+      ],
+      "dependencies": [
+        "specialist.domain.workflow-router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.well-workflow.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.domain.workflow-router",
+      "candidate_digest": "d7ecb00de4a5baf1b4fcfd46968e43bae82567dfd630baf02af45620e1f00d79",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Field and Well Workflow Router; it has no Product, operational, legal, financial, engineering, or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named P5 signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with declared foundation controls",
+        "never substitute for an atomic specialist",
+        "split the five P5 authority/failure domains when evidenced"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "domain",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.osha-oil-gas-site-preparation",
+        "source.osha-oil-gas-well-etool"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.workflow-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.finance.accounting-router",
+      "candidate_digest": "af27765b4ebf4bca3d460f40ded0b231764b67b25ef23398e842a69f3afca0af",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Accounting and Job-Cost Router; it has no Product, operational, legal, financial, engineering, or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named P5 signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with declared foundation controls",
+        "never substitute for an atomic specialist",
+        "split the five P5 authority/failure domains when evidenced"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "finance",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.gao-green-book-2025",
+        "source.irs-managerial-costing-2024"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.accounting-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.finance.job-cost-accounting",
+      "candidate_digest": "6c91c1f4aa2034f2a54df232cbfb0a6caf8bd8d4f357fd8591d7090cc1be577f",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Job-Cost Accounting; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named P5 concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.finance.accounting-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "finance",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.gao-green-book-2025",
+        "source.irs-managerial-costing-2024"
+      ],
+      "dependencies": [
+        "specialist.finance.accounting-router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.standard.gao-green-book-2025"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.job-cost-accounting.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.foundation.authority-jurisdiction-gate",
       "candidate_digest": "710415cebb2f139c9bf4f836c011e902b61bcbf646d28e22af3181460ec5fe13",
       "role_kind": "CONTROL_PLANE",
@@ -1309,6 +1728,124 @@
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "evaluator_receipt": "specialist-eval.tool-custody-gate.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.graphics.industrial-3d",
+      "candidate_digest": "be373a1b2f2aecc4a9681a3c9bda6a98c4950da484feea6f5e7aabbf8f48cf70",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Industrial 3D Asset Pipeline; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named P5 concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.graphics.industrial-3d-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "graphics",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.blender-gltf-2-0-manual"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.graphics.industrial-3d-router",
+        "specialist.standard.gltf-2-0-1"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.industrial-3d.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.graphics.industrial-3d-router",
+      "candidate_digest": "d1d3ce94e7c58178825521e84b6d37fab52e94174007821f3f1947d113f9deb5",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Industrial 3D Asset Router; it has no Product, operational, legal, financial, engineering, or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named P5 signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with declared foundation controls",
+        "never substitute for an atomic specialist",
+        "split the five P5 authority/failure domains when evidenced"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "graphics",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.blender-gltf-2-0-manual"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.industrial-3d-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -2058,6 +2595,124 @@
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "evaluator_receipt": "specialist-eval.product-client-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.regulatory.applicability-router",
+      "candidate_digest": "6fa79f0afe0c30e57d4f44d506a9f4ca16169ff1888a60a5793bb960c64b5ad4",
+      "role_kind": "ROUTER",
+      "atomic_scope_statement": "Router-only classification for Regulatory Applicability Router; it has no Product, operational, legal, financial, engineering, or acceptance authority.",
+      "permitted_decisions": [
+        "assemble typed context for downstream atomic blocks",
+        "classify the named P5 signal",
+        "escalate missing authority or evidence",
+        "return NOT_APPLICABLE when the family is absent"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "infer missing authority, applicability, or evidence",
+        "perform atomic specialist work",
+        "substitute for a narrower atomic specialist",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_ACTIVATION;_TYPED_ROUTING_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent route",
+        "compose only with declared foundation controls",
+        "never substitute for an atomic specialist",
+        "split the five P5 authority/failure domains when evidenced"
+      ],
+      "escalation_target": "specialist.foundation.role-intake-classifier",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "regulatory",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.govinfo-cfr-title49-part390-2025"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.regulatory-applicability-router.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.regulatory.fmcsa-applicability",
+      "candidate_digest": "1b65ded54e7e869434a8c948a2d1556c0397ccb0f82177eebe1d73add170d7ee",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: FMCSA Applicability; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named P5 concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.regulatory.applicability-router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "jurisdiction, provider, standard, version, or professional-authority boundary differs",
+        "knowledge differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P5",
+      "family": "regulatory",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.govinfo-cfr-title49-part390-2025"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.regulatory.applicability-router",
+        "specialist.standard.fmcsa-part-390-2025"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.fmcsa-applicability.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -5404,6 +6059,281 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.standard.fmcsa-part-390-2025",
+      "candidate_digest": "f56608f1f853c2ca32178cba501f1077124c3b1e68e764c34ce52ebbff37e029",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: 49 CFR Part 390 General Applicability and Definitions — 2025 Edition; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P5",
+      "family": "regulatory",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.govinfo-cfr-title49-part390-2025"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.fmcsa-part-390-2025.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.gao-green-book-2025",
+      "candidate_digest": "0eaee4ae68a191a1bf6731cd1640d77ece1a4948337302c0edb18b4ca8ef46d8",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: GAO Standards for Internal Control in the Federal Government — 2025 Green Book; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P5",
+      "family": "finance",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.gao-green-book-2025"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.gao-green-book-2025.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.gltf-2-0-1",
+      "candidate_digest": "e6bb9c2d75acebea411235022606952b316990f70a62fdb484106fe0b99a13a4",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: Khronos glTF 2.0.1 Specification; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P5",
+      "family": "3d-graphics",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.khronos-gltf-2-0-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.gltf-2-0-1.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.nist-ai-rmf-1-0",
+      "candidate_digest": "9e7c1372f4f8c79d1e6958a631000d072633c643bb206cd4ff548bedd4c6a87f",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: NIST Artificial Intelligence Risk Management Framework 1.0; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P5",
+      "family": "ai-search",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.nist-ai-100-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.nist-ai-rmf-1-0.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.nist-genai-profile-1-0",
+      "candidate_digest": "72cd09bcd5ea171dfa62f14f0269d07161630bf799e233ff89e7c0347c314d71",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: NIST Generative AI Profile NIST AI 600-1; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P5",
+      "family": "ai-search",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.nist-ai-600-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.nist-genai-profile-1-0.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.standard.nist-ssdf",
       "candidate_digest": "8475acafc2aab24903deae55734967f5a8098919276fc023b7d50b3257c35bbb",
       "role_kind": "STANDARD_BLOCK",
@@ -6177,5 +7107,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "10cdcbe78dd3e3893c6a9205cfd44a99037beefefc7c8d008b79458f735f7ffa"
+  "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08"
 }
