@@ -1,0 +1,103 @@
+{
+  "schema": "agentos.specialist_library_integration_handoff.v1",
+  "version": 1,
+  "status": "WAITING_WITH_RECEIPT",
+  "candidate": {
+    "branch": "codex/specialist-block-library-candidate",
+    "commit": "ec68722f00508ee0842ffea86c79748797cc4fc3",
+    "tree": "a4c410fd1e208f5b1b08f116911c6678fb86f529",
+    "remote_ref": "origin/codex/specialist-block-library-candidate",
+    "activation": "OFF",
+    "admission": "NOT_ADMITTED"
+  },
+  "library": {
+    "governance_version": "2.1rc",
+    "lifecycle": "CANDIDATE_INACTIVE",
+    "generic_purity": true,
+    "compiler_outputs": [
+      "agent-plan.json",
+      "block-lock.json",
+      "authority-graph.json",
+      "context-manifest.json",
+      "decision-tree.gate",
+      "proof-matrix.json",
+      "handoff.schema.json",
+      "evaluation-receipt.json"
+    ]
+  },
+  "inventory": {
+    "raw_role_mentions": 625,
+    "unique_role_titles": 619,
+    "alias_mappings": 10,
+    "materialized_entries": 619,
+    "role_kind_counts": {
+      "ROUTER": 626,
+      "CONTROL_PLANE": 13,
+      "KNOWLEDGE_BLOCK": 0,
+      "GOVERNANCE_BLOCK": 0,
+      "STANDARD_BLOCK": 0,
+      "CONTEXT_BLOCK": 0,
+      "ATOMIC_SPECIALIST": 79,
+      "COMPILED_AGENT_PACKAGE": 0
+    }
+  },
+  "lanes": {
+    "active_count": 6,
+    "wave": "P0",
+    "entries": [
+      {"generic_id": "AGENT.BOOTSTRAP", "child_id": "019ff333-1cda-76f2-a43b-b44ec39bf088", "package_id": "specialist.control.bootstrap-project-initializer", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.PROJECT_CONTROLLER", "child_id": "019ff333-1d4b-7082-8556-feab852e2d4a", "package_id": "specialist.control.project-controller", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.INTENT_REGULATOR", "child_id": "019ff333-1dca-72c0-85a8-3c81a6715d6a", "package_id": "specialist.control.intent-regulator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.RESOURCE_SCHEDULER", "child_id": "019ff333-1e3f-7e43-8e2d-3c2ccfc17ee4", "package_id": "specialist.control.resource-scheduler", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.RUNTIME_DEPLOYMENT", "child_id": "019ff333-1eb9-7ea1-a239-a5aae1d1bb35", "package_id": "specialist.control.runtime-deployment-operator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.INDEPENDENT_AUDITOR", "child_id": "019ff333-1f36-75e3-b7ab-f552edb9c438", "package_id": "specialist.control.independent-auditor", "status": "CANDIDATE"}
+    ]
+  },
+  "outputs": {
+    "block_compiler": "control/specialist-block-compiler.mjs",
+    "loader": "control/specialist-block-loader.mjs",
+    "bootstrap_compiler": "control/specialist-agent-compiler.mjs",
+    "schemas": [
+      "schemas/specialist-block.v1.json",
+      "schemas/specialist-gate.v1.json",
+      "schemas/specialist-recipe.v1.json",
+      "schemas/specialist-agent-plan.v1.json",
+      "schemas/specialist-block-lock.v1.json",
+      "schemas/specialist-authority-graph.v1.json",
+      "schemas/specialist-context-manifest.v1.json",
+      "schemas/specialist-composed-gate.v1.json",
+      "schemas/specialist-proof-matrix.v1.json",
+      "schemas/specialist-handoff-schema.v1.json",
+      "schemas/specialist-evaluation-receipt.v1.json",
+      "schemas/specialist-integration-handoff.v1.json"
+    ],
+    "registry": [
+      "specialist-blocks/registry/master-inventory.v1.json",
+      "specialist-blocks/registry/master-inventory.materialized.v1.json",
+      "specialist-blocks/registry/atomic-inventory.v1.json",
+      "specialist-blocks/registry/priority-roster.v1.json",
+      "specialist-blocks/registry/recipe-catalog.v1.json",
+      "specialist-blocks/registry/roster.v1.json",
+      "specialist-blocks/registry/routing-index.v1.json"
+    ],
+    "human_roster": "specialist-blocks/registry/ROSTER.md"
+  },
+  "receipts": [
+    {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "13 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
+    {"receipt_id": "specialist-task-composition-fixture-v1", "status": "PASS", "scope": "three external task-shaped packages, immutable standard reuse, minimal closure, negative denials, deterministic bootstrap output, zero repository residue"},
+    {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"}
+  ],
+  "unfinished_gates": [
+    "Independent utility/harm evaluation of the six P0 packages and Agent Builder input has not passed.",
+    "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
+    "Actual source-backed STANDARD_BLOCK production beyond synthetic composition fixtures remains planned; current materialized STANDARD_BLOCK count is 0.",
+    "Full hostile/utility validation and main AgentOS 3.0 integration-owner intake remain external follow-up gates.",
+    "No consumer adoption, migration, provider activation, public release, or protected Memory action is authorized by this receipt."
+  ],
+  "authority": {
+    "scope": "ISOLATED_AGENTOS_LIBRARY_WORKTREE_ONLY",
+    "forbidden": ["merge into another worktree", "activate or deploy", "self-admit", "write secrets", "modify source packages or active integration worktree", "direct protected Memory internals", "assert legal applicability without complete current authority evidence"],
+    "independent_acceptance_required": true
+  },
+  "next_action": "Main AgentOS 3.0 integration owner may inspect the exact branch, commit, tree, package receipts, and unfinished gates; intake is permitted only after independent utility/harm and admission authority pass all dependent gates."
+}

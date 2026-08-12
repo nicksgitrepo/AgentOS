@@ -20,3 +20,4 @@
     "next_action": {"type": "string", "minLength": 1}
   }
 }
+}

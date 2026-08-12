@@ -28,6 +28,11 @@ const recipeCatalog = JSON.parse(fs.readFileSync(path.join(root, "specialist-blo
 assert.equal(recipeCatalog.schema, "agentos.specialist_recipe_catalog.v1");
 assert.equal(recipeCatalog.recipes.length, 6, "recipe catalog must retain all six P0 recipes");
 assert(recipeCatalog.recipes.every((recipe) => recipe.priority === "P0" && recipe.lifecycle === "CANDIDATE"), "recipe catalog P0 entries must remain inactive candidates");
+const integrationHandoff = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/integration-handoff.v1.json"), "utf8"));
+assert.equal(integrationHandoff.schema, "agentos.specialist_library_integration_handoff.v1");
+assert.equal(integrationHandoff.status, "WAITING_WITH_RECEIPT");
+assert.equal(execFileSync("git", ["rev-parse", `${integrationHandoff.candidate.commit}^{tree}`], {cwd: root, encoding: "utf8"}).trim(), integrationHandoff.candidate.tree, "handoff candidate tree must match its commit");
+assert.deepEqual(integrationHandoff.lanes.entries.map((entry) => entry.generic_id), ["AGENT.BOOTSTRAP", "AGENT.PROJECT_CONTROLLER", "AGENT.INTENT_REGULATOR", "AGENT.RESOURCE_SCHEDULER", "AGENT.RUNTIME_DEPLOYMENT", "AGENT.INDEPENDENT_AUDITOR"]);
 
 function compile(name, recipe, task, external = makeExternal(name), blocks = BLOCKS) {
   return compileTaskShapedAgent({
