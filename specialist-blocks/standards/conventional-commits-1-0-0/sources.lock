@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.conventional-commits-1-0-0",
+  "sources": [
+    {
+      "source_id": "source.conventional-commits-1-0-0",
+      "title": "Conventional Commits",
+      "publisher": "Conventional Commits",
+      "url": "https://www.conventionalcommits.org/en/v1.0.0/",
+      "version": "1.0.0",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "conventional-commits-1.0.0",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Commit-message structure and change-intent signaling; no merge or release authority."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "8c64094ea90b712674e4e03497f01e897a61708dadc97f316a563eed21a224f5"
+}

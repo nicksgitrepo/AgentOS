@@ -1,0 +1,32 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.release-manager.v1",
+  "block_id": "specialist.control.release-manager",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "e2595ba339b5fd2963c02a6507d8c305c602676052f30df8425347dc5f32a236",
+  "source_commit": "a6407f4c991d1768596f43f2f29d5a91d8044c0c",
+  "source_tree": "2c392cf5d4f4a0fdb942c8d37fd09d3d836ef2f2",
+  "changed_paths": [
+    "specialist-blocks/wave-04/release-manager/block.json",
+    "specialist-blocks/wave-04/release-manager/evaluation.json",
+    "specialist-blocks/wave-04/release-manager/gates/manifest.json",
+    "specialist-blocks/wave-04/release-manager/handoff.json",
+    "specialist-blocks/wave-04/release-manager/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "hostile-fixture-catalog",
+    "independent-reviewer-required",
+    "p3-scope-and-authority",
+    "source-lock-digest"
+  ],
+  "residuals": [
+    "applicability and project context remain external",
+    "candidate is not admitted or activated",
+    "independent utility/harm evaluation has not run",
+    "main AgentOS 3.0 integration owner must intake exact digest"
+  ],
+  "next_action": "Route the immutable P3 governance candidate through independent evaluation; preserve activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

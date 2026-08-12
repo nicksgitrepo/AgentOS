@@ -72,6 +72,16 @@
       "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1"
     },
     {
+      "generic_id": "INTERNAL.SRE_OBSERVABILITY_ROUTER",
+      "block_id": "specialist.delivery-operations.observability-router",
+      "title": "Observability and Incident Router",
+      "version": "1.0.0",
+      "source_lock": "sources.lock",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.observability-router.v1"
+    },
+    {
       "generic_id": "PLATFORM.AWS_CLOUDFLARE_EDGE",
       "block_id": "specialist.platform.provider-edge-router",
       "title": "Provider and Edge Capability Router",
@@ -97,8 +107,9 @@
       "title": "Assurance and Enterprise Router",
       "version": "1.0.0",
       "source_lock": "sources.lock",
-      "package_status": "PLANNED",
-      "evaluator_status": "NOT_RUN"
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.assurance-enterprise-router.v1"
     },
     {
       "generic_id": "SEC.OWASP_API_TOP10",
@@ -168,14 +179,35 @@
       "title": "Bootstrap/Project Initializer"
     },
     {
-      "generic_id": "AGENT.PROJECT_CONTROLLER",
-      "block_id": "specialist.control.project-controller",
-      "title": "Global Project Controller"
+      "generic_id": "AGENT.CENTRAL_INTEGRATOR",
+      "block_id": "specialist.control.central-integrator",
+      "title": "Integration/Central Owner",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.central-integrator.v1"
+    },
+    {
+      "generic_id": "AGENT.INDEPENDENT_AUDITOR",
+      "block_id": "specialist.control.independent-auditor",
+      "title": "Independent Auditor"
     },
     {
       "generic_id": "AGENT.INTENT_REGULATOR",
       "block_id": "specialist.control.intent-regulator",
       "title": "Intent Regulator"
+    },
+    {
+      "generic_id": "AGENT.PROJECT_CONTROLLER",
+      "block_id": "specialist.control.project-controller",
+      "title": "Global Project Controller"
+    },
+    {
+      "generic_id": "AGENT.RELEASE_MANAGER",
+      "block_id": "specialist.control.release-manager",
+      "title": "Release Manager",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.release-manager.v1"
     },
     {
       "generic_id": "AGENT.RESOURCE_SCHEDULER",
@@ -188,14 +220,22 @@
       "title": "Runtime/Deployment Operator"
     },
     {
-      "generic_id": "AGENT.INDEPENDENT_AUDITOR",
-      "block_id": "specialist.control.independent-auditor",
-      "title": "Independent Auditor"
+      "generic_id": "AGENT.WORKTREE_CUSTODY",
+      "block_id": "specialist.control.worktree-custody",
+      "title": "Worktree/Custody Manager",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.worktree-custody.v1"
     },
     {
-      "generic_id": "FOUNDATION.ROLE_INTAKE",
-      "block_id": "specialist.foundation.role-intake-classifier",
-      "title": "Universal Role-Intake Classifier"
+      "generic_id": "FOUNDATION.AUTHORITY_JURISDICTION",
+      "block_id": "specialist.foundation.authority-jurisdiction-gate",
+      "title": "Authority/Precedence/Jurisdiction Gate"
+    },
+    {
+      "generic_id": "FOUNDATION.EVALUATION_ADMISSION",
+      "block_id": "specialist.foundation.evaluation-admission-gate",
+      "title": "Evaluation/Admission Gate"
     },
     {
       "generic_id": "FOUNDATION.EVIDENCE_FRESHNESS",
@@ -203,9 +243,14 @@
       "title": "Source/Evidence/Freshness Gate"
     },
     {
-      "generic_id": "FOUNDATION.AUTHORITY_JURISDICTION",
-      "block_id": "specialist.foundation.authority-jurisdiction-gate",
-      "title": "Authority/Precedence/Jurisdiction Gate"
+      "generic_id": "FOUNDATION.REGISTRY_DEDUP",
+      "block_id": "specialist.foundation.registry-alias-deduplicator",
+      "title": "Registry/Alias/Deduplication Controller"
+    },
+    {
+      "generic_id": "FOUNDATION.ROLE_INTAKE",
+      "block_id": "specialist.foundation.role-intake-classifier",
+      "title": "Universal Role-Intake Classifier"
     },
     {
       "generic_id": "FOUNDATION.SCOPE_NONGOAL",
@@ -216,16 +261,6 @@
       "generic_id": "FOUNDATION.TOOL_CUSTODY",
       "block_id": "specialist.foundation.tool-custody-gate",
       "title": "Tool/Resource/Custody Gate"
-    },
-    {
-      "generic_id": "FOUNDATION.EVALUATION_ADMISSION",
-      "block_id": "specialist.foundation.evaluation-admission-gate",
-      "title": "Evaluation/Admission Gate"
-    },
-    {
-      "generic_id": "FOUNDATION.REGISTRY_DEDUP",
-      "block_id": "specialist.foundation.registry-alias-deduplicator",
-      "title": "Registry/Alias/Deduplication Controller"
     }
   ],
   "atomic_specialists": [
@@ -352,6 +387,16 @@
       "router": "specialist.platform.provider-edge-router"
     },
     {
+      "generic_id": "DATA.MIGRATION_ROLLBACK",
+      "block_id": "specialist.data.migration-rollback",
+      "title": "Data Migration/Rollback",
+      "version": "1.0.0",
+      "router": "specialist.data.router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.migration-rollback.v1"
+    },
+    {
       "generic_id": "DATA.POSTGRES_RLS",
       "title": "PostgreSQL Row-Level Security",
       "version": "current",
@@ -461,8 +506,12 @@
     {
       "generic_id": "QA.TEST_ARCHITECT",
       "title": "Test Architecture",
-      "version": "current",
-      "router": "specialist.assurance-enterprise.router"
+      "version": "1.0.0",
+      "router": "specialist.assurance-enterprise.router",
+      "block_id": "specialist.assurance-enterprise.test-architect",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.test-architect.v1"
     },
     {
       "generic_id": "SEC.ACCESS_CONTROL_ABAC",
@@ -904,12 +953,22 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.toctou.v1"
+    },
+    {
+      "generic_id": "SRE.OBSERVABILITY_INCIDENT",
+      "block_id": "specialist.delivery-operations.observability-incident",
+      "title": "Observability/Incident Evidence",
+      "version": "1.0.0",
+      "router": "specialist.delivery-operations.observability-router",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.observability-incident.v1"
     }
   ],
   "counts": {
-    "ROUTER": 12,
-    "ATOMIC_SPECIALIST": 79,
-    "CONTROL_PLANE": 13
+    "ROUTER": 13,
+    "ATOMIC_SPECIALIST": 81,
+    "CONTROL_PLANE": 16
   },
   "evaluator_failure_classes": [
     "umbrella_authority",

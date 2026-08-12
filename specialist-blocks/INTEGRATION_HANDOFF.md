@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `38d8d5b36ecd9284c8d297d19a304b38660d76b5`
-- Candidate tree: `1c781ad3dab822d040cf652433f63733ceadb26c`
+- Candidate commit: `38d8d5b36ecd9284c8d297d19a304b38660d76b5` (P2 baseline; receipt refresh follows the P3 commit)
+- Candidate tree: `1c781ad3dab822d040cf652433f63733ceadb26c` (P2 baseline)
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
@@ -25,16 +25,16 @@ attached as a separate immutable receipt commit.
 
 - Master inventory: 625 raw role mentions, 619 unique titles, 10 explicit alias
   mappings, 619 materialized entries.
-- Materialized role kinds: `ROUTER: 631`, `CONTROL_PLANE: 13`,
+- Materialized role kinds: `ROUTER: 632`, `CONTROL_PLANE: 16`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-  `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`,
+  `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `91` packages total — `12` `ROUTER`, `13`
-  `CONTROL_PLANE`, `51` `ATOMIC_SPECIALIST`, and `15` source-locked
+- Compiled candidate package roster: `98` packages total — `13` `ROUTER`, `16`
+  `CONTROL_PLANE`, `54` `ATOMIC_SPECIALIST`, and `15` source-locked
   `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
   materialization count above.
-- Atomic overlay: 12 routers, 79 atomic specialists, 13 control-plane roles;
-  all twelve packaged routers are classification-only and carry no Product or
+- Atomic overlay: 13 routers, 81 atomic specialists, 16 control-plane roles;
+  all packaged routers are classification-only and carry no Product or
   acceptance authority.
 - P0 has exactly six candidate lanes, each with a package, source lock, exact
   twelve-gate pack, hostile fixtures, evaluation dossier, and typed handoff.
@@ -44,14 +44,15 @@ attached as a separate immutable receipt commit.
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS
   repository residue.
-- The source-locked standard slice contains fifteen reusable authorities:
+- The source-locked standard slice contains seventeen reusable authorities:
   NIST SP 800-218 SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten
   P1 language/framework/data/API/identity/provider authorities, and the OWASP
-  Top 10:2025 and OWASP API Security Top 10:2023 indexes. Each binds normalized
+  Top 10:2025 and OWASP API Security Top 10:2023 indexes, plus Semantic
+  Versioning 2.0.0 and Conventional Commits 1.0.0. Each binds normalized
   requirements, compatibility/supersession metadata, and its source manifest
   by digest.
-- The separate read-only independent evaluator passes all 91 package candidates,
-  1,092 gate files, and 1,547 hostile fixtures. Its disposition is
+- The separate read-only independent evaluator passes all 98 package candidates,
+  1,176 gate files, and 1,666 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
@@ -71,13 +72,17 @@ attached as a separate immutable receipt commit.
   modes/boundaries, seven concurrency/replay/idempotency hazards, and six
   CVE/SBOM/provenance domains. The category atoms bind to their exact upstream
   router and reuse the shared OWASP, ASVS, NIST SSDF, or SLSA block hash.
+- The P3 delivery/assurance slice adds three governance controls, one
+  observability router, and three atomic candidates for test architecture,
+  observability/incident evidence, and migration rollback. It reuses existing
+  NIST SSDF and SLSA hashes and remains candidate-only.
 
 ## Unfinished admission gates
 
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Independent utility/harm evaluation of the P1 and P2 router/atomic/standard
+3. Independent utility/harm evaluation of the P1, P2, and P3 router/atomic/control
    candidates and broader source-backed `STANDARD_BLOCK` expansion remain pending; the
    backlog materialized standard-block count is zero because those roles are
    not yet expanded into packages.

@@ -57,17 +57,17 @@ generated `bootstrap.md` view. Generated instances are external companion
 artifacts only; `bootstrap.md` is never the authority and cannot be edited as a
 standalone contract.
 
-Current materialized role-kind counts are `ROUTER: 631`,
-`CONTROL_PLANE: 13`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
-`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`, and
-`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `12` routers,
-`79` atomic specialists, and `13` control-plane roles in the complete
-backlog; twelve router packages, fifty-one atomic packages, and thirteen
+Current materialized role-kind counts are `ROUTER: 632`,
+`CONTROL_PLANE: 16`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
+`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`, and
+`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay remains `13` routers,
+`81` atomic specialists, and `16` control-plane roles in the complete
+backlog; thirteen router packages, fifty-four atomic packages, and sixteen
 control-plane packages are compiled candidates in the current library slice.
 
 The compiled candidate package count is separate from the backlog materialized
-count: `91` packages are validated (`13` `CONTROL_PLANE`, `15`
-`STANDARD_BLOCK`, `12` `ROUTER`, and `51` `ATOMIC_SPECIALIST`). These are
+count: `100` packages are validated (`16` `CONTROL_PLANE`, `17`
+`STANDARD_BLOCK`, `13` `ROUTER`, and `54` `ATOMIC_SPECIALIST`). These are
 source-locked inactive candidates and do not change the unexpanded backlog
 count.
 
@@ -104,8 +104,8 @@ remain external gates.
 ## Next controller actions
 
 1. Keep the exact six P0 lanes reserved while independent utility/harm and
-   admission review remains external; no P2 package is an active lane.
-2. Continue the next queue from P3 only after the current P2 receipt is
+   admission review remains external; no P3 package is an active lane.
+2. Continue the next queue from P4 only after the current P3 receipt is
    independently reviewed and the host-pressure ceiling permits bounded work.
 3. Send the exact isolated receipt to the main AgentOS 3.0 integration owner;
    do not merge, activate, deploy, or adopt a consumer project from this lane.
@@ -335,3 +335,39 @@ remain external gates.
   swap at `5.5/6 GiB`; no heavyweight proof, activation, deployment, or
   external-worktree mutation occurred. Next queue is P3 delivery/assurance
   expansion after independent review of this P2 slice.
+
+## Latest verified state — P3 delivery and assurance expansion — 2026-08-11
+
+- The current bounded slice adds three P3 governance controls:
+  `AGENT.CENTRAL_INTEGRATOR`, `AGENT.RELEASE_MANAGER`, and
+  `AGENT.WORKTREE_CUSTODY`; one observability/incident router; and three
+  atomic candidates for `QA.TEST_ARCHITECT`, `SRE.OBSERVABILITY_INCIDENT`,
+  and `DATA.MIGRATION_ROLLBACK`. The observability router is an internal
+  prerequisite package for the SRE atomic route; it is not a substitute for
+  the atomic specialist.
+- All seven new packages carry exact twelve-gate packs, source locks,
+  typed contracts, hostile fixtures, independent-evaluation dossiers, and
+  candidate-only handoffs. The atomic candidates bind to their upstream
+  routers, and the migration candidate reuses the existing immutable NIST
+  SSDF and SLSA standard hashes rather than copying authority content.
+- The release-control candidate also reuses two newly materialized immutable
+  `STANDARD_BLOCK`s: Semantic Versioning 2.0.0 and Conventional Commits 1.0.0.
+  The standard catalog now contains `17` reusable authorities.
+- Compiler proof reports `100` package records: `16` control-plane, `17`
+  reusable standards, `13` routers, and `54` atomic specialists. Materialized
+  backlog counts remain `619` unique titles and role kinds `ROUTER:632`,
+  `CONTROL_PLANE:16`, `ATOMIC_SPECIALIST:81`, with the other role kinds at
+  zero as recorded in the machine receipt. The typed overlay has `110`
+  entries (`13` routers, `16` controls, and `81` atomic specialists).
+- Independent read-only evaluation passes `100` inactive packages, `1,200`
+  gate files, and `1,700` hostile fixtures. Utility/harm and admission remain
+  external and pending; no P3 package is an active lane.
+- Exactly six P0 lanes remain the only materially active lane set:
+  `AGENT.BOOTSTRAP`, `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
+  `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
+  `AGENT.INDEPENDENT_AUDITOR`; each is `CANDIDATE`/inactive. P1–P6 packages
+  are compiled candidates or planned backlog entries, not active lanes.
+- Host-pressure ceiling remains canonical scheduler `JOB-407` `RUNNING` with
+  swap at `5.5/6 GiB`; only lightweight source-lock, schema, gate, and focused
+  evaluator work occurred. Next queue is P4 client/UX expansion after
+  independent review of this P3 slice.

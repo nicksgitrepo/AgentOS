@@ -49,16 +49,16 @@ The materialized roster distinguishes these role kinds:
 - `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
   roster agent.
 
-Current materialized counts are `ROUTER: 631`, `CONTROL_PLANE: 13`,
+Current materialized counts are `ROUTER: 632`, `CONTROL_PLANE: 16`,
 `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`, and
+`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`, and
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
-`12` routers, `79` atomic specialists, and `13` control-plane roles.
+`13` routers, `81` atomic specialists, and `16` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `91` packages total, consisting of `12` `ROUTER`, `13`
-`CONTROL_PLANE`, `51` `ATOMIC_SPECIALIST`, and `15` `STANDARD_BLOCK` packages.
-All 91 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
+backlog: `100` packages total, consisting of `13` `ROUTER`, `16`
+`CONTROL_PLANE`, `54` `ATOMIC_SPECIALIST`, and `17` `STANDARD_BLOCK` packages.
+All 100 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 ## Source-locked standard candidates
 
@@ -69,6 +69,8 @@ All 91 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 | `specialist.standard.owasp-top10-2025` | `security / P2` | [OWASP Top 10:2025](https://owasp.org/Top10/) `2025`; `sources.lock`; immutable identity `owasp-top10-2025-release` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-top10-2025.v1` | 12 gates; external web-application applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.owasp-api-top10-2023` | `security / P2` | [OWASP API Security Top 10 2023](https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/) `2023`; `sources.lock`; immutable identity `owasp-api-security-top10-2023-release-20230703` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-top10-2023.v1` | 12 gates; external API applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.slsa` | `delivery-operations / P1` | [SLSA Specification](https://slsa.dev/spec/v1.2/) `1.2`; `sources.lock`; immutable identity `slsa-spec-v1.2-approved` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.slsa.v1` | 12 gates; external track/level overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.semantic-versioning-2-0-0` | `delivery-operations / P3` | [Semantic Versioning](https://semver.org/spec/v2.0.0.html) `2.0.0`; `sources.lock`; immutable identity `semantic-versioning-2.0.0` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.semantic-versioning-2-0-0.v1` | 12 gates; external public-API/version overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.conventional-commits-1-0-0` | `delivery-operations / P3` | [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) `1.0.0`; `sources.lock`; immutable identity `conventional-commits-1.0.0` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.conventional-commits-1-0-0.v1` | 12 gates; external commit-history overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.rust-reference` | `software-language-runtime / P1` | [Rust Reference](https://doc.rust-lang.org/reference.html) `1.97.1`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.rust-reference.v1` | 12 gates; external edition/toolchain overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.typescript-5-9` | `software-language-runtime / P1` | [TypeScript 5.9 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html) `5.9`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.typescript-5-9.v1` | 12 gates; external compiler overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.react-19-2` | `software-language-runtime / P1` | [React 19.2 release notes](https://react.dev/blog/2025/10/01/react-19-2) `19.2`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.react-19-2.v1` | 12 gates; external framework overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
@@ -166,6 +168,23 @@ and typed handoff.
 | `specialist.security.owasp-api-2023-api9-inventory` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api9-inventory.v1` | 12 gates; `NOT_ADMITTED / OFF` |
 | `specialist.security.owasp-api-2023-api10-unsafe-api-consumption` | `ATOMIC_SPECIALIST`; `specialist.security.owasp-api-top10-router` | `specialist.standard.owasp-api-top10-2023`, `specialist.standard.owasp-asvs` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-api-2023-api10-unsafe-api-consumption.v1` | 12 gates; `NOT_ADMITTED / OFF` |
 
+## P3 delivery and assurance candidates
+
+The P3 slice remains candidate-only and expands the governance, delivery, data,
+and assurance routes without activating a lane. The observability router is a
+typed prerequisite for its narrower incident-evidence specialist; it has no
+Product or acceptance authority.
+
+| Block ID | Kind / upstream | Exact source lock / reusable authorities | Build / evaluation | Gates / lifecycle |
+|---|---|---|---|---|
+| `specialist.control.central-integrator` | `CONTROL_PLANE`; none | `PORTABLE_KERNEL` atomicity law; SLSA 1.2; reusable NIST SSDF/SLSA dependencies | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.central-integrator.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.control.release-manager` | `CONTROL_PLANE`; none | `PORTABLE_KERNEL`; [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html); [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/); reusable NIST SSDF/SLSA dependencies | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.release-manager.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.control.worktree-custody` | `CONTROL_PLANE`; none | `PORTABLE_KERNEL`; [git-worktree documentation](https://git-scm.com/docs/git-worktree.html); reusable SLSA dependency | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.worktree-custody.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+| `specialist.delivery-operations.observability-router` | `ROUTER`; none | `PORTABLE_KERNEL`; [Google SRE monitoring](https://sre.google/sre-book/monitoring-distributed-systems/) | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.observability-router.v1` | 12 gates; router-only; `NOT_ADMITTED / OFF` |
+| `specialist.assurance-enterprise.test-architect` | `ATOMIC_SPECIALIST`; `specialist.assurance-enterprise.router` | `PORTABLE_KERNEL`; [Google SRE reliability testing](https://sre.google/sre-book/testing-reliability/); reusable NIST SSDF dependency | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.test-architect.v1` | 12 gates; upstream required; `NOT_ADMITTED / OFF` |
+| `specialist.delivery-operations.observability-incident` | `ATOMIC_SPECIALIST`; `specialist.delivery-operations.observability-router` | `PORTABLE_KERNEL`; [Google SRE monitoring](https://sre.google/sre-book/monitoring-distributed-systems/); reusable SLSA dependency | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.observability-incident.v1` | 12 gates; upstream required; `NOT_ADMITTED / OFF` |
+| `specialist.data.migration-rollback` | `ATOMIC_SPECIALIST`; `specialist.data.router` | `PORTABLE_KERNEL`; [PostgreSQL transaction isolation](https://www.postgresql.org/docs/current/transaction-iso.html); reusable NIST SSDF/SLSA dependencies | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.migration-rollback.v1` | 12 gates; upstream required; `NOT_ADMITTED / OFF` |
+
 ## Mandatory package contract
 
 Every block has stable identity/version/aliases/lifecycle, narrow role context,
@@ -202,14 +221,15 @@ candidate library records, not active lanes.
 
 The full inventory retains 625 role mentions and 619 unique titles, with 10
 explicit duplicate/alias mappings. Priority changes sequencing, not existence.
+P3 packages are compiled candidates only; P0 remains the sole active wave.
 
 ## Atomicity counts
 
 The current typed atomicity overlay reports exactly:
 
-- `12` routers;
-- `79` atomic specialists;
-- `13` control-plane blocks.
+- `13` routers;
+- `81` atomic specialists;
+- `16` control-plane blocks.
 
 Routers may classify and assemble context but may not write Product or accept a
 result. Atomic specialists must be selected by an upstream router, may return
@@ -229,10 +249,11 @@ evidence remain external overlays. New editions, material errata, or normative
 gate corrections create new block versions with compatibility/supersession
 metadata. A non-material publisher refresh creates a freshness receipt only.
 
-The current candidate contains fifteen such source-locked standard packages:
+The current candidate contains seventeen such source-locked standard packages:
 NIST SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten P1 language,
 framework, data, API, identity, and provider authorities, OWASP Top 10:2025,
-and OWASP API Security Top 10:2023. Their static receipts do not change the
+and OWASP API Security Top 10:2023, Semantic Versioning 2.0.0, and Conventional
+Commits 1.0.0. Their static receipts do not change the
 backlog's `STANDARD_BLOCK: 0` materialization count; that count records roles
 not yet expanded into packages.
 

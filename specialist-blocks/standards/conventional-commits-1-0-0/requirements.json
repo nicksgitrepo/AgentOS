@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.conventional-commits-1-0-0",
+  "standard_identity": {
+    "publisher": "Conventional Commits",
+    "identifier": "Conventional Commits",
+    "edition": "1.0.0"
+  },
+  "requirements": [
+    {
+      "requirement_id": "CONVENTIONAL_COMMITS.1.0.0.structure",
+      "statement": "Use the exact type, optional scope, description, optional body, and footer structure defined by Conventional Commits 1.0.0.",
+      "source_ref": "ConventionalCommits.1.0.0:structure",
+      "evidence": "Commit message parse and source-lock identity."
+    },
+    {
+      "requirement_id": "CONVENTIONAL_COMMITS.1.0.0.breaking",
+      "statement": "Preserve explicit breaking-change signaling through the defined exclamation-mark or BREAKING CHANGE footer forms.",
+      "source_ref": "ConventionalCommits.1.0.0:breaking-changes",
+      "evidence": "Parsed commit footer/type and independent change-impact evidence."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

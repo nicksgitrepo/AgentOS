@@ -31,21 +31,21 @@
     "alias_mappings": 10,
     "materialized_entries": 619,
     "role_kind_counts": {
-      "ROUTER": 631,
-      "CONTROL_PLANE": 13,
+      "ROUTER": 632,
+      "CONTROL_PLANE": 16,
       "KNOWLEDGE_BLOCK": 0,
       "GOVERNANCE_BLOCK": 0,
       "STANDARD_BLOCK": 0,
       "CONTEXT_BLOCK": 0,
-      "ATOMIC_SPECIALIST": 79,
+      "ATOMIC_SPECIALIST": 81,
       "COMPILED_AGENT_PACKAGE": 0
     },
     "compiled_package_counts": {
-      "total": 91,
-      "ROUTER": 12,
-      "CONTROL_PLANE": 13,
-      "ATOMIC_SPECIALIST": 51,
-      "STANDARD_BLOCK": 15
+      "total": 100,
+      "ROUTER": 13,
+      "CONTROL_PLANE": 16,
+      "ATOMIC_SPECIALIST": 54,
+      "STANDARD_BLOCK": 17
     }
   },
   "lanes": {
@@ -93,20 +93,21 @@
     "human_roster": "specialist-blocks/registry/ROSTER.md"
   },
   "receipts": [
-    {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "91 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
-    {"receipt_id": "specialist-standard-reuse-v1", "status": "PASS", "scope": "fifteen source-locked STANDARD_BLOCK candidates, normalized requirements, compatibility/supersession digests, 180 gate files, and 255 hostile fixtures"},
+    {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "100 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
+    {"receipt_id": "specialist-standard-reuse-v1", "status": "PASS", "scope": "seventeen source-locked STANDARD_BLOCK candidates, normalized requirements, compatibility/supersession digests, 204 gate files, and 289 hostile fixtures"},
     {"receipt_id": "specialist-task-composition-fixture-v1", "status": "PASS", "scope": "three external task-shaped packages, immutable standard reuse, minimal closure, negative denials, deterministic bootstrap output, zero repository residue"},
-    {"receipt_id": "specialist-independent-evaluator-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "read-only independent checks over 91 packages, 1092 gate files, and 1547 hostile fixtures; utility/harm remains pending"},
+    {"receipt_id": "specialist-independent-evaluator-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "read-only independent checks over 100 packages, 1200 gate files, and 1700 hostile fixtures; utility/harm remains pending"},
     {"receipt_id": "specialist-atomic-composition-v1", "status": "PASS", "scope": "atomic upstream-router dependency closure, router-plus-atomic routing, sibling-conflict denial, lock preservation, and missing-upstream hostile fixtures"},
     {"receipt_id": "specialist-p1-atomic-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P1 routers, ten source-locked atomic candidates, and ten reusable exact-edition STANDARD_BLOCK authorities for language/runtime, data, API contracts, identity, AWS IAM, and Cloudflare DNS/cache"},
     {"receipt_id": "specialist-p2-security-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P2 routers, forty-one narrow security atoms, two reusable OWASP index standards, exact upstream-router closure, standard-hash reuse, and actual Web A01/API7 routing fixtures"},
+    {"receipt_id": "specialist-p3-delivery-assurance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "three P3 governance controls, one observability router, two delivery/data atomic specialists, one assurance atomic specialist, exact upstream closure, and reuse of existing NIST SSDF/SLSA authorities"},
     {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"},
     {"receipt_id": "specialist-p1-standard-reuse-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "implementation commit 170bbf4ca705dce9de199172910c6c25e243e7fc with tree aebfe743b8b460dd1ffb5c90cfc3342f93d18597; ten P1 atoms reuse ten immutable exact-edition standard blocks"}
   ],
   "unfinished_gates": [
     "Independent utility/harm evaluation of the six P0 packages and Agent Builder input has not passed.",
     "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
-    "Independent utility/harm evaluation of the P1 and P2 router/atomic/standard candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
+    "Independent utility/harm evaluation of the P1, P2, and P3 router/atomic/control candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
     "Full hostile/utility validation and main AgentOS 3.0 integration-owner intake remain external follow-up gates.",
     "No consumer adoption, migration, provider activation, public release, or protected Memory action is authorized by this receipt."
   ],

@@ -4,13 +4,13 @@
   "status": "COMPILED_CANDIDATE",
   "activation": "OFF",
   "counts": {
-    "ROUTER": 631,
-    "CONTROL_PLANE": 13,
+    "ROUTER": 632,
+    "CONTROL_PLANE": 16,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
     "STANDARD_BLOCK": 0,
     "CONTEXT_BLOCK": 0,
-    "ATOMIC_SPECIALIST": 79,
+    "ATOMIC_SPECIALIST": 81,
     "COMPILED_AGENT_PACKAGE": 0
   },
   "entries": [
@@ -26068,6 +26068,40 @@
       "required_upstream_router": null
     },
     {
+      "canonical_id": "AGENT.CENTRAL_INTEGRATOR",
+      "title": "Integration/Central Owner",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Integration/Central Owner.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
       "canonical_id": "AGENT.INDEPENDENT_AUDITOR",
       "title": "Independent Auditor",
       "aliases": [],
@@ -26170,6 +26204,40 @@
       "required_upstream_router": null
     },
     {
+      "canonical_id": "AGENT.RELEASE_MANAGER",
+      "title": "Release Manager",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Release Manager.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
       "canonical_id": "AGENT.RESOURCE_SCHEDULER",
       "title": "Resource Scheduler",
       "aliases": [],
@@ -26210,6 +26278,40 @@
       "family": "control-plane",
       "subfamily": "control-plane",
       "purpose": "Operate the portable governance control for Runtime/Deployment Operator.",
+      "triggers": [
+        "typed control-plane request"
+      ],
+      "exclusions": [
+        "consumer Product implementation",
+        "provider activation",
+        "self-acceptance"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "portable AgentOS authority corpus and exact local evidence"
+      ],
+      "freshness_policy": "Stale authority or missing custody evidence stops the dependent control transition.",
+      "priority_score": "P0",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "UNPACKAGED",
+      "evaluator_status": "NOT_RUN",
+      "evaluator_receipt": null,
+      "lifecycle": "PLANNED",
+      "role_kind": "CONTROL_PLANE",
+      "required_upstream_router": null
+    },
+    {
+      "canonical_id": "AGENT.WORKTREE_CUSTODY",
+      "title": "Worktree/Custody Manager",
+      "aliases": [],
+      "family": "control-plane",
+      "subfamily": "control-plane",
+      "purpose": "Operate the portable governance control for Worktree/Custody Manager.",
       "triggers": [
         "typed control-plane request"
       ],
@@ -27011,6 +27113,43 @@
       "block_id": "specialist.data.router"
     },
     {
+      "canonical_id": "DATA.MIGRATION_ROLLBACK",
+      "title": "Data Migration/Rollback",
+      "aliases": [],
+      "family": "data",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Data Migration/Rollback under its version lock.",
+      "triggers": [
+        "upstream router selects DATA.MIGRATION_ROLLBACK"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.data.router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.migration-rollback.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.data.router",
+      "block_id": "specialist.data.migration-rollback",
+      "block_ids": []
+    },
+    {
       "canonical_id": "DATA.POSTGRES_RLS",
       "title": "PostgreSQL Row-Level Security",
       "aliases": [],
@@ -27805,6 +27944,41 @@
       "required_upstream_router": null
     },
     {
+      "canonical_id": "INTERNAL.SRE_OBSERVABILITY_ROUTER",
+      "title": "Observability and Incident Router",
+      "aliases": [],
+      "family": "delivery-operations",
+      "subfamily": "router",
+      "purpose": "Classify and assemble context for Observability and Incident Router; never perform the atomic work.",
+      "triggers": [
+        "typed family-level request"
+      ],
+      "exclusions": [
+        "Product writing",
+        "acceptance",
+        "substituting for an atomic specialist"
+      ],
+      "dependencies": [
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "versioned primary source and applicability evidence"
+      ],
+      "freshness_policy": "Unknown or stale applicability denies the dependent route.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.observability-router.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ROUTER",
+      "required_upstream_router": null,
+      "block_id": "specialist.delivery-operations.observability-router"
+    },
+    {
       "canonical_id": "PLATFORM.AWS_CLOUDFLARE_EDGE",
       "title": "Provider and Edge Capability Router",
       "aliases": [],
@@ -27901,9 +28075,9 @@
       "gate_status": "PLANNED",
       "gate_path": null,
       "schema_path": "schemas/specialist-block.v1.json",
-      "package_status": "PLANNED",
-      "evaluator_status": "NOT_RUN",
-      "evaluator_receipt": null,
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.assurance-enterprise-router.v1",
       "lifecycle": "PLANNED",
       "role_kind": "ROUTER",
       "required_upstream_router": null,
@@ -27936,14 +28110,14 @@
       "gate_status": "PLANNED",
       "gate_path": null,
       "schema_path": "schemas/specialist-block.v1.json",
-      "package_status": "UNPACKAGED",
-      "evaluator_status": "NOT_RUN",
-      "evaluator_receipt": null,
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.test-architect.v1",
       "lifecycle": "PLANNED",
       "role_kind": "ATOMIC_SPECIALIST",
-      "version": "current",
+      "version": "1.0.0",
       "required_upstream_router": "specialist.assurance-enterprise.router",
-      "block_id": null,
+      "block_id": "specialist.assurance-enterprise.test-architect",
       "block_ids": []
     },
     {
@@ -29823,17 +29997,54 @@
       "required_upstream_router": "specialist.security.access-control-router",
       "block_id": "specialist.security.toctou",
       "block_ids": []
+    },
+    {
+      "canonical_id": "SRE.OBSERVABILITY_INCIDENT",
+      "title": "Observability/Incident Evidence",
+      "aliases": [],
+      "family": "delivery-operations",
+      "subfamily": "atomic",
+      "purpose": "Analyze only Observability/Incident Evidence under its version lock.",
+      "triggers": [
+        "upstream router selects SRE.OBSERVABILITY_INCIDENT"
+      ],
+      "exclusions": [
+        "unrelated sibling failure modes",
+        "provider or standard versions not named in the source lock"
+      ],
+      "dependencies": [
+        "specialist.delivery-operations.observability-router"
+      ],
+      "conflicts": [],
+      "source_requirements": [
+        "primary source with version and immutable identity",
+        "sources.lock required"
+      ],
+      "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
+      "priority_score": "P1",
+      "gate_status": "PLANNED",
+      "gate_path": null,
+      "schema_path": "schemas/specialist-block.v1.json",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.observability-incident.v1",
+      "lifecycle": "PLANNED",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "version": "1.0.0",
+      "required_upstream_router": "specialist.delivery-operations.observability-router",
+      "block_id": "specialist.delivery-operations.observability-incident",
+      "block_ids": []
     }
   ],
   "typed_overlay_counts": {
-    "ROUTER": 12,
-    "CONTROL_PLANE": 13,
+    "ROUTER": 13,
+    "CONTROL_PLANE": 16,
     "KNOWLEDGE_BLOCK": 0,
     "GOVERNANCE_BLOCK": 0,
     "STANDARD_BLOCK": 0,
     "CONTEXT_BLOCK": 0,
-    "ATOMIC_SPECIALIST": 79,
+    "ATOMIC_SPECIALIST": 81,
     "COMPILED_AGENT_PACKAGE": 0
   },
-  "inventory_sha256": "b1af7808c9f9c2a96bae74093f4cf41507c097eebef55d5fc22586146c36de45"
+  "inventory_sha256": "6a87400727d843dad7813762683e6c507457263912c5b5f12479ce40849b11ae"
 }

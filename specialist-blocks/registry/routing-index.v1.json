@@ -31,6 +31,40 @@
       "priority": 1
     },
     {
+      "route_id": "route.assurance-enterprise.test-architect",
+      "family": "assurance-enterprise",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "QA.TEST_ARCHITECT",
+        "quality gates",
+        "test architecture",
+        "test strategy"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "test.evidence",
+        "test.scope",
+        "test.strategy"
+      ],
+      "select": [
+        "specialist.assurance-enterprise.test-architect"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved standard version",
+        "unsafe action"
+      ],
+      "priority": 3
+    },
+    {
       "route_id": "route.control.bootstrap-project-initializer",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -59,6 +93,38 @@
         "unsafe write, adoption, activation, deployment, or migration action"
       ],
       "priority": 0
+    },
+    {
+      "route_id": "route.control.central-integrator",
+      "family": "permanent-governance-control",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "AGENT.CENTRAL_INTEGRATOR",
+        "authority graph",
+        "block lock",
+        "central integration"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "handoff.receipt",
+        "integration.candidate",
+        "integration.conflicts",
+        "integration.dependencies",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.central-integrator"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 3
     },
     {
       "route_id": "route.control.independent-auditor",
@@ -152,6 +218,38 @@
       "priority": 0
     },
     {
+      "route_id": "route.control.release-manager",
+      "family": "permanent-governance-control",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "AGENT.RELEASE_MANAGER",
+        "release readiness",
+        "rollback evidence",
+        "version change"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "release.changes",
+        "release.proof",
+        "release.rollback",
+        "release.version",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.release-manager"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 3
+    },
+    {
       "route_id": "route.control.resource-scheduler",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -217,6 +315,74 @@
       "priority": 0
     },
     {
+      "route_id": "route.control.worktree-custody",
+      "family": "permanent-governance-control",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "AGENT.WORKTREE_CUSTODY",
+        "changed paths",
+        "clean readback",
+        "worktree custody"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "custody.receipt",
+        "request",
+        "signals",
+        "source_lock",
+        "worktree.base",
+        "worktree.changed_paths",
+        "worktree.identity"
+      ],
+      "select": [
+        "specialist.control.worktree-custody"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 3
+    },
+    {
+      "route_id": "route.data.migration-rollback",
+      "family": "data",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "DATA.MIGRATION_ROLLBACK",
+        "backfill rollback",
+        "migration rollback",
+        "schema migration"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "data.backup",
+        "data.engine",
+        "data.migration",
+        "data.rollback",
+        "request",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.data.migration-rollback"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved standard version",
+        "unsafe action"
+      ],
+      "priority": 3
+    },
+    {
       "route_id": "route.data.postgresql-rls",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
@@ -275,6 +441,74 @@
         "unsafe action"
       ],
       "priority": 1
+    },
+    {
+      "route_id": "route.delivery-operations.observability-incident",
+      "family": "delivery-operations",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "SRE.OBSERVABILITY_INCIDENT",
+        "alert quality",
+        "incident evidence",
+        "monitoring",
+        "observability"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "incident.identity",
+        "observability.evidence",
+        "request",
+        "service.identity",
+        "signal.scope",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.delivery-operations.observability-incident"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved standard version",
+        "unsafe action"
+      ],
+      "priority": 3
+    },
+    {
+      "route_id": "route.delivery-operations.observability-router",
+      "family": "delivery-operations",
+      "role_kind": "ROUTER",
+      "signals": [
+        "SRE.OBSERVABILITY_INCIDENT",
+        "alerting",
+        "incident response",
+        "monitoring",
+        "observability"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "incident.identity",
+        "request",
+        "service.identity",
+        "signal.scope",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.delivery-operations.observability-router"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "stale or superseded source",
+        "unsafe action"
+      ],
+      "priority": 3
     },
     {
       "route_id": "route.foundation.authority-jurisdiction-gate",
@@ -2423,6 +2657,37 @@
       "priority": 1
     },
     {
+      "route_id": "route.standard.conventional-commits-1-0-0",
+      "family": "delivery-operations",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "BREAKING CHANGE",
+        "Conventional Commits",
+        "commit type",
+        "release notes"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "release.changes",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.conventional-commits-1-0-0"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 3
+    },
+    {
       "route_id": "route.standard.nist-ssdf",
       "family": "security",
       "role_kind": "STANDARD_BLOCK",
@@ -2700,6 +2965,37 @@
       "priority": 1
     },
     {
+      "route_id": "route.standard.semantic-versioning-2-0-0",
+      "family": "delivery-operations",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "SemVer",
+        "breaking change",
+        "semantic versioning",
+        "version precedence"
+      ],
+      "required_context": [
+        "activity",
+        "applicability_decision",
+        "data_class",
+        "effective_date",
+        "entity",
+        "jurisdiction",
+        "release.version",
+        "standard_version"
+      ],
+      "select": [
+        "specialist.standard.semantic-versioning-2-0-0"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 3
+    },
+    {
       "route_id": "route.standard.slsa",
       "family": "delivery-operations",
       "role_kind": "STANDARD_BLOCK",
@@ -2757,5 +3053,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "d74f5699329e14b239ddbeb89c4e3e58019466bcdefe0645a9d823e73858a862"
+  "routing_sha256": "7b3501f76001891366c9067b4ba0b81fd872cf989782773494614194f54c1f36"
 }

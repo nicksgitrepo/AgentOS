@@ -31,6 +31,8 @@ const sourceCatalog = {
   owaspWebTop10: {source_id: "source.owasp-top10-2025", title: "OWASP Top 10:2025", publisher: "OWASP Foundation", url: "https://owasp.org/Top10/", version: "2025", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "owasp-top10-2025-release", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Version-bound web application security risk categories and category identity; not a certification or project-specific risk determination."},
   owaspApiTop10: {source_id: "source.owasp-api-top10-2023", title: "OWASP API Security Top 10 2023", publisher: "OWASP Foundation", url: "https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/", version: "2023", effective_date: "2023-07-03", retrieved_date: SOURCE_DATE, immutable_identity: "owasp-api-security-top10-2023-release-20230703", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Version-bound API security risk categories and category identity; not a certification or project-specific risk determination."},
   slsa: {source_id: "source.slsa-spec-1-2", title: "SLSA Specification", publisher: "SLSA", url: "https://slsa.dev/spec/v1.2/", version: "1.2", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "slsa-spec-v1.2-approved", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Approved SLSA tracks, levels, attestations, and provenance references."},
+  semver: {source_id: "source.semantic-versioning-2-0-0", title: "Semantic Versioning", publisher: "Semantic Versioning", url: "https://semver.org/spec/v2.0.0.html", version: "2.0.0", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "semantic-versioning-2.0.0", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version precedence and compatibility signaling; no product acceptance or release authority."},
+  conventionalCommits: {source_id: "source.conventional-commits-1-0-0", title: "Conventional Commits", publisher: "Conventional Commits", url: "https://www.conventionalcommits.org/en/v1.0.0/", version: "1.0.0", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "conventional-commits-1.0.0", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Commit-message structure and change-intent signaling; no merge or release authority."},
   rustReference: {source_id: "source.rust-reference-1-97-1", title: "The Rust Reference", publisher: "Rust Project", url: "https://doc.rust-lang.org/reference.html", version: "1.97.1", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "rust-reference-1.97.1-stable-2026-08-11", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Rust language semantics and reference behavior."},
   typescript: {source_id: "source.typescript-5-9", title: "TypeScript 5.9 Release Notes", publisher: "Microsoft TypeScript", url: "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html", version: "5.9", effective_date: "2025-08-01", retrieved_date: SOURCE_DATE, immutable_identity: "typescript-5.9-release-notes-2025-08-01", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "TypeScript 5.9 language and compiler changes."},
   react: {source_id: "source.react-19-2", title: "React 19.2 Release Notes", publisher: "React", url: "https://react.dev/blog/2025/10/01/react-19-2", version: "19.2", effective_date: "2025-10-01", retrieved_date: SOURCE_DATE, immutable_identity: "react-19.2-release-2025-10-01", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "React 19.2 runtime and component behavior."},
@@ -156,6 +158,46 @@ const specs = [
     requirements: [
       {requirement_id: "SLSA.1.2.provenance", statement: "Bind verifiable provenance to the source, build, and artifact identities in the selected track.", source_ref: "SLSA.1.2:provenance", evidence: "Attestation identity and verification receipt."},
       {requirement_id: "SLSA.1.2.track-level", statement: "Evaluate the declared source or build track and level without silently broadening the claim.", source_ref: "SLSA.1.2:track-level", evidence: "Explicit track/level applicability overlay."}
+    ]
+  },
+  {
+    slug: "semantic-versioning-2-0-0",
+    blockId: "specialist.standard.semantic-versioning-2-0-0",
+    title: "Semantic Versioning 2.0.0",
+    family: "delivery-operations",
+    priority: "P3",
+    standardIdentity: {publisher: "Semantic Versioning", identifier: "Semantic Versioning", edition: "2.0.0"},
+    source: sourceCatalog.semver,
+    supersessionStatus: "CURRENT_SPECIFICATION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["semantic versioning", "SemVer", "version precedence", "breaking change"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "release.version"],
+    applicabilityInputs: ["versioning scheme and artifact scope", "public compatibility claim scope", "exact edition and source identity", "external applicability overlay"],
+    exceptions: ["SemVer does not prove API compatibility or authorize a release; those require independent artifact and contract evidence.", "Pre-release and build metadata semantics must remain bound to the exact edition."],
+    requirements: [
+      {requirement_id: "SEMVER.2.0.0.precedence", statement: "Compare version precedence using the exact Semantic Versioning 2.0.0 rules, including pre-release ordering.", source_ref: "SemVer.2.0.0:precedence", evidence: "Version strings, comparison result, and exact source-lock identity."},
+      {requirement_id: "SEMVER.2.0.0.compatibility", statement: "Treat a major-version change as a compatibility signal only within the declared public API and evidence scope; do not infer compatibility from a version number alone.", source_ref: "SemVer.2.0.0:versioning", evidence: "Declared API scope and independent compatibility evidence."}
+    ]
+  },
+  {
+    slug: "conventional-commits-1-0-0",
+    blockId: "specialist.standard.conventional-commits-1-0-0",
+    title: "Conventional Commits 1.0.0",
+    family: "delivery-operations",
+    priority: "P3",
+    standardIdentity: {publisher: "Conventional Commits", identifier: "Conventional Commits", edition: "1.0.0"},
+    source: sourceCatalog.conventionalCommits,
+    supersessionStatus: "CURRENT_SPECIFICATION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["Conventional Commits", "commit type", "BREAKING CHANGE", "release notes"],
+    context: ["jurisdiction", "entity", "activity", "data_class", "standard_version", "effective_date", "applicability_decision", "release.changes"],
+    applicabilityInputs: ["commit-history scope", "change-message format", "exact edition and source identity", "external applicability overlay"],
+    exceptions: ["Commit-message conformance does not authorize merge, publication, release, or deployment.", "A breaking-change footer is evidence of declared intent, not proof of actual compatibility impact."],
+    requirements: [
+      {requirement_id: "CONVENTIONAL_COMMITS.1.0.0.structure", statement: "Use the exact type, optional scope, description, optional body, and footer structure defined by Conventional Commits 1.0.0.", source_ref: "ConventionalCommits.1.0.0:structure", evidence: "Commit message parse and source-lock identity."},
+      {requirement_id: "CONVENTIONAL_COMMITS.1.0.0.breaking", statement: "Preserve explicit breaking-change signaling through the defined exclamation-mark or BREAKING CHANGE footer forms.", source_ref: "ConventionalCommits.1.0.0:breaking-changes", evidence: "Parsed commit footer/type and independent change-impact evidence."}
     ]
   },
   {
@@ -356,7 +398,7 @@ function buildBlock(spec, fileDigests, sourceLock) {
     version: 1,
     block_id: spec.blockId,
     revision: "1.0.0",
-    priority: "P1",
+    priority: spec.priority ?? "P1",
     role_kind: "STANDARD_BLOCK",
     family: spec.family,
     title: spec.title,
