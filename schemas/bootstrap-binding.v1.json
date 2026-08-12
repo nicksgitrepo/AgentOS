@@ -702,7 +702,7 @@
     },
     "bootstrap_runtime_controller": {
       "path": "control/bootstrap-runtime.mjs",
-      "sha256": "a4b62b070242fb661386d0b3ef5bb7a96a5efeca4a70934fccb0188c70e06d39"
+      "sha256": "01cc7e5fc7bd5f135716373ca44168b64b623cbb11e6aa90fb0b61094a2c98ab"
     },
     "intent_regulator_runtime_controller": {
       "path": "control/intent-regulator-runtime.mjs",
@@ -710,7 +710,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "d4d818bdc60ccf1fa7dfa263a3d1203dbcb469f9dfaeb0282924b625ae49545f"
+      "sha256": "d737d6f54f84320c223b9dbed560de3cb8752349a8772b66226c81e2cfea83c2"
     },
     "persistent_intent_runtime_primitives_controller": {
       "path": "control/persistent-intent-runtime-primitives.mjs",
@@ -846,7 +846,15 @@
     },
     "project_memory_store_controller": {
       "path": "control/project-memory-store.mjs",
-      "sha256": "a4e872f5d19350de44ac920cd37ce1106496863ad600003c1c466c6b46fc3b2d"
+      "sha256": "305761f4dad20e9e69e87d63482d45dbaefc8c2805be82becb02d092f929edea"
+    },
+    "project_memory_artifact_controller": {
+      "path": "control/project-memory-artifacts.mjs",
+      "sha256": "024b17341d68b056dace200d28d1f43a9884ac4e2f9884b67aff12b6370f4018"
+    },
+    "project_memory_runtime_controller": {
+      "path": "control/project-memory-runtime.mjs",
+      "sha256": "8ed653c8fff9d5c681baa18854c4b6f749ba5c9bc6391e17dfde74d2e4fe138b"
     },
     "project_memory_common_controller": {
       "path": "control/map-memory-common.mjs",
@@ -863,6 +871,22 @@
     "project_memory_contract": {
       "path": "schemas/project-memory.v1.json",
       "sha256": "813540f8125457b36ea6c62375903948bfb21482d731956d74cae841d504fef0"
+    },
+    "project_memory_artifact_contract": {
+      "path": "schemas/project-memory-artifact.v1.json",
+      "sha256": "992e3726489ba5637e60563e9108a2648c56cc73519d27609754c2a4af18c9d3"
+    },
+    "project_memory_runtime_contract": {
+      "path": "schemas/project-memory-runtime.v1.json",
+      "sha256": "01a44ca590386b19dc7054e92b077b0dc06f0b94162b56c03752d07df5f3369f"
+    },
+    "project_memory_task_context_contract": {
+      "path": "schemas/project-memory-task-context.v1.json",
+      "sha256": "41ae4562f51f84a0101fc9c34dc530aef9d9cc51c46ea5e20a478e24c8dd1f39"
+    },
+    "project_memory_capsule_import_receipt_contract": {
+      "path": "schemas/project-memory-capsule-import-receipt.v1.json",
+      "sha256": "90481c9ee8182a173de3935f2a1bb55bb67ba876cd3f3ca18d549282d0fae616"
     },
     "project_map_contract": {
       "path": "schemas/project-map.v1.json",
@@ -886,7 +910,11 @@
     },
     "project_memory_article": {
       "path": "docs/project-memory-ledger.md",
-      "sha256": "50a80d88f8d25aade62f89fa1bdee339631ea300e775c5c2405abe2465bb31ee"
+      "sha256": "3cab5de72b685458ddb8a0dd1f3f4074d02e8853d27345bad74f80127c50f992"
+    },
+    "project_memory_operational_candidate_article": {
+      "path": "docs/project-memory-operational-candidate-2026-08-11.md",
+      "sha256": "b3fa6535e01e589155285ff6026657bcb7190af3d23b98fc9c9d7240943dd311"
     },
     "project_memory_audit_report": {
       "path": "docs/feature-audits/PROJECT_MEMORY_LEDGER/auditreport.md",
@@ -907,6 +935,10 @@
     "project_memory_schema_verifier": {
       "path": "tests/verify-project-memory-schema.mjs",
       "sha256": "9f0900649d97b98e67ceb200b5f86b3da368c3b95fe1dd6504b7becc7df88998"
+    },
+    "project_memory_runtime_verifier": {
+      "path": "tests/verify-project-memory-runtime.mjs",
+      "sha256": "ac1fb76ab505c2b96b2d6b8ba2b1fc5ed3fb65d56535704bbd5063d6088e3316"
     },
     "portability_source_hygiene_audit_report": {
       "path": "docs/feature-audits/PORTABILITY_SOURCE_HYGIENE/auditreport.md",

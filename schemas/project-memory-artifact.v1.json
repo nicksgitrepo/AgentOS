@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_memory_artifact.v1",
+  "title": "AgentOS privacy-screened project-memory semantic artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "contract_status", "visibility", "advisory_only",
+    "acceptance_authority", "artifact_kind", "scope_ref", "project_ref",
+    "payload", "payload_sha256", "artifact_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.project_memory_artifact.v1"},
+    "version": {"const": 1},
+    "contract_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "visibility": {"const": "CONTROL_SPACE"},
+    "advisory_only": {"const": true},
+    "acceptance_authority": {"const": false},
+    "artifact_kind": {"$ref": "#/$defs/id"},
+    "scope_ref": {"$ref": "#/$defs/id"},
+    "project_ref": {"$ref": "#/$defs/id"},
+    "payload": {"type": "object"},
+    "payload_sha256": {"$ref": "#/$defs/sha"},
+    "artifact_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

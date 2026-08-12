@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_memory_task_context.v1",
+  "title": "AgentOS transient task-context bridge for hydrated project memory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "source_binding_sha256", "project_context_sha256", "items", "transient_payloads"],
+  "properties": {
+    "schema": {"const": "agentos.project_memory_task_context.v1"},
+    "status": {"const": "READY"},
+    "source_binding_sha256": {"$ref": "#/$defs/sha"},
+    "project_context_sha256": {"$ref": "#/$defs/sha"},
+    "items": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "transient_payloads": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_ref_sha256", "payload"],
+        "properties": {
+          "item_ref_sha256": {"$ref": "#/$defs/sha"},
+          "payload": {"type": "object"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

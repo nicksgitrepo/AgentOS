@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_memory_runtime.v1",
+  "title": "AgentOS operational project-memory runtime state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "status", "snapshot_disposition", "ledger_head_sha256",
+    "event_count", "replay", "snapshot", "capsule", "semantic_context"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.project_memory_runtime.v1"},
+    "status": {"enum": ["READY", "PARTIAL", "STALE", "CONFLICT", "INVALIDATED", "UNAVAILABLE"]},
+    "snapshot_disposition": {"enum": ["CURRENT", "REBUILT_FROM_LEDGER"]},
+    "ledger_head_sha256": {"$ref": "#/$defs/sha"},
+    "event_count": {"type": "integer", "minimum": 0},
+    "replay": {"type": "object"},
+    "snapshot": {"type": "object"},
+    "capsule": {"type": "object"},
+    "semantic_context": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["record_sha256", "artifact"],
+        "properties": {
+          "record_sha256": {"$ref": "#/$defs/sha"},
+          "artifact": {"type": "object"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

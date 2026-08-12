@@ -22,6 +22,9 @@ import {
 } from "./project-memory.mjs";
 import {requireSha} from "./map-memory-common.mjs";
 
+const PROJECT_MEMORY_LOCK_SCHEMA = "agentos.project_memory_lock.v1";
+const LOCK_FIELDS = ["schema", "version", "process_id", "operation", "target_relative_path", "acquired_at_utc", "lock_sha256"];
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -133,12 +136,44 @@ function removeIfPresent(target) {
   }
 }
 
-function acquireLock(lockPath) {
+function compileLock({operation, relativePath}) {
+  const lock = {
+    schema: PROJECT_MEMORY_LOCK_SCHEMA,
+    version: 1,
+    process_id: process.pid,
+    operation,
+    target_relative_path: relativePath,
+    acquired_at_utc: new Date().toISOString(),
+    lock_sha256: null,
+  };
+  lock.lock_sha256 = canonicalDigest({...lock, lock_sha256: null});
+  assertPersistedRecordSafe(lock);
+  return lock;
+}
+
+function validateLock(lock, {relativePath = null} = {}) {
+  assert(lock !== null && typeof lock === "object" && !Array.isArray(lock), "project-memory lock must be an object");
+  assert(JSON.stringify(Object.keys(lock).sort(compareUtf8)) === JSON.stringify([...LOCK_FIELDS].sort(compareUtf8)), "project-memory lock fields mismatch");
+  assert(lock.schema === PROJECT_MEMORY_LOCK_SCHEMA && lock.version === 1, "project-memory lock identity is invalid");
+  assert(Number.isSafeInteger(lock.process_id) && lock.process_id > 0, "project-memory lock process is invalid");
+  assert(["APPEND_LEDGER", "WRITE_SNAPSHOT"].includes(lock.operation), "project-memory lock operation is invalid");
+  assert(typeof lock.target_relative_path === "string" && lock.target_relative_path.length > 0, "project-memory lock target is invalid");
+  assert(!path.isAbsolute(lock.target_relative_path) && !lock.target_relative_path.split(/[\\/]/u).some((segment) => segment === ".."), "project-memory lock target is unsafe");
+  assert(typeof lock.acquired_at_utc === "string" && Number.isFinite(Date.parse(lock.acquired_at_utc)), "project-memory lock timestamp is invalid");
+  requireSha(lock.lock_sha256, "project-memory lock digest");
+  assert(lock.lock_sha256 === canonicalDigest({...lock, lock_sha256: null}), "project-memory lock digest mismatch");
+  if (relativePath !== null) assert(lock.target_relative_path === relativePath, "project-memory lock targets another authority record");
+  assertPersistedRecordSafe(lock);
+  return lock;
+}
+
+function acquireLock(lockPath, {operation, relativePath}) {
   let descriptor = null;
   try {
     descriptor = fs.openSync(lockPath, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
-    fs.writeFileSync(descriptor, Buffer.from("LOCKED\n", "utf8"));
+    fs.writeFileSync(descriptor, Buffer.from(`${canonicalJson(compileLock({operation, relativePath}))}\n`, "utf8"));
     fs.fsyncSync(descriptor);
+    syncDirectory(path.dirname(lockPath));
     return true;
   } catch (error) {
     if (error.code === "EEXIST") throw new MemoryConflictError("LEDGER_LOCKED", "project-memory ledger is already locked");
@@ -213,7 +248,8 @@ export function appendProjectMemoryEvent({
   const target = resolveRelativeTarget(root, relativePath, "project-memory ledger path");
   ensureSafeParents(root, target);
   const lockPath = `${target}.lock`;
-  acquireLock(lockPath);
+  acquireLock(lockPath, {operation: "APPEND_LEDGER", relativePath});
+  let temporaryPath = null;
   try {
     const events = readEventsAtTarget(target);
     validateMemoryLedger(events);
@@ -235,21 +271,20 @@ export function appendProjectMemoryEvent({
     if (semanticConflict !== null) throw new MemoryConflictError("RECORD_CONFLICT", "project-memory record version conflicts with existing canonical truth", semanticConflict);
     const ledgerBinding = bindingFrom(events[0] ?? event, "project-memory append binding");
     validateMemoryLedger([...events, event], {binding: ledgerBinding});
-    const line = Buffer.from(`${canonicalJson(event)}\n`, "utf8");
-    const descriptor = fs.openSync(target, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_APPEND | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
-    try {
-      fs.writeFileSync(descriptor, line);
-      fs.fsyncSync(descriptor);
-    } finally {
-      fs.closeSync(descriptor);
-    }
+    const nextEvents = [...events, event];
+    temporaryPath = `${target}.tmp-${process.pid}-${Date.now()}`;
+    writeBufferDurably(temporaryPath, Buffer.from(`${nextEvents.map((candidate) => canonicalJson(candidate)).join("\n")}\n`, "utf8"));
+    fs.renameSync(temporaryPath, target);
     syncDirectory(path.dirname(target));
+    temporaryPath = null;
     const readback = readEventsAtTarget(target);
     validateMemoryLedger(readback, {binding: ledgerBinding});
     assert(readback.at(-1)?.event_sha256 === event.event_sha256, "project-memory append readback mismatch");
     return {status: "APPENDED", event, head_sha256: event.event_sha256};
   } finally {
+    if (temporaryPath !== null) removeIfPresent(temporaryPath);
     removeIfPresent(lockPath);
+    syncDirectory(path.dirname(lockPath));
   }
 }
 
@@ -275,7 +310,7 @@ export function writeProjectMemorySnapshotCompareAndSwap({
   const target = resolveRelativeTarget(root, relativePath, "project-memory snapshot path");
   ensureSafeParents(root, target);
   const lockPath = `${target}.lock`;
-  acquireLock(lockPath);
+  acquireLock(lockPath, {operation: "WRITE_SNAPSHOT", relativePath});
   let temporaryPath = null;
   try {
     const existing = assertRegularFile(target, "project-memory snapshot") ? readJsonFile(target, "project-memory snapshot") : null;
@@ -296,7 +331,45 @@ export function writeProjectMemorySnapshotCompareAndSwap({
   } finally {
     if (temporaryPath !== null) removeIfPresent(temporaryPath);
     removeIfPresent(lockPath);
+    syncDirectory(path.dirname(lockPath));
   }
+}
+
+export function recoverProjectMemoryLock({
+  authorityRoot,
+  relativePath = "ledgers/project-memory-events.jsonl",
+  repositoryRoot = process.cwd(),
+} = {}) {
+  const root = resolveAuthorityRoot(authorityRoot, repositoryRoot);
+  const target = resolveRelativeTarget(root, relativePath, "project-memory recovery target");
+  assertSafeParents(root, target);
+  const lockPath = `${target}.lock`;
+  if (!assertRegularFile(lockPath, "project-memory lock")) return {status: "NO_LOCK", recovered_lock_path: null, lock_sha256: null};
+  let lock;
+  try {
+    lock = validateLock(readJsonFile(lockPath, "project-memory lock"), {relativePath});
+  } catch (error) {
+    throw new MemoryConflictError("LOCK_RECOVERY_UNPROVEN", "project-memory lock is not a valid recoverable lease", {cause: error.message});
+  }
+  try {
+    process.kill(lock.process_id, 0);
+    throw new MemoryConflictError("LEDGER_LOCKED", "project-memory lock owner is still running", {process_id: lock.process_id, lock_sha256: lock.lock_sha256});
+  } catch (error) {
+    if (error instanceof MemoryConflictError) throw error;
+    if (error.code !== "ESRCH") {
+      throw new MemoryConflictError("LOCK_RECOVERY_UNPROVEN", "project-memory lock owner could not be proven absent", {process_id: lock.process_id, lock_sha256: lock.lock_sha256});
+    }
+  }
+  const recoveredPath = `${lockPath}.recovered-${lock.lock_sha256}`;
+  assert(!fs.existsSync(recoveredPath), "project-memory recovered lock evidence already exists");
+  fs.renameSync(lockPath, recoveredPath);
+  syncDirectory(path.dirname(lockPath));
+  const recovered = validateLock(readJsonFile(recoveredPath, "recovered project-memory lock"), {relativePath});
+  return {
+    status: "RECOVERED_PROVEN_DEAD_PROCESS",
+    recovered_lock_path: path.relative(root, recoveredPath),
+    lock_sha256: recovered.lock_sha256,
+  };
 }
 
 export const PROJECT_MEMORY_STORE_API = Object.freeze({
@@ -305,4 +378,5 @@ export const PROJECT_MEMORY_STORE_API = Object.freeze({
   appendProjectMemoryEvent,
   readProjectMemorySnapshot,
   writeProjectMemorySnapshotCompareAndSwap,
+  recoverProjectMemoryLock,
 });
