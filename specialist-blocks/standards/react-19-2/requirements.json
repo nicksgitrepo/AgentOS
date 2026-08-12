@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.react-19-2",
+  "standard_identity": {
+    "publisher": "React",
+    "identifier": "React Release Notes",
+    "edition": "19.2"
+  },
+  "requirements": [
+    {
+      "requirement_id": "REACT.19.2.runtime",
+      "statement": "Bind component-runtime findings to React 19.2 and the declared component boundary.",
+      "source_ref": "React.19.2.release-notes",
+      "evidence": "Version, component boundary, and source-lock receipt."
+    },
+    {
+      "requirement_id": "REACT.19.2.scope",
+      "statement": "Keep framework runtime claims separate from browser, accessibility, and UX acceptance claims.",
+      "source_ref": "React.19.2.scope",
+      "evidence": "Narrow scope and sibling routing record."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

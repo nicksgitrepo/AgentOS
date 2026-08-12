@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.typescript-language.v1",
   "block_id": "specialist.software-language-runtime.typescript-language",
-  "candidate_digest": "ac884c0fec02628150aaa70e3511d1d3c8df41171d682826257fe83256ffb886",
+  "candidate_digest": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5",
   "model_requirement": "gpt-5.6-luna/max",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [

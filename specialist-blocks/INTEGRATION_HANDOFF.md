@@ -29,8 +29,8 @@ attached as a separate immutable receipt commit.
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 79`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `32` packages total — `6` `ROUTER`, `13`
-  `CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `3` source-locked
+- Compiled candidate package roster: `42` packages total — `6` `ROUTER`, `13`
+  `CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `13` source-locked
   `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
   materialization count above.
 - Atomic overlay: 12 routers, 79 atomic specialists, 13 control-plane roles;
@@ -47,8 +47,8 @@ attached as a separate immutable receipt commit.
 - The source-locked standard slice contains NIST SP 800-218 SSDF 1.1, OWASP
   ASVS 5.0.0, and SLSA Specification 1.2. Each binds normalized requirements,
   compatibility/supersession metadata, and its source manifest by digest.
-- The separate read-only independent evaluator passes all 32 package candidates,
-  384 gate files, and 544 hostile fixtures. Its disposition is
+- The separate read-only independent evaluator passes all 42 package candidates,
+  504 gate files, and 714 hostile fixtures. Its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
@@ -57,6 +57,11 @@ attached as a separate immutable receipt commit.
   TypeScript, React, PostgreSQL RLS, OpenAPI contracts, OAuth, OIDC, AWS IAM,
   Cloudflare DNS, and Cloudflare Cache. Their generic P1 IDs remain routing
   mappings; the packages are not admitted or activated.
+- Each atom now reuses one immutable exact-edition `STANDARD_BLOCK` by
+  dependency and hash: Rust Reference, TypeScript 5.9, React 19.2, PostgreSQL
+  17 RLS, OpenAPI 3.1.1, OAuth RFC 9700, OIDC Core 1.0, AWS IAM, Cloudflare
+  DNS, and Cloudflare Cache. Official source research is encoded once in those
+  standard packages.
 
 ## Unfinished admission gates
 

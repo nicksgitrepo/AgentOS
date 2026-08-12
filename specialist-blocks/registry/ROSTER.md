@@ -56,9 +56,9 @@ Current materialized counts are `ROUTER: 631`, `CONTROL_PLANE: 13`,
 `12` routers, `79` atomic specialists, and `13` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `32` packages total, consisting of `6` `ROUTER`, `13`
-`CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `3` `STANDARD_BLOCK` packages.
-All 32 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
+backlog: `42` packages total, consisting of `6` `ROUTER`, `13`
+`CONTROL_PLANE`, `10` `ATOMIC_SPECIALIST`, and `13` `STANDARD_BLOCK` packages.
+All 42 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 ## Source-locked standard candidates
 
@@ -67,6 +67,16 @@ All 32 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 | `specialist.standard.nist-ssdf` | `security / P1` | [NIST SP 800-218 SSDF](https://csrc.nist.gov/pubs/sp/800/218/final) `1.1`; `sources.lock`; immutable identity `nist-sp-800-218-v1.1-final-20220203` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.nist-ssdf.v1` | 12 gates; external applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.owasp-asvs` | `security / P1` | [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/) `5.0.0`; `sources.lock`; immutable identity `owasp-asvs-5.0.0-release-20250530` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.owasp-asvs.v1` | 12 gates; external applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.slsa` | `delivery-operations / P1` | [SLSA Specification](https://slsa.dev/spec/v1.2/) `1.2`; `sources.lock`; immutable identity `slsa-spec-v1.2-approved` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.slsa.v1` | 12 gates; external track/level overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.rust-reference` | `software-language-runtime / P1` | [Rust Reference](https://doc.rust-lang.org/reference.html) `1.97.1`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.rust-reference.v1` | 12 gates; external edition/toolchain overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.typescript-5-9` | `software-language-runtime / P1` | [TypeScript 5.9 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html) `5.9`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.typescript-5-9.v1` | 12 gates; external compiler overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.react-19-2` | `software-language-runtime / P1` | [React 19.2 release notes](https://react.dev/blog/2025/10/01/react-19-2) `19.2`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.react-19-2.v1` | 12 gates; external framework overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.postgresql-17-rls` | `data / P1` | [PostgreSQL 17 row security](https://www.postgresql.org/docs/17/ddl-rowsecurity.html) `17.10`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.postgresql-17-rls.v1` | 12 gates; external database/tenant overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.openapi-3-1-1` | `product-client / P1` | [OpenAPI Specification](https://spec.openapis.org/oas/v3.1.1.html) `3.1.1`; immutable identity `openapi-spec-3.1.1-2024-10-24` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.openapi-3-1-1.v1` | 12 gates; external contract overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.oauth-rfc-9700` | `security / P1` | [OAuth Security BCP](https://www.rfc-editor.org/rfc/rfc9700.html) `RFC 9700`; exact retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.oauth-rfc-9700.v1` | 12 gates; external flow/client overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.oidc-core-1-0` | `security / P1` | [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html) `1.0`; immutable identity `openid-connect-core-1.0-2014-11-08` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.oidc-core-1-0.v1` | 12 gates; external issuer/claims overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.aws-iam-current` | `delivery-operations / P1` | [AWS IAM policy elements](https://docs.aws.amazon.com/us_en/IAM/latest/UserGuide/reference_policies_elements.html) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.aws-iam-current.v1` | 12 gates; external provider/account overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.cloudflare-dns-current` | `delivery-operations / P1` | [Cloudflare DNS records](https://developers.cloudflare.com/dns/manage-dns-records/) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-dns-current.v1` | 12 gates; external zone overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.cloudflare-cache-current` | `delivery-operations / P1` | [Cloudflare Cache Rules](https://developers.cloudflare.com/cache/how-to/cache-rules/) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-cache-current.v1` | 12 gates; external edge overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 
 Each standard row is content-addressed by its `block_sha256` and binds
 `requirements.json`, `compatibility.json`, and `supersession.json` by digest.
@@ -158,7 +168,7 @@ evidence remain external overlays. New editions, material errata, or normative
 gate corrections create new block versions with compatibility/supersession
 metadata. A non-material publisher refresh creates a freshness receipt only.
 
-The current candidate contains three such source-locked standard packages:
+The current candidate contains thirteen such source-locked standard packages:
 NIST SSDF 1.1, OWASP ASVS 5.0.0, and SLSA Specification 1.2. Their static
 receipts do not change the backlog's `STANDARD_BLOCK: 0` materialization count;
 that count records roles not yet expanded into packages.

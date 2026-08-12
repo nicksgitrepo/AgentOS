@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "04-source-evidence-freshness",
+  "block_id": "specialist.standard.react-19-2",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "React 19.2 Runtime Authority: does the exact edition and external applicability condition pass with typed evidence?",
+  "evidence": [
+    "block_sha256",
+    "external_applicability_overlay",
+    "gate.04-source-evidence-freshness.answer",
+    "gate.04-source-evidence-freshness.evidence",
+    "source_manifest_sha256"
+  ],
+  "next": {
+    "YES": "05-context-completeness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "05-context-completeness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "cd91b41498521ca247c97f4f2b50bef4b716da68b949c87ac395a8bb3e340360"
+}

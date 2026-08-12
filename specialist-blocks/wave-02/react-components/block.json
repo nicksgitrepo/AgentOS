@@ -57,9 +57,9 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "React 19.2 release behavior",
     "component and hook boundaries",
-    "runtime evidence"
+    "runtime evidence",
+    "specialist.standard.react-19-2"
   ],
   "routing": {
     "signals": [
@@ -258,7 +258,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.software-language-runtime.router"
+    "specialist.software-language-runtime.router",
+    "specialist.standard.react-19-2"
   ],
   "conflicts": [],
   "aliases": [],
@@ -297,5 +298,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "1c024e5426c71fd3ffb614ca87caef54bb267216d009570339b695028ed76489"
+  "block_sha256": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d"
 }

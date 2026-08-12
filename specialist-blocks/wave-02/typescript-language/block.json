@@ -57,8 +57,8 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "TypeScript 5.9 release notes",
     "compiler configuration",
+    "specialist.standard.typescript-5-9",
     "type-system and emitted-code evidence"
   ],
   "routing": {
@@ -258,7 +258,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.software-language-runtime.router"
+    "specialist.software-language-runtime.router",
+    "specialist.standard.typescript-5-9"
   ],
   "conflicts": [],
   "aliases": [],
@@ -297,5 +298,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "ac884c0fec02628150aaa70e3511d1d3c8df41171d682826257fe83256ffb886"
+  "block_sha256": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5"
 }

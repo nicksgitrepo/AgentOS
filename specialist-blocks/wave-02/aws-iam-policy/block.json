@@ -57,9 +57,9 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "AWS IAM policy elements",
     "action/resource/condition semantics",
-    "provider version and account evidence"
+    "provider version and account evidence",
+    "specialist.standard.aws-iam-current"
   ],
   "routing": {
     "signals": [
@@ -260,7 +260,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.platform.provider-edge-router"
+    "specialist.platform.provider-edge-router",
+    "specialist.standard.aws-iam-current"
   ],
   "conflicts": [],
   "aliases": [],
@@ -299,5 +300,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "4f947edc9dce506d7c1831a715075f601dd76f1323d15959f52182fd383c0443"
+  "block_sha256": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016"
 }

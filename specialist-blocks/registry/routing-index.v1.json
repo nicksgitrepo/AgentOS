@@ -858,6 +858,84 @@
       "priority": 1
     },
     {
+      "route_id": "route.standard.aws-iam-current",
+      "family": "delivery-operations",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "AWS IAM",
+        "AWS policy",
+        "least privilege"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "policy",
+        "provider",
+        "region"
+      ],
+      "select": [
+        "specialist.standard.aws-iam-current"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.cloudflare-cache-current",
+      "family": "delivery-operations",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "Cloudflare Cache",
+        "cache rules",
+        "edge caching"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "cache_rule",
+        "cache_scope",
+        "provider"
+      ],
+      "select": [
+        "specialist.standard.cloudflare-cache-current"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.cloudflare-dns-current",
+      "family": "delivery-operations",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "Cloudflare DNS",
+        "DNS records",
+        "zone records"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "provider",
+        "records",
+        "zone"
+      ],
+      "select": [
+        "specialist.standard.cloudflare-dns-current"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
       "route_id": "route.standard.nist-ssdf",
       "family": "security",
       "role_kind": "STANDARD_BLOCK",
@@ -877,6 +955,84 @@
       ],
       "select": [
         "specialist.standard.nist-ssdf"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.oauth-rfc-9700",
+      "family": "security",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "OAuth",
+        "authorization flow",
+        "identity security"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "client_type",
+        "flow",
+        "protocol"
+      ],
+      "select": [
+        "specialist.standard.oauth-rfc-9700"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.oidc-core-1-0",
+      "family": "security",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "OIDC",
+        "OpenID Connect",
+        "identity claims"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "claims",
+        "issuer",
+        "protocol"
+      ],
+      "select": [
+        "specialist.standard.oidc-core-1-0"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.openapi-3-1-1",
+      "family": "product-client",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "API contract",
+        "HTTP schema",
+        "OpenAPI"
+      ],
+      "required_context": [
+        "api",
+        "applicability_decision",
+        "contract_scope",
+        "version"
+      ],
+      "select": [
+        "specialist.standard.openapi-3-1-1"
       ],
       "deny_if": [
         "certification request",
@@ -916,6 +1072,85 @@
       "priority": 1
     },
     {
+      "route_id": "route.standard.postgresql-17-rls",
+      "family": "data",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "PostgreSQL RLS",
+        "row-level security",
+        "tenant isolation"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "database",
+        "tenant_boundary",
+        "version"
+      ],
+      "select": [
+        "specialist.standard.postgresql-17-rls"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.react-19-2",
+      "family": "software-language-runtime",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "React component",
+        "component runtime",
+        "react"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "component_boundary",
+        "framework",
+        "version"
+      ],
+      "select": [
+        "specialist.standard.react-19-2"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
+      "route_id": "route.standard.rust-reference",
+      "family": "software-language-runtime",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "Rust Reference",
+        "language semantics",
+        "rust"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "edition",
+        "language",
+        "toolchain",
+        "version"
+      ],
+      "select": [
+        "specialist.standard.rust-reference"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
+    },
+    {
       "route_id": "route.standard.slsa",
       "family": "delivery-operations",
       "role_kind": "STANDARD_BLOCK",
@@ -944,8 +1179,34 @@
         "stale or superseded source"
       ],
       "priority": 1
+    },
+    {
+      "route_id": "route.standard.typescript-5-9",
+      "family": "software-language-runtime",
+      "role_kind": "STANDARD_BLOCK",
+      "signals": [
+        "TypeScript compiler",
+        "type system",
+        "typescript"
+      ],
+      "required_context": [
+        "applicability_decision",
+        "compiler_options",
+        "language",
+        "version"
+      ],
+      "select": [
+        "specialist.standard.typescript-5-9"
+      ],
+      "deny_if": [
+        "certification request",
+        "missing jurisdiction/entity/activity/data applicability",
+        "missing publisher/version/effective identity",
+        "stale or superseded source"
+      ],
+      "priority": 1
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "a231526859014de68b30b151e10f66a2b090ba5660f3892d5623390a216ec3c8"
+  "routing_sha256": "ec836c94e18749e25ad05e38dcdc4d60faf0355533e861abdea78a3a901b1d8a"
 }

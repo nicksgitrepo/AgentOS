@@ -57,9 +57,9 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "OpenID Connect Core 1.0",
     "authentication evidence",
-    "issuer and claims semantics"
+    "issuer and claims semantics",
+    "specialist.standard.oidc-core-1-0"
   ],
   "routing": {
     "signals": [
@@ -260,7 +260,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.security.router"
+    "specialist.security.router",
+    "specialist.standard.oidc-core-1-0"
   ],
   "conflicts": [],
   "aliases": [],
@@ -299,5 +300,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "369a08f03366e0c94ed3b98620981fae9b2c511c382109a60178d010d4c6596d"
+  "block_sha256": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66"
 }

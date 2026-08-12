@@ -57,9 +57,9 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "Cloudflare DNS record management",
     "external account/zone custody",
-    "record type and zone evidence"
+    "record type and zone evidence",
+    "specialist.standard.cloudflare-dns-current"
   ],
   "routing": {
     "signals": [
@@ -260,7 +260,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.platform.provider-edge-router"
+    "specialist.platform.provider-edge-router",
+    "specialist.standard.cloudflare-dns-current"
   ],
   "conflicts": [],
   "aliases": [],
@@ -299,5 +300,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "14f96648137e9710caf5014eb41a7a807bbd2d8c394bfada8f1c67a33674ecef"
+  "block_sha256": "1a3bffa788c03d2ee2d20796bc59f0ede08688a321e0b6078d30b3af62cc8298"
 }

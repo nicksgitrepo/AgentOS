@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.openapi-3-1-1",
+  "standard_identity": {
+    "publisher": "OpenAPI Initiative",
+    "identifier": "OpenAPI Specification",
+    "edition": "3.1.1"
+  },
+  "requirements": [
+    {
+      "requirement_id": "OAS.3.1.1.contract",
+      "statement": "Bind contract findings to the exact OpenAPI 3.1.1 document and declared operation/schema scope.",
+      "source_ref": "OpenAPI.3.1.1",
+      "evidence": "Document identity, operation trace, and source-lock receipt."
+    },
+    {
+      "requirement_id": "OAS.3.1.1.compatibility",
+      "statement": "Record compatibility findings without silently selecting a different OpenAPI edition.",
+      "source_ref": "OpenAPI.3.1.1:version",
+      "evidence": "Versioned compatibility mapping."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

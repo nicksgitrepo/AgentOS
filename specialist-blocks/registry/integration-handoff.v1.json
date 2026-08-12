@@ -41,11 +41,11 @@
       "COMPILED_AGENT_PACKAGE": 0
     },
     "compiled_package_counts": {
-      "total": 32,
+      "total": 42,
       "ROUTER": 6,
       "CONTROL_PLANE": 13,
       "ATOMIC_SPECIALIST": 10,
-      "STANDARD_BLOCK": 3
+      "STANDARD_BLOCK": 13
     }
   },
   "lanes": {
@@ -93,12 +93,12 @@
     "human_roster": "specialist-blocks/registry/ROSTER.md"
   },
   "receipts": [
-    {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "32 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
-    {"receipt_id": "specialist-standard-reuse-v1", "status": "PASS", "scope": "three source-locked STANDARD_BLOCK candidates, normalized requirements, compatibility/supersession digests, 36 gate files, and 51 hostile fixtures"},
+    {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "42 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
+    {"receipt_id": "specialist-standard-reuse-v1", "status": "PASS", "scope": "thirteen source-locked STANDARD_BLOCK candidates, normalized requirements, compatibility/supersession digests, 156 gate files, and 221 hostile fixtures"},
     {"receipt_id": "specialist-task-composition-fixture-v1", "status": "PASS", "scope": "three external task-shaped packages, immutable standard reuse, minimal closure, negative denials, deterministic bootstrap output, zero repository residue"},
-    {"receipt_id": "specialist-independent-evaluator-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "read-only independent checks over 32 packages, 384 gate files, and 544 hostile fixtures; utility/harm remains pending"},
+    {"receipt_id": "specialist-independent-evaluator-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "read-only independent checks over 42 packages, 504 gate files, and 714 hostile fixtures; utility/harm remains pending"},
     {"receipt_id": "specialist-atomic-composition-v1", "status": "PASS", "scope": "atomic upstream-router dependency closure, router-plus-atomic routing, sibling-conflict denial, lock preservation, and missing-upstream hostile fixtures"},
-    {"receipt_id": "specialist-p1-atomic-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P1 routers and ten source-locked atomic candidates for language/runtime, data, API contracts, identity, AWS IAM, and Cloudflare DNS/cache"},
+    {"receipt_id": "specialist-p1-atomic-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P1 routers, ten source-locked atomic candidates, and ten reusable exact-edition STANDARD_BLOCK authorities for language/runtime, data, API contracts, identity, AWS IAM, and Cloudflare DNS/cache"},
     {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"}
   ],
   "unfinished_gates": [

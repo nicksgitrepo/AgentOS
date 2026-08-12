@@ -15,21 +15,8 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
-    },
-    {
-      "source_id": "source.react-19-2",
-      "title": "React 19.2 Release Notes",
-      "publisher": "React",
-      "url": "https://react.dev/blog/2025/10/01/react-19-2",
-      "version": "19.2",
-      "effective_date": "2025-10-01",
-      "retrieved_date": "2026-08-11",
-      "immutable_identity": "react-19.2-release-2025-10-01",
-      "content_sha256": null,
-      "authority_class": "PRIMARY_DESCRIPTIVE",
-      "scope": "React 19.2 runtime and component behavior; no product UX or acceptance authority."
     }
   ],
   "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "4475ddd7c048b6257e697ee748dbcb0e44b9d0da1c2fd7b07126ed819529654b"
+  "manifest_sha256": "5f19b2a40c13c8a4fc0d03b22b659159a61e6da9689c543fc73b6bb8edb02cd3"
 }

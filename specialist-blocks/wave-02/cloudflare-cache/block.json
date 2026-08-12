@@ -57,9 +57,9 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "Cloudflare Cache Rules",
     "edge scope and purge boundary",
-    "matching and cache behavior"
+    "matching and cache behavior",
+    "specialist.standard.cloudflare-cache-current"
   ],
   "routing": {
     "signals": [
@@ -260,7 +260,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.platform.provider-edge-router"
+    "specialist.platform.provider-edge-router",
+    "specialist.standard.cloudflare-cache-current"
   ],
   "conflicts": [],
   "aliases": [],
@@ -299,5 +300,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "c526afbcdd0d0392940f148c74a89c097c4a1336e6018793ba8947a9c255d6da"
+  "block_sha256": "f9e5bdccb6c797add9816b0b398a8aeb5622ea2a07a0af6e8f1e357d750f3981"
 }

@@ -15,21 +15,8 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
-    },
-    {
-      "source_id": "source.cloudflare-dns-records",
-      "title": "Cloudflare DNS Records",
-      "publisher": "Cloudflare",
-      "url": "https://developers.cloudflare.com/dns/manage-dns-records/",
-      "version": "current",
-      "effective_date": "2026-06-24",
-      "retrieved_date": "2026-08-11",
-      "immutable_identity": "cloudflare-dns-records-current-2026-06-24",
-      "content_sha256": null,
-      "authority_class": "PRIMARY_DESCRIPTIVE",
-      "scope": "Cloudflare DNS record management semantics; account and zone authority remain external."
     }
   ],
   "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "84e67fda66b1be68080feb1054e46670c9da09dbd850c53583c59e8aa1c6870d"
+  "manifest_sha256": "9e2ac665f98ca8bf55ebe4440bf3ec856333e741ea984e9886af2597800dc8d3"
 }

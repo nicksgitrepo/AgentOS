@@ -421,7 +421,7 @@
     },
     {
       "block_id": "specialist.data.postgresql-rls",
-      "candidate_digest": "f896ac9c3a548b3acf02af84ddc70d5b55a16e1cdb6708660d7e1feda6cfe1a8",
+      "candidate_digest": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: PostgreSQL Row-Level Security; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -458,8 +458,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.postgresql-17-rls"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.data.router",
@@ -467,7 +466,8 @@
         "specialist.foundation.evidence-freshness-gate",
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
-        "specialist.foundation.tool-custody-gate"
+        "specialist.foundation.tool-custody-gate",
+        "specialist.standard.postgresql-17-rls"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -892,7 +892,7 @@
     },
     {
       "block_id": "specialist.platform.aws-iam-policy",
-      "candidate_digest": "4f947edc9dce506d7c1831a715075f601dd76f1323d15959f52182fd383c0443",
+      "candidate_digest": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: AWS IAM Policy Elements; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -929,8 +929,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.aws-iam-policy-elements"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -938,7 +937,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.platform.provider-edge-router"
+        "specialist.platform.provider-edge-router",
+        "specialist.standard.aws-iam-current"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -950,7 +950,7 @@
     },
     {
       "block_id": "specialist.platform.cloudflare-cache",
-      "candidate_digest": "c526afbcdd0d0392940f148c74a89c097c4a1336e6018793ba8947a9c255d6da",
+      "candidate_digest": "f9e5bdccb6c797add9816b0b398a8aeb5622ea2a07a0af6e8f1e357d750f3981",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare Cache Rules; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -987,8 +987,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.cloudflare-cache-rules"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -996,7 +995,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.platform.provider-edge-router"
+        "specialist.platform.provider-edge-router",
+        "specialist.standard.cloudflare-cache-current"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1008,7 +1008,7 @@
     },
     {
       "block_id": "specialist.platform.cloudflare-dns",
-      "candidate_digest": "14f96648137e9710caf5014eb41a7a807bbd2d8c394bfada8f1c67a33674ecef",
+      "candidate_digest": "1a3bffa788c03d2ee2d20796bc59f0ede08688a321e0b6078d30b3af62cc8298",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare DNS Records; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1045,8 +1045,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.cloudflare-dns-records"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1054,7 +1053,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.platform.provider-edge-router"
+        "specialist.platform.provider-edge-router",
+        "specialist.standard.cloudflare-dns-current"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1119,7 +1119,7 @@
     },
     {
       "block_id": "specialist.product-client.openapi-contracts",
-      "candidate_digest": "8df76e745ee57052418bc1482f5e9a9a275d5c5a3ca9772f8e66bea93d380c02",
+      "candidate_digest": "171b4e51575523b9f16e52dad3092b522d3fcd00c1fcd3ac4d27cebc9b55a43c",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: OpenAPI HTTP Contract; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1156,8 +1156,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.openapi-3-1-1"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1165,7 +1164,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.product-client.router"
+        "specialist.product-client.router",
+        "specialist.standard.openapi-3-1-1"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1230,7 +1230,7 @@
     },
     {
       "block_id": "specialist.security.oauth-identity",
-      "candidate_digest": "05c203329c251230e377561a5e10db7721f40a3486e466575d13995a1d93c6fe",
+      "candidate_digest": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: OAuth Security Identity Flow; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1267,8 +1267,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.rfc-9700"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1276,7 +1275,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.security.router"
+        "specialist.security.router",
+        "specialist.standard.oauth-rfc-9700"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1288,7 +1288,7 @@
     },
     {
       "block_id": "specialist.security.oidc-core",
-      "candidate_digest": "369a08f03366e0c94ed3b98620981fae9b2c511c382109a60178d010d4c6596d",
+      "candidate_digest": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: OpenID Connect Core Claims; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1325,8 +1325,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.oidc-core"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1334,7 +1333,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.security.router"
+        "specialist.security.router",
+        "specialist.standard.oidc-core-1-0"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1399,7 +1399,7 @@
     },
     {
       "block_id": "specialist.software-language-runtime.react-components",
-      "candidate_digest": "1c024e5426c71fd3ffb614ca87caef54bb267216d009570339b695028ed76489",
+      "candidate_digest": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: React Component Runtime; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1436,8 +1436,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.react-19-2"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1445,7 +1444,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.software-language-runtime.router"
+        "specialist.software-language-runtime.router",
+        "specialist.standard.react-19-2"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1510,7 +1510,7 @@
     },
     {
       "block_id": "specialist.software-language-runtime.rust-backend",
-      "candidate_digest": "d1280a4e2c33edd15ef0a0daf32976333c657052df9990d3ca65a94b14059a5c",
+      "candidate_digest": "a52204f7a2a7e00ce5f7ca5120333a4d3d7ea2956194bdf03eea32d96199d877",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Rust Backend Language Semantics; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1547,8 +1547,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.rust-reference"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1556,7 +1555,8 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.software-language-runtime.router"
+        "specialist.software-language-runtime.router",
+        "specialist.standard.rust-reference"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
@@ -1568,7 +1568,7 @@
     },
     {
       "block_id": "specialist.software-language-runtime.typescript-language",
-      "candidate_digest": "ac884c0fec02628150aaa70e3511d1d3c8df41171d682826257fe83256ffb886",
+      "candidate_digest": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: TypeScript Language and Compiler Semantics; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1605,8 +1605,7 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law",
-        "source.typescript-5-9"
+        "source.atomic-specialization-law"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -1614,12 +1613,178 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.software-language-runtime.router"
+        "specialist.software-language-runtime.router",
+        "specialist.standard.typescript-5-9"
       ],
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "evaluator_receipt": "specialist-eval.typescript-language.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.aws-iam-current",
+      "candidate_digest": "b3ef939cb57279f6a88bbd416226829e2e6bb20e6aa5b2613fa9fe6d6dd3ec48",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: AWS IAM Policy Elements Current Reference; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "delivery-operations",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.aws-iam-policy-elements"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.aws-iam-current.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.cloudflare-cache-current",
+      "candidate_digest": "fd2aee0c3d782a3f37b68a188e314c754ddb25ed3ccde036c9853eced75c9fd0",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: Cloudflare Cache Rules Current Reference; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "delivery-operations",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.cloudflare-cache-rules"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.cloudflare-cache-current.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.cloudflare-dns-current",
+      "candidate_digest": "839c7f916eebb81a5766373e326898e9878dce6750edeb79d086c66cb05e13b4",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: Cloudflare DNS Records Current Reference; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "delivery-operations",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.cloudflare-dns-records"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.cloudflare-dns-current.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -1680,6 +1845,171 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.standard.oauth-rfc-9700",
+      "candidate_digest": "b78ea77bdde8d0ed484fb135ef3eab197aced90183fa6f5afc1f3cacadfa3f6b",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: OAuth 2.0 Security BCP RFC 9700; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "security",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.rfc-9700"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.oauth-rfc-9700.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.oidc-core-1-0",
+      "candidate_digest": "4da992ee05545369feb2b4c01b00c60d1632f384d5c3eea7d1ac10f98add10f2",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: OpenID Connect Core 1.0; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "security",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.oidc-core-1-0"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.oidc-core-1-0.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.openapi-3-1-1",
+      "candidate_digest": "dd51614d340d8227cd1c6b4e2d9adc6a20468c11a2736ee517326c527ad50695",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: OpenAPI Specification 3.1.1; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "product-client",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.openapi-3-1-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.openapi-3-1-1.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.standard.owasp-asvs",
       "candidate_digest": "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f",
       "role_kind": "STANDARD_BLOCK",
@@ -1730,6 +2060,171 @@
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "evaluator_receipt": "specialist-eval.owasp-asvs.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.postgresql-17-rls",
+      "candidate_digest": "09b45ba38933b2e46e3bf5fe8b862603d3f5f13c6c8d2950343db31c3e3fbd94",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: PostgreSQL 17 Row-Level Security Authority; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "data",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.postgresql-17-rls"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.postgresql-17-rls.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.react-19-2",
+      "candidate_digest": "5aab3dada3967f3def8daf9984e894119303ee9f521b3114972d4694bd7259cf",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: React 19.2 Runtime Authority; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "software-language-runtime",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.react-19-2"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.react-19-2.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.rust-reference",
+      "candidate_digest": "7b447ef37ef69054faa6b343b0a9083a86388e976111326a86fe7c0834ed8d0c",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: Rust Reference 1.97.1; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "software-language-runtime",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.rust-reference-1-97-1"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.rust-reference.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -1788,10 +2283,65 @@
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.standard.typescript-5-9",
+      "candidate_digest": "a4fee33b93f943b2af855c429ae2bb68668ad8bcea39f1a8903e6aa4375c533d",
+      "role_kind": "STANDARD_BLOCK",
+      "atomic_scope_statement": "One immutable standard edition: TypeScript 5.9 Compiler Authority; no unrelated standard, jurisdiction, or certification authority.",
+      "permitted_decisions": [
+        "issue a typed evidence obligation",
+        "map a typed requirement to the exact locked edition",
+        "return NOT_APPLICABLE when the external overlay proves the standard is irrelevant",
+        "return UNKNOWN when applicability or evidence is incomplete"
+      ],
+      "forbidden_decisions": [
+        "activate, deploy, publish, or self-accept",
+        "automated certification",
+        "broaden into a different standard",
+        "claim another edition or publisher",
+        "infer jurisdiction/entity/activity/data applicability",
+        "legal advice"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_CERTIFICATION;_NO_LEGAL_ADVICE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent requirement mapping",
+        "evaluate applicability only in the external overlay",
+        "new edition, material erratum, or gate correction creates a new block version",
+        "reuse exact ID/version/hash rather than copying requirements"
+      ],
+      "escalation_target": "specialist.foundation.authority-jurisdiction-gate",
+      "split_required_when": [
+        "edition or material erratum differs",
+        "jurisdiction or applicability rule differs",
+        "publisher differs",
+        "requirement authority differs",
+        "tool or evidence custody differs"
+      ],
+      "priority": "P1",
+      "family": "software-language-runtime",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.typescript-5-9"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.typescript-5-9.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
     }
   ],
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "01f4790418195f41728ea34b0ac788d4fa30adff08cb0925dce5bf2442d975c5"
+  "roster_sha256": "03fe9f62e5acdb30884305445ee69d0b2bf49e55f5b838e2b1813aa12f6d9bb0"
 }

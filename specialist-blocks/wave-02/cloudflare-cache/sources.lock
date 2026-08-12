@@ -15,21 +15,8 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
-    },
-    {
-      "source_id": "source.cloudflare-cache-rules",
-      "title": "Cloudflare Cache Rules",
-      "publisher": "Cloudflare",
-      "url": "https://developers.cloudflare.com/cache/how-to/cache-rules/",
-      "version": "current",
-      "effective_date": null,
-      "retrieved_date": "2026-08-11",
-      "immutable_identity": "cloudflare-cache-rules-current-2026-08-11",
-      "content_sha256": null,
-      "authority_class": "PRIMARY_DESCRIPTIVE",
-      "scope": "Cloudflare cache-rule matching and behavior; deployment and purge authority remain external."
     }
   ],
   "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "4466b83a73b08db605ead4ba1b18695b6af7fcf52723c586ccd576ad3e3520dd"
+  "manifest_sha256": "29f84f25ea455f3bce1e53fc91cd171a8c6140c61d774ba3cb21b5ec9f0aae7e"
 }

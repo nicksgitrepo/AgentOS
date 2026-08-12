@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.specialist_standard_requirements.v1",
+  "version": 1,
+  "block_id": "specialist.standard.postgresql-17-rls",
+  "standard_identity": {
+    "publisher": "PostgreSQL Global Development Group",
+    "identifier": "PostgreSQL Row Security Policies",
+    "edition": "17.10"
+  },
+  "requirements": [
+    {
+      "requirement_id": "PG.17.10.RLS.policy",
+      "statement": "Bind row-security findings to the exact PostgreSQL 17 policy semantics and declared tenant boundary.",
+      "source_ref": "PostgreSQL.17.10:ddl-rowsecurity",
+      "evidence": "Policy, role, and tenant-boundary evidence."
+    },
+    {
+      "requirement_id": "PG.17.10.RLS.scope",
+      "statement": "Do not infer migration, backup, or legal privacy conclusions from row-security documentation alone.",
+      "source_ref": "PostgreSQL.17.10:scope",
+      "evidence": "Scope and unknown ledger."
+    }
+  ],
+  "applicability_rule": "Applicability is evaluated from external jurisdiction/entity/activity/data/version/effective-date evidence; this file never stores project facts.",
+  "exception_rule": "Exceptions require an external primary-source or authority-corpus reference and remain requirement-level mappings."
+}

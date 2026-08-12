@@ -29,6 +29,16 @@ const sourceCatalog = {
   nist: {source_id: "source.nist-sp-800-218", title: "Secure Software Development Framework (SSDF) Version 1.1", publisher: "NIST", url: "https://csrc.nist.gov/pubs/sp/800/218/final", version: "1.1", effective_date: "2022-02-03", retrieved_date: SOURCE_DATE, immutable_identity: "nist-sp-800-218-v1.1-final-20220203", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound secure software development practices and task mappings."},
   asvs: {source_id: "source.owasp-asvs-5-0-0", title: "Application Security Verification Standard", publisher: "OWASP Foundation", url: "https://owasp.org/www-project-application-security-verification-standard/", version: "5.0.0", effective_date: "2025-05-30", retrieved_date: SOURCE_DATE, immutable_identity: "owasp-asvs-5.0.0-release-20250530", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Version-bound application security verification requirements and identifiers."},
   slsa: {source_id: "source.slsa-spec-1-2", title: "SLSA Specification", publisher: "SLSA", url: "https://slsa.dev/spec/v1.2/", version: "1.2", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "slsa-spec-v1.2-approved", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Approved SLSA tracks, levels, attestations, and provenance references."},
+  rustReference: {source_id: "source.rust-reference-1-97-1", title: "The Rust Reference", publisher: "Rust Project", url: "https://doc.rust-lang.org/reference.html", version: "1.97.1", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "rust-reference-1.97.1-stable-2026-08-11", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "Rust language semantics and reference behavior."},
+  typescript: {source_id: "source.typescript-5-9", title: "TypeScript 5.9 Release Notes", publisher: "Microsoft TypeScript", url: "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-9.html", version: "5.9", effective_date: "2025-08-01", retrieved_date: SOURCE_DATE, immutable_identity: "typescript-5.9-release-notes-2025-08-01", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "TypeScript 5.9 language and compiler changes."},
+  react: {source_id: "source.react-19-2", title: "React 19.2 Release Notes", publisher: "React", url: "https://react.dev/blog/2025/10/01/react-19-2", version: "19.2", effective_date: "2025-10-01", retrieved_date: SOURCE_DATE, immutable_identity: "react-19.2-release-2025-10-01", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "React 19.2 runtime and component behavior."},
+  postgresRls: {source_id: "source.postgresql-17-rls", title: "PostgreSQL 17 Row Security Policies", publisher: "PostgreSQL Global Development Group", url: "https://www.postgresql.org/docs/17/ddl-rowsecurity.html", version: "17.10", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "postgresql-17-row-security-docs-17.10-2026-08-11", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "PostgreSQL row-level security policy semantics."},
+  openapi: {source_id: "source.openapi-3-1-1", title: "OpenAPI Specification 3.1.1", publisher: "OpenAPI Initiative", url: "https://spec.openapis.org/oas/v3.1.1.html", version: "3.1.1", effective_date: "2024-10-24", retrieved_date: SOURCE_DATE, immutable_identity: "openapi-spec-3.1.1-2024-10-24", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "OpenAPI HTTP contract syntax and semantics."},
+  oauth: {source_id: "source.rfc-9700", title: "OAuth 2.0 Security Best Current Practice", publisher: "IETF", url: "https://www.rfc-editor.org/rfc/rfc9700.html", version: "RFC 9700", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "rfc-9700-oauth-security-bcp-2025", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "OAuth security requirements and threat mitigations."},
+  oidc: {source_id: "source.oidc-core-1-0", title: "OpenID Connect Core 1.0", publisher: "OpenID Foundation", url: "https://openid.net/specs/openid-connect-core-1_0.html", version: "1.0", effective_date: "2014-11-08", retrieved_date: SOURCE_DATE, immutable_identity: "openid-connect-core-1.0-2014-11-08", content_sha256: null, authority_class: "PRIMARY_NORMATIVE", scope: "OpenID Connect authentication and claims contracts."},
+  awsIam: {source_id: "source.aws-iam-policy-elements", title: "IAM JSON Policy Elements Reference", publisher: "Amazon Web Services", url: "https://docs.aws.amazon.com/us_en/IAM/latest/UserGuide/reference_policies_elements.html", version: "current", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "aws-iam-policy-elements-current-2026-08-11", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "AWS IAM policy element semantics at retrieval."},
+  cloudflareDns: {source_id: "source.cloudflare-dns-records", title: "Cloudflare DNS Records", publisher: "Cloudflare", url: "https://developers.cloudflare.com/dns/manage-dns-records/", version: "current", effective_date: "2026-06-24", retrieved_date: SOURCE_DATE, immutable_identity: "cloudflare-dns-records-current-2026-06-24", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Cloudflare DNS record management semantics."},
+  cloudflareCache: {source_id: "source.cloudflare-cache-rules", title: "Cloudflare Cache Rules", publisher: "Cloudflare", url: "https://developers.cloudflare.com/cache/how-to/cache-rules/", version: "current", effective_date: null, retrieved_date: SOURCE_DATE, immutable_identity: "cloudflare-cache-rules-current-2026-08-11", content_sha256: null, authority_class: "PRIMARY_DESCRIPTIVE", scope: "Cloudflare cache-rule matching and behavior."},
 };
 
 const specs = [
@@ -88,6 +98,196 @@ const specs = [
     requirements: [
       {requirement_id: "SLSA.1.2.provenance", statement: "Bind verifiable provenance to the source, build, and artifact identities in the selected track.", source_ref: "SLSA.1.2:provenance", evidence: "Attestation identity and verification receipt."},
       {requirement_id: "SLSA.1.2.track-level", statement: "Evaluate the declared source or build track and level without silently broadening the claim.", source_ref: "SLSA.1.2:track-level", evidence: "Explicit track/level applicability overlay."}
+    ]
+  },
+  {
+    slug: "rust-reference",
+    blockId: "specialist.standard.rust-reference",
+    title: "Rust Reference 1.97.1",
+    family: "software-language-runtime",
+    standardIdentity: {publisher: "Rust Project", identifier: "Rust Reference", edition: "1.97.1"},
+    source: sourceCatalog.rustReference,
+    supersessionStatus: "CURRENT_STABLE_REFERENCE_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["rust", "Rust Reference", "language semantics"],
+    context: ["language", "version", "edition", "toolchain", "applicability_decision"],
+    applicabilityInputs: ["Rust edition and toolchain", "language and runtime scope", "source version and retrieval identity", "external applicability overlay"],
+    exceptions: ["Framework, crate, compiler, and unsafe-policy guidance are separate blocks.", "This block does not authorize unsafe code or certify a Rust artifact."],
+    requirements: [
+      {requirement_id: "RUST.REFERENCE.1.97.1.language", statement: "Bind language-semantic findings to the exact Rust Reference edition and declared toolchain.", source_ref: "Rust.Reference.1.97.1", evidence: "Edition, toolchain, and source-lock receipt."},
+      {requirement_id: "RUST.REFERENCE.1.97.1.scope", statement: "Do not transfer a language-reference claim to a framework, crate, or deployment domain without a separate authority block.", source_ref: "Rust.Reference.1.97.1:scope", evidence: "Narrow scope and unknown ledger."}
+    ]
+  },
+  {
+    slug: "typescript-5-9",
+    blockId: "specialist.standard.typescript-5-9",
+    title: "TypeScript 5.9 Compiler Authority",
+    family: "software-language-runtime",
+    standardIdentity: {publisher: "Microsoft TypeScript", identifier: "TypeScript Release Notes", edition: "5.9"},
+    source: sourceCatalog.typescript,
+    supersessionStatus: "CURRENT_RELEASE_NOTES_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["typescript", "TypeScript compiler", "type system"],
+    context: ["language", "version", "compiler_options", "applicability_decision"],
+    applicabilityInputs: ["TypeScript version and compiler scope", "runtime/emission target", "source version and retrieval identity", "external applicability overlay"],
+    exceptions: ["Framework and browser behavior are separate blocks.", "This block does not accept a product type or release."],
+    requirements: [
+      {requirement_id: "TS.5.9.version", statement: "Bind compiler findings to TypeScript 5.9 and the declared compiler options.", source_ref: "TypeScript.5.9.release-notes", evidence: "Version, options, and source-lock receipt."},
+      {requirement_id: "TS.5.9.scope", statement: "Keep compiler-language claims separate from framework, browser, and UX claims.", source_ref: "TypeScript.5.9.scope", evidence: "Narrow scope and sibling routing record."}
+    ]
+  },
+  {
+    slug: "react-19-2",
+    blockId: "specialist.standard.react-19-2",
+    title: "React 19.2 Runtime Authority",
+    family: "software-language-runtime",
+    standardIdentity: {publisher: "React", identifier: "React Release Notes", edition: "19.2"},
+    source: sourceCatalog.react,
+    supersessionStatus: "CURRENT_RELEASE_NOTES_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["react", "React component", "component runtime"],
+    context: ["framework", "version", "component_boundary", "applicability_decision"],
+    applicabilityInputs: ["React version and component scope", "runtime target", "source version and retrieval identity", "external applicability overlay"],
+    exceptions: ["TypeScript, accessibility, and product design authorities are separate blocks.", "This block does not accept UI behavior or a product release."],
+    requirements: [
+      {requirement_id: "REACT.19.2.runtime", statement: "Bind component-runtime findings to React 19.2 and the declared component boundary.", source_ref: "React.19.2.release-notes", evidence: "Version, component boundary, and source-lock receipt."},
+      {requirement_id: "REACT.19.2.scope", statement: "Keep framework runtime claims separate from browser, accessibility, and UX acceptance claims.", source_ref: "React.19.2.scope", evidence: "Narrow scope and sibling routing record."}
+    ]
+  },
+  {
+    slug: "postgresql-17-rls",
+    blockId: "specialist.standard.postgresql-17-rls",
+    title: "PostgreSQL 17 Row-Level Security Authority",
+    family: "data",
+    standardIdentity: {publisher: "PostgreSQL Global Development Group", identifier: "PostgreSQL Row Security Policies", edition: "17.10"},
+    source: sourceCatalog.postgresRls,
+    supersessionStatus: "CURRENT_17_DOCUMENTATION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["PostgreSQL RLS", "row-level security", "tenant isolation"],
+    context: ["database", "version", "tenant_boundary", "applicability_decision"],
+    applicabilityInputs: ["PostgreSQL engine/version", "policy and tenant boundary scope", "source version and retrieval identity", "external applicability overlay"],
+    exceptions: ["Migration execution, backup/restore, and privacy law are separate blocks.", "This block does not certify tenant isolation."],
+    requirements: [
+      {requirement_id: "PG.17.10.RLS.policy", statement: "Bind row-security findings to the exact PostgreSQL 17 policy semantics and declared tenant boundary.", source_ref: "PostgreSQL.17.10:ddl-rowsecurity", evidence: "Policy, role, and tenant-boundary evidence."},
+      {requirement_id: "PG.17.10.RLS.scope", statement: "Do not infer migration, backup, or legal privacy conclusions from row-security documentation alone.", source_ref: "PostgreSQL.17.10:scope", evidence: "Scope and unknown ledger."}
+    ]
+  },
+  {
+    slug: "openapi-3-1-1",
+    blockId: "specialist.standard.openapi-3-1-1",
+    title: "OpenAPI Specification 3.1.1",
+    family: "product-client",
+    standardIdentity: {publisher: "OpenAPI Initiative", identifier: "OpenAPI Specification", edition: "3.1.1"},
+    source: sourceCatalog.openapi,
+    supersessionStatus: "CURRENT_PATCH_EDITION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["OpenAPI", "API contract", "HTTP schema"],
+    context: ["api", "version", "contract_scope", "applicability_decision"],
+    applicabilityInputs: ["OpenAPI document and version", "operation/schema scope", "source version and retrieval identity", "external applicability overlay"],
+    exceptions: ["Framework implementation and Product acceptance are separate blocks.", "This block does not certify an API or a consumer outcome."],
+    requirements: [
+      {requirement_id: "OAS.3.1.1.contract", statement: "Bind contract findings to the exact OpenAPI 3.1.1 document and declared operation/schema scope.", source_ref: "OpenAPI.3.1.1", evidence: "Document identity, operation trace, and source-lock receipt."},
+      {requirement_id: "OAS.3.1.1.compatibility", statement: "Record compatibility findings without silently selecting a different OpenAPI edition.", source_ref: "OpenAPI.3.1.1:version", evidence: "Versioned compatibility mapping."}
+    ]
+  },
+  {
+    slug: "oauth-rfc-9700",
+    blockId: "specialist.standard.oauth-rfc-9700",
+    title: "OAuth 2.0 Security BCP RFC 9700",
+    family: "security",
+    standardIdentity: {publisher: "IETF", identifier: "OAuth 2.0 Security Best Current Practice", edition: "RFC 9700"},
+    source: sourceCatalog.oauth,
+    supersessionStatus: "CURRENT_BEST_CURRENT_PRACTICE_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["OAuth", "authorization flow", "identity security"],
+    context: ["protocol", "flow", "client_type", "applicability_decision"],
+    applicabilityInputs: ["OAuth flow and client type", "authorization-server scope", "RFC identity and retrieval status", "external applicability overlay"],
+    exceptions: ["OIDC claims and provider account operations are separate blocks.", "This block does not provide legal advice or change credentials."],
+    requirements: [
+      {requirement_id: "RFC9700.flow", statement: "Map OAuth flow findings to RFC 9700 and the declared client/authorization-server context.", source_ref: "RFC9700", evidence: "Flow, client type, and threat-mitigation mapping."},
+      {requirement_id: "RFC9700.scope", statement: "Do not transfer an OAuth security claim to OIDC claims or provider administration without separate authority.", source_ref: "RFC9700:scope", evidence: "Narrow scope and sibling routing record."}
+    ]
+  },
+  {
+    slug: "oidc-core-1-0",
+    blockId: "specialist.standard.oidc-core-1-0",
+    title: "OpenID Connect Core 1.0",
+    family: "security",
+    standardIdentity: {publisher: "OpenID Foundation", identifier: "OpenID Connect Core", edition: "1.0"},
+    source: sourceCatalog.oidc,
+    supersessionStatus: "CURRENT_CORE_SPECIFICATION_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["OpenID Connect", "OIDC", "identity claims"],
+    context: ["protocol", "claims", "issuer", "applicability_decision"],
+    applicabilityInputs: ["OIDC flow and issuer", "claims scope", "specification identity and retrieval status", "external applicability overlay"],
+    exceptions: ["OAuth threat mitigation and provider account operations are separate blocks.", "This block does not accept an identity provider or user outcome."],
+    requirements: [
+      {requirement_id: "OIDC.1.0.claims", statement: "Map claims findings to OpenID Connect Core 1.0 and the declared issuer/claims context.", source_ref: "OpenID.Connect.Core.1.0", evidence: "Issuer, claims, and flow mapping."},
+      {requirement_id: "OIDC.1.0.scope", statement: "Keep claims semantics separate from OAuth threat analysis and account mutation.", source_ref: "OpenID.Connect.Core.1.0:scope", evidence: "Narrow scope and sibling routing record."}
+    ]
+  },
+  {
+    slug: "aws-iam-current",
+    blockId: "specialist.standard.aws-iam-current",
+    title: "AWS IAM Policy Elements Current Reference",
+    family: "delivery-operations",
+    standardIdentity: {publisher: "Amazon Web Services", identifier: "IAM JSON Policy Elements Reference", edition: "current"},
+    source: sourceCatalog.awsIam,
+    supersessionStatus: "CURRENT_DOCUMENTATION_SNAPSHOT_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["AWS IAM", "AWS policy", "least privilege"],
+    context: ["provider", "region", "policy", "applicability_decision"],
+    applicabilityInputs: ["AWS provider/account scope", "policy element scope", "documentation retrieval identity", "external applicability overlay"],
+    exceptions: ["AWS account mutation, credentials, network, storage, and deployment are separate blocks.", "This block does not certify an AWS account or policy."],
+    requirements: [
+      {requirement_id: "AWS.IAM.current.elements", statement: "Bind IAM policy findings to the exact current AWS documentation snapshot and declared policy scope.", source_ref: "AWS.IAM.Policy.Elements.current", evidence: "Policy, provider scope, and source-lock receipt."},
+      {requirement_id: "AWS.IAM.current.boundary", statement: "Do not transfer AWS IAM semantics to another provider or grant account mutation authority.", source_ref: "AWS.IAM.Policy.Elements.scope", evidence: "Provider identity and authority boundary."}
+    ]
+  },
+  {
+    slug: "cloudflare-dns-current",
+    blockId: "specialist.standard.cloudflare-dns-current",
+    title: "Cloudflare DNS Records Current Reference",
+    family: "delivery-operations",
+    standardIdentity: {publisher: "Cloudflare", identifier: "Cloudflare DNS Records", edition: "current"},
+    source: sourceCatalog.cloudflareDns,
+    supersessionStatus: "CURRENT_DOCUMENTATION_SNAPSHOT_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["Cloudflare DNS", "DNS records", "zone records"],
+    context: ["provider", "zone", "records", "applicability_decision"],
+    applicabilityInputs: ["Cloudflare account/zone scope", "record type and operation", "documentation retrieval identity", "external applicability overlay"],
+    exceptions: ["TLS, WAF, cache, purge, and account operations are separate blocks.", "This block does not change a zone or certify DNS state."],
+    requirements: [
+      {requirement_id: "CF.DNS.current.records", statement: "Bind DNS findings to the exact current Cloudflare DNS documentation snapshot and declared zone scope.", source_ref: "Cloudflare.DNS.current", evidence: "Zone, record, provider, and source-lock receipt."},
+      {requirement_id: "CF.DNS.current.boundary", statement: "Do not transfer DNS semantics to another edge provider or infer account authority.", source_ref: "Cloudflare.DNS.current:scope", evidence: "Provider identity and custody boundary."}
+    ]
+  },
+  {
+    slug: "cloudflare-cache-current",
+    blockId: "specialist.standard.cloudflare-cache-current",
+    title: "Cloudflare Cache Rules Current Reference",
+    family: "delivery-operations",
+    standardIdentity: {publisher: "Cloudflare", identifier: "Cloudflare Cache Rules", edition: "current"},
+    source: sourceCatalog.cloudflareCache,
+    supersessionStatus: "CURRENT_DOCUMENTATION_SNAPSHOT_AT_RETRIEVAL",
+    supersededBy: null,
+    knownNonSuperseding: [],
+    signals: ["Cloudflare Cache", "cache rules", "edge caching"],
+    context: ["provider", "cache_rule", "cache_scope", "applicability_decision"],
+    applicabilityInputs: ["Cloudflare zone/edge scope", "cache rule and matching scope", "documentation retrieval identity", "external applicability overlay"],
+    exceptions: ["Purge, DNS, TLS, WAF, and deployment are separate blocks.", "This block does not purge or mutate edge state."],
+    requirements: [
+      {requirement_id: "CF.CACHE.current.rules", statement: "Bind cache findings to the exact current Cloudflare Cache Rules documentation snapshot and declared rule scope.", source_ref: "Cloudflare.Cache.current", evidence: "Rule, scope, provider, and source-lock receipt."},
+      {requirement_id: "CF.CACHE.current.boundary", statement: "Do not transfer cache semantics to another provider or infer purge/deployment authority.", source_ref: "Cloudflare.Cache.current:scope", evidence: "Provider identity and custody boundary."}
     ]
   }
 ];

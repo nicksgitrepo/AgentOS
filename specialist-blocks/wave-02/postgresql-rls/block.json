@@ -57,8 +57,8 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "PostgreSQL 17 row-security policies",
     "policy enablement and enforcement",
+    "specialist.standard.postgresql-17-rls",
     "tenant-boundary evidence"
   ],
   "routing": {
@@ -262,7 +262,8 @@
     "specialist.foundation.evidence-freshness-gate",
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
-    "specialist.foundation.tool-custody-gate"
+    "specialist.foundation.tool-custody-gate",
+    "specialist.standard.postgresql-17-rls"
   ],
   "conflicts": [],
   "aliases": [],
@@ -301,5 +302,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "f896ac9c3a548b3acf02af84ddc70d5b55a16e1cdb6708660d7e1feda6cfe1a8"
+  "block_sha256": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082"
 }

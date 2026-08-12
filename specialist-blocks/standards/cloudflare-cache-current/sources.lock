@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.cloudflare-cache-current",
+  "sources": [
+    {
+      "source_id": "source.cloudflare-cache-rules",
+      "title": "Cloudflare Cache Rules",
+      "publisher": "Cloudflare",
+      "url": "https://developers.cloudflare.com/cache/how-to/cache-rules/",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "cloudflare-cache-rules-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Cloudflare cache-rule matching and behavior."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "5b0be23138cb3082aaba736daf69ddfbfc814c978f143af844299df63e5d0adf"
+}

@@ -26,18 +26,19 @@ const second = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: f
 assert.deepEqual(first.roster, second.roster, "specialist roster compilation is not deterministic");
 assert.deepEqual(first.routing, second.routing, "specialist routing compilation is not deterministic");
 assert.deepEqual(first.inventory, second.inventory, "specialist inventory materialization is not deterministic");
-assert.equal(first.records.length, 32, "foundation, standard, P0, and first P1 router/atomic package count is wrong");
+assert.equal(first.records.length, 42, "foundation, reusable standard, P0, and first P1 router/atomic package count is wrong");
 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
-assert.equal(taskCompilerCatalog.length, 32, "task-shaped compiler catalog must load every compiled candidate package");
-assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.nist-ssdf", "specialist.standard.owasp-asvs", "specialist.standard.slsa"]);
+assert.equal(taskCompilerCatalog.length, 42, "task-shaped compiler catalog must load every compiled candidate package");
+assert.equal(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 13);
+assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.aws-iam-current", "specialist.standard.cloudflare-cache-current", "specialist.standard.cloudflare-dns-current", "specialist.standard.nist-ssdf", "specialist.standard.oauth-rfc-9700", "specialist.standard.oidc-core-1-0", "specialist.standard.openapi-3-1-1", "specialist.standard.owasp-asvs", "specialist.standard.postgresql-17-rls", "specialist.standard.react-19-2", "specialist.standard.rust-reference", "specialist.standard.slsa", "specialist.standard.typescript-5-9"]);
 assert(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").every((block) => block.standard_identity && /^[0-9a-f]{64}$/u.test(block.source_lock_digest)), "loaded standard blocks must retain exact reuse and source-lock identities");
 assert.equal(library.roster.activation, "OFF");
 assert.equal(library.roster.lifecycle ?? "NOT_ADMITTED", "NOT_ADMITTED");
 assert.equal(library.roster.blocks.every((block) => block.lifecycle === "NOT_ADMITTED" && block.activation === "OFF"), true);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "CONTROL_PLANE").length, 13);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 3);
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 13);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ROUTER").length, 6);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST").length, 10);
 assert.deepEqual(library.inventory.counts, {ROUTER: 631, CONTROL_PLANE: 13, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 79, COMPILED_AGENT_PACKAGE: 0});
@@ -101,6 +102,7 @@ assert.deepEqual(rustRoute.selected, ["specialist.software-language-runtime.rout
 assert.deepEqual(validateAtomicSelection({library, selected: rustRoute.selected}).status, "PASS");
 const p1AtomicIds = ["specialist.software-language-runtime.rust-backend", "specialist.software-language-runtime.typescript-language", "specialist.software-language-runtime.react-components", "specialist.data.postgresql-rls", "specialist.product-client.openapi-contracts", "specialist.security.oauth-identity", "specialist.security.oidc-core", "specialist.platform.aws-iam-policy", "specialist.platform.cloudflare-dns", "specialist.platform.cloudflare-cache"];
 assert(p1AtomicIds.every((blockId) => taskCompilerCatalog.find((block) => block.block_id === blockId)?.required_upstream_router), "every first-wave P1 atomic package must bind an upstream router");
+assert(p1AtomicIds.every((blockId) => taskCompilerCatalog.find((block) => block.block_id === blockId)?.dependencies.some((dependency) => dependency.startsWith("specialist.standard."))), "every first-wave P1 atomic package must reuse an immutable STANDARD_BLOCK");
 
 const overlay = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/atomic-inventory.v1.json"), "utf8"));
 assert.deepEqual(overlay.counts, {ROUTER: 12, ATOMIC_SPECIALIST: 79, CONTROL_PLANE: 13});

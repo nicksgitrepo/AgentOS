@@ -272,13 +272,17 @@ remain external gates.
   Cloudflare DNS records, and Cloudflare Cache Rules. Each has a distinct
   source lock, exact upstream router, 12 gates, 17 hostile fixtures,
   evaluation dossier, and typed handoff.
-- Compiler proof currently reports `32` package records: `13` control-plane,
-  `3` standard, `6` router, and `10` atomic. Materialized counts are
+- Each P1 atomic package now depends on one exact reusable `STANDARD_BLOCK`
+  for its official language/framework/database/API/identity/provider authority;
+  the atom source lock carries only the portable composition authority, while
+  the exact publisher source is encoded once in the standard package.
+- Compiler proof currently reports `42` package records: `13` control-plane,
+  `13` reusable standard, `6` router, and `10` atomic. Materialized counts are
   `ROUTER:631`, `CONTROL_PLANE:13`, `KNOWLEDGE_BLOCK:0`,
   `GOVERNANCE_BLOCK:0`, `STANDARD_BLOCK:0`, `CONTEXT_BLOCK:0`,
   `ATOMIC_SPECIALIST:79`, `COMPILED_AGENT_PACKAGE:0`.
-- Independent static evaluator passes `32` inactive packages, `384` gate
-  files, and `544` hostile fixtures; utility/harm and admission remain
+- Independent static evaluator passes `42` inactive packages, `504` gate
+  files, and `714` hostile fixtures; utility/harm and admission remain
   pending external authority. Focused library, compiler, and evaluator checks
   pass; no heavyweight proof ran.
 - Exact six P0 lane identities/statuses remain candidate/inactive and no P1

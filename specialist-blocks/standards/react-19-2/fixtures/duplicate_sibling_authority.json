@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.standard.react-19-2",
+  "class": "duplicate_sibling_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for duplicate_sibling_authority; standard applicability and requirement evidence remain external."
+}

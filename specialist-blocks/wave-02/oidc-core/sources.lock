@@ -15,21 +15,8 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
-    },
-    {
-      "source_id": "source.oidc-core",
-      "title": "OpenID Connect Core 1.0",
-      "publisher": "OpenID Foundation",
-      "url": "https://openid.net/specs/openid-connect-core-1_0.html",
-      "version": "1.0",
-      "effective_date": "2014-11-08",
-      "retrieved_date": "2026-08-11",
-      "immutable_identity": "openid-connect-core-1.0-2014-11-08",
-      "content_sha256": null,
-      "authority_class": "PRIMARY_NORMATIVE",
-      "scope": "OpenID Connect authentication protocol claims and flow contracts."
     }
   ],
   "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "c7bd1900f921b38f61634aa224593a7db96e9342b3e73112aab4f61b7eb30765"
+  "manifest_sha256": "314833b1825f6f0029b6c2c299e2fddc0ceceeb018cc36d74f1a79c9787f8429"
 }

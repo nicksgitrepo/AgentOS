@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.standard.cloudflare-dns-current",
+  "sources": [
+    {
+      "source_id": "source.cloudflare-dns-records",
+      "title": "Cloudflare DNS Records",
+      "publisher": "Cloudflare",
+      "url": "https://developers.cloudflare.com/dns/manage-dns-records/",
+      "version": "current",
+      "effective_date": "2026-06-24",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "cloudflare-dns-records-current-2026-06-24",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Cloudflare DNS record management semantics."
+    }
+  ],
+  "freshness_rule": "DENY dependent mapping when source is stale, superseded, unverifiable, or missing edition/effective identity; refresh or escalate.",
+  "manifest_sha256": "04a1ce223a649388750d3bd9ee17ba783d89f7e78ed067a07216c821f0f10ea2"
+}

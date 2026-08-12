@@ -18,9 +18,10 @@ Each block package contains:
 Each reusable `STANDARD_BLOCK` additionally contains `requirements.json`,
 `compatibility.json`, and `supersession.json`. Their digests are bound into
 `block.json`; applicability, jurisdiction, project facts, and freshness
-overlays remain external. The current candidate has three source-locked
-standard packages under `specialist-blocks/standards/`:
-NIST SP 800-218 SSDF 1.1, OWASP ASVS 5.0.0, and SLSA Specification 1.2.
+overlays remain external. The current candidate has thirteen source-locked
+standard packages under `specialist-blocks/standards/`: NIST SP 800-218 SSDF
+1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, and ten exact authorities
+reused by the first P1 atomic slice.
 
 The first P1 atomic slice under `specialist-blocks/wave-02/` contains six
 classification-only routers and ten narrow candidates for Rust, TypeScript,

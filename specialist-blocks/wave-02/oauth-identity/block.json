@@ -57,8 +57,8 @@
     "tool or data custody differs"
   ],
   "required_knowledge": [
-    "RFC 9700 OAuth security BCP",
     "flow and client constraints",
+    "specialist.standard.oauth-rfc-9700",
     "threat and mitigation evidence"
   ],
   "routing": {
@@ -262,7 +262,8 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.security.router"
+    "specialist.security.router",
+    "specialist.standard.oauth-rfc-9700"
   ],
   "conflicts": [],
   "aliases": [],
@@ -301,5 +302,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "05c203329c251230e377561a5e10db7721f40a3486e466575d13995a1d93c6fe"
+  "block_sha256": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8"
 }
