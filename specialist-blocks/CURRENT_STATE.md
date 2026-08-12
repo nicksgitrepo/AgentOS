@@ -1,6 +1,6 @@
 # Specialist Block Library — Current State
 
-Status: `P0_CONTROL_PLANE_BUILD_ACTIVE`
+Status: `SPECIALIST_BLOCK_LIBRARY_BUILD_ACTIVE`
 
 Lifecycle: `CANDIDATE_INACTIVE`
 
@@ -34,7 +34,7 @@ and the protected Memory lane are read-only or out of scope.
   purpose, triggers, exclusions, dependencies, conflicts, source requirements,
   freshness policy, priority score, gate status/path, schema/package status,
   evaluator status/receipt, and lifecycle.
-- No role is removed for priority; P0–P4 ranks control sequencing only.
+- No role is removed for priority; P0–P6 ranks control sequencing only.
 
 ## On-demand compiler shape
 
@@ -70,6 +70,13 @@ count: `100` packages are validated (`16` `CONTROL_PLANE`, `17`
 `STANDARD_BLOCK`, `13` `ROUTER`, and `54` `ATOMIC_SPECIALIST`). These are
 source-locked inactive candidates and do not change the unexpanded backlog
 count.
+
+The on-demand recipe catalog is now complete for the retained backlog: `619`
+stable recipes map one-to-one to the `619` inventory titles and preserve all
+`10` alias mappings. Six P0 recipes are `CANDIDATE`/compileable; the remaining
+`613` are `PLANNED`/non-compileable until a role-specific block has source
+evidence, the exact twelve gates, hostile fixtures, independent evaluation, and
+an admission receipt.
 
 ## Wave law
 
@@ -374,3 +381,24 @@ remain external gates.
   swap at `5.5/6 GiB`; only lightweight source-lock, schema, gate, and focused
   evaluator work occurred. Next queue is P4 client/UX expansion after
   independent review of this P3 slice.
+
+## Latest verified state — complete recipe addressability — 2026-08-11
+
+- `control/scaffold-recipe-catalog.mjs` now materializes one stable recipe for
+  every retained inventory title: `619` recipes for `619` roles, preserving all
+  `10` explicit alias mappings.
+- The catalog contains exactly `6` `CANDIDATE`/compileable P0 recipes and
+  `613` `PLANNED`/non-compileable recipes. Planned recipes carry the universal
+  foundation dependency set and external typed context requirements, but cannot
+  compile until a role-specific block has source locks, all twelve gates,
+  hostile fixtures, independent evaluation, and admission.
+- Catalog digest: `41f897c1b1ef9773b85cc2f6335168874abf995c95c0d8fd95c45ee6b347ffe4`.
+  The recipe coverage verifier passes alongside the existing library,
+  independent evaluator, and task-shaped compiler checks.
+- The exact six P0 lanes remain candidate/inactive and are still the only
+  reserved active lane set. No P4 lane was activated or spawned. Host pressure
+  remains the recorded ceiling (`JOB-407 RUNNING`, swap `5.5/6 GiB`); only
+  lightweight registry/schema/test work occurred.
+- Next cursor: source-backed P4 client/UX expansion only after independent
+  review and host-pressure clearance; utility/harm, admission, and main
+  integration-owner intake remain external gates.

@@ -254,8 +254,11 @@ export function loadSpecialistBlockCatalog({repositoryRoot = process.cwd()} = {}
 
 function validateRecipe(recipe) {
   assertRecord(recipe, "recipe");
-  for (const field of ["recipe_id", "version", "family", "purpose"]) assertString(recipe[field], `recipe.${field}`);
-  if (!/^[0-9]+\.[0-9]+\.[0-9]+$/u.test(recipe.version)) fail("INVALID_RECIPE", "recipe.version must be semantic");
+  for (const field of ["recipe_id", "family", "purpose"]) assertString(recipe[field], `recipe.${field}`);
+  const recipeVersion = recipe.recipe_version ?? recipe.version;
+  assertString(recipeVersion, "recipe.recipe_version");
+  if (!/^[0-9]+\.[0-9]+\.[0-9]+$/u.test(recipeVersion)) fail("INVALID_RECIPE", "recipe_version must be semantic");
+  if (recipe.compile_allowed === false || recipe.lifecycle === "PLANNED" || recipe.materialization?.status === "PLANNED_RECIPE_ONLY") fail("PLANNED_RECIPE_NOT_COMPILEABLE", `${recipe.recipe_id} is a planned recipe and requires a role-specific admitted block before compilation`);
   const required = [...(recipe.required_block_ids ?? recipe.block_ids ?? [])].sort();
   if (required.length === 0) fail("INVALID_RECIPE", "recipe has no required reusable blocks");
   sortedUnique(required, "recipe.required_block_ids", {minItems: 1});
@@ -271,7 +274,7 @@ function validateRecipe(recipe) {
   assertRecord(reasons, "recipe.reasons");
   return {
     recipe_id: recipe.recipe_id,
-    version: recipe.version,
+    version: recipeVersion,
     family: recipe.family,
     purpose: recipe.purpose,
     required_block_ids: required,

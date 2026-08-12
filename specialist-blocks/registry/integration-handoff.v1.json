@@ -46,6 +46,13 @@
       "CONTROL_PLANE": 16,
       "ATOMIC_SPECIALIST": 54,
       "STANDARD_BLOCK": 17
+    },
+    "recipe_counts": {
+      "total": 619,
+      "CANDIDATE": 6,
+      "PLANNED": 613,
+      "alias_mappings": 10,
+      "catalog_sha256": "41f897c1b1ef9773b85cc2f6335168874abf995c95c0d8fd95c45ee6b347ffe4"
     }
   },
   "lanes": {
@@ -64,10 +71,12 @@
     "block_compiler": "control/specialist-block-compiler.mjs",
     "loader": "control/specialist-block-loader.mjs",
     "bootstrap_compiler": "control/specialist-agent-compiler.mjs",
+    "recipe_catalog_compiler": "control/scaffold-recipe-catalog.mjs",
     "schemas": [
       "schemas/specialist-block.v1.json",
       "schemas/specialist-gate.v1.json",
       "schemas/specialist-recipe.v1.json",
+      "schemas/specialist-recipe-catalog.v1.json",
       "schemas/specialist-agent-plan.v1.json",
       "schemas/specialist-block-lock.v1.json",
       "schemas/specialist-authority-graph.v1.json",
@@ -101,6 +110,7 @@
     {"receipt_id": "specialist-p1-atomic-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P1 routers, ten source-locked atomic candidates, and ten reusable exact-edition STANDARD_BLOCK authorities for language/runtime, data, API contracts, identity, AWS IAM, and Cloudflare DNS/cache"},
     {"receipt_id": "specialist-p2-security-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P2 routers, forty-one narrow security atoms, two reusable OWASP index standards, exact upstream-router closure, standard-hash reuse, and actual Web A01/API7 routing fixtures"},
     {"receipt_id": "specialist-p3-delivery-assurance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "three P3 governance controls, one observability router, two delivery/data atomic specialists, one assurance atomic specialist, exact upstream closure, and reuse of existing NIST SSDF/SLSA authorities"},
+    {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "619 stable recipes for 619 retained inventory roles, six P0 compileable candidates, 613 planned non-compileable recipes, ten alias resolutions, and deterministic catalog digest"},
     {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"},
     {"receipt_id": "specialist-p1-standard-reuse-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "implementation commit 170bbf4ca705dce9de199172910c6c25e243e7fc with tree aebfe743b8b460dd1ffb5c90cfc3342f93d18597; ten P1 atoms reuse ten immutable exact-edition standard blocks"}
   ],
@@ -108,6 +118,7 @@
     "Independent utility/harm evaluation of the six P0 packages and Agent Builder input has not passed.",
     "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
     "Independent utility/harm evaluation of the P1, P2, and P3 router/atomic/control candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
+    "613 planned recipes still require role-specific source research, exact twelve-gate packages, hostile fixtures, independent evaluation, and admission before compilation.",
     "Full hostile/utility validation and main AgentOS 3.0 integration-owner intake remain external follow-up gates.",
     "No consumer adoption, migration, provider activation, public release, or protected Memory action is authorized by this receipt."
   ],

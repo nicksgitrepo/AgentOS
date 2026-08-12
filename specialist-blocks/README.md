@@ -64,10 +64,14 @@ The on-demand bootstrap compiler in
 into a task-shaped agent package. It writes only to an external companion or
 isolated governed agent workspace and emits the eight machine contracts plus a
 generated `bootstrap.md` view. The registry stores recipes and reusable block
-references, never permanent task agents.
+references, never permanent task agents. `control/scaffold-recipe-catalog.mjs`
+materializes one stable recipe for every retained inventory role and marks
+unbuilt role recipes explicitly `PLANNED` and non-compileable.
 
-`registry/recipe-catalog.v1.json` contains the first six P0 control-plane
-recipes. `registry/integration-handoff.v1.json` and
+`registry/recipe-catalog.v1.json` contains one stable recipe for every retained
+inventory role: six P0 recipes are compileable candidates and the remaining
+613 are explicit planned, non-compileable recipes awaiting role-specific
+source research, gates, evaluation, and admission. `registry/integration-handoff.v1.json` and
 `INTEGRATION_HANDOFF.md` carry the exact isolated-candidate disposition and
 unfinished admission gates.
 

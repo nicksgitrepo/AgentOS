@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-recipe-catalog.v1.json",
+  "title": "AgentOS Specialist Recipe Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "activation", "selection_rule", "external_overlay_rule", "addressability_rule", "planned_recipe_rule", "foundation_block_ids", "inventory", "recipes", "aliases", "recipes_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_recipe_catalog.v1"},
+    "version": {"const": 1},
+    "status": {"const": "COMPILED_CANDIDATE"},
+    "activation": {"const": "OFF"},
+    "selection_rule": {"const": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS"},
+    "external_overlay_rule": {"const": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL"},
+    "addressability_rule": {"type": "string", "minLength": 1},
+    "planned_recipe_rule": {"type": "string", "minLength": 1},
+    "foundation_block_ids": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}, "minItems": 1},
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_role_mentions", "unique_role_titles", "alias_mappings"],
+      "properties": {"raw_role_mentions": {"const": 625}, "unique_role_titles": {"const": 619}, "alias_mappings": {"const": 10}}
+    },
+    "recipes": {"type": "array", "minItems": 619, "items": {"$ref": "specialist-recipe.v1.json"}},
+    "aliases": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["alias", "source_inventory_id", "canonical_recipe_id", "reason"],
+        "properties": {
+          "alias": {"type": "string", "minLength": 1},
+          "source_inventory_id": {"type": "string", "pattern": "^inventory\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+          "canonical_recipe_id": {"type": "string", "pattern": "^recipe\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "recipes_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

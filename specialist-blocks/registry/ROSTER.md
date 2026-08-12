@@ -60,6 +60,13 @@ backlog: `100` packages total, consisting of `13` `ROUTER`, `16`
 `CONTROL_PLANE`, `54` `ATOMIC_SPECIALIST`, and `17` `STANDARD_BLOCK` packages.
 All 100 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
+The on-demand recipe catalog now covers all `619` retained inventory roles:
+`6` P0 recipes are `CANDIDATE` and compileable, while `613` recipes are
+`PLANNED`, explicitly non-compileable, and require a role-specific block with
+its own source lock, twelve gates, hostile fixtures, independent evaluation,
+and admission receipt. The catalog preserves all `10` alias mappings and is
+content-addressed by `41f897c1b1ef9773b85cc2f6335168874abf995c95c0d8fd95c45ee6b347ffe4`.
+
 ## Source-locked standard candidates
 
 | Block ID | Family / priority | Exact edition and source lock | Build / evaluation | Gates / intake / lifecycle |

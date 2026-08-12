@@ -11,6 +11,7 @@ import {
   loadSpecialistBlockCatalog,
   validateTaskShapedAgentPackage,
 } from "../control/specialist-agent-compiler.mjs";
+import {canonicalDigest} from "../control/specialist-block-compiler.mjs";
 import {
   BLOCKS,
   LIBRARY_IDENTITY,
@@ -27,8 +28,19 @@ const statusBefore = execFileSync("git", ["status", "--short"], {cwd: root, enco
 const companion = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-specialist-companion-"));
 const recipeCatalog = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/recipe-catalog.v1.json"), "utf8"));
 assert.equal(recipeCatalog.schema, "agentos.specialist_recipe_catalog.v1");
-assert.equal(recipeCatalog.recipes.length, 6, "recipe catalog must retain all six P0 recipes");
-assert(recipeCatalog.recipes.every((recipe) => recipe.priority === "P0" && recipe.lifecycle === "CANDIDATE"), "recipe catalog P0 entries must remain inactive candidates");
+assert.equal(recipeCatalog.inventory.raw_role_mentions, 625);
+assert.equal(recipeCatalog.inventory.unique_role_titles, 619);
+assert.equal(recipeCatalog.inventory.alias_mappings, 10);
+assert.equal(recipeCatalog.recipes.length, 619, "recipe catalog must address every retained inventory role");
+assert.equal(recipeCatalog.aliases.length, 10, "recipe catalog must preserve every explicit alias mapping");
+assert.equal(recipeCatalog.recipes_sha256, canonicalDigest({...recipeCatalog, recipes_sha256: null}), "recipe catalog digest must be deterministic");
+assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 619, "recipe source inventory IDs must be unique");
+assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 619, "recipe IDs must be unique");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 6, "only the six P0 recipes may be compiled candidates");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 613, "unbuilt inventory roles must remain planned recipes");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PLANNED_RECIPE_ONLY"), "planned recipes must not be compileable");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "P0 recipes must remain compileable candidates");
+assert(recipeCatalog.aliases.every((alias) => recipeCatalog.recipes.some((recipe) => recipe.recipe_id === alias.canonical_recipe_id && recipe.source_inventory_id === alias.source_inventory_id)), "aliases must resolve to covered canonical recipes");
 const integrationHandoff = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/integration-handoff.v1.json"), "utf8"));
 assert.equal(integrationHandoff.schema, "agentos.specialist_library_integration_handoff.v1");
 assert.equal(integrationHandoff.status, "WAITING_WITH_RECEIPT");
@@ -74,12 +86,17 @@ function customRecipe(id, required, atomic = [], standards = []) {
 }
 
 try {
+  const plannedCatalogRecipe = recipeCatalog.recipes.find((recipe) => recipe.lifecycle === "PLANNED");
+  assert(plannedCatalogRecipe, "recipe catalog must contain planned coverage entries");
+  assertCode(() => compile("planned-catalog-recipe", plannedCatalogRecipe, TASKS.web, makeExternal("planned-catalog-recipe")), "PLANNED_RECIPE_NOT_COMPILEABLE");
   const rustA = compile("rust-search-a", RECIPES.rustSearch, TASKS.rustSearch, makeExternal("rust-search"));
   const rustB = compile("rust-search-b", RECIPES.rustSearch, TASKS.rustSearch, makeExternal("rust-search"));
   const web = compile("typescript-web", RECIPES.web, TASKS.web, makeExternal("typescript-web"));
   const data = compile("postgres-data", RECIPES.data, TASKS.data, makeExternal("postgres-data"));
 
   const portableCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
+  const portableIds = new Set(portableCatalog.map((block) => block.block_id));
+  for (const blockId of recipeCatalog.foundation_block_ids) assert(portableIds.has(blockId), `recipe catalog foundation dependency ${blockId} must be loadable`);
   const actualStandard = portableCatalog.find((block) => block.block_id === "specialist.standard.owasp-asvs");
   assert(actualStandard, "the source-locked OWASP ASVS standard must be loadable by the task-shaped compiler");
   const actualClosure = new Set([actualStandard.block_id]);
