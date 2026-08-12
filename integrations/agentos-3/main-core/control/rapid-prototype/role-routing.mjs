@@ -220,6 +220,11 @@ export function admitRole(role, admittedRoles, sessionIdentity, expectedProject,
   if (!capabilityValues.every((value) => typeof value === "string" && value.trim().length > 0)) {
     typedFailure("CAPABILITY_BINDING_INVALID", "source capabilities are invalid");
   }
+  if (new Set(expectedCapabilities).size !== expectedCapabilities.length
+    || new Set(observedCapabilities).size !== observedCapabilities.length
+    || new Set(requiredCapabilities).size !== requiredCapabilities.length) {
+    typedFailure("CAPABILITY_BINDING_INVALID", "source capabilities contain duplicates");
+  }
   if (JSON.stringify([...expectedCapabilities].sort()) !== JSON.stringify([...observedCapabilities].sort())) {
     typedFailure("CAPABILITY_BINDING_MISMATCH", "source capabilities differ from the host readback");
   }

@@ -12,7 +12,7 @@
     "article_1187_digest": "163208ef3d2728ab0348a3359f7445d607afbae00c3c2d54894827a866bbb02a"
   },
   "inputs": [
-    {"id": "main-agentos", "source_commit": "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e", "candidate_commit": "59860e96574416673c5a1dca19b6e06368f4de97", "candidate_tree": "dd39662b87abec5d359863f6f1565d2792941d26", "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e", "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"},
+    {"id": "main-agentos", "source_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310", "candidate_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310", "candidate_tree": "6f66883444f0340aac86905ab0e889832b420df6", "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e", "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f"},
     {"id": "memory-m2", "source_commit": "16acbcdb0c414a541fa435be7942d6ce883042ef", "source_tree": "ee795fb24b2ecc9c1587b73a726ca2dec7817572", "proof_commit": "882ee0d", "proof_tree": "39d40d5", "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2"},
     {"id": "agent-builder", "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626", "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833", "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec", "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d", "candidate_status": "EVALUATION_CANDIDATE_READY_FOR_INDEPENDENT_RERUN"}
   ],
@@ -23,12 +23,14 @@
     "default_off": "PASS",
     "unauthorized_activation_denial": "PASS_EXTERNALLY_BOUND_CAPABILITY",
     "memory_initialize_replay_restart": "PASS_INITIALIZE_REPLAY_REOPEN_LOCAL",
-    "main_core_source_parity": "PASS_187_ENTRIES",
+    "main_core_source_parity": "PASS_203_ENTRIES_EXACT_CURRENT_COMMIT",
     "main_core_combined_entrypoint": "PASS_CONTROLLER_COMPILE_PROBE",
     "agent_builder_candidate_compiler": "PASS_TYPED_COMPILER_AND_FOUR_DENIALS",
     "sibling_custody_static_contract": "PASS_SIBLING_AND_CANONICAL_ROOT_RULES",
     "install_and_rollback": "PASS_ZERO_TRACE_HOSTILE_ROLLBACK",
-    "bundle_manifest_reconciliation": "PASS_265_ENTRIES",
+    "specialist_roster_materialization": "PASS_620_COMPILEABLE_ONE_PROTECTED_EXTERNAL",
+    "memory_authority": "PASS_M2_ONLY_EXPOSED_ROOT_PROJECT_MEMORY_PRESERVED_OFF",
+    "bundle_manifest_reconciliation": "PASS_4762_ENTRIES_ALL_COMPONENTS",
     "reproducible_build": "PASS_IDENTICAL_REGENERATIONS",
     "private_or_external_context_leak": "PASS_SYNTHETIC_SCAN"
   },

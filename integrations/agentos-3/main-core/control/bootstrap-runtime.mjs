@@ -10,6 +10,7 @@ import {createIntentRegulatorRuntime} from "./intent-regulator-runtime.mjs";
 import {validateProjectImportPlan} from "./project-import.mjs";
 import {validateAuditDrivenMigrationRecord, validateRapidPrototypeWorkflow, validateRapidPrototypeWorkflowInventoryBinding} from "./rapid-prototype-workflow.mjs";
 import {assertUniversalDevelopmentMode} from "./governance-library.mjs";
+import {initializeBootstrapProjectMemory} from "./project-memory-runtime.mjs";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -136,6 +137,8 @@ export async function bootstrapAndStartAgentOS({
   authorityRoot,
   repositoryRoot = process.cwd(),
   projectBinding = null,
+  projectContract = null,
+  projectMemory = null,
   persistCampaignState = null,
   statePath = "campaigns/current/state.json",
   rapidPrototypeWorkflow = null,
@@ -247,6 +250,26 @@ export async function bootstrapAndStartAgentOS({
     repositoryRoot,
     projectBinding,
   });
+  let memoryRuntime = null;
+  let memoryState = null;
+  if (projectMemory !== null) {
+    assert(projectMemory !== null && typeof projectMemory === "object" && !Array.isArray(projectMemory), "Bootstrap Runtime project-memory options must be an object");
+    assert(projectContract !== null, "Bootstrap Runtime project-memory integration requires the compiled project contract");
+    const initializedMemory = initializeBootstrapProjectMemory({
+      projectContract,
+      observedAtUtc: projectMemory.observedAtUtc,
+      authorityRoot: projectMemory.authorityRoot ?? authorityRoot,
+      repositoryRoot,
+      binding: projectMemory.binding,
+      ledgerPath: projectMemory.ledgerPath,
+      snapshotPath: projectMemory.snapshotPath,
+      laneRef: projectMemory.laneRef,
+      allowedScopeRefs: projectMemory.allowedScopeRefs,
+      prohibitedScopeRefs: projectMemory.prohibitedScopeRefs,
+    });
+    memoryRuntime = initializedMemory.runtime;
+    memoryState = initializedMemory.state;
+  }
   assert(monitorObservation === null || typeof monitorObservation === "function", "Bootstrap Runtime monitor observation must be callable");
   assert(monitorOnIteration === null || typeof monitorOnIteration === "function", "Bootstrap Runtime monitor callback must be callable");
   assert(monitorOptions !== null && typeof monitorOptions === "object" && !Array.isArray(monitorOptions), "Bootstrap Runtime monitor options must be an object");
@@ -353,6 +376,11 @@ export async function bootstrapAndStartAgentOS({
     state_path: persistence.state_path ?? null,
     workflow_state_path: workflowPersistence?.state_path ?? null,
     questions_path: questionPersistence?.question_path ?? null,
+    memory: memoryState,
+    refresh_memory: memoryRuntime === null ? null : ({observedAtUtc = new Date().toISOString()} = {}) => {
+      memoryState = memoryRuntime.loadCurrent({observedAtUtc});
+      return memoryState;
+    },
     advance_workflow: advanceWorkflow,
     initialize_project: rapidPrototypeWorkflow === null ? null : async ({setupReceipt = projectSetupReceipt} = {}) => {
       const initialized = await regulator.initializeRapidPrototypeProject({

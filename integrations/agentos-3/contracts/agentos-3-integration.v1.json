@@ -13,9 +13,9 @@
     {
       "id": "main-agentos",
       "role": "host_candidate",
-      "source_commit": "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e",
-      "candidate_commit": "59860e96574416673c5a1dca19b6e06368f4de97",
-      "candidate_tree": "dd39662b87abec5d359863f6f1565d2792941d26",
+      "source_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
+      "candidate_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
+      "candidate_tree": "6f66883444f0340aac86905ab0e889832b420df6",
       "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
       "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f",
       "distribution": "main-core/source-manifest.json",

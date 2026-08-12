@@ -11,6 +11,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
+import {pathToFileURL} from "node:url";
 import {
   applyAndWriteAgentOSControllerEvent,
   applyAndWriteAgentOSControllerEventAsync,
@@ -756,7 +757,7 @@ async function main(argv = process.argv.slice(2), options = {}) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] !== undefined && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync.native(path.resolve(process.argv[1]))).href) {
   try {
     await main();
   } catch (error) {

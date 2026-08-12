@@ -92,7 +92,7 @@ const reopened = await memory.reopen(memoryRoot);
 assert.equal((await reopened.memory.projectState()).records.get("memory:test-record").effective_state, "ACCEPTED");
 
 const core = await verifyMainCore({ sourceRoot: MAIN_SOURCE, coreRoot: join(INTEGRATION_ROOT, "main-core") });
-assert.equal(core.candidate_commit, "59860e96574416673c5a1dca19b6e06368f4de97");
+assert.equal(core.candidate_commit, "029ccdb40efaeeae38ec1adabc6d3b44f5316310");
 const mainEntrypoint = createCombinedMainCoreEntrypoint();
 assert.equal(mainEntrypoint.activation, "OFF");
 assert.ok(mainEntrypoint.exports_available.includes("bootstrapAndStartAgentOS"));
@@ -103,7 +103,7 @@ const combined = await createAgentOS3TestBuild({ projectRef, controlPlaneRef, ca
 assert.equal(combined.activation, "OFF");
 assert.equal(combined.bootstrap.memory.enabled, false);
 assert.equal(combined.agent_builder.activation, "NOT_ACTIVATED");
-assert.equal(combined.main_core.identity.candidate_commit, "59860e96574416673c5a1dca19b6e06368f4de97");
+assert.equal(combined.main_core.identity.candidate_commit, "029ccdb40efaeeae38ec1adabc6d3b44f5316310");
 
 const installed = await installBundle(BUNDLE, { projectRoot, companionRoot });
 assert.equal(installed.activation, "OFF");

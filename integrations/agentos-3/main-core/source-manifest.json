@@ -1,9 +1,9 @@
 {
-  "schema": "agentos.integration.main-core-manifest.v1",
-  "source_commit": "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e",
-  "source_tree": "29a60c1eb9a8ec9856ce8f08abbe4cabb72fe168",
-  "candidate_commit": "59860e96574416673c5a1dca19b6e06368f4de97",
-  "candidate_tree": "dd39662b87abec5d359863f6f1565d2792941d26",
+  "schema": "agentos.integration.main-core-manifest.v2",
+  "source_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
+  "source_tree": "6f66883444f0340aac86905ab0e889832b420df6",
+  "candidate_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
+  "candidate_tree": "6f66883444f0340aac86905ab0e889832b420df6",
   "entries": [
     {
       "path": "control/README.md",
@@ -17,13 +17,13 @@
     },
     {
       "path": "control/agentos-controller.mjs",
-      "size": 72164,
-      "sha256": "3ad27f39fe3b1182dc40e8860d375071848dfff6e1a68784651597751f1511fc"
+      "size": 72317,
+      "sha256": "f92131f04f515445ce18fdda9d31079f122dcdbe1ac0938270735d1844d0ff23"
     },
     {
       "path": "control/agentos.mjs",
-      "size": 6324,
-      "sha256": "d4d818bdc60ccf1fa7dfa263a3d1203dbcb469f9dfaeb0282924b625ae49545f"
+      "size": 6911,
+      "sha256": "d737d6f54f84320c223b9dbed560de3cb8752349a8772b66226c81e2cfea83c2"
     },
     {
       "path": "control/apprenticeship-common.mjs",
@@ -107,8 +107,8 @@
     },
     {
       "path": "control/bootstrap-conversation.mjs",
-      "size": 41028,
-      "sha256": "03f0dd12e0a464bc687f669bfb6d9b9cb6144293c0552ac14033630106936b6f"
+      "size": 42915,
+      "sha256": "32fa28ecf6789f148d55eedc29cd8ba4b1acdaf0cdd47f7c664ff1ab5c1423ff"
     },
     {
       "path": "control/bootstrap-coverage.mjs",
@@ -132,18 +132,23 @@
     },
     {
       "path": "control/bootstrap-owner-surface.mjs",
-      "size": 7773,
-      "sha256": "bf83c8bf10e384e20c4905a65cba2f799e5b62d833fbac531fb32f105a9d48a6"
+      "size": 7961,
+      "sha256": "c950060f19ad031e4179728ef8a84df639cbd2928357c88bb6a6586bd225c4ea"
     },
     {
       "path": "control/bootstrap-project-contract.mjs",
-      "size": 49393,
-      "sha256": "48a8925e02122748beba85104eaede1d964f2086f85a1cd7ad7d3a5f4e12a6c5"
+      "size": 50646,
+      "sha256": "a8c1fb079211fa3c973ac7e57cb39e34d5c15636c2692a4b93d60a4844f08ea2"
+    },
+    {
+      "path": "control/bootstrap-question-catalog.mjs",
+      "size": 10092,
+      "sha256": "d969547d50df87fad508a69fe3cb6b408c7efee70097752496a236e12a86d5b5"
     },
     {
       "path": "control/bootstrap-runtime.mjs",
-      "size": 19278,
-      "sha256": "a4b62b070242fb661386d0b3ef5bb7a96a5efeca4a70934fccb0188c70e06d39"
+      "size": 20630,
+      "sha256": "01cc7e5fc7bd5f135716373ca44168b64b623cbb11e6aa90fb0b61094a2c98ab"
     },
     {
       "path": "control/bootstrap-safety-analysis.mjs",
@@ -167,8 +172,8 @@
     },
     {
       "path": "control/campaign-controller.mjs",
-      "size": 13805,
-      "sha256": "741977ac72a7545d6e76377df735a7b6c026b46ee9593f3c72babbf091c4dcc9"
+      "size": 13958,
+      "sha256": "c49bdf6caa186cee03dfe7e171b2fc64a83a7267854922f4c31ff49d81b6ea07"
     },
     {
       "path": "control/campaign-lifecycle.mjs",
@@ -262,8 +267,8 @@
     },
     {
       "path": "control/controller-supervisor-runtime.mjs",
-      "size": 19924,
-      "sha256": "afd9c70746bd96e8f7664e7b3b29795866e66b826a74f55af495b1131e9a176e"
+      "size": 20037,
+      "sha256": "ed3163e68c4156056ac8bd43676bfcef4348e5879c1ee6146ee7517332608859"
     },
     {
       "path": "control/controller-supervisor.mjs",
@@ -472,8 +477,8 @@
     },
     {
       "path": "control/legacy-preservation.mjs",
-      "size": 20610,
-      "sha256": "985c1e63bd972f8c067a338bbf5f5c9163434a0c6efb9dd02f60759a00c56a9e"
+      "size": 20763,
+      "sha256": "19ee3fd43e52a1ff1c6d03a0ed92fd5f07971493b4413a4f4115fd3753ae412b"
     },
     {
       "path": "control/local-agent-runtime.mjs",
@@ -487,8 +492,8 @@
     },
     {
       "path": "control/local-agent-session.mjs",
-      "size": 24912,
-      "sha256": "38582bb453daeb2c00773b9e617138083ad176f1c993c624aa8a4d230f11a16f"
+      "size": 25211,
+      "sha256": "026b64d18108d34d3208e259c5f14cb0f7a618c8d56a316fca7b4030008eb23f"
     },
     {
       "path": "control/local-agent-worker.mjs",
@@ -701,6 +706,11 @@
       "sha256": "00db72bf666cbc6f7d0da171212713506c16e6da7a3a6eb1b7e45cc741c9b3f8"
     },
     {
+      "path": "control/project-memory-artifacts.mjs",
+      "size": 8610,
+      "sha256": "024b17341d68b056dace200d28d1f43a9884ac4e2f9884b67aff12b6370f4018"
+    },
+    {
       "path": "control/project-memory-capsule.mjs",
       "size": 12014,
       "sha256": "6d56d56d820da84b8b0420f6b4217069884bb87c70273be2a12393c73b5d335e"
@@ -712,13 +722,18 @@
     },
     {
       "path": "control/project-memory-records.mjs",
-      "size": 33862,
-      "sha256": "b61eb054c58b13540ca2ac2fe50a8153b07289a80c501c82c355f79070aca707"
+      "size": 33901,
+      "sha256": "9e5c227dec4fec950d0da2b2600de41f43d0ad7872f9501dd689772730a89d31"
+    },
+    {
+      "path": "control/project-memory-runtime.mjs",
+      "size": 22492,
+      "sha256": "8ed653c8fff9d5c681baa18854c4b6f749ba5c9bc6391e17dfde74d2e4fe138b"
     },
     {
       "path": "control/project-memory-store.mjs",
-      "size": 12795,
-      "sha256": "499f26280a037c978138386fcbe4397751d716c78019fa94233b0007222038ea"
+      "size": 17154,
+      "sha256": "305761f4dad20e9e69e87d63482d45dbaefc8c2805be82becb02d092f929edea"
     },
     {
       "path": "control/project-memory.mjs",
@@ -737,8 +752,8 @@
     },
     {
       "path": "control/rapid-prototype-workflow.mjs",
-      "size": 653,
-      "sha256": "bc79d38c6cde0fb001804f1133ecd50730d23e0e4ef6c524383badd166f3b460"
+      "size": 779,
+      "sha256": "4c88698e66efcfff40bda7617df0f022b5c49a721a5a7fbd5bd65de02461bbcd"
     },
     {
       "path": "control/rapid-prototype/bootstrap-context.mjs",
@@ -757,8 +772,8 @@
     },
     {
       "path": "control/rapid-prototype/evidence-identity.mjs",
-      "size": 23827,
-      "sha256": "48d986844253cd6b5525d0951dbb88a9fab8243454d8060612aadddd9d920b04"
+      "size": 24764,
+      "sha256": "7fb258f7d25d85f03ae0a79c1db2e7f405065615d975f21b52d6dc2578c34caf"
     },
     {
       "path": "control/rapid-prototype/functionality.mjs",
@@ -767,8 +782,8 @@
     },
     {
       "path": "control/rapid-prototype/index.mjs",
-      "size": 35228,
-      "sha256": "448d1b541e722992b472bfce5a461cf53beb8dd64a1cecb2ab441c9508054b18"
+      "size": 35859,
+      "sha256": "6733fdb151c9131b2a4eff8baafe91231ada4310b7e3385e13f30aa9436e8c22"
     },
     {
       "path": "control/rapid-prototype/intent-scope.mjs",
@@ -787,8 +802,8 @@
     },
     {
       "path": "control/rapid-prototype/role-routing.mjs",
-      "size": 10064,
-      "sha256": "88e50bf91aad431b0436bdd52fc7a6200c77ff4408b4acde5ccd1a5099c2d979"
+      "size": 10382,
+      "sha256": "ad5bc69d8793af2edb3d83e44cb767bb54968fcf8b9cba2989bc2f73b7e034c0"
     },
     {
       "path": "control/rapid-prototype/security-privacy.mjs",
@@ -872,13 +887,78 @@
     },
     {
       "path": "control/run-campaign-evidence-repair.mjs",
-      "size": 22405,
-      "sha256": "8118cde78be2f2f89768c41ded449b6726d00b7583ab9127419dca1394d74af8"
+      "size": 22518,
+      "sha256": "336e59d616a9016c0b8ed551812dd509c404feb1a90d2421898b4010248601c7"
+    },
+    {
+      "path": "control/scaffold-p1-atomic-blocks.mjs",
+      "size": 32484,
+      "sha256": "24166c60cef34c69402c07bd99be8a81e6e007a44093e55c8ef13f7c9c9e8aa8"
+    },
+    {
+      "path": "control/scaffold-p2-security-blocks.mjs",
+      "size": 30021,
+      "sha256": "674ab4e18c4fba3315d80360b5142520617ff105ecb1b2980a64da97d572fc3c"
+    },
+    {
+      "path": "control/scaffold-p3-delivery-assurance.mjs",
+      "size": 31775,
+      "sha256": "38988750d1e52767b67121931389f49d5a28791a1b8ab3c9490f61587c3ba718"
+    },
+    {
+      "path": "control/scaffold-p4-client-ux.mjs",
+      "size": 28142,
+      "sha256": "e89167586e9398e022b910290a1fdc8b22cc28eb2b8d6fb47bb04d251aa14b41"
+    },
+    {
+      "path": "control/scaffold-p5-domain-ai-3d-reg-finance.mjs",
+      "size": 36314,
+      "sha256": "497d76429c1af64ffae7369045f1d11c28f70436d54ac01089d422b921e00d88"
+    },
+    {
+      "path": "control/scaffold-recipe-catalog.mjs",
+      "size": 24430,
+      "sha256": "0874bfd030bdf1f78693b6cbadb08469b49049801897612f8313b712f48676e8"
+    },
+    {
+      "path": "control/scaffold-specialist-package.mjs",
+      "size": 21122,
+      "sha256": "5775c4b9d8b92fa86ab82bf100a53ef4d3c7a35c618ccd07486f8e4bd58efae1"
+    },
+    {
+      "path": "control/scaffold-standard-blocks.mjs",
+      "size": 71146,
+      "sha256": "49b27fc9837868da7747cb1ca7dafb972a53a73e9b7bb1c3fe5f007550bb3a1d"
     },
     {
       "path": "control/scheduler-admission.mjs",
       "size": 4235,
       "sha256": "2d8e8e11ff92123eb45465ec4133fd9945bb02ef5111e0f31e162dacc3401cb2"
+    },
+    {
+      "path": "control/specialist-agent-compiler.mjs",
+      "size": 57234,
+      "sha256": "4b69cc46333275f2499fc63101a5ae74a844f9a76641ce0574a0e3036c2327b5"
+    },
+    {
+      "path": "control/specialist-block-compiler.mjs",
+      "size": 42200,
+      "sha256": "7263876e3b7b758348730b0103f1e200fdf94497814cd53dd37408e7d2642058"
+    },
+    {
+      "path": "control/specialist-block-loader.mjs",
+      "size": 8752,
+      "sha256": "69a163bdad79ad1fc35b6bd5fee2f9fdb1dd91fa5e6c125efbf135ebc34390a2"
+    },
+    {
+      "path": "control/specialist-independent-evaluator.mjs",
+      "size": 14956,
+      "sha256": "df9bf99b7257d54e1ac7bb07ed86d05c3fa63d105978520af8d54141e978ab97"
+    },
+    {
+      "path": "control/specialist-utility-harm-prescreen.mjs",
+      "size": 9717,
+      "sha256": "02929e6efdbfa693e1afba28046ed53132ac6fabb9c0a5d706b8a627fab8e0c4"
     },
     {
       "path": "control/standards-registry.mjs",
@@ -887,8 +967,8 @@
     },
     {
       "path": "control/start-local-self-development.mjs",
-      "size": 41186,
-      "sha256": "42cbb36b811e52fbcc7d742c30071ae907a6f5e4a277b5d40d58d5ffb819e753"
+      "size": 41339,
+      "sha256": "a5118061b090c4af5527d98c4e5dd1f96688e8ab37493f05423ad6971fd0a34b"
     },
     {
       "path": "control/task-context-firewall.mjs",

@@ -414,7 +414,7 @@ async function main() {
   if (args.once) process.stdout.write(`${JSON.stringify(results.at(-1) ?? null)}\n`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] !== undefined && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync.native(path.resolve(process.argv[1]))).href) {
   main().catch((error) => {
     process.stderr.write(`${error.stack ?? error.message ?? String(error)}\n`);
     process.exitCode = 1;

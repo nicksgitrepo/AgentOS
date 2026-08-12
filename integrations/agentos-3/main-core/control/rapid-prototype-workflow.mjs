@@ -11,5 +11,6 @@
 
 export * from "./audit-driven-integration-pyramid.mjs";
 export * from "./audit-repair-integration-pyramid.mjs";
+export {compileAuditDrivenIntegrationPyramid as compileRapidPrototypeWorkflow} from "./audit-driven-integration-pyramid.mjs";
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("rapid-prototype workflow is the audit-driven integration pyramid\n");

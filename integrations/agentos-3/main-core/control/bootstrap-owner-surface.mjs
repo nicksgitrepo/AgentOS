@@ -81,13 +81,14 @@ export function validateBootstrapOwnerQuestion(surface) {
   assert(JSON.stringify(Object.keys(surface).sort()) === JSON.stringify(expected.sort()), "owner question fields mismatch");
   assert(surface.schema === BOOTSTRAP_OWNER_QUESTION_SCHEMA && surface.version === BOOTSTRAP_OWNER_QUESTION_VERSION, "owner question identity is invalid");
   assert(typeof surface.question_id === "string" && QUESTION_ID.test(surface.question_id), "owner question ID is invalid");
-  assert(["TEXT", "BOOLEAN", "CHOICE"].includes(surface.answer_kind), "owner answer kind is invalid");
+  assert(["TEXT", "BOOLEAN", "CHOICE", "MULTI_CHOICE"].includes(surface.answer_kind), "owner answer kind is invalid");
   plain(surface.prompt, "owner prompt");
-  assert(Array.isArray(surface.choices) && surface.choices.length <= 5, "owner choices are invalid");
+  assert(Array.isArray(surface.choices) && surface.choices.length <= 12, "owner choices are invalid");
   surface.choices.forEach(validateChoice);
   if (surface.answer_kind === "TEXT") assert(surface.choices.length === 0 && surface.boolean_answers === false, "text owner question choices are invalid");
   if (surface.answer_kind === "BOOLEAN") assert(surface.choices.length === 2 && surface.boolean_answers === true, "boolean owner question choices are invalid");
   if (surface.answer_kind === "CHOICE") assert(surface.choices.length >= 2 && surface.boolean_answers === false, "choice owner question choices are invalid");
+  if (surface.answer_kind === "MULTI_CHOICE") assert(surface.choices.length >= 2 && surface.boolean_answers === false, "multi-choice owner question choices are invalid");
   assert(surface.internal_fields_hidden === true, "owner question exposes internal fields");
   assert(typeof surface.digest === "string" && surface.digest === canonicalDigest({...surface, digest: null}), "owner question digest is invalid");
   return surface;

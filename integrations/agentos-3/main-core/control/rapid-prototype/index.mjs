@@ -3,17 +3,12 @@ import {
   classifyIntentChange,
   compileIntentEnvelope,
 } from "./intent-scope.mjs";
-import {
-  compileBootstrapContext,
-} from "./bootstrap-context.mjs";
+import {compileBootstrapContext} from "./bootstrap-context.mjs";
 import {buildConversationTurn} from "./user-conversation.mjs";
 import {assertUniversalDevelopmentMode} from "../governance-library.mjs";
 import {admitRole} from "./role-routing.mjs";
 import {recordProgress} from "./progress-health.mjs";
-import {
-  evaluateThinWorkflow,
-  THIN_WORKFLOW_OUTCOMES,
-} from "./functionality.mjs";
+import {evaluateThinWorkflow, THIN_WORKFLOW_OUTCOMES} from "./functionality.mjs";
 import {renderOwnerSurface} from "./ui-ux.mjs";
 import {
   CODE_HYGIENE_ALLOWED_PATHS,
@@ -21,11 +16,7 @@ import {
   EXACT_LANE_PATHS,
 } from "./code-hygiene.mjs";
 import {scanPublicPayload} from "./security-privacy.mjs";
-import {
-  compileEvidenceReceipt,
-  verifyHostAuthority,
-  verifyEvidenceReceipt,
-} from "./evidence-identity.mjs";
+import {compileEvidenceReceipt, verifyHostAuthority, verifyEvidenceReceipt} from "./evidence-identity.mjs";
 import {routeBoundary} from "./recovery-boundaries.mjs";
 import {validateSchedulerAdmissionReceipt} from "../scheduler-admission.mjs";
 import {
@@ -261,6 +252,9 @@ function roleOptions(input, source) {
   const supplied = input.role_admission ?? input.roleAdmission ?? {};
   const expectedProject = firstDefined(supplied, ["expectedProject", "expected_project"], sourceValue(source.expected, ["project_id", "projectId", "project"], DEFAULT_SOURCE_BINDING.project_id));
   const expectedCwd = firstDefined(supplied, ["expectedCwd", "expected_cwd"], sourceValue(source.expected, ["cwd", "working_directory", "workingDirectory"], DEFAULT_SOURCE_BINDING.cwd));
+  const capabilities = input.capabilities ?? input.availableCapabilities ?? ["local_check"];
+  const hostAuthority = input.host_authority ?? input.hostAuthority ?? input.nativeHostReadback ?? {};
+  const authoritySourceReadback = hostAuthority.source_readback ?? hostAuthority.sourceReadback ?? hostAuthority;
   const sessionIdentity = firstDefined(supplied, ["sessionIdentity", "session_identity"], {
     ...DEFAULT_ROLE_IDENTITY,
     projectId: expectedProject,
@@ -273,6 +267,20 @@ function roleOptions(input, source) {
     expectedProject,
     expectedCwd,
     topology: supplied.topology ?? "INDEPENDENT_SIBLING_SESSION",
+    phase: supplied.phase ?? "RAPID_SLICE_BUILD",
+    sourceBinding: supplied.sourceBinding ?? supplied.source_binding ?? {
+      project_id: expectedProject,
+      cwd: expectedCwd,
+      capabilities: [...capabilities],
+    },
+    hostReadback: supplied.hostReadback ?? supplied.host_readback ?? {
+      project_id: sourceValue(authoritySourceReadback, ["project_id", "projectId", "project"]),
+      cwd: sourceValue(authoritySourceReadback, ["cwd", "pwd", "working_directory", "workingDirectory"]),
+      capabilities: Array.isArray(hostAuthority.capabilities) ? [...hostAuthority.capabilities] : [],
+      status: hostAuthority.status,
+      verified: hostAuthority.verified,
+    },
+    requiredCapabilities: supplied.requiredCapabilities ?? supplied.required_capabilities ?? ["local_check"],
   };
 }
 function summarizeRoleAdmission(admission) {
@@ -356,19 +364,18 @@ function laneRoleAdmission(role) {
   const admission = admitRole({
     role: FUNCTIONALITY_ROLE,
     admittedRoles: [FUNCTIONALITY_ROLE],
-    sessionIdentity: {
-      sessionId: "functionality-lane-synthetic",
-      projectId: role.expectedProject,
-      cwd: role.expectedCwd,
-      verified: true,
-    },
+    sessionIdentity: role.sessionIdentity,
     expectedProject: role.expectedProject,
     expectedCwd: role.expectedCwd,
     topology: FUNCTIONALITY_TOPOLOGY,
+    phase: "RAPID_SLICE_FUNCTIONALITY",
+    sourceBinding: role.sourceBinding,
+    hostReadback: role.hostReadback,
+    requiredCapabilities: role.requiredCapabilities,
   });
   return {
     ...admission,
-    session_id: "functionality-lane-synthetic",
+    session_id: role.sessionIdentity.sessionId ?? role.sessionIdentity.session_id,
     identity_verified: true,
   };
 }
@@ -396,9 +403,9 @@ function conversationFor(outcome, input = {}) {
     status === "one-question" ? ["Which safe local option should continue?"] : []
   );
   const safeDefault = input.safe_default ?? input.safeDefault ?? (
-    status === "ready" ? "Review the local result."
-      : status === "puzzle" ? "Keep the current repair scope."
-        : status === "soft-review" ? "Keep the current local arrangement."
+    status === "ready" ? "Review the local result"
+      : status === "puzzle" ? "Keep the current repair scope"
+        : status === "soft-review" ? "Keep the current local arrangement"
           : null
   );
   const decision = status === "one-question" ? "SOFT_REVIEW" : status.toUpperCase().replaceAll("-", "_");
@@ -507,7 +514,7 @@ function selectedBoundary(classification, sourceStatus, capabilityAvailable) {
       identityMatch: false,
     });
   }
-  if (classification === "UNCHANGED") return null;
+  if (classification === "UNCHANGED" || classification === "PROCEED") return null;
   const condition = classification === "PUZZLE" ? "PUZZLE"
     : classification === "SOFT_REVIEW" ? "SOFT_REVIEW"
       : "HARD_STOP";
@@ -520,9 +527,7 @@ function selectedBoundary(classification, sourceStatus, capabilityAvailable) {
     identityMatch: true,
   });
 }
-function publicPayloadCandidate({surface, functionality, changedPaths, handoffStatus}) {
-  void functionality;
-  void handoffStatus;
+function publicPayloadCandidate({surface, changedPaths}) {
   return [surface.text, ...changedPaths].join("\n");
 }
 function hostileSecuritySummary() {
@@ -534,30 +539,24 @@ function hostileSecuritySummary() {
     payload_sha256: hostile.payload_sha256,
   };
 }
-function evidenceInputs(input, source, sourceStatus, digests, behaviorStatus, sourceCommit, sourceTree, authority) {
-const suppliedSource = authority?.sourceReadback ?? input.evidence_source_readback ?? input.evidenceSourceReadback;
-assert(suppliedSource !== null && typeof suppliedSource === "object" && !Array.isArray(suppliedSource), "authoritative source readback is required", "EVIDENCE_UNAVAILABLE");
-const evidenceSource = suppliedSource;
-const schedulerReceipt = authority?.schedulerTerminalReceipt ?? input.scheduler_terminal_receipt ?? input.schedulerTerminalReceipt ?? null;
-const schedulerAdmission = authority?.schedulerAdmissionReceipt ?? input.scheduler_admission_receipt ?? input.schedulerAdmissionReceipt ?? null;
-let schedulerEvidenceVerified = false;
-try {
-  normalizeSchedulerTerminalReceipt(schedulerReceipt, {sourceCommit, sourceTree, requestId: schedulerAdmission?.request_id ?? null});
-  validateSchedulerAdmissionReceipt(schedulerAdmission, {candidateCommit: sourceCommit, candidateTree: sourceTree});
-  schedulerEvidenceVerified = true;
-} catch {
-  schedulerEvidenceVerified = false;
-}
-const schedulerEvidenceReady = schedulerReceipt !== null
-  && typeof schedulerReceipt === "object"
-  && schedulerReceipt.status === "PASS"
-  && schedulerReceipt.source_commit === sourceCommit
-  && schedulerReceipt.source_tree === sourceTree
-  && schedulerAdmission !== null
-  && typeof schedulerAdmission === "object"
-  && schedulerAdmission.status === "READY"
-  && schedulerAdmission.candidate_commit === sourceCommit
-  && schedulerAdmission.candidate_tree === sourceTree;
+function evidenceInputs(input, source, digests, behaviorStatus, sourceCommit, sourceTree, authority) {
+  const suppliedSource = authority?.sourceReadback ?? input.evidence_source_readback ?? input.evidenceSourceReadback;
+  if (suppliedSource === null || typeof suppliedSource !== "object" || Array.isArray(suppliedSource)) {
+    const error = new Error("authoritative source readback is required");
+    error.code = "EVIDENCE_UNAVAILABLE";
+    throw error;
+  }
+  const evidenceSource = suppliedSource;
+  const schedulerReceipt = authority?.schedulerTerminalReceipt ?? input.scheduler_terminal_receipt ?? input.schedulerTerminalReceipt ?? null;
+  const schedulerAdmission = authority?.schedulerAdmissionReceipt ?? input.scheduler_admission_receipt ?? input.schedulerAdmissionReceipt ?? null;
+  let schedulerEvidenceVerified = false;
+  try {
+    normalizeSchedulerTerminalReceipt(schedulerReceipt, {sourceCommit, sourceTree, requestId: schedulerAdmission?.request_id ?? null});
+    validateSchedulerAdmissionReceipt(schedulerAdmission, {candidateCommit: sourceCommit, candidateTree: sourceTree});
+    schedulerEvidenceVerified = true;
+  } catch {
+    schedulerEvidenceVerified = false;
+  }
   const suppliedProject = authority?.projectIdentity ?? input.evidence_project_identity ?? input.evidenceProjectIdentity;
   const evidenceProject = suppliedProject ?? {
     projectId: "source-bound-project",
@@ -584,8 +583,8 @@ const schedulerEvidenceReady = schedulerReceipt !== null
         ? "The first useful local workflow is ready for independent review."
         : "The local workflow remains blocked at a typed boundary.",
     },
-focusedCheck: {
-  test: "node tests/verify-rapid-prototype.mjs",
+    focusedCheck: {
+      test: "node tests/verify-rapid-prototype.mjs",
       status: schedulerEvidenceVerified ? "PASS" : "UNPROVEN",
       sourceCommit,
       sourceTree,
@@ -719,12 +718,12 @@ async function runRapidPrototypeInternal(input) {
     : suppliedRole.expectedProject === sourceExpectedProject && suppliedRole.expectedCwd === sourceExpectedCwd;
   const authority = verifyHostAuthority({input, source, suppliedRole});
   let roleAdmission = null;
-  if (sourceMatch && roleBindingMatches) roleAdmission = admitRole(suppliedRole);
+  if (sourceMatch && roleBindingMatches && authority.verified) roleAdmission = admitRole(suppliedRole);
   const roleSummary = summarizeRoleAdmission(roleAdmission);
   const progress = recordProgress(progressOptions(input));
   const capabilities = input.capabilities ?? input.availableCapabilities ?? ["local_check"];
   const workflow = workflowIntent(intent, classification);
-  const laneAdmission = sourceMatch && roleBindingMatches ? laneRoleAdmission(suppliedRole) : null;
+  const laneAdmission = sourceMatch && roleBindingMatches && authority.verified ? laneRoleAdmission(suppliedRole) : null;
   const functionalityInput = {
     intent: workflow,
     context: functionalityContext(source, bootstrap, capabilities),
@@ -737,9 +736,7 @@ async function runRapidPrototypeInternal(input) {
   const candidateSurface = publicSurfaceFor(functionality.outcome, conversation);
   const publicCandidate = publicPayloadCandidate({
     surface: candidateSurface,
-    functionality,
     changedPaths: RAPID_PROTOTYPE_CHANGED_PATHS,
-    handoffStatus: functionality.success ? "READY_FOR_INDEPENDENT_CLEARANCE" : "BLOCKED",
   });
   const publicScan = scanPublicPayload(publicCandidate, [], true);
   const surface = publicScan.safe && authority.verified
@@ -793,7 +790,7 @@ const coreReady = bootstrap.status === "READY"
   let evidenceReceipt = null;
   if (coreReady && GIT_OBJECT.test(sourceCommit ?? "") && GIT_OBJECT.test(sourceTree ?? "")) {
     try {
-      const inputs = evidenceInputs(input, source, bootstrap.source_binding.status, digests, "PASS", sourceCommit, sourceTree, authority);
+      const inputs = evidenceInputs(input, source, digests, "PASS", sourceCommit, sourceTree, authority);
       evidenceReceipt = compileEvidenceReceipt(inputs);
       evidenceReceipt = verifyEvidenceReceipt(evidenceReceipt);
       evidence = {

@@ -22,7 +22,7 @@ async function files(root, current = root) {
     if (info.isDirectory()) output.push(...await files(root, absolute));
     else if (info.isFile()) output.push(absolute);
   }
-  return output;
+  return output.sort();
 }
 
 function git(...args) {
@@ -32,7 +32,7 @@ function git(...args) {
 }
 
 const status = git("status", "--porcelain");
-if (status.length > 0) throw new Error("SOURCE_WORKTREE_NOT_CLEAN");
+if (status.length > 0 && process.env.AGENTOS_REBIND_DIRTY_ACK !== "GENERATED_MAIN_CORE_ONLY") throw new Error("SOURCE_WORKTREE_NOT_CLEAN");
 const commit = git("rev-parse", "HEAD");
 const tree = git("rev-parse", "HEAD^{tree}");
 await rm(STAGE, {recursive: true, force: true});

@@ -1,5 +1,23 @@
 # AgentOS 3.0 test-integration BUILD checkpoint
 
+## 2026-08-12 exact-current combined artifact
+
+- Main core is rebound byte-for-byte to commit
+  `029ccdb40efaeeae38ec1adabc6d3b44f5316310`, tree
+  `6f66883444f0340aac86905ab0e889832b420df6`, with 203 control entries.
+- The deterministic 4,762-entry bundle now contains the current main core,
+  Memory M2, Agent Builder, the 620-role specialist library, and root schemas.
+- Memory M2 is the only exposed Memory runtime. Root Project Memory remains a
+  disabled legacy compatibility surface and cannot co-author state.
+- Exact sibling install, capability-bound Memory initialization, acceptance
+  replay/reopen, Agent Builder positive and four denial paths, hostile install,
+  zero-project-trace, and accountable rollback pass against the combined
+  artifact. Activation remains `OFF`; migration remains forbidden.
+- Exact bundle SHA-256 is recorded only in the adjacent generated manifest to
+  avoid a self-referential artifact identity.
+- Independent utility/harm and real-host NEW_PROJECT/import-adoption proof
+  remain explicit next gates; this local receipt does not self-accept them.
+
 - Classification: `behavior_plus_correct_placement + production_hardening`
 - Build: `AGENTOS_3_TEST_BUILD`
 - Lifecycle: `CANDIDATE_INACTIVE`; activation `OFF`
