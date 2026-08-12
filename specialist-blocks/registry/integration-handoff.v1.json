@@ -4,8 +4,8 @@
   "status": "WAITING_WITH_RECEIPT",
   "candidate": {
     "branch": "codex/specialist-block-library-candidate",
-    "commit": "e35e05551aae24638abbef9c164ba994e56be1b9",
-    "tree": "2bd879482553aef3223e08757cccca394cc8618f",
+    "commit": "c2b4d5757653e7b4b223ddedf387b4df915a273e",
+    "tree": "158152d279de4cf7aa4ff1743c16d3e770dc06f3",
     "remote_ref": "origin/codex/specialist-block-library-candidate",
     "activation": "OFF",
     "admission": "NOT_ADMITTED"

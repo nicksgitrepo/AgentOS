@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `e35e05551aae24638abbef9c164ba994e56be1b9`
-- Candidate tree: `2bd879482553aef3223e08757cccca394cc8618f`
+- Candidate commit: `c2b4d5757653e7b4b223ddedf387b4df915a273e`
+- Candidate tree: `158152d279de4cf7aa4ff1743c16d3e770dc06f3`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
