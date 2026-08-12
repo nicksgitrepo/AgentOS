@@ -19,8 +19,8 @@
     },
     {
       "path": "CURRENT_STATE.md",
-      "size": 10808,
-      "sha256": "1576f5c82a5f515990cf7e70d8f5260e918ac1c1d7f0085796471dcb6abd8613"
+      "size": 3174,
+      "sha256": "9a6ee52c5e806dd6fc94f0dd07cb75c7ede2f7007fe935576c9c34c1deb036ab"
     },
     {
       "path": "agent-builder-adapter.mjs",
@@ -204,8 +204,8 @@
     },
     {
       "path": "contracts/agentos-3-integration.v1.json",
-      "size": 3415,
-      "sha256": "56f5f86a445eb71aef0cc0f822f92e6fd9a5812cd5d84491e2e2c06ad4153c0b"
+      "size": 3426,
+      "sha256": "4488498549454c30044acb7dd7a7d46224af14e7fa4353337e3ab6e365a9f9c3"
     },
     {
       "path": "contracts/compatibility-map.v1.json",
@@ -214,8 +214,8 @@
     },
     {
       "path": "contracts/test-build-receipt.json",
-      "size": 3126,
-      "sha256": "abc4a002c4c0c6dc3e0586914fd7d5b7d14c307a836e7f0b385d2742d9d9ed0a"
+      "size": 3318,
+      "sha256": "d59a54acbdd17f87ea3c355c4056633564ad9942c3e2a86d61925a93ae6e5d63"
     },
     {
       "path": "custody.mjs",
@@ -23808,6 +23808,11 @@
       "sha256": "d28ba841e7dc1dc9df823a84f1d58a61b4c912f766e49422c8a624c331a5f274"
     },
     {
+      "path": "tests/real-host-proof.mjs",
+      "size": 4241,
+      "sha256": "68c9e50c9a283be92fd0b68117d94dd1d4f324a0e8f83f107db84a10dc1d21e5"
+    },
+    {
       "path": "tools/build.mjs",
       "size": 2533,
       "sha256": "7ba0a040a70a8fcaece073906a1e06f14b1515462fde3dba39f79690ea987b4b"
@@ -23819,10 +23824,10 @@
     },
     {
       "path": "tools/verify-main-core.mjs",
-      "size": 3063,
-      "sha256": "cdbc609514b2f63d0cdcbb0d1ba80e826863f6bd9b7cc51e483a7d0927cb6e8a"
+      "size": 3271,
+      "sha256": "87218cb6394663c3ed1726b2c4a9e06897e201ad150350eea3f6ddfae3787486"
     }
   ],
-  "bundle_sha256": "f8aeb6db6f0ccc569aaf979128e51bfcf488091e35ab2ee48935fdea5ff29267",
+  "bundle_sha256": "ced876ef3512b74c44ce2faa664408364aa698abc69e86e95dd0f984030fb5e4",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "agentos.integration.test-build-receipt.v1",
   "build_id": "AGENTOS_3_TEST_BUILD",
-  "disposition": "AGENTOS_3_TEST_BUILD_READY_FOR_INDEPENDENT_EVALUATION",
+  "disposition": "REAL_HOST_TESTED_CANDIDATE_PENDING_INDEPENDENT_CLEARANCE",
   "candidate_lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
   "authority_reference": {
@@ -28,13 +28,15 @@
     "agent_builder_candidate_compiler": "PASS_TYPED_COMPILER_AND_FOUR_DENIALS",
     "sibling_custody_static_contract": "PASS_SIBLING_AND_CANONICAL_ROOT_RULES",
     "install_and_rollback": "PASS_ZERO_TRACE_HOSTILE_ROLLBACK",
+    "real_host_new_project": "PASS_INSTALLED_BOOTSTRAP_READ_ONLY_ZERO_TRACE_ROLLBACK",
+    "real_host_import_adoption": "PASS_INSTALLED_BOOTSTRAP_READ_ONLY_ZERO_TRACE_ROLLBACK",
     "specialist_roster_materialization": "PASS_620_COMPILEABLE_ONE_PROTECTED_EXTERNAL",
     "memory_authority": "PASS_M2_ONLY_EXPOSED_ROOT_PROJECT_MEMORY_PRESERVED_OFF",
-    "bundle_manifest_reconciliation": "PASS_4762_ENTRIES_ALL_COMPONENTS",
+    "bundle_manifest_reconciliation": "PASS_4763_ENTRIES_ALL_COMPONENTS",
     "reproducible_build": "PASS_IDENTICAL_REGENERATIONS",
     "private_or_external_context_leak": "PASS_SYNTHETIC_SCAN"
   },
-  "remaining_ceilings": ["independent_utility_harm_evaluation", "real_host_new_project", "real_host_import_adoption", "provider_activation", "public_release"],
+  "remaining_ceilings": ["independent_utility_harm_evaluation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"],
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK",
   "source_mutation": "NONE",
   "private_control_payload": "NOT_INCLUDED"

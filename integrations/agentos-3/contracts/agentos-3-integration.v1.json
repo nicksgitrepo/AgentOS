@@ -60,5 +60,5 @@
     "agent_builder_package": "agent-builder/package-manifest.json"
   },
   "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
-  "proof_ceiling": ["independent_utility_harm_evaluation", "real_host_new_project", "real_host_import_adoption", "provider_activation", "public_release"]
+  "proof_ceiling": ["independent_utility_harm_evaluation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"]
 }

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile, stat, writeFile } from "node:fs/promises";
-import { join, relative, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
@@ -31,18 +31,17 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
   }
   if (existing && JSON.stringify(existing.entries) !== JSON.stringify(entries)) throw new Error("MAIN_CORE_MANIFEST_MISMATCH");
   if (sourceRoot !== null) {
-    const repositoryRoot = resolve(sourceRoot, "..");
-    const sourceCommit = spawnSync("git", ["-C", repositoryRoot, "rev-parse", "HEAD"], { encoding: "utf8" });
-    const sourceTree = spawnSync("git", ["-C", repositoryRoot, "rev-parse", "HEAD^{tree}"], { encoding: "utf8" });
-    if (sourceCommit.status !== 0 || sourceTree.status !== 0 || sourceCommit.stdout.trim() !== existing.source_commit || sourceTree.stdout.trim() !== existing.source_tree) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
-    const sourceFiles = await listFiles(resolve(sourceRoot));
-    const sourceEntries = [];
-    for (const absolute of sourceFiles) {
-      const bytes = await readFile(absolute);
-      sourceEntries.push({ path: relative(resolve(sourceRoot), absolute).split("\\").join("/"), size: bytes.length, sha256: sha256(bytes) });
-    }
-    if (JSON.stringify(sourceEntries) !== JSON.stringify(entries.map(({ path, size, sha256: digest }) => ({ path: path.replace(/^control\//u, ""), size, sha256: digest })))) {
-      throw new Error("MAIN_CORE_SOURCE_BYTES_MISMATCH");
+    const requested = resolve(sourceRoot);
+    const repositoryRoot = basename(requested) === "control" ? resolve(requested, "..") : requested;
+    const sourceTree = spawnSync("git", ["-C", repositoryRoot, "rev-parse", `${existing.source_commit}^{tree}`], { encoding: "utf8" });
+    if (sourceTree.status !== 0 || sourceTree.stdout.trim() !== existing.source_tree) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
+    const listed = spawnSync("git", ["-C", repositoryRoot, "ls-tree", "-r", "--name-only", existing.source_commit, "--", "control"], { encoding: "utf8" });
+    if (listed.status !== 0) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
+    const sourcePaths = listed.stdout.trim().split("\n").filter(Boolean).sort();
+    if (JSON.stringify(sourcePaths) !== JSON.stringify(entries.map((entry) => entry.path))) throw new Error("MAIN_CORE_SOURCE_PATHS_MISMATCH");
+    for (const entry of entries) {
+      const object = spawnSync("git", ["-C", repositoryRoot, "show", `${existing.source_commit}:${entry.path}`], { encoding: null, maxBuffer: 64 * 1024 * 1024 });
+      if (object.status !== 0 || object.stdout.length !== entry.size || sha256(object.stdout) !== entry.sha256) throw new Error(`MAIN_CORE_SOURCE_BYTES_MISMATCH:${entry.path}`);
     }
   }
   if (writeManifest) throw new Error("WRITE_MANIFEST_REMOVED_USE_REBIND_MAIN_CORE");
