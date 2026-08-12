@@ -183,6 +183,11 @@ function normalizeBlock(raw, index) {
   const dependencies = [...(raw.dependencies ?? raw.depends_on ?? [])].sort();
   const conflicts = [...(raw.conflicts ?? [])].sort();
   if (dependencies.some((value) => typeof value !== "string") || conflicts.some((value) => typeof value !== "string")) fail("INVALID_BLOCK", `${blockId} dependency or conflict list is invalid`);
+  const requiredUpstreamRouter = raw.required_upstream_router ?? null;
+  const siblingConflicts = [...(raw.sibling_conflicts ?? [])].sort();
+  if (requiredUpstreamRouter !== null && typeof requiredUpstreamRouter !== "string") fail("INVALID_ATOMIC_COMPOSITION", `${blockId} required_upstream_router is invalid`);
+  if (siblingConflicts.some((value) => typeof value !== "string")) fail("INVALID_ATOMIC_COMPOSITION", `${blockId} sibling conflict list is invalid`);
+  if (raw.role_kind === "ATOMIC_SPECIALIST" && requiredUpstreamRouter === null) fail("INVALID_ATOMIC_COMPOSITION", `${blockId} atomic specialist lacks required_upstream_router`);
   const requiredContext = [...(raw.required_context ?? raw.intake?.required_context ?? [])].sort();
   const permitted = [...(raw.permitted_decisions ?? raw.authority?.allowed_authority ?? ["advisory analysis"])].sort();
   const forbidden = [...(raw.forbidden_decisions ?? raw.authority?.prohibited_authority ?? ["Product writing", "acceptance", "deployment", "silent scope expansion"])].sort();
@@ -207,6 +212,8 @@ function normalizeBlock(raw, index) {
     source_lock_digest: sourceDigest,
     dependencies,
     conflicts,
+    required_upstream_router: requiredUpstreamRouter,
+    sibling_conflicts: siblingConflicts,
     required_context: requiredContext,
     permitted_decisions: permitted,
     forbidden_decisions: forbidden,
@@ -219,6 +226,7 @@ function normalizeBlock(raw, index) {
   if (!COMPOSITION_LAYERS.includes(normalized.layer)) fail("INVALID_BLOCK", `${blockId} uses an unknown composition layer`, {layer: normalized.layer});
   sortedUnique(normalized.dependencies, `${blockId}.dependencies`);
   sortedUnique(normalized.conflicts, `${blockId}.conflicts`);
+  sortedUnique(normalized.sibling_conflicts, `${blockId}.sibling_conflicts`);
   sortedUnique(normalized.required_context, `${blockId}.required_context`);
   sortedUnique(normalized.permitted_decisions, `${blockId}.permitted_decisions`);
   sortedUnique(normalized.forbidden_decisions, `${blockId}.forbidden_decisions`);
@@ -373,7 +381,17 @@ function resolveSelection({recipe, task, catalog}) {
   for (const block of selectedBlocks) {
     if (block.applicability !== "YES") fail(block.applicability === "UNKNOWN" ? "APPLICABILITY_UNKNOWN" : "BLOCK_NOT_APPLICABLE", `${block.block_id} cannot advance with applicability ${block.applicability}`);
     if (block.source_state !== "FRESH") fail(block.source_state === "UNKNOWN" ? "SOURCE_FRESHNESS_UNKNOWN" : "STALE_SOURCE", `${block.block_id} cannot advance with source state ${block.source_state}`);
-    if (block.role_kind === "ROUTER" && recipe.required_atomic_blocks.length > 0 && !recipe.required_atomic_blocks.includes(block.block_id)) fail("BROAD_ROUTER_SUBSTITUTION", `${block.block_id} is a router and cannot replace the recipe's atomic specialists`);
+    if (block.role_kind === "ROUTER" && recipe.required_atomic_blocks.length > 0) {
+      const isRequiredUpstream = recipe.required_atomic_blocks.some((atomicId) => byId.get(atomicId)?.required_upstream_router === block.block_id);
+      if (!isRequiredUpstream && !recipe.required_atomic_blocks.includes(block.block_id)) fail("BROAD_ROUTER_SUBSTITUTION", `${block.block_id} is a router and cannot replace the recipe's atomic specialists`);
+    }
+    if (block.role_kind === "ATOMIC_SPECIALIST") {
+      if (block.required_upstream_router === null) fail("UPSTREAM_ROUTER_REQUIRED", `${block.block_id} has no required upstream router`);
+      const upstream = byId.get(block.required_upstream_router);
+      if (!upstream || upstream.role_kind !== "ROUTER") fail("UPSTREAM_ROUTER_REQUIRED", `${block.block_id} requires a selected ROUTER ${block.required_upstream_router}`);
+      if (!selected.has(block.required_upstream_router)) fail("UPSTREAM_ROUTER_REQUIRED", `${block.block_id} requires upstream router ${block.required_upstream_router} in the selected set`);
+    }
+    for (const sibling of block.sibling_conflicts) if (selected.has(sibling)) fail("DUPLICATE_SIBLING_AUTHORITY", `${block.block_id} conflicts with sibling authority ${sibling}`);
     if (block.forbidden_decisions.some((decision) => /(?:unsafe\s+write|unsafe\s+authority|grant\s+unsafe|escalate\s+unsafe)/iu.test(decision))) {
       if (task.goal.toLowerCase().includes("unsafe") || task.outcome.toLowerCase().includes("unsafe")) fail("UNSAFE_AUTHORITY_ESCALATION", `${block.block_id} exposes an unsafe authority escalation`);
     }
@@ -425,6 +443,8 @@ function blockReference(block, reason) {
     source_lock_digest: block.source_lock_digest,
     dependencies: [...block.dependencies],
     conflicts: [...block.conflicts],
+    required_upstream_router: block.required_upstream_router,
+    sibling_conflicts: [...block.sibling_conflicts],
   };
 }
 
@@ -682,6 +702,11 @@ export function validateTaskShapedAgentPackage(packageDir, {repositoryRoot = nul
   for (const block of documents.blockLock.blocks) {
     const exact = `${block.block_id}@${block.version}#${block.hash}`;
     if (!bootstrap.includes(exact)) fail("BOOTSTRAP_LOCK_MISMATCH", `bootstrap.md does not reflect ${exact}`);
+    if (block.role_kind === "ATOMIC_SPECIALIST") {
+      if (typeof block.required_upstream_router !== "string" || block.required_upstream_router.length === 0) fail("PACKAGE_ATOMICITY_INVALID", `${block.block_id} lock omits its required upstream router`);
+      if (!documents.blockLock.blocks.some((candidate) => candidate.block_id === block.required_upstream_router && candidate.role_kind === "ROUTER")) fail("PACKAGE_ATOMICITY_INVALID", `${block.block_id} lock omits its upstream ROUTER`);
+      if (!Array.isArray(block.sibling_conflicts)) fail("PACKAGE_ATOMICITY_INVALID", `${block.block_id} lock omits sibling conflicts`);
+    }
   }
   if (!bootstrap.includes(`Package hash: ${packageHash}`)) fail("BOOTSTRAP_HASH_MISMATCH", "bootstrap.md does not reflect package hash");
   return {status: "PASS", package_hash: packageHash, files: names, documents};

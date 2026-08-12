@@ -98,10 +98,21 @@ export function routeSpecialists({library, signals = [], context = {}, requested
   const controls = candidates.filter((route) => route.role_kind === "CONTROL_PLANE");
   for (const route of atomic) selected.push(...route.select);
   for (const route of controls) selected.push(...route.select);
+  const requiredRouterIds = new Set(atomic.flatMap((route) => route.select.map((blockId) => library.byId.get(blockId)?.required_upstream_router).filter(Boolean)));
   for (const route of routers) {
-    const hasAtomicUnderRouter = atomic.some((atomicRoute) => atomicRoute.select.some((blockId) => library.byId.get(blockId)?.required_upstream_router === route.select[0]));
-    if (!hasAtomicUnderRouter || atomic.length === 0) selected.push(...route.select);
+    if (route.select.some((blockId) => requiredRouterIds.has(blockId)) || atomic.length === 0) selected.push(...route.select);
   }
+  let missingUpstream = false;
+  for (const routerId of [...requiredRouterIds].sort()) {
+    const router = library.byId.get(routerId);
+    if (!router || router.role_kind !== "ROUTER") {
+      denials.push({outcome: "UNKNOWN", reason: `Atomic selection requires missing upstream router ${routerId}.`});
+      missingUpstream = true;
+      continue;
+    }
+    selected.push(routerId);
+  }
+  if (missingUpstream) return {status: "UNKNOWN", selected: [], denials, signals: normalizedSignals};
   const uniqueSelected = [...new Set(selected)].sort();
   if (uniqueSelected.length === 0) return {status: "UNKNOWN", selected: [], denials: [{outcome: "UNKNOWN", reason: "No narrow route survived the context contract."}], signals: normalizedSignals};
   return {status: "ROUTE", selected: uniqueSelected, denials, signals: normalizedSignals, smallest_sufficient: true};
@@ -114,12 +125,15 @@ export function validateAtomicSelection({library, selected}) {
   const atomic = blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST");
   const routers = blocks.filter((block) => block.role_kind === "ROUTER");
   for (const block of routers) {
-    const hasNarrower = atomic.some((candidate) => candidate.required_upstream_router === block.block_id);
-    assert(!hasNarrower, `broad router ${block.block_id} was selected instead of a narrower atomic block`);
+    const availableNarrowers = [...library.byId.values()].filter((candidate) => candidate.role_kind === "ATOMIC_SPECIALIST" && candidate.required_upstream_router === block.block_id);
+    const selectedNarrowers = atomic.filter((candidate) => candidate.required_upstream_router === block.block_id);
+    if (availableNarrowers.length > 0) assert(selectedNarrowers.length > 0, `broad router ${block.block_id} was selected instead of a narrower atomic block`);
   }
   const ids = new Set(blocks.map((block) => block.block_id));
   for (const block of atomic) {
-    assert(block.required_upstream_router === null || ids.has(block.required_upstream_router) || typeof block.required_upstream_router === "string", `${block.block_id} lacks an upstream route identity`);
+    assert(typeof block.required_upstream_router === "string" && block.required_upstream_router.length > 0, `${block.block_id} lacks an upstream route identity`);
+    assert(ids.has(block.required_upstream_router), `${block.block_id} requires upstream router ${block.required_upstream_router} in the selected set`);
+    assert(library.byId.get(block.required_upstream_router)?.role_kind === "ROUTER", `${block.block_id} upstream ${block.required_upstream_router} is not a ROUTER`);
     assert(!block.sibling_conflicts.some((conflict) => ids.has(conflict)), `${block.block_id} has a sibling conflict in the selected set`);
   }
   return {status: "PASS", selected: [...ids].sort(), outcomes: GATE_OUTCOMES};

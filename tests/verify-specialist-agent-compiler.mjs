@@ -108,7 +108,7 @@ try {
   const actualStandardPackage = compile("actual-standard-loader", actualRecipe, actualTask, makeExternal("actual-standard-loader", {contextFields: actualContextFields}), portableCatalog);
   assert.equal(validateTaskShapedAgentPackage(actualStandardPackage.packageDir, {repositoryRoot: root}).status, "PASS");
   const actualStandardLock = actualStandardPackage.documents.blockLock.blocks.find((block) => block.block_id === actualStandard.block_id);
-  assert.deepEqual(actualStandardLock, {block_id: actualStandard.block_id, version: actualStandard.version, hash: actualStandard.hash, role_kind: "STANDARD_BLOCK", layer: actualStandard.layer, reason: "reuse the exact source-locked ASVS edition", reuse_key: actualStandard.reuse_key, source_lock_digest: actualStandard.source_lock_digest, dependencies: actualStandard.dependencies, conflicts: actualStandard.conflicts, applicability: "YES", source_state: "FRESH"});
+  assert.deepEqual(actualStandardLock, {block_id: actualStandard.block_id, version: actualStandard.version, hash: actualStandard.hash, role_kind: "STANDARD_BLOCK", layer: actualStandard.layer, reason: "reuse the exact source-locked ASVS edition", reuse_key: actualStandard.reuse_key, source_lock_digest: actualStandard.source_lock_digest, dependencies: actualStandard.dependencies, conflicts: actualStandard.conflicts, required_upstream_router: null, sibling_conflicts: [], applicability: "YES", source_state: "FRESH"});
 
   assert.equal(validateTaskShapedAgentPackage(rustA.packageDir, {repositoryRoot: root}).status, "PASS");
   assert.equal(validateTaskShapedAgentPackage(web.packageDir, {repositoryRoot: root}).status, "PASS");
@@ -129,9 +129,16 @@ try {
   }
   const rustIds = new Set(rustLock.blocks.map((block) => block.block_id));
   for (const block of rustLock.blocks) for (const dependency of block.dependencies) assert(rustIds.has(dependency), `${block.block_id} dependency ${dependency} missing from lock`);
-  assert.equal(rustLock.blocks.length, 5, "Rust/search recipe must select the minimal dependency-complete set");
-  assert.equal(webLock.blocks.length, 4, "web recipe must select the minimal dependency-complete set");
-  assert.equal(dataLock.blocks.length, 4, "data recipe must select the minimal dependency-complete set");
+  assert.equal(rustLock.blocks.length, 6, "Rust/search recipe must select the minimal dependency-complete set including its upstream router");
+  assert.equal(webLock.blocks.length, 5, "web recipe must select the minimal dependency-complete set including its upstream router");
+  assert.equal(dataLock.blocks.length, 5, "data recipe must select the minimal dependency-complete set including its upstream router");
+  for (const lock of [rustLock, webLock, dataLock]) {
+    const atomicBlocks = lock.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST");
+    for (const block of atomicBlocks) {
+      assert(block.required_upstream_router, `${block.block_id} must retain its upstream router in the block lock`);
+      assert(lock.blocks.some((candidate) => candidate.block_id === block.required_upstream_router && candidate.role_kind === "ROUTER"), `${block.block_id} lock must include a ROUTER upstream`);
+    }
+  }
   for (const packageResult of [rustA, web, data]) {
     for (const block of packageResult.documents.blockLock.blocks) assert(packageResult.bootstrap.includes(`${block.block_id}@${block.version}#${block.hash}`), "bootstrap.md must reflect each machine lock");
     assert(packageResult.bootstrap.includes(`Package hash: ${packageResult.packageHash}`), "bootstrap.md must reflect package hash");
@@ -174,6 +181,14 @@ try {
   const broadRecipe = customRecipe("recipe.fixture.broad-router", ["specialist.fixture.general-governance", router.block_id], ["specialist.fixture.search-rag"]);
   const broadTask = {...TASKS.rustSearch, goal: "route a security family request"};
   assertCode(() => compile("broad-router", broadRecipe, broadTask, makeExternal("broad-router")), "ATOMIC_SPECIALIST_REQUIRED");
+
+  const missingUpstream = clone(BLOCKS).map((block) => {
+    if (block.block_id !== "specialist.fixture.search-rag") return block;
+    const copy = {...block, required_upstream_router: null, dependencies: block.dependencies.filter((id) => id !== "specialist.fixture.security-router")};
+    copy.hash = digest({...copy, hash: null});
+    return copy;
+  });
+  assertCode(() => compile("missing-upstream-router", RECIPES.rustSearch, TASKS.rustSearch, makeExternal("missing-upstream-router"), missingUpstream), "INVALID_ATOMIC_COMPOSITION");
 
   const unsafe = BLOCKS.find((block) => block.block_id === "specialist.fixture.unsafe-rust-authority");
   const unsafeRecipe = customRecipe("recipe.fixture.unsafe-authority", ["specialist.fixture.general-governance", unsafe.block_id], [unsafe.block_id]);

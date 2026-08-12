@@ -6,14 +6,17 @@ function digest(value) {
   return canonicalDigest(value);
 }
 
-function makeBlock({block_id, version = "1.0.0", role_kind, layer, dependencies = [], required_context = [], standard_identity = null, forbidden_decisions = []}) {
+function makeBlock({block_id, version = "1.0.0", role_kind, layer, dependencies = [], required_context = [], standard_identity = null, forbidden_decisions = [], required_upstream_router = null, sibling_conflicts = []}) {
+  const allDependencies = [...new Set([...dependencies, ...(required_upstream_router ? [required_upstream_router] : [])])].sort();
   const block = {
     block_id,
     version,
     role_kind,
     layer,
-    dependencies: [...dependencies].sort(),
+    dependencies: allDependencies,
     conflicts: [],
+    required_upstream_router,
+    sibling_conflicts: [...sibling_conflicts].sort(),
     required_context: [...required_context].sort(),
     permitted_decisions: ["return typed scoped analysis"],
     forbidden_decisions: [...new Set(["write Product", "self-accept", "silently broaden scope", ...forbidden_decisions])].sort(),
@@ -67,6 +70,8 @@ const sharedSlsa = makeBlock({
   required_context: ["artifact.provenance"],
 });
 
+const taskRouterId = "specialist.fixture.security-router";
+
 const rust = makeBlock({
   block_id: "specialist.fixture.rust-backend",
   role_kind: "KNOWLEDGE_BLOCK",
@@ -80,6 +85,7 @@ const search = makeBlock({
   role_kind: "ATOMIC_SPECIALIST",
   layer: "domain-capability",
   dependencies: [sharedGovernance.block_id, sharedNist.block_id, sharedAsvs.block_id],
+  required_upstream_router: taskRouterId,
   required_context: ["corpus.authority", "retrieval.freshness"],
 });
 
@@ -88,6 +94,7 @@ const web = makeBlock({
   role_kind: "ATOMIC_SPECIALIST",
   layer: "language-runtime-framework",
   dependencies: [sharedGovernance.block_id, sharedNist.block_id, sharedAsvs.block_id],
+  required_upstream_router: taskRouterId,
   required_context: ["web.route", "browser.target"],
 });
 
@@ -96,6 +103,7 @@ const data = makeBlock({
   role_kind: "ATOMIC_SPECIALIST",
   layer: "architecture-platform",
   dependencies: [sharedGovernance.block_id, sharedNist.block_id, sharedSlsa.block_id],
+  required_upstream_router: taskRouterId,
   required_context: ["data.schema", "data.tenant-boundary"],
 });
 
@@ -112,6 +120,7 @@ const unsafeRust = makeBlock({
   role_kind: "ATOMIC_SPECIALIST",
   layer: "language-runtime-framework",
   dependencies: [sharedGovernance.block_id],
+  required_upstream_router: taskRouterId,
   required_context: ["language.edition"],
   forbidden_decisions: ["grant unsafe authority"],
 });

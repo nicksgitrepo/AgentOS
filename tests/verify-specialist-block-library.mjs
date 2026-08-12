@@ -79,9 +79,14 @@ const synthetic = {
 };
 const narrow = routeSpecialists({library: synthetic, signals: ["security", "access-control"], context: {request: {kind: "web"}, access_control: {object_scope: "declared"}}});
 assert.equal(narrow.status, "ROUTE");
-assert.deepEqual(narrow.selected, [atomicId]);
+assert.deepEqual(narrow.selected, [atomicId, routerId]);
 assert.equal(narrow.smallest_sufficient, true);
 assert.deepEqual(validateAtomicSelection({library: synthetic, selected: narrow.selected}).status, "PASS");
+assert.throws(() => validateAtomicSelection({library: synthetic, selected: [atomicId]}), /requires upstream router/u);
+const missingUpstreamLibrary = {byId: new Map([[atomicId, syntheticAtomic]]), routing: synthetic.routing};
+const missingUpstreamRoute = routeSpecialists({library: missingUpstreamLibrary, signals: ["access-control"], context: {request: {kind: "web"}, access_control: {object_scope: "declared"}}});
+assert.equal(missingUpstreamRoute.status, "UNKNOWN");
+assert.equal(missingUpstreamRoute.selected.length, 0);
 const missing = routeSpecialists({library: synthetic, signals: ["access-control"], context: {request: {kind: "web"}}});
 assert.equal(missing.status, "UNKNOWN");
 assert.equal(missing.denials[0].outcome, "UNKNOWN");
