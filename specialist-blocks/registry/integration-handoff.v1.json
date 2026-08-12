@@ -89,7 +89,8 @@
       "schemas/specialist-integration-handoff.v1.json",
       "schemas/specialist-standard-requirements.v1.json",
       "schemas/specialist-standard-compatibility.v1.json",
-      "schemas/specialist-standard-supersession.v1.json"
+      "schemas/specialist-standard-supersession.v1.json",
+      "schemas/specialist-utility-harm-prescreen.v1.json"
     ],
     "registry": [
       "specialist-blocks/registry/master-inventory.v1.json",
@@ -100,7 +101,8 @@
       "specialist-blocks/registry/roster.v1.json",
       "specialist-blocks/registry/routing-index.v1.json"
     ],
-    "human_roster": "specialist-blocks/registry/ROSTER.md"
+    "human_roster": "specialist-blocks/registry/ROSTER.md",
+    "utility_harm_prescreen": "specialist-blocks/registry/utility-harm-prescreen.v1.json"
   },
   "receipts": [
     {"receipt_id": "specialist-library-static-v1", "status": "PASS", "scope": "123 package records, exact twelve-gate packs, content digests, roster/routing/inventory materialization"},
@@ -115,10 +117,12 @@
     {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "621 stable recipes for 621 retained inventory roles, seventeen compileable candidates (six P0, five P4, and six P5), 603 planned recipes, one protected external lane marked NOT_APPLICABLE, ten alias resolutions, and deterministic catalog digest"},
     {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"},
     {"receipt_id": "specialist-p1-standard-reuse-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "implementation commit 170bbf4ca705dce9de199172910c6c25e243e7fc with tree aebfe743b8b460dd1ffb5c90cfc3342f93d18597; ten P1 atoms reuse ten immutable exact-edition standard blocks"},
-    {"receipt_id": "specialist-p5-domain-ai-3d-reg-finance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P5 atomic candidates, five P5 classification routers, five reusable exact-edition STANDARD_BLOCK authorities, source locks, twelve-gate packs, hostile fixtures, upstream-router closure, and standard-hash reuse"}
+    {"receipt_id": "specialist-p5-domain-ai-3d-reg-finance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P5 atomic candidates, five P5 classification routers, five reusable exact-edition STANDARD_BLOCK authorities, source locks, twelve-gate packs, hostile fixtures, upstream-router closure, and standard-hash reuse"},
+    {"receipt_id": "specialist-utility-harm-prescreen-v1", "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW", "scope": "deterministic read-only comparison of 123 package dossiers and 2,091 hostile fixture policies; 2,023 observed passes, 68 pending, zero failures; external utility/harm authority remains required"}
   ],
   "unfinished_gates": [
     "Independent utility/harm evaluation of the six P0 packages and Agent Builder input has not passed.",
+    "The deterministic utility/harm pre-screen is receipt-backed but remains pending external independent utility/harm authority; it does not admit or activate any package.",
     "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
     "Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
     "603 planned recipes still require role-specific source research, exact twelve-gate packages, hostile fixtures, independent evaluation, and admission before compilation; the protected Memory lane is NOT_APPLICABLE and remains external.",

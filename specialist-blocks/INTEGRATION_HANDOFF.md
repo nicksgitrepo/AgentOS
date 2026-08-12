@@ -67,6 +67,11 @@ attached as a separate immutable receipt commit.
   1,476 gate files, and 2,091 hostile fixtures. Every package-level static
   check passes; its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
+- The deterministic utility/harm pre-screen receipt at
+  `registry/utility-harm-prescreen.v1.json` checks the same 123 package
+  dossiers and 2,091 hostile fixture policies: 2,023 observed passes, 68
+  pending cases, and zero failures. It is a consistency pre-screen only;
+  independent utility/harm authority remains required.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
   substitution, missing upstream closure, and sibling-authority overlap deny.
@@ -107,11 +112,14 @@ attached as a separate immutable receipt commit.
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control
+3. The deterministic pre-screen is receipt-backed but remains
+   `PRESCREEN_PENDING_EXTERNAL_REVIEW`; it does not admit or activate any
+   package.
+4. Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control
    candidates and broader source-backed `STANDARD_BLOCK` expansion remain pending; the
    backlog materialized standard-block count is zero because those roles are
    not yet expanded into packages.
-4. Independent utility/harm evaluation of the current standard candidates and
+5. Independent utility/harm evaluation of the current standard candidates and
    P0 packages, plus main AgentOS 3.0 integration-owner intake, remain external.
 
 The exact next action is to consume this receipt in the main integration owner,

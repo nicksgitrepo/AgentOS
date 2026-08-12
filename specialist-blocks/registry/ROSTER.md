@@ -299,6 +299,17 @@ The aggregate typed handoff is `registry/integration-handoff.v1.json` with its
 human-readable companion `INTEGRATION_HANDOFF.md`; its current disposition is
 `WAITING_WITH_RECEIPT`.
 
+## Utility/harm pre-screen receipt
+
+The read-only deterministic pre-screen is implemented at
+`control/specialist-utility-harm-prescreen.mjs` and recorded at
+`registry/utility-harm-prescreen.v1.json`. It verifies the declared policy of
+all `123` package dossiers and `2,091` hostile fixtures: `2,023` cases are
+observed `PASS`, `68` remain `PENDING`, and `0` are failed. Its disposition is
+`PRESCREEN_PENDING_EXTERNAL_REVIEW`; an independent reviewer and admission
+authority are still mandatory, and no package is activated or admitted by
+this receipt.
+
 ## P4 client/UX candidates — current receipt
 
 These six packages are candidate-only, use exact twelve-gate packs, and have

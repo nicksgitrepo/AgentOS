@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_utility_harm_prescreen.v1",
+  "version": 1,
+  "evaluator_id": "agentos.deterministic-utility-harm-prescreen",
+  "evaluator_version": "1.0.0",
+  "model_requirement": "gpt-5.6-luna/max",
+  "candidate": {
+    "branch": "codex/specialist-block-library-candidate",
+    "commit": "7f18682529c3ec65e9c85df126afcc3cb17a0169",
+    "tree": "3ff5893ed22c2b4f8aeffce344dc4f950291420d"
+  },
+  "candidate_roster_digest": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08",
+  "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW",
+  "independent_reviewer_required": true,
+  "self_acceptance": "FORBIDDEN",
+  "packages_checked": 123,
+  "cases_checked": 2091,
+  "route_cases": 603,
+  "deny_cases": 1481,
+  "passed_cases": 2023,
+  "failed_cases": 0,
+  "pending_cases": 68,
+  "escalate_cases": 7,
+  "policy": {
+    "always_route_classes": ["handoff", "narrowness", "routing"],
+    "always_deny_classes": ["broad_when_narrow_exists", "cross_provider_version_claim", "false_positive", "missing_context", "router_self_accept", "silent_scope_expansion", "stale_source", "umbrella_authority", "unrelated_scope", "unsafe_action"],
+    "flexible_classes": ["authority_conflict", "data_limit", "duplicate_sibling_authority", "tool_limit"],
+    "rule": "ROUTE_REQUIRES_EXPLICIT_TYPED_SCOPE;_DENY_OR_ESCALATE_CLOSES_UNSAFE_OR_UNRESOLVED_ACTIONS"
+  },
+  "evaluation_manifest_sha256": "8e09c1e0e32b98cd62bd349d08258ba9474dc1f88cfb6a3c92d73828b79720e3",
+  "utility_harm": "PENDING_EXTERNAL_AUTHORITY",
+  "residuals": [
+    "This deterministic pre-screen validates declared fixture policy and dossier consistency; it is not external utility/harm acceptance.",
+    "Independent reviewer identity and admission authority remain required.",
+    "Activation, deployment, consumer adoption, and release remain OFF and out of scope."
+  ]
+}

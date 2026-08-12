@@ -100,6 +100,13 @@ source locks, all twelve gate digests, hostile fixtures, handoff custody, and
 self-admission denial. It issues a static receipt only; utility/harm and
 admission authority remain separate gates.
 
+The deterministic utility/harm pre-screen in
+`control/specialist-utility-harm-prescreen.mjs` validates every declared
+hostile fixture policy against its evaluation dossier and records the result
+at `registry/utility-harm-prescreen.v1.json`. The current receipt covers 123
+packages and 2,091 cases with zero failures, but 68 cases remain pending
+external review; this pre-screen never admits or activates a block.
+
 `registry/master-inventory.v1.json` is the durable Fortune-500-scale backlog.
 Its raw role mentions are preserved, and alias mappings explain only exact or
 near-exact duplicates. The highest-value waves are sequenced by cross-project

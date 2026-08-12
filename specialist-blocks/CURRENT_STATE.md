@@ -463,7 +463,10 @@ remain external gates.
 - Focused library/compiler checks pass. The independent read-only evaluator
   reports `STATIC_PASS_REVIEW_REQUIRED` with all package-level checks passing:
   `123` packages, `1,476` twelve-gate files, and `2,091` hostile fixtures.
-  Independent utility/harm and admission authority remain external.
+  The deterministic utility/harm pre-screen also passes its declared policy
+  checks with `2,023` observed passes, `68` pending cases, and zero failures;
+  its receipt is `PRESCREEN_PENDING_EXTERNAL_REVIEW`. Independent utility/harm
+  and admission authority remain external.
 - Exactly the six P0 lanes remain reserved and candidate/inactive. No P4 or P5
   lane was activated or spawned. Host pressure remains the recorded ceiling:
   canonical scheduler `JOB-407` is `RUNNING` with swap at `5.5/6 GiB`; no
