@@ -457,8 +457,8 @@ remain external gates.
 
 ## Latest verified state — P5 domain/AI/3D/regulatory/finance slice — 2026-08-11
 
-- Implementation candidate: commit `7f18682529c3ec65e9c85df126afcc3cb17a0169`,
-  tree `3ff5893ed22c2b4f8aeffce344dc4f950291420d`; the candidate branch is
+- Implementation candidate: commit `edd6cb5012b052445d623923d304ff7e1906ca51`,
+  tree `44de1627c475f7c0d64becc5b82f63693dc7a9fb`; the candidate branch is
   pushed and clean. The machine handoff points to this implementation commit;
   any later receipt-only commit must not change this candidate identity.
 - The P5 slice adds six narrow atomic candidates —
