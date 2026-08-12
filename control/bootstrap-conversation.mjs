@@ -8,6 +8,9 @@
  */
 
 import crypto from "node:crypto";
+import {BOOTSTRAP_QUESTIONS} from "./bootstrap-question-catalog.mjs";
+
+export {BOOTSTRAP_QUESTIONS};
 
 export const BOOTSTRAP_CONVERSATION_SCHEMA = "agentos.bootstrap_conversation.v1";
 export const BOOTSTRAP_CONVERSATION_VERSION = 1;
@@ -46,139 +49,6 @@ const UNSAFE_TEXT = Object.freeze([
   ["SESSION_OR_TASK_IDENTITY", /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu],
 ]);
 const INTERNAL_PROMPT_TERMS = /\b(?:agentos|governance|schema|digest|runtime|worktree|campaign|repository|repo|git|role|lane|packet|auditor|orchestrator|source control|environment)\b/iu;
-
-export const BOOTSTRAP_QUESTIONS = Object.freeze([
-  Object.freeze({
-    id: "intent.audience",
-    kind: "TEXT",
-    prompt: "Who is this for?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "intent.outcome",
-    kind: "TEXT",
-    prompt: "What should it make easier?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "intent.first_result",
-    kind: "TEXT",
-    prompt: "What would a useful first result look like?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "scope.allowed",
-    kind: "TEXT",
-    prompt: "What should this work touch?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "scope.non_goals",
-    kind: "TEXT",
-    prompt: "What should I explicitly leave out for now?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "boundaries.hard",
-    kind: "TEXT",
-    prompt: "What must always make me stop?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "boundaries.soft",
-    kind: "TEXT",
-    prompt: "What should make me pause and check with you?",
-    required: true,
-  }),
-  Object.freeze({
-    id: "governance.memory",
-    kind: "BOOLEAN",
-    prompt: "Should I remember this next time?",
-    choices: Object.freeze([
-      Object.freeze({value: true, label: "Yes"}),
-      Object.freeze({value: false, label: "No"}),
-    ]),
-    required: true,
-  }),
-  Object.freeze({
-    id: "delivery.finish",
-    kind: "CHOICE",
-    prompt: "When the first version is ready, what should happen?",
-    choices: Object.freeze([
-      Object.freeze({value: "REVIEW", label: "Leave it ready for review"}),
-      Object.freeze({value: "SAVE", label: "Save it safely for later"}),
-      Object.freeze({value: "SHARE", label: "Share the saved work"}),
-      Object.freeze({value: "LIVE", label: "Put it live"}),
-    ]),
-    required: true,
-  }),
-  Object.freeze({
-    id: "workflow.steps",
-    kind: "TEXT",
-    prompt: "What steps should the first version follow?",
-    required: false,
-  }),
-  Object.freeze({
-    id: "terminology.preferred",
-    kind: "TEXT",
-    prompt: "Which words should we use consistently?",
-    required: false,
-  }),
-  Object.freeze({
-    id: "acceptance.conditions",
-    kind: "TEXT",
-    prompt: "How will you know the result is good enough?",
-    required: false,
-  }),
-  Object.freeze({
-    id: "governance.providers",
-    kind: "CHOICE",
-    prompt: "Should outside services be used?",
-    choices: Object.freeze([
-      Object.freeze({value: "LOCAL_ONLY", label: "Use only this workspace"}),
-      Object.freeze({value: "OWNER_APPROVAL", label: "Ask before using outside services"}),
-      Object.freeze({value: "DEFERRED", label: "Decide later"}),
-    ]),
-    required: false,
-    default_value: "LOCAL_ONLY",
-  }),
-  Object.freeze({
-    id: "governance.retention",
-    kind: "CHOICE",
-    prompt: "How long should saved information be kept?",
-    choices: Object.freeze([
-      Object.freeze({value: "SESSION_ONLY", label: "This session only"}),
-      Object.freeze({value: "PROJECT_LIFETIME", label: "For this project"}),
-      Object.freeze({value: "OWNER_REVIEW", label: "Ask before keeping it"}),
-    ]),
-    required: false,
-    default_value: "OWNER_REVIEW",
-  }),
-  Object.freeze({
-    id: "delivery.intent",
-    kind: "CHOICE",
-    prompt: "Where should the result go first?",
-    choices: Object.freeze([
-      Object.freeze({value: "LOCAL_REVIEW", label: "Keep it here for review"}),
-      Object.freeze({value: "SAFE_STORAGE", label: "Save it for later"}),
-      Object.freeze({value: "OWNER_DECIDES", label: "Let me decide later"}),
-    ]),
-    required: false,
-    default_value: "LOCAL_REVIEW",
-  }),
-  Object.freeze({
-    id: "governance.review_interval",
-    kind: "CHOICE",
-    prompt: "How often should I pause to review progress?",
-    choices: Object.freeze([
-      Object.freeze({value: 15, label: "15 minutes (recommended)"}),
-      Object.freeze({value: 30, label: "30 minutes"}),
-      Object.freeze({value: 60, label: "60 minutes"}),
-    ]),
-    required: false,
-    default_value: 15,
-  }),
-]);
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -294,23 +164,57 @@ function normalizeChoice(question, value) {
   throw new Error("answer is not one of the listed choices");
 }
 
+function normalizeMultiChoice(question, value) {
+  let supplied = value;
+  if (typeof supplied === "string") {
+    supplied = supplied.split(/[,+]/u).map((entry) => entry.trim()).filter(Boolean);
+  }
+  assert(Array.isArray(supplied), `${question.id} must be a list of choices`);
+  assert(supplied.length > 0, `${question.id} must include at least one choice`);
+  const normalized = supplied.map((entry) => normalizeChoice(question, entry));
+  assert(new Set(normalized.map((entry) => canonicalDigest(entry))).size === normalized.length, `${question.id} contains duplicate choices`);
+  const order = new Map(question.choices.map((choice, index) => [canonicalDigest(choice.value), index]));
+  normalized.sort((left, right) => order.get(canonicalDigest(left)) - order.get(canonicalDigest(right)));
+  if (normalized.includes("NONE")) assert(normalized.length === 1, `${question.id} cannot combine None with another choice`);
+  return normalized;
+}
+
 function normalizeAnswer(question, value) {
   if (question.kind === "TEXT") return normalizeText(value, question.id);
   if (question.kind === "BOOLEAN") return normalizeBoolean(value, question.id);
   if (question.kind === "CHOICE") return normalizeChoice(question, value);
+  if (question.kind === "MULTI_CHOICE") return normalizeMultiChoice(question, value);
   throw new Error(`unsupported Bootstrap question kind: ${question.kind}`);
+}
+
+function normalizeConditions(value, questionId, priorQuestions) {
+  const conditions = value ?? [];
+  assert(Array.isArray(conditions), `Bootstrap question ${questionId} conditions are invalid`);
+  return conditions.map((condition, index) => {
+    assert(isRecord(condition), `Bootstrap question ${questionId} condition ${index} is invalid`);
+    assert(JSON.stringify(Object.keys(condition).sort()) === JSON.stringify(["operator", "question_id", "value"]), `Bootstrap question ${questionId} condition ${index} fields are invalid`);
+    assert(typeof condition.question_id === "string" && priorQuestions.has(condition.question_id), `Bootstrap question ${questionId} condition ${index} must reference an earlier question`);
+    assert(["EQUALS", "NOT_EQUALS", "CONTAINS"].includes(condition.operator), `Bootstrap question ${questionId} condition ${index} operator is invalid`);
+    const parent = priorQuestions.get(condition.question_id);
+    if (condition.operator === "CONTAINS") assert(parent.kind === "MULTI_CHOICE", `Bootstrap question ${questionId} CONTAINS condition requires a multi-choice parent`);
+    primitiveChoiceValue(condition.value, `Bootstrap question ${questionId} condition ${index}`);
+    if (["CHOICE", "MULTI_CHOICE", "BOOLEAN"].includes(parent.kind)) {
+      assert(parent.choices.some((choice) => canonicalDigest(choice.value) === canonicalDigest(condition.value)), `Bootstrap question ${questionId} condition ${index} value is outside the parent choices`);
+    }
+    return {question_id: condition.question_id, operator: condition.operator, value: condition.value};
+  });
 }
 
 export function normalizeBootstrapAnswer(question, value) {
   return normalizeAnswer(question, value);
 }
 
-function normalizeQuestion(question, index) {
+function normalizeQuestion(question, index, priorQuestions = new Map()) {
   assert(isRecord(question), `Bootstrap question ${index} must be an object`);
   const id = question.id ?? question.question_id;
   assert(typeof id === "string" && SAFE_QUESTION_ID.test(id), `Bootstrap question ${index} ID is invalid`);
   const kind = question.kind ?? question.answer_kind;
-  assert(["TEXT", "BOOLEAN", "CHOICE"].includes(kind), `Bootstrap question ${id} answer kind is invalid`);
+  assert(["TEXT", "BOOLEAN", "CHOICE", "MULTI_CHOICE"].includes(kind), `Bootstrap question ${id} answer kind is invalid`);
   const prompt = normalizePrompt(question.prompt, `Bootstrap question ${id} prompt`);
   const required = question.required !== false;
   let choices = question.choices ?? [];
@@ -319,6 +223,7 @@ function normalizeQuestion(question, index) {
   if (kind === "TEXT") assert(choices.length === 0, `Bootstrap question ${id} text choices are invalid`);
   if (kind === "BOOLEAN") assert(choices.length === 2, `Bootstrap question ${id} boolean choices are invalid`);
   if (kind === "CHOICE") assert(choices.length >= 2 && choices.length <= 5, `Bootstrap question ${id} choices are invalid`);
+  if (kind === "MULTI_CHOICE") assert(choices.length >= 2 && choices.length <= 12, `Bootstrap question ${id} choices are invalid`);
   const normalizedChoices = choices.map((choice, choiceIndex) => {
     assert(isRecord(choice), `Bootstrap question ${id} choice ${choiceIndex} is invalid`);
     return {
@@ -335,7 +240,8 @@ function normalizeQuestion(question, index) {
     const normalizedDefault = normalizeAnswer({id, kind, choices: normalizedChoices}, defaultValue);
     assert(canonicalDigest(normalizedDefault) === canonicalDigest(defaultValue), `Bootstrap question ${id} default is not normalized`);
   }
-  return {
+  const conditions = normalizeConditions(question.when, id, priorQuestions);
+  const normalized = {
     id,
     kind,
     prompt,
@@ -343,12 +249,19 @@ function normalizeQuestion(question, index) {
     required,
     default_value: defaultValue === null ? null : normalizeAnswer({id, kind, choices: normalizedChoices}, defaultValue),
   };
+  if (conditions.length > 0) normalized.when = conditions;
+  return normalized;
 }
 
 export function createBootstrapQuestionMap(questionMap = BOOTSTRAP_QUESTIONS) {
   const supplied = isRecord(questionMap) && Array.isArray(questionMap.questions) ? questionMap.questions : questionMap;
   assert(Array.isArray(supplied) && supplied.length > 0 && supplied.length <= 128, "Bootstrap question map must contain between one and 128 questions");
-  const questions = supplied.map(normalizeQuestion);
+  const priorQuestions = new Map();
+  const questions = supplied.map((question, index) => {
+    const normalized = normalizeQuestion(question, index, priorQuestions);
+    priorQuestions.set(normalized.id, normalized);
+    return normalized;
+  });
   const ids = questions.map((question) => question.id);
   assert(new Set(ids).size === ids.length, "Bootstrap question map contains duplicate IDs");
   const map = {
@@ -465,14 +378,49 @@ function sealSession(session) {
   return Object.freeze(sealed);
 }
 
+function conditionMatches(condition, answers) {
+  const answer = answers[condition.question_id];
+  if (!answerIsResolved(answer)) return false;
+  if (condition.operator === "EQUALS") return canonicalDigest(answer.value) === canonicalDigest(condition.value);
+  if (condition.operator === "NOT_EQUALS") return canonicalDigest(answer.value) !== canonicalDigest(condition.value);
+  if (condition.operator === "CONTAINS") return Array.isArray(answer.value)
+    && answer.value.some((entry) => canonicalDigest(entry) === canonicalDigest(condition.value));
+  return false;
+}
+
+export function bootstrapQuestionIsApplicable(question, answers = {}) {
+  assert(isRecord(question), "Bootstrap question is invalid");
+  assert(isRecord(answers), "Bootstrap applicability answers are invalid");
+  const conditions = question.when ?? [];
+  return conditions.length === 0 || conditions.every((condition) => conditionMatches(condition, answers));
+}
+
+export function applicableBootstrapQuestions(session, {includeOptional = true} = {}) {
+  validateBootstrapConversation(session);
+  return session.question_map.questions.filter((question) => bootstrapQuestionIsApplicable(question, session.answers)
+    && (question.required || includeOptional));
+}
+
+export function unresolvedRequiredBootstrapQuestionIds(session) {
+  validateBootstrapConversation(session);
+  return session.question_map.questions
+    .filter((question) => question.required
+      && bootstrapQuestionIsApplicable(question, session.answers)
+      && !answerIsResolved(session.answers[question.id]))
+    .map((question) => question.id);
+}
+
 function missingRequired(session) {
   return session.question_map.questions
-    .filter((question) => question.required && !answerIsResolved(session.answers[question.id]))
+    .filter((question) => question.required
+      && bootstrapQuestionIsApplicable(question, session.answers)
+      && !answerIsResolved(session.answers[question.id]))
     .map((question) => question.id);
 }
 
 function nextQuestionId(session, includeOptional) {
   return session.question_map.questions.find((question) => !answerIsResolved(session.answers[question.id])
+    && bootstrapQuestionIsApplicable(question, session.answers)
     && (question.required || includeOptional))?.id ?? null;
 }
 
@@ -512,6 +460,11 @@ export function createBootstrapConversation({
   for (const [questionId, source] of Object.entries(initialAnswers)) {
     const question = bootstrapQuestionById(questionId, map);
     answers[question.id] = answerRecord(question, source);
+  }
+  for (const question of map.questions) {
+    if (Object.hasOwn(answers, question.id)) {
+      assert(bootstrapQuestionIsApplicable(question, answers), `Bootstrap initial answer is not applicable: ${question.id}`);
+    }
   }
   const answerOrder = map.questions.filter((question) => Object.hasOwn(answers, question.id)).map((question) => question.id);
   const session = {
@@ -564,6 +517,7 @@ export function acceptBootstrapReply(session, {questionId, reply} = {}) {
   let question;
   try {
     question = bootstrapQuestionById(questionId, session.question_map);
+    assert(bootstrapQuestionIsApplicable(question, session.answers), "Bootstrap question is not applicable to the current project");
     const value = parseBootstrapReply(question.id, reply, {questionMap: session.question_map}).value;
     const previous = session.answers[question.id];
     const replayed = previous?.provenance === "OWNER"
@@ -577,13 +531,18 @@ export function acceptBootstrapReply(session, {questionId, reply} = {}) {
         next_question: nextBootstrapQuestion(session),
       };
     }
-    const expected = nextQuestionId(session, true);
+    const expected = nextQuestionId(session, false) ?? nextQuestionId(session, true);
     const expectedQuestion = expected === null ? null : bootstrapQuestionById(expected, session.question_map);
     const optionalSkip = question.required === false && expectedQuestion?.required === false;
     const revision = previous !== undefined;
     assert(revision || expected === question.id || optionalSkip, "Bootstrap answers must follow the current question");
-    const answers = {...session.answers, [question.id]: answerRecord(question, value)};
-    const answerOrder = revision ? [...session.answer_order] : [...session.answer_order, question.id];
+    let answers = {...session.answers, [question.id]: answerRecord(question, value)};
+    let answerOrder = revision ? [...session.answer_order] : [...session.answer_order, question.id];
+    const activeIds = new Set(session.question_map.questions
+      .filter((candidate) => bootstrapQuestionIsApplicable(candidate, answers))
+      .map((candidate) => candidate.id));
+    answers = Object.fromEntries(Object.entries(answers).filter(([answerId]) => activeIds.has(answerId)));
+    answerOrder = answerOrder.filter((answerId) => activeIds.has(answerId));
     const reassessmentRequired = session.reassessment_required
       || (previous !== undefined && ["intent.audience", "intent.outcome", "intent.first_result", "scope.allowed", "scope.non_goals"].includes(question.id));
     const next = {
@@ -789,6 +748,7 @@ export function validateBootstrapConversation(session) {
   for (const [questionId, answer] of Object.entries(session.answers)) {
     const question = bootstrapQuestionById(questionId, session.question_map);
     validateAnswer(question, answer);
+    assert(bootstrapQuestionIsApplicable(question, session.answers), `Bootstrap answer is not applicable: ${question.id}`);
   }
   assert(Array.isArray(session.answer_order), "Bootstrap answer order is invalid");
   assert(new Set(session.answer_order).size === session.answer_order.length, "Bootstrap answer order contains duplicates");

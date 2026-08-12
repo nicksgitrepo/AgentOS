@@ -10,6 +10,7 @@
     "status",
     "project_ref",
     "intent",
+    "project_profile",
     "workflows",
     "terminology",
     "acceptance_conditions",
@@ -45,6 +46,34 @@
         "outcome": {"$ref": "#/$defs/typedValue"},
         "first_result": {"$ref": "#/$defs/typedValue"},
         "summary": {"$ref": "#/$defs/typedValue"}
+      }
+    },
+    "project_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "starting_point", "existing_invariants", "capabilities", "experience_channels", "backend_behavior", "data_posture", "data_lifecycle", "access_model",
+        "ai_behavior", "ai_truth_boundary", "integration_boundaries", "hardware_constraints", "commerce_boundaries",
+        "risk_applicability", "technology_constraints", "operating_conditions", "quality_priorities"
+      ],
+      "properties": {
+        "starting_point": {"$ref": "#/$defs/typedValue"},
+        "existing_invariants": {"$ref": "#/$defs/typedValue"},
+        "capabilities": {"$ref": "#/$defs/typedValue"},
+        "experience_channels": {"$ref": "#/$defs/typedValue"},
+        "backend_behavior": {"$ref": "#/$defs/typedValue"},
+        "data_posture": {"$ref": "#/$defs/typedValue"},
+        "data_lifecycle": {"$ref": "#/$defs/typedValue"},
+        "access_model": {"$ref": "#/$defs/typedValue"},
+        "ai_behavior": {"$ref": "#/$defs/typedValue"},
+        "ai_truth_boundary": {"$ref": "#/$defs/typedValue"},
+        "integration_boundaries": {"$ref": "#/$defs/typedValue"},
+        "hardware_constraints": {"$ref": "#/$defs/typedValue"},
+        "commerce_boundaries": {"$ref": "#/$defs/typedValue"},
+        "risk_applicability": {"$ref": "#/$defs/typedValue"},
+        "technology_constraints": {"$ref": "#/$defs/typedValue"},
+        "operating_conditions": {"$ref": "#/$defs/typedValue"},
+        "quality_priorities": {"$ref": "#/$defs/typedValue"}
       }
     },
     "workflows": {"$ref": "#/$defs/typedList"},

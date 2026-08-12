@@ -41,11 +41,11 @@
             "required": ["id", "kind", "prompt", "choices", "required", "default_value"],
             "properties": {
               "id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"},
-              "kind": {"enum": ["TEXT", "BOOLEAN", "CHOICE"]},
+              "kind": {"enum": ["TEXT", "BOOLEAN", "CHOICE", "MULTI_CHOICE"]},
               "prompt": {"type": "string", "minLength": 2, "maxLength": 160},
               "choices": {
                 "type": "array",
-                "maxItems": 5,
+                "maxItems": 12,
                 "items": {
                   "type": "object",
                   "additionalProperties": false,
@@ -57,7 +57,20 @@
                 }
               },
               "required": {"type": "boolean"},
-              "default_value": {}
+              "default_value": {},
+              "when": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["question_id", "operator", "value"],
+                  "properties": {
+                    "question_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,127}$"},
+                    "operator": {"enum": ["EQUALS", "NOT_EQUALS", "CONTAINS"]},
+                    "value": {}
+                  }
+                }
+              }
             }
           }
         },

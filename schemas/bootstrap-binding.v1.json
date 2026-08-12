@@ -38,7 +38,7 @@
     },
     "bootstrap_entrypoint": {
       "path": "bootstrap/start-here.md",
-      "sha256": "2576487c4fd46e967331130e3c0141e9216b066f822ee3c5d00e9832b04064e5"
+      "sha256": "3dc41bcc7c59b1d5b451d86d713b9efad10b4fd6e194191c2ad2744dd3ce2e3e"
     },
     "bootstrap_compiler": {
       "path": "control/bootstrap-compiler.mjs",
@@ -62,15 +62,19 @@
     },
     "bootstrap_conversation_controller": {
       "path": "control/bootstrap-conversation.mjs",
-      "sha256": "03f0dd12e0a464bc687f669bfb6d9b9cb6144293c0552ac14033630106936b6f"
+      "sha256": "32fa28ecf6789f148d55eedc29cd8ba4b1acdaf0cdd47f7c664ff1ab5c1423ff"
+    },
+    "bootstrap_question_catalog": {
+      "path": "control/bootstrap-question-catalog.mjs",
+      "sha256": "d969547d50df87fad508a69fe3cb6b408c7efee70097752496a236e12a86d5b5"
     },
     "bootstrap_owner_surface_controller": {
       "path": "control/bootstrap-owner-surface.mjs",
-      "sha256": "bf83c8bf10e384e20c4905a65cba2f799e5b62d833fbac531fb32f105a9d48a6"
+      "sha256": "c950060f19ad031e4179728ef8a84df639cbd2928357c88bb6a6586bd225c4ea"
     },
     "bootstrap_conversation_contract": {
       "path": "schemas/bootstrap-conversation.v1.json",
-      "sha256": "9fe66ac39552ae186337918ba3c68132b9d675229250387ba6b4fc918e12f84b"
+      "sha256": "d66eab90ce80c32751325f28ad07a09af71cd7b1f8876d85de38312593828821"
     },
     "bootstrap_conversation_handoff_contract": {
       "path": "schemas/bootstrap-conversation-handoff.v1.json",
@@ -86,11 +90,11 @@
     },
     "bootstrap_owner_question_contract": {
       "path": "schemas/bootstrap-owner-question.v1.json",
-      "sha256": "444c3b2d65984f8d2734ccf048ce0e8ec4a1d3c091eeb5431f66286f060460bc"
+      "sha256": "dd097a66b4ae7d0b773006888de7d643ec153b12ce206278a5db75cb5f50e008"
     },
     "bootstrap_conversation_article": {
       "path": "docs/rapid-foundations/03-user-conversation.md",
-      "sha256": "c9012a0283a25739a7a13c0251522e9749be2b57ab5e5fdeb12a6cf195e7c999"
+      "sha256": "6b6aa2859b27703dee5f58d9db3d8ddb56c2159c2fcb59354bae1e89a9887567"
     },
     "bootstrap_conversation_verifier": {
       "path": "tests/verify-bootstrap-conversation-contract.mjs",
@@ -106,19 +110,23 @@
     },
     "bootstrap_project_contract_controller": {
       "path": "control/bootstrap-project-contract.mjs",
-      "sha256": "48a8925e02122748beba85104eaede1d964f2086f85a1cd7ad7d3a5f4e12a6c5"
+      "sha256": "a8c1fb079211fa3c973ac7e57cb39e34d5c15636c2692a4b93d60a4844f08ea2"
     },
     "bootstrap_project_contract": {
       "path": "schemas/bootstrap-project-contract.v1.json",
-      "sha256": "bae4108bbe463b0aa54f3522afe98d0c9ffd73f9b273dbbda99d1caf1733b038"
+      "sha256": "22da543f8b47ad81126e47c607a8a7e2c788dd44f09461cb05443e673db160e4"
     },
     "bootstrap_project_contract_verifier": {
       "path": "tests/verify-bootstrap-project-contract.mjs",
-      "sha256": "a39083fd9f33a594fd84716b46d0d7d43897e89f05682559fc268cc69f074c22"
+      "sha256": "f007de886a55e740dc761447bf1698f77d762538d405736b41b4147114804de5"
     },
     "bootstrap_project_contract_schema_verifier": {
       "path": "tests/verify-bootstrap-project-contract-schema.mjs",
-      "sha256": "ad24c84373f1d3a7c508a9af7abf7033cb5444b1ca561100074b6bd3faba8db3"
+      "sha256": "d1c48b36c981b8bddfeeecc757643beb799c845cdf98de88d667a50c6c4b9e31"
+    },
+    "adaptive_bootstrap_interview_verifier": {
+      "path": "tests/verify-adaptive-bootstrap-interview.mjs",
+      "sha256": "ccd5c41a421d8e9cec9df612062d6f7197b62679a82d39ae4f0212465faa6628"
     },
     "bootstrap_rapid_prototype_plan_article": {
       "path": "docs/bootstrap-rapid-prototype-plan.md",
@@ -1274,7 +1282,7 @@
     },
     "audited_persisted_record_privacy_verifier": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "79ff64515021d6d11c7a56c93f3ee9e7f558ac272457c3c321a48112bbbd2f7c"
+      "sha256": "66d75dadf9cf32d4f2bcab435d139f1afb9e823d71c534f945ef54c1207b6db1"
     },
     "audited_merge_review": {
       "path": "docs/audited-merge-review.md",

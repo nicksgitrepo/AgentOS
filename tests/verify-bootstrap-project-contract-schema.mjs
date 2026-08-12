@@ -20,20 +20,29 @@ function readSchema(name) {
 }
 
 function answerRequired(conversation) {
-  const replies = [
-    "A small planning team",
-    "A clear decision-ready plan",
-    "One bounded plan they can review",
-    "The planning notes and agreed scope",
-    "Implementation details outside the first plan",
-    "Stop before protected actions or unclear choices",
-    "Pause when the scope changes",
-    "no",
-    "1",
-  ];
+  const replies = {
+    "intent.audience": "A small planning team",
+    "intent.outcome": "A clear decision-ready plan",
+    "intent.first_result": "One bounded plan they can review",
+    "project.starting_point": "1",
+    "scope.allowed": "The planning notes and agreed scope",
+    "scope.non_goals": "Implementation details outside the first plan",
+    "project.capabilities": "10",
+    "workflow.steps": "Capture the need, create the plan, check it, and hand it over",
+    "technology.constraints": "Use portable supported tools and avoid unnecessary dependencies",
+    "operations.conditions": "Normal small-team use with dependable recovery",
+    "quality.priorities": "1",
+    "boundaries.hard": "Stop before protected actions or unclear choices",
+    "boundaries.soft": "Pause when the scope changes",
+    "governance.memory": "no",
+    "delivery.finish": "1",
+    "acceptance.conditions": "The owner can review one complete bounded plan",
+  };
   let current = conversation;
-  for (const reply of replies) {
+  while (nextBootstrapQuestion(current) !== null) {
     const question = nextBootstrapQuestion(current);
+    const reply = replies[question.question_id];
+    assert.notEqual(reply, undefined, `missing fixture reply for ${question.question_id}`);
     const accepted = acceptBootstrapReply(current, {questionId: question.question_id, reply});
     assert.equal(accepted.accepted, true, accepted.error?.message);
     current = accepted.session;

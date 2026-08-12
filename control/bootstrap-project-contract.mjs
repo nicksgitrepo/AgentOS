@@ -11,6 +11,7 @@ import {
   CERTAINTY,
   canonicalDigest,
   bootstrapQuestionById,
+  bootstrapQuestionIsApplicable,
   createBootstrapQuestionMap,
   validateBootstrapConversation,
 } from "./bootstrap-conversation.mjs";
@@ -45,18 +46,6 @@ const UNSAFE_PERSISTED_TEXT = Object.freeze([
   ["SESSION_OR_TASK_IDENTITY", /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu],
 ]);
 
-const REQUIRED_ANSWER_IDS = Object.freeze([
-  "intent.audience",
-  "intent.outcome",
-  "intent.first_result",
-  "scope.allowed",
-  "scope.non_goals",
-  "boundaries.hard",
-  "boundaries.soft",
-  "governance.memory",
-  "delivery.finish",
-]);
-
 const DISCOVERY_STATUSES = Object.freeze(["OBSERVED_FACT", "UNKNOWN", "CONFLICT"]);
 const DISCOVERY_EPISTEMIC_CLASSES = Object.freeze([
   "OBSERVED",
@@ -75,6 +64,7 @@ const PROJECT_CONTRACT_KEYS = Object.freeze([
   "status",
   "project_ref",
   "intent",
+  "project_profile",
   "workflows",
   "terminology",
   "acceptance_conditions",
@@ -447,19 +437,18 @@ function compileDecisions(conversation) {
 }
 
 function compileOpenQuestions(conversation, discoveryBinding) {
-  const prompts = {
-    "intent.audience": ["Who is this for?", "The audience is needed to keep the first result bounded."],
-    "intent.outcome": ["What should it make easier?", "The desired outcome is an owner decision."],
-    "intent.first_result": ["What would a useful first result look like?", "A measurable first result is needed for the phase plan."],
-    "scope.allowed": ["What should this work touch?", "The allowed scope is needed before work can start."],
-    "scope.non_goals": ["What should I explicitly leave out for now?", "Non-goals prevent silent scope expansion."],
-    "boundaries.hard": ["What must always make me stop?", "Hard boundaries are required for fail-closed behavior."],
-    "boundaries.soft": ["What should make me pause and check with you?", "Soft boundaries define review points."],
-    "governance.memory": ["Should I remember this next time?", "Memory and persistence require an explicit owner choice."],
-    "delivery.finish": ["When the first version is ready, what should happen?", "Delivery cannot be inferred from readiness."],
-  };
-  const questions = REQUIRED_ANSWER_IDS.filter((questionId) => !ownerConfirmedAnswer(conversation, questionId))
-    .map((questionId) => blockingQuestion(questionId, prompts[questionId][0], prompts[questionId][1]));
+  const questions = conversation.question_map.questions
+    .filter((question) => question.required
+      && bootstrapQuestionIsApplicable(question, conversation.answers)
+      && !ownerConfirmedAnswer(conversation, question.id))
+    .map((question) => {
+    const questionId = question.id;
+    return blockingQuestion(
+      questionId,
+      question.prompt,
+      "This answer is required because it materially changes the project plan, specialist routing, proof, or authority boundary.",
+    );
+  });
   if (discoveryBinding.fact_ids_by_epistemic_class.CONFLICT.length > 0) {
     questions.push(blockingQuestion(
       "discovery.conflict",
@@ -474,13 +463,14 @@ function compileOpenQuestions(conversation, discoveryBinding) {
       "Discovery could not establish material facts; the dependent contract remains unresolved.",
     ));
   }
-  const optionalContext = [
-    ["workflow.steps", "What steps should the first version follow?", "A first workflow was not recorded; keep work bounded until one is supplied."],
-    ["terminology.preferred", "Which words should we use consistently?", "Preferred terminology was not recorded; avoid inventing project-specific terms."],
-    ["acceptance.conditions", "How will you know the result is good enough?", "Explicit acceptance conditions were not recorded; the first result remains the fallback condition."],
-  ];
-  for (const [questionId, prompt, reason] of optionalContext) {
-    if (!Object.hasOwn(conversation.answers, questionId)) questions.push(nonBlockingQuestion(questionId, prompt, reason));
+  for (const question of conversation.question_map.questions) {
+    if (question.required || !bootstrapQuestionIsApplicable(question, conversation.answers)
+      || Object.hasOwn(conversation.answers, question.id)) continue;
+    questions.push(nonBlockingQuestion(
+      question.id,
+      question.prompt,
+      "This context can sharpen later work but does not block the first bounded project contract.",
+    ));
   }
   return questions;
 }
@@ -559,8 +549,38 @@ function compileScope(conversation) {
   };
 }
 
+function conditionalProfileField(conversation, questionId) {
+  const question = bootstrapQuestionById(questionId, conversation.question_map);
+  if (!bootstrapQuestionIsApplicable(question, conversation.answers)) {
+    return field("NOT_APPLICABLE", "CONFIRMED", "COMPILER", questionId);
+  }
+  return ownerField(conversation, questionId);
+}
+
+function compileProjectProfile(conversation) {
+  return {
+    starting_point: ownerField(conversation, "project.starting_point"),
+    existing_invariants: conditionalProfileField(conversation, "existing.invariants"),
+    capabilities: ownerField(conversation, "project.capabilities"),
+    experience_channels: conditionalProfileField(conversation, "experience.channels"),
+    backend_behavior: conditionalProfileField(conversation, "backend.behavior"),
+    data_posture: conditionalProfileField(conversation, "data.posture"),
+    data_lifecycle: conditionalProfileField(conversation, "data.lifecycle"),
+    access_model: conditionalProfileField(conversation, "access.model"),
+    ai_behavior: conditionalProfileField(conversation, "ai.behavior"),
+    ai_truth_boundary: conditionalProfileField(conversation, "ai.truth_boundary"),
+    integration_boundaries: conditionalProfileField(conversation, "integrations.boundaries"),
+    hardware_constraints: conditionalProfileField(conversation, "hardware.constraints"),
+    commerce_boundaries: conditionalProfileField(conversation, "commerce.boundaries"),
+    risk_applicability: conditionalProfileField(conversation, "risk.applicability"),
+    technology_constraints: ownerField(conversation, "technology.constraints"),
+    operating_conditions: ownerField(conversation, "operations.conditions"),
+    quality_priorities: ownerField(conversation, "quality.priorities"),
+  };
+}
+
 function intentScopeDigest(contractParts) {
-  return canonicalDigest({intent: contractParts.intent, scope: contractParts.scope});
+  return canonicalDigest({intent: contractParts.intent, scope: contractParts.scope, project_profile: contractParts.projectProfile});
 }
 
 function changedIntentOrScope(previousContract, currentDigest) {
@@ -577,12 +597,13 @@ function compileProjectContractInternal({conversation, discoveryFacts = [], disc
 
   const intent = compileIntent(conversation);
   const scope = compileScope(conversation);
+  const projectProfile = compileProjectProfile(conversation);
   const boundaries = compileBoundaries(conversation);
   const delivery = ownerField(conversation, "delivery.finish");
   const governanceInputs = compileGovernanceInputs(conversation);
   const blockingQuestions = compileOpenQuestions(conversation, discoveryBinding);
   const statusBeforeReassessment = conversation.status === "READY_FOR_CONTRACT" && !blockingQuestions.some((question) => question.blocking) ? "READY" : "DRAFT";
-  const parts = {intent, scope};
+  const parts = {intent, scope, projectProfile};
   const currentIntentScopeSha256 = intentScopeDigest(parts);
   const requiresJsa = changedIntentOrScope(previousContract, currentIntentScopeSha256);
   const status = requiresJsa ? "REASSESSMENT_REQUIRED" : statusBeforeReassessment;
@@ -603,6 +624,7 @@ function compileProjectContractInternal({conversation, discoveryFacts = [], disc
     status,
     project_ref: conversation.project_ref,
     intent,
+    project_profile: projectProfile,
     workflows: roadmapContext.workflows,
     terminology: roadmapContext.terminology,
     acceptance_conditions: roadmapContext.acceptance_conditions,
@@ -734,6 +756,12 @@ export function validateProjectContract(contract) {
   assert(typeof contract.project_ref === "string" && SAFE_PROJECT_REF.test(contract.project_ref), "project contract project reference is invalid");
   assert(isRecord(contract.intent) && isRecord(contract.scope) && isRecord(contract.boundaries), "project contract intent, scope, or boundaries are missing");
   assertExactKeys(contract.intent, ["audience", "outcome", "first_result", "summary"], "project contract intent");
+  assertExactKeys(contract.project_profile, [
+    "starting_point", "existing_invariants", "capabilities", "experience_channels", "backend_behavior", "data_posture", "data_lifecycle", "access_model",
+    "ai_behavior", "ai_truth_boundary", "integration_boundaries", "hardware_constraints", "commerce_boundaries",
+    "risk_applicability", "technology_constraints", "operating_conditions", "quality_priorities",
+  ], "project contract project profile");
+  for (const [key, value] of Object.entries(contract.project_profile)) validateTypedValue(value, `project contract project_profile.${key}`);
   for (const key of ["workflows", "terminology", "acceptance_conditions", "unknowns"]) validateTypedList(contract[key], "project contract " + key);
   assertExactKeys(contract.providers, ["posture", "identities", "identity_policy"], "project contract providers");
   validateTypedValue(contract.providers.posture, "project contract providers.posture");

@@ -21,20 +21,30 @@ import {
 import {validateBootstrapCompileReceipt} from "../control/bootstrap-compile-receipt.mjs";
 
 function answerAllRequired(conversation) {
-  const replies = [
-    "Keep their planning work clear",
-    "One complete planning result they can review",
-    "The first bounded planning workflow",
-    "Anything outside that first workflow",
-    "Stop whenever a protected action or unclear owner decision appears",
-    "Pause when the request would change the agreed scope",
-    "yes",
-    "1",
-  ];
+  const replies = {
+    "intent.audience": "Keep their planning work clear",
+    "intent.outcome": "One complete planning result they can review",
+    "intent.first_result": "The first bounded planning workflow",
+    "project.starting_point": "1",
+    "scope.allowed": "Planning notes and agreed scope",
+    "scope.non_goals": "Anything outside that first workflow",
+    "project.capabilities": "10",
+    "workflow.steps": "Capture the need, create the plan, check it, and hand it over",
+    "technology.constraints": "Use portable supported tools and avoid unnecessary dependencies",
+    "operations.conditions": "Normal small-team use with dependable recovery",
+    "quality.priorities": "1",
+    "boundaries.hard": "Stop whenever a protected action or unclear owner decision appears",
+    "boundaries.soft": "Pause when the request would change the agreed scope",
+    "governance.memory": "yes",
+    "delivery.finish": "1",
+    "acceptance.conditions": "The owner can review one complete bounded result",
+  };
   let current = conversation;
-  for (const reply of replies) {
+  while (nextBootstrapQuestion(current) !== null) {
     const question = nextBootstrapQuestion(current);
     assert(question, "expected another Bootstrap question");
+    const reply = replies[question.question_id];
+    assert.notEqual(reply, undefined, `missing fixture reply for ${question.question_id}`);
     const accepted = acceptBootstrapReply(current, {questionId: question.question_id, reply});
     assert.equal(accepted.accepted, true, accepted.error?.message);
     current = accepted.session;

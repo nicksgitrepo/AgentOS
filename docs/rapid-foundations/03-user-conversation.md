@@ -58,6 +58,13 @@ the governed plan calls for one.
    later questions behind it until its answer is recorded or explicitly left
    unresolved.
 
+   The default sequence is outcome and first useful result, starting point,
+   allowed scope and non-goals, existing invariants when applicable,
+   capability applicability, applicable
+   specialist context, quality and acceptance, protected boundaries, then
+   delivery and memory. A capability that is not selected closes its branch
+   with explicit non-applicability instead of eliciting speculative detail.
+
 3. **Keep the one-question boundary.** Each turn has exactly one primary
    question. A numbered choice set is allowed only when every option answers
    that one question. Independent questions must be separated into later
@@ -152,6 +159,14 @@ authentication, spending, or private conversation records:
   commit/tree readback fields, task and scope, progress, result, hostile
   coverage, independent-check status, evidence digests, open risks, and the
   next handoff without a raw session record.
+- `UC-C09 — adaptive branch integrity`: conditional questions reference only
+  earlier questions, selected capabilities open the exact matching branches,
+  unselected branches stay absent, and revising a parent prunes stale child
+  answers.
+- `UC-C10 — project-profile completeness`: the compiled contract preserves
+  starting point, selected capabilities, applicable domain context, quality
+  priorities, and explicit non-applicability without embedding project facts
+  in the portable kernel.
 
 ## Typed handoff
 

@@ -94,6 +94,14 @@ The compact catalog covers:
 
 - project identity, boundary, users, outcome, and non-goals;
 - the north-star intent and smallest complete workflow;
+- whether the work is new, an extension, a repair, or a replacement;
+- a compact capability selection that opens only applicable follow-up
+  questions for user interfaces, backend/API work, data, access, AI/search, integrations,
+  hardware/realtime, commerce, and safety or regulatory obligations;
+- existing behavior and information that must survive an extension, repair,
+  or replacement, plus required technology and operating constraints;
+- the qualities that matter most and an explicit first-version acceptance
+  condition;
 - protected safety, legal, privacy, data-loss, spending, authentication, destructive-action, and intent boundaries;
 - authority-corpus source and legacy preservation;
 - design authority and required user/device/state coverage when visible surfaces exist;
@@ -124,6 +132,13 @@ The compact catalog covers:
   and authenticated exact approval over one candidate digest.
 
 The user should not have to answer questions that exact discovery or a safe governance default can settle. If a fact is unavailable, the plan records `UNKNOWN` or an explicit unavailable behavior rather than inventing a choice.
+
+Question order is load-bearing. Bootstrap binds outcome before implementation,
+scope before specialist detail, capability applicability before conditional
+questions, and acceptance before handoff. It asks one short question at a
+time. Multi-choice replies are normalized into canonical catalog order.
+Conditional questions may reference only an earlier question, preventing a
+later answer from silently changing the meaning of an earlier one.
 
 When the owner chooses project memory, Bootstrap must bind it to a real host
 session and workspace readback. Use the host-bound helper
