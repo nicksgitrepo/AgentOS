@@ -34,7 +34,7 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
     const repositoryRoot = resolve(sourceRoot, "..");
     const sourceCommit = spawnSync("git", ["-C", repositoryRoot, "rev-parse", "HEAD"], { encoding: "utf8" });
     const sourceTree = spawnSync("git", ["-C", repositoryRoot, "rev-parse", "HEAD^{tree}"], { encoding: "utf8" });
-    if (sourceCommit.status !== 0 || sourceTree.status !== 0 || sourceCommit.stdout.trim() !== "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e" || sourceTree.stdout.trim() !== "29a60c1eb9a8ec9856ce8f08abbe4cabb72fe168") throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
+    if (sourceCommit.status !== 0 || sourceTree.status !== 0 || sourceCommit.stdout.trim() !== existing.source_commit || sourceTree.stdout.trim() !== existing.source_tree) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
     const sourceFiles = await listFiles(resolve(sourceRoot));
     const sourceEntries = [];
     for (const absolute of sourceFiles) {
@@ -45,8 +45,8 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
       throw new Error("MAIN_CORE_SOURCE_BYTES_MISMATCH");
     }
   }
-  if (writeManifest) await writeFile(join(root, "source-manifest.json"), canonical({ schema: "agentos.integration.main-core-manifest.v1", source_commit: "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e", source_tree: "29a60c1eb9a8ec9856ce8f08abbe4cabb72fe168", candidate_commit: "59860e96574416673c5a1dca19b6e06368f4de97", candidate_tree: "dd39662b87abec5d359863f6f1565d2792941d26", entries }));
-  return { entry_count: entries.length, source_commit: existing?.source_commit ?? "5f6b68d4a55a0ae6b7a3009a0e659ec256b2ae1e", candidate_commit: existing?.candidate_commit ?? "59860e96574416673c5a1dca19b6e06368f4de97", candidate_tree: existing?.candidate_tree ?? "dd39662b87abec5d359863f6f1565d2792941d26" };
+  if (writeManifest) throw new Error("WRITE_MANIFEST_REMOVED_USE_REBIND_MAIN_CORE");
+  return { entry_count: entries.length, source_commit: existing.source_commit, source_tree: existing.source_tree, candidate_commit: existing.candidate_commit, candidate_tree: existing.candidate_tree };
 }
 
 if (process.argv[1]?.endsWith("verify-main-core.mjs") && process.argv[2]) {
