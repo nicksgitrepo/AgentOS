@@ -9,8 +9,8 @@ by its author.
 ## Exact candidate receipt
 
 - Branch: `codex/specialist-block-library-candidate`
-- Candidate commit: `1a0ebdf38082eed02d37d44039d9719d3926aade`
-- Candidate tree: `678a7829d619e57a08670d51245f7c75afb72d6c`
+- Candidate commit: `7f18682529c3ec65e9c85df126afcc3cb17a0169`
+- Candidate tree: `3ff5893ed22c2b4f8aeffce344dc4f950291420d`
 - Remote ref: `origin/codex/specialist-block-library-candidate`
 - Governance: `2.1rc`, prepared but inactive
 - Activation: `OFF`
@@ -23,30 +23,31 @@ attached as a separate immutable receipt commit.
 
 ## Verified scope
 
-- Master inventory: 625 raw role mentions, 619 unique titles, 10 explicit alias
-  mappings, 619 materialized entries.
-- Recipe catalog: 619 stable role recipes, with 11 compileable candidates (6
-  P0 and 5 P4), 607 planned non-compileable recipes, and the protected Memory lane marked
+- Master inventory: 625 raw role mentions, 621 unique titles (the 619 baseline
+  roles plus two generic discovered workflow additions), 10 explicit alias
+  mappings, 621 materialized entries.
+- Recipe catalog: 621 stable role recipes, with 17 compileable candidates (6
+  P0, 5 P4, and 6 P5), 603 planned non-compileable recipes, and the protected Memory lane marked
   `NOT_APPLICABLE`/external-only; all 10 aliases resolve to canonical recipe
   IDs. Planned recipes cannot compile until role-specific block research, source
   locking, evaluation, and admission exist.
-- Materialized role kinds: `ROUTER: 633`, `CONTROL_PLANE: 16`,
+- Materialized role kinds: `ROUTER: 640`, `CONTROL_PLANE: 16`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-  `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 86`,
+  `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `107` packages total — `14` `ROUTER`, `16`
-  `CONTROL_PLANE`, `59` `ATOMIC_SPECIALIST`, and `18` source-locked
+- Compiled candidate package roster: `123` packages total — `19` `ROUTER`, `16`
+  `CONTROL_PLANE`, `65` `ATOMIC_SPECIALIST`, and `23` source-locked
   `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
   materialization count above.
-- Atomic overlay: 14 routers, 86 atomic specialists, 16 control-plane roles;
+- Atomic overlay: 19 routers, 92 atomic specialists, 16 control-plane roles;
   all packaged routers are classification-only and carry no Product or
   acceptance authority.
 - P0 has exactly six candidate lanes, each with a package, source lock, exact
   twelve-gate pack, hostile fixtures, evaluation dossier, and typed handoff.
 - The on-demand compiler emits the eight required machine contracts plus a
   generated `bootstrap.md` view in an external companion workspace only.
-- The recipe catalog is complete for the retained backlog: `619` stable role
-  recipes, `11` compileable candidates (`6` P0 and `5` P4), `607` planned non-compileable
+- The recipe catalog is complete for the retained backlog: `621` stable role
+  recipes, `17` compileable candidates (`6` P0, `5` P4, and `6` P5), `603` planned non-compileable
   recipes, one protected `NOT_APPLICABLE` external lane, and `10` alias
   resolutions. The planned entries cannot compile until role-specific blocks
   satisfy the full source/gate/evaluation/admission law.
@@ -54,15 +55,17 @@ attached as a separate immutable receipt commit.
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS
   repository residue.
-- The source-locked standard slice contains eighteen reusable authorities:
+- The source-locked standard slice contains twenty-three reusable authorities:
   NIST SP 800-218 SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten
   P1 language/framework/data/API/identity/provider authorities, and the OWASP
   Top 10:2025 and OWASP API Security Top 10:2023 indexes, plus Semantic
   Versioning 2.0.0, Conventional Commits 1.0.0, and W3C WCAG 2.2. Each binds normalized
   requirements, compatibility/supersession metadata, and its source manifest
-  by digest.
-- The separate read-only independent evaluator passes all 107 package candidates,
-  1,284 gate files, and 1,819 hostile fixtures. Its disposition is
+  by digest. The P5 additions are NIST AI RMF 1.0, NIST AI 600-1, glTF 2.0.1,
+  FMCSA Part 390 (2025), and the GAO Green Book (2025).
+- The separate read-only independent evaluator passes all 123 package candidates,
+  1,476 gate files, and 2,091 hostile fixtures. Every package-level static
+  check passes; its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - Atomic composition enforcement is included in the candidate: an atomic block
   must bind to and compile with its selected upstream `ROUTER`; router-only
@@ -91,13 +94,20 @@ attached as a separate immutable receipt commit.
   accessibility, responsive web, iOS/SwiftUI, and Android/Kotlin. The
   accessibility atom reuses the exact WCAG 2.2 standard hash; no P4 lane was
   activated or spawned.
+- The P5 domain/AI/3D/regulatory/finance slice adds five classification-only
+  routers and six narrow atomic candidates under `specialist-blocks/wave-06/`:
+  field workflow, well workflow, industrial 3D, AI/Search/RAG, FMCSA
+  applicability, and job-cost accounting. Their exact upstream-router closure,
+  source locks, twelve-gate packs, hostile fixtures, and reusable standard
+  dependencies are represented in the machine roster; no P5 lane was activated
+  or spawned.
 
 ## Unfinished admission gates
 
 1. Independent utility/harm evaluation of the P0 candidates and Agent Builder
    candidate input.
 2. Independent admission authority; no author self-acceptance is valid.
-3. Independent utility/harm evaluation of the P1, P2, P3, and P4 router/atomic/control
+3. Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control
    candidates and broader source-backed `STANDARD_BLOCK` expansion remain pending; the
    backlog materialized standard-block count is zero because those roles are
    not yet expanded into packages.

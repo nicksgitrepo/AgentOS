@@ -49,24 +49,24 @@ The materialized roster distinguishes these role kinds:
 - `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
   roster agent.
 
-Current materialized counts are `ROUTER: 633`, `CONTROL_PLANE: 16`,
+Current materialized counts are `ROUTER: 640`, `CONTROL_PLANE: 16`,
 `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 86`, and
+`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`, and
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
-`14` routers, `86` atomic specialists, and `16` control-plane roles.
+`19` routers, `92` atomic specialists, and `16` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `107` packages total, consisting of `14` `ROUTER`, `16`
-`CONTROL_PLANE`, `59` `ATOMIC_SPECIALIST`, and `18` `STANDARD_BLOCK` packages.
-All 107 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
+backlog: `123` packages total, consisting of `19` `ROUTER`, `16`
+`CONTROL_PLANE`, `65` `ATOMIC_SPECIALIST`, and `23` `STANDARD_BLOCK` packages.
+All 123 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
-The on-demand recipe catalog now covers all `619` retained inventory roles:
-`11` recipes are `CANDIDATE` and compileable (`6` P0 and `5` P4), `607` recipes are `PLANNED`,
+The on-demand recipe catalog now covers all `621` retained inventory roles:
+`17` recipes are `CANDIDATE` and compileable (`6` P0, `5` P4, and `6` P5), `603` recipes are `PLANNED`,
 explicitly non-compileable, and require a role-specific block with its own
 source lock, twelve gates, hostile fixtures, independent evaluation, and
 admission receipt. The protected Memory lane is retained as `NOT_APPLICABLE`
 and external-only. The catalog preserves all `10` alias mappings and is
-content-addressed by `d6c427d0ec39f79a297b8de5f7c4cace7b3d8d9d8146cf307db432832aeefd7a`.
+content-addressed by `c484a6d63ed440fde38c88fafde7ce30bc54ae0eca743f5076d6fc063d4f5d49`.
 
 ## Source-locked standard candidates
 
@@ -90,6 +90,11 @@ content-addressed by `d6c427d0ec39f79a297b8de5f7c4cace7b3d8d9d8146cf307db432832a
 | `specialist.standard.cloudflare-dns-current` | `delivery-operations / P1` | [Cloudflare DNS records](https://developers.cloudflare.com/dns/manage-dns-records/) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-dns-current.v1` | 12 gates; external zone overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.cloudflare-cache-current` | `delivery-operations / P1` | [Cloudflare Cache Rules](https://developers.cloudflare.com/cache/how-to/cache-rules/) `current`; retrieval identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.cloudflare-cache-current.v1` | 12 gates; external edge overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 | `specialist.standard.wcag-2-2` | `product-client / P4` | [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/) `2.2`, Recommendation republished 2024-12-12; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.wcag-2-2.v1` | 12 gates; external jurisdiction/content applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.nist-ai-rmf-1-0` | `ai-search / P5` | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10) `1.0`; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.nist-ai-rmf-1-0.v1` | 12 gates; external use-case/applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.nist-genai-profile-1-0` | `ai-search / P5` | [NIST AI 600-1](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf) `2024-07-26`; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.nist-genai-profile-1-0.v1` | 12 gates; external generative-AI applicability overlay required; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.gltf-2-0-1` | `3d-graphics / P5` | [Khronos glTF Registry](https://registry.khronos.org/glTF/) `2.0.1`; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.gltf-2-0-1.v1` | 12 gates; asset/runtime applicability external; no engineering-truth certification; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.fmcsa-part-390-2025` | `regulatory / P5` | [49 CFR Part 390](https://www.govinfo.gov/content/pkg/CFR-2025-title49-vol5/pdf/CFR-2025-title49-vol5-part390.pdf) `2025`; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.fmcsa-part-390-2025.v1` | 12 gates; jurisdiction/entity/activity/exception/effective-date overlay required; no legal advice; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
+| `specialist.standard.gao-green-book-2025` | `finance / P5` | [GAO Green Book](https://www.gao.gov/greenbook) `2025`; immutable identity in `sources.lock` | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.gao-green-book-2025.v1` | 12 gates; entity/control-objective overlay required; no licensed accounting conclusion; `WAITING_WITH_RECEIPT / NOT_ADMITTED` |
 
 Each standard row is content-addressed by its `block_sha256` and binds
 `requirements.json`, `compatibility.json`, and `supersession.json` by digest.
@@ -194,6 +199,27 @@ Product or acceptance authority.
 | `specialist.delivery-operations.observability-incident` | `ATOMIC_SPECIALIST`; `specialist.delivery-operations.observability-router` | `PORTABLE_KERNEL`; [Google SRE monitoring](https://sre.google/sre-book/monitoring-distributed-systems/); reusable SLSA dependency | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.observability-incident.v1` | 12 gates; upstream required; `NOT_ADMITTED / OFF` |
 | `specialist.data.migration-rollback` | `ATOMIC_SPECIALIST`; `specialist.data.router` | `PORTABLE_KERNEL`; [PostgreSQL transaction isolation](https://www.postgresql.org/docs/current/transaction-iso.html); reusable NIST SSDF/SLSA dependencies | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.migration-rollback.v1` | 12 gates; upstream required; `NOT_ADMITTED / OFF` |
 
+## P5 domain, AI, 3D, regulatory, and finance candidates
+
+The P5 slice remains candidate-only and adds six narrow atomic specialists plus
+five classification-only routers. The routers assemble typed context only; the
+atomic rows are the smallest sufficient authority/failure domains and may return
+`NOT_APPLICABLE` rather than broaden scope.
+
+| Generic ID | Block ID / kind | Upstream / reusable authority | Build / evaluation | Gates / intake / lifecycle |
+|---|---|---|---|---|
+| `DOMAIN.WORKFLOW_ROUTER` | `specialist.domain.workflow-router` / `ROUTER` | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.workflow-router.v1` | 12 gates; router-only; `NOT_ADMITTED / OFF` |
+| `DOMAIN.FIELD_JOB_WORKFLOW` | `specialist.domain.field-job-workflow` / `ATOMIC_SPECIALIST` | upstream `specialist.domain.workflow-router`; OSHA Oil & Gas eTool context remains descriptive/external | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.field-job-workflow.v1` | 12 gates; narrow workflow scope; `NOT_ADMITTED / OFF` |
+| `DOMAIN.WELL_WORKFLOW` | `specialist.domain.well-workflow` / `ATOMIC_SPECIALIST` | upstream `specialist.domain.workflow-router`; OSHA Oil & Gas eTool context remains descriptive/external | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.well-workflow.v1` | 12 gates; narrow workflow scope; `NOT_ADMITTED / OFF` |
+| `GRAPHICS.INDUSTRIAL_3D` | `specialist.graphics.industrial-3d` / `ATOMIC_SPECIALIST` | upstream `specialist.graphics.industrial-3d-router`; exact `specialist.standard.gltf-2-0-1` hash | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.industrial-3d.v1` | 12 gates; no engineering-truth claim; `NOT_ADMITTED / OFF` |
+| `GRAPHICS.INDUSTRIAL_3D_ROUTER` | `specialist.graphics.industrial-3d-router` / `ROUTER` | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.industrial-3d-router.v1` | 12 gates; router-only; `NOT_ADMITTED / OFF` |
+| `AI.SEARCH_ROUTER` | `specialist.ai.search-router` / `ROUTER` | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.search-router.v1` | 12 gates; router-only; `NOT_ADMITTED / OFF` |
+| `AI.SEARCH_RAG` | `specialist.ai.search-rag` / `ATOMIC_SPECIALIST` | upstream `specialist.ai.search-router`; exact NIST AI RMF and GenAI Profile hashes | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.search-rag.v1` | 12 gates; corpus/provider/context external; `NOT_ADMITTED / OFF` |
+| `REGULATORY.APPLICABILITY_ROUTER` | `specialist.regulatory.applicability-router` / `ROUTER` | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.regulatory-applicability-router.v1` | 12 gates; router-only; `NOT_ADMITTED / OFF` |
+| `REG.FMCSA_APPLICABILITY` | `specialist.regulatory.fmcsa-applicability` / `ATOMIC_SPECIALIST` | upstream `specialist.regulatory.applicability-router`; exact FMCSA Part 390 hash | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.fmcsa-applicability.v1` | 12 gates; jurisdiction/entity/activity/exception overlay required; `NOT_ADMITTED / OFF` |
+| `FINANCE.ACCOUNTING_ROUTER` | `specialist.finance.accounting-router` / `ROUTER` | `PORTABLE_KERNEL` atomicity law | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.accounting-router.v1` | 12 gates; router-only; `NOT_ADMITTED / OFF` |
+| `FIN.JOB_COST_ACCOUNTING` | `specialist.finance.job-cost-accounting` / `ATOMIC_SPECIALIST` | upstream `specialist.finance.accounting-router`; exact GAO Green Book 2025 hash | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.job-cost-accounting.v1` | 12 gates; advisory control mapping only; `NOT_ADMITTED / OFF` |
+
 ## Mandatory package contract
 
 Every block has stable identity/version/aliases/lifecycle, narrow role context,
@@ -224,21 +250,22 @@ it does not authorize a guess or silently block unrelated work.
 P0 is the only active priority wave. It has six lanes: `AGENT.BOOTSTRAP`,
 `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
 `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
-`AGENT.INDEPENDENT_AUDITOR`. All P1–P6 entries remain planned until the
-foundation and preceding wave receipts exist; the P1–P4 packages above are
+`AGENT.INDEPENDENT_AUDITOR`. Unbuilt P1–P6 entries remain planned until the
+foundation and preceding wave receipts exist; the P1–P5 packages above are
 candidate library records, not active lanes.
 
-The full inventory retains 625 role mentions and 619 unique titles, with 10
+The full inventory retains 625 role mentions and 621 unique titles (the 619
+baseline roles plus two generic discovered workflow additions), with 10
 explicit duplicate/alias mappings. Priority changes sequencing, not existence.
-P3 and P4 packages are compiled candidates only; P0 remains the sole active
-wave.
+P3, P4, and P5 packages are compiled candidates only; P0 remains the sole
+active wave.
 
 ## Atomicity counts
 
 The current typed atomicity overlay reports exactly:
 
-- `14` routers;
-- `86` atomic specialists;
+- `19` routers;
+- `92` atomic specialists;
 - `16` control-plane blocks.
 
 Routers may classify and assemble context but may not write Product or accept a
@@ -259,11 +286,12 @@ evidence remain external overlays. New editions, material errata, or normative
 gate corrections create new block versions with compatibility/supersession
 metadata. A non-material publisher refresh creates a freshness receipt only.
 
-The current candidate contains eighteen such source-locked standard packages:
+The current candidate contains twenty-three such source-locked standard packages:
 NIST SSDF 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten P1 language,
 framework, data, API, identity, and provider authorities, OWASP Top 10:2025,
-and OWASP API Security Top 10:2023, Semantic Versioning 2.0.0, and Conventional
-Commits 1.0.0, and W3C WCAG 2.2. Their static receipts do not change the
+and OWASP API Security Top 10:2023, Semantic Versioning 2.0.0, Conventional
+Commits 1.0.0, W3C WCAG 2.2, NIST AI RMF 1.0, NIST AI 600-1, glTF 2.0.1,
+FMCSA Part 390 (2025), and the GAO Green Book (2025). Their static receipts do not change the
 backlog's `STANDARD_BLOCK: 0` materialization count; that count records roles
 not yet expanded into packages.
 

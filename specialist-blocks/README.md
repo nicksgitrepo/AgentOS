@@ -18,13 +18,16 @@ Each block package contains:
 Each reusable `STANDARD_BLOCK` additionally contains `requirements.json`,
 `compatibility.json`, and `supersession.json`. Their digests are bound into
 `block.json`; applicability, jurisdiction, project facts, and freshness
-overlays remain external. The current candidate has eighteen source-locked
+overlays remain external. The current candidate has twenty-three source-locked
 standard packages under `specialist-blocks/standards/`: NIST SP 800-218 SSDF
 1.1, OWASP ASVS 5.0.0, SLSA Specification 1.2, ten exact authorities reused
 by the first P1 atomic slice, the OWASP Top 10:2025 and OWASP API Security
 Top 10:2023 indexes, plus reusable Semantic Versioning 2.0.0 and Conventional
-Commits 1.0.0 authorities for release governance, and W3C WCAG 2.2 for
-accessibility applicability and evidence mapping.
+Commits 1.0.0 authorities for release governance, W3C WCAG 2.2 for
+accessibility applicability and evidence mapping, NIST AI RMF 1.0, NIST AI
+600-1, glTF 2.0.1, FMCSA Part 390 (2025), and the GAO Green Book (2025).
+Each is immutable and reused by hash; task-specific applicability remains
+external.
 
 The first P1 atomic slice under `specialist-blocks/wave-02/` contains six
 classification-only routers and ten narrow candidates for Rust, TypeScript,
@@ -54,6 +57,13 @@ product interaction, WCAG accessibility, responsive web, iOS/SwiftUI, and
 Android/Kotlin. The accessibility atom reuses the exact WCAG 2.2 standard hash;
 the router does not substitute for narrower atoms.
 
+The P5 domain/AI/3D/regulatory/finance slice under
+`specialist-blocks/wave-06/` adds five classification-only routers and six
+narrow atomic specialists for field and well workflows, industrial 3D,
+AI/Search/RAG, FMCSA applicability, and job-cost accounting. The atomic
+specialists bind to their required routers and, where applicable, reuse the
+exact NIST AI, glTF, FMCSA, and GAO standard hashes. All remain candidate-only.
+
 Atomicity is normative: broad family labels are routers only, atomic blocks own
 one failure mode or evidence domain, and control-plane blocks own governance
 mechanics. The atomicity overlay in `registry/atomic-inventory.v1.json` keeps
@@ -76,7 +86,8 @@ materializes one stable recipe for every retained inventory role and marks
 unbuilt role recipes explicitly `PLANNED` and non-compileable.
 
 `registry/recipe-catalog.v1.json` contains one stable recipe for every retained
-inventory role: eleven recipes are compileable candidates (`6` P0 and `5` P4), 607 are explicit
+inventory role: `621` recipes total, with seventeen compileable candidates (`6`
+P0, `5` P4, and `6` P5), `603` explicit
 planned, non-compileable recipes awaiting role-specific source research, gates,
 evaluation, and admission, and the protected Memory lane is `NOT_APPLICABLE`
 and external-only. `registry/integration-handoff.v1.json` and

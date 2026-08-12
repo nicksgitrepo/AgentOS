@@ -27,7 +27,7 @@ and the protected Memory lane are read-only or out of scope.
 ## Master inventory
 
 - Raw role mentions retained: `625`.
-- Unique role titles retained: `619`.
+- Unique role titles retained: `621` (`619` baseline roles plus two source-backed generic workflow additions).
 - Explicit duplicate/alias mappings: `10`.
 - Inventory source: `registry/master-inventory.v1.json`.
 - Required materialization fields: canonical ID, aliases, family/subfamily,
@@ -57,23 +57,23 @@ generated `bootstrap.md` view. Generated instances are external companion
 artifacts only; `bootstrap.md` is never the authority and cannot be edited as a
 standalone contract.
 
-Current materialized role-kind counts are `ROUTER: 633`,
+Current materialized role-kind counts are `ROUTER: 640`,
 `CONTROL_PLANE: 16`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
-`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 86`, and
-`COMPILED_AGENT_PACKAGE: 0`. The current typed atomic overlay contains `14`
-routers, `86` atomic specialists, and `16` control-plane roles after the P4
-client/UX source-backed slice.
+`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`, and
+`COMPILED_AGENT_PACKAGE: 0`. The current typed atomic overlay contains `19`
+routers, `92` atomic specialists, and `16` control-plane roles after the P4
+client/UX and P5 domain/AI/3D/regulatory/finance source-backed slices.
 
 The compiled candidate package count is separate from the backlog materialized
-count: `107` packages are validated (`16` `CONTROL_PLANE`, `18`
-`STANDARD_BLOCK`, `14` `ROUTER`, and `59` `ATOMIC_SPECIALIST`). These are
+count: `123` packages are validated (`16` `CONTROL_PLANE`, `23`
+`STANDARD_BLOCK`, `19` `ROUTER`, and `65` `ATOMIC_SPECIALIST`). These are
 source-locked inactive candidates and do not change the unexpanded backlog
 count.
 
-The on-demand recipe catalog is now complete for the retained backlog: `619`
-stable recipes map one-to-one to the `619` inventory titles and preserve all
-`10` alias mappings. Eleven recipes are `CANDIDATE`/compileable (`6` P0 and
-`5` P4); `607` are `PLANNED`/non-compileable until a role-specific block has source evidence, the
+The on-demand recipe catalog is now complete for the retained backlog: `621`
+stable recipes map one-to-one to the `621` inventory titles and preserve all
+`10` alias mappings. Seventeen recipes are `CANDIDATE`/compileable (`6` P0,
+`5` P4, and `6` P5); `603` are `PLANNED`/non-compileable until a role-specific block has source evidence, the
 exact twelve gates, hostile fixtures, independent evaluation, and an admission
 receipt. The protected Memory lane is retained as `NOT_APPLICABLE` and
 external-only.
@@ -111,10 +111,9 @@ remain external gates.
 ## Next controller actions
 
 1. Keep the exact six P0 lanes reserved while independent utility/harm and
-   admission review remains external; no P3 package is an active lane.
-2. Hold the P4 client/UX packages as static candidates; continue to P5 only
-   after this slice is independently reviewed and the host-pressure ceiling
-   permits bounded work.
+   admission review remains external; no P3, P4, or P5 package is an active lane.
+2. Hold the P4 and P5 packages as static candidates; continue to P6 only after
+   independent review and the host-pressure ceiling permit bounded work.
 3. Send the exact isolated receipt to the main AgentOS 3.0 integration owner;
    do not merge, activate, deploy, or adopt a consumer project from this lane.
 
@@ -440,3 +439,33 @@ remain external gates.
 - Next cursor: P5 source-backed expansion only after independent review and
   host-pressure clearance; the exact isolated candidate receipt is ready for
   the main integration owner to inspect.
+
+## Latest verified state — P5 domain/AI/3D/regulatory/finance slice — 2026-08-11
+
+- Implementation candidate: commit `7f18682529c3ec65e9c85df126afcc3cb17a0169`,
+  tree `3ff5893ed22c2b4f8aeffce344dc4f950291420d`; the candidate branch is
+  pushed and clean. The machine handoff points to this implementation commit;
+  any later receipt-only commit must not change this candidate identity.
+- The P5 slice adds six narrow atomic candidates —
+  `DOMAIN.FIELD_JOB_WORKFLOW`, `DOMAIN.WELL_WORKFLOW`,
+  `GRAPHICS.INDUSTRIAL_3D`, `AI.SEARCH_RAG`, `REG.FMCSA_APPLICABILITY`, and
+  `FIN.JOB_COST_ACCOUNTING` — plus five classification-only routers and five
+  reusable exact-edition `STANDARD_BLOCK` authorities. No router substitutes
+  for an atomic specialist.
+- Verified totals are `123` compiled package candidates (`16` controls,
+  `23` standards, `19` routers, `65` atoms), `640` materialized router roles,
+  `92` materialized atomic roles, and `127` typed overlay entries (`19`
+  routers, `16` controls, `92` atoms). The recipe catalog contains `621`
+  entries: `17` candidates (`6` P0, `5` P4, `6` P5), `603` planned, `1`
+  `NOT_APPLICABLE`, and `10` aliases. The two added workflow roles are
+  generic discovered additions; all 619 baseline roles remain retained.
+- Focused library/compiler checks pass. The independent read-only evaluator
+  reports `STATIC_PASS_REVIEW_REQUIRED` with all package-level checks passing:
+  `123` packages, `1,476` twelve-gate files, and `2,091` hostile fixtures.
+  Independent utility/harm and admission authority remain external.
+- Exactly the six P0 lanes remain reserved and candidate/inactive. No P4 or P5
+  lane was activated or spawned. Host pressure remains the recorded ceiling:
+  canonical scheduler `JOB-407` is `RUNNING` with swap at `5.5/6 GiB`; no
+  heavyweight proof or new heavyweight admission was run.
+- Next cursor: consume the refreshed typed handoff, obtain independent
+  utility/harm/admission review, and only then consider P6 source-backed work.

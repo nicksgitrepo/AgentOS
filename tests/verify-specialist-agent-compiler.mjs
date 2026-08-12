@@ -57,6 +57,9 @@ const integrationHandoff = JSON.parse(fs.readFileSync(path.join(root, "specialis
 assert.equal(integrationHandoff.schema, "agentos.specialist_library_integration_handoff.v1");
 assert.equal(integrationHandoff.status, "WAITING_WITH_RECEIPT");
 assert.equal(execFileSync("git", ["rev-parse", `${integrationHandoff.candidate.commit}^{tree}`], {cwd: root, encoding: "utf8"}).trim(), integrationHandoff.candidate.tree, "handoff candidate tree must match its commit");
+assert.deepEqual(integrationHandoff.inventory.recipe_counts, {total: 621, CANDIDATE: 17, PLANNED: 603, NOT_APPLICABLE: 1, alias_mappings: 10, catalog_sha256: recipeCatalog.recipes_sha256}, "handoff recipe receipt must match the compiled catalog");
+assert.deepEqual(integrationHandoff.inventory.compiled_package_counts, {total: 123, ROUTER: 19, CONTROL_PLANE: 16, ATOMIC_SPECIALIST: 65, STANDARD_BLOCK: 23}, "handoff package receipt must match the compiled roster");
+assert.equal(integrationHandoff.inventory.unique_role_titles, 621, "handoff inventory receipt must include discovered additions");
 assert.deepEqual(integrationHandoff.lanes.entries.map((entry) => entry.generic_id), ["AGENT.BOOTSTRAP", "AGENT.PROJECT_CONTROLLER", "AGENT.INTENT_REGULATOR", "AGENT.RESOURCE_SCHEDULER", "AGENT.RUNTIME_DEPLOYMENT", "AGENT.INDEPENDENT_AUDITOR"]);
 
 function compile(name, recipe, task, external = makeExternal(name), blocks = BLOCKS) {
