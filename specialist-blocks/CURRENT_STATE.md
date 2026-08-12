@@ -300,6 +300,9 @@ remain external gates.
 
 ## Latest verified state — P2 security expansion — 2026-08-11
 
+- Implementation candidate: commit `38d8d5b36ecd9284c8d297d19a304b38660d76b5`,
+  tree `1c781ad3dab822d040cf652433f63733ceadb26c`; the receipt-only metadata
+  commit will follow after focused validation.
 - The current bounded slice adds six P2 routers, forty-one P2 atomic security
   candidates, and two reusable exact-version OWASP standards: OWASP Top
   10:2025 and OWASP API Security Top 10:2023. The six routers cover web Top 10,
