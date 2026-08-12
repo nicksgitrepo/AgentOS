@@ -384,6 +384,9 @@ remain external gates.
 
 ## Latest verified state — complete recipe addressability — 2026-08-11
 
+- Implementation candidate: commit `337d1dcbdbb78e357da579a6c7f9b74ece72a150`,
+  tree `4c168b72dedb7f9708cddfcb4b40d81a6cb588a0`; the receipt-only metadata
+  commit follows this implementation commit.
 - `control/scaffold-recipe-catalog.mjs` now materializes one stable recipe for
   every retained inventory title: `619` recipes for `619` roles, preserving all
   `10` explicit alias mappings.
