@@ -25,10 +25,11 @@ attached as a separate immutable receipt commit.
 
 - Master inventory: 625 raw role mentions, 619 unique titles, 10 explicit alias
   mappings, 619 materialized entries.
-- Recipe catalog: 619 stable role recipes, with 6 P0 compileable candidates and
-  613 planned non-compileable recipes; all 10 aliases resolve to canonical
-  recipe IDs. Planned recipes cannot compile until role-specific block research,
-  source locking, evaluation, and admission exist.
+- Recipe catalog: 619 stable role recipes, with 6 P0 compileable candidates,
+  612 planned non-compileable recipes, and the protected Memory lane marked
+  `NOT_APPLICABLE`/external-only; all 10 aliases resolve to canonical recipe
+  IDs. Planned recipes cannot compile until role-specific block research, source
+  locking, evaluation, and admission exist.
 - Materialized role kinds: `ROUTER: 632`, `CONTROL_PLANE: 16`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 81`,
@@ -45,9 +46,10 @@ attached as a separate immutable receipt commit.
 - The on-demand compiler emits the eight required machine contracts plus a
   generated `bootstrap.md` view in an external companion workspace only.
 - The recipe catalog is complete for the retained backlog: `619` stable role
-  recipes, `6` P0 compileable candidates, `613` planned non-compileable
-  recipes, and `10` alias resolutions. The planned entries cannot compile until
-  role-specific blocks satisfy the full source/gate/evaluation/admission law.
+  recipes, `6` P0 compileable candidates, `612` planned non-compileable
+  recipes, one protected `NOT_APPLICABLE` external lane, and `10` alias
+  resolutions. The planned entries cannot compile until role-specific blocks
+  satisfy the full source/gate/evaluation/admission law.
 - The composition fixture generates three different task-shaped packages,
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS

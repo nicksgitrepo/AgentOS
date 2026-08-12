@@ -24,14 +24,14 @@
     "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
     "selection_rule": {"const": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS"},
     "external_overlay_rule": {"const": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL"},
-    "lifecycle": {"enum": ["PLANNED", "CANDIDATE", "EVALUATED", "ADMITTED", "DEPRECATED", "ARCHIVED"]},
+    "lifecycle": {"enum": ["PLANNED", "CANDIDATE", "EVALUATED", "ADMITTED", "DEPRECATED", "NOT_APPLICABLE", "ARCHIVED"]},
     "compile_allowed": {"type": "boolean"},
     "materialization": {
       "type": "object",
       "additionalProperties": false,
       "required": ["status", "role_specific_block_required", "package_ids"],
       "properties": {
-        "status": {"enum": ["PLANNED_RECIPE_ONLY", "COMPILED_CANDIDATE"]},
+        "status": {"enum": ["PLANNED_RECIPE_ONLY", "COMPILED_CANDIDATE", "PROTECTED_EXTERNAL_LANE"]},
         "role_specific_block_required": {"type": "boolean"},
         "package_ids": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}}
       }

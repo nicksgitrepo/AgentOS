@@ -58,6 +58,10 @@ function genericReasons(entry) {
   return Object.fromEntries(FOUNDATION_BLOCKS.map((blockId) => [blockId, `Universal governance dependency for the planned ${entry.title} recipe.`]));
 }
 
+function isProtectedMemoryLane(entry) {
+  return entry.title === "Memory Systems (protected lane)";
+}
+
 function finalizeRecipe(recipe) {
   const normalized = {
     ...recipe,
@@ -109,6 +113,37 @@ function normalizeExistingRecipe(existing, entry) {
 }
 
 function plannedRecipe(entry) {
+  if (isProtectedMemoryLane(entry)) {
+    return finalizeRecipe({
+      schema: "agentos.specialist_recipe.v1",
+      version: 1,
+      recipe_id: recipeIdFor(entry),
+      recipe_version: "1.0.0",
+      source_inventory_id: entry.canonical_id,
+      source_title: entry.title,
+      source_role_kind: entry.role_kind,
+      aliases: entry.aliases,
+      priority: entry.priority_score,
+      lane: `INVENTORY.${entry.canonical_id}`,
+      family: entry.family,
+      purpose: "Preserve a protected external lane identity without encoding portable Memory implementation or internal direction.",
+      required_layers: ["agentos-governance", "exact-project-context"],
+      required_block_ids: ["specialist.foundation.role-intake-classifier", "specialist.foundation.scope-non-goal-gate", "specialist.foundation.tool-custody-gate"],
+      required_context_fields: ["authority", "custody", "request"],
+      non_goals: [...BASE_NON_GOALS, "Memory internals", "Memory implementation", "directing or modifying a protected Memory lane"],
+      selection_rule: "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
+      external_overlay_rule: "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
+      lifecycle: "NOT_APPLICABLE",
+      compile_allowed: false,
+      materialization: {status: "PROTECTED_EXTERNAL_LANE", role_specific_block_required: false, package_ids: []},
+      required_atomic_blocks: [],
+      required_standard_blocks: [],
+      optional_block_ids: [],
+      reasons: Object.fromEntries(["specialist.foundation.role-intake-classifier", "specialist.foundation.scope-non-goal-gate", "specialist.foundation.tool-custody-gate"].map((blockId) => [blockId, "Preserve the protected external boundary without implementing or directing Memory internals."])),
+      source_requirements: entry.source_requirements,
+      freshness_policy: entry.freshness_policy,
+    });
+  }
   return finalizeRecipe({
     schema: "agentos.specialist_recipe.v1",
     version: 1,

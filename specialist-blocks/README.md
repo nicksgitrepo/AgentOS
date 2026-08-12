@@ -69,9 +69,10 @@ materializes one stable recipe for every retained inventory role and marks
 unbuilt role recipes explicitly `PLANNED` and non-compileable.
 
 `registry/recipe-catalog.v1.json` contains one stable recipe for every retained
-inventory role: six P0 recipes are compileable candidates and the remaining
-613 are explicit planned, non-compileable recipes awaiting role-specific
-source research, gates, evaluation, and admission. `registry/integration-handoff.v1.json` and
+inventory role: six P0 recipes are compileable candidates, 612 are explicit
+planned, non-compileable recipes awaiting role-specific source research, gates,
+evaluation, and admission, and the protected Memory lane is `NOT_APPLICABLE`
+and external-only. `registry/integration-handoff.v1.json` and
 `INTEGRATION_HANDOFF.md` carry the exact isolated-candidate disposition and
 unfinished admission gates.
 

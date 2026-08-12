@@ -1275,58 +1275,47 @@
       "priority": "P1",
       "lane": "INVENTORY.inventory.ai-search-intelligent-systems.memory-systems-protected-lane",
       "family": "ai-search-intelligent-systems",
-      "purpose": "Compile a task-shaped Memory Systems (protected lane) specialist only after applicability, authority, source, and context evidence are complete.",
+      "purpose": "Preserve a protected external lane identity without encoding portable Memory implementation or internal direction.",
       "required_layers": [
         "agentos-governance",
-        "exact-project-context",
-        "owner-intent-and-authority",
-        "task-role-authority"
+        "exact-project-context"
       ],
       "required_block_ids": [
-        "specialist.foundation.authority-jurisdiction-gate",
-        "specialist.foundation.evaluation-admission-gate",
-        "specialist.foundation.evidence-freshness-gate",
-        "specialist.foundation.registry-alias-deduplicator",
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate"
       ],
       "required_context_fields": [
         "authority",
-        "candidate",
         "custody",
-        "proof",
-        "request",
-        "source_lock",
-        "worktree"
+        "request"
       ],
       "non_goals": [
+        "Memory implementation",
+        "Memory internals",
         "activation",
         "consumer Product writing",
         "deployment",
+        "directing or modifying a protected Memory lane",
         "self-acceptance",
         "unrelated specialist scopes"
       ],
       "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
       "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-      "lifecycle": "PLANNED",
+      "lifecycle": "NOT_APPLICABLE",
       "compile_allowed": false,
       "materialization": {
-        "status": "PLANNED_RECIPE_ONLY",
-        "role_specific_block_required": true,
+        "status": "PROTECTED_EXTERNAL_LANE",
+        "role_specific_block_required": false,
         "package_ids": []
       },
       "required_atomic_blocks": [],
       "required_standard_blocks": [],
       "optional_block_ids": [],
       "reasons": {
-        "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Memory Systems (protected lane) recipe.",
-        "specialist.foundation.evaluation-admission-gate": "Universal governance dependency for the planned Memory Systems (protected lane) recipe.",
-        "specialist.foundation.evidence-freshness-gate": "Universal governance dependency for the planned Memory Systems (protected lane) recipe.",
-        "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Memory Systems (protected lane) recipe.",
-        "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Memory Systems (protected lane) recipe.",
-        "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Memory Systems (protected lane) recipe.",
-        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Memory Systems (protected lane) recipe."
+        "specialist.foundation.role-intake-classifier": "Preserve the protected external boundary without implementing or directing Memory internals.",
+        "specialist.foundation.scope-non-goal-gate": "Preserve the protected external boundary without implementing or directing Memory internals.",
+        "specialist.foundation.tool-custody-gate": "Preserve the protected external boundary without implementing or directing Memory internals."
       },
       "source_requirements": [
         "primary source or typed authority-corpus record",
@@ -1334,7 +1323,7 @@
         "content digest when obtainable"
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "c341f61fef32be69498e6a337911ed202221d07f71a27d9e5b0dd2b2cb0af6de"
+      "recipe_hash": "6db1b1734c7eae22c8b08d892cd69fad3405115985d910166230f7f7a4a6d132"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -45275,5 +45264,5 @@
       "reason": "Exact duplicate label; one documentation role owns the writing contract."
     }
   ],
-  "recipes_sha256": "41f897c1b1ef9773b85cc2f6335168874abf995c95c0d8fd95c45ee6b347ffe4"
+  "recipes_sha256": "525213cc43afaba3819518859ce84ca31d3617ba8efa85d58b2d0e6251f0024b"
 }

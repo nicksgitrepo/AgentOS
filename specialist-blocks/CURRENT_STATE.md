@@ -73,10 +73,11 @@ count.
 
 The on-demand recipe catalog is now complete for the retained backlog: `619`
 stable recipes map one-to-one to the `619` inventory titles and preserve all
-`10` alias mappings. Six P0 recipes are `CANDIDATE`/compileable; the remaining
-`613` are `PLANNED`/non-compileable until a role-specific block has source
-evidence, the exact twelve gates, hostile fixtures, independent evaluation, and
-an admission receipt.
+`10` alias mappings. Six P0 recipes are `CANDIDATE`/compileable; `612` are
+`PLANNED`/non-compileable until a role-specific block has source evidence, the
+exact twelve gates, hostile fixtures, independent evaluation, and an admission
+receipt. The protected Memory lane is retained as `NOT_APPLICABLE` and
+external-only.
 
 ## Wave law
 
@@ -391,11 +392,12 @@ remain external gates.
   every retained inventory title: `619` recipes for `619` roles, preserving all
   `10` explicit alias mappings.
 - The catalog contains exactly `6` `CANDIDATE`/compileable P0 recipes and
-  `613` `PLANNED`/non-compileable recipes. Planned recipes carry the universal
-  foundation dependency set and external typed context requirements, but cannot
-  compile until a role-specific block has source locks, all twelve gates,
-  hostile fixtures, independent evaluation, and admission.
-- Catalog digest: `41f897c1b1ef9773b85cc2f6335168874abf995c95c0d8fd95c45ee6b347ffe4`.
+  `612` `PLANNED`/non-compileable recipes and one protected `NOT_APPLICABLE`
+  external lane. Planned recipes carry the universal foundation dependency set
+  and external typed context requirements, but cannot compile until a
+  role-specific block has source locks, all twelve gates, hostile fixtures,
+  independent evaluation, and admission.
+- Catalog digest: `525213cc43afaba3819518859ce84ca31d3617ba8efa85d58b2d0e6251f0024b`.
   The recipe coverage verifier passes alongside the existing library,
   independent evaluator, and task-shaped compiler checks.
 - The exact six P0 lanes remain candidate/inactive and are still the only

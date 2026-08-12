@@ -37,8 +37,10 @@ assert.equal(recipeCatalog.recipes_sha256, canonicalDigest({...recipeCatalog, re
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 619, "recipe source inventory IDs must be unique");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 619, "recipe IDs must be unique");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 6, "only the six P0 recipes may be compiled candidates");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 613, "unbuilt inventory roles must remain planned recipes");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 612, "unbuilt inventory roles must remain planned recipes");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").length, 1, "the protected Memory lane must remain not applicable");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PLANNED_RECIPE_ONLY"), "planned recipes must not be compileable");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PROTECTED_EXTERNAL_LANE" && recipe.source_title === "Memory Systems (protected lane)"), "protected Memory lane must not become a portable recipe");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "P0 recipes must remain compileable candidates");
 assert(recipeCatalog.aliases.every((alias) => recipeCatalog.recipes.some((recipe) => recipe.recipe_id === alias.canonical_recipe_id && recipe.source_inventory_id === alias.source_inventory_id)), "aliases must resolve to covered canonical recipes");
 const integrationHandoff = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/integration-handoff.v1.json"), "utf8"));
@@ -89,6 +91,9 @@ try {
   const plannedCatalogRecipe = recipeCatalog.recipes.find((recipe) => recipe.lifecycle === "PLANNED");
   assert(plannedCatalogRecipe, "recipe catalog must contain planned coverage entries");
   assertCode(() => compile("planned-catalog-recipe", plannedCatalogRecipe, TASKS.web, makeExternal("planned-catalog-recipe")), "PLANNED_RECIPE_NOT_COMPILEABLE");
+  const protectedMemoryRecipe = recipeCatalog.recipes.find((recipe) => recipe.lifecycle === "NOT_APPLICABLE");
+  assert(protectedMemoryRecipe, "recipe catalog must retain the protected external lane");
+  assertCode(() => compile("protected-memory-recipe", protectedMemoryRecipe, TASKS.web, makeExternal("protected-memory-recipe")), "PLANNED_RECIPE_NOT_COMPILEABLE");
   const rustA = compile("rust-search-a", RECIPES.rustSearch, TASKS.rustSearch, makeExternal("rust-search"));
   const rustB = compile("rust-search-b", RECIPES.rustSearch, TASKS.rustSearch, makeExternal("rust-search"));
   const web = compile("typescript-web", RECIPES.web, TASKS.web, makeExternal("typescript-web"));
