@@ -1,25 +1,15 @@
 import { createHash } from "node:crypto";
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { basename, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import {listReleaseFiles, verifyReleaseSourceIdentity} from "./release-source.mjs";
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 
-async function listFiles(root, current = root) {
-  const output = [];
-  for (const name of (await readdir(current)).sort()) {
-    const absolute = join(current, name);
-    const info = await stat(absolute);
-    if (info.isDirectory()) output.push(...await listFiles(root, absolute));
-    else if (info.isFile()) output.push(absolute);
-  }
-  return output.sort();
-}
-
 export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifest = false } = {}) {
   const root = resolve(coreRoot);
-  const files = await listFiles(join(root, "control"));
+  const files = await listReleaseFiles(join(root, "control"));
   const entries = [];
   for (const absolute of files) {
     const bytes = await readFile(absolute);
@@ -30,9 +20,11 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
     if (!writeManifest) throw error;
   }
   if (existing && JSON.stringify(existing.entries) !== JSON.stringify(entries)) throw new Error("MAIN_CORE_MANIFEST_MISMATCH");
+  let releaseSource = null;
   if (sourceRoot !== null) {
     const requested = resolve(sourceRoot);
     const repositoryRoot = basename(requested) === "control" ? resolve(requested, "..") : requested;
+    releaseSource = verifyReleaseSourceIdentity({repositoryRoot, sourceCommit: existing.source_commit, sourceTree: existing.source_tree});
     const sourceTree = spawnSync("git", ["-C", repositoryRoot, "rev-parse", `${existing.source_commit}^{tree}`], { encoding: "utf8" });
     if (sourceTree.status !== 0 || sourceTree.stdout.trim() !== existing.source_tree) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
     const listed = spawnSync("git", ["-C", repositoryRoot, "ls-tree", "-r", "--name-only", existing.source_commit, "--", "control"], { encoding: "utf8" });
@@ -45,7 +37,7 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
     }
   }
   if (writeManifest) throw new Error("WRITE_MANIFEST_REMOVED_USE_REBIND_MAIN_CORE");
-  return { entry_count: entries.length, source_commit: existing.source_commit, source_tree: existing.source_tree, candidate_commit: existing.candidate_commit, candidate_tree: existing.candidate_tree };
+  return { entry_count: entries.length, source_commit: existing.source_commit, source_tree: existing.source_tree, candidate_commit: existing.candidate_commit, candidate_tree: existing.candidate_tree, release_source: releaseSource };
 }
 
 if (process.argv[1]?.endsWith("verify-main-core.mjs") && process.argv[2]) {

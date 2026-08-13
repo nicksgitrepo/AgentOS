@@ -1,0 +1,21 @@
+{
+  "schema": "agentos.integration.release_source_binding.v1",
+  "version": 1,
+  "status": "BOUND_INACTIVE_RELEASE_CANDIDATE",
+  "activation": "OFF",
+  "entries": [
+    {"path": "integrations/agentos-3/SOURCE_PARITY.md", "sha256": "1aa94777e2d592bb6eaae46ac900a67c58c77cb1e047abdfb48ff14272a9d8fe"},
+    {"path": "integrations/agentos-3/contracts/release-source-policy.v1.json", "sha256": "4cb13ed73ed4e0b74e3a1ba3a75ad421c3aec07731658d822167bd728c072133"},
+    {"path": "integrations/agentos-3/custody.mjs", "sha256": "d9e2d27f85c905863623468694b7c35eff8c39c6ec96166eeb24322b0945e485"},
+    {"path": "integrations/agentos-3/tests/integration-test.mjs", "sha256": "3fcb89bd10300cf1a2972e20f7f856c21b7295815d761a612e3d715a373eb4e7"},
+    {"path": "integrations/agentos-3/tools/build.mjs", "sha256": "5f07f36ab9e4b090c39d46dbf9821b60e5284081e22f41dadc37883eed359cd0"},
+    {"path": "integrations/agentos-3/tools/rebind-main-core.mjs", "sha256": "03d055477f837c0c47bb645c5408cd39ef413579cc64bbfb3bda923cc7456c46"},
+    {"path": "integrations/agentos-3/tools/release-source.mjs", "sha256": "f503f08ada328a18ba7b50e9c59e5eef8296c7bd454e417e24accec9f85fd4c8"},
+    {"path": "integrations/agentos-3/tools/verify-main-core.mjs", "sha256": "66b42cb5cd0092343f4b2676022a92a7fd47117ae4da142bd7fc121d462d7d01"},
+    {"path": "tests/verify-agentos-3-release-candidate.mjs", "sha256": "55c66f96910c11af1f76b7a6ff998b1062469cd9188423005e2ee6da3d86d100"},
+    {"path": "tests/verify-agentos-3-source-parity.mjs", "sha256": "b683617693e06e84d086074b1f2898a5274358c427360c93d174f98f5e53c847"}
+  ],
+  "invalidation": "Any entry digest, release-source identity, non-generated source path, or release-file-type change invalidates this binding and every generated AgentOS 3 bundle.",
+  "migration": "Freeze a new clean source commit/tree, refresh this binding, rebind main-core, rebuild twice, and independently verify before accepting a successor artifact.",
+  "authority": "NO_ACTIVATION_DEPLOYMENT_PUBLICATION_OR_CONSUMER_MUTATION"
+}

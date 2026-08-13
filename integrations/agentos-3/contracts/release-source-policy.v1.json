@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/integration-release-source-policy.v1.json",
+  "title": "AgentOS 3 exact release-source policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "source_commit", "source_tree", "observed_head_commit", "observed_head_tree", "generated_committed_paths", "generated_dirty_paths", "non_generated_drift", "status", "identity_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.integration.release_source_identity.v1"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "observed_head_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "observed_head_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "generated_committed_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "generated_dirty_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "non_generated_drift": {"const": []},
+    "status": {"const": "EXACT_SOURCE_OR_GENERATED_DESCENDANT"},
+    "identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

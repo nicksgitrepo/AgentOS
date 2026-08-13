@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
-import { readdir, readFile, stat, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {listReleaseFiles, verifyReleaseBinding, verifyReleaseSourceIdentity} from "./release-source.mjs";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const REPOSITORY_ROOT = resolve(ROOT, "../..");
@@ -9,25 +10,16 @@ const DIST = join(ROOT, "dist");
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 
-async function files(current = ROOT) {
-  const names = (await readdir(current)).sort();
-  const result = [];
-  for (const name of names) {
-    if (name === "dist") continue;
-    const absolute = join(current, name);
-    const info = await stat(absolute);
-    if (info.isDirectory()) result.push(...await files(absolute));
-    else if (info.isFile()) result.push(absolute);
-  }
-  return result.sort();
-}
+const sourceManifest = JSON.parse(await readFile(join(ROOT, "main-core", "source-manifest.json"), "utf8"));
+const releaseSource = verifyReleaseSourceIdentity({repositoryRoot: REPOSITORY_ROOT, sourceCommit: sourceManifest.source_commit, sourceTree: sourceManifest.source_tree});
+await verifyReleaseBinding({integrationRoot: ROOT});
 
 const entries = [];
 for (const source of [
   {root: ROOT, prefix: ""},
   {root: join(REPOSITORY_ROOT, "schemas"), prefix: "schemas"},
   {root: join(REPOSITORY_ROOT, "specialist-blocks"), prefix: "specialist-blocks"},
-]) for (const absolute of await files(source.root)) {
+]) for (const absolute of (await listReleaseFiles(source.root)).filter((entry) => !entry.startsWith(`${DIST}/`))) {
   const bytes = await readFile(absolute);
   const path = join(source.prefix, relative(source.root, absolute)).split("\\").join("/");
   entries.push({ path, size: bytes.length, sha256: sha256(bytes), bytes_base64: bytes.toString("base64") });
@@ -40,7 +32,9 @@ const manifest = {
   build_id: "AGENTOS_3_TEST_BUILD",
   lifecycle: "CANDIDATE_INACTIVE",
   activation: "OFF",
-  source_base: JSON.parse(await readFile(join(ROOT, "main-core", "source-manifest.json"), "utf8")).candidate_commit,
+  source_base: sourceManifest.candidate_commit,
+  source_tree: sourceManifest.candidate_tree,
+  release_source: releaseSource,
   includes: ["current-main-core", "memory-m2", "agent-builder", "specialist-block-library", "root-schemas"],
   entries: entries.map(({ path, size, sha256: digest }) => ({ path, size, sha256: digest })),
   bundle_sha256: sha256(bundleBytes),

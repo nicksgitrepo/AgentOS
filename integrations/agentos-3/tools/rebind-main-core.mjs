@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {createHash} from "node:crypto";
-import {cp, mkdir, readFile, readdir, rename, rm, stat, writeFile} from "node:fs/promises";
+import {cp, lstat, mkdir, readFile, readdir, rename, rm, writeFile} from "node:fs/promises";
 import {dirname, join, relative, resolve} from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -18,9 +18,11 @@ async function files(root, current = root) {
   const output = [];
   for (const name of (await readdir(current)).sort()) {
     const absolute = join(current, name);
-    const info = await stat(absolute);
+    const info = await lstat(absolute);
+    if (info.isSymbolicLink()) throw new Error(`MAIN_CORE_SOURCE_SYMLINK_FORBIDDEN:${relative(root, absolute)}`);
     if (info.isDirectory()) output.push(...await files(root, absolute));
     else if (info.isFile()) output.push(absolute);
+    else throw new Error(`MAIN_CORE_SOURCE_SPECIAL_FILE_FORBIDDEN:${relative(root, absolute)}`);
   }
   return output.sort();
 }
@@ -31,8 +33,8 @@ function git(...args) {
   return result.stdout.trim();
 }
 
-const status = git("status", "--porcelain");
-if (status.length > 0 && process.env.AGENTOS_REBIND_DIRTY_ACK !== "GENERATED_MAIN_CORE_ONLY") throw new Error("SOURCE_WORKTREE_NOT_CLEAN");
+const status = git("status", "--porcelain", "--untracked-files=all");
+if (status.length > 0) throw new Error("SOURCE_WORKTREE_NOT_CLEAN");
 const commit = git("rev-parse", "HEAD");
 const tree = git("rev-parse", "HEAD^{tree}");
 await rm(STAGE, {recursive: true, force: true});

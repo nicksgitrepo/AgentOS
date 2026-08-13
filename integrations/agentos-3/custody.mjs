@@ -101,10 +101,11 @@ export async function verifyBundle(bundlePathInput) {
   const bundle = JSON.parse(bundleBytes);
   const manifest = JSON.parse(manifestBytes);
   if (!bundleBytes.equals(canonical(bundle)) || !manifestBytes.equals(canonical(manifest))) throw new Error("BUNDLE_OR_MANIFEST_NON_CANONICAL");
-  if (JSON.stringify(Object.keys(bundle).sort()) !== JSON.stringify(["build_id", "entries", "schema"]) || JSON.stringify(Object.keys(manifest).sort()) !== JSON.stringify(["activation", "build_id", "bundle_sha256", "entries", "includes", "lifecycle", "rollback_identity", "schema", "source_base"])) throw new Error("BUNDLE_SCHEMA_INVALID");
+  if (JSON.stringify(Object.keys(bundle).sort()) !== JSON.stringify(["build_id", "entries", "schema"]) || JSON.stringify(Object.keys(manifest).sort()) !== JSON.stringify(["activation", "build_id", "bundle_sha256", "entries", "includes", "lifecycle", "release_source", "rollback_identity", "schema", "source_base", "source_tree"])) throw new Error("BUNDLE_SCHEMA_INVALID");
   if (bundle.schema !== "agentos.integration.bundle.v1" || manifest.schema !== "agentos.integration.manifest.v1") throw new Error("BUNDLE_SCHEMA_INVALID");
   if (JSON.stringify(manifest.includes) !== JSON.stringify(["current-main-core", "memory-m2", "agent-builder", "specialist-block-library", "root-schemas"])) throw new Error("BUNDLE_COMPONENT_SET_INVALID");
   if (bundle.build_id !== "AGENTOS_3_TEST_BUILD" || manifest.lifecycle !== "CANDIDATE_INACTIVE" || manifest.activation !== "OFF" || manifest.rollback_identity !== "AGENTOS_3_TEST_BUILD_ROLLBACK") throw new Error("BUNDLE_LIFECYCLE_INVALID");
+  if (!/^[0-9a-f]{40}$/u.test(manifest.source_base) || !/^[0-9a-f]{40}$/u.test(manifest.source_tree) || manifest.release_source?.source_commit !== manifest.source_base || manifest.release_source?.source_tree !== manifest.source_tree || manifest.release_source?.status !== "EXACT_SOURCE_OR_GENERATED_DESCENDANT" || !/^[0-9a-f]{64}$/u.test(manifest.release_source?.identity_sha256 ?? "")) throw new Error("BUNDLE_RELEASE_SOURCE_INVALID");
   if (manifest.bundle_sha256 !== sha256(bundleBytes)) throw new Error("BUNDLE_DIGEST_MISMATCH");
   if (bundle.build_id !== manifest.build_id || !Array.isArray(bundle.entries) || !Array.isArray(manifest.entries)) throw new Error("BUNDLE_MANIFEST_IDENTITY_MISMATCH");
   const paths = bundle.entries.map((entry) => canonicalPath(entry.path));
