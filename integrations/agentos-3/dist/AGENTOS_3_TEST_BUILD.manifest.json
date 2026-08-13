@@ -3,33 +3,21 @@
   "build_id": "AGENTOS_3_TEST_BUILD",
   "lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
-  "source_base": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
-  "source_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+  "source_base": "72db9a625fddf693add9a18293e510db3fb8c0dd",
+  "source_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
   "release_source": {
     "schema": "agentos.integration.release_source_identity.v1",
-    "source_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
-    "source_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
-    "observed_head_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
-    "observed_head_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+    "source_commit": "72db9a625fddf693add9a18293e510db3fb8c0dd",
+    "source_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
+    "observed_head_commit": "72db9a625fddf693add9a18293e510db3fb8c0dd",
+    "observed_head_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
     "generated_committed_paths": [],
     "generated_dirty_paths": [
-      "integrations/agentos-3/main-core/control/audit-first-import-procedure.mjs",
-      "integrations/agentos-3/main-core/control/bootstrap-compiler.mjs",
-      "integrations/agentos-3/main-core/control/bootstrap-coverage.mjs",
-      "integrations/agentos-3/main-core/control/bootstrap-discovery.mjs",
-      "integrations/agentos-3/main-core/control/composed-project-import.mjs",
-      "integrations/agentos-3/main-core/control/conservative-preservation-policy.mjs",
-      "integrations/agentos-3/main-core/control/context-block-intake.mjs",
-      "integrations/agentos-3/main-core/control/preservation-receipt-intake.mjs",
-      "integrations/agentos-3/main-core/control/project-import.mjs",
-      "integrations/agentos-3/main-core/control/spawn-preparation.mjs",
-      "integrations/agentos-3/main-core/control/spawner-admission-roundtrip.mjs",
-      "integrations/agentos-3/main-core/control/typed-project-evidence-binding.mjs",
       "integrations/agentos-3/main-core/source-manifest.json"
     ],
     "non_generated_drift": [],
     "status": "EXACT_SOURCE_OR_GENERATED_DESCENDANT",
-    "identity_sha256": "22fc96161a6e73a7b82dd0f472f0b1ab3d04284545a7af3b22cf15a67c14ae9b"
+    "identity_sha256": "696b744ae48a09ca67a21116ae6055529b9ecdc8a8e5838bb8aa3c58e5261e76"
   },
   "includes": [
     "current-main-core",
@@ -1362,7 +1350,7 @@
     {
       "path": "main-core/source-manifest.json",
       "size": 36384,
-      "sha256": "2c0ca3f35fec35743979c9edfbf9fa572dbc361cf3009f6cc226a616225506c5"
+      "sha256": "2d3b75df5e035a40aa45db746614b226a06a89ac259b2762bb72403bd0b29b69"
     },
     {
       "path": "memory-adapter.mjs",
@@ -23990,6 +23978,6 @@
       "sha256": "66b42cb5cd0092343f4b2676022a92a7fd47117ae4da142bd7fc121d462d7d01"
     }
   ],
-  "bundle_sha256": "815d4d6c134df796b4f0c9d7c9b52a3248b8b6873332842f3b248a5f10e18197",
+  "bundle_sha256": "459bb9022ffe07fe31b39f1afa67b6cc4f3c5e11adb192526e2565c081f627f6",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

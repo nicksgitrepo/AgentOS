@@ -1,9 +1,9 @@
 {
   "schema": "agentos.integration.main-core-manifest.v2",
-  "source_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
-  "source_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
-  "candidate_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
-  "candidate_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+  "source_commit": "72db9a625fddf693add9a18293e510db3fb8c0dd",
+  "source_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
+  "candidate_commit": "72db9a625fddf693add9a18293e510db3fb8c0dd",
+  "candidate_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
   "entries": [
     {
       "path": "control/README.md",
