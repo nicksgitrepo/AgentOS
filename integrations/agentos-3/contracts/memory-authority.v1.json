@@ -1,0 +1,82 @@
+{
+  "schema": "agentos.integration.memory-authority-contract.v1",
+  "version": 1,
+  "status": "P0_CANDIDATE_INACTIVE",
+  "activation": "OFF",
+  "canonical_taxonomy": [
+    "EPISODIC",
+    "SEMANTIC",
+    "PROCEDURAL",
+    "GOVERNANCE",
+    "WORKING_TASK"
+  ],
+  "mapping_version": "agentos.memory.category-map.v1",
+  "source_mappings": {
+    "LEGACY_PROJECT_MEMORY": {
+      "PROJECT_CONTEXT": "SEMANTIC",
+      "GOAL": "WORKING_TASK",
+      "DECISION": "GOVERNANCE",
+      "REPOSITORY_MAP_REF": "SEMANTIC",
+      "HANDOFF": "WORKING_TASK",
+      "POLICY_REF": "GOVERNANCE",
+      "INVALIDATION": "GOVERNANCE",
+      "CONFLICT": "GOVERNANCE"
+    },
+    "MEMORY_M2": {
+      "decision": "GOVERNANCE",
+      "fact": "SEMANTIC",
+      "procedure": "PROCEDURAL",
+      "lesson": "SEMANTIC",
+      "evidence": "EPISODIC",
+      "reference": "SEMANTIC"
+    }
+  },
+  "mapping_rule": "Every known source category maps exactly once and retains source_system plus source_category; unknown, omitted, conflicting, or canonical-only reverse mappings fail closed.",
+  "authority": {
+    "rule": "Exactly one of LEGACY_PROJECT_MEMORY and MEMORY_M2 is AUTHORITATIVE for one project_ref at one authority epoch.",
+    "m2_selection": {"legacy_project_memory": "DISABLED", "memory_m2": "AUTHORITATIVE"},
+    "legacy_selection": {"legacy_project_memory": "AUTHORITATIVE", "memory_m2": "DISABLED"},
+    "binding_schema": "schemas/memory-authority-binding.v1.json",
+    "m2_binding_event": "MEMORY_AUTHORITY_BOUND",
+    "external_readback_required_per_adapter_call": true,
+    "co_authority": "FORBIDDEN"
+  },
+  "adapter": {
+    "controller": "integrations/agentos-3/memory-adapter.mjs",
+    "authority_controller": "integrations/agentos-3/memory-authority.mjs",
+    "surface_schema": "schemas/agentos-3-memory-adapter-surface.v1.json",
+    "category_mapping_schema": "schemas/memory-category-mapping.v1.json",
+    "available": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery"],
+    "fail_closed_not_implemented": ["migration", "handoff_journal", "successor_transfer"]
+  },
+  "migration": {
+    "current_mode": "NONE",
+    "status": "PLAN_ONLY_FAIL_CLOSED_NOT_IMPLEMENTED",
+    "future_required_sequence": [
+      "FREEZE_SOURCE_READ_ONLY",
+      "MAP_EVERY_SOURCE_CATEGORY_AND_PRESERVE_SOURCE_IDENTITY",
+      "VERIFY_ZERO_UNMAPPED_ZERO_LOSSY_ZERO_CONFLICT",
+      "INVALIDATE_SOURCE_DERIVED_PROJECTIONS",
+      "OWNER_AUTHORIZES_SINGLE_AUTHORITY_SWITCH",
+      "ACTIVATE_TARGET_ONLY_AFTER_SOURCE_IS_NON_AUTHORITATIVE"
+    ],
+    "forbidden": ["DUAL_WRITE", "PARTIAL_SWITCH", "INFERRED_CATEGORY", "SILENT_DROP"]
+  },
+  "invalidation": {
+    "source_record_invalidated": "INVALIDATE_DESCENDANT_CLOSURE_AND_REBUILD_DERIVED_PROJECTIONS",
+    "category_map_changed": "INVALIDATE_ALL_MAPPED_PROJECTIONS_AND_REQUIRE_EXPLICIT_RECLASSIFICATION",
+    "authority_binding_changed": "STOP_WRITES_AND_REQUIRE_A_NEW_EXCLUSIVE_BINDING_EPOCH",
+    "migration_aborted": "TARGET_REMAINS_NON_AUTHORITATIVE_AND_STAGED_OUTPUT_IS_INVALIDATED",
+    "unknown_or_conflicting_input": "FAIL_CLOSED_WITHOUT_WRITING"
+  },
+  "proof_ceiling": [
+    "INDEPENDENT_MEMORY_AUTHORITY_CLEARANCE",
+    "REAL_DATA_MIGRATION",
+    "HANDOFF_JOURNAL",
+    "SUCCESSOR_TRANSFER",
+    "CONSUMER_ADOPTION",
+    "PROVIDER_ACTIVATION",
+    "RELEASE_PROMOTION",
+    "PUBLIC_RELEASE"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory.authority_binding.v1",
+  "title": "AgentOS exclusive project memory-authority binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "project_ref",
+    "control_plane_ref",
+    "memory_project_id",
+    "authority_epoch",
+    "selected_authority",
+    "authorities",
+    "mapping_version",
+    "migration",
+    "activation",
+    "authority_effect",
+    "binding_digest"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.memory.authority_binding.v1"},
+    "version": {"const": 1},
+    "project_ref": {"type": "string", "pattern": "^ref_[a-z0-9]{32}$"},
+    "control_plane_ref": {"type": "string", "pattern": "^ref_[a-z0-9]{32}$"},
+    "memory_project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "authority_epoch": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "selected_authority": {"enum": ["LEGACY_PROJECT_MEMORY", "MEMORY_M2"]},
+    "authorities": {"$ref": "#/$defs/authorities"},
+    "mapping_version": {"const": "agentos.memory.category-map.v1"},
+    "migration": {"$ref": "#/$defs/migration"},
+    "activation": {"const": "TEST_ONLY"},
+    "authority_effect": {"const": "ONE_PROJECT_ONE_MEMORY_AUTHOR"},
+    "binding_digest": {"type": "string", "pattern": "^sha256:[a-z2-7]{52}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"selected_authority": {"const": "MEMORY_M2"}}},
+      "then": {"properties": {"authorities": {"const": {"legacy_project_memory": "DISABLED", "memory_m2": "AUTHORITATIVE"}}}}
+    },
+    {
+      "if": {"properties": {"selected_authority": {"const": "LEGACY_PROJECT_MEMORY"}}},
+      "then": {"properties": {"authorities": {"const": {"legacy_project_memory": "AUTHORITATIVE", "memory_m2": "DISABLED"}}}}
+    }
+  ],
+  "$defs": {
+    "authorities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legacy_project_memory", "memory_m2"],
+      "properties": {
+        "legacy_project_memory": {"enum": ["DISABLED", "AUTHORITATIVE"]},
+        "memory_m2": {"enum": ["DISABLED", "AUTHORITATIVE"]}
+      }
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "source_authority",
+        "source_head_ref",
+        "target_head_ref",
+        "unmapped_categories",
+        "invalidation_status"
+      ],
+      "properties": {
+        "mode": {"const": "NONE"},
+        "source_authority": {"type": "null"},
+        "source_head_ref": {"type": "null"},
+        "target_head_ref": {"type": "null"},
+        "unmapped_categories": {"const": []},
+        "invalidation_status": {"const": "NOT_REQUIRED"}
+      }
+    }
+  }
+}

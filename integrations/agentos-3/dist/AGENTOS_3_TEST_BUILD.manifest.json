@@ -19,8 +19,8 @@
     },
     {
       "path": "CURRENT_STATE.md",
-      "size": 3834,
-      "sha256": "2c3a6c1bf278a9d573265f4bef1ac2b2b8c44ed5069f9b14b33be0d46fd0fb72"
+      "size": 4542,
+      "sha256": "51623b7750f2ae938eebb78039446542b3650de1970c969065d7dc52935f17f1"
     },
     {
       "path": "agent-builder-adapter.mjs",
@@ -194,8 +194,8 @@
     },
     {
       "path": "bootstrap.mjs",
-      "size": 1514,
-      "sha256": "a33a2e3dd362f806e9d48f0a4cb26a57a5a6aa2c8748a8cff79990af5dd26dd4"
+      "size": 1749,
+      "sha256": "17d69fe534ece84b1ad6478243c4e23673b063352b9e34bf8c47f63eec95e16a"
     },
     {
       "path": "contracts/agent-builder-candidate-receipt.json",
@@ -209,13 +209,23 @@
     },
     {
       "path": "contracts/agentos-3-integration.v1.json",
-      "size": 4667,
-      "sha256": "12dc16d661b866dd9d641d35571fca81dcc28c5e7b81a247ea78bbf4f12e5ed9"
+      "size": 5897,
+      "sha256": "40ea7965f1f0f88e00bee7205643c8d63b33dd084ed3353916a0ebc6649310d6"
     },
     {
       "path": "contracts/compatibility-map.v1.json",
-      "size": 1389,
-      "sha256": "e5efbc92c00637c0d8826be91cfd0985b79ec830a801bb35c0cbcabbaeb9332d"
+      "size": 2081,
+      "sha256": "052c308159487096a2c109e936bc53517fe00351e6389948db9f105dbf0dd447"
+    },
+    {
+      "path": "contracts/memory-authority-binding.v1.json",
+      "size": 3421,
+      "sha256": "f096f4f1166a50bf8e6ab61bf31df9487f79f005a7d06437f6feb083bd4442ca"
+    },
+    {
+      "path": "contracts/memory-authority.v1.json",
+      "size": 3366,
+      "sha256": "4768fd8ef3ea73fc1af9b308df5340c748d8c8c3e52f9675ce35f07083217519"
     },
     {
       "path": "contracts/specialist-independent-clearance.v1.json",
@@ -224,8 +234,8 @@
     },
     {
       "path": "contracts/test-build-receipt.json",
-      "size": 4035,
-      "sha256": "3287946d1f23b027921882e3a23b7d7d9378ebee4612a7a2783ae19905cf1843"
+      "size": 4574,
+      "sha256": "2dc9699cf11aab667e3358c27f4dfa8c46d4027f639c817296d7e2f58e08f806"
     },
     {
       "path": "custody.mjs",
@@ -241,6 +251,11 @@
       "path": "fixtures/normalization-generic.json",
       "size": 155,
       "sha256": "24b82c3920051cb70a3615cdf1a84427b55f3f2ad00998134cb9a2cbdcc555a9"
+    },
+    {
+      "path": "governance/memory-authority.v1.md",
+      "size": 4221,
+      "sha256": "0e47dda3c75cba0dc922b5188f51016fea46cd04e8ea90404f300a33caf090e3"
     },
     {
       "path": "install.mjs",
@@ -1284,8 +1299,13 @@
     },
     {
       "path": "memory-adapter.mjs",
-      "size": 2304,
-      "sha256": "540ba9459ae55745ef3207d9aa308642f8bd69c079f59827d8ec33320e929bf3"
+      "size": 9103,
+      "sha256": "b1a942deed75570776974a527d4efebe737093f34f9310b4d1a89e3e7eee0981"
+    },
+    {
+      "path": "memory-authority.mjs",
+      "size": 12739,
+      "sha256": "7a07734d79ba3f2d18af437b7bc2c09c3974ebe987b49f1b0f6f74a93bd1568d"
     },
     {
       "path": "memory-m2/LICENSE",
@@ -1418,6 +1438,11 @@
       "sha256": "8ac5ebac2bd07729ba984272d92d0751344475c6b052ffaea2ca5d9a38b49b36"
     },
     {
+      "path": "schemas/agentos-3-memory-adapter-surface.v1.json",
+      "size": 2149,
+      "sha256": "554adabb4314ba0e9424cdce1f3950cdca21c7df65698a9b6303d97171068243"
+    },
+    {
       "path": "schemas/agentos-controller.v1.json",
       "size": 5841,
       "sha256": "30977a30eb8c2f8faa01f108e77d42b86cd9455caf5c2ec1b0bb83fd7fed44e1"
@@ -1508,6 +1533,11 @@
       "sha256": "07d1cee782bcca19ae0ae31e9e9a29721f99f83af5e9a536faddfe1fcae2b1cf"
     },
     {
+      "path": "schemas/audit-first-import-procedure.v1.json",
+      "size": 1392,
+      "sha256": "216a9b1df90c9870edfe72b1537fb44b01f897351227e080b1683509f3e732ed"
+    },
+    {
       "path": "schemas/audit-repair-integration-state.v1.json",
       "size": 6212,
       "sha256": "d0530de190059b132c55771d9d75b7ea72c8cc406b687aa1d17bd34fcca2c875"
@@ -1529,8 +1559,8 @@
     },
     {
       "path": "schemas/bootstrap-binding.v1.json",
-      "size": 102834,
-      "sha256": "c80695531d4b46ef45513db3c2785244bfda379f756f946869c1d71c7de30cbd"
+      "size": 112987,
+      "sha256": "204204d44a580fb79dae671a39a2cf384ab39c4c9d74ac54152a6ba3b1e935ea"
     },
     {
       "path": "schemas/bootstrap-compile-receipt.v1.json",
@@ -1559,8 +1589,8 @@
     },
     {
       "path": "schemas/bootstrap-discovery.v1.json",
-      "size": 2643,
-      "sha256": "4fec273638e0468e5c023f6cc75c7ee5e976b0872c24bca9cd38f5bdb00f3969"
+      "size": 2734,
+      "sha256": "3c4eee71e57e2eb88dd065a9afa3c5a14783f1e62faf49e538f4149e376dae36"
     },
     {
       "path": "schemas/bootstrap-interview.v1.json",
@@ -1589,8 +1619,8 @@
     },
     {
       "path": "schemas/bootstrap-start.v1.json",
-      "size": 2080,
-      "sha256": "fd0faec444d345524cbbd8a6e8c1872751fb0fa966b8d51664f35cafc051ceeb"
+      "size": 2425,
+      "sha256": "5dd04ed1fef7750b34e34df1d08779f9a73f13d232e3c5a13fcff9df99abebd8"
     },
     {
       "path": "schemas/boundary-contract.v1.json",
@@ -1661,6 +1691,26 @@
       "path": "schemas/cascade-economics.v1.json",
       "size": 3270,
       "sha256": "2979eb5859bc9ea302f6cb4f2d647009663a02055c447c4af34df222c2625468"
+    },
+    {
+      "path": "schemas/composed-project-import.v1.json",
+      "size": 5444,
+      "sha256": "960ca35d19ea01d4f4fc36a8caa34b60222ddef39474417ad8aa476319ed0442"
+    },
+    {
+      "path": "schemas/composed-source-preservation.v1.json",
+      "size": 4829,
+      "sha256": "06fe58b8318f29b6a1e7b796846fd607a4f81d3941d4fb9f5f3a26ce01ef5e55"
+    },
+    {
+      "path": "schemas/conservative-source-preservation-policy.v1.json",
+      "size": 1532,
+      "sha256": "4acc0195e6c58e623f7c4e9874432ec75f08a8c2b59d83822ceefe6c8772f2b3"
+    },
+    {
+      "path": "schemas/context-block-intake.v1.json",
+      "size": 10058,
+      "sha256": "cd17eb2afd89753295525123192fe305fab54e71f2b91702ca402e8fad9d30df"
     },
     {
       "path": "schemas/continuous-audit-sentinel.v1.json",
@@ -1933,6 +1983,16 @@
       "sha256": "b0d66b31aae1326c293ed7b39ef0a06a083f19b3b1f4f5c681f3908bbdfc8b34"
     },
     {
+      "path": "schemas/memory-authority-binding.v1.json",
+      "size": 2759,
+      "sha256": "f1254c488ce5523a474ea577869b41b10fa337e7f331f7114562e3b9bf26773b"
+    },
+    {
+      "path": "schemas/memory-category-mapping.v1.json",
+      "size": 3714,
+      "sha256": "487b6341c85a486012caade07c4d3a0d526614e0f56b642e35e16982a19f5de5"
+    },
+    {
       "path": "schemas/naming-and-terminology.v1.json",
       "size": 9190,
       "sha256": "e7b678c7480bf2bb92084a05173377553cb62715cf13b9a393523434d1a445fb"
@@ -2068,6 +2128,11 @@
       "sha256": "d8595c4e489ce8abcf4153134bebdcf996afe69502caa592f9dfe6ce6f966ef8"
     },
     {
+      "path": "schemas/preservation-receipt-intake.v1.json",
+      "size": 2707,
+      "sha256": "5c67b1a4ef23269440782b0add0d57a959ed5e305ae4a89e3a60babca6006701"
+    },
+    {
       "path": "schemas/privacy-public-projection.v1.json",
       "size": 2241,
       "sha256": "a0b7534d055929834c750e965b1971f93a3c20f540c61e5eeea7e22a7d05791b"
@@ -2134,8 +2199,8 @@
     },
     {
       "path": "schemas/project-import.v1.json",
-      "size": 4290,
-      "sha256": "1cf58430d1a34f0b57a368461936ce5d0bc8a3916e2e72928085d25afde03aa2"
+      "size": 4832,
+      "sha256": "137ea4fd03b73bfbeeb92ca756e7176011dbc88e8c6e110eb90a2db6b0ebb087"
     },
     {
       "path": "schemas/project-life-contract.v1.json",
@@ -2301,6 +2366,16 @@
       "path": "schemas/scheduler-admission-receipt.v1.json",
       "size": 1552,
       "sha256": "7c2529c84ef4b70a0c1c9eb8963f7d33a0c29bcbdae64b4a2d7575a8f716fcd2"
+    },
+    {
+      "path": "schemas/spawn-preparation.v1.json",
+      "size": 3058,
+      "sha256": "ee4114a8a9740b733dff905412f95fdd9832ed120334f67471b30b766844938c"
+    },
+    {
+      "path": "schemas/spawner-admission-roundtrip.v1.json",
+      "size": 4919,
+      "sha256": "f65161bfdcefdba13746b70650c97331fd9925d62dbe792dcde09e8d1c565f78"
     },
     {
       "path": "schemas/specialist-agent-plan.v1.json",
@@ -2471,6 +2546,16 @@
       "path": "schemas/task-run-loop.v1.json",
       "size": 3175,
       "sha256": "c39973b75266fe6bcb1a98dd3aebe7b09240abdd26780f21bdf410cb3dddde6b"
+    },
+    {
+      "path": "schemas/typed-project-evidence-binding.v1.json",
+      "size": 597,
+      "sha256": "2e046249582f1bc78f0ed3da4938b82cce66b0fd4755bdc7f8a6911f35da8c00"
+    },
+    {
+      "path": "schemas/typed-project-evidence-receipt.v1.json",
+      "size": 1448,
+      "sha256": "92eefc0d95cfa9c69f7d93c0663c3c11c8a29e26596bbd2e582f830d51a3a921"
     },
     {
       "path": "schemas/universal-response-handoff.v1.json",
@@ -23819,8 +23904,13 @@
     },
     {
       "path": "tests/integration-test.mjs",
-      "size": 11344,
-      "sha256": "753e40aa003a13204a21860977481e31fbac37d32e24786a12911ae5a590c381"
+      "size": 12395,
+      "sha256": "fb80aca13bef517ecaac233a498f11b2fa00f1e22ea0cc2fcbf0520ee026885e"
+    },
+    {
+      "path": "tests/memory-authority-test.mjs",
+      "size": 13165,
+      "sha256": "2912e0d40df2e44a597e2d9e9dd7f17d2a943122da10f712aa406649bd84c30a"
     },
     {
       "path": "tests/real-host-proof.mjs",
@@ -23853,6 +23943,6 @@
       "sha256": "87218cb6394663c3ed1726b2c4a9e06897e201ad150350eea3f6ddfae3787486"
     }
   ],
-  "bundle_sha256": "dd642d7475cf04f6760c6fc6bb8c8c7365de939a21844846b1024be63642c08f",
+  "bundle_sha256": "9d929c54dacfe260be91c224d5cbcd84a9c06d93768ccb911cf893c88173401d",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

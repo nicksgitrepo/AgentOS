@@ -26,19 +26,22 @@ for (const feature of inventory.features) {
     assert.ok(existsSync(join(root, source)), `${feature.feature_id} source is missing: ${source}`);
   }
 }
-assert.equal(receipt.disposition, "INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE");
+assert.equal(receipt.disposition, "MEMORY_AUTHORITY_P0_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE");
 assert.equal(receipt.proof.real_host_new_project, "PASS_INSTALLED_BOOTSTRAP_READ_ONLY_ZERO_TRACE_ROLLBACK");
 assert.equal(receipt.proof.real_host_import_adoption, "PASS_INSTALLED_BOOTSTRAP_READ_ONLY_ZERO_TRACE_ROLLBACK");
-assert.equal(receipt.proof.memory_authority, "PASS_M2_ONLY_EXPOSED_ROOT_PROJECT_MEMORY_PRESERVED_OFF");
+assert.equal(receipt.proof.memory_authority, "PASS_P0_EXCLUSIVE_SIGNED_BINDING_LEGACY_DISABLED");
+assert.equal(receipt.proof.memory_taxonomy_mapping, "PASS_FIVE_TYPES_8_LEGACY_6_M2_TOTAL_LOSSLESS_UNKNOWN_DENIED");
+assert.equal(receipt.proof.memory_authority_independent_clearance, "NOT_RUN");
 assert.equal(receipt.proof.specialist_roster_materialization, "PASS_620_COMPILEABLE_ONE_PROTECTED_EXTERNAL");
 assert.equal(contract.lifecycle, "CANDIDATE_INACTIVE");
 assert.equal(contract.activation, "OFF");
 assert.ok(!contract.proof_ceiling.includes("independent_utility_harm_evaluation"));
 assert.ok(contract.proof_ceiling.includes("provider_model_quality_evaluation_at_activation"));
+assert.ok(contract.proof_ceiling.includes("memory_authority_independent_clearance"));
 assert.ok(!contract.proof_ceiling.includes("real_host_new_project"));
-assert.equal(manifest.entries.length, 4768);
+assert.equal(manifest.entries.length, 4786);
 assert.equal(manifest.activation, "OFF");
 assert.equal(manifest.lifecycle, "CANDIDATE_INACTIVE");
 assert.equal(manifest.bundle_sha256, digest(readFileSync(bundlePath)));
 
-console.log("PASS AgentOS 3.0 completion coverage: 37 capabilities, 12 governance lanes, 3 platform projections, real-host zero-trace proof, inactive release boundary");
+console.log("PASS AgentOS 3.0 completion coverage: inactive memory-authority P0 is bound and pending independent clearance");
