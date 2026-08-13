@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/typed-project-evidence-binding.v1.json",
+  "title": "AgentOS typed project-context evidence binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["path", "sha256", "classification", "current_portable_kernel_input"],
+  "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "classification": {"const": "TYPED_PROJECT_CONTEXT_EVIDENCE"},
+    "current_portable_kernel_input": {"const": false}
+  }
+}

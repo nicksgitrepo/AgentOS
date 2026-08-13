@@ -4,6 +4,14 @@
   "release_candidate": "2.1rc",
   "status": "PREPARED_NOT_ACTIVATED",
   "normative": {
+    "typed_project_evidence_binding_contract": {
+      "path": "schemas/typed-project-evidence-binding.v1.json",
+      "sha256": "2e046249582f1bc78f0ed3da4938b82cce66b0fd4755bdc7f8a6911f35da8c00"
+    },
+    "typed_project_evidence_binding_governance": {
+      "path": "governance/2.1rc/typed-project-evidence-binding.md",
+      "sha256": "018cc31b4d0c2b4972eb83e673fb3f520a1378f0a9251f8115d9b4f081ec3752"
+    },
     "user_readme": {
       "path": "README.md",
       "sha256": "e502b970a2647e59bf1623afb0aa415c276018cc50b2d9ca4b3c468ee377ceb7"
@@ -176,10 +184,6 @@
       "path": "tests/verify-conservative-source-preservation.mjs",
       "sha256": "d54539d99c65b4e049aea119a1d045993ffa28dfdd804d535cccd2a53d6a9468"
     },
-    "bootstrap_conservative_preservation_checkpoint": {
-      "path": "docs/bootstrap-conservative-preservation-checkpoint-2026-08-13.md",
-      "sha256": "19a9096a3019813a90fc83bfa04c1603a4ccf26c1c16a28c0a83d984150eb5f4"
-    },
     "preservation_receipt_intake_controller": {
       "path": "control/preservation-receipt-intake.mjs",
       "sha256": "06fbe1b37098a916b483e42b76fb0dad85ca7eb74319955d6bee6295be9b10b0"
@@ -242,7 +246,7 @@
     },
     "composed_project_import_verifier": {
       "path": "tests/verify-composed-project-import.mjs",
-      "sha256": "7e81137ef3187ca22340c01c10b0ffd84c47f24b4fc6dd7b656ba39ddfa6d6b3"
+      "sha256": "0c60178adb02519955b795fed279b33342371dbc978c876bcaa8941c579ccf93"
     },
     "spawn_preparation_controller": {
       "path": "control/spawn-preparation.mjs",
@@ -280,18 +284,6 @@
       "path": "tests/verify-spawner-admission-roundtrip.mjs",
       "sha256": "a7578491f8c3958d505ba04f002af508a3c5fda580f670a43972638b12efdcdb"
     },
-    "bootstrap_spawner_synthetic_roundtrip_checkpoint": {
-      "path": "docs/bootstrap-spawner-synthetic-roundtrip-2026-08-13.md",
-      "sha256": "395603e8a1be08e40c00a443074ce2e29239f812bd75ea0f24e39cc1c3ab2794"
-    },
-    "bootstrap_source_composition_breakpoint": {
-      "path": "docs/bootstrap-source-composition-breakpoint-2026-08-13.md",
-      "sha256": "da09601d3d03d93fe45b99a98658aaf3ae7f1cdbe5131c79a75ddd3a3d050f61"
-    },
-    "bootstrap_composed_plan_readback": {
-      "path": "docs/bootstrap-composed-plan-readback-2026-08-13.md",
-      "sha256": "52fd1cded4a9ec187989e95a02c1e54fe899ec4c61012057e568505f4913a61f"
-    },
     "composed_source_preservation_contract": {
       "path": "schemas/composed-source-preservation.v1.json",
       "sha256": "06fe58b8318f29b6a1e7b796846fd607a4f81d3941d4fb9f5f3a26ce01ef5e55"
@@ -302,15 +294,11 @@
     },
     "composed_source_preservation_verifier": {
       "path": "tests/verify-composed-source-preservation.mjs",
-      "sha256": "c4c5568e8e9665f93af7d1626e93b93e225df4c9d170b9de5b1e3f3d90bbe46e"
+      "sha256": "b4d4190a3484262c2960bd8c1feedc112f06bb6b2197b472134e2eb35cf490be"
     },
     "bootstrap_preservation_plan_breakpoint": {
       "path": "docs/bootstrap-preservation-plan-breakpoint-2026-08-13.md",
       "sha256": "54718b5425b31566d35919e31daaa94933af0cb9b7fe193034120469077cbb91"
-    },
-    "bootstrap_preservation_plan_readback": {
-      "path": "docs/bootstrap-preservation-readback-2026-08-13.md",
-      "sha256": "5e8a78b763ba7dc6e5727f00704f15656d915fc73ca4ab2d9b2e95a74e297e44"
     },
     "audit_first_import_controller": {
       "path": "control/audit-first-import-procedure.mjs",
@@ -1374,7 +1362,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "9b4926dc301b4b5be603664c88cb4f6eaeaffc4d24fc30b827a28220c8caed73"
+      "sha256": "900d7689d6d6cbfe1a37a873668477bcaa705f92083892c9b687ce7ec8688108"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
@@ -2039,6 +2027,44 @@
     "roadmap_amendment": {
       "path": "docs/roadmap.md",
       "sha256": "a7acbd58e99b031ce64cbc612956302262e5b0540cd2ce36862dfbbdc0c507c9"
+    }
+  },
+  "typed_project_evidence": {
+    "bootstrap_conservative_preservation_checkpoint": {
+      "path": "docs/bootstrap-conservative-preservation-checkpoint-2026-08-13.md",
+      "sha256": "19a9096a3019813a90fc83bfa04c1603a4ccf26c1c16a28c0a83d984150eb5f4",
+      "classification": "TYPED_PROJECT_CONTEXT_EVIDENCE",
+      "current_portable_kernel_input": false
+    },
+    "bootstrap_spawner_synthetic_roundtrip_checkpoint": {
+      "path": "docs/bootstrap-spawner-synthetic-roundtrip-2026-08-13.md",
+      "sha256": "395603e8a1be08e40c00a443074ce2e29239f812bd75ea0f24e39cc1c3ab2794",
+      "classification": "TYPED_PROJECT_CONTEXT_EVIDENCE",
+      "current_portable_kernel_input": false
+    },
+    "bootstrap_source_composition_breakpoint": {
+      "path": "docs/bootstrap-source-composition-breakpoint-2026-08-13.md",
+      "sha256": "da09601d3d03d93fe45b99a98658aaf3ae7f1cdbe5131c79a75ddd3a3d050f61",
+      "classification": "TYPED_PROJECT_CONTEXT_EVIDENCE",
+      "current_portable_kernel_input": false
+    },
+    "bootstrap_composed_plan_readback": {
+      "path": "docs/bootstrap-composed-plan-readback-2026-08-13.md",
+      "sha256": "52fd1cded4a9ec187989e95a02c1e54fe899ec4c61012057e568505f4913a61f",
+      "classification": "TYPED_PROJECT_CONTEXT_EVIDENCE",
+      "current_portable_kernel_input": false
+    },
+    "bootstrap_preservation_plan_readback": {
+      "path": "docs/bootstrap-preservation-readback-2026-08-13.md",
+      "sha256": "5e8a78b763ba7dc6e5727f00704f15656d915fc73ca4ab2d9b2e95a74e297e44",
+      "classification": "TYPED_PROJECT_CONTEXT_EVIDENCE",
+      "current_portable_kernel_input": false
+    },
+    "bootstrap_typed_project_evidence_checkpoint": {
+      "path": "docs/bootstrap-typed-project-evidence-checkpoint-2026-08-13.md",
+      "sha256": "905ea2544b0b43d3e7114ccac4184cdd259010fc140f89daa7e1acb8556bcf67",
+      "classification": "TYPED_PROJECT_CONTEXT_EVIDENCE",
+      "current_portable_kernel_input": false
     }
   },
   "compatibility_only": {

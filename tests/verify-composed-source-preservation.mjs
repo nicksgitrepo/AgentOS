@@ -17,7 +17,7 @@ const source = (id, role, letter) => ({
   role,
   commit: git(letter),
   tree: git(letter),
-  branch: `codex/${role.toLowerCase()}`,
+  branch: `agentos/${role.toLowerCase()}`,
   remote_refs: [`https://example.invalid/${id}.git`],
   dirty_state: {
     status: "DIRTY",

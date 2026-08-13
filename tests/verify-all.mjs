@@ -104,6 +104,11 @@ const nativeSessionContract = JSON.parse(read("schemas/native-session-team.v1.js
 assert.equal(nativeSessionContract.rules.execution_mode_binding.PROJECT_LOCAL_SESSION.includes("environment type local"), true);
 assert.equal(nativeSessionContract.rules.execution_mode_binding.ISOLATED_WORKTREE.includes("environment type worktree"), true);
 for (const [name, entry] of Object.entries(binding.normative)) assertBoundFile(entry, `normative ${name}`);
+for (const [name, entry] of Object.entries(binding.typed_project_evidence ?? {})) {
+  assertBoundFile(entry, `typed project evidence ${name}`);
+  assert.equal(entry.classification, "TYPED_PROJECT_CONTEXT_EVIDENCE", `typed project evidence ${name} is not classified`);
+  assert.equal(entry.current_portable_kernel_input, false, `typed project evidence ${name} leaks into the portable kernel`);
+}
 for (const [name, entry] of Object.entries(binding.compatibility_only)) {
   if (entry && typeof entry === "object" && !Array.isArray(entry) && entry.path) assertBoundFile(entry, `compatibility ${name}`);
 }

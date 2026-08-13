@@ -17,7 +17,7 @@ const source = (id, role, letter, modified, untracked, worktrees) => ({
   role,
   commit: git(letter),
   tree: git(String.fromCharCode(letter.charCodeAt(0) + 1)),
-  branch: `codex/${role}`,
+  branch: `agentos/${role}`,
   remote_refs: [`https://example.invalid/${id}.git`],
   dirty_state: {
     status: modified || untracked ? "DIRTY" : "CLEAN",
