@@ -6,6 +6,11 @@ The machine-readable source of the full backlog is
 `recipe-catalog.v1.json`. The compiled canonical block roster and routing index
 are generated only after package validation.
 
+The current fail-closed release audit is
+`release-audit.v1.json`. A listed role is not spawnable merely because it has a
+stable address; only an independently accepted, dependency-complete recipe may
+enter spawn preparation.
+
 ## Status and activation
 
 - `2.1rc`: prepared, not activated.
@@ -66,7 +71,7 @@ explicitly non-compileable, and require a role-specific block with its own
 source lock, twelve gates, hostile fixtures, independent evaluation, and
 admission receipt. The protected Memory lane is retained as `NOT_APPLICABLE`
 and external-only. The catalog preserves all `10` alias mappings and is
-content-addressed by `e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74`.
+content-addressed by `765ae656b91e8c12b5c5a98bbe9ecc31eef786eb8b7ab5c1baaf5025b033a604`.
 
 ## Source-locked standard candidates
 
