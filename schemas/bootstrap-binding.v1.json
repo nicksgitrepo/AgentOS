@@ -158,7 +158,7 @@
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
-      "sha256": "a315fdd3e40f90878a9d2ba3c54b74d0926027777b6dcaf470bb790f915ecc74"
+      "sha256": "810165c3e9f3ffe6dcd72669d185b669972c5a2b388c39a8e235232a74f4031f"
     },
     "conservative_preservation_policy_controller": {
       "path": "control/conservative-preservation-policy.mjs",
@@ -179,6 +179,26 @@
     "bootstrap_conservative_preservation_checkpoint": {
       "path": "docs/bootstrap-conservative-preservation-checkpoint-2026-08-13.md",
       "sha256": "19a9096a3019813a90fc83bfa04c1603a4ccf26c1c16a28c0a83d984150eb5f4"
+    },
+    "preservation_receipt_intake_controller": {
+      "path": "control/preservation-receipt-intake.mjs",
+      "sha256": "06fbe1b37098a916b483e42b76fb0dad85ca7eb74319955d6bee6295be9b10b0"
+    },
+    "preservation_receipt_intake_contract": {
+      "path": "schemas/preservation-receipt-intake.v1.json",
+      "sha256": "5c67b1a4ef23269440782b0add0d57a959ed5e305ae4a89e3a60babca6006701"
+    },
+    "preservation_receipt_intake_article": {
+      "path": "governance/2.1rc/preservation-receipt-intake.md",
+      "sha256": "4e9531297c28501115fd29223538004836270efbc96d087333d8e7523c65f46d"
+    },
+    "preservation_receipt_intake_verifier": {
+      "path": "tests/verify-preservation-receipt-intake.mjs",
+      "sha256": "35950f82944a1d828dff6d45516b2a4fa90afb807796b530ecb12e33a5e255bf"
+    },
+    "bootstrap_preservation_receipt_intake_checkpoint": {
+      "path": "docs/bootstrap-preservation-receipt-intake-2026-08-13.md",
+      "sha256": "44cb3f464dd243906e6132556f820e933acc1bc1ed3cb27b29f0ca2fb7e42cee"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",

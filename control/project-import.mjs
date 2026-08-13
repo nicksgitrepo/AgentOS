@@ -278,25 +278,26 @@ function publicFiles(entries) {
 }
 
 function sourceObservation(source, collected) {
+  const contentBody = {included_files: publicFiles(collected.included), excluded_paths: collected.excluded};
+  if (collected.symlinks.length > 0) contentBody.symlink_files = collected.symlinks;
   const body = {
     source_root_ref: opaqueSchedulerWorktreeRef(source),
-    source_content_sha256: canonicalDigest({included_files: publicFiles(collected.included), symlink_files: collected.symlinks, excluded_paths: collected.excluded}),
+    source_content_sha256: canonicalDigest(contentBody),
     included_files: collected.included.length,
-    symlink_files: collected.symlinks.length,
     excluded_paths: collected.excluded.length,
   };
+  if (collected.symlinks.length > 0) body.symlink_files = collected.symlinks.length;
   return {...body, observation_sha256: canonicalDigest(body)};
 }
 
 function sourceManifest(source, collected, {conservative = false, policy = null} = {}) {
   const observation = sourceObservation(source, collected);
-  return {
+  const manifest = {
     schema: "agentos.project_source_preservation_manifest.v1",
     version: 1,
     archive_entry_root: "SOURCE_ROOT",
     source_observation: observation,
     source_content_sha256: observation.source_content_sha256,
-    symlink_files: collected.symlinks,
     preservation_policy: conservative
       ? "PRESERVE_TRACKED_AND_USER_OWNED_UNTRACKED;EXCLUDE_GIT_ADMIN_AND_IGNORED_REPRODUCIBLE_OUTPUTS_ONLY"
       : "DEFAULT_LEGACY_EXCLUSIONS",
@@ -304,6 +305,8 @@ function sourceManifest(source, collected, {conservative = false, policy = null}
     included_files: publicFiles(collected.included),
     excluded_paths: collected.excluded,
   };
+  if (collected.symlinks.length > 0) manifest.symlink_files = collected.symlinks;
+  return manifest;
 }
 
 function indexBytes(included, symlinks = []) {
@@ -429,7 +432,9 @@ export function verifySourcePreservation(outputRoot, expectedReceipt = null) {
   const manifest = JSON.parse(manifestBytes.toString("utf8"));
   assert(manifest.schema === "agentos.project_source_preservation_manifest.v1" && manifest.archive_entry_root === "SOURCE_ROOT", "source preservation manifest identity is invalid");
   assert(manifest.included_files.length > 0 && Array.isArray(manifest.symlink_files ?? []) && Array.isArray(manifest.excluded_paths), "source preservation manifest inventory is invalid");
-  assert(canonicalDigest({included_files: manifest.included_files, symlink_files: manifest.symlink_files ?? [], excluded_paths: manifest.excluded_paths}) === manifest.source_content_sha256, "source preservation content digest mismatch");
+  const manifestContentBody = {included_files: manifest.included_files, excluded_paths: manifest.excluded_paths};
+  if (Object.prototype.hasOwnProperty.call(manifest, "symlink_files")) manifestContentBody.symlink_files = manifest.symlink_files;
+  assert(canonicalDigest(manifestContentBody) === manifest.source_content_sha256, "source preservation content digest mismatch");
   assert(sha256(archive) === receipt.archive_sha256 && sha256(manifestBytes) === receipt.manifest_sha256
     && sha256(index) === receipt.index_sha256 && sha256(exclusions) === receipt.exclusions_sha256, "source preservation receipt does not bind its artifacts");
   assert(receipt.source_content_sha256 === manifest.source_content_sha256 && receipt.source_observation_sha256 === manifest.source_observation.observation_sha256, "source preservation receipt is not bound to the manifest");

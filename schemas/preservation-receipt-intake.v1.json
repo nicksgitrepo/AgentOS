@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/preservation-receipt-intake.v1.json",
+  "title": "AgentOS preservation receipt intake and zero-trace proof",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "destination_ref", "external_custody_ref", "policy_sha256", "sources", "zero_trace", "independent_readback", "source_mutation", "destination_mutation", "manifest_invalidation_rule", "intake_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.preservation_receipt_intake.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PRESERVATION_RECEIPTS_ACCEPTED_ZERO_TRACE"},
+    "destination_ref": {"type": "string", "pattern": "^opaque:[a-z][a-z0-9._-]*:[0-9a-f]{64}$"},
+    "external_custody_ref": {"type": "string", "pattern": "^opaque:[a-z][a-z0-9._-]*:[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sources": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/source"}},
+    "zero_trace": {"type": "object", "additionalProperties": false, "required": ["destination_entry_count", "destination_inventory_sha256", "consumer_unchanged", "control_plane_created"], "properties": {"destination_entry_count": {"const": 0}, "destination_inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "consumer_unchanged": {"const": true}, "control_plane_created": {"const": false}}},
+    "independent_readback": {"const": true},
+    "source_mutation": {"const": "NOT_OBSERVED"},
+    "destination_mutation": {"const": "NOT_PERFORMED"},
+    "manifest_invalidation_rule": {"type": "string", "minLength": 1},
+    "intake_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "source": {"type": "object", "additionalProperties": false, "required": ["repository_id", "source_ref", "source_commit", "source_tree", "source_content_sha256", "source_observation_sha256", "receipt_sha256", "verification_status", "included_files", "excluded_paths"], "properties": {"repository_id": {"type": "string", "minLength": 1}, "source_ref": {"type": "string", "pattern": "^opaque:[a-z][a-z0-9._-]*:[0-9a-f]{64}$"}, "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "source_content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "source_observation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "verification_status": {"const": "VERIFIED_EXACT"}, "included_files": {"type": "integer", "minimum": 1}, "excluded_paths": {"type": "integer", "minimum": 0}}}
+  }
+}
