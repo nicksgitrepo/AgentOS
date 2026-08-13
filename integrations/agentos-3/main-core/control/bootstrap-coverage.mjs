@@ -183,7 +183,8 @@ function ownerRow(definitionRecord, answerId, answers, reason, gaps = []) {
 }
 
 function projectImportSignal(discovery) {
-  return hasSignal(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u);
+  return hasSignal(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u)
+    || discovery.some((fact) => fact && /^repositories\.nested\./u.test(fact.fact_id ?? ""));
 }
 
 function projectImportGaps(answer) {
@@ -191,8 +192,12 @@ function projectImportGaps(answer) {
   const mode = answer.mode;
   const gaps = [];
   if (!["ADOPT_IN_PLACE", "CLEAN_COPY", "NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(mode)) gaps.push("PROJECT_IMPORT_MODE");
-  if (typeof answer.source_root !== "string" || answer.source_root.trim().length === 0) gaps.push("PROJECT_IMPORT_SOURCE_ROOT");
-  if (mode !== "ADOPT_IN_PLACE" && (typeof answer.destination_root !== "string" || answer.destination_root.trim().length === 0)) gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
+  const composed = Array.isArray(answer.source_roots);
+  if (composed) {
+    if (answer.source_roots.length < 2) gaps.push("PROJECT_IMPORT_COMPOSED_SOURCE_ROOTS");
+    if (typeof answer.destination_root !== "string" && typeof answer.destination_root_ref !== "string") gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
+  } else if (typeof answer.source_root !== "string" || answer.source_root.trim().length === 0) gaps.push("PROJECT_IMPORT_SOURCE_ROOT");
+  if (!composed && mode !== "ADOPT_IN_PLACE" && (typeof answer.destination_root !== "string" || answer.destination_root.trim().length === 0)) gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
   return gaps;
 }
 
@@ -224,7 +229,10 @@ function compileRows(discovery, answers) {
     ? {
       source_kind: answerPresent(answers, "project.import") ? "OWNER_INPUT" : "UNRESOLVED_OWNER_BOUNDARY",
       source_refs: ["project.import"],
-      discovery_inputs: factIds(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u),
+      discovery_inputs: [
+        ...factIds(discovery, /^(?:project\.marker\.|authority-corpus\.candidate\.|design-authority\.candidate\.|delivery\.marker\.)/u),
+        ...factIds(discovery, /^repositories\.nested\./u, ["OBSERVED_FACT", "CONFLICT", "UNKNOWN"]),
+      ].sort(compareUtf8),
       status: importGaps.length === 0 ? "OWNER_CONFIRMED" : "OWNER_REQUIRED",
       blocking: importGaps.length > 0,
       reason: importGaps.length === 0 ? "PROJECT_IMPORT_MODE_AND_SEPARATE_SOURCE_CONTEXT_BOUND" : importGaps.join("+"),

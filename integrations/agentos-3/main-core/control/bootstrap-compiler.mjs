@@ -52,6 +52,11 @@ import {
   verifySourcePreservation,
 } from "./project-import.mjs";
 import {
+  compileComposedProjectImportPlan,
+  validateComposedProjectImportPlan,
+} from "./composed-project-import.mjs";
+import {AUDIT_FIRST_CHECKPOINT_CONTRACT} from "./audit-first-import-procedure.mjs";
+import {
   relativeControlPlanePath,
   resolveControlPlaneRoot,
   validateControlPlaneBinding,
@@ -1027,7 +1032,18 @@ export function compileBootstrapPlan({
     protectedContracts: importAnswer?.protected_contracts ?? [],
     additionalRules: importAnswer?.additional_normalization_rules ?? {},
   });
-  const projectImport = importAnswer
+  const composedProjectImport = importAnswer?.source_roots
+    ? compileComposedProjectImportPlan({
+      projectId: projectImportIdentifier(normalizedAnswers["project.boundary"]?.project_name),
+      mode: importMode,
+      sourceRoots: importAnswer.source_roots,
+      destinationRootRef: importAnswer.destination_root_ref ?? null,
+      destinationRootPath: importAnswer.destination_root ?? null,
+      excludedRepositories: importAnswer.excluded_repositories ?? [],
+      nowUtc: "1970-01-01T00:00:00.000Z",
+    })
+    : null;
+  const projectImport = importAnswer && composedProjectImport === null
     ? compileProjectImportPlan({
       projectId: projectImportIdentifier(normalizedAnswers["project.boundary"]?.project_name),
       mode: importMode,
@@ -1036,6 +1052,9 @@ export function compileBootstrapPlan({
       discoveryFacts: discovery,
       standardsRegistry,
       normalizationPolicy,
+      specialistRosterSha256: JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../specialist-blocks/registry/roster.v1.json"), "utf8")).roster_sha256,
+      discoveredStandardIds: importAnswer.discovered_standard_ids ?? [],
+      ownerDeclaredStandardIds: importAnswer.owner_declared_standard_ids ?? [],
       sourcePreservationRoot: importAnswer.source_preservation_root ?? path.join(controlPlane.control_plane_root, ".agentos", "import"),
       preservationBoundaryRoot: controlPlane.control_plane_root,
       preservationStorageMode: controlPlane.binding.mode === "IN_PROJECT_OPT_IN" ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE",
@@ -1112,6 +1131,7 @@ export function compileBootstrapPlan({
     standards_registry: standardsRegistry,
     normalization_policy: normalizationPolicy,
     project_import: projectImport,
+    composed_project_import: composedProjectImport,
     model_policy: deriveModelPolicy(normalizedAnswers["project.model_economics"]),
     global_policy_state: globalPolicyState,
     owner_review_policy: ownerReviewPolicy,
@@ -1141,6 +1161,7 @@ export function compileBootstrapPlan({
       normalization_sha256: normalizationPolicy.normalization_sha256,
       project_import_sha256: projectImport?.plan_sha256 ?? null,
       source_preservation_sha256: projectImport?.source_identity?.source_content_sha256 ?? null,
+      composed_project_import_sha256: composedProjectImport?.plan_sha256 ?? null,
       project_life_contract_sha256: projectLifeContract.life_contract_sha256,
       boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
       global_policy_state_sha256: globalPolicyState.policy_state_sha256,
@@ -1292,8 +1313,17 @@ export function validateBootstrapPlan(plan) {
   requireRecord(plan.normalization_policy, "normalization policy");
   validateNormalizationPolicy(plan.normalization_policy);
   if (plan.project_import === null) {
-    assert(plan.normalization_policy.import_mode === null, "normalization policy carries an import mode without a project import plan");
-    assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null, "exact plan carries an unbound project import identity");
+    if (plan.composed_project_import === null) {
+      assert(plan.normalization_policy.import_mode === null, "normalization policy carries an import mode without a project import plan");
+      assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null
+        && plan.exact_creation_plan.composed_project_import_sha256 === null, "exact plan carries an unbound project import identity");
+    } else {
+      requireRecord(plan.composed_project_import, "composed project import plan");
+      validateComposedProjectImportPlan(plan.composed_project_import);
+      assert(plan.normalization_policy.import_mode === plan.composed_project_import.mode, "normalization policy is not bound to the composed import mode");
+      assert(plan.exact_creation_plan.composed_project_import_sha256 === plan.composed_project_import.plan_sha256, "exact creation plan is not bound to composed project import");
+      assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null, "exact plan carries a singular import identity alongside composed import");
+    }
   } else {
     requireRecord(plan.project_import, "project import plan");
     validateProjectImportPlan(plan.project_import);
@@ -1301,6 +1331,7 @@ export function validateBootstrapPlan(plan) {
     assert(plan.project_import.normalization_sha256 === plan.normalization_policy.normalization_sha256, "project import is not bound to the normalization policy");
     assert(plan.exact_creation_plan.project_import_sha256 === plan.project_import.plan_sha256, "exact creation plan is not bound to project import");
     assert(plan.exact_creation_plan.source_preservation_sha256 === plan.project_import.source_identity.source_content_sha256, "exact creation plan is not bound to source preservation identity");
+    assert(plan.composed_project_import === null && plan.exact_creation_plan.composed_project_import_sha256 === null, "exact plan carries a composed import identity alongside singular import");
   }
   assert(plan.exact_creation_plan.standards_registry_sha256 === plan.standards_registry.registry_sha256, "exact creation plan is not bound to standards registry");
   assert(plan.exact_creation_plan.normalization_sha256 === plan.normalization_policy.normalization_sha256, "exact creation plan is not bound to normalization policy");
@@ -1373,6 +1404,7 @@ export function validateApprovedPlan(plan) {
 
 export function validateBootstrapRunnablePlan(plan) {
   validateBootstrapPlan(plan);
+  assert(plan.composed_project_import === null, "composed multi-repository import is a read-only candidate until per-root source-preservation execution is admitted");
   if (isJsaPlan(plan)) {
     validateBootstrapActionScope(plan.bootstrap_safety_analysis.in_scope_actions, plan.bootstrap_safety_analysis);
     return plan;
@@ -1415,6 +1447,7 @@ function contextFromPlan(plan) {
     standards_registry: plan.standards_registry,
     normalization_policy: plan.normalization_policy,
     project_import: plan.project_import,
+    composed_project_import: plan.composed_project_import,
     model_policy: plan.model_policy,
     global_policy_state: plan.global_policy_state,
     owner_review_policy: plan.owner_review_policy,
@@ -1457,6 +1490,7 @@ function contextFromPlan(plan) {
     controller_supervision_sha256: plan.controller_supervision.supervision_sha256,
     bootstrap_safety_analysis_sha256: plan.bootstrap_safety_analysis.safety_sha256,
     project_import_sha256: plan.project_import?.plan_sha256 ?? null,
+    composed_project_import_sha256: plan.composed_project_import?.plan_sha256 ?? null,
     bootstrap_output_groups: [
       "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "DEVELOPMENT_PLAN", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
       "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",
@@ -2110,9 +2144,9 @@ export function auditBootstrapSetup({
   return {...reportBody, audit_sha256: canonicalDigest(reportBody)};
 }
 
-function bootstrapStartResult({discovery, questionPlan}) {
+function bootstrapStartResult({discovery, questionPlan, controlPlaneOptions = {}}) {
   const agentosRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-  const controlPlane = resolveControlPlaneRoot({projectRoot: discovery.project_root});
+  const controlPlane = resolveControlPlaneRoot({projectRoot: discovery.project_root, ...controlPlaneOptions});
   const body = {
     schema: "agentos.bootstrap_start_result.v1",
     version: 1,
@@ -2127,6 +2161,7 @@ function bootstrapStartResult({discovery, questionPlan}) {
     initial_answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
     discovery,
     question_plan: questionPlan,
+    checkpoint_contract: structuredClone(AUDIT_FIRST_CHECKPOINT_CONTRACT),
     next_action: questionPlan.next === null
       ? "COMPILE_THE_JSA_PLAN_AND_CONTINUE_ONLY_WITHIN_ITS_DECLARED_SCOPE"
       : "ASK_ONLY_THE_NEXT_MATERIAL_BOOTSTRAP_QUESTION",
@@ -2135,16 +2170,31 @@ function bootstrapStartResult({discovery, questionPlan}) {
 }
 
 function runBootstrapStartCommand() {
-  const [command, projectRoot, mode = "RECOMMENDED", ...extra] = process.argv.slice(2);
-  if (command !== "start" || !projectRoot || extra.length > 0) {
-    throw new Error("usage: bootstrap-compiler start <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY]");
+  const [command, projectRoot, ...args] = process.argv.slice(2);
+  if (command !== "start" || !projectRoot) throw new Error("usage: bootstrap-compiler start <project-root> [RECOMMENDED|GUIDED|EXPERT|LOCAL_ONLY] [--control-plane-root <absolute-path>] [--control-plane-mode EXTERNAL_EXPLICIT|IN_PROJECT_OPT_IN] [--control-plane-storage LOCAL|GIT|HYBRID]");
+  let mode = "RECOMMENDED";
+  let cursor = 0;
+  if (args[0] && !args[0].startsWith("--")) {
+    mode = args[0];
+    cursor = 1;
   }
+  const options = {};
+  while (cursor < args.length) {
+    const flag = args[cursor];
+    const value = args[cursor + 1];
+    if (!["--control-plane-root", "--control-plane-mode", "--control-plane-storage"].includes(flag) || value === undefined || value.startsWith("--")) throw new Error("invalid or incomplete Bootstrap control-plane option");
+    const key = flag === "--control-plane-root" ? "controlPlaneRoot" : flag === "--control-plane-mode" ? "controlPlaneMode" : "storageBackend";
+    if (Object.hasOwn(options, key)) throw new Error(`duplicate Bootstrap option: ${flag}`);
+    options[key] = value;
+    cursor += 2;
+  }
+  if ((options.controlPlaneMode === "EXTERNAL_EXPLICIT" || options.controlPlaneMode === "IN_PROJECT_OPT_IN") && !options.controlPlaneRoot) throw new Error("explicit Bootstrap control-plane mode requires --control-plane-root");
   const discovery = discoverProject(projectRoot, mode);
   const questionPlan = planBootstrapQuestions({
     discovery: discovery.facts,
     answers: {"bootstrap.discovery.mode": discovery.discovery_mode},
   });
-  process.stdout.write(`${canonicalCompactJson(bootstrapStartResult({discovery, questionPlan}))}\n`);
+  process.stdout.write(`${canonicalCompactJson(bootstrapStartResult({discovery, questionPlan, controlPlaneOptions: options}))}\n`);
 }
 
 let invokedPath = null;

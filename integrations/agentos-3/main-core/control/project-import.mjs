@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import crypto from "node:crypto";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {buildStoredZip, parseStoredZip} from "./deterministic-zip.mjs";
@@ -14,9 +15,19 @@ import {validateStandardsRegistry} from "./standards-registry.mjs";
 import {readSourceControlBinding} from "./bootstrap-discovery.mjs";
 import {opaqueSchedulerWorktreeRef} from "./hybrid-scheduler.mjs";
 import {
+  AUDIT_FIRST_IMPORT_PHASES,
+  compileAuditFirstImportProcedure,
+  validateAuditFirstImportProcedure,
+} from "./audit-first-import-procedure.mjs";
+import {
   assertNoSymlinkComponents as assertSafePathComponents,
   ensureDirectory as ensureSafeDirectory,
 } from "./private-control-common.mjs";
+import {
+  compileConservativePreservationPolicy,
+  decideConservativePreservation,
+  validateConservativePreservationPolicy,
+} from "./conservative-preservation-policy.mjs";
 
 export const PROJECT_IMPORT_SCHEMA = "agentos.project_import.v1";
 export const PROJECT_IMPORT_MODES = Object.freeze([
@@ -155,8 +166,45 @@ function sourceDestination(sourceRoot, destinationRoot, {allowNullDestination = 
   return {source, destination};
 }
 
-function sourceExclusion(relative, entry, bytes = null) {
+function gitInventory(source) {
+  const environment = {
+    ...process.env,
+    GIT_CONFIG_NOSYSTEM: "1",
+    GIT_TERMINAL_PROMPT: "0",
+    LANG: "C",
+    LC_ALL: "C",
+  };
+  const run = (args) => spawnSync("git", args, {cwd: source, env: environment, encoding: "buffer", timeout: 20_000});
+  const trackedResult = run(["ls-files", "-z"]);
+  const ignoredResult = run(["ls-files", "--others", "--ignored", "--exclude-standard", "-z"]);
+  const decode = (result) => result.status === 0
+    ? new Set(result.stdout.toString("utf8").split("\0").filter(Boolean))
+    : new Set();
+  return {tracked: decode(trackedResult), ignored: decode(ignoredResult)};
+}
+
+function hasPathOrDescendant(paths, relative) {
+  return paths.has(relative) || [...paths].some((value) => value.startsWith(`${relative}/`));
+}
+
+function sourceExclusion(relative, entry, bytes = null, {conservative = false, inventory = null, policy = null} = {}) {
   const name = path.posix.basename(relative);
+  if (conservative) {
+    const conservativeDecision = decideConservativePreservation({
+      entryName: name,
+      entryKind: entry.isDirectory() ? "directory" : "file",
+      tracked: inventory?.tracked.has(relative) === true,
+      ignored: inventory?.ignored.has(relative) === true || hasPathOrDescendant(inventory?.ignored ?? new Set(), relative),
+      hasTrackedDescendant: hasPathOrDescendant(inventory?.tracked ?? new Set(), relative),
+      policy,
+    });
+    if (conservativeDecision.decision === "EXCLUDE_GIT_ADMINISTRATIVE_INTERNAL") return conservativeDecision.reason;
+    const tracked = inventory?.tracked.has(relative) === true || hasPathOrDescendant(inventory?.tracked ?? new Set(), relative);
+    const ignored = inventory?.ignored.has(relative) === true || hasPathOrDescendant(inventory?.ignored ?? new Set(), relative);
+    if (conservativeDecision.decision === "EXCLUDE_IGNORED_REPRODUCIBLE_OUTPUT") return conservativeDecision.reason;
+    if (entry.isFile() && OUTPUT_NAMES.has(name)) return "AgentOS import preservation output";
+    return null;
+  }
   if (entry.isDirectory() && GENERATED_DIRECTORIES.has(name)) return GENERATED_DIRECTORIES.get(name);
   if (entry.isFile() && name === ".DS_Store") return "operating-system metadata";
   if (entry.isFile() && OUTPUT_NAMES.has(name)) return "AgentOS import preservation output";
@@ -170,9 +218,12 @@ function sourceExclusion(relative, entry, bytes = null) {
   return null;
 }
 
-function collectSource(source) {
+function collectSource(source, {conservative = false, policy = compileConservativePreservationPolicy()} = {}) {
+  if (conservative) validateConservativePreservationPolicy(policy);
   const included = [];
+  const symlinks = [];
   const excluded = [{path: RESERVED_PRESERVATION_ROOT, reason: "reserved AgentOS source-preservation output root"}];
+  const inventory = conservative ? gitInventory(source) : null;
   function visit(directory, prefix = "") {
     for (const entry of fs.readdirSync(directory, {withFileTypes: true}).sort((left, right) => compareUtf8(left.name, right.name))) {
       const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
@@ -181,12 +232,18 @@ function collectSource(source) {
       if (relative === entry.name && entry.name.startsWith(".agentos-bootstrap-stage-")) continue;
       if (relative === RESERVED_PRESERVATION_ROOT) continue;
       if (relative.startsWith(`${RESERVED_PRESERVATION_ROOT}/`)) continue;
-      const earlyExclusion = sourceExclusion(relative, stat);
+      const earlyExclusion = sourceExclusion(relative, stat, null, {conservative, inventory, policy});
       if (earlyExclusion !== null) {
         excluded.push({path: safeRelative(relative, "excluded source path"), reason: earlyExclusion});
         continue;
       }
-      if (stat.isSymbolicLink() || (!stat.isDirectory() && !stat.isFile())) {
+      if (stat.isSymbolicLink()) {
+        if (!conservative) throw new Error(`project import source contains an unsafe filesystem entry: ${relative}`);
+        const target = fs.readlinkSync(absolute, {encoding: "utf8"});
+        symlinks.push({path: safeRelative(relative, "source symlink path"), target, target_sha256: sha256(Buffer.from(target, "utf8"))});
+        continue;
+      }
+      if (!stat.isDirectory() && !stat.isFile()) {
         throw new Error(`project import source contains an unsafe filesystem entry: ${relative}`);
       }
       if (stat.isDirectory()) {
@@ -194,7 +251,7 @@ function collectSource(source) {
         continue;
       }
       const bytes = fs.readFileSync(absolute);
-      const contentExclusion = sourceExclusion(relative, stat, bytes);
+      const contentExclusion = sourceExclusion(relative, stat, bytes, {conservative, inventory, policy});
       if (contentExclusion !== null) {
         excluded.push({path: safeRelative(relative, "excluded source path"), reason: contentExclusion});
         continue;
@@ -212,7 +269,8 @@ function collectSource(source) {
   included.sort((left, right) => compareUtf8(left.path, right.path));
   excluded.sort((left, right) => compareUtf8(left.path, right.path));
   assert(included.length > 0, "project import source contains no preservable regular files");
-  return {included, excluded};
+  symlinks.sort((left, right) => compareUtf8(left.path, right.path));
+  return {included, symlinks, excluded};
 }
 
 function publicFiles(entries) {
@@ -220,30 +278,43 @@ function publicFiles(entries) {
 }
 
 function sourceObservation(source, collected) {
+  const contentBody = {included_files: publicFiles(collected.included), excluded_paths: collected.excluded};
+  if (collected.symlinks.length > 0) contentBody.symlink_files = collected.symlinks;
   const body = {
     source_root_ref: opaqueSchedulerWorktreeRef(source),
-    source_content_sha256: canonicalDigest({included_files: publicFiles(collected.included), excluded_paths: collected.excluded}),
+    source_content_sha256: canonicalDigest(contentBody),
     included_files: collected.included.length,
     excluded_paths: collected.excluded.length,
   };
+  if (collected.symlinks.length > 0) body.symlink_files = collected.symlinks.length;
   return {...body, observation_sha256: canonicalDigest(body)};
 }
 
-function sourceManifest(source, collected) {
+function sourceManifest(source, collected, {conservative = false, policy = null} = {}) {
   const observation = sourceObservation(source, collected);
-  return {
+  const manifest = {
     schema: "agentos.project_source_preservation_manifest.v1",
     version: 1,
     archive_entry_root: "SOURCE_ROOT",
     source_observation: observation,
     source_content_sha256: observation.source_content_sha256,
+    preservation_policy: conservative
+      ? "PRESERVE_TRACKED_AND_USER_OWNED_UNTRACKED;EXCLUDE_GIT_ADMIN_AND_IGNORED_REPRODUCIBLE_OUTPUTS_ONLY"
+      : "DEFAULT_LEGACY_EXCLUSIONS",
+    policy_sha256: policy?.policy_sha256 ?? null,
     included_files: publicFiles(collected.included),
     excluded_paths: collected.excluded,
   };
+  if (collected.symlinks.length > 0) manifest.symlink_files = collected.symlinks;
+  return manifest;
 }
 
-function indexBytes(included) {
-  return Buffer.from(included.map(({bytes, ...entry}) => canonicalJson(entry)).join(""), "utf8");
+function indexBytes(included, symlinks = []) {
+  const entries = [
+    ...included.map(({bytes, ...entry}) => entry),
+    ...symlinks.map((entry) => ({...entry, kind: "SYMLINK"})),
+  ].sort((left, right) => compareUtf8(left.path, right.path));
+  return Buffer.from(entries.map((entry) => canonicalJson(entry)).join(""), "utf8");
 }
 
 function exclusionsMarkdown(manifest) {
@@ -260,10 +331,10 @@ function exclusionsMarkdown(manifest) {
   return Buffer.from(`${lines.join("\n")}\n`, "utf8");
 }
 
-export function inspectProjectSource(sourceRoot) {
+export function inspectProjectSource(sourceRoot, {conservative = false, policy = compileConservativePreservationPolicy()} = {}) {
   const source = canonicalExistingDirectory(sourceRoot, "project import source root");
-  const collected = collectSource(source);
-  const manifest = sourceManifest(source, collected);
+  const collected = collectSource(source, {conservative, policy});
+  const manifest = sourceManifest(source, collected, {conservative, policy: conservative ? policy : null});
   let sourceControl = null;
   try {
     sourceControl = readSourceControlBinding(source);
@@ -281,13 +352,16 @@ export function inspectProjectSource(sourceRoot) {
   };
 }
 
-export function compileSourcePreservationPlan(sourceRoot, destinationRoot, {allowDestinationInsideSource = false} = {}) {
+export function compileSourcePreservationPlan(sourceRoot, destinationRoot, {allowDestinationInsideSource = false, conservative = false, policy = compileConservativePreservationPolicy()} = {}) {
   const roots = sourceDestination(sourceRoot, destinationRoot, {allowDestinationInsideSource});
-  const collected = collectSource(roots.source);
-  const manifest = sourceManifest(roots.source, collected);
+  const collected = collectSource(roots.source, {conservative, policy});
+  const manifest = sourceManifest(roots.source, collected, {conservative, policy: conservative ? policy : null});
   const manifestBytes = Buffer.from(canonicalJson(manifest), "utf8");
-  const index = indexBytes(collected.included);
-  const archive = buildStoredZip(collected.included.map((entry) => ({name: entry.path, bytes: entry.bytes, mode: entry.mode})));
+  const index = indexBytes(collected.included, collected.symlinks);
+  const archive = buildStoredZip([
+    ...collected.included.map((entry) => ({name: entry.path, bytes: entry.bytes, mode: entry.mode})),
+    ...collected.symlinks.map((entry) => ({name: entry.path, bytes: Buffer.from(entry.target, "utf8"), mode: 0o777})),
+  ]);
   const exclusions = exclusionsMarkdown(manifest);
   return {
     schema: "agentos.project_source_preservation_plan.v1",
@@ -357,28 +431,38 @@ export function verifySourcePreservation(outputRoot, expectedReceipt = null) {
   assert(canonicalJson(JSON.parse(manifestBytes.toString("utf8"))) === manifestBytes.toString("utf8"), "source preservation manifest is not canonical JSON");
   const manifest = JSON.parse(manifestBytes.toString("utf8"));
   assert(manifest.schema === "agentos.project_source_preservation_manifest.v1" && manifest.archive_entry_root === "SOURCE_ROOT", "source preservation manifest identity is invalid");
-  assert(manifest.included_files.length > 0 && Array.isArray(manifest.excluded_paths), "source preservation manifest inventory is invalid");
-  assert(canonicalDigest({included_files: manifest.included_files, excluded_paths: manifest.excluded_paths}) === manifest.source_content_sha256, "source preservation content digest mismatch");
+  assert(manifest.included_files.length > 0 && Array.isArray(manifest.symlink_files ?? []) && Array.isArray(manifest.excluded_paths), "source preservation manifest inventory is invalid");
+  const manifestContentBody = {included_files: manifest.included_files, excluded_paths: manifest.excluded_paths};
+  if (Object.prototype.hasOwnProperty.call(manifest, "symlink_files")) manifestContentBody.symlink_files = manifest.symlink_files;
+  assert(canonicalDigest(manifestContentBody) === manifest.source_content_sha256, "source preservation content digest mismatch");
   assert(sha256(archive) === receipt.archive_sha256 && sha256(manifestBytes) === receipt.manifest_sha256
     && sha256(index) === receipt.index_sha256 && sha256(exclusions) === receipt.exclusions_sha256, "source preservation receipt does not bind its artifacts");
   assert(receipt.source_content_sha256 === manifest.source_content_sha256 && receipt.source_observation_sha256 === manifest.source_observation.observation_sha256, "source preservation receipt is not bound to the manifest");
   const entries = parseStoredZip(archive);
-  const expected = new Set(manifest.included_files.map((entry) => entry.path));
+  const symlinkFiles = manifest.symlink_files ?? [];
+  const expected = new Set([...manifest.included_files, ...symlinkFiles].map((entry) => entry.path));
   assert(entries.size === expected.size && [...entries.keys()].every((name) => expected.has(name)), "source preservation archive entries do not match the manifest");
   for (const entry of manifest.included_files) {
     const actual = entries.get(entry.path);
     assert(actual && actual.mode === entry.mode && actual.bytes.length === entry.size && sha256(actual.bytes) === entry.sha256, `source preservation archive content mismatch: ${entry.path}`);
   }
-  assert(index.toString("utf8") === manifest.included_files.map((entry) => canonicalJson(entry)).join(""), "source preservation index does not match the manifest");
+  for (const entry of symlinkFiles) {
+    const actual = entries.get(entry.path);
+    assert(actual && actual.mode === 0o777 && actual.bytes.toString("utf8") === entry.target && sha256(actual.bytes) === entry.target_sha256, `source preservation symlink mismatch: ${entry.path}`);
+  }
+  const expectedIndex = [...manifest.included_files.map((entry) => entry), ...symlinkFiles.map((entry) => ({...entry, kind: "SYMLINK"}))]
+    .sort((left, right) => compareUtf8(left.path, right.path)).map((entry) => canonicalJson(entry)).join("");
+  assert(index.toString("utf8") === expectedIndex, "source preservation index does not match the manifest");
   assert(exclusions.toString("utf8") === exclusionsMarkdown(manifest).toString("utf8"), "source exclusion record does not match the manifest");
   if (expectedReceipt !== null) assert(JSON.stringify(receipt) === JSON.stringify(expectedReceipt), "source preservation receipt differs from expected receipt");
   return {schema: "agentos.project_source_preservation_verification.v1", archive_sha256: receipt.archive_sha256, manifest_sha256: receipt.manifest_sha256, index_sha256: receipt.index_sha256, exclusions_sha256: receipt.exclusions_sha256, included_files: manifest.included_files.length, excluded_paths: manifest.excluded_paths.length, status: "VERIFIED_EXACT"};
 }
 
-export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allowDestinationInsideSource = false} = {}) {
+export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allowDestinationInsideSource = false, conservative = false, policy = compileConservativePreservationPolicy()} = {}) {
+  if (conservative) validateConservativePreservationPolicy(policy);
   requireUtc(nowUtc, "project source preservation time");
-  const plan = compileSourcePreservationPlan(sourceRoot, destinationRoot, {allowDestinationInsideSource});
-  const repeat = compileSourcePreservationPlan(sourceRoot, destinationRoot, {allowDestinationInsideSource});
+  const plan = compileSourcePreservationPlan(sourceRoot, destinationRoot, {allowDestinationInsideSource, conservative, policy});
+  const repeat = compileSourcePreservationPlan(sourceRoot, destinationRoot, {allowDestinationInsideSource, conservative, policy});
   for (const field of ["archive_sha256", "manifest_sha256", "index_sha256", "exclusions_sha256"]) assert(plan[field] === repeat[field], `project source preservation is not deterministic: ${field}`);
   const receiptBody = {
     schema: "agentos.project_source_preservation_receipt.v1",
@@ -422,11 +506,11 @@ export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allo
   try {
     for (const [name, bytes] of artifactBytes) writeExclusive(path.join(temporary, name), bytes);
     verifySourcePreservation(temporary);
-    const finalCheck = compileSourcePreservationPlan(plan.source_root, plan.destination_root, {allowDestinationInsideSource});
+    const finalCheck = compileSourcePreservationPlan(plan.source_root, plan.destination_root, {allowDestinationInsideSource, conservative, policy});
     assert(finalCheck.manifest.source_content_sha256 === plan.manifest.source_content_sha256
       && finalCheck.manifest.source_observation.observation_sha256 === plan.manifest.source_observation.observation_sha256, "source changed during preservation publish");
     for (const name of artifactNames) {
-      const beforePublish = compileSourcePreservationPlan(plan.source_root, plan.destination_root, {allowDestinationInsideSource});
+      const beforePublish = compileSourcePreservationPlan(plan.source_root, plan.destination_root, {allowDestinationInsideSource, conservative, policy});
       assert(beforePublish.manifest.source_content_sha256 === plan.manifest.source_content_sha256
         && beforePublish.manifest.source_observation.observation_sha256 === plan.manifest.source_observation.observation_sha256, "source changed during preservation publish");
       moveExclusive(path.join(temporary, name), path.join(destinationRootPath, name));
@@ -457,8 +541,8 @@ export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allo
 function phaseNames(mode) {
   if (mode === "ADOPT_IN_PLACE") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "BIND_GOVERNANCE", "CUTOVER_OR_CONTINUE"];
   if (mode === "CLEAN_COPY") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "BIND_GOVERNANCE", "CUTOVER_OR_ROLLBACK"];
-  if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"];
-  return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"];
+  if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", ...AUDIT_FIRST_IMPORT_PHASES, "CUTOVER_OR_ROLLBACK"];
+  return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", ...AUDIT_FIRST_IMPORT_PHASES, "CUTOVER_OR_ROLLBACK"];
 }
 
 function auditSchedule(mode) {
@@ -487,7 +571,7 @@ export function recommendProjectImportMode(discoveryFacts = []) {
   };
 }
 
-export function compileProjectImportPlan({projectId, mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null, rapidDevelopmentApproved = false, rapidDevelopmentApproval = null} = {}) {
+export function compileProjectImportPlan({projectId, mode, sourceRoot, destinationRoot = null, discoveryFacts = [], standardsRegistry, normalizationPolicy, specialistRosterSha256 = null, discoveredStandardIds = [], ownerDeclaredStandardIds = [], sourcePreservationRoot = null, preservationBoundaryRoot = null, preservationStorageMode = null, rapidDevelopmentApproved = false, rapidDevelopmentApproval = null} = {}) {
   assert(typeof projectId === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(projectId), "project import project ID is required", "PROJECT_BINDING_REQUIRED");
   if (rapidDevelopmentApproved) assert(rapidDevelopmentApproval !== null && typeof rapidDevelopmentApproval === "object", "imported rapid development requires a typed owner approval receipt", "OWNER_APPROVAL_REQUIRED");
   if (!rapidDevelopmentApproved) assert(rapidDevelopmentApproval === null, "unactivated imported owner approval cannot be retained", "IMPORTED_OWNER_APPROVAL_INVALID");
@@ -502,6 +586,7 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
   const roots = sourceDestination(sourceRoot, destinationRoot, {allowNullDestination: mode === "ADOPT_IN_PLACE"});
   const sourceIdentity = inspectProjectSource(roots.source);
   const fullAudit = ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(mode);
+  if (fullAudit) requireSha(specialistRosterSha256, "project import specialist roster binding");
   const storageMode = preservationStorageMode ?? (preservationBoundaryRoot === null ? "PROJECT_SIDE_CAR" : "EXTERNAL_CONTROL_PLANE");
   assert(PROJECT_IMPORT_STORAGE_MODES.includes(storageMode), "project source preservation storage mode is invalid");
   let preservationRoot = sourcePreservationRoot ?? (roots.destination === null
@@ -570,6 +655,15 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
       acceptance: "FUNCTION_REQUIREMENTS_PASS_THEN_DESIGN_BIBLE_PASS_THEN_SECURITY_PASS;_CODE_QUALITY_HYGIENE_REMAINS_AUDIT_DISCIPLINE",
       writer_rule: "AUDITORS_READ_ONLY;_ONE_MIGRATION_WRITER_CUSTODY_AT_A_TIME",
     },
+    audit_first_procedure: fullAudit
+      ? compileAuditFirstImportProcedure({
+        standardsRegistrySha256: standardsRegistry.registry_sha256,
+        specialistRosterSha256,
+        registryStandardIds: standardsRegistry.required_standard_ids,
+        discoveredStandardIds,
+        ownerDeclaredStandardIds,
+      })
+      : null,
     universal_closeout: universalTaskCloseoutPolicy("IMPORT"),
     normalization: {
       execute_in_first_governed_campaign: fullAudit,
@@ -644,6 +738,13 @@ export function validateProjectImportPlan(plan) {
   assert(Array.isArray(plan.audit?.lanes) && plan.audit.lanes.length === IMPORT_AUDIT_LANES.length, "project import audit schedule is incomplete");
   const fullAudit = ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(plan.mode);
   assert(plan.audit.full_audit_required === fullAudit, "project import full-audit converse is invalid");
+  if (fullAudit) {
+    validateAuditFirstImportProcedure(plan.audit_first_procedure);
+    assert(plan.audit_first_procedure.standards_registry_sha256 === plan.standards_registry_sha256, "project import is not bound to the standards registry: audit-first procedure binding differs");
+    assert(JSON.stringify(plan.phases.slice(plan.mode === "NORMALIZE_AND_AUDIT" ? 4 : 3, -1)) === JSON.stringify(AUDIT_FIRST_IMPORT_PHASES), "project import does not execute the complete audit-first procedure before cutover");
+  } else {
+    assert(plan.audit_first_procedure === null, "non-full import mode unexpectedly activates the audit-first repair procedure");
+  }
   const seen = new Set();
   for (const lane of plan.audit.lanes) {
     assert(IMPORT_AUDIT_LANES.includes(lane.discipline) && !seen.has(lane.discipline), "project import audit lane is duplicate or unknown");

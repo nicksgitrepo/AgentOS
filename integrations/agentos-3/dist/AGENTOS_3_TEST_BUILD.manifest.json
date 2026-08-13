@@ -3,7 +3,34 @@
   "build_id": "AGENTOS_3_TEST_BUILD",
   "lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
-  "source_base": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
+  "source_base": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
+  "source_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+  "release_source": {
+    "schema": "agentos.integration.release_source_identity.v1",
+    "source_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
+    "source_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+    "observed_head_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
+    "observed_head_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+    "generated_committed_paths": [],
+    "generated_dirty_paths": [
+      "integrations/agentos-3/main-core/control/audit-first-import-procedure.mjs",
+      "integrations/agentos-3/main-core/control/bootstrap-compiler.mjs",
+      "integrations/agentos-3/main-core/control/bootstrap-coverage.mjs",
+      "integrations/agentos-3/main-core/control/bootstrap-discovery.mjs",
+      "integrations/agentos-3/main-core/control/composed-project-import.mjs",
+      "integrations/agentos-3/main-core/control/conservative-preservation-policy.mjs",
+      "integrations/agentos-3/main-core/control/context-block-intake.mjs",
+      "integrations/agentos-3/main-core/control/preservation-receipt-intake.mjs",
+      "integrations/agentos-3/main-core/control/project-import.mjs",
+      "integrations/agentos-3/main-core/control/spawn-preparation.mjs",
+      "integrations/agentos-3/main-core/control/spawner-admission-roundtrip.mjs",
+      "integrations/agentos-3/main-core/control/typed-project-evidence-binding.mjs",
+      "integrations/agentos-3/main-core/source-manifest.json"
+    ],
+    "non_generated_drift": [],
+    "status": "EXACT_SOURCE_OR_GENERATED_DESCENDANT",
+    "identity_sha256": "22fc96161a6e73a7b82dd0f472f0b1ab3d04284545a7af3b22cf15a67c14ae9b"
+  },
   "includes": [
     "current-main-core",
     "memory-m2",
@@ -21,6 +48,11 @@
       "path": "CURRENT_STATE.md",
       "size": 3834,
       "sha256": "2c3a6c1bf278a9d573265f4bef1ac2b2b8c44ed5069f9b14b33be0d46fd0fb72"
+    },
+    {
+      "path": "SOURCE_PARITY.md",
+      "size": 1205,
+      "sha256": "1aa94777e2d592bb6eaae46ac900a67c58c77cb1e047abdfb48ff14272a9d8fe"
     },
     {
       "path": "agent-builder-adapter.mjs",
@@ -218,6 +250,16 @@
       "sha256": "e5efbc92c00637c0d8826be91cfd0985b79ec830a801bb35c0cbcabbaeb9332d"
     },
     {
+      "path": "contracts/release-source-binding.v1.json",
+      "size": 2015,
+      "sha256": "16051cef273ca311ed15de6015cdf76ca7737e46aa10a7ef25fa12a2210feb21"
+    },
+    {
+      "path": "contracts/release-source-policy.v1.json",
+      "size": 1227,
+      "sha256": "4cb13ed73ed4e0b74e3a1ba3a75ad421c3aec07731658d822167bd728c072133"
+    },
+    {
       "path": "contracts/specialist-independent-clearance.v1.json",
       "size": 1721,
       "sha256": "8412f031971db5dd6371eace8c14eccfee9c26f640a2e2cc32f0a79c8706e018"
@@ -229,8 +271,8 @@
     },
     {
       "path": "custody.mjs",
-      "size": 10071,
-      "sha256": "085dca995a5da49d4f8e47a397e4b42d43cdc3e639944ccb54f081bdb274520b"
+      "size": 10541,
+      "sha256": "d9e2d27f85c905863623468694b7c35eff8c39c6ec96166eeb24322b0945e485"
     },
     {
       "path": "entrypoint.mjs",
@@ -318,6 +360,11 @@
       "sha256": "b06333f67c440ff35d8b845efeda0f62428dacc2cd148fff0d12760a7e0f9095"
     },
     {
+      "path": "main-core/control/audit-first-import-procedure.mjs",
+      "size": 12669,
+      "sha256": "f9232ce892a5e1b17391092708faf252f6528cb694c57f47b319c326b1bc0185"
+    },
+    {
       "path": "main-core/control/audit-repair-integration-pyramid.mjs",
       "size": 17955,
       "sha256": "6c12e7cb4828b633e0513582499924fbca63d2870b596cc983b62cfc9fa36c04"
@@ -344,8 +391,8 @@
     },
     {
       "path": "main-core/control/bootstrap-compiler.mjs",
-      "size": 123862,
-      "sha256": "111066e2de692ff017308330924369d2e7967926fdcb61e3fb3a1a83af7c547a"
+      "size": 127694,
+      "sha256": "e3e4d18c93d8efe3552fd0cccad2b78b97f74f497e55634cc9df34443112a86a"
     },
     {
       "path": "main-core/control/bootstrap-conversation.mjs",
@@ -354,13 +401,13 @@
     },
     {
       "path": "main-core/control/bootstrap-coverage.mjs",
-      "size": 41489,
-      "sha256": "a9c748d4404894361a93ed3235b6f17ac7f22600a93436942cd4275df0c5f916"
+      "size": 42057,
+      "sha256": "b1ed8a40a91aac41a28146b9bae070bc28a9fa42a31623c9454616ea4b157301"
     },
     {
       "path": "main-core/control/bootstrap-discovery.mjs",
-      "size": 12845,
-      "sha256": "51eb42c9da7e8a7c80cdbf36095c8163171e3a3e4b1eca9c5171c093e460f7a5"
+      "size": 18090,
+      "sha256": "183c7b2f33b5a955af9088912c8ef4035ec99fa7a64d0f1226b120ca35abd198"
     },
     {
       "path": "main-core/control/bootstrap-interview.mjs",
@@ -473,9 +520,24 @@
       "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"
     },
     {
+      "path": "main-core/control/composed-project-import.mjs",
+      "size": 26704,
+      "sha256": "51dc69891220055f3ca014b3cec13a6cb59d1681798d432081ebaa98f5687a07"
+    },
+    {
+      "path": "main-core/control/conservative-preservation-policy.mjs",
+      "size": 8538,
+      "sha256": "0c6da0277a61230c3f48eda4466422cf190a2a9e8662d027cbe28a86c4fb7090"
+    },
+    {
       "path": "main-core/control/content-addressing.mjs",
       "size": 1916,
       "sha256": "421de352ad4db38a949b121884adc4a5a7ea9c6b1f8b8e6cf70ae7f7291dd37a"
+    },
+    {
+      "path": "main-core/control/context-block-intake.mjs",
+      "size": 16381,
+      "sha256": "6d8ff57bcc103241de3fe91d603e41b295ec4ea4c88321bdebf7bfab86ed69db"
     },
     {
       "path": "main-core/control/continuous-audit-sentinel.mjs",
@@ -893,6 +955,11 @@
       "sha256": "fc55995a338a4a55d05d58dc0465d12aeacf96c80b9bf52564a6448ece98daa4"
     },
     {
+      "path": "main-core/control/preservation-receipt-intake.mjs",
+      "size": 9217,
+      "sha256": "06fbe1b37098a916b483e42b76fb0dad85ca7eb74319955d6bee6295be9b10b0"
+    },
+    {
       "path": "main-core/control/private-context-detector.mjs",
       "size": 4867,
       "sha256": "0aec9f2eca52c9254d4c6df3e27dfae51eb81f873d7cfdb6bf889303a52b74e4"
@@ -934,8 +1001,8 @@
     },
     {
       "path": "main-core/control/project-import.mjs",
-      "size": 42813,
-      "sha256": "fae9000d5a10c9c80b1a2807be55bd908a1871eca72a36f7ce35ac4c076d320e"
+      "size": 49284,
+      "sha256": "810165c3e9f3ffe6dcd72669d185b669972c5a2b388c39a8e235232a74f4031f"
     },
     {
       "path": "main-core/control/project-life-contract.mjs",
@@ -1178,6 +1245,16 @@
       "sha256": "2d8e8e11ff92123eb45465ec4133fd9945bb02ef5111e0f31e162dacc3401cb2"
     },
     {
+      "path": "main-core/control/spawn-preparation.mjs",
+      "size": 17755,
+      "sha256": "27369634129e9999ce3458e49fb3c0230fcc18f3eee83f0e67052a53e04d2c4b"
+    },
+    {
+      "path": "main-core/control/spawner-admission-roundtrip.mjs",
+      "size": 16796,
+      "sha256": "0125ad25fe1b523e73174fdf0029856bf88a1f5f9658e929e27d35664e8709f1"
+    },
+    {
       "path": "main-core/control/specialist-agent-compiler.mjs",
       "size": 57234,
       "sha256": "4b69cc46333275f2499fc63101a5ae74a844f9a76641ce0574a0e3036c2327b5"
@@ -1258,6 +1335,11 @@
       "sha256": "626ef06c0e59853f8e4805dab43a669241dbf39fbf67625f4adad30225d627c4"
     },
     {
+      "path": "main-core/control/typed-project-evidence-binding.mjs",
+      "size": 7177,
+      "sha256": "734d99c3bdb0d97a64a9142c21be16524998d27b0f04d4833e665b0c9d659db2"
+    },
+    {
       "path": "main-core/control/universal-response-gating.mjs",
       "size": 16528,
       "sha256": "c34ea0a228ec92f1ab215ef7c009be9900830984aa7d50c0ea0b9d23db692032"
@@ -1279,8 +1361,8 @@
     },
     {
       "path": "main-core/source-manifest.json",
-      "size": 35007,
-      "sha256": "2e26e28255ab93bbceba93fad22c8aba6a3b3bcd85cc8a4e5887a7369f505f6f"
+      "size": 36384,
+      "sha256": "2c0ca3f35fec35743979c9edfbf9fa572dbc361cf3009f6cc226a616225506c5"
     },
     {
       "path": "memory-adapter.mjs",
@@ -1508,6 +1590,11 @@
       "sha256": "07d1cee782bcca19ae0ae31e9e9a29721f99f83af5e9a536faddfe1fcae2b1cf"
     },
     {
+      "path": "schemas/audit-first-import-procedure.v1.json",
+      "size": 1392,
+      "sha256": "216a9b1df90c9870edfe72b1537fb44b01f897351227e080b1683509f3e732ed"
+    },
+    {
       "path": "schemas/audit-repair-integration-state.v1.json",
       "size": 6212,
       "sha256": "d0530de190059b132c55771d9d75b7ea72c8cc406b687aa1d17bd34fcca2c875"
@@ -1529,8 +1616,8 @@
     },
     {
       "path": "schemas/bootstrap-binding.v1.json",
-      "size": 102834,
-      "sha256": "c80695531d4b46ef45513db3c2785244bfda379f756f946869c1d71c7de30cbd"
+      "size": 112987,
+      "sha256": "204204d44a580fb79dae671a39a2cf384ab39c4c9d74ac54152a6ba3b1e935ea"
     },
     {
       "path": "schemas/bootstrap-compile-receipt.v1.json",
@@ -1559,8 +1646,8 @@
     },
     {
       "path": "schemas/bootstrap-discovery.v1.json",
-      "size": 2643,
-      "sha256": "4fec273638e0468e5c023f6cc75c7ee5e976b0872c24bca9cd38f5bdb00f3969"
+      "size": 2734,
+      "sha256": "3c4eee71e57e2eb88dd065a9afa3c5a14783f1e62faf49e538f4149e376dae36"
     },
     {
       "path": "schemas/bootstrap-interview.v1.json",
@@ -1589,8 +1676,8 @@
     },
     {
       "path": "schemas/bootstrap-start.v1.json",
-      "size": 2080,
-      "sha256": "fd0faec444d345524cbbd8a6e8c1872751fb0fa966b8d51664f35cafc051ceeb"
+      "size": 2425,
+      "sha256": "5dd04ed1fef7750b34e34df1d08779f9a73f13d232e3c5a13fcff9df99abebd8"
     },
     {
       "path": "schemas/boundary-contract.v1.json",
@@ -1661,6 +1748,26 @@
       "path": "schemas/cascade-economics.v1.json",
       "size": 3270,
       "sha256": "2979eb5859bc9ea302f6cb4f2d647009663a02055c447c4af34df222c2625468"
+    },
+    {
+      "path": "schemas/composed-project-import.v1.json",
+      "size": 5444,
+      "sha256": "960ca35d19ea01d4f4fc36a8caa34b60222ddef39474417ad8aa476319ed0442"
+    },
+    {
+      "path": "schemas/composed-source-preservation.v1.json",
+      "size": 4829,
+      "sha256": "06fe58b8318f29b6a1e7b796846fd607a4f81d3941d4fb9f5f3a26ce01ef5e55"
+    },
+    {
+      "path": "schemas/conservative-source-preservation-policy.v1.json",
+      "size": 1532,
+      "sha256": "4acc0195e6c58e623f7c4e9874432ec75f08a8c2b59d83822ceefe6c8772f2b3"
+    },
+    {
+      "path": "schemas/context-block-intake.v1.json",
+      "size": 10058,
+      "sha256": "cd17eb2afd89753295525123192fe305fab54e71f2b91702ca402e8fad9d30df"
     },
     {
       "path": "schemas/continuous-audit-sentinel.v1.json",
@@ -2068,6 +2175,11 @@
       "sha256": "d8595c4e489ce8abcf4153134bebdcf996afe69502caa592f9dfe6ce6f966ef8"
     },
     {
+      "path": "schemas/preservation-receipt-intake.v1.json",
+      "size": 2707,
+      "sha256": "5c67b1a4ef23269440782b0add0d57a959ed5e305ae4a89e3a60babca6006701"
+    },
+    {
       "path": "schemas/privacy-public-projection.v1.json",
       "size": 2241,
       "sha256": "a0b7534d055929834c750e965b1971f93a3c20f540c61e5eeea7e22a7d05791b"
@@ -2134,8 +2246,8 @@
     },
     {
       "path": "schemas/project-import.v1.json",
-      "size": 4290,
-      "sha256": "1cf58430d1a34f0b57a368461936ce5d0bc8a3916e2e72928085d25afde03aa2"
+      "size": 4832,
+      "sha256": "137ea4fd03b73bfbeeb92ca756e7176011dbc88e8c6e110eb90a2db6b0ebb087"
     },
     {
       "path": "schemas/project-life-contract.v1.json",
@@ -2301,6 +2413,16 @@
       "path": "schemas/scheduler-admission-receipt.v1.json",
       "size": 1552,
       "sha256": "7c2529c84ef4b70a0c1c9eb8963f7d33a0c29bcbdae64b4a2d7575a8f716fcd2"
+    },
+    {
+      "path": "schemas/spawn-preparation.v1.json",
+      "size": 3058,
+      "sha256": "ee4114a8a9740b733dff905412f95fdd9832ed120334f67471b30b766844938c"
+    },
+    {
+      "path": "schemas/spawner-admission-roundtrip.v1.json",
+      "size": 4919,
+      "sha256": "f65161bfdcefdba13746b70650c97331fd9925d62dbe792dcde09e8d1c565f78"
     },
     {
       "path": "schemas/specialist-agent-plan.v1.json",
@@ -2471,6 +2593,16 @@
       "path": "schemas/task-run-loop.v1.json",
       "size": 3175,
       "sha256": "c39973b75266fe6bcb1a98dd3aebe7b09240abdd26780f21bdf410cb3dddde6b"
+    },
+    {
+      "path": "schemas/typed-project-evidence-binding.v1.json",
+      "size": 597,
+      "sha256": "2e046249582f1bc78f0ed3da4938b82cce66b0fd4755bdc7f8a6911f35da8c00"
+    },
+    {
+      "path": "schemas/typed-project-evidence-receipt.v1.json",
+      "size": 1448,
+      "sha256": "92eefc0d95cfa9c69f7d93c0663c3c11c8a29e26596bbd2e582f830d51a3a921"
     },
     {
       "path": "schemas/universal-response-handoff.v1.json",
@@ -23819,8 +23951,8 @@
     },
     {
       "path": "tests/integration-test.mjs",
-      "size": 11344,
-      "sha256": "753e40aa003a13204a21860977481e31fbac37d32e24786a12911ae5a590c381"
+      "size": 11382,
+      "sha256": "3fcb89bd10300cf1a2972e20f7f856c21b7295815d761a612e3d715a373eb4e7"
     },
     {
       "path": "tests/real-host-proof.mjs",
@@ -23829,13 +23961,18 @@
     },
     {
       "path": "tools/build.mjs",
-      "size": 2533,
-      "sha256": "7ba0a040a70a8fcaece073906a1e06f14b1515462fde3dba39f79690ea987b4b"
+      "size": 2624,
+      "sha256": "5f07f36ab9e4b090c39d46dbf9821b60e5284081e22f41dadc37883eed359cd0"
     },
     {
       "path": "tools/rebind-main-core.mjs",
-      "size": 2411,
-      "sha256": "902fe484aca0f5b4ac8e505de5fd87f0b9971dd3b23057500f08d22b452136ab"
+      "size": 2578,
+      "sha256": "03d055477f837c0c47bb645c5408cd39ef413579cc64bbfb3bda923cc7456c46"
+    },
+    {
+      "path": "tools/release-source.mjs",
+      "size": 6566,
+      "sha256": "f503f08ada328a18ba7b50e9c59e5eef8296c7bd454e417e24accec9f85fd4c8"
     },
     {
       "path": "tools/review-agent-builder-utility-harm.mjs",
@@ -23849,10 +23986,10 @@
     },
     {
       "path": "tools/verify-main-core.mjs",
-      "size": 3271,
-      "sha256": "87218cb6394663c3ed1726b2c4a9e06897e201ad150350eea3f6ddfae3787486"
+      "size": 3168,
+      "sha256": "66b42cb5cd0092343f4b2676022a92a7fd47117ae4da142bd7fc121d462d7d01"
     }
   ],
-  "bundle_sha256": "dd642d7475cf04f6760c6fc6bb8c8c7365de939a21844846b1024be63642c08f",
+  "bundle_sha256": "815d4d6c134df796b4f0c9d7c9b52a3248b8b6873332842f3b248a5f10e18197",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

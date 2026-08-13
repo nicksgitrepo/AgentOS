@@ -1,9 +1,9 @@
 {
   "schema": "agentos.integration.main-core-manifest.v2",
-  "source_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
-  "source_tree": "6f66883444f0340aac86905ab0e889832b420df6",
-  "candidate_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
-  "candidate_tree": "6f66883444f0340aac86905ab0e889832b420df6",
+  "source_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
+  "source_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
+  "candidate_commit": "95cfaa6421fc3a533932606c7bbc3f2cdefb3398",
+  "candidate_tree": "3c67192dffb306ac71fb5579ee8df63e66f9041a",
   "entries": [
     {
       "path": "control/README.md",
@@ -76,6 +76,11 @@
       "sha256": "b06333f67c440ff35d8b845efeda0f62428dacc2cd148fff0d12760a7e0f9095"
     },
     {
+      "path": "control/audit-first-import-procedure.mjs",
+      "size": 12669,
+      "sha256": "f9232ce892a5e1b17391092708faf252f6528cb694c57f47b319c326b1bc0185"
+    },
+    {
       "path": "control/audit-repair-integration-pyramid.mjs",
       "size": 17955,
       "sha256": "6c12e7cb4828b633e0513582499924fbca63d2870b596cc983b62cfc9fa36c04"
@@ -102,8 +107,8 @@
     },
     {
       "path": "control/bootstrap-compiler.mjs",
-      "size": 123862,
-      "sha256": "111066e2de692ff017308330924369d2e7967926fdcb61e3fb3a1a83af7c547a"
+      "size": 127694,
+      "sha256": "e3e4d18c93d8efe3552fd0cccad2b78b97f74f497e55634cc9df34443112a86a"
     },
     {
       "path": "control/bootstrap-conversation.mjs",
@@ -112,13 +117,13 @@
     },
     {
       "path": "control/bootstrap-coverage.mjs",
-      "size": 41489,
-      "sha256": "a9c748d4404894361a93ed3235b6f17ac7f22600a93436942cd4275df0c5f916"
+      "size": 42057,
+      "sha256": "b1ed8a40a91aac41a28146b9bae070bc28a9fa42a31623c9454616ea4b157301"
     },
     {
       "path": "control/bootstrap-discovery.mjs",
-      "size": 12845,
-      "sha256": "51eb42c9da7e8a7c80cdbf36095c8163171e3a3e4b1eca9c5171c093e460f7a5"
+      "size": 18090,
+      "sha256": "183c7b2f33b5a955af9088912c8ef4035ec99fa7a64d0f1226b120ca35abd198"
     },
     {
       "path": "control/bootstrap-interview.mjs",
@@ -231,9 +236,24 @@
       "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"
     },
     {
+      "path": "control/composed-project-import.mjs",
+      "size": 26704,
+      "sha256": "51dc69891220055f3ca014b3cec13a6cb59d1681798d432081ebaa98f5687a07"
+    },
+    {
+      "path": "control/conservative-preservation-policy.mjs",
+      "size": 8538,
+      "sha256": "0c6da0277a61230c3f48eda4466422cf190a2a9e8662d027cbe28a86c4fb7090"
+    },
+    {
       "path": "control/content-addressing.mjs",
       "size": 1916,
       "sha256": "421de352ad4db38a949b121884adc4a5a7ea9c6b1f8b8e6cf70ae7f7291dd37a"
+    },
+    {
+      "path": "control/context-block-intake.mjs",
+      "size": 16381,
+      "sha256": "6d8ff57bcc103241de3fe91d603e41b295ec4ea4c88321bdebf7bfab86ed69db"
     },
     {
       "path": "control/continuous-audit-sentinel.mjs",
@@ -651,6 +671,11 @@
       "sha256": "fc55995a338a4a55d05d58dc0465d12aeacf96c80b9bf52564a6448ece98daa4"
     },
     {
+      "path": "control/preservation-receipt-intake.mjs",
+      "size": 9217,
+      "sha256": "06fbe1b37098a916b483e42b76fb0dad85ca7eb74319955d6bee6295be9b10b0"
+    },
+    {
       "path": "control/private-context-detector.mjs",
       "size": 4867,
       "sha256": "0aec9f2eca52c9254d4c6df3e27dfae51eb81f873d7cfdb6bf889303a52b74e4"
@@ -692,8 +717,8 @@
     },
     {
       "path": "control/project-import.mjs",
-      "size": 42813,
-      "sha256": "fae9000d5a10c9c80b1a2807be55bd908a1871eca72a36f7ce35ac4c076d320e"
+      "size": 49284,
+      "sha256": "810165c3e9f3ffe6dcd72669d185b669972c5a2b388c39a8e235232a74f4031f"
     },
     {
       "path": "control/project-life-contract.mjs",
@@ -936,6 +961,16 @@
       "sha256": "2d8e8e11ff92123eb45465ec4133fd9945bb02ef5111e0f31e162dacc3401cb2"
     },
     {
+      "path": "control/spawn-preparation.mjs",
+      "size": 17755,
+      "sha256": "27369634129e9999ce3458e49fb3c0230fcc18f3eee83f0e67052a53e04d2c4b"
+    },
+    {
+      "path": "control/spawner-admission-roundtrip.mjs",
+      "size": 16796,
+      "sha256": "0125ad25fe1b523e73174fdf0029856bf88a1f5f9658e929e27d35664e8709f1"
+    },
+    {
       "path": "control/specialist-agent-compiler.mjs",
       "size": 57234,
       "sha256": "4b69cc46333275f2499fc63101a5ae74a844f9a76641ce0574a0e3036c2327b5"
@@ -1014,6 +1049,11 @@
       "path": "control/task-run-loop.mjs",
       "size": 28835,
       "sha256": "626ef06c0e59853f8e4805dab43a669241dbf39fbf67625f4adad30225d627c4"
+    },
+    {
+      "path": "control/typed-project-evidence-binding.mjs",
+      "size": 7177,
+      "sha256": "734d99c3bdb0d97a64a9142c21be16524998d27b0f04d4833e665b0c9d659db2"
     },
     {
       "path": "control/universal-response-gating.mjs",
