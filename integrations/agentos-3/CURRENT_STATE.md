@@ -1,6 +1,6 @@
 # AgentOS 3.0 test-build current state
 
-Status: `INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE`
+Status: `MEMORY_AUTHORITY_P0_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE`
 
 ## Exact candidate
 
@@ -9,7 +9,7 @@ Status: `INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE`
 - Main core: commit `029ccdb40efaeeae38ec1adabc6d3b44f5316310`,
   tree `6f66883444f0340aac86905ab0e889832b420df6`, 203 exact
   control entries.
-- Bundle: 4,768 canonical entries containing the current main-core input,
+- Bundle: 4,786 canonical entries containing the current main-core input,
   Memory M2, Agent Builder, the specialist block library, and root schemas.
 - Bundle identity is recorded in the adjacent generated manifest so the
   bundle never embeds a self-referential digest.
@@ -23,11 +23,18 @@ Status: `INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE`
   records and are exercised through the canonical combined-candidate suite.
   Historical task workflow labels remain provenance, not current release
   status.
-- Memory M2 is the only exposed Memory runtime. Root Project Memory is a
-  disabled compatibility surface and cannot co-author state.
+- Memory uses one five-type taxonomy: `EPISODIC`, `SEMANTIC`, `PROCEDURAL`,
+  `GOVERNANCE`, and `WORKING_TASK`. All eight legacy project-memory types and
+  all six M2 families map explicitly while retaining their source category;
+  unknown or altered mappings fail closed.
+- A content-addressed binding and signed M2 ledger event select exactly one
+  memory author for a project. The M2 adapter requires legacy project-memory
+  to be disabled and rechecks the external binding plus signed ledger binding
+  on every exposed call.
 - Memory remains default-off and requires an externally verified, bound test
-  capability. Initialize, propose, verify, accept, replay, reopen, and wrong-
-  capability denial pass.
+  capability. Records, run workspace, current projection, roster, rethread,
+  run recovery, and head recovery are exposed through guarded adapter views.
+  Migration, handoff journal, and successor transfer stubs fail closed.
 - Agent Builder compiles a typed, non-admitted governance candidate and denies
   unknown fields, contradictions, omissions, stale sources, overlapping scope,
   duplicate provenance, malformed digests, ambiguous SemVer, invalid identity
@@ -54,16 +61,18 @@ Status: `INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE`
 
 ## Evidence ceiling
 
-- Independent clearance establishes deterministic compiler behavior and the
+- Existing independent clearance establishes deterministic compiler behavior and the
   declared specialist authority boundaries. It does not establish provider or
   model quality for an eventual activated configuration, domain certification,
   or the fitness of a future consumer-specific context selection.
+- The memory-authority P0 changes have deterministic positive, negative, and
+  hostile local proof but have not received a separate independent clearance.
 - Provider activation, consumer adoption, real-data migration, deployment,
   public publication, license selection, and release promotion remain dormant
   and are not implied by the test-build proof.
-- The candidate is ready for an explicit owner release/promotion decision.
-  Provider/model evaluation, consumer-specific adoption, and any activated
-  configuration remain later bound gates.
+- Memory-authority independent clearance is required before any renewed
+  release/promotion decision. Provider/model evaluation, consumer-specific
+  adoption, and any activated configuration remain later bound gates.
 
 This record contains no private control payload, absolute consumer path,
 credential, provider identity, conversation identity, or external project

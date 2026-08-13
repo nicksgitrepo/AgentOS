@@ -7,6 +7,7 @@ import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { combinedBootstrap, assertInactive } from "../bootstrap.mjs";
 import { createAgentOS3Runtime, TEST_CAPABILITY_SCHEMA } from "../memory-adapter.mjs";
+import { compileMemoryAuthorityBinding } from "../memory-authority.mjs";
 import { compileGovernanceCandidate, validateCandidateFixtures } from "../agent-builder-adapter.mjs";
 import { installBundle } from "../install.mjs";
 import { rollbackTestBuild } from "../rollback.mjs";
@@ -39,6 +40,9 @@ async function createGitProject(parent, name, imported = false) {
 const bootstrap = await combinedBootstrap();
 assertInactive(bootstrap);
 assert.equal(bootstrap.activation, "OFF");
+assert.equal(bootstrap.memory.authority, "UNBOUND_EXCLUSIVE_SELECTION_REQUIRED");
+assert.deepEqual(bootstrap.memory.taxonomy, ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"]);
+assert.equal(bootstrap.memory.migration, "PLAN_ONLY_FAIL_CLOSED");
 assert.equal(bootstrap.specialist_library.admitted_for_test_build, true);
 assert.equal(bootstrap.specialist_library.activation, "OFF");
 assert.equal(createAgentOS3Runtime({ projectRef: "ref_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", controlPlaneRef: "ref_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }).memory_enabled, false);
@@ -79,12 +83,20 @@ const projectRef = `ref_${randomBytes(16).toString("hex")}`;
 const controlPlaneRef = `ref_${randomBytes(16).toString("hex")}`;
 const lease = randomBytes(32).toString("hex");
 const capability = { schema: TEST_CAPABILITY_SCHEMA, build_id: "AGENTOS_3_TEST_BUILD", project_ref: projectRef, control_plane_ref: controlPlaneRef, scope: "memory:test", expires_at_utc: new Date(Date.now() + 60_000).toISOString(), nonce: randomBytes(32).toString("hex"), lease };
-const runtime = createAgentOS3Runtime({ projectRef, controlPlaneRef, capabilityVerifier: async (value, expected) => value.lease === lease && value.build_id === expected.build_id && value.project_ref === expected.project_ref && value.control_plane_ref === expected.control_plane_ref });
+const authorityBinding = compileMemoryAuthorityBinding({ project_ref: projectRef, control_plane_ref: controlPlaneRef,
+  memory_project_id: "test-build", selected_authority: "MEMORY_M2" });
+const runtime = createAgentOS3Runtime({ projectRef, controlPlaneRef,
+  capabilityVerifier: async (value, expected) => value.lease === lease && value.build_id === expected.build_id && value.project_ref === expected.project_ref && value.control_plane_ref === expected.control_plane_ref,
+  memoryAuthorityVerifier: async (value, expected) => value.binding_digest === expected.binding_digest
+    && value.selected_authority === expected.selected_authority && value.authorities.legacy_project_memory === expected.legacy_project_memory });
 const wrongCapability = { ...capability, lease: randomBytes(32).toString("hex") };
-await assert.rejects(() => runtime.enableForTest(wrongCapability), /CAPABILITY_NOT_VERIFIED/);
-const memory = await runtime.enableForTest(capability);
+await assert.rejects(() => runtime.enableForTest(wrongCapability, authorityBinding), /CAPABILITY_NOT_VERIFIED/);
+const memory = await runtime.enableForTest(capability, authorityBinding);
 const memoryRoot = join(root, "memory");
 const first = await memory.initialize(memoryRoot, "test-build");
+assert.equal(first.descriptor.interfaces.run_workspace, "AVAILABLE_GUARDED");
+assert.equal(first.descriptor.interfaces.rethread, "AVAILABLE_GUARDED");
+assert.equal(first.descriptor.interfaces.handoff_journal, "FAIL_CLOSED_NOT_IMPLEMENTED");
 await first.memory.propose({ record_id: "memory:test-record", family: "fact", statement: "A staged test fact", role: "test", lane: "local" });
 await first.memory.transition("memory:test-record", "RECORD_VERIFIED", { actor: "reviewer" });
 await first.memory.transition("memory:test-record", "RECORD_ACCEPTED", { actor: "controller" });

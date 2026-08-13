@@ -1,16 +1,21 @@
 {
   "schema": "agentos.integration.compatibility-map.v1",
+  "version": 1,
   "routing_authority": "main-agentos-core",
+  "executable_authority": "integrations/agentos-3/memory-authority.mjs",
+  "canonical_memory_taxonomy": ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"],
+  "category_mapping": "contracts/memory-authority.v1.json",
   "legacy_authorities": {
-    "project-memory": {"route": "LEGACY_MAIN_MEMORY_PRESERVED_OFF", "co_authority": false, "migration": false, "replacement": "memory-m2-typed-adapter"},
-    "project-memory-store": {"route": "LEGACY_MAIN_MEMORY_PRESERVED_OFF", "co_authority": false, "migration": false, "replacement": "memory-m2-typed-adapter"},
-    "project-memory-capsule": {"route": "LEGACY_MAIN_MEMORY_PRESERVED_OFF", "co_authority": false, "migration": false, "replacement": "memory-m2-typed-adapter"},
+    "project-memory": {"route": "LEGACY_MAIN_MEMORY_DISABLED_WHEN_M2_AUTHORITATIVE", "co_authority": false, "migration": "PLAN_ONLY_FAIL_CLOSED", "replacement": "memory-m2-typed-adapter"},
+    "project-memory-store": {"route": "LEGACY_MAIN_MEMORY_DISABLED_WHEN_M2_AUTHORITATIVE", "co_authority": false, "migration": "PLAN_ONLY_FAIL_CLOSED", "replacement": "memory-m2-typed-adapter"},
+    "project-memory-capsule": {"route": "LEGACY_MAIN_MEMORY_DISABLED_WHEN_M2_AUTHORITATIVE", "co_authority": false, "migration": "PLAN_ONLY_FAIL_CLOSED", "replacement": "memory-m2-typed-adapter"},
     "role-governance": {"route": "MAIN_CORE_GOVERNANCE_AUTHORITY", "co_authority": false, "replacement": "agent-builder-typed-projection"},
     "task-role": {"route": "MAIN_CORE_TASK_PACKET_AUTHORITY", "co_authority": false, "replacement": "agent-builder-typed-projection"}
   },
   "new_inputs": {
-    "memory-m2-typed-adapter": {"default": "OFF", "requires": "externally_verified_bound_test_capability", "scope": "test_only", "migration": "forbidden"},
+    "memory-m2-typed-adapter": {"default": "OFF", "requires": ["externally_verified_bound_test_capability", "externally_verified_exclusive_memory_authority", "signed_m2_authority_binding"], "scope": "test_only", "migration": "PLAN_ONLY_FAIL_CLOSED"},
     "agent-builder-typed-projection": {"compiler": "main-agentos-core", "authority_effect_grants": [], "admission": "external_only", "activation": "external_only"}
   },
-  "invariants": ["one_main_governance_compiler", "one_main_task_packet_authority", "legacy_memory_never_silently_coauthors", "memory_m2_never_replaces_custody"]
+  "deferred_interfaces": {"handoff_journal": "FAIL_CLOSED_NOT_IMPLEMENTED", "successor_transfer": "FAIL_CLOSED_NOT_IMPLEMENTED"},
+  "invariants": ["one_main_governance_compiler", "one_main_task_packet_authority", "one_project_one_memory_author", "legacy_memory_never_silently_coauthors", "source_category_preserved_in_every_mapping", "unknown_category_fails_closed", "memory_m2_never_replaces_custody"]
 }

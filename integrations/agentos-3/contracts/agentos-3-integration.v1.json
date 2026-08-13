@@ -32,9 +32,17 @@
       "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2",
       "state": "IMMUTABLE_INPUT_ACCEPTED_FOR_INACTIVE_TEST_BUILD",
       "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
+      "adapter_state": "P0_MEMORY_AUTHORITY_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE",
       "default_enabled": false,
       "custody": "private_local_only",
-      "migration": "forbidden"
+      "canonical_taxonomy": ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"],
+      "mapping_version": "agentos.memory.category-map.v1",
+      "authority_contract": "contracts/memory-authority.v1.json",
+      "authority_binding": "contracts/memory-authority-binding.v1.json",
+      "authority_binding_sha256": "5e3ae96e9fb49850465c7d85bd82de50d9a270844200cb36fbb9701fa878ce9e",
+      "exposed_surfaces": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery"],
+      "deferred_fail_closed": ["migration", "handoff_journal", "successor_transfer"],
+      "migration": "PLAN_ONLY_FAIL_CLOSED"
     },
     {
       "id": "agent-builder",
@@ -64,16 +72,18 @@
     }
   ],
   "contracts": {
-    "memory": ["activation_off_by_default", "private_custody", "recipient_authority_required", "replay_verified", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
+    "memory": ["activation_off_by_default", "private_custody", "five_type_canonical_taxonomy", "total_lossless_source_category_mapping_exposed", "one_project_one_memory_author", "externally_verified_exclusive_binding", "signed_m2_authority_binding", "recipient_authority_required", "replay_verified", "run_workspace_current_projection_roster_rethread_recovery_exposed", "migration_handoff_successor_fail_closed", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
     "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial", "independent_deterministic_utility_harm_clearance"],
     "specialist_block_library": ["123_reusable_packages", "620_compileable_role_recipes", "typed_gate_dependency_closure", "independent_utility_harm_clearance", "inactive_test_build_only"],
     "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK",
     "install": "EXTERNAL_SIBLING_ONLY",
     "capability": "externally_supplied_bound_lease_verified_outside_artifact",
     "compatibility_map": "contracts/compatibility-map.v1.json",
+    "memory_authority": "contracts/memory-authority.v1.json",
+    "memory_authority_binding": "contracts/memory-authority-binding.v1.json",
     "main_core_distribution": "main-core/source-manifest.json",
     "agent_builder_package": "agent-builder/package-manifest.json"
   },
   "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
-  "proof_ceiling": ["provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"]
+  "proof_ceiling": ["memory_authority_independent_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "handoff_journal", "successor_transfer", "release_promotion", "public_release"]
 }

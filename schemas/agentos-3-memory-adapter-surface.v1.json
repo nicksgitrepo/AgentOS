@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.integration.memory_adapter_surface.v1",
+  "title": "AgentOS 3 guarded Memory M2 adapter surface",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "activation",
+    "project_ref",
+    "memory_project_id",
+    "authority_binding_digest",
+    "selected_authority",
+    "legacy_project_memory",
+    "mapping_version",
+    "canonical_types",
+    "interfaces"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.integration.memory_adapter_surface.v1"},
+    "version": {"const": 1},
+    "activation": {"const": "TEST_ONLY"},
+    "project_ref": {"type": "string", "pattern": "^ref_[a-z0-9]{32}$"},
+    "memory_project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "authority_binding_digest": {"type": "string", "pattern": "^sha256:[a-z2-7]{52}$"},
+    "selected_authority": {"const": "MEMORY_M2"},
+    "legacy_project_memory": {"const": "DISABLED"},
+    "mapping_version": {"const": "agentos.memory.category-map.v1"},
+    "canonical_types": {"const": ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"]},
+    "interfaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "records",
+        "taxonomy",
+        "run_workspace",
+        "current_projection",
+        "roster",
+        "rethread",
+        "recovery",
+        "migration",
+        "handoff_journal",
+        "successor_transfer"
+      ],
+      "properties": {
+        "records": {"const": "AVAILABLE_GUARDED"},
+        "taxonomy": {"const": "AVAILABLE_TOTAL_FAIL_CLOSED"},
+        "run_workspace": {"const": "AVAILABLE_GUARDED"},
+        "current_projection": {"const": "AVAILABLE_GUARDED"},
+        "roster": {"const": "AVAILABLE_GUARDED"},
+        "rethread": {"const": "AVAILABLE_GUARDED"},
+        "recovery": {"const": "AVAILABLE_GUARDED"},
+        "migration": {"const": "FAIL_CLOSED_NOT_IMPLEMENTED"},
+        "handoff_journal": {"const": "FAIL_CLOSED_NOT_IMPLEMENTED"},
+        "successor_transfer": {"const": "FAIL_CLOSED_NOT_IMPLEMENTED"}
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory.category_mapping.v1",
+  "title": "AgentOS lossless source-to-canonical memory category mapping",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "mapping_version",
+    "source_system",
+    "source_category",
+    "canonical_type",
+    "preservation"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.memory.category_mapping.v1"},
+    "version": {"const": 1},
+    "mapping_version": {"const": "agentos.memory.category-map.v1"},
+    "source_system": {"enum": ["LEGACY_PROJECT_MEMORY", "MEMORY_M2"]},
+    "source_category": {"type": "string", "minLength": 1},
+    "canonical_type": {"enum": ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"]},
+    "preservation": {"const": "SOURCE_SYSTEM_AND_CATEGORY_RETAINED_LOSSLESSLY"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}}},
+      "then": {"properties": {"source_category": {"enum": [
+        "PROJECT_CONTEXT",
+        "GOAL",
+        "DECISION",
+        "REPOSITORY_MAP_REF",
+        "HANDOFF",
+        "POLICY_REF",
+        "INVALIDATION",
+        "CONFLICT"
+      ]}}}
+    },
+    {
+      "if": {"properties": {"source_system": {"const": "MEMORY_M2"}}},
+      "then": {"properties": {"source_category": {"enum": [
+        "decision",
+        "fact",
+        "procedure",
+        "lesson",
+        "evidence",
+        "reference"
+      ]}}}
+    }
+  ],
+  "oneOf": [
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "PROJECT_CONTEXT"}, "canonical_type": {"const": "SEMANTIC"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "GOAL"}, "canonical_type": {"const": "WORKING_TASK"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "DECISION"}, "canonical_type": {"const": "GOVERNANCE"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "REPOSITORY_MAP_REF"}, "canonical_type": {"const": "SEMANTIC"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "HANDOFF"}, "canonical_type": {"const": "WORKING_TASK"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "POLICY_REF"}, "canonical_type": {"const": "GOVERNANCE"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "INVALIDATION"}, "canonical_type": {"const": "GOVERNANCE"}}},
+    {"properties": {"source_system": {"const": "LEGACY_PROJECT_MEMORY"}, "source_category": {"const": "CONFLICT"}, "canonical_type": {"const": "GOVERNANCE"}}},
+    {"properties": {"source_system": {"const": "MEMORY_M2"}, "source_category": {"const": "decision"}, "canonical_type": {"const": "GOVERNANCE"}}},
+    {"properties": {"source_system": {"const": "MEMORY_M2"}, "source_category": {"const": "fact"}, "canonical_type": {"const": "SEMANTIC"}}},
+    {"properties": {"source_system": {"const": "MEMORY_M2"}, "source_category": {"const": "procedure"}, "canonical_type": {"const": "PROCEDURAL"}}},
+    {"properties": {"source_system": {"const": "MEMORY_M2"}, "source_category": {"const": "lesson"}, "canonical_type": {"const": "SEMANTIC"}}},
+    {"properties": {"source_system": {"const": "MEMORY_M2"}, "source_category": {"const": "evidence"}, "canonical_type": {"const": "EPISODIC"}}},
+    {"properties": {"source_system": {"const": "MEMORY_M2"}, "source_category": {"const": "reference"}, "canonical_type": {"const": "SEMANTIC"}}}
+  ]
+}
