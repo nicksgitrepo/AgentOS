@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory.goal_amendment.v1",
+  "title": "AgentOS immutable-goal amendment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_id", "task_id", "amendment_number", "authority_ref", "reason", "success_criteria", "evidence_refs", "recorded_at_utc", "predecessor_amendment_digest", "amendment_digest"],
+  "properties": {
+    "schema": {"const": "agentos.memory.goal_amendment.v1"},
+    "version": {"const": 1},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "task_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "amendment_number": {"type": "integer", "minimum": 1},
+    "authority_ref": {"$ref": "#/$defs/ref"},
+    "reason": {"type": "string", "minLength": 1},
+    "success_criteria": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/ref"}},
+    "recorded_at_utc": {"type": "string", "format": "date-time"},
+    "predecessor_amendment_digest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "amendment_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-z2-7]{52}$"},
+    "ref": {"type": "string", "pattern": "^(sha256:[a-z2-7]{52}|obj_[a-z2-7]{52}|ref_[a-z0-9]{32})$"}
+  }
+}

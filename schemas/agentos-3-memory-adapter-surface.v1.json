@@ -39,6 +39,7 @@
         "roster",
         "rethread",
         "recovery",
+        "continuity",
         "migration",
         "handoff_journal",
         "successor_transfer"
@@ -51,9 +52,10 @@
         "roster": {"const": "AVAILABLE_GUARDED"},
         "rethread": {"const": "AVAILABLE_GUARDED"},
         "recovery": {"const": "AVAILABLE_GUARDED"},
+        "continuity": {"const": "AVAILABLE_GUARDED_TEST_ONLY"},
         "migration": {"const": "FAIL_CLOSED_NOT_IMPLEMENTED"},
-        "handoff_journal": {"const": "FAIL_CLOSED_NOT_IMPLEMENTED"},
-        "successor_transfer": {"const": "FAIL_CLOSED_NOT_IMPLEMENTED"}
+        "handoff_journal": {"const": "AVAILABLE_GUARDED_TEST_ONLY"},
+        "successor_transfer": {"const": "AVAILABLE_GUARDED_TEST_ONLY"}
       }
     }
   }

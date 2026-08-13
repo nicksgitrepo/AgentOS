@@ -137,7 +137,7 @@ try {
   assert.equal(opened.descriptor.legacy_project_memory, "DISABLED");
   assert.deepEqual(opened.descriptor.canonical_types, CANONICAL_MEMORY_TYPES);
   assert.equal(opened.descriptor.interfaces.taxonomy, "AVAILABLE_TOTAL_FAIL_CLOSED");
-  assert.deepEqual(contract.adapter.available, ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery"]);
+  assert.deepEqual(contract.adapter.available, ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery", "continuity"]);
   assert.equal(opened.taxonomy.mapM2RecordFamily("procedure").canonical_type, "PROCEDURAL");
   assert.throws(() => opened.taxonomy.mapM2RecordFamily("working"),
     (error) => error.code === "UNMAPPED_MEMORY_CATEGORY");
@@ -206,8 +206,9 @@ try {
 
   const beforeDeferred = (await opened.memory.projectState()).head_sequence;
   await assert.rejects(() => opened.migrate(), (error) => error.code === "MEMORY_MIGRATION_NOT_IMPLEMENTED");
-  await assert.rejects(() => opened.handoffJournal(), (error) => error.code === "HANDOFF_JOURNAL_NOT_IMPLEMENTED");
-  await assert.rejects(() => opened.successorTransfer(), (error) => error.code === "SUCCESSOR_TRANSFER_NOT_IMPLEMENTED");
+  assert.equal(opened.descriptor.interfaces.continuity, "AVAILABLE_GUARDED_TEST_ONLY");
+  assert.equal(opened.descriptor.interfaces.handoff_journal, "AVAILABLE_GUARDED_TEST_ONLY");
+  assert.equal(opened.descriptor.interfaces.successor_transfer, "AVAILABLE_GUARDED_TEST_ONLY");
   assert.equal((await opened.memory.projectState()).head_sequence, beforeDeferred);
 
   const reopened = await adapter.reopen(memoryRoot);

@@ -72,14 +72,16 @@ unverified authority stops the call without invoking the requested operation.
 ## Adapter surface
 
 The guarded adapter exposes M2 records, run workspace, current projection,
-agent roster, rethread, run recovery, and head recovery. The returned project
+agent roster, rethread, run recovery, head recovery, and the test-only signed
+continuity controller. The returned project
 view exposes verification only; raw writable M2 project custody is not returned
 through this adapter.
 
-Migration, handoff journal, and successor transfer are explicit interface
-stubs. They throw typed not-implemented errors. Classifying a legacy `HANDOFF`
-record as `WORKING_TASK` does not implement or authorize a new journal or a
-successor transfer.
+Migration remains an explicit interface stub. The handoff journal and successor
+transfer route through `memory-continuity.mjs`; they remain capability-guarded,
+test-only, and inactive for consumers. The controller records an externally
+verified spawn receipt but does not spawn an agent. Classifying a legacy
+`HANDOFF` record as `WORKING_TASK` does not migrate or authorize it.
 
 ## Migration and invalidation
 

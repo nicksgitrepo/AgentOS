@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory.continuity_checkpoint.v1",
+  "title": "AgentOS append-first continuity checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_id", "task_id", "checkpoint_number", "status", "recorded_at_utc", "agent_id", "generation", "worktree", "active_goal_digest", "predecessor_checkpoint_digest", "entries", "checkpoint_digest"],
+  "properties": {
+    "schema": {"const": "agentos.memory.continuity_checkpoint.v1"},
+    "version": {"const": 1},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "task_id": {"$ref": "#/$defs/id"},
+    "checkpoint_number": {"type": "integer", "minimum": 1},
+    "status": {"enum": ["ACTIVE", "BLOCKED", "PHASE_COMPLETE", "FINAL", "RECOVERY"]},
+    "recorded_at_utc": {"type": "string", "format": "date-time"},
+    "agent_id": {"$ref": "#/$defs/id"},
+    "generation": {"type": "integer", "minimum": 1},
+    "worktree": {"$ref": "memory-continuity-task.v1.json#/$defs/worktree"},
+    "active_goal_digest": {"$ref": "#/$defs/digest"},
+    "predecessor_checkpoint_digest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["class", "epistemic_status", "statement", "evidence_refs", "provenance_refs", "attempt_disposition"],
+        "properties": {
+          "class": {"enum": ["OBSERVATION", "DECISION", "CODE_CHANGE", "TEST_RESULT", "BLOCKER", "ASSUMPTION", "DISCOVERY", "GATE_CANDIDATE", "MEMORY_CANDIDATE"]},
+          "epistemic_status": {"enum": ["FACT", "CLAIM", "RECOMMENDATION"]},
+          "statement": {"type": "string", "minLength": 1},
+          "evidence_refs": {"$ref": "#/$defs/refs"},
+          "provenance_refs": {"$ref": "#/$defs/refs"},
+          "attempt_disposition": {"enum": ["NOT_APPLICABLE", "SUCCEEDED", "DISPROVEN", "REJECTED", "BLOCKED"]}
+        }
+      }
+    },
+    "checkpoint_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-z2-7]{52}$"},
+    "ref": {"type": "string", "pattern": "^(sha256:[a-z2-7]{52}|obj_[a-z2-7]{52}|ref_[a-z0-9]{32})$"},
+    "refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/ref"}}
+  }
+}

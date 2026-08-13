@@ -1,0 +1,102 @@
+{
+  "schema": "agentos.integration.memory-continuity-contract.v1",
+  "version": 1,
+  "status": "CANDIDATE_INACTIVE",
+  "activation": "TEST_ONLY",
+  "authority": {
+    "required": "EXCLUSIVE_MEMORY_M2",
+    "adapter_guard_per_call": true,
+    "legacy_coauthority": "FORBIDDEN",
+    "worker_seed_or_governance_rewrite": "FORBIDDEN"
+  },
+  "task_custody": {
+    "goal": "IMMUTABLE_WITH_TYPED_AMENDMENTS",
+    "worktree_owner": "TASK",
+    "agent_owner": "LEASE_ONLY",
+    "agent_archive_effect": "RELEASE_AGENT_LEASE_ONLY_RETAIN_WORKTREE",
+    "structured_ledger": "MACHINE_AUTHORITY",
+    "handoff_md": "APPEND_FIRST_HUMAN_PROJECTION_FROM_SIGNED_CHECKPOINT_CHAIN",
+    "evidence": "PROOF_ONLY",
+    "seed": "INHERITED_GOVERNED_CONTEXT"
+  },
+  "checkpoint": {
+    "maximum_interval_minutes_default": 15,
+    "timer_role": "FAILSAFE_ONLY",
+    "lifecycle_authority": "STATE_MACHINE",
+    "material_event_classes": ["OBSERVATION", "DECISION", "CODE_CHANGE", "TEST_RESULT", "BLOCKER", "ASSUMPTION", "DISCOVERY", "GATE_CANDIDATE", "MEMORY_CANDIDATE"],
+    "epistemic_classes": ["FACT", "CLAIM", "RECOMMENDATION"],
+    "negative_knowledge_dispositions": ["DISPROVEN", "REJECTED", "BLOCKED"],
+    "projection_recovery": "APPEND_ONLY_MISSING_SIGNED_SUFFIX_OR_FAIL_CLOSED_ON_DIVERGENCE"
+  },
+  "failure_policy": {
+    "scope": "CHAIN_LEVEL_ACROSS_GENERATIONS",
+    "material_identity": ["failure_class", "normalized_scope", "normalized_cause", "affected_gate"],
+    "third_successive_identical_disposition": "ROUTE_CHANGE_REQUIRED",
+    "identical_successor_package": "DENIED",
+    "allowed_recovery": "MATERIALLY_CHANGED_SEED_ROLE_MODEL_WHEN_AUTHORIZED_OR_STRATEGY"
+  },
+  "handoff_sequence": [
+    "PREPARE_HANDOFF",
+    "FREEZE_PREDECESSOR_WRITES",
+    "FINAL_CHECKPOINT",
+    "SPAWNER_VERIFY_WORKTREE_AND_EVIDENCE",
+    "CONSOLIDATE_SUCCESSOR_CONTEXT",
+    "SPAWN_SUCCESSOR",
+    "SUCCESSOR_VERIFY_CHECKSUM",
+    "SUCCESSOR_ACK_OR_DIVERGENCE",
+    "TRANSFER_TASK_WORKTREE_LEASE",
+    "VERIFY_HEAD_DIRTY_PATCH_AND_MANIFEST",
+    "HANDOFF_COMMITTED",
+    "ARCHIVE_PREDECESSOR"
+  ],
+  "transaction_guarantees": [
+    "CONTROLLER_RECORDS_EXTERNAL_SPAWN_RECEIPT_BUT_NEVER_SPAWNS",
+    "PREDECESSOR_WRITES_FREEZE_BEFORE_FINAL_CHECKPOINT",
+    "SUCCESSOR_CANNOT_ACK_MISMATCHED_CONTEXT_GOAL_WORKTREE_OR_ROLE_MANIFEST",
+    "PROPOSED_TRANSFER_DOES_NOT_CHANGE_AUTHORITATIVE_LEASE",
+    "FAILURE_BEFORE_COMMIT_RETAINS_PREDECESSOR_CUSTODY",
+    "ARCHIVE_REQUIRES_COMMITTED_HANDOFF",
+    "ARCHIVE_NEVER_DELETES_OR_COPIES_TASK_WORKTREE"
+  ],
+  "portable_files": {
+    "controller": "integrations/agentos-3/memory-continuity.mjs",
+    "task_schema": "schemas/memory-continuity-task.v1.json",
+    "checkpoint_schema": "schemas/memory-continuity-checkpoint.v1.json",
+    "goal_amendment_schema": "schemas/memory-goal-amendment.v1.json",
+    "failure_schema": "schemas/memory-failure-signature.v1.json",
+    "handoff_schema": "schemas/memory-handoff-transition.v1.json",
+    "governance": "integrations/agentos-3/governance/memory-continuity.v1.md",
+    "binding": "integrations/agentos-3/contracts/memory-continuity-binding.v1.json",
+    "test": "integrations/agentos-3/tests/memory-continuity-test.mjs"
+  },
+  "migration": {
+    "from": "MEMORY_AUTHORITY_P0_HANDOFF_AND_SUCCESSOR_STUBS",
+    "to": "MEMORY_M2_GUARDED_CONTINUITY_V1",
+    "rule": "NO_EXISTING_TASK_IS_IMPLICITLY_ADOPTED;_CREATE_TYPED_TASK_MANIFEST_AND_FIRST_CHECKPOINT_UNDER_EXCLUSIVE_M2_AUTHORITY",
+    "rollback": "DISABLE_TEST_CAPABILITY_AND_RETAIN_SIGNED_LEDGER_AND_TASK_WORKTREE"
+  },
+  "invalidation": {
+    "goal_amendment": "INVALIDATE_SUCCESSOR_CONTEXT_AND_UNCOMMITTED_HANDOFF",
+    "worktree_change": "REQUIRE_NEW_CHECKPOINT_AND_TRANSFER_REVERIFICATION",
+    "memory_authority_change": "STOP_WRITES_UNTIL_EXCLUSIVE_REBIND",
+    "seed_or_role_change": "INVALIDATE_SUCCESSOR_CONTEXT_AND_ROLE_CONTEXT_MANIFEST",
+    "checkpoint_mutation": "FAIL_CLOSED_CHAIN_INVALID",
+    "controller_or_schema_change": "INVALIDATE_CONTINUITY_BINDING_AND_REQUIRE_FOCUSED_REEVALUATION"
+  },
+  "useful_state_loss": {
+    "bound": "AT_MOST_MATERIAL_STATE_SINCE_LAST_EVENT_CHECKPOINT_WITH_DEFAULT_MAXIMUM_15_MINUTES",
+    "material_event_checkpoint": "REQUIRED_IMMEDIATELY",
+    "unrecorded_external_event": "NOT_CLAIMED_RECOVERABLE",
+    "signed_state_and_task_worktree": "ZERO_LOSS_EXPECTED_UNDER_TESTED_LOCAL_CRASH_FIXTURES"
+  },
+  "evidence_ceiling": [
+    "INDEPENDENT_CONTINUITY_CLEARANCE",
+    "REAL_HOST_PROCESS_DISAPPEARANCE",
+    "REAL_AGENT_SPAWN_AND_ARCHIVE",
+    "REAL_SCHEDULER_WORKTREE_LEASE_INTEGRATION",
+    "CONSUMER_ADOPTION",
+    "PROVIDER_ACTIVATION",
+    "RELEASE_PROMOTION",
+    "PUBLIC_RELEASE"
+  ]
+}

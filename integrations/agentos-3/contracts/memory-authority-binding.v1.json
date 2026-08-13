@@ -8,11 +8,11 @@
   "inputs": [
     {"path": "integrations/agentos-3/bootstrap.mjs", "sha256": "17d69fe534ece84b1ad6478243c4e23673b063352b9e34bf8c47f63eec95e16a", "role": "DEFAULT_OFF_BOOTSTRAP_PROJECTION"},
     {"path": "integrations/agentos-3/contracts/compatibility-map.v1.json", "sha256": "052c308159487096a2c109e936bc53517fe00351e6389948db9f105dbf0dd447", "role": "LEGACY_M2_ROUTE_MAP"},
-    {"path": "integrations/agentos-3/contracts/memory-authority.v1.json", "sha256": "4768fd8ef3ea73fc1af9b308df5340c748d8c8c3e52f9675ce35f07083217519", "role": "VERSIONED_AUTHORITY_CONTRACT"},
-    {"path": "integrations/agentos-3/governance/memory-authority.v1.md", "sha256": "0e47dda3c75cba0dc922b5188f51016fea46cd04e8ea90404f300a33caf090e3", "role": "VERSIONED_GOVERNANCE"},
+    {"path": "integrations/agentos-3/contracts/memory-authority.v1.json", "sha256": "402173280ead98e2f7f140889499a13d2f6420f1967248e88069c73af0de57b3", "role": "VERSIONED_AUTHORITY_CONTRACT"},
+    {"path": "integrations/agentos-3/governance/memory-authority.v1.md", "sha256": "7574e0845b3a039af31b3b3d8a334b523d7f4c35d31eacb9addf48e7d5715bd5", "role": "VERSIONED_GOVERNANCE"},
     {"path": "integrations/agentos-3/main-core/control/project-memory-records.mjs", "sha256": "9e5c227dec4fec950d0da2b2600de41f43d0ad7872f9501dd689772730a89d31", "role": "LEGACY_CATEGORY_SOURCE"},
-    {"path": "integrations/agentos-3/memory-adapter.mjs", "sha256": "b1a942deed75570776974a527d4efebe737093f34f9310b4d1a89e3e7eee0981", "role": "GUARDED_ADAPTER"},
-    {"path": "integrations/agentos-3/memory-authority.mjs", "sha256": "7a07734d79ba3f2d18af437b7bc2c09c3974ebe987b49f1b0f6f74a93bd1568d", "role": "EXECUTABLE_AUTHORITY"},
+    {"path": "integrations/agentos-3/memory-adapter.mjs", "sha256": "2bc2b97070ddd30c0b29a93c4cf0ab2ce0baf6e26f1bf668410eeabf3d822f7a", "role": "GUARDED_ADAPTER"},
+    {"path": "integrations/agentos-3/memory-authority.mjs", "sha256": "ad2036a0a9e7ddb146c5f6588fdc9ef214520c2b6474d5c64a10a878e076c016", "role": "EXECUTABLE_AUTHORITY"},
     {"path": "integrations/agentos-3/memory-m2/src/canonical.mjs", "sha256": "157e8b1597b95a1da015d657c84cc28ef526e022072dd07e791144b7af8b7fb2", "role": "M2_CANONICAL_DIGEST_INPUT"},
     {"path": "integrations/agentos-3/memory-m2/src/index.mjs", "sha256": "06283fa9fc9521390d5dae4a0ab577bf9da33d997dd7b221342eb0f7633cfa51", "role": "M2_EXPORTED_SURFACE_INPUT"},
     {"path": "integrations/agentos-3/memory-m2/src/memory.mjs", "sha256": "a3707fcc80ea803f4ffd48eceb12e1ad732df5671caaf931c6584993082d8ff3", "role": "M2_CATEGORY_SOURCE"},
@@ -20,9 +20,9 @@
     {"path": "integrations/agentos-3/memory-m2/src/projections.mjs", "sha256": "5255310bdfb34223a70f7297b21a4a031a6ebff541d8a2fc7c82fbfdfaec3801", "role": "M2_CURRENT_PROJECTION_INPUT"},
     {"path": "integrations/agentos-3/memory-m2/src/rosters.mjs", "sha256": "7b3d6c9488db3167af8d5342c956916e6a3c290ae79c6a4d9d6ce77356ff201b", "role": "M2_ROSTER_RETHREAD_INPUT"},
     {"path": "integrations/agentos-3/memory-m2/src/runs.mjs", "sha256": "0e38a17016661b7392d73e58b8771381dba5e00fc39ed24d34005769c84c2a20", "role": "M2_RUN_RECOVERY_INPUT"},
-    {"path": "schemas/agentos-3-memory-adapter-surface.v1.json", "sha256": "554adabb4314ba0e9424cdce1f3950cdca21c7df65698a9b6303d97171068243", "role": "ADAPTER_SURFACE_SCHEMA"},
+    {"path": "schemas/agentos-3-memory-adapter-surface.v1.json", "sha256": "93df6e30cb652f4c7983f1a83bdac9c2bf312e72325f0d80cbe663b37b2c16f3", "role": "ADAPTER_SURFACE_SCHEMA"},
     {"path": "schemas/memory-authority-binding.v1.json", "sha256": "f1254c488ce5523a474ea577869b41b10fa337e7f331f7114562e3b9bf26773b", "role": "AUTHORITY_BINDING_SCHEMA"},
     {"path": "schemas/memory-category-mapping.v1.json", "sha256": "487b6341c85a486012caade07c4d3a0d526614e0f56b642e35e16982a19f5de5", "role": "CATEGORY_MAPPING_SCHEMA"}
   ],
-  "binding_sha256": "5e3ae96e9fb49850465c7d85bd82de50d9a270844200cb36fbb9701fa878ce9e"
+  "binding_sha256": "8143560d370c679ef0b369ec816cdf92a96463d392b2a2bc7b76682efbd8627d"
 }

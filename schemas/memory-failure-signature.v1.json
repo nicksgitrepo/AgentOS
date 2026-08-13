@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory.failure_signature.v1",
+  "title": "AgentOS chain-level failure signature",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_id", "task_id", "agent_id", "generation", "failure_class", "normalized_scope", "normalized_cause", "affected_gate", "evidence_refs", "route", "signature_digest", "route_digest", "recorded_at_utc", "failure_digest"],
+  "properties": {
+    "schema": {"const": "agentos.memory.failure_signature.v1"},
+    "version": {"const": 1},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "task_id": {"$ref": "#/$defs/id"},
+    "agent_id": {"$ref": "#/$defs/id"},
+    "generation": {"type": "integer", "minimum": 1},
+    "failure_class": {"$ref": "#/$defs/id"},
+    "normalized_scope": {"type": "string", "minLength": 1},
+    "normalized_cause": {"type": "string", "minLength": 1},
+    "affected_gate": {"$ref": "#/$defs/id"},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/ref"}},
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seed_digest", "role_manifest_digest", "model", "duty", "strategy_digest"],
+      "properties": {
+        "seed_digest": {"$ref": "#/$defs/digest"},
+        "role_manifest_digest": {"$ref": "#/$defs/digest"},
+        "model": {"type": "string", "minLength": 1},
+        "duty": {"type": "string", "minLength": 1},
+        "strategy_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "signature_digest": {"$ref": "#/$defs/digest"},
+    "route_digest": {"$ref": "#/$defs/digest"},
+    "recorded_at_utc": {"type": "string", "format": "date-time"},
+    "failure_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-z2-7]{52}$"},
+    "ref": {"type": "string", "pattern": "^(sha256:[a-z2-7]{52}|obj_[a-z2-7]{52}|ref_[a-z0-9]{32})$"}
+  }
+}

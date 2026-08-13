@@ -268,13 +268,3 @@ export function requestMemoryMigration() {
   throw new MemoryError("MEMORY_MIGRATION_NOT_IMPLEMENTED",
     "memory migration is plan-only and cannot run in the inactive P0 authority slice");
 }
-
-export function requestHandoffJournal() {
-  throw new MemoryError("HANDOFF_JOURNAL_NOT_IMPLEMENTED",
-    "handoff journal and successor transfer are outside this P0 slice");
-}
-
-export function requestSuccessorTransfer() {
-  throw new MemoryError("SUCCESSOR_TRANSFER_NOT_IMPLEMENTED",
-    "handoff journal and successor transfer are outside this P0 slice");
-}
