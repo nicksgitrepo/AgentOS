@@ -224,6 +224,10 @@
       "path": "docs/bootstrap-source-composition-breakpoint-2026-08-13.md",
       "sha256": "da09601d3d03d93fe45b99a98658aaf3ae7f1cdbe5131c79a75ddd3a3d050f61"
     },
+    "bootstrap_composed_plan_readback": {
+      "path": "docs/bootstrap-composed-plan-readback-2026-08-13.md",
+      "sha256": "52fd1cded4a9ec187989e95a02c1e54fe899ec4c61012057e568505f4913a61f"
+    },
     "audit_first_import_controller": {
       "path": "control/audit-first-import-procedure.mjs",
       "sha256": "f9232ce892a5e1b17391092708faf252f6528cb694c57f47b319c326b1bc0185"
