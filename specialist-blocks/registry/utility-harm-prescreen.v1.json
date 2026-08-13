@@ -5,9 +5,9 @@
   "evaluator_version": "1.0.0",
   "model_requirement": "gpt-5.6-luna/max",
   "candidate": {
-    "branch": "codex/specialist-block-library-candidate",
-    "commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
-    "tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb"
+    "branch": "codex/specialist-gate-library-release",
+    "commit": "37e069b09bf32619691b4763375ef21a1230bbf0",
+    "tree": "2721626e68bc978788d49dbe4f1a2e293cff57ce"
   },
   "candidate_roster_digest": "29e8c719c1773e33913240b50dbb2149327ad0500362191329849d87dbb6c8ea",
   "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW",
