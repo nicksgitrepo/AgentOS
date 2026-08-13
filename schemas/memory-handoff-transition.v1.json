@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory.handoff_transition.v1",
+  "title": "AgentOS transactional successor handoff transition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_id", "task_id", "transaction_id", "action", "actor_id", "recorded_at_utc", "predecessor_transition_digest", "payload", "transition_digest"],
+  "properties": {
+    "schema": {"const": "agentos.memory.handoff_transition.v1"},
+    "version": {"const": 1},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "task_id": {"$ref": "#/$defs/id"},
+    "transaction_id": {"$ref": "#/$defs/id"},
+    "action": {"enum": ["PREPARE_HANDOFF", "FREEZE_PREDECESSOR_WRITES", "FINAL_CHECKPOINT", "SPAWNER_VERIFY_WORKTREE_AND_EVIDENCE", "CONSOLIDATE_SUCCESSOR_CONTEXT", "SPAWN_SUCCESSOR", "SUCCESSOR_VERIFY_CHECKSUM", "SUCCESSOR_ACK", "DIVERGENCE", "TRANSFER_TASK_WORKTREE_LEASE", "VERIFY_HEAD_DIRTY_PATCH_AND_MANIFEST", "HANDOFF_COMMITTED", "ARCHIVE_PREDECESSOR"]},
+    "actor_id": {"$ref": "#/$defs/id"},
+    "recorded_at_utc": {"type": "string", "format": "date-time"},
+    "predecessor_transition_digest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "payload": {"type": "object"},
+    "transition_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-z2-7]{52}$"}
+  }
+}

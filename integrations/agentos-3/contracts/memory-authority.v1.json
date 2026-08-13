@@ -46,8 +46,9 @@
     "authority_controller": "integrations/agentos-3/memory-authority.mjs",
     "surface_schema": "schemas/agentos-3-memory-adapter-surface.v1.json",
     "category_mapping_schema": "schemas/memory-category-mapping.v1.json",
-    "available": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery"],
-    "fail_closed_not_implemented": ["migration", "handoff_journal", "successor_transfer"]
+    "available": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery", "continuity"],
+    "fail_closed_not_implemented": ["migration"],
+    "test_only_continuity": ["handoff_journal", "successor_transfer"]
   },
   "migration": {
     "current_mode": "NONE",
@@ -72,8 +73,8 @@
   "proof_ceiling": [
     "INDEPENDENT_MEMORY_AUTHORITY_CLEARANCE",
     "REAL_DATA_MIGRATION",
-    "HANDOFF_JOURNAL",
-    "SUCCESSOR_TRANSFER",
+    "INDEPENDENT_CONTINUITY_CLEARANCE",
+    "REAL_AGENT_HANDOFF_AND_SUCCESSOR_TRANSFER",
     "CONSUMER_ADOPTION",
     "PROVIDER_ACTIVATION",
     "RELEASE_PROMOTION",

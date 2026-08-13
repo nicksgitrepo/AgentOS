@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.integration.memory-continuity-binding.v1",
+  "version": 1,
+  "status": "CANDIDATE_INACTIVE",
+  "activation": "TEST_ONLY",
+  "digest_profile": "sha256-over-agentos-canonical-json-body-v1",
+  "inputs": [
+    {"path": "integrations/agentos-3/contracts/memory-continuity.v1.json", "sha256": "296be6c25c7a2331d04d60024cef51fb7b3aa9df40c96dad82035e14e153d6b1", "role": "VERSIONED_CONTRACT"},
+    {"path": "integrations/agentos-3/governance/memory-continuity.v1.md", "sha256": "67ef68f47e9f2764aa422a72baba0a9cfa8bd5fa18088890b6962fbff4e314d3", "role": "VERSIONED_GOVERNANCE_MIGRATION_INVALIDATION"},
+    {"path": "integrations/agentos-3/memory-adapter.mjs", "sha256": "2bc2b97070ddd30c0b29a93c4cf0ab2ce0baf6e26f1bf668410eeabf3d822f7a", "role": "EXCLUSIVE_AUTHORITY_GUARDED_SURFACE"},
+    {"path": "integrations/agentos-3/memory-authority.mjs", "sha256": "ad2036a0a9e7ddb146c5f6588fdc9ef214520c2b6474d5c64a10a878e076c016", "role": "EXCLUSIVE_AUTHORITY_INPUT"},
+    {"path": "integrations/agentos-3/memory-continuity.mjs", "sha256": "106282572594711436c573036f9d863eddf39d5bc193418b48a8d62bd1e8a75b", "role": "EXECUTABLE_CONTINUITY_STATE_MACHINE"},
+    {"path": "integrations/agentos-3/tests/memory-continuity-test.mjs", "sha256": "12fd37ae0cd0e1d2ede57d0acf83ae77599c8ae1832617c8b4d56e5840b2905f", "role": "POSITIVE_NEGATIVE_HOSTILE_CRASH_FIXTURES"},
+    {"path": "schemas/agentos-3-memory-adapter-surface.v1.json", "sha256": "93df6e30cb652f4c7983f1a83bdac9c2bf312e72325f0d80cbe663b37b2c16f3", "role": "GUARDED_SURFACE_SCHEMA"},
+    {"path": "schemas/memory-continuity-checkpoint.v1.json", "sha256": "c20f958d1cc912277d6cc499bd36c8d41b878cd311e40f679557badb3c5f4561", "role": "CHECKPOINT_SCHEMA"},
+    {"path": "schemas/memory-continuity-task.v1.json", "sha256": "8afa2b3fc3fcb629561c076c12b08a5a7e5d5c324bbd5ae3006ef6759722aa24", "role": "TASK_AND_WORKTREE_CUSTODY_SCHEMA"},
+    {"path": "schemas/memory-failure-signature.v1.json", "sha256": "0f885d848c5898b28dee76021ac8a1b8144c66c499eb6afa00d80cfaea9444c8", "role": "CHAIN_FAILURE_AND_ROUTE_SCHEMA"},
+    {"path": "schemas/memory-goal-amendment.v1.json", "sha256": "98ca66f19e8fdb34dd0626736d34927576d117f249b7cf3039ad10efffbbea00", "role": "IMMUTABLE_GOAL_AMENDMENT_SCHEMA"},
+    {"path": "schemas/memory-handoff-transition.v1.json", "sha256": "02b290fcbface151a6b464f4988d1e538a56e97d09e8dc9c1c25bcf13d47558e", "role": "TRANSACTIONAL_HANDOFF_SCHEMA"}
+  ],
+  "binding_sha256": "ba5b60b529281ad1e522595fea13b7b55531fd335367045899542ca6011d52e0"
+}

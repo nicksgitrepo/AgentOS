@@ -13,11 +13,10 @@ import {
   mapM2RecordFamily,
   MEMORY_CATEGORY_MAP_VERSION,
   recoverMappedSource,
-  requestHandoffJournal,
   requestMemoryMigration,
-  requestSuccessorTransfer,
   verifyM2AuthorityBinding,
 } from "./memory-authority.mjs";
+import { MemoryContinuityController } from "./memory-continuity.mjs";
 
 const CAPABILITY_SCHEMA = "agentos.integration.test-capability.v1";
 const ADAPTER_SURFACE_SCHEMA = "agentos.integration.memory_adapter_surface.v1";
@@ -108,9 +107,10 @@ function adapterDescriptor(binding) {
       roster: "AVAILABLE_GUARDED",
       rethread: "AVAILABLE_GUARDED",
       recovery: "AVAILABLE_GUARDED",
+      continuity: "AVAILABLE_GUARDED_TEST_ONLY",
       migration: "FAIL_CLOSED_NOT_IMPLEMENTED",
-      handoff_journal: "FAIL_CLOSED_NOT_IMPLEMENTED",
-      successor_transfer: "FAIL_CLOSED_NOT_IMPLEMENTED",
+      handoff_journal: "AVAILABLE_GUARDED_TEST_ONLY",
+      successor_transfer: "AVAILABLE_GUARDED_TEST_ONLY",
     }),
   });
 }
@@ -163,6 +163,7 @@ function exposeM2Surface({ project, authorityBinding, capability, capabilityVeri
   const currentProjection = new CurrentProjection(project, memory);
   const roster = new AgentRoster(project);
   const guard = createGuard({ project, authorityBinding, capability, capabilityVerifier, memoryAuthorityVerifier, expected });
+  const continuity = new MemoryContinuityController(project, guard);
   return Object.freeze({
     activation: "TEST_ONLY",
     descriptor: adapterDescriptor(authorityBinding),
@@ -192,17 +193,21 @@ function exposeM2Surface({ project, authorityBinding, capability, capabilityVeri
         return project.recoverHead();
       },
     }),
+    continuity: guarded(continuity, [
+      "state", "openTask", "appendCheckpoint", "appendFinalCheckpoint", "recoverHandoffProjection",
+      "amendGoal", "recordFailure", "beginHandoff", "advanceHandoff", "checkpointFailsafe",
+    ], guard),
     async migrate(...args) {
       await guard();
       return requestMemoryMigration(...args);
     },
     async handoffJournal(...args) {
       await guard();
-      return requestHandoffJournal(...args);
+      return continuity.appendCheckpoint(...args);
     },
     async successorTransfer(...args) {
       await guard();
-      return requestSuccessorTransfer(...args);
+      return continuity.advanceHandoff(...args);
     },
   });
 }
