@@ -190,7 +190,7 @@
     },
     "composed_project_import_controller": {
       "path": "control/composed-project-import.mjs",
-      "sha256": "3aee4937440ea5e58147f61e7cedd667b6fa1c46b6d5d7bb8f7c1cb6eaaaf451"
+      "sha256": "51dc69891220055f3ca014b3cec13a6cb59d1681798d432081ebaa98f5687a07"
     },
     "composed_project_import_contract": {
       "path": "schemas/composed-project-import.v1.json",
@@ -227,6 +227,22 @@
     "bootstrap_composed_plan_readback": {
       "path": "docs/bootstrap-composed-plan-readback-2026-08-13.md",
       "sha256": "52fd1cded4a9ec187989e95a02c1e54fe899ec4c61012057e568505f4913a61f"
+    },
+    "composed_source_preservation_contract": {
+      "path": "schemas/composed-source-preservation.v1.json",
+      "sha256": "06fe58b8318f29b6a1e7b796846fd607a4f81d3941d4fb9f5f3a26ce01ef5e55"
+    },
+    "composed_source_preservation_article": {
+      "path": "governance/2.1rc/composed-source-preservation.md",
+      "sha256": "371dfec74fc2201d79017dd690c7c87c3cfda9020ee8e978c07c66bc1bffc8ca"
+    },
+    "composed_source_preservation_verifier": {
+      "path": "tests/verify-composed-source-preservation.mjs",
+      "sha256": "c4c5568e8e9665f93af7d1626e93b93e225df4c9d170b9de5b1e3f3d90bbe46e"
+    },
+    "bootstrap_preservation_plan_breakpoint": {
+      "path": "docs/bootstrap-preservation-plan-breakpoint-2026-08-13.md",
+      "sha256": "54718b5425b31566d35919e31daaa94933af0cb9b7fe193034120469077cbb91"
     },
     "audit_first_import_controller": {
       "path": "control/audit-first-import-procedure.mjs",

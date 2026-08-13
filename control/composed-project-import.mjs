@@ -12,6 +12,8 @@ export const COMPOSED_IMPORT_SCHEMA = "agentos.composed_project_import.v1";
 export const COMPOSED_IMPORT_MODES = Object.freeze(["NORMALIZE_AND_AUDIT"]);
 export const COMPOSED_IMPORT_STATUSES = Object.freeze(["PLANNED", "PRESERVED", "MIGRATION_IN_PROGRESS", "CUTOVER_READY", "ROLLED_BACK"]);
 export const COMPOSED_IMPORT_DECISIONS = Object.freeze(["COMPOSED_MULTI_REPOSITORY"]);
+export const COMPOSED_PRESERVATION_SCHEMA = "agentos.composed_source_preservation_plan.v1";
+export const COMPOSED_PRESERVATION_STATUSES = Object.freeze(["PLANNED", "VERIFIED_PLAN", "NOT_AUTHORIZED"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -53,6 +55,16 @@ function opaqueRef(rootPath) {
   requireString(rootPath, "source root path");
   assert(rootPath.startsWith("/"), "source root path must be absolute at the execution boundary");
   return `opaque:worktree:${canonicalDigest(rootPath)}`;
+}
+
+function opaqueTypedRef(kind, value, label) {
+  requireString(value, label);
+  assert(/^[a-z][a-z0-9._-]*$/u.test(kind), `${label} kind is invalid`);
+  return `opaque:${kind}:${canonicalDigest(value)}`;
+}
+
+function requireOpaqueAny(value, label) {
+  assert(typeof value === "string" && /^opaque:[a-z][a-z0-9._-]*:[0-9a-f]{64}$/u.test(value), `${label} must be an opaque reference`);
 }
 
 function normalizeRoot(root, index) {
@@ -203,3 +215,122 @@ export function assertComposedImportExecutionUnsupported(plan) {
   throw new Error("COMPOSED_IMPORT_EXECUTION_NOT_AUTHORIZED: read-only composition plan must receive source-preservation custody and an explicit execution implementation before any write");
 }
 
+function preservationArtifactPlan({projectPlanSha256, repositoryId, sourceRootRef, artifactName}) {
+  return {
+    artifact_name: artifactName,
+    artifact_ref: opaqueTypedRef("artifact", `${projectPlanSha256}:${repositoryId}:${sourceRootRef}:${artifactName}`, "artifact identity seed"),
+    content_addressing: "CONTENT_ADDRESS_AFTER_CREATION_AND_FULL_READBACK",
+    planned_identity_sha256: canonicalDigest({projectPlanSha256, repositoryId, sourceRootRef, artifactName}),
+  };
+}
+
+export function validateComposedPreservationPlan(plan) {
+  requireRecord(plan, "composed source-preservation plan");
+  assert(plan.schema === COMPOSED_PRESERVATION_SCHEMA && plan.version === 1 && plan.governance_version === "2.1rc", "composed source-preservation schema is invalid");
+  assert(COMPOSED_PRESERVATION_STATUSES.includes(plan.status), "composed source-preservation status is invalid");
+  requireSha(plan.project_import_plan_sha256, "composed source-preservation import binding");
+  requireOpaque(plan.destination_root_ref, "composed source-preservation destination");
+  requireOpaqueAny(plan.external_preservation_root_ref, "composed source-preservation external root");
+  assert(plan.external_preservation_root_ref !== plan.destination_root_ref, "preservation root cannot equal destination");
+  requireRecord(plan.boundaries, "composed source-preservation boundaries");
+  assert(plan.boundaries.source_mutation === "DENY" && plan.boundaries.destination_mutation === "DENY" && plan.boundaries.archive_creation === "NOT_PERFORMED", "composed source-preservation plan permits a write");
+  assert(plan.boundaries.zero_trace_consumer === true, "composed source-preservation plan lacks zero-trace proof");
+  assert(Array.isArray(plan.repositories) && plan.repositories.length >= 2, "composed source-preservation requires every included repository");
+  const repositoryIds = [];
+  const artifactNames = ["import-exclusions.md", "source-preservation.index.jsonl", "source-preservation.manifest.json", "source-preservation.receipt.json", "source-preservation.zip"];
+  for (const [index, repository] of plan.repositories.entries()) {
+    requireRecord(repository, `composed source-preservation.repositories[${index}]`);
+    requireId(repository.repository_id, `composed source-preservation.repositories[${index}].repository_id`);
+    requireOpaque(repository.source_root_ref, `composed source-preservation.repositories[${index}].source_root_ref`);
+    requireGit(repository.commit, `composed source-preservation.repositories[${index}].commit`);
+    requireGit(repository.tree, `composed source-preservation.repositories[${index}].tree`);
+    requireString(repository.branch, `composed source-preservation.repositories[${index}].branch`);
+    sortedUnique(repository.remote_refs, `composed source-preservation.repositories[${index}].remote_refs`, {minItems: 1});
+    requireRecord(repository.dirty_state, `composed source-preservation.repositories[${index}].dirty_state`);
+    assert(["CLEAN", "DIRTY"].includes(repository.dirty_state.status), `composed source-preservation.repositories[${index}] dirty state is invalid`);
+    requireString(repository.dirty_state.untracked_owner_policy, `composed source-preservation.repositories[${index}] untracked ownership policy`);
+    assert(repository.worktree_evidence?.historical_worktrees_excluded === true, `composed source-preservation.repositories[${index}] does not exclude historical worktrees`);
+    assert(repository.submodule_policy === "RECORD_AND_VERIFY;_DO_NOT_TRAVERSE_UNBOUND_SUBMODULES", `composed source-preservation.repositories[${index}] submodule policy is incomplete`);
+    sortedUnique(repository.exclusions, `composed source-preservation.repositories[${index}].exclusions`, {minItems: 1});
+    assert(repository.exclusions.includes("secrets-and-credentials"), `composed source-preservation.repositories[${index}] lacks secret exclusion`);
+    assert(repository.exclusions.includes("historical-worktrees"), `composed source-preservation.repositories[${index}] lacks historical-worktree exclusion`);
+    assert(repository.restore_procedure && typeof repository.restore_procedure === "string", `composed source-preservation.repositories[${index}] lacks restore procedure`);
+    assert(Array.isArray(repository.artifacts) && repository.artifacts.map((artifact) => artifact.artifact_name).sort(compareUtf8).join("\0") === artifactNames.sort(compareUtf8).join("\0"), `composed source-preservation.repositories[${index}] artifact plan is incomplete`);
+    for (const artifact of repository.artifacts) {
+      requireRecord(artifact, `composed source-preservation.repositories[${index}].artifact`);
+      requireString(artifact.artifact_name, "preservation artifact name");
+      requireOpaqueAny(artifact.artifact_ref, "preservation artifact reference");
+      requireSha(artifact.planned_identity_sha256, "preservation artifact planned identity");
+      assert(artifact.content_addressing === "CONTENT_ADDRESS_AFTER_CREATION_AND_FULL_READBACK", "preservation artifact is not content-addressed after readback");
+    }
+    repositoryIds.push(repository.repository_id);
+  }
+  sortedUnique(repositoryIds, "composed source-preservation repository IDs", {minItems: 2});
+  assert(JSON.stringify(repositoryIds) === JSON.stringify([...repositoryIds].sort(compareUtf8)), "composed source-preservation repositories are not sorted");
+  assert(repositoryIds.length === new Set(repositoryIds).size, "composed source-preservation repository IDs are duplicated");
+  requireRecord(plan.exclusions, "composed source-preservation exclusions");
+  for (const exclusion of plan.exclusions.repositories ?? []) {
+    requireId(exclusion.repository_id, "preserved exclusion repository ID");
+    requireOpaque(exclusion.root_ref, "preserved exclusion root");
+    assert(exclusion.preserved_outside_product === true, "preserved exclusion may not enter Product scope");
+    assert(!repositoryIds.includes(exclusion.repository_id), "preservation exclusion is also an included repository");
+  }
+  requireRecord(plan.verification, "composed source-preservation verification");
+  sortedUnique(plan.verification.before_write, "preservation before-write checks", {minItems: 5});
+  sortedUnique(plan.verification.after_creation, "preservation after-creation checks", {minItems: 5});
+  assert(plan.verification.independent_reviewer_required === true && plan.verification.consumer_byte_for_byte_check === true, "composed source-preservation independence or zero-trace verification is missing");
+  requireString(plan.rollback.restore_rule, "composed source-preservation rollback rule");
+  assert(plan.rollback.sources_retained === true && plan.rollback.cutover_reversible === true, "composed source-preservation rollback is incomplete");
+  requireSha(plan.plan_sha256, "composed source-preservation plan digest");
+  const body = structuredClone(plan); delete body.plan_sha256;
+  assert(plan.plan_sha256 === canonicalDigest(body), "composed source-preservation plan is not content-addressed");
+  secretFree(plan, "composed source-preservation plan");
+  return plan;
+}
+
+export function compileComposedPreservationPlan({composedImportPlan, externalPreservationRootPath = null, externalPreservationRootRef = null, nowUtc = "1970-01-01T00:00:00.000Z"} = {}) {
+  validateComposedProjectImportPlan(composedImportPlan);
+  requireUtc(nowUtc, "composed source-preservation observation time");
+  const preservationRootRef = externalPreservationRootRef ?? (externalPreservationRootPath ? opaqueTypedRef("control-plane", externalPreservationRootPath, "external preservation root") : null);
+  requireOpaqueAny(preservationRootRef, "external preservation root");
+  assert(preservationRootRef !== composedImportPlan.destination_root_ref, "external preservation root overlaps the destination");
+  const artifactNames = ["import-exclusions.md", "source-preservation.index.jsonl", "source-preservation.manifest.json", "source-preservation.receipt.json", "source-preservation.zip"];
+  const repositories = composedImportPlan.source_roots.map((root) => ({
+    repository_id: root.repository_id,
+    source_root_ref: root.source_root_ref,
+    commit: root.commit,
+    tree: root.tree,
+    branch: root.branch,
+    remote_refs: [...root.remote_refs],
+    dirty_state: structuredClone(root.dirty_state),
+    worktree_evidence: structuredClone(root.worktree_evidence),
+    submodule_policy: "RECORD_AND_VERIFY;_DO_NOT_TRAVERSE_UNBOUND_SUBMODULES",
+    exclusions: ["generated-and-temporary-material", "historical-worktrees", "secrets-and-credentials", "unsafe-filesystem-objects"].sort(compareUtf8),
+    restore_procedure: "Restore the exact archive and manifest for this source root, verify commit/tree and observation digests, then release only the source-preservation receipt for candidate use.",
+    artifacts: artifactNames.map((artifactName) => preservationArtifactPlan({projectPlanSha256: composedImportPlan.plan_sha256, repositoryId: root.repository_id, sourceRootRef: root.source_root_ref, artifactName})).sort((left, right) => compareUtf8(left.artifact_name, right.artifact_name)),
+  })).sort((left, right) => compareUtf8(left.repository_id, right.repository_id));
+  const body = {
+    schema: COMPOSED_PRESERVATION_SCHEMA,
+    version: 1,
+    governance_version: "2.1rc",
+    status: "VERIFIED_PLAN",
+    project_import_plan_sha256: composedImportPlan.plan_sha256,
+    destination_root_ref: composedImportPlan.destination_root_ref,
+    external_preservation_root_ref: preservationRootRef,
+    repositories,
+    exclusions: {repositories: structuredClone(composedImportPlan.exclusions.repositories)},
+    boundaries: {source_mutation: "DENY", destination_mutation: "DENY", archive_creation: "NOT_PERFORMED", zero_trace_consumer: true},
+    verification: {
+      before_write: ["DESTINATION_IS_SEPARATE_AND_EMPTY_OR_EXPLICITLY_BOUND", "EVERY_INCLUDED_SOURCE_COMMIT_AND_TREE_RECHECKED", "EVERY_DIRTY_AND_UNTRACKED_OWNER_POLICY_BOUND", "EXCLUDED_REPOSITORIES_PRESERVED_OUTSIDE_PRODUCT", "EXTERNAL_PRESERVATION_ROOT_DOES_NOT_OVERLAP_SOURCE_OR_DESTINATION", "REMOTES_WORKTREES_SUBMODULES_AND_UNSAFE_OBJECT_RULES_BOUND"].sort(compareUtf8),
+      after_creation: ["ARCHIVE_BYTES_MATCH_MANIFEST", "CONTENT_ADDRESSED_RECEIPT_READBACK", "EXCLUSION_RECORD_READBACK", "RESTORE_PROCEDURE_REHEARSAL_OR_TYPED_EXCEPTION", "SOURCES_REMAIN_BYTE_FOR_BYTE_UNCHANGED", "DESTINATION_ZERO_TRACE_RECHECK"].sort(compareUtf8),
+      independent_reviewer_required: true,
+      consumer_byte_for_byte_check: true,
+      no_archive_created_in_this_plan: true,
+    },
+    rollback: {sources_retained: true, cutover_reversible: true, restore_rule: "Retain every source root and receipt; reject the candidate and restore only from the exact preserved source identity on any mismatch."},
+    execution: {status: "NOT_AUTHORIZED", mutation: "NONE", activation: "OFF", archive_creation: "NOT_PERFORMED"},
+    observed_at_utc: nowUtc,
+  };
+  const plan = {...body, plan_sha256: canonicalDigest(body)};
+  return validateComposedPreservationPlan(plan);
+}
