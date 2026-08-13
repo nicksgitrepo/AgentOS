@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/feature-platform-central-custody.v1.json",
+  "title": "AgentOS Feature to Platform to Central custody records",
+  "oneOf": [
+    {"$ref": "#/$defs/featureReceipt"},
+    {"$ref": "#/$defs/candidateLedger"},
+    {"$ref": "#/$defs/platformMatrix"},
+    {"$ref": "#/$defs/platformCandidate"},
+    {"$ref": "#/$defs/centralManifest"}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$"},
+    "featureReceipt": {
+      "type": "object", "required": ["schema", "version", "receipt_id", "feature_id", "candidate_id", "commit", "tree", "finding_ids", "applicable_platform_ids", "proof_evidence_sha256", "independent_acceptance_sha256", "scheduler_admission", "status", "rejection_reason", "rejection_evidence_sha256", "retained", "created_at_utc", "receipt_sha256"],
+      "properties": {"schema": {"const": "agentos.feature_candidate_receipt.v1"}, "version": {"const": 1}, "status": {"enum": ["ACCEPTED_FOR_PLATFORM", "REJECTED_RETAINED"]}, "retained": {"const": true}}
+    },
+    "candidateLedger": {
+      "type": "object", "required": ["schema", "version", "status", "expected_candidate_ids", "receipts", "accepted_candidate_ids", "rejected_candidate_ids", "ledger_sha256"],
+      "properties": {"schema": {"const": "agentos.candidate_retention_ledger.v1"}, "version": {"const": 1}, "status": {"const": "ALL_CANDIDATES_RETAINED"}}
+    },
+    "platformMatrix": {
+      "type": "object", "required": ["schema", "version", "status", "candidate_ledger_sha256", "platform_ids", "cells", "matrix_sha256"],
+      "properties": {"schema": {"const": "agentos.platform_consumption_matrix.v1"}, "version": {"const": 1}, "status": {"const": "EVERY_CELL_SETTLED"}}
+    },
+    "platformCandidate": {
+      "type": "object", "required": ["schema", "version", "status", "platform_id", "candidate_id", "commit", "tree", "matrix_sha256", "consumed_cell_ids", "scheduler_admission", "independent_reaudit", "created_at_utc", "candidate_sha256"],
+      "properties": {"schema": {"const": "agentos.cumulative_platform_candidate.v1"}, "version": {"const": 1}, "status": {"enum": ["CUMULATIVE_REAUDITED_PASS", "CUMULATIVE_REAUDIT_REOPENED"]}}
+    },
+    "centralManifest": {
+      "type": "object", "required": ["schema", "version", "status", "central_candidate_id", "commit", "tree", "candidate_ledger_sha256", "matrix_sha256", "repair_dag_sha256", "convergence_ledger_sha256", "matrix_cell_dispositions", "platform_entries", "consumed_feature_candidate_ids", "retained_rejected_candidate_ids", "intake_evidence_sha256", "created_at_utc", "manifest_sha256"],
+      "properties": {"schema": {"const": "agentos.central_intake_manifest.v1"}, "version": {"const": 1}, "status": {"const": "CENTRAL_INTAKE_COMPLETE"}}
+    }
+  }
+}
