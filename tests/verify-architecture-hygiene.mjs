@@ -158,6 +158,7 @@ const explicitlyRetainedLargeBoundaries = new Set([
   "control/owner-review.mjs",
   "control/proof-carrying-work.mjs",
   "control/release-lifecycle.mjs",
+  "control/scheduler-runtime-custody.mjs",
   "control/task-model-routing.mjs",
 ]);
 const largeModules = modules

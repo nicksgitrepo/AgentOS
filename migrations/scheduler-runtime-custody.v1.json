@@ -1,0 +1,57 @@
+{
+  "schema": "agentos.scheduler_runtime_custody_migration.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "from": [
+    "agentos.hybrid_scheduler_policy.v1",
+    "agentos.hybrid_scheduler_job.v1",
+    "agentos.hybrid_scheduler_request.v1"
+  ],
+  "to": "agentos.scheduler_runtime_custody_state.v1",
+  "authority_graph_sha256": "7395e70dff8ee2237907ac1da2689beaca34dc38d988e8baec286bfd4fca9d2d",
+  "rules": [
+    {
+      "source": "RESOURCE_CLASS_LEASE",
+      "target": "WORKLOAD_CLASS_AND_RESOURCE_POOL",
+      "disposition": "RECOMPILE_REQUEST_AND_APPLY_GLOBAL_HEAVY_MUTEX"
+    },
+    {
+      "source": "PID_ONLY_LEASE",
+      "target": "EXACT_PROCESS_PROVENANCE",
+      "disposition": "DENY_CURRENT_CUSTODY_UNTIL_EXACT_ABSENCE_OR_FRESH_REBIND"
+    },
+    {
+      "source": "AGENT_OWNED_WORKTREE",
+      "target": "TASK_OWNED_WORKTREE_WITH_EPOCH",
+      "disposition": "REQUIRE_TWO_PHASE_SUCCESSOR_ACK_TRANSFER"
+    },
+    {
+      "source": "CALLER_SUPPLIED_RUNTIME_PREFLIGHT",
+      "target": "CAPABILITY_BOUND_RUNTIME",
+      "disposition": "REQUIRE_READ_ONLY_DISCOVERY_OR_PROTECTED_DECISION"
+    }
+  ],
+  "invalidation": {
+    "authority_graph_change": "INVALIDATE_ALL_CUSTODY_STATES_RUNTIME_CAPABILITIES_AND_ROLE_MANIFESTS",
+    "policy_change": "INVALIDATE_ACTIVE_LEASE_MANIFESTS_AND_REQUIRE_REBIND",
+    "worktree_identity_change": "FENCE_ALL_PRIOR_EPOCH_JOBS_AND_TRANSFERS",
+    "process_identity_change": "REQUIRE_FRESH_PROCESS_ABSENCE_OR_BINDING_PROOF",
+    "runtime_capability_change": "INVALIDATE_ACTION_PREPARATIONS"
+  },
+  "history": {
+    "mutated": false,
+    "accepted_evidence_preserved": true,
+    "legacy_proof_reused": false
+  },
+  "effects": {
+    "starts_roles": false,
+    "starts_processes": false,
+    "signals_processes": false,
+    "moves_worktrees": false,
+    "builds": false,
+    "deploys": false,
+    "rolls_back": false,
+    "publishes": false
+  },
+  "migration_sha256": "bb8b0570a88fd96dce3c15a56700df767e67418f49bcb05db2a5d32c269a078a"
+}

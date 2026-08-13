@@ -1,0 +1,45 @@
+{
+  "schema": "agentos.scheduler_runtime_custody_binding.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "authority_graph_sha256": "7395e70dff8ee2237907ac1da2689beaca34dc38d988e8baec286bfd4fca9d2d",
+  "artifacts": [
+    {
+      "path": "control/scheduler-runtime-custody.mjs",
+      "sha256": "b10c8bf444877e44e32cc82459a2ae6c8a189c1be3527ce649fc1aba6f9f7427"
+    },
+    {
+      "path": "governance/3.0/scheduler-runtime-custody.md",
+      "sha256": "22ab7f4fe8d0bfc8f78af6bbb5a7f2263e70ed5b4b84bdbefb2642e4b5ba1d53"
+    },
+    {
+      "path": "migrations/scheduler-runtime-custody.v1.json",
+      "sha256": "7e4b237f05c57256fa925ab9e4b3bc301fd3a35ca94eb7f28dd45bbd65f44247"
+    },
+    {
+      "path": "schemas/scheduler-runtime-custody.v1.json",
+      "sha256": "1a57e86396c6cc9a1f9efb06de51642e68e1e4b11eb6fe63c98eba7910714fe7"
+    }
+  ],
+  "migration": {
+    "path": "migrations/scheduler-runtime-custody.v1.json",
+    "sha256": "7e4b237f05c57256fa925ab9e4b3bc301fd3a35ca94eb7f28dd45bbd65f44247"
+  },
+  "invalidation": {
+    "authority_graph_change": "INVALIDATE_ALL_CUSTODY_AND_RUNTIME_CAPABILITIES",
+    "policy_change": "INVALIDATE_ACTIVE_LEASE_MANIFESTS_AND_REQUIRE_REBIND",
+    "worktree_identity_change": "FENCE_PRIOR_EPOCH_JOBS_AND_TRANSFERS",
+    "process_identity_change": "REQUIRE_FRESH_ABSENCE_OR_BINDING_PROOF"
+  },
+  "runtime_effects": {
+    "starts_roles": false,
+    "starts_processes": false,
+    "signals_processes": false,
+    "runs_builds": false,
+    "deploys": false,
+    "rolls_back": false,
+    "publishes": false,
+    "mutates_consumers": false
+  },
+  "binding_sha256": "c6bf7123ffe0112fe414980860a18868f02d9e17c08a5fedf8ea480c7dcf80f6"
+}

@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.scheduler_runtime_custody.v1",
+  "title": "AgentOS 3 Scheduler and Runtime custody contracts",
+  "description": "Effect-free portable contracts for state-CAS queue/capacity/worktree/process custody and capability-bound Runtime preparation.",
+  "oneOf": [
+    {"$ref": "#/$defs/policy"},
+    {"$ref": "#/$defs/state"},
+    {"$ref": "#/$defs/process"},
+    {"$ref": "#/$defs/process_absence"},
+    {"$ref": "#/$defs/queue_absence"},
+    {"$ref": "#/$defs/process_reconciliation"},
+    {"$ref": "#/$defs/store_lock"},
+    {"$ref": "#/$defs/store_recovery"},
+    {"$ref": "#/$defs/runtime_capability"},
+    {"$ref": "#/$defs/runtime_discovery"},
+    {"$ref": "#/$defs/runtime_action_preparation"}
+  ],
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "opaque_ref": {"type": "string", "pattern": "^opaque:[a-z][a-z0-9._-]*:[0-9a-f]{64}$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "workload": {"enum": ["ARTIFACT_BUILD", "DATABASE_EXCLUSIVE", "IO_BOUNDED", "LIGHTWEIGHT_CHECK", "NETWORK_BOUNDED", "NODE_BUILD", "RENDER", "RUST_BUILD"]},
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "sequence", "prior_state_sha256", "event_type", "subject_id", "actor_role", "actor_id", "observed_at_utc", "detail_sha256", "event_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_runtime_custody_event.v1"},
+        "version": {"const": 1},
+        "sequence": {"type": "integer", "minimum": 1},
+        "prior_state_sha256": {"$ref": "#/$defs/sha256"},
+        "event_type": {"$ref": "#/$defs/identifier"},
+        "subject_id": {"$ref": "#/$defs/identifier"},
+        "actor_role": {"$ref": "#/$defs/identifier"},
+        "actor_id": {"$ref": "#/$defs/identifier"},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "detail_sha256": {"$ref": "#/$defs/sha256"},
+        "event_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "authority_graph_sha256", "policy_revision", "global_heavy", "lighter_capacity", "database_exclusive_capacity", "max_attempts", "queue_timeout_seconds", "run_timeout_seconds", "reservation_timeout_seconds", "controller_heavy_execution", "stale_recovery", "direct_effects", "policy_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_runtime_custody_policy.v1"},
+        "version": {"const": 1},
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "policy_revision": {"$ref": "#/$defs/identifier"},
+        "global_heavy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["capacity", "workload_classes", "rust_node_render_mutually_exclusive"],
+          "properties": {
+            "capacity": {"const": 1},
+            "workload_classes": {"const": ["ARTIFACT_BUILD", "NODE_BUILD", "RENDER", "RUST_BUILD"]},
+            "rust_node_render_mutually_exclusive": {"const": true}
+          }
+        },
+        "lighter_capacity": {"type": "integer", "minimum": 1, "maximum": 64},
+        "database_exclusive_capacity": {"const": 1},
+        "max_attempts": {"type": "integer", "minimum": 1, "maximum": 10},
+        "queue_timeout_seconds": {"type": "integer", "minimum": 1},
+        "run_timeout_seconds": {"type": "integer", "minimum": 1},
+        "reservation_timeout_seconds": {"type": "integer", "minimum": 1},
+        "controller_heavy_execution": {"const": "DENY"},
+        "stale_recovery": {"const": "EXACT_PROCESS_ABSENCE_OR_REUSED_IDENTITY_PROOF_REQUIRED"},
+        "direct_effects": {"const": false},
+        "policy_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "transfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transfer_id", "from_task_id", "to_task_id", "expected_lease_epoch", "expected_commit", "expected_tree_or_digest", "expected_dirty_patch_sha256", "prepared_at_utc", "transfer_sha256"],
+      "properties": {
+        "transfer_id": {"$ref": "#/$defs/identifier"},
+        "from_task_id": {"$ref": "#/$defs/identifier"},
+        "to_task_id": {"$ref": "#/$defs/identifier"},
+        "expected_lease_epoch": {"type": "integer", "minimum": 0},
+        "expected_commit": {"$ref": "#/$defs/candidate"},
+        "expected_tree_or_digest": {"$ref": "#/$defs/candidate"},
+        "expected_dirty_patch_sha256": {"$ref": "#/$defs/sha256"},
+        "prepared_at_utc": {"$ref": "#/$defs/utc"},
+        "transfer_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "worktree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worktree_id", "repository_id", "working_directory_ref", "owner_task_id", "candidate_commit", "candidate_tree_or_digest", "dirty_patch_sha256", "lease_epoch", "status", "transfer", "worktree_sha256"],
+      "properties": {
+        "worktree_id": {"$ref": "#/$defs/identifier"},
+        "repository_id": {"$ref": "#/$defs/identifier"},
+        "working_directory_ref": {"$ref": "#/$defs/opaque_ref"},
+        "owner_task_id": {"$ref": "#/$defs/identifier"},
+        "candidate_commit": {"$ref": "#/$defs/candidate"},
+        "candidate_tree_or_digest": {"$ref": "#/$defs/candidate"},
+        "dirty_patch_sha256": {"$ref": "#/$defs/sha256"},
+        "lease_epoch": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["ACTIVE", "TRANSFER_PREPARED"]},
+        "transfer": {"oneOf": [{"$ref": "#/$defs/transfer"}, {"type": "null"}]},
+        "worktree_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "job": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_id", "request_id", "request_sha256", "requester_id", "requester_role", "task_id", "worktree_id", "worktree_epoch", "workload_class", "resource_pool", "status", "attempt", "max_attempts", "submitted_at_utc", "queued_at_utc", "leased_at_utc", "started_at_utc", "finished_at_utc", "lease_id", "terminal_reason", "job_sha256"],
+      "properties": {
+        "job_id": {"$ref": "#/$defs/identifier"},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "requester_id": {"$ref": "#/$defs/identifier"},
+        "requester_role": {"$ref": "#/$defs/identifier"},
+        "task_id": {"$ref": "#/$defs/identifier"},
+        "worktree_id": {"$ref": "#/$defs/identifier"},
+        "worktree_epoch": {"type": "integer", "minimum": 0},
+        "workload_class": {"$ref": "#/$defs/workload"},
+        "resource_pool": {"enum": ["GLOBAL_HEAVY", "DATABASE_EXCLUSIVE", "LIGHTWEIGHT"]},
+        "status": {"enum": ["SUBMITTED", "QUEUED", "LEASED", "RUNNING", "CANCEL_REQUESTED", "SUCCEEDED", "FAILED", "CANCELLED", "INTERRUPTED"]},
+        "attempt": {"type": "integer", "minimum": 1},
+        "max_attempts": {"type": "integer", "minimum": 1, "maximum": 10},
+        "submitted_at_utc": {"$ref": "#/$defs/utc"},
+        "queued_at_utc": {"oneOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "leased_at_utc": {"oneOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "started_at_utc": {"oneOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "finished_at_utc": {"oneOf": [{"$ref": "#/$defs/utc"}, {"type": "null"}]},
+        "lease_id": {"oneOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "terminal_reason": {"oneOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "job_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "pid", "ppid", "pgid", "cwd_ref", "executable_sha256", "argv_sha256", "started_at_utc", "start_identity_sha256", "process_instance_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_process_provenance.v1"},
+        "version": {"const": 1},
+        "pid": {"type": "integer", "minimum": 1},
+        "ppid": {"type": "integer", "minimum": 1},
+        "pgid": {"type": "integer", "minimum": 1},
+        "cwd_ref": {"$ref": "#/$defs/opaque_ref"},
+        "executable_sha256": {"$ref": "#/$defs/sha256"},
+        "argv_sha256": {"$ref": "#/$defs/sha256"},
+        "started_at_utc": {"$ref": "#/$defs/utc"},
+        "start_identity_sha256": {"$ref": "#/$defs/sha256"},
+        "process_instance_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lease_id", "lease_epoch", "lease_token_sha256", "job_id", "requester_id", "task_id", "worktree_id", "worktree_epoch", "resource_pool", "slot", "status", "acquired_at_utc", "expires_at_utc", "process", "lease_sha256"],
+      "properties": {
+        "lease_id": {"$ref": "#/$defs/identifier"},
+        "lease_epoch": {"type": "integer", "minimum": 1},
+        "lease_token_sha256": {"$ref": "#/$defs/sha256"},
+        "job_id": {"$ref": "#/$defs/identifier"},
+        "requester_id": {"$ref": "#/$defs/identifier"},
+        "task_id": {"$ref": "#/$defs/identifier"},
+        "worktree_id": {"$ref": "#/$defs/identifier"},
+        "worktree_epoch": {"type": "integer", "minimum": 0},
+        "resource_pool": {"enum": ["GLOBAL_HEAVY", "DATABASE_EXCLUSIVE", "LIGHTWEIGHT"]},
+        "slot": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["RESERVED", "PROCESS_BOUND", "CANCEL_REQUESTED", "RELEASED"]},
+        "acquired_at_utc": {"$ref": "#/$defs/utc"},
+        "expires_at_utc": {"$ref": "#/$defs/utc"},
+        "process": {"oneOf": [{"$ref": "#/$defs/process"}, {"type": "null"}]},
+        "lease_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "authority_graph_sha256", "policy", "revision", "worktrees", "jobs", "leases", "queue_index", "events", "state_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_runtime_custody_state.v1"},
+        "version": {"const": 1},
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "policy": {"$ref": "#/$defs/policy"},
+        "revision": {"type": "integer", "minimum": 0},
+        "worktrees": {"type": "array", "items": {"$ref": "#/$defs/worktree"}},
+        "jobs": {"type": "array", "items": {"$ref": "#/$defs/job"}},
+        "leases": {"type": "array", "items": {"$ref": "#/$defs/lease"}},
+        "queue_index": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+        "events": {"type": "array", "items": {"$ref": "#/$defs/event"}},
+        "state_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "process_absence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "job_id", "lease_id", "expected_process_instance_sha256", "expected_pid", "observed_pid_status", "observed_start_identity_sha256", "probe_sha256", "observer_role", "observer_id", "observed_at_utc", "proof_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_process_absence_proof.v1"},
+        "version": {"const": 1},
+        "status": {"const": "EXACT_INSTANCE_ABSENT"},
+        "job_id": {"$ref": "#/$defs/identifier"},
+        "lease_id": {"$ref": "#/$defs/identifier"},
+        "expected_process_instance_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_pid": {"type": "integer", "minimum": 1},
+        "observed_pid_status": {"enum": ["OBSERVED_PID_ABSENT", "OBSERVED_PID_REUSED"]},
+        "observed_start_identity_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "probe_sha256": {"$ref": "#/$defs/sha256"},
+        "observer_role": {"const": "RUNTIME"},
+        "observer_id": {"$ref": "#/$defs/identifier"},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "proof_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "queue_absence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "observed_state_sha256", "job_ids", "process_reconciliation_sha256", "observer_role", "observer_id", "observed_at_utc", "proof_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_queue_absence_proof.v1"},
+        "version": {"const": 1},
+        "status": {"const": "NO_PROCESS_CUSTODY_PRESENT"},
+        "observed_state_sha256": {"$ref": "#/$defs/sha256"},
+        "job_ids": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+        "process_reconciliation_sha256": {"$ref": "#/$defs/sha256"},
+        "observer_role": {"const": "RUNTIME"},
+        "observer_id": {"$ref": "#/$defs/identifier"},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "proof_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "process_instance_sha256", "job_id", "lease_id", "action"],
+      "properties": {
+        "code": {"enum": ["ORPHAN_PROCESS_NONCANONICAL", "PROCESS_BINDING_MISMATCH", "DUPLICATE_PROCESS_NONCANONICAL"]},
+        "process_instance_sha256": {"$ref": "#/$defs/sha256"},
+        "job_id": {"oneOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "lease_id": {"oneOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "action": {"enum": ["FREEZE_AND_ROUTE_EXACT_GROUP_REVIEW", "FREEZE_AND_FAIL_CLOSED"]}
+      }
+    },
+    "process_reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "observer_role", "observer_id", "observed_at_utc", "findings", "effects_applied", "reconciliation_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_process_inventory_reconciliation.v1"},
+        "version": {"const": 1},
+        "status": {"enum": ["CANONICAL", "NONCANONICAL_PROCESS_FOUND"]},
+        "observer_role": {"const": "RUNTIME"},
+        "observer_id": {"$ref": "#/$defs/identifier"},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+        "effects_applied": {"const": []},
+        "reconciliation_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "store_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "token_sha256", "owner_process", "acquired_at_utc", "lock_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_runtime_custody_store_lock.v1"},
+        "version": {"const": 1},
+        "status": {"const": "HELD"},
+        "token_sha256": {"$ref": "#/$defs/sha256"},
+        "owner_process": {"$ref": "#/$defs/process"},
+        "acquired_at_utc": {"$ref": "#/$defs/utc"},
+        "lock_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "store_recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "prior_lock_sha256", "absence_proof_sha256", "effects_applied", "recovery_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.scheduler_runtime_custody_store_recovery.v1"},
+        "version": {"const": 1},
+        "status": {"const": "STALE_LOCK_RELEASED"},
+        "prior_lock_sha256": {"$ref": "#/$defs/sha256"},
+        "absence_proof_sha256": {"$ref": "#/$defs/sha256"},
+        "effects_applied": {"const": ["EXACT_STALE_LOCK_FILE_REMOVED"]},
+        "recovery_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "runtime_capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "authority_graph_sha256", "runtime_role", "runtime_identity", "capability_id", "action", "project_ref", "control_plane_ref", "scope_refs", "request_sha256", "protected_decision_sha256", "scheduler_lease_sha256", "rollback_identity_sha256", "execution_authorized", "capability_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.runtime_bound_capability.v1"},
+        "version": {"const": 1},
+        "status": {"const": "BOUND_PREPARED_NOT_EXECUTED"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "runtime_role": {"const": "RUNTIME"},
+        "runtime_identity": {"$ref": "#/$defs/identifier"},
+        "capability_id": {"$ref": "#/$defs/identifier"},
+        "action": {"enum": ["BUILD", "DEPLOY", "DISCOVER_READ_ONLY", "ROLLBACK"]},
+        "project_ref": {"$ref": "#/$defs/opaque_ref"},
+        "control_plane_ref": {"$ref": "#/$defs/opaque_ref"},
+        "scope_refs": {"type": "array", "items": {"$ref": "#/$defs/opaque_ref"}, "uniqueItems": true},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "protected_decision_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "scheduler_lease_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "rollback_identity_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "execution_authorized": {"const": false},
+        "capability_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "runtime_discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "capability_sha256", "observed_at_utc", "observations", "secrets_read", "effects_applied", "discovery_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.runtime_read_only_discovery.v1"},
+        "version": {"const": 1},
+        "status": {"const": "READ_ONLY_COMPLETE"},
+        "capability_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "observations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["git", "build", "routing", "hosting", "environments", "secret_interfaces"],
+          "properties": {
+            "git": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+            "build": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+            "routing": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+            "hosting": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+            "environments": {"type": "array", "items": {"$ref": "#/$defs/sha256"}},
+            "secret_interfaces": {"type": "array", "items": {"$ref": "#/$defs/sha256"}}
+          }
+        },
+        "secrets_read": {"const": false},
+        "effects_applied": {"const": []},
+        "discovery_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "runtime_action_preparation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "action", "capability_sha256", "action_plan_sha256", "authority_graph_sha256", "execution_authorized", "effects_applied", "preparation_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.runtime_action_preparation.v1"},
+        "version": {"const": 1},
+        "status": {"const": "PREPARED_NOT_EXECUTED"},
+        "action": {"enum": ["BUILD", "DEPLOY", "ROLLBACK"]},
+        "capability_sha256": {"$ref": "#/$defs/sha256"},
+        "action_plan_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "execution_authorized": {"const": false},
+        "effects_applied": {"const": []},
+        "preparation_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}
