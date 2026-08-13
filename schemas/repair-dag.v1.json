@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/repair-dag.v1.json",
+  "title": "AgentOS deterministic repair DAG",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "consolidation_sha256", "nodes", "edges", "conflict_resolutions", "rejected_false_positive_finding_ids", "plan", "dag_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.repair_dag.v1"},
+    "version": {"const": 1},
+    "status": {"const": "ACYCLIC_DETERMINISTIC_WAVES_PLANNED"},
+    "consolidation_sha256": {"$ref": "#/$defs/sha256"},
+    "nodes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "edges": {"type": "array", "items": {"$ref": "#/$defs/edge"}},
+    "conflict_resolutions": {"type": "array", "items": {"type": "object"}},
+    "rejected_false_positive_finding_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "plan": {"type": "array", "items": {"$ref": "#/$defs/planItem"}},
+    "dag_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "edge": {
+      "type": "object", "additionalProperties": false, "required": ["from_finding_id", "to_finding_id", "edge_kind"],
+      "properties": {"from_finding_id": {"$ref": "#/$defs/id"}, "to_finding_id": {"$ref": "#/$defs/id"}, "edge_kind": {"enum": ["DEPENDENCY", "CONFLICT_ORDER"]}}
+    },
+    "planItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["order", "finding_id", "wave", "repair_class", "downstream_unblock_count", "severity", "blast_radius"],
+      "properties": {
+        "order": {"type": "integer", "minimum": 0}, "finding_id": {"$ref": "#/$defs/id"}, "wave": {"enum": ["A", "B", "C"]},
+        "repair_class": {"type": "string", "minLength": 1}, "downstream_unblock_count": {"type": "integer", "minimum": 0},
+        "severity": {"enum": ["BLOCKER", "CRITICAL", "HIGH", "MEDIUM", "LOW"]}, "blast_radius": {"enum": ["SYSTEM", "REPOSITORY", "COMPONENT", "LOCAL"]}
+      }
+    }
+  }
+}

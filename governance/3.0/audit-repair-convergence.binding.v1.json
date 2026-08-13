@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.audit_repair_convergence_binding.v1",
+  "version": 1,
+  "status": "PORTABLE_CANDIDATE_INACTIVE",
+  "kernel_version": "3.0-candidate",
+  "files": [
+    {"path": "control/audit-repair-convergence.mjs", "sha256": "5bdcc4ff14a297f592632fc9389511f46954cf843f92218fb2232346be2e0b47"},
+    {"path": "governance/3.0/audit-repair-convergence.md", "sha256": "b26e0b80d79918312f3e53aebae6b0f1a3a52a5cc963f00bb696a4b0ec3ad162"},
+    {"path": "migrations/audit-repair-convergence-v1.md", "sha256": "0dc863e29634792e5d1e0bebc3fa3e2be6529fb644030811aad326e26cbd29c8"},
+    {"path": "schemas/audit-finding.v1.json", "sha256": "3f1fda7f42ab3711613728ec4601d39ab02b1e00b93a47126d367a22154d9ae3"},
+    {"path": "schemas/audit-repair-convergence-binding.v1.json", "sha256": "f4ea4d01eaeb3da1bca9b7fa2a57b9b4f486181bbfd35e9a93e0240543979ae9"},
+    {"path": "schemas/feature-platform-central-custody.v1.json", "sha256": "438f667745222cabbcb748e099a4ce5b574823ae025d45b439305f1b80f3c8ee"},
+    {"path": "schemas/repair-dag.v1.json", "sha256": "88004d26919eb6966735cea60d4ebc19afff82f625525839f62c45e4fdd80fb1"}
+  ],
+  "dependencies": [
+    {"controller": "control/campaign-cascade.mjs", "interface": "applyCascadeTransition + append-only transition readback"},
+    {"controller": "control/scheduler-admission.mjs", "interface": "validateSchedulerAdmissionReceipt"}
+  ],
+  "invalidation_rule": "Any bound file digest, dependency interface, source finding, custody receipt, Platform roster, matrix disposition, re-audit, or evidence-ceiling change invalidates this binding and all dependent DAGs, manifests, cascade events, and release evidence; preserve old identities and rebuild in migration order.",
+  "migration_ref": "migrations/audit-repair-convergence-v1.md",
+  "binding_sha256": "72d48620ce0db568b712413d2eb6092fd9faefd9af6200fb39be9dd035cf592a"
+}
