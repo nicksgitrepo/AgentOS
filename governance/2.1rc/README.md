@@ -4,6 +4,11 @@ Normative, portable governance payloads for AgentOS `2.1rc`.
 
 This directory must remain free of product-specific context.
 
+The later AgentOS 3.0 permanent-role candidate is versioned separately under
+`governance/3.0/`. Where a 2.1rc Controller or persistent-role name conflicts
+with that graph, the 2.1rc record is compatibility input only and must pass the
+3.0 migration and rebinding boundary; it does not co-author current authority.
+
 Bootstrap delivery choices are governed by [delivery-policy.md](delivery-policy.md)
 and compiled by the canonical delivery-policy controller. Provider identities
 and account bindings remain project-context data.

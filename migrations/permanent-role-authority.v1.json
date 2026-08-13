@@ -1,0 +1,64 @@
+{
+  "schema": "agentos.permanent_role_authority_migration.v1",
+  "version": 1,
+  "from_governance_versions": [
+    "2.1rc",
+    "3.0-pre-authority-graph"
+  ],
+  "to_governance_version": "3.0",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "canonical_role_ids": [
+    "AGENT_SPAWNER_COMPILER",
+    "CONTROLLER",
+    "INTENT_REGULATOR",
+    "RUNTIME",
+    "SCHEDULER"
+  ],
+  "role_aliases": [
+    {
+      "legacy_id": "AGENTOS_CONTROLLER",
+      "canonical_role_id": "INTENT_REGULATOR",
+      "disposition": "MAP_ONLY_WITH_LEGACY_INTENT_EVIDENCE",
+      "never_maps_to": [
+        "CONTROLLER"
+      ],
+      "required_semantics": "INTENT_SCOPE_AND_PROTECTED_DECISION_ROUTING"
+    },
+    {
+      "legacy_id": "AGENT_SPAWNER_GOVERNANCE_COMPILER",
+      "canonical_role_id": "AGENT_SPAWNER_COMPILER",
+      "disposition": "MAP_EXACT_RENAME",
+      "never_maps_to": [],
+      "required_semantics": "ROLE_CONTEXT_COMPILATION"
+    },
+    {
+      "legacy_id": "GLOBAL_ORCHESTRATOR",
+      "canonical_role_id": "INTENT_REGULATOR",
+      "disposition": "MAP_ONLY_WITH_LEGACY_INTENT_EVIDENCE",
+      "never_maps_to": [
+        "CONTROLLER"
+      ],
+      "required_semantics": "INTENT_SCOPE_AND_PROTECTED_DECISION_ROUTING"
+    }
+  ],
+  "ambiguous_role_terms": [
+    "AGENT.PROJECT_CONTROLLER",
+    "AGENTOS_CONTROLLER_WITH_LIFECYCLE_DUTY",
+    "CONTROLLER_RUNTIME",
+    "PROJECT_CONTROLLER"
+  ],
+  "record_rules": {
+    "canonical_reference": "A canonical role reference is current only when it is bound to the exact permanent-role authority graph digest.",
+    "legacy_alias": "A legacy alias normalizes before current validation and never grants authority by itself.",
+    "accepted_history": "Accepted history remains immutable; migration emits a new content-addressed reference receipt.",
+    "incomplete_roster": "A legacy two-role or expanded permanent-role roster is not a current five-role roster and must be explicitly rebound.",
+    "ambiguous_record": "Missing, conflicting, or lifecycle-duty evidence denies migration rather than guessing between Intent Regulator and Controller."
+  },
+  "runtime_effects": {
+    "mutates_history": false,
+    "starts_roles": false,
+    "spawns_sessions": false,
+    "activates_governance": false
+  },
+  "migration_sha256": "58345088fa66e2a7fd97e2ffc5840388a2a086cd0d5fea1a07397158c922ad08"
+}

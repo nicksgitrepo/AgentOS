@@ -1,0 +1,299 @@
+{
+  "schema": "agentos.permanent_role_authority_graph.v1",
+  "version": 1,
+  "governance_version": "3.0",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "authority_mode": "CANONICAL_SUBSTRATE_ONLY",
+  "activation": "OFF",
+  "roles": [
+    {
+      "role_id": "AGENT_SPAWNER_COMPILER",
+      "public_name": "Agent Spawner Compiler",
+      "lifetime": "PERMANENT",
+      "purpose": "Compile least-authority role context, fail closed until independent manifest acceptance, and own the future host-spawn boundary without doing project work.",
+      "model_duty": "FAIL_CLOSED_ROLE_CONTEXT_COMPILATION_AND_POST_ACCEPTANCE_HOST_SPAWN",
+      "allowed_authority": [
+        "COMPILE_ROLE_CONTEXT",
+        "PRESENT_MANIFEST_FOR_INDEPENDENT_ACCEPTANCE",
+        "SPAWN_HOST_SESSION_AFTER_ACCEPTED_MANIFEST"
+      ],
+      "prohibited_authority": [
+        "ACCEPT_OWN_MANIFEST",
+        "APPOINT_PERMANENT_ROLE",
+        "BUILD_WITH_BOUND_CAPABILITY",
+        "CUSTODY_JOBS",
+        "CUSTODY_PROCESSES",
+        "CUSTODY_WORKTREES",
+        "DEPLOY_AT_PROTECTED_BOUNDARY",
+        "EXECUTE_PROJECT_WORK",
+        "INTERPRET_OWNER_INTENT",
+        "RECONCILE_LIFECYCLE_15_MINUTES",
+        "REWRITE_OWNER_INTENT",
+        "ROLLBACK_AT_PROTECTED_BOUNDARY",
+        "SELF_ACCEPT",
+        "WRITE_PRODUCT"
+      ],
+      "protected_actions": [
+        "SPAWN_HOST_SESSION_AFTER_ACCEPTED_MANIFEST"
+      ],
+      "required_evidence": [
+        "ACCEPTED_ROLE_CONTEXT_MANIFEST",
+        "COMPILER_IDENTITY",
+        "MANIFEST_ACCEPTOR_IDENTITY"
+      ],
+      "independent_from_roles": [
+        "CONTROLLER",
+        "INTENT_REGULATOR",
+        "RUNTIME",
+        "SCHEDULER"
+      ]
+    },
+    {
+      "role_id": "CONTROLLER",
+      "public_name": "Controller",
+      "lifetime": "PERMANENT",
+      "purpose": "Observe state, supervise lifecycle and liveness on the fifteen-minute cadence, and route recovery without rewriting intent or writing Product.",
+      "model_duty": "LIFECYCLE_STATE_SUPERVISION_AND_RECOVERY",
+      "allowed_authority": [
+        "OBSERVE_LIFECYCLE_STATE",
+        "RECONCILE_LIFECYCLE_15_MINUTES",
+        "ROUTE_LIFECYCLE_RECOVERY",
+        "SUPERVISE_ROLE_LIVENESS"
+      ],
+      "prohibited_authority": [
+        "APPOINT_PERMANENT_ROLE",
+        "BUILD_WITH_BOUND_CAPABILITY",
+        "COMPILE_ROLE_CONTEXT",
+        "DEPLOY_AT_PROTECTED_BOUNDARY",
+        "EXECUTE_PROJECT_WORK",
+        "INTERPRET_OWNER_INTENT",
+        "REWRITE_OWNER_INTENT",
+        "ROLLBACK_AT_PROTECTED_BOUNDARY",
+        "ROUTE_PROTECTED_DECISIONS",
+        "SELF_ACCEPT",
+        "SPAWN_HOST_SESSION_AFTER_ACCEPTED_MANIFEST",
+        "WRITE_PRODUCT"
+      ],
+      "protected_actions": [],
+      "required_evidence": [
+        "FIFTEEN_MINUTE_CADENCE_BINDING",
+        "LIFECYCLE_STATE_DIGEST",
+        "RECOVERY_ROUTE_RECEIPT"
+      ],
+      "independent_from_roles": [
+        "AGENT_SPAWNER_COMPILER",
+        "INTENT_REGULATOR",
+        "RUNTIME",
+        "SCHEDULER"
+      ]
+    },
+    {
+      "role_id": "INTENT_REGULATOR",
+      "public_name": "Intent Regulator",
+      "lifetime": "PERMANENT",
+      "purpose": "Interpret owner intent, maintain scope boundaries, and route protected decisions without executing project work.",
+      "model_duty": "OWNER_INTENT_SCOPE_AND_PROTECTED_DECISION_ROUTING",
+      "allowed_authority": [
+        "INTERPRET_OWNER_INTENT",
+        "MAINTAIN_SCOPE_BOUNDARIES",
+        "ROUTE_PROTECTED_DECISIONS"
+      ],
+      "prohibited_authority": [
+        "APPOINT_PERMANENT_ROLE",
+        "BUILD_WITH_BOUND_CAPABILITY",
+        "COMPILE_ROLE_CONTEXT",
+        "CUSTODY_JOBS",
+        "CUSTODY_PROCESSES",
+        "DEPLOY_AT_PROTECTED_BOUNDARY",
+        "EXECUTE_PROJECT_WORK",
+        "RECONCILE_LIFECYCLE_15_MINUTES",
+        "REWRITE_OWNER_INTENT",
+        "ROLLBACK_AT_PROTECTED_BOUNDARY",
+        "SELF_ACCEPT",
+        "SPAWN_HOST_SESSION_AFTER_ACCEPTED_MANIFEST",
+        "SUPERVISE_ROLE_LIVENESS",
+        "WRITE_PRODUCT"
+      ],
+      "protected_actions": [
+        "ROUTE_PROTECTED_DECISIONS"
+      ],
+      "required_evidence": [
+        "OWNER_INTENT_DIGEST",
+        "PROTECTED_DECISION_ROUTE_RECEIPT"
+      ],
+      "independent_from_roles": [
+        "AGENT_SPAWNER_COMPILER",
+        "CONTROLLER",
+        "RUNTIME",
+        "SCHEDULER"
+      ]
+    },
+    {
+      "role_id": "RUNTIME",
+      "public_name": "Runtime",
+      "lifetime": "PERMANENT",
+      "purpose": "Discover the environment read-only and perform capability-bound build, deploy, and rollback only at protected boundaries.",
+      "model_duty": "READ_ONLY_DISCOVERY_AND_CAPABILITY_BOUND_BUILD_DEPLOY_ROLLBACK",
+      "allowed_authority": [
+        "BUILD_WITH_BOUND_CAPABILITY",
+        "DEPLOY_AT_PROTECTED_BOUNDARY",
+        "DISCOVER_ENVIRONMENT_READ_ONLY",
+        "ROLLBACK_AT_PROTECTED_BOUNDARY"
+      ],
+      "prohibited_authority": [
+        "APPOINT_PERMANENT_ROLE",
+        "COMPILE_ROLE_CONTEXT",
+        "CUSTODY_JOBS",
+        "CUSTODY_PROCESSES",
+        "INTERPRET_OWNER_INTENT",
+        "MAINTAIN_SCOPE_BOUNDARIES",
+        "RECONCILE_LIFECYCLE_15_MINUTES",
+        "REWRITE_OWNER_INTENT",
+        "ROUTE_PROTECTED_DECISIONS",
+        "SELF_ACCEPT",
+        "SPAWN_HOST_SESSION_AFTER_ACCEPTED_MANIFEST",
+        "WRITE_PRODUCT"
+      ],
+      "protected_actions": [
+        "BUILD_WITH_BOUND_CAPABILITY",
+        "DEPLOY_AT_PROTECTED_BOUNDARY",
+        "ROLLBACK_AT_PROTECTED_BOUNDARY"
+      ],
+      "required_evidence": [
+        "BOUND_CAPABILITY_RECEIPT",
+        "ENVIRONMENT_DISCOVERY_READBACK",
+        "PROTECTED_DECISION_RECEIPT",
+        "ROLLBACK_IDENTITY"
+      ],
+      "independent_from_roles": [
+        "AGENT_SPAWNER_COMPILER",
+        "CONTROLLER",
+        "INTENT_REGULATOR",
+        "SCHEDULER"
+      ]
+    },
+    {
+      "role_id": "SCHEDULER",
+      "public_name": "Scheduler",
+      "lifetime": "PERMANENT",
+      "purpose": "Hold job, capacity, worktree, and process custody without Product or release authority.",
+      "model_duty": "JOB_CAPACITY_WORKTREE_AND_PROCESS_CUSTODY",
+      "allowed_authority": [
+        "ALLOCATE_CAPACITY",
+        "CUSTODY_JOBS",
+        "CUSTODY_PROCESSES",
+        "CUSTODY_WORKTREES"
+      ],
+      "prohibited_authority": [
+        "ACCEPT_PRODUCT",
+        "APPOINT_PERMANENT_ROLE",
+        "BUILD_WITH_BOUND_CAPABILITY",
+        "COMPILE_ROLE_CONTEXT",
+        "DEPLOY_AT_PROTECTED_BOUNDARY",
+        "INTERPRET_OWNER_INTENT",
+        "PROMOTE_RELEASE",
+        "RECONCILE_LIFECYCLE_15_MINUTES",
+        "REWRITE_OWNER_INTENT",
+        "ROLLBACK_AT_PROTECTED_BOUNDARY",
+        "SELF_ACCEPT",
+        "SPAWN_HOST_SESSION_AFTER_ACCEPTED_MANIFEST",
+        "WRITE_PRODUCT"
+      ],
+      "protected_actions": [
+        "CUSTODY_PROCESSES",
+        "CUSTODY_WORKTREES"
+      ],
+      "required_evidence": [
+        "ACCEPTED_CUSTODY_REQUEST",
+        "SCHEDULER_CAPACITY_RECEIPT",
+        "WORKTREE_PROCESS_CUSTODY_RECEIPT"
+      ],
+      "independent_from_roles": [
+        "AGENT_SPAWNER_COMPILER",
+        "CONTROLLER",
+        "INTENT_REGULATOR",
+        "RUNTIME"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "handoff_id": "ACCEPTED_MANIFEST_TO_SCHEDULER",
+      "from_role": "AGENT_SPAWNER_COMPILER",
+      "to_role": "SCHEDULER",
+      "artifact": "ACCEPTED_ROLE_CONTEXT_MANIFEST",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    },
+    {
+      "handoff_id": "CAPABILITY_REQUEST_TO_RUNTIME",
+      "from_role": "CONTROLLER",
+      "to_role": "RUNTIME",
+      "artifact": "CAPABILITY_BOUND_RUNTIME_REQUEST",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    },
+    {
+      "handoff_id": "LIFECYCLE_REQUEST_TO_SPAWNER",
+      "from_role": "CONTROLLER",
+      "to_role": "AGENT_SPAWNER_COMPILER",
+      "artifact": "ROLE_ADMISSION_REQUEST",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    },
+    {
+      "handoff_id": "OWNER_BOUNDARY_TO_INTENT_REGULATOR",
+      "from_role": "CONTROLLER",
+      "to_role": "INTENT_REGULATOR",
+      "artifact": "PROTECTED_DECISION_REQUEST",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    },
+    {
+      "handoff_id": "REGULATED_SCOPE_TO_CONTROLLER",
+      "from_role": "INTENT_REGULATOR",
+      "to_role": "CONTROLLER",
+      "artifact": "REGULATED_SCOPE_DECISION",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    },
+    {
+      "handoff_id": "RUNTIME_READBACK_TO_CONTROLLER",
+      "from_role": "RUNTIME",
+      "to_role": "CONTROLLER",
+      "artifact": "RUNTIME_ACTION_READBACK",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    },
+    {
+      "handoff_id": "SCHEDULER_CUSTODY_TO_CONTROLLER",
+      "from_role": "SCHEDULER",
+      "to_role": "CONTROLLER",
+      "artifact": "CUSTODY_READBACK",
+      "authority_transfer": "NONE",
+      "independent_identity_required": true
+    }
+  ],
+  "identity_policy": {
+    "distinct_role_identities_required": true,
+    "requester_subject_reviewer_distinct": true,
+    "compiler_acceptor_distinct": true,
+    "self_appointment": "DENY",
+    "missing_identity_evidence": "DENY"
+  },
+  "compatibility": {
+    "mapping": "migrations/permanent-role-authority.v1.json",
+    "migration_sha256": "58345088fa66e2a7fd97e2ffc5840388a2a086cd0d5fea1a07397158c922ad08",
+    "legacy_agentos_controller_target": "INTENT_REGULATOR",
+    "legacy_agentos_controller_may_target_controller": false,
+    "ambiguous_record_policy": "DENY_UNTIL_EXPLICITLY_REBOUND"
+  },
+  "runtime_effects": {
+    "starts_roles": false,
+    "host_spawn_wired": false,
+    "product_writes": false,
+    "deployment_authorized": false,
+    "publication_authorized": false
+  },
+  "graph_sha256": "7395e70dff8ee2237907ac1da2689beaca34dc38d988e8baec286bfd4fca9d2d"
+}

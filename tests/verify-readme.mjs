@@ -33,9 +33,10 @@ for (const required of [
   "CODE_QUALITY_HYGIENE",
   "Optional continuity",
   "PREPARED_NOT_ACTIVATED",
-  "setup, the ongoing project-persistent role is **Intent Regulator**",
-  "`AGENTOS_CONTROLLER`. It owns the control-plane conversation",
-  "Bootstrap does not continue as that role.",
+  "3.0 defines five distinct permanent roles",
+  "`AGENTOS_CONTROLLER` maps only to `INTENT_REGULATOR`, never to `CONTROLLER`",
+  "Bootstrap does not continue as any permanent role.",
+  "governance/3.0/permanent-role-authority.md",
 ]) {
   assert(readme.includes(required), `README is missing required user-facing content: ${required}`);
 }

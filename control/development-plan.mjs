@@ -11,6 +11,7 @@ import {
   assertUniversalDevelopmentMode,
   universalTaskCloseoutPolicy,
 } from "./governance-library.mjs";
+import {CANONICAL_PERMANENT_ROLE_IDS} from "./permanent-role-authority.mjs";
 
 export const DEVELOPMENT_PLAN_SCHEMA = "agentos.bootstrap_development_plan.v1";
 export const DEVELOPMENT_MODES = Object.freeze(["RAPID_PROTOTYPING", "ITERATION"]);
@@ -21,13 +22,13 @@ export const DEVELOPMENT_PHASES = Object.freeze({
     Object.freeze({id: "RAPID_FOUNDATION", name: "Lay down the governance lanes", owner: "NAMED_LANE_WORKERS", result: "One small, checkable rule set for each required lane."}),
     Object.freeze({id: "RAPID_IMPLEMENTATION", name: "Build the first working version", owner: "NAMED_LANE_WORKERS", result: "A small real workflow with focused checks."}),
     Object.freeze({id: "INDEPENDENT_AUDIT", name: "Check the result separately", owner: "INDEPENDENT_AUDITOR", result: "A truthful pass, repair finding, or clear stop."}),
-    Object.freeze({id: "ITERATION_HANDOFF", name: "Keep improving in fresh campaigns", owner: "INTENT_REGULATOR", result: "A typed next step bound to the accepted result or open finding."}),
+    Object.freeze({id: "ITERATION_HANDOFF", name: "Keep improving in fresh campaigns", owner: "CONTROLLER", result: "A typed next step bound to the accepted result or open finding, with changed intent routed to Intent Regulator."}),
   ]),
   ITERATION: Object.freeze([
     Object.freeze({id: "CAMPAIGN_PLAN", name: "Choose the next small change", owner: "CAMPAIGN_ORCHESTRATOR", result: "One source-bound campaign with a clear finish line."}),
     Object.freeze({id: "CAMPAIGN_BUILD", name: "Build the chosen change", owner: "NAMED_LANE_WORKERS", result: "A real change with focused checks."}),
     Object.freeze({id: "INDEPENDENT_AUDIT", name: "Check the result separately", owner: "INDEPENDENT_AUDITOR", result: "A truthful pass, repair finding, or clear stop."}),
-    Object.freeze({id: "CAMPAIGN_CLOSURE", name: "Close or repair and continue", owner: "INTENT_REGULATOR", result: "Preserved handoff, closed temporary workers, and the next safe campaign."}),
+    Object.freeze({id: "CAMPAIGN_CLOSURE", name: "Close or repair and continue", owner: "CONTROLLER", result: "Preserved handoff, closed temporary workers, and the next safe campaign, with protected intent decisions routed separately."}),
   ]),
 });
 
@@ -58,7 +59,7 @@ export function compileDevelopmentPlan({mode = DEFAULT_DEVELOPMENT_MODE, northSt
     status: "PLANNED",
     mode,
     user_facing_mode: mode === "RAPID_PROTOTYPING" ? "QUICK_FIRST_VERSION_THEN_IMPROVEMENTS" : "FRESH_SMALL_IMPROVEMENTS",
-    persistent_roles: ["INTENT_REGULATOR", "RUNTIME"],
+    persistent_roles: [...CANONICAL_PERMANENT_ROLE_IDS],
     temporary_role_rule: "CYCLE_CAMPAIGN_ORCHESTRATOR_AUDITOR_AND_ONE_NAMED_LANE_WORKER_PER_ADMITTED_LANE",
     phase_order: DEVELOPMENT_PHASES[mode].map((phase) => phase.id),
     phases: structuredClone(DEVELOPMENT_PHASES[mode]),
@@ -84,7 +85,7 @@ export function validateDevelopmentPlan(plan, {northStar = null, firstWorkflow =
   assert(plan.status === "PLANNED", "development plan status is invalid");
   assert(DEVELOPMENT_MODES.includes(plan.mode), "development plan mode is invalid");
   requireString(plan.user_facing_mode, "development plan user-facing mode");
-  assert(JSON.stringify(plan.persistent_roles) === JSON.stringify(["INTENT_REGULATOR", "RUNTIME"]), "persistent development roles are invalid");
+  assert(JSON.stringify(plan.persistent_roles) === JSON.stringify(CANONICAL_PERMANENT_ROLE_IDS), "persistent development roles are invalid");
   requireString(plan.temporary_role_rule, "development plan temporary role rule");
   assert(JSON.stringify(plan.phase_order) === JSON.stringify(DEVELOPMENT_PHASES[plan.mode].map((phase) => phase.id)), "development plan phase order is invalid");
   assert(JSON.stringify(plan.phases) === JSON.stringify(DEVELOPMENT_PHASES[plan.mode]), "development plan phases are invalid");

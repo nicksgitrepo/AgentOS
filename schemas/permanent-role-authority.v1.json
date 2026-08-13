@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.permanent_role_authority.v1",
+  "title": "AgentOS 3.0 permanent-role authority records",
+  "type": "object",
+  "oneOf": [
+    {"$ref": "#/$defs/authorityGraph"},
+    {"$ref": "#/$defs/migrationMap"},
+    {"$ref": "#/$defs/roster"},
+    {"$ref": "#/$defs/actionRequest"},
+    {"$ref": "#/$defs/actionAdmission"},
+    {"$ref": "#/$defs/referenceReceipt"}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "roleId": {
+      "enum": [
+        "AGENT_SPAWNER_COMPILER",
+        "CONTROLLER",
+        "INTENT_REGULATOR",
+        "RUNTIME",
+        "SCHEDULER"
+      ]
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "public_name",
+        "lifetime",
+        "purpose",
+        "model_duty",
+        "allowed_authority",
+        "prohibited_authority",
+        "protected_actions",
+        "required_evidence",
+        "independent_from_roles"
+      ],
+      "properties": {
+        "role_id": {"$ref": "#/$defs/roleId"},
+        "public_name": {"type": "string", "minLength": 1},
+        "lifetime": {"const": "PERMANENT"},
+        "purpose": {"type": "string", "minLength": 1},
+        "model_duty": {"$ref": "#/$defs/identifier"},
+        "allowed_authority": {"$ref": "#/$defs/stringSet"},
+        "prohibited_authority": {"$ref": "#/$defs/stringSet"},
+        "protected_actions": {"$ref": "#/$defs/stringSet"},
+        "required_evidence": {"$ref": "#/$defs/stringSet"},
+        "independent_from_roles": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/roleId"}
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handoff_id", "from_role", "to_role", "artifact", "authority_transfer", "independent_identity_required"],
+      "properties": {
+        "handoff_id": {"$ref": "#/$defs/identifier"},
+        "from_role": {"$ref": "#/$defs/roleId"},
+        "to_role": {"$ref": "#/$defs/roleId"},
+        "artifact": {"$ref": "#/$defs/identifier"},
+        "authority_transfer": {"const": "NONE"},
+        "independent_identity_required": {"const": true}
+      }
+    },
+    "authorityGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "version",
+        "governance_version",
+        "status",
+        "authority_mode",
+        "activation",
+        "roles",
+        "handoffs",
+        "identity_policy",
+        "compatibility",
+        "runtime_effects",
+        "graph_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_authority_graph.v1"},
+        "version": {"const": 1},
+        "governance_version": {"const": "3.0"},
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "authority_mode": {"const": "CANONICAL_SUBSTRATE_ONLY"},
+        "activation": {"const": "OFF"},
+        "roles": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {"$ref": "#/$defs/role"}
+        },
+        "handoffs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/handoff"}},
+        "identity_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["distinct_role_identities_required", "requester_subject_reviewer_distinct", "compiler_acceptor_distinct", "self_appointment", "missing_identity_evidence"],
+          "properties": {
+            "distinct_role_identities_required": {"const": true},
+            "requester_subject_reviewer_distinct": {"const": true},
+            "compiler_acceptor_distinct": {"const": true},
+            "self_appointment": {"const": "DENY"},
+            "missing_identity_evidence": {"const": "DENY"}
+          }
+        },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mapping", "migration_sha256", "legacy_agentos_controller_target", "legacy_agentos_controller_may_target_controller", "ambiguous_record_policy"],
+          "properties": {
+            "mapping": {"const": "migrations/permanent-role-authority.v1.json"},
+            "migration_sha256": {"$ref": "#/$defs/sha256"},
+            "legacy_agentos_controller_target": {"const": "INTENT_REGULATOR"},
+            "legacy_agentos_controller_may_target_controller": {"const": false},
+            "ambiguous_record_policy": {"const": "DENY_UNTIL_EXPLICITLY_REBOUND"}
+          }
+        },
+        "runtime_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["starts_roles", "host_spawn_wired", "product_writes", "deployment_authorized", "publication_authorized"],
+          "properties": {
+            "starts_roles": {"const": false},
+            "host_spawn_wired": {"const": false},
+            "product_writes": {"const": false},
+            "deployment_authorized": {"const": false},
+            "publication_authorized": {"const": false}
+          }
+        },
+        "graph_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "alias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legacy_id", "canonical_role_id", "disposition", "never_maps_to", "required_semantics"],
+      "properties": {
+        "legacy_id": {"$ref": "#/$defs/identifier"},
+        "canonical_role_id": {"$ref": "#/$defs/roleId"},
+        "disposition": {"$ref": "#/$defs/identifier"},
+        "never_maps_to": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/roleId"}},
+        "required_semantics": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "migrationMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "from_governance_versions", "to_governance_version", "status", "canonical_role_ids", "role_aliases", "ambiguous_role_terms", "record_rules", "runtime_effects", "migration_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_authority_migration.v1"},
+        "version": {"const": 1},
+        "from_governance_versions": {"$ref": "#/$defs/stringSet"},
+        "to_governance_version": {"const": "3.0"},
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "canonical_role_ids": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"$ref": "#/$defs/roleId"}},
+        "role_aliases": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/alias"}},
+        "ambiguous_role_terms": {"$ref": "#/$defs/stringSet"},
+        "record_rules": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canonical_reference", "legacy_alias", "accepted_history", "incomplete_roster", "ambiguous_record"],
+          "properties": {
+            "canonical_reference": {"type": "string", "minLength": 1},
+            "legacy_alias": {"type": "string", "minLength": 1},
+            "accepted_history": {"type": "string", "minLength": 1},
+            "incomplete_roster": {"type": "string", "minLength": 1},
+            "ambiguous_record": {"type": "string", "minLength": 1}
+          }
+        },
+        "runtime_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mutates_history", "starts_roles", "spawns_sessions", "activates_governance"],
+          "properties": {
+            "mutates_history": {"const": false},
+            "starts_roles": {"const": false},
+            "spawns_sessions": {"const": false},
+            "activates_governance": {"const": false}
+          }
+        },
+        "migration_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "appointment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "requested_role_id", "subject_identity", "requester_identity", "compiler_identity", "acceptor_identity", "appointing_identity", "authority_graph_sha256", "appointment_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_appointment.v1"},
+        "version": {"const": 1},
+        "status": {"const": "INDEPENDENTLY_ACCEPTED"},
+        "requested_role_id": {"$ref": "#/$defs/roleId"},
+        "subject_identity": {"$ref": "#/$defs/identifier"},
+        "requester_identity": {"$ref": "#/$defs/identifier"},
+        "compiler_identity": {"$ref": "#/$defs/identifier"},
+        "acceptor_identity": {"$ref": "#/$defs/identifier"},
+        "appointing_identity": {"$ref": "#/$defs/identifier"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "appointment_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role_id", "identity_id", "appointment"],
+      "properties": {
+        "role_id": {"$ref": "#/$defs/roleId"},
+        "identity_id": {"$ref": "#/$defs/identifier"},
+        "appointment": {"$ref": "#/$defs/appointment"}
+      }
+    },
+    "roster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "authority_graph_sha256", "bindings", "activation", "host_sessions_bound", "roster_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_roster.v1"},
+        "version": {"const": 1},
+        "status": {"const": "PREPARED_NOT_ACTIVATED"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "bindings": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/binding"}},
+        "activation": {"const": "OFF"},
+        "host_sessions_bound": {"const": false},
+        "roster_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "independentReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "reviewer_identity", "reviewed_request_sha256", "review_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_independent_review.v1"},
+        "version": {"const": 1},
+        "status": {"const": "ACCEPTED"},
+        "reviewer_identity": {"$ref": "#/$defs/identifier"},
+        "reviewed_request_sha256": {"$ref": "#/$defs/sha256"},
+        "review_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "acceptedManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "manifest_sha256", "compiled_by_identity", "accepted_by_identity", "receipt_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.accepted_role_context_manifest.v1"},
+        "version": {"const": 1},
+        "status": {"const": "ACCEPTED"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "compiled_by_identity": {"$ref": "#/$defs/identifier"},
+        "accepted_by_identity": {"$ref": "#/$defs/identifier"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "capability_id", "granted_to_identity", "authorized_by_identity", "capability_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.bound_capability_receipt.v1"},
+        "version": {"const": 1},
+        "status": {"const": "BOUND"},
+        "capability_id": {"$ref": "#/$defs/identifier"},
+        "granted_to_identity": {"$ref": "#/$defs/identifier"},
+        "authorized_by_identity": {"$ref": "#/$defs/identifier"},
+        "capability_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "protectedDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "decision_id", "decided_by_identity", "decision_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.protected_decision_receipt.v1"},
+        "version": {"const": 1},
+        "status": {"const": "ACCEPTED"},
+        "decision_id": {"$ref": "#/$defs/identifier"},
+        "decided_by_identity": {"$ref": "#/$defs/identifier"},
+        "decision_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "actionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "request_id", "authority_graph_sha256", "roster_sha256", "actor_role", "actor_identity", "model_duty", "requested_authority", "independent_review", "accepted_manifest", "capability", "protected_decision"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_action_request.v1"},
+        "version": {"const": 1},
+        "request_id": {"$ref": "#/$defs/identifier"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "roster_sha256": {"$ref": "#/$defs/sha256"},
+        "actor_role": {"$ref": "#/$defs/roleId"},
+        "actor_identity": {"$ref": "#/$defs/identifier"},
+        "model_duty": {"$ref": "#/$defs/identifier"},
+        "requested_authority": {"$ref": "#/$defs/stringSet"},
+        "independent_review": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/independentReview"}]},
+        "accepted_manifest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/acceptedManifest"}]},
+        "capability": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/capability"}]},
+        "protected_decision": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/protectedDecision"}]}
+      }
+    },
+    "actionAdmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "request_sha256", "authority_graph_sha256", "roster_sha256", "actor_role", "requested_authority", "denial_codes", "execution_authorized", "activation", "host_spawn_wired", "admission_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_action_admission.v1"},
+        "version": {"const": 1},
+        "status": {"enum": ["SHAPE_ACCEPTED_NOT_ACTIVATED", "DENIED"]},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "roster_sha256": {"$ref": "#/$defs/sha256"},
+        "actor_role": {"$ref": "#/$defs/roleId"},
+        "requested_authority": {"$ref": "#/$defs/stringSet"},
+        "denial_codes": {"$ref": "#/$defs/stringSet"},
+        "execution_authorized": {"const": false},
+        "activation": {"const": "OFF"},
+        "host_spawn_wired": {"const": false},
+        "admission_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "referenceReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "status", "source_role_id", "canonical_role_id", "canonical_public_name", "disposition", "authority_graph_sha256", "migration_sha256", "mutation", "activation", "receipt_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.permanent_role_reference_receipt.v1"},
+        "version": {"const": 1},
+        "status": {"enum": ["CURRENT_REFERENCE", "MIGRATED_REFERENCE_ONLY"]},
+        "source_role_id": {"$ref": "#/$defs/identifier"},
+        "canonical_role_id": {"$ref": "#/$defs/roleId"},
+        "canonical_public_name": {"type": "string", "minLength": 1},
+        "disposition": {"$ref": "#/$defs/identifier"},
+        "authority_graph_sha256": {"$ref": "#/$defs/sha256"},
+        "migration_sha256": {"$ref": "#/$defs/sha256"},
+        "mutation": {"const": "NONE"},
+        "activation": {"const": "OFF"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

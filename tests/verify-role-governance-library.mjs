@@ -31,6 +31,7 @@ import {
   validateControllerArchitectureRepairGate,
 } from "../control/agentos-controller.mjs";
 import {TASK_GATE_CATALOG_SHA256, TASK_GATE_QUESTIONS} from "../control/task-gate-questions.mjs";
+import {CANONICAL_PERMANENT_ROLE_IDS, PERMANENT_ROLE_AUTHORITY_SHA256} from "../control/permanent-role-authority.mjs";
 
 const DIGEST = "b".repeat(64);
 const SOURCE_COMMIT = "commit-architecture-repair";
@@ -94,15 +95,18 @@ const defaultDefinitions = defaultRoleDefinitions({
   ],
 });
 assert.deepEqual(defaultDefinitions.map((role) => role.role_id), [
+  "AGENT_SPAWNER_COMPILER",
   "CAMPAIGN_ORCHESTRATOR",
+  "CONTROLLER",
   "INDEPENDENT_AUDITOR",
   "INTENT_REGULATOR",
   "RUNTIME",
+  "SCHEDULER",
   "WORKER_BUILD",
   "WORKER_UI",
 ]);
-assert.equal(defaultDefinitions.find((role) => role.role_id === "INTENT_REGULATOR").role_scope, "PERSISTENT");
-assert.equal(defaultDefinitions.find((role) => role.role_id === "RUNTIME").role_scope, "PERSISTENT");
+assert.equal(CANONICAL_ROLE_DEFINITION_SOURCE.permanent_role_authority_sha256, PERMANENT_ROLE_AUTHORITY_SHA256);
+assert.deepEqual(defaultDefinitions.filter((role) => role.role_scope === "PERSISTENT").map((role) => role.role_id), CANONICAL_PERMANENT_ROLE_IDS);
 assert.equal(defaultDefinitions.find((role) => role.role_id === "CAMPAIGN_ORCHESTRATOR").role_scope, "CAMPAIGN");
 assert.equal(defaultDefinitions.find((role) => role.role_id === "INDEPENDENT_AUDITOR").role_scope, "CAMPAIGN");
 assert.equal(defaultDefinitions.find((role) => role.role_id === "WORKER_UI").role_kind, "ONE_LANE_WORKER");
@@ -126,10 +130,13 @@ assert.equal(catalog.task_gate_catalog_sha256, TASK_GATE_CATALOG_SHA256);
 assert(catalog.roles.every((role) => role.universal_task_gate_question_ids.length === TASK_GATE_QUESTIONS.length));
 assert.equal(catalog.role_definition_source_sha256, ROLE_DEFINITION_SOURCE_SHA256);
 assert.deepEqual(catalog.roles.map((role) => role.role_id), [
+  "AGENT_SPAWNER_COMPILER",
   "CAMPAIGN_ORCHESTRATOR",
+  "CONTROLLER",
   "INDEPENDENT_AUDITOR",
   "INTENT_REGULATOR",
   "RUNTIME",
+  "SCHEDULER",
   "WORKER_BUILD",
   "WORKER_UI",
 ]);

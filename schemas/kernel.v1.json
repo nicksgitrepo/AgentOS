@@ -91,10 +91,24 @@
     "contract": "schemas/global-policy-state.v1.json",
     "rule": "Declared policy variables are independently addressable, content-addressed, dependency-aware, and amended through exact owner approval. Constitutional rules cannot be weakened by a project amendment."
   },
+  "permanent_role_authority": {
+    "governance_version": "3.0",
+    "status": "PREPARED_NOT_ACTIVATED",
+    "controller": "control/permanent-role-authority.mjs",
+    "graph": "governance/3.0/permanent-role-authority-graph.v1.json",
+    "contract": "schemas/permanent-role-authority.v1.json",
+    "migration": "migrations/permanent-role-authority.v1.json",
+    "canonical_roles": ["AGENT_SPAWNER_COMPILER", "CONTROLLER", "INTENT_REGULATOR", "RUNTIME", "SCHEDULER"],
+    "precedence": "This content-addressed graph is the only current permanent-role authority source. Older controller, two-role Runtime, development-plan, and imported roster records are compatibility inputs and grant no 3.0 authority without explicit graph-bound rebinding.",
+    "effects": "The substrate validates and emits inactive receipts only; it does not start roles, bind host sessions, spawn, write Product, deploy, publish, or activate governance."
+  },
   "agentos_controller": {
     "controller": "control/agentos-controller.mjs",
     "contract": "schemas/agentos-controller.v1.json",
     "name": "AGENTOS_CONTROLLER",
+    "authority_status": "LEGACY_COMPATIBILITY_INPUT_ONLY",
+    "canonical_target": "INTENT_REGULATOR",
+    "never_target": "CONTROLLER",
     "scope": "PROJECT_PERSISTENT",
     "controller_agent": "Judgment, interpretation, planning, and routing; wakes only when a material decision requires it.",
     "controller_runtime": "Deterministic event loop, state transaction, timer, adapter, lease, session, worktree, test, deployment, and readback boundary.",

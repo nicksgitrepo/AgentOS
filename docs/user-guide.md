@@ -29,17 +29,21 @@ inside the Product repository is an explicit opt-in.
    choose `APPROVE_EXACT_PLAN` when a separate exact approval is required.
 
 Bootstrap then stages a resumable setup transaction in the bound control
-plane. It creates the persistent project-level `AGENTOS_CONTROLLER` state at
-`agentos/controller-state.json` inside that control plane from an independent
-Controller Runtime readback. If an authority corpus is imported or refactored,
+plane. Older setup flows may create a project-level `AGENTOS_CONTROLLER` state
+at `agentos/controller-state.json`; AgentOS 3.0 treats that record as a legacy
+Intent Regulator input, not as the distinct Controller or as a complete
+five-role roster. If an authority corpus is imported or refactored,
 it creates and verifies `legacy.zip`, its manifest, index, and receipt before
 writing the new corpus. A distinct setup Auditor verifies the exact plan,
 readback, root separation, security baseline, Runtime and Controller Runtime
 bindings, and the three-root acceptance slice.
 
-After setup, the ongoing owner conversation is with the project-persistent
-**Intent Regulator** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate
-discovery and setup authority; it is not the ongoing Controller role.
+AgentOS 3.0 separates five permanent roles: **Intent Regulator** for owner
+intent/scope/protected decisions, **Controller** for lifecycle supervision,
+**Agent Spawner Compiler** for fail-closed role-context preparation and the
+future post-acceptance spawn boundary, **Scheduler** for custody, and
+**Runtime** for capability-bound effects. `AGENTOS_CONTROLLER` is a legacy
+alias for Intent Regulator only. Bootstrap remains separate from every role.
 
 JSA is not a broad permission. It covers only the recorded local setup actions
 while source, intent, scope, host readback, and relevant conditions remain the
