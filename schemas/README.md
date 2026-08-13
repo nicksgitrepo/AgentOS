@@ -2,6 +2,11 @@
 
 Machine-readable contracts and versioned validation schemas.
 
+`permanent-role-authority.v1.json` types the AgentOS 3.0 content-addressed
+five-role graph, inactive independently appointed roster, legacy-reference
+migration receipt, action request, and fail-closed admission receipt. Runtime
+effects remain disabled by contract.
+
 Release contracts are additive typed records: `release-lifecycle.v1.json`
 covers candidate and promotion identities, while `release-migration.v1.json`,
 `release-compatibility.v1.json`, `release-policy-replay.v1.json`,

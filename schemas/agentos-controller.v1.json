@@ -5,6 +5,13 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "name": "AGENTOS_CONTROLLER",
   "scope": "PROJECT_PERSISTENT",
+  "authority_compatibility": {
+    "status": "LEGACY_COMPATIBILITY_INPUT_ONLY",
+    "canonical_graph": "governance/3.0/permanent-role-authority-graph.v1.json",
+    "canonical_target": "INTENT_REGULATOR",
+    "never_target": "CONTROLLER",
+    "admission_rule": "This v1 record grants no current authority until the executable migration emits an evidence-bound Intent Regulator reference and the complete five-role roster is rebound. Lifecycle or state-supervision duties make the old record ambiguous and fail closed."
+  },
   "role_display": {
     "machine_role": "AGENTOS_CONTROLLER",
     "public_name": "Intent Regulator",

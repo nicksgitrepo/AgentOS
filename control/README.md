@@ -2,6 +2,7 @@
 
 Canonical executable authorities:
 
+- `permanent-role-authority.mjs` — the inactive AgentOS 3.0 five-role authority graph, independent-identity roster, legacy-reference migration, and fail-closed action-shape admission boundary;
 - `bootstrap-compiler.mjs` — discovery-backed exact setup plan and transaction;
 - `control-plane-root.mjs` — separate control-plane binding and containment rules;
 - `bootstrap-coverage.mjs` — deterministic setup output-gap inventory and material-question planner input;
@@ -14,7 +15,7 @@ Canonical executable authorities:
 - `task-continuation.mjs` — one-task control-plane continuation from a completed inactive handoff;
 - `task-run-loop.mjs` — repeatable one-task inactive control-plane execution, reconciliation, and next-task queuing;
 - `campaign-state-owner.mjs` — one serialized lifecycle/cascade/bridge snapshot with compare-and-swap persistence and policy-boundary reconciliation;
-- `agentos-controller.mjs` — persistent project-level `AGENTOS_CONTROLLER` with a judgment boundary, deterministic event loop, adapter readbacks, policy/session reconciliation, and compare-and-swap state;
+- `agentos-controller.mjs` — legacy project-level `AGENTOS_CONTROLLER` compatibility surface; current authority requires migration to `INTENT_REGULATOR` and never implies the distinct `CONTROLLER` role;
 - `continuous-operating-loop.mjs` — fifteen-minute meaningful-progress inspection, evidence-preserving in-scope repair, predecessor-bound replacement, and independent clearance;
 - `controller-supervisor.mjs` and `controller-supervisor-runtime.mjs` — the self-starting observation, bounded-goal, boundary, lease, heartbeat, and repair-routing loop for the persistent Controller;
 - `local-agent-session.mjs` — durable campaign-role custody with source-bound commands, heartbeats, isolated worktrees, and exact initial/follow-up readbacks;
@@ -24,8 +25,7 @@ Canonical executable authorities:
 - `question-tree.mjs` — three-root answer/lifecycle acceptance compiler;
 - `governance-library.mjs` and `role-governance-library.mjs` — the shared
   general rules and generated role-specific rule packets;
-- `governance-role-definitions.mjs` — the persistent-role and one-lane worker
-  seed source;
+- `governance-role-definitions.mjs` — graph-bound permanent-role, campaign-role, and one-lane worker projection source;
 - `native-session-runner.mjs` — the only host-facing rapid-team lifecycle;
 - `codex-native-host-adapter.mjs` — the in-app Codex bridge; host callbacks
   remain outside the portable kernel and are bound to one project/environment;
@@ -73,17 +73,16 @@ and user-facing readbacks.
 are migration-only compatibility aliases. They cannot create setup state,
 campaign state, provider identity, Product custody, or successor rosters.
 
-After first-run setup, the ongoing project-persistent role is **Intent
-Regulator** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate discovery
-and setup authority. The public name is intentional; the machine role remains
-stable for source compatibility.
+AgentOS 3.0 has five permanent roles. Intent Regulator handles owner intent,
+scope, and protected decisions; Controller handles fifteen-minute lifecycle
+supervision and recovery; Agent Spawner Compiler, Scheduler, and Runtime keep
+compilation/spawn, custody, and capability-bound effects separate. The old
+`AGENTOS_CONTROLLER` identifier is readable only as an evidence-bound alias to
+`INTENT_REGULATOR`. It never names `CONTROLLER`. Bootstrap remains separate.
 
-`AGENTOS_CONTROLLER` persists across campaigns. The Intent Regulator may
-interpret a judgment or owner boundary, but its Controller Runtime owns the
-deterministic event/state transaction and requires external readback before
-completion. `CAMPAIGN_ORCHESTRATOR` remains campaign-scoped; the project
-controller does not write Product code, accept Product work, override the
-Auditor, deploy directly, or hold Feature/Platform worktrees.
+The authority module currently emits inactive receipts only. It starts no
+roles and wires no real host spawn. Older operational loops remain compatibility
+surfaces until separately rebound to the five-role graph.
 
 The portable kernel does not contain a provider-specific model host, worktree
 spawner, deployment connector, or live-site browser driver. Those are admitted

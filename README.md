@@ -70,19 +70,21 @@ Use the returned discovery and question plan. The normal Bootstrap mode is JSA-s
 
 Running Bootstrap as an agent uses the host’s agentic execution allowance. Use ordinary Chat or a private handoff-file exchange when you want advice without repository execution; use a public Git handoff only when public source exchange is intentional. Provider APIs and unattended automation may have separate billing and credentials.
 
-The prompt above is only for first-run Bootstrap discovery and setup. After
-setup, the ongoing project-persistent role is **Intent Regulator**
-`AGENTOS_CONTROLLER`. It owns the control-plane conversation and safe
-campaign coordination; Bootstrap does not continue as that role.
+The prompt above is only for first-run Bootstrap discovery and setup. AgentOS
+3.0 defines five distinct permanent roles: **Intent Regulator**, **Controller**,
+**Agent Spawner Compiler**, **Scheduler**, and **Runtime**. Intent Regulator
+owns owner-intent, scope, and protected-decision routing; Controller owns
+fifteen-minute lifecycle supervision and recovery. The legacy machine name
+`AGENTOS_CONTROLLER` maps only to `INTENT_REGULATOR`, never to `CONTROLLER`.
+Bootstrap does not continue as any permanent role.
 
 ## AgentOS in one minute
 
 You explain what you want. Bootstrap handles the first read-only discovery and
-setup plan. After setup, Intent Regulator carries the project-persistent
-control-plane conversation and safe campaign coordination. Economical agents
-build the first pass, independent checkers inspect it, a stronger Finalizer
-repairs the retained code, and persistent Runtime handles release and
-deployment.
+setup plan. The five permanent roles then keep intent, lifecycle supervision,
+role-context compilation, scheduling custody, and capability-bound Runtime
+effects separate. Economical agents build the first pass, independent checkers
+inspect it, and a stronger Finalizer repairs the retained code.
 
 The Controller keeps moving by itself: it watches campaign handoffs and worker
 heartbeats, re-binds unchanged intent and acceptance records to the exact source
@@ -155,6 +157,7 @@ delete.
 - Bootstrap entrypoint: [`bootstrap/start-here.md`](bootstrap/start-here.md)
 - Fresh-agent start contract: replace the two path placeholders in the instruction above, then run `node "<AGENTOS_ROOT>/control/bootstrap-compiler.mjs" start "<PROJECT_ROOT>" RECOMMENDED` for the first read-only discovery and question plan. The result includes the separately bound control-plane root.
 - Exact binding: [`schemas/bootstrap-binding.v1.json`](schemas/bootstrap-binding.v1.json)
+- AgentOS 3.0 permanent-role authority: [`governance/3.0/permanent-role-authority.md`](governance/3.0/permanent-role-authority.md)
 - User guide: [`docs/user-guide.md`](docs/user-guide.md)
 - Architecture: [`docs/architecture.md`](docs/architecture.md)
 - Repository roles: [`docs/repository-roles.md`](docs/repository-roles.md)

@@ -32,6 +32,11 @@ import {
   validateGovernanceMigration,
   validateProjectGeneralLibrary,
 } from "../control/four-library-governance.mjs";
+import {
+  CANONICAL_PERMANENT_ROLE_AUTHORITY_GRAPH,
+  CANONICAL_PERMANENT_ROLE_IDS,
+  PERMANENT_ROLE_AUTHORITY_SHA256,
+} from "../control/permanent-role-authority.mjs";
 
 const digest = (label) => canonicalDigest({fixture: label});
 const sorted = (items) => [...items].sort((left, right) => Buffer.from(left).compare(Buffer.from(right, "utf8")));
@@ -100,13 +105,16 @@ function makeRoleInputs() {
     {graph_id: "LANE_ALPHA", path_ref: "release/lanes/alpha.gate", graph_sha256: digest("lane-alpha"), scope_role_id: "WORKER_ALPHA", lane_id: "ALPHA"},
     {graph_id: "LANE_BETA", path_ref: "release/lanes/beta.gate", graph_sha256: digest("lane-beta"), scope_role_id: "WORKER_BETA", lane_id: "BETA"},
     {graph_id: "ROLE_AUDIT", path_ref: "release/roles/audit.gate", graph_sha256: digest("role-audit"), scope_role_id: "INDEPENDENT_AUDITOR", lane_id: null},
+    {graph_id: "ROLE_COMPILER", path_ref: "release/roles/compiler.gate", graph_sha256: digest("role-compiler"), scope_role_id: "AGENT_SPAWNER_COMPILER", lane_id: null},
+    {graph_id: "ROLE_CONTROLLER", path_ref: "release/roles/controller.gate", graph_sha256: digest("role-controller"), scope_role_id: "CONTROLLER", lane_id: null},
     {graph_id: "ROLE_ORCHESTRATION", path_ref: "release/roles/orchestration.gate", graph_sha256: digest("role-orchestration"), scope_role_id: "CAMPAIGN_ORCHESTRATOR", lane_id: null},
     {graph_id: "ROLE_REGULATOR", path_ref: "release/roles/regulator.gate", graph_sha256: digest("role-regulator"), scope_role_id: "INTENT_REGULATOR", lane_id: null},
     {graph_id: "ROLE_RUNTIME", path_ref: "release/roles/runtime.gate", graph_sha256: digest("role-runtime"), scope_role_id: "RUNTIME", lane_id: null},
+    {graph_id: "ROLE_SCHEDULER", path_ref: "release/roles/scheduler.gate", graph_sha256: digest("role-scheduler"), scope_role_id: "SCHEDULER", lane_id: null},
   ];
   const general = ["GENERAL_CORE", "GENERAL_EVIDENCE", "GENERAL_SECURITY"];
-  const prohibited = ["SCOPE_EXPANSION", "SELF_ACCEPTANCE"];
-  const role = ({role_id, display_name, role_kind, lifetime, lane_id = null, role_graph_id, allowed_authority, required_evidence}) => ({
+  const campaignProhibited = ["SCOPE_EXPANSION", "SELF_ACCEPTANCE"];
+  const role = ({role_id, display_name, role_kind, lifetime, lane_id = null, role_graph_id, allowed_authority, prohibited_authority = campaignProhibited, required_evidence}) => ({
     role_id,
     display_name,
     role_kind,
@@ -114,20 +122,36 @@ function makeRoleInputs() {
     lane_id,
     graph_ids: sorted([...general, role_graph_id]),
     allowed_authority: sorted(allowed_authority),
-    prohibited_authority: prohibited,
+    prohibited_authority: [...prohibited_authority],
     required_evidence: sorted(required_evidence),
   });
+  const permanentGraphIds = {
+    AGENT_SPAWNER_COMPILER: "ROLE_COMPILER",
+    CONTROLLER: "ROLE_CONTROLLER",
+    INTENT_REGULATOR: "ROLE_REGULATOR",
+    RUNTIME: "ROLE_RUNTIME",
+    SCHEDULER: "ROLE_SCHEDULER",
+  };
   const role_definitions = [
     role({role_id: "CAMPAIGN_ORCHESTRATOR", display_name: "Campaign Orchestrator", role_kind: "CAMPAIGN_ORCHESTRATOR", lifetime: "CAMPAIGN", role_graph_id: "ROLE_ORCHESTRATION", allowed_authority: ["CAMPAIGN_ROUTING"], required_evidence: ["CAMPAIGN_RECEIPT"]}),
     role({role_id: "INDEPENDENT_AUDITOR", display_name: "Independent Auditor", role_kind: "INDEPENDENT_AUDITOR", lifetime: "CAMPAIGN", role_graph_id: "ROLE_AUDIT", allowed_authority: ["INDEPENDENT_CHECK"], required_evidence: ["AUDIT_RECEIPT"]}),
-    role({role_id: "INTENT_REGULATOR", display_name: "Intent Regulator", role_kind: "INTENT_REGULATOR", lifetime: "PERSISTENT", role_graph_id: "ROLE_REGULATOR", allowed_authority: ["PROJECT_GOVERNANCE_REVIEW"], required_evidence: ["OWNER_DECISION"]}),
-    role({role_id: "RUNTIME", display_name: "Runtime", role_kind: "RUNTIME", lifetime: "PERSISTENT", role_graph_id: "ROLE_RUNTIME", allowed_authority: ["HOST_READBACK"], required_evidence: ["RUNTIME_RECEIPT"]}),
+    ...CANONICAL_PERMANENT_ROLE_AUTHORITY_GRAPH.roles.map((authorityRole) => role({
+      role_id: authorityRole.role_id,
+      display_name: authorityRole.public_name,
+      role_kind: authorityRole.role_id,
+      lifetime: "PERSISTENT",
+      role_graph_id: permanentGraphIds[authorityRole.role_id],
+      allowed_authority: authorityRole.allowed_authority,
+      prohibited_authority: authorityRole.prohibited_authority,
+      required_evidence: authorityRole.required_evidence,
+    })),
     role({role_id: "WORKER_ALPHA", display_name: "Alpha Worker", role_kind: "NAMED_LANE_WORKER", lifetime: "CAMPAIGN", lane_id: "ALPHA", role_graph_id: "LANE_ALPHA", allowed_authority: ["LANE_EXECUTION"], required_evidence: ["LANE_RECEIPT"]}),
     role({role_id: "WORKER_BETA", display_name: "Beta Worker", role_kind: "NAMED_LANE_WORKER", lifetime: "CAMPAIGN", lane_id: "BETA", role_graph_id: "LANE_BETA", allowed_authority: ["LANE_EXECUTION"], required_evidence: ["LANE_RECEIPT"]}),
   ];
   return {
     source: {
       lane_manifest_digest: digest("lane-manifest"),
+      permanent_role_authority_digest: PERMANENT_ROLE_AUTHORITY_SHA256,
       role_selection_digest: digest("role-selection"),
       role_definition_source_digest: digest("role-definition-source"),
     },
@@ -142,6 +166,7 @@ function makeBaseRole(baseGeneral, releaseLabel = "release-a", previous = null) 
     baseGeneralLibrary: baseGeneral,
     source: {
       lane_manifest_digest: digest(`${releaseLabel}-lane-manifest`),
+      permanent_role_authority_digest: PERMANENT_ROLE_AUTHORITY_SHA256,
       role_selection_digest: digest(`${releaseLabel}-role-selection`),
       role_definition_source_digest: digest(`${releaseLabel}-role-definition-source`),
     },
@@ -255,9 +280,9 @@ validateLegacyLayeredGovernanceContract(layeredContract, {
 assert.deepEqual(layeredContract.layer_order, ["SHARED_GENERAL", "BASE_ROLE", "PERSISTENT_PROJECT", "GENERATED_TASK_ROLE"]);
 assert.equal(layeredContract.activation.active, false);
 
-assert.equal(first.baseRole.role_packets.length, 6, "base role packet inventory is incomplete");
+assert.equal(first.baseRole.role_packets.length, 9, "base role packet inventory is incomplete");
 assert.equal(first.binding.status, "COMPILED", "binding compilation must not imply preparation or activation");
-assert.deepEqual(first.baseRole.role_packets.filter((packet) => packet.lifetime === "PERSISTENT").map((packet) => packet.role_id), ["INTENT_REGULATOR", "RUNTIME"]);
+assert.deepEqual(first.baseRole.role_packets.filter((packet) => packet.lifetime === "PERSISTENT").map((packet) => packet.role_id), CANONICAL_PERMANENT_ROLE_IDS);
 assert.deepEqual(first.generatedProjectRole.role_packets.find((packet) => packet.role_id === "WORKER_ALPHA").project_graph_ids, ["PROJECT_ACCEPTANCE", "PROJECT_SECURITY"]);
 assert(first.generatedProjectRole.role_packets.every((packet) => packet.allowed_authority.every((item) => first.baseRole.role_packets.find((base) => base.role_id === packet.role_id && base.lane_id === packet.lane_id).allowed_authority.includes(item))), "generated role expanded authority");
 assert(first.generatedProjectRole.role_packets.find((packet) => packet.role_id === "WORKER_ALPHA").prohibited_authority.includes("UNAUTHORIZED_EXTERNAL_ACTION"), "project prohibition was not composed");

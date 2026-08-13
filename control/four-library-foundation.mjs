@@ -11,6 +11,11 @@
 
 import crypto from "node:crypto";
 import path from "node:path";
+import {
+  CANONICAL_PERMANENT_ROLE_AUTHORITY_GRAPH,
+  CANONICAL_PERMANENT_ROLE_IDS,
+  PERMANENT_ROLE_AUTHORITY_SHA256,
+} from "./permanent-role-authority.mjs";
 
 export const BASE_GENERAL_SCHEMA = "agentos.base_general_library.v1";
 export const BASE_ROLE_SCHEMA = "agentos.base_role_library.v1";
@@ -45,17 +50,23 @@ export const GOVERNANCE_UPDATE_MODES = Object.freeze([
 ]);
 
 export const FIXED_ROLE_IDS = Object.freeze([
+  "AGENT_SPAWNER_COMPILER",
   "CAMPAIGN_ORCHESTRATOR",
+  "CONTROLLER",
   "INDEPENDENT_AUDITOR",
   "INTENT_REGULATOR",
   "RUNTIME",
+  "SCHEDULER",
 ]);
 
 export const FIXED_ROLE_KINDS = Object.freeze({
+  AGENT_SPAWNER_COMPILER: "AGENT_SPAWNER_COMPILER",
   CAMPAIGN_ORCHESTRATOR: "CAMPAIGN_ORCHESTRATOR",
+  CONTROLLER: "CONTROLLER",
   INDEPENDENT_AUDITOR: "INDEPENDENT_AUDITOR",
   INTENT_REGULATOR: "INTENT_REGULATOR",
   RUNTIME: "RUNTIME",
+  SCHEDULER: "SCHEDULER",
 });
 
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -355,6 +366,13 @@ function validateBaseRolePacket(packet, label, {baseGraphIds = null, roleGraphBi
     assert(packet.lane_id === null, `${label}.fixed role carries a lane`);
     assert(packet.role_kind === FIXED_ROLE_KINDS[packet.role_id], `${label}.fixed role kind is invalid`);
     assert(packet.lifetime === "CAMPAIGN" || packet.lifetime === "PERSISTENT", `${label}.lifetime is invalid`);
+    if (CANONICAL_PERMANENT_ROLE_IDS.includes(packet.role_id)) {
+      const authorityRole = CANONICAL_PERMANENT_ROLE_AUTHORITY_GRAPH.roles.find((role) => role.role_id === packet.role_id);
+      assert(packet.lifetime === "PERSISTENT" && packet.display_name === authorityRole.public_name, `${label} persistent identity differs from the permanent-role graph`);
+      assert(packet.allowed_authority.every((action) => authorityRole.allowed_authority.includes(action)), `${label} expands permanent-role authority`);
+      assert(authorityRole.prohibited_authority.every((action) => packet.prohibited_authority.includes(action)), `${label} omits a permanent-role prohibition`);
+      assert(authorityRole.required_evidence.every((evidence) => packet.required_evidence.includes(evidence)), `${label} omits permanent-role evidence`);
+    } else assert(packet.lifetime === "CAMPAIGN", `${label} campaign role claims persistent lifetime`);
   }
   if (knownRoleIds !== null) assert(!knownRoleIds.has(packet.role_id), `${label}.role_id is duplicated`);
   sortedUniqueStrings(packet.graph_ids, `${label}.graph_ids`);
@@ -542,7 +560,8 @@ export function validateBaseRoleLibrary(value, {baseGeneralLibrary = null} = {})
     validateBaseGeneralLibrary(baseGeneralLibrary);
     assert(value.base_general_library_digest === baseGeneralLibrary.digest, "base role library parent differs");
   }
-  validateSourceDigests(value.source, ["lane_manifest_digest", "role_selection_digest", "role_definition_source_digest"], "base role library.source");
+  validateSourceDigests(value.source, ["lane_manifest_digest", "permanent_role_authority_digest", "role_selection_digest", "role_definition_source_digest"], "base role library.source");
+  assert(value.source.permanent_role_authority_digest === PERMANENT_ROLE_AUTHORITY_SHA256, "base role library permanent-role authority binding is stale");
   assert(Array.isArray(value.role_graph_bindings) && value.role_graph_bindings.length > 0, "base role library.role_graph_bindings must not be empty");
   const packetRoleIds = new Set((value.role_packets ?? []).map((packet) => packet.role_id));
   value.role_graph_bindings.forEach((binding, index) => validateRoleGraphBinding(binding, `base role library.role_graph_bindings[${index}]`, packetRoleIds));
@@ -579,7 +598,8 @@ export function compileBaseRoleLibrary({
   previous = null,
 } = {}) {
   validateBaseGeneralLibrary(baseGeneralLibrary);
-  validateSourceDigests(source, ["lane_manifest_digest", "role_selection_digest", "role_definition_source_digest"], "base role source");
+  validateSourceDigests(source, ["lane_manifest_digest", "permanent_role_authority_digest", "role_selection_digest", "role_definition_source_digest"], "base role source");
+  assert(source.permanent_role_authority_digest === PERMANENT_ROLE_AUTHORITY_SHA256, "base role source permanent-role authority binding is stale");
   assert(Array.isArray(role_graph_bindings) && role_graph_bindings.length > 0, "base role graph bindings must not be empty");
   assert(Array.isArray(role_definitions) && role_definitions.length > 0, "base role definitions must not be empty");
   validatePrevious(previous, (record) => validateBaseRoleLibrary(record, {baseGeneralLibrary}), "base role previous record");

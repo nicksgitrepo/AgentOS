@@ -5,6 +5,7 @@ The public kernel is split into small layers with one direction of authority:
 ```text
 Bootstrap
   -> shared general governance
+  -> permanent-role authority graph
   -> role-definition source + question tree
   -> generated role-specific governance
   -> source-bound session runner
@@ -20,9 +21,17 @@ The two governance libraries have different jobs:
 | General governance | `control/governance-library.mjs` | portable rules shared by every role |
 | Role-specific governance | `control/role-governance-library.mjs` | a small role packet generated from the general rules, role definitions, and the compiled question tree |
 
-`control/governance-role-definitions.mjs` is the canonical role seed. It keeps
-the persistent roles (`Intent Regulator` and `Runtime`), the campaign roles,
-and the one-lane worker template separate from the generated library.
+`governance/3.0/permanent-role-authority-graph.v1.json` is the sole permanent-
+role authority source. It keeps `INTENT_REGULATOR`, `CONTROLLER`,
+`AGENT_SPAWNER_COMPILER`, `SCHEDULER`, and `RUNTIME` distinct and content-
+addressed. `control/governance-role-definitions.mjs` binds that exact graph and
+projects the five permanent roles alongside campaign roles and the one-lane
+worker template; it cannot create a second permanent-role canon.
+
+Older `AGENTOS_CONTROLLER`, two-role persistent Runtime, and expanded imported
+roster records are compatibility inputs only. The executable migration maps
+`AGENTOS_CONTROLLER` to `INTENT_REGULATOR` with legacy intent evidence and
+never maps it to `CONTROLLER`; ambiguous or incomplete records fail closed.
 
 The rapid prototype is deliberately divided into twelve named lane modules.
 Each lane owns one kind of behavior and has a focused verifier. The index only

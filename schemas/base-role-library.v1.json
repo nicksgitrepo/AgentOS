@@ -17,9 +17,10 @@
     "source": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["lane_manifest_digest", "role_selection_digest", "role_definition_source_digest"],
+      "required": ["lane_manifest_digest", "permanent_role_authority_digest", "role_selection_digest", "role_definition_source_digest"],
       "properties": {
         "lane_manifest_digest": {"$ref": "#/$defs/digest"},
+        "permanent_role_authority_digest": {"$ref": "#/$defs/digest"},
         "role_selection_digest": {"$ref": "#/$defs/digest"},
         "role_definition_source_digest": {"$ref": "#/$defs/digest"}
       }
@@ -42,7 +43,7 @@
     },
     "role_packets": {
       "type": "array",
-      "minItems": 5,
+      "minItems": 8,
       "items": {"$ref": "#/$defs/rolePacket"}
     },
     "digest": {"$ref": "#/$defs/digest"}

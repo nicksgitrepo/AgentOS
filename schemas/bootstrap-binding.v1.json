@@ -30,7 +30,7 @@
     },
     "user_readme": {
       "path": "README.md",
-      "sha256": "e502b970a2647e59bf1623afb0aa415c276018cc50b2d9ca4b3c468ee377ceb7"
+      "sha256": "9681b8e535ef7ac50f84acdea7136631fa1e20dfba42f5228f7871a760a0a112"
     },
     "repository_roles_guide": {
       "path": "docs/repository-roles.md",
@@ -38,11 +38,11 @@
     },
     "readme_verifier": {
       "path": "tests/verify-readme.mjs",
-      "sha256": "f4ddec3183c26b9b3fb56b16d0ab8dc0ba73fc6d1f2036adda364e445a093f56"
+      "sha256": "c99b62c551e8b23de86c22ac1ac07a31eb7d0df0beb8ac7088e55623c09798f8"
     },
     "role_naming_verifier": {
       "path": "tests/verify-role-naming.mjs",
-      "sha256": "61c63247ed87d487395b05b8471777fbaf1e0c323dc2ff576b9c9efdb5ae7cdf"
+      "sha256": "cd4e34b5e0c16962fa1f788066640ccc5a0d40df72a9ee6cd9a6fb7b32c9ab3f"
     },
     "cascade_economics_controller": {
       "path": "control/cascade-economics.mjs",
@@ -382,11 +382,11 @@
     },
     "naming_registry": {
       "path": "schemas/naming-and-terminology.v1.json",
-      "sha256": "e7b678c7480bf2bb92084a05173377553cb62715cf13b9a393523434d1a445fb"
+      "sha256": "837097f99040396d621420f3eef3ffd3b1d1701549ef9a38b03159114a04e04b"
     },
     "kernel_registry": {
       "path": "schemas/kernel.v1.json",
-      "sha256": "89e856946da0bc0cd1452d3596c0dbde7a7fa198e96616af55115e373aabd8fe"
+      "sha256": "9374267971e007524f9c7d1a818524449d1c0169535c93202f7f7297b4e22c18"
     },
     "delivery_closure_records_controller": {
       "path": "control/delivery-closure-records.mjs",
@@ -714,7 +714,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "30977a30eb8c2f8faa01f108e77d42b86cd9455caf5c2ec1b0bb83fd7fed44e1"
+      "sha256": "2beb2208b3bdae12c8eb9d4e166019b4c6d9bd3dcc198b7b19b0ec00b6b61d37"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -834,7 +834,7 @@
     },
     "naming_article": {
       "path": "governance/2.1rc/naming-and-terminology.md",
-      "sha256": "0d3d9ac988e87650f5524b82960f7640dc182fd3b309fb6bdae1a26a9db8a96c"
+      "sha256": "c0b5f3a4a80157e4745dfb7779bc735375400d1a1a465e469b256179e5543cf3"
     },
     "workflow_registry": {
       "path": "schemas/capability-and-worktree-registry.v1.json",
@@ -1158,11 +1158,11 @@
     },
     "development_plan_controller": {
       "path": "control/development-plan.mjs",
-      "sha256": "eb15ad7d224e6aacb59f782d352f71831897bc09f4d8060752ccc4511cd34707"
+      "sha256": "a333be52be4388d85141e70777a442b7a568a1a1bb51919e07a6d80c9e53c497"
     },
     "development_plan_verifier": {
       "path": "tests/verify-development-plan.mjs",
-      "sha256": "1d67d7c2343c39561beae4aff46227aaac6b0ea1787ba6dd6cbcebb307b69d3f"
+      "sha256": "605105676931dc624c9978b16053c82c3cb6fe89da94c643128d5e443223d4a9"
     },
     "iteration_campaign_expansion_controller": {
       "path": "control/iteration-campaign-expansion.mjs",
@@ -1254,7 +1254,7 @@
     },
     "governance_role_definitions_controller": {
       "path": "control/governance-role-definitions.mjs",
-      "sha256": "963f0188da198c845c5c1a4fe9d267e8f370d4573ca86a163df0bf0fc2803e3e"
+      "sha256": "3a4942ad4a642741d88d7327aeb5f93b8409ebfa768144613d6eb7bd001ac079"
     },
     "role_governance_library_controller": {
       "path": "control/role-governance-library.mjs",
@@ -1262,7 +1262,7 @@
     },
     "role_governance_library_verifier": {
       "path": "tests/verify-role-governance-library.mjs",
-      "sha256": "8d4f46ee7fb1932555203a9b7a95d1b9d10afb46eef960c48dff4f8eda5fcd03"
+      "sha256": "b1af02f46bd333b9084a396600d6bf1d175a64ec969b95bf0cc64f5e362da972"
     },
     "native_session_team_controller": {
       "path": "control/native-session-team.mjs",
@@ -1378,7 +1378,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "900d7689d6d6cbfe1a37a873668477bcaa705f92083892c9b687ce7ec8688108"
+      "sha256": "86296d6ace552475dd47e10acb169558dd366ffe8279a9874af3044973bb3154"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
@@ -1386,7 +1386,7 @@
     },
     "architecture_guide": {
       "path": "docs/architecture.md",
-      "sha256": "25da364a4254012b3b99e50c8f26e152586e43a8c666bf5b70ac5a81adb926c3"
+      "sha256": "44a5b9fea25fbf6e0e110220c2319d2790b3fe25017fc601544682900aff13e2"
     },
     "architecture_hygiene_verifier": {
       "path": "tests/verify-architecture-hygiene.mjs",
@@ -1582,7 +1582,7 @@
     },
     "release_schema_readme": {
       "path": "schemas/README.md",
-      "sha256": "8ac5ebac2bd07729ba984272d92d0751344475c6b052ffaea2ca5d9a38b49b36"
+      "sha256": "259a37b003c7e4571b863cbe21fa663b968c23d156bfe060513afecf95afcfca"
     },
     "release_lifecycle_controller": {
       "path": "control/release-lifecycle.mjs",
@@ -1778,7 +1778,7 @@
     },
     "four_library_foundation_controller": {
       "path": "control/four-library-foundation.mjs",
-      "sha256": "35b1c36d1bd98257acaad1dfd89140f5be998ccf3785e03aa6062639abc2628d"
+      "sha256": "d1bf3cc7de4f8a9da33f50ab9a006bb1426386b1959dde3ed522c865de64fa8b"
     },
     "four_library_governance_controller": {
       "path": "control/four-library-governance.mjs",
@@ -1798,7 +1798,7 @@
     },
     "four_library_base_role_contract": {
       "path": "schemas/base-role-library.v1.json",
-      "sha256": "a6d1459e28427ed594792765fa3099ef654597ac38eeb79e8ac635a67a71e5d8"
+      "sha256": "56551c844ea3889714003723d5993334d08dbc373cb372720fcce8ca35cfd2b5"
     },
     "four_library_project_general_contract": {
       "path": "schemas/project-general-library.v1.json",
@@ -1826,7 +1826,7 @@
     },
     "four_library_verifier": {
       "path": "tests/verify-four-library-governance.mjs",
-      "sha256": "af701927f95d98a68c62387911018433d44c03a3d53db7cdd23b52953c6677a6"
+      "sha256": "1a00d6677bcacaa623af9c70462c6bb4b7820088e2096dd8b4f5a29072c081a4"
     },
     "four_library_audit_report": {
       "path": "docs/feature-audits/FOUR_LIBRARY_GOVERNANCE/auditreport.md",
@@ -2043,6 +2043,34 @@
     "roadmap_amendment": {
       "path": "docs/roadmap.md",
       "sha256": "a7acbd58e99b031ce64cbc612956302262e5b0540cd2ce36862dfbbdc0c507c9"
+    },
+    "permanent_role_authority_article": {
+      "path": "governance/3.0/permanent-role-authority.md",
+      "sha256": "8fe9b703b980804fadfe597d7f1f31b81cc4c4508ea7ab414c7a9a15788fd348"
+    },
+    "permanent_role_authority_contract": {
+      "path": "schemas/permanent-role-authority.v1.json",
+      "sha256": "7690d0c2487cc9f25e090ef8125a727b7135dc3997a8fbb9a789d948bd1ecf22"
+    },
+    "permanent_role_authority_controller": {
+      "path": "control/permanent-role-authority.mjs",
+      "sha256": "90822dd3f02338060d2585723b5e9aeb4d5f8681bdf35a3654f0e6d159331560"
+    },
+    "permanent_role_authority_governance_readme": {
+      "path": "governance/3.0/README.md",
+      "sha256": "6be513cae3f36eb95dc4b66d9e641988bf7bf76f2af0d2cfd563f1fa8b74d9c4"
+    },
+    "permanent_role_authority_graph": {
+      "path": "governance/3.0/permanent-role-authority-graph.v1.json",
+      "sha256": "088bc4a9ed7460fd2e23aef1e279394b8a4d2390205f5440adb940897bf63bf1"
+    },
+    "permanent_role_authority_migration": {
+      "path": "migrations/permanent-role-authority.v1.json",
+      "sha256": "2cc2837fb02be119001d42779459720a1a51359a8305fa4f462c7ef12dbf98bb"
+    },
+    "permanent_role_authority_verifier": {
+      "path": "tests/verify-permanent-role-authority.mjs",
+      "sha256": "b718ec1cae52f8376586809d21875444be327c4b09b07ee29975f418af3e6786"
     }
   },
   "typed_project_evidence": {
@@ -2091,8 +2119,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "The host task-kind and task-host assertions are provider-specific execution context; portable authority consumes typed host-attachment contracts instead.",
       "replacement_bindings": [
-        {"historical_reference":"provider_host_task_readback","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"},
-        {"historical_reference":"provider_runtime_readback","replacement":"schemas/visible-task-parity-readback.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"}
+        {
+          "historical_reference": "provider_host_task_readback",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        },
+        {
+          "historical_reference": "provider_runtime_readback",
+          "replacement": "schemas/visible-task-parity-readback.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
+        }
       ]
     },
     "roadmap03_controller_intent_handoff_historical_compatibility": {
@@ -2102,8 +2138,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "This append-only feature handoff preserves historical branch and provider context; current portability proof consumes the typed state and normative contracts instead.",
       "replacement_bindings": [
-        {"historical_reference":"roadmap03_typed_handoff_projection","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
-        {"historical_reference":"roadmap03_source_contract","replacement":"schemas/audit-repair-integration-state.v1.json","status":"RETAINED_NORMATIVE_STATE_CONTRACT"}
+        {
+          "historical_reference": "roadmap03_typed_handoff_projection",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "roadmap03_source_contract",
+          "replacement": "schemas/audit-repair-integration-state.v1.json",
+          "status": "RETAINED_NORMATIVE_STATE_CONTRACT"
+        }
       ]
     },
     "roadmap03_controller_intent_audit_report_historical_compatibility": {
@@ -2113,8 +2157,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "This append-only feature audit preserves historical provider and branch context; it does not define current portable-kernel authority or current comprehensive-proof input.",
       "replacement_bindings": [
-        {"historical_reference":"roadmap03_audit_observation","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
-        {"historical_reference":"roadmap03_feature_handoff","replacement":"docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md","status":"RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"}
+        {
+          "historical_reference": "roadmap03_audit_observation",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "roadmap03_feature_handoff",
+          "replacement": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
+          "status": "RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"
+        }
       ]
     },
     "platform_gate_response_handoff_historical_compatibility": {
@@ -2124,8 +2176,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "This append-only platform handoff preserves provider-specific historical context and custody evidence; it is not current portable-kernel authority or current comprehensive-proof input.",
       "replacement_bindings": [
-        {"historical_reference":"gate_catalog_and_response_boundary","replacement":"schemas/gate-catalog.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"},
-        {"historical_reference":"typed_platform_handoff_contract","replacement":"schemas/platform-foundation-handoff.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"}
+        {
+          "historical_reference": "gate_catalog_and_response_boundary",
+          "replacement": "schemas/gate-catalog.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"
+        },
+        {
+          "historical_reference": "typed_platform_handoff_contract",
+          "replacement": "schemas/platform-foundation-handoff.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"
+        }
       ]
     },
     "historical_platform_foundation_independent_audit": {
@@ -2135,8 +2195,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Provider-specific historical paths and context are preserved for traceability and do not define the current portable-kernel contract.",
       "replacement_bindings": [
-        {"historical_reference": "provider_specific_host_readback", "replacement": "schemas/visible-task-parity-readback.v1.json", "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"},
-        {"historical_reference": "provider_specific_native_host_bridge", "replacement": "schemas/native-host-attachment.v1.json", "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"}
+        {
+          "historical_reference": "provider_specific_host_readback",
+          "replacement": "schemas/visible-task-parity-readback.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
+        },
+        {
+          "historical_reference": "provider_specific_native_host_bridge",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        }
       ]
     },
     "visible_task_parity_readback_contract": {
@@ -2186,8 +2254,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only central audit context is retained for traceability and replaced in current authority by typed state, map, and platform receipts.",
       "replacement_bindings": [
-        {"historical_reference":"central_audit_context","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
-        {"historical_reference":"central_platform_readback","replacement":"docs/platform-feature-map.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_PLATFORM_MAP"}
+        {
+          "historical_reference": "central_audit_context",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "central_platform_readback",
+          "replacement": "docs/platform-feature-map.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_PLATFORM_MAP"
+        }
       ]
     },
     "proof_acceptance_intake_manifest_historical_compatibility": {
@@ -2197,8 +2273,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "The held proof-acceptance intake manifest preserves historical custody context and is replaced by current typed proof receipts before admission.",
       "replacement_bindings": [
-        {"historical_reference":"proof_acceptance_intake_context","replacement":"docs/privacy-public-projection.v1.json","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"},
-        {"historical_reference":"proof_acceptance_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+        {
+          "historical_reference": "proof_acceptance_intake_context",
+          "replacement": "docs/privacy-public-projection.v1.json",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        },
+        {
+          "historical_reference": "proof_acceptance_state",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        }
       ]
     },
     "structured_memory_audit_report_historical_compatibility": {
@@ -2208,19 +2292,35 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Memory architecture evidence remains preserved outside ordinary feature and Platform intake until explicit owner acceptance and governed integration decision.",
       "replacement_bindings": [
-        {"historical_reference":"memory_architecture_audit_context","replacement":"docs/memory-routing-amendment.v1.json","status":"RETAINED_SPECIAL_LANE_ROUTING_ONLY"},
-        {"historical_reference":"memory_acceptance_boundary","replacement":"docs/privacy-public-projection.v1.json","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+        {
+          "historical_reference": "memory_architecture_audit_context",
+          "replacement": "docs/memory-routing-amendment.v1.json",
+          "status": "RETAINED_SPECIAL_LANE_ROUTING_ONLY"
+        },
+        {
+          "historical_reference": "memory_acceptance_boundary",
+          "replacement": "docs/privacy-public-projection.v1.json",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
       ]
     },
     "release_readme_historical_compatibility": {
       "path": "control/README.md",
-      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394",
+      "sha256": "3b451f4d54e24c5fec2b74e3786ea3039dc23ed658430d3b19cc7cb427891320",
       "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_ADAPTER_DOCUMENTATION",
       "current_portable_kernel_input": false,
       "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",
       "replacement_bindings": [
-        {"historical_reference":"adapter_documentation","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"},
-        {"historical_reference":"controller_documentation","replacement":"docs/maintainer-guide.md","status":"RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"}
+        {
+          "historical_reference": "adapter_documentation",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        },
+        {
+          "historical_reference": "controller_documentation",
+          "replacement": "docs/maintainer-guide.md",
+          "status": "RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"
+        }
       ]
     },
     "release_migration_audit_report_historical_compatibility": {
@@ -2230,8 +2330,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only release-migration evidence preserves historical provider and deployment context; current portability proof consumes typed release contracts and current state receipts instead.",
       "replacement_bindings": [
-        {"historical_reference":"release_migration_audit_context","replacement":"schemas/release-migration.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"},
-        {"historical_reference":"release_migration_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+        {
+          "historical_reference": "release_migration_audit_context",
+          "replacement": "schemas/release-migration.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"
+        },
+        {
+          "historical_reference": "release_migration_state",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        }
       ]
     },
     "portability_historical_compatibility_contract": {
@@ -2241,7 +2349,11 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Additive selector contract preserves exact custody bytes and excludes project-local records from portable-kernel input.",
       "replacement_bindings": [
-        {"historical_reference":"project_local_custody_records","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+        {
+          "historical_reference": "project_local_custody_records",
+          "replacement": "typed-project-agnostic-portable-kernel-contracts",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
       ]
     },
     "portability_historical_compatibility_record": {
@@ -2251,7 +2363,11 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",
       "replacement_bindings": [
-        {"historical_reference":"historical_custody_payload","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+        {
+          "historical_reference": "historical_custody_payload",
+          "replacement": "typed-project-agnostic-portable-kernel-contracts",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
       ]
     },
     "audit_repair_integration_state_private_payload": {
@@ -2261,7 +2377,11 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "The append-only state payload retains custody history and opaque source bindings; the public projection contains only project-agnostic fields.",
       "replacement_bindings": [
-        {"historical_reference":"audit_repair_integration_state_payload","replacement":"docs/audit-repair-integration-state-public.v1.json","status":"CURRENT_PUBLIC_PROJECTION"}
+        {
+          "historical_reference": "audit_repair_integration_state_payload",
+          "replacement": "docs/audit-repair-integration-state-public.v1.json",
+          "status": "CURRENT_PUBLIC_PROJECTION"
+        }
       ]
     },
     "legacy_contracts": [

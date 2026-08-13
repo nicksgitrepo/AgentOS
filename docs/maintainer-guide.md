@@ -14,10 +14,16 @@ Keep one canonical implementation for each authority:
 - acceptance: `control/question-tree.mjs`;
 - optional exchange: `control/gpt-assist.mjs`.
 - control-plane boundary: `control/control-plane-root.mjs`.
-- ongoing project control plane: **Intent Regulator** (`AGENTOS_CONTROLLER`);
+- permanent role authority: `control/permanent-role-authority.mjs` bound to `governance/3.0/permanent-role-authority-graph.v1.json`;
+- owner-intent control plane: **Intent Regulator** (`INTENT_REGULATOR`); legacy `AGENTOS_CONTROLLER` maps only to this role;
+- lifecycle supervision: **Controller** (`CONTROLLER`), independently identified from Intent Regulator;
 - first-run discovery and setup: **Bootstrap** (`BOOTSTRAP`), which is not the ongoing Controller role.
 
 Compatibility entrypoints are import-only aliases. They cannot create setup state, campaign state, provider identity, Product custody, or successor rosters.
+
+Never infer a current five-role roster from an older two-role Runtime record or
+an expanded imported role list. Require the exact graph digest, all five
+independent identities, and a migration receipt before a 3.0 authority claim.
 
 When changing a bound controller, schema, article, or verifier, update its SHA-256 in `schemas/bootstrap-binding.v1.json`. Add positive, hostile, deterministic, containment, and transition coverage for every new boundary. Keep source provenance in migrations, not normative authority. Bootstrap coverage must remain the only output-gap and question-selection authority.
 
