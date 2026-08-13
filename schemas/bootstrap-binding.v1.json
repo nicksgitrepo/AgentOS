@@ -282,7 +282,7 @@
     },
     "bootstrap_spawner_synthetic_roundtrip_checkpoint": {
       "path": "docs/bootstrap-spawner-synthetic-roundtrip-2026-08-13.md",
-      "sha256": "a5751efe0f2fc496794aa0f5a286d3389daa6501f1570948c7158825d61abbbe"
+      "sha256": "395603e8a1be08e40c00a443074ce2e29239f812bd75ea0f24e39cc1c3ab2794"
     },
     "bootstrap_source_composition_breakpoint": {
       "path": "docs/bootstrap-source-composition-breakpoint-2026-08-13.md",
