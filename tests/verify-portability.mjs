@@ -13,6 +13,7 @@ import {
   compileCorpusPlan,
   validateCorpusInputs,
 } from "../control/authority-corpus.mjs";
+import {validateTypedProjectEvidenceBindings} from "../control/typed-project-evidence-binding.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -81,6 +82,12 @@ function canonicalPretty(value) {
 }
 
 const files = listFiles(root);
+const binding = readJson("schemas/bootstrap-binding.v1.json");
+const typedProjectEvidenceReceipt = validateTypedProjectEvidenceBindings({
+  repositoryRoot: root,
+  bindings: binding.typed_project_evidence ?? {},
+  portablePaths: Object.values(binding.normative ?? {}).map((entry) => entry.path),
+});
 const historicalCompatibility = readJson("docs/portability-historical-compatibility.v1.json");
 const historicalCompatibilityBody = structuredClone(historicalCompatibility);
 delete historicalCompatibilityBody.digest;
@@ -95,6 +102,7 @@ if (historicalCompatibility.digest !== sha256(canonicalCompactJson(historicalCom
   fail("historical compatibility selector digest mismatch");
 }
 const projectLocalEvidencePaths = new Set();
+for (const relative of typedProjectEvidenceReceipt.excluded_paths) projectLocalEvidencePaths.add(relative);
 for (const record of historicalCompatibility.records ?? []) {
   const relative = record.path;
   if (typeof relative !== "string" || path.isAbsolute(relative)
@@ -178,7 +186,6 @@ for (const absolute of files) {
   if (numericBinding.test(text)) fail(`numeric account or deployment identity in ${relative}`);
 }
 
-const binding = readJson("schemas/bootstrap-binding.v1.json");
 const boundPaths = collectBoundPaths(binding);
 for (const relative of boundPaths) {
   if (path.isAbsolute(relative)
@@ -397,5 +404,5 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`FAIL: ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log(`PASS AgentOS 2.1rc portability: ${files.length} files scanned; ${boundPaths.length} bound paths; JSON and script syntax verified; deterministic empty-project, portable-context identity, extension-boundary, root containment, CAS, page metadata, and symlink cases passed`);
+  console.log(`PASS AgentOS 2.1rc portability: ${files.length} files scanned; ${boundPaths.length} bound paths; ${typedProjectEvidenceReceipt.evidence.length} typed project-evidence files digest-verified and excluded from portable authority; JSON and script syntax verified; deterministic empty-project, portable-context identity, extension-boundary, root containment, CAS, page metadata, and symlink cases passed`);
 }

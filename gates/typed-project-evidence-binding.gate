@@ -1,0 +1,17 @@
+schema: agentos.typed_project_evidence_binding_gate.v1
+version: 1
+decision_tree:
+  - if: evidence path is unsafe, missing, non-regular, duplicated, or overlaps portable authority
+    then: DENY
+  - if: evidence digest is stale or classification is not TYPED_PROJECT_CONTEXT_EVIDENCE
+    then: DENY
+  - if: evidence claims current portable-kernel authority
+    then: DENY
+  - if: receipt status, digest, or exclusions differ from the verified evidence set
+    then: DENY
+  - if: every evidence entry is exact, project-context-only, and disjoint from portable authority
+    then: BOUND_EXCLUDED_FROM_PORTABLE_AUTHORITY
+  - otherwise: DENY
+authority: bootstrap-portability-verifier-only
+mutation: NONE
+activation: OFF

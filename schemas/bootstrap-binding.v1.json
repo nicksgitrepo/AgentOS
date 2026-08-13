@@ -8,9 +8,25 @@
       "path": "schemas/typed-project-evidence-binding.v1.json",
       "sha256": "2e046249582f1bc78f0ed3da4938b82cce66b0fd4755bdc7f8a6911f35da8c00"
     },
+    "typed_project_evidence_receipt_contract": {
+      "path": "schemas/typed-project-evidence-receipt.v1.json",
+      "sha256": "92eefc0d95cfa9c69f7d93c0663c3c11c8a29e26596bbd2e582f830d51a3a921"
+    },
+    "typed_project_evidence_binding_controller": {
+      "path": "control/typed-project-evidence-binding.mjs",
+      "sha256": "734d99c3bdb0d97a64a9142c21be16524998d27b0f04d4833e665b0c9d659db2"
+    },
+    "typed_project_evidence_binding_gate": {
+      "path": "gates/typed-project-evidence-binding.gate",
+      "sha256": "74a0e2c3848b6dc4f8cdeb5d3a7ee3bab1523367e7548bae6cfc0439242a9d5a"
+    },
     "typed_project_evidence_binding_governance": {
       "path": "governance/2.1rc/typed-project-evidence-binding.md",
-      "sha256": "018cc31b4d0c2b4972eb83e673fb3f520a1378f0a9251f8115d9b4f081ec3752"
+      "sha256": "24357af00409d88523a73ad13cc9b8238f6a376378a49b4c97962a4955693060"
+    },
+    "typed_project_evidence_binding_verifier": {
+      "path": "tests/verify-typed-project-evidence-binding.mjs",
+      "sha256": "ce086329e6ec1cb4db2f439942fff2d7c15a8d40eddab0f6a7efeb822376f0d3"
     },
     "user_readme": {
       "path": "README.md",
@@ -1350,7 +1366,7 @@
     },
     "portability_verifier": {
       "path": "tests/verify-portability.mjs",
-      "sha256": "06215c3398696dfa752d3169ada99385d7c5c9a9647d9383b69e29273dd5d950"
+      "sha256": "d281db574a7645bd44dd4105776d7115ede986744bb99bd462588825f1c239cd"
     },
     "retained_failed_worktree_controller": {
       "path": "control/retained-failed-worktree.mjs",
