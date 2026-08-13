@@ -1,0 +1,163 @@
+{
+  "schema": "agentos.specialist_library_audit.v1",
+  "version": 1,
+  "status": "BUILD_ACTIVE_FAIL_CLOSED",
+  "activation": "OFF",
+  "audited_candidate": {
+    "branch": "codex/specialist-gate-library-release",
+    "commit": "5b28f79f4e95bd68248e27f542f1d4e3b447cf90",
+    "tree": "0bfc951ecfaca103292b4c541ebac6d550666f2b"
+  },
+  "inventory": {
+    "packages": 123,
+    "routers": 19,
+    "control_planes": 16,
+    "atomic_specialists": 65,
+    "standard_blocks": 23,
+    "gate_files": 1476,
+    "fixture_records": 2091,
+    "source_records": 188,
+    "source_records_with_content_digest": 0,
+    "role_addresses": 621,
+    "compileable_recipes": 17,
+    "planned_noncompileable_recipes": 603,
+    "protected_not_applicable_recipes": 1,
+    "pending_prescreen_cases": 68
+  },
+  "findings": [
+    {
+      "finding_id": "LIB-001",
+      "status": "RESOLVED_CANDIDATE",
+      "severity": "BLOCKER",
+      "surface": "recipe readiness and atomicity",
+      "evidence": ["control/scaffold-recipe-catalog.mjs", "specialist-blocks/registry/recipe-catalog.v1.json", "tests/verify-specialist-agent-compiler.mjs", "commit:37e069b09bf32619691b4763375ef21a1230bbf0"],
+      "disposition": "Context-only profiles are addressable but non-compileable; only dependency-complete recipes may compile.",
+      "depends_on": []
+    },
+    {
+      "finding_id": "LIB-002",
+      "status": "RESOLVED_CANDIDATE",
+      "severity": "HIGH",
+      "surface": "block/schema family parity",
+      "evidence": ["schemas/specialist-block.v1.json", "control/specialist-block-compiler.mjs", "tests/verify-specialist-block-library.mjs", "commit:37e069b09bf32619691b4763375ef21a1230bbf0"],
+      "disposition": "Every package now carries a registered family and runtime/schema registries are bound by test.",
+      "depends_on": []
+    },
+    {
+      "finding_id": "LIB-003",
+      "status": "REPAIR_ACTIVE",
+      "severity": "BLOCKER",
+      "surface": "typed specialist intake",
+      "evidence": ["schemas/specialist-context.v1.json", "control/specialist-agent-compiler.mjs"],
+      "disposition": "Replace field-name-only assertions with value-, provenance-, privacy-, freshness-, applicability-, and digest-bound typed context.",
+      "depends_on": ["LIB-002"]
+    },
+    {
+      "finding_id": "LIB-004",
+      "status": "REPAIR_ACTIVE",
+      "severity": "HIGH",
+      "surface": "typed specialist output",
+      "evidence": ["schemas/specialist-output.v1.json", "specialist-blocks/standards/openapi-3-1-1/block.json"],
+      "disposition": "Provide a closed typed output contract that represents ordinary findings and standard applicability/requirement mappings.",
+      "depends_on": ["LIB-003"]
+    },
+    {
+      "finding_id": "LIB-005",
+      "status": "OPEN",
+      "severity": "BLOCKER",
+      "surface": "routing denial predicates",
+      "evidence": ["control/specialist-block-loader.mjs", "specialist-blocks/registry/routing-index.v1.json"],
+      "disposition": "Replace natural-language dotted-key denial probes with deterministic typed predicates.",
+      "depends_on": ["LIB-003"]
+    },
+    {
+      "finding_id": "LIB-006",
+      "status": "REPAIR_ACTIVE",
+      "severity": "BLOCKER",
+      "surface": "gate evidence and ordered execution",
+      "evidence": ["control/specialist-block-compiler.mjs", "specialist-blocks/foundation/role-intake-classifier/gates/00-intake.gate"],
+      "disposition": "Require verified evidence values and execute the complete ordered pack; key presence alone cannot advance.",
+      "depends_on": ["LIB-003"]
+    },
+    {
+      "finding_id": "LIB-007",
+      "status": "REPAIR_ACTIVE",
+      "severity": "BLOCKER",
+      "surface": "applicability and freshness defaults",
+      "evidence": ["control/specialist-agent-compiler.mjs", "specialist-blocks/wave-02/rust-backend/gates/01-applicability.gate"],
+      "disposition": "Remove implicit YES/FRESH state; NOT_APPLICABLE is terminal and never routes.",
+      "depends_on": ["LIB-003", "LIB-006"]
+    },
+    {
+      "finding_id": "LIB-008",
+      "status": "REPAIR_ACTIVE",
+      "severity": "BLOCKER",
+      "surface": "source identity, licensing, access, freshness, and supersession",
+      "evidence": ["schemas/specialist-source-manifest.v1.json", "control/specialist-block-compiler.mjs", "specialist-blocks/standards/slsa/sources.lock"],
+      "disposition": "Add verifiable artifact identity, lawful access ceiling, coverage class, typed unavailable reasons, update triggers, and invalidation fan-out.",
+      "depends_on": []
+    },
+    {
+      "finding_id": "LIB-009",
+      "status": "OPEN",
+      "severity": "BLOCKER",
+      "surface": "hostile behavioral evaluation",
+      "evidence": ["control/specialist-utility-harm-prescreen.mjs", "specialist-blocks/wave-02/rust-backend/fixtures/stale_source.json"],
+      "disposition": "Replace metadata-only fixtures with executable inputs, expected transitions, and independent result receipts.",
+      "depends_on": ["LIB-005", "LIB-006", "LIB-007", "LIB-008"]
+    },
+    {
+      "finding_id": "LIB-010",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "surface": "alias and conflict runtime resolution",
+      "evidence": ["specialist-blocks/registry/recipe-catalog.v1.json", "control/specialist-block-loader.mjs"],
+      "disposition": "Resolve aliases through the canonical registry and enforce real conflict/sibling edges before selection.",
+      "depends_on": ["LIB-005"]
+    },
+    {
+      "finding_id": "LIB-011",
+      "status": "OPEN",
+      "severity": "BLOCKER",
+      "surface": "Agent Spawner typed intake bridge",
+      "evidence": ["control/spawn-preparation.mjs", "control/specialist-agent-compiler.mjs"],
+      "disposition": "Adapt real accepted block locks and recipe/catalog identities into fail-closed spawn preparation; synthetic fixtures are insufficient.",
+      "depends_on": ["LIB-003", "LIB-004", "LIB-006", "LIB-008", "LIB-009", "LIB-010"]
+    },
+    {
+      "finding_id": "LIB-012",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "surface": "source coverage and priority compositions",
+      "evidence": ["specialist-blocks/registry/ROSTER.md", "specialist-blocks/registry/recipe-catalog.v1.json"],
+      "disposition": "Build or repair exact role-specific and standards blocks, beginning with requirements, language/backend, AI/search, security, test/review, versioning, and provenance compositions.",
+      "depends_on": ["LIB-008", "LIB-009", "LIB-011"]
+    },
+    {
+      "finding_id": "LIB-013",
+      "status": "DEFERRED_PROTECTED",
+      "severity": "HIGH",
+      "surface": "independent admission and activation",
+      "evidence": ["specialist-blocks/registry/utility-harm-prescreen.v1.json", "specialist-blocks/registry/integration-handoff.v1.json"],
+      "disposition": "No package is admitted or activated until behavioral QA and independent acceptance pass the exact cumulative identity.",
+      "depends_on": ["LIB-009", "LIB-011", "LIB-012"]
+    }
+  ],
+  "dependency_dag": [
+    "contract authority -> executable validation",
+    "typed intake + source registry -> gate and routing semantics",
+    "gate + routing semantics -> behavioral hostile evaluation",
+    "behavioral evaluation -> real Spawner bridge",
+    "Spawner bridge + source coverage -> priority compositions",
+    "priority compositions -> independent cumulative acceptance",
+    "independent acceptance -> typed integration intake"
+  ],
+  "evidence_ceiling": [
+    "The static package compiler and focused tests pass only their declared structural invariants.",
+    "The utility/harm pre-screen has 68 pending cases and is not independent admission.",
+    "No package, recipe, seed, or working agent is admitted or activated by this audit.",
+    "No certification, regulatory approval, universal compliance, or unavailable real-use proof is claimed."
+  ],
+  "next_breakpoint": "Complete the typed intake/output, source-registry, and ordered gate-execution contracts before regenerating or independently evaluating package families.",
+  "audit_sha256": "196202d905d1c40c968c2ae50c881853a663b8197f5aac456716126d9c9b1059"
+}

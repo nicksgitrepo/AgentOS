@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-library-audit.v1.json",
+  "title": "AgentOS Specialist Library Release Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "activation", "audited_candidate", "inventory", "findings", "dependency_dag", "evidence_ceiling", "next_breakpoint", "audit_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_library_audit.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["BUILD_ACTIVE_FAIL_CLOSED", "READY_FOR_INDEPENDENT_REVIEW", "BLOCKED_EXACT"]},
+    "activation": {"const": "OFF"},
+    "audited_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "commit", "tree"],
+      "properties": {
+        "branch": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "inventory": {"type": "object"},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "status", "severity", "surface", "evidence", "disposition", "depends_on"],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^LIB-[0-9]{3}$"},
+          "status": {"enum": ["OPEN", "REPAIR_ACTIVE", "RESOLVED_CANDIDATE", "DEFERRED_PROTECTED", "NOT_APPLICABLE"]},
+          "severity": {"enum": ["BLOCKER", "HIGH", "MEDIUM", "LOW"]},
+          "surface": {"type": "string", "minLength": 1},
+          "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+          "disposition": {"type": "string", "minLength": 1},
+          "depends_on": {"type": "array", "items": {"type": "string", "pattern": "^LIB-[0-9]{3}$"}}
+        }
+      }
+    },
+    "dependency_dag": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "evidence_ceiling": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "next_breakpoint": {"type": "string", "minLength": 1},
+    "audit_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
