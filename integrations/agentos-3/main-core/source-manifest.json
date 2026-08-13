@@ -1,9 +1,9 @@
 {
   "schema": "agentos.integration.main-core-manifest.v3",
-  "source_commit": "06bceb223b8c849dafcaba2c1fbf4cd5917640fb",
-  "source_tree": "4b0f55626049ab880a1e93cdbdb4088532f4bb99",
-  "candidate_commit": "06bceb223b8c849dafcaba2c1fbf4cd5917640fb",
-  "candidate_tree": "4b0f55626049ab880a1e93cdbdb4088532f4bb99",
+  "source_commit": "fc92848e9814f1e69d53b1da3f90bf85eeb6539b",
+  "source_tree": "718566d49ac78d0b2faeb943f11bff2bd660e285",
+  "candidate_commit": "fc92848e9814f1e69d53b1da3f90bf85eeb6539b",
+  "candidate_tree": "718566d49ac78d0b2faeb943f11bff2bd660e285",
   "source_bindings": [
     {
       "source": "control",

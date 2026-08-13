@@ -3,28 +3,21 @@
   "build_id": "AGENTOS_3_TEST_BUILD",
   "lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
-  "source_base": "38a1351f12628020e59ced067652ffa419e94ce9",
-  "source_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
+  "source_base": "fc92848e9814f1e69d53b1da3f90bf85eeb6539b",
+  "source_tree": "718566d49ac78d0b2faeb943f11bff2bd660e285",
   "release_source": {
     "schema": "agentos.integration.release_source_identity.v1",
-    "source_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
-    "source_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
-    "observed_head_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
-    "observed_head_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
+    "source_commit": "fc92848e9814f1e69d53b1da3f90bf85eeb6539b",
+    "source_tree": "718566d49ac78d0b2faeb943f11bff2bd660e285",
+    "observed_head_commit": "fc92848e9814f1e69d53b1da3f90bf85eeb6539b",
+    "observed_head_tree": "718566d49ac78d0b2faeb943f11bff2bd660e285",
     "generated_committed_paths": [],
     "generated_dirty_paths": [
-      "integrations/agentos-3/main-core/control/README.md",
-      "integrations/agentos-3/main-core/control/campaign-cascade.mjs",
-      "integrations/agentos-3/main-core/control/campaign-state-owner.mjs",
-      "integrations/agentos-3/main-core/control/development-plan.mjs",
-      "integrations/agentos-3/main-core/control/four-library-foundation.mjs",
-      "integrations/agentos-3/main-core/control/governance-role-definitions.mjs",
-      "integrations/agentos-3/main-core/control/permanent-role-authority.mjs",
       "integrations/agentos-3/main-core/source-manifest.json"
     ],
     "non_generated_drift": [],
     "status": "EXACT_SOURCE_OR_GENERATED_DESCENDANT",
-    "identity_sha256": "0d4cdfd8ea100b2d13d3e1416f86d32537faf984daa51ed3c1d799317221f4f2"
+    "identity_sha256": "583c17ca4920a574606b549fb66e35a79590e0561630a72f746b4e5e2a14f587"
   },
   "includes": [
     "current-main-core",
@@ -267,7 +260,7 @@
     {
       "path": "contracts/release-source-binding.v1.json",
       "size": 2605,
-      "sha256": "77a1866b3c6031a5ac94378ebba167be1f8503fd8a891c588543443393c46d90"
+      "sha256": "14fed6e22ab1342286d87db42c464aa53449af6cb653bec3da0c61f5a039a3e2"
     },
     {
       "path": "contracts/release-source-policy.v1.json",
@@ -1375,9 +1368,19 @@
       "sha256": "2b2c8ff1c4af7f816a8aabb13980540b44fcb617b3c5ac0db890c34bb9aa1b3c"
     },
     {
+      "path": "main-core/governance/3.0/permanent-role-authority-graph.v1.json",
+      "size": 9803,
+      "sha256": "088bc4a9ed7460fd2e23aef1e279394b8a4d2390205f5440adb940897bf63bf1"
+    },
+    {
       "path": "main-core/identity.mjs",
       "size": 337,
       "sha256": "825abb84610d663038acad8ae4f3c7cb2960f5cad705bdb38fdba507113faf65"
+    },
+    {
+      "path": "main-core/migrations/permanent-role-authority.v1.json",
+      "size": 2321,
+      "sha256": "2cc2837fb02be119001d42779459720a1a51359a8305fa4f462c7ef12dbf98bb"
     },
     {
       "path": "main-core/package.json",
@@ -1386,8 +1389,8 @@
     },
     {
       "path": "main-core/source-manifest.json",
-      "size": 36555,
-      "sha256": "d576160b45d87f2383371458437950446412ca32cfced5e3742592bf33677af1"
+      "size": 37308,
+      "sha256": "00cbbc2e7be4b5ba7dd210c86776b3289d977a06f142c63d3a31947148248cb6"
     },
     {
       "path": "memory-adapter.mjs",
@@ -24026,13 +24029,13 @@
     },
     {
       "path": "tools/rebind-main-core.mjs",
-      "size": 2578,
-      "sha256": "03d055477f837c0c47bb645c5408cd39ef413579cc64bbfb3bda923cc7456c46"
+      "size": 3338,
+      "sha256": "03250aa7615505b632b53d37dbb8027b3d3b9377e4713a9e662fed18cdddeb3f"
     },
     {
       "path": "tools/release-source.mjs",
-      "size": 6566,
-      "sha256": "f503f08ada328a18ba7b50e9c59e5eef8296c7bd454e417e24accec9f85fd4c8"
+      "size": 6666,
+      "sha256": "9b360e5e00941cafce546689ef1bd1f798d81e09fc7a5c09485e3ab209af9197"
     },
     {
       "path": "tools/review-agent-builder-utility-harm.mjs",
@@ -24046,10 +24049,10 @@
     },
     {
       "path": "tools/verify-main-core.mjs",
-      "size": 3168,
-      "sha256": "66b42cb5cd0092343f4b2676022a92a7fd47117ae4da142bd7fc121d462d7d01"
+      "size": 4316,
+      "sha256": "c6202278dc0a9e4e5998b20de46331e7e320c6b9750c13055075731307e9672a"
     }
   ],
-  "bundle_sha256": "b556442aaaa4a9adaccef663dcf7d0b8b3c4878cefda778346927aaa7e2fca1d",
+  "bundle_sha256": "c2791e04b437b420d216c78d304c323ec88c0ecbbefbc12737da26f4c5107ed9",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }
