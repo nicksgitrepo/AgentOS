@@ -288,6 +288,10 @@
       "path": "tests/verify-bootstrap-multirepo-discovery.mjs",
       "sha256": "d219eea08a1cbc23dc15559808971fa59fa0695f42832974ce47719ac1191dd2"
     },
+    "bootstrap_multirepo_start_verifier": {
+      "path": "tests/verify-bootstrap-multirepo-start.mjs",
+      "sha256": "be7231d8c2ba0397a691e1e75740fbb3d5282e3ce2929390ebe5c75f835f0ce8"
+    },
     "delivery_policy_article": {
       "path": "governance/2.1rc/delivery-policy.md",
       "sha256": "88eb5ff3af5905dabed94a20ca5ba22ee6d383f77fc9f27be307d61d87fee3e8"
