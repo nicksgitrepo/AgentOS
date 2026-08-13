@@ -3,21 +3,21 @@
   "build_id": "AGENTOS_3_TEST_BUILD",
   "lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
-  "source_base": "72db9a625fddf693add9a18293e510db3fb8c0dd",
-  "source_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
+  "source_base": "b256d40bca0a4107db5028d13fffdeeebbf1340d",
+  "source_tree": "5434ed12bb746fd959dfd2766482085e6d2266c8",
   "release_source": {
     "schema": "agentos.integration.release_source_identity.v1",
-    "source_commit": "72db9a625fddf693add9a18293e510db3fb8c0dd",
-    "source_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
-    "observed_head_commit": "72db9a625fddf693add9a18293e510db3fb8c0dd",
-    "observed_head_tree": "e20ba92597b4144c23fe108e7380fb86ccf69762",
+    "source_commit": "b256d40bca0a4107db5028d13fffdeeebbf1340d",
+    "source_tree": "5434ed12bb746fd959dfd2766482085e6d2266c8",
+    "observed_head_commit": "b256d40bca0a4107db5028d13fffdeeebbf1340d",
+    "observed_head_tree": "5434ed12bb746fd959dfd2766482085e6d2266c8",
     "generated_committed_paths": [],
     "generated_dirty_paths": [
       "integrations/agentos-3/main-core/source-manifest.json"
     ],
     "non_generated_drift": [],
     "status": "EXACT_SOURCE_OR_GENERATED_DESCENDANT",
-    "identity_sha256": "696b744ae48a09ca67a21116ae6055529b9ecdc8a8e5838bb8aa3c58e5261e76"
+    "identity_sha256": "db46c94cf3b0b145451d2717929712579de922a13454626371831e0727225a58"
   },
   "includes": [
     "current-main-core",
@@ -36,6 +36,11 @@
       "path": "CURRENT_STATE.md",
       "size": 3834,
       "sha256": "2c3a6c1bf278a9d573265f4bef1ac2b2b8c44ed5069f9b14b33be0d46fd0fb72"
+    },
+    {
+      "path": "INSTALLATION_TOPOLOGY.md",
+      "size": 1646,
+      "sha256": "37002c73aa99f03f2d8679676fb2c6508f3af9eaae0a69f5f2291f8d3e847193"
     },
     {
       "path": "SOURCE_PARITY.md",
@@ -238,9 +243,14 @@
       "sha256": "e5efbc92c00637c0d8826be91cfd0985b79ec830a801bb35c0cbcabbaeb9332d"
     },
     {
+      "path": "contracts/project-snapshot.v2.json",
+      "size": 2366,
+      "sha256": "ef73d3d96002107d1291372ed573509f9e967771e3ba082ef0205b7d82543b14"
+    },
+    {
       "path": "contracts/release-source-binding.v1.json",
-      "size": 2015,
-      "sha256": "16051cef273ca311ed15de6015cdf76ca7737e46aa10a7ef25fa12a2210feb21"
+      "size": 2605,
+      "sha256": "cb786a0d6cd0e2c8802c59b3cbcc7ec29276a5df17fc173d6434fec557f60b74"
     },
     {
       "path": "contracts/release-source-policy.v1.json",
@@ -259,8 +269,8 @@
     },
     {
       "path": "custody.mjs",
-      "size": 10541,
-      "sha256": "d9e2d27f85c905863623468694b7c35eff8c39c6ec96166eeb24322b0945e485"
+      "size": 14871,
+      "sha256": "b36b507bba4cd4945f02fd68b39a000f1f6b7776c25a677f9ef1b1066548d136"
     },
     {
       "path": "entrypoint.mjs",
@@ -1350,7 +1360,7 @@
     {
       "path": "main-core/source-manifest.json",
       "size": 36384,
-      "sha256": "2d3b75df5e035a40aa45db746614b226a06a89ac259b2762bb72403bd0b29b69"
+      "sha256": "5d10c0fb24d5f765658a3be504eeaf93b5955d8213a8fb5db2cac20b990aff72"
     },
     {
       "path": "memory-adapter.mjs",
@@ -23943,9 +23953,14 @@
       "sha256": "3fcb89bd10300cf1a2972e20f7f856c21b7295815d761a612e3d715a373eb4e7"
     },
     {
+      "path": "tests/project-topology-test.mjs",
+      "size": 4043,
+      "sha256": "21cea1bbb6de114afc10b53953c8150e1a7033bf4ba6c564e28f93a337cccbd5"
+    },
+    {
       "path": "tests/real-host-proof.mjs",
-      "size": 4241,
-      "sha256": "68c9e50c9a283be92fd0b68117d94dd1d4f324a0e8f83f107db84a10dc1d21e5"
+      "size": 4641,
+      "sha256": "e74acd450f988361f43be54b996e4932685564710dada809116cb0952947f8f1"
     },
     {
       "path": "tools/build.mjs",
@@ -23978,6 +23993,6 @@
       "sha256": "66b42cb5cd0092343f4b2676022a92a7fd47117ae4da142bd7fc121d462d7d01"
     }
   ],
-  "bundle_sha256": "459bb9022ffe07fe31b39f1afa67b6cc4f3c5e11adb192526e2565c081f627f6",
+  "bundle_sha256": "9d9b6980ddfff0ff6cc8bc29e6a6423b7963b0a343b440b21ce757c52a5d73d2",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }
