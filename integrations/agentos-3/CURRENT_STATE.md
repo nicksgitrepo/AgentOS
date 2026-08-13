@@ -1,16 +1,16 @@
 # AgentOS 3.0 test-build current state
 
-Status: `MEMORY_AUTHORITY_P0_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE`
+Status: `CUMULATIVE_INACTIVE_CANDIDATE_PENDING_EXTERNAL_LIBRARY_AND_MEMORY_CLEARANCE`
 
 ## Exact candidate
 
 - Build: `AGENTOS_3_TEST_BUILD`.
 - Lifecycle: `CANDIDATE_INACTIVE`; activation remains `OFF`.
-- Main core: commit `029ccdb40efaeeae38ec1adabc6d3b44f5316310`,
-  tree `6f66883444f0340aac86905ab0e889832b420df6`, 203 exact
-  control entries.
-- Bundle: 4,786 canonical entries containing the current main-core input,
-  Memory M2, Agent Builder, the specialist block library, and root schemas.
+- Main-core identity is read from `main-core/source-manifest.json`; no static
+  historical commit is presented as the current candidate.
+- The bundle contains the exact current main core and its runtime authority
+  assets, Memory M2, Agent Builder, the external specialist-library intake
+  seam, and root schemas. It excludes the legacy local specialist library.
 - Bundle identity is recorded in the adjacent generated manifest so the
   bundle never embeds a self-referential digest.
 - Authority Canon object:
@@ -39,18 +39,23 @@ Status: `MEMORY_AUTHORITY_P0_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE`
   unknown fields, contradictions, omissions, stale sources, overlapping scope,
   duplicate provenance, malformed digests, ambiguous SemVer, invalid identity
   fields, and context-budget overflow.
-- The specialist library materializes 620 compileable role recipes from 123
-  reusable packages, while the protected Memory role remains external.
-- An independent read-only release review cleared all 68 specialist cases that
-  could not be decided by the deterministic pre-screen (12 route, 51 deny,
-  five escalate) and 14 Agent Builder utility/harm cases (four pass, ten
-  deny). Both clearances are digest-bound and grant no runtime authority.
-- Main AgentOS, Memory M2, Agent Builder, and the specialist library now appear
-  as explicit typed inputs in the inactive combined integration contract.
+- The Specialist Gate Library is under external exclusive custody. No final
+  typed intake has been received, so it is `NOT_ADMITTED`, activation is
+  `OFF`, and no compileable-role count is claimed by this candidate. The
+  earlier local 620-role assertion and 68-case review are legacy evidence and
+  are not valid intake authority.
+- The generic intake seam requires exact commit/tree, manifest and roster
+  digests, truthful compileable/planned/not-applicable counts, dependency
+  closure, migration/invalidation artifacts, remote readback, and independent
+  clearance. Packet validation still cannot self-admit or merge the library.
+- Agent Builder's 14-case independent utility/harm clearance remains bound and
+  grants no runtime authority.
+- Main AgentOS, Memory M2, and Agent Builder are explicit inactive inputs; the
+  Specialist Gate Library remains an explicit external dependency.
 - Sibling-only install, hostile bundle and path cases, foreign or changed file
   rollback denial, exact owned rollback, and zero Product trace pass.
-- Installed Bootstrap runs from the packaged sibling against both a fresh Git
-  project and an existing imported Git project on the real host filesystem.
+- Installed Bootstrap runs from the packaged sibling against both an actually
+  empty non-Git project and a real multi-repository composition root.
   Both runs complete read-only discovery, return a material question plan,
   leave Product bytes and Git state unchanged, and roll back the companion
   completely.
@@ -67,6 +72,9 @@ Status: `MEMORY_AUTHORITY_P0_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE`
   or the fitness of a future consumer-specific context selection.
 - The memory-authority P0 changes have deterministic positive, negative, and
   hostile local proof but have not received a separate independent clearance.
+- Specialist Gate Library intake is untested and unavailable until its
+  external owner emits a final accepted typed handoff; partial candidates are
+  neither bundled nor treated as ready.
 - Provider activation, consumer adoption, real-data migration, deployment,
   public publication, license selection, and release promotion remain dormant
   and are not implied by the test-build proof.

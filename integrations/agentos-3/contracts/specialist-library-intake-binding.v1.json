@@ -1,0 +1,23 @@
+{
+  "schema": "agentos.integration.specialist_library_intake_binding.v1",
+  "version": 1,
+  "status": "EXTERNAL_CUSTODY_NOT_RECEIVED",
+  "activation": "OFF",
+  "entries": [
+    {"path": "integrations/agentos-3/SPECIALIST_LIBRARY_INTAKE.md", "sha256": "7cb85609ad8a1941c82784a0e3b07d0ee4eccbb049a34fd9de9617a4ab0251bd"},
+    {"path": "integrations/agentos-3/bootstrap.mjs", "sha256": "165d3e6644995d72b78e8001deaae28ac3955cfdf5cefef5d424e47b484a15e0"},
+    {"path": "integrations/agentos-3/contracts/agentos-3-integration.v1.json", "sha256": "c7e7d6404080d6cb8b889e14ea94d398a28cff92678fd86eb63ba7ad440ab7e2"},
+    {"path": "integrations/agentos-3/contracts/specialist-independent-clearance.v1.json", "sha256": "635c4a0dbde131a6dea3bf413b69b49bae5e9956d51dfebb38232a7433550bf8"},
+    {"path": "integrations/agentos-3/contracts/specialist-library-intake.v1.json", "sha256": "d99bd700716d6e8c72706c359b4bd1cfd3c853281a4a2e260a3d6e9472b4cfbc"},
+    {"path": "integrations/agentos-3/custody.mjs", "sha256": "8236c0293741aaa12a7094061b777671b9fce0de848bc88b9271cf2b94f4397e"},
+    {"path": "integrations/agentos-3/specialist-library-intake.mjs", "sha256": "e5be33d5e16188671598ed4d9518cdfd4d98e088d38624110459178bddfa4db8"},
+    {"path": "integrations/agentos-3/tests/independent-clearance-test.mjs", "sha256": "ef756ffc5c2219cc11c22e8ff601513f210b696d5e7cfd0f4f6183180f0dc0f9"},
+    {"path": "integrations/agentos-3/tests/specialist-library-intake-test.mjs", "sha256": "0c3dba3deebbbea0d1bcfda51b9fdb6ee3b8eef8c01b4b1cc2641ad64a57bfb6"},
+    {"path": "integrations/agentos-3/tools/build.mjs", "sha256": "2851af99d0c7844aa7faa56c506193048941b3e414108a4f421e71099d49a5cb"},
+    {"path": "integrations/agentos-3/tools/review-specialist-utility-harm.mjs", "sha256": "70e624b7b0c239fa9264edea4f19961fddcea9b01f443b2d574b79106a014112"}
+  ],
+  "invalidation": "Any intake controller, schema, truth projection, exclusion, build-component set, historical-review disposition, proof, or entry digest change invalidates this binding and every downstream role-context manifest.",
+  "migration": "Keep the external candidate inactive; verify the final typed packet and artifacts independently; freeze a new content-addressed binding; then run a separate AgentOS admission without self-merge or activation.",
+  "authority": "NO_SELF_ADMISSION_MERGE_ACTIVATION_PRODUCT_MUTATION_OR_PUBLICATION",
+  "binding_sha256": "6170a1ea5c6b5ad2e349c3b705f349e770be70b59566fdac1cde88dc820037e7"
+}

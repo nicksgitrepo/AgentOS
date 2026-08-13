@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-library-intake-handoff.v1.json",
+  "title": "AgentOS Specialist Gate Library typed intake handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "lifecycle", "activation", "candidate", "truth", "artifacts", "proof", "authority", "intake_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.specialist_library_intake_handoff.v1"},
+    "version": {"const": 1},
+    "status": {"const": "SPECIALIST_GATE_LIBRARY_READY_FOR_AGENTOS_INTAKE"},
+    "lifecycle": {"const": "CANDIDATE_INACTIVE"},
+    "activation": {"const": "OFF"},
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "tree", "manifest_sha256", "roster_sha256"],
+      "properties": {
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "roster_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["address_count", "compileable_count", "planned_count", "not_applicable_count", "dependency_complete"],
+      "properties": {
+        "address_count": {"type": "integer", "minimum": 1},
+        "compileable_count": {"type": "integer", "minimum": 0},
+        "planned_count": {"type": "integer", "minimum": 0},
+        "not_applicable_count": {"type": "integer", "minimum": 0},
+        "dependency_complete": {"const": true}
+      }
+    },
+    "artifacts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["manifest_path", "roster_path", "coverage_path", "migration_path", "invalidation_path"],
+      "properties": {
+        "manifest_path": {"type": "string", "minLength": 1},
+        "roster_path": {"type": "string", "minLength": 1},
+        "coverage_path": {"type": "string", "minLength": 1},
+        "migration_path": {"type": "string", "minLength": 1},
+        "invalidation_path": {"type": "string", "minLength": 1}
+      }
+    },
+    "proof": {
+      "type": "object", "additionalProperties": false,
+      "required": ["focused_tests_sha256", "independent_clearance_sha256", "remote_readback_commit", "remote_readback_tree"],
+      "properties": {
+        "focused_tests_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "independent_clearance_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "remote_readback_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "remote_readback_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["self_admission", "product_mutation", "activation", "merge"],
+      "properties": {
+        "self_admission": {"const": false}, "product_mutation": {"const": false},
+        "activation": {"const": false}, "merge": {"const": false}
+      }
+    },
+    "intake_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -7,6 +7,7 @@ import {listReleaseFiles, verifyReleaseBinding, verifyReleaseSourceIdentity} fro
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const REPOSITORY_ROOT = resolve(ROOT, "../..");
 const DIST = join(ROOT, "dist");
+const EXCLUDED_INTEGRATION_PREFIXES = Object.freeze(["specialist-blocks/"]);
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 
@@ -18,10 +19,11 @@ const entries = [];
 for (const source of [
   {root: ROOT, prefix: ""},
   {root: join(REPOSITORY_ROOT, "schemas"), prefix: "schemas"},
-  {root: join(REPOSITORY_ROOT, "specialist-blocks"), prefix: "specialist-blocks"},
 ]) for (const absolute of (await listReleaseFiles(source.root)).filter((entry) => !entry.startsWith(`${DIST}/`))) {
+  const sourceRelative = relative(source.root, absolute).split("\\").join("/");
+  if (source.root === ROOT && EXCLUDED_INTEGRATION_PREFIXES.some((prefix) => sourceRelative.startsWith(prefix))) continue;
   const bytes = await readFile(absolute);
-  const path = join(source.prefix, relative(source.root, absolute)).split("\\").join("/");
+  const path = join(source.prefix, sourceRelative).split("\\").join("/");
   entries.push({ path, size: bytes.length, sha256: sha256(bytes), bytes_base64: bytes.toString("base64") });
 }
 entries.sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0);
@@ -35,7 +37,7 @@ const manifest = {
   source_base: sourceManifest.candidate_commit,
   source_tree: sourceManifest.candidate_tree,
   release_source: releaseSource,
-  includes: ["current-main-core", "memory-m2", "agent-builder", "specialist-block-library", "root-schemas"],
+  includes: ["current-main-core", "memory-m2", "agent-builder", "specialist-library-intake-seam", "root-schemas"],
   entries: entries.map(({ path, size, sha256: digest }) => ({ path, size, sha256: digest })),
   bundle_sha256: sha256(bundleBytes),
   rollback_identity: "AGENTOS_3_TEST_BUILD_ROLLBACK"

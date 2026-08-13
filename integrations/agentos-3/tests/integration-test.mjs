@@ -43,7 +43,9 @@ assert.equal(bootstrap.activation, "OFF");
 assert.equal(bootstrap.memory.authority, "UNBOUND_EXCLUSIVE_SELECTION_REQUIRED");
 assert.deepEqual(bootstrap.memory.taxonomy, ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"]);
 assert.equal(bootstrap.memory.migration, "PLAN_ONLY_FAIL_CLOSED");
-assert.equal(bootstrap.specialist_library.admitted_for_test_build, true);
+assert.equal(bootstrap.specialist_library.status, "SPECIALIST_GATE_LIBRARY_EXTERNAL_CUSTODY");
+assert.equal(bootstrap.specialist_library.intake_status, "NOT_RECEIVED");
+assert.equal(bootstrap.specialist_library.admitted, false);
 assert.equal(bootstrap.specialist_library.activation, "OFF");
 assert.equal(createAgentOS3Runtime({ projectRef: "ref_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", controlPlaneRef: "ref_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }).memory_enabled, false);
 assert.throws(() => createAgentOS3Runtime({ memoryEnabled: true, projectRef: "ref_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", controlPlaneRef: "ref_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }), /MEMORY_DEFAULT_OFF/);
@@ -119,7 +121,9 @@ assert.equal(combined.activation, "OFF");
 assert.equal(combined.bootstrap.memory.enabled, false);
 assert.equal(combined.agent_builder.activation, "NOT_ACTIVATED");
 assert.equal(combined.specialist_library.activation, "OFF");
-assert.equal(combined.specialist_library.roster_sha256, "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08");
+assert.equal(combined.specialist_library.intake_status, "NOT_RECEIVED");
+assert.equal(combined.specialist_library.admitted, false);
+assert.equal(combined.specialist_library.roster_truth, null);
 assert.equal(combined.main_core.identity.candidate_commit, core.candidate_commit);
 
 const installed = await installBundle(BUNDLE, { projectRoot, companionRoot });
@@ -170,6 +174,9 @@ await rm(maliciousRoot, { recursive: true, force: true });
 await rm(root, { recursive: true, force: true });
 
 const bundleText = await readFile(BUNDLE, "utf8");
+const releaseBundle = JSON.parse(bundleText);
+assert.equal(releaseBundle.entries.some((entry) => entry.path.startsWith("specialist-blocks/")), false,
+  "legacy or partial specialist library entered the release bundle");
 const forbiddenMarkers = ["Job" + "Sight", "Well" + "Sight", "Soci" + "una", String.fromCharCode(47) + "Users" + String.fromCharCode(47)];
 assert(forbiddenMarkers.every((marker) => !bundleText.includes(marker)), "non-portable context in bundle");
 console.log(`AGENTOS_3_TEST_PROOF PASS core=${core.entry_count} default-off capability-bound builder-compile hostile-install rollback-project-unchanged restart-replay purity`);

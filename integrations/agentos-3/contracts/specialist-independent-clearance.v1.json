@@ -5,7 +5,7 @@
   "author_role": "SPECIALIST_BLOCK_LIBRARY_BUILDER",
   "reviewer": { "reviewer_id": "agentos.release-independent-utility-harm-reviewer", "role": "INDEPENDENT_RELEASE_AUDITOR", "separate_from_author": true },
   "authority": "READ_ONLY_INDEPENDENT_REVIEW;_NO_ADMISSION_ACTIVATION_DEPLOYMENT_OR_RELEASE_AUTHORITY",
-  "status": "PASS_PENDING_INTEGRATION_INTAKE",
+  "status": "LEGACY_LOCAL_REVIEW_EXCLUDED_NOT_VALID_FOR_CURRENT_INTAKE",
   "blocks_reviewed": 4,
   "cases_reviewed": 68,
   "route_verdicts": 12,
@@ -18,6 +18,6 @@
     { "block_id": "specialist.control.runtime-deployment-operator", "block_sha256": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859" }
   ],
   "review_manifest_sha256": "366657337e4511691d58de86d8387e51df890839861f82bff69ee853fcc38ce9",
-  "residuals": ["Integration intake remains separate.", "Activation, deployment, migration, publication, and release promotion remain OFF."],
-  "clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"
+  "residuals": ["The reviewed local candidate is superseded and excluded from the AgentOS 3 bundle.", "A new external typed handoff and independent admission are required; activation, deployment, migration, publication, and release promotion remain OFF."],
+  "clearance_sha256": "cf08faf4fc920aa617969463d0bfc1f0009e67de62e9142d8878e372ef07c1bd"
 }

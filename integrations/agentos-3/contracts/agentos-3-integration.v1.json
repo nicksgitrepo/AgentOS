@@ -13,14 +13,10 @@
     {
       "id": "main-agentos",
       "role": "host_candidate",
-      "source_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
-      "candidate_commit": "029ccdb40efaeeae38ec1adabc6d3b44f5316310",
-      "candidate_tree": "6f66883444f0340aac86905ab0e889832b420df6",
-      "central_commit": "0b68f431d62bee662763e00cfe4bf496c815ab7e",
-      "central_tree": "9afbf4f9db7e3bd8c260ecc15be19066fc8deb9f",
+      "identity_authority": "main-core/source-manifest.json",
       "distribution": "main-core/source-manifest.json",
       "entrypoint": "main-core/entrypoint.mjs",
-      "state": "IMMUTABLE_INPUT"
+      "state": "EXACT_BUILD_TIME_SOURCE_BOUND"
     },
     {
       "id": "memory-m2",
@@ -39,7 +35,7 @@
       "mapping_version": "agentos.memory.category-map.v1",
       "authority_contract": "contracts/memory-authority.v1.json",
       "authority_binding": "contracts/memory-authority-binding.v1.json",
-      "authority_binding_sha256": "5e3ae96e9fb49850465c7d85bd82de50d9a270844200cb36fbb9701fa878ce9e",
+      "authority_binding_sha256": "3ec77246e1c5c4854aab540f3d49279b326dd03b5bd06f6cf45b89286c077378",
       "exposed_surfaces": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery"],
       "deferred_fail_closed": ["migration", "handoff_journal", "successor_transfer"],
       "migration": "PLAN_ONLY_FAIL_CLOSED"
@@ -60,21 +56,23 @@
     },
     {
       "id": "specialist-block-library",
-      "role": "reusable_governance_gate_and_role_recipe_library",
-      "candidate_commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
-      "candidate_tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb",
-      "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08",
-      "state": "IMMUTABLE_INPUT_INDEPENDENTLY_CLEARED",
-      "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
+      "role": "external_typed_specialist_gate_library_intake",
+      "custody": "EXTERNAL_TYPED_INTAKE_ONLY",
+      "state": "EXTERNAL_CANDIDATE_NOT_RECEIVED",
+      "admission": "NOT_ADMITTED",
       "activation": "OFF",
-      "utility_harm_evaluation": "PASS_2023_PREDETERMINED_AND_68_INDEPENDENTLY_REVIEWED_CASES",
-      "independent_clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"
+      "intake_contract": "contracts/specialist-library-intake.v1.json",
+      "intake_controller": "specialist-library-intake.mjs",
+      "intake_binding": "contracts/specialist-library-intake-binding.v1.json",
+      "accepted_candidate": null,
+      "roster_truth": null,
+      "authority_effect_grants": []
     }
   ],
   "contracts": {
     "memory": ["activation_off_by_default", "private_custody", "five_type_canonical_taxonomy", "total_lossless_source_category_mapping_exposed", "one_project_one_memory_author", "externally_verified_exclusive_binding", "signed_m2_authority_binding", "recipient_authority_required", "replay_verified", "run_workspace_current_projection_roster_rethread_recovery_exposed", "migration_handoff_successor_fail_closed", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
     "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial", "independent_deterministic_utility_harm_clearance"],
-    "specialist_block_library": ["123_reusable_packages", "620_compileable_role_recipes", "typed_gate_dependency_closure", "independent_utility_harm_clearance", "inactive_test_build_only"],
+    "specialist_block_library": ["external_typed_intake_only", "legacy_local_library_excluded", "no_partial_candidate", "no_self_admission", "truth_counts_required", "independent_clearance_required", "activation_off"],
     "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK",
     "install": "EXTERNAL_SIBLING_ONLY",
     "capability": "externally_supplied_bound_lease_verified_outside_artifact",
@@ -85,5 +83,5 @@
     "agent_builder_package": "agent-builder/package-manifest.json"
   },
   "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
-  "proof_ceiling": ["memory_authority_independent_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "handoff_journal", "successor_transfer", "release_promotion", "public_release"]
+  "proof_ceiling": ["specialist_gate_library_accepted_typed_intake", "memory_authority_independent_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "handoff_journal", "successor_transfer", "release_promotion", "public_release"]
 }

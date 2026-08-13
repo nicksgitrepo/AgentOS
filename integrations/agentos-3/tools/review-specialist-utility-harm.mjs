@@ -104,7 +104,7 @@ export function reviewSpecialistUtilityHarm({ repositoryRoot = process.cwd() } =
     author_role: AUTHOR_ROLE,
     reviewer: { reviewer_id: REVIEWER_ID, role: REVIEWER_ROLE, separate_from_author: true },
     authority: "READ_ONLY_INDEPENDENT_REVIEW;_NO_ADMISSION_ACTIVATION_DEPLOYMENT_OR_RELEASE_AUTHORITY",
-    status: "PASS_PENDING_INTEGRATION_INTAKE",
+    status: "LEGACY_LOCAL_REVIEW_EXCLUDED_NOT_VALID_FOR_CURRENT_INTAKE",
     blocks_reviewed: blockDigests.length,
     cases_reviewed: reviewed.length,
     route_verdicts: reviewed.filter((item) => item.verdict === "ROUTE").length,
@@ -112,7 +112,7 @@ export function reviewSpecialistUtilityHarm({ repositoryRoot = process.cwd() } =
     escalate_verdicts: reviewed.filter((item) => item.verdict === "ESCALATE").length,
     block_digests: blockDigests,
     review_manifest_sha256: digest(reviewed),
-    residuals: ["Integration intake remains separate.", "Activation, deployment, migration, publication, and release promotion remain OFF."],
+    residuals: ["The reviewed local candidate is superseded and excluded from the AgentOS 3 bundle.", "A new external typed handoff and independent admission are required; activation, deployment, migration, publication, and release promotion remain OFF."],
   };
   return { ...body, clearance_sha256: digest(body) };
 }

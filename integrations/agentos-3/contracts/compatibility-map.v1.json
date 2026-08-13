@@ -14,8 +14,9 @@
   },
   "new_inputs": {
     "memory-m2-typed-adapter": {"default": "OFF", "requires": ["externally_verified_bound_test_capability", "externally_verified_exclusive_memory_authority", "signed_m2_authority_binding"], "scope": "test_only", "migration": "PLAN_ONLY_FAIL_CLOSED"},
-    "agent-builder-typed-projection": {"compiler": "main-agentos-core", "authority_effect_grants": [], "admission": "external_only", "activation": "external_only"}
+    "agent-builder-typed-projection": {"compiler": "main-agentos-core", "authority_effect_grants": [], "admission": "external_only", "activation": "external_only"},
+    "specialist-gate-library": {"custody": "EXTERNAL_TYPED_INTAKE_ONLY", "current_intake": "NOT_RECEIVED", "legacy_local_library": "EXCLUDED_FROM_RELEASE", "authority_effect_grants": [], "activation": "OFF"}
   },
   "deferred_interfaces": {"handoff_journal": "FAIL_CLOSED_NOT_IMPLEMENTED", "successor_transfer": "FAIL_CLOSED_NOT_IMPLEMENTED"},
-  "invariants": ["one_main_governance_compiler", "one_main_task_packet_authority", "one_project_one_memory_author", "legacy_memory_never_silently_coauthors", "source_category_preserved_in_every_mapping", "unknown_category_fails_closed", "memory_m2_never_replaces_custody"]
+  "invariants": ["one_main_governance_compiler", "one_main_task_packet_authority", "one_project_one_memory_author", "legacy_memory_never_silently_coauthors", "source_category_preserved_in_every_mapping", "unknown_category_fails_closed", "memory_m2_never_replaces_custody", "specialist_library_never_self_admits", "partial_specialist_candidate_never_packages"]
 }

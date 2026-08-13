@@ -17,13 +17,15 @@ const run = (relativePath, env = {}) => {
 const independent = run("integrations/agentos-3/tests/independent-clearance-test.mjs");
 const sourceParity = run("tests/verify-agentos-3-source-parity.mjs");
 const topology = run("integrations/agentos-3/tests/project-topology-test.mjs");
+const specialistIntake = run("integrations/agentos-3/tests/specialist-library-intake-test.mjs");
 const memoryAuthority = run("integrations/agentos-3/tests/memory-authority-test.mjs");
 const integrated = run("integrations/agentos-3/tests/integration-test.mjs", { AGENTOS_MAIN_SOURCE_ROOT: join(root, "control") });
 const realHost = run("integrations/agentos-3/tests/real-host-proof.mjs");
 assert.match(independent, /PASS independent clearance/u);
 assert.match(sourceParity, /PASS AgentOS 3 release-source parity/u);
 assert.match(topology, /AGENTOS_3_PROJECT_TOPOLOGY PASS/u);
+assert.match(specialistIntake, /PASS AgentOS 3 specialist-library intake/u);
 assert.match(memoryAuthority, /PASS AgentOS 3 memory authority/u);
 assert.match(integrated, /AGENTOS_3_TEST_PROOF PASS/u);
 assert.match(realHost, /AGENTOS_3_REAL_HOST_PROOF PASS/u);
-console.log("PASS AgentOS 3.0 inactive candidate: exact source-to-artifact parity, typed topology, existing independent clearances, memory-authority P0 self-test, combined integration, and real-host zero-trace proof; memory-authority independent clearance remains pending");
+console.log("PASS AgentOS 3.0 inactive candidate: exact source-to-artifact parity, typed topology, external specialist intake fail-closed, existing Agent Builder clearance, memory-authority P0 self-test, combined integration, and real-host zero-trace proof; external specialist intake and memory-authority clearance remain pending");
