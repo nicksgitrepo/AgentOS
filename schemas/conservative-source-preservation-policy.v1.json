@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/conservative-source-preservation-policy.v1.json",
+  "title": "AgentOS conservative source-preservation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "policy_id", "policy_version", "status", "git_administrative_names", "reproducible_ignored_directory_names", "reproducible_ignored_file_suffixes", "ambiguous_ignored_content", "sensitive_user_content", "source_overlay_digest", "rules", "policy_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.conservative_source_preservation_policy.v1"},
+    "version": {"const": 1},
+    "policy_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "git_administrative_names": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "reproducible_ignored_directory_names": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "reproducible_ignored_file_suffixes": {"const": []},
+    "ambiguous_ignored_content": {"const": "PRESERVE"},
+    "sensitive_user_content": {"const": "PRESERVE_IN_EXTERNAL_CUSTODY"},
+    "source_overlay_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "rules": {"type": "array", "minItems": 5, "items": {"type": "string", "minLength": 1}},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

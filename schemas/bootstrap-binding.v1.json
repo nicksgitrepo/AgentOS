@@ -158,7 +158,27 @@
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
-      "sha256": "fc4496d30ca12a3cc3880b2b36a704056e90e0679ba5dbe97504fadb83bd8f01"
+      "sha256": "a315fdd3e40f90878a9d2ba3c54b74d0926027777b6dcaf470bb790f915ecc74"
+    },
+    "conservative_preservation_policy_controller": {
+      "path": "control/conservative-preservation-policy.mjs",
+      "sha256": "0c6da0277a61230c3f48eda4466422cf190a2a9e8662d027cbe28a86c4fb7090"
+    },
+    "conservative_preservation_policy_contract": {
+      "path": "schemas/conservative-source-preservation-policy.v1.json",
+      "sha256": "4acc0195e6c58e623f7c4e9874432ec75f08a8c2b59d83822ceefe6c8772f2b3"
+    },
+    "conservative_preservation_policy_article": {
+      "path": "governance/2.1rc/conservative-source-preservation.md",
+      "sha256": "8f54620d73be89e7d5bbea6485730bbc5dc5b58c9e8e9c2f4e15541bf6962221"
+    },
+    "conservative_preservation_policy_verifier": {
+      "path": "tests/verify-conservative-source-preservation.mjs",
+      "sha256": "d54539d99c65b4e049aea119a1d045993ffa28dfdd804d535cccd2a53d6a9468"
+    },
+    "bootstrap_conservative_preservation_checkpoint": {
+      "path": "docs/bootstrap-conservative-preservation-checkpoint-2026-08-13.md",
+      "sha256": "19a9096a3019813a90fc83bfa04c1603a4ccf26c1c16a28c0a83d984150eb5f4"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",
