@@ -246,7 +246,7 @@
     },
     "spawn_preparation_controller": {
       "path": "control/spawn-preparation.mjs",
-      "sha256": "b30f23acfa9245018b914bb1a3599139374218ac751ed346448f328de5d527f9"
+      "sha256": "27369634129e9999ce3458e49fb3c0230fcc18f3eee83f0e67052a53e04d2c4b"
     },
     "spawn_preparation_contract": {
       "path": "schemas/spawn-preparation.v1.json",
@@ -259,6 +259,30 @@
     "spawn_preparation_verifier": {
       "path": "tests/verify-spawn-preparation.mjs",
       "sha256": "c63f2047d9c3e0ca7748dc8e2eed0bca68c8e7108fa6f75d1f826ba408981878"
+    },
+    "spawner_admission_roundtrip_controller": {
+      "path": "control/spawner-admission-roundtrip.mjs",
+      "sha256": "0125ad25fe1b523e73174fdf0029856bf88a1f5f9658e929e27d35664e8709f1"
+    },
+    "spawner_admission_roundtrip_contract": {
+      "path": "schemas/spawner-admission-roundtrip.v1.json",
+      "sha256": "f65161bfdcefdba13746b70650c97331fd9925d62dbe792dcde09e8d1c565f78"
+    },
+    "spawner_admission_roundtrip_gate": {
+      "path": "gates/spawner-admission.gate",
+      "sha256": "fae86f8b6055bce98f1d8386db4a02da761595cc4b4faf8609560e0e49067be9"
+    },
+    "spawner_admission_roundtrip_article": {
+      "path": "governance/2.1rc/spawner-admission-roundtrip.md",
+      "sha256": "d03ea719fa59e3de2e6bf3aff665ded966ae01fe990d447ef50f051c015a0b98"
+    },
+    "spawner_admission_roundtrip_verifier": {
+      "path": "tests/verify-spawner-admission-roundtrip.mjs",
+      "sha256": "a7578491f8c3958d505ba04f002af508a3c5fda580f670a43972638b12efdcdb"
+    },
+    "bootstrap_spawner_synthetic_roundtrip_checkpoint": {
+      "path": "docs/bootstrap-spawner-synthetic-roundtrip-2026-08-13.md",
+      "sha256": "a5751efe0f2fc496794aa0f5a286d3389daa6501f1570948c7158825d61abbbe"
     },
     "bootstrap_source_composition_breakpoint": {
       "path": "docs/bootstrap-source-composition-breakpoint-2026-08-13.md",

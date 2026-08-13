@@ -151,7 +151,7 @@ function compositionFailures(request, blocks) {
   }
   if (request.composition_qa?.status !== "PASS") failures.push({code: "COMPOSITION_QA_REQUIRED", reason: "composition-level QA must explicitly pass"});
   if (request.composition_qa) {
-    for (const field of ["contradictions", "missing_seams", "context_leaks", "impossible_completion", "unsafe_fallback", "non_deterministic_handoff"]) {
+    for (const field of ["contradictions", "missing_seams", "scope_excess", "context_leaks", "unsupported_applicability", "impossible_completion", "unsafe_fallback", "non_deterministic_handoff"]) {
       if ((request.composition_qa[field] ?? []).length > 0) failures.push({code: `COMPOSITION_${field.toUpperCase()}`, details: request.composition_qa[field]});
     }
   }
@@ -208,7 +208,7 @@ export function compileSpawnPreparation({request, catalog = [], nowUtc = "1970-0
     if (block.required_model && (block.required_model.model !== request.model_duty.model || block.required_model.reasoning_effort !== request.model_duty.reasoning_effort)) failures.push({code: "MODEL_DUTY_MISMATCH", block_id: block.block_id});
   }
   failures.push(...compositionFailures(request, closure));
-  const contradiction = failures.some((failure) => ["COMPOSITION_CONFLICT", "COMPOSITION_CONTRADICTIONS", "AUTHORITY_OVERLAP", "ALIAS_DUPLICATE"].includes(failure.code));
+  const contradiction = failures.some((failure) => failure.code.startsWith("COMPOSITION_") || ["COMPOSITION_CONFLICT", "AUTHORITY_OVERLAP", "ALIAS_DUPLICATE"].includes(failure.code));
   const status = failures.length === 0
     ? "SPAWN_PACKAGE_ACCEPTED"
     : exhaustedBlocker ? "BLOCKED_EXACT"
@@ -252,7 +252,7 @@ export function validateSpawnPreparation(receipt) {
   return receipt;
 }
 
-export function verifySpawnReadback({acceptedPackage, readback, kind = "WORKING_AGENT"} = {}) {
+export function verifySpawnReadback({acceptedPackage, readback, kind = "WORKING_AGENT", expectedProjectControlPlaneRef = null, expectedFirstHandoffSha256 = null} = {}) {
   validateSpawnPreparation(acceptedPackage);
   assert(acceptedPackage.status === "SPAWN_PACKAGE_ACCEPTED", "spawn readback requires an accepted package");
   requireRecord(readback, "spawn readback");
@@ -265,6 +265,9 @@ export function verifySpawnReadback({acceptedPackage, readback, kind = "WORKING_
   if (readback.model !== acceptedPackage.role_context_manifest.model_duty.model || readback.reasoning_effort !== acceptedPackage.role_context_manifest.model_duty.reasoning_effort) failures.push("MODEL_MISMATCH");
   if (readback.manifest_sha256 !== acceptedPackage.role_context_manifest.manifest_sha256) failures.push("MANIFEST_DIGEST_MISMATCH");
   if (readback.no_subagents !== true) failures.push("SUBAGENT_RULE_MISMATCH");
+  if (expectedProjectControlPlaneRef !== null && readback.project_control_plane_ref !== expectedProjectControlPlaneRef) failures.push("PROJECT_CONTROL_PLANE_MISMATCH");
+  if (expectedFirstHandoffSha256 !== null && readback.first_handoff_sha256 !== expectedFirstHandoffSha256) failures.push("FIRST_HANDOFF_MISMATCH");
   const status = failures.length === 0 ? (kind === "SEED" ? "SEED_CREATED_IDLE" : "WORKING_AGENT_CREATED_READY") : "SPAWN_READBACK_FAILED";
-  return {schema: "agentos.spawn_readback_receipt.v1", version: 1, status, role_id: readback.role_id ?? null, task_id: readback.task_id ?? null, manifest_sha256: readback.manifest_sha256 ?? null, failures, mutation: "NONE", activation: status === "WORKING_AGENT_CREATED_READY" ? "READY_ONLY" : "OFF", receipt_sha256: canonicalDigest({status, role_id: readback.role_id ?? null, task_id: readback.task_id ?? null, manifest_sha256: readback.manifest_sha256 ?? null, failures, mutation: "NONE", activation: status === "WORKING_AGENT_CREATED_READY" ? "READY_ONLY" : "OFF"})};
+  const receiptBody = {schema: "agentos.spawn_readback_receipt.v1", version: 1, status, role_id: readback.role_id ?? null, task_id: readback.task_id ?? null, model: readback.model ?? null, reasoning_effort: readback.reasoning_effort ?? null, manifest_sha256: readback.manifest_sha256 ?? null, project_control_plane_ref: readback.project_control_plane_ref ?? null, first_handoff_sha256: readback.first_handoff_sha256 ?? null, no_subagents: readback.no_subagents ?? null, failures, mutation: "NONE", activation: status === "WORKING_AGENT_CREATED_READY" ? "READY_ONLY" : "OFF"};
+  return {...receiptBody, receipt_sha256: canonicalDigest(receiptBody)};
 }

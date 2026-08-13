@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/spawner-admission-roundtrip.v1.json",
+  "title": "AgentOS synthetic Agent Spawner admission round trip",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "extraction", "contradictions", "adjudications", "invalidation", "spawn_status", "readback_status", "mutation", "activation", "roundtrip_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_admission_roundtrip.v1"},
+    "version": {"const": 1},
+    "extraction": {"type": "object", "required": ["schema", "status", "source_id", "source_digest", "model_duty", "claims", "contradiction_packet_ids", "raw_material_retained", "mutation", "activation", "extraction_sha256"], "properties": {"schema": {"const": "agentos.spawner_admission_roundtrip.v1"}, "status": {"const": "EXTRACTED"}, "source_id": {"type": "string"}, "source_digest": {"$ref": "#/$defs/sha"}, "model_duty": {"type": "object"}, "claims": {"type": "array", "minItems": 1}, "contradiction_packet_ids": {"type": "array", "items": {"$ref": "#/$defs/sha"}}, "raw_material_retained": {"const": false}, "mutation": {"const": "NONE"}, "activation": {"const": "OFF"}, "extraction_sha256": {"$ref": "#/$defs/sha"}}, "additionalProperties": true},
+    "contradictions": {"type": "array", "items": {"$ref": "#/$defs/contradiction"}},
+    "adjudications": {"type": "array", "items": {"$ref": "#/$defs/adjudication"}},
+    "invalidation": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/invalidation"}]},
+    "spawn_status": {"enum": ["SPAWN_PREPARATION_IN_PROGRESS", "BLOCK_BUILD_ACTIVE", "BLOCK_QA_FAILED_REPAIRING", "CONTEXT_INCONSISTENCY_AWAITING_BOOTSTRAP", "SPAWN_PACKAGE_ACCEPTED"]},
+    "readback_status": {"enum": ["SPAWN_READBACK_FAILED", "SEED_CREATED_IDLE", "WORKING_AGENT_CREATED_READY"]},
+    "mutation": {"const": "NONE"},
+    "activation": {"const": "OFF"},
+    "roundtrip_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "contradiction": {"type": "object", "additionalProperties": false, "required": ["schema", "version", "status", "semantic_key", "source_id", "source_digest", "statement_refs", "claim_digests", "raw_admissible", "mutation", "activation", "packet_sha256"], "properties": {"schema": {"const": "agentos.context_inconsistency.v1"}, "version": {"const": 1}, "status": {"const": "AWAITING_BOOTSTRAP"}, "semantic_key": {"type": "string"}, "source_id": {"type": "string"}, "source_digest": {"$ref": "#/$defs/sha"}, "extraction_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "statement_refs": {"type": "array", "items": {"type": "string"}}, "claim_digests": {"type": "array", "items": {"$ref": "#/$defs/sha"}}, "reason": {"type": "string"}, "raw_admissible": {"const": false}, "mutation": {"const": "NONE"}, "activation": {"const": "OFF"}, "packet_sha256": {"$ref": "#/$defs/sha"}}},
+    "adjudication": {"type": "object", "additionalProperties": false, "required": ["schema", "version", "status", "packet_sha256", "selected_candidate_id", "retained_candidate_ids", "comparison_order", "candidate_ids", "reason", "mutation", "activation", "decision_sha256"], "properties": {"schema": {"const": "agentos.context_adjudication.v1"}, "version": {"const": 1}, "status": {"enum": ["RESOLVED_BY_HIGHER_AUTHORITY", "RESOLVED_BY_SUPERSESSION", "RESOLVED_AS_SCOPE_DISTINCTION", "RETAIN_BOTH_TYPED", "UNPROVEN_SOURCE_GAP", "OWNER_DECISION_REQUIRED"]}, "packet_sha256": {"$ref": "#/$defs/sha"}, "owner_intent_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha"}]}, "selected_candidate_id": {"anyOf": [{"type": "null"}, {"type": "string"}]}, "retained_candidate_ids": {"type": "array", "items": {"type": "string"}}, "comparison_order": {"type": "array", "items": {"type": "string"}}, "candidate_ids": {"type": "array", "items": {"type": "string"}}, "reason": {"type": "string"}, "mutation": {"const": "NONE"}, "activation": {"const": "OFF"}, "decision_sha256": {"$ref": "#/$defs/sha"}}},
+    "invalidation": {"type": "object", "additionalProperties": false, "required": ["schema", "version", "status", "prior_manifest_sha256", "changed_block_id", "new_block_digest", "dependent_block_ids", "rebuild_required", "migration_rule", "mutation", "activation", "invalidation_sha256"], "properties": {"schema": {"const": "agentos.role_context_manifest_invalidation.v1"}, "version": {"const": 1}, "status": {"const": "INVALIDATED"}, "prior_manifest_sha256": {"$ref": "#/$defs/sha"}, "changed_block_id": {"type": "string"}, "new_block_digest": {"$ref": "#/$defs/sha"}, "dependent_block_ids": {"type": "array", "items": {"type": "string"}}, "reason": {"type": "string"}, "rebuild_required": {"const": true}, "migration_rule": {"type": "string"}, "mutation": {"const": "NONE"}, "activation": {"const": "OFF"}, "invalidation_sha256": {"$ref": "#/$defs/sha"}}}
+  }
+}

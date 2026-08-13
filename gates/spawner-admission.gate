@@ -1,0 +1,17 @@
+schema: agentos.spawn_admission_gate.v1
+version: 1
+decision_tree:
+  - if: extractor duty is not AGENT_SPAWNER_COMPILER with gpt-5.6-sol/medium owner exception
+    then: DENY
+  - if: raw source or unresolved contradiction is present
+    then: CONTEXT_INCONSISTENCY_AWAITING_BOOTSTRAP
+  - if: any direct/transitive block is missing, stale, inapplicable, conflicting, duplicated, leaked, wrong-model, or unevaluated
+    then: SPAWN_PREPARATION_IN_PROGRESS
+  - if: all blocks pass dependency closure and composition QA
+    then: SPAWN_PACKAGE_ACCEPTED
+  - if: accepted manifest readback differs in digest/model/binding/no-subagents/handoff
+    then: SPAWN_READBACK_FAILED
+  - otherwise: DENY
+authority: bootstrap-and-spawner-only
+mutation: NONE
+activation: OFF
