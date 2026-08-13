@@ -148,8 +148,6 @@ export function applySerializedCampaignTransition({
 }) {
   validateLifecycleState(lifecycle);
   validateCascadeState(cascade);
-  validateLifecycleState(nextLifecycle);
-  validateCascadeState(nextCascade);
   const beforeBridge = compileSerializedStateBridge({lifecycle, cascade});
   const lifecycleAfter = applyLifecycleTransition(lifecycle, nextLifecycle, lifecycleEvent);
   const cascadeAfter = applyCascadeTransition(cascade, nextCascade, cascadeEvent);

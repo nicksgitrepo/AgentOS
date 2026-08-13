@@ -116,6 +116,15 @@
     "required_fields": ["policy_epoch", "policy_state_sha256", "acceptance_contract_sha256"],
     "rule": "The cascade state and its first-pass candidate carry the same policy and complete acceptance identity. A same-campaign cascade transition cannot change either identity without a new admitted campaign."
   },
+  "transition_transaction": {
+    "journal_entry_fields": ["sequence", "from_state_sha256", "from_stage", "to_stage", "event_type", "payload", "at_utc", "event_sha256"],
+    "candidate_rule": "A transition candidate is a content-addressed target-state document whose journal is canonically equal to the validated predecessor journal. It is validated against that predecessor journal head and is not accepted as a standalone current state before append.",
+    "append_rule": "The transition engine clones both inputs, validates lineage, policy, acceptance, target-state invariants, allowed edge, holds, candidate CAS, event type, UTC time, and a plain portable JSON payload, then appends exactly one entry. The entry sequence is the predecessor journal length; from_state_sha256 is the exact predecessor cascade_sha256; from_stage and to_stage are the exact edge.",
+    "event_digest_rule": "event_sha256 is SHA-256 over canonical JSON for the complete journal entry with event_sha256 set to null. Genesis uses the same rule.",
+    "completion_rule": "After the one append, the engine recomputes cascade_sha256 and validates the completed state normally, including journal-head equality with state.stage. It returns a new state and never mutates either caller input; any rejection returns no partial state.",
+    "replay_and_tamper_rule": "Every historical edge must be allowed, sequence must be contiguous, journal history must remain an exact predecessor prefix, and each event digest must verify. A stale predecessor, pre-appended or replayed entry, skipped stage, rewritten prefix, invalid payload, or stale candidate CAS fails closed.",
+    "migration_and_invalidation": "This additive repair remains governance.campaign_cascade_state.v1 because 2.1rc is prepared and inactive. Any pre-repair fixture or persisted candidate with the legacy genesis digest, a pre-appended target journal, an illegal historical edge, or bytes not derivable from the last independently validated predecessor is invalidated. Regenerate genesis or replay from that predecessor; never rewrite or re-hash accepted journal history in place."
+  },
   "universal_closeout": {
     "mode": "CASCADE",
     "receipt_schema": "agentos.universal_task_closeout_receipts.v1",

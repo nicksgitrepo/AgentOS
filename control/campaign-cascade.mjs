@@ -73,6 +73,16 @@ const SEVERITIES = new Set(FINDING_SEVERITIES);
 const ROUTES = new Set(FINDING_ROUTES);
 const MODEL_ROLES = new Set(MODEL_POLICY_ROLES);
 const HOLD_KINDS = new Set(["CONTEXT", "AUTHORITY_BOUNDARY", "EXTERNAL_DEPENDENCY", "CREDENTIAL_ACCESS", "OWNER_DECISION", "PROTECTED_RESOURCE"]);
+const ALLOWED_CASCADE_TRANSITIONS = Object.freeze({
+  FIRST_PASS_BUILDING: new Set(["FIRST_PASS_BUILDING", "TERMINAL_PROPOSED"]),
+  TERMINAL_PROPOSED: new Set(["TERMINAL_PROPOSED", "FIRST_PASS_REPAIR_REQUIRED", "TERMINAL_SETTLED"]),
+  FIRST_PASS_REPAIR_REQUIRED: new Set(["FIRST_PASS_REPAIR_REQUIRED", "FIRST_PASS_BUILDING"]),
+  TERMINAL_SETTLED: new Set(["TERMINAL_SETTLED", "FINALIZER_PENDING", "READY_FOR_ACCEPTANCE"]),
+  FINALIZER_PENDING: new Set(["FINALIZER_PENDING", "FINALIZING"]),
+  FINALIZING: new Set(["FINALIZING", "DELTA_REPAIR"]),
+  DELTA_REPAIR: new Set(["DELTA_REPAIR", "FINALIZING", "READY_FOR_ACCEPTANCE"]),
+  READY_FOR_ACCEPTANCE: new Set(["READY_FOR_ACCEPTANCE"]),
+});
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -84,6 +94,35 @@ function isRecord(value) {
 
 function requireRecord(value, label) {
   assert(isRecord(value), `${label} must be an object`);
+}
+
+function validatePortableJson(value, label, ancestors = new Set()) {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return value;
+  if (typeof value === "number") {
+    assert(Number.isFinite(value), `${label} contains a non-finite number`);
+    return value;
+  }
+  assert(typeof value === "object", `${label} contains a non-JSON value`);
+  assert(!ancestors.has(value), `${label} contains a cycle`);
+  ancestors.add(value);
+  if (Array.isArray(value)) {
+    assert(Object.getOwnPropertySymbols(value).length === 0, `${label} contains symbol fields`);
+    assert(Object.keys(value).every((key) => /^(?:0|[1-9][0-9]*)$/u.test(key) && Number(key) < value.length), `${label} array contains non-index fields`);
+    for (const [index, item] of value.entries()) validatePortableJson(item, `${label}[${index}]`, ancestors);
+  } else {
+    const prototype = Object.getPrototypeOf(value);
+    assert(prototype === Object.prototype || prototype === null, `${label} must contain only plain objects`);
+    assert(Object.getOwnPropertySymbols(value).length === 0, `${label} contains symbol fields`);
+    for (const [key, item] of Object.entries(value)) validatePortableJson(item, `${label}.${key}`, ancestors);
+  }
+  ancestors.delete(value);
+  return value;
+}
+
+function validateCascadeTransitionPayload(payload) {
+  requireRecord(payload, "cascade transition payload");
+  validatePortableJson(payload, "cascade transition payload");
+  return payload;
 }
 
 function requireString(value, label) {
@@ -1263,6 +1302,10 @@ const LOOP_KEYS = ["max_finalization_passes", "max_delta_repair_passes", "max_su
 const TELEMETRY_KEYS = ["records", "evidence_reuse_count", "escaped_finding_count", "owner_interruptions"];
 const NEXT_CAMPAIGN_ENTRY_KEYS = ["entry_id", "category", "summary", "references", "status", "created_at_utc", "entry_sha256"];
 
+function cascadeTransitionDigest(entry) {
+  return cascadeDigest({...entry, event_sha256: null});
+}
+
 function validateNextCampaignLedger(ledger) {
   assert(Array.isArray(ledger), "next-campaign ledger is required");
   const ids = new Set();
@@ -1307,7 +1350,7 @@ function validateCascadeTransitionJournal(journal, currentStage) {
     assert(entry.from_stage === null || STAGES.has(entry.from_stage), "cascade transition source stage is invalid");
     assert(STAGES.has(entry.to_stage), "cascade transition target stage is invalid");
     requireString(entry.event_type, "cascade transition event type");
-    requireRecord(entry.payload, "cascade transition payload");
+    validateCascadeTransitionPayload(entry.payload);
     requireUtc(entry.at_utc, "cascade transition time");
     requireSha(entry.event_sha256, "cascade transition event digest");
     if (index === 0) {
@@ -1315,13 +1358,14 @@ function validateCascadeTransitionJournal(journal, currentStage) {
     } else {
       const previous = journal[index - 1];
       assert(entry.from_state_sha256 !== null && entry.from_stage === previous.to_stage, "cascade transition journal parent is not bound to the previous stage");
+      assert(ALLOWED_CASCADE_TRANSITIONS[previous.to_stage]?.has(entry.to_stage), "cascade transition journal contains an illegal stage edge");
     }
-    assert(entry.event_sha256 === cascadeDigest({...entry, event_sha256: null}), "cascade transition event is not content-addressed");
+    assert(entry.event_sha256 === cascadeTransitionDigest(entry), "cascade transition event is not content-addressed");
   }
   assert(journal.at(-1).to_stage === currentStage, "cascade transition journal does not end at the current stage");
 }
 
-function sealCascadeState(state) {
+function sealCascadeState(state, validationOptions = {}) {
   const next = structuredClone(state);
   if (!Array.isArray(next.transition_journal) || next.transition_journal.length === 0) {
     assert(next.stage === "FIRST_PASS_BUILDING", "a new cascade state must begin at FIRST_PASS_BUILDING");
@@ -1333,12 +1377,14 @@ function sealCascadeState(state) {
       event_type: "GENESIS",
       payload: {campaign_id: next.campaign_id, campaign_version: next.campaign_version, logical_lineage_id: next.logical_lineage_id},
       at_utc: "1970-01-01T00:00:00.000Z",
+      event_sha256: null,
     };
-    next.transition_journal = [{...genesis, event_sha256: cascadeDigest(genesis)}];
+    genesis.event_sha256 = cascadeTransitionDigest(genesis);
+    next.transition_journal = [genesis];
   }
   delete next.cascade_sha256;
   next.cascade_sha256 = cascadeDigest(next);
-  return validateCascadeState(next);
+  return validateCascadeState(next, validationOptions);
 }
 
 export function createCascadeState(input) {
@@ -1374,7 +1420,7 @@ export function createCascadeState(input) {
   });
 }
 
-export function validateCascadeState(state, options = {}) {
+function validateCascadeStateDocument(state, options = {}, journalStage = null) {
   assertUniversalDevelopmentMode("CASCADE");
   exactKeys(state, CASCADE_STATE_KEYS, "campaign cascade state");
   assert(state.schema === "governance.campaign_cascade_state.v1" && state.governance_version === "2.1rc", "campaign cascade identity is invalid");
@@ -1383,7 +1429,7 @@ export function validateCascadeState(state, options = {}) {
   requireSha(state.policy_state_sha256, "cascade policy snapshot");
   requireSha(state.acceptance_contract_sha256, "cascade acceptance contract");
   assert(MODES.has(state.mode) && STAGES.has(state.stage), "campaign cascade mode or stage is invalid");
-  validateCascadeTransitionJournal(state.transition_journal, state.stage);
+  validateCascadeTransitionJournal(state.transition_journal, journalStage ?? state.stage);
   validateFirstPassCandidate(state.first_pass);
   assert(state.first_pass.campaign_id === state.campaign_id && state.first_pass.campaign_version === state.campaign_version && state.first_pass.logical_lineage_id === state.logical_lineage_id, "cascade first-pass lineage mismatch");
   assert(state.first_pass.policy_epoch === state.policy_epoch && state.first_pass.policy_snapshot_sha256 === state.policy_state_sha256 && state.first_pass.acceptance_contract_sha256 === state.acceptance_contract_sha256, "cascade policy or acceptance binding differs from first-pass candidate");
@@ -1462,7 +1508,6 @@ export function validateCascadeState(state, options = {}) {
     assert(options.productAcceptance !== undefined && options.productAcceptanceProof !== undefined, "ready cascade requires the executable Product acceptance proof");
     verifyProductAcceptanceProof(options.productAcceptance, options.productAcceptanceProof, state.campaign_id);
     assert(state.acceptance.product_acceptance_sha256 === cascadeDigest(options.productAcceptance), "ready cascade Product acceptance digest mismatch");
-    assert(options.productAcceptance.final_candidate_commit === finalCommit && options.productAcceptance.final_candidate_tree === finalTree, "ready cascade Product acceptance candidate mismatch");
   }
   if (options.productAcceptance) {
     const product = options.productAcceptance;
@@ -1476,6 +1521,10 @@ export function validateCascadeState(state, options = {}) {
   delete body.cascade_sha256;
   assert(state.cascade_sha256 === cascadeDigest(body), "campaign cascade digest is not content-addressed");
   return state;
+}
+
+export function validateCascadeState(state, options = {}) {
+  return validateCascadeStateDocument(state, options);
 }
 
 export function compileCascadeUniversalTaskCloseoutReceipts({receiptRefs, observedAt, label = "campaign cascade universal closeout receipts"} = {}) {
@@ -1517,47 +1566,51 @@ export function validateAcceptedLiveCascadeBinding({cascade, acceptedLive, produ
 
 export function applyCascadeTransition(previous, next, event = {}) {
   validateCascadeState(previous);
-  validateCascadeState(next, event.productAcceptance === undefined ? {} : {productAcceptance: event.productAcceptance, productAcceptanceProof: event.productAcceptanceProof});
-  assert(previous.campaign_id === next.campaign_id && previous.campaign_version === next.campaign_version && previous.logical_lineage_id === next.logical_lineage_id, "cascade transition changed campaign lineage");
-  assert(previous.policy_epoch === next.policy_epoch && previous.policy_state_sha256 === next.policy_state_sha256 && previous.acceptance_contract_sha256 === next.acceptance_contract_sha256, "cascade transition changed policy or acceptance without a new admitted campaign");
-  assert(next.next_campaign_ledger.length >= previous.next_campaign_ledger.length, "cascade transition removed next-campaign ledger entries");
-  assert(canonicalJson(next.next_campaign_ledger.slice(0, previous.next_campaign_ledger.length)) === canonicalJson(previous.next_campaign_ledger), "cascade transition rewrote next-campaign ledger history");
-  assert(next.cascade_sha256 !== previous.cascade_sha256, "cascade transition did not change state");
-  const allowed = new Map([
-    ["FIRST_PASS_BUILDING", new Set(["FIRST_PASS_BUILDING", "TERMINAL_PROPOSED"])],
-    ["TERMINAL_PROPOSED", new Set(["TERMINAL_PROPOSED", "FIRST_PASS_REPAIR_REQUIRED", "TERMINAL_SETTLED"])],
-    ["FIRST_PASS_REPAIR_REQUIRED", new Set(["FIRST_PASS_REPAIR_REQUIRED", "FIRST_PASS_BUILDING"])],
-    ["TERMINAL_SETTLED", new Set(["TERMINAL_SETTLED", "FINALIZER_PENDING", "READY_FOR_ACCEPTANCE"])],
-    ["FINALIZER_PENDING", new Set(["FINALIZER_PENDING", "FINALIZING"])],
-    ["FINALIZING", new Set(["FINALIZING", "DELTA_REPAIR"])],
-    ["DELTA_REPAIR", new Set(["DELTA_REPAIR", "FINALIZING", "READY_FOR_ACCEPTANCE"])],
-    ["READY_FOR_ACCEPTANCE", new Set(["READY_FOR_ACCEPTANCE"])]
-  ]);
-  assert(allowed.get(previous.stage)?.has(next.stage), `cascade transition ${previous.stage} -> ${next.stage} is not allowed`);
+  requireRecord(event, "cascade transition event");
+  const candidate = structuredClone(next);
+  const payload = event.payload === undefined ? {} : structuredClone(event.payload);
+  validateCascadeTransitionPayload(payload);
+  const eventType = event.type ?? "CASCADE_TRANSITION";
+  const atUtc = event.at_utc ?? new Date().toISOString();
+  requireString(eventType, "cascade transition event type");
+  requireUtc(atUtc, "cascade transition event time");
+  const validationOptions = event.productAcceptance === undefined
+    ? {}
+    : {productAcceptance: event.productAcceptance, productAcceptanceProof: event.productAcceptanceProof};
+  validateCascadeStateDocument(candidate, validationOptions, previous.stage);
+  assert(previous.campaign_id === candidate.campaign_id && previous.campaign_version === candidate.campaign_version && previous.logical_lineage_id === candidate.logical_lineage_id, "cascade transition changed campaign lineage");
+  assert(previous.policy_epoch === candidate.policy_epoch && previous.policy_state_sha256 === candidate.policy_state_sha256 && previous.acceptance_contract_sha256 === candidate.acceptance_contract_sha256, "cascade transition changed policy or acceptance without a new admitted campaign");
+  assert(candidate.next_campaign_ledger.length >= previous.next_campaign_ledger.length, "cascade transition removed next-campaign ledger entries");
+  assert(canonicalJson(candidate.next_campaign_ledger.slice(0, previous.next_campaign_ledger.length)) === canonicalJson(previous.next_campaign_ledger), "cascade transition rewrote next-campaign ledger history");
+  assert(candidate.cascade_sha256 !== previous.cascade_sha256, "cascade transition did not change state");
+  assert(ALLOWED_CASCADE_TRANSITIONS[previous.stage]?.has(candidate.stage), `cascade transition ${previous.stage} -> ${candidate.stage} is not allowed`);
   for (const hold of previous.holds) {
-    assert(!hold.blocked_stages.includes(next.stage), `cascade transition enters a stage blocked by hold ${hold.hold_id}`);
-    if (event.payload?.outcome_id !== undefined) assert(!hold.affected_outcome_ids.includes(event.payload.outcome_id), `cascade transition advances an outcome blocked by hold ${hold.hold_id}`);
+    assert(!hold.blocked_stages.includes(candidate.stage), `cascade transition enters a stage blocked by hold ${hold.hold_id}`);
+    if (payload.outcome_id !== undefined) assert(!hold.affected_outcome_ids.includes(payload.outcome_id), `cascade transition advances an outcome blocked by hold ${hold.hold_id}`);
   }
-  if (previous.stage === "FIRST_PASS_REPAIR_REQUIRED" && next.stage === "FIRST_PASS_BUILDING") {
-    assert(next.first_pass.candidate_id !== previous.first_pass.candidate_id, "first-pass repair rewrote the same candidate identity");
+  if (previous.stage === "FIRST_PASS_REPAIR_REQUIRED" && candidate.stage === "FIRST_PASS_BUILDING") {
+    assert(candidate.first_pass.candidate_id !== previous.first_pass.candidate_id, "first-pass repair rewrote the same candidate identity");
   } else if (previous.first_pass.terminal) {
-    assert(next.first_pass.commit === previous.first_pass.commit && next.first_pass.tree === previous.first_pass.tree, "cascade transition rewrote terminal first-pass candidate");
+    assert(candidate.first_pass.commit === previous.first_pass.commit && candidate.first_pass.tree === previous.first_pass.tree, "cascade transition rewrote terminal first-pass candidate");
   }
-  if (next.finalizer !== null && next.first_pass.terminal) assert(next.finalizer.source_commit === next.first_pass.commit && next.finalizer.source_tree === next.first_pass.tree, "cascade finalizer detached from first-pass candidate");
-  assert(canonicalJson(next.transition_journal) === canonicalJson(previous.transition_journal), "cascade transition must append to the current journal");
+  if (candidate.finalizer !== null && candidate.first_pass.terminal) assert(candidate.finalizer.source_commit === candidate.first_pass.commit && candidate.finalizer.source_tree === candidate.first_pass.tree, "cascade finalizer detached from first-pass candidate");
+  assert(canonicalJson(candidate.transition_journal) === canonicalJson(previous.transition_journal), "cascade transition must append to the current journal");
   const eventBody = {
-    sequence: next.transition_journal.length,
+    sequence: candidate.transition_journal.length,
     from_state_sha256: previous.cascade_sha256,
     from_stage: previous.stage,
-    to_stage: next.stage,
-    event_type: event.type ?? "CASCADE_TRANSITION",
-    payload: structuredClone(event.payload ?? {}),
-    at_utc: event.at_utc ?? new Date().toISOString(),
+    to_stage: candidate.stage,
+    event_type: eventType,
+    payload,
+    at_utc: atUtc,
   };
-  requireString(eventBody.event_type, "cascade transition event type");
-  requireUtc(eventBody.at_utc, "cascade transition event time");
-  next.transition_journal.push({...eventBody, event_sha256: cascadeDigest({...eventBody, event_sha256: null})});
-  return sealCascadeState(next);
+  candidate.transition_journal.push({...eventBody, event_sha256: cascadeTransitionDigest(eventBody)});
+  const completed = sealCascadeState(candidate, validationOptions);
+  assert(completed.transition_journal.length === previous.transition_journal.length + 1, "cascade transition did not append exactly one journal entry");
+  assert(canonicalJson(completed.transition_journal.slice(0, -1)) === canonicalJson(previous.transition_journal), "cascade transition rewrote journal history");
+  const appended = completed.transition_journal.at(-1);
+  assert(appended.from_state_sha256 === previous.cascade_sha256 && appended.from_stage === previous.stage && appended.to_stage === completed.stage, "cascade transition journal entry is not bound to its exact predecessor");
+  return completed;
 }
 
 export function clearCascadeHold(state, holdId, resolution) {
