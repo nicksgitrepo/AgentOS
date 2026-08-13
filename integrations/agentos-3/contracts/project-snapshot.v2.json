@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/integration-project-snapshot.v2.json",
+  "title": "AgentOS side-by-side project topology snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "topology", "entries", "repositories", "content_sha256", "repository_state_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.integration.project_snapshot.v2"},
+    "topology": {
+      "enum": ["EMPTY_PROJECT_ROOT", "NON_GIT_PROJECT_ROOT", "SINGLE_REPOSITORY", "MULTI_REPOSITORY_PROJECT_ROOT"]
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "type"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "type": {"const": "DIRECTORY"}
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "type", "size", "sha256"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "type": {"const": "FILE"},
+              "size": {"type": "integer", "minimum": 0},
+              "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            }
+          }
+        ]
+      }
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["relative_root", "git_admin_kind", "state", "head", "tree", "branch", "status_base64", "status_sha256"],
+        "properties": {
+          "relative_root": {"type": "string", "minLength": 1},
+          "git_admin_kind": {"enum": ["DIRECTORY", "FILE"]},
+          "state": {"enum": ["HEAD_BOUND", "UNBORN"]},
+          "head": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+          "tree": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+          "branch": {"type": ["string", "null"]},
+          "status_base64": {"type": "string"},
+          "status_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "repository_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

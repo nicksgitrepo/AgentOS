@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,17 +17,26 @@ function git(root, ...args) {
   return execFileSync("git", ["-C", root, ...args], { encoding: "utf8" }).trim();
 }
 
-async function createProject(parent, name, { imported }) {
+async function createRepository(root, relativeRoot, marker) {
+  const repositoryRoot = join(root, relativeRoot);
+  await mkdir(repositoryRoot, { recursive: true, mode: 0o700 });
+  await writeFile(join(repositoryRoot, "project.json"), `${JSON.stringify({ schema: "generic.real-host-repository.v1", marker }, null, 2)}\n`);
+  git(repositoryRoot, "init", "-q");
+  git(repositoryRoot, "config", "user.email", "real-host-proof@example.invalid");
+  git(repositoryRoot, "config", "user.name", "AgentOS Real Host Proof");
+  git(repositoryRoot, "add", ".");
+  git(repositoryRoot, "commit", "-qm", "real-host fixture");
+  return repositoryRoot;
+}
+
+async function createProject(parent, name, { kind }) {
   const root = join(parent, name);
   await mkdir(root, { recursive: true, mode: 0o700 });
-  await writeFile(join(root, "README.md"), imported ? "# Existing project\n" : "# Fresh project\n");
-  await writeFile(join(root, "project.json"), `${JSON.stringify({ schema: "generic.real-host-project.v1", imported }, null, 2)}\n`);
-  if (imported) await writeFile(join(root, "existing-source.mjs"), "export const existing = true;\n");
-  git(root, "init", "-q");
-  git(root, "config", "user.email", "real-host-proof@example.invalid");
-  git(root, "config", "user.name", "AgentOS Real Host Proof");
-  git(root, "add", ".");
-  git(root, "commit", "-qm", "real-host fixture");
+  if (kind === "MULTI_REPOSITORY_PROJECT_ROOT") {
+    await createRepository(root, "services/api", "api");
+    await createRepository(root, "clients/web", "web");
+    await writeFile(join(root, "composition.json"), "{\"schema\":\"generic.composition.v1\"}\n");
+  }
   return root;
 }
 
@@ -49,11 +58,11 @@ function runInstalledBootstrap(companionRoot, projectRoot) {
 const testRoot = await mkdtemp(join(hostRoot, ".agentos-3-real-host-proof-"));
 const results = [];
 try {
-  for (const imported of [false, true]) {
-    const kind = imported ? "IMPORTED_PROJECT" : "NEW_PROJECT";
-    const projectRoot = await createProject(testRoot, imported ? "existing-project" : "new-project", { imported });
-    const companionRoot = join(testRoot, imported ? "existing-project.agentos" : "new-project.agentos");
+  for (const kind of ["EMPTY_PROJECT_ROOT", "MULTI_REPOSITORY_PROJECT_ROOT"]) {
+    const projectRoot = await createProject(testRoot, kind === "EMPTY_PROJECT_ROOT" ? "new-project" : "composed-project", { kind });
+    const companionRoot = join(testRoot, kind === "EMPTY_PROJECT_ROOT" ? "new-project.agentos" : "composed-project.agentos");
     const before = await snapshotProject(projectRoot);
+    assert.equal(before.topology, kind);
     const installed = await installBundle(BUNDLE, { projectRoot, companionRoot });
     assert.equal(installed.activation, "OFF");
     assert.ok(snapshotsEqual(before, await snapshotProject(projectRoot)), `${kind} changed during sibling install`);
@@ -65,6 +74,7 @@ try {
     await assert.rejects(() => readdir(companionRoot), /ENOENT/u);
     results.push({
       kind,
+      topology: before.topology,
       activation: installed.activation,
       bootstrap_mode: bootstrap.discovery.discovery_mode,
       question_count: bootstrap.question_plan.questions.length,

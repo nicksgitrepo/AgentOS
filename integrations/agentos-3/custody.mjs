@@ -4,6 +4,7 @@ import { lstat, mkdir, open, readdir, readFile, realpath, rename, rm, stat, writ
 import { homedir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
+import { discoverProject } from "./main-core/control/bootstrap-discovery.mjs";
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`, "utf8");
@@ -53,32 +54,128 @@ export async function projectCompanionRoots(projectRootInput, companionRootInput
   const existingCompanion = await realDirectory(companionRoot, "COMPANION_ROOT", { allowMissing: true, privateDirectory: true });
   if (existingCompanion && !allowExisting) throw new Error("COMPANION_ALREADY_EXISTS");
   if (!existingCompanion && allowExisting) throw new Error("COMPANION_MISSING");
-  const git = spawnSync("git", ["-C", projectRoot, "rev-parse", "--show-toplevel"], { encoding: "utf8" });
-  if (git.status !== 0 || resolve(git.stdout.trim()) !== projectRoot) throw new Error("PROJECT_ROOT_MUST_BE_GIT_REPOSITORY");
   return { projectRoot, companionRoot };
 }
 
-async function walk(root, current = root, output = []) {
+async function walkProjectContent(root, current = root, output = []) {
   for (const name of (await readdir(current)).sort()) {
-    if (name === ".git" && current === root) continue;
     const absolute = join(current, name);
     const info = await lstat(absolute);
+    const projectRelative = relative(root, absolute).split("\\").join("/");
+    if (name === ".git") {
+      if (info.isSymbolicLink() || (!info.isDirectory() && !info.isFile())) {
+        throw new Error(`PROJECT_GIT_METADATA_UNSAFE:${projectRelative}`);
+      }
+      continue;
+    }
     if (info.isSymbolicLink()) throw new Error(`PROJECT_SYMLINK:${relative(root, absolute)}`);
-    if (info.isDirectory()) await walk(root, absolute, output);
+    if (info.isDirectory()) {
+      output.push({ path: projectRelative, type: "DIRECTORY" });
+      await walkProjectContent(root, absolute, output);
+    }
     else if (info.isFile()) {
       const bytes = await readFile(absolute);
-      output.push({ path: relative(root, absolute).split("\\").join("/"), size: bytes.length, sha256: sha256(bytes) });
+      output.push({ path: projectRelative, type: "FILE", size: bytes.length, sha256: sha256(bytes) });
+    } else {
+      throw new Error(`PROJECT_SPECIAL_FILE:${projectRelative}`);
     }
   }
-  return output.sort((left, right) => left.path.localeCompare(right.path));
+  return output.sort((left, right) => Buffer.compare(Buffer.from(left.path), Buffer.from(right.path)));
 }
 
-export async function snapshotProject(projectRoot) {
-  const head = spawnSync("git", ["-C", projectRoot, "rev-parse", "HEAD"], { encoding: "utf8" });
-  const tree = spawnSync("git", ["-C", projectRoot, "rev-parse", "HEAD^{tree}"], { encoding: "utf8" });
-  const status = spawnSync("git", ["-C", projectRoot, "status", "--porcelain=v1", "--untracked-files=all"], { encoding: "utf8" });
-  if ([head, tree, status].some((result) => result.status !== 0)) throw new Error("PROJECT_GIT_READBACK_FAILED");
-  return { head: head.stdout.trim(), tree: tree.stdout.trim(), status: status.stdout, files: await walk(projectRoot) };
+function runGit(repositoryRoot, args, { binary = false } = {}) {
+  return spawnSync("git", ["-C", repositoryRoot, ...args], {
+    encoding: binary ? null : "utf8",
+    env: {
+      PATH: process.env.PATH ?? "",
+      LANG: "C",
+      LC_ALL: "C",
+      GIT_TERMINAL_PROMPT: "0",
+      GIT_CONFIG_NOSYSTEM: "1",
+    },
+    timeout: 10_000,
+    windowsHide: true,
+  });
+}
+
+function exactRepositoryRoot(candidate) {
+  const topLevel = runGit(candidate, ["rev-parse", "--show-toplevel"]);
+  if (topLevel.status !== 0 || typeof topLevel.stdout !== "string" || topLevel.stdout.trim().length === 0) return null;
+  let canonicalTopLevel;
+  try { canonicalTopLevel = resolve(topLevel.stdout.trim()); } catch { return null; }
+  return canonicalTopLevel === candidate ? candidate : null;
+}
+
+async function repositoryIdentity(projectRoot, relativeRoot) {
+  const repositoryRoot = relativeRoot === "." ? projectRoot : resolve(projectRoot, relativeRoot);
+  if (!isWithin(projectRoot, repositoryRoot) || exactRepositoryRoot(repositoryRoot) !== repositoryRoot) {
+    throw new Error(`PROJECT_REPOSITORY_BINDING_INVALID:${relativeRoot}`);
+  }
+  const gitAdmin = await lstat(join(repositoryRoot, ".git"));
+  if (gitAdmin.isSymbolicLink() || (!gitAdmin.isDirectory() && !gitAdmin.isFile())) {
+    throw new Error(`PROJECT_GIT_METADATA_UNSAFE:${relativeRoot}/.git`);
+  }
+  const head = runGit(repositoryRoot, ["rev-parse", "--verify", "HEAD"]);
+  const tree = runGit(repositoryRoot, ["rev-parse", "--verify", "HEAD^{tree}"]);
+  const branch = runGit(repositoryRoot, ["symbolic-ref", "--quiet", "--short", "HEAD"]);
+  const status = runGit(repositoryRoot, ["status", "--porcelain=v1", "-z", "--untracked-files=all"], { binary: true });
+  if (status.status !== 0 || !Buffer.isBuffer(status.stdout)) throw new Error(`PROJECT_REPOSITORY_STATUS_FAILED:${relativeRoot}`);
+  const hasHead = head.status === 0 && tree.status === 0
+    && /^[0-9a-f]{40}$/u.test(head.stdout.trim()) && /^[0-9a-f]{40}$/u.test(tree.stdout.trim());
+  if ((head.status === 0) !== (tree.status === 0)) throw new Error(`PROJECT_REPOSITORY_HEAD_TREE_MISMATCH:${relativeRoot}`);
+  const identity = {
+    relative_root: relativeRoot,
+    git_admin_kind: gitAdmin.isDirectory() ? "DIRECTORY" : "FILE",
+    state: hasHead ? "HEAD_BOUND" : "UNBORN",
+    head: hasHead ? head.stdout.trim() : null,
+    tree: hasHead ? tree.stdout.trim() : null,
+    branch: branch.status === 0 && branch.stdout.trim().length > 0 ? branch.stdout.trim() : null,
+    status_base64: status.stdout.toString("base64"),
+    status_sha256: sha256(status.stdout),
+  };
+  return identity;
+}
+
+function nestedRepositoryRoots(discovery) {
+  return discovery.facts
+    .filter((entry) => entry.fact_id.startsWith("repositories.nested.")
+      && entry.fact_id !== "repositories.nested.count"
+      && !entry.fact_id.startsWith("repositories.nested.issue.")
+      && entry.status === "OBSERVED_FACT")
+    .map((entry) => dirname(entry.source_locator).split("\\").join("/"))
+    .sort((left, right) => Buffer.compare(Buffer.from(left), Buffer.from(right)));
+}
+
+export async function snapshotProject(projectRootInput) {
+  const requestedProjectRoot = asAbsolute(projectRootInput, "PROJECT_ROOT");
+  await realDirectory(requestedProjectRoot, "PROJECT_ROOT", { privateDirectory: false });
+  const discovery = discoverProject(requestedProjectRoot, "RECOMMENDED");
+  const projectRoot = discovery.project_root;
+  const topologyFact = discovery.facts.find((entry) => entry.fact_id === "repositories.topology");
+  if (!topologyFact || topologyFact.status === "CONFLICT") {
+    throw new Error(`PROJECT_TOPOLOGY_DISCOVERY_INCOMPLETE:${topologyFact?.reason ?? "MISSING_TOPOLOGY_FACT"}`);
+  }
+  const entries = await walkProjectContent(projectRoot);
+  const repositoryRoots = new Set(nestedRepositoryRoots(discovery));
+  if (exactRepositoryRoot(projectRoot) === projectRoot) repositoryRoots.add(".");
+  const repositories = [];
+  for (const relativeRoot of [...repositoryRoots].sort((left, right) => Buffer.compare(Buffer.from(left), Buffer.from(right)))) {
+    repositories.push(await repositoryIdentity(projectRoot, relativeRoot));
+  }
+  let topology;
+  if (repositories.length > 1) topology = "MULTI_REPOSITORY_PROJECT_ROOT";
+  else if (repositories.length === 1) topology = "SINGLE_REPOSITORY";
+  else if (entries.length === 0) topology = "EMPTY_PROJECT_ROOT";
+  else topology = "NON_GIT_PROJECT_ROOT";
+  const snapshot = {
+    schema: "agentos.integration.project_snapshot.v2",
+    topology,
+    entries,
+    repositories,
+    content_sha256: sha256(canonical(entries)),
+    repository_state_sha256: sha256(canonical(repositories)),
+  };
+  return Object.freeze(snapshot);
 }
 
 export function snapshotsEqual(left, right) {
