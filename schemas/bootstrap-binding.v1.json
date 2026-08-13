@@ -1394,7 +1394,7 @@
     },
     "architecture_hygiene_verifier": {
       "path": "tests/verify-architecture-hygiene.mjs",
-      "sha256": "4b63f63b11fb74582c14799b58459ea62100be1bc82960613810d255d4820019"
+      "sha256": "60aa82ef7aa21aadc58c260be737987567cbd92f2760aee9e4c35d87a23466ef"
     },
     "bootstrap_output_definitions": {
       "path": "control/bootstrap-output-definitions.mjs",

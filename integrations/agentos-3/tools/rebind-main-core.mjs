@@ -12,8 +12,14 @@ const CORE_ROOT = join(INTEGRATION_ROOT, "main-core");
 const STAGE = join(CORE_ROOT, ".source-rebind-stage");
 const SOURCE_BINDINGS = Object.freeze([
   Object.freeze({source: "control", target: "control"}),
+  Object.freeze({source: "governance/3.0/audit-repair-convergence.binding.v1.json", target: "governance/3.0/audit-repair-convergence.binding.v1.json"}),
+  Object.freeze({source: "governance/3.0/audit-repair-convergence.md", target: "governance/3.0/audit-repair-convergence.md"}),
   Object.freeze({source: "governance/3.0/permanent-role-authority-graph.v1.json", target: "governance/3.0/permanent-role-authority-graph.v1.json"}),
+  Object.freeze({source: "governance/3.0/scheduler-runtime-custody-binding.v1.json", target: "governance/3.0/scheduler-runtime-custody-binding.v1.json"}),
+  Object.freeze({source: "governance/3.0/scheduler-runtime-custody.md", target: "governance/3.0/scheduler-runtime-custody.md"}),
+  Object.freeze({source: "migrations/audit-repair-convergence-v1.md", target: "migrations/audit-repair-convergence-v1.md"}),
   Object.freeze({source: "migrations/permanent-role-authority.v1.json", target: "migrations/permanent-role-authority.v1.json"}),
+  Object.freeze({source: "migrations/scheduler-runtime-custody.v1.json", target: "migrations/scheduler-runtime-custody.v1.json"}),
 ]);
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 

@@ -1,7 +1,7 @@
 {
   "schema": "agentos.integration.test-build-receipt.v1",
   "build_id": "AGENTOS_3_TEST_BUILD",
-  "disposition": "CUMULATIVE_INACTIVE_CANDIDATE_PENDING_EXTERNAL_LIBRARY_AND_MEMORY_CLEARANCE",
+  "disposition": "CUMULATIVE_INACTIVE_CANDIDATE_PENDING_EXTERNAL_LIBRARY_AND_INDEPENDENT_CLEARANCE",
   "candidate_lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
   "authority_reference": {
@@ -13,7 +13,9 @@
   },
   "inputs": [
     {"id": "main-agentos", "identity_authority": "main-core/source-manifest.json", "state": "EXACT_BUILD_TIME_SOURCE_BOUND"},
-    {"id": "memory-m2", "source_commit": "16acbcdb0c414a541fa435be7942d6ce883042ef", "source_tree": "ee795fb24b2ecc9c1587b73a726ca2dec7817572", "proof_commit": "882ee0d", "proof_tree": "39d40d5", "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2", "authority_binding_sha256": "3ec77246e1c5c4854aab540f3d49279b326dd03b5bd06f6cf45b89286c077378"},
+    {"id": "audit-repair-convergence", "binding_sha256": "72d48620ce0db568b712413d2eb6092fd9faefd9af6200fb39be9dd035cf592a", "status": "PORTABLE_CANDIDATE_INACTIVE"},
+    {"id": "scheduler-runtime-custody", "binding_sha256": "c6bf7123ffe0112fe414980860a18868f02d9e17c08a5fedf8ea480c7dcf80f6", "status": "PREPARED_NOT_ACTIVATED"},
+    {"id": "memory-m2", "source_commit": "16acbcdb0c414a541fa435be7942d6ce883042ef", "source_tree": "ee795fb24b2ecc9c1587b73a726ca2dec7817572", "proof_commit": "882ee0d", "proof_tree": "39d40d5", "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2", "authority_binding_sha256": "5ac138b6c388cc1ea553c0ab37c8af519953b9f0729f1f1d35f28c67ca197a8c", "continuity_binding_sha256": "ba5b60b529281ad1e522595fea13b7b55531fd335367045899542ca6011d52e0"},
     {"id": "agent-builder", "current_state_sha256": "b44a572468be17d55786d2d18d51e6b64e0e5d47bc1522a66d60c01d9f7da626", "bootstrap_sha256": "6dad2005af11519966d3c6e0fb3af4cade3003e860fd8085629bd41398b47833", "context_schema_sha256": "3f23a5e56f7f6f004336dfa6180709ef9fe6cb4466d20aed59a6b50df5d1f1ec", "task_ir_schema_sha256": "44e29544b88a9d7ae11f2702d6694f67b4336aaac304ee0062f22b34d27b669d", "candidate_status": "INDEPENDENTLY_CLEARED_FOR_INACTIVE_TEST_BUILD_INTAKE", "independent_clearance_sha256": "5cacf76b76e9dd9c34cb8df5e9138d346400543647180bb172e0f8c194df2e38"},
     {"id": "specialist-block-library", "custody": "EXTERNAL_TYPED_INTAKE_ONLY", "status": "NOT_RECEIVED", "admission": "NOT_ADMITTED", "activation": "OFF"}
   ],
@@ -38,13 +40,16 @@
     "memory_authority": "PASS_P0_EXCLUSIVE_SIGNED_BINDING_LEGACY_DISABLED",
     "memory_taxonomy_mapping": "PASS_FIVE_TYPES_8_LEGACY_6_M2_TOTAL_LOSSLESS_UNKNOWN_DENIED",
     "memory_adapter_surfaces": "PASS_RECORDS_RUN_WORKSPACE_CURRENT_PROJECTION_ROSTER_RETHREAD_RECOVERY_GUARDED",
-    "memory_deferred_interfaces": "PASS_MIGRATION_HANDOFF_JOURNAL_SUCCESSOR_TRANSFER_FAIL_CLOSED",
+    "memory_continuity": "PASS_FOCUSED_APPEND_FIRST_GOAL_FAILURE_HANDOFF_ACK_LEASE_ARCHIVE_CRASH_FIXTURES",
+    "memory_deferred_interfaces": "PASS_MIGRATION_FAIL_CLOSED_HANDOFF_AND_SUCCESSOR_GUARDED_TEST_ONLY",
     "memory_authority_independent_clearance": "NOT_RUN",
+    "audit_repair_convergence": "PASS_FOCUSED_TYPED_DAG_CUSTODY_REAUDIT_AND_BLOCKED_EXACT",
+    "scheduler_runtime_custody": "PASS_FOCUSED_MUTEX_PROVENANCE_CAS_TRANSFER_AND_PROTECTED_RUNTIME",
     "bundle_manifest_reconciliation": "PASS_STRUCTURAL_CURRENT_COMPONENT_SET_NO_LEGACY_SPECIALIST_PAYLOAD",
     "reproducible_build": "PASS_IDENTICAL_REGENERATIONS",
     "private_or_external_context_leak": "PASS_SYNTHETIC_SCAN"
   },
-  "remaining_ceilings": ["specialist_gate_library_accepted_typed_intake", "memory_authority_independent_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "handoff_journal", "successor_transfer", "release_promotion", "public_release"],
+  "remaining_ceilings": ["specialist_gate_library_accepted_typed_intake", "memory_continuity_independent_clearance", "real_agent_handoff_and_scheduler_lease_binding", "scheduler_runtime_independent_clearance", "audit_repair_end_to_end_campaign_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"],
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK",
   "source_mutation": "NONE",
   "private_control_payload": "NOT_INCLUDED"

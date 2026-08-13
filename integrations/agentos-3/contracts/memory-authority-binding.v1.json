@@ -7,7 +7,7 @@
   "digest_profile": "sha256-over-agentos-canonical-json-body-v1",
   "inputs": [
     {"path": "integrations/agentos-3/bootstrap.mjs", "sha256": "165d3e6644995d72b78e8001deaae28ac3955cfdf5cefef5d424e47b484a15e0", "role": "DEFAULT_OFF_BOOTSTRAP_PROJECTION"},
-    {"path": "integrations/agentos-3/contracts/compatibility-map.v1.json", "sha256": "161a1bb36ea473f47dc13f5cd2c9f2c43d549a6f7577404a27ff56654604b116", "role": "LEGACY_M2_ROUTE_MAP"},
+    {"path": "integrations/agentos-3/contracts/compatibility-map.v1.json", "sha256": "662279437de9a318c8b4549bad5fc65a1c6a9b85f1c813c2314dde290dfa0ee5", "role": "LEGACY_M2_ROUTE_MAP"},
     {"path": "integrations/agentos-3/contracts/memory-authority.v1.json", "sha256": "402173280ead98e2f7f140889499a13d2f6420f1967248e88069c73af0de57b3", "role": "VERSIONED_AUTHORITY_CONTRACT"},
     {"path": "integrations/agentos-3/governance/memory-authority.v1.md", "sha256": "7574e0845b3a039af31b3b3d8a334b523d7f4c35d31eacb9addf48e7d5715bd5", "role": "VERSIONED_GOVERNANCE"},
     {"path": "integrations/agentos-3/main-core/control/project-memory-records.mjs", "sha256": "9e5c227dec4fec950d0da2b2600de41f43d0ad7872f9501dd689772730a89d31", "role": "LEGACY_CATEGORY_SOURCE"},
@@ -24,5 +24,5 @@
     {"path": "schemas/memory-authority-binding.v1.json", "sha256": "f1254c488ce5523a474ea577869b41b10fa337e7f331f7114562e3b9bf26773b", "role": "AUTHORITY_BINDING_SCHEMA"},
     {"path": "schemas/memory-category-mapping.v1.json", "sha256": "487b6341c85a486012caade07c4d3a0d526614e0f56b642e35e16982a19f5de5", "role": "CATEGORY_MAPPING_SCHEMA"}
   ],
-  "binding_sha256": "685c6b21ab83888ff926fe7df8a4a3da7c9c09346d8c78dcd9be4466e09a6fba"
+  "binding_sha256": "5ac138b6c388cc1ea553c0ab37c8af519953b9f0729f1f1d35f28c67ca197a8c"
 }

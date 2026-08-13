@@ -69,11 +69,21 @@ const core = await verifyMainCore({sourceRoot: root, coreRoot: join(integrationR
 assert.equal(sourceManifest.schema, "agentos.integration.main-core-manifest.v3");
 assert.deepEqual(sourceManifest.source_bindings, [
   {source: "control", target: "control"},
+  {source: "governance/3.0/audit-repair-convergence.binding.v1.json", target: "governance/3.0/audit-repair-convergence.binding.v1.json"},
+  {source: "governance/3.0/audit-repair-convergence.md", target: "governance/3.0/audit-repair-convergence.md"},
   {source: "governance/3.0/permanent-role-authority-graph.v1.json", target: "governance/3.0/permanent-role-authority-graph.v1.json"},
+  {source: "governance/3.0/scheduler-runtime-custody-binding.v1.json", target: "governance/3.0/scheduler-runtime-custody-binding.v1.json"},
+  {source: "governance/3.0/scheduler-runtime-custody.md", target: "governance/3.0/scheduler-runtime-custody.md"},
+  {source: "migrations/audit-repair-convergence-v1.md", target: "migrations/audit-repair-convergence-v1.md"},
   {source: "migrations/permanent-role-authority.v1.json", target: "migrations/permanent-role-authority.v1.json"},
+  {source: "migrations/scheduler-runtime-custody.v1.json", target: "migrations/scheduler-runtime-custody.v1.json"},
 ]);
 assert(sourceManifest.entries.some((entry) => entry.path === "governance/3.0/permanent-role-authority-graph.v1.json"));
+assert(sourceManifest.entries.some((entry) => entry.path === "governance/3.0/audit-repair-convergence.binding.v1.json"));
+assert(sourceManifest.entries.some((entry) => entry.path === "governance/3.0/scheduler-runtime-custody-binding.v1.json"));
 assert(sourceManifest.entries.some((entry) => entry.path === "migrations/permanent-role-authority.v1.json"));
+assert(sourceManifest.entries.some((entry) => entry.path === "migrations/audit-repair-convergence-v1.md"));
+assert(sourceManifest.entries.some((entry) => entry.path === "migrations/scheduler-runtime-custody.v1.json"));
 assert.equal(actual.identity_sha256, core.release_source.identity_sha256);
 assert.equal(core.candidate_commit, actual.source_commit);
 

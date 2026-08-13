@@ -146,6 +146,7 @@ for (const [relativePath, budget] of focusedBudgets) assert(lineCount(relativePa
 const explicitlyRetainedLargeBoundaries = new Set([
   "control/agentos-controller.mjs",
   "control/audit-driven-integration-pyramid.mjs",
+  "control/audit-repair-convergence.mjs",
   "control/bootstrap-compiler.mjs",
   "control/campaign-cascade.mjs",
   "control/campaign-lifecycle.mjs",

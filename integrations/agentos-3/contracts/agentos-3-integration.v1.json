@@ -19,6 +19,24 @@
       "state": "EXACT_BUILD_TIME_SOURCE_BOUND"
     },
     {
+      "id": "audit-repair-convergence",
+      "role": "typed_audit_repair_and_candidate_custody_pipeline",
+      "state": "PORTABLE_CANDIDATE_INACTIVE",
+      "activation": "OFF",
+      "binding": "governance/3.0/audit-repair-convergence.binding.v1.json",
+      "binding_sha256": "72d48620ce0db568b712413d2eb6092fd9faefd9af6200fb39be9dd035cf592a",
+      "authority_effect_grants": []
+    },
+    {
+      "id": "scheduler-runtime-custody",
+      "role": "effect_free_scheduler_and_runtime_custody_substrate",
+      "state": "PREPARED_NOT_ACTIVATED",
+      "activation": "OFF",
+      "binding": "governance/3.0/scheduler-runtime-custody-binding.v1.json",
+      "binding_sha256": "c6bf7123ffe0112fe414980860a18868f02d9e17c08a5fedf8ea480c7dcf80f6",
+      "authority_effect_grants": []
+    },
+    {
       "id": "memory-m2",
       "role": "typed_memory_adapter",
       "source_commit": "16acbcdb0c414a541fa435be7942d6ce883042ef",
@@ -28,16 +46,19 @@
       "park_commit": "fa2d2a721ca631d661e2d93b5046c0020bcd08e2",
       "state": "IMMUTABLE_INPUT_ACCEPTED_FOR_INACTIVE_TEST_BUILD",
       "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
-      "adapter_state": "P0_MEMORY_AUTHORITY_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE",
+      "adapter_state": "P0_MEMORY_CONTINUITY_FOCUSED_SELF_TESTED_PENDING_INDEPENDENT_CLEARANCE",
       "default_enabled": false,
       "custody": "private_local_only",
       "canonical_taxonomy": ["EPISODIC", "SEMANTIC", "PROCEDURAL", "GOVERNANCE", "WORKING_TASK"],
       "mapping_version": "agentos.memory.category-map.v1",
       "authority_contract": "contracts/memory-authority.v1.json",
       "authority_binding": "contracts/memory-authority-binding.v1.json",
-      "authority_binding_sha256": "3ec77246e1c5c4854aab540f3d49279b326dd03b5bd06f6cf45b89286c077378",
-      "exposed_surfaces": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery"],
-      "deferred_fail_closed": ["migration", "handoff_journal", "successor_transfer"],
+      "authority_binding_sha256": "5ac138b6c388cc1ea553c0ab37c8af519953b9f0729f1f1d35f28c67ca197a8c",
+      "continuity_contract": "contracts/memory-continuity.v1.json",
+      "continuity_binding": "contracts/memory-continuity-binding.v1.json",
+      "continuity_binding_sha256": "ba5b60b529281ad1e522595fea13b7b55531fd335367045899542ca6011d52e0",
+      "exposed_surfaces": ["taxonomy", "records", "run_workspace", "current_projection", "roster", "rethread", "recovery", "continuity", "handoff_journal", "successor_transfer"],
+      "deferred_fail_closed": ["migration"],
       "migration": "PLAN_ONLY_FAIL_CLOSED"
     },
     {
@@ -70,7 +91,9 @@
     }
   ],
   "contracts": {
-    "memory": ["activation_off_by_default", "private_custody", "five_type_canonical_taxonomy", "total_lossless_source_category_mapping_exposed", "one_project_one_memory_author", "externally_verified_exclusive_binding", "signed_m2_authority_binding", "recipient_authority_required", "replay_verified", "run_workspace_current_projection_roster_rethread_recovery_exposed", "migration_handoff_successor_fail_closed", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
+    "audit_repair_convergence": ["typed_findings", "semantic_causal_dedupe", "acyclic_wave_dag", "scheduler_receipt_bound_custody", "feature_platform_central_no_silent_drop", "independent_reaudit_reopen", "three_route_blocked_exact", "activation_off"],
+    "scheduler_runtime_custody": ["effect_free_default", "global_heavy_mutex", "exact_process_provenance", "cas_queue_and_leases", "bounded_recovery", "successor_ack_worktree_transfer", "runtime_protected_actions_default_denied", "activation_off"],
+    "memory": ["activation_off_by_default", "private_custody", "five_type_canonical_taxonomy", "total_lossless_source_category_mapping_exposed", "one_project_one_memory_author", "externally_verified_exclusive_binding", "signed_m2_authority_binding", "recipient_authority_required", "replay_verified", "run_workspace_current_projection_roster_rethread_recovery_continuity_exposed", "transactional_successor_ack_and_lease_transfer_test_only", "migration_fail_closed", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
     "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial", "independent_deterministic_utility_harm_clearance"],
     "specialist_block_library": ["external_typed_intake_only", "legacy_local_library_excluded", "no_partial_candidate", "no_self_admission", "truth_counts_required", "independent_clearance_required", "activation_off"],
     "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK",
@@ -83,5 +106,5 @@
     "agent_builder_package": "agent-builder/package-manifest.json"
   },
   "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
-  "proof_ceiling": ["specialist_gate_library_accepted_typed_intake", "memory_authority_independent_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "handoff_journal", "successor_transfer", "release_promotion", "public_release"]
+  "proof_ceiling": ["specialist_gate_library_accepted_typed_intake", "memory_continuity_independent_clearance", "real_agent_handoff_and_scheduler_lease_binding", "scheduler_runtime_independent_clearance", "audit_repair_end_to_end_campaign_clearance", "provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"]
 }
