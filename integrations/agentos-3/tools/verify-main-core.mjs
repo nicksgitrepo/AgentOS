@@ -1,15 +1,33 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { lstat, readFile } from "node:fs/promises";
 import { basename, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import {listReleaseFiles, verifyReleaseSourceIdentity} from "./release-source.mjs";
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
+const SOURCE_BINDINGS = Object.freeze([
+  Object.freeze({source: "control", target: "control"}),
+  Object.freeze({source: "governance/3.0/permanent-role-authority-graph.v1.json", target: "governance/3.0/permanent-role-authority-graph.v1.json"}),
+  Object.freeze({source: "migrations/permanent-role-authority.v1.json", target: "migrations/permanent-role-authority.v1.json"}),
+]);
+
+async function boundFiles(root) {
+  const output = [];
+  for (const binding of SOURCE_BINDINGS) {
+    const target = join(root, binding.target);
+    const info = await lstat(target);
+    if (info.isSymbolicLink()) throw new Error(`MAIN_CORE_BOUND_SOURCE_SYMLINK:${binding.target}`);
+    if (info.isDirectory()) output.push(...await listReleaseFiles(target));
+    else if (info.isFile()) output.push(target);
+    else throw new Error(`MAIN_CORE_BOUND_SOURCE_SPECIAL_FILE:${binding.target}`);
+  }
+  return output.sort();
+}
 
 export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifest = false } = {}) {
   const root = resolve(coreRoot);
-  const files = await listReleaseFiles(join(root, "control"));
+  const files = await boundFiles(root);
   const entries = [];
   for (const absolute of files) {
     const bytes = await readFile(absolute);
@@ -19,6 +37,10 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
   try { existing = JSON.parse(await readFile(join(root, "source-manifest.json"), "utf8")); } catch (error) {
     if (!writeManifest) throw error;
   }
+  if (existing?.schema !== "agentos.integration.main-core-manifest.v3"
+    || JSON.stringify(existing.source_bindings) !== JSON.stringify(SOURCE_BINDINGS)) {
+    throw new Error("MAIN_CORE_SOURCE_BINDINGS_MISMATCH");
+  }
   if (existing && JSON.stringify(existing.entries) !== JSON.stringify(entries)) throw new Error("MAIN_CORE_MANIFEST_MISMATCH");
   let releaseSource = null;
   if (sourceRoot !== null) {
@@ -27,7 +49,7 @@ export async function verifyMainCore({ sourceRoot = null, coreRoot, writeManifes
     releaseSource = verifyReleaseSourceIdentity({repositoryRoot, sourceCommit: existing.source_commit, sourceTree: existing.source_tree});
     const sourceTree = spawnSync("git", ["-C", repositoryRoot, "rev-parse", `${existing.source_commit}^{tree}`], { encoding: "utf8" });
     if (sourceTree.status !== 0 || sourceTree.stdout.trim() !== existing.source_tree) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
-    const listed = spawnSync("git", ["-C", repositoryRoot, "ls-tree", "-r", "--name-only", existing.source_commit, "--", "control"], { encoding: "utf8" });
+    const listed = spawnSync("git", ["-C", repositoryRoot, "ls-tree", "-r", "--name-only", existing.source_commit, "--", ...SOURCE_BINDINGS.map((binding) => binding.source)], { encoding: "utf8" });
     if (listed.status !== 0) throw new Error("MAIN_CORE_SOURCE_GIT_IDENTITY_MISMATCH");
     const sourcePaths = listed.stdout.trim().split("\n").filter(Boolean).sort();
     if (JSON.stringify(sourcePaths) !== JSON.stringify(entries.map((entry) => entry.path))) throw new Error("MAIN_CORE_SOURCE_PATHS_MISMATCH");

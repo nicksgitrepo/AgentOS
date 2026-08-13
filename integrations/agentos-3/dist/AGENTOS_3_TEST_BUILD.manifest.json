@@ -3,21 +3,28 @@
   "build_id": "AGENTOS_3_TEST_BUILD",
   "lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
-  "source_base": "2712cf4db54c5ffa0d5a1a1a211bf9c7ec768f19",
-  "source_tree": "e16af0c28a6ab9160f1a8c2c20a70ce2cccb5205",
+  "source_base": "38a1351f12628020e59ced067652ffa419e94ce9",
+  "source_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
   "release_source": {
     "schema": "agentos.integration.release_source_identity.v1",
-    "source_commit": "2712cf4db54c5ffa0d5a1a1a211bf9c7ec768f19",
-    "source_tree": "e16af0c28a6ab9160f1a8c2c20a70ce2cccb5205",
-    "observed_head_commit": "2712cf4db54c5ffa0d5a1a1a211bf9c7ec768f19",
-    "observed_head_tree": "e16af0c28a6ab9160f1a8c2c20a70ce2cccb5205",
+    "source_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
+    "source_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
+    "observed_head_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
+    "observed_head_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
     "generated_committed_paths": [],
     "generated_dirty_paths": [
+      "integrations/agentos-3/main-core/control/README.md",
+      "integrations/agentos-3/main-core/control/campaign-cascade.mjs",
+      "integrations/agentos-3/main-core/control/campaign-state-owner.mjs",
+      "integrations/agentos-3/main-core/control/development-plan.mjs",
+      "integrations/agentos-3/main-core/control/four-library-foundation.mjs",
+      "integrations/agentos-3/main-core/control/governance-role-definitions.mjs",
+      "integrations/agentos-3/main-core/control/permanent-role-authority.mjs",
       "integrations/agentos-3/main-core/source-manifest.json"
     ],
     "non_generated_drift": [],
     "status": "EXACT_SOURCE_OR_GENERATED_DESCENDANT",
-    "identity_sha256": "83f6d7ae382de1a595a2a6c60284eb6d9872a24d034e54412fe46bc733bd7618"
+    "identity_sha256": "0d4cdfd8ea100b2d13d3e1416f86d32537faf984daa51ed3c1d799317221f4f2"
   },
   "includes": [
     "current-main-core",
@@ -304,8 +311,8 @@
     },
     {
       "path": "main-core/control/README.md",
-      "size": 7796,
-      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394"
+      "size": 7998,
+      "sha256": "3b451f4d54e24c5fec2b74e3786ea3039dc23ed658430d3b19cc7cb427891320"
     },
     {
       "path": "main-core/control/acceptance-bridge.mjs",
@@ -469,8 +476,8 @@
     },
     {
       "path": "main-core/control/campaign-cascade.mjs",
-      "size": 109736,
-      "sha256": "12e93099bee6dae043c6d0b2158e914aeca6c97379f467b55bfd6bbc174901b0"
+      "size": 112520,
+      "sha256": "36d0b40ae014a0bbc45390ca677cc1a666f9116d26e05ec9d2e647bdfc9de563"
     },
     {
       "path": "main-core/control/campaign-controller.mjs",
@@ -499,8 +506,8 @@
     },
     {
       "path": "main-core/control/campaign-state-owner.mjs",
-      "size": 12270,
-      "sha256": "90b12a343b5389576765b8453d5f50eb5465108e93b5445f68b916fcfbcf5982"
+      "size": 12192,
+      "sha256": "6a51ff74940975905e8544b33e573be14220e6bf40346f06afac4c2495d20ec5"
     },
     {
       "path": "main-core/control/canonical-campaign-orchestration-adapter.mjs",
@@ -639,8 +646,8 @@
     },
     {
       "path": "main-core/control/development-plan.mjs",
-      "size": 7831,
-      "sha256": "eb15ad7d224e6aacb59f782d352f71831897bc09f4d8060752ccc4511cd34707"
+      "size": 7994,
+      "sha256": "a333be52be4388d85141e70777a442b7a568a1a1bb51919e07a6d80c9e53c497"
     },
     {
       "path": "main-core/control/durable-session-liveness-repair-receipt.mjs",
@@ -694,8 +701,8 @@
     },
     {
       "path": "main-core/control/four-library-foundation.mjs",
-      "size": 40505,
-      "sha256": "35b1c36d1bd98257acaad1dfd89140f5be998ccf3785e03aa6062639abc2628d"
+      "size": 42136,
+      "sha256": "d1bf3cc7de4f8a9da33f50ab9a006bb1426386b1959dde3ed522c865de64fa8b"
     },
     {
       "path": "main-core/control/four-library-governance.mjs",
@@ -744,8 +751,8 @@
     },
     {
       "path": "main-core/control/governance-role-definitions.mjs",
-      "size": 10446,
-      "sha256": "963f0188da198c845c5c1a4fe9d267e8f370d4573ca86a163df0bf0fc2803e3e"
+      "size": 13561,
+      "sha256": "3a4942ad4a642741d88d7327aeb5f93b8409ebfa768144613d6eb7bd001ac079"
     },
     {
       "path": "main-core/control/governance-universal.mjs",
@@ -931,6 +938,11 @@
       "path": "main-core/control/parallel-campaign-records.mjs",
       "size": 36447,
       "sha256": "627548ec38d042f7d3e74930bd95b3bdb517a53d3881269dc292e872922eaf1f"
+    },
+    {
+      "path": "main-core/control/permanent-role-authority.mjs",
+      "size": 34682,
+      "sha256": "90822dd3f02338060d2585723b5e9aeb4d5f8681bdf35a3654f0e6d159331560"
     },
     {
       "path": "main-core/control/persisted-record-privacy.mjs",
@@ -1374,8 +1386,8 @@
     },
     {
       "path": "main-core/source-manifest.json",
-      "size": 36384,
-      "sha256": "35e398d49d22edfc39e5c9c81a55fc36043bd095129433273f4591564d48a61c"
+      "size": 36555,
+      "sha256": "d576160b45d87f2383371458437950446412ca32cfced5e3742592bf33677af1"
     },
     {
       "path": "memory-adapter.mjs",
@@ -1514,8 +1526,8 @@
     },
     {
       "path": "schemas/README.md",
-      "size": 1671,
-      "sha256": "8ac5ebac2bd07729ba984272d92d0751344475c6b052ffaea2ca5d9a38b49b36"
+      "size": 1937,
+      "sha256": "259a37b003c7e4571b863cbe21fa663b968c23d156bfe060513afecf95afcfca"
     },
     {
       "path": "schemas/agentos-3-memory-adapter-surface.v1.json",
@@ -1524,8 +1536,8 @@
     },
     {
       "path": "schemas/agentos-controller.v1.json",
-      "size": 5841,
-      "sha256": "30977a30eb8c2f8faa01f108e77d42b86cd9455caf5c2ec1b0bb83fd7fed44e1"
+      "size": 6364,
+      "sha256": "2beb2208b3bdae12c8eb9d4e166019b4c6d9bd3dcc198b7b19b0ec00b6b61d37"
     },
     {
       "path": "schemas/apprenticeship-admission.v1.json",
@@ -1629,8 +1641,8 @@
     },
     {
       "path": "schemas/base-role-library.v1.json",
-      "size": 3791,
-      "sha256": "a6d1459e28427ed594792765fa3099ef654597ac38eeb79e8ac635a67a71e5d8"
+      "size": 3897,
+      "sha256": "56551c844ea3889714003723d5993334d08dbc373cb372720fcce8ca35cfd2b5"
     },
     {
       "path": "schemas/bootstrap-answer.v1.json",
@@ -1639,8 +1651,8 @@
     },
     {
       "path": "schemas/bootstrap-binding.v1.json",
-      "size": 112987,
-      "sha256": "204204d44a580fb79dae671a39a2cf384ab39c4c9d74ac54152a6ba3b1e935ea"
+      "size": 115534,
+      "sha256": "d4b0929f3e994af5d3a8a654d4e216edaab8bcf7e24081022ff8dfa99cc8b614"
     },
     {
       "path": "schemas/bootstrap-compile-receipt.v1.json",
@@ -1719,8 +1731,8 @@
     },
     {
       "path": "schemas/campaign-cascade.v1.json",
-      "size": 17429,
-      "sha256": "f5b0cbb03c15ac592349ea9964f129a532b96ac3120e5eb8a66145262859d059"
+      "size": 19555,
+      "sha256": "fbff22243cd149ae17ece6c1171127fe0fa641f0b32f93423fe1d20c70b6426c"
     },
     {
       "path": "schemas/campaign-lifecycle.v1.json",
@@ -2024,8 +2036,8 @@
     },
     {
       "path": "schemas/kernel.v1.json",
-      "size": 16190,
-      "sha256": "89e856946da0bc0cd1452d3596c0dbde7a7fa198e96616af55115e373aabd8fe"
+      "size": 17258,
+      "sha256": "9374267971e007524f9c7d1a818524449d1c0169535c93202f7f7297b4e22c18"
     },
     {
       "path": "schemas/layered-governance-check.v1.json",
@@ -2074,8 +2086,8 @@
     },
     {
       "path": "schemas/naming-and-terminology.v1.json",
-      "size": 9190,
-      "sha256": "e7b678c7480bf2bb92084a05173377553cb62715cf13b9a393523434d1a445fb"
+      "size": 10272,
+      "sha256": "837097f99040396d621420f3eef3ffd3b1d1701549ef9a38b03159114a04e04b"
     },
     {
       "path": "schemas/native-campaign-activation.v1.json",
@@ -2176,6 +2188,11 @@
       "path": "schemas/parallel-campaign-worker.v1.json",
       "size": 23432,
       "sha256": "be1e90fe97d1bfa82deb202c6ab09f4b4e18a62d54f2abcea2606d08f44b714e"
+    },
+    {
+      "path": "schemas/permanent-role-authority.v1.json",
+      "size": 15787,
+      "sha256": "7690d0c2487cc9f25e090ef8125a727b7135dc3997a8fbb9a789d948bd1ecf22"
     },
     {
       "path": "schemas/persisted-record-privacy.v1.json",
@@ -24033,6 +24050,6 @@
       "sha256": "66b42cb5cd0092343f4b2676022a92a7fd47117ae4da142bd7fc121d462d7d01"
     }
   ],
-  "bundle_sha256": "137a011add89ebb5b44023877a88097781ca0d540992ade4652753914920b41a",
+  "bundle_sha256": "b556442aaaa4a9adaccef663dcf7d0b8b3c4878cefda778346927aaa7e2fca1d",
   "rollback_identity": "AGENTOS_3_TEST_BUILD_ROLLBACK"
 }

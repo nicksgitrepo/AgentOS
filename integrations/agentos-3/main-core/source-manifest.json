@@ -1,14 +1,14 @@
 {
   "schema": "agentos.integration.main-core-manifest.v2",
-  "source_commit": "2712cf4db54c5ffa0d5a1a1a211bf9c7ec768f19",
-  "source_tree": "e16af0c28a6ab9160f1a8c2c20a70ce2cccb5205",
-  "candidate_commit": "2712cf4db54c5ffa0d5a1a1a211bf9c7ec768f19",
-  "candidate_tree": "e16af0c28a6ab9160f1a8c2c20a70ce2cccb5205",
+  "source_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
+  "source_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
+  "candidate_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
+  "candidate_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
   "entries": [
     {
       "path": "control/README.md",
-      "size": 7796,
-      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394"
+      "size": 7998,
+      "sha256": "3b451f4d54e24c5fec2b74e3786ea3039dc23ed658430d3b19cc7cb427891320"
     },
     {
       "path": "control/acceptance-bridge.mjs",
@@ -172,8 +172,8 @@
     },
     {
       "path": "control/campaign-cascade.mjs",
-      "size": 109736,
-      "sha256": "12e93099bee6dae043c6d0b2158e914aeca6c97379f467b55bfd6bbc174901b0"
+      "size": 112520,
+      "sha256": "36d0b40ae014a0bbc45390ca677cc1a666f9116d26e05ec9d2e647bdfc9de563"
     },
     {
       "path": "control/campaign-controller.mjs",
@@ -202,8 +202,8 @@
     },
     {
       "path": "control/campaign-state-owner.mjs",
-      "size": 12270,
-      "sha256": "90b12a343b5389576765b8453d5f50eb5465108e93b5445f68b916fcfbcf5982"
+      "size": 12192,
+      "sha256": "6a51ff74940975905e8544b33e573be14220e6bf40346f06afac4c2495d20ec5"
     },
     {
       "path": "control/canonical-campaign-orchestration-adapter.mjs",
@@ -342,8 +342,8 @@
     },
     {
       "path": "control/development-plan.mjs",
-      "size": 7831,
-      "sha256": "eb15ad7d224e6aacb59f782d352f71831897bc09f4d8060752ccc4511cd34707"
+      "size": 7994,
+      "sha256": "a333be52be4388d85141e70777a442b7a568a1a1bb51919e07a6d80c9e53c497"
     },
     {
       "path": "control/durable-session-liveness-repair-receipt.mjs",
@@ -397,8 +397,8 @@
     },
     {
       "path": "control/four-library-foundation.mjs",
-      "size": 40505,
-      "sha256": "35b1c36d1bd98257acaad1dfd89140f5be998ccf3785e03aa6062639abc2628d"
+      "size": 42136,
+      "sha256": "d1bf3cc7de4f8a9da33f50ab9a006bb1426386b1959dde3ed522c865de64fa8b"
     },
     {
       "path": "control/four-library-governance.mjs",
@@ -447,8 +447,8 @@
     },
     {
       "path": "control/governance-role-definitions.mjs",
-      "size": 10446,
-      "sha256": "963f0188da198c845c5c1a4fe9d267e8f370d4573ca86a163df0bf0fc2803e3e"
+      "size": 13561,
+      "sha256": "3a4942ad4a642741d88d7327aeb5f93b8409ebfa768144613d6eb7bd001ac079"
     },
     {
       "path": "control/governance-universal.mjs",
@@ -634,6 +634,11 @@
       "path": "control/parallel-campaign-records.mjs",
       "size": 36447,
       "sha256": "627548ec38d042f7d3e74930bd95b3bdb517a53d3881269dc292e872922eaf1f"
+    },
+    {
+      "path": "control/permanent-role-authority.mjs",
+      "size": 34682,
+      "sha256": "90822dd3f02338060d2585723b5e9aeb4d5f8681bdf35a3654f0e6d159331560"
     },
     {
       "path": "control/persisted-record-privacy.mjs",

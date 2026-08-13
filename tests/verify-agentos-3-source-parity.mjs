@@ -58,7 +58,15 @@ assert.equal(binding.activation, "OFF");
 const sourceManifest = JSON.parse(await readFile(join(integrationRoot, "main-core", "source-manifest.json"), "utf8"));
 const actual = verifyReleaseSourceIdentity({repositoryRoot: root, sourceCommit: sourceManifest.source_commit, sourceTree: sourceManifest.source_tree});
 const core = await verifyMainCore({sourceRoot: root, coreRoot: join(integrationRoot, "main-core")});
+assert.equal(sourceManifest.schema, "agentos.integration.main-core-manifest.v3");
+assert.deepEqual(sourceManifest.source_bindings, [
+  {source: "control", target: "control"},
+  {source: "governance/3.0/permanent-role-authority-graph.v1.json", target: "governance/3.0/permanent-role-authority-graph.v1.json"},
+  {source: "migrations/permanent-role-authority.v1.json", target: "migrations/permanent-role-authority.v1.json"},
+]);
+assert(sourceManifest.entries.some((entry) => entry.path === "governance/3.0/permanent-role-authority-graph.v1.json"));
+assert(sourceManifest.entries.some((entry) => entry.path === "migrations/permanent-role-authority.v1.json"));
 assert.equal(actual.identity_sha256, core.release_source.identity_sha256);
 assert.equal(core.candidate_commit, actual.source_commit);
 
-console.log("PASS AgentOS 3 release-source parity: exact source/tree, generated-only descendants, dirty and committed source drift denial, symlink denial, bound policy, and main-core Git-object parity");
+console.log("PASS AgentOS 3 release-source parity: exact source/tree, generated-only descendants, dirty and committed source drift denial, symlink denial, bound policy, and main-core Git-object plus runtime-authority-asset parity");
