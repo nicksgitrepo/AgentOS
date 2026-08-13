@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/spawn-preparation.v1.json",
+  "title": "AgentOS fail-closed Agent Spawner preparation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "request", "required_block_ids", "resolved_block_refs", "failures", "work_plan", "role_context_manifest", "spawn_allowed", "mutation", "activation", "created_at_utc", "checkpoint_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawn_preparation.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["SPAWN_PREPARATION_IN_PROGRESS", "BLOCK_BUILD_ACTIVE", "BLOCK_QA_FAILED_REPAIRING", "CONTEXT_INCONSISTENCY_AWAITING_BOOTSTRAP", "SPAWN_PACKAGE_ACCEPTED", "SEED_CREATED_IDLE", "WORKING_AGENT_CREATED_READY", "SPAWN_READBACK_FAILED", "BLOCKED_EXACT"]},
+    "request": {"type": "object"},
+    "required_block_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "resolved_block_refs": {"type": "array", "items": {"$ref": "#/$defs/block_ref"}},
+    "failures": {"type": "array", "items": {"type": "object"}},
+    "work_plan": {"type": "array", "items": {"type": "string"}},
+    "role_context_manifest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/manifest"}]},
+    "spawn_allowed": {"type": "boolean"},
+    "mutation": {"const": "NONE"},
+    "activation": {"const": "OFF"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "block_ref": {"type": "object", "additionalProperties": false, "required": ["block_id", "version", "digest"], "properties": {"block_id": {"type": "string"}, "version": {"type": "string"}, "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "manifest": {"type": "object", "additionalProperties": false, "required": ["schema", "version", "status", "role_id", "task_id", "project_context_digest", "model_duty", "task_scope", "non_goals", "authority", "block_refs", "inputs_outputs", "evidence_contract", "handoff", "escalation", "invalidation_triggers", "completion_definition", "independent_acceptance", "no_subagents", "manifest_sha256"], "properties": {"schema": {"const": "agentos.role_context_manifest.v1"}, "version": {"const": 1}, "status": {"const": "ACCEPTED"}, "role_id": {"type": "string"}, "task_id": {"type": "string"}, "project_context_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "model_duty": {"type": "object"}, "task_scope": {"type": "string"}, "non_goals": {"type": "array"}, "authority": {"type": "object"}, "block_refs": {"type": "array", "minItems": 1}, "inputs_outputs": {"type": "object"}, "evidence_contract": {"type": "object"}, "handoff": {"type": "object"}, "escalation": {"type": "string"}, "invalidation_triggers": {"type": "array", "minItems": 1}, "completion_definition": {"type": "string"}, "independent_acceptance": {"type": "object"}, "no_subagents": {"const": true}, "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}
+  }
+}

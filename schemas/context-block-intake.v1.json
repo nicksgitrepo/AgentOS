@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/context-block-intake.v1.json",
+  "title": "AgentOS External Context Block Intake",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "block_id",
+    "revision",
+    "author_ref",
+    "classification",
+    "authority_scope",
+    "purpose",
+    "atomic_scope",
+    "source_documents",
+    "statements",
+    "freshness",
+    "applicability",
+    "dependencies",
+    "conflicts",
+    "precedence",
+    "intended_roles",
+    "minimal_context_payload",
+    "gate_mapping",
+    "authority",
+    "evidence",
+    "privacy",
+    "adversarial_fixtures",
+    "independent_evaluation",
+    "supersession",
+    "rollback",
+    "block_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.context_block_intake.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["CANDIDATE", "WAITING_WITH_RECEIPT", "REJECTED", "SUPERSEDED", "ARCHIVED"]},
+    "block_id": {"type": "string", "pattern": "^context\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+    "revision": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "author_ref": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "classification": {"enum": ["PORTABLE", "PROJECT_SPECIFIC"]},
+    "authority_scope": {"enum": ["PORTABLE_KERNEL", "PROJECT_CONTROL_PLANE", "EXTERNAL_COMPANION_ONLY"]},
+    "purpose": {"type": "string", "minLength": 1},
+    "atomic_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["included", "non_goals", "smallest_sufficient_rule"],
+      "properties": {
+        "included": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "smallest_sufficient_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_documents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "title", "publisher", "source_locator", "version", "immutable_identity", "content_sha256", "extracted_at_utc", "authority_class"],
+        "properties": {
+          "source_id": {"type": "string", "pattern": "^source\\.[a-z0-9-]+$"},
+          "title": {"type": "string", "minLength": 1},
+          "publisher": {"type": "string", "minLength": 1},
+          "source_locator": {"type": "string", "pattern": "^(https://|PORTABLE_KERNEL$|PROJECT_CONTEXT$|PROJECT_CONTROL_PLANE$)"},
+          "version": {"type": "string", "minLength": 1},
+          "immutable_identity": {"type": "string", "minLength": 1},
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "extracted_at_utc": {"type": "string", "format": "date-time"},
+          "authority_class": {"enum": ["PRIMARY_NORMATIVE", "PRIMARY_DESCRIPTIVE", "SECONDARY_RESEARCH", "AGENTOS_PORTABLE", "PROJECT_CONTEXT"]}
+        }
+      }
+    },
+    "statements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoritative", "inference", "history"],
+      "properties": {
+        "authoritative": {"$ref": "#/$defs/statement_array"},
+        "inference": {"$ref": "#/$defs/statement_array"},
+        "history": {"$ref": "#/$defs/statement_array"}
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "expires_at_utc", "revalidation_triggers"],
+      "properties": {
+        "policy": {"type": "string", "minLength": 1},
+        "expires_at_utc": {"type": ["string", "null"], "format": "date-time"},
+        "revalidation_triggers": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applies_when", "does_not_apply_when", "required_context_fields", "unknown_rule"],
+      "properties": {
+        "applies_when": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "does_not_apply_when": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "required_context_fields": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "unknown_rule": {"const": "UNKNOWN_DENIES_DEPENDENT_ACTION;_NO_INFERENCE_OR_SCOPE_EXPANSION"}
+      }
+    },
+    "dependencies": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "conflicts": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "precedence": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "intended_roles": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "minimal_context_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_fields", "optional_fields", "redaction_profile", "payload_sha256"],
+      "properties": {
+        "required_fields": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "optional_fields": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "redaction_profile": {"type": "string", "minLength": 1},
+        "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "gate_mapping": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["gate_path", "gate_ids", "allowed_outcomes", "mapping_sha256"],
+      "properties": {
+        "gate_path": {"type": "string", "pattern": "^.+\\.gate$"},
+        "gate_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "allowed_outcomes": {"const": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]},
+        "mapping_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "prohibited", "escalation", "acceptance"],
+      "properties": {
+        "allowed": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "prohibited": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "escalation": {"type": "string", "minLength": 1},
+        "acceptance": {"const": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "claim_boundary", "unknown_action"],
+      "properties": {
+        "minimum": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "unknown_action": {"const": "RECORD_UNKNOWN_AND_CLOSE_ONLY_THE_DEPENDENT_ACTION"}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "secret_handling", "redaction_method", "redaction_proof_sha256"],
+      "properties": {
+        "classification": {"enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]},
+        "secret_handling": {"const": "DENY_RAW_SECRETS;_REDACT_AND_ESCALATE"},
+        "redaction_method": {"type": "string", "minLength": 1},
+        "redaction_proof_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "adversarial_fixtures": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fixture_id", "purpose", "expected_outcome"],
+        "properties": {
+          "fixture_id": {"type": "string", "pattern": "^fixture\\.[a-z0-9-]+$"},
+          "purpose": {"type": "string", "minLength": 1},
+          "expected_outcome": {"enum": ["ACCEPT", "DENY", "UNKNOWN", "NOT_APPLICABLE"]}
+        }
+      }
+    },
+    "independent_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluator_ref", "status", "independent", "evaluated_block_sha256", "receipt_sha256"],
+      "properties": {
+        "evaluator_ref": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+        "status": {"enum": ["NOT_RUN", "STATIC_PASS_REVIEW_REQUIRED", "INTAKE_RECOMMENDED", "REJECTED"]},
+        "independent": {"const": true},
+        "evaluated_block_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "receipt_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "supersession": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "supersedes", "superseded_by", "migration_rule"],
+      "properties": {
+        "status": {"enum": ["CURRENT", "SUPERSEDES", "SUPERSEDED", "BLOCKED_REVALIDATION"]},
+        "supersedes": {"type": ["string", "null"]},
+        "superseded_by": {"type": ["string", "null"]},
+        "migration_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legacy_source_identity", "preservation_receipt_sha256", "restore_procedure"],
+      "properties": {
+        "legacy_source_identity": {"type": "string", "minLength": 1},
+        "preservation_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "restore_procedure": {"type": "string", "minLength": 1}
+      }
+    },
+    "block_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "statement_array": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["statement_id", "text", "source_refs"],
+        "properties": {
+          "statement_id": {"type": "string", "pattern": "^statement\\.[a-z0-9-]+$"},
+          "text": {"type": "string", "minLength": 1},
+          "source_refs": {"type": "array", "items": {"type": "string", "pattern": "^source\\.[a-z0-9-]+$"}, "minItems": 1}
+        }
+      }
+    }
+  }
+}

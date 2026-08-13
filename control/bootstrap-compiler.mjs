@@ -51,6 +51,10 @@ import {
   validateProjectImportPlan,
   verifySourcePreservation,
 } from "./project-import.mjs";
+import {
+  compileComposedProjectImportPlan,
+  validateComposedProjectImportPlan,
+} from "./composed-project-import.mjs";
 import {AUDIT_FIRST_CHECKPOINT_CONTRACT} from "./audit-first-import-procedure.mjs";
 import {
   relativeControlPlanePath,
@@ -1028,7 +1032,18 @@ export function compileBootstrapPlan({
     protectedContracts: importAnswer?.protected_contracts ?? [],
     additionalRules: importAnswer?.additional_normalization_rules ?? {},
   });
-  const projectImport = importAnswer
+  const composedProjectImport = importAnswer?.source_roots
+    ? compileComposedProjectImportPlan({
+      projectId: projectImportIdentifier(normalizedAnswers["project.boundary"]?.project_name),
+      mode: importMode,
+      sourceRoots: importAnswer.source_roots,
+      destinationRootRef: importAnswer.destination_root_ref ?? null,
+      destinationRootPath: importAnswer.destination_root ?? null,
+      excludedRepositories: importAnswer.excluded_repositories ?? [],
+      nowUtc: "1970-01-01T00:00:00.000Z",
+    })
+    : null;
+  const projectImport = importAnswer && composedProjectImport === null
     ? compileProjectImportPlan({
       projectId: projectImportIdentifier(normalizedAnswers["project.boundary"]?.project_name),
       mode: importMode,
@@ -1116,6 +1131,7 @@ export function compileBootstrapPlan({
     standards_registry: standardsRegistry,
     normalization_policy: normalizationPolicy,
     project_import: projectImport,
+    composed_project_import: composedProjectImport,
     model_policy: deriveModelPolicy(normalizedAnswers["project.model_economics"]),
     global_policy_state: globalPolicyState,
     owner_review_policy: ownerReviewPolicy,
@@ -1145,6 +1161,7 @@ export function compileBootstrapPlan({
       normalization_sha256: normalizationPolicy.normalization_sha256,
       project_import_sha256: projectImport?.plan_sha256 ?? null,
       source_preservation_sha256: projectImport?.source_identity?.source_content_sha256 ?? null,
+      composed_project_import_sha256: composedProjectImport?.plan_sha256 ?? null,
       project_life_contract_sha256: projectLifeContract.life_contract_sha256,
       boundary_contract_sha256: boundaryContract.boundary_contract_sha256,
       global_policy_state_sha256: globalPolicyState.policy_state_sha256,
@@ -1296,8 +1313,17 @@ export function validateBootstrapPlan(plan) {
   requireRecord(plan.normalization_policy, "normalization policy");
   validateNormalizationPolicy(plan.normalization_policy);
   if (plan.project_import === null) {
-    assert(plan.normalization_policy.import_mode === null, "normalization policy carries an import mode without a project import plan");
-    assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null, "exact plan carries an unbound project import identity");
+    if (plan.composed_project_import === null) {
+      assert(plan.normalization_policy.import_mode === null, "normalization policy carries an import mode without a project import plan");
+      assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null
+        && plan.exact_creation_plan.composed_project_import_sha256 === null, "exact plan carries an unbound project import identity");
+    } else {
+      requireRecord(plan.composed_project_import, "composed project import plan");
+      validateComposedProjectImportPlan(plan.composed_project_import);
+      assert(plan.normalization_policy.import_mode === plan.composed_project_import.mode, "normalization policy is not bound to the composed import mode");
+      assert(plan.exact_creation_plan.composed_project_import_sha256 === plan.composed_project_import.plan_sha256, "exact creation plan is not bound to composed project import");
+      assert(plan.exact_creation_plan.project_import_sha256 === null && plan.exact_creation_plan.source_preservation_sha256 === null, "exact plan carries a singular import identity alongside composed import");
+    }
   } else {
     requireRecord(plan.project_import, "project import plan");
     validateProjectImportPlan(plan.project_import);
@@ -1305,6 +1331,7 @@ export function validateBootstrapPlan(plan) {
     assert(plan.project_import.normalization_sha256 === plan.normalization_policy.normalization_sha256, "project import is not bound to the normalization policy");
     assert(plan.exact_creation_plan.project_import_sha256 === plan.project_import.plan_sha256, "exact creation plan is not bound to project import");
     assert(plan.exact_creation_plan.source_preservation_sha256 === plan.project_import.source_identity.source_content_sha256, "exact creation plan is not bound to source preservation identity");
+    assert(plan.composed_project_import === null && plan.exact_creation_plan.composed_project_import_sha256 === null, "exact plan carries a composed import identity alongside singular import");
   }
   assert(plan.exact_creation_plan.standards_registry_sha256 === plan.standards_registry.registry_sha256, "exact creation plan is not bound to standards registry");
   assert(plan.exact_creation_plan.normalization_sha256 === plan.normalization_policy.normalization_sha256, "exact creation plan is not bound to normalization policy");
@@ -1377,6 +1404,7 @@ export function validateApprovedPlan(plan) {
 
 export function validateBootstrapRunnablePlan(plan) {
   validateBootstrapPlan(plan);
+  assert(plan.composed_project_import === null, "composed multi-repository import is a read-only candidate until per-root source-preservation execution is admitted");
   if (isJsaPlan(plan)) {
     validateBootstrapActionScope(plan.bootstrap_safety_analysis.in_scope_actions, plan.bootstrap_safety_analysis);
     return plan;
@@ -1419,6 +1447,7 @@ function contextFromPlan(plan) {
     standards_registry: plan.standards_registry,
     normalization_policy: plan.normalization_policy,
     project_import: plan.project_import,
+    composed_project_import: plan.composed_project_import,
     model_policy: plan.model_policy,
     global_policy_state: plan.global_policy_state,
     owner_review_policy: plan.owner_review_policy,
@@ -1461,6 +1490,7 @@ function contextFromPlan(plan) {
     controller_supervision_sha256: plan.controller_supervision.supervision_sha256,
     bootstrap_safety_analysis_sha256: plan.bootstrap_safety_analysis.safety_sha256,
     project_import_sha256: plan.project_import?.plan_sha256 ?? null,
+    composed_project_import_sha256: plan.composed_project_import?.plan_sha256 ?? null,
     bootstrap_output_groups: [
       "PROJECT_DEFINITION", "PROJECT_IMPORT", "SOURCE_PRESERVATION", "NORMALIZATION_POLICY", "STANDARDS_REGISTRY", "NORTH_STAR", "FIRST_USEFUL_WORKFLOW", "DEVELOPMENT_PLAN", "PROJECT_LIFE_CONTRACT", "FUNCTION_REQUIREMENTS",
       "TECHNICAL_BASELINE", "DELIVERY_POLICY", "DELIVERY_TARGET", "DESIGN_BIBLE", "SECURITY_BASELINE", "AUTHORITY_BOUNDARIES", "BOUNDARY_CONTRACT",

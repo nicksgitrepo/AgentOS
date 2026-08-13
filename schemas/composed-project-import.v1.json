@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/composed-project-import.v1.json",
+  "title": "AgentOS composed multi-repository import plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "governance_version", "status", "project_id", "mode", "composition", "source_roots", "destination_root_ref", "exclusions", "source_preservation", "execution", "rollback", "observed_at_utc", "plan_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.composed_project_import.v1"},
+    "version": {"const": 1},
+    "governance_version": {"const": "2.1rc"},
+    "status": {"enum": ["PLANNED", "PRESERVED", "MIGRATION_IN_PROGRESS", "CUTOVER_READY", "ROLLED_BACK"]},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "mode": {"const": "NORMALIZE_AND_AUDIT"},
+    "composition": {"type": "object", "additionalProperties": false, "required": ["decision", "included_repository_ids", "excluded_repository_ids", "rule"], "properties": {"decision": {"const": "COMPOSED_MULTI_REPOSITORY"}, "included_repository_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}}, "excluded_repository_ids": {"type": "array", "items": {"type": "string"}}, "rule": {"type": "string", "minLength": 1}}},
+    "source_roots": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/source_root"}},
+    "destination_root_ref": {"type": "string", "pattern": "^opaque:worktree:[0-9a-f]{64}$"},
+    "exclusions": {"type": "object", "additionalProperties": false, "required": ["repositories"], "properties": {"repositories": {"type": "array", "items": {"$ref": "#/$defs/exclusion"}}}},
+    "source_preservation": {"type": "object", "additionalProperties": false, "required": ["required_before_any_write", "storage_mode", "required_artifacts", "independent_verification"], "properties": {"required_before_any_write": {"const": true}, "storage_mode": {"const": "EXTERNAL_CONTROL_PLANE"}, "required_artifacts": {"type": "array", "minItems": 5, "items": {"type": "string"}}, "independent_verification": {"type": "string", "minLength": 1}}},
+    "execution": {"type": "object", "additionalProperties": false, "required": ["status", "mutation", "activation", "source_preservation_complete", "next_protected_decision"], "properties": {"status": {"const": "NOT_AUTHORIZED"}, "mutation": {"const": "NONE"}, "activation": {"const": "OFF"}, "source_preservation_complete": {"const": false}, "next_protected_decision": {"type": "string", "minLength": 1}}},
+    "rollback": {"type": "object", "additionalProperties": false, "required": ["source_retained", "cutover_reversible", "rule"], "properties": {"source_retained": {"const": true}, "cutover_reversible": {"const": true}, "rule": {"type": "string", "minLength": 1}}},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "source_root": {"type": "object", "additionalProperties": false, "required": ["source_root_ref", "repository_id", "role", "commit", "tree", "branch", "remote_refs", "dirty_state", "worktree_evidence", "excluded_subpaths", "preservation"], "properties": {"source_root_ref": {"type": "string", "pattern": "^opaque:worktree:[0-9a-f]{64}$"}, "repository_id": {"type": "string"}, "role": {"type": "string"}, "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "branch": {"type": "string"}, "remote_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "dirty_state": {"$ref": "#/$defs/dirty_state"}, "worktree_evidence": {"$ref": "#/$defs/worktree_evidence"}, "excluded_subpaths": {"type": "array", "items": {"type": "string"}}, "preservation": {"$ref": "#/$defs/preservation"}}},
+    "dirty_state": {"type": "object", "additionalProperties": false, "required": ["status", "tracked_modified_count", "untracked_count", "worktree_count", "submodule_count", "untracked_owner_policy", "observation_sha256"], "properties": {"status": {"enum": ["CLEAN", "DIRTY"]}, "tracked_modified_count": {"type": "integer", "minimum": 0}, "untracked_count": {"type": "integer", "minimum": 0}, "worktree_count": {"type": "integer", "minimum": 0}, "submodule_count": {"type": "integer", "minimum": 0}, "untracked_owner_policy": {"type": "string", "minLength": 1}, "observation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "worktree_evidence": {"type": "object", "additionalProperties": false, "required": ["historical_worktrees_excluded", "inventory_sha256"], "properties": {"historical_worktrees_excluded": {"const": true}, "inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "preservation": {"type": "object", "additionalProperties": false, "required": ["required", "required_artifacts", "restore_procedure"], "properties": {"required": {"const": true}, "required_artifacts": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "restore_procedure": {"type": "string", "minLength": 1}}},
+    "exclusion": {"type": "object", "additionalProperties": false, "required": ["repository_id", "root_ref", "reason", "preserved_outside_product"], "properties": {"repository_id": {"type": "string"}, "root_ref": {"type": "string", "pattern": "^opaque:worktree:[0-9a-f]{64}$"}, "reason": {"type": "string", "minLength": 1}, "preserved_outside_product": {"const": true}}}
+  }
+}

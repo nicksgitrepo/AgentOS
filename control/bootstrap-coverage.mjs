@@ -192,8 +192,12 @@ function projectImportGaps(answer) {
   const mode = answer.mode;
   const gaps = [];
   if (!["ADOPT_IN_PLACE", "CLEAN_COPY", "NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(mode)) gaps.push("PROJECT_IMPORT_MODE");
-  if (typeof answer.source_root !== "string" || answer.source_root.trim().length === 0) gaps.push("PROJECT_IMPORT_SOURCE_ROOT");
-  if (mode !== "ADOPT_IN_PLACE" && (typeof answer.destination_root !== "string" || answer.destination_root.trim().length === 0)) gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
+  const composed = Array.isArray(answer.source_roots);
+  if (composed) {
+    if (answer.source_roots.length < 2) gaps.push("PROJECT_IMPORT_COMPOSED_SOURCE_ROOTS");
+    if (typeof answer.destination_root !== "string" && typeof answer.destination_root_ref !== "string") gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
+  } else if (typeof answer.source_root !== "string" || answer.source_root.trim().length === 0) gaps.push("PROJECT_IMPORT_SOURCE_ROOT");
+  if (!composed && mode !== "ADOPT_IN_PLACE" && (typeof answer.destination_root !== "string" || answer.destination_root.trim().length === 0)) gaps.push("PROJECT_IMPORT_DESTINATION_ROOT");
   return gaps;
 }
 

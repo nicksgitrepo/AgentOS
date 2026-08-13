@@ -42,7 +42,7 @@
     },
     "bootstrap_compiler": {
       "path": "control/bootstrap-compiler.mjs",
-      "sha256": "0d0a0affe4dbc8bee2f5f0e77846d0190e9759f5155ea613f96641024c737efd"
+      "sha256": "e3e4d18c93d8efe3552fd0cccad2b78b97f74f497e55634cc9df34443112a86a"
     },
     "control_plane_controller": {
       "path": "control/control-plane-root.mjs",
@@ -146,7 +146,7 @@
     },
     "bootstrap_coverage_controller": {
       "path": "control/bootstrap-coverage.mjs",
-      "sha256": "d0f269acb7a687d4a57dcc177a70fe38ec96d8b0cb1f5e184746f131c715b6d1"
+      "sha256": "b1ed8a40a91aac41a28146b9bae070bc28a9fa42a31623c9454616ea4b157301"
     },
     "bootstrap_coverage_contract": {
       "path": "schemas/bootstrap-coverage.v1.json",
@@ -171,6 +171,58 @@
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
       "sha256": "d533ba6522c916a33fac56b89caac330d40d41654e35b38d4f2fdf1d6bd2ff5c"
+    },
+    "context_block_intake_controller": {
+      "path": "control/context-block-intake.mjs",
+      "sha256": "6d8ff57bcc103241de3fe91d603e41b295ec4ea4c88321bdebf7bfab86ed69db"
+    },
+    "context_block_intake_contract": {
+      "path": "schemas/context-block-intake.v1.json",
+      "sha256": "cd17eb2afd89753295525123192fe305fab54e71f2b91702ca402e8fad9d30df"
+    },
+    "context_block_intake_article": {
+      "path": "governance/2.1rc/context-block-intake.md",
+      "sha256": "21303a8270a56b4e59147c89e200fd6828ee103efd91c754d5d93f3ab23d9453"
+    },
+    "context_block_intake_verifier": {
+      "path": "tests/verify-context-block-intake.mjs",
+      "sha256": "ff1d962a0594276a93bdd361363db700bebb3068c657a872e53a2d0a884802fb"
+    },
+    "composed_project_import_controller": {
+      "path": "control/composed-project-import.mjs",
+      "sha256": "3aee4937440ea5e58147f61e7cedd667b6fa1c46b6d5d7bb8f7c1cb6eaaaf451"
+    },
+    "composed_project_import_contract": {
+      "path": "schemas/composed-project-import.v1.json",
+      "sha256": "960ca35d19ea01d4f4fc36a8caa34b60222ddef39474417ad8aa476319ed0442"
+    },
+    "composed_project_import_article": {
+      "path": "governance/2.1rc/composed-project-import.md",
+      "sha256": "61ea7520b1404cd0526f360f72cc5f9793c461e69e199881731e625c527a5388"
+    },
+    "composed_project_import_verifier": {
+      "path": "tests/verify-composed-project-import.mjs",
+      "sha256": "7e81137ef3187ca22340c01c10b0ffd84c47f24b4fc6dd7b656ba39ddfa6d6b3"
+    },
+    "spawn_preparation_controller": {
+      "path": "control/spawn-preparation.mjs",
+      "sha256": "b30f23acfa9245018b914bb1a3599139374218ac751ed346448f328de5d527f9"
+    },
+    "spawn_preparation_contract": {
+      "path": "schemas/spawn-preparation.v1.json",
+      "sha256": "ee4114a8a9740b733dff905412f95fdd9832ed120334f67471b30b766844938c"
+    },
+    "spawn_preparation_article": {
+      "path": "governance/2.1rc/spawn-preparation.md",
+      "sha256": "403c89ed35231c13998fdced4c64bad56f994e8bdaffbb4671e864d8a0c953cf"
+    },
+    "spawn_preparation_verifier": {
+      "path": "tests/verify-spawn-preparation.mjs",
+      "sha256": "c63f2047d9c3e0ca7748dc8e2eed0bca68c8e7108fa6f75d1f826ba408981878"
+    },
+    "bootstrap_source_composition_breakpoint": {
+      "path": "docs/bootstrap-source-composition-breakpoint-2026-08-13.md",
+      "sha256": "da09601d3d03d93fe45b99a98658aaf3ae7f1cdbe5131c79a75ddd3a3d050f61"
     },
     "audit_first_import_controller": {
       "path": "control/audit-first-import-procedure.mjs",
