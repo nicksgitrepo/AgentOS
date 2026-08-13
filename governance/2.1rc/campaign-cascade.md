@@ -30,6 +30,38 @@ DELTA_AUDIT <---- targeted delta repair -----------+
 READY_FOR_ACCEPTANCE -> Runtime -> live audit -> exact closure
 ```
 
+## Atomic transition journal
+
+Every transition starts from one validated, content-addressed predecessor. The
+caller supplies a content-addressed target-state candidate whose unchanged
+journal is canonically equal to the predecessor journal. The transition engine
+validates that candidate against the predecessor journal head, validates the
+allowed edge and a plain portable JSON event payload, and works only on a
+private clone.
+
+The engine then appends exactly one journal record. Its sequence is the prior
+journal length, `from_state_sha256` is the exact predecessor
+`cascade_sha256`, and its source and target stages are the executed edge. The
+event digest is the SHA-256 of canonical JSON for the complete record with
+`event_sha256` set to `null`; genesis uses the same digest rule. The completed
+state is resealed and validated normally, including the rule that its journal
+head ends at its current stage. A paired serialized lifecycle/cascade
+transaction likewise lets each transition engine complete this append before
+the state-owner validates and persists the joined result.
+
+Inputs are never mutated. A stale predecessor, stale candidate CAS, rewritten
+journal prefix, pre-appended or replayed transition, noncontiguous sequence,
+skipped stage, changed payload, nonportable payload, or invalid completed state
+fails without returning partial state.
+
+This is an additive repair to `governance.campaign_cascade_state.v1`; `2.1rc`
+remains prepared and inactive. There is no accepted active-state migration. A
+pre-repair fixture or persisted candidate is invalid when genesis used the
+legacy digest shape, the target journal was appended before the transaction,
+the journal contains an illegal edge, or its bytes cannot be derived from the
+last independently validated predecessor. Regenerate genesis or replay from
+that predecessor. Never rewrite or re-hash accepted journal history in place.
+
 ## First pass
 
 The Feature Agents build one logical Product lineage and publish substantial immutable checkpoints. Each checkpoint binds campaign, lineage, worktree, branch, commit, tree, remote identity, clean/pushed proof, changed paths, changed surfaces, quality floor, and parent identity.
@@ -80,4 +112,13 @@ One targeted delta repair and one supervisor-selected reframe per causal root ar
 
 ## Closure
 
-The final candidate is admissible only when the exact cascade state binds `FUNCTION_REQUIREMENTS_PASS`, `DESIGN_BIBLE_PASS`, `SECURITY_PASS`, the final candidate commit/tree, the Product-acceptance receipt, typed deployment and rollback receipt digests, a live-audit receipt from the independent campaign Auditor, and the closure receipt. Runtime is the sole merge/deployment executor. Until all closure facts are reconciled, the campaign is `ACCEPTED_LIVE_PENDING_CLOSURE`.
+The final candidate is admissible only when the exact content-addressed cascade
+state co-binds `FUNCTION_REQUIREMENTS_PASS`, `DESIGN_BIBLE_PASS`,
+`SECURITY_PASS`, the final candidate commit/tree, and the exact executable
+Product-acceptance proof. The compiled Product-acceptance object does not
+invent candidate fields outside its schema; the cascade acceptance binding and
+outer state digest provide that join. Typed deployment and rollback receipt
+digests, a live-audit receipt from the independent campaign Auditor, and the
+closure receipt remain required. Runtime is the sole merge/deployment
+executor. Until all closure facts are reconciled, the campaign is
+`ACCEPTED_LIVE_PENDING_CLOSURE`.

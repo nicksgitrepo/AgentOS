@@ -594,15 +594,19 @@
     },
     "campaign_cascade": {
       "path": "control/campaign-cascade.mjs",
-      "sha256": "12e93099bee6dae043c6d0b2158e914aeca6c97379f467b55bfd6bbc174901b0"
+      "sha256": "36d0b40ae014a0bbc45390ca677cc1a666f9116d26e05ec9d2e647bdfc9de563"
     },
     "campaign_cascade_contract": {
       "path": "schemas/campaign-cascade.v1.json",
-      "sha256": "f5b0cbb03c15ac592349ea9964f129a532b96ac3120e5eb8a66145262859d059"
+      "sha256": "fbff22243cd149ae17ece6c1171127fe0fa641f0b32f93423fe1d20c70b6426c"
+    },
+    "campaign_cascade_article": {
+      "path": "governance/2.1rc/campaign-cascade.md",
+      "sha256": "60aeaa6ea60739f2954dbb65320f70dd81aefe58f56f32719cc9f4a2e885872d"
     },
     "campaign_cascade_verifier": {
       "path": "tests/verify-campaign-cascade.mjs",
-      "sha256": "80a0ca3d569a3bc10a39fd6a7cd55fb67e2e83042a2a27f2d67d71ec60aaf1d9"
+      "sha256": "499a848097c050e20d1201c49e98d975d2ed012585154349acaeee1226590f02"
     },
     "apprenticeship_drill_controller": {
       "path": "control/apprenticeship-drill.mjs",
@@ -674,7 +678,7 @@
     },
     "campaign_state_owner_controller": {
       "path": "control/campaign-state-owner.mjs",
-      "sha256": "90b12a343b5389576765b8453d5f50eb5465108e93b5445f68b916fcfbcf5982"
+      "sha256": "6a51ff74940975905e8544b33e573be14220e6bf40346f06afac4c2495d20ec5"
     },
     "campaign_state_owner_contract": {
       "path": "schemas/campaign-state-owner.v1.json",

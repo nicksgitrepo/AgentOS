@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import {
   AUDIT_DISCIPLINES,
+  applyCascadeTransition,
   cascadeDigest,
   compileAuditPlan,
   compileAuditWorkerBinding,
@@ -15,6 +16,7 @@ import {
   compileModelPolicy,
   compileRollingAudit,
   completeCampaignFinalizer,
+  createCascadeState,
   deriveApplicableDisciplines,
   openCampaignFinalizer,
   reconcileAuditFindings,
@@ -24,9 +26,12 @@ import {
   validateFirstPassCandidate,
   validateModelPolicy,
   validateRollingAudit,
+  validateCascadeState,
 } from "../control/campaign-cascade.mjs";
 import {compileFinalizerRewriteAssessment} from "../control/cascade-economics.mjs";
 import {compileCampaignAcceptanceContract} from "../control/campaign-acceptance-contract.mjs";
+import {compileProductAcceptanceProof} from "../control/acceptance-bridge.mjs";
+import {compileQuestionTree, sha256 as questionTreeDigest} from "../control/question-tree.mjs";
 import {
   campaignIdentityBindingDigest,
   compileCampaignIdentityBinding,
@@ -256,8 +261,360 @@ const modelPolicy = compileModelPolicy({profile: "ECO_CONTINUOUS", completionFlo
 ], observations: []});
 validateModelPolicy(modelPolicy);
 
+function checkpointEntry(firstPass, {status, auditPlan = null, auditReconciliation = null, findingStatus = "NONE"}) {
+  return {
+    candidate_id: firstPass.candidate_id,
+    candidate_commit: firstPass.commit,
+    candidate_tree: firstPass.tree,
+    terminal: firstPass.terminal,
+    audit_plan_sha256: auditPlan?.plan_sha256 ?? null,
+    audit_reconciliation_sha256: auditReconciliation?.reconciliation_sha256 ?? null,
+    finding_status: findingStatus,
+    status,
+  };
+}
+
+function pendingCascadeAcceptance(firstPass) {
+  return {
+    product_acceptance_sha256: "0".repeat(64),
+    question_tree_sha256: SHA,
+    final_candidate_commit: firstPass.commit,
+    final_candidate_tree: firstPass.tree,
+    roots: {FUNCTION_REQUIREMENTS: "UNKNOWN", DESIGN_BIBLE: "UNKNOWN", SECURITY: "UNKNOWN"},
+    rc_ready: false,
+    auditor_session_id: firstPass.auditor_session_id,
+  };
+}
+
+function compileReadyProof(finalCommit, finalTree) {
+  const definitions = [
+    ["FR-ENTRY", "FUNCTION_REQUIREMENTS", "ALWAYS"],
+    ["DB-SURFACE", "DESIGN_BIBLE", "UI"],
+    ["SEC-ACCESS", "SECURITY", "AUTHENTICATED_UI"],
+  ];
+  const clauses = definitions.map(([questionId, root, surface]) => ({
+    clause_id: `${questionId}:CLAUSE`,
+    question_id: questionId,
+    root,
+    parent_question_id: null,
+    source_authority: {authority_id: "SYNTHETIC-AUTHORITY", version: "1", sha256: SHA},
+    applicability: {predicate_id: `${questionId}:APPLIES`, question: `Does ${questionId} apply?`},
+    atomic_question: `Does ${questionId} satisfy its exact outcome?`,
+    required_evidence: [`${questionId}:RESULT`],
+    repair_owner_role: "FEATURE_AGENT",
+    invalidation_conditions: [`${questionId}:CHANGE`],
+    blocking_scope: `${questionId}:SCOPE`,
+    exception_policy: {allowed: true, granting_authority_ids: ["OWNER"], scope: `${questionId}:SCOPE`},
+    materiality: "MATERIAL_PRODUCT_ACCEPTANCE",
+    applies_to_surfaces: [surface],
+  }));
+  const manifestBody = {
+    schema: "governance.changed_surface_manifest.v1",
+    checkpoint_id: "CHECKPOINT-CASCADE-ACCEPTANCE",
+    originating_owner_role_id: "FEATURE_AGENT:ONE",
+    root_id: "root-worktree",
+    branch: "campaign/main",
+    commit: finalCommit,
+    tree: finalTree,
+    changed_paths: ["src/feature.ts"],
+    changed_surfaces: ["ALWAYS", "UI", "AUTHENTICATED_UI"],
+  };
+  const tree = compileQuestionTree({
+    schema: "governance.question_tree_source_clauses.v1",
+    campaign_id: "CAMPAIGN-1",
+    question_tree_version: "2.1rc",
+    change_manifest: {...manifestBody, manifest_sha256: questionTreeDigest(manifestBody)},
+    clauses,
+  });
+  const evidence = (kind) => ({
+    evidence_id: `EVIDENCE-${kind}`,
+    kind,
+    sha256: SHA,
+    commit_sha: finalCommit,
+    worktree_id: "root-worktree",
+    build_identity: "BUILD-1",
+    environment_id: "ENV-1",
+    observed_at_utc: "2026-08-03T00:00:00.000Z",
+    question_tree_version: "2.1rc",
+  });
+  const evaluationBinding = {
+    commit_sha: finalCommit,
+    worktree_id: "root-worktree",
+    relevant_hashes: [SHA],
+    build_identity: "BUILD-1",
+    environment_id: "ENV-1",
+    question_tree_version: "2.1rc",
+  };
+  return compileProductAcceptanceProof({
+    tree,
+    observations: tree.questions.map((question) => ({
+      question_id: question.question_id,
+      answer: "YES",
+      lifecycle: "VERIFIED",
+      applicable: true,
+      applicability_evidence: [evidence(`${question.question_id}:APPLICABLE`)],
+      evaluated_at_utc: "2026-08-03T00:00:00.000Z",
+      evaluation_binding: evaluationBinding,
+      evidence: [evidence(question.required_evidence[0])],
+    })),
+    evidence_cache: [],
+    auditor_session_id: fullCandidate.auditor_session_id,
+    evaluated_at_utc: "2026-08-03T00:00:00.000Z",
+    critical_freezes: [],
+  });
+}
+
+function readyCascadeAcceptance(proof, finalCommit, finalTree) {
+  return {
+    product_acceptance_sha256: cascadeDigest(proof.product_acceptance),
+    question_tree_sha256: proof.product_acceptance.question_tree_sha256,
+    final_candidate_commit: finalCommit,
+    final_candidate_tree: finalTree,
+    roots: structuredClone(proof.product_acceptance.roots),
+    rc_ready: proof.product_acceptance.rc_ready,
+    auditor_session_id: proof.product_acceptance.auditor_session_id,
+  };
+}
+
+function cascadeCandidate(previous, overrides) {
+  const next = Object.assign(structuredClone(previous), structuredClone(overrides));
+  next.transition_journal = structuredClone(previous.transition_journal);
+  delete next.cascade_sha256;
+  next.cascade_sha256 = cascadeDigest(next);
+  return next;
+}
+
+const initialLedger = compileCheckpointAuditLedger({
+  activeCandidateId: candidate.candidate_id,
+  entries: [checkpointEntry(candidate, {status: "BUILDING"})],
+});
+const cascadeInitial = createCascadeState({
+  campaign_id: candidate.campaign_id,
+  campaign_version: candidate.campaign_version,
+  mode: "STANDARD_SUBSTANTIAL",
+  logical_lineage_id: candidate.logical_lineage_id,
+  policy_epoch: candidate.policy_epoch,
+  policy_state_sha256: candidate.policy_snapshot_sha256,
+  acceptance_contract_sha256: candidate.acceptance_contract_sha256,
+  first_pass: candidate,
+  checkpoint_ledger: initialLedger,
+  acceptance: pendingCascadeAcceptance(candidate),
+  model_policy: modelPolicy,
+  telemetry: {records: [], evidence_reuse_count: 0, escaped_finding_count: 0, owner_interruptions: 0},
+  loop_control: {max_finalization_passes: 1, max_delta_repair_passes: 1, max_supervisor_reframes: 1, equivalent_retry_policy: "STOP_AND_CLASSIFY_AFTER_ONE_REFRAME"},
+});
+validateCascadeState(cascadeInitial);
+assert.equal(cascadeInitial.transition_journal.length, 1);
+
+const terminalProposedLedger = compileCheckpointAuditLedger({
+  activeCandidateId: fullCandidate.candidate_id,
+  entries: [
+    checkpointEntry(candidate, {status: "SUPERSEDED"}),
+    checkpointEntry(fullCandidate, {status: "TERMINAL_PROPOSED"}),
+  ],
+});
+const repairRequiredLedger = compileCheckpointAuditLedger({
+  activeCandidateId: fullCandidate.candidate_id,
+  entries: [
+    checkpointEntry(candidate, {status: "SUPERSEDED"}),
+    checkpointEntry(fullCandidate, {status: "REPAIR_REQUIRED", auditPlan: fullPlan, auditReconciliation: reconciliation, findingStatus: "REPAIR_REQUIRED"}),
+  ],
+});
+const settledLedger = compileCheckpointAuditLedger({
+  activeCandidateId: fullCandidate.candidate_id,
+  entries: [
+    checkpointEntry(candidate, {status: "SUPERSEDED"}),
+    checkpointEntry(fullCandidate, {status: "SETTLED", auditPlan: fullPlan, auditReconciliation: reconciliation, findingStatus: "SETTLED"}),
+  ],
+});
+const repairedCandidate = compileFirstPassCandidate(candidateVariant({
+  candidate_id: "CANDIDATE-REPAIR",
+  commit: "commit-repair",
+  tree: "tree-repair",
+  remote_commit: "commit-repair",
+  remote_tree: "tree-repair",
+}));
+const repairedLedger = compileCheckpointAuditLedger({
+  activeCandidateId: repairedCandidate.candidate_id,
+  entries: [
+    checkpointEntry(candidate, {status: "SUPERSEDED"}),
+    checkpointEntry(fullCandidate, {status: "SUPERSEDED", auditPlan: fullPlan, auditReconciliation: reconciliation, findingStatus: "REPAIR_REQUIRED"}),
+    checkpointEntry(repairedCandidate, {status: "BUILDING"}),
+  ],
+});
+
+const observedCascadeEdges = new Set();
+let transitionOrdinal = 0;
+function applyEdge(previous, overrides, eventOptions = {}) {
+  const next = cascadeCandidate(previous, overrides);
+  const nextBefore = structuredClone(next);
+  const previousBefore = structuredClone(previous);
+  transitionOrdinal += 1;
+  const event = {
+    type: "CASCADE_TEST_TRANSITION",
+    payload: {edge: `${previous.stage}->${next.stage}`},
+    at_utc: `2026-08-03T00:${String(transitionOrdinal).padStart(2, "0")}:00.000Z`,
+    ...eventOptions,
+  };
+  const completedState = applyCascadeTransition(previous, next, event);
+  assert.deepEqual(previous, previousBefore, "cascade transition mutated its predecessor input");
+  assert.deepEqual(next, nextBefore, "cascade transition mutated its candidate input");
+  assert.equal(completedState.transition_journal.length, previous.transition_journal.length + 1);
+  assert.deepEqual(completedState.transition_journal.slice(0, -1), previous.transition_journal);
+  assert.equal(completedState.transition_journal.at(-1).from_state_sha256, previous.cascade_sha256);
+  assert.equal(completedState.transition_journal.at(-1).from_stage, previous.stage);
+  assert.equal(completedState.transition_journal.at(-1).to_stage, completedState.stage);
+  assert.equal(completedState.transition_journal.at(-1).event_sha256, cascadeDigest({...completedState.transition_journal.at(-1), event_sha256: null}));
+  observedCascadeEdges.add(`${previous.stage}->${completedState.stage}`);
+  return completedState;
+}
+
+const terminalProposed = applyEdge(cascadeInitial, {
+  stage: "TERMINAL_PROPOSED",
+  first_pass: fullCandidate,
+  checkpoint_ledger: terminalProposedLedger,
+  acceptance: pendingCascadeAcceptance(fullCandidate),
+});
+const repairRequired = applyEdge(terminalProposed, {
+  stage: "FIRST_PASS_REPAIR_REQUIRED",
+  checkpoint_ledger: repairRequiredLedger,
+  audit_plan: fullPlan,
+  audit_reconciliation: reconciliation,
+});
+applyEdge(repairRequired, {
+  stage: "FIRST_PASS_BUILDING",
+  first_pass: repairedCandidate,
+  checkpoint_ledger: repairedLedger,
+  audit_plan: null,
+  audit_reconciliation: null,
+  acceptance: pendingCascadeAcceptance(repairedCandidate),
+});
+const terminalSettled = applyEdge(terminalProposed, {
+  stage: "TERMINAL_SETTLED",
+  checkpoint_ledger: settledLedger,
+  audit_plan: fullPlan,
+  audit_reconciliation: reconciliation,
+});
+const finalizerPending = applyEdge(terminalSettled, {
+  stage: "FINALIZER_PENDING",
+  finalizer,
+});
+const finalizing = applyEdge(finalizerPending, {stage: "FINALIZING"});
+const deltaRepair = applyEdge(finalizing, {
+  stage: "DELTA_REPAIR",
+  finalizer: completed,
+  delta_audit: delta,
+});
+applyEdge(deltaRepair, {
+  stage: "FINALIZING",
+  finalizer,
+  delta_audit: null,
+});
+const readyProof = compileReadyProof(completed.final_commit, completed.final_tree);
+const readyEventOptions = {productAcceptance: readyProof.product_acceptance, productAcceptanceProof: readyProof.proof};
+const readyOverrides = {
+  stage: "READY_FOR_ACCEPTANCE",
+  finalizer: completed,
+  delta_audit: delta,
+  acceptance: readyCascadeAcceptance(readyProof, completed.final_commit, completed.final_tree),
+  universal_closeout_receipts: cascadeCloseout,
+};
+const readyFromDelta = applyEdge(deltaRepair, readyOverrides, readyEventOptions);
+validateCascadeState(readyFromDelta, readyEventOptions);
+const readyDirect = applyEdge(terminalSettled, readyOverrides, readyEventOptions);
+validateCascadeState(readyDirect, readyEventOptions);
+
+assert.deepEqual([...observedCascadeEdges].sort(), [
+  "DELTA_REPAIR->FINALIZING",
+  "DELTA_REPAIR->READY_FOR_ACCEPTANCE",
+  "FINALIZER_PENDING->FINALIZING",
+  "FINALIZING->DELTA_REPAIR",
+  "FIRST_PASS_BUILDING->TERMINAL_PROPOSED",
+  "FIRST_PASS_REPAIR_REQUIRED->FIRST_PASS_BUILDING",
+  "TERMINAL_PROPOSED->FIRST_PASS_REPAIR_REQUIRED",
+  "TERMINAL_PROPOSED->TERMINAL_SETTLED",
+  "TERMINAL_SETTLED->FINALIZER_PENDING",
+  "TERMINAL_SETTLED->READY_FOR_ACCEPTANCE",
+]);
+
 let hostile = 0;
 function hostileCase(label, operation) { assert.throws(operation, label); hostile += 1; }
+function rejectedTransition(label, previous, next, event) {
+  const previousBefore = structuredClone(previous);
+  const nextBefore = structuredClone(next);
+  hostileCase(label, () => applyCascadeTransition(previous, next, event));
+  assert.deepEqual(previous, previousBefore, `${label} mutated its predecessor input`);
+  assert.deepEqual(next, nextBefore, `${label} left partial candidate state`);
+}
+
+const settledTransitionOverrides = {
+  stage: "TERMINAL_SETTLED",
+  checkpoint_ledger: settledLedger,
+  audit_plan: fullPlan,
+  audit_reconciliation: reconciliation,
+};
+const stalePredecessorTarget = cascadeCandidate(terminalProposed, settledTransitionOverrides);
+rejectedTransition("stale cascade predecessor", cascadeInitial, stalePredecessorTarget, {
+  type: "STALE_PREDECESSOR",
+  payload: {},
+  at_utc: "2026-08-03T00:20:00.000Z",
+});
+
+const tamperedJournalTarget = cascadeCandidate(terminalProposed, settledTransitionOverrides);
+tamperedJournalTarget.transition_journal[0].payload.campaign_id = "CAMPAIGN-TAMPERED";
+tamperedJournalTarget.transition_journal[0].event_sha256 = cascadeDigest({...tamperedJournalTarget.transition_journal[0], event_sha256: null});
+delete tamperedJournalTarget.cascade_sha256;
+tamperedJournalTarget.cascade_sha256 = cascadeDigest(tamperedJournalTarget);
+rejectedTransition("rewritten cascade journal history", terminalProposed, tamperedJournalTarget, {
+  type: "TAMPERED_JOURNAL",
+  payload: {},
+  at_utc: "2026-08-03T00:21:00.000Z",
+});
+
+const skippedStage = structuredClone(terminalSettled);
+const skippedStageEvent = {
+  sequence: 1,
+  from_state_sha256: cascadeInitial.cascade_sha256,
+  from_stage: "FIRST_PASS_BUILDING",
+  to_stage: "TERMINAL_SETTLED",
+  event_type: "SKIPPED_STAGE",
+  payload: {},
+  at_utc: "2026-08-03T00:22:00.000Z",
+  event_sha256: null,
+};
+skippedStageEvent.event_sha256 = cascadeDigest(skippedStageEvent);
+skippedStage.transition_journal = [structuredClone(cascadeInitial.transition_journal[0]), skippedStageEvent];
+delete skippedStage.cascade_sha256;
+skippedStage.cascade_sha256 = cascadeDigest(skippedStage);
+hostileCase("skipped cascade journal stage", () => validateCascadeState(skippedStage));
+
+rejectedTransition("duplicate replayed cascade transition", terminalProposed, terminalSettled, {
+  type: "REPLAYED_TRANSITION",
+  payload: {},
+  at_utc: "2026-08-03T00:23:00.000Z",
+});
+
+const invalidatedPayloadState = structuredClone(terminalProposed);
+invalidatedPayloadState.transition_journal.at(-1).payload.edge = "PAYLOAD-TAMPERED";
+delete invalidatedPayloadState.cascade_sha256;
+invalidatedPayloadState.cascade_sha256 = cascadeDigest(invalidatedPayloadState);
+hostileCase("invalidated cascade transition payload", () => validateCascadeState(invalidatedPayloadState));
+
+const invalidPayloadTarget = cascadeCandidate(terminalProposed, settledTransitionOverrides);
+rejectedTransition("non-portable cascade transition payload", terminalProposed, invalidPayloadTarget, {
+  type: "INVALID_PAYLOAD",
+  payload: {unsupported: undefined},
+  at_utc: "2026-08-03T00:24:00.000Z",
+});
+
+const staleCandidateCas = cascadeCandidate(terminalProposed, settledTransitionOverrides);
+staleCandidateCas.cascade_sha256 = terminalProposed.cascade_sha256;
+rejectedTransition("stale cascade candidate CAS", terminalProposed, staleCandidateCas, {
+  type: "STALE_CANDIDATE_CAS",
+  payload: {},
+  at_utc: "2026-08-03T00:25:00.000Z",
+});
+
 hostileCase("unmapped material finding", () => compileAuditReport({plan: codePlan, discipline: "FUNCTIONALITY", auditorSessionId: "AUDITOR-1", workerSessionId: "WORKER-F", evidenceSha256: SHA, findings: [{finding_id: "F", discipline: "FUNCTIONALITY", severity: "MATERIAL", causal_root_id: "ROOT", route: "FINALIZATION_QUEUE", question_ids: [], evidence_sha256: SHA, summary: "missing mapping"}]}));
 hostileCase("acceptance question assigned to the wrong root", () => compileCampaignAcceptanceContract({
   campaignId: "CAMPAIGN-WRONG-ROOT", campaignVersion: "v1", logicalLineageId: "LINE-WRONG-ROOT", policyEpoch: 1,
