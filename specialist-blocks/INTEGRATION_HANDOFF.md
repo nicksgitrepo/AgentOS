@@ -26,12 +26,11 @@ attached as a separate immutable receipt commit.
 - Master inventory: 627 raw role mentions, 621 unique titles (the 619 baseline
   roles plus two generic discovered workflow additions), 10 explicit alias
   mappings, 621 materialized entries.
-- Recipe catalog: 621 stable role recipes, with 620 compileable candidates and
-  the protected Memory lane marked `NOT_APPLICABLE`/external-only; all 10
-  aliases resolve to canonical recipe IDs. The 603 generic roles compile from
-  an immutable role-context profile plus the smallest dependency-complete
-  reusable gate set. A profile grants no authority and cannot replace a
-  source-locked gate or external project context.
+- Recipe catalog: 621 stable role addresses, with 17 dependency-complete
+  compileable candidates, 603 explicit planned/non-compileable entries, and the
+  protected Memory lane marked `NOT_APPLICABLE`/external-only; all 10 aliases
+  resolve to canonical recipe IDs. A role profile preserves routing context but
+  cannot make an unbuilt specialist spawnable or replace source-locked gates.
 - Materialized role kinds: `ROUTER: 640`, `CONTROL_PLANE: 16`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
   `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`,
@@ -47,11 +46,11 @@ attached as a separate immutable receipt commit.
   twelve-gate pack, hostile fixtures, evaluation dossier, and typed handoff.
 - The on-demand compiler emits the eight required machine contracts plus a
   generated `bootstrap.md` view in an external companion workspace only.
-- The recipe catalog is complete for the retained backlog: `621` stable role
-  recipes, `620` compileable candidates, zero advertised-but-non-materializable
-  roles, one protected `NOT_APPLICABLE` external lane, and `10` alias
-  resolutions. Generic role profiles narrow purpose, triggers, exclusions, and
-  source requirements but never become authority.
+- The recipe catalog is complete for addressability, not implementation: `621`
+  stable role recipes, `17` dependency-complete compileable candidates, `603`
+  planned/non-compileable roles, one protected `NOT_APPLICABLE` external lane,
+  and `10` alias resolutions. Generic role profiles narrow routing context but
+  never become authority.
 - The composition fixture generates three different task-shaped packages,
   proves shared standard block hashes, minimal dependency closure, deterministic
   recompile, machine/bootstrap agreement, negative denials, and zero AgentOS

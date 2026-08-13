@@ -49,11 +49,11 @@
     },
     "recipe_counts": {
       "total": 621,
-      "CANDIDATE": 620,
-      "PLANNED": 0,
+      "CANDIDATE": 17,
+      "PLANNED": 603,
       "NOT_APPLICABLE": 1,
       "alias_mappings": 10,
-      "catalog_sha256": "f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67"
+      "catalog_sha256": "765ae656b91e8c12b5c5a98bbe9ecc31eef786eb8b7ab5c1baaf5025b033a604"
     }
   },
   "lanes": {
@@ -114,7 +114,7 @@
     {"receipt_id": "specialist-p2-security-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P2 routers, forty-one narrow security atoms, two reusable OWASP index standards, exact upstream-router closure, standard-hash reuse, and actual Web A01/API7 routing fixtures"},
     {"receipt_id": "specialist-p3-delivery-assurance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "three P3 governance controls, one observability router, two delivery/data atomic specialists, one assurance atomic specialist, exact upstream closure, and reuse of existing NIST SSDF/SLSA authorities"},
     {"receipt_id": "specialist-p4-client-ux-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "one P4 desktop/offline/realtime classification router, five narrow client/UX atoms, one reusable W3C WCAG 2.2 STANDARD_BLOCK, exact upstream closure, source locks, twelve-gate packs, and routing fixtures"},
-    {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "621 stable recipes for 621 retained inventory roles, 620 compileable candidates, zero advertised-but-non-materializable roles, one protected external Memory lane marked NOT_APPLICABLE, ten alias resolutions, and deterministic catalog digest; 603 generic roles use immutable context profiles plus the smallest reusable gate set and receive no authority from profile text"},
+    {"receipt_id": "specialist-recipe-coverage-v1", "status": "PASS", "scope": "621 stable addresses for 621 retained inventory roles, 17 dependency-complete compileable candidates, 603 explicit planned non-compileable roles, one protected external Memory lane marked NOT_APPLICABLE, ten alias resolutions, and deterministic catalog digest; role profiles preserve routing context but never substitute for missing specialist or standard authority"},
     {"receipt_id": "specialist-p0-candidate-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "six exact P0 packages remain candidate-only pending independent utility/harm and admission review"},
     {"receipt_id": "specialist-p1-standard-reuse-handoff-v1", "status": "WAITING_WITH_RECEIPT", "scope": "implementation commit 170bbf4ca705dce9de199172910c6c25e243e7fc with tree aebfe743b8b460dd1ffb5c90cfc3342f93d18597; ten P1 atoms reuse ten immutable exact-edition standard blocks"},
     {"receipt_id": "specialist-p5-domain-ai-3d-reg-finance-slice-v1", "status": "STATIC_PASS_REVIEW_REQUIRED", "scope": "six P5 atomic candidates, five P5 classification routers, five reusable exact-edition STANDARD_BLOCK authorities, source locks, twelve-gate packs, hostile fixtures, upstream-router closure, and standard-hash reuse"},
@@ -125,7 +125,7 @@
     "The deterministic utility/harm pre-screen is receipt-backed but remains pending external independent utility/harm authority; it does not admit or activate any package.",
     "Independent admission authority has not accepted any block; activation and deployment remain OFF.",
     "Independent utility/harm evaluation of the P1, P2, P3, P4, and P5 router/atomic/control candidates and broader source-backed STANDARD_BLOCK expansion remain pending; the backlog materialized STANDARD_BLOCK count remains 0 because those roles are not yet expanded into STANDARD_BLOCK packages.",
-    "Context-profile recipes are compileable candidates, not independently admitted specialists: their role profile narrows context only, and every substantive claim still requires selected source-locked gates plus a complete external authority corpus.",
+    "Context-profile recipes remain addressable PLANNED entries and are not compileable until role-specific source-locked gates, transitive standards, hostile QA, and independent acceptance exist.",
     "Full hostile/utility validation and main AgentOS 3.0 integration-owner intake remain external follow-up gates.",
     "No consumer adoption, migration, provider activation, public release, or protected Memory action is authorized by this receipt."
   ],

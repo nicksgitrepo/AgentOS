@@ -457,6 +457,7 @@
     },
     {
       "route_id": "route.data.postgresql-rls",
+      "family": "data",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "DATA.POSTGRES_RLS",
@@ -1021,6 +1022,7 @@
     },
     {
       "route_id": "route.platform.aws-iam-policy",
+      "family": "delivery-operations",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "AWS policy",
@@ -1052,6 +1054,7 @@
     },
     {
       "route_id": "route.platform.cloudflare-cache",
+      "family": "delivery-operations",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "EDGE.CLOUDFLARE_CACHE",
@@ -1083,6 +1086,7 @@
     },
     {
       "route_id": "route.platform.cloudflare-dns",
+      "family": "delivery-operations",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "DNS records",
@@ -1143,6 +1147,7 @@
     },
     {
       "route_id": "route.privacy.data-lifecycle-router",
+      "family": "data",
       "role_kind": "ROUTER",
       "signals": [
         "PRIVACY.DATA_LIFECYCLE",
@@ -1308,6 +1313,7 @@
     },
     {
       "route_id": "route.product-client.openapi-contracts",
+      "family": "product-client",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "API contract",
@@ -1537,6 +1543,7 @@
     },
     {
       "route_id": "route.security.access-control-router",
+      "family": "security",
       "role_kind": "ROUTER",
       "signals": [
         "RBAC",
@@ -1847,6 +1854,7 @@
     },
     {
       "route_id": "route.security.oauth-identity",
+      "family": "security",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "OAuth security",
@@ -1910,6 +1918,7 @@
     },
     {
       "route_id": "route.security.oidc-core",
+      "family": "security",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "OIDC",
@@ -2263,6 +2272,7 @@
     },
     {
       "route_id": "route.security.owasp-api-top10-router",
+      "family": "security",
       "role_kind": "ROUTER",
       "signals": [
         "API security",
@@ -2294,6 +2304,7 @@
     },
     {
       "route_id": "route.security.owasp-asvs-router",
+      "family": "security",
       "role_kind": "ROUTER",
       "signals": [
         "ASVS",
@@ -2652,6 +2663,7 @@
     },
     {
       "route_id": "route.security.owasp-web-top10-router",
+      "family": "security",
       "role_kind": "ROUTER",
       "signals": [
         "A01:2025",
@@ -2960,6 +2972,7 @@
     },
     {
       "route_id": "route.security.supply-chain-router",
+      "family": "security",
       "role_kind": "ROUTER",
       "signals": [
         "CVE",
@@ -3053,6 +3066,7 @@
     },
     {
       "route_id": "route.software-language-runtime.react-components",
+      "family": "software-language-runtime",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "ENG.TYPESCRIPT_REACT_WEB",
@@ -3113,6 +3127,7 @@
     },
     {
       "route_id": "route.software-language-runtime.rust-backend",
+      "family": "software-language-runtime",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "ENG.RUST_BACKEND",
@@ -3143,6 +3158,7 @@
     },
     {
       "route_id": "route.software-language-runtime.typescript-language",
+      "family": "software-language-runtime",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "ENG.TYPESCRIPT_REACT_WEB",
@@ -3834,5 +3850,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "ea4fb1ab7c22de2cb149f37607a7026f00b09c861899b4bfc6e10c5a9e1828d1"
+  "routing_sha256": "bcececebdfcea91ec4cd11f875343786d61ab00c7adf9f8927bbf053493d67e3"
 }

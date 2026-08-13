@@ -60,13 +60,20 @@
     "role_kind": {"enum": ["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]},
     "family": {
       "enum": [
-        "foundation",
-        "software-language-runtime",
-        "security",
+        "3d-graphics",
+        "ai-search",
+        "assurance-enterprise",
         "data",
-        "product-client",
         "delivery-operations",
-        "assurance-enterprise"
+        "domain",
+        "finance",
+        "foundation",
+        "graphics",
+        "permanent-governance-control",
+        "product-client",
+        "regulatory",
+        "security",
+        "software-language-runtime"
       ]
     },
     "title": {"type": "string", "minLength": 1},

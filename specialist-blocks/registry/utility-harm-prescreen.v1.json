@@ -9,7 +9,7 @@
     "commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
     "tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb"
   },
-  "candidate_roster_digest": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08",
+  "candidate_roster_digest": "29e8c719c1773e33913240b50dbb2149327ad0500362191329849d87dbb6c8ea",
   "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW",
   "independent_reviewer_required": true,
   "self_acceptance": "FORBIDDEN",
@@ -27,7 +27,7 @@
     "flexible_classes": ["authority_conflict", "data_limit", "duplicate_sibling_authority", "tool_limit"],
     "rule": "ROUTE_REQUIRES_EXPLICIT_TYPED_SCOPE;_DENY_OR_ESCALATE_CLOSES_UNSAFE_OR_UNRESOLVED_ACTIONS"
   },
-  "evaluation_manifest_sha256": "8e09c1e0e32b98cd62bd349d08258ba9474dc1f88cfb6a3c92d73828b79720e3",
+  "evaluation_manifest_sha256": "e1eb2ea3320ad5b3510b1722cc5f38ddd3de73c3bc06ac93670f061aac3f09b8",
   "utility_harm": "PENDING_EXTERNAL_AUTHORITY",
   "residuals": [
     "This deterministic pre-screen validates declared fixture policy and dossier consistency; it is not external utility/harm acceptance.",

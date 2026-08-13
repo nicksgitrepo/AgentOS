@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /*
- * Materialize one deterministic, project-agnostic recipe for every retained
- * master-inventory role. A role profile is context, not a new authority: it
- * narrows purpose, triggers, exclusions, and source requirements while the
- * reusable block library supplies the actual gates. This lets the same
- * source-locked standard or control govern many task-shaped agents without
- * copying that authority into hundreds of role packages.
+ * Materialize one deterministic, project-agnostic recipe address for every
+ * retained master-inventory role. A role profile is context, not authority
+ * and never makes an otherwise unbuilt role spawnable. Only recipes whose
+ * complete role-specific block closure exists may become compileable. This
+ * preserves stable routing for the backlog without pretending a family router
+ * and universal governance are a finished specialist.
  */
 
 import fs from "node:fs";
@@ -300,9 +300,9 @@ function contextualRecipe(entry) {
     non_goals: BASE_NON_GOALS,
     selection_rule: "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
     external_overlay_rule: "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-    lifecycle: "CANDIDATE",
-    compile_allowed: true,
-    materialization: {status: "CONTEXT_PROFILE_CANDIDATE", role_specific_block_required: false, package_ids: requiredBlockIds},
+    lifecycle: "PLANNED",
+    compile_allowed: false,
+    materialization: {status: "PLANNED_RECIPE_ONLY", role_specific_block_required: true, package_ids: requiredBlockIds},
     required_atomic_blocks: [],
     required_standard_blocks: [],
     optional_block_ids: [],
@@ -402,7 +402,7 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
     selection_rule: "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
     external_overlay_rule: "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
     addressability_rule: "EVERY_RETAINED_MASTER_INVENTORY_ROLE_HAS_ONE_STABLE_RECIPE;_ALIASES_RESOLVE_TO_THE_CANONICAL_RECIPE",
-    planned_recipe_rule: "ALL_NON_PROTECTED_ROLES_COMPILE_FROM_ONE_IMMUTABLE_CONTEXT_PROFILE_PLUS_THE_SMALLEST_DEPENDENCY_COMPLETE_REUSABLE_GATE_SET;_CONTEXT_NEVER_BECOMES_AUTHORITY",
+    planned_recipe_rule: "UNBUILT_ROLES_REMAIN_ADDRESSABLE_BUT_NON_COMPILEABLE_UNTIL_THE_COMPLETE_ROLE_SPECIFIC_AND_STANDARD_BLOCK_CLOSURE_IS_SOURCE_LOCKED_QA_EVALUATED_AND_ACCEPTED;_CONTEXT_NEVER_BECOMES_AUTHORITY",
     foundation_block_ids: FOUNDATION_BLOCKS,
     inventory: {raw_role_mentions: 627, unique_role_titles: inventoryEntries.length, alias_mappings: aliases.length},
     recipes,

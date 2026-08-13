@@ -7,6 +7,7 @@ import {
   ATOMIC_EVALUATION_CLASSES,
   CORE_EVALUATION_CLASSES,
   GATE_OUTCOMES,
+  SPECIALIST_FAMILIES,
   SPECIALIST_GATE_IDS,
   canonicalDigest,
   compileSpecialistLibrary,
@@ -23,6 +24,8 @@ const root = path.resolve(new URL("..", import.meta.url).pathname);
 
 const first = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: false});
 const second = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: false});
+const blockSchema = JSON.parse(fs.readFileSync(path.join(root, "schemas/specialist-block.v1.json"), "utf8"));
+assert.deepEqual([...blockSchema.properties.family.enum].sort(), [...SPECIALIST_FAMILIES], "runtime and JSON Schema family registries must match");
 assert.deepEqual(first.roster, second.roster, "specialist roster compilation is not deterministic");
 assert.deepEqual(first.routing, second.routing, "specialist routing compilation is not deterministic");
 assert.deepEqual(first.inventory, second.inventory, "specialist inventory materialization is not deterministic");
@@ -48,6 +51,8 @@ assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 19, CONTROL_PL
 
 for (const record of first.records) {
   const packageDir = record.packageDir;
+  for (const field of blockSchema.required) assert(Object.hasOwn(record.block, field), `${record.block.block_id} omits required schema field ${field}`);
+  assert(SPECIALIST_FAMILIES.includes(record.block.family), `${record.block.block_id} uses an unregistered family`);
   assert.equal(record.block.gate_pack.ordered_gate_ids.length, 12);
   assert.deepEqual(record.block.gate_pack.outcomes, GATE_OUTCOMES);
   assert.equal(fs.readdirSync(path.join(packageDir, "gates")).filter((name) => name.endsWith(".gate")).length, 12);

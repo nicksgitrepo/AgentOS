@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "data",
   "title": "PostgreSQL Row-Level Security",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -302,5 +303,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082"
+  "block_sha256": "5ca783a11f62c4619357f760a3264f3234382fec3004515bcd895270fcc05c4f"
 }

@@ -4,7 +4,7 @@
   "handoff_id": "specialist-handoff.oidc-core.v1",
   "block_id": "specialist.security.oidc-core",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66",
+  "candidate_digest": "ce5280f65cf33fbb8e0cf4b050d8db85209cfe84fa3dca2d3ed9462c376977ce",
   "source_commit": "3c6cf8b420c7d4f54ba4c551266a4e27e3cdd913",
   "source_tree": "a77308b8a879200cb2d0053fabc5c3284f1ba3a4",
   "changed_paths": [

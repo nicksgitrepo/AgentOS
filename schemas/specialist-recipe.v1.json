@@ -40,6 +40,26 @@
     "required_standard_blocks": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
     "optional_block_ids": {"type": "array", "items": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"}},
     "reasons": {"type": "object", "additionalProperties": {"type": "string"}},
+    "role_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "canonical_id", "title", "family", "subfamily", "purpose", "triggers", "exclusions", "source_requirements", "freshness_policy", "authority", "digest"],
+      "properties": {
+        "schema": {"const": "agentos.specialist_role_profile.v1"},
+        "version": {"const": 1},
+        "canonical_id": {"type": "string", "pattern": "^inventory\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "family": {"type": "string", "minLength": 1},
+        "subfamily": {"type": "string", "minLength": 1},
+        "purpose": {"type": "string", "minLength": 1},
+        "triggers": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "exclusions": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "source_requirements": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "freshness_policy": {"type": "string", "minLength": 1},
+        "authority": {"const": "CONTEXT_ONLY;_NEVER_OVERRIDES_SELECTED_GATES_OR_EXTERNAL_PROJECT_AUTHORITY"},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "source_requirements": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
     "freshness_policy": {"type": "string", "minLength": 1},
     "recipe_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}

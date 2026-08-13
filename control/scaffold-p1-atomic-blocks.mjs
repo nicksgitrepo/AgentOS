@@ -73,6 +73,15 @@ const atomicSpecs = [
   {slug: "cloudflare-cache", blockId: "specialist.platform.cloudflare-cache", genericIds: ["PLATFORM.AWS_CLOUDFLARE_EDGE", "EDGE.CLOUDFLARE_CACHE"], standardBlock: "specialist.standard.cloudflare-cache-current", title: "Cloudflare Cache Rules", purpose: "Analyze Cloudflare cache-rule matching and behavior for the exact documentation snapshot without purging, deploying, or changing edge state.", upstream: "specialist.platform.provider-edge-router", signals: ["cloudflare cache", "EDGE.CLOUDFLARE_CACHE", "cache rules"], sources: [sourceCatalog.atomicLaw], context: ["provider.name", "cache.rule", "cache.scope", "candidate.identity"], knowledge: ["specialist.standard.cloudflare-cache-current", "matching and cache behavior", "edge scope and purge boundary"], included: ["cache-rule semantics", "rule matching evidence", "edge behavior findings"], nonGoals: ["cache purge", "DNS/TLS/WAF", "deployment", "provider account mutation"]},
 ];
 
+const FAMILY_BY_UPSTREAM = Object.freeze({
+  "specialist.assurance-enterprise.router": "assurance-enterprise",
+  "specialist.data.router": "data",
+  "specialist.platform.provider-edge-router": "delivery-operations",
+  "specialist.product-client.router": "product-client",
+  "specialist.security.router": "security",
+  "specialist.software-language-runtime.router": "software-language-runtime",
+});
+
 function buildBlock(spec) {
   const isRouter = spec.roleKind === "ROUTER";
   const dependencies = sorted([...(isRouter ? ["specialist.foundation.role-intake-classifier", "specialist.foundation.scope-non-goal-gate"] : foundationDependencies), ...(spec.upstream ? [spec.upstream] : []), ...(spec.standardBlock ? [spec.standardBlock] : [])]);
@@ -92,7 +101,7 @@ function buildBlock(spec) {
     revision: "1.0.0",
     priority: "P1",
     role_kind: spec.roleKind,
-    family: spec.family,
+    family: spec.family ?? FAMILY_BY_UPSTREAM[spec.upstream],
     title: spec.title,
     lifecycle: "CANDIDATE",
     activation: "OFF",

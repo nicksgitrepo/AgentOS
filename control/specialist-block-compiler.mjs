@@ -16,6 +16,7 @@ export const SPECIALIST_SOURCE_SCHEMA = "agentos.specialist_source_manifest.v1";
 export const SPECIALIST_EVALUATION_SCHEMA = "agentos.specialist_evaluation.v1";
 export const SPECIALIST_HANDOFF_SCHEMA = "agentos.specialist_handoff.v1";
 export const ROLE_KINDS = Object.freeze(["ROUTER", "CONTROL_PLANE", "KNOWLEDGE_BLOCK", "GOVERNANCE_BLOCK", "STANDARD_BLOCK", "CONTEXT_BLOCK", "ATOMIC_SPECIALIST", "COMPILED_AGENT_PACKAGE"]);
+export const SPECIALIST_FAMILIES = Object.freeze(["3d-graphics", "ai-search", "assurance-enterprise", "data", "delivery-operations", "domain", "finance", "foundation", "graphics", "permanent-governance-control", "product-client", "regulatory", "security", "software-language-runtime"]);
 export const GATE_OUTCOMES = Object.freeze(["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]);
 export const SPECIALIST_GATE_IDS = Object.freeze([
   "00-intake",
@@ -173,6 +174,8 @@ export function validateSpecialistBlock(block) {
   assert(/^specialist\.[a-z0-9-]+\.[a-z0-9-]+$/u.test(block.block_id), "specialist block ID is invalid");
   assert(/^[0-9]+\.[0-9]+\.[0-9]+$/u.test(block.revision), `${block.block_id} revision is invalid`);
   assert(/^P[0-6]$/u.test(block.priority), `${block.block_id} priority is invalid`);
+  requireString(block.family, `${block.block_id} family`);
+  assert(SPECIALIST_FAMILIES.includes(block.family), `${block.block_id} family is invalid`);
   validateAtomicity(block);
   requireString(block.title, `${block.block_id} title`);
   assert(["PLANNED", "RESEARCHING", "CANDIDATE", "EVALUATED", "ADMITTED", "DEPRECATED", "NOT_APPLICABLE", "SUSPENDED", "ARCHIVED"].includes(block.lifecycle), `${block.block_id} lifecycle is invalid`);

@@ -27,6 +27,7 @@ const root = path.resolve(new URL("..", import.meta.url).pathname);
 const statusBefore = execFileSync("git", ["status", "--short"], {cwd: root, encoding: "utf8"});
 const companion = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-specialist-companion-"));
 const recipeCatalog = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/recipe-catalog.v1.json"), "utf8"));
+const recipeSchema = JSON.parse(fs.readFileSync(path.join(root, "schemas/specialist-recipe.v1.json"), "utf8"));
 assert.equal(recipeCatalog.schema, "agentos.specialist_recipe_catalog.v1");
 assert.equal(recipeCatalog.inventory.raw_role_mentions, 627);
 assert.equal(recipeCatalog.inventory.unique_role_titles, 621);
@@ -36,12 +37,17 @@ assert.equal(recipeCatalog.aliases.length, 10, "recipe catalog must preserve eve
 assert.equal(recipeCatalog.recipes_sha256, canonicalDigest({...recipeCatalog, recipes_sha256: null}), "recipe catalog digest must be deterministic");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 621, "recipe source inventory IDs must be unique");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 621, "recipe IDs must be unique");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 620, "every non-protected inventory role must compile from reusable gates and an immutable context profile");
-assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 0, "the on-demand roster must not advertise non-materializable roles");
+for (const recipe of recipeCatalog.recipes) {
+  for (const field of recipeSchema.required) assert(Object.hasOwn(recipe, field), `${recipe.recipe_id} omits required schema field ${field}`);
+  for (const field of Object.keys(recipe)) assert(Object.hasOwn(recipeSchema.properties, field), `${recipe.recipe_id} has schema-unknown field ${field}`);
+  assert(recipeSchema.properties.materialization.properties.status.enum.includes(recipe.materialization.status), `${recipe.recipe_id} has an invalid materialization status`);
+}
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 17, "only recipes with a complete role-specific block closure may be candidates");
+assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 603, "unbuilt roster roles must remain addressable but fail closed");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").length, 1, "the protected Memory lane must remain not applicable");
-assert(recipeCatalog.recipes.filter((recipe) => recipe.role_profile).every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "CONTEXT_PROFILE_CANDIDATE"), "context-profile recipes must be compileable without copying reusable authority");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.role_profile).every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PLANNED_RECIPE_ONLY" && recipe.materialization.role_specific_block_required === true), "a context profile must never substitute for missing specialist authority");
 assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").every((recipe) => recipe.compile_allowed === false && recipe.materialization.status === "PROTECTED_EXTERNAL_LANE" && recipe.source_title === "Memory Systems (protected lane)"), "protected Memory lane must not become a portable recipe");
-assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true), "every non-protected recipe must remain compileable");
+assert(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").every((recipe) => recipe.compile_allowed === true && recipe.materialization.status === "COMPILED_CANDIDATE"), "candidate recipes must have a compiled block package");
 const p4RecipeIds = ["recipe.client.product-interaction", "recipe.client.accessibility-wcag", "recipe.client.responsive-web", "recipe.client.ios-swiftui", "recipe.client.android-kotlin"];
 for (const recipeId of p4RecipeIds) {
   const recipe = recipeCatalog.recipes.find((candidate) => candidate.recipe_id === recipeId);
@@ -57,7 +63,7 @@ const integrationHandoff = JSON.parse(fs.readFileSync(path.join(root, "specialis
 assert.equal(integrationHandoff.schema, "agentos.specialist_library_integration_handoff.v1");
 assert.equal(integrationHandoff.status, "WAITING_WITH_RECEIPT");
 assert.equal(execFileSync("git", ["rev-parse", `${integrationHandoff.candidate.commit}^{tree}`], {cwd: root, encoding: "utf8"}).trim(), integrationHandoff.candidate.tree, "handoff candidate tree must match its commit");
-assert.deepEqual(integrationHandoff.inventory.recipe_counts, {total: 621, CANDIDATE: 620, PLANNED: 0, NOT_APPLICABLE: 1, alias_mappings: 10, catalog_sha256: recipeCatalog.recipes_sha256}, "handoff recipe receipt must match the compiled catalog");
+assert.deepEqual(integrationHandoff.inventory.recipe_counts, {total: 621, CANDIDATE: 17, PLANNED: 603, NOT_APPLICABLE: 1, alias_mappings: 10, catalog_sha256: recipeCatalog.recipes_sha256}, "handoff recipe receipt must match the compiled catalog");
 assert.deepEqual(integrationHandoff.inventory.compiled_package_counts, {total: 123, ROUTER: 19, CONTROL_PLANE: 16, ATOMIC_SPECIALIST: 65, STANDARD_BLOCK: 23}, "handoff package receipt must match the compiled roster");
 assert.equal(integrationHandoff.inventory.raw_role_mentions, 627, "handoff raw role receipt must match the complete master inventory");
 assert.equal(integrationHandoff.inventory.unique_role_titles, 621, "handoff inventory receipt must include discovered additions");
@@ -109,8 +115,7 @@ try {
   assert(contextualCatalogRecipe, "recipe catalog must contain context-profile recipes");
   const contextualBlocks = loadSpecialistBlockCatalog({repositoryRoot: root});
   const contextualFields = [...new Set([...contextualCatalogRecipe.required_context_fields, ...contextualCatalogRecipe.required_block_ids.flatMap((blockId) => contextualBlocks.find((block) => block.block_id === blockId)?.required_context ?? [])])].sort();
-  const contextualPackage = compile("contextual-catalog-recipe", contextualCatalogRecipe, TASKS.web, makeExternal("contextual-catalog-recipe", {contextFields: contextualFields}), contextualBlocks);
-  assert.equal(contextualPackage.documents.agentPlan.recipe.role_profile.digest, contextualCatalogRecipe.role_profile.digest);
+  assertCode(() => compile("contextual-catalog-recipe", contextualCatalogRecipe, TASKS.web, makeExternal("contextual-catalog-recipe", {contextFields: contextualFields}), contextualBlocks), "RECIPE_NOT_COMPILEABLE");
   const protectedMemoryRecipe = recipeCatalog.recipes.find((recipe) => recipe.lifecycle === "NOT_APPLICABLE");
   assert(protectedMemoryRecipe, "recipe catalog must retain the protected external lane");
   assertCode(() => compile("protected-memory-recipe", protectedMemoryRecipe, TASKS.web, makeExternal("protected-memory-recipe")), "RECIPE_NOT_COMPILEABLE");
@@ -136,10 +141,7 @@ try {
     assert.equal(first.documents.agentPlan.recipe.source_inventory_id, rosterRecipe.source_inventory_id);
     compiledRosterCount += 1;
   }
-  assert.equal(compiledRosterCount, 620, "every non-protected roster role must actually materialize through the compiler");
-  const tamperedProfile = clone(contextualCatalogRecipe);
-  tamperedProfile.role_profile.purpose = `${tamperedProfile.role_profile.purpose} tampered`;
-  assertCode(() => compileTaskShapedAgent({task: clone(TASKS.web), recipe: tamperedProfile, blocks: clone(portableCatalog), external: makeExternal("tampered-profile"), parent: clone(PARENT), library_identity: clone(LIBRARY_IDENTITY)}), "ROLE_PROFILE_DIGEST_MISMATCH");
+  assert.equal(compiledRosterCount, 17, "only dependency-complete roster recipes may materialize through the compiler");
   const actualStandard = portableCatalog.find((block) => block.block_id === "specialist.standard.owasp-asvs");
   assert(actualStandard, "the source-locked OWASP ASVS standard must be loadable by the task-shaped compiler");
   const actualClosure = new Set([actualStandard.block_id]);

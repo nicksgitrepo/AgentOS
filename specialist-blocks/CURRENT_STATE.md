@@ -2,16 +2,16 @@
 
 ## 2026-08-12 on-demand roster materialization repair
 
-- The canonical 621-role roster now has 620 deterministic compileable
-  candidates and one deliberately non-compileable protected Memory lane.
-- The prior 603 `PLANNED` rows are historical. Each now carries an immutable
-  role profile composed with the smallest dependency-complete reusable gate
-  set.
+- The canonical 621-role roster has 17 dependency-complete compileable
+  candidates, 603 explicit planned/non-compileable entries, and one protected
+  Memory lane marked `NOT_APPLICABLE`.
+- Each planned row carries an immutable role profile for addressability only;
+  a profile cannot replace role-specific or standards authority.
 - Role profiles are context only. They grant no authority, do not copy a
   standard, and cannot support a substantive claim without exact selected
   source locks plus a complete external authority corpus.
 - Current recipe catalog digest:
-  `f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67`.
+  `765ae656b91e8c12b5c5a98bbe9ecc31eef786eb8b7ab5c1baaf5025b033a604`.
 - Admission and activation remain off pending focused and independent proof of
   the repaired compiler and a typed AgentOS intake.
 
