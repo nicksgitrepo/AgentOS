@@ -14,10 +14,10 @@
     {"path": "integrations/agentos-3/tests/real-host-proof.mjs", "sha256": "e74acd450f988361f43be54b996e4932685564710dada809116cb0952947f8f1"},
     {"path": "integrations/agentos-3/tools/build.mjs", "sha256": "5f07f36ab9e4b090c39d46dbf9821b60e5284081e22f41dadc37883eed359cd0"},
     {"path": "integrations/agentos-3/tools/rebind-main-core.mjs", "sha256": "03250aa7615505b632b53d37dbb8027b3d3b9377e4713a9e662fed18cdddeb3f"},
-    {"path": "integrations/agentos-3/tools/release-source.mjs", "sha256": "f503f08ada328a18ba7b50e9c59e5eef8296c7bd454e417e24accec9f85fd4c8"},
+    {"path": "integrations/agentos-3/tools/release-source.mjs", "sha256": "9b360e5e00941cafce546689ef1bd1f798d81e09fc7a5c09485e3ab209af9197"},
     {"path": "integrations/agentos-3/tools/verify-main-core.mjs", "sha256": "c6202278dc0a9e4e5998b20de46331e7e320c6b9750c13055075731307e9672a"},
     {"path": "tests/verify-agentos-3-release-candidate.mjs", "sha256": "baecc6c55e39a4b241009ea44565dd849cc61e41bbaa2946906287e3fab2c960"},
-    {"path": "tests/verify-agentos-3-source-parity.mjs", "sha256": "01d669ae1f30d0e32e21a63905cb963c1e70c957c8f845d29dd110a6f8fcae01"}
+    {"path": "tests/verify-agentos-3-source-parity.mjs", "sha256": "30324d2cf43d85f99b1677f5d308094a69b0f026953329e84fdd61c57013abb8"}
   ],
   "invalidation": "Any entry digest, release-source identity, non-generated source path, or release-file-type change invalidates this binding and every generated AgentOS 3 bundle.",
   "migration": "Freeze a new clean source commit/tree, refresh this binding, rebind main-core, rebuild twice, and independently verify before accepting a successor artifact.",

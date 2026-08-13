@@ -6,6 +6,8 @@ import {spawnSync} from "node:child_process";
 const GENERATED_PATH_PREFIXES = Object.freeze([
   "integrations/agentos-3/dist/",
   "integrations/agentos-3/main-core/control/",
+  "integrations/agentos-3/main-core/governance/",
+  "integrations/agentos-3/main-core/migrations/",
 ]);
 const GENERATED_EXACT_PATHS = Object.freeze([
   "integrations/agentos-3/main-core/source-manifest.json",

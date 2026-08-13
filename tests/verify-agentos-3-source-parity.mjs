@@ -29,11 +29,19 @@ try {
   assert.equal(verifyReleaseSourceIdentity({repositoryRoot: fixture, sourceCommit, sourceTree}).status, "EXACT_SOURCE_OR_GENERATED_DESCENDANT");
 
   await mkdir(join(fixture, "integrations", "agentos-3", "dist"), {recursive: true});
+  await mkdir(join(fixture, "integrations", "agentos-3", "main-core", "governance"), {recursive: true});
+  await mkdir(join(fixture, "integrations", "agentos-3", "main-core", "migrations"), {recursive: true});
   await writeFile(join(fixture, "integrations", "agentos-3", "dist", "artifact.json"), "{}\n");
+  await writeFile(join(fixture, "integrations", "agentos-3", "main-core", "governance", "authority.json"), "{}\n");
+  await writeFile(join(fixture, "integrations", "agentos-3", "main-core", "migrations", "authority.json"), "{}\n");
   git(fixture, "add", ".");
   git(fixture, "commit", "-qm", "generated artifact");
   const generated = verifyReleaseSourceIdentity({repositoryRoot: fixture, sourceCommit, sourceTree});
-  assert.deepEqual(generated.generated_committed_paths, ["integrations/agentos-3/dist/artifact.json"]);
+  assert.deepEqual(generated.generated_committed_paths, [
+    "integrations/agentos-3/dist/artifact.json",
+    "integrations/agentos-3/main-core/governance/authority.json",
+    "integrations/agentos-3/main-core/migrations/authority.json",
+  ]);
 
   await writeFile(join(fixture, "control", "portable.mjs"), "export const portable = false;\n");
   assert.throws(() => verifyReleaseSourceIdentity({repositoryRoot: fixture, sourceCommit, sourceTree}), /RELEASE_SOURCE_DIRTY/u);

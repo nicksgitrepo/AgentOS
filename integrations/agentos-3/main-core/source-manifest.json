@@ -1,9 +1,23 @@
 {
-  "schema": "agentos.integration.main-core-manifest.v2",
-  "source_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
-  "source_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
-  "candidate_commit": "38a1351f12628020e59ced067652ffa419e94ce9",
-  "candidate_tree": "d3107f25e38711dd86be71968895b32c3eb33748",
+  "schema": "agentos.integration.main-core-manifest.v3",
+  "source_commit": "06bceb223b8c849dafcaba2c1fbf4cd5917640fb",
+  "source_tree": "4b0f55626049ab880a1e93cdbdb4088532f4bb99",
+  "candidate_commit": "06bceb223b8c849dafcaba2c1fbf4cd5917640fb",
+  "candidate_tree": "4b0f55626049ab880a1e93cdbdb4088532f4bb99",
+  "source_bindings": [
+    {
+      "source": "control",
+      "target": "control"
+    },
+    {
+      "source": "governance/3.0/permanent-role-authority-graph.v1.json",
+      "target": "governance/3.0/permanent-role-authority-graph.v1.json"
+    },
+    {
+      "source": "migrations/permanent-role-authority.v1.json",
+      "target": "migrations/permanent-role-authority.v1.json"
+    }
+  ],
   "entries": [
     {
       "path": "control/README.md",
@@ -1064,6 +1078,16 @@
       "path": "control/universal-response-gating.mjs",
       "size": 16528,
       "sha256": "c34ea0a228ec92f1ab215ef7c009be9900830984aa7d50c0ea0b9d23db692032"
+    },
+    {
+      "path": "governance/3.0/permanent-role-authority-graph.v1.json",
+      "size": 9803,
+      "sha256": "088bc4a9ed7460fd2e23aef1e279394b8a4d2390205f5440adb940897bf63bf1"
+    },
+    {
+      "path": "migrations/permanent-role-authority.v1.json",
+      "size": 2321,
+      "sha256": "2cc2837fb02be119001d42779459720a1a51359a8305fa4f462c7ef12dbf98bb"
     }
   ]
 }
