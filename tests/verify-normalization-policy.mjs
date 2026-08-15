@@ -10,13 +10,13 @@ import {
 
 const policy = compileNormalizationPolicy({
   importMode: "NORMALIZE_AND_AUDIT",
-  projectGlossary: ["WellSight", "JobSight"],
+  projectGlossary: ["TermBeta", "TermAlpha"],
   protectedContracts: ["GET /public-record", "users.email"],
   frameworkConventions: {router: "official-framework"},
 });
 const repeated = compileNormalizationPolicy({
   importMode: "NORMALIZE_AND_AUDIT",
-  projectGlossary: ["JobSight", "WellSight"],
+  projectGlossary: ["TermAlpha", "TermBeta"],
   protectedContracts: ["users.email", "GET /public-record"],
   frameworkConventions: {router: "official-framework"},
 });
