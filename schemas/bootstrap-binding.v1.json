@@ -546,7 +546,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "36eaf7b3ef9d8ce62f89a65bc9e9ab0395e060e04ca024de2ad72eeaaa616120"
+      "sha256": "4316033877c31539947ffef3c3647a8dce50f647bc9ecda0742fd56977c31385"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -554,7 +554,7 @@
     },
     "continuous_operating_loop_contract": {
       "path": "schemas/continuous-operating-loop.v1.json",
-      "sha256": "3b9d40d03db9f1ba30b93ffd182eff1646de6abba112792725e04d48d0e008e5"
+      "sha256": "0573b71224a9b5eebb49b2ad9bf40910ebbc604eace37f58fc249458424a27d4"
     },
     "continuous_operating_loop_verifier": {
       "path": "tests/verify-continuous-operating-loop.mjs",

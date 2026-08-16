@@ -13,7 +13,7 @@
   },
   "storage_scope": "CONTROL_PLANE_PERSISTENT",
   "storage_rule": "Controller state is stored under the bound control-plane root and is never written into the product root by default. An in-project control plane requires an explicit owner opt-in.",
-  "purpose": "A persistent project-level control plane that starts and reconciles campaigns while keeping deterministic state transitions separate from judgment.",
+  "purpose": "A persistent project-level control plane that keeps the Import Orchestrator moving while keeping deterministic state transitions separate from judgment and project work.",
   "controller_agent": {
     "schema": "agentos.controller_agent_binding.v1",
     "role": "JUDGMENT_INTERPRETATION_PLANNING_ROUTING",
@@ -41,7 +41,7 @@
     "controller": "control/controller-supervisor-runtime.mjs",
     "contract": "schemas/controller-supervisor.v1.json",
     "role": "PROJECT_PERSISTENT_AUTONOMOUS_OBSERVATION_GOAL_ROUTING",
-    "loop_rule": "Hold one supervisor lease, observe current control-plane records, mint one deterministic bounded goal, route safe work, retain exact failures, and remain in an event-driven wait rather than IDLE whenever no safe route is available.",
+    "loop_rule": "Hold one supervisor lease, observe the Import Orchestrator and current control-plane records, mint one deterministic bounded workflow-repair goal, route safe repairs, retain exact failures, and remain active rather than IDLE whenever the Orchestrator is absent or no safe route is available.",
     "hard_boundary_rule": "Stop the dependent outcome on protected authority, identity, evidence, credential, destructive, external, or unresolved owner-intent boundaries.",
     "soft_boundary_rule": "Send changed scope or operating choices to campaign Orchestrator review while unrelated safe work continues.",
     "puzzle_rule": "Route one repairable engineering puzzle through campaign custody, then require Auditor and Controller rechecks.",
@@ -52,7 +52,7 @@
     "contract": "schemas/continuous-operating-loop.v1.json",
     "default_meaningful_progress_window_minutes": 15,
     "persistent_roles": ["INTENT_REGULATOR", "RUNTIME"],
-    "temporary_role_rule": "The Campaign Orchestrator starts named temporary workers, the independent Auditor checks the campaign, and the Intent Regulator audits workflow progress without becoming the worker.",
+    "temporary_role_rule": "The Import Orchestrator owns project-bound planning, wave order, spawning, custody, handoffs, repair intake, and candidate integration; the independent Auditor checks the campaign; and the Intent Regulator audits workflow progress and repairs liveness without becoming the worker or project-work orchestrator.",
     "repair_rule": "Preserve evidence, classify the finding, record root cause, apply the smallest admitted repair, refresh bindings, replace the predecessor with visible host receipts, and require independent clearance.",
     "naming_rule": "Temporary role display names carry the exact version and two-digit test-build tag."
   },

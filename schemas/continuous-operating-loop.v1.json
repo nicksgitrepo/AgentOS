@@ -3,11 +3,11 @@
   "version": 1,
   "status": "PREPARED_NOT_ACTIVATED",
   "controller": "control/continuous-operating-loop.mjs",
-  "purpose": "Run the project-persistent self-development workflow through a timed Intent Regulator inspection, campaign-owned repair, fresh replacement, and independent clearance.",
+  "purpose": "Run the project-persistent self-development workflow through an Import Orchestrator-owned campaign, Intent Regulator liveness supervision, campaign-owned repair, fresh replacement, and independent clearance.",
   "roles": {
     "intent_regulator": {
       "persistent": true,
-      "responsibility": "Own the campaign goal, inspect workflow health, preserve failures, classify boundaries, and decide whether the whole process is moving toward intent."
+      "responsibility": "Supervise the Import Orchestrator's workflow health, preserve failures, classify boundaries, repair safe liveness gaps, and decide whether the whole process is moving toward intent without taking ownership of project work."
     },
     "runtime": {
       "persistent": true,
@@ -15,7 +15,7 @@
     },
     "orchestrator": {
       "persistent": false,
-      "responsibility": "Start the admitted campaign workers, keep each worker in one named lane, and attempt ordinary in-scope repairs."
+      "responsibility": "Own the project-bound import plan, derive wave order, request and QA-gate Spawner routes, start admitted campaign workers, keep each worker in one named lane, preserve custody and handoffs, collect repairs, and advance the candidate through integration."
     },
     "auditor": {
       "persistent": false,
