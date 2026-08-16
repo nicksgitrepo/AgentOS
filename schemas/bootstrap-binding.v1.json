@@ -226,7 +226,7 @@
     },
     "kernel_registry": {
       "path": "schemas/kernel.v1.json",
-      "sha256": "07007ec5dbc85836c1ab061fc1cbbd7527e5f98e41f3f8e7184f64d1794fbbdb"
+      "sha256": "9d9177199ff901662907e207a56efdc9a310c2ee2561b9ab1dc9734e7a35fbb6"
     },
     "delivery_closure_records_controller": {
       "path": "control/delivery-closure-records.mjs",
@@ -710,7 +710,19 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "00ec7402cf209362b97b4c2e30457f08eea3045415f2e64f2626819afe628cf2"
+      "sha256": "0dc500c97cbdfd5df04a6967a0e593439d8d99ed07444117ab0e630c8c70c0f2"
+    },
+    "controller_owner_event_wake_controller": {
+      "path": "control/controller-owner-event-wake.mjs",
+      "sha256": "ed2a8f9ffcfffd020c73c7a03301a164a3ea3d5621c38864a1f5bdd94df520ec"
+    },
+    "controller_owner_event_wake_contract": {
+      "path": "schemas/controller-owner-event-wake.v1.json",
+      "sha256": "7a25dd53b0275ebfcbe27d1b28b3fa3012d938caebfde1a6fe6d82985aeb3bbd"
+    },
+    "controller_owner_event_wake_verifier": {
+      "path": "tests/verify-controller-owner-event-wake.mjs",
+      "sha256": "cd8d4c3b8c009b234902dee0fb6e3da1d27eac60f3427d53663b49f81d10d301"
     },
     "persistent_intent_runtime_primitives_controller": {
       "path": "control/persistent-intent-runtime-primitives.mjs",

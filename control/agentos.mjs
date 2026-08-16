@@ -15,6 +15,7 @@ export {compileProjectContract, compileProjectContractWithReceipt, reassessProje
 export {compileControllerImportPlanningContext, validateControllerImportPlanningContext, compileControllerImportCampaignPlan, validateControllerImportCampaignPlan, compileControllerImportRosterProjection, validateControllerImportRosterProjection, compileControllerImportRunState, validateControllerImportRunState, advanceControllerImportRunState} from "./controller-import-planner.mjs";
 export {compileControllerImportRoutineCloseout, validateControllerImportRoutineCloseout} from "./controller-import-closeout.mjs";
 export {compileControllerEscalation, validateControllerEscalation} from "./controller-escalation-continuation.mjs";
+export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,
@@ -78,6 +79,7 @@ export * as controller from "./agentos-controller.mjs";
 export * as controllerImportPlanner from "./controller-import-planner.mjs";
 export * as controllerImportCloseout from "./controller-import-closeout.mjs";
 export * as controllerEscalation from "./controller-escalation-continuation.mjs";
+export * as controllerOwnerEventWake from "./controller-owner-event-wake.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as dynamicLanes from "./dynamic-project-lanes.mjs";
 export * as featureInventory from "./canonical-feature-inventory.mjs";

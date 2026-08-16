@@ -109,6 +109,11 @@
       "contract": "schemas/continuous-operating-loop.v1.json",
       "rule": "The Intent Regulator inspects every active worker on the meaningful-progress timer; the Orchestrator owns ordinary repair, the independent Auditor owns clearance, Runtime and Intent Regulator persist, and hard boundaries stop continuation."
     },
+    "owner_event_wake": {
+      "controller": "control/controller-owner-event-wake.mjs",
+      "contract": "schemas/controller-owner-event-wake.v1.json",
+      "rule": "A valid direct owner resumption response is a same-turn event, not a timer observation: validate the escalation, projection, and owner-decision bindings before acting, start exactly one bounded local transition when eligible, otherwise persist an event-driven protected checkpoint, and never treat owner resumption as independent clearance."
+    },
     "campaign_orchestrator": "CAMPAIGN_SCOPED",
     "runtime_rule": "No consequential transition completes until a project-bound adapter performs the action and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",
     "reconciliation_interval_minutes": 15,

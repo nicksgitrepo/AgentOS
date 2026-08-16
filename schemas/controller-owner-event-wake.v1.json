@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/controller-owner-event-wake.v1.json",
+  "title": "AgentOS Controller Direct Owner Event Wake",
+  "description": "A content-bound direct owner response wakes the Controller in the same task turn. It starts one bounded local transition when eligible, otherwise persists an event-driven protected checkpoint. Owner resumption never clears an independent protected gate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "event_id", "event_type", "wake_mode", "owner_task_id", "controller_task_id",
+    "received_at_utc", "bound_receipts", "local_work", "protected_gate", "continuation", "resource_state",
+    "owner_resumption_is_clearance", "wake_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.controller_owner_event_wake.v1"},
+    "version": {"const": 1},
+    "event_id": {"$ref": "#/$defs/identifier"},
+    "event_type": {"const": "OWNER_RESUMPTION"},
+    "wake_mode": {"const": "DIRECT_OWNER_EVENT_SAME_TURN"},
+    "owner_task_id": {"$ref": "#/$defs/identifier"},
+    "controller_task_id": {"$ref": "#/$defs/identifier"},
+    "received_at_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$"},
+    "bound_receipts": {"$ref": "#/$defs/boundReceipts"},
+    "local_work": {"$ref": "#/$defs/localWork"},
+    "protected_gate": {"$ref": "#/$defs/protectedGate"},
+    "continuation": {"$ref": "#/$defs/continuation"},
+    "resource_state": {"$ref": "#/$defs/resourceState"},
+    "owner_resumption_is_clearance": {"const": false},
+    "wake_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "identifierArray": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+    "boundReceipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["escalation_receipt_sha256", "projection_sha256", "owner_decision_sha256"],
+      "properties": {
+        "escalation_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "projection_sha256": {"$ref": "#/$defs/sha256"},
+        "owner_decision_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "localWork": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pending_local_request_ids", "available_wave_ids", "activation_blocked_wave_ids", "wave_activation_allowed"],
+      "properties": {
+        "pending_local_request_ids": {"$ref": "#/$defs/identifierArray"},
+        "available_wave_ids": {"$ref": "#/$defs/identifierArray"},
+        "activation_blocked_wave_ids": {"$ref": "#/$defs/identifierArray"},
+        "wave_activation_allowed": {"type": "boolean"}
+      }
+    },
+    "protectedGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dependency_id", "status", "evidence_ceiling", "blocked_wave_ids", "clearance_receipt_sha256"],
+      "properties": {
+        "dependency_id": {"$ref": "#/$defs/identifier"},
+        "status": {"enum": ["PENDING_EXTERNAL_AUTHORITY", "OWNER_DECISION_REQUIRED", "PENDING_AUTHORITY"]},
+        "evidence_ceiling": {"type": "string", "minLength": 1},
+        "blocked_wave_ids": {"$ref": "#/$defs/identifierArray"},
+        "clearance_receipt_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}
+      }
+    },
+    "continuation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action", "transition_kind", "transition_id", "target_id", "same_turn", "event_driven_idle",
+        "timer_wait_forbidden", "heartbeat_defer_forbidden", "transition_count", "admission", "activation"
+      ],
+      "properties": {
+        "action": {"enum": ["START_ONE_BOUNDED_LOCAL_TRANSITION", "PERSIST_EVENT_DRIVEN_PROTECTED_CHECKPOINT"]},
+        "transition_kind": {"enum": ["LOCAL_BLOCK_REPAIR", "AVAILABLE_WAVE", "PROTECTED_CHECKPOINT"]},
+        "transition_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "target_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "same_turn": {"const": true},
+        "event_driven_idle": {"type": "boolean"},
+        "timer_wait_forbidden": {"const": true},
+        "heartbeat_defer_forbidden": {"const": true},
+        "transition_count": {"type": "integer", "minimum": 0, "maximum": 1},
+        "admission": {"const": "OFF"},
+        "activation": {"const": "OFF"}
+      }
+    },
+    "resourceState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["temporary_workers", "scheduler_jobs", "heavyweight_processes", "timers", "polling"],
+      "properties": {
+        "temporary_workers": {"const": 0},
+        "scheduler_jobs": {"const": 0},
+        "heavyweight_processes": {"const": 0},
+        "timers": {"const": 0},
+        "polling": {"const": false}
+      }
+    }
+  }
+}
