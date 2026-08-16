@@ -129,7 +129,7 @@ assert.equal(hardResult.tick.route_status, "STOPPED_HARD_BOUNDARY");
 const liveness = observation({findings: []});
 assert.equal(deriveSupervisorAction(liveness), "RECONCILE_LIVENESS");
 const idle = observation({activeCampaign: false});
-assert.equal(deriveSupervisorAction(idle), "WAIT_FOR_AUTHORIZED_WORK");
+assert.equal(deriveSupervisorAction(idle), "RECONCILE_LIVENESS", "an inactive workflow must be repaired or reconciled before any wait");
 
 const autonomousTasks = [
   {
@@ -163,7 +163,7 @@ assert.equal(selectAutonomousNextTask({tasks: autonomousTasks, boundary: boundar
   source_sha256: sourceSha256,
 }], activeCampaign: true}).action, "STOP_HARD_BOUNDARY");
 assert.equal(selectAutonomousNextTask({tasks: [], boundary: boundary(), findings: [], activeCampaign: true}).action, "RECONCILE_LIVENESS");
-assert.equal(selectAutonomousNextTask({tasks: [], boundary: boundary(), findings: [], activeCampaign: false}).action, "WAIT_FOR_AUTHORIZED_WORK");
+assert.equal(selectAutonomousNextTask({tasks: [], boundary: boundary(), findings: [], activeCampaign: false}).action, "RECONCILE_LIVENESS");
 assert.equal(selectAutonomousNextTask({tasks: [{...autonomousTasks[0], task_id: "CONTROLLER-TASK-OWNER", owner_decision_required: true}], boundary: boundary(), findings: [], activeCampaign: true}).action, "STOP_HARD_BOUNDARY");
 
 const tampered = structuredClone(puzzle);

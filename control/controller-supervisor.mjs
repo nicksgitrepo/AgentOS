@@ -240,7 +240,7 @@ export function selectAutonomousNextTask({tasks = [], boundary, findings = [], a
     return {action: "ROUTE_REPAIRABLE_PUZZLE", task_id: nextTask.task_id, reason: nextTask.summary};
   }
   if (activeCampaign) return {action: "RECONCILE_LIVENESS", task_id: null, reason: "No queued task is open; reconcile the active campaign and mint the next safe task if needed."};
-  return {action: "WAIT_FOR_AUTHORIZED_WORK", task_id: null, reason: "There is no active campaign or authorized queued task."};
+  return {action: "RECONCILE_LIVENESS", task_id: null, reason: "No campaign is marked active; reconcile the workflow state and recover or mint the next safe control-plane task before any wait."};
 }
 
 export function validateSupervisorObservation(observation) {
@@ -340,8 +340,7 @@ export function deriveSupervisorAction(observation) {
   if (hasOpenFinding(observation.findings, ["REPAIRABLE_ENGINEERING_PUZZLE"])) {
     return "ROUTE_REPAIRABLE_PUZZLE";
   }
-  if (observation.active_campaign) return "RECONCILE_LIVENESS";
-  return "WAIT_FOR_AUTHORIZED_WORK";
+  return "RECONCILE_LIVENESS";
 }
 
 function actionClassification(action) {
@@ -358,7 +357,7 @@ function actionGoal(action, observation) {
   if (action === "ROUTE_REPAIRABLE_PUZZLE") return open.length === 0
     ? "Inspect the active campaign handoff, find the next safe repair, and return a source-bound readback."
     : "Route the open repair puzzle through the campaign roles, retain exact evidence, and recheck the result at the Controller boundary.";
-  if (action === "RECONCILE_LIVENESS") return "Observe the active campaign roles and receipts, repair a safe liveness gap if one exists, and recheck the current handoff.";
+  if (action === "RECONCILE_LIVENESS") return "Observe the workflow roles and receipts, repair any safe liveness gap, and recover or mint the next safe control-plane task before waiting. Waiting is allowed only after a true protected blocker is recorded.";
   return "Wait for an owner-authorized campaign or control-plane task; do not invent Product work.";
 }
 

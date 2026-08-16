@@ -8,7 +8,7 @@
   "autonomous_task_selection": {
     "controller": "control/controller-supervisor.mjs",
     "rule": "When a project adapter supplies an ordered typed task queue, the Controller selects the first open safe task by priority and stable ID; it never requires an outside task name.",
-    "boundary_rule": "Hard boundaries stop first, soft boundaries go to Orchestrator review, repair puzzles route through campaign custody, and an empty queue on an active campaign triggers liveness reconciliation and safe next-task minting.",
+    "boundary_rule": "Hard boundaries stop first, soft boundaries go to Orchestrator review, repair puzzles route through campaign custody, and an empty or inactive workflow triggers liveness reconciliation and safe next-task recovery before any wait.",
     "task_fields": ["task_id", "status", "priority", "summary", "scope", "owner_decision_required"]
   },
   "observation": {
@@ -35,7 +35,7 @@
     "soft": "Ask the campaign Orchestrator to review the changed scope or operating choice while unrelated safe work continues.",
     "puzzle": "Route one bounded repair through the existing campaign custody, then require Auditor and Controller rechecks.",
     "liveness": "Observe active roles and receipts and repair safe liveness gaps without changing owner intent.",
-    "idle": "Compatibility-only legacy label; a persistent supervisor uses ACTIVE_EVENT_WAIT while awaiting a material observation or owner event.",
+    "idle": "Compatibility-only legacy label; an inactive or empty workflow is reconciled before waiting, and a persistent supervisor uses ACTIVE_EVENT_WAIT only after the workflow records a genuine protected dependency or event-driven boundary.",
     "event_driven_wait": "Remain alive with zero workers and no external activity until a material observation, owner event, or protected dependency change arrives."
   },
   "persistence": {

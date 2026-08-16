@@ -562,7 +562,7 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "8f82a4c4d82176604b197d13c57a6830ecee304d310606362966f7b66b9f9f02"
+      "sha256": "7c3d4b3ef66d959a63570d20d565b88797d2949d41ad077f6fb3117caa3113a5"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
@@ -570,11 +570,11 @@
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
-      "sha256": "a9c7f3fc1d38a2672f380658cf388822dd960d533fc59b120879d55aad3f1af0"
+      "sha256": "d1db7924aecf038b522b8575780ff1ab356f007879adfdfc56d50015a9bf2c42"
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "6c6dd47bc42f7f7eaf4ea4637a16517e80b025a545c731e1b8c66577dcf0e929"
+      "sha256": "4fbac3063a239d5185d7f73358f71c2b83ba9f1dd1bdf5b937926964c5e58bc7"
     },
     "controller_intent_hardening_verifier": {
       "path": "tests/verify-controller-intent-hardening.mjs",
