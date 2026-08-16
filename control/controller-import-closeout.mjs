@@ -68,40 +68,61 @@ function validateProtectedDependency(dependency) {
   assert(dependency.sole_protected_dependency === true, "Controller import protected dependency is not sole");
 }
 
+function validateProtectedWaveActivation(activation, projection) {
+  exactKeys(activation, ["action", "wave_ids", "source_projection_sha256"], "Controller import protected wave activation");
+  assert(activation.action === CONTROLLER_IMPORT_NEXT_ACTIONS.WAIT_PROTECTED_WAVE_ACTIVATION, "Controller import protected wave activation action is invalid");
+  assert(JSON.stringify(activation.wave_ids) === JSON.stringify(projection.activation_blocked_wave_ids), "Controller import protected wave activation routes are stale");
+  requireSha(activation.source_projection_sha256, "Controller import protected wave activation projection");
+  assert(activation.source_projection_sha256 === projection.projection_sha256, "Controller import protected wave activation is stale");
+}
+
 export function validateControllerImportRoutineCloseout(closeout, {projection, plan = null} = {}) {
   validateControllerImportRosterProjection(projection, {plan});
-  exactKeys(closeout, ["schema", "version", "status", "projection_sha256", "next_transition", "local_block_repair", "protected_dependency", "closeout_sha256"], "Controller import routine closeout");
+  exactKeys(closeout, ["schema", "version", "status", "projection_sha256", "wave_activation_allowed", "next_transition", "local_block_repair", "protected_wave_activation", "protected_dependency", "closeout_sha256"], "Controller import routine closeout");
   assert(closeout.schema === CONTROLLER_IMPORT_CLOSEOUT_SCHEMA && closeout.version === CONTROLLER_IMPORT_PLANNER_VERSION, "Controller import routine closeout identity is invalid");
-  assert(["ROUTINE_HANDOFF_ACCEPTED", "STALLED_READY_FOR_RESUMPTION", "TERMINAL_READY"].includes(closeout.status), "Controller import routine closeout status is invalid");
+  assert(["ROUTINE_HANDOFF_ACCEPTED", "PROTECTED_WAVE_ACTIVATION_PENDING", "STALLED_READY_FOR_RESUMPTION", "TERMINAL_READY"].includes(closeout.status), "Controller import routine closeout status is invalid");
   requireSha(closeout.projection_sha256, "Controller import routine closeout projection");
   assert(closeout.projection_sha256 === projection.projection_sha256, "Controller import routine closeout is bound to a different projection");
+  assert(closeout.wave_activation_allowed === projection.wave_activation_allowed, "Controller import closeout activation eligibility is stale");
   assert(closeout.next_transition === null || isRecord(closeout.next_transition), "Controller import routine closeout next transition is invalid");
   assert(closeout.local_block_repair === null || isRecord(closeout.local_block_repair), "Controller import routine closeout local repair is invalid");
+  assert(closeout.protected_wave_activation === null || isRecord(closeout.protected_wave_activation), "Controller import routine closeout protected wave activation is invalid");
   assert(closeout.protected_dependency === null || isRecord(closeout.protected_dependency), "Controller import routine closeout protected dependency is invalid");
   if (closeout.status === "ROUTINE_HANDOFF_ACCEPTED") {
     assert(closeout.protected_dependency === null, "Routine closeout cannot carry a protected stall");
     if (projection.available_wave_ids.length > 0) {
+      assert(projection.wave_activation_allowed === true, "Routine closeout cannot start a wave while activation is held");
       assert(projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE, "Routine closeout projection does not start available work");
       assert(closeout.next_transition !== null, "Routine closeout must bind the next available transition");
       assert(closeout.local_block_repair === null, "Routine closeout cannot replace an available transition with block repair");
+      assert(closeout.protected_wave_activation === null, "Routine closeout cannot carry a protected wave hold");
       validateNextTransition(closeout.next_transition, projection);
     } else if (projection.pending_role_request_ids.length > 0) {
       assert(projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR, "Routine closeout projection does not start local block repair");
       assert(closeout.next_transition === null, "Local block repair closeout cannot carry a wave transition");
       assert(closeout.local_block_repair !== null, "Routine closeout must bind the next local block repair");
+      assert(closeout.protected_wave_activation === null, "Local block repair closeout cannot freeze behind wave activation");
       validateLocalBlockRepair(closeout.local_block_repair, projection);
     } else {
       assert(projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW, "Routine closeout terminal action is invalid");
-      assert(closeout.next_transition === null && closeout.local_block_repair === null, "Terminal closeout carries an ineligible transition");
+      assert(closeout.next_transition === null && closeout.local_block_repair === null && closeout.protected_wave_activation === null, "Terminal closeout carries an ineligible transition");
     }
+  } else if (closeout.status === "PROTECTED_WAVE_ACTIVATION_PENDING") {
+    assert(projection.wave_activation_allowed === false, "Protected wave activation status requires activation to be held");
+    assert(projection.available_wave_ids.length === 0 && projection.pending_role_request_ids.length === 0 && projection.activation_blocked_wave_ids.length > 0, "Protected wave activation status does not bind the remaining wave work");
+    assert(projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.WAIT_PROTECTED_WAVE_ACTIVATION, "Protected wave activation next action is invalid");
+    assert(closeout.next_transition === null && closeout.local_block_repair === null, "Protected wave activation carries an executable local action");
+    assert(closeout.protected_wave_activation !== null && closeout.protected_dependency !== null, "Protected wave activation lacks its exact protected dependency");
+    validateProtectedWaveActivation(closeout.protected_wave_activation, projection);
+    validateProtectedDependency(closeout.protected_dependency);
   } else if (closeout.status === "STALLED_READY_FOR_RESUMPTION") {
-    assert(projection.available_wave_ids.length === 0 && projection.pending_role_request_ids.length === 0, "Only a sole protected dependency may stall when no local work remains");
-    assert(closeout.next_transition === null && closeout.local_block_repair === null, "Protected stall carries local work");
+    assert(projection.available_wave_ids.length === 0 && projection.pending_role_request_ids.length === 0 && projection.activation_blocked_wave_ids.length === 0, "Only a sole protected dependency may stall when no local work remains");
+    assert(closeout.next_transition === null && closeout.local_block_repair === null && closeout.protected_wave_activation === null, "Protected stall carries local work");
     assert(closeout.protected_dependency !== null, "Protected stall lacks its sole dependency");
     validateProtectedDependency(closeout.protected_dependency);
   } else {
-    assert(projection.available_wave_ids.length === 0 && projection.pending_role_request_ids.length === 0, "Terminal closeout leaves eligible work unstarted");
-    assert(closeout.next_transition === null && closeout.local_block_repair === null && closeout.protected_dependency === null, "Terminal closeout carries a non-terminal action");
+    assert(projection.available_wave_ids.length === 0 && projection.pending_role_request_ids.length === 0 && projection.activation_blocked_wave_ids.length === 0, "Terminal closeout leaves eligible work unstarted");
+    assert(closeout.next_transition === null && closeout.local_block_repair === null && closeout.protected_wave_activation === null && closeout.protected_dependency === null, "Terminal closeout carries a non-terminal action");
   }
   requireSha(closeout.closeout_sha256, "Controller import routine closeout digest");
   assert(closeout.closeout_sha256 === canonicalDigest(closeoutBody(closeout)), "Controller import routine closeout digest mismatch");
@@ -113,6 +134,7 @@ export function compileControllerImportRoutineCloseout({projection, plan = null,
   let status = "ROUTINE_HANDOFF_ACCEPTED";
   let nextTransition = null;
   let localBlockRepair = null;
+  let protectedWaveActivation = null;
   if (projection.available_wave_ids.length > 0) {
     const targetWaveId = projection.available_wave_ids[0];
     nextTransition = {
@@ -127,6 +149,14 @@ export function compileControllerImportRoutineCloseout({projection, plan = null,
       request_id: projection.pending_role_request_ids[0],
       source_projection_sha256: projection.projection_sha256,
     };
+  } else if (projection.activation_blocked_wave_ids.length > 0) {
+    assert(protectedDependency !== null, "Protected wave activation requires its sole protected dependency");
+    status = "PROTECTED_WAVE_ACTIVATION_PENDING";
+    protectedWaveActivation = {
+      action: CONTROLLER_IMPORT_NEXT_ACTIONS.WAIT_PROTECTED_WAVE_ACTIVATION,
+      wave_ids: projection.activation_blocked_wave_ids,
+      source_projection_sha256: projection.projection_sha256,
+    };
   } else if (protectedDependency !== null) {
     status = "STALLED_READY_FOR_RESUMPTION";
   } else {
@@ -137,9 +167,11 @@ export function compileControllerImportRoutineCloseout({projection, plan = null,
     version: CONTROLLER_IMPORT_PLANNER_VERSION,
     status,
     projection_sha256: projection.projection_sha256,
+    wave_activation_allowed: projection.wave_activation_allowed,
     next_transition: nextTransition,
     local_block_repair: localBlockRepair,
-    protected_dependency: status === "STALLED_READY_FOR_RESUMPTION" ? protectedDependency : null,
+    protected_wave_activation: protectedWaveActivation,
+    protected_dependency: ["PROTECTED_WAVE_ACTIVATION_PENDING", "STALLED_READY_FOR_RESUMPTION"].includes(status) ? protectedDependency : null,
     closeout_sha256: null,
   };
   closeout.closeout_sha256 = canonicalDigest(closeoutBody(closeout));

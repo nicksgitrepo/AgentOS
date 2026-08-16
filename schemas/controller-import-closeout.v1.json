@@ -5,14 +5,16 @@
   "description": "A routine Controller import handoff is not closed until the exact next transition or local block repair is content-bound to the current roster projection.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "status", "projection_sha256", "next_transition", "local_block_repair", "protected_dependency", "closeout_sha256"],
+  "required": ["schema", "version", "status", "projection_sha256", "wave_activation_allowed", "next_transition", "local_block_repair", "protected_wave_activation", "protected_dependency", "closeout_sha256"],
   "properties": {
     "schema": {"const": "agentos.controller_import_closeout.v1"},
     "version": {"const": 1},
-    "status": {"enum": ["ROUTINE_HANDOFF_ACCEPTED", "STALLED_READY_FOR_RESUMPTION", "TERMINAL_READY"]},
+    "status": {"enum": ["ROUTINE_HANDOFF_ACCEPTED", "PROTECTED_WAVE_ACTIVATION_PENDING", "STALLED_READY_FOR_RESUMPTION", "TERMINAL_READY"]},
     "projection_sha256": {"$ref": "#/$defs/sha256"},
+    "wave_activation_allowed": {"type": "boolean"},
     "next_transition": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/nextTransition"}]},
     "local_block_repair": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/localBlockRepair"}]},
+    "protected_wave_activation": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/protectedWaveActivation"}]},
     "protected_dependency": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/protectedDependency"}]},
     "closeout_sha256": {"$ref": "#/$defs/sha256"}
   },
@@ -37,6 +39,16 @@
       "properties": {
         "action": {"const": "BUILD_AND_QA_PENDING_BLOCK"},
         "request_id": {"$ref": "#/$defs/identifier"},
+        "source_projection_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "protectedWaveActivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "wave_ids", "source_projection_sha256"],
+      "properties": {
+        "action": {"const": "WAIT_FOR_PROTECTED_WAVE_ACTIVATION"},
+        "wave_ids": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "minItems": 1},
         "source_projection_sha256": {"$ref": "#/$defs/sha256"}
       }
     },

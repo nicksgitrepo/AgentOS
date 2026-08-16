@@ -12,7 +12,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const sha = (character) => character.repeat(64);
 
-function projection({availableWaveIds, pendingRoleIds, nextAction}) {
+function projection({availableWaveIds, pendingRoleIds, nextAction, waveActivationAllowed = true, activationBlockedWaveIds = []}) {
   const value = {
     schema: "agentos.controller_import_roster_projection.v1",
     version: 1,
@@ -23,13 +23,17 @@ function projection({availableWaveIds, pendingRoleIds, nextAction}) {
     pending_role_request_ids: [...pendingRoleIds].sort(),
     blocked_role_request_ids: [...pendingRoleIds].sort(),
     available_wave_ids: [...availableWaveIds].sort(),
+    activation_blocked_wave_ids: [...activationBlockedWaveIds].sort(),
     completed_wave_ids: [],
     active_wave_ids: [],
+    wave_activation_allowed: waveActivationAllowed,
     next_action: nextAction,
     controller_decision_inputs: {
       available_wave_ids: [...availableWaveIds].sort(),
+      activation_blocked_wave_ids: [...activationBlockedWaveIds].sort(),
       pending_role_request_ids: [...pendingRoleIds].sort(),
       blocked_role_request_ids: [...pendingRoleIds].sort(),
+      wave_activation_allowed: waveActivationAllowed,
       replan_required: pendingRoleIds.length > 0,
     },
     incomplete_never_admitted: true,
@@ -68,13 +72,46 @@ assert.equal(repairCloseout.status, "ROUTINE_HANDOFF_ACCEPTED");
 assert.equal(repairCloseout.local_block_repair.action, "BUILD_AND_QA_PENDING_BLOCK");
 assert.equal(repairCloseout.local_block_repair.request_id, "REQ.PENDING");
 
+const activationHeld = projection({
+  availableWaveIds: [],
+  activationBlockedWaveIds: ["WAVE.001.FOUNDATION"],
+  pendingRoleIds: ["REQ.PENDING"],
+  waveActivationAllowed: false,
+  nextAction: "START_NEXT_LOCAL_BLOCK_REPAIR",
+});
+validateControllerImportRosterProjection(activationHeld);
+const heldRepair = compileControllerImportRoutineCloseout({projection: activationHeld});
+assert.equal(heldRepair.wave_activation_allowed, false);
+assert.equal(heldRepair.next_transition, null);
+assert.equal(heldRepair.local_block_repair.request_id, "REQ.PENDING");
+
+const fakeHeldWaveStart = {
+  ...heldRepair,
+  next_transition: {
+    transition_id: "TRANSITION.WAVE.001.FOUNDATION.START",
+    action: "START_AVAILABLE_WAVE",
+    target_wave_id: "WAVE.001.FOUNDATION",
+    source_projection_sha256: activationHeld.projection_sha256,
+  },
+  local_block_repair: null,
+  closeout_sha256: null,
+};
+fakeHeldWaveStart.closeout_sha256 = canonicalDigest({...fakeHeldWaveStart, closeout_sha256: null});
+assert.throws(
+  () => validateControllerImportRoutineCloseout(fakeHeldWaveStart, {projection: activationHeld}),
+  /cannot carry a wave transition/u,
+  "a held wave must reject a fake start and continue with local block repair",
+);
+
 const illegalProtectedStall = {
   schema: "agentos.controller_import_closeout.v1",
   version: 1,
   status: "STALLED_READY_FOR_RESUMPTION",
   projection_sha256: eligible.projection_sha256,
+  wave_activation_allowed: true,
   next_transition: null,
   local_block_repair: null,
+  protected_wave_activation: null,
   protected_dependency: {
     dependency_id: "AUTH.PROTECTED",
     reason: "External protected authority is unavailable.",
@@ -89,4 +126,4 @@ assert.throws(
   "protected dependency must not freeze eligible local work",
 );
 
-console.log("PASS Controller import closeout chaining rejects early closeout, binds immediate transition or local repair, and preserves sole-protected-stall rule");
+console.log("PASS Controller import closeout chaining rejects early closeout, blocks held-wave starts, binds local repair, and preserves sole-protected-stall rule");

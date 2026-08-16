@@ -23,6 +23,7 @@ export const CONTROLLER_IMPORT_MAX_COGNITIVE_LANES = 6;
 export const CONTROLLER_IMPORT_NEXT_ACTIONS = Object.freeze({
   START_AVAILABLE_WAVE: "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION",
   START_PENDING_BLOCK_REPAIR: "START_NEXT_LOCAL_BLOCK_REPAIR",
+  WAIT_PROTECTED_WAVE_ACTIVATION: "WAIT_FOR_PROTECTED_WAVE_ACTIVATION",
   PREPARE_REVIEW: "PREPARE_DEVELOPMENT_CANDIDATE_REVIEW",
 });
 export const CONTROLLER_IMPORT_PHASES = Object.freeze([
@@ -591,6 +592,7 @@ function rosterProjectionBody(projection) {
 function expectedRosterNextAction(projection) {
   if (projection.available_wave_ids.length > 0) return CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE;
   if (projection.pending_role_request_ids.length > 0) return CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR;
+  if (projection.activation_blocked_wave_ids.length > 0) return CONTROLLER_IMPORT_NEXT_ACTIONS.WAIT_PROTECTED_WAVE_ACTIVATION;
   return CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW;
 }
 
@@ -606,16 +608,26 @@ function validateQaRecord(record, requestIds) {
 }
 
 export function validateControllerImportRosterProjection(projection, {plan = null} = {}) {
-  exactKeys(projection, ["schema", "version", "status", "campaign_plan_sha256", "source", "available_role_request_ids", "pending_role_request_ids", "blocked_role_request_ids", "available_wave_ids", "completed_wave_ids", "active_wave_ids", "next_action", "controller_decision_inputs", "incomplete_never_admitted", "projection_sha256"], "Controller import roster projection");
+  exactKeys(projection, ["schema", "version", "status", "campaign_plan_sha256", "source", "available_role_request_ids", "pending_role_request_ids", "blocked_role_request_ids", "available_wave_ids", "activation_blocked_wave_ids", "completed_wave_ids", "active_wave_ids", "wave_activation_allowed", "next_action", "controller_decision_inputs", "incomplete_never_admitted", "projection_sha256"], "Controller import roster projection");
   assert(projection.schema === CONTROLLER_IMPORT_ROSTER_SCHEMA && projection.version === CONTROLLER_IMPORT_PLANNER_VERSION, "Controller import roster projection identity is invalid");
   assert(["PARTIAL_READY", "READY_COMPLETE"].includes(projection.status), "Controller import roster projection status is invalid");
   requireSha(projection.campaign_plan_sha256, "Controller import roster campaign plan");
   assert(projection.source === "AGENT.SPAWNER_COMPILER", "Controller import roster source is not Spawner");
-  for (const field of ["available_role_request_ids", "pending_role_request_ids", "blocked_role_request_ids", "available_wave_ids", "completed_wave_ids", "active_wave_ids"]) sortedUnique(projection[field], `Controller import roster ${field}`, {allowEmpty: true});
-  exactKeys(projection.controller_decision_inputs, ["available_wave_ids", "pending_role_request_ids", "blocked_role_request_ids", "replan_required"], "Controller import roster decision inputs");
+  assert(typeof projection.wave_activation_allowed === "boolean", "Controller import roster wave activation eligibility is invalid");
+  for (const field of ["available_role_request_ids", "pending_role_request_ids", "blocked_role_request_ids", "available_wave_ids", "activation_blocked_wave_ids", "completed_wave_ids", "active_wave_ids"]) sortedUnique(projection[field], `Controller import roster ${field}`, {allowEmpty: true});
+  assert(projection.wave_activation_allowed || projection.available_wave_ids.length === 0, "Controller import roster exposes an activatable wave while activation is held");
+  assert(projection.wave_activation_allowed || projection.next_action !== CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE, "Controller import roster starts a wave while activation is held");
+  assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.every((waveId) => !projection.available_wave_ids.includes(waveId)), "Controller import roster overlaps activatable and activation-blocked waves");
+  assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.length > 0 || projection.pending_role_request_ids.length > 0 || projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW, "Controller import roster loses held wave or local block work");
+  assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.length === 0 || projection.next_action !== CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW, "Controller import roster closes while held wave work remains");
+  assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.length === 0 || projection.next_action !== CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE, "Controller import roster starts held wave work");
+  assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.length === 0 || projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR || projection.next_action === CONTROLLER_IMPORT_NEXT_ACTIONS.WAIT_PROTECTED_WAVE_ACTIVATION, "Controller import roster uses an invalid held-wave action");
+  exactKeys(projection.controller_decision_inputs, ["available_wave_ids", "activation_blocked_wave_ids", "pending_role_request_ids", "blocked_role_request_ids", "wave_activation_allowed", "replan_required"], "Controller import roster decision inputs");
   assert(JSON.stringify(projection.controller_decision_inputs.available_wave_ids) === JSON.stringify(projection.available_wave_ids), "Controller import roster decision waves are stale");
+  assert(JSON.stringify(projection.controller_decision_inputs.activation_blocked_wave_ids) === JSON.stringify(projection.activation_blocked_wave_ids), "Controller import roster activation-blocked waves are stale");
   assert(JSON.stringify(projection.controller_decision_inputs.pending_role_request_ids) === JSON.stringify(projection.pending_role_request_ids), "Controller import roster decision pending routes are stale");
   assert(JSON.stringify(projection.controller_decision_inputs.blocked_role_request_ids) === JSON.stringify(projection.blocked_role_request_ids), "Controller import roster decision blocked routes are stale");
+  assert(projection.controller_decision_inputs.wave_activation_allowed === projection.wave_activation_allowed, "Controller import roster activation eligibility is stale");
   assert(projection.controller_decision_inputs.replan_required === (projection.status === "PARTIAL_READY"), "Controller import roster replan signal is invalid");
   requireIdentifier(projection.next_action, "Controller import roster next action");
   assert(projection.next_action === expectedRosterNextAction(projection), "Controller import roster next action must start eligible work immediately");
@@ -630,14 +642,19 @@ export function validateControllerImportRosterProjection(projection, {plan = nul
     assert(all.size === requestIds.size && [...all].every((requestId) => requestIds.has(requestId)), "Controller import roster does not cover the plan exactly");
     assert(projection.blocked_role_request_ids.every((requestId) => projection.pending_role_request_ids.includes(requestId)), "Controller import blocked route is not pending");
     const waveIds = new Set(plan.waves.map((wave) => wave.wave_id));
-    for (const field of ["available_wave_ids", "completed_wave_ids", "active_wave_ids"]) assert(projection[field].every((waveId) => waveIds.has(waveId)), `Controller import roster ${field} names an unknown wave`);
+    for (const field of ["available_wave_ids", "activation_blocked_wave_ids", "completed_wave_ids", "active_wave_ids"]) assert(projection[field].every((waveId) => waveIds.has(waveId)), `Controller import roster ${field} names an unknown wave`);
     assert(projection.available_wave_ids.every((waveId) => !projection.completed_wave_ids.includes(waveId) && !projection.active_wave_ids.includes(waveId)), "Controller import roster exposes a completed or active wave as available");
+    assert(projection.activation_blocked_wave_ids.every((waveId) => !projection.completed_wave_ids.includes(waveId) && !projection.active_wave_ids.includes(waveId)), "Controller import roster exposes a completed or active wave as activation-blocked");
+    assert(projection.wave_activation_allowed || projection.available_wave_ids.length === 0, "Controller import roster exposes a wave while activation is held");
+    assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.every((waveId) => !projection.available_wave_ids.includes(waveId)), "Controller import roster overlaps available and activation-blocked waves");
+    assert(projection.wave_activation_allowed || projection.activation_blocked_wave_ids.length > 0 || projection.available_wave_ids.length === 0, "Controller import roster lost wave work while activation is held");
   }
   return projection;
 }
 
-export function compileControllerImportRosterProjection({plan, qaRecords = [], completedWaveIds = [], activeWaveIds = []} = {}) {
+export function compileControllerImportRosterProjection({plan, qaRecords = [], completedWaveIds = [], activeWaveIds = [], waveActivationAllowed = true} = {}) {
   validateControllerImportCampaignPlan(plan);
+  assert(typeof waveActivationAllowed === "boolean", "Controller import wave activation eligibility must be boolean");
   const requestIds = new Set(plan.role_requests.map((request) => request.request_id));
   assert(Array.isArray(qaRecords), "Controller import Spawner QA records must be an array");
   const seen = new Set();
@@ -651,7 +668,9 @@ export function compileControllerImportRosterProjection({plan, qaRecords = [], c
   const blocked = qaRecords.filter((record) => ["NOT_READY", "UNKNOWN"].includes(record.status)).map((record) => record.request_id).sort(compareUtf8);
   const completed = [...new Set(completedWaveIds)].sort(compareUtf8);
   const active = [...new Set(activeWaveIds)].sort(compareUtf8);
-  const availableWaves = plan.waves.filter((wave) => !completed.includes(wave.wave_id) && !active.includes(wave.wave_id) && wave.role_request_ids.every((requestId) => ready.includes(requestId))).map((wave) => wave.wave_id);
+  const completeWaves = plan.waves.filter((wave) => !completed.includes(wave.wave_id) && !active.includes(wave.wave_id) && wave.role_request_ids.every((requestId) => ready.includes(requestId))).map((wave) => wave.wave_id);
+  const availableWaves = waveActivationAllowed ? completeWaves : [];
+  const activationBlockedWaves = waveActivationAllowed ? [] : completeWaves;
   const projection = {
     schema: CONTROLLER_IMPORT_ROSTER_SCHEMA,
     version: CONTROLLER_IMPORT_PLANNER_VERSION,
@@ -662,13 +681,17 @@ export function compileControllerImportRosterProjection({plan, qaRecords = [], c
     pending_role_request_ids: pending,
     blocked_role_request_ids: blocked,
     available_wave_ids: availableWaves,
+    activation_blocked_wave_ids: activationBlockedWaves,
     completed_wave_ids: completed,
     active_wave_ids: active,
-    next_action: availableWaves.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE : pending.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR : CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW,
+    wave_activation_allowed: waveActivationAllowed,
+    next_action: availableWaves.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE : pending.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR : activationBlockedWaves.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.WAIT_PROTECTED_WAVE_ACTIVATION : CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW,
     controller_decision_inputs: {
       available_wave_ids: availableWaves,
+      activation_blocked_wave_ids: activationBlockedWaves,
       pending_role_request_ids: pending,
       blocked_role_request_ids: blocked,
+      wave_activation_allowed: waveActivationAllowed,
       replan_required: pending.length > 0,
     },
     incomplete_never_admitted: true,
