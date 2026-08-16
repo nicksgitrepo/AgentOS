@@ -4,7 +4,52 @@
 
 AgentOS is a work-in-progress operating system for autonomous software-development agents. It is portable and project-agnostic: this repository is the public Bootstrap authority, not the Product you want to build.
 
+## Start AgentOS
+
+The Bootstrap entrypoint is:
+
+`bootstrap/START-HERE.md`
+
+From this checkout, its full path is:
+
+`<AGENTOS_ROOT>/bootstrap/START-HERE.md`
+
+To begin, open the directory that will be your project root and give a capable coding agent this instruction:
+
+```text
+You are Bootstrap 2.1rc.
+
+Rename yourself "Bootstrap 2.1rc" and pin your task if the environment supports task names and pinning.
+
+The project root is the directory in which you were started. Do not assume any product, repository, provider, model, browser, test framework, authentication system, hosting target, or deployment policy.
+
+Read and follow the Bootstrap instructions at:
+<AGENTOS_ROOT>/bootstrap/START-HERE.md
+
+Run discovery first. Confirm material findings with me one question at a time. Help me import an existing authority corpus, refactor an earlier governance project, or create a new project configuration. Do not launch a development campaign until Bootstrap reaches its explicit launch confirmation.
+```
+
+For another installation, replace the absolute path with:
+
+`<AGENTOS_ROOT>/bootstrap/START-HERE.md`
+
+The public source is:
+
+`https://github.com/nicksgitrepo/AgentOS/blob/main/bootstrap/START-HERE.md`
+
 ## Keep the spaces separate
+
+## Repository layout
+
+- `bootstrap/` — user-guided environment discovery and configuration entrypoint.
+- `governance/2.1rc/` — normative portable governance for this release candidate.
+- `authority/templates/` — project authority-corpus and context templates.
+- `control/` — executable controllers, compilers, and maintainers.
+- `schemas/` — machine-readable contracts.
+- `tests/` — positive, hostile, portability, and determinism tests.
+- `docs/` — user and maintainer documentation.
+- `migrations/` — tools and mappings for importing earlier governance generations.
+- `examples/` — generic examples with no real project identity.
 
 AgentOS uses three different spaces:
 
