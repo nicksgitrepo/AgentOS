@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/agent-spawner-lifecycle.v1.json",
+  "title": "AgentOS Agent Spawner Lifecycle",
+  "description": "Project-agnostic lifecycle for the persistent no-side-effect Agent Spawner compiler and separately admitted governed worker spawning.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "lifecycle_id", "role_id", "mode", "state", "persistent_state", "wave_activation", "candidate_sha256",
+    "roster_projection_sha256", "context_sha256", "qa", "authority", "execution", "next_action",
+    "lifecycle_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.agent_spawner_lifecycle.v1"},
+    "version": {"const": 1},
+    "lifecycle_id": {"$ref": "#/$defs/identifier"},
+    "role_id": {"const": "AGENT.SPAWNER_COMPILER"},
+    "mode": {"enum": ["COMPILER_ONLY", "GOVERNED_SPAWN"]},
+    "state": {"enum": ["PREPARED", "QA_READY", "COMPILER_ACTIVE", "SPAWN_ADMITTED", "SPAWN_ACTIVE", "STALLED", "RETIRED"]},
+    "persistent_state": {"enum": ["PREPARED", "QA_READY", "ADMITTED", "ACTIVE", "STALLED"]},
+    "wave_activation": {"enum": ["OFF", "ON"]},
+    "candidate_sha256": {"$ref": "#/$defs/sha256"},
+    "roster_projection_sha256": {"$ref": "#/$defs/sha256"},
+    "context_sha256": {"$ref": "#/$defs/sha256"},
+    "qa": {"$ref": "#/$defs/qa"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "execution": {"$ref": "#/$defs/execution"},
+    "next_action": {"enum": ["START_COMPILER", "COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE", "ADMIT_GOVERNED_SPAWN", "START_GOVERNED_SPAWN", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "NONE"]},
+    "lifecycle_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "complete_block_count", "incomplete_block_count", "pending_route_count", "independent_clearance_status", "independent_clearance_receipt_sha256"],
+      "properties": {
+        "status": {"enum": ["NOT_READY", "STATIC_PASS_REVIEW_REQUIRED", "INDEPENDENT_PASS"]},
+        "complete_block_count": {"type": "integer", "minimum": 0},
+        "incomplete_block_count": {"type": "integer", "minimum": 0},
+        "pending_route_count": {"type": "integer", "minimum": 0},
+        "independent_clearance_status": {"enum": ["PENDING_EXTERNAL_AUTHORITY", "CLEARED", "REJECTED"]},
+        "independent_clearance_receipt_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compiler_authority", "temporary_worker_admission", "spawn_authority", "product_mutation", "provider_access", "credential_access", "external_sync", "independent_evaluation_required"],
+      "properties": {
+        "compiler_authority": {"const": true},
+        "temporary_worker_admission": {"type": "boolean"},
+        "spawn_authority": {"type": "boolean"},
+        "product_mutation": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false},
+        "external_sync": {"const": false},
+        "independent_evaluation_required": {"const": true}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compiler_ticks", "active_worker_count", "scheduler_job_count", "heavyweight_process_count", "timer_count", "polling"],
+      "properties": {
+        "compiler_ticks": {"type": "integer", "minimum": 0},
+        "active_worker_count": {"type": "integer", "minimum": 0},
+        "scheduler_job_count": {"type": "integer", "minimum": 0},
+        "heavyweight_process_count": {"type": "integer", "minimum": 0},
+        "timer_count": {"type": "integer", "minimum": 0},
+        "polling": {"type": "boolean"}
+      }
+    }
+  }
+}

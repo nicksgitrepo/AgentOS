@@ -226,7 +226,7 @@
     },
     "kernel_registry": {
       "path": "schemas/kernel.v1.json",
-      "sha256": "9d9177199ff901662907e207a56efdc9a310c2ee2561b9ab1dc9734e7a35fbb6"
+      "sha256": "f754e1fb13d21dbe7c0e2f9f308483ce6679796f69a7b895c552aa26dd138b32"
     },
     "delivery_closure_records_controller": {
       "path": "control/delivery-closure-records.mjs",
@@ -710,7 +710,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "0dc500c97cbdfd5df04a6967a0e593439d8d99ed07444117ab0e630c8c70c0f2"
+      "sha256": "6c575e354d509dd7f48712c0289017ae91c9e7d38fbdd2c1855522afb7ae9cb9"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -723,6 +723,22 @@
     "controller_owner_event_wake_verifier": {
       "path": "tests/verify-controller-owner-event-wake.mjs",
       "sha256": "cd8d4c3b8c009b234902dee0fb6e3da1d27eac60f3427d53663b49f81d10d301"
+    },
+    "agent_spawner_lifecycle_controller": {
+      "path": "control/agent-spawner-lifecycle.mjs",
+      "sha256": "1b8f75f468e26fc4f55aa741a1d6c23b372a5bd07bc4d268239cec57462145cf"
+    },
+    "agent_spawner_lifecycle_contract": {
+      "path": "schemas/agent-spawner-lifecycle.v1.json",
+      "sha256": "179eeee618bb99e3c0c9693f38a1bdc9b501c53476f7b022a80023ff4261169b"
+    },
+    "agent_spawner_lifecycle_verifier": {
+      "path": "tests/verify-agent-spawner-lifecycle.mjs",
+      "sha256": "41da7d07695a14c11c920e7052247c0891d0cb5f1455e62d3c7ea8a4e82c8c65"
+    },
+    "agent_spawner_lifecycle_article": {
+      "path": "docs/agent-spawner-lifecycle.md",
+      "sha256": "d1f653c00b7f203eead462391e68d66b61e2b5fef059c57b62402fdc9646e322"
     },
     "persistent_intent_runtime_primitives_controller": {
       "path": "control/persistent-intent-runtime-primitives.mjs",
