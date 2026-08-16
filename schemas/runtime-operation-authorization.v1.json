@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.runtime_operation_authorization.v1",
+  "title": "AgentOS Runtime operation authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "operation_id", "operation", "authority", "runtime_only", "policy_digest", "adapter_contract_digest", "choice_digest", "candidate", "route", "cost_projection", "route_change", "policy_change", "owner_decision", "requested_at_utc", "authorization_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.runtime_operation_authorization.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_FOR_OWNER", "APPROVED", "REJECTED"]},
+    "operation_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "operation": {"enum": ["GIT_PUSH", "GIT_MERGE", "CI_RUN", "HOSTING_DEPLOY", "HOSTING_ROLLBACK", "RELEASE"]},
+    "authority": {"const": "RUNTIME_ONLY"},
+    "runtime_only": {"const": true},
+    "policy_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "adapter_contract_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "choice_digest": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{64}$"}]},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "source_tree", "artifact_digest", "environment_ref"],
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "artifact_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "environment_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^opaque:[A-Za-z0-9][A-Za-z0-9._:-]*$"}]}
+      }
+    },
+    "route": {"type": "object"},
+    "cost_projection": {"$ref": "runtime-operation-cost-projection.v1.json"},
+    "route_change": {"type": "boolean"},
+    "policy_change": {"type": "boolean"},
+    "owner_decision": {"type": "object"},
+    "requested_at_utc": {"type": "string", "format": "date-time"},
+    "authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "rules": [
+    "Prepared authorization is a decision packet and has no external effect.",
+    "Only Runtime may transition it to APPROVED, and only with an explicit owner decision.",
+    "Policy changes require recompilation and reauthorization; route changes require a full cost projection and an explicit one-time owner exception.",
+    "The candidate, route, policy, adapter, cost projection, and owner decision are content-addressed together."
+  ]
+}

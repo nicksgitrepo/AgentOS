@@ -63,7 +63,13 @@
     "contract": "schemas/delivery-adapter.v1.json",
     "runtime_request_field": "adapter_contract_digest",
     "status": "PREPARED_NOT_ACTIVATED",
-    "rule": "A project-bound adapter contract must enumerate the exact action capabilities, owner and Runtime permission boundary, dry-run behavior, partial-failure states, exact rollback identity, typed receipt, spend enforcement, secret boundary, and environment binding before any external receipt can be accepted."
+    "rule": "A project-bound adapter contract must enumerate the exact action capabilities, owner and Runtime permission boundary, dry-run behavior, partial-failure states, exact rollback identity, typed receipt, spend enforcement, secret boundary, environment binding, and Runtime operation authorization before any external receipt can be accepted."
+  },
+  "operation_governance": {
+    "contract": "schemas/delivery-operation-governance.v1.json",
+    "runtime_authority": "RUNTIME_ONLY",
+    "protected_operations": ["GIT_PUSH", "GIT_MERGE", "CI_RUN", "HOSTING_DEPLOY", "HOSTING_ROLLBACK", "RELEASE"],
+    "rule": "Bootstrap compiles source-control, merge, runner, hosting, environment, provider, and cost decisions into project governance. Agents and Controllers may prepare a typed cost projection and return a decision packet; only Runtime may authorize or execute. Unknown cost, excess cost, route changes, and policy changes fail closed and return to the owner."
   },
   "rollback": {
     "required": true,

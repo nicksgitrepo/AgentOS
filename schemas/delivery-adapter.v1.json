@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schema", "version", "status", "adapter_ref", "protocol", "capabilities", "permissions", "dry_run",
-    "partial_failure", "rollback", "receipt_verification", "spend_boundary", "secret_boundary", "environment_binding", "digest"
+    "partial_failure", "rollback", "receipt_verification", "spend_boundary", "secret_boundary", "environment_binding", "operation_authorization", "digest"
   ],
   "properties": {
     "schema": {"const": "agentos.delivery_adapter_contract.v1"},
@@ -25,7 +25,7 @@
         "required": ["action", "authority", "receipt"],
         "properties": {
           "action": {"enum": ["PUSH", "MERGE", "DEPLOY", "RELEASE", "ROLLBACK"]},
-          "authority": {"const": "OWNER_APPROVAL_AND_RUNTIME_AUTHORIZATION"},
+          "authority": {"const": "RUNTIME_AUTHORIZATION_AFTER_OWNER_DECISION"},
           "receipt": {"const": "TYPED_EXTERNAL_RECEIPT"}
         }
       }
@@ -46,11 +46,23 @@
     },
     "secret_boundary": {"const": "HOST_LOCAL_ONLY"},
     "environment_binding": {"const": "PROJECT_CONTEXT_BOUND"},
+    "operation_authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "cost_projection", "owner_decision", "route_change", "policy_change"],
+      "properties": {
+        "authority": {"const": "RUNTIME_ONLY"},
+        "cost_projection": {"const": "REQUIRED"},
+        "owner_decision": {"const": "REQUIRED_BEFORE_RUNTIME_AUTHORIZATION"},
+        "route_change": {"const": "FULL_COST_PROJECTION_AND_OWNER_DECISION"},
+        "policy_change": {"const": "RECOMPILE_POLICY_AND_REAUTHORIZE"}
+      }
+    },
     "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   },
   "rules": [
     "A provider adapter is project-context data, not a portable provider account or credential.",
-    "Every enabled action has owner-approval and Runtime authorization permission and returns a typed external receipt.",
+    "Every enabled action is Runtime-only after an explicit owner decision and returns a typed external receipt.",
     "Dry-run has no external effects; partial failure retries require a fresh explicit choice; spend over the bound policy fails closed.",
     "The contract is prepared and content-addressed; activation and provider authentication remain outside this contract."
   ]

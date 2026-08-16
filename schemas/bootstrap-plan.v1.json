@@ -161,6 +161,11 @@
     "FIRST_CAMPAIGN",
     "EXACT_CREATION_PLAN"
   ],
+  "operation_governance": {
+    "contract": "schemas/delivery-operation-governance.v1.json",
+    "compiled_under": "delivery_policy.operation_governance",
+    "rule": "Bootstrap must bind all protected source-control, merge, CI, hosting, deployment, rollback, release, provider, environment, and cost routes to project context before Runtime can authorize an external operation."
+  },
   "approval": {
     "decision": "APPROVE_EXACT_PLAN",
     "rule": "EXACT_PLAN_APPROVAL mode displays the complete plan and SHA-256 before approval. The approval receipt binds the exact pre-approval plan body digest, discovery digest, actor, time, and execution boundary; changing the approved body invalidates the receipt even if a new outer plan digest is computed. JSA mode does not add a second approval prompt for declared local setup, but this exact approval route remains available and protected actions are never implied.",

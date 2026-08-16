@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.delivery_operation_governance.v1",
+  "title": "AgentOS project operation governance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "runtime_authority", "preparation_authority", "protected_operations", "route_bindings", "cost_policy", "owner_decision_policy", "governance_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.delivery_operation_governance.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PROJECT_GOVERNANCE_BOUND", "PROJECT_GOVERNANCE_WITH_BINDING_GAPS"]},
+    "runtime_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["external_operations", "bypass_rule", "receipt_rule"],
+      "properties": {
+        "external_operations": {"const": "RUNTIME_ONLY"},
+        "bypass_rule": {"const": "NO_SILENT_POLICY_OR_ROUTE_OVERRIDE"},
+        "receipt_rule": {"const": "TYPED_RECEIPT_BOUND_TO_POLICY_AND_PROJECTION"}
+      }
+    },
+    "preparation_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_roles", "allowed_actions", "external_effects"],
+      "properties": {
+        "allowed_roles": {"const": ["BOOTSTRAP", "CONTROLLER", "AUDITOR", "AGENT", "SPAWNER"]},
+        "allowed_actions": {"const": ["DISCOVER", "PROPOSE", "PREPARE_COST_PROJECTION", "RETURN_OWNER_DECISION_PACKET"]},
+        "external_effects": {"const": false}
+      }
+    },
+    "protected_operations": {
+      "const": ["GIT_PUSH", "GIT_MERGE", "CI_RUN", "HOSTING_DEPLOY", "HOSTING_ROLLBACK", "RELEASE"]
+    },
+    "route_bindings": {"type": "object"},
+    "cost_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projection_required", "required_fields", "currency", "weekly_runner_minutes", "monthly_spend_ceiling", "unknown_cost_behavior", "exceed_behavior", "route_change_behavior", "hidden_costs_forbidden"],
+      "properties": {
+        "projection_required": {"const": true},
+        "required_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "currency": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z]{3}$"}]},
+        "weekly_runner_minutes": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+        "monthly_spend_ceiling": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+        "unknown_cost_behavior": {"const": "RETURN_OWNER_DECISION_PACKET"},
+        "exceed_behavior": {"const": "RETURN_OWNER_DECISION_PACKET"},
+        "route_change_behavior": {"const": "FULL_COST_PROJECTION_AND_OWNER_DECISION"},
+        "hidden_costs_forbidden": {"const": true}
+      }
+    },
+    "owner_decision_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_for", "status_before_runtime", "route_change", "policy_change", "packet_schema"],
+      "properties": {
+        "required_for": {"const": ["GIT_PUSH", "GIT_MERGE", "CI_RUN", "HOSTING_DEPLOY", "HOSTING_ROLLBACK", "RELEASE"]},
+        "status_before_runtime": {"const": "REQUIRED_BEFORE_RUNTIME_AUTHORIZATION"},
+        "route_change": {"const": "OWNER_ONLY_WITH_FULL_COST_PROJECTION"},
+        "policy_change": {"const": "RECOMPILE_POLICY_AND_REAUTHORIZE"},
+        "packet_schema": {"const": "agentos.runtime_operation_authorization.v1"}
+      }
+    },
+    "governance_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "rules": [
+    "Bootstrap compiles route, provider, environment, runner, hosting, merge, and cost boundaries as project context.",
+    "Only the persistent Runtime may authorize or execute a protected operation.",
+    "Every protected operation requires a complete cost projection and an explicit owner decision before Runtime authorization.",
+    "A route or policy deviation returns a decision packet; it never silently overrides project governance.",
+    "Unknown provider cost, quota, or rollback impact fails closed for the affected operation only."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.runtime_operation_owner_decision.v1",
+  "title": "AgentOS owner decision for a protected Runtime operation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "decision_ref", "decision_kind", "scope_digest", "projection_sha256", "decided_at_utc", "decision_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.runtime_operation_owner_decision.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PENDING_OWNER", "APPROVED", "REJECTED"]},
+    "decision_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^opaque:[A-Za-z0-9][A-Za-z0-9._:-]*$"}]},
+    "decision_kind": {"anyOf": [{"type": "null"}, {"enum": ["WITHIN_POLICY", "ONE_TIME_EXCEPTION", "POLICY_REBIND_REQUIRED"]}]},
+    "scope_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "projection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "decided_at_utc": {"anyOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]},
+    "decision_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "rules": [
+    "PENDING_OWNER is returned to the owner and cannot authorize Runtime.",
+    "An APPROVED decision must name an opaque decision reference and the exact projection scope.",
+    "A route change is an explicit one-time exception; a policy change requires policy recompilation."
+  ]
+}

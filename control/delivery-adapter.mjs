@@ -11,7 +11,7 @@ export const DELIVERY_ADAPTER_STATUS = "PREPARED_NOT_ACTIVATED";
 const SHA256 = /^[0-9a-f]{64}$/u;
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 const SECRET_PATTERN = /(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret|credential)\s*[:=]/iu;
-const ACTION_PERMISSION = "OWNER_APPROVAL_AND_RUNTIME_AUTHORIZATION";
+const ACTION_PERMISSION = "RUNTIME_AUTHORIZATION_AFTER_OWNER_DECISION";
 const RECEIPT_CONTRACT = "TYPED_EXTERNAL_RECEIPT";
 
 function assert(condition, message) {
@@ -93,6 +93,7 @@ export function validateDeliveryAdapterContract(contract) {
   const fields = [
     "schema", "version", "status", "adapter_ref", "protocol", "capabilities", "permissions", "dry_run",
     "partial_failure", "rollback", "receipt_verification", "spend_boundary", "secret_boundary", "environment_binding", "digest",
+    "operation_authorization",
   ];
   assert(JSON.stringify(Object.keys(contract).sort()) === JSON.stringify(fields.sort()), "delivery adapter contract fields mismatch");
   assert(contract.schema === DELIVERY_ADAPTER_SCHEMA && contract.version === 1, "delivery adapter contract identity is invalid");
@@ -121,6 +122,14 @@ export function validateDeliveryAdapterContract(contract) {
     && contract.spend_boundary.exceed_behavior === "FAIL_CLOSED", "delivery adapter spend boundary is weakened");
   assert(contract.secret_boundary === "HOST_LOCAL_ONLY", "delivery adapter secret boundary is weakened");
   assert(contract.environment_binding === "PROJECT_CONTEXT_BOUND", "delivery adapter environment binding is invalid");
+  requireRecord(contract.operation_authorization, "delivery adapter operation authorization");
+  rejectUnknown(contract.operation_authorization, ["authority", "cost_projection", "owner_decision", "route_change", "policy_change"], "delivery adapter operation authorization");
+  assert(contract.operation_authorization.authority === "RUNTIME_ONLY"
+    && contract.operation_authorization.cost_projection === "REQUIRED"
+    && contract.operation_authorization.owner_decision === "REQUIRED_BEFORE_RUNTIME_AUTHORIZATION"
+    && contract.operation_authorization.route_change === "FULL_COST_PROJECTION_AND_OWNER_DECISION"
+    && contract.operation_authorization.policy_change === "RECOMPILE_POLICY_AND_REAUTHORIZE",
+  "delivery adapter operation authorization is weakened");
   secretFree(contract, "delivery adapter contract");
   validateAdapterDigest(contract);
   return contract;
@@ -152,6 +161,13 @@ export function compileDeliveryAdapterContract({
     spend_boundary: {policy_digest, enforcement: "HOST_MUST_ENFORCE", exceed_behavior: "FAIL_CLOSED"},
     secret_boundary: "HOST_LOCAL_ONLY",
     environment_binding: "PROJECT_CONTEXT_BOUND",
+    operation_authorization: {
+      authority: "RUNTIME_ONLY",
+      cost_projection: "REQUIRED",
+      owner_decision: "REQUIRED_BEFORE_RUNTIME_AUTHORIZATION",
+      route_change: "FULL_COST_PROJECTION_AND_OWNER_DECISION",
+      policy_change: "RECOMPILE_POLICY_AND_REAUTHORIZE",
+    },
     digest: null,
   };
   secretFree(contract, "delivery adapter contract");

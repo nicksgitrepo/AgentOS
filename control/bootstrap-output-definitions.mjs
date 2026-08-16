@@ -153,11 +153,11 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
   }),
   definition("DELIVERY_POLICY", "DELIVERY", {
     question_ids: ["project.delivery_finish"],
-    compiled_field_paths: ["delivery_policy", "exact_creation_plan.delivery_bindings"],
-    safe_default: "CHECKPOINTS_REMOTE_EQUAL_CENTRAL_MERGE_RUNTIME_DEPLOYMENT_ROLLBACK_REQUIRED",
+    compiled_field_paths: ["delivery_policy", "delivery_policy.operation_governance", "exact_creation_plan.delivery_bindings"],
+    safe_default: "CHECKPOINTS_REMOTE_EQUAL_CENTRAL_MERGE_RUNTIME_ONLY_COST_PROJECTION_OWNER_DECISION_DEPLOYMENT_ROLLBACK_REQUIRED",
     probe_required: true,
     owner_decision_required: true,
-    unavailable_behavior: "DO_NOT_PUSH_MERGE_AUTHENTICATE_SPEND_PREVIEW_DEPLOY_OR_ROLL_BACK",
+    unavailable_behavior: "DO_NOT_PUSH_MERGE_RUN_CI_AUTHENTICATE_SPEND_PREVIEW_DEPLOY_RELEASE_OR_ROLL_BACK",
     reopen_triggers: ["provider_or_environment_changed", "runner_route_changed", "deployment_or_rollback_changed", "cost_boundary_changed"],
   }),
   definition("DELIVERY_TARGET", "DELIVERY", {

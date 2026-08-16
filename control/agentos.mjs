@@ -38,6 +38,17 @@ export {compileProviderNeutralDiscovery, findOfflineUsableAdapters} from "./priv
 export {allocateTestBuild, formatTestBuildTag, parseTestBuildTag, buildReleaseArtifactManifest} from "./release-lifecycle.mjs";
 export {compileReleasePromotionGate, compileBlockedDevelopmentPromotionGate} from "./release-promotion-gate.mjs";
 export {advanceDeliveryState, assertCampaignCompletionEligible} from "./delivery-closure-transitions.mjs";
+export {
+  compileDeliveryOperationGovernance,
+  validateDeliveryOperationGovernance,
+  compileRuntimeOperationCostProjection,
+  validateRuntimeOperationCostProjection,
+  compileRuntimeOperationAuthorization,
+  validateRuntimeOperationAuthorization,
+  approveRuntimeOperationAuthorization,
+  rejectRuntimeOperationAuthorization,
+  createRuntimeOperationDecisionPacket,
+} from "./delivery-operation-governance.mjs";
 export {startLocalSelfDevelopment} from "./start-local-self-development.mjs";
 export * as apprenticeship from "./apprenticeship-contracts.mjs";
 
@@ -89,6 +100,7 @@ export * as rapidPrototype from "./rapid-prototype/index.mjs";
 export * as rapidPrototypeWorkflow from "./rapid-prototype-workflow.mjs";
 export * as platformFoundationMerge from "./platform-foundation-merge.mjs";
 export * as deliveryClosure from "./delivery-closure-foundation.mjs";
+export * as deliveryOperationGovernance from "./delivery-operation-governance.mjs";
 export * as repairRecovery from "./repair-recovery.mjs";
 export * as continuousLoop from "./continuous-operating-loop.mjs";
 export * as apprenticeshipRunner from "./apprenticeship-native-runner.mjs";

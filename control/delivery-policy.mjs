@@ -6,6 +6,10 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {compileProjectLifeContract} from "./project-life-contract.mjs";
 import {compileDeliveryTarget, validateDeliveryTarget} from "./delivery-target.mjs";
+import {
+  compileDeliveryOperationGovernance,
+  validateDeliveryOperationGovernance,
+} from "./delivery-operation-governance.mjs";
 
 export const DELIVERY_POLICY_SCHEMA = "agentos.delivery_policy.v1";
 export const DELIVERY_PROBE_PLAN_SCHEMA = "agentos.delivery_probe_plan.v1";
@@ -204,7 +208,7 @@ export function validateDeliveryPolicy(policy) {
   requireRecord(policy, "delivery policy");
   assert(policy.schema === DELIVERY_POLICY_SCHEMA && policy.version === 1, "delivery policy identity is invalid");
   assert(["COMPILED_OWNER_BOUND", "COMPILED_WITH_PROJECT_BINDING_GAPS"].includes(policy.status), "delivery policy status is invalid");
-  for (const field of ["preferences", "source_control", "merge", "ci_runner", "deployment", "delivery_target", "rollback", "cost_boundaries", "recommendation"]) requireRecord(policy[field], `delivery policy ${field}`);
+  for (const field of ["preferences", "source_control", "merge", "ci_runner", "deployment", "delivery_target", "rollback", "cost_boundaries", "operation_governance", "recommendation"]) requireRecord(policy[field], `delivery policy ${field}`);
   validateDeliveryFinish(policy.finish);
   assert(DELIVERY_PRIORITIES.includes(policy.preferences.priority), "delivery policy priority is invalid");
   assert(PUSH_MODES.includes(policy.source_control.push_mode), "delivery policy push mode is invalid");
@@ -237,6 +241,17 @@ export function validateDeliveryPolicy(policy) {
   assert(policy.cost_boundaries.currency === null || /^[A-Z]{3}$/u.test(policy.cost_boundaries.currency), "delivery policy currency is invalid");
   assert(COST_APPROVALS.includes(policy.cost_boundaries.approval), "delivery policy cost approval is invalid");
   assert(LIMIT_ACTIONS.includes(policy.cost_boundaries.on_limit), "delivery policy limit action is invalid");
+  validateDeliveryOperationGovernance(policy.operation_governance);
+  assert(policy.operation_governance.route_bindings.CI_RUN.route_class === policy.ci_runner.route
+    && policy.operation_governance.route_bindings.CI_RUN.provider_id === policy.ci_runner.provider_id
+    && policy.operation_governance.cost_policy.weekly_runner_minutes === policy.cost_boundaries.weekly_runner_minutes
+    && policy.operation_governance.cost_policy.monthly_spend_ceiling === policy.cost_boundaries.monthly_spend_ceiling
+    && policy.operation_governance.cost_policy.currency === policy.cost_boundaries.currency,
+  "delivery operation governance is not bound to CI and cost policy");
+  assert(policy.operation_governance.route_bindings.HOSTING_DEPLOY.route_class === policy.deployment.route
+    && policy.operation_governance.route_bindings.HOSTING_DEPLOY.provider_id === policy.deployment.provider_id
+    && JSON.stringify(policy.operation_governance.route_bindings.HOSTING_DEPLOY.environment_ids) === JSON.stringify(policy.deployment.environment_ids),
+  "delivery operation governance is not bound to deployment policy");
   assert(policy.policy_sha256 && SHA256.test(policy.policy_sha256), "delivery policy digest is invalid");
   const body = structuredClone(policy);
   delete body.policy_sha256;
@@ -288,6 +303,16 @@ export function compileDeliveryPolicy({discovery = [], answer = undefined, proje
   const monthlySpendCeiling = optionalFiniteNumber(costInput.monthly_spend_ceiling, "monthly spend ceiling", {minimum: 0});
   const currency = costInput.currency ?? null;
   if (currency !== null) assert(typeof currency === "string" && /^[A-Z]{3}$/u.test(currency), "cost boundary currency is invalid");
+  const operationGovernance = compileDeliveryOperationGovernance({
+    runner_route: runnerRoute,
+    runner_provider_id: runnerProvider,
+    weekly_runner_minutes: weeklyRunnerMinutes,
+    deployment_route: deploymentRoute,
+    deployment_provider_id: deploymentProvider,
+    deployment_environment_ids: environmentIds,
+    monthly_spend_ceiling: monthlySpendCeiling,
+    currency,
+  });
   const policy = {
     schema: DELIVERY_POLICY_SCHEMA,
     version: 1,
@@ -352,6 +377,7 @@ export function compileDeliveryPolicy({discovery = [], answer = undefined, proje
       approval: enumValue(costInput.approval, COST_APPROVALS, "cost boundary approval", "OWNER_ONLY_ABOVE_BOUNDARY"),
       on_limit: enumValue(costInput.on_limit, LIMIT_ACTIONS, "cost boundary limit action", "PAUSE_NEW_LOW_PRIORITY_WORK"),
     },
+    operation_governance: operationGovernance,
     recommendation: {
       runner: recommendationForRoute({selected: runnerRoute, routeType: "RUNNER", priority, available: availableRunnerRoutes}),
       deployment: recommendationForRoute({selected: deploymentRoute, routeType: "DEPLOYMENT", priority, available: availableDeploymentRoutes}),

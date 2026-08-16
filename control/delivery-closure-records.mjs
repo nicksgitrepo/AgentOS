@@ -4,6 +4,10 @@ import * as common from "./delivery-closure-foundation.mjs";
 import {
   validateDeliveryAdapterForAction,
 } from "./delivery-adapter.mjs";
+import {
+  operationForDeliveryAction,
+  validateRuntimeOperationAuthorization,
+} from "./delivery-operation-governance.mjs";
 
 const {
   DELIVERY_CHOICE_SCHEMA,
@@ -220,7 +224,7 @@ export function validateRuntimeRequest(request, expected = {}) {
     "schema", "version", "request_id", "action", "choice_digest", "project_ref", "campaign_id",
     "campaign_version", "goal_id", "source_commit", "source_tree", "environment_ref", "scope_digest",
     "owner_approval_digest", "policy_digest", "adapter_contract_digest", "rollback_target_digest", "runtime_ref", "status", "requested_at_utc",
-    "authorized_by_role", "authorized_at_utc", "digest",
+    "authorized_by_role", "authorized_at_utc", "operation_authorization_digest", "operation_authorization", "digest",
   ], "Runtime delivery request");
   assert(request.schema === RUNTIME_REQUEST_SCHEMA && request.version === 1, "Runtime request identity is invalid");
   safeId(request.request_id, "Runtime request ID");
@@ -239,6 +243,17 @@ export function validateRuntimeRequest(request, expected = {}) {
   sha(request.owner_approval_digest, "Runtime request owner approval digest");
   sha(request.policy_digest, "Runtime request policy digest");
   sha(request.adapter_contract_digest, "Runtime request adapter contract digest");
+  sha(request.operation_authorization_digest, "Runtime request operation authorization digest");
+  validateRuntimeOperationAuthorization(request.operation_authorization, {
+    requireApproved: request.status === "AUTHORIZED",
+    expected: {
+      policy_digest: request.policy_digest,
+      adapter_contract_digest: request.adapter_contract_digest,
+      choice_digest: request.choice_digest,
+      operation: operationForDeliveryAction(request.action),
+    },
+  });
+  assert(request.operation_authorization_digest === request.operation_authorization.authorization_sha256, "Runtime request operation authorization digest differs from its contract");
   nullableSha(request.rollback_target_digest, "Runtime request rollback target digest");
   if (request.action === "ROLLBACK") sha(request.rollback_target_digest, "rollback Runtime request target digest");
   else assert(request.rollback_target_digest === null, "non-rollback Runtime request cannot contain a rollback target");
@@ -268,14 +283,23 @@ export function validateRuntimeRequest(request, expected = {}) {
     validateDeliveryAdapterForAction(adapter_contract, request.action, request.policy_digest);
     assert(request.adapter_contract_digest === adapter_contract.digest, "Runtime request adapter contract differs");
   }
+  if (expected.operation_authorization) assert(request.operation_authorization_digest === expected.operation_authorization.authorization_sha256, "Runtime request operation authorization differs");
   validateDigest(request.digest, "Runtime request digest", request);
   return request;
 }
 
-export function compileRuntimeRequest({request_id, choice, runtime_ref, requested_at_utc, adapter_contract} = {}) {
+export function compileRuntimeRequest({request_id, choice, runtime_ref, requested_at_utc, adapter_contract, operation_authorization} = {}) {
   validateDeliveryChoice(choice);
   assert(EXTERNAL_OUTCOMES.has(choice.outcome), "only external delivery choices may create a Runtime request");
   validateDeliveryAdapterForAction(adapter_contract, ACTION_BY_OUTCOME[choice.outcome], choice.policy_digest);
+  validateRuntimeOperationAuthorization(operation_authorization, {
+    expected: {
+      policy_digest: choice.policy_digest,
+      adapter_contract_digest: adapter_contract.digest,
+      choice_digest: choice.digest,
+      operation: operationForDeliveryAction(ACTION_BY_OUTCOME[choice.outcome]),
+    },
+  });
   const request = withDigest({
     schema: RUNTIME_REQUEST_SCHEMA,
     version: 1,
@@ -293,6 +317,8 @@ export function compileRuntimeRequest({request_id, choice, runtime_ref, requeste
     owner_approval_digest: choice.owner_approval.digest,
     policy_digest: choice.policy_digest,
     adapter_contract_digest: adapter_contract.digest,
+    operation_authorization_digest: operation_authorization.authorization_sha256,
+    operation_authorization: structuredClone(operation_authorization),
     rollback_target_digest: choice.rollback_target_digest,
     runtime_ref,
     status: "PREPARED",
@@ -300,16 +326,27 @@ export function compileRuntimeRequest({request_id, choice, runtime_ref, requeste
     authorized_by_role: null,
     authorized_at_utc: null,
   });
-  return validateRuntimeRequest(request, {...stateContext(choice), choice, adapter_contract});
+  return validateRuntimeRequest(request, {...stateContext(choice), choice, adapter_contract, operation_authorization});
 }
 
-export function authorizeRuntimeRequest(request, {runtime_role = "RUNTIME", authorized_at_utc, choice = null, adapter_contract = null} = {}) {
-  assert(choice !== null && adapter_contract !== null, "Runtime authorization requires the selected choice and adapter contract");
-  validateRuntimeRequest(request, {choice, adapter_contract});
+export function authorizeRuntimeRequest(request, {runtime_role = "RUNTIME", authorized_at_utc, choice = null, adapter_contract = null, operation_authorization = null} = {}) {
+  assert(choice !== null && adapter_contract !== null && operation_authorization !== null, "Runtime authorization requires the selected choice, adapter contract, and cost/owner authorization");
+  validateRuntimeRequest(request, {choice, adapter_contract, operation_authorization});
   assert(request.status === "PREPARED", "Runtime request is not awaiting authorization");
   assert(runtime_role === "RUNTIME", "only the persistent Runtime may authorize delivery");
+  validateRuntimeOperationAuthorization(operation_authorization, {
+    requireApproved: true,
+    expected: {
+      policy_digest: request.policy_digest,
+      adapter_contract_digest: request.adapter_contract_digest,
+      choice_digest: request.choice_digest,
+      operation: operationForDeliveryAction(request.action),
+    },
+  });
   const authorized = withDigest({
     ...request,
+    operation_authorization_digest: operation_authorization.authorization_sha256,
+    operation_authorization: structuredClone(operation_authorization),
     status: "AUTHORIZED",
     authorized_by_role: "RUNTIME",
     authorized_at_utc,

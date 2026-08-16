@@ -20,6 +20,12 @@ import {
 } from "../control/delivery-closure-state.mjs";
 import {compileDeliveryAdapterContract} from "../control/delivery-adapter.mjs";
 import {digestWithout} from "../control/delivery-closure-foundation.mjs";
+import {
+  approveRuntimeOperationAuthorization,
+  compileRuntimeOperationAuthorization,
+  compileRuntimeOperationCostProjection,
+  operationForDeliveryAction,
+} from "../control/delivery-operation-governance.mjs";
 
 const SOURCE_COMMIT = "1".repeat(40);
 const SOURCE_TREE = "2".repeat(40);
@@ -144,15 +150,56 @@ function closeState({state, choice, request = null, receipt = null, liveAudit = 
   return {closed, handoff, closure};
 }
 
+function prepareOperationAuthorization(choice, tag, offset = 30) {
+  const action = choice.outcome;
+  const operation = operationForDeliveryAction(action);
+  const routeClass = ["PUSH", "MERGE"].includes(action) ? "SOURCE_CONTROL" : "LOCAL";
+  const operationAuthorization = compileRuntimeOperationAuthorization({
+    operation_id: `operation-${tag}`,
+    operation,
+    policy_digest: choice.policy_digest,
+    adapter_contract_digest: ADAPTER.digest,
+    choice_digest: choice.digest,
+    source_commit: choice.source_commit,
+    source_tree: choice.source_tree,
+    artifact_digest: choice.accepted_result_digest,
+    environment_ref: choice.environment_ref,
+    route_class: routeClass,
+    provider_id: null,
+    environment_ids: choice.environment_ref === null ? [] : ["synthetic"],
+    cost_projection: compileRuntimeOperationCostProjection({
+      currency: "USD",
+      one_time_cost: 0,
+      recurring_monthly_cost: 0,
+      runner_minutes: 1,
+      expected_duration_minutes: 1,
+      worst_case_duration_minutes: 2,
+      max_concurrency: 1,
+      rollback_one_time_cost: 0,
+      rollback_recurring_monthly_cost: 0,
+      confidence: "MEASURED",
+      basis: ["TEST_FIXTURE_ESTIMATE"],
+      boundary_status: "WITHIN",
+    }),
+    requested_at_utc: time(offset),
+  });
+  return approveRuntimeOperationAuthorization(operationAuthorization, {
+    decision_ref: `opaque:operation-approval-${tag}`,
+    decided_at_utc: time(offset + 1),
+  });
+}
+
 function authorize(choice, tag, offset = 30) {
+  const operationAuthorization = prepareOperationAuthorization(choice, tag, offset);
   const request = compileRuntimeRequest({
     request_id: `request-${tag}`,
     choice,
     runtime_ref: RUNTIME_REF,
     requested_at_utc: time(offset),
     adapter_contract: ADAPTER,
+    operation_authorization: operationAuthorization,
   });
-  return authorizeRuntimeRequest(request, {choice, adapter_contract: ADAPTER, authorized_at_utc: time(offset + 1)});
+  return authorizeRuntimeRequest(request, {choice, adapter_contract: ADAPTER, operation_authorization: operationAuthorization, authorized_at_utc: time(offset + 1)});
 }
 
 function externalReceipt(request, receiptId, status, offset, resultRef = null, errorCode = null) {
@@ -298,7 +345,7 @@ assert.equal(reopenedState.receipt_digest, failedReceipt.digest);
 
 const mismatchedRequest = {...pushRequest, source_commit: "3".repeat(40), digest: null};
 mismatchedRequest.digest = digestWithout(mismatchedRequest);
-assert.throws(() => authorizeRuntimeRequest(mismatchedRequest, {choice: pushChoice, adapter_contract: ADAPTER, authorized_at_utc: time(88)}), /source differs from selected choice/u);
+assert.throws(() => authorizeRuntimeRequest(mismatchedRequest, {choice: pushChoice, adapter_contract: ADAPTER, operation_authorization: prepareOperationAuthorization(pushChoice, "mismatched", 88), authorized_at_utc: time(88)}), /source differs from selected choice/u);
 
 const omittedReceiptHandoff = {...push.handoff, receipt_digests: [OTHER_DIGEST], digest: null};
 omittedReceiptHandoff.digest = digestWithout(omittedReceiptHandoff);
@@ -547,14 +594,16 @@ assert.throws(() => compileDeliveryChoice({
   owner_approval: ownerApproval("secret"),
   selected_at_utc: time(72),
 }), /secret material/u);
+const unauthorizedOperation = prepareOperationAuthorization(pushChoice, "unauthorized", 73);
 const unauthorizedRequest = compileRuntimeRequest({
   request_id: "request-unauthorized",
   choice: pushChoice,
   runtime_ref: RUNTIME_REF,
   requested_at_utc: time(73),
   adapter_contract: ADAPTER,
+  operation_authorization: unauthorizedOperation,
 });
-assert.throws(() => authorizeRuntimeRequest(unauthorizedRequest, {choice: pushChoice, adapter_contract: ADAPTER, runtime_role: "OWNER", authorized_at_utc: time(74)}), /persistent Runtime/u);
+assert.throws(() => authorizeRuntimeRequest(unauthorizedRequest, {choice: pushChoice, adapter_contract: ADAPTER, operation_authorization: unauthorizedOperation, runtime_role: "OWNER", authorized_at_utc: time(74)}), /persistent Runtime/u);
 assert.throws(() => advanceDeliveryState({
   state: pushState,
   expected_revision: 0,

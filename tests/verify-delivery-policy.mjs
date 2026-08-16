@@ -84,6 +84,11 @@ assert.equal(policy.source_control.checkpoint_rule, "CLEAN_PUSHED_REMOTE_EQUAL_B
 assert.equal(policy.merge.auto_merge, "DISABLED_BY_DEFAULT");
 assert.equal(policy.deployment.authority, "RUNTIME_AFTER_CENTRAL_ACCEPTANCE");
 assert.equal(policy.rollback.identity, "EXACT_LAST_ACCEPTED_DEPLOYMENT");
+assert.equal(policy.operation_governance.runtime_authority.external_operations, "RUNTIME_ONLY");
+assert.equal(policy.operation_governance.cost_policy.projection_required, true);
+assert.equal(policy.operation_governance.owner_decision_policy.status_before_runtime, "REQUIRED_BEFORE_RUNTIME_AUTHORIZATION");
+assert.equal(policy.operation_governance.route_bindings.CI_RUN.route_class, "HOSTED");
+assert.equal(policy.operation_governance.route_bindings.HOSTING_DEPLOY.provider_id, "hosting-provider");
 assert.equal(policy.finish.selected, "DEPLOY");
 assert.deepEqual(policy.finish.included_steps, ["PREPARE", "CHECK", "AUDIT", "HANDOFF", "SAVE_BRANCH", "PUSH", "MERGE", "DEPLOY"]);
 assert(policy.finish.protected_action_rule.includes("EXACT_ROUTE"));

@@ -210,7 +210,8 @@
         "rule": "A local Git checkpoint must be read back from the actual worktree and upstream before clean/pushed handoff is admitted."
       },
       "adapter_contract": "schemas/delivery-adapter.v1.json",
-      "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, adapter, cost, and owner-selected finish choices are typed project context. The selected finish is also bound into the campaign design and exact Bootstrap plan. Bootstrap asks for the finish in plain language, recommends route classes and target profiles, and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back."
+      "operation_governance_contract": "schemas/delivery-operation-governance.v1.json",
+      "rule": "Push, merge, CI-runner, product target, hosting, deployment, rollback, provider, environment, adapter, operation authorization, cost, and owner-selected finish choices are typed project context. The selected finish is also bound into the campaign design and exact Bootstrap plan. Bootstrap asks for the finish in plain language, recommends route classes and target profiles, and runs local read-only probes only; it never authenticates, spends, pushes, merges, previews, deploys, or rolls back. Only Runtime may authorize or execute a protected operation, and every operation requires a complete cost projection and explicit owner decision."
     }
   },
   "platform_pool": {

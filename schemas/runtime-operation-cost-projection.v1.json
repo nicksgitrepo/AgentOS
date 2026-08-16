@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.runtime_operation_cost_projection.v1",
+  "title": "AgentOS protected operation cost projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "currency", "one_time_cost", "recurring_monthly_cost", "runner_minutes", "expected_duration_minutes", "worst_case_duration_minutes", "max_concurrency", "rollback_one_time_cost", "rollback_recurring_monthly_cost", "confidence", "basis", "boundary_status", "projection_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.runtime_operation_cost_projection.v1"},
+    "version": {"const": 1},
+    "currency": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z]{3}$"}]},
+    "one_time_cost": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "recurring_monthly_cost": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "runner_minutes": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "expected_duration_minutes": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "worst_case_duration_minutes": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "max_concurrency": {"type": "integer", "minimum": 1},
+    "rollback_one_time_cost": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "rollback_recurring_monthly_cost": {"anyOf": [{"type": "null"}, {"type": "number", "minimum": 0}]},
+    "confidence": {"enum": ["MEASURED", "ESTIMATED", "UNKNOWN"]},
+    "basis": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "boundary_status": {"enum": ["WITHIN", "EXCEEDS", "UNKNOWN"]},
+    "projection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "rules": [
+    "A null or unknown cost is not treated as zero.",
+    "Worst-case duration cannot be lower than expected duration.",
+    "Unknown confidence must retain an UNKNOWN boundary status and return to the owner."
+  ]
+}
