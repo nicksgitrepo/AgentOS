@@ -16,7 +16,7 @@ export {compileControllerImportPlanningContext, validateControllerImportPlanning
 export {compileControllerImportRoutineCloseout, validateControllerImportRoutineCloseout} from "./controller-import-closeout.mjs";
 export {compileControllerEscalation, validateControllerEscalation} from "./controller-escalation-continuation.mjs";
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
-export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick} from "./agent-spawner-lifecycle.mjs";
+export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick, validateAgentSpawnerCompilerContinuation} from "./agent-spawner-lifecycle.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";

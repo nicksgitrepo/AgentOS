@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/agent-spawner-compiler-continuation.v1.json",
+  "title": "AgentOS Agent Spawner Compiler Continuation",
+  "description": "Project-agnostic, digest-bound successor contract for a compiler-only Agent Spawner tick. It proves local progress or an explicit protected event wait without admitting workers or activating a wave.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "role_id", "outcome", "action", "lifecycle_before_sha256", "lifecycle_after_sha256",
+    "progress_delta_sha256", "changed_fields", "evidence_refs", "hostile_fixture_refs", "next_action",
+    "continuation", "authority", "admission", "continuation_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.agent_spawner_compiler_continuation.v1"},
+    "version": {"const": 1},
+    "role_id": {"const": "AGENT.SPAWNER_COMPILER"},
+    "outcome": {"enum": ["BLOCK_COMPILED", "TYPED_ROSTER_PUBLISHED", "PROTECTED_EVENT_WAIT"]},
+    "action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE"]},
+    "lifecycle_before_sha256": {"$ref": "#/$defs/sha256"},
+    "lifecycle_after_sha256": {"$ref": "#/$defs/sha256"},
+    "progress_delta_sha256": {"$ref": "#/$defs/sha256"},
+    "changed_fields": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/fieldName"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidenceRef"},
+      "minItems": 1
+    },
+    "hostile_fixture_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identifier"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "next_action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT"]},
+    "continuation": {"$ref": "#/$defs/continuation"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "admission": {"$ref": "#/$defs/admission"},
+    "continuation_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "fieldName": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,127}$"},
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/identifier"},
+        "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "continuation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_next_action", "protected_event_id", "resume_condition"],
+      "properties": {
+        "mode": {"const": "EVENT_DRIVEN_AUTOMATIC"},
+        "timer_deferral": {"const": false},
+        "heartbeat_deferral": {"const": false},
+        "same_turn_next_action": {"const": true},
+        "protected_event_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "resume_condition": {"type": "string", "minLength": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access"],
+      "properties": {
+        "compiler_only": {"const": true},
+        "admission": {"const": false},
+        "activation": {"const": false},
+        "product_mutation": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false}
+      }
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spawnable", "wave_activation"],
+      "properties": {
+        "spawnable": {"const": false},
+        "wave_activation": {"const": "OFF"}
+      }
+    }
+  }
+}

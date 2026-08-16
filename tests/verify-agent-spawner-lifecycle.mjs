@@ -51,11 +51,23 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
     compiled += 1;
     assert.equal(request.product_mutation, false);
     assert.equal(request.spawn_authority, false);
-    return "BLOCK_CANDIDATE_QA_RECEIPT";
+    const after = advanceAgentSpawnerLifecycle(compilerOnly, {
+      event_type: "BLOCK_LIBRARY_UPDATED",
+      event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null}),
+    });
+    return {
+      outcome: "BLOCK_COMPILED",
+      lifecycle_after: after,
+      evidence_refs: [{evidence_id: "EVIDENCE.BLOCK.CANDIDATE", reference: `opaque:block:${HASH("block-evidence")}`, sha256: HASH("block-evidence")}],
+      hostile_fixture_refs: ["FIXTURE.BLOCK.INCOMPLETE", "FIXTURE.BLOCK.STALE_SOURCE"],
+    };
   },
 });
 assert.equal(compiled, 1);
-assert.equal(tick.status, "COMPILER_TICK_STARTED");
+assert.equal(tick.outcome, "BLOCK_COMPILED");
+assert.equal(tick.next_action, "COMPILE_NEXT_BLOCK");
+assert.equal(tick.continuation.same_turn_next_action, true);
+assert.equal(tick.admission.spawnable, false);
 
 const admitted = compileAgentSpawnerLifecycle({
   ...common,
