@@ -9,6 +9,7 @@
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "identity": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
     "blockSet": {
       "type": "object", "additionalProperties": false,
       "required": ["schema", "version", "block_set_id", "block_ids", "status", "non_placeholder", "hostile_fixture_ids", "independent_evaluation_sha256", "authority", "stop_conditions", "block_set_sha256"],
@@ -31,7 +32,7 @@
       "required": ["route", "controller_id", "spawner_id", "source_readiness_sha256", "source_handoff_sha256", "custody_sha256"],
       "properties": {
         "route": {"const": "CONTROLLER_TO_PERSISTENT_SPAWNER"},
-        "controller_id": {"$ref": "#/$defs/id"},
+        "controller_id": {"$ref": "#/$defs/identity"},
         "spawner_id": {"$ref": "#/$defs/id"},
         "source_readiness_sha256": {"$ref": "#/$defs/sha256"},
         "source_handoff_sha256": {"$ref": "#/$defs/sha256"},
@@ -43,7 +44,7 @@
     "schema": {"const": "agentos.typed_spawner_admission.v1"},
     "version": {"const": 1},
     "spawner_id": {"$ref": "#/$defs/id"},
-    "controller_id": {"$ref": "#/$defs/id"},
+    "controller_id": {"$ref": "#/$defs/identity"},
     "governance_readiness_sha256": {"$ref": "#/$defs/sha256"},
     "sealed_handoff_sha256": {"$ref": "#/$defs/sha256"},
     "block_set": {"$ref": "#/$defs/blockSet"},

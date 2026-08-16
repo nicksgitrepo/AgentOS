@@ -13,6 +13,7 @@ export const TYPED_SPAWNER_ADMISSION_NEXT_ACTION = "CONSTRUCT_PERMANENT_ROLES_ON
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const TOKEN = /^[A-Z][A-Z0-9._:-]*$/u;
+const IDENTITY_TOKEN = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 const PLACEHOLDER = /(?:^|[^A-Z])(TBD|TODO|FIXME|PLACEHOLDER|FILL[ _-]?ME|LATER)(?:$|[^A-Z])/iu;
 const PLACEHOLDER_ONLY = /^(?:TBD|TODO|FIXME|PLACEHOLDER|FILL[ _-]?ME|LATER)$/iu;
@@ -37,6 +38,10 @@ function exactKeys(value, expected, label) {
 }
 function requireToken(value, label) {
   assert(typeof value === "string" && TOKEN.test(value), `${label} must be a stable uppercase identifier`);
+  assert(!PLACEHOLDER.test(value), `${label} cannot be a placeholder`);
+}
+function requireIdentityToken(value, label) {
+  assert(typeof value === "string" && IDENTITY_TOKEN.test(value), `${label} must be a stable identity token`);
   assert(!PLACEHOLDER.test(value), `${label} cannot be a placeholder`);
 }
 function requireSha(value, label) { assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`); }
@@ -104,7 +109,7 @@ export function validateTypedSpawnerAdmission(admission, {governanceReadiness = 
   exactKeys(admission, ADMISSION_KEYS, "Typed Spawner admission");
   assert(admission.schema === TYPED_SPAWNER_ADMISSION_SCHEMA && admission.version === TYPED_SPAWNER_ADMISSION_VERSION, "Typed Spawner admission identity is invalid");
   requireToken(admission.spawner_id, "Spawner admission spawner");
-  requireToken(admission.controller_id, "Spawner admission Controller");
+  requireIdentityToken(admission.controller_id, "Spawner admission Controller");
   requireSha(admission.governance_readiness_sha256, "Spawner admission governance readiness");
   requireSha(admission.sealed_handoff_sha256, "Spawner admission sealed handoff");
   validateSpawnerGoverningBlockSet(admission.block_set);
@@ -146,7 +151,7 @@ export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanc
   assert(sealedBootstrapHandoff.next_action === "ADMIT_TYPED_AGENT_SPAWNER", "Spawner admission requires sealed-handoff successor");
   validateSpawnerGoverningBlockSet(blockSet);
   requireToken(spawnerId, "Spawner admission spawner");
-  requireToken(controllerId, "Spawner admission Controller");
+  requireIdentityToken(controllerId, "Spawner admission Controller");
   requireUtc(admittedAtUtc, "Spawner admission time");
   assert(controllerId === sealedBootstrapHandoff.controller_task_id, "Spawner admission Controller differs from sealed handoff");
   const custody = {

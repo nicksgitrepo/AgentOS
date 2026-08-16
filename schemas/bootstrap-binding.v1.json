@@ -814,11 +814,11 @@
     },
     "typed_spawner_admission_controller": {
       "path": "control/typed-spawner-admission.mjs",
-      "sha256": "bdd534e2f98bf0744c1ec313e7ac885e65b89371f0d5ee3484d8830a960e2f8f"
+      "sha256": "e97744c95106a5bfef435ad07685bbfaac4be45c6fb56fb40130f7bc3a12b806"
     },
     "typed_spawner_admission_contract": {
       "path": "schemas/typed-spawner-admission.v1.json",
-      "sha256": "f2d8112b6b176e115d4d04ca22103f1dde7a54afe35ec5d3d4befe5702e6e123"
+      "sha256": "def7961a90c3d3b01b8c0c5a06c1bae8b25bd30ae3ac8861f1149df6eaaa2a7b"
     },
     "typed_spawner_admission_verifier": {
       "path": "tests/verify-typed-spawner-admission.mjs",
