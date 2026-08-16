@@ -357,6 +357,8 @@ export function advanceImportOrchestrator({orchestrator, plan, rosterProjection,
 function safeOrchestratorRecordPath(authorityRoot, recordPath) {
   assert(typeof authorityRoot === "string" && path.isAbsolute(authorityRoot), "Orchestrator authority root must be absolute");
   requireRecordPath(recordPath, "Orchestrator record path");
+  const inputRootStat = fs.lstatSync(authorityRoot);
+  assert(inputRootStat.isDirectory() && !inputRootStat.isSymbolicLink(), "Orchestrator authority root must be a real directory");
   const root = fs.realpathSync.native(authorityRoot);
   const rootStat = fs.lstatSync(root);
   assert(rootStat.isDirectory() && !rootStat.isSymbolicLink(), "Orchestrator authority root must be a real directory");

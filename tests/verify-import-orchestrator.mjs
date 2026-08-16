@@ -145,11 +145,15 @@ assert.throws(() => readImportOrchestratorRecord({authorityRoot: persistenceRoot
 const linkedRoot = path.join(persistenceRoot, "linked-target");
 fs.mkdirSync(linkedRoot);
 const linkedPath = path.join(persistenceRoot, "linked");
+const authorityLink = `${persistenceRoot}-link`;
 try {
   fs.symlinkSync(linkedRoot, linkedPath, "dir");
   assert.throws(() => readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: "linked/import-orchestrator.json"}), /may not contain symlinks/u);
+  fs.symlinkSync(persistenceRoot, authorityLink, "dir");
+  assert.throws(() => readImportOrchestratorRecord({authorityRoot: authorityLink, recordPath: persistencePath}), /authority root must be a real directory/u);
 } finally {
   fs.rmSync(linkedPath, {force: true});
+  fs.rmSync(authorityLink, {force: true});
 }
 fs.rmSync(persistenceRoot, {recursive: true, force: true});
 

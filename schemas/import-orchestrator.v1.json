@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/import-orchestrator.v1.json",
   "title": "AgentOS Import Campaign Orchestrator",
-  "description": "Project-agnostic campaign execution contract. The Orchestrator owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, and candidate advance; the persistent Controller supervises liveness and bounded workflow repair.",
+  "description": "Project-agnostic campaign execution contract. The Orchestrator owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, candidate advance, and durable digest-CAS state persistence; the persistent Controller supervises liveness and bounded workflow repair.",
   "type": "object",
   "additionalProperties": false,
   "required": [
