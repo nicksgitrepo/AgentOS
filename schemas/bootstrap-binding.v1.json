@@ -790,15 +790,15 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "b541239377046acfd0e8154e547039256a934d9db05d52eacac089bebc9ed344"
+      "sha256": "4dac8ce5b38ac476ae8eec549cea1a73c690e9d61dc08389ee8426162c81567b"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
-      "sha256": "b1ef4c9de7d0cdc06826f78c03d61bc0a79f1a71d854b4c9bb4e8afbbdabaeb1"
+      "sha256": "8078bb5030cc7f3e792dd41c028d882ee3bfb968fb70ee2df2c16e20505977b1"
     },
     "agent_spawner_compiler_continuation_verifier": {
       "path": "tests/verify-agent-spawner-compiler-continuation.mjs",
-      "sha256": "99d1405d7c8bec44c612b31b5989d9d580fa4e45c51edcfc017ed78a2fab17fa"
+      "sha256": "53cbe7852b66a0a96fb7476f775e0934951623f32e84ca3f735798990ea24185"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",

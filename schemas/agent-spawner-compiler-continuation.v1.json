@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/agent-spawner-compiler-continuation.v1.json",
   "title": "AgentOS Agent Spawner Compiler Continuation",
-  "description": "Project-agnostic, digest-bound successor contract for a compiler-only Agent Spawner tick. BLOCK_COMPILED must reduce incomplete blocks or advance its bound compile route; TYPED_ROSTER_PUBLISHED must reduce pending routes or advance beyond publishing; PROTECTED_EVENT_WAIT is the only protected outcome. No worker admission or wave activation is implied.",
+  "description": "Project-agnostic, digest-bound successor contract for a compiler-only Agent Spawner tick. BLOCK_COMPILED must reduce incomplete blocks or advance its bound compile route; TYPED_ROSTER_PUBLISHED must reduce pending routes or advance beyond publishing; a complete cleared roster hands off to ADMIT_GOVERNED_SPAWN with the governed adapter/readback still required; PROTECTED_EVENT_WAIT is the only protected outcome. No worker admission or wave activation is implied.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -36,7 +36,7 @@
       "minItems": 1,
       "uniqueItems": true
     },
-    "next_action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT"]},
+    "next_action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT", "ADMIT_GOVERNED_SPAWN"]},
     "continuation": {"$ref": "#/$defs/continuation"},
     "authority": {"$ref": "#/$defs/authority"},
     "admission": {"$ref": "#/$defs/admission"},

@@ -24,6 +24,12 @@ const pending = {
   independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY",
   independent_clearance_receipt_sha256: null,
 };
+const cleared = {
+  ...pending,
+  status: "INDEPENDENT_PASS",
+  independent_clearance_status: "CLEARED",
+  independent_clearance_receipt_sha256: HASH("clearance"),
+};
 
 const compileReady = compileAgentSpawnerLifecycle({
   ...base,
@@ -75,7 +81,7 @@ const publishReady = compileAgentSpawnerLifecycle({
   ...base,
   lifecycleId: "LIFECYCLE.SPAWNER.CONTINUATION.PUBLISH",
   state: "COMPILER_ACTIVE",
-  qa: {...pending, pending_route_count: 1},
+  qa: {...cleared, pending_route_count: 1},
 });
 assert.throws(
   () => runAgentSpawnerCompilerTick(publishReady, {onPublishRoster: () => {
@@ -94,14 +100,16 @@ assert.throws(
   "roster publish must not pass on incidental execution progress",
 );
 
+let validPublishAfter = null;
 const validPublish = runAgentSpawnerCompilerTick(publishReady, {onPublishRoster: () => {
-  const lifecycleAfter = advanceAgentSpawnerLifecycle(publishReady, {
-    event_type: "BLOCK_LIBRARY_UPDATED",
-    event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null}),
+  const lifecycleAfter = compileAgentSpawnerLifecycle({
+    ...base,
+    lifecycleId: publishReady.lifecycle_id,
+    state: "COMPILER_ACTIVE",
+    qa: {...cleared, pending_route_count: 0},
   });
-  lifecycleAfter.qa.pending_route_count = 0;
-  lifecycleAfter.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
-  lifecycleAfter.lifecycle_sha256 = canonicalDigest({...lifecycleAfter, lifecycle_sha256: null});
+  assert.equal(lifecycleAfter.next_action, "ADMIT_GOVERNED_SPAWN");
+  validPublishAfter = lifecycleAfter;
   return {
     outcome: "TYPED_ROSTER_PUBLISHED",
     lifecycle_after: lifecycleAfter,
@@ -110,8 +118,10 @@ const validPublish = runAgentSpawnerCompilerTick(publishReady, {onPublishRoster:
   };
 }});
 assert.equal(validPublish.outcome, "TYPED_ROSTER_PUBLISHED");
-assert.equal(validPublish.next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(validPublish.next_action, "ADMIT_GOVERNED_SPAWN");
+assert.equal(validPublish.continuation.resume_condition, "Hand off to governed admission; adapter/readback still required.");
 assert.equal(validPublish.admission.spawnable, false);
+assert.throws(() => runAgentSpawnerCompilerTick(validPublishAfter), /governed admission adapter.*readback/u, "compiler must not perform governed admission");
 
 assert.throws(
   () => runAgentSpawnerCompilerTick(compileReady, {onCompileBlock: () => ({

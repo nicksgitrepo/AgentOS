@@ -46,7 +46,7 @@ export const AGENT_SPAWNER_COMPILER_CONTINUATION_SCHEMA = "agentos.agent_spawner
 export const AGENT_SPAWNER_COMPILER_CONTINUATION_VERSION = 1;
 export const AGENT_SPAWNER_COMPILER_OUTCOMES = Object.freeze(["BLOCK_COMPILED", "TYPED_ROSTER_PUBLISHED", "PROTECTED_EVENT_WAIT"]);
 export const AGENT_SPAWNER_COMPILER_CONTINUATION_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE"]);
-export const AGENT_SPAWNER_COMPILER_NEXT_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT"]);
+export const AGENT_SPAWNER_COMPILER_NEXT_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT", "ADMIT_GOVERNED_SPAWN"]);
 
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -117,7 +117,7 @@ function deriveCompilerAction(lifecycle) {
     if (lifecycle.qa.incomplete_block_count > 0) return "COMPILE_NEXT_BLOCK";
     if (lifecycle.qa.pending_route_count > 0) return "PUBLISH_TYPED_ROSTER";
     if (lifecycle.qa.independent_clearance_status !== "CLEARED") return "WAIT_FOR_INDEPENDENT_CLEARANCE";
-    return "PUBLISH_TYPED_ROSTER";
+    return "ADMIT_GOVERNED_SPAWN";
   }
   if (lifecycle.state === "QA_READY") return "ADMIT_GOVERNED_SPAWN";
   if (lifecycle.state === "SPAWN_ADMITTED") return "START_GOVERNED_SPAWN";
@@ -389,6 +389,7 @@ function nextCompilerContinuationAction(lifecycle) {
   if (lifecycle.next_action === "COMPILE_NEXT_BLOCK") return "COMPILE_NEXT_BLOCK";
   if (lifecycle.next_action === "PUBLISH_TYPED_ROSTER") return "PUBLISH_TYPED_ROSTER";
   if (lifecycle.next_action === "WAIT_FOR_INDEPENDENT_CLEARANCE" || lifecycle.next_action === "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT") return "WAIT_FOR_PROTECTED_EVENT";
+  if (lifecycle.next_action === "ADMIT_GOVERNED_SPAWN") return "ADMIT_GOVERNED_SPAWN";
   throw new Error("Compiler continuation cannot bind an unsafe lifecycle successor");
 }
 
@@ -445,6 +446,7 @@ export function validateAgentSpawnerCompilerContinuation(continuation) {
   if (continuation.next_action === "WAIT_FOR_PROTECTED_EVENT") requireIdentifier(continuation.continuation.protected_event_id, "Compiler continuation protected event");
   else assert(continuation.continuation.protected_event_id === null, "Non-protected compiler continuation cannot bind a protected event");
   requireString(continuation.continuation.resume_condition, "Compiler continuation resume condition");
+  if (continuation.next_action === "ADMIT_GOVERNED_SPAWN") assert(continuation.continuation.resume_condition === "Hand off to governed admission; adapter/readback still required.", "Governed admission successor lacks the explicit adapter/readback boundary");
   exactKeys(continuation.authority, ["compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access"], "Compiler continuation authority");
   assert(continuation.authority.compiler_only === true, "Compiler continuation must remain compiler-only");
   for (const field of ["admission", "activation", "product_mutation", "provider_access", "credential_access"]) assert(continuation.authority[field] === false, `Compiler continuation crossed protected boundary: ${field}`);
@@ -498,7 +500,11 @@ function compileAgentSpawnerCompilerContinuation({lifecycle, action, outcome, li
       heartbeat_deferral: false,
       same_turn_next_action: true,
       protected_event_id: nextAction === "WAIT_FOR_PROTECTED_EVENT" ? protectedEventId : null,
-      resume_condition: nextAction === "WAIT_FOR_PROTECTED_EVENT" ? "Resume only on the explicitly bound protected event; owner resumption is not clearance." : "Start the bound local compiler action in the same continuation.",
+      resume_condition: nextAction === "WAIT_FOR_PROTECTED_EVENT"
+        ? "Resume only on the explicitly bound protected event; owner resumption is not clearance."
+        : nextAction === "ADMIT_GOVERNED_SPAWN"
+          ? "Hand off to governed admission; adapter/readback still required."
+          : "Start the bound local compiler action in the same continuation.",
     },
     authority: {compiler_only: true, admission: false, activation: false, product_mutation: false, provider_access: false, credential_access: false},
     admission: {spawnable: false, wave_activation: "OFF"},
@@ -539,6 +545,7 @@ export function runAgentSpawnerCompilerTick(lifecycle, {onCompileBlock = null, o
       protectedEventId,
     });
   }
+  if (lifecycle.next_action === "ADMIT_GOVERNED_SPAWN") throw new Error("Compiler tick must hand off to governed admission adapter/readback; compiler cannot admit or activate");
   assert(SAFE_COMPILER_ACTIONS.has(lifecycle.next_action), "Compiler tick has an unsafe action");
   throw new Error("Compiler tick cannot close without a typed continuation");
 }
