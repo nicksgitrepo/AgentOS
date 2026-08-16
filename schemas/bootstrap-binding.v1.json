@@ -562,19 +562,19 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "3f0ecc301d2ad9fe5395ec6692d790011e73a304a72210bcee0b00247b2512bf"
+      "sha256": "078bbda9654f2bc209d9e33119d227da26744f66e4c8c3d48bc44af6607714f5"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "3c46bd9fb05b6950de78057c306e8fa69de095ef681b457c73d3159c701b116b"
+      "sha256": "3728949c35755ed29bfd8602b9f0fd03cd6488b46c89dfe5935a42ab1459dc31"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
-      "sha256": "cc20c81a180cdfcd7c0bbff20ec8152999d1abb69e64554075783a0a8ebcc711"
+      "sha256": "9e8509932881b1a768922ad38861726d39d2ef85d303aa84d2e73f7b62471a16"
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "b06166d188e61aae904f7b0c8039a3bd49fbe83ee076f94373674dd27af7d014"
+      "sha256": "0915662d5ea915d0303d45dede55178c5fbb5e78b019c4edf6a1272c5f4d70ef"
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",

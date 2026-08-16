@@ -17,6 +17,7 @@ import {
 } from "./controller-import-planner.mjs";
 import {validateAgentSpawnerLifecycle} from "./agent-spawner-lifecycle.mjs";
 import {validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
+import {validateAgentSpawnerDefectQueue} from "./agent-spawner-defect-queue.mjs";
 
 export const IMPORT_ORCHESTRATOR_SCHEMA = "agentos.import_orchestrator.v1";
 export const IMPORT_ORCHESTRATOR_VERSION = 1;
@@ -112,6 +113,16 @@ function summarizeDefectIntakes(defectIntakes = []) {
   };
 }
 
+function summarizeDefectQueue({defectQueue, defectIntakes} = {}) {
+  assert(isRecord(defectQueue), "Import Orchestrator requires a typed Spawner defect queue");
+  validateAgentSpawnerDefectQueue(defectQueue);
+  const orderedQueueEntries = [...defectQueue.entries].sort((left, right) => compareUtf8(left.defect_id, right.defect_id));
+  const orderedIntakes = [...(defectIntakes ?? [])].sort((left, right) => compareUtf8(left.defect_id, right.defect_id));
+  assert(JSON.stringify(orderedQueueEntries) === JSON.stringify(orderedIntakes), "Import Orchestrator defect queue and intake entries diverge");
+  const defectSummary = summarizeDefectIntakes(orderedQueueEntries);
+  return {defectQueueSha256: defectQueue.queue_sha256, ...defectSummary};
+}
+
 function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary}) {
   if (defectSummary.repairCandidateCount > 0 || defectSummary.controllerCustodyCount > 0) {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
@@ -196,10 +207,10 @@ function validateContinuation(continuation) {
   for (const field of ["same_turn_next_action", "heartbeat_is_not_progress", "timer_is_not_progress", "active_worker_counts_as_progress", "protected_wait_requires_exact_event"]) assert(continuation[field] === true, `Import Orchestrator continuation rule is weakened: ${field}`);
 }
 
-export function validateImportOrchestrator(orchestrator, {plan, rosterProjection, runState, spawnerLifecycle, defectIntakes} = {}) {
+export function validateImportOrchestrator(orchestrator, {plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   exactKeys(orchestrator, [
     "schema", "version", "orchestrator_id", "role_id", "mode", "state", "campaign_plan_sha256", "roster_projection_sha256",
-    "run_state_sha256", "spawner_lifecycle_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
+    "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
     "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
     "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256",
   ], "Import Orchestrator");
@@ -209,6 +220,7 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
   assert(IMPORT_ORCHESTRATOR_STATES.includes(orchestrator.state), "Import Orchestrator state is invalid");
   assert(IMPORT_ORCHESTRATOR_ACTIONS.includes(orchestrator.next_action), "Import Orchestrator action is invalid");
   for (const field of ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256"]) requireSha(orchestrator[field], `Import Orchestrator ${field}`);
+  requireSha(orchestrator.defect_queue_sha256, "Import Orchestrator defect queue binding");
   requireSha(orchestrator.defect_intake_sha256, "Import Orchestrator defect intake binding");
   for (const field of ["repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count"]) requireNonNegativeInteger(orchestrator[field], `Import Orchestrator ${field}`);
   nullableIdentifier(orchestrator.current_wave_id, "Import Orchestrator current wave");
@@ -236,7 +248,15 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
     assert(orchestrator.spawner_lifecycle_sha256 === spawnerLifecycle.lifecycle_sha256, "Import Orchestrator Spawner binding is stale");
     if (rosterProjection !== undefined) assert(spawnerLifecycle.roster_projection_sha256 === rosterProjection.projection_sha256, "Spawner roster binding is stale");
   }
-  if (defectIntakes !== undefined) {
+  if (defectQueue !== undefined) {
+    const defectSummary = summarizeDefectQueue({defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
+    assert(orchestrator.defect_queue_sha256 === defectSummary.defectQueueSha256, "Import Orchestrator defect queue binding is stale");
+    assert(orchestrator.defect_intake_sha256 === defectSummary.defectIntakeSha256, "Import Orchestrator defect intake binding is stale");
+    assert(orchestrator.repair_candidate_count === defectSummary.repairCandidateCount, "Import Orchestrator repair candidate count is stale");
+    assert(orchestrator.controller_custody_count === defectSummary.controllerCustodyCount, "Import Orchestrator Controller custody count is stale");
+    assert(orchestrator.protected_defect_count === defectSummary.protectedDefectCount, "Import Orchestrator protected defect count is stale");
+    assert(orchestrator.rejected_duplicate_count === defectSummary.rejectedDuplicateCount, "Import Orchestrator duplicate count is stale");
+  } else if (defectIntakes !== undefined) {
     const defectSummary = summarizeDefectIntakes(defectIntakes);
     assert(orchestrator.defect_intake_sha256 === defectSummary.defectIntakeSha256, "Import Orchestrator defect intake binding is stale");
     assert(orchestrator.repair_candidate_count === defectSummary.repairCandidateCount, "Import Orchestrator repair candidate count is stale");
@@ -245,7 +265,10 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
     assert(orchestrator.rejected_duplicate_count === defectSummary.rejectedDuplicateCount, "Import Orchestrator duplicate count is stale");
   }
   if (runState !== undefined || rosterProjection !== undefined || spawnerLifecycle !== undefined) {
-    const derived = deriveOrchestration({runState: runState ?? {status: "COMPLETE", current_wave_id: null}, rosterProjection: rosterProjection ?? {pending_role_request_ids: [], available_wave_ids: [], activation_blocked_wave_ids: []}, spawnerLifecycle: spawnerLifecycle ?? {state: "COMPILER_ACTIVE"}, defectSummary: summarizeDefectIntakes(defectIntakes ?? [])});
+    const derivedDefectSummary = defectQueue !== undefined
+      ? summarizeDefectQueue({defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries})
+      : summarizeDefectIntakes(defectIntakes ?? []);
+    const derived = deriveOrchestration({runState: runState ?? {status: "COMPLETE", current_wave_id: null}, rosterProjection: rosterProjection ?? {pending_role_request_ids: [], available_wave_ids: [], activation_blocked_wave_ids: []}, spawnerLifecycle: spawnerLifecycle ?? {state: "COMPILER_ACTIVE"}, defectSummary: derivedDefectSummary});
     assert(orchestrator.state === derived.state && orchestrator.next_action === derived.nextAction, "Import Orchestrator action is not derived from current run state");
     assert(orchestrator.blocked_dependency_id === derived.dependencyId, "Import Orchestrator protected dependency is stale");
     if (orchestrator.state === "PROTECTED_WAIT") assert(orchestrator.next_action === "WAIT_FOR_PROTECTED_EVENT", "Protected Orchestrator wait is not explicit");
@@ -257,12 +280,12 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
   return orchestrator;
 }
 
-export function compileImportOrchestrator({orchestratorId, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes = []} = {}) {
+export function compileImportOrchestrator({orchestratorId, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   validateControllerImportCampaignPlan(plan);
   validateControllerImportRosterProjection(rosterProjection, {plan});
   validateControllerImportRunState(runState, {plan});
   validateAgentSpawnerLifecycle(spawnerLifecycle);
-  const defectSummary = summarizeDefectIntakes(defectIntakes);
+  const defectSummary = summarizeDefectQueue({defectQueue, defectIntakes: defectIntakes ?? defectQueue?.entries});
   assert(spawnerLifecycle.roster_projection_sha256 === rosterProjection.projection_sha256, "Spawner roster binding is stale");
   requireIdentifier(orchestratorId, "Import Orchestrator ID");
   const derived = deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary});
@@ -277,6 +300,7 @@ export function compileImportOrchestrator({orchestratorId, plan, rosterProjectio
     roster_projection_sha256: rosterProjection.projection_sha256,
     run_state_sha256: runState.state_sha256,
     spawner_lifecycle_sha256: spawnerLifecycle.lifecycle_sha256,
+    defect_queue_sha256: defectSummary.defectQueueSha256,
     defect_intake_sha256: defectSummary.defectIntakeSha256,
     repair_candidate_count: defectSummary.repairCandidateCount,
     controller_custody_count: defectSummary.controllerCustodyCount,
@@ -334,17 +358,17 @@ export function compileImportOrchestrator({orchestratorId, plan, rosterProjectio
     orchestrator_sha256: null,
   };
   orchestrator.orchestrator_sha256 = canonicalDigest(body(orchestrator));
-  return validateImportOrchestrator(orchestrator, {plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
+  return validateImportOrchestrator(orchestrator, {plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
 }
 
-export function advanceImportOrchestrator({orchestrator, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes = []} = {}) {
+export function advanceImportOrchestrator({orchestrator, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   validateImportOrchestrator(orchestrator);
-  const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
-  const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
+  const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
+  const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
   assert(changed, "Import Orchestrator cannot advance without a material bound transition");
   next.transition_sequence = orchestrator.transition_sequence + 1;
   next.orchestrator_sha256 = canonicalDigest(body(next));
-  return validateImportOrchestrator(next, {plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
+  return validateImportOrchestrator(next, {plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
 }
 
 /*
@@ -427,11 +451,11 @@ export function writeImportOrchestratorRecordCompareAndSwap({authorityRoot, reco
   return {path: recordPath, orchestrator_sha256: readback.orchestrator_sha256};
 }
 
-export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes = []} = {}) {
+export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   requireSha(expectedOrchestratorSha256, "expected Orchestrator record");
   const current = readImportOrchestratorRecord({authorityRoot, recordPath});
   assert(current !== null, "Orchestrator record is missing");
   assert(current.orchestrator_sha256 === expectedOrchestratorSha256, "Orchestrator record parent is stale");
-  const next = advanceImportOrchestrator({orchestrator: current, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
+  const next = advanceImportOrchestrator({orchestrator: current, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
   return writeImportOrchestratorRecordCompareAndSwap({authorityRoot, recordPath, expectedOrchestratorSha256, orchestrator: next});
 }

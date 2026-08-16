@@ -13,6 +13,7 @@ import {
 } from "../control/controller-import-planner.mjs";
 import {compileAgentSpawnerLifecycle} from "../control/agent-spawner-lifecycle.mjs";
 import {compileAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
+import {compileAgentSpawnerDefectQueue} from "../control/agent-spawner-defect-queue.mjs";
 import {
   advanceImportOrchestrator,
   advanceImportOrchestratorRecord,
@@ -52,13 +53,15 @@ let lifecycle = compileAgentSpawnerLifecycle({
   qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
   state: "COMPILER_ACTIVE",
 });
-const initial = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.SYNTHETIC", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle});
-validateImportOrchestrator(initial, {plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle});
-assert.equal(initial.state, "ACTIVE");
-assert.equal(initial.next_action, "REQUEST_SPAWNER_QA");
-assert.equal(initial.authority.product_mutation, false);
-assert.equal(initial.authority.protected_release, false);
-assert.equal(initial.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
+const emptyDefectQueue = compileAgentSpawnerDefectQueue({queueId: "QUEUE.SPAWNER.DEFECTS.SYNTHETIC", entries: []});
+const initialWithQueue = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.SYNTHETIC", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
+validateImportOrchestrator(initialWithQueue, {plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
+assert.equal(initialWithQueue.defect_queue_sha256, emptyDefectQueue.queue_sha256);
+assert.equal(initialWithQueue.state, "ACTIVE");
+assert.equal(initialWithQueue.next_action, "REQUEST_SPAWNER_QA");
+assert.equal(initialWithQueue.authority.product_mutation, false);
+assert.equal(initialWithQueue.authority.protected_release, false);
+assert.equal(initialWithQueue.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
 
 const defectRepair = compileAgentSpawnerDefectIntake({
   defectId: "DEFECT.ORCHESTRATOR.CONTINUATION.001",
@@ -72,14 +75,16 @@ const defectRepair = compileAgentSpawnerDefectIntake({
   gateId: "GATE.CONTINUATION.NEXT_ACTION",
   graphId: "GRAPH.IMPORT.ORCHESTRATOR",
 });
-const repairOrchestrator = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.REPAIR", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectIntakes: [defectRepair]});
+const repairDefectQueue = compileAgentSpawnerDefectQueue({queueId: "QUEUE.SPAWNER.DEFECTS.SYNTHETIC", entries: [defectRepair]});
+assert.throws(() => compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.DIVERGED", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue, defectIntakes: [defectRepair]}), /queue and intake entries diverge/u);
+const repairOrchestrator = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.REPAIR", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: repairDefectQueue});
 assert.equal(repairOrchestrator.state, "REPAIRING");
 assert.equal(repairOrchestrator.next_action, "REPAIR_BLOCKS");
 assert.equal(repairOrchestrator.repair_candidate_count, 1);
 assert.equal(repairOrchestrator.controller_custody_count, 0);
 assert.equal(repairOrchestrator.protected_defect_count, 0);
 assert.equal(repairOrchestrator.rejected_duplicate_count, 0);
-const repairedTransition = advanceImportOrchestrator({orchestrator: initial, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectIntakes: [defectRepair]});
+const repairedTransition = advanceImportOrchestrator({orchestrator: initialWithQueue, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: repairDefectQueue});
 assert.equal(repairedTransition.transition_sequence, 1);
 assert.equal(repairedTransition.next_action, "REPAIR_BLOCKS");
 
@@ -93,10 +98,10 @@ lifecycle = compileAgentSpawnerLifecycle({
   qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
   state: "COMPILER_ACTIVE",
 });
-const progressed = advanceImportOrchestrator({orchestrator: initial, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle});
+const progressed = advanceImportOrchestrator({orchestrator: initialWithQueue, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
 assert.equal(progressed.transition_sequence, 1);
 assert.equal(progressed.next_action, "START_SPECIALIST_WAVE");
-assert.throws(() => advanceImportOrchestrator({orchestrator: progressed, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle}), /without a material bound transition/u);
+assert.throws(() => advanceImportOrchestrator({orchestrator: progressed, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue}), /without a material bound transition/u);
 
 const heldRoster = compileControllerImportRosterProjection({plan, qaRecords: qa, waveActivationAllowed: false});
 const heldLifecycle = compileAgentSpawnerLifecycle({
@@ -107,7 +112,7 @@ const heldLifecycle = compileAgentSpawnerLifecycle({
   qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
   state: "COMPILER_ACTIVE",
 });
-const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle});
+const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
 assert.equal(held.state, "PROTECTED_WAIT");
 assert.equal(held.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(held.continuation.timer_is_not_progress, true);
@@ -118,24 +123,25 @@ const persistedInitial = writeImportOrchestratorRecordCompareAndSwap({
   authorityRoot: persistenceRoot,
   recordPath: persistencePath,
   expectedOrchestratorSha256: null,
-  orchestrator: initial,
+  orchestrator: initialWithQueue,
 });
-assert.equal(persistedInitial.orchestrator_sha256, initial.orchestrator_sha256);
-assert.deepEqual(readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: persistencePath}), initial);
+assert.equal(persistedInitial.orchestrator_sha256, initialWithQueue.orchestrator_sha256);
+assert.deepEqual(readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: persistencePath}), initialWithQueue);
 assert.throws(() => writeImportOrchestratorRecordCompareAndSwap({
   authorityRoot: persistenceRoot,
   recordPath: persistencePath,
   expectedOrchestratorSha256: "0".repeat(64),
-  orchestrator: initial,
+  orchestrator: initialWithQueue,
 }), /compare-and-swap parent is stale/u);
 const persistedAdvance = advanceImportOrchestratorRecord({
   authorityRoot: persistenceRoot,
   recordPath: persistencePath,
-  expectedOrchestratorSha256: initial.orchestrator_sha256,
+  expectedOrchestratorSha256: initialWithQueue.orchestrator_sha256,
   plan,
   rosterProjection: activeRoster,
   runState: run,
   spawnerLifecycle: lifecycle,
+  defectQueue: emptyDefectQueue,
 });
 const persistedReadback = readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: persistencePath});
 assert.equal(persistedAdvance.orchestrator_sha256, persistedReadback.orchestrator_sha256);

@@ -22,7 +22,10 @@ machine-readable contract is `schemas/import-orchestrator.v1.json`. Every
 compiled record binds the campaign plan, Spawner roster, run state, and
 Spawner lifecycle by digest. A no-op recheck cannot advance the Orchestrator.
 
-The Orchestrator record is durable. `writeImportOrchestratorRecordCompareAndSwap`
+The Orchestrator record is durable. Its `defect_queue_sha256` must match the
+typed Agent Spawner queue that supplied its `defect_intake_sha256`; the
+Orchestrator never accepts a loose list of findings as queue custody.
+`writeImportOrchestratorRecordCompareAndSwap`
 persists a canonical JSON record beneath an explicit control-plane authority
 root using an exclusive lock, an atomic replacement, directory fsync, and a
 digest compare-and-swap parent. `readImportOrchestratorRecord` validates the
