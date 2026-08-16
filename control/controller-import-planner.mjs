@@ -501,6 +501,26 @@ export function compileControllerImportCampaignPlan({projectId, projectImportPla
       controller_consumes_only_typed_roster_projection: true,
       independent_evaluation_required: true,
     },
+    orchestrator_contract: {
+      role: "CAMPAIGN_ORCHESTRATOR",
+      mode: "IMPORT",
+      contract: "schemas/import-orchestrator.v1.json",
+      controller_supervision: "LIVENESS_ONLY",
+      ownership: [
+        "IMPORT_PLAN_AND_REPLAN",
+        "DERIVE_AND_SEQUENCE_WAVES",
+        "REQUEST_TYPED_SPAWNER_QA",
+        "START_ONLY_QA_READY_WORKERS",
+        "ASSIGN_AND_VERIFY_WORKTREE_CUSTODY",
+        "ACCEPT_SOURCE_BOUND_TYPED_HANDOFFS",
+        "ADMIT_FINDINGS_AND_REPAIR_CANDIDATES",
+        "REQUIRE_PLATFORM_REVIEW_TEST_AND_TYPED_HANDOFF",
+        "CONSUME_ACCEPTED_PLATFORM_HANDOFFS_ONLY",
+        "ADVANCE_ONLY_AFTER_INDEPENDENT_REAUDIT",
+      ],
+      protected_actions: ["PRODUCT_MUTATION", "PROVIDER_ACCESS", "CREDENTIAL_ACCESS", "EXTERNAL_SYNC", "PROTECTED_RELEASE"],
+      continuation: "START_NEXT_ELIGIBLE_ACTION_BEFORE_CLOSEOUT",
+    },
     continuation: {
       mode: "EVENT_DRIVEN_AUTOMATIC",
       routine_gate_pass: "START_NEXT_ELIGIBLE_TRANSITION_BEFORE_ENDING_THE_CONTROLLER_TURN",
@@ -530,7 +550,7 @@ export function compileControllerImportCampaignPlan({projectId, projectImportPla
 }
 
 export function validateControllerImportCampaignPlan(plan) {
-  exactKeys(plan, ["schema", "version", "status", "project_id", "planning_authority", "project_import_plan_sha256", "project_contract_sha256", "planning_context_sha256", "source_identity", "platforms", "role_requests", "waves", "resource_plan", "spawner_contract", "continuation", "acceptance", "zero_trace", "plan_sha256"], "Controller import campaign plan");
+  exactKeys(plan, ["schema", "version", "status", "project_id", "planning_authority", "project_import_plan_sha256", "project_contract_sha256", "planning_context_sha256", "source_identity", "platforms", "role_requests", "waves", "resource_plan", "spawner_contract", "orchestrator_contract", "continuation", "acceptance", "zero_trace", "plan_sha256"], "Controller import campaign plan");
   assert(plan.schema === CONTROLLER_IMPORT_PLAN_SCHEMA && plan.version === CONTROLLER_IMPORT_PLANNER_VERSION, "Controller import campaign plan identity is invalid");
   assert(plan.status === "CONTROLLER_GENERATED_READY_FOR_SPAWNER_QA" && plan.planning_authority === "AGENTOS_CONTROLLER", "Controller import campaign plan authority is invalid");
   requireIdentifier(plan.project_id, "Controller import campaign project ID");
@@ -575,6 +595,22 @@ export function validateControllerImportCampaignPlan(plan) {
   assert(plan.spawner_contract.role === "AGENT.SPAWNER_COMPILER" && plan.spawner_contract.incomplete_block_behavior.includes("NEVER_SPAWN_INCOMPLETE"), "Controller import Spawner contract is incomplete");
   assert(plan.spawner_contract.seed_rule.includes("SEED_IS_IMMUTABLE_AND_NEVER_WORKS") && plan.spawner_contract.independent_evaluation_required === true, "Controller import seed QA is weakened");
   assert(plan.spawner_contract.incremental_library_rule === "BUILD_MISSING_BLOCKS_AND_PUBLISH_TYPED_ROSTER_PROJECTIONS_AS_ROUTES_BECOME_READY" && plan.spawner_contract.roster_projection_contract === "schemas/controller-import-roster-projection.v1.json" && plan.spawner_contract.controller_consumes_only_typed_roster_projection === true, "Controller import incremental Spawner contract is incomplete");
+  exactKeys(plan.orchestrator_contract, ["role", "mode", "contract", "controller_supervision", "ownership", "protected_actions", "continuation"], "Controller import Orchestrator contract");
+  assert(plan.orchestrator_contract.role === "CAMPAIGN_ORCHESTRATOR" && plan.orchestrator_contract.mode === "IMPORT" && plan.orchestrator_contract.contract === "schemas/import-orchestrator.v1.json", "Controller import Orchestrator contract identity is invalid");
+  assert(plan.orchestrator_contract.controller_supervision === "LIVENESS_ONLY" && plan.orchestrator_contract.continuation === "START_NEXT_ELIGIBLE_ACTION_BEFORE_CLOSEOUT", "Controller import Orchestrator supervision boundary is invalid");
+  assert(JSON.stringify(plan.orchestrator_contract.ownership) === JSON.stringify([
+    "IMPORT_PLAN_AND_REPLAN",
+    "DERIVE_AND_SEQUENCE_WAVES",
+    "REQUEST_TYPED_SPAWNER_QA",
+    "START_ONLY_QA_READY_WORKERS",
+    "ASSIGN_AND_VERIFY_WORKTREE_CUSTODY",
+    "ACCEPT_SOURCE_BOUND_TYPED_HANDOFFS",
+    "ADMIT_FINDINGS_AND_REPAIR_CANDIDATES",
+    "REQUIRE_PLATFORM_REVIEW_TEST_AND_TYPED_HANDOFF",
+    "CONSUME_ACCEPTED_PLATFORM_HANDOFFS_ONLY",
+    "ADVANCE_ONLY_AFTER_INDEPENDENT_REAUDIT",
+  ]), "Controller import Orchestrator ownership is incomplete or reordered");
+  assert(JSON.stringify(plan.orchestrator_contract.protected_actions) === JSON.stringify(["PRODUCT_MUTATION", "PROVIDER_ACCESS", "CREDENTIAL_ACCESS", "EXTERNAL_SYNC", "PROTECTED_RELEASE"]), "Controller import Orchestrator protected actions are incomplete or reordered");
   assert(plan.continuation.mode === "EVENT_DRIVEN_AUTOMATIC" && plan.continuation.routine_owner_review_forbidden === true, "Controller import routine continuation is not automatic");
   assert(plan.continuation.routine_gate_pass.includes("START_NEXT_ELIGIBLE_TRANSITION"), "Controller import may end a turn without starting eligible work");
   assert(plan.acceptance.platform_review_after_every_wave === true && plan.acceptance.central_integration_after_every_wave === true && plan.acceptance.independent_reaudit_after_every_wave === true && plan.acceptance.self_acceptance_forbidden === true, "Controller import pyramid acceptance is incomplete");

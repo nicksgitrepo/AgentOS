@@ -546,7 +546,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "4316033877c31539947ffef3c3647a8dce50f647bc9ecda0742fd56977c31385"
+      "sha256": "5c7240f9f1edab5f80811db2b52d7b27a432ff57e1c33f29d6a7ec97c4b8468a"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -554,11 +554,35 @@
     },
     "continuous_operating_loop_contract": {
       "path": "schemas/continuous-operating-loop.v1.json",
-      "sha256": "0573b71224a9b5eebb49b2ad9bf40910ebbc604eace37f58fc249458424a27d4"
+      "sha256": "7f2ce3c3e14fb4a8d226ae58dfed4be45eb4ae12a951459692b1cf9509ce0f82"
     },
     "continuous_operating_loop_verifier": {
       "path": "tests/verify-continuous-operating-loop.mjs",
       "sha256": "1ba1b914a9446e4572142ff058988173e883bb6cdd6bd7b0f615d17e4c31376a"
+    },
+    "import_orchestrator_controller": {
+      "path": "control/import-orchestrator.mjs",
+      "sha256": "ea9cfcff7c87e31c10a875dd7e360aaa1890e10283cab0bbcfbcad12c967ff7c"
+    },
+    "import_orchestrator_contract": {
+      "path": "schemas/import-orchestrator.v1.json",
+      "sha256": "0c8a3be53eb831341f4da56404fe14e4f5e5192f14f9e2ccc58d074d8d8b42e3"
+    },
+    "import_orchestrator_article": {
+      "path": "docs/import-orchestrator.md",
+      "sha256": "774537a38f27133558e8913e1798e3e7689d0970bea73e9bf23026108793f3e5"
+    },
+    "import_orchestrator_verifier": {
+      "path": "tests/verify-import-orchestrator.mjs",
+      "sha256": "d0535ff6203937651d4d32d8a3277c76c2f116276f9fa6282f620e02b13b7718"
+    },
+    "controller_import_planner": {
+      "path": "control/controller-import-planner.mjs",
+      "sha256": "85ee60ff0aa1d8cbc961e9d164f50975d3030f0fa9c843b243c7dcf48787ff56"
+    },
+    "controller_import_planning_contract": {
+      "path": "schemas/controller-import-planning.v1.json",
+      "sha256": "a95cd21ba5c1de2e4201affcbc93d5e200637ccd793b1df58ff7e10ab59734e0"
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
@@ -710,7 +734,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "6c575e354d509dd7f48712c0289017ae91c9e7d38fbdd2c1855522afb7ae9cb9"
+      "sha256": "d33f3b3897a0368e32163bf5b676b8eaa32447bf2327648cee627326398f9550"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -1238,7 +1262,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "b9002038d279a9d048059a766857ccb569981425c9af15fa64cd7605a6a655bb"
+      "sha256": "c95a9806913624d38fda79f742a75ecdd09aa1516485b0bf71e744276a6efe94"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",

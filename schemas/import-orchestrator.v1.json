@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/import-orchestrator.v1.json",
+  "title": "AgentOS Import Campaign Orchestrator",
+  "description": "Project-agnostic campaign execution contract. The Orchestrator owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, and candidate advance; the persistent Controller supervises liveness and bounded workflow repair.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "orchestrator_id", "role_id", "mode", "state", "campaign_plan_sha256", "roster_projection_sha256",
+    "run_state_sha256", "spawner_lifecycle_sha256", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
+    "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.import_orchestrator.v1"},
+    "version": {"const": 1},
+    "orchestrator_id": {"$ref": "#/$defs/identifier"},
+    "role_id": {"const": "CAMPAIGN_ORCHESTRATOR"},
+    "mode": {"const": "IMPORT"},
+    "state": {"enum": ["ACTIVE", "REPAIRING", "PROTECTED_WAIT", "CANDIDATE_REVIEW", "RETIRED"]},
+    "campaign_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "roster_projection_sha256": {"$ref": "#/$defs/sha256"},
+    "run_state_sha256": {"$ref": "#/$defs/sha256"},
+    "spawner_lifecycle_sha256": {"$ref": "#/$defs/sha256"},
+    "current_wave_id": {"$ref": "#/$defs/nullableIdentifier"},
+    "blocked_dependency_id": {"$ref": "#/$defs/nullableIdentifier"},
+    "ownership": {"$ref": "#/$defs/ownership"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "handoff_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spawn_request", "worker_handoff", "platform_review", "central_integration", "candidate_advance"],
+      "properties": {
+        "spawn_request": {"const": "TYPED_SPAWNER_REQUEST"},
+        "worker_handoff": {"const": "SOURCE_BOUND_TYPED_HANDOFF"},
+        "platform_review": {"const": "INDEPENDENT_PLATFORM_TYPED_HANDOFF"},
+        "central_integration": {"const": "ACCEPTED_PLATFORM_HANDOFFS_ONLY"},
+        "candidate_advance": {"const": "INDEPENDENT_REAUDIT_REQUIRED"}
+      }
+    },
+    "continuation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "same_turn_next_action", "heartbeat_is_not_progress", "timer_is_not_progress", "active_worker_counts_as_progress", "protected_wait_requires_exact_event"],
+      "properties": {
+        "mode": {"const": "EVENT_DRIVEN_AUTOMATIC"},
+        "same_turn_next_action": {"const": true},
+        "heartbeat_is_not_progress": {"const": true},
+        "timer_is_not_progress": {"const": true},
+        "active_worker_counts_as_progress": {"const": true},
+        "protected_wait_requires_exact_event": {"const": true}
+      }
+    },
+    "transition_sequence": {"type": "integer", "minimum": 0},
+    "next_action": {"enum": ["REQUEST_SPAWNER_QA", "REPAIR_BLOCKS", "START_SPECIALIST_WAVE", "START_PLATFORM_REVIEW", "START_CENTRAL_INTEGRATION", "START_INDEPENDENT_REAUDIT", "PREPARE_CANDIDATE_REVIEW", "WAIT_FOR_PROTECTED_EVENT", "NONE"]},
+    "orchestrator_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "nullableIdentifier": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan", "wave_order", "spawner_qa", "spawning", "custody", "worker_handoffs", "repair_intake", "platform_review", "central_integration", "candidate_advance"],
+      "properties": {
+        "plan": {"const": "IMPORT_PLAN_AND_REPLAN"},
+        "wave_order": {"const": "DERIVE_AND_SEQUENCE_WAVES"},
+        "spawner_qa": {"const": "REQUEST_TYPED_SPAWNER_QA"},
+        "spawning": {"const": "START_ONLY_QA_READY_WORKERS"},
+        "custody": {"const": "ASSIGN_AND_VERIFY_WORKTREE_CUSTODY"},
+        "worker_handoffs": {"const": "ACCEPT_SOURCE_BOUND_TYPED_HANDOFFS"},
+        "repair_intake": {"const": "ADMIT_FINDINGS_AND_REPAIR_CANDIDATES"},
+        "platform_review": {"const": "REQUIRE_PLATFORM_REVIEW_TEST_AND_TYPED_HANDOFF"},
+        "central_integration": {"const": "CONSUME_ACCEPTED_PLATFORM_HANDOFFS_ONLY"},
+        "candidate_advance": {"const": "ADVANCE_ONLY_AFTER_INDEPENDENT_REAUDIT"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["campaign_planning", "wave_routing", "spawner_qa_request", "worker_spawn_request", "custody_transfer", "handoff_acceptance", "repair_intake", "platform_review_routing", "central_integration_routing", "candidate_advance", "product_mutation", "provider_access", "credential_access", "external_sync", "protected_release"],
+      "properties": {
+        "campaign_planning": {"const": true},
+        "wave_routing": {"const": true},
+        "spawner_qa_request": {"const": true},
+        "worker_spawn_request": {"const": true},
+        "custody_transfer": {"const": true},
+        "handoff_acceptance": {"const": true},
+        "repair_intake": {"const": true},
+        "platform_review_routing": {"const": true},
+        "central_integration_routing": {"const": true},
+        "candidate_advance": {"const": true},
+        "product_mutation": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false},
+        "external_sync": {"const": false},
+        "protected_release": {"const": false}
+      }
+    }
+  }
+}

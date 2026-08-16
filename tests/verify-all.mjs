@@ -86,6 +86,8 @@ assert.equal(controllerContract.operating_loop.default_meaningful_progress_windo
 assert.deepEqual(controllerContract.operating_loop.persistent_roles, ["INTENT_REGULATOR", "RUNTIME"]);
 const operatingLoopContract = JSON.parse(read("schemas/continuous-operating-loop.v1.json"));
 assert.equal(operatingLoopContract.cadence.default_meaningful_progress_window_minutes, 15);
+assert.equal(operatingLoopContract.roles.orchestrator.controller, "control/import-orchestrator.mjs");
+assert.equal(operatingLoopContract.roles.orchestrator.contract, "schemas/import-orchestrator.v1.json");
 assert.equal(operatingLoopContract.cadence.background_runner, "runContinuousOperatingLoop");
 assert.equal(operatingLoopContract.cadence.heartbeat_is_not_meaningful_progress, true);
 assert.equal(operatingLoopContract.cadence.failure_list_is_not_meaningful_progress, true);
@@ -97,6 +99,10 @@ const supervisorContract = JSON.parse(read("schemas/controller-supervisor.v1.jso
 assert.equal(supervisorContract.role, "AGENTOS_CONTROLLER");
 assert.equal(supervisorContract.persistence.controller, "control/controller-supervisor.mjs");
 assert.equal(supervisorContract.goal.one_at_a_time_rule.includes("deterministic bounded goal"), true);
+const importOrchestratorContract = JSON.parse(read("schemas/import-orchestrator.v1.json"));
+assert.equal(importOrchestratorContract.properties.role_id.const, "CAMPAIGN_ORCHESTRATOR");
+assert.equal(importOrchestratorContract.properties.mode.const, "IMPORT");
+assert.equal(importOrchestratorContract.properties.continuation.properties.same_turn_next_action.const, true);
 const sessionContract = JSON.parse(read("schemas/local-agent-session.v1.json"));
 assert.equal(sessionContract.session.controller, "control/local-agent-session.mjs");
 assert.equal(sessionContract.handoff.one_command_at_a_time, true);

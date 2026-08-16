@@ -73,6 +73,9 @@
   ],
   "campaign_boundary": {
     "orchestrator": "CAMPAIGN_SCOPED",
+    "import_orchestrator_contract": "schemas/import-orchestrator.v1.json",
+    "import_orchestrator_controller": "control/import-orchestrator.mjs",
+    "import_orchestrator_rule": "The Import Orchestrator owns plan, wave, Spawner QA, spawning, custody, handoffs, repair intake, Platform review, Central integration, and candidate advance; the persistent Controller only supervises liveness and bounded workflow repair.",
     "controller": "PROJECT_PERSISTENT",
     "platform_agents": "CAMPAIGN_LOCAL_ON_DEMAND",
     "runtime": "PERSISTENT_PROJECT_RUNTIME",
