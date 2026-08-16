@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.controller_governance_readiness.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "title": "Project-agnostic Controller governance injection and readiness",
+  "description": "The Controller must inject and verify its complete governance envelope before accepting work. Missing, placeholder, incomplete, or tampered gates produce a typed blocked receipt. This contract does not admit a worker, activate a wave, or bind project intent.",
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "gateId": {"type": "string", "pattern": "^CONTROLLER\\.GOVERNANCE\\.[A-Z0-9_]+$"}
+  },
+  "properties": {
+    "schema": {"const": "agentos.controller_governance_readiness.v1"},
+    "version": {"const": 1},
+    "controller_id": {"$ref": "#/$defs/token"},
+    "injection_order": {"const": 1},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "governance_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "required_gate_ids": {"type": "array", "minItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/gateId"}},
+    "verified_gate_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/gateId"}},
+    "status": {"enum": ["READY_TO_ACCEPT_WORK", "BLOCKED"]},
+    "acceptance_state": {"enum": ["WORK_ACCEPTANCE_ALLOWED", "WORK_REJECTED"]},
+    "failure_code": {"anyOf": [{"enum": ["GOVERNANCE_MISSING", "GOVERNANCE_INVALID"]}, {"type": "null"}]},
+    "readiness_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "required": [
+    "schema", "version", "controller_id", "injection_order", "observed_at_utc",
+    "governance_sha256", "required_gate_ids", "verified_gate_ids", "status",
+    "acceptance_state", "failure_code", "readiness_sha256"
+  ],
+  "readiness_rules": {
+    "ready": "READY_TO_ACCEPT_WORK requires all required gates verified, governance_sha256 non-null, failure_code null, and work acceptance remains a separate typed receipt.",
+    "blocked": "BLOCKED requires governance_sha256 null, no verified gates, WORK_REJECTED, and a typed failure code.",
+    "ordering": "injection_order=1 is mandatory; Bootstrap handoff validation is the next transition and may not precede this readiness receipt.",
+    "side_effects": "Readiness verification is compiler-only and cannot mutate Product state, use credentials/providers, activate work, or admit incomplete roles."
+  }
+}

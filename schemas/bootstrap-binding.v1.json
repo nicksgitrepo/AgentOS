@@ -788,6 +788,18 @@
       "path": "tests/verify-controller-owner-event-wake.mjs",
       "sha256": "cd8d4c3b8c009b234902dee0fb6e3da1d27eac60f3427d53663b49f81d10d301"
     },
+    "controller_governance_readiness_controller": {
+      "path": "control/controller-governance-readiness.mjs",
+      "sha256": "d4516d10fae6c647092adcf8de059a25927f2516180431f3271580fc5786608f"
+    },
+    "controller_governance_readiness_contract": {
+      "path": "schemas/controller-governance-readiness.v1.json",
+      "sha256": "dbf9760da5beda3842a280947abcfcdf38bf44cdeac9da329589128620f9a2e8"
+    },
+    "controller_governance_readiness_verifier": {
+      "path": "tests/verify-controller-governance-readiness.mjs",
+      "sha256": "6b6a527eaf670eaad2115ac8894094ec85abbe07e39c68ad5784bec5ba45f547"
+    },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
       "sha256": "4dac8ce5b38ac476ae8eec549cea1a73c690e9d61dc08389ee8426162c81567b"
