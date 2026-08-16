@@ -392,11 +392,28 @@ function nextCompilerContinuationAction(lifecycle) {
   throw new Error("Compiler continuation cannot bind an unsafe lifecycle successor");
 }
 
-function validateCompilerTickResult(result, action) {
+function validateCompilerSemanticProgress(lifecycleBefore, lifecycleAfter, outcome) {
+  if (outcome === "BLOCK_COMPILED") {
+    const reducedIncompleteBlocks = lifecycleAfter.qa.incomplete_block_count < lifecycleBefore.qa.incomplete_block_count;
+    const advancedCompileRoute = lifecycleBefore.next_action === "COMPILE_NEXT_BLOCK" && lifecycleAfter.next_action !== "COMPILE_NEXT_BLOCK";
+    assert(reducedIncompleteBlocks || advancedCompileRoute, "BLOCK_COMPILED must reduce incomplete_block_count or advance the bound compile route");
+    return;
+  }
+  if (outcome === "TYPED_ROSTER_PUBLISHED") {
+    const reducedPendingRoutes = lifecycleAfter.qa.pending_route_count < lifecycleBefore.qa.pending_route_count;
+    const advancedRosterRoute = lifecycleBefore.next_action === "PUBLISH_TYPED_ROSTER" && lifecycleAfter.next_action !== "PUBLISH_TYPED_ROSTER";
+    assert(reducedPendingRoutes || advancedRosterRoute, "TYPED_ROSTER_PUBLISHED must reduce pending_route_count or advance beyond the publish route");
+    return;
+  }
+  assert(outcome === "PROTECTED_EVENT_WAIT", "Only PROTECTED_EVENT_WAIT may represent a protected compiler outcome");
+}
+
+function validateCompilerTickResult(result, action, lifecycleBefore) {
   exactKeys(result, ["outcome", "lifecycle_after", "evidence_refs", "hostile_fixture_refs"], "Agent Spawner compiler tick result");
   const expectedOutcome = action === "COMPILE_NEXT_BLOCK" ? "BLOCK_COMPILED" : "TYPED_ROSTER_PUBLISHED";
   assert(result.outcome === expectedOutcome, `Compiler tick outcome must be ${expectedOutcome}`);
   validateAgentSpawnerLifecycle(result.lifecycle_after);
+  validateCompilerSemanticProgress(lifecycleBefore, result.lifecycle_after, result.outcome);
   validateContinuationEvidence(result.evidence_refs);
   sortedIdentifiers(result.hostile_fixture_refs, "Compiler continuation hostile fixtures");
   assert(result.hostile_fixture_refs.length > 0, "Compiler continuation hostile fixtures are required");
@@ -497,13 +514,13 @@ export function runAgentSpawnerCompilerTick(lifecycle, {onCompileBlock = null, o
   if (lifecycle.next_action === "COMPILE_NEXT_BLOCK") {
     assert(typeof onCompileBlock === "function", "Compiler tick requires a block compiler callback");
     const result = onCompileBlock({role_id: AGENT_SPAWNER_ROLE_ID, action: lifecycle.next_action, lifecycle_before_sha256: lifecycle.lifecycle_sha256, product_mutation: false, spawn_authority: false});
-    validateCompilerTickResult(result, lifecycle.next_action);
+    validateCompilerTickResult(result, lifecycle.next_action, lifecycle);
     return compileAgentSpawnerCompilerContinuation({lifecycle, action: lifecycle.next_action, outcome: result.outcome, lifecycleAfter: result.lifecycle_after, evidenceRefs: result.evidence_refs, hostileFixtureRefs: result.hostile_fixture_refs, protectedEventId});
   }
   if (lifecycle.next_action === "PUBLISH_TYPED_ROSTER") {
     assert(typeof onPublishRoster === "function", "Compiler tick requires a typed roster callback");
     const result = onPublishRoster({role_id: AGENT_SPAWNER_ROLE_ID, action: lifecycle.next_action, lifecycle_before_sha256: lifecycle.lifecycle_sha256, product_mutation: false, spawn_authority: false});
-    validateCompilerTickResult(result, lifecycle.next_action);
+    validateCompilerTickResult(result, lifecycle.next_action, lifecycle);
     return compileAgentSpawnerCompilerContinuation({lifecycle, action: lifecycle.next_action, outcome: result.outcome, lifecycleAfter: result.lifecycle_after, evidenceRefs: result.evidence_refs, hostileFixtureRefs: result.hostile_fixture_refs, protectedEventId});
   }
   if (lifecycle.next_action === "WAIT_FOR_INDEPENDENT_CLEARANCE") {

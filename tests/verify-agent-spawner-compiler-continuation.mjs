@@ -37,6 +37,10 @@ const localContinuation = runAgentSpawnerCompilerTick(compileReady, {
       event_type: "BLOCK_LIBRARY_UPDATED",
       event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null}),
     });
+    lifecycleAfter.qa.incomplete_block_count = 0;
+    lifecycleAfter.qa.status = "STATIC_PASS_REVIEW_REQUIRED";
+    lifecycleAfter.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
+    lifecycleAfter.lifecycle_sha256 = canonicalDigest({...lifecycleAfter, lifecycle_sha256: null});
     return {
       outcome: "BLOCK_COMPILED",
       lifecycle_after: lifecycleAfter,
@@ -48,6 +52,7 @@ const localContinuation = runAgentSpawnerCompilerTick(compileReady, {
 validateAgentSpawnerCompilerContinuation(localContinuation);
 assert.equal(localContinuation.outcome, "BLOCK_COMPILED");
 assert.notEqual(localContinuation.lifecycle_before_sha256, localContinuation.lifecycle_after_sha256);
+assert.equal(localContinuation.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(localContinuation.continuation.same_turn_next_action, true);
 assert.equal(localContinuation.continuation.timer_deferral, false);
 assert.equal(localContinuation.admission.spawnable, false);
@@ -66,6 +71,48 @@ assert.equal(protectedContinuation.continuation.protected_event_id, "INDEPENDENT
 assert.equal(protectedContinuation.continuation.heartbeat_deferral, false);
 assert.equal(protectedContinuation.continuation.timer_deferral, false);
 
+const publishReady = compileAgentSpawnerLifecycle({
+  ...base,
+  lifecycleId: "LIFECYCLE.SPAWNER.CONTINUATION.PUBLISH",
+  state: "COMPILER_ACTIVE",
+  qa: {...pending, pending_route_count: 1},
+});
+assert.throws(
+  () => runAgentSpawnerCompilerTick(publishReady, {onPublishRoster: () => {
+    const lifecycleAfter = advanceAgentSpawnerLifecycle(publishReady, {
+      event_type: "BLOCK_LIBRARY_UPDATED",
+      event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null}),
+    });
+    return {
+      outcome: "TYPED_ROSTER_PUBLISHED",
+      lifecycle_after: lifecycleAfter,
+      evidence_refs: [{evidence_id: "EVIDENCE.SPAWNER.ROSTER.FALSE_PUBLISH", reference: `opaque:roster:${HASH("false-publish")}`, sha256: HASH("false-publish")}],
+      hostile_fixture_refs: ["FIXTURE.SPAWNER.ROSTER.INCIDENTAL_EXECUTION_ONLY"],
+    };
+  }}),
+  /TYPED_ROSTER_PUBLISHED must reduce pending_route_count or advance/u,
+  "roster publish must not pass on incidental execution progress",
+);
+
+const validPublish = runAgentSpawnerCompilerTick(publishReady, {onPublishRoster: () => {
+  const lifecycleAfter = advanceAgentSpawnerLifecycle(publishReady, {
+    event_type: "BLOCK_LIBRARY_UPDATED",
+    event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null}),
+  });
+  lifecycleAfter.qa.pending_route_count = 0;
+  lifecycleAfter.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
+  lifecycleAfter.lifecycle_sha256 = canonicalDigest({...lifecycleAfter, lifecycle_sha256: null});
+  return {
+    outcome: "TYPED_ROSTER_PUBLISHED",
+    lifecycle_after: lifecycleAfter,
+    evidence_refs: [{evidence_id: "EVIDENCE.SPAWNER.ROSTER.VALID", reference: `opaque:roster:${HASH("valid-publish")}`, sha256: HASH("valid-publish")}],
+    hostile_fixture_refs: ["FIXTURE.SPAWNER.ROSTER.PENDING_ROUTE", "FIXTURE.SPAWNER.ROSTER.STALE_PROJECTION"],
+  };
+}});
+assert.equal(validPublish.outcome, "TYPED_ROSTER_PUBLISHED");
+assert.equal(validPublish.next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(validPublish.admission.spawnable, false);
+
 assert.throws(
   () => runAgentSpawnerCompilerTick(compileReady, {onCompileBlock: () => ({
     outcome: "BLOCK_COMPILED",
@@ -73,7 +120,7 @@ assert.throws(
     evidence_refs: [{evidence_id: "EVIDENCE.SPAWNER.BLOCK", reference: "opaque:block:unchanged", sha256: HASH("unchanged")}],
     hostile_fixture_refs: ["FIXTURE.SPAWNER.INCOMPLETE_ROUTE"],
   })}),
-  /real lifecycle progress delta/u,
+  /BLOCK_COMPILED must reduce incomplete_block_count or advance/u,
   "unchanged lifecycle must be rejected",
 );
 

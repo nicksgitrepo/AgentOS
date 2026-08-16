@@ -55,6 +55,10 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
       event_type: "BLOCK_LIBRARY_UPDATED",
       event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null}),
     });
+    after.qa.incomplete_block_count = 0;
+    after.qa.status = "STATIC_PASS_REVIEW_REQUIRED";
+    after.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
+    after.lifecycle_sha256 = canonicalDigest({...after, lifecycle_sha256: null});
     return {
       outcome: "BLOCK_COMPILED",
       lifecycle_after: after,
@@ -65,7 +69,7 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
 });
 assert.equal(compiled, 1);
 assert.equal(tick.outcome, "BLOCK_COMPILED");
-assert.equal(tick.next_action, "COMPILE_NEXT_BLOCK");
+assert.equal(tick.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(tick.continuation.same_turn_next_action, true);
 assert.equal(tick.admission.spawnable, false);
 
