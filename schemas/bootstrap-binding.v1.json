@@ -812,6 +812,18 @@
       "path": "tests/verify-sealed-bootstrap-handoff.mjs",
       "sha256": "15290df31298dfbb97da178e15ce56c07a47914df653da910bba143e8fe97ef3"
     },
+    "typed_spawner_admission_controller": {
+      "path": "control/typed-spawner-admission.mjs",
+      "sha256": "bdd534e2f98bf0744c1ec313e7ac885e65b89371f0d5ee3484d8830a960e2f8f"
+    },
+    "typed_spawner_admission_contract": {
+      "path": "schemas/typed-spawner-admission.v1.json",
+      "sha256": "f2d8112b6b176e115d4d04ca22103f1dde7a54afe35ec5d3d4befe5702e6e123"
+    },
+    "typed_spawner_admission_verifier": {
+      "path": "tests/verify-typed-spawner-admission.mjs",
+      "sha256": "c1de736b814db64261be1b8e8713d697d6104a4baa79a78024b61c3abc2bdf78"
+    },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
       "sha256": "4dac8ce5b38ac476ae8eec549cea1a73c690e9d61dc08389ee8426162c81567b"

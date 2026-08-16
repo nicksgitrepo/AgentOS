@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.typed_spawner_admission.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "title": "Typed persistent Spawner/Compiler admission",
+  "description": "Admits only the project-agnostic persistent Spawner/Compiler after Controller governance readiness and sealed Bootstrap handoff validation. It cannot spawn workers, activate waves, mutate Product state, or use providers/credentials.",
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
+    "blockSet": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "block_set_id", "block_ids", "status", "non_placeholder", "hostile_fixture_ids", "independent_evaluation_sha256", "authority", "stop_conditions", "block_set_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.spawner_governing_block_set.v1"},
+        "version": {"const": 1},
+        "block_set_id": {"$ref": "#/$defs/id"},
+        "block_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "status": {"const": "COMPLETE_QA_PASS"},
+        "non_placeholder": {"const": true},
+        "hostile_fixture_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "independent_evaluation_sha256": {"$ref": "#/$defs/sha256"},
+        "authority": {"const": "INDEPENDENT_ADMISSION_AUTHORITY"},
+        "stop_conditions": {"type": "string", "minLength": 24},
+        "block_set_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false,
+      "required": ["route", "controller_id", "spawner_id", "source_readiness_sha256", "source_handoff_sha256", "custody_sha256"],
+      "properties": {
+        "route": {"const": "CONTROLLER_TO_PERSISTENT_SPAWNER"},
+        "controller_id": {"$ref": "#/$defs/id"},
+        "spawner_id": {"$ref": "#/$defs/id"},
+        "source_readiness_sha256": {"$ref": "#/$defs/sha256"},
+        "source_handoff_sha256": {"$ref": "#/$defs/sha256"},
+        "custody_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "agentos.typed_spawner_admission.v1"},
+    "version": {"const": 1},
+    "spawner_id": {"$ref": "#/$defs/id"},
+    "controller_id": {"$ref": "#/$defs/id"},
+    "governance_readiness_sha256": {"$ref": "#/$defs/sha256"},
+    "sealed_handoff_sha256": {"$ref": "#/$defs/sha256"},
+    "block_set": {"$ref": "#/$defs/blockSet"},
+    "custody": {"$ref": "#/$defs/custody"},
+    "admission_state": {"const": "ADMITTED_COMPILER_ONLY"},
+    "mode": {"const": "COMPILER_ONLY"},
+    "temporary_admission": {"const": false},
+    "worker_spawned": {"const": false},
+    "wave_activation": {"const": "OFF"},
+    "product_mutation": {"const": "FORBIDDEN"},
+    "provider_access": {"const": "FORBIDDEN"},
+    "credential_access": {"const": "FORBIDDEN"},
+    "permanent_roles_constructed": {"const": 0},
+    "next_action": {"const": "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME"},
+    "admission_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "required": [
+    "schema", "version", "spawner_id", "controller_id", "governance_readiness_sha256", "sealed_handoff_sha256",
+    "block_set", "custody", "admission_state", "mode", "temporary_admission", "worker_spawned", "wave_activation",
+    "product_mutation", "provider_access", "credential_access", "permanent_roles_constructed", "next_action", "admission_sha256"
+  ],
+  "admission_rules": {
+    "predecessors": "Controller governance readiness and sealed Bootstrap handoff must both validate and their digests must be bound into custody.",
+    "block_gate": "Only a complete non-placeholder QA-passed governing block set with independent evaluation may be admitted.",
+    "lifecycle": "The persistent Spawner is admitted compiler-only; permanent roles are constructed one at a time by the next transition.",
+    "protected_boundary": "No worker, temporary role, wave, Product mutation, provider, credential, spend, or release action is performed by this contract."
+  }
+}
