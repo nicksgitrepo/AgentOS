@@ -52,7 +52,8 @@
     "contract": "schemas/controller-import-planning.v1.json",
     "required_inputs": ["OWNER_BOUND_PROJECT_CONTRACT", "SOURCE_IDENTITY", "PROJECT_ARCHITECTURE", "FEATURE_INVENTORY", "ENVIRONMENT_INVENTORY", "HARDWARE_PROFILE", "STANDARD_APPLICABILITY"],
     "rule": "The Controller derives the project-applicable roster and roadmap. Bootstrap and the Agent Spawner must not embed a fixed project roster.",
-    "automatic_continuation": "Routine passed gates start the next eligible transition before the Controller turn ends; owner review is protected-boundary-only."
+    "automatic_continuation": "Routine passed gates start the next eligible transition before the Controller turn ends; owner review is protected-boundary-only.",
+    "incremental_spawner_roster": "The Spawner builds incomplete blocks in the background and emits a typed roster projection. The Controller may use only complete, independently evaluated routes and may choose available waves while pending routes remain pending."
   },
   "minimum_audit_coverage": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
   "maximum_parallel_cognitive_lanes": 6,

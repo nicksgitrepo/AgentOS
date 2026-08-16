@@ -16,6 +16,7 @@ import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 export const CONTROLLER_IMPORT_CONTEXT_SCHEMA = "agentos.controller_import_planning_context.v1";
 export const CONTROLLER_IMPORT_PLAN_SCHEMA = "agentos.controller_import_campaign_plan.v1";
 export const CONTROLLER_IMPORT_RUN_STATE_SCHEMA = "agentos.controller_import_run_state.v1";
+export const CONTROLLER_IMPORT_ROSTER_SCHEMA = "agentos.controller_import_roster_projection.v1";
 export const CONTROLLER_IMPORT_PLANNER_VERSION = 1;
 export const CONTROLLER_IMPORT_MAX_COGNITIVE_LANES = 6;
 export const CONTROLLER_IMPORT_PHASES = Object.freeze([
@@ -41,6 +42,7 @@ const NETWORK_MODES = new Set(["OFFLINE", "RESTRICTED", "CONNECTED", "UNKNOWN"])
 const STANDARD_STATUSES = new Set(["REQUIRED", "CONDITIONAL", "NOT_APPLICABLE"]);
 const RUN_STATUSES = new Set(["SPAWNER_QA_PENDING", "SPECIALIST_WAVE_ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING", "INDEPENDENT_REAUDIT_PENDING", "BLOCKED_RECOVERY", "BLOCKED_PROTECTED", "COMPLETE"]);
 const RUN_EVENTS = new Set(["SPAWNER_QA_PASSED", "SPAWNER_QA_NOT_READY", "BLOCK_QA_REPAIRED", "SPECIALIST_WAVE_PASSED", "PLATFORM_REVIEW_PASSED", "CENTRAL_INTEGRATION_PASSED", "INDEPENDENT_REAUDIT_PASSED", "RECOVERY_FAILED", "PROTECTED_BOUNDARY_REACHED", "PROTECTED_BOUNDARY_RESOLVED"]);
+const QA_STATUSES = new Set(["READY", "NOT_READY", "UNKNOWN"]);
 const PHASE_RANK = new Map(CONTROLLER_IMPORT_PHASES.map((phase, index) => [phase, index]));
 
 function assert(condition, message) {
@@ -487,6 +489,9 @@ export function compileControllerImportCampaignPlan({projectId, projectImportPla
       seed_rule: "SEED_IS_IMMUTABLE_AND_NEVER_WORKS;_ONLY_A_GOVERNED_CLONE_MAY_WORK",
       background_rule: "PREPARE_AND_INDEPENDENTLY_EVALUATE_THE_NEXT_TWO_WAVES_WHILE_CURRENT_WAVE_RUNS",
       invalidation_rule: "GOVERNING_BLOCK_CHANGE_INVALIDATES_AND_REBUILDS_EVERY_DEPENDENT_SEED",
+      incremental_library_rule: "BUILD_MISSING_BLOCKS_AND_PUBLISH_TYPED_ROSTER_PROJECTIONS_AS_ROUTES_BECOME_READY",
+      roster_projection_contract: "schemas/controller-import-roster-projection.v1.json",
+      controller_consumes_only_typed_roster_projection: true,
       independent_evaluation_required: true,
     },
     continuation: {
@@ -562,12 +567,102 @@ export function validateControllerImportCampaignPlan(plan) {
   assert(plan.resource_plan.freeze_new_heavyweight_admissions_on_pressure === true && plan.resource_plan.require_scheduler_job_process_provenance === true, "Controller import resource safety is weakened");
   assert(plan.spawner_contract.role === "AGENT.SPAWNER_COMPILER" && plan.spawner_contract.incomplete_block_behavior.includes("NEVER_SPAWN_INCOMPLETE"), "Controller import Spawner contract is incomplete");
   assert(plan.spawner_contract.seed_rule.includes("SEED_IS_IMMUTABLE_AND_NEVER_WORKS") && plan.spawner_contract.independent_evaluation_required === true, "Controller import seed QA is weakened");
+  assert(plan.spawner_contract.incremental_library_rule === "BUILD_MISSING_BLOCKS_AND_PUBLISH_TYPED_ROSTER_PROJECTIONS_AS_ROUTES_BECOME_READY" && plan.spawner_contract.roster_projection_contract === "schemas/controller-import-roster-projection.v1.json" && plan.spawner_contract.controller_consumes_only_typed_roster_projection === true, "Controller import incremental Spawner contract is incomplete");
   assert(plan.continuation.mode === "EVENT_DRIVEN_AUTOMATIC" && plan.continuation.routine_owner_review_forbidden === true, "Controller import routine continuation is not automatic");
   assert(plan.continuation.routine_gate_pass.includes("START_NEXT_ELIGIBLE_TRANSITION"), "Controller import may end a turn without starting eligible work");
   assert(plan.acceptance.platform_review_after_every_wave === true && plan.acceptance.central_integration_after_every_wave === true && plan.acceptance.independent_reaudit_after_every_wave === true && plan.acceptance.self_acceptance_forbidden === true, "Controller import pyramid acceptance is incomplete");
   assert(plan.zero_trace.control_plane_external_to_product === true && plan.zero_trace.agentos_artifacts_forbidden_in_product === true && plan.zero_trace.source_roots_unchanged_until_accepted_cutover === true, "Controller import zero-trace boundary is weakened");
   assert(plan.plan_sha256 === canonicalDigest(planBody(plan)), "Controller import campaign plan digest mismatch");
   return plan;
+}
+
+function rosterProjectionBody(projection) {
+  const body = structuredClone(projection);
+  body.projection_sha256 = null;
+  return body;
+}
+
+function validateQaRecord(record, requestIds) {
+  exactKeys(record, ["request_id", "status", "block_set_sha256", "independent_evaluation_sha256"], "Controller import Spawner QA record");
+  requireIdentifier(record.request_id, "Controller import Spawner QA request");
+  assert(requestIds.has(record.request_id), `Controller import Spawner QA names an unknown request: ${record.request_id}`);
+  assert(QA_STATUSES.has(record.status), "Controller import Spawner QA status is invalid");
+  for (const field of ["block_set_sha256", "independent_evaluation_sha256"]) {
+    if (record.status === "READY") requireSha(record[field], `Controller import ready QA ${field}`);
+    else assert(record[field] === null, `Controller import non-ready QA ${field} must be null`);
+  }
+}
+
+export function validateControllerImportRosterProjection(projection, {plan = null} = {}) {
+  exactKeys(projection, ["schema", "version", "status", "campaign_plan_sha256", "source", "available_role_request_ids", "pending_role_request_ids", "blocked_role_request_ids", "available_wave_ids", "completed_wave_ids", "active_wave_ids", "next_action", "controller_decision_inputs", "incomplete_never_admitted", "projection_sha256"], "Controller import roster projection");
+  assert(projection.schema === CONTROLLER_IMPORT_ROSTER_SCHEMA && projection.version === CONTROLLER_IMPORT_PLANNER_VERSION, "Controller import roster projection identity is invalid");
+  assert(["PARTIAL_READY", "READY_COMPLETE"].includes(projection.status), "Controller import roster projection status is invalid");
+  requireSha(projection.campaign_plan_sha256, "Controller import roster campaign plan");
+  assert(projection.source === "AGENT.SPAWNER_COMPILER", "Controller import roster source is not Spawner");
+  for (const field of ["available_role_request_ids", "pending_role_request_ids", "blocked_role_request_ids", "available_wave_ids", "completed_wave_ids", "active_wave_ids"]) sortedUnique(projection[field], `Controller import roster ${field}`, {allowEmpty: true});
+  exactKeys(projection.controller_decision_inputs, ["available_wave_ids", "pending_role_request_ids", "blocked_role_request_ids", "replan_required"], "Controller import roster decision inputs");
+  assert(JSON.stringify(projection.controller_decision_inputs.available_wave_ids) === JSON.stringify(projection.available_wave_ids), "Controller import roster decision waves are stale");
+  assert(JSON.stringify(projection.controller_decision_inputs.pending_role_request_ids) === JSON.stringify(projection.pending_role_request_ids), "Controller import roster decision pending routes are stale");
+  assert(JSON.stringify(projection.controller_decision_inputs.blocked_role_request_ids) === JSON.stringify(projection.blocked_role_request_ids), "Controller import roster decision blocked routes are stale");
+  assert(projection.controller_decision_inputs.replan_required === (projection.status === "PARTIAL_READY"), "Controller import roster replan signal is invalid");
+  requireIdentifier(projection.next_action, "Controller import roster next action");
+  assert(projection.incomplete_never_admitted === true, "Controller import roster may admit incomplete work");
+  requireSha(projection.projection_sha256, "Controller import roster projection digest");
+  assert(projection.projection_sha256 === canonicalDigest(rosterProjectionBody(projection)), "Controller import roster projection digest mismatch");
+  if (plan !== null) {
+    validateControllerImportCampaignPlan(plan);
+    assert(projection.campaign_plan_sha256 === plan.plan_sha256, "Controller import roster is bound to a different campaign plan");
+    const requestIds = new Set(plan.role_requests.map((request) => request.request_id));
+    const all = new Set([...projection.available_role_request_ids, ...projection.pending_role_request_ids]);
+    assert(all.size === requestIds.size && [...all].every((requestId) => requestIds.has(requestId)), "Controller import roster does not cover the plan exactly");
+    assert(projection.blocked_role_request_ids.every((requestId) => projection.pending_role_request_ids.includes(requestId)), "Controller import blocked route is not pending");
+    const waveIds = new Set(plan.waves.map((wave) => wave.wave_id));
+    for (const field of ["available_wave_ids", "completed_wave_ids", "active_wave_ids"]) assert(projection[field].every((waveId) => waveIds.has(waveId)), `Controller import roster ${field} names an unknown wave`);
+    assert(projection.available_wave_ids.every((waveId) => !projection.completed_wave_ids.includes(waveId) && !projection.active_wave_ids.includes(waveId)), "Controller import roster exposes a completed or active wave as available");
+  }
+  return projection;
+}
+
+export function compileControllerImportRosterProjection({plan, qaRecords = [], completedWaveIds = [], activeWaveIds = []} = {}) {
+  validateControllerImportCampaignPlan(plan);
+  const requestIds = new Set(plan.role_requests.map((request) => request.request_id));
+  assert(Array.isArray(qaRecords), "Controller import Spawner QA records must be an array");
+  const seen = new Set();
+  for (const record of qaRecords) {
+    validateQaRecord(record, requestIds);
+    assert(!seen.has(record.request_id), `Controller import Spawner QA duplicates request ${record.request_id}`);
+    seen.add(record.request_id);
+  }
+  const ready = [...seen].filter((requestId) => qaRecords.find((record) => record.request_id === requestId)?.status === "READY").sort(compareUtf8);
+  const pending = [...requestIds].filter((requestId) => !ready.includes(requestId)).sort(compareUtf8);
+  const blocked = qaRecords.filter((record) => ["NOT_READY", "UNKNOWN"].includes(record.status)).map((record) => record.request_id).sort(compareUtf8);
+  const completed = [...new Set(completedWaveIds)].sort(compareUtf8);
+  const active = [...new Set(activeWaveIds)].sort(compareUtf8);
+  const availableWaves = plan.waves.filter((wave) => !completed.includes(wave.wave_id) && !active.includes(wave.wave_id) && wave.role_request_ids.every((requestId) => ready.includes(requestId))).map((wave) => wave.wave_id);
+  const projection = {
+    schema: CONTROLLER_IMPORT_ROSTER_SCHEMA,
+    version: CONTROLLER_IMPORT_PLANNER_VERSION,
+    status: pending.length === 0 ? "READY_COMPLETE" : "PARTIAL_READY",
+    campaign_plan_sha256: plan.plan_sha256,
+    source: "AGENT.SPAWNER_COMPILER",
+    available_role_request_ids: ready,
+    pending_role_request_ids: pending,
+    blocked_role_request_ids: blocked,
+    available_wave_ids: availableWaves,
+    completed_wave_ids: completed,
+    active_wave_ids: active,
+    next_action: availableWaves.length > 0 ? "RETURN_TYPED_ROSTER_AND_REQUEST_CONTROLLER_WAVE_DECISION" : pending.length > 0 ? "BUILD_AND_QA_PENDING_BLOCKS" : "RETURN_TYPED_ROSTER_FOR_CONTROLLER_COMPLETION_REVIEW",
+    controller_decision_inputs: {
+      available_wave_ids: availableWaves,
+      pending_role_request_ids: pending,
+      blocked_role_request_ids: blocked,
+      replan_required: pending.length > 0,
+    },
+    incomplete_never_admitted: true,
+    projection_sha256: null,
+  };
+  projection.projection_sha256 = canonicalDigest(rosterProjectionBody(projection));
+  return validateControllerImportRosterProjection(projection, {plan});
 }
 
 function runStateBody(state) {

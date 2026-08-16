@@ -8,6 +8,7 @@ import {
   advanceControllerImportRunState,
   compileControllerImportCampaignPlan,
   compileControllerImportPlanningContext,
+  compileControllerImportRosterProjection,
   compileControllerImportRunState,
   validateControllerImportCampaignPlan,
   validateControllerImportPlanningContext,
@@ -65,6 +66,23 @@ assert(plan.spawner_contract.seed_rule.includes("NEVER_WORKS"));
 assert.equal(plan.continuation.routine_owner_review_forbidden, true);
 assert(plan.continuation.routine_gate_pass.includes("START_NEXT_ELIGIBLE_TRANSITION"));
 
+const currentWaveRoleIds = new Set(plan.waves[0].role_request_ids);
+const currentWaveQa = [...currentWaveRoleIds].map((request_id) => ({request_id, status: "READY", block_set_sha256: sha("8"), independent_evaluation_sha256: sha("9")}));
+const pendingRoleId = plan.role_requests.find((request) => !currentWaveRoleIds.has(request.request_id)).request_id;
+currentWaveQa.push({request_id: pendingRoleId, status: "NOT_READY", block_set_sha256: null, independent_evaluation_sha256: null});
+const partialRoster = compileControllerImportRosterProjection({plan, qaRecords: currentWaveQa});
+assert.equal(partialRoster.status, "PARTIAL_READY");
+assert.deepEqual(partialRoster.available_wave_ids, [plan.waves[0].wave_id]);
+assert(partialRoster.available_role_request_ids.length === 6 && partialRoster.pending_role_request_ids.includes(pendingRoleId));
+assert(partialRoster.blocked_role_request_ids.includes(pendingRoleId));
+assert.equal(partialRoster.incomplete_never_admitted, true);
+const completeQa = plan.role_requests.map(({request_id}) => ({request_id, status: "READY", block_set_sha256: sha("a"), independent_evaluation_sha256: sha("b")}));
+const completeRoster = compileControllerImportRosterProjection({plan, qaRecords: completeQa});
+assert.equal(completeRoster.status, "READY_COMPLETE");
+assert.equal(completeRoster.pending_role_request_ids.length, 0);
+assert.equal(completeRoster.available_wave_ids.length, plan.waves.length);
+assert.throws(() => compileControllerImportRosterProjection({plan, qaRecords: [{request_id: pendingRoleId, status: "READY", block_set_sha256: null, independent_evaluation_sha256: null}]}), /ready QA block_set_sha256/u);
+
 let run = compileControllerImportRunState({plan});
 assert.equal(run.next_action, "REQUEST_SPAWNER_QA_FOR_CURRENT_WAVE");
 run = advanceControllerImportRunState({state: run, plan, event: {event_type: "SPAWNER_QA_NOT_READY", finding_ids: ["FINDING.MISSING_BLOCK"], protected_boundary_id: null}});
@@ -96,7 +114,7 @@ unknownDependency.architecture[0].depends_on = ["UNKNOWN_COMPONENT"];
 assert.throws(() => compileControllerImportPlanningContext(unknownDependency), /invalid dependency/u);
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-for (const relative of ["control/controller-import-planner.mjs", "schemas/controller-import-planning.v1.json", "governance/2.1rc/project-import.md"]) {
+for (const relative of ["control/controller-import-planner.mjs", "schemas/controller-import-planning.v1.json", "schemas/controller-import-roster-projection.v1.json", "governance/2.1rc/project-import.md"]) {
   const text = fs.readFileSync(path.join(root, relative), "utf8");
   assert(!/Sociuna|JobSight|WellSight/iu.test(text), `${relative} contains consumer-specific policy`);
 }

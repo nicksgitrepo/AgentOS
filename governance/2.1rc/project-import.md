@@ -71,7 +71,11 @@ The Agent Spawner compiles only roles requested by the Controller. It must
 select a dependency-complete block set, source-lock it, run independent QA,
 and return `NOT_READY` while any required block is incomplete. Seeds are
 immutable checkpoints and never work; only governed clones work. While the
-current wave runs, the Spawner prepares the next two eligible waves.
+current wave runs, the Spawner prepares the next two eligible waves. It also
+continues building missing reusable blocks and emits a typed roster projection
+whenever a route becomes complete. The Controller may choose among complete
+available waves while incomplete routes remain pending; no incomplete route
+ever enters the possible-agent roster or runtime.
 
 Routine gate passes are event-driven and automatic. Before a Controller turn
 ends, it starts the next eligible transition or persists an exact resumable

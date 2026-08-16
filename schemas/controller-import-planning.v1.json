@@ -32,7 +32,10 @@
     "incomplete_blocks": "Return NOT_READY, build and source-lock missing blocks, iterate through QA, and never spawn an incomplete seed or working agent.",
     "seed_rule": "Seeds never perform work.",
     "background_rule": "While a wave runs, prepare and independently evaluate the next two eligible waves without duplicating active work.",
-    "invalidation_rule": "A governing-block change invalidates and rebuilds every dependent seed before reuse."
+    "invalidation_rule": "A governing-block change invalidates and rebuilds every dependent seed before reuse.",
+    "incremental_library_rule": "Build missing blocks continuously and publish typed roster projections as routes become ready. The Controller may choose among available complete waves while pending routes remain pending.",
+    "roster_projection_schema": "agentos.controller_import_roster_projection.v1",
+    "controller_consumes_only_typed_roster_projection": true
   },
   "automatic_continuation": {
     "state_schema": "agentos.controller_import_run_state.v1",

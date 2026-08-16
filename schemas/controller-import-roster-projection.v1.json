@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.controller_import_roster_projection.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "producer": "AGENT.SPAWNER_COMPILER",
+  "consumer": "AGENTOS_CONTROLLER",
+  "purpose": "Publish only complete, independently evaluated role routes to the possible-agent roster while the remaining reusable block library is built.",
+  "qa_record": {
+    "required": ["request_id", "status", "block_set_sha256", "independent_evaluation_sha256"],
+    "statuses": {
+      "READY": "The complete block set is source-locked, independently evaluated, and eligible for Controller consideration.",
+      "NOT_READY": "A required block, source lock, fixture, or evaluation is missing; the route is never admitted.",
+      "UNKNOWN": "Evidence is insufficient; the route is never admitted."
+    }
+  },
+  "projection_rule": "Omitted and non-ready routes remain pending. Available role request IDs and available wave IDs are the only routes the Controller may consider. A block update invalidates dependent seeds and requires a fresh projection.",
+  "controller_rule": "The Controller may choose among available complete waves while the Spawner continues building pending blocks. It must not infer readiness from a role name, static registry count, commentary, or an opaque digest.",
+  "admission_rule": "incomplete_never_admitted=true; no seed or working agent is spawned from NOT_READY or UNKNOWN routes.",
+  "zero_trace_rule": "The projection is control-plane state and never enters Product source."
+}
