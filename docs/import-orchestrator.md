@@ -22,6 +22,17 @@ machine-readable contract is `schemas/import-orchestrator.v1.json`. Every
 compiled record binds the campaign plan, Spawner roster, run state, and
 Spawner lifecycle by digest. A no-op recheck cannot advance the Orchestrator.
 
+The Orchestrator record is durable. `writeImportOrchestratorRecordCompareAndSwap`
+persists a canonical JSON record beneath an explicit control-plane authority
+root using an exclusive lock, an atomic replacement, directory fsync, and a
+digest compare-and-swap parent. `readImportOrchestratorRecord` validates the
+readback, and `advanceImportOrchestratorRecord` performs the read/derive/write
+transition against the expected parent digest. Paths must remain relative to
+the authority root and may not traverse or follow symlinks. This lets a
+Controller repair or resume the campaign in the same turn after a worker
+handoff or process restart; it must not treat a timer-only observation as a
+transition.
+
 The Orchestrator can route campaign work, but it cannot mutate Product source,
 access credentials or external providers, synchronize externally, or publish
 or release a candidate. Those actions remain separate protected boundaries.

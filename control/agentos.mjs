@@ -18,7 +18,7 @@ export {compileControllerEscalation, validateControllerEscalation} from "./contr
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
 export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick} from "./agent-spawner-lifecycle.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
-export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator} from "./import-orchestrator.mjs";
+export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,

@@ -6,6 +6,9 @@
  * it does not become the worker, wave planner, or handoff owner.
  */
 
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {
   validateControllerImportCampaignPlan,
@@ -60,7 +63,8 @@ function requireIdentifier(value, label) {
   assert(typeof value === "string" && IDENTIFIER.test(value), `${label} must be a stable identifier`);
 }
 
-function requireSha(value, label) {
+function requireSha(value, label, {nullable = false} = {}) {
+  if (nullable && value === null) return;
   assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
 }
 
@@ -70,6 +74,12 @@ function requireBoolean(value, label) {
 
 function requireNonNegativeInteger(value, label) {
   assert(Number.isSafeInteger(value) && value >= 0, `${label} must be a non-negative integer`);
+}
+
+function requireRecordPath(value, label) {
+  assert(typeof value === "string" && value.length > 0, `${label} must be a non-empty relative path`);
+  assert(!path.isAbsolute(value) && !value.includes("\\"), `${label} must be a relative POSIX path`);
+  assert(!value.split("/").includes(".."), `${label} may not contain parent traversal`);
 }
 
 function nullableIdentifier(value, label) {
@@ -335,4 +345,91 @@ export function advanceImportOrchestrator({orchestrator, plan, rosterProjection,
   next.transition_sequence = orchestrator.transition_sequence + 1;
   next.orchestrator_sha256 = canonicalDigest(body(next));
   return validateImportOrchestrator(next, {plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
+}
+
+/*
+ * The Controller must be able to observe and resume the Orchestrator across
+ * turns and process restarts.  Persistence is deliberately generic: the
+ * record is the same digest-bound contract above, written only beneath an
+ * explicit authority root with a filesystem CAS.  No project source, provider
+ * state, credentials, or consumer path is ever touched by these helpers.
+ */
+function safeOrchestratorRecordPath(authorityRoot, recordPath) {
+  assert(typeof authorityRoot === "string" && path.isAbsolute(authorityRoot), "Orchestrator authority root must be absolute");
+  requireRecordPath(recordPath, "Orchestrator record path");
+  const root = fs.realpathSync.native(authorityRoot);
+  const rootStat = fs.lstatSync(root);
+  assert(rootStat.isDirectory() && !rootStat.isSymbolicLink(), "Orchestrator authority root must be a real directory");
+  const target = path.resolve(root, recordPath);
+  assert(target.startsWith(`${root}${path.sep}`), "Orchestrator record path escapes authority root");
+  for (let cursor = target; cursor !== root; cursor = path.dirname(cursor)) {
+    if (fs.existsSync(cursor)) assert(!fs.lstatSync(cursor).isSymbolicLink(), "Orchestrator record path may not contain symlinks");
+  }
+  return target;
+}
+
+function fsyncOrchestratorDirectory(directory) {
+  const descriptor = fs.openSync(directory, fs.constants.O_RDONLY | (fs.constants.O_DIRECTORY ?? 0));
+  try { fs.fsyncSync(descriptor); } finally { fs.closeSync(descriptor); }
+}
+
+export function readImportOrchestratorRecord({authorityRoot, recordPath}) {
+  const target = safeOrchestratorRecordPath(authorityRoot, recordPath);
+  let stat;
+  try { stat = fs.lstatSync(target); } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+  assert(stat.isFile() && !stat.isSymbolicLink(), "Orchestrator record must be a regular file");
+  let record;
+  try { record = JSON.parse(fs.readFileSync(target, "utf8")); }
+  catch (error) { throw new Error(`Orchestrator record JSON is invalid: ${error.message}`); }
+  return validateImportOrchestrator(record);
+}
+
+export function writeImportOrchestratorRecordCompareAndSwap({authorityRoot, recordPath, expectedOrchestratorSha256 = null, orchestrator} = {}) {
+  const validated = validateImportOrchestrator(orchestrator);
+  requireSha(expectedOrchestratorSha256, "Orchestrator compare-and-swap parent", {nullable: true});
+  let target = safeOrchestratorRecordPath(authorityRoot, recordPath);
+  fs.mkdirSync(path.dirname(target), {recursive: true});
+  target = safeOrchestratorRecordPath(authorityRoot, recordPath);
+  const lockPath = `${target}.lock`;
+  let lockDescriptor;
+  let lockHeld = false;
+  let temporary;
+  try {
+    lockDescriptor = fs.openSync(lockPath, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
+    lockHeld = true;
+    const current = readImportOrchestratorRecord({authorityRoot, recordPath});
+    if (expectedOrchestratorSha256 === null) assert(current === null, "Orchestrator record already exists");
+    else assert(current !== null && current.orchestrator_sha256 === expectedOrchestratorSha256, "Orchestrator compare-and-swap parent is stale");
+    temporary = `${target}.${process.pid}.${crypto.randomUUID()}.stage`;
+    const descriptor = fs.openSync(temporary, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
+    try {
+      fs.writeFileSync(descriptor, `${JSON.stringify(validated, null, 2)}\n`, "utf8");
+      fs.fsyncSync(descriptor);
+    } finally { fs.closeSync(descriptor); }
+    fs.renameSync(temporary, target);
+    fsyncOrchestratorDirectory(path.dirname(target));
+    temporary = null;
+  } finally {
+    if (temporary !== undefined && fs.existsSync(temporary)) fs.unlinkSync(temporary);
+    if (lockDescriptor !== undefined) fs.closeSync(lockDescriptor);
+    if (lockHeld) {
+      try { fs.unlinkSync(lockPath); }
+      catch (error) { if (error.code !== "ENOENT") throw error; }
+    }
+  }
+  const readback = readImportOrchestratorRecord({authorityRoot, recordPath});
+  assert(readback.orchestrator_sha256 === validated.orchestrator_sha256, "Orchestrator record readback differs");
+  return {path: recordPath, orchestrator_sha256: readback.orchestrator_sha256};
+}
+
+export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes = []} = {}) {
+  requireSha(expectedOrchestratorSha256, "expected Orchestrator record");
+  const current = readImportOrchestratorRecord({authorityRoot, recordPath});
+  assert(current !== null, "Orchestrator record is missing");
+  assert(current.orchestrator_sha256 === expectedOrchestratorSha256, "Orchestrator record parent is stale");
+  const next = advanceImportOrchestrator({orchestrator: current, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
+  return writeImportOrchestratorRecordCompareAndSwap({authorityRoot, recordPath, expectedOrchestratorSha256, orchestrator: next});
 }

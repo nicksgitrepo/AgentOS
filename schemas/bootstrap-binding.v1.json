@@ -562,7 +562,7 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "d0fc7281e27a554321d3c3d535222cfa4971f9749c8a4861b539563851212102"
+      "sha256": "6a6b8656be38d5ce2d8079ee9f51130f0c7a7be0c806ff383a9d6440444f3a1d"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
@@ -570,11 +570,11 @@
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
-      "sha256": "774537a38f27133558e8913e1798e3e7689d0970bea73e9bf23026108793f3e5"
+      "sha256": "cc20c81a180cdfcd7c0bbff20ec8152999d1abb69e64554075783a0a8ebcc711"
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "b4d046d0c22eeb126202d0c77800714169ed11ab0e022499c89393a44091fb2e"
+      "sha256": "d5a253bc461d911493054f0e6f2629f75018149bbb1fb15df239469107705634"
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",
@@ -750,7 +750,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "89479b87aeef71b692bc91a1395797df5762dc09d5cd66fe558278618c0b3a2a"
+      "sha256": "82da309f4ceca71ebc9c5fc946b55dba7c4c8a478be7808aba22f4e888011ad3"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",

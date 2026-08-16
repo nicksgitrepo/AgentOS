@@ -13,7 +13,14 @@ import {
 } from "../control/controller-import-planner.mjs";
 import {compileAgentSpawnerLifecycle} from "../control/agent-spawner-lifecycle.mjs";
 import {compileAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
-import {advanceImportOrchestrator, compileImportOrchestrator, validateImportOrchestrator} from "../control/import-orchestrator.mjs";
+import {
+  advanceImportOrchestrator,
+  advanceImportOrchestratorRecord,
+  compileImportOrchestrator,
+  readImportOrchestratorRecord,
+  validateImportOrchestrator,
+  writeImportOrchestratorRecordCompareAndSwap,
+} from "../control/import-orchestrator.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const hash = (value) => canonicalDigest({value});
@@ -104,6 +111,47 @@ const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HEL
 assert.equal(held.state, "PROTECTED_WAIT");
 assert.equal(held.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(held.continuation.timer_is_not_progress, true);
+
+const persistenceRoot = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "agentos-import-orchestrator-"));
+const persistencePath = "state/import-orchestrator.json";
+const persistedInitial = writeImportOrchestratorRecordCompareAndSwap({
+  authorityRoot: persistenceRoot,
+  recordPath: persistencePath,
+  expectedOrchestratorSha256: null,
+  orchestrator: initial,
+});
+assert.equal(persistedInitial.orchestrator_sha256, initial.orchestrator_sha256);
+assert.deepEqual(readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: persistencePath}), initial);
+assert.throws(() => writeImportOrchestratorRecordCompareAndSwap({
+  authorityRoot: persistenceRoot,
+  recordPath: persistencePath,
+  expectedOrchestratorSha256: "0".repeat(64),
+  orchestrator: initial,
+}), /compare-and-swap parent is stale/u);
+const persistedAdvance = advanceImportOrchestratorRecord({
+  authorityRoot: persistenceRoot,
+  recordPath: persistencePath,
+  expectedOrchestratorSha256: initial.orchestrator_sha256,
+  plan,
+  rosterProjection: activeRoster,
+  runState: run,
+  spawnerLifecycle: lifecycle,
+});
+const persistedReadback = readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: persistencePath});
+assert.equal(persistedAdvance.orchestrator_sha256, persistedReadback.orchestrator_sha256);
+assert.equal(persistedReadback.transition_sequence, 1);
+assert.equal(persistedReadback.next_action, "START_SPECIALIST_WAVE");
+assert.throws(() => readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: "../escape.json"}), /parent traversal/u);
+const linkedRoot = path.join(persistenceRoot, "linked-target");
+fs.mkdirSync(linkedRoot);
+const linkedPath = path.join(persistenceRoot, "linked");
+try {
+  fs.symlinkSync(linkedRoot, linkedPath, "dir");
+  assert.throws(() => readImportOrchestratorRecord({authorityRoot: persistenceRoot, recordPath: "linked/import-orchestrator.json"}), /may not contain symlinks/u);
+} finally {
+  fs.rmSync(linkedPath, {force: true});
+}
+fs.rmSync(persistenceRoot, {recursive: true, force: true});
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 for (const relative of ["control/import-orchestrator.mjs", "schemas/import-orchestrator.v1.json"]) {
