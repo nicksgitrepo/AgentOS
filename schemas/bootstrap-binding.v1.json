@@ -734,7 +734,7 @@
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "894f6fb831d2725ffb2e6c5b8a6d438b1f4775f3182676ab49ae9c0140ab805b"
+      "sha256": "f353e279b1d8e6365c550b77b5539128e9520c8a444ac791a19ff503bfbf96d7"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",

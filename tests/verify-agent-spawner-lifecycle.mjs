@@ -128,4 +128,4 @@ assert.throws(
   "compiler-only Spawner must reject temporary admission",
 );
 
-console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/ADMITTED/ACTIVE/STALLED state, compiler-only safe mode, separate wave activation, and hostile gate checks");
+console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/COMPILER_ACTIVE/ADMITTED/ACTIVE/STALLED state, compiler-only safe mode, separate wave activation, and hostile gate checks");
