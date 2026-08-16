@@ -158,19 +158,19 @@
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
-      "sha256": "fae9000d5a10c9c80b1a2807be55bd908a1871eca72a36f7ce35ac4c076d320e"
+      "sha256": "0b779926755bcc13b1db60c686ac6c6227b4f01ee5cd879be9963cf7f01a50ac"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",
-      "sha256": "1cf58430d1a34f0b57a368461936ce5d0bc8a3916e2e72928085d25afde03aa2"
+      "sha256": "cdd14a000311c50cdce9bf211b95d65b3401b05fa6d1e445bbe169127109fd26"
     },
     "project_import_article": {
       "path": "governance/2.1rc/project-import.md",
-      "sha256": "42c238d6b6d2bc624809d9c4552d96807b6b8863dd046a511d91c761638b002d"
+      "sha256": "8148efa0733be318b3d953ddde203370db5f1e47e6086d47d369e3467c19e2a7"
     },
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
-      "sha256": "fc75901e949701117c9d8c865cfcd96ce2027b2cbd52067dbc4e955dad9ccecf"
+      "sha256": "1c8c83955b6150a90fdd37fb272ca96e800b681cccc64923bda561d409cec43a"
     },
     "normalization_policy_controller": {
       "path": "control/normalization-policy.mjs",
@@ -186,7 +186,7 @@
     },
     "normalization_policy_verifier": {
       "path": "tests/verify-normalization-policy.mjs",
-      "sha256": "525d01fdf37caf58ea7895469ae911dae3f81e12e612d777aa547dbe441ea29a"
+      "sha256": "7c2cf858f61acc5422a5e60df83671744c7cc62aa65ee856d92990da81d56350"
     },
     "standards_registry_controller": {
       "path": "control/standards-registry.mjs",
@@ -726,19 +726,19 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "1b8f75f468e26fc4f55aa741a1d6c23b372a5bd07bc4d268239cec57462145cf"
+      "sha256": "3e9a3df9ca670f88ce5bc06918e024eb53b7a061759c1891fcff9bdb99309e42"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "179eeee618bb99e3c0c9693f38a1bdc9b501c53476f7b022a80023ff4261169b"
+      "sha256": "5ceb16f3401e063a054d8df2d496d03169d52a9ff1e8616a6f6ba5319978f7f0"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "41da7d07695a14c11c920e7052247c0891d0cb5f1455e62d3c7ea8a4e82c8c65"
+      "sha256": "894f6fb831d2725ffb2e6c5b8a6d438b1f4775f3182676ab49ae9c0140ab805b"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
-      "sha256": "d1f653c00b7f203eead462391e68d66b61e2b5fef059c57b62402fdc9646e322"
+      "sha256": "9b40453dc215d5d559d45e8af08eae7743bde9da2d60109d8f776a3d537b8bec"
     },
     "persistent_intent_runtime_primitives_controller": {
       "path": "control/persistent-intent-runtime-primitives.mjs",
@@ -2064,7 +2064,7 @@
     },
     "release_readme_historical_compatibility": {
       "path": "control/README.md",
-      "sha256": "68531240addf636dea5af19bfc789ff3ce7beb377b7a1a28f84bb48855183394",
+      "sha256": "60646ea46d56bf7eb413f3a93b8680084d298f68e2a6e13cef120cb89faa569e",
       "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_ADAPTER_DOCUMENTATION",
       "current_portable_kernel_input": false,
       "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",

@@ -42,7 +42,7 @@ const compilerOnly = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: {...pendingQa, incomplete_block_count: 1, status: "NOT_READY"},
 });
-assert.equal(compilerOnly.persistent_state, "QA_READY");
+assert.equal(compilerOnly.persistent_state, "COMPILER_ACTIVE");
 assert.equal(compilerOnly.mode, "COMPILER_ONLY");
 assert.equal(compilerOnly.wave_activation, "OFF");
 let compiled = 0;
@@ -98,7 +98,7 @@ const resumedCompiler = advanceAgentSpawnerLifecycle(stalled, {
   event_sha256: canonicalDigest({event_type: "START_COMPILER", event_sha256: null}),
 });
 assert.equal(resumedCompiler.state, "COMPILER_ACTIVE");
-assert.equal(resumedCompiler.persistent_state, "QA_READY");
+assert.equal(resumedCompiler.persistent_state, "COMPILER_ACTIVE");
 assert.equal(resumedCompiler.mode, "COMPILER_ONLY");
 
 const fakeActivePending = structuredClone(stalled);
