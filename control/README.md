@@ -17,7 +17,7 @@ Canonical executable authorities:
 - `agentos-controller.mjs` — persistent project-level `AGENTOS_CONTROLLER` with a judgment boundary, deterministic event loop, adapter readbacks, policy/session reconciliation, and compare-and-swap state;
 - `controller-import-planner.mjs` — deterministic source-bound Controller planning from project goals, architecture, features, environments, hardware, standards, and evidence into a QA-gated specialist roster, incremental Spawner roster projections, and six-lane audit/repair pyramid;
 - `continuous-operating-loop.mjs` — fifteen-minute meaningful-progress inspection, evidence-preserving in-scope repair, predecessor-bound replacement, and independent clearance;
-- `controller-supervisor.mjs` and `controller-supervisor-runtime.mjs` — the self-starting observation, bounded-goal, boundary, lease, heartbeat, and repair-routing loop for the persistent Controller;
+- `controller-supervisor.mjs` and `controller-supervisor-runtime.mjs` — the self-starting observation, bounded-goal, boundary, lease, heartbeat, and repair-routing loop for the persistent Controller. An unchanged observation or protected hold is recorded as `ACTIVE_EVENT_WAIT`/`ACTIVE_PROTECTED_WAIT`, never as an unexplained idle runtime;
 - `local-agent-session.mjs` — durable campaign-role custody with source-bound commands, heartbeats, isolated worktrees, and exact initial/follow-up readbacks;
 - `repository-readback.mjs` — local Git checkpoint readback; provider and hosted-runtime readback remain typed external adapters;
 - `project-map.mjs` — bounded, deterministic project-map compilation from typed repository snapshots with explicit omission and freshness metadata;

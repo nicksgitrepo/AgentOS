@@ -41,11 +41,11 @@
     "controller": "control/controller-supervisor-runtime.mjs",
     "contract": "schemas/controller-supervisor.v1.json",
     "role": "PROJECT_PERSISTENT_AUTONOMOUS_OBSERVATION_GOAL_ROUTING",
-    "loop_rule": "Hold one supervisor lease, observe current control-plane records, mint one deterministic bounded goal, route safe work, retain exact failures, and reconcile again without an outside prompt.",
+    "loop_rule": "Hold one supervisor lease, observe current control-plane records, mint one deterministic bounded goal, route safe work, retain exact failures, and remain in an event-driven wait rather than IDLE whenever no safe route is available.",
     "hard_boundary_rule": "Stop the dependent outcome on protected authority, identity, evidence, credential, destructive, external, or unresolved owner-intent boundaries.",
     "soft_boundary_rule": "Send changed scope or operating choices to campaign Orchestrator review while unrelated safe work continues.",
     "puzzle_rule": "Route one repairable engineering puzzle through campaign custody, then require Auditor and Controller rechecks.",
-    "session_rule": "Campaign roles remain observable through durable local sessions, heartbeats, source-bound commands, and readbacks."
+    "session_rule": "Campaign roles remain observable through durable local sessions, heartbeats, source-bound commands, and readbacks; a protected hold keeps the Controller Runtime alive without activating dependent work."
   },
   "operating_loop": {
     "controller": "control/continuous-operating-loop.mjs",

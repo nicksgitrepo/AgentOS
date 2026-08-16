@@ -214,6 +214,8 @@ assert.equal(fs.existsSync(path.join(runtimeRoot, "supervisor", "route-failures"
 const reusedRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
 assert.equal(reusedRuntime.reused, true, "an unchanged observation must not retry the same route");
 assert.equal(routeAttempts, 2);
+const reusedRuntimeState = JSON.parse(fs.readFileSync(path.join(runtimeRoot, "supervisor", "runtime.json"), "utf8"));
+assert.equal(reusedRuntimeState.status, "ACTIVE_EVENT_WAIT", "unchanged observations must remain an active event-driven wait, not idle");
 fs.rmSync(runtimeRoot, {recursive: true, force: true});
 
 const evolvingFailureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-evolving-failure-"));

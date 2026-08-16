@@ -75,6 +75,7 @@ const OPERATION_NAMES = Object.freeze([
 const OPERATION_SET = new Set(OPERATION_NAMES);
 const OPERATIONAL_STATUSES = Object.freeze([
   "IDLE",
+  "EVENT_DRIVEN_WAIT",
   "BOOTSTRAPPING",
   "OWNER_REVIEW_PENDING",
   "CAMPAIGN_ACTIVE",
@@ -527,7 +528,10 @@ export function compileAgentOSControllerState({
     schema: CONTROLLER_SCHEMA,
     version: 1,
     status: "PREPARED_NOT_ACTIVATED",
-    operational_status: "IDLE",
+    // A persistent Controller is never represented as idle after setup.  With
+    // no admitted campaign it remains alive in an event-driven wait state;
+    // PREPARED_NOT_ACTIVATED still keeps Product and external actions closed.
+    operational_status: "EVENT_DRIVEN_WAIT",
     logical_controller_id: logicalControllerId,
     project_id: projectId,
     current_session_id: currentSessionId,
@@ -1021,7 +1025,7 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       add("archiveCampaignAgents");
       const closedId = state.active_campaign.campaign_id;
       next = updateState(next, {
-        operational_status: "IDLE",
+        operational_status: "EVENT_DRIVEN_WAIT",
         active_campaign_id: null,
         active_campaign: null,
         campaign_queue: markQueueClosed(next.campaign_queue, closedId),
@@ -1046,7 +1050,10 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       const readback = add("reconcileLiveness", {observed_at_utc: nowUtc});
       const details = requireDetails(readback, ["observed_at_utc"], "liveness reconciliation");
       requireUtc(details.observed_at_utc, "liveness reconciliation observation");
-      next = updateState(next, {last_reconciliation_at: details.observed_at_utc});
+      const operationalStatus = next.active_campaign === null && ["IDLE", "EVENT_DRIVEN_WAIT"].includes(next.operational_status)
+        ? "EVENT_DRIVEN_WAIT"
+        : next.operational_status;
+      next = updateState(next, {last_reconciliation_at: details.observed_at_utc, operational_status: operationalStatus});
       break;
     }
     default:

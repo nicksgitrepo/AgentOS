@@ -35,7 +35,8 @@
     "soft": "Ask the campaign Orchestrator to review the changed scope or operating choice while unrelated safe work continues.",
     "puzzle": "Route one bounded repair through the existing campaign custody, then require Auditor and Controller rechecks.",
     "liveness": "Observe active roles and receipts and repair safe liveness gaps without changing owner intent.",
-    "idle": "Wait for an authorized task; do not invent Product work."
+    "idle": "Compatibility-only legacy label; a persistent supervisor uses ACTIVE_EVENT_WAIT while awaiting a material observation or owner event.",
+    "event_driven_wait": "Remain alive with zero workers and no external activity until a material observation, owner event, or protected dependency change arrives."
   },
   "persistence": {
     "controller": "control/controller-supervisor.mjs",

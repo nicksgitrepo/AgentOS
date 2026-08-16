@@ -67,7 +67,7 @@ let state = compileAgentOSControllerState({
   nowUtc: NOW,
 });
 validateAgentOSControllerState(state);
-assert.equal(state.operational_status, "IDLE");
+assert.equal(state.operational_status, "EVENT_DRIVEN_WAIT");
 assert.equal(state.reconciliation_interval_minutes, 15);
 assert.equal(state.controller_role, "AGENTOS_CONTROLLER");
 assert.equal(state.controller_display_name, "Intent Regulator");

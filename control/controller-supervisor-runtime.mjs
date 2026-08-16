@@ -32,6 +32,13 @@ const RUNTIME_SCHEMA = "agentos.controller_supervisor_runtime.v1";
 const LEASE_SCHEMA = "agentos.controller_supervisor_lease.v1";
 export const DEFAULT_SUPERVISOR_INTERVAL_MINUTES = 15;
 const MAX_SUPERVISOR_INTERVAL_MINUTES = 24 * 60;
+export const CONTROLLER_RUNTIME_STATUSES = Object.freeze([
+  "ACTIVE_EVENT_WAIT",
+  "ACTIVE_PROTECTED_WAIT",
+  "ROUTED_OR_RECONCILED",
+  "ROUTE_FAILED_RETAINED",
+  "ITERATION_FAILED_RETAINED",
+]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -54,6 +61,11 @@ function requireSha(value, label) {
 function requireUtc(value, label) {
   requireString(value, label);
   assert(ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`);
+}
+
+function requireRuntimeStatus(value) {
+  requireString(value, "supervisor runtime status");
+  assert(CONTROLLER_RUNTIME_STATUSES.includes(value), "supervisor runtime status is invalid");
 }
 
 function safeSupervisorText(value, fallback = null) {
@@ -200,6 +212,7 @@ function releaseLease({target, lease}) {
 }
 
 function compileRuntimeState({runtimeId, status, observation = null, goal = null, tick = null, error = null, nowUtc}) {
+  requireRuntimeStatus(status);
   const state = {
     schema: RUNTIME_SCHEMA,
     version: 1,
@@ -216,6 +229,13 @@ function compileRuntimeState({runtimeId, status, observation = null, goal = null
   };
   state.runtime_sha256 = digestWithout(state, "runtime_sha256");
   return state;
+}
+
+function runtimeStatusForTick(tick) {
+  if (tick.route_status === "STOPPED_HARD_BOUNDARY") return "ACTIVE_PROTECTED_WAIT";
+  if (tick.route_status === "ROUTE_FAILED") return "ROUTE_FAILED_RETAINED";
+  if (tick.action === "WAIT_FOR_AUTHORIZED_WORK") return "ACTIVE_EVENT_WAIT";
+  return "ROUTED_OR_RECONCILED";
 }
 
 function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
@@ -284,7 +304,10 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     validateSupervisorTick(existingTick);
     const existingGoal = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/goal.json"});
     validateSupervisorGoal(existingGoal);
-    writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "IDLE_SAME_OBSERVATION", observation, goal: existingGoal, tick: existingTick, nowUtc}));
+    const status = existingTick.route_status === "STOPPED_HARD_BOUNDARY"
+      ? "ACTIVE_PROTECTED_WAIT"
+      : existingTick.route_status === "ROUTE_FAILED" ? "ROUTE_FAILED_RETAINED" : "ACTIVE_EVENT_WAIT";
+    writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status, observation, goal: existingGoal, tick: existingTick, nowUtc}));
     return {observation, goal: existingGoal, tick: existingTick, reused: true};
   }
   const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
@@ -295,9 +318,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   writeOrVerify({runtimeRoot: root, recordPath: tickRecordPath, record: result.tick, digestField: "tick_sha256", validate: validateSupervisorTick});
   writeJsonAtomic(safeChild(root, "supervisor/goal.json"), result.goal);
   writeJsonAtomic(safeChild(root, "supervisor/tick.json"), result.tick);
-  const status = result.tick.route_status === "STOPPED_HARD_BOUNDARY"
-    ? "HARD_BOUNDARY_STOPPED"
-    : result.tick.route_status === "ROUTE_FAILED" ? "ROUTE_FAILED_RETAINED" : "ROUTED_OR_RECONCILED";
+  const status = runtimeStatusForTick(result.tick);
   writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status, observation, goal: result.goal, tick: result.tick, error: result.tick.route_error, nowUtc}));
   return {...result, observation, reused: false};
 }
