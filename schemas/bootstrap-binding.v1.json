@@ -586,11 +586,23 @@
     },
     "agent_spawner_defect_intake_article": {
       "path": "docs/agent-spawner-defect-intake.md",
-      "sha256": "c8e0ca24fa9ff6f70cc73c5bf90fabe13ca3f04fbbb95c085b1c8ee70e05010e"
+      "sha256": "4aa49c77c80851a713873aea42f6429aee31a26c91c16c4747d37c2355a2222c"
     },
     "agent_spawner_defect_intake_verifier": {
       "path": "tests/verify-agent-spawner-defect-intake.mjs",
       "sha256": "7f22681bf555a2f76924e8c28f586479765e02bc65f808bc1739786216c0032f"
+    },
+    "agent_spawner_defect_queue_controller": {
+      "path": "control/agent-spawner-defect-queue.mjs",
+      "sha256": "ee8af2ec2abd71b53f2cb6ab70f1a12151b689ab41c1eaf4a9e4c37930ea984d"
+    },
+    "agent_spawner_defect_queue_contract": {
+      "path": "schemas/agent-spawner-defect-queue.v1.json",
+      "sha256": "047b9db1ace639bd7eed8a5be359a7f49a71cc9185fbeb7cdad822b4303537dd"
+    },
+    "agent_spawner_defect_queue_verifier": {
+      "path": "tests/verify-agent-spawner-defect-queue.mjs",
+      "sha256": "dc4d3f97f846a741975a0b9cc314a03f903528796bac82fa2c7fed1359698a34"
     },
     "controller_import_planner": {
       "path": "control/controller-import-planner.mjs",
@@ -750,7 +762,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "82da309f4ceca71ebc9c5fc946b55dba7c4c8a478be7808aba22f4e888011ad3"
+      "sha256": "0edc45c4953bf0938357ed5e9ada19f638ee01c9cd1e94b4e795fe2163fbd909"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",

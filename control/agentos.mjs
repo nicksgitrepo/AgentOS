@@ -18,6 +18,7 @@ export {compileControllerEscalation, validateControllerEscalation} from "./contr
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
 export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick} from "./agent-spawner-lifecycle.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
+export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
@@ -85,6 +86,7 @@ export * as controllerEscalation from "./controller-escalation-continuation.mjs"
 export * as controllerOwnerEventWake from "./controller-owner-event-wake.mjs";
 export * as agentSpawnerLifecycle from "./agent-spawner-lifecycle.mjs";
 export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";
+export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as dynamicLanes from "./dynamic-project-lanes.mjs";

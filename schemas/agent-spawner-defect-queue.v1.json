@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/agent-spawner-defect-queue.v1.json",
+  "title": "AgentOS Agent Spawner Defect Queue",
+  "description": "Project-agnostic durable, digest-bound queue of typed Agent Spawner defect intakes. Queue persistence does not admit or spawn agents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "queue_id", "intake_schema", "entries", "entry_count", "queue_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.agent_spawner_defect_queue.v1"},
+    "version": {"const": 1},
+    "queue_id": {"$ref": "#/$defs/identifier"},
+    "intake_schema": {"const": "agentos.agent_spawner_defect_intake.v1"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/intake"}},
+    "entry_count": {"type": "integer", "minimum": 0},
+    "queue_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "intake": {"type": "object", "description": "Validated by the agent-spawner-defect-intake.v1 contract before queue admission"}
+  }
+}

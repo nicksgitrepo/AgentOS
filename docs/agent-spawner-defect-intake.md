@@ -28,3 +28,11 @@ the Orchestrator to `REPAIRING`/`REPAIR_BLOCKS`; a protected defect becomes an
 exact protected wait; duplicates are retained as invalidation evidence. The
 persistent Controller does not consume or reinterpret the queue: it only
 repairs Orchestrator liveness when the next transition fails to start.
+
+`control/agent-spawner-defect-queue.mjs` is the durable queue boundary. It
+sorts and validates every intake by defect identity, rejects duplicates, and
+persists the complete queue with an atomic digest compare-and-swap, exclusive
+lock, fsync, and strict authority-root path/symlink checks. Use
+`appendAgentSpawnerDefectQueueRecord` for a new typed finding and pass the
+resulting queue digest into the Orchestrator; a queue write never admits or
+spawns an agent by itself.
