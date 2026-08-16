@@ -17,8 +17,14 @@ export const CONTROLLER_IMPORT_CONTEXT_SCHEMA = "agentos.controller_import_plann
 export const CONTROLLER_IMPORT_PLAN_SCHEMA = "agentos.controller_import_campaign_plan.v1";
 export const CONTROLLER_IMPORT_RUN_STATE_SCHEMA = "agentos.controller_import_run_state.v1";
 export const CONTROLLER_IMPORT_ROSTER_SCHEMA = "agentos.controller_import_roster_projection.v1";
+export const CONTROLLER_IMPORT_CLOSEOUT_SCHEMA = "agentos.controller_import_closeout.v1";
 export const CONTROLLER_IMPORT_PLANNER_VERSION = 1;
 export const CONTROLLER_IMPORT_MAX_COGNITIVE_LANES = 6;
+export const CONTROLLER_IMPORT_NEXT_ACTIONS = Object.freeze({
+  START_AVAILABLE_WAVE: "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION",
+  START_PENDING_BLOCK_REPAIR: "START_NEXT_LOCAL_BLOCK_REPAIR",
+  PREPARE_REVIEW: "PREPARE_DEVELOPMENT_CANDIDATE_REVIEW",
+});
 export const CONTROLLER_IMPORT_PHASES = Object.freeze([
   "FOUNDATION",
   "FUNCTIONALITY",
@@ -582,6 +588,12 @@ function rosterProjectionBody(projection) {
   return body;
 }
 
+function expectedRosterNextAction(projection) {
+  if (projection.available_wave_ids.length > 0) return CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE;
+  if (projection.pending_role_request_ids.length > 0) return CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR;
+  return CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW;
+}
+
 function validateQaRecord(record, requestIds) {
   exactKeys(record, ["request_id", "status", "block_set_sha256", "independent_evaluation_sha256"], "Controller import Spawner QA record");
   requireIdentifier(record.request_id, "Controller import Spawner QA request");
@@ -606,6 +618,7 @@ export function validateControllerImportRosterProjection(projection, {plan = nul
   assert(JSON.stringify(projection.controller_decision_inputs.blocked_role_request_ids) === JSON.stringify(projection.blocked_role_request_ids), "Controller import roster decision blocked routes are stale");
   assert(projection.controller_decision_inputs.replan_required === (projection.status === "PARTIAL_READY"), "Controller import roster replan signal is invalid");
   requireIdentifier(projection.next_action, "Controller import roster next action");
+  assert(projection.next_action === expectedRosterNextAction(projection), "Controller import roster next action must start eligible work immediately");
   assert(projection.incomplete_never_admitted === true, "Controller import roster may admit incomplete work");
   requireSha(projection.projection_sha256, "Controller import roster projection digest");
   assert(projection.projection_sha256 === canonicalDigest(rosterProjectionBody(projection)), "Controller import roster projection digest mismatch");
@@ -651,7 +664,7 @@ export function compileControllerImportRosterProjection({plan, qaRecords = [], c
     available_wave_ids: availableWaves,
     completed_wave_ids: completed,
     active_wave_ids: active,
-    next_action: availableWaves.length > 0 ? "RETURN_TYPED_ROSTER_AND_REQUEST_CONTROLLER_WAVE_DECISION" : pending.length > 0 ? "BUILD_AND_QA_PENDING_BLOCKS" : "RETURN_TYPED_ROSTER_FOR_CONTROLLER_COMPLETION_REVIEW",
+    next_action: availableWaves.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.START_AVAILABLE_WAVE : pending.length > 0 ? CONTROLLER_IMPORT_NEXT_ACTIONS.START_PENDING_BLOCK_REPAIR : CONTROLLER_IMPORT_NEXT_ACTIONS.PREPARE_REVIEW,
     controller_decision_inputs: {
       available_wave_ids: availableWaves,
       pending_role_request_ids: pending,
