@@ -562,11 +562,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "ea9cfcff7c87e31c10a875dd7e360aaa1890e10283cab0bbcfbcad12c967ff7c"
+      "sha256": "7493e920921985eb4cc1c8dc98d80ef706a9685826239d664fb2768ebfa4fe97"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "0c8a3be53eb831341f4da56404fe14e4f5e5192f14f9e2ccc58d074d8d8b42e3"
+      "sha256": "398ae9667fc2a535e02ea976dd3c3253f386db21a936930e47dcab7cc129bb67"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -574,7 +574,23 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "d0535ff6203937651d4d32d8a3277c76c2f116276f9fa6282f620e02b13b7718"
+      "sha256": "e0860147057216110a5aeb1ccc42c94852a78eaa90fce6f12bcad52f0da8b227"
+    },
+    "agent_spawner_defect_intake_controller": {
+      "path": "control/agent-spawner-defect-intake.mjs",
+      "sha256": "53443c1318edd0ba5285c5bfd9fd12729406383b82438743dd0d59ccf5d9520c"
+    },
+    "agent_spawner_defect_intake_contract": {
+      "path": "schemas/agent-spawner-defect-intake.v1.json",
+      "sha256": "b133f7061e088fae63f4a62d0d0048acc8bdb035afdde0389df77e19750361c1"
+    },
+    "agent_spawner_defect_intake_article": {
+      "path": "docs/agent-spawner-defect-intake.md",
+      "sha256": "b76a8458a4e0f99e3cf1b2633242fc94d98f36342b14be7101ec58c13d12cae5"
+    },
+    "agent_spawner_defect_intake_verifier": {
+      "path": "tests/verify-agent-spawner-defect-intake.mjs",
+      "sha256": "7f22681bf555a2f76924e8c28f586479765e02bc65f808bc1739786216c0032f"
     },
     "controller_import_planner": {
       "path": "control/controller-import-planner.mjs",
@@ -734,7 +750,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "d33f3b3897a0368e32163bf5b676b8eaa32447bf2327648cee627326398f9550"
+      "sha256": "89479b87aeef71b692bc91a1395797df5762dc09d5cd66fe558278618c0b3a2a"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -1262,7 +1278,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "c95a9806913624d38fda79f742a75ecdd09aa1516485b0bf71e744276a6efe94"
+      "sha256": "af63c696fcc25ce39174d1b9dc47ffc36722ded53faaa9590ff57ed893d61f8b"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",

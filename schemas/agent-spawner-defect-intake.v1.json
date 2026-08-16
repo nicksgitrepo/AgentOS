@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/agent-spawner-defect-intake.v1.json",
+  "title": "AgentOS Agent Spawner Defect Intake",
+  "description": "Project-agnostic compiler contract that converts every failed check, QA finding, complaint, contradiction, rejected route, or failed handoff into a reusable gate/block repair candidate and typed Controller custody handoff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "defect_id", "spawner_role_id", "defect_kind", "status", "source_binding", "evidence_refs", "observation", "classification", "route", "root_cause", "repair", "admission", "handoff", "defect_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.agent_spawner_defect_intake.v1"},
+    "version": {"const": 1},
+    "defect_id": {"$ref": "#/$defs/identifier"},
+    "spawner_role_id": {"const": "AGENT.SPAWNER_COMPILER"},
+    "defect_kind": {"enum": ["CHECK_FAILURE", "QA_FINDING", "COMPLAINT", "CONTRADICTION", "REJECTED_ROUTE", "HANDOFF_FAILURE", "NON_PASSING_CHECK"]},
+    "status": {"enum": ["REPAIR_CANDIDATE_READY", "PENDING_PROTECTED_DECISION", "ACCEPTED_FOR_CONTROLLER_CUSTODY", "REJECTED_DUPLICATE"]},
+    "source_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_sha256", "context_sha256", "roster_projection_sha256", "source_identity_sha256"],
+      "properties": {
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "context_sha256": {"$ref": "#/$defs/sha256"},
+        "roster_projection_sha256": {"$ref": "#/$defs/sha256"},
+        "source_identity_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
+    "observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["summary", "expected", "observed", "observed_at_utc", "details_sha256"],
+      "properties": {
+        "summary": {"type": "string", "minLength": 1}, "expected": {"type": "string", "minLength": 1}, "observed": {"type": "string", "minLength": 1},
+        "observed_at_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"}, "details_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "classification": {"enum": ["REPAIRABLE_GATE_GAP", "ORCHESTRATOR_LIVENESS_FAILURE", "PROTECTED_BOUNDARY", "AUTHORITY_CONFLICT", "DUPLICATE_OR_STALE_BLOCK"]},
+    "route": {"enum": ["COMPILE_BLOCK_PATCH", "REPAIR_ORCHESTRATOR_ROUTE", "REBUILD_DEPENDENT_ROSTER", "ESCALATE_PROTECTED", "REJECT_DUPLICATE"]},
+    "root_cause": {
+      "type": "object", "additionalProperties": false, "required": ["category", "statement", "evidence_class"],
+      "properties": {"category": {"$ref": "#/$defs/identifier"}, "statement": {"type": "string", "minLength": 1}, "evidence_class": {"enum": ["OBSERVED", "INFERRED", "UNKNOWN"]}}
+    },
+    "repair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "block_id", "gate_id", "graph_id", "question", "required_evidence", "deterministic_rule", "failure_routes", "hostile_fixture_refs", "authority_scope", "stop_conditions", "bindings_to_refresh", "invalidation_rule"],
+      "properties": {
+        "kind": {"enum": ["REUSABLE_BLOCK_PATCH", "ORCHESTRATOR_ROUTE_REPAIR", "NO_REPAIR_PROPOSED"]},
+        "block_id": {"$ref": "#/$defs/nullableIdentifier"}, "gate_id": {"$ref": "#/$defs/nullableIdentifier"}, "graph_id": {"$ref": "#/$defs/nullableIdentifier"},
+        "question": {"type": "string", "pattern": "^.+\\?$"}, "required_evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "deterministic_rule": {"type": "string", "minLength": 1},
+        "failure_routes": {"$ref": "#/$defs/failureRoutes"},
+        "hostile_fixture_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "authority_scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "stop_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "bindings_to_refresh": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "invalidation_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "admission": {
+      "type": "object", "additionalProperties": false, "required": ["spawnable", "independent_evaluation_required", "independent_evaluation_sha256", "roster_status"],
+      "properties": {"spawnable": {"const": false}, "independent_evaluation_required": {"const": true}, "independent_evaluation_sha256": {"$ref": "#/$defs/nullableSha256"}, "roster_status": {"enum": ["INVALIDATE_DEPENDENTS", "PRESERVE_EXISTING_AND_REBUILD", "NO_DEPENDENTS"]}}
+    },
+    "handoff": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "version", "defect_id", "source_binding_sha256", "route", "status", "next_action", "controller_receipt_sha256", "handoff_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.agent_spawner_defect_handoff.v1"}, "version": {"const": 1}, "defect_id": {"$ref": "#/$defs/identifier"}, "source_binding_sha256": {"$ref": "#/$defs/sha256"},
+        "route": {"enum": ["COMPILE_BLOCK_PATCH", "REPAIR_ORCHESTRATOR_ROUTE", "REBUILD_DEPENDENT_ROSTER", "ESCALATE_PROTECTED", "REJECT_DUPLICATE"]},
+        "status": {"enum": ["PENDING_TYPED_CONTROLLER_CUSTODY", "PENDING_PROTECTED_DECISION", "ACCEPTED_FOR_TYPED_CONTROLLER_CUSTODY", "REJECTED_DUPLICATE"]},
+        "next_action": {"enum": ["ROUTE_TO_CONTROLLER_CUSTODY", "WAIT_FOR_PROTECTED_DECISION", "CONTROLLER_REVIEW_AND_ORCHESTRATOR_ROUTE", "INVALIDATE_DEPENDENTS"]},
+        "controller_receipt_sha256": {"$ref": "#/$defs/nullableSha256"}, "handoff_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false, "required": ["evidence_id", "kind", "reference", "sha256"],
+      "properties": {"evidence_id": {"$ref": "#/$defs/identifier"}, "kind": {"$ref": "#/$defs/identifier"}, "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "failureRoutes": {
+      "type": "object", "additionalProperties": false, "required": ["NO", "UNKNOWN", "NOT_APPLICABLE"],
+      "properties": {"NO": {"$ref": "#/$defs/failureRoute"}, "UNKNOWN": {"$ref": "#/$defs/failureRoute"}, "NOT_APPLICABLE": {"$ref": "#/$defs/failureRoute"}}
+    },
+    "failureRoute": {
+      "type": "object", "additionalProperties": false, "required": ["classification", "route", "terminal_behavior"],
+      "properties": {"classification": {"$ref": "#/$defs/identifier"}, "route": {"$ref": "#/$defs/identifier"}, "terminal_behavior": {"type": "string", "minLength": 1}}
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "nullableIdentifier": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}
+  }
+}

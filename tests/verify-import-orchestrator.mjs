@@ -50,6 +50,7 @@ assert.equal(initial.state, "ACTIVE");
 assert.equal(initial.next_action, "REQUEST_SPAWNER_QA");
 assert.equal(initial.authority.product_mutation, false);
 assert.equal(initial.authority.protected_release, false);
+assert.equal(initial.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
 
 run = advanceControllerImportRunState({state: run, plan, event: {event_type: "SPAWNER_QA_PASSED", finding_ids: [], protected_boundary_id: null}});
 const activeRoster = compileControllerImportRosterProjection({plan, qaRecords: qa, activeWaveIds: [run.current_wave_id], waveActivationAllowed: true});

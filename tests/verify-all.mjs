@@ -102,7 +102,12 @@ assert.equal(supervisorContract.goal.one_at_a_time_rule.includes("deterministic 
 const importOrchestratorContract = JSON.parse(read("schemas/import-orchestrator.v1.json"));
 assert.equal(importOrchestratorContract.properties.role_id.const, "CAMPAIGN_ORCHESTRATOR");
 assert.equal(importOrchestratorContract.properties.mode.const, "IMPORT");
+assert.equal(importOrchestratorContract.properties.handoff_contract.properties.spawner_defect_intake.const, "TYPED_SPAWNER_DEFECT_INTAKE");
 assert.equal(importOrchestratorContract.properties.continuation.properties.same_turn_next_action.const, true);
+const spawnerDefectIntakeContract = JSON.parse(read("schemas/agent-spawner-defect-intake.v1.json"));
+assert.equal(spawnerDefectIntakeContract.properties.spawner_role_id.const, "AGENT.SPAWNER_COMPILER");
+assert.equal(spawnerDefectIntakeContract.properties.admission.properties.spawnable.const, false);
+assert.equal(spawnerDefectIntakeContract.properties.admission.properties.independent_evaluation_required.const, true);
 const sessionContract = JSON.parse(read("schemas/local-agent-session.v1.json"));
 assert.equal(sessionContract.session.controller, "control/local-agent-session.mjs");
 assert.equal(sessionContract.handoff.one_command_at_a_time, true);
