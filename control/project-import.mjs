@@ -455,10 +455,12 @@ export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allo
 }
 
 function phaseNames(mode) {
-  if (mode === "ADOPT_IN_PLACE") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "BIND_GOVERNANCE", "CUTOVER_OR_CONTINUE"];
-  if (mode === "CLEAN_COPY") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "BIND_GOVERNANCE", "CUTOVER_OR_ROLLBACK"];
-  if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"];
-  return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"];
+  const planning = "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING";
+  if (mode === "ADOPT_IN_PLACE") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", planning, "BIND_GOVERNANCE", "CUTOVER_OR_CONTINUE"];
+  if (mode === "CLEAN_COPY") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", planning, "BIND_GOVERNANCE", "CUTOVER_OR_ROLLBACK"];
+  const pyramid = [planning, "CONTROLLER_DERIVED_AUDIT_REPAIR_PYRAMID", "PLATFORM_AND_CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "CUTOVER_OR_ROLLBACK"];
+  if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", ...pyramid];
+  return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", ...pyramid];
 }
 
 function auditSchedule(mode) {
@@ -544,7 +546,7 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
       owner_approved: Boolean(rapidDevelopmentApproved),
       owner_approval: rapidDevelopmentApproval,
       owner_approval_sha256: rapidDevelopmentApproval?.approval_sha256 ?? null,
-      initial_stage: rapidDevelopmentApproved ? "PLATFORM_DISCOVERY" : "IMPORT_APPROVAL_REQUIRED",
+      initial_stage: rapidDevelopmentApproved ? "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING" : "IMPORT_APPROVAL_REQUIRED",
       workflow: "agentos.rapid_prototype_workflow.v1",
       rule: "IMPORTED_PROJECT_REMAINS_DISCOVERY_ONLY_UNTIL_EXPLICIT_OWNER_APPROVAL_FOR_RAPID_DEVELOPMENT",
     },
@@ -562,12 +564,34 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
     normalization_sha256: normalizationPolicy.normalization_sha256,
     discovery_fact_ids: discoveryFacts.map((fact) => fact?.fact_id).filter((id) => typeof id === "string").sort(compareUtf8),
     phases: phaseNames(mode),
+    controller_planning: {
+      authority: "AGENTOS_CONTROLLER",
+      compiler: "control/controller-import-planner.mjs",
+      contract: "schemas/controller-import-planning.v1.json",
+      status: "AWAITING_SOURCE_BOUND_PROJECT_CONTEXT",
+      required_inputs: ["ENVIRONMENT_INVENTORY", "FEATURE_INVENTORY", "HARDWARE_PROFILE", "OWNER_BOUND_PROJECT_CONTRACT", "PROJECT_ARCHITECTURE", "SOURCE_IDENTITY", "STANDARD_APPLICABILITY"],
+      outputs: ["ACCEPTANCE_MATRIX", "CAMPAIGN_ROADMAP", "PLATFORM_OWNERSHIP_MAP", "PROJECT_ARCHITECTURE_GRAPH", "REPLAN_STATE", "RESOURCE_PLAN", "SIX_LANE_WAVE_SCHEDULE", "SPECIALIST_APPLICABILITY_ROSTER"],
+      fixed_project_roster_forbidden: true,
+      maximum_parallel_lanes: 6,
+      routine_transition: "AUTOMATIC_EVENT_DRIVEN",
+      owner_review: "PROTECTED_BOUNDARIES_ONLY",
+      spawner_boundary: "CONTROLLER_REQUESTS_ROLES;_SPAWNER_QA_COMPILES_SEEDS;_SPAWNER_DOES_NOT_SET_PROJECT_PRIORITY",
+      seed_rule: "SEEDS_NEVER_WORK",
+    },
     audit: {
       full_audit_required: fullAudit,
       lanes: auditSchedule(mode),
+      lanes_are_minimum_coverage_not_roster: true,
+      roster_source: "CONTROLLER_DERIVED_FROM_PROJECT_ARCHITECTURE_GOALS_FEATURES_ENVIRONMENTS_HARDWARE_STANDARDS_AND_EVIDENCE",
+      fixed_roster_forbidden: true,
+      maximum_parallel_lanes: 6,
       scheduler: "control/campaign-cascade.mjs",
       governed_scheduler: "control/hybrid-scheduler.mjs",
-      acceptance: "FUNCTION_REQUIREMENTS_PASS_THEN_DESIGN_BIBLE_PASS_THEN_SECURITY_PASS;_CODE_QUALITY_HYGIENE_REMAINS_AUDIT_DISCIPLINE",
+      acceptance: "CONTROLLER_DERIVED_SPECIALIST_AUDIT_REPAIR_THEN_PLATFORM_REVIEW_TEST_INTEGRATION_THEN_CENTRAL_INTEGRATION_THEN_INDEPENDENT_REAUDIT",
+      pyramid_cycle: "SPECIALIST_AUDIT_REPAIR_TO_PLATFORM_TO_CENTRAL_TO_INDEPENDENT_REAUDIT",
+      platform_review_after_every_wave: true,
+      central_integration_after_every_wave: true,
+      independent_reaudit_after_every_wave: true,
       writer_rule: "AUDITORS_READ_ONLY;_ONE_MIGRATION_WRITER_CUSTODY_AT_A_TIME",
     },
     universal_closeout: universalTaskCloseoutPolicy("IMPORT"),
@@ -629,7 +653,7 @@ export function validateProjectImportPlan(plan) {
   requireRecord(plan.rapid_development, "project import rapid development policy");
   assert(plan.rapid_development.mode === "OPT_IN" && plan.rapid_development.owner_approval_required === true, "project import rapid development must remain owner opt-in");
   assert(typeof plan.rapid_development.owner_approved === "boolean", "project import rapid development approval is invalid");
-  assert(plan.rapid_development.initial_stage === (plan.rapid_development.owner_approved ? "PLATFORM_DISCOVERY" : "IMPORT_APPROVAL_REQUIRED"), "project import rapid development stage is inconsistent with approval");
+  assert(plan.rapid_development.initial_stage === (plan.rapid_development.owner_approved ? "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING" : "IMPORT_APPROVAL_REQUIRED"), "project import rapid development stage is inconsistent with approval");
   assert(plan.rapid_development.workflow === "agentos.rapid_prototype_workflow.v1", "project import rapid development workflow is invalid");
   assert(plan.rapid_development.rule.includes("EXPLICIT_OWNER_APPROVAL"), "project import rapid development approval rule is weakened");
   requireRecord(plan.preservation, "project import preservation");
@@ -641,9 +665,16 @@ export function validateProjectImportPlan(plan) {
   requireSha(plan.standards_registry_sha256, "project import standards binding");
   requireSha(plan.normalization_sha256, "project import normalization binding");
   assert(Array.isArray(plan.phases) && JSON.stringify(plan.phases) === JSON.stringify(phaseNames(plan.mode)), "project import phase plan does not match its mode");
+  requireRecord(plan.controller_planning, "project import Controller planning policy");
+  assert(plan.controller_planning.authority === "AGENTOS_CONTROLLER" && plan.controller_planning.compiler === "control/controller-import-planner.mjs" && plan.controller_planning.contract === "schemas/controller-import-planning.v1.json", "project import Controller planning authority is invalid");
+  assert(plan.controller_planning.status === "AWAITING_SOURCE_BOUND_PROJECT_CONTEXT" && plan.controller_planning.fixed_project_roster_forbidden === true, "project import embeds or prematurely compiles a project roster");
+  assert(plan.controller_planning.maximum_parallel_lanes === 6 && plan.controller_planning.routine_transition === "AUTOMATIC_EVENT_DRIVEN" && plan.controller_planning.owner_review === "PROTECTED_BOUNDARIES_ONLY", "project import Controller continuation policy is invalid");
+  assert(plan.controller_planning.spawner_boundary.includes("SPAWNER_QA_COMPILES_SEEDS") && plan.controller_planning.seed_rule === "SEEDS_NEVER_WORK", "project import Controller/Spawner custody is invalid");
   assert(Array.isArray(plan.audit?.lanes) && plan.audit.lanes.length === IMPORT_AUDIT_LANES.length, "project import audit schedule is incomplete");
   const fullAudit = ["NORMALIZE_AND_AUDIT", "RECONSTRUCT_FROM_INTENT"].includes(plan.mode);
   assert(plan.audit.full_audit_required === fullAudit, "project import full-audit converse is invalid");
+  assert(plan.audit.lanes_are_minimum_coverage_not_roster === true && plan.audit.fixed_roster_forbidden === true && plan.audit.maximum_parallel_lanes === 6, "project import incorrectly treats minimum disciplines as a fixed roster");
+  assert(plan.audit.roster_source.includes("PROJECT_ARCHITECTURE_GOALS_FEATURES_ENVIRONMENTS_HARDWARE_STANDARDS_AND_EVIDENCE"), "project import roster is not project-derived");
   const seen = new Set();
   for (const lane of plan.audit.lanes) {
     assert(IMPORT_AUDIT_LANES.includes(lane.discipline) && !seen.has(lane.discipline), "project import audit lane is duplicate or unknown");
@@ -657,7 +688,8 @@ export function validateProjectImportPlan(plan) {
   assert(plan.audit.governed_scheduler === "control/hybrid-scheduler.mjs", "project import resource-governed work is not bound to the shared hybrid scheduler");
   assert(JSON.stringify(plan.universal_closeout) === JSON.stringify(universalTaskCloseoutPolicy("IMPORT")),
     "project import universal closeout policy differs from general governance");
-  assert(plan.audit.acceptance.includes("FUNCTION_REQUIREMENTS_PASS_THEN_DESIGN_BIBLE_PASS_THEN_SECURITY_PASS"), "project import acceptance order is invalid");
+  assert(plan.audit.acceptance.includes("PLATFORM_REVIEW_TEST_INTEGRATION_THEN_CENTRAL_INTEGRATION_THEN_INDEPENDENT_REAUDIT"), "project import acceptance pyramid is invalid");
+  assert(plan.audit.platform_review_after_every_wave === true && plan.audit.central_integration_after_every_wave === true && plan.audit.independent_reaudit_after_every_wave === true, "project import pyramid does not re-integrate and re-audit every wave");
   assert(plan.cutover.status === "NOT_AUTHORIZED" && plan.cutover.never_rewrites_source_in_place === true, "project import cutover boundary is weakened");
   assert(plan.normalization.execute_in_first_governed_campaign === fullAudit, "project import normalization phase is not bound to its mode");
   assert(plan.rollback.required === (plan.mode !== "ADOPT_IN_PLACE"), "project import rollback requirement is invalid");

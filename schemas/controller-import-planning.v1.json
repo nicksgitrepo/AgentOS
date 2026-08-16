@@ -1,0 +1,57 @@
+{
+  "schema": "agentos.controller_import_planning_contract.v1",
+  "version": 1,
+  "governance_version": "2.1rc",
+  "status": "PREPARED_NOT_ACTIVATED",
+  "controller": "control/controller-import-planner.mjs",
+  "authority": "AGENTOS_CONTROLLER",
+  "purpose": "Derive an imported project's complete specialist campaign from typed project evidence instead of a fixed product roster.",
+  "required_inputs": [
+    "OWNER_BOUND_PROJECT_CONTRACT",
+    "SOURCE_BOUND_PROJECT_IMPORT_PLAN",
+    "PROJECT_ARCHITECTURE",
+    "FEATURE_INVENTORY",
+    "ENVIRONMENT_INVENTORY",
+    "HARDWARE_PROFILE",
+    "STANDARD_APPLICABILITY"
+  ],
+  "outputs": [
+    "PROJECT_ARCHITECTURE_GRAPH",
+    "PLATFORM_OWNERSHIP_MAP",
+    "SPECIALIST_APPLICABILITY_ROSTER",
+    "CAMPAIGN_ROADMAP",
+    "SIX_LANE_WAVE_SCHEDULE",
+    "RESOURCE_PLAN",
+    "ACCEPTANCE_MATRIX",
+    "REPLAN_STATE"
+  ],
+  "planning_rule": "The Controller derives applicable roles, priority, dependency order, Platform ownership, resource limits, and acceptance gates from goals, architecture, features, environments, hardware, standards, evidence, and unresolved unknowns. A fixed project roster is forbidden.",
+  "wave_rule": "At most six cognitive lanes run concurrently. Every wave passes specialist audit and repair, Platform review/test/integration, Central integration, and independent re-audit before dependent work advances.",
+  "spawner_boundary": {
+    "rule": "The Controller requests typed roles. The Agent Spawner selects the smallest dependency-complete block set, compiles and independently evaluates immutable seeds, and spawns governed working clones. It does not choose project priorities.",
+    "incomplete_blocks": "Return NOT_READY, build and source-lock missing blocks, iterate through QA, and never spawn an incomplete seed or working agent.",
+    "seed_rule": "Seeds never perform work.",
+    "background_rule": "While a wave runs, prepare and independently evaluate the next two eligible waves without duplicating active work.",
+    "invalidation_rule": "A governing-block change invalidates and rebuilds every dependent seed before reuse."
+  },
+  "automatic_continuation": {
+    "state_schema": "agentos.controller_import_run_state.v1",
+    "state_compiler": "compileControllerImportRunState",
+    "transition": "advanceControllerImportRunState",
+    "mode": "EVENT_DRIVEN_AUTOMATIC",
+    "routine_transition": "Start the next eligible transition before ending the Controller turn.",
+    "no_progress": "Inspect the exact blocker, run one bounded recovery, verify the result, and continue unaffected work.",
+    "owner_review": "Only direct protected interaction, destructive or irreversible user-work risk, material unexpected cost/legal/safety risk, production/public release, or route-changing equal-authority conflict requires owner review."
+  },
+  "replan_triggers": [
+    "ACCEPTED_FINDING",
+    "ARCHITECTURE_CHANGE",
+    "BLOCK_LIBRARY_CHANGE",
+    "ENVIRONMENT_CHANGE",
+    "FEATURE_INVENTORY_CHANGE",
+    "HARDWARE_PRESSURE_CHANGE",
+    "OWNER_INTENT_OR_SCOPE_CHANGE",
+    "SOURCE_IDENTITY_CHANGE"
+  ],
+  "zero_trace_rule": "Planning and orchestration state remains in the external control plane. Product source receives no AgentOS artifacts."
+}

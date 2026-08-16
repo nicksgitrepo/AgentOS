@@ -184,7 +184,9 @@
     "project_import": {
       "controller": "control/project-import.mjs",
       "contract": "schemas/project-import.v1.json",
-      "rule": "A source-preserving import selects exactly one mode. Normalize and reconstruct modes run the full migration and four-lane audit as the first governed campaign; Bootstrap only authorizes and seals the inputs."
+      "planner": "control/controller-import-planner.mjs",
+      "planning_contract": "schemas/controller-import-planning.v1.json",
+      "rule": "A source-preserving import selects exactly one mode. Bootstrap authorizes and seals the inputs; the persistent Controller derives the project-applicable roster, roadmap, resource plan, and six-lane audit/repair pyramid from typed architecture, goals, features, environments, hardware, standards, and evidence."
     },
     "normalization_policy": {
       "controller": "control/normalization-policy.mjs",

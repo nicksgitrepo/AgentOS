@@ -12,6 +12,7 @@ export {runCanonicalCampaign, inspectCanonicalCampaignRuntime} from "./canonical
 export {compileGeneratedProjectRoleLibrary, compileGeneratedTaskRolePacket, compileGovernanceBinding, prepareGovernanceUpgrade} from "./four-library-governance.mjs";
 export {compileLayeredGovernanceContract, validateLayeredGovernanceContract, activateLayeredGovernance, compareLayeredGovernanceEvidence, validateLayeredGovernanceEvidence} from "./layered-governance-contract.mjs";
 export {compileProjectContract, compileProjectContractWithReceipt, reassessProjectContract} from "./bootstrap-project-contract.mjs";
+export {compileControllerImportPlanningContext, validateControllerImportPlanningContext, compileControllerImportCampaignPlan, validateControllerImportCampaignPlan, compileControllerImportRunState, validateControllerImportRunState, advanceControllerImportRunState} from "./controller-import-planner.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,
@@ -61,6 +62,7 @@ export * as hostContract from "./native-host-contract.mjs";
 export * as nativeSessions from "./native-session-team.mjs";
 export * as nativeRunner from "./native-session-runner.mjs";
 export * as controller from "./agentos-controller.mjs";
+export * as controllerImportPlanner from "./controller-import-planner.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as dynamicLanes from "./dynamic-project-lanes.mjs";
 export * as featureInventory from "./canonical-feature-inventory.mjs";

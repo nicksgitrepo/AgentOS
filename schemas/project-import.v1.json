@@ -42,11 +42,21 @@
     "owner_approval": "CONTENT_ADDRESSED_INACTIVE_OWNER_APPROVAL_RECEIPT_OR_NULL",
     "owner_approval_sha256": "MATCHES_OWNER_APPROVAL_APPROVAL_SHA256_OR_NULL",
     "initial_stage_without_approval": "IMPORT_APPROVAL_REQUIRED",
-    "initial_stage_after_approval": "PLATFORM_DISCOVERY",
+    "initial_stage_after_approval": "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING",
     "workflow": "agentos.rapid_prototype_workflow.v1",
     "rule": "Imported projects remain discovery-only until the owner explicitly approves rapid development."
   },
-  "audit_lanes": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
+  "controller_planning": {
+    "authority": "AGENTOS_CONTROLLER",
+    "compiler": "control/controller-import-planner.mjs",
+    "contract": "schemas/controller-import-planning.v1.json",
+    "required_inputs": ["OWNER_BOUND_PROJECT_CONTRACT", "SOURCE_IDENTITY", "PROJECT_ARCHITECTURE", "FEATURE_INVENTORY", "ENVIRONMENT_INVENTORY", "HARDWARE_PROFILE", "STANDARD_APPLICABILITY"],
+    "rule": "The Controller derives the project-applicable roster and roadmap. Bootstrap and the Agent Spawner must not embed a fixed project roster.",
+    "automatic_continuation": "Routine passed gates start the next eligible transition before the Controller turn ends; owner review is protected-boundary-only."
+  },
+  "minimum_audit_coverage": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
+  "maximum_parallel_cognitive_lanes": 6,
+  "pyramid_cycle": ["SPECIALIST_AUDIT_AND_REPAIR", "PLATFORM_REVIEW_TEST_AND_INTEGRATION", "CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT"],
   "audit_scheduler": "control/campaign-cascade.mjs",
   "governed_scheduler": "control/hybrid-scheduler.mjs",
   "universal_closeout": {
@@ -58,5 +68,5 @@
   },
   "acceptance_order": ["FUNCTION_REQUIREMENTS", "DESIGN_BIBLE", "SECURITY"],
   "storage_rule": "External control-plane storage keeps preservation artifacts outside the product root by default. Project-sidecar storage is allowed only when the owner explicitly opts into an in-project control plane.",
-  "cutover_rule": "A full normalize or reconstruct mode requires grouped repair, independent read-only audit, exact candidate identity, and reversible cutover. Product source files remain unchanged before cutover; preservation artifacts are written only to the bound control-plane storage root."
+  "cutover_rule": "A full normalize or reconstruct mode requires Controller-derived specialist coverage, Platform and Central integration, independent re-audit, exact candidate identity, and reversible cutover. Product source files remain unchanged before cutover; preservation artifacts are written only to the bound control-plane storage root."
 }

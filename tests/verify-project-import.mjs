@@ -55,9 +55,15 @@ const repeated = compileProjectImportPlan({
   normalizationPolicy: normalization,
 });
 assert.deepEqual(plan, repeated, "project import plan is not deterministic");
-assert.deepEqual(plan.phases, ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "FOUR_LANE_AUDIT", "REPAIR_GROUPED_FINDINGS", "CUTOVER_OR_ROLLBACK"]);
+assert.deepEqual(plan.phases, ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING", "CONTROLLER_DERIVED_AUDIT_REPAIR_PYRAMID", "PLATFORM_AND_CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "CUTOVER_OR_ROLLBACK"]);
 assert.deepEqual(plan.audit.lanes.map((lane) => lane.discipline), ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"]);
 assert(plan.audit.lanes.every((lane) => lane.disposition === "REQUIRED" && lane.writer === "NONE_READ_ONLY"));
+assert.equal(plan.audit.lanes_are_minimum_coverage_not_roster, true);
+assert.equal(plan.audit.maximum_parallel_lanes, 6);
+assert.equal(plan.controller_planning.authority, "AGENTOS_CONTROLLER");
+assert.equal(plan.controller_planning.fixed_project_roster_forbidden, true);
+assert.equal(plan.controller_planning.routine_transition, "AUTOMATIC_EVENT_DRIVEN");
+assert.equal(plan.controller_planning.seed_rule, "SEEDS_NEVER_WORK");
 validateProjectImportPlan(plan);
 assert.equal(plan.universal_closeout.mode, "IMPORT");
 assert.equal(plan.universal_closeout.archive_is_dynamic, true);
@@ -137,4 +143,4 @@ laneTamper.plan_sha256 = canonicalDigest(laneTamper);
 assert.throws(() => validateProjectImportPlan(laneTamper), /full-audit converse/u);
 
 fs.rmSync(root, {recursive: true, force: true});
-console.log("PASS AgentOS Project Import (four modes controller, source preservation, exclusions, deterministic output, path containment, symlink rejection, rollback, and hostile coverage)");
+console.log("PASS AgentOS Project Import (four modes, Controller-derived campaign handoff, source preservation, exclusions, deterministic output, path containment, symlink rejection, rollback, and hostile coverage)");
