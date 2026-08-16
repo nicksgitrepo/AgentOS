@@ -27,7 +27,7 @@ Discover what is present before asking questions. Treat discovered values as pro
 
 Ask exactly one question:
 
-> Do you want to use ChatGPT-assisted setup (recommended), or work with me directly?
+> Do you want to use guided setup (recommended), or work with me directly?
 
 Then continue with one material question at a time.
 
