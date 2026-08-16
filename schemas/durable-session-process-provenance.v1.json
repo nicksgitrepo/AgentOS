@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.durable_session_process_provenance.v1",
+  "title": "AgentOS durable session process provenance",
+  "description": "A project-agnostic gate requiring every live durable session PID to reconcile to exactly one registered scheduler job, requester, root, and hold.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "agentos.durable_session_process_provenance.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PASS", "REPAIR_REQUIRED", "CLEANUP_RCA_REQUIRED"]},
+    "next_action": {"enum": ["CONTINUE", "RECONCILE_REGISTRY_AND_RETAIN_EVIDENCE", "EMIT_CLEANUP_RCA_BEFORE_STOP", "STOP_AFTER_CLEANUP_RCA_AND_RETAIN_EVIDENCE"]},
+    "observed_at_utc": {"$ref": "#/$defs/utc"},
+    "session_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "registry_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "live_session_ids": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "uniqueItems": true},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "cleanup_rcas": {"type": "array", "items": {"$ref": "#/$defs/cleanupRca"}},
+    "result_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "required": ["schema", "version", "status", "next_action", "observed_at_utc", "session_snapshot_sha256", "registry_snapshot_sha256", "live_session_ids", "findings", "cleanup_rcas", "result_sha256"],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {"$ref": "#/$defs/identifier"},
+        "session_id": {"$ref": "#/$defs/identifier"},
+        "pid": {"type": "integer", "minimum": 0},
+        "detail": {"type": "string", "minLength": 1},
+        "required_action": {"$ref": "#/$defs/identifier"}
+      },
+      "required": ["code", "session_id", "pid", "detail", "required_action"]
+    },
+    "cleanupRca": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {"const": "agentos.scheduler_noncanonical_session_cleanup_rca.v1"},
+        "version": {"const": 1},
+        "status": {"const": "READY_TO_STOP"},
+        "session_id": {"$ref": "#/$defs/identifier"},
+        "pid": {"type": "integer", "minimum": 0},
+        "reason": {"enum": ["ORPHANED_PP1_RUNNING", "MISSING_SCHEDULER_REGISTRY", "DUPLICATE_SCHEDULER_REGISTRY", "STALE_SCHEDULER_REGISTRY", "LIVE_PID_REGISTRY_MISMATCH", "DEAD_SESSION_RECORD"]},
+        "observed_at_utc": {"$ref": "#/$defs/utc"},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"},
+        "rca_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "required": ["schema", "version", "status", "session_id", "pid", "reason", "observed_at_utc", "evidence_sha256", "rca_sha256"]
+    }
+  }
+}

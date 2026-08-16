@@ -644,6 +644,18 @@
       "path": "tests/verify-local-agent-session.mjs",
       "sha256": "84754b8ef5a8cce139ae6c2a088b6739ce870a2a7afa8b8cdf23e4722e9a879d"
     },
+    "durable_session_process_provenance_controller": {
+      "path": "control/durable-session-process-provenance.mjs",
+      "sha256": "5f3965177074b2a22cf7dbb2319e18dffebfe5ef0504d66eec6acc6171d1672c"
+    },
+    "durable_session_process_provenance_contract": {
+      "path": "schemas/durable-session-process-provenance.v1.json",
+      "sha256": "1e2ff0fc3fb523d1ace5ba30c7b73671eb273db8316dd1f535ec32904015b1f4"
+    },
+    "durable_session_process_provenance_verifier": {
+      "path": "tests/verify-durable-session-process-provenance.mjs",
+      "sha256": "0028fe0d68e35ede790a283462a72e026a0b1197f5370d5c02009691c61abfea"
+    },
     "local_agent_worker_controller": {
       "path": "control/local-agent-worker.mjs",
       "sha256": "0045478d89590fb2d1f35e7dd7bfb093d7c65da6818e2d38890f3e0298b65b4c"
