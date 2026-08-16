@@ -800,6 +800,18 @@
       "path": "tests/verify-controller-governance-readiness.mjs",
       "sha256": "6b6a527eaf670eaad2115ac8894094ec85abbe07e39c68ad5784bec5ba45f547"
     },
+    "sealed_bootstrap_handoff_controller": {
+      "path": "control/sealed-bootstrap-handoff.mjs",
+      "sha256": "570ce7b6cf0a32eca6892c7eadef44618828ea1161d7005eaa396193ce8af2c9"
+    },
+    "sealed_bootstrap_handoff_contract": {
+      "path": "schemas/sealed-bootstrap-handoff.v1.json",
+      "sha256": "8a492dd198ad03c49d25e65c9e47e2609b7aad5b76e6750c958f0680289e15f9"
+    },
+    "sealed_bootstrap_handoff_verifier": {
+      "path": "tests/verify-sealed-bootstrap-handoff.mjs",
+      "sha256": "15290df31298dfbb97da178e15ce56c07a47914df653da910bba143e8fe97ef3"
+    },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
       "sha256": "4dac8ce5b38ac476ae8eec549cea1a73c690e9d61dc08389ee8426162c81567b"

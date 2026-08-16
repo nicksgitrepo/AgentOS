@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.sealed_bootstrap_handoff.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "title": "Sealed Bootstrap handoff validation",
+  "description": "A project-agnostic Controller boundary that validates exact Bootstrap identity, plan/runtime/audit digests, opaque source exclusions, prepared-only Memory posture, and zero Product trace before typed Spawner admission.",
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "opaqueExclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exclusion_id", "classification", "content_access", "evidence_ceiling"],
+      "properties": {
+        "exclusion_id": {"enum": ["EXTERNAL_DEPENDENCY", "SECRET_MATERIAL"]},
+        "classification": {"enum": ["QUARANTINED_EXTERNAL_DEPENDENCY", "PERMANENT_SECRET_EXCLUSION"]},
+        "content_access": {"const": "FORBIDDEN"},
+        "evidence_ceiling": {"type": "string", "minLength": 32}
+      }
+    },
+    "sourceBoundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agentos_core_project_agnostic", "control_plane_scope", "original_source_roots_untouched", "product_zero_trace", "quarantine_access", "credential_access", "external_sync", "opaque_exclusions"],
+      "properties": {
+        "agentos_core_project_agnostic": {"const": true},
+        "control_plane_scope": {"const": "PRIVATE_EXTERNAL_CONTROL_PLANE"},
+        "original_source_roots_untouched": {"const": true},
+        "product_zero_trace": {"const": true},
+        "quarantine_access": {"const": "FORBIDDEN"},
+        "credential_access": {"const": "FORBIDDEN"},
+        "external_sync": {"const": "FORBIDDEN"},
+        "opaque_exclusions": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/opaqueExclusion"}}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "agentos.sealed_bootstrap_handoff.v1"},
+    "version": {"const": 1},
+    "handoff_id": {"$ref": "#/$defs/token"},
+    "bootstrap_session_id": {"$ref": "#/$defs/token"},
+    "controller_task_id": {"$ref": "#/$defs/token"},
+    "host_id": {"$ref": "#/$defs/token"},
+    "project_binding_sha256": {"$ref": "#/$defs/sha256"},
+    "control_plane_binding_sha256": {"$ref": "#/$defs/sha256"},
+    "plan_sha256": {"$ref": "#/$defs/sha256"},
+    "execution_state_sha256": {"$ref": "#/$defs/sha256"},
+    "setup_audit_sha256": {"$ref": "#/$defs/sha256"},
+    "runtime_readback_sha256": {"$ref": "#/$defs/sha256"},
+    "controller_runtime_readback_sha256": {"$ref": "#/$defs/sha256"},
+    "capability_set_sha256": {"$ref": "#/$defs/sha256"},
+    "source_mapping_sha256": {"$ref": "#/$defs/sha256"},
+    "memory_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "quarantine_gate_state_sha256": {"$ref": "#/$defs/sha256"},
+    "product_zero_trace_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "setup_audit_status": {"const": "PASS"},
+    "memory_status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "memory_sync": {"const": "PROJECT_ONLY_NO_EXTERNAL_SYNC"},
+    "product_mutated": {"const": false},
+    "deployment_attempted": {"const": false},
+    "permanent_roster_admitted": {"const": false},
+    "model_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["model", "reasoning_effort", "continuity"],
+      "properties": {"model": {"const": "gpt-5.6-luna"}, "reasoning_effort": {"const": "max"}, "continuity": {"const": "ECO_CONTINUOUS"}}
+    },
+    "source_boundaries": {"$ref": "#/$defs/sourceBoundaries"},
+    "next_action": {"const": "ADMIT_TYPED_AGENT_SPAWNER"},
+    "handoff_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "required": [
+    "schema", "version", "handoff_id", "bootstrap_session_id", "controller_task_id", "host_id",
+    "project_binding_sha256", "control_plane_binding_sha256", "plan_sha256", "execution_state_sha256",
+    "setup_audit_sha256", "runtime_readback_sha256", "controller_runtime_readback_sha256",
+    "capability_set_sha256", "source_mapping_sha256", "memory_plan_sha256", "quarantine_gate_state_sha256",
+    "product_zero_trace_receipt_sha256", "setup_audit_status", "memory_status", "memory_sync",
+    "product_mutated", "deployment_attempted", "permanent_roster_admitted", "model_policy",
+    "source_boundaries", "next_action", "handoff_sha256"
+  ],
+  "validation_rules": {
+    "digest": "handoff_sha256 is the canonical digest of the exact record with handoff_sha256=null.",
+    "ordering": "Controller governance readiness must be verified before this handoff is accepted; the next action is typed Spawner admission only.",
+    "boundary": "Opaque exclusions are classifications and evidence ceilings, never content; this contract cannot open, copy, execute, hash, or expose excluded material.",
+    "activation": "permanent_roster_admitted=false and Memory PREPARED_NOT_ACTIVATED are mandatory at this boundary."
+  }
+}
