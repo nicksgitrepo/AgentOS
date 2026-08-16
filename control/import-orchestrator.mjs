@@ -257,12 +257,7 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
     assert(orchestrator.protected_defect_count === defectSummary.protectedDefectCount, "Import Orchestrator protected defect count is stale");
     assert(orchestrator.rejected_duplicate_count === defectSummary.rejectedDuplicateCount, "Import Orchestrator duplicate count is stale");
   } else if (defectIntakes !== undefined) {
-    const defectSummary = summarizeDefectIntakes(defectIntakes);
-    assert(orchestrator.defect_intake_sha256 === defectSummary.defectIntakeSha256, "Import Orchestrator defect intake binding is stale");
-    assert(orchestrator.repair_candidate_count === defectSummary.repairCandidateCount, "Import Orchestrator repair candidate count is stale");
-    assert(orchestrator.controller_custody_count === defectSummary.controllerCustodyCount, "Import Orchestrator Controller custody count is stale");
-    assert(orchestrator.protected_defect_count === defectSummary.protectedDefectCount, "Import Orchestrator protected defect count is stale");
-    assert(orchestrator.rejected_duplicate_count === defectSummary.rejectedDuplicateCount, "Import Orchestrator duplicate count is stale");
+    throw new Error("Import Orchestrator defect intakes require typed Spawner queue custody");
   }
   if (runState !== undefined || rosterProjection !== undefined || spawnerLifecycle !== undefined) {
     const derivedDefectSummary = defectQueue !== undefined

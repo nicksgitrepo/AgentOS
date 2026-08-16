@@ -56,6 +56,7 @@ let lifecycle = compileAgentSpawnerLifecycle({
 const emptyDefectQueue = compileAgentSpawnerDefectQueue({queueId: "QUEUE.SPAWNER.DEFECTS.SYNTHETIC", entries: []});
 const initialWithQueue = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.SYNTHETIC", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
 validateImportOrchestrator(initialWithQueue, {plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
+assert.throws(() => validateImportOrchestrator(initialWithQueue, {defectIntakes: []}), /require typed Spawner queue custody/u);
 assert.equal(initialWithQueue.defect_queue_sha256, emptyDefectQueue.queue_sha256);
 assert.equal(initialWithQueue.state, "ACTIVE");
 assert.equal(initialWithQueue.next_action, "REQUEST_SPAWNER_QA");
