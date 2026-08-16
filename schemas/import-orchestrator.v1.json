@@ -7,7 +7,8 @@
   "additionalProperties": false,
   "required": [
     "schema", "version", "orchestrator_id", "role_id", "mode", "state", "campaign_plan_sha256", "roster_projection_sha256",
-    "run_state_sha256", "spawner_lifecycle_sha256", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
+    "run_state_sha256", "spawner_lifecycle_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
+    "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
     "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256"
   ],
   "properties": {
@@ -21,6 +22,11 @@
     "roster_projection_sha256": {"$ref": "#/$defs/sha256"},
     "run_state_sha256": {"$ref": "#/$defs/sha256"},
     "spawner_lifecycle_sha256": {"$ref": "#/$defs/sha256"},
+    "defect_intake_sha256": {"$ref": "#/$defs/sha256"},
+    "repair_candidate_count": {"type": "integer", "minimum": 0},
+    "controller_custody_count": {"type": "integer", "minimum": 0},
+    "protected_defect_count": {"type": "integer", "minimum": 0},
+    "rejected_duplicate_count": {"type": "integer", "minimum": 0},
     "current_wave_id": {"$ref": "#/$defs/nullableIdentifier"},
     "blocked_dependency_id": {"$ref": "#/$defs/nullableIdentifier"},
     "ownership": {"$ref": "#/$defs/ownership"},

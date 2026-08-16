@@ -21,3 +21,10 @@ protected decisions, and duplicate/stale blocks invalidate dependent seeds
 instead of being silently reused. `acceptAgentSpawnerDefectRepair` only places
 an otherwise-ready candidate into Controller custody; it does not activate or
 spawn anything.
+
+The Import Orchestrator binds the ordered defect queue by digest and derives
+its next action from that queue. A ready or Controller-custodied repair takes
+the Orchestrator to `REPAIRING`/`REPAIR_BLOCKS`; a protected defect becomes an
+exact protected wait; duplicates are retained as invalidation evidence. The
+persistent Controller does not consume or reinterpret the queue: it only
+repairs Orchestrator liveness when the next transition fails to start.

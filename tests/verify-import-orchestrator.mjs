@@ -12,6 +12,7 @@ import {
   advanceControllerImportRunState,
 } from "../control/controller-import-planner.mjs";
 import {compileAgentSpawnerLifecycle} from "../control/agent-spawner-lifecycle.mjs";
+import {compileAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
 import {advanceImportOrchestrator, compileImportOrchestrator, validateImportOrchestrator} from "../control/import-orchestrator.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -51,6 +52,29 @@ assert.equal(initial.next_action, "REQUEST_SPAWNER_QA");
 assert.equal(initial.authority.product_mutation, false);
 assert.equal(initial.authority.protected_release, false);
 assert.equal(initial.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
+
+const defectRepair = compileAgentSpawnerDefectIntake({
+  defectId: "DEFECT.ORCHESTRATOR.CONTINUATION.001",
+  defectKind: "HANDOFF_FAILURE",
+  sourceBinding: {candidate_sha256: hash("candidate"), context_sha256: context.context_sha256, roster_projection_sha256: roster.projection_sha256, source_identity_sha256: hash("source")},
+  evidenceRefs: [{evidence_id: "EVIDENCE.ORCHESTRATOR.FAILURE", kind: "HANDOFF_READBACK", reference: "opaque:orchestrator-failure", sha256: hash("failure")}],
+  observation: {summary: "The campaign closeout did not start the next action.", expected: "The next eligible action starts before closeout.", observed: "The handoff ended without a successor action.", observed_at_utc: "2026-08-16T20:01:00.000Z", details_sha256: hash("details")},
+  classification: "ORCHESTRATOR_LIVENESS_FAILURE",
+  rootCause: {category: "MISSING_CONTINUATION", statement: "The route lacked a same-turn successor transition.", evidence_class: "OBSERVED"},
+  blockId: "BLOCK.CONTINUATION",
+  gateId: "GATE.CONTINUATION.NEXT_ACTION",
+  graphId: "GRAPH.IMPORT.ORCHESTRATOR",
+});
+const repairOrchestrator = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.REPAIR", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectIntakes: [defectRepair]});
+assert.equal(repairOrchestrator.state, "REPAIRING");
+assert.equal(repairOrchestrator.next_action, "REPAIR_BLOCKS");
+assert.equal(repairOrchestrator.repair_candidate_count, 1);
+assert.equal(repairOrchestrator.controller_custody_count, 0);
+assert.equal(repairOrchestrator.protected_defect_count, 0);
+assert.equal(repairOrchestrator.rejected_duplicate_count, 0);
+const repairedTransition = advanceImportOrchestrator({orchestrator: initial, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectIntakes: [defectRepair]});
+assert.equal(repairedTransition.transition_sequence, 1);
+assert.equal(repairedTransition.next_action, "REPAIR_BLOCKS");
 
 run = advanceControllerImportRunState({state: run, plan, event: {event_type: "SPAWNER_QA_PASSED", finding_ids: [], protected_boundary_id: null}});
 const activeRoster = compileControllerImportRosterProjection({plan, qaRecords: qa, activeWaveIds: [run.current_wave_id], waveActivationAllowed: true});

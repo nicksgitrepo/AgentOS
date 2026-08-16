@@ -562,11 +562,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "7493e920921985eb4cc1c8dc98d80ef706a9685826239d664fb2768ebfa4fe97"
+      "sha256": "d701325868504f979246f9482ec940b3e95cd1b6768408ff13a1666166d99689"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "398ae9667fc2a535e02ea976dd3c3253f386db21a936930e47dcab7cc129bb67"
+      "sha256": "1f26df198318b3bfedce945e716e67885b1765b2c24515e732e6acba05dff1e4"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -574,7 +574,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "e0860147057216110a5aeb1ccc42c94852a78eaa90fce6f12bcad52f0da8b227"
+      "sha256": "b4d046d0c22eeb126202d0c77800714169ed11ab0e022499c89393a44091fb2e"
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",
@@ -586,7 +586,7 @@
     },
     "agent_spawner_defect_intake_article": {
       "path": "docs/agent-spawner-defect-intake.md",
-      "sha256": "b76a8458a4e0f99e3cf1b2633242fc94d98f36342b14be7101ec58c13d12cae5"
+      "sha256": "c8e0ca24fa9ff6f70cc73c5bf90fabe13ca3f04fbbb95c085b1c8ee70e05010e"
     },
     "agent_spawner_defect_intake_verifier": {
       "path": "tests/verify-agent-spawner-defect-intake.mjs",
