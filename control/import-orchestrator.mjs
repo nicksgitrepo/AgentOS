@@ -330,7 +330,7 @@ export function compileImportOrchestrator({orchestratorId, plan, rosterProjectio
 export function advanceImportOrchestrator({orchestrator, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes = []} = {}) {
   validateImportOrchestrator(orchestrator);
   const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, plan, rosterProjection, runState, spawnerLifecycle, defectIntakes});
-  const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
+  const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
   assert(changed, "Import Orchestrator cannot advance without a material bound transition");
   next.transition_sequence = orchestrator.transition_sequence + 1;
   next.orchestrator_sha256 = canonicalDigest(body(next));

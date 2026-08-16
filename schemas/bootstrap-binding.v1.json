@@ -562,7 +562,7 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "d701325868504f979246f9482ec940b3e95cd1b6768408ff13a1666166d99689"
+      "sha256": "d0fc7281e27a554321d3c3d535222cfa4971f9749c8a4861b539563851212102"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
