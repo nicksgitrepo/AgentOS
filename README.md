@@ -33,9 +33,8 @@ For another installation, replace the absolute path with:
 
 `<AGENTOS_ROOT>/bootstrap/START-HERE.md`
 
-The public source is:
-
-`https://github.com/nicksgitrepo/AgentOS/blob/main/bootstrap/START-HERE.md`
+The public source is the default branch of this repository; no consumer
+project identity belongs in the portable Bootstrap authority.
 
 ## Keep the spaces separate
 

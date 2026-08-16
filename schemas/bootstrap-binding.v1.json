@@ -6,7 +6,7 @@
   "normative": {
     "user_readme": {
       "path": "README.md",
-      "sha256": "e502b970a2647e59bf1623afb0aa415c276018cc50b2d9ca4b3c468ee377ceb7"
+      "sha256": "db450474c9c82afb7b784ff7b5f660efbc123fa66fb022beccad69c6a77f02cb"
     },
     "repository_roles_guide": {
       "path": "docs/repository-roles.md",
@@ -38,7 +38,7 @@
     },
     "bootstrap_entrypoint": {
       "path": "bootstrap/start-here.md",
-      "sha256": "3dc41bcc7c59b1d5b451d86d713b9efad10b4fd6e194191c2ad2744dd3ce2e3e"
+      "sha256": "9a12b269d4597a5348ec8f4d3a2b6bb9482674db27af4a1a75b6889eb1fa6bd4"
     },
     "bootstrap_compiler": {
       "path": "control/bootstrap-compiler.mjs",
