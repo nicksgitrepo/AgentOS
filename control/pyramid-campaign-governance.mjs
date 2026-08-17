@@ -35,6 +35,14 @@ export const PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA = "agentos.pyramid_campaign_gove
 export const PYRAMID_CAMPAIGN_GOVERNANCE_VERSION = 1;
 export const PYRAMID_CAMPAIGN_MAX_LANES = 6;
 export const PYRAMID_CAMPAIGN_MAX_HEAVYWEIGHT_PROCESSES = 1;
+export const PYRAMID_LOCAL_PROOF_STEP_IDS = Object.freeze([
+  "AUDIT_REPAIR_INTEGRATION_PREPARATION",
+  "PROVE_LOCAL_BUILD_AND_TEST",
+  "PROVE_LOCAL_INSTALLATION",
+  "REPLAY_DEPENDENCY_CLOSURE_OFFLINE",
+  "REPLAY_SAFE_PROVENANCE",
+  "ZERO_TRACE_ROLLBACK_AND_UNINSTALL_PROOF",
+]);
 export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "START_SPECIALIST_WAVE",
   "START_PLATFORM_REVIEW",
@@ -44,6 +52,7 @@ export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "PREPARE_PYRAMID_IMPORT_OUTPUT",
   "MATERIALIZE_NEW_PROJECT_REPOSITORIES",
   "RUNTIME_ATOMIC_GIT_REPOINT",
+  "RUN_LOCAL_CANDIDATE_PROOF",
   "WAIT_FOR_PROTECTED_EVENT",
 ]);
 export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
@@ -55,6 +64,7 @@ export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
   "IMPORT_OUTPUT_PENDING",
   "CANDIDATE_REPOSITORIES_PENDING",
   "CANDIDATE_CUTOVER_PENDING",
+  "LOCAL_PROOF_PENDING",
   "PROTECTED_WAIT",
 ]);
 
@@ -111,6 +121,17 @@ const CANDIDATE_MATERIALIZATION_KEYS = Object.freeze([
   "legacy_policy", "source_roots_preserved", "product_mutation", "provider_access", "credential_access", "external_sync",
   "spend", "destructive_work", "clean_candidate", "status", "rollback_ref", "evidence_refs", "materialization_sha256",
 ]);
+const DEVELOPMENT_CUTOVER_KEYS = Object.freeze([
+  "schema", "version", "result_id", "materialization_sha256", "target_root_ref", "rollback_ref",
+  "source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access",
+  "external_sync", "spend", "destructive_work", "clean_target", "status", "evidence_refs", "result_sha256",
+]);
+const LOCAL_PROOF_STEP_KEYS = Object.freeze(["step_id", "status", "disposition", "evidence_refs"]);
+const LOCAL_CANDIDATE_PROOF_KEYS = Object.freeze([
+  "schema", "version", "materialization_sha256", "development_cutover_result_sha256", "target_root_ref", "rollback_ref",
+  "steps", "source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access",
+  "external_sync", "spend", "destructive_work", "clean_target", "proof_sha256",
+]);
 const LANE_POLICY_KEYS = Object.freeze([
   "max_active_lanes", "max_heavyweight_processes", "heavyweight_processes", "timers", "polling",
 ]);
@@ -128,7 +149,7 @@ const STATE_KEYS = Object.freeze([
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
   "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
   "source_scope", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
-  "candidate_materialization",
+  "candidate_materialization", "development_cutover", "local_candidate_proof",
 ]);
 
 function assert(condition, message, code = "PYRAMID_CAMPAIGN_INVALID") {
@@ -524,6 +545,69 @@ function validateCandidateMaterialization(materialization, {pyramidImportOutput 
   return materialization;
 }
 
+function validateDevelopmentCutoverResult(result, {materialization = null} = {}) {
+  exactKeys(result, DEVELOPMENT_CUTOVER_KEYS, "pyramid development cutover result");
+  assert(result.schema === `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.development_cutover`, "pyramid development cutover result schema is invalid");
+  assert(result.version === PYRAMID_CAMPAIGN_GOVERNANCE_VERSION, "pyramid development cutover result version is invalid");
+  requireIdentifier(result.result_id, "pyramid development cutover result ID");
+  requireSha(result.materialization_sha256, "pyramid development cutover materialization binding");
+  requireReference(result.target_root_ref, "pyramid development cutover target");
+  requireReference(result.rollback_ref, "pyramid development cutover rollback");
+  for (const field of ["source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "clean_target"]) {
+    assert(typeof result[field] === "boolean", `pyramid development cutover ${field} is invalid`);
+  }
+  assert(result.source_roots_preserved === true && result.legacy_roots_untouched === true && result.product_mutation === false
+    && result.provider_access === false && result.credential_access === false && result.external_sync === false
+    && result.spend === false && result.destructive_work === false && result.clean_target === true, "pyramid development cutover crossed a protected boundary");
+  assert(result.status === "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE", "pyramid development cutover result is incomplete");
+  requireSortedReferences(result.evidence_refs, "pyramid development cutover evidence refs");
+  requireSha(result.result_sha256, "pyramid development cutover result digest");
+  assert(result.result_sha256 === digestWithout(result, "result_sha256"), "pyramid development cutover result digest mismatch");
+  if (materialization !== null) {
+    assert(result.materialization_sha256 === materialization.materialization_sha256, "pyramid development cutover materialization binding is stale");
+    assert(result.rollback_ref === materialization.rollback_ref, "pyramid development cutover rollback is stale");
+  }
+  return result;
+}
+
+function validateLocalProofStep(step, expectedStepId) {
+  exactKeys(step, LOCAL_PROOF_STEP_KEYS, `pyramid local proof step ${expectedStepId}`);
+  assert(step.step_id === expectedStepId, `pyramid local proof step ${expectedStepId} is missing or out of order`);
+  assert(step.status === "PASS" || step.status === "NOT_APPLICABLE", `pyramid local proof step ${expectedStepId} status is invalid`);
+  assert(typeof step.disposition === "string" && step.disposition.trim().length >= 16, `pyramid local proof step ${expectedStepId} disposition is too short`);
+  requireSortedReferences(step.evidence_refs, `pyramid local proof step ${expectedStepId} evidence refs`);
+  return step;
+}
+
+export function validatePyramidLocalCandidateProof(proof, {materialization = null, developmentCutover = null} = {}) {
+  exactKeys(proof, LOCAL_CANDIDATE_PROOF_KEYS, "pyramid local candidate proof");
+  assert(proof.schema === `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.local_candidate_proof` && proof.version === PYRAMID_CAMPAIGN_GOVERNANCE_VERSION, "pyramid local candidate proof identity is invalid");
+  requireSha(proof.materialization_sha256, "pyramid local candidate proof materialization binding");
+  requireSha(proof.development_cutover_result_sha256, "pyramid local candidate proof cutover binding");
+  requireReference(proof.target_root_ref, "pyramid local candidate proof target");
+  requireReference(proof.rollback_ref, "pyramid local candidate proof rollback");
+  assert(Array.isArray(proof.steps) && proof.steps.length === PYRAMID_LOCAL_PROOF_STEP_IDS.length, "pyramid local candidate proof must cover every required local step");
+  proof.steps.forEach((step, index) => validateLocalProofStep(step, PYRAMID_LOCAL_PROOF_STEP_IDS[index]));
+  assert(JSON.stringify(proof.steps.map((step) => step.step_id)) === JSON.stringify(PYRAMID_LOCAL_PROOF_STEP_IDS), "pyramid local candidate proof steps are not canonical");
+  for (const field of ["source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "clean_target"]) {
+    assert(typeof proof[field] === "boolean", `pyramid local candidate proof ${field} is invalid`);
+  }
+  assert(proof.source_roots_preserved === true && proof.legacy_roots_untouched === true && proof.product_mutation === false
+    && proof.provider_access === false && proof.credential_access === false && proof.external_sync === false
+    && proof.spend === false && proof.destructive_work === false && proof.clean_target === true, "pyramid local candidate proof crossed a protected boundary");
+  if (materialization !== null) {
+    assert(proof.materialization_sha256 === materialization.materialization_sha256, "pyramid local candidate proof materialization is stale");
+    assert(proof.rollback_ref === materialization.rollback_ref, "pyramid local candidate proof rollback is stale");
+  }
+  if (developmentCutover !== null) {
+    assert(proof.development_cutover_result_sha256 === developmentCutover.result_sha256, "pyramid local candidate proof cutover result is stale");
+    assert(proof.target_root_ref === developmentCutover.target_root_ref, "pyramid local candidate proof target is stale");
+  }
+  requireSha(proof.proof_sha256, "pyramid local candidate proof digest");
+  assert(proof.proof_sha256 === digestWithout(proof, "proof_sha256"), "pyramid local candidate proof digest mismatch");
+  return proof;
+}
+
 /**
  * Compile the ordinary local step between a completed pyramid output and the
  * protected Runtime cutover.  This is deliberately a plan/receipt, not a
@@ -749,6 +833,16 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     validateCandidateMaterialization(state.candidate_materialization, {pyramidImportOutput: state.pyramid_import_output});
     assert(state.pyramid_import_output !== null, "pyramid candidate materialization lacks import output");
   }
+  if (state.development_cutover !== null) {
+    validateDevelopmentCutoverResult(state.development_cutover, {materialization: state.candidate_materialization});
+    assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid development cutover lacks materialized candidate repositories");
+  }
+  if (state.local_candidate_proof !== null) {
+    validatePyramidLocalCandidateProof(state.local_candidate_proof, {
+      materialization: state.candidate_materialization,
+      developmentCutover: state.development_cutover,
+    });
+  }
   assert(Array.isArray(state.platform_review_batch), "pyramid platform review batch is required");
   state.platform_review_batch.forEach((handoff) => validatePyramidSpecialistHandoff(handoff));
   sortedUnique(state.platform_review_batch.map((handoff) => handoff.lane_id), "pyramid platform review batch lanes");
@@ -771,6 +865,15 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     if (state.pyramid_import_output !== null) {
       assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid protected cutover wait requires materialized candidate repositories");
     }
+    if (state.protected_event.affected_action === "RUNTIME_ATOMIC_GIT_REPOINT_OR_RELEASE") {
+      assert(state.development_cutover !== null, "pyramid protected cutover wait requires completed development cutover");
+      assert(state.local_candidate_proof !== null, "pyramid protected cutover wait requires complete local candidate proof");
+    }
+  } else if (state.status === "LOCAL_PROOF_PENDING") {
+    assert(state.next_action === "RUN_LOCAL_CANDIDATE_PROOF", "pyramid local proof successor is not the proof action");
+    assert(state.protected_event === null && state.stop_workflow_decision === null, "local candidate proof must not carry a protected wait");
+    assert(state.candidate_materialization?.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "local candidate proof requires materialized candidate repositories");
+    assert(state.development_cutover !== null && state.local_candidate_proof === null, "local candidate proof successor is already resolved");
   } else if (state.status === "CANDIDATE_CUTOVER_PENDING") {
     assert(state.next_action === "RUNTIME_ATOMIC_GIT_REPOINT", "pyramid candidate cutover successor is not the Runtime action");
     assert(state.protected_event === null && state.stop_workflow_decision === null, "isolated candidate cutover must not carry a protected wait");
@@ -778,6 +881,7 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid candidate cutover requires materialized candidate repositories");
     const scopeGate = compilePyramidIsolatedCandidateScopeGate(state.candidate_materialization);
     assert(scopeGate.stop_decision.outcome === "CONTINUE_AUTONOMOUS" && scopeGate.stop_decision.stop === false, "isolated candidate cutover must pass the all-NO stop gate");
+    assert(state.development_cutover === null && state.local_candidate_proof === null, "candidate cutover pending carries a stale proof result");
   } else {
     assert(state.protected_event === null, "pyramid non-protected state carries a protected event");
     assert(state.stop_workflow_decision === null, "pyramid non-protected state carries a stop-workflow decision");
@@ -801,7 +905,10 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.pyramid_import_output !== null && state.candidate_materialization === null, "pyramid candidate materialization route is already resolved");
   }
   if (state.status !== "IMPORT_OUTPUT_PENDING" && state.pyramid_import_output !== null) {
-    assert(["CANDIDATE_REPOSITORIES_PENDING", "CANDIDATE_CUTOVER_PENDING", "PROTECTED_WAIT"].includes(state.status), "pyramid import output advanced without materialization or protected cutover");
+    assert(["CANDIDATE_REPOSITORIES_PENDING", "CANDIDATE_CUTOVER_PENDING", "LOCAL_PROOF_PENDING", "PROTECTED_WAIT"].includes(state.status), "pyramid import output advanced without materialization or protected cutover");
+  }
+  if (!["LOCAL_PROOF_PENDING", "PROTECTED_WAIT"].includes(state.status)) {
+    assert(state.development_cutover === null && state.local_candidate_proof === null, "pyramid non-proof state carries stale local proof evidence");
   }
   validateRoute(state);
   requireSha(state.state_sha256, "pyramid state digest");
@@ -846,6 +953,8 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     independent_reaudit: null,
     pyramid_import_output: null,
     candidate_materialization: null,
+    development_cutover: null,
+    local_candidate_proof: null,
     lane_policy: {max_active_lanes: PYRAMID_CAMPAIGN_MAX_LANES, max_heavyweight_processes: PYRAMID_CAMPAIGN_MAX_HEAVYWEIGHT_PROCESSES, heavyweight_processes: 0, timers: 0, polling: false},
     authority: structuredClone(PYRAMID_AUTHORITY),
     next_action: route.next_action,
@@ -995,27 +1104,21 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
     assert(state.next_action === "RUNTIME_ATOMIC_GIT_REPOINT", "pyramid development cutover is not the current successor");
     assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid development cutover lacks materialized candidate repositories");
     assert(isRecord(assembly), "pyramid development cutover requires a typed Runtime result");
-    exactKeys(assembly, [
-      "schema", "version", "result_id", "materialization_sha256", "target_root_ref", "rollback_ref",
-      "source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access",
-      "external_sync", "spend", "destructive_work", "clean_target", "status", "evidence_refs", "result_sha256",
-    ], "pyramid development cutover result");
-    assert(assembly.schema === `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.development_cutover`, "pyramid development cutover result schema is invalid");
-    assert(assembly.version === PYRAMID_CAMPAIGN_GOVERNANCE_VERSION, "pyramid development cutover result version is invalid");
-    requireIdentifier(assembly.result_id, "pyramid development cutover result ID");
-    requireSha(assembly.materialization_sha256, "pyramid development cutover materialization binding");
-    assert(assembly.materialization_sha256 === state.candidate_materialization.materialization_sha256, "pyramid development cutover materialization binding is stale");
-    requireReference(assembly.target_root_ref, "pyramid development cutover target");
-    requireReference(assembly.rollback_ref, "pyramid development cutover rollback");
-    assert(assembly.rollback_ref === state.candidate_materialization.rollback_ref, "pyramid development cutover rollback is stale");
-    for (const field of ["source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "clean_target"]) assert(typeof assembly[field] === "boolean", `pyramid development cutover ${field} is invalid`);
-    assert(assembly.source_roots_preserved === true && assembly.legacy_roots_untouched === true && assembly.product_mutation === false
-      && assembly.provider_access === false && assembly.credential_access === false && assembly.external_sync === false
-      && assembly.spend === false && assembly.destructive_work === false && assembly.clean_target === true, "pyramid development cutover crossed a protected boundary");
-    assert(assembly.status === "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE", "pyramid development cutover result is incomplete");
-    requireSortedReferences(assembly.evidence_refs, "pyramid development cutover evidence refs");
-    requireSha(assembly.result_sha256, "pyramid development cutover result digest");
-    assert(assembly.result_sha256 === canonicalDigest({...assembly, result_sha256: null}), "pyramid development cutover result digest mismatch");
+    validateDevelopmentCutoverResult(assembly, {materialization: state.candidate_materialization});
+    next.development_cutover = structuredClone(assembly);
+    // Local dependency, installation, build/test, repair-integration, and
+    // zero-trace proofs are ordinary isolated work.  Never jump directly to
+    // the protected Product/public Git boundary while any of them is absent.
+    return finishState(next, {status: "LOCAL_PROOF_PENDING", nextAction: "RUN_LOCAL_CANDIDATE_PROOF"});
+  }
+  if (event === "LOCAL_CANDIDATE_PROOF_COMPLETED") {
+    assert(state.next_action === "RUN_LOCAL_CANDIDATE_PROOF", "pyramid local candidate proof is not the current successor");
+    assert(state.development_cutover !== null, "pyramid local candidate proof lacks development cutover");
+    const proof = validatePyramidLocalCandidateProof(assembly, {
+      materialization: state.candidate_materialization,
+      developmentCutover: state.development_cutover,
+    });
+    next.local_candidate_proof = structuredClone(proof);
     const cutoverEvent = protectedEvent ?? {
       blocker_id: "PROTECTED.RUNTIME.GIT_REPOINT_OR_RELEASE",
       blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",

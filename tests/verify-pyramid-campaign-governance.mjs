@@ -5,6 +5,7 @@ import fs from "node:fs";
 import {
   PYRAMID_CAMPAIGN_ACTIONS,
   PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA,
+  PYRAMID_LOCAL_PROOF_STEP_IDS,
   advancePyramidCampaign,
   compilePyramidCampaignContext,
   compilePyramidCampaignState,
@@ -368,7 +369,61 @@ const developmentCutoverResult = {
   result_sha256: null,
 };
 developmentCutoverResult.result_sha256 = canonicalDigest({...developmentCutoverResult, result_sha256: null});
-const protectedWait = advancePyramidCampaign(candidateCutoverPending, {roster, event: "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE", assembly: developmentCutoverResult});
+const localProofPending = advancePyramidCampaign(candidateCutoverPending, {roster, event: "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE", assembly: developmentCutoverResult});
+assert.equal(localProofPending.status, "LOCAL_PROOF_PENDING");
+assert.equal(localProofPending.next_action, "RUN_LOCAL_CANDIDATE_PROOF");
+assert.equal(localProofPending.next_handler, "HANDLER.RUNTIME.RUN_LOCAL_CANDIDATE_PROOF");
+assert.equal(localProofPending.protected_event, null);
+assert.equal(localProofPending.stop_workflow_decision, null);
+assert.throws(
+  () => advancePyramidCampaign(localProofPending, {roster, event: "LOCAL_CANDIDATE_PROOF_COMPLETED", assembly: {
+    schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.local_candidate_proof`,
+    version: 1,
+    materialization_sha256: materialization.materialization_sha256,
+    development_cutover_result_sha256: developmentCutoverResult.result_sha256,
+    target_root_ref: developmentCutoverResult.target_root_ref,
+    rollback_ref: materialization.rollback_ref,
+    steps: [],
+    source_roots_preserved: true,
+    legacy_roots_untouched: true,
+    product_mutation: false,
+    provider_access: false,
+    credential_access: false,
+    external_sync: false,
+    spend: false,
+    destructive_work: false,
+    clean_target: true,
+    proof_sha256: HASH("incomplete-local-proof"),
+  }}),
+  /must cover every required local step/u,
+  "protected wait cannot open with missing local proof steps",
+);
+const localCandidateProof = {
+  schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.local_candidate_proof`,
+  version: 1,
+  materialization_sha256: materialization.materialization_sha256,
+  development_cutover_result_sha256: developmentCutoverResult.result_sha256,
+  target_root_ref: developmentCutoverResult.target_root_ref,
+  rollback_ref: materialization.rollback_ref,
+  steps: PYRAMID_LOCAL_PROOF_STEP_IDS.map((stepId) => ({
+    step_id: stepId,
+    status: "PASS",
+    disposition: `Synthetic evidence completed for ${stepId}`,
+    evidence_refs: [`ref:evidence/local-proof/${stepId.toLowerCase()}`],
+  })),
+  source_roots_preserved: true,
+  legacy_roots_untouched: true,
+  product_mutation: false,
+  provider_access: false,
+  credential_access: false,
+  external_sync: false,
+  spend: false,
+  destructive_work: false,
+  clean_target: true,
+  proof_sha256: null,
+};
+localCandidateProof.proof_sha256 = canonicalDigest({...localCandidateProof, proof_sha256: null});
+const protectedWait = advancePyramidCampaign(localProofPending, {roster, event: "LOCAL_CANDIDATE_PROOF_COMPLETED", assembly: localCandidateProof});
 assert.equal(protectedWait.status, "PROTECTED_WAIT");
 assert.equal(protectedWait.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
@@ -462,11 +517,12 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "source_scope", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "candidate_materialization", "protected_event", "stop_workflow_decision", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "source_scope", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "candidate_materialization", "development_cutover", "local_candidate_proof", "protected_event", "stop_workflow_decision", "state_sha256",
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");
 assert(schema.$defs.developmentCutoverResult, "schema must bind isolated development cutover results");
+assert(schema.$defs.localCandidateProof, "schema must bind local candidate proof");
 assert(schema.$defs.protectedEvent.required.includes("affected_action"), "protected promotion event must name its affected action");
 assert(schema.$defs.stopWorkflowDecision, "protected waits must bind the stop-workflow decision tree");
 for (const relative of ["control/pyramid-campaign-governance.mjs", "schemas/pyramid-campaign-governance.v1.json", "control/import-orchestrator.mjs"]) {
