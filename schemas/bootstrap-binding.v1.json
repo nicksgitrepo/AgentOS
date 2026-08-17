@@ -902,15 +902,15 @@
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
-      "sha256": "bbbbc0a6337c6f37bd01c42115325de1e4872280151021ca717bd81637191a5d"
+      "sha256": "c42d963dc17872ff609ab5e89602aeaf736614cc24135b1a1bea5e6d58aa1357"
     },
     "harness_collision_gate_contract": {
       "path": "schemas/harness-collision-gate.v1.json",
-      "sha256": "b0160b61657ec32da25246c220d84bdc8df12925ef706bf81d40d267cf380fda"
+      "sha256": "bb73d723fc458acc66eb66892a4fdc50e7ddfb91f7d94c878a7b9af918977767"
     },
     "harness_collision_gate_verifier": {
       "path": "tests/verify-harness-collision-gate.mjs",
-      "sha256": "2eb11c054359c39315209cb50afd0d0acde373aecab7400487e838d66bff5d51"
+      "sha256": "e3114568517fd4be9e5ef4d1b142ed8c8d204fbda0af2d3524129d31fa7a3635"
     },
     "orchestrator_successor_dispatch_controller": {
       "path": "control/orchestrator-successor-dispatch.mjs",

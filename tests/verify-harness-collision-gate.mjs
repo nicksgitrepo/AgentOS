@@ -13,6 +13,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 const AUTHORITY = {
   authority_commit: "ca63c10f5e85ca3ecf680936a4ffd041091e1772",
   authority_tree: "a5d654de40b94263367130cd33ace7f669312311",
+  authority_receipt_ref: "ref:state/controller-campaign/agentos-local-proof-evidence-dispatch.authority-ca63c10.receipt.json",
   authority_receipt_sha256: "dc9c5123cd9b57e7ad028a546821c77d2c4f82d98b6a46acc4e9aa1502318655",
   source_mapping_sha256: "72da1380db142b59d32a5e097f43d33c1519a06f59775067d44d8c58e05ceb33",
 };

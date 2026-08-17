@@ -34,8 +34,8 @@
     "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
     "authority": {
       "type": "object", "additionalProperties": false,
-      "required": ["authority_commit", "authority_tree", "authority_receipt_sha256", "source_mapping_sha256"],
-      "properties": {"authority_commit": {"$ref": "#/$defs/gitObject"}, "authority_tree": {"$ref": "#/$defs/gitObject"}, "authority_receipt_sha256": {"$ref": "#/$defs/sha256"}, "source_mapping_sha256": {"$ref": "#/$defs/sha256"}}
+      "required": ["authority_commit", "authority_tree", "authority_receipt_ref", "authority_receipt_sha256", "source_mapping_sha256"],
+      "properties": {"authority_commit": {"$ref": "#/$defs/gitObject"}, "authority_tree": {"$ref": "#/$defs/gitObject"}, "authority_receipt_ref": {"$ref": "#/$defs/reference"}, "authority_receipt_sha256": {"$ref": "#/$defs/sha256"}, "source_mapping_sha256": {"$ref": "#/$defs/sha256"}}
     },
     "source": {
       "type": "object", "additionalProperties": false,

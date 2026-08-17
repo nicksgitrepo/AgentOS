@@ -108,9 +108,10 @@ function observedFailureDigest(observedFailure) {
 }
 
 function validateAuthorityBinding(binding) {
-  exactKeys(binding, ["authority_commit", "authority_tree", "authority_receipt_sha256", "source_mapping_sha256"], "Harness collision authority binding");
+  exactKeys(binding, ["authority_commit", "authority_tree", "authority_receipt_ref", "authority_receipt_sha256", "source_mapping_sha256"], "Harness collision authority binding");
   requireGitObject(binding.authority_commit, "Harness collision authority commit");
   requireGitObject(binding.authority_tree, "Harness collision authority tree");
+  requireReference(binding.authority_receipt_ref, "Harness collision authority receipt reference");
   requireSha(binding.authority_receipt_sha256, "Harness collision authority receipt");
   requireSha(binding.source_mapping_sha256, "Harness collision source mapping");
 }
