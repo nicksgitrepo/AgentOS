@@ -539,7 +539,12 @@ export function advanceControllerAction(currentReceipt, {handlers, persist, onDe
     persisted.push(successor);
     cursor = successor;
   }
-  return dispatchDefect({currentReceipt: cursor, defectClass: "DISPATCH_FAILED", message: "Controller successor dispatch bound exhausted before a protected or explicit owner route", onDefect});
+  // A valid local chain can legitimately outlive one bounded dispatch turn.
+  // The last successor is already persisted and carries the next registered
+  // action, so return it for immediate re-observation rather than converting
+  // healthy progress into a false dispatch failure. Malformed handlers and
+  // persistence failures are still rejected above.
+  return {status: "ROUTED_SAME_TURN", dispatched_count: maxTransitions, receipt: cursor, persisted_receipts: persisted};
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Controller action dispatcher contract loaded\n");

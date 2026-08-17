@@ -898,7 +898,7 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "c26289d4f1a63ae5965c23d09d5eeea4b659c97e7c19253b4545436faff7436f"
+      "sha256": "c013489a7e5b240ad666fa25f800dddcbf588ea77a91640f3fddd1b14c567d56"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
@@ -906,7 +906,7 @@
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "14a9acfc47f97c8e845936161eddfc765d71bcf66ddd5e881a621de0b9785ac6"
+      "sha256": "c478c18c0f4f9b2b20d96e71cef3a05ad0203824c04a15cf68652fc0e821f956"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
@@ -930,7 +930,7 @@
     },
     "controller_startup_runner_verifier": {
       "path": "tests/verify-controller-startup-runner.mjs",
-      "sha256": "47caa5e188d547a6fc2fdaf5830364e84f68f98743fc130732d440197a6ab972"
+      "sha256": "055cfacdc52fbe5c324e678fbb1d9aaf7c70d2dcbab829cf61aa985ff7c3179b"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",

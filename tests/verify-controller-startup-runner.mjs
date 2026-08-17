@@ -92,6 +92,19 @@ assert.deepEqual(calls, [
 assert.equal(publicKernel.runControllerStartupCycle, runControllerStartupCycle);
 assert.equal(publicKernel.controllerStartupRunner.runControllerStartupCycle, runControllerStartupCycle);
 
+const boundedRunReadbacks = [];
+const boundedRun = runControllerStartupCycle({
+  sequence,
+  handlers,
+  maxTransitions: 1,
+  persist: () => true,
+  persistReadback: (readback) => { boundedRunReadbacks.push(readback); return true; },
+});
+assert.equal(boundedRun.status, "ROUTED_SAME_TURN");
+assert.equal(boundedRun.receipt.next_action, "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME");
+assert.equal(boundedRunReadbacks[0].next_action, "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME");
+assert.equal(boundedRunReadbacks[0].status, "ROUTED_SAME_TURN");
+
 const tampered = structuredClone(readbacks[0]);
 tampered.next_action = "NONE";
 assert.throws(() => validateControllerStartupRunReadback(tampered), /handler|action/u);
