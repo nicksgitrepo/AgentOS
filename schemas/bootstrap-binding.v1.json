@@ -608,6 +608,18 @@
       "path": "tests/verify-candidate-reaudit-continuation.mjs",
       "sha256": "38afc4f20dbfa750429d90b3acac32b7543acb52c3dfe6793476850d883d01e1"
     },
+    "candidate_stage_continuation_controller": {
+      "path": "control/candidate-stage-continuation.mjs",
+      "sha256": "e1323cbc6b08c1529e052b9b91dee907ac3a6272c80d42ccae1420f575ce6198"
+    },
+    "candidate_stage_continuation_contract": {
+      "path": "schemas/candidate-stage-continuation.v1.json",
+      "sha256": "fe7ec69c841fd3bf0bf7a89818ef3967993938ed86833887612cfc1fca2bbfcf"
+    },
+    "candidate_stage_continuation_verifier": {
+      "path": "tests/verify-candidate-stage-continuation.mjs",
+      "sha256": "19ac2a45d92afa10cd03a0e4b50876c086444c0f5a232428616042d56a465759"
+    },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
       "sha256": "6ce7319103aacb87384b37eda1906edba69eecc0fbb243ee637f1803d38cba07"
