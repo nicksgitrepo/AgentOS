@@ -448,6 +448,12 @@ export function validateImportOrchestrator(orchestrator, {governanceReadiness, g
   if (["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"].includes(orchestrator.state)) {
     assert(orchestrator.next_action !== "NONE", "Active Import Orchestrator cannot publish NONE; route a typed successor or defect");
   }
+  if (orchestrator.state === "PROTECTED_WAIT") {
+    assert(orchestrator.next_action === "WAIT_FOR_PROTECTED_EVENT", "Protected Import Orchestrator must publish the explicit event successor");
+    assert(orchestrator.blocked_dependency_id !== null, "Protected Import Orchestrator wait must bind an exact dependency");
+    assert(orchestrator.repair_candidate_count === 0, "Protected Import Orchestrator cannot hide a queued repair candidate");
+    assert(orchestrator.controller_custody_count === 0, "Protected Import Orchestrator cannot hide Controller-custody work");
+  }
   for (const field of ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256"]) requireSha(orchestrator[field], `Import Orchestrator ${field}`);
   requireSha(orchestrator.defect_queue_sha256, "Import Orchestrator defect queue binding");
   requireSha(orchestrator.defect_intake_sha256, "Import Orchestrator defect intake binding");

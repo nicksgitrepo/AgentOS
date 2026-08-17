@@ -148,6 +148,9 @@ const protectedRule = importSchema.allOf.find((rule) => rule.if?.properties?.sta
 const retiredRule = importSchema.allOf.find((rule) => rule.if?.properties?.state?.const === "RETIRED");
 assert(activeRule?.then?.properties?.next_action?.not?.const === "NONE", "active Orchestrator schema must reject NONE closeouts");
 assert(protectedRule?.then?.properties?.next_action?.const === "WAIT_FOR_PROTECTED_EVENT", "protected Orchestrator schema must require the explicit event successor");
+assert(protectedRule?.then?.properties?.blocked_dependency_id?.not?.type === "null", "protected Orchestrator schema must bind an exact dependency");
+assert(protectedRule?.then?.properties?.repair_candidate_count?.const === 0, "protected Orchestrator schema must not hide queued repair work");
+assert(protectedRule?.then?.properties?.controller_custody_count?.const === 0, "protected Orchestrator schema must not hide Controller-custody work");
 assert(retiredRule?.then?.properties?.next_action?.const === "NONE", "retired Orchestrator schema must make terminal retirement explicit");
 const assemblyRoute = structuredClone(initialWithQueue);
 assemblyRoute.next_action = "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE";
@@ -159,6 +162,23 @@ for (const activeState of ["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"]) {
   activeNone.next_action = "NONE";
   activeNone.orchestrator_sha256 = canonicalDigest({...activeNone, orchestrator_sha256: null});
   assert.throws(() => validateImportOrchestrator(activeNone), /Active Import Orchestrator cannot publish NONE/u);
+}
+
+// A protected wait is not a generic idle state. It must identify the exact
+// dependency and prove that no local repair or Controller-custody work is
+// waiting behind it.
+for (const [field, value, pattern] of [
+  ["blocked_dependency_id", null, /exact dependency/u],
+  ["repair_candidate_count", 1, /queued repair candidate/u],
+  ["controller_custody_count", 1, /Controller-custody work/u],
+]) {
+  const protectedIdle = structuredClone(initialWithQueue);
+  protectedIdle.state = "PROTECTED_WAIT";
+  protectedIdle.next_action = "WAIT_FOR_PROTECTED_EVENT";
+  protectedIdle.blocked_dependency_id = "INDEPENDENT.UTILITY_HARM_CLEARANCE";
+  protectedIdle[field] = value;
+  protectedIdle.orchestrator_sha256 = canonicalDigest({...protectedIdle, orchestrator_sha256: null});
+  assert.throws(() => validateImportOrchestrator(protectedIdle), pattern);
 }
 
 const defectRepair = compileAgentSpawnerDefectIntake({
