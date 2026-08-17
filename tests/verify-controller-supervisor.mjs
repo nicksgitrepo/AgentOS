@@ -322,6 +322,13 @@ assert.equal(repeatedFailureBlocked, 1, "persistent failures must emit one exhau
 assert.equal(repeatedFailureResults.length, 0, "no invalid result may be treated as workflow progress");
 const repeatedFailureRuntime = JSON.parse(fs.readFileSync(path.join(repeatedFailureRoot, "supervisor", "runtime.json"), "utf8"));
 assert.equal(repeatedFailureRuntime.error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_ITERATION_FAILURES");
+const repeatedFailureDefectDirectory = path.join(repeatedFailureRoot, "supervisor", "spawner-defects");
+const repeatedFailureDefectFiles = fs.readdirSync(repeatedFailureDefectDirectory).filter((name) => name.endsWith(".json"));
+assert.equal(repeatedFailureDefectFiles.length, 1, "every repeated iteration failure must collapse to one durable typed Spawner intake");
+const repeatedFailureDefect = JSON.parse(fs.readFileSync(path.join(repeatedFailureDefectDirectory, repeatedFailureDefectFiles[0]), "utf8"));
+validateAgentSpawnerDefectIntake(repeatedFailureDefect);
+assert.equal(repeatedFailureDefect.repair.block_id, "BLOCK.CONTROLLER.SUPERVISOR.ITERATION_FAILURE");
+assert.equal(repeatedFailureDefect.observation.observed, "UNCLASSIFIED:persistent observation failure");
 fs.rmSync(repeatedFailureRoot, {recursive: true, force: true});
 
 // `--once` is a diagnostic mode, not a silent-success mode: an adapter error
@@ -340,6 +347,10 @@ await assert.rejects(
 const onceFailureRuntime = JSON.parse(fs.readFileSync(path.join(onceFailureRoot, "supervisor", "runtime.json"), "utf8"));
 assert.equal(onceFailureRuntime.status, "ITERATION_FAILED_RETAINED");
 assert.equal(onceFailureRuntime.error, "one-shot observation failure");
+const onceFailureDefectDirectory = path.join(onceFailureRoot, "supervisor", "spawner-defects");
+const onceFailureDefectFiles = fs.readdirSync(onceFailureDefectDirectory).filter((name) => name.endsWith(".json"));
+assert.equal(onceFailureDefectFiles.length, 1, "one-shot failures must still produce a typed Spawner intake");
+validateAgentSpawnerDefectIntake(JSON.parse(fs.readFileSync(path.join(onceFailureDefectDirectory, onceFailureDefectFiles[0]), "utf8")));
 fs.rmSync(onceFailureRoot, {recursive: true, force: true});
 
 // Reaching the bounded same-turn transition count must re-observe immediately,

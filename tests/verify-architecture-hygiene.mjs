@@ -150,6 +150,7 @@ const explicitlyRetainedLargeBoundaries = new Set([
   "control/campaign-cascade.mjs",
   "control/campaign-lifecycle.mjs",
   "control/continuous-operating-loop.mjs",
+  "control/controller-supervisor-runtime.mjs",
   "control/hybrid-scheduler.mjs",
   "control/local-agent-runtime.mjs",
   "control/local-agent-worker.mjs",

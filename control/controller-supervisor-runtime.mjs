@@ -404,6 +404,79 @@ function compileSpawnerDefectIntake({observation, rca, defectId, defectKind = "N
   });
 }
 
+// An observation/factory failure happens before a valid Controller
+// observation exists, but it is still a failed check that the Agent Spawner
+// must learn from.  Keep this intake deliberately opaque and project
+// agnostic: it binds only the runtime identity, safe error fingerprint, and
+// the fact that no observation or route result was produced.  It must never
+// invent project facts or make the failure spawnable.
+function compileIterationFailureSpawnerDefect({runtimeId, errorCode, errorMessage, errorFingerprint, observedAtUtc}) {
+  const sourceBinding = {
+    candidate_sha256: canonicalDigest({runtime_id: runtimeId, evidence: "ITERATION_FAILURE"}),
+    context_sha256: canonicalDigest({runtime_id: runtimeId, error_code: errorCode, error_fingerprint: errorFingerprint}),
+    roster_projection_sha256: canonicalDigest({runtime_id: runtimeId, roster: "UNAVAILABLE_BEFORE_OBSERVATION"}),
+    source_identity_sha256: canonicalDigest({runtime_id: runtimeId, source: "SUPERVISOR_RUNTIME"}),
+  };
+  const evidenceRefs = [
+    {
+      evidence_id: "EVIDENCE.CONTROLLER.SUPERVISOR.ITERATION_ERROR",
+      kind: "SUPERVISOR_ITERATION_ERROR",
+      reference: `opaque:supervisor-iteration-error:${errorFingerprint}`,
+      sha256: errorFingerprint,
+    },
+    {
+      evidence_id: "EVIDENCE.CONTROLLER.SUPERVISOR.RUNTIME_IDENTITY",
+      kind: "SUPERVISOR_RUNTIME_IDENTITY",
+      reference: `opaque:supervisor-runtime:${canonicalDigest({runtime_id: runtimeId})}`,
+      sha256: canonicalDigest({runtime_id: runtimeId}),
+    },
+  ];
+  return compileAgentSpawnerDefectIntake({
+    defectId: `DEFECT.SUPERVISOR.ITERATION_FAILURE.${errorFingerprint.slice(0, 16).toUpperCase()}`,
+    defectKind: "NON_PASSING_CHECK",
+    sourceBinding,
+    evidenceRefs,
+    observation: {
+      summary: "The Controller supervisor failed before producing a valid observation or route result.",
+      expected: "The supervisor produces a valid observation or a typed route result in the same turn.",
+      observed: `${errorCode}:${errorMessage}`,
+      observed_at_utc: observedAtUtc,
+      details_sha256: errorFingerprint,
+    },
+    classification: "REPAIRABLE_GATE_GAP",
+    rootCause: {
+      category: "SUPERVISOR_ITERATION_FAILURE",
+      statement: "The supervisor failed before producing a valid observation or route result; repair the runtime or adapter and re-observe immediately.",
+      evidence_class: "OBSERVED",
+    },
+    blockId: "BLOCK.CONTROLLER.SUPERVISOR.ITERATION_FAILURE",
+    gateId: "GATE.CONTROLLER.SUPERVISOR.ITERATION_RESULT",
+    graphId: "GRAPH.CONTROLLER.SUPERVISOR",
+    question: "Did the Controller supervisor produce a valid observation or typed route result in this turn?",
+    requiredEvidence: ["evidence.supervisor_runtime_identity", "evidence.iteration_error", "evidence.repair_attempt", "evidence.independent_recheck"],
+    hostileFixtureRefs: ["FIXTURE.CONTROLLER.SUPERVISOR.ITERATION_FAILURE", "FIXTURE.CONTROLLER.SUPERVISOR.MISSING_OBSERVATION", "FIXTURE.CONTROLLER.SUPERVISOR.REPAIR_REQUIRED"],
+    authorityScope: ["COMPILE_REUSABLE_GATE", "REFRESH_TYPED_BINDINGS", "REPAIR_CONTROLLER_RUNTIME", "INVALIDATE_DEPENDENT_ROSTER"],
+    stopConditions: ["INCOMPLETE_BLOCK", "MISSING_ITERATION_RESULT", "PROTECTED_BOUNDARY", "INDEPENDENT_EVALUATION_NOT_CLEARED"],
+    bindingsToRefresh: ["BLOCK_DIGEST", "GATE_DIGEST", "ROSTER_PROJECTION_DIGEST", "DEPENDENT_SEED_DIGEST", "CONTROLLER_RUNTIME_DIGEST"],
+    deterministicRule: "Pass only when the supervisor emits a valid observation or typed route result after the repair attempt; an exception, missing result, or unverified repair remains a reusable failure gate.",
+    detailsSha256: errorFingerprint,
+    observedAtUtc,
+  });
+}
+
+function persistIterationFailureSpawnerDefect({runtimeRoot, runtimeId, errorCode, errorMessage, errorFingerprint, observedAtUtc}) {
+  const defectId = `DEFECT.SUPERVISOR.ITERATION_FAILURE.${errorFingerprint.slice(0, 16).toUpperCase()}`;
+  const recordPath = `supervisor/spawner-defects/${defectId}.json`;
+  const existing = readSupervisorRecord({authorityRoot: runtimeRoot, recordPath});
+  if (existing !== null) {
+    validateAgentSpawnerDefectIntake(existing);
+    return existing;
+  }
+  const intake = compileIterationFailureSpawnerDefect({runtimeId, errorCode, errorMessage, errorFingerprint, observedAtUtc});
+  const persisted = persistSpawnerDefect({runtimeRoot, intake});
+  return persisted.record;
+}
+
 function persistSpawnerDefect({runtimeRoot, intake}) {
   return writeOrVerify({
     runtimeRoot,
@@ -777,6 +850,32 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
           const fingerprint = canonicalDigest({error_code: errorCode, error_message: errorMessage});
           iterationFailureCount = fingerprint === iterationFailureFingerprint ? iterationFailureCount + 1 : 1;
           iterationFailureFingerprint = fingerprint;
+          // Capture every failed iteration before attempting repair or
+          // deciding whether the bounded retry budget is exhausted.  The
+          // Spawner receives an opaque, reusable gate candidate even when the
+          // failure happened before a project observation was available.
+          let iterationFailureDefect = null;
+          try {
+            iterationFailureDefect = persistIterationFailureSpawnerDefect({
+              runtimeRoot: root,
+              runtimeId,
+              errorCode,
+              errorMessage,
+              errorFingerprint: fingerprint,
+              observedAtUtc: nowUtc,
+            });
+          } catch (intakeError) {
+            const intakeMessage = safeSupervisorText(intakeError?.message ?? String(intakeError), "spawner defect intake failed");
+            const failure = compileRuntimeState({
+              runtimeId,
+              status: "ITERATION_FAILED_RETAINED",
+              error: `SPAWNER_DEFECT_INTAKE_FAILED:${intakeMessage}`,
+              nowUtc,
+            });
+            writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
+            stopping = true;
+            break;
+          }
           if (once) {
             const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: errorMessage, nowUtc});
             writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
@@ -791,6 +890,7 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
                 error: errorMessage,
                 error_code: errorCode,
                 error_fingerprint: fingerprint,
+                defect: iterationFailureDefect,
                 attempt: iterationFailureCount,
               });
             } catch (repairError) {
@@ -806,7 +906,7 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
             const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: exhausted.message, nowUtc});
             writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
             if (typeof activeAdapter?.onBlockedExact === "function") {
-              await activeAdapter.onBlockedExact({runtimeId, result: null, error: exhausted.message, original_error: errorMessage, error_code: errorCode, error_fingerprint: fingerprint, recovery_count: iterationFailureCount});
+              await activeAdapter.onBlockedExact({runtimeId, result: null, defect: iterationFailureDefect, error: exhausted.message, original_error: errorMessage, error_code: errorCode, error_fingerprint: fingerprint, recovery_count: iterationFailureCount});
             }
             stopping = true;
             break;
