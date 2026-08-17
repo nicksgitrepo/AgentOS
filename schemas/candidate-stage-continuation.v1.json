@@ -15,8 +15,8 @@
     "result_sha256": {"$ref": "#/$defs/sha256"},
     "semantic_before_sha256": {"$ref": "#/$defs/sha256"},
     "semantic_after_sha256": {"$ref": "#/$defs/sha256"},
-    "next_action": {"$ref": "#/$defs/stage"},
-    "next_handler": {"type": "string", "enum": ["HANDLER.CONTROLLER_CANDIDATE_REVIEW", "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION", "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT", "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW"]},
+    "next_action": {"$ref": "#/$defs/successorStage"},
+    "next_handler": {"type": "string", "enum": ["HANDLER.CONTROLLER_CANDIDATE_REVIEW", "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION", "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT", "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW", "HANDLER.ORCHESTRATOR.PREPARE_PYRAMID_IMPORT_OUTPUT"]},
     "continuation": {
       "type": "object", "additionalProperties": false,
       "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
@@ -52,6 +52,7 @@
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
     "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
     "stage": {"enum": ["PREPARE_CANDIDATE_REVIEW", "START_CENTRAL_INTEGRATION", "START_INDEPENDENT_REAUDIT", "START_PLATFORM_REVIEW"]},
+    "successorStage": {"enum": ["PREPARE_CANDIDATE_REVIEW", "START_CENTRAL_INTEGRATION", "START_INDEPENDENT_REAUDIT", "START_PLATFORM_REVIEW", "PREPARE_PYRAMID_IMPORT_OUTPUT"]},
     "evidenceRef": {
       "type": "object", "additionalProperties": false,
       "required": ["evidence_id", "reference", "sha256"],
@@ -71,7 +72,7 @@
     }
   },
   "state_rules": {
-    "ordinary_stages": "Only the four registered candidate stages may be chained by this contract.",
+    "ordinary_stages": "The four registered candidate stages may be chained; a complete no-delta pyramid may advance once to output preparation.",
     "liveness": "Every stage result is atomically persisted and dispatched in the same turn; timer-only, commentary-only, NONE, DONE, and placeholder results are invalid.",
     "boundary": "The candidate may change inside isolated custody, but Product mutation and source-root loss are always rejected."
   }

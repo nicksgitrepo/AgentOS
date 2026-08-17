@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   CANDIDATE_STAGE_ROUTES,
+  CANDIDATE_STAGE_SUCCESSOR_ROUTES,
   compileCandidateStageContinuation,
   validateCandidateStageContinuation,
 } from "../control/candidate-stage-continuation.mjs";
@@ -29,6 +30,43 @@ assert.equal(record.next_handler, CANDIDATE_STAGE_ROUTES.PREPARE_CANDIDATE_REVIE
 assert.equal(record.continuation.same_turn_dispatch, true);
 assert.equal(record.continuation.timer_deferral, false);
 assert.equal(record.continuation.protected_event_id, null);
+
+const completePyramidResult = {
+  ...baseResult,
+  status: "CANDIDATE_REVIEW_COMPLETE_NO_DELTA",
+  pyramid_complete: true,
+  audit_repair_complete: true,
+  platform_review_complete: true,
+  central_integration_complete: true,
+  independent_reaudit_complete: true,
+};
+const outputSuccessor = compileCandidateStageContinuation({
+  actionId: "PREPARE_CANDIDATE_REVIEW",
+  resultId: "RESULT.CANDIDATE_STAGE.COMPLETE_OUTPUT",
+  result: completePyramidResult,
+  semanticBeforeSha256: sha("complete-before"),
+  semanticAfterSha256: sha("complete-after"),
+  nextAction: "PREPARE_PYRAMID_IMPORT_OUTPUT",
+  evidenceRefs: [evidence("EVIDENCE.COMPLETE")],
+  hostileFixtureRefs: ["FIXTURE.COMPLETE.NO_LOOP"],
+  receiptRef: "ref:control-plane/candidate-stage/complete-output",
+  receiptSha256: sha("complete-output-receipt"),
+});
+assert.equal(outputSuccessor.next_handler, CANDIDATE_STAGE_SUCCESSOR_ROUTES.PREPARE_PYRAMID_IMPORT_OUTPUT);
+assert.equal(outputSuccessor.continuation.same_turn_dispatch, true);
+
+assert.throws(() => compileCandidateStageContinuation({
+  actionId: "PREPARE_CANDIDATE_REVIEW",
+  resultId: "RESULT.CANDIDATE_STAGE.INCOMPLETE_OUTPUT",
+  result: {...baseResult, status: "CANDIDATE_REVIEW_INCOMPLETE"},
+  semanticBeforeSha256: sha("incomplete-before"),
+  semanticAfterSha256: sha("incomplete-after"),
+  nextAction: "PREPARE_PYRAMID_IMPORT_OUTPUT",
+  evidenceRefs: [evidence("EVIDENCE.INCOMPLETE")],
+  hostileFixtureRefs: ["FIXTURE.COMPLETE.NO_LOOP"],
+  receiptRef: "ref:control-plane/candidate-stage/incomplete-output",
+  receiptSha256: sha("incomplete-output-receipt"),
+}), /Pyramid output successor requires/u);
 
 for (const [action, handler] of Object.entries(CANDIDATE_STAGE_ROUTES)) {
   const next = compileCandidateStageContinuation({

@@ -30,7 +30,12 @@ export const CANDIDATE_STAGE_ROUTES = Object.freeze({
   START_INDEPENDENT_REAUDIT: "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT",
   START_PLATFORM_REVIEW: "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW",
 });
+export const CANDIDATE_STAGE_SUCCESSOR_ROUTES = Object.freeze({
+  ...CANDIDATE_STAGE_ROUTES,
+  PREPARE_PYRAMID_IMPORT_OUTPUT: "HANDLER.ORCHESTRATOR.PREPARE_PYRAMID_IMPORT_OUTPUT",
+});
 export const CANDIDATE_STAGE_ACTIONS = Object.freeze(Object.keys(CANDIDATE_STAGE_ROUTES).sort(compareUtf8));
+export const CANDIDATE_STAGE_SUCCESSOR_ACTIONS = Object.freeze(Object.keys(CANDIDATE_STAGE_SUCCESSOR_ROUTES).sort(compareUtf8));
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -86,8 +91,14 @@ export function validateCandidateStageContinuation(record) {
   validateActionResultContinuation(record);
   assert(record.schema === "agentos.action_result_continuation.v1", "Candidate stage continuation must use the action-result contract");
   assert(CANDIDATE_STAGE_ACTIONS.includes(record.action_id), `Candidate stage action ${record.action_id} is not registered`);
-  assert(CANDIDATE_STAGE_ACTIONS.includes(record.next_action), `Candidate stage successor ${record.next_action} is not registered`);
-  assert(record.next_handler === CANDIDATE_STAGE_ROUTES[record.next_action], "Candidate stage successor handler is stale");
+  assert(CANDIDATE_STAGE_SUCCESSOR_ACTIONS.includes(record.next_action), `Candidate stage successor ${record.next_action} is not registered`);
+  assert(record.next_handler === CANDIDATE_STAGE_SUCCESSOR_ROUTES[record.next_action], "Candidate stage successor handler is stale");
+  if (record.next_action === "PREPARE_PYRAMID_IMPORT_OUTPUT") {
+    for (const flag of ["audit_repair_complete", "platform_review_complete", "central_integration_complete", "independent_reaudit_complete"]) {
+      assert(record.result[flag] === true, `Pyramid output successor requires ${flag}`);
+    }
+    assert(record.result.pyramid_complete === true, "Pyramid output successor requires pyramid_complete");
+  }
   assert(record.continuation.mode === "IMMEDIATE_SAME_TURN" && record.continuation.same_turn_dispatch === true, "Candidate stage must dispatch in the same turn");
   assert(record.continuation.protected_event_id === null, "Candidate stage cannot carry a protected event");
   assert(record.persistence.status === "PERSISTED" && record.persistence.atomic === true && record.persistence.same_turn === true && record.persistence.write_scope === "CONTROL_PLANE_ONLY", "Candidate stage persistence is not atomic control-plane state");
@@ -110,7 +121,13 @@ export function compileCandidateStageContinuation({
 } = {}) {
   validateCandidateStageResult(result, actionId);
   requireIdentifier(nextAction, "Candidate stage next action");
-  assert(CANDIDATE_STAGE_ACTIONS.includes(nextAction), `Candidate stage successor ${nextAction} is not registered`);
+  assert(CANDIDATE_STAGE_SUCCESSOR_ACTIONS.includes(nextAction), `Candidate stage successor ${nextAction} is not registered`);
+  if (nextAction === "PREPARE_PYRAMID_IMPORT_OUTPUT") {
+    for (const flag of ["audit_repair_complete", "platform_review_complete", "central_integration_complete", "independent_reaudit_complete"]) {
+      assert(result[flag] === true, `Pyramid output successor requires ${flag}`);
+    }
+    assert(result.pyramid_complete === true, "Pyramid output successor requires pyramid_complete");
+  }
   requireSha(semanticBeforeSha256, "Candidate stage semantic state before");
   requireSha(semanticAfterSha256, "Candidate stage semantic state after");
   requireReference(receiptRef, "Candidate stage receipt reference");
@@ -143,7 +160,7 @@ export function compileCandidateStageContinuation({
     semanticBeforeSha256,
     semanticAfterSha256,
     nextAction,
-    nextHandler: CANDIDATE_STAGE_ROUTES[nextAction],
+    nextHandler: CANDIDATE_STAGE_SUCCESSOR_ROUTES[nextAction],
     continuation,
     persistence,
     evidenceRefs: evidence,

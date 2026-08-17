@@ -610,15 +610,15 @@
     },
     "candidate_stage_continuation_controller": {
       "path": "control/candidate-stage-continuation.mjs",
-      "sha256": "e1323cbc6b08c1529e052b9b91dee907ac3a6272c80d42ccae1420f575ce6198"
+      "sha256": "e3029774bf2a8b57a188294d935c060370a8b030947b00377f123fd29a8dcd46"
     },
     "candidate_stage_continuation_contract": {
       "path": "schemas/candidate-stage-continuation.v1.json",
-      "sha256": "fe7ec69c841fd3bf0bf7a89818ef3967993938ed86833887612cfc1fca2bbfcf"
+      "sha256": "af775a823384bea40dd25ddd95f811e32bbd09f3d9e0e0f81af89c4dc7dab893"
     },
     "candidate_stage_continuation_verifier": {
       "path": "tests/verify-candidate-stage-continuation.mjs",
-      "sha256": "19ac2a45d92afa10cd03a0e4b50876c086444c0f5a232428616042d56a465759"
+      "sha256": "08818fd18d6de47648618f5a06a15ca0a914c313eeddf533fdd574fcbdba1e67"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
