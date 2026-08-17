@@ -646,7 +646,7 @@
     },
     "agent_spawner_defect_intake_article": {
       "path": "docs/agent-spawner-defect-intake.md",
-      "sha256": "4aa49c77c80851a713873aea42f6429aee31a26c91c16c4747d37c2355a2222c"
+      "sha256": "05c2f24441391888eb83ba81ce7baa6afa1a6b40e297ed0b7812cb93cadc60cd"
     },
     "agent_spawner_defect_intake_verifier": {
       "path": "tests/verify-agent-spawner-defect-intake.mjs",

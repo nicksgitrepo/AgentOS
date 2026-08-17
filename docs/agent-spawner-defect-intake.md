@@ -22,6 +22,13 @@ instead of being silently reused. `acceptAgentSpawnerDefectRepair` only places
 an otherwise-ready candidate into Controller custody; it does not activate or
 spawn anything.
 
+The Controller supervisor also routes failures that occur before a valid
+observation exists (for example, an adapter load or observation exception)
+through the same intake. Those records bind only opaque runtime identity and an
+error fingerprint, reuse the exact record for repeated identical failures,
+and remain non-spawnable until the normal repair and independent-evaluation
+gates pass.
+
 The Import Orchestrator binds the ordered defect queue by digest and derives
 its next action from that queue. A ready or Controller-custodied repair takes
 the Orchestrator to `REPAIRING`/`REPAIR_BLOCKS`; a protected defect becomes an
