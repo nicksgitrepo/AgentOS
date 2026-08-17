@@ -127,6 +127,13 @@ function validateRouteFacts(facts) {
    * workflow without a real protected event.
    */
   const localApplicability = facts.boundary_scope === "APPLICABILITY_ONLY_LOCAL";
+  const protectedBoundary = ["PROTECTED_EXTERNAL", "PROTECTED_PRODUCT", "PROTECTED_INTEGRATION"].includes(facts.boundary_scope);
+  if (["NOT_APPLICABLE_LOCAL_COMPILER_QA", "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"].includes(facts.clearance_applicability)) {
+    assert(localApplicability, "local applicability must use the applicability-only boundary");
+  }
+  if (protectedBoundary) {
+    assert(facts.clearance_applicability === "REQUIRED_PROTECTED_ROUTE", "protected boundary must require protected clearance");
+  }
   if (localApplicability) {
     assert(facts.clearance_applicability !== "REQUIRED_PROTECTED_ROUTE", "local applicability cannot claim required protected clearance");
     assert(actionDescriptor.mode !== "PROTECTED_WAIT", "local applicability cannot derive a protected wait");

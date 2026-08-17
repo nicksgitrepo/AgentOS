@@ -83,6 +83,22 @@ unanchoredProtectedClaim.route_facts.derived_next_handler = "HANDLER.ORCHESTRATO
 unanchoredProtectedClaim.gate_sha256 = canonicalDigest({...unanchoredProtectedClaim, gate_sha256: null});
 assert.throws(() => validateImportOrchestratorTestFailureGate(unanchoredProtectedClaim, {authority}), /blocked protected run-state/u);
 
+const protectedLocalApplicability = structuredClone(gate);
+protectedLocalApplicability.route_facts.boundary_scope = "PROTECTED_INTEGRATION";
+protectedLocalApplicability.route_facts.clearance_applicability = "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR";
+protectedLocalApplicability.route_facts.derived_next_action = "START_ISOLATED_AUDIT_LANES";
+protectedLocalApplicability.route_facts.derived_next_handler = "HANDLER.ORCHESTRATOR_ISOLATED_AUDIT";
+protectedLocalApplicability.gate_sha256 = canonicalDigest({...protectedLocalApplicability, gate_sha256: null});
+assert.throws(() => validateImportOrchestratorTestFailureGate(protectedLocalApplicability, {authority}), /local applicability must use|protected boundary must require/u);
+
+const localProtectedApplicability = structuredClone(gate);
+localProtectedApplicability.route_facts.boundary_scope = "APPLICABILITY_ONLY_LOCAL";
+localProtectedApplicability.route_facts.clearance_applicability = "REQUIRED_PROTECTED_ROUTE";
+localProtectedApplicability.route_facts.derived_next_action = "WAIT_FOR_PROTECTED_EVENT";
+localProtectedApplicability.route_facts.derived_next_handler = "HANDLER.PROTECTED_EVENT_WAIT";
+localProtectedApplicability.gate_sha256 = canonicalDigest({...localProtectedApplicability, gate_sha256: null});
+assert.throws(() => validateImportOrchestratorTestFailureGate(localProtectedApplicability, {authority}), /local applicability cannot claim|required protected/u);
+
 const wrongCompilerSuccessor = structuredClone(gate);
 wrongCompilerSuccessor.route_facts.clearance_applicability = "NOT_APPLICABLE_LOCAL_COMPILER_QA";
 wrongCompilerSuccessor.route_facts.derived_next_action = "START_ISOLATED_AUDIT_LANES";

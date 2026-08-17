@@ -49,6 +49,46 @@
       "if": {
         "properties": {
           "route_facts": {
+            "required": ["clearance_applicability"],
+            "properties": {
+              "clearance_applicability": {"enum": ["NOT_APPLICABLE_LOCAL_COMPILER_QA", "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"]}
+            }
+          }
+        },
+        "required": ["route_facts"]
+      },
+      "then": {
+        "properties": {
+          "route_facts": {
+            "properties": {"boundary_scope": {"const": "APPLICABILITY_ONLY_LOCAL"}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_facts": {
+            "required": ["boundary_scope"],
+            "properties": {
+              "boundary_scope": {"enum": ["PROTECTED_EXTERNAL", "PROTECTED_PRODUCT", "PROTECTED_INTEGRATION"]}
+            }
+          }
+        },
+        "required": ["route_facts"]
+      },
+      "then": {
+        "properties": {
+          "route_facts": {
+            "properties": {"clearance_applicability": {"const": "REQUIRED_PROTECTED_ROUTE"}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_facts": {
             "required": ["boundary_scope", "clearance_applicability"],
             "properties": {
               "boundary_scope": {"const": "APPLICABILITY_ONLY_LOCAL"},
