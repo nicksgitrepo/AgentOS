@@ -8,6 +8,7 @@ import {
   advancePyramidCampaign,
   compilePyramidCampaignContext,
   compilePyramidCampaignState,
+  compilePyramidIsolatedCandidateAssembly,
   compilePyramidPlatformReview,
   compilePyramidSpecialistHandoff,
   deriveApplicableSpecialistRoster,
@@ -167,13 +168,64 @@ const finalReview = {
   review_sha256: null,
 };
 finalReview.review_sha256 = canonicalDigest({...finalReview, review_sha256: null});
-const protectedWait = advancePyramidCampaign(finalReviewPending, {roster, event: "FINAL_REVIEW_COMPLETED", finalReview});
+const assemblyPending = advancePyramidCampaign(finalReviewPending, {roster, event: "FINAL_REVIEW_COMPLETED", finalReview});
+assert.equal(assemblyPending.status, "CANDIDATE_ASSEMBLY_PENDING");
+assert.equal(assemblyPending.next_action, "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE");
+assert.equal(assemblyPending.next_handler, "HANDLER.PLATFORM_AGENT.ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE");
+
+function assemblyCustody() {
+  return {
+    isolated_worktree: true,
+    shared_workspace_read_only: true,
+    source_roots_preserved: true,
+    product_mutation: false,
+    provider_access: false,
+    credential_access: false,
+    external_sync: false,
+    spend: false,
+    destructive_work: false,
+    deployment_publication_merge: false,
+    release: false,
+    heavyweight_processes: 0,
+    timer_count: 0,
+    polling: false,
+  };
+}
+
+const isolatedAssembly = compilePyramidIsolatedCandidateAssembly({
+  candidate: assemblyPending.candidate,
+  proofRefs: ["opaque:proof/accepted-platform-handoffs", "opaque:proof/isolated-candidate-custody"],
+  custody: assemblyCustody(),
+});
+assert.equal(isolatedAssembly.candidate_id, assemblyPending.candidate.candidate_id);
+assert.equal(isolatedAssembly.base_candidate_sha256, assemblyPending.candidate.candidate_sha256);
+assert.equal(isolatedAssembly.source_roots_preserved, true);
+assert.equal(isolatedAssembly.zero_trace, true);
+const protectedWait = advancePyramidCampaign(assemblyPending, {roster, event: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", assembly: isolatedAssembly});
 assert.equal(protectedWait.status, "PROTECTED_WAIT");
 assert.equal(protectedWait.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
+assert.equal(protectedWait.protected_event.affected_action, "PROMOTE_ISOLATED_CUMULATIVE_CANDIDATE_TO_PRODUCT");
 assert.deepEqual(protectedWait.protected_event.resources, {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0});
 assert.equal(protectedWait.authority.central_integration, false);
+assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolatedAssembly.assembly_sha256);
 validatePyramidCampaignState(protectedWait, {roster});
+
+assert.throws(
+  () => advancePyramidCampaign(assemblyPending, {roster, event: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", assembly: {...isolatedAssembly, base_candidate_sha256: HASH("stale-base"), assembly_sha256: canonicalDigest({...isolatedAssembly, base_candidate_sha256: HASH("stale-base"), assembly_sha256: null})}}),
+  /baseline is stale|candidate digest mismatch/u,
+  "isolated assembly must bind the exact cumulative candidate baseline",
+);
+assert.throws(
+  () => compilePyramidIsolatedCandidateAssembly({candidate: assemblyPending.candidate, proofRefs: isolatedAssembly.proof_refs, custody: {...assemblyCustody(), product_mutation: true}}),
+  /crossed protected boundary/u,
+  "isolated assembly cannot carry product mutation authority",
+);
+assert.throws(
+  () => compilePyramidIsolatedCandidateAssembly({candidate: assemblyPending.candidate, proofRefs: [], custody: assemblyCustody()}),
+  /proof refs are required/u,
+  "isolated assembly requires deterministic proof references",
+);
 
 assert.throws(
   () => advancePyramidCampaign(finalReviewPending, {roster, event: "FINAL_REVIEW_COMPLETED", finalReview: {...finalReview, candidate_sha256: HASH("stale")}}),
@@ -219,8 +271,11 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "state_sha256",
 ].sort());
+assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
+assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");
+assert(schema.$defs.protectedEvent.required.includes("affected_action"), "protected promotion event must name its affected action");
 for (const relative of ["control/pyramid-campaign-governance.mjs", "schemas/pyramid-campaign-governance.v1.json", "control/import-orchestrator.mjs"]) {
   const source = fs.readFileSync(new URL(`../${relative}`, import.meta.url), "utf8");
   assert(!/Sociuna|JobSight|WellSight/iu.test(source), `${relative} contains consumer-specific policy`);

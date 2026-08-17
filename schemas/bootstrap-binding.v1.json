@@ -562,11 +562,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "211718f4da2d5d3699afe5e92440f66d269efc97c4cb4b182705f5149a3f9e92"
+      "sha256": "606b8e9d14c7dbc27fb9a7dad1ae3008c1e5cf5cdf0185ff4a7a5cbcf12eaec7"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "af0f0f7052d68ee569ab55c77e08324a4dde11b78bcdd08fb02df80e461645d4"
+      "sha256": "1698147266bb99987ce4adf103a3dcce6f3dc404c76a71f0180ffaf75057eb00"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -574,19 +574,19 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "f22f95bddbca72a3da47e5bdb0c56476314719e71f04b32dbcf320e84f2c3c45"
+      "sha256": "e339bea67fde96255ec1309e3c0317ab3921a1433d25fab26a1c2c476571ba99"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "d7204f5be3864434667d4e883286dc4f4fdbb71572762c5259f17928d144d464"
+      "sha256": "fccc5b287c8226660812be4615d3221adcf298bc21f73b3b5ec00a660f57c98f"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
-      "sha256": "be5d9b3f324ce8cd84fa94f2bf125e8817eee79a7c90df41d39480722ebaec08"
+      "sha256": "8bb8a92672ae336f314d040eded5176cd43e4f9e6678a2307bef44d5866f1260"
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "bd1f36605829f5983ad0de4884fdc20c1e711b662d831360df4ad6e1e7af41fc"
+      "sha256": "a07121c4ce6e2f7432fe663258d58e1a846234e1047aa17a9106e7baebb5bff3"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
@@ -666,7 +666,7 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "7c3d4b3ef66d959a63570d20d565b88797d2949d41ad077f6fb3117caa3113a5"
+      "sha256": "9d1da54c79b42046b37a2f5ef9cd64c6e4be5aba397e8b626cbef50a61e127a7"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
@@ -679,6 +679,18 @@
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
       "sha256": "4fbac3063a239d5185d7f73358f71c2b83ba9f1dd1bdf5b937926964c5e58bc7"
+    },
+    "stop_workflow_gate_controller": {
+      "path": "control/stop-workflow-gate.mjs",
+      "sha256": "6a3e166406d7fbfeeb95fb80a8f4006984a463cd17689ce26e6da41c5439cb5e"
+    },
+    "stop_workflow_gate_contract": {
+      "path": "schemas/stop-workflow-gate.v1.json",
+      "sha256": "40f79d6555fc4299654b1cd951c35e925289ca557f0eee3ead61cb326ec4abf4"
+    },
+    "stop_workflow_gate_verifier": {
+      "path": "tests/verify-stop-workflow-gate.mjs",
+      "sha256": "f442ce448fb3eebedbf9efd547cb7be10f4834ad1ec245594cd53c1024ecaa9a"
     },
     "controller_intent_hardening_verifier": {
       "path": "tests/verify-controller-intent-hardening.mjs",
@@ -826,7 +838,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "3a8d07db695f3e694406eb36367099ae3091ae87c5483476d4a061dd4c3d6630"
+      "sha256": "7c50dfb9aab546014073d344a640e659a7aaab18a9d7282921eab316bfe5bb76"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -878,15 +890,15 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "679bb72f713b31e3ddf9cad409d9503d1c3aceb1ec7c1523fabfdce283f3d534"
+      "sha256": "169b0f0182856e3fd77b7cc81114d7575483ef6d8db271acd0ea2c1426e76fb2"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "9f7aaa662efe8622940b857863f9627f7f719da4d9274fe35102251f2229b723"
+      "sha256": "80410763a767b79f4aa5edf8c912b8dcb4374cb3cefaa8eb81893f2128f1ce85"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "b9c60e0884e7f633e76551348ab998e1f351b812d1df632b94866b5d0e21bd5b"
+      "sha256": "efea49fa15cf30997a61b1593e63a907502fadbdeb5dbbb0a360ca8c41f91279"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",

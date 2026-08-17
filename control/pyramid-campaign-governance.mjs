@@ -27,12 +27,14 @@ export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "START_SPECIALIST_WAVE",
   "START_PLATFORM_REVIEW",
   "PREPARE_CANDIDATE_REVIEW",
+  "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE",
   "WAIT_FOR_PROTECTED_EVENT",
 ]);
 export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
   "PREPARED",
   "PLATFORM_REVIEW_PENDING",
   "FINAL_REVIEW_PENDING",
+  "CANDIDATE_ASSEMBLY_PENDING",
   "PROTECTED_WAIT",
 ]);
 
@@ -72,6 +74,15 @@ const REVIEW_KEYS = Object.freeze([
 const FINAL_REVIEW_KEYS = Object.freeze([
   "reviewer_role", "candidate_sha256", "coherence_evidence_sha256", "release_evidence_sha256", "residual_risk_sha256", "accepted", "review_sha256",
 ]);
+const ISOLATED_CANDIDATE_ASSEMBLY_KEYS = Object.freeze([
+  "schema", "version", "candidate_id", "base_candidate_sha256", "assembled_candidate_sha256", "worktree_ref", "rollback_ref",
+  "source_roots_preserved", "zero_trace", "custody", "proof_refs", "status", "assembly_sha256",
+]);
+const ISOLATED_CANDIDATE_CUSTODY_KEYS = Object.freeze([
+  "isolated_worktree", "shared_workspace_read_only", "source_roots_preserved", "product_mutation", "provider_access",
+  "credential_access", "external_sync", "spend", "destructive_work", "deployment_publication_merge", "release",
+  "heavyweight_processes", "timer_count", "polling",
+]);
 const LANE_POLICY_KEYS = Object.freeze([
   "max_active_lanes", "max_heavyweight_processes", "heavyweight_processes", "timers", "polling",
 ]);
@@ -80,13 +91,13 @@ const AUTHORITY_KEYS = Object.freeze([
   "central_integration", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "release",
 ]);
 const PROTECTED_EVENT_KEYS = Object.freeze([
-  "blocker_id", "blocker_class", "evidence_ceiling", "restart_event", "resources",
+  "blocker_id", "blocker_class", "affected_action", "evidence_ceiling", "restart_event", "resources",
 ]);
 const RESOURCE_KEYS = Object.freeze(["jobs", "workers", "heavyweight_processes", "timers"]);
 const STATE_KEYS = Object.freeze([
   "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index",
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
-  "final_review", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
+  "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
   "protected_event", "state_sha256",
 ]);
 
@@ -352,10 +363,78 @@ function validateFinalReview(review, candidateSha256) {
   return review;
 }
 
+function validateIsolatedCandidateCustody(custody) {
+  exactKeys(custody, ISOLATED_CANDIDATE_CUSTODY_KEYS, "pyramid isolated candidate custody");
+  for (const key of ["isolated_worktree", "shared_workspace_read_only", "source_roots_preserved"]) {
+    assert(custody[key] === true, `pyramid isolated candidate custody ${key} is required`);
+  }
+  for (const key of ["product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "deployment_publication_merge", "release", "polling"]) {
+    assert(custody[key] === false, `pyramid isolated candidate crossed protected boundary: ${key}`);
+  }
+  assert(Number.isSafeInteger(custody.heavyweight_processes) && custody.heavyweight_processes === 0, "pyramid isolated candidate heavyweight processes must be zero");
+  assert(Number.isSafeInteger(custody.timer_count) && custody.timer_count === 0, "pyramid isolated candidate timers must be zero");
+  return custody;
+}
+
+function isolatedCandidateContentDigest(assembly) {
+  return canonicalDigest({
+    candidate_id: assembly.candidate_id,
+    base_candidate_sha256: assembly.base_candidate_sha256,
+    worktree_ref: assembly.worktree_ref,
+    rollback_ref: assembly.rollback_ref,
+    source_roots_preserved: assembly.source_roots_preserved,
+    zero_trace: assembly.zero_trace,
+    custody: assembly.custody,
+    proof_refs: assembly.proof_refs,
+  });
+}
+
+export function compilePyramidIsolatedCandidateAssembly({candidate, proofRefs, custody, zeroTrace = true} = {}) {
+  validateCandidate(candidate);
+  const assembly = {
+    schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.isolated_candidate_assembly`,
+    version: PYRAMID_CAMPAIGN_GOVERNANCE_VERSION,
+    candidate_id: candidate.candidate_id,
+    base_candidate_sha256: candidate.candidate_sha256,
+    assembled_candidate_sha256: null,
+    worktree_ref: candidate.worktree_ref,
+    rollback_ref: candidate.rollback_ref,
+    source_roots_preserved: candidate.source_roots_preserved,
+    zero_trace: zeroTrace,
+    custody,
+    proof_refs: proofRefs,
+    status: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED",
+    assembly_sha256: null,
+  };
+  assembly.assembled_candidate_sha256 = isolatedCandidateContentDigest(assembly);
+  assembly.assembly_sha256 = digestWithout(assembly, "assembly_sha256");
+  return validatePyramidIsolatedCandidateAssembly(assembly);
+}
+
+export function validatePyramidIsolatedCandidateAssembly(assembly) {
+  exactKeys(assembly, ISOLATED_CANDIDATE_ASSEMBLY_KEYS, "pyramid isolated candidate assembly");
+  assert(assembly.schema === `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.isolated_candidate_assembly` && assembly.version === PYRAMID_CAMPAIGN_GOVERNANCE_VERSION, "pyramid isolated candidate assembly identity is invalid");
+  requireIdentifier(assembly.candidate_id, "pyramid isolated candidate ID");
+  requireSha(assembly.base_candidate_sha256, "pyramid isolated candidate base");
+  requireSha(assembly.assembled_candidate_sha256, "pyramid isolated candidate assembled digest");
+  requireReference(assembly.worktree_ref, "pyramid isolated candidate worktree");
+  requireReference(assembly.rollback_ref, "pyramid isolated candidate rollback");
+  assert(assembly.source_roots_preserved === true, "pyramid isolated candidate source roots must be preserved");
+  assert(assembly.zero_trace === true, "pyramid isolated candidate must have zero protected trace");
+  validateIsolatedCandidateCustody(assembly.custody);
+  requireSortedReferences(assembly.proof_refs, "pyramid isolated candidate proof refs");
+  assert(assembly.status === "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", "pyramid isolated candidate assembly status is invalid");
+  assert(assembly.assembled_candidate_sha256 === isolatedCandidateContentDigest(assembly), "pyramid isolated candidate digest mismatch");
+  requireSha(assembly.assembly_sha256, "pyramid isolated candidate assembly digest");
+  assert(assembly.assembly_sha256 === digestWithout(assembly, "assembly_sha256"), "pyramid isolated candidate assembly receipt digest mismatch");
+  return assembly;
+}
+
 function compileProtectedEvent(protectedEvent) {
   const event = protectedEvent ?? {
     blocker_id: "PROTECTED.PRODUCT_MUTATION.CENTRAL_INTEGRATION_AUTHORITY",
     blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
+    affected_action: "PROMOTE_ISOLATED_CUMULATIVE_CANDIDATE_TO_PRODUCT",
     evidence_ceiling: "Static typed findings, accepted platform handoffs, and isolated cumulative-candidate metadata only; no Product mutation or release evidence is inferred.",
     restart_event: "CURRENT_TYPED_CENTRAL_INTEGRATION_AUTHORIZATION_OR_EXPLICIT_OWNER_RESUMPTION",
     resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
@@ -363,6 +442,7 @@ function compileProtectedEvent(protectedEvent) {
   exactKeys(event, PROTECTED_EVENT_KEYS, "pyramid protected event");
   requireIdentifier(event.blocker_id, "pyramid protected blocker");
   assert(["CREDENTIAL_OR_AUTHENTICATION", "IRREVERSIBLE_DESTRUCTIVE_USER_WORK", "MAJOR_PRODUCT_OR_PRODUCTION_DECISION", "MATERIAL_SPEND_OR_FINANCIAL_AUTHORITY", "PROTECTED_EXTERNAL_DEPENDENCY"].includes(event.blocker_class), "pyramid protected blocker class is invalid");
+  requireIdentifier(event.affected_action, "pyramid protected affected action");
   assert(typeof event.evidence_ceiling === "string" && event.evidence_ceiling.length >= 24, "pyramid protected evidence ceiling is incomplete");
   assert(typeof event.restart_event === "string" && event.restart_event.length >= 8, "pyramid protected restart event is incomplete");
   exactKeys(event.resources, RESOURCE_KEYS, "pyramid protected resources");
@@ -449,6 +529,14 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.roster_sha256 === roster.roster_sha256, "pyramid state roster binding is stale");
     validateStateArrays(state, roster);
   }
+  if (state.isolated_candidate_assembly !== null) {
+    validatePyramidIsolatedCandidateAssembly(state.isolated_candidate_assembly);
+    assert(state.final_review?.accepted === true, "pyramid isolated candidate assembly lacks accepted final review");
+    assert(state.isolated_candidate_assembly.candidate_id === state.candidate.candidate_id, "pyramid isolated candidate identity is stale");
+    assert(state.isolated_candidate_assembly.base_candidate_sha256 === state.candidate.candidate_sha256, "pyramid isolated candidate baseline is stale");
+    assert(state.isolated_candidate_assembly.worktree_ref === state.candidate.worktree_ref, "pyramid isolated candidate worktree binding is stale");
+    assert(state.isolated_candidate_assembly.rollback_ref === state.candidate.rollback_ref, "pyramid isolated candidate rollback binding is stale");
+  }
   assert(Array.isArray(state.platform_review_batch), "pyramid platform review batch is required");
   state.platform_review_batch.forEach((handoff) => validatePyramidSpecialistHandoff(handoff));
   sortedUnique(state.platform_review_batch.map((handoff) => handoff.lane_id), "pyramid platform review batch lanes");
@@ -462,7 +550,12 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
   if (state.status === "PROTECTED_WAIT") {
     assert(state.next_action === "WAIT_FOR_PROTECTED_EVENT" && state.protected_event !== null, "pyramid protected wait is not explicit");
     compileProtectedEvent(state.protected_event);
+    if (state.final_review !== null) assert(state.isolated_candidate_assembly !== null, "pyramid protected promotion wait lacks isolated candidate assembly");
   } else assert(state.protected_event === null, "pyramid non-protected state carries a protected event");
+  if (state.status === "CANDIDATE_ASSEMBLY_PENDING") {
+    assert(state.next_action === "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE" && state.final_review?.accepted === true, "pyramid candidate assembly successor is not ready");
+    assert(state.isolated_candidate_assembly === null, "pyramid candidate assembly is already recorded");
+  }
   validateRoute(state);
   requireSha(state.state_sha256, "pyramid state digest");
   assert(state.state_sha256 === digestWithout(state, "state_sha256"), "pyramid state digest mismatch");
@@ -499,6 +592,7 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     platform_review_batch: [],
     accepted_platform_lane_ids: [],
     final_review: null,
+    isolated_candidate_assembly: null,
     lane_policy: {max_active_lanes: PYRAMID_CAMPAIGN_MAX_LANES, max_heavyweight_processes: PYRAMID_CAMPAIGN_MAX_HEAVYWEIGHT_PROCESSES, heavyweight_processes: 0, timers: 0, polling: false},
     authority: structuredClone(PYRAMID_AUTHORITY),
     next_action: route.next_action,
@@ -528,7 +622,7 @@ function finishState(next, {status, nextAction, protectedEvent = null} = {}) {
   return next;
 }
 
-export function advancePyramidCampaign(state, {roster, event, handoffs = [], reviews = [], finalReview = null, protectedEvent = null} = {}) {
+export function advancePyramidCampaign(state, {roster, event, handoffs = [], reviews = [], finalReview = null, assembly = null, protectedEvent = null} = {}) {
   validatePyramidCampaignState(state, {roster});
   const next = cloneState(state);
   if (event === "SPECIALIST_WAVE_HANDOFFS_READY") {
@@ -582,6 +676,18 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
     assert(state.pending_specialist_ids.length === 0 && state.active_lane_ids.length === 0 && state.platform_review_batch.length === 0, "pyramid final review cannot start before all applicable specialist lanes are covered");
     validateFinalReview(finalReview, state.candidate.candidate_sha256);
     next.final_review = structuredClone(finalReview);
+    return finishState(next, {status: "CANDIDATE_ASSEMBLY_PENDING", nextAction: "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE"});
+  }
+  if (event === "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED") {
+    assert(state.next_action === "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE", "pyramid isolated candidate assembly is not the current successor");
+    assert(state.pending_specialist_ids.length === 0 && state.active_lane_ids.length === 0 && state.platform_review_batch.length === 0, "pyramid isolated candidate cannot assemble before all applicable specialist lanes are covered");
+    assert(state.final_review?.accepted === true, "pyramid isolated candidate cannot assemble before final coherence review");
+    const assembled = validatePyramidIsolatedCandidateAssembly(assembly);
+    assert(assembled.candidate_id === state.candidate.candidate_id, "pyramid isolated candidate assembly targets a different candidate");
+    assert(assembled.base_candidate_sha256 === state.candidate.candidate_sha256, "pyramid isolated candidate assembly baseline is stale");
+    assert(assembled.worktree_ref === state.candidate.worktree_ref, "pyramid isolated candidate assembly worktree is stale");
+    assert(assembled.rollback_ref === state.candidate.rollback_ref, "pyramid isolated candidate assembly rollback is stale");
+    next.isolated_candidate_assembly = structuredClone(assembled);
     return finishState(next, {status: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", protectedEvent: compileProtectedEvent(protectedEvent)});
   }
   assert(false, `Unsupported pyramid campaign event: ${event}`);

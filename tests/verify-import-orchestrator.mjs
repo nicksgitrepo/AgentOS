@@ -21,6 +21,7 @@ import {
   readImportOrchestratorRecord,
   validateImportOrchestrator,
   writeImportOrchestratorRecordCompareAndSwap,
+  IMPORT_ORCHESTRATOR_ACTIONS,
 } from "../control/import-orchestrator.mjs";
 import {
   IMPORT_ORCHESTRATOR_GOVERNANCE_GATE_IDS,
@@ -89,6 +90,13 @@ assert.equal(initialWithQueue.next_action, "REQUEST_SPAWNER_QA");
 assert.equal(initialWithQueue.authority.product_mutation, false);
 assert.equal(initialWithQueue.authority.protected_release, false);
 assert.equal(initialWithQueue.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
+assert(IMPORT_ORCHESTRATOR_ACTIONS.includes("ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE"), "isolated cumulative assembly must be an Orchestrator successor");
+const importSchema = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/import-orchestrator.v1.json"), "utf8"));
+assert.deepEqual([...importSchema.properties.next_action.enum].sort(), [...IMPORT_ORCHESTRATOR_ACTIONS].sort(), "Import Orchestrator action schema is stale");
+const assemblyRoute = structuredClone(initialWithQueue);
+assemblyRoute.next_action = "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE";
+assemblyRoute.orchestrator_sha256 = canonicalDigest({...assemblyRoute, orchestrator_sha256: null});
+validateImportOrchestrator(assemblyRoute);
 for (const activeState of ["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"]) {
   const activeNone = structuredClone(initialWithQueue);
   activeNone.state = activeState;

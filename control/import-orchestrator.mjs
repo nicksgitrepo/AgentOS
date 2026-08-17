@@ -34,10 +34,12 @@ export {
   compilePyramidCampaignContext,
   compilePyramidCampaignState,
   compilePyramidPlatformReview,
+  compilePyramidIsolatedCandidateAssembly,
   compilePyramidSpecialistHandoff,
   deriveApplicableSpecialistRoster,
   validatePyramidCampaignState,
   validatePyramidPlatformReview,
+  validatePyramidIsolatedCandidateAssembly,
   validatePyramidSpecialistHandoff,
   validatePyramidSpecialistRoster,
 } from "./pyramid-campaign-governance.mjs";
@@ -72,6 +74,7 @@ export const IMPORT_ORCHESTRATOR_ACTIONS = Object.freeze([
   "START_CENTRAL_INTEGRATION",
   "START_INDEPENDENT_REAUDIT",
   "PREPARE_CANDIDATE_REVIEW",
+  "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE",
   "WAIT_FOR_PROTECTED_EVENT",
   "NONE",
 ]);
