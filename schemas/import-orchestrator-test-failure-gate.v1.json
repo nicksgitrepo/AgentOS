@@ -21,6 +21,96 @@
     "status": {"const": "REPAIR_REQUIRED"},
     "gate_sha256": {"$ref": "#/$defs/sha256"}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "route_facts": {
+            "required": ["boundary_scope"],
+            "properties": {
+              "boundary_scope": {"const": "APPLICABILITY_ONLY_LOCAL"}
+            }
+          }
+        },
+        "required": ["route_facts"]
+      },
+      "then": {
+        "properties": {
+          "route_facts": {
+            "properties": {
+              "clearance_applicability": {"not": {"const": "REQUIRED_PROTECTED_ROUTE"}},
+              "derived_next_action": {"not": {"enum": ["WAIT_FOR_INDEPENDENT_CLEARANCE", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "WAIT_FOR_PROTECTED_WAVE_ACTIVATION", "WAIT_FOR_EXACT_PROTECTED_BOUNDARY_RESOLUTION", "WAIT_FOR_PROTECTED_EVENT"]}}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_facts": {
+            "required": ["boundary_scope", "clearance_applicability"],
+            "properties": {
+              "boundary_scope": {"const": "APPLICABILITY_ONLY_LOCAL"},
+              "clearance_applicability": {"const": "NOT_APPLICABLE_LOCAL_COMPILER_QA"}
+            }
+          }
+        },
+        "required": ["route_facts"]
+      },
+      "then": {
+        "properties": {
+          "route_facts": {
+            "properties": {"derived_next_action": {"const": "REQUEST_SPAWNER_QA"}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_facts": {
+            "required": ["boundary_scope", "clearance_applicability"],
+            "properties": {
+              "boundary_scope": {"const": "APPLICABILITY_ONLY_LOCAL"},
+              "clearance_applicability": {"const": "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"}
+            }
+          }
+        },
+        "required": ["route_facts"]
+      },
+      "then": {
+        "properties": {
+          "route_facts": {
+            "properties": {"derived_next_action": {"const": "START_ISOLATED_AUDIT_LANES"}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route_facts": {
+            "required": ["clearance_applicability"],
+            "properties": {
+              "clearance_applicability": {"const": "REQUIRED_PROTECTED_ROUTE"}
+            }
+          }
+        },
+        "required": ["route_facts"]
+      },
+      "then": {
+        "properties": {
+          "route_facts": {
+            "properties": {
+              "boundary_scope": {"not": {"const": "APPLICABILITY_ONLY_LOCAL"}},
+              "run_state": {"const": "BLOCKED_PROTECTED"}
+            }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},

@@ -115,8 +115,32 @@ function validateRouteFacts(facts) {
   assert(facts.wave_activation === "OFF", "test-failure route cannot activate a wave");
   requireIdentifier(facts.derived_next_action, "test-failure derived next action");
   requireIdentifier(facts.derived_next_handler, "test-failure derived next handler");
-  assert(CONTROLLER_ACTION_REGISTRY[facts.derived_next_action] !== undefined, "test-failure derived next action is not registered");
+  const actionDescriptor = CONTROLLER_ACTION_REGISTRY[facts.derived_next_action];
+  assert(actionDescriptor !== undefined, "test-failure derived next action is not registered");
   assert(facts.derived_next_handler === controllerActionHandlerFor(facts.derived_next_action), "test-failure derived next handler does not match the action registry");
+
+  /*
+   * Registration alone is not route proof. A stale or hand-written record
+   * must not turn an applicability-only local fact into a protected wait, and
+   * a protected route must be anchored to the planner's blocked state. This
+   * semantic boundary prevents a familiar action name from parking the
+   * workflow without a real protected event.
+   */
+  const localApplicability = facts.boundary_scope === "APPLICABILITY_ONLY_LOCAL";
+  if (localApplicability) {
+    assert(facts.clearance_applicability !== "REQUIRED_PROTECTED_ROUTE", "local applicability cannot claim required protected clearance");
+    assert(actionDescriptor.mode !== "PROTECTED_WAIT", "local applicability cannot derive a protected wait");
+    if (facts.clearance_applicability === "NOT_APPLICABLE_LOCAL_COMPILER_QA") {
+      assert(facts.derived_next_action === "REQUEST_SPAWNER_QA", "local compiler QA must continue through Spawner QA");
+    }
+    if (facts.clearance_applicability === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR") {
+      assert(facts.derived_next_action === "START_ISOLATED_AUDIT_LANES", "local audit repair must continue through isolated audit lanes");
+    }
+  }
+  if (facts.clearance_applicability === "REQUIRED_PROTECTED_ROUTE") {
+    assert(!localApplicability, "required protected clearance cannot use an applicability-only boundary");
+    assert(facts.run_state === "BLOCKED_PROTECTED", "required protected clearance must be anchored to a blocked protected run-state");
+  }
 }
 
 function validateRepair(repair) {

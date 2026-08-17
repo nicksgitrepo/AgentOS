@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   compileImportOrchestratorTestFailureGate,
   validateImportOrchestratorTestFailureGate,
@@ -59,10 +60,42 @@ const hostile = (change, pattern) => {
 hostile((candidate) => { candidate.gate_sha256 = sha("e"); }, /digest mismatch/u);
 hostile((candidate) => { candidate.authority_binding.tree = sha("f"); }, /authority is stale/u);
 hostile((candidate) => { candidate.custody.controller_approval_required = true; }, /Controller approval/u);
-hostile((candidate) => { candidate.route_facts.clearance_applicability = "REQUIRED_PROTECTED_ROUTE"; }, /gate digest mismatch|route facts/u);
+hostile((candidate) => { candidate.route_facts.clearance_applicability = "REQUIRED_PROTECTED_ROUTE"; }, /gate digest mismatch|route facts|local applicability|required protected/u);
 hostile((candidate) => { candidate.route_facts.derived_next_handler = "HANDLER.OWNER_REVIEW"; }, /action registry/u);
 hostile((candidate) => { candidate.hostile_fixture_refs.push("FIXTURE.TEST.NULL_DIGEST"); }, /sorted and unique/u);
 hostile((candidate) => { candidate.failed_check.actual = candidate.failed_check.expected; }, /real mismatch/u);
+
+// A registered action is not enough: local applicability cannot smuggle in a
+// protected wait, and a protected route must be anchored to a blocked state.
+const localProtectedClaim = structuredClone(gate);
+localProtectedClaim.route_facts.clearance_applicability = "REQUIRED_PROTECTED_ROUTE";
+localProtectedClaim.route_facts.derived_next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
+localProtectedClaim.route_facts.derived_next_handler = "HANDLER.PROTECTED_EVENT_WAIT";
+localProtectedClaim.gate_sha256 = canonicalDigest({...localProtectedClaim, gate_sha256: null});
+assert.throws(() => validateImportOrchestratorTestFailureGate(localProtectedClaim, {authority}), /local applicability|required protected/u);
+
+const unanchoredProtectedClaim = structuredClone(gate);
+unanchoredProtectedClaim.route_facts.boundary_scope = "PROTECTED_INTEGRATION";
+unanchoredProtectedClaim.route_facts.clearance_applicability = "REQUIRED_PROTECTED_ROUTE";
+unanchoredProtectedClaim.route_facts.run_state = "ACTIVE";
+unanchoredProtectedClaim.route_facts.derived_next_action = "START_CENTRAL_INTEGRATION";
+unanchoredProtectedClaim.route_facts.derived_next_handler = "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION";
+unanchoredProtectedClaim.gate_sha256 = canonicalDigest({...unanchoredProtectedClaim, gate_sha256: null});
+assert.throws(() => validateImportOrchestratorTestFailureGate(unanchoredProtectedClaim, {authority}), /blocked protected run-state/u);
+
+const wrongCompilerSuccessor = structuredClone(gate);
+wrongCompilerSuccessor.route_facts.clearance_applicability = "NOT_APPLICABLE_LOCAL_COMPILER_QA";
+wrongCompilerSuccessor.route_facts.derived_next_action = "START_ISOLATED_AUDIT_LANES";
+wrongCompilerSuccessor.route_facts.derived_next_handler = "HANDLER.ORCHESTRATOR_ISOLATED_AUDIT";
+wrongCompilerSuccessor.gate_sha256 = canonicalDigest({...wrongCompilerSuccessor, gate_sha256: null});
+assert.throws(() => validateImportOrchestratorTestFailureGate(wrongCompilerSuccessor, {authority}), /local compiler QA/u);
+
+const wrongAuditSuccessor = structuredClone(gate);
+wrongAuditSuccessor.route_facts.clearance_applicability = "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR";
+wrongAuditSuccessor.route_facts.derived_next_action = "REQUEST_SPAWNER_QA";
+wrongAuditSuccessor.route_facts.derived_next_handler = "HANDLER.ORCHESTRATOR_SPAWNER_QA";
+wrongAuditSuccessor.gate_sha256 = canonicalDigest({...wrongAuditSuccessor, gate_sha256: null});
+assert.throws(() => validateImportOrchestratorTestFailureGate(wrongAuditSuccessor, {authority}), /local audit repair/u);
 
 const protectedFacts = {...compilerFacts,
   boundary_id: "BOUNDED_LOCAL_INTEGRATION",

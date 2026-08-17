@@ -34,6 +34,10 @@ export const CONTROLLER_ACTION_COVERAGE = Object.freeze({
   START_GOVERNED_SPAWN: local("HANDLER.GOVERNED_SPAWN_ADAPTER"),
   WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT: protectedWait,
   REQUEST_SPAWNER_QA: local("HANDLER.ORCHESTRATOR_SPAWNER_QA"),
+  // Isolated audit/repair is a first-class Orchestrator successor.  Keeping
+  // it in the closed Controller registry prevents the Orchestrator from
+  // emitting a valid route that the dispatcher cannot execute.
+  START_ISOLATED_AUDIT_LANES: local("HANDLER.ORCHESTRATOR_ISOLATED_AUDIT"),
   // A failed QA handoff is still an autonomous lane transition.  Keep the
   // retry explicit so a valid Spawner result can be consumed directly rather
   // than being forced through Controller approval or an unexplained wait.
