@@ -99,6 +99,15 @@ assert.throws(() => compileControllerStartupSuccessor({
   hostileFixtureRefs: hostile("GOVERNED_MISSING_CLEARANCE"),
 }), /cannot activate without a typed true blocker/u, "governed activation cannot silently bypass clearance");
 
+for (const [label, overrides] of [["INCOMPLETE_BLOCKS", {incompleteBlockCount: 1}], ["PENDING_ROUTES", {pendingRouteCount: 1}]]) {
+  assert.throws(() => compileControllerStartupSuccessor({
+    ...base,
+    stage: "GOVERNED_SPAWN_ADMITTED",
+    routeFacts: facts(overrides),
+    hostileFixtureRefs: hostile(label),
+  }), /cannot activate without a typed true blocker/u, `governed activation cannot bypass ${label.toLowerCase()}`);
+}
+
 const governedWait = compileControllerStartupSuccessor({
   ...base,
   stage: "GOVERNED_SPAWN_ADMITTED",

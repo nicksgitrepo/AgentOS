@@ -1046,15 +1046,15 @@
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
-      "sha256": "c2f078e807b415bfc78742c1a0c8f849d7d8d1f44096b46386d58e430b84cafe"
+      "sha256": "47de0e655f4c8778ea8d6a56d527e79415aeb8d7abcd6df05dccda8cd57269b0"
     },
     "controller_startup_sequence_contract": {
       "path": "schemas/controller-startup-sequence.v1.json",
-      "sha256": "f71c3130f5e27b97364032ef3ee506ffac904cd2f15dff6bd81ec6cf72865640"
+      "sha256": "53eff1482e02685618c2b05788d8949d8db4534f86169a90478d0dfccfccc914"
     },
     "controller_startup_sequence_verifier": {
       "path": "tests/verify-controller-startup-sequence.mjs",
-      "sha256": "41580b1a4b03615c7688f94e64a0dfe77f01d197df6783fd8891ccebcfa0a975"
+      "sha256": "81f8bea49968e3e8b6cfa3075a0fc533fb079400bf4f94a8aea5efffca8a335f"
     },
     "controller_startup_runner_controller": {
       "path": "control/controller-startup-runner.mjs",
