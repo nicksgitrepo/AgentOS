@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/controller-next-lifecycle-handoff.v1.json",
+  "title": "AgentOS Controller next-lifecycle handoff",
+  "description": "Project-agnostic proof that a bounded local successor started its next lifecycle turn before the current dispatch closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "source_receipt_sha256", "next_action", "next_handler",
+    "handoff_ref", "handoff_sha256", "started_same_turn"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.controller_next_lifecycle_handoff.v1"},
+    "version": {"const": 1},
+    "status": {"const": "STARTED"},
+    "source_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "next_action": {"$ref": "#/$defs/identifier"},
+    "next_handler": {"$ref": "#/$defs/identifier"},
+    "handoff_ref": {"$ref": "#/$defs/reference"},
+    "handoff_sha256": {"$ref": "#/$defs/sha256"},
+    "started_same_turn": {"const": true}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"}
+  },
+  "state_rules": {
+    "start": "A local dispatch may close only after an executable starter returns status STARTED, binds the final persisted receipt, names the registry handler, and proves started_same_turn=true.",
+    "failure": "A missing, null, stale, placeholder, or mismatched handoff is a workflow dead-end and must route to the project-agnostic Spawner repair path; it is never a timer or approval wait."
+  }
+}
