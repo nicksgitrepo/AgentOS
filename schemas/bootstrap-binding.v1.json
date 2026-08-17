@@ -1066,7 +1066,7 @@
     },
     "controller_startup_runner_verifier": {
       "path": "tests/verify-controller-startup-runner.mjs",
-      "sha256": "055cfacdc52fbe5c324e678fbb1d9aaf7c70d2dcbab829cf61aa985ff7c3179b"
+      "sha256": "6815f13fe26d078ab2f495821df5ac5ff23acba05521b8a287fe952d8f9547cb"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
@@ -1082,7 +1082,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "100499e83ccb03b2309c94500f08c58f2660e7dd7c76aad9b24f43c4d2973b33"
+      "sha256": "b43ddfc9717f36935d07203328c76cd956f178f4e0f91d5cc49d28ecc3393247"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1090,15 +1090,15 @@
     },
     "agent_spawner_compiler_continuation_verifier": {
       "path": "tests/verify-agent-spawner-compiler-continuation.mjs",
-      "sha256": "f9cb7358749d173e6ae3688e2bd1c243ba428305ec334a5b9f296fd24781e954"
+      "sha256": "ea7ba0e24275b04e8687aac3aebc4b0ba1a54ed56aa6f36925025b4204662174"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "06ec7aeeaddf6a824eced35730ae31cd9509b3e645b1906f7abebb2f415067a1"
+      "sha256": "356d4415864f57712efe9cecaec8465d655dea6b18e7922589d733cf2535ad69"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "d4ebf9dba2eecf9be5163df01cc3f9582a63f1d7ba9c5321d63b14e44a17de23"
+      "sha256": "c997774c2c60680902d122f5b303c2e79bcef922f6a86b64b3971433f7c7b7b7"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
@@ -1562,7 +1562,7 @@
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
-      "sha256": "d29a8f3c04a182ac20e2fc462c72c32698f02cd1182e3aad59cf30a91910b950"
+      "sha256": "3be3387de173ebdce1bdf524f44763b3f3d90ce6adecdd886a2d22453e32cff4"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
