@@ -19,6 +19,7 @@ import {
   advanceImportOrchestrator,
   advanceImportOrchestratorRecord,
   compileImportOrchestrator,
+  resumeBoundedLocalIntegration,
   readImportOrchestratorRecord,
   validateImportOrchestrator,
   writeImportOrchestratorRecordCompareAndSwap,
@@ -267,6 +268,20 @@ const localCentralOrchestrator = compileImportOrchestrator({
 assert.equal(localCentralOrchestrator.state, "ACTIVE");
 assert.equal(localCentralOrchestrator.next_action, "START_CENTRAL_INTEGRATION");
 assert.equal(localCentralOrchestrator.blocked_dependency_id, null);
+const resumedCentralRun = resumeBoundedLocalIntegration({
+  runState: blockedCentralRun,
+  plan,
+  spawnerLifecycle: isolatedSpawner,
+  clearanceApplicability: heldApplicability,
+});
+assert.equal(resumedCentralRun.status, "CENTRAL_INTEGRATION_PENDING");
+assert.equal(resumedCentralRun.next_action, "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS");
+assert.equal(resumedCentralRun.protected_boundary_id, null);
+assert.throws(() => resumeBoundedLocalIntegration({
+  runState: blockedCentralRun,
+  plan,
+  spawnerLifecycle: lifecycle,
+}), /isolated governed Spawner custody/u, "central integration must not resume without isolated custody");
 
 const persistenceRoot = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "agentos-import-orchestrator-"));
 const persistencePath = "state/import-orchestrator.json";

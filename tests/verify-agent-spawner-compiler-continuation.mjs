@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   advanceAgentSpawnerLifecycle,
+  admitAgentSpawnerIsolatedLocalCustody,
   compileAgentSpawnerLifecycle,
   runAgentSpawnerCompilerTick,
   validateAgentSpawnerCompilerContinuation,
@@ -122,6 +123,32 @@ assert.equal(validPublish.next_action, "ADMIT_GOVERNED_SPAWN");
 assert.equal(validPublish.continuation.resume_condition, "Hand off to governed admission; adapter/readback still required.");
 assert.equal(validPublish.admission.spawnable, false);
 assert.throws(() => runAgentSpawnerCompilerTick(validPublishAfter), /governed admission adapter.*readback/u, "compiler must not perform governed admission");
+
+const isolatedAdmission = admitAgentSpawnerIsolatedLocalCustody(validPublishAfter);
+assert.equal(isolatedAdmission.mode, "GOVERNED_SPAWN");
+assert.equal(isolatedAdmission.state, "SPAWN_ADMITTED");
+assert.equal(isolatedAdmission.authority.isolated_local_custody, true);
+assert.equal(isolatedAdmission.authority.spawn_authority, true);
+assert.equal(isolatedAdmission.wave_activation, "OFF");
+assert.equal(isolatedAdmission.qa.independent_clearance_status, "CLEARED");
+
+const pendingLocalCompiler = compileAgentSpawnerLifecycle({
+  ...base,
+  lifecycleId: "LIFECYCLE.SPAWNER.CONTINUATION.LOCAL_PENDING",
+  state: "COMPILER_ACTIVE",
+  qa: pending,
+});
+const pendingLocalAdmission = admitAgentSpawnerIsolatedLocalCustody(pendingLocalCompiler);
+assert.equal(pendingLocalAdmission.state, "SPAWN_ADMITTED");
+assert.equal(pendingLocalAdmission.authority.isolated_local_custody, true);
+
+const incompleteLocalCompiler = compileAgentSpawnerLifecycle({
+  ...base,
+  lifecycleId: "LIFECYCLE.SPAWNER.CONTINUATION.LOCAL_INCOMPLETE",
+  state: "COMPILER_ACTIVE",
+  qa: {...pending, incomplete_block_count: 1, status: "NOT_READY"},
+});
+assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(incompleteLocalCompiler), /governed-admission successor|complete blocks/u, "isolated admission must not bypass an incomplete roster route");
 
 assert.throws(
   () => runAgentSpawnerCompilerTick(compileReady, {onCompileBlock: () => ({

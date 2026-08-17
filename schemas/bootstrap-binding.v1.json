@@ -570,7 +570,7 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "b88ee7a2c9dab4e704b8a5118b3c446a4deceee30be68e0e6339aee2c2a98d10"
+      "sha256": "4ff71e5217606b4ac7b8ca4608d40b855f71f7c232eb59e817c9211d8613a6bc"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
@@ -582,7 +582,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "cbbe426b889bf8b8409671270ce103452cf0b6f33bcf907b9273d8217d7426cc"
+      "sha256": "eae23eab3082454b3365b9ed542b6592b3031fe58d4507cbc7dc6e71d5ba508c"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
@@ -922,7 +922,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "2f949f7f28f02ee14dc19a67d7a9f833fe6b3d641e09eb92d3840cdfae4a7484"
+      "sha256": "7d89876e437be65ba76842697e043bb193b6f50d221b9406af5e095f7c2769d8"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -930,7 +930,7 @@
     },
     "agent_spawner_compiler_continuation_verifier": {
       "path": "tests/verify-agent-spawner-compiler-continuation.mjs",
-      "sha256": "53cbe7852b66a0a96fb7476f775e0934951623f32e84ca3f735798990ea24185"
+      "sha256": "f9cb7358749d173e6ae3688e2bd1c243ba428305ec334a5b9f296fd24781e954"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",

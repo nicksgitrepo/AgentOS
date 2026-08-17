@@ -285,6 +285,35 @@ export function compileAgentSpawnerLifecycle({
   return validateAgentSpawnerLifecycle(lifecycle);
 }
 
+/*
+ * The compiler is intentionally not allowed to admit workers itself.  Once it
+ * emits ADMIT_GOVERNED_SPAWN, however, the Controller needs a concrete,
+ * project-agnostic adapter rather than a prose handoff that can strand the
+ * campaign.  This adapter performs only the bounded local transition: the
+ * source roots remain preserved, the candidate is isolated, and every
+ * provider/credential/product/external capability stays closed.  Protected
+ * clearance is still required for any non-isolated route.
+ */
+export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalCustody = true} = {}) {
+  validateAgentSpawnerLifecycle(lifecycle);
+  assert(lifecycle.mode === "COMPILER_ONLY", "Isolated governed admission must start from the compiler lifecycle");
+  assert(lifecycle.state === "COMPILER_ACTIVE" && ["ADMIT_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"].includes(lifecycle.next_action), "Spawner is not at a governed-admission successor");
+  assert(isolatedLocalCustody === true, "Isolated governed admission requires explicit local custody proof");
+  assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Isolated governed admission requires complete blocks and a published roster");
+  return compileAgentSpawnerLifecycle({
+    lifecycleId: lifecycle.lifecycle_id,
+    mode: "GOVERNED_SPAWN",
+    state: "SPAWN_ADMITTED",
+    waveActivation: "OFF",
+    candidateSha256: lifecycle.candidate_sha256,
+    rosterProjectionSha256: lifecycle.roster_projection_sha256,
+    contextSha256: lifecycle.context_sha256,
+    isolatedLocalCustody: true,
+    qa: structuredClone(lifecycle.qa),
+    execution: structuredClone(lifecycle.execution),
+  });
+}
+
 function eventBody(event) {
   const body = structuredClone(event);
   body.event_sha256 = null;

@@ -14,6 +14,7 @@ import {
   validateControllerImportCampaignPlan,
   validateControllerImportRosterProjection,
   validateControllerImportRunState,
+  advanceControllerImportRunState,
   BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID,
 } from "./controller-import-planner.mjs";
 import {validateAgentSpawnerLifecycle} from "./agent-spawner-lifecycle.mjs";
@@ -162,17 +163,21 @@ function summarizeDefectQueue({defectQueue, defectIntakes} = {}) {
 }
 
 function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability = null} = {}) {
-  if (clearanceApplicability !== null) {
-    return validateIndependentClearanceApplicability(clearanceApplicability);
-  }
   const execution = spawnerLifecycle?.execution ?? {};
   const authority = spawnerLifecycle?.authority ?? {};
   const localQaPhase = runState?.status === "SPAWNER_QA_PENDING" && spawnerLifecycle?.mode === "COMPILER_ONLY";
   const isolatedLocalPhase = authority.isolated_local_custody === true
     && (["SPAWNER_QA_PENDING", "SPECIALIST_WAVE_ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING", "INDEPENDENT_REAUDIT_PENDING"].includes(runState?.status)
       || (runState?.status === "BLOCKED_PROTECTED" && runState?.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID));
+  if (clearanceApplicability !== null && !isolatedLocalPhase) {
+    return validateIndependentClearanceApplicability(clearanceApplicability);
+  }
+  // A previously persisted REQUIRED_PROTECTED_ROUTE receipt is stale when
+  // the current Spawner has since proved isolated local custody. Recompute the
+  // applicability from the current authority/readback instead of letting an
+  // old central-integration hold strand ordinary candidate work.
   const protectedRoute = !localQaPhase;
-  return compileIndependentClearanceApplicability({
+  const derived = compileIndependentClearanceApplicability({
     applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ORCHESTRATOR",
     phase: localQaPhase || isolatedLocalPhase ? (localQaPhase ? "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING" : "ISOLATED_LOCAL_AUDIT_REPAIR") : "GOVERNED_WORKER_ACTIVATION",
     spawnerMode: spawnerLifecycle?.mode === "COMPILER_ONLY" ? "COMPILER_ONLY" : "GOVERNED_SPAWN",
@@ -197,6 +202,39 @@ function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceAppl
     heavyweightProcessLimit: 1,
     timerCount: execution.timer_count ?? (protectedRoute && !isolatedLocalPhase ? 1 : 0),
     polling: execution.polling ?? (protectedRoute && !isolatedLocalPhase),
+  });
+  if (clearanceApplicability !== null) {
+    const persisted = validateIndependentClearanceApplicability(clearanceApplicability);
+    if (persisted.decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR") {
+      assert(isolatedLocalPhase, "Local audit-repair applicability requires current isolated Spawner custody");
+    }
+  }
+  return derived;
+}
+
+/*
+ * Convert the exact central-integration hold into the next local run-state
+ * successor when the current Spawner and applicability readback prove that
+ * this is only an isolated candidate write.  This is the Controller's
+ * bounded-resume adapter: it never opens Product/provider/credential/spend,
+ * destructive, deployment, publication, merge, or release authority.
+ */
+export function resumeBoundedLocalIntegration({runState, plan, spawnerLifecycle, clearanceApplicability = null} = {}) {
+  validateControllerImportRunState(runState, {plan});
+  validateAgentSpawnerLifecycle(spawnerLifecycle);
+  assert(runState.status === "BLOCKED_PROTECTED" && runState.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID, "Bounded local integration resume requires the exact central-integration hold");
+  assert(runState.open_finding_ids.length === 0, "Bounded local integration cannot hide open findings");
+  assert(spawnerLifecycle.mode === "GOVERNED_SPAWN" && spawnerLifecycle.authority.isolated_local_custody === true, "Bounded local integration requires isolated governed Spawner custody");
+  const applicability = deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability});
+  assert(applicability.decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR", "Bounded local integration is not safe under the current applicability facts");
+  return advanceControllerImportRunState({
+    state: runState,
+    plan,
+    event: {
+      event_type: "BOUNDED_LOCAL_INTEGRATION_RESUMED",
+      finding_ids: [],
+      protected_boundary_id: BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID,
+    },
   });
 }
 
