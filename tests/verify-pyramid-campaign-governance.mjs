@@ -79,9 +79,29 @@ assert.equal(initial.next_action, "START_SPECIALIST_WAVE");
 assert.equal(initial.next_handler, controllerActionHandlerFor(initial.next_action));
 assert.ok(PYRAMID_CAMPAIGN_ACTIONS.includes(initial.next_action));
 
-const initiallyProtected = compilePyramidCampaignState({
+assert.throws(() => compilePyramidCampaignState({
   campaignId: "CAMPAIGN.PYRAMID.INITIAL_PROTECTED",
   roster,
+  candidateId: "CANDIDATE.INITIAL.PROTECTED",
+  candidateSha256: HASH("initial-protected-candidate"),
+  worktreeRef: "opaque:initial-protected-worktree",
+  rollbackRef: "opaque:initial-protected-rollback",
+  sourceScope,
+  initialProtectedWait: true,
+  protectedEvent: {
+    blocker_id: "PROTECTED.INITIAL.DECISION",
+    blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
+    affected_action: "INITIAL_PROTECTED_ACTION",
+    evidence_ceiling: "Only typed local evidence is available before protected review.",
+    restart_event: "CURRENT_TYPED_OWNER_DECISION",
+    resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
+  },
+}), /cannot hide applicable specialist work/u);
+
+const noWorkRoster = deriveApplicableSpecialistRoster({context, specialistTypes: specialistTypes.filter((entry) => entry.applicability === "NOT_APPLICABLE")});
+const initiallyProtected = compilePyramidCampaignState({
+  campaignId: "CAMPAIGN.PYRAMID.INITIAL_PROTECTED",
+  roster: noWorkRoster,
   candidateId: "CANDIDATE.INITIAL.PROTECTED",
   candidateSha256: HASH("initial-protected-candidate"),
   worktreeRef: "opaque:initial-protected-worktree",
@@ -103,7 +123,14 @@ assert.equal(initiallyProtected.stop_workflow_decision.stop, true);
 const missingProtectedDecision = structuredClone(initiallyProtected);
 missingProtectedDecision.stop_workflow_decision = null;
 missingProtectedDecision.state_sha256 = canonicalDigest({...missingProtectedDecision, state_sha256: null});
-assert.throws(() => validatePyramidCampaignState(missingProtectedDecision, {roster}), /lacks stop-workflow decision/u);
+assert.throws(() => validatePyramidCampaignState(missingProtectedDecision, {roster: noWorkRoster}), /lacks stop-workflow decision/u);
+const singleWorkRoster = deriveApplicableSpecialistRoster({context, specialistTypes: specialistTypes.filter((entry) => entry.specialist_id === "SPECIALIST_01")});
+const pendingProtected = structuredClone(initiallyProtected);
+pendingProtected.context_sha256 = singleWorkRoster.context.context_sha256;
+pendingProtected.roster_sha256 = singleWorkRoster.roster_sha256;
+pendingProtected.pending_specialist_ids = ["SPECIALIST_01"];
+pendingProtected.state_sha256 = canonicalDigest({...pendingProtected, state_sha256: null});
+assert.throws(() => validatePyramidCampaignState(pendingProtected, {roster: singleWorkRoster}), /cannot hide pending specialist work/u);
 
 function custody() {
   return {

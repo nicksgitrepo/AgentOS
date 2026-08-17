@@ -36,6 +36,21 @@
     "stop_workflow_decision": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/stopWorkflowDecision"}]},
     "state_sha256": {"$ref": "#/$defs/sha256"}
   },
+  "allOf": [
+    {
+      "if": {
+        "required": ["status"],
+        "properties": {"status": {"const": "PROTECTED_WAIT"}}
+      },
+      "then": {
+        "properties": {
+          "pending_specialist_ids": {"const": []},
+          "active_lane_ids": {"const": []},
+          "platform_review_batch": {"const": []}
+        }
+      }
+    }
+  ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},

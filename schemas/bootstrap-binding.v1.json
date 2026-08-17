@@ -586,15 +586,15 @@
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "2d0e1cefc52fbef5d8f8ba647d65bd4eb18f21b0e6ff811073026548a0c086bc"
+      "sha256": "fa781bb69fa499cfc29873ed7287a2331ca192961986c17821c7ab1b2da9261e"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
-      "sha256": "797b0f7fb73b8870c05aeaaef49c43e32224eb08a0ec02d265b3a758968eaf47"
+      "sha256": "1b58be612b8a9b8f605df891a8eac709b42b8eb68a6b6a0aa7b88f8f305ff7ba"
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "cff1fb5553afccbac4feb49ad832b60081c5c13a37a52c7a6515ea96eefdb757"
+      "sha256": "d3e7e6821d9ff509a554e3f1e972f2c3b8cac502fa185adebcdec6dd96b8faa3"
     },
     "candidate_reaudit_continuation_controller": {
       "path": "control/candidate-reaudit-continuation.mjs",

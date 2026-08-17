@@ -862,6 +862,9 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
   validateAuthority(state.authority);
   if (state.status === "PROTECTED_WAIT") {
     assert(state.next_action === "WAIT_FOR_PROTECTED_EVENT" && state.protected_event !== null, "pyramid protected wait is not explicit");
+    assert(state.pending_specialist_ids.length === 0, "pyramid protected wait cannot hide pending specialist work");
+    assert(state.active_lane_ids.length === 0, "pyramid protected wait cannot hide active specialist lanes");
+    assert(state.platform_review_batch.length === 0, "pyramid protected wait cannot hide queued platform review work");
     compileProtectedEvent(state.protected_event);
     assert(state.stop_workflow_decision !== null, "pyramid protected wait lacks stop-workflow decision");
     validateStopWorkflowDecision(state.stop_workflow_decision);
@@ -938,6 +941,9 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
   validateCandidate(candidate);
   validateSourceScope(sourceScope);
   const shouldWait = initialProtectedWait === true;
+  if (shouldWait) {
+    assert(roster.applicable_specialist_ids.length === 0, "pyramid initial protected wait cannot hide applicable specialist work");
+  }
   const initialProtectedEvent = shouldWait ? compileProtectedEvent(protectedEvent) : null;
   const route = shouldWait ? compileRoute("WAIT_FOR_PROTECTED_EVENT", initialProtectedEvent) : compileRoute(roster.applicable_specialist_ids.length === 0 ? "PREPARE_CANDIDATE_REVIEW" : "START_SPECIALIST_WAVE");
   const state = {
