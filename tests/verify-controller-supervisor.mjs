@@ -94,6 +94,14 @@ assert.equal(failedRoute.tick.route_status, "ROUTE_FAILED");
 assert.match(failedRoute.tick.route_error, /^opaque:error:[0-9a-f]{64}$/u);
 assert.doesNotMatch(JSON.stringify(failedRoute.tick), /route adapter unavailable/u);
 
+// Missing routing is an internal liveness defect, never a cadence wait.  The
+// pure engine must encode it as a failed route so the runtime can create a
+// typed Spawner intake and reload/repair the adapter in the same turn.
+const missingRoute = runSupervisorIteration({observation: puzzle});
+assert.equal(missingRoute.tick.route_status, "ROUTE_FAILED");
+assert.equal(missingRoute.routeAdapterMissing, true);
+assert.match(missingRoute.tick.route_error, /^opaque:error:[0-9a-f]{64}$/u);
+
 const soft = observation({
   boundary: boundary({soft_review: true, scope_changed: true}),
 });
@@ -303,6 +311,80 @@ assert(turnBoundObservations >= 2, "same-turn safety bound must re-observe befor
 assert(turnBoundRoutes >= 2, "same-turn safety bound must start the next route immediately");
 assert(turnBoundResults.length >= 2, "same-turn safety-bound continuation must persist the next iteration");
 fs.rmSync(turnBoundRoot, {recursive: true, force: true});
+
+// A missing route must be reloaded immediately rather than sleeping until the
+// configured cadence. The factory simulates a startup repair that exposes a
+// route on its second same-turn observation.
+const missingRouteRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-missing-route-"));
+const missingRouteAbort = new AbortController();
+let missingRouteFactoryCalls = 0;
+const missingRouteResults = await runControllerSupervisor({
+  runtimeRoot: missingRouteRoot,
+  adapter: {observe: () => puzzle},
+  adapterFactory: async () => {
+    missingRouteFactoryCalls += 1;
+    if (missingRouteFactoryCalls === 1) return {observe: () => puzzle};
+    return {
+      observe: () => puzzle,
+      route: () => {
+        missingRouteAbort.abort();
+        return {status: "ROUTED", repaired: true};
+      },
+    };
+  },
+  runtimeId: "SUPERVISOR-MISSING-ROUTE-TEST",
+  intervalMinutes: 1,
+  signal: missingRouteAbort.signal,
+});
+assert.equal(missingRouteFactoryCalls, 2, "missing route must reload immediately in the same turn");
+assert.equal(missingRouteResults.length, 2, "missing route repair and successor must both be durable");
+assert.equal(missingRouteResults[0].routeAdapterMissing, true);
+assert.equal(missingRouteResults[1].tick.route_status, "ROUTED");
+const missingRouteDefectDirectory = path.join(missingRouteRoot, "supervisor", "spawner-defects");
+const missingRouteDefectFiles = fs.readdirSync(missingRouteDefectDirectory).filter((name) => name.endsWith(".json"));
+assert.equal(missingRouteDefectFiles.length, 2, "missing route and its bounded retry must both be captured as typed Spawner defects");
+const missingRouteDefects = missingRouteDefectFiles.map((name) => JSON.parse(fs.readFileSync(path.join(missingRouteDefectDirectory, name), "utf8")));
+missingRouteDefects.forEach((defect) => validateAgentSpawnerDefectIntake(defect));
+assert(missingRouteDefects.some((defect) => defect.defect_id.startsWith("DEFECT.SUPERVISOR.ROUTE_ADAPTER_MISSING.")), "missing route defect must be retained");
+fs.rmSync(missingRouteRoot, {recursive: true, force: true});
+
+// If a prior generic route failure exists for the same goal, a later missing
+// adapter must supersede that RCA rather than reuse stale evidence under a
+// misleading missing-route defect id.
+const staleRouteRcaRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-stale-route-rca-"));
+const staleRouteFailure = await runControllerSupervisorIteration({
+  runtimeRoot: staleRouteRcaRoot,
+  adapter: {
+    observe: () => puzzle,
+    route: () => { throw new Error("generic route failure before adapter disappeared"); },
+  },
+  runtimeId: "SUPERVISOR-STALE-ROUTE-RCA-TEST",
+});
+const staleRouteRetry = await runControllerSupervisorIteration({
+  runtimeRoot: staleRouteRcaRoot,
+  adapter: {
+    observe: () => puzzle,
+    route: () => { throw new Error("generic route failure before adapter disappeared"); },
+  },
+  runtimeId: "SUPERVISOR-STALE-ROUTE-RCA-TEST",
+});
+const staleRouteRcaBefore = JSON.parse(fs.readFileSync(path.join(staleRouteRcaRoot, "supervisor", "route-failures", `${staleRouteFailure.goal.goal_id}.json`), "utf8"));
+assert.match(staleRouteRcaBefore.error_message_exact, /^opaque:error:[0-9a-f]{64}$/u);
+writeSupervisorRecordCompareAndSwap({
+  authorityRoot: staleRouteRcaRoot,
+  recordPath: `supervisor/route-failures/${staleRouteRetry.goal.goal_id}.json`,
+  expectedDigest: null,
+  record: staleRouteRcaBefore,
+  digestField: "rca_sha256",
+});
+const staleRouteRca = await runControllerSupervisorIteration({
+  runtimeRoot: staleRouteRcaRoot,
+  adapter: {observe: () => staleRouteRetry.observation},
+  runtimeId: "SUPERVISOR-STALE-ROUTE-RCA-TEST",
+});
+assert.equal(staleRouteRca.routeAdapterMissing, true);
+assert.equal(staleRouteRca.routeFailureRca.error_message_exact, "CONTROLLER_ROUTE_ADAPTER_MISSING");
+fs.rmSync(staleRouteRcaRoot, {recursive: true, force: true});
 
 const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));
 const authorizedWaitAdapter = {

@@ -674,11 +674,11 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "9d1da54c79b42046b37a2f5ef9cd64c6e4be5aba397e8b626cbef50a61e127a7"
+      "sha256": "d6ddc570fc15eb5efe4eb678d46d97c518796d795cd627b3a6f0e605871966df"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "41837eb836ec30ce036d0057a2eb1715c96172e6747166f532b3b69989186e89"
+      "sha256": "c595e5a0e87af8ffa32ed8f51dfd554441d618a08cd7b9c0a61cab4aded6cda0"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
@@ -686,7 +686,7 @@
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "64dc01c749f0280e277c32bda2f553fd877230693efe85ab9b6889f1b1a1c048"
+      "sha256": "63db424973a7d1512d42d8c02bcd9f183b4bb29a8506f305d3da8542e18ac351"
     },
     "stop_workflow_gate_controller": {
       "path": "control/stop-workflow-gate.mjs",

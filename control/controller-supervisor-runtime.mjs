@@ -296,6 +296,38 @@ function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObserva
   return rca;
 }
 
+function compileMissingRouteAdapterRca({runtimeId, goal, observation, observedAtUtc}) {
+  const rca = {
+    schema: "agentos.controller_supervisor_route_failure_rca.v1",
+    version: 1,
+    status: "OPEN_REPAIR_REQUIRED",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    controller_role: "AGENTOS_CONTROLLER",
+    runtime_id: runtimeId,
+    prior_goal_id: goal.goal_id,
+    prior_goal_sha256: goal.goal_sha256,
+    prior_observation_sha256: observation.observation_sha256,
+    failed_route_status: "ROUTE_FAILED",
+    error_message_exact: "CONTROLLER_ROUTE_ADAPTER_MISSING",
+    current_observation_sha256: observation.observation_sha256,
+    required_action: "Bind or repair the project-agnostic local route adapter, reload it, and re-observe in the same turn; cadence is not a recovery mechanism.",
+    external_actions_attempted: false,
+    observed_at_utc: observedAtUtc,
+    rca_sha256: null,
+  };
+  rca.rca_sha256 = digestWithout(rca, "rca_sha256");
+  return rca;
+}
+
+function ensureMissingRouteAdapterRca({runtimeId, goal, observation, observedAtUtc, authorityRoot, recordPath, existingRca}) {
+  if (existingRca?.error_message_exact === "CONTROLLER_ROUTE_ADAPTER_MISSING") return existingRca;
+  const rca = compileMissingRouteAdapterRca({runtimeId, goal, observation, observedAtUtc});
+  const expectedDigest = existingRca === null ? null : existingRca?.rca_sha256;
+  if (existingRca !== null) requireSha(expectedDigest, "existing supervisor route failure RCA digest");
+  writeSupervisorRecordCompareAndSwap({authorityRoot, recordPath, expectedDigest, record: rca, digestField: "rca_sha256"});
+  return rca;
+}
+
 function compileNoProgressRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
   const rca = {
     schema: "agentos.controller_supervisor_route_failure_rca.v1",
@@ -439,7 +471,15 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   const root = canonicalRoot(runtimeRoot);
   const observation = await adapter.observe();
   validateSupervisorObservation(observation);
-  const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
+  // `reconcile` is an explicit project-agnostic recovery surface.  It is
+  // accepted as a route only when the adapter has not yet exposed its normal
+  // route, so a startup/configuration defect can repair itself without a
+  // timer-shaped wait.
+  const route = typeof adapter.route === "function"
+    ? (goal) => adapter.route(goal)
+    : typeof adapter.reconcile === "function"
+      ? (goal) => adapter.reconcile(goal)
+      : null;
   const existingTick = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/tick.json"});
   let priorSpawnerDefect = null;
   if (existingTick !== null && existingTick.route_status === "ROUTE_FAILED" && existingTick.observation_sha256 !== observation.observation_sha256) {
@@ -480,13 +520,18 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
       if (route !== null) {
         const rcaPath = `supervisor/route-failures/${existingGoal.goal_id}.json`;
         const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
-        const rca = compileRouteFailureRca({
-          runtimeId,
-          priorGoal: existingGoal,
-          priorTick: existingTick,
-          currentObservation: observation,
-          observedAtUtc: existingRca?.observed_at_utc ?? nowUtc,
-        });
+        // Preserve a previously recorded missing-adapter RCA when the route
+        // has just become available. Recompiling it as a generic route error
+        // would change its evidence digest and falsely strand the recovery.
+        const rca = existingRca?.error_message_exact === "CONTROLLER_ROUTE_ADAPTER_MISSING"
+          ? existingRca
+          : compileRouteFailureRca({
+            runtimeId,
+            priorGoal: existingGoal,
+            priorTick: existingTick,
+            currentObservation: observation,
+            observedAtUtc: existingRca?.observed_at_utc ?? nowUtc,
+          });
         if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
         else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor route failure RCA differs");
         const spawnerDefect = compileSpawnerDefectIntake({
@@ -523,8 +568,17 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
           recovery_started_same_turn: true,
         };
       }
-      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, nowUtc}));
-      return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
+      const existingRcaPath = `supervisor/route-failures/${existingGoal.goal_id}.json`;
+      const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: existingRcaPath});
+      const missingRouteRca = ensureMissingRouteAdapterRca({runtimeId, goal: existingGoal, observation, observedAtUtc: nowUtc, authorityRoot: root, recordPath: existingRcaPath, existingRca});
+      const missingRouteDefect = compileSpawnerDefectIntake({
+        observation,
+        rca: missingRouteRca,
+        defectId: `DEFECT.SUPERVISOR.ROUTE_ADAPTER_MISSING.${existingGoal.goal_id}`,
+      });
+      persistSpawnerDefect({runtimeRoot: root, intake: missingRouteDefect});
+      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, error: "CONTROLLER_ROUTE_ADAPTER_MISSING", nowUtc}));
+      return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, routeFailureRca: missingRouteRca, spawnerDefect: missingRouteDefect, routeAdapterMissing: true, reused: true};
     }
     if (isExplicitAuthorizedEventWait(existingTick)) {
       writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ACTIVE_EVENT_WAIT", observation, goal: existingGoal, tick: existingTick, nowUtc}));
@@ -583,6 +637,19 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     return {observation, goal: existingGoal, tick: existingTick, reused: true, noProgressRca: rca, spawnerDefect};
   }
   const result = await runSupervisorIterationAsync({observation, route});
+  if (result.routeAdapterMissing === true) {
+    const rcaPath = `supervisor/route-failures/${result.goal.goal_id}.json`;
+    const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
+    const rca = ensureMissingRouteAdapterRca({runtimeId, goal: result.goal, observation, observedAtUtc: nowUtc, authorityRoot: root, recordPath: rcaPath, existingRca});
+    const spawnerDefect = compileSpawnerDefectIntake({
+      observation,
+      rca,
+      defectId: `DEFECT.SUPERVISOR.ROUTE_ADAPTER_MISSING.${result.goal.goal_id}`,
+    });
+    persistSpawnerDefect({runtimeRoot: root, intake: spawnerDefect});
+    result.routeFailureRca = rca;
+    result.spawnerDefect = spawnerDefect;
+  }
   const goalRecordPath = `supervisor/goals/${observation.observation_sha256}.json`;
   const tickRecordPath = `supervisor/ticks/${observation.observation_sha256}.json`;
   writeOrVerify({runtimeRoot: root, recordPath: goalRecordPath, record: result.goal, digestField: "goal_sha256", validate: validateSupervisorGoal});
@@ -623,6 +690,7 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
   const stop = () => { stopping = true; };
   if (signal) signal.addEventListener("abort", stop, {once: true});
   const results = [];
+  let routeAdapterMissingAttempts = 0;
   try {
     do {
       if (signal?.aborted === true || stopping) break;
@@ -635,6 +703,23 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
           const result = await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc});
           results.push(result);
           iterationFailures = 0;
+          if (result.routeAdapterMissing === true) {
+            routeAdapterMissingAttempts += 1;
+            // An adapter may repair/reload its own route surface.  Give that
+            // explicit local hook a same-turn opportunity before reloading
+            // through adapterFactory; no cadence timer is involved.
+            if (typeof activeAdapter.repair === "function") {
+              await activeAdapter.repair({goal: result.goal, observation: result.observation, defect: result.spawnerDefect, attempt: routeAdapterMissingAttempts});
+            }
+            if (routeAdapterMissingAttempts < 3) continue;
+            const exhausted = new Error("CONTROLLER_ROUTE_ADAPTER_MISSING_AFTER_BOUNDED_RECOVERY");
+            exhausted.code = "AGENTOS_SUPERVISOR_ROUTE_ADAPTER_MISSING";
+            const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", observation: result.observation, goal: result.goal, tick: result.tick, error: exhausted.message, nowUtc});
+            writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
+            stopping = true;
+            break;
+          }
+          routeAdapterMissingAttempts = 0;
           if (!shouldContinueSupervisorSameTurn(result)) break;
           sameTurnTransitions += 1;
         } catch (error) {

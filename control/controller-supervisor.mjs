@@ -555,7 +555,19 @@ export function runSupervisorIteration({observation, route = null}) {
   if (goal.action === "STOP_HARD_BOUNDARY") {
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "STOPPED_HARD_BOUNDARY"})};
   }
-  if (route === null) return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "NOT_ATTEMPTED"})};
+  // A non-boundary goal without a route is an internal workflow defect, not a
+  // legitimate idle state.  Returning NOT_ATTEMPTED here used to let the
+  // supervisor fall through to cadence sleep with no repair or next action.
+  // Encode the missing route as a failed local route so the runtime can mint
+  // the Spawner defect and retry/reload the adapter in the same turn.
+  if (route === null) {
+    return {goal, tick: compileSupervisorTick({
+      observation,
+      goal,
+      routeStatus: "ROUTE_FAILED",
+      routeError: "CONTROLLER_ROUTE_ADAPTER_MISSING",
+    }), routeAdapterMissing: true};
+  }
   try {
     const routeReadback = route(goal);
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "ROUTED", routeReadback})};
@@ -570,7 +582,14 @@ export async function runSupervisorIterationAsync({observation, route = null}) {
   if (goal.action === "STOP_HARD_BOUNDARY") {
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "STOPPED_HARD_BOUNDARY"})};
   }
-  if (route === null) return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "NOT_ATTEMPTED"})};
+  if (route === null) {
+    return {goal, tick: compileSupervisorTick({
+      observation,
+      goal,
+      routeStatus: "ROUTE_FAILED",
+      routeError: "CONTROLLER_ROUTE_ADAPTER_MISSING",
+    }), routeAdapterMissing: true};
+  }
   try {
     const routeReadback = await route(goal);
     return {goal, tick: compileSupervisorTick({observation, goal, routeStatus: "ROUTED", routeReadback})};
