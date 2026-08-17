@@ -219,4 +219,23 @@ assert.throws(
   "compiler-only Spawner must reject temporary admission",
 );
 
+const clearedStall = structuredClone(stalled);
+clearedStall.qa.independent_clearance_status = "CLEARED";
+clearedStall.qa.independent_clearance_receipt_sha256 = HASH("clearance");
+clearedStall.lifecycle_sha256 = canonicalDigest({...clearedStall, lifecycle_sha256: null});
+assert.throws(
+  () => validateAgentSpawnerLifecycle(clearedStall),
+  /requires a pending external decision/u,
+  "a cleared governed Spawner cannot masquerade as a protected wait",
+);
+
+const queuedStall = structuredClone(stalled);
+queuedStall.qa.pending_route_count = 1;
+queuedStall.lifecycle_sha256 = canonicalDigest({...queuedStall, lifecycle_sha256: null});
+assert.throws(
+  () => validateAgentSpawnerLifecycle(queuedStall),
+  /cannot hide local block or roster work/u,
+  "a protected Spawner hold cannot hide queued local work",
+);
+
 console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/COMPILER_ACTIVE/ADMITTED/ACTIVE/STALLED/RETIRED state, compiler-only safe mode, separate wave activation, and hostile gate checks");

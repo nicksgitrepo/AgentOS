@@ -29,6 +29,16 @@
     "next_action": {"enum": ["START_COMPILER", "COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE", "ADMIT_GOVERNED_SPAWN", "START_GOVERNED_SPAWN", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "NONE"]},
     "lifecycle_sha256": {"$ref": "#/$defs/sha256"}
   },
+  "allOf": [
+    {"if": {"properties": {"state": {"const": "STALLED"}}}, "then": {"properties": {
+      "mode": {"const": "GOVERNED_SPAWN"},
+      "qa": {"properties": {
+        "incomplete_block_count": {"const": 0},
+        "pending_route_count": {"const": 0},
+        "independent_clearance_status": {"const": "PENDING_EXTERNAL_AUTHORITY"}
+      }}
+    }}}
+  ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},

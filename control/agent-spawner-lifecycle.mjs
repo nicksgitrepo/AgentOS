@@ -219,6 +219,8 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   for (const field of ["candidate_sha256", "roster_projection_sha256", "context_sha256"]) requireSha(lifecycle[field], `Agent Spawner ${field}`);
   if (lifecycle.state === "STALLED") {
     assert(lifecycle.mode === "GOVERNED_SPAWN", "Compiler-only Spawner cannot enter a protected stall");
+    assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Protected Spawner stall cannot hide local block or roster work");
+    assert(lifecycle.qa.independent_clearance_status === "PENDING_EXTERNAL_AUTHORITY", "Protected Spawner stall requires a pending external decision");
     requireSha(lifecycle.protected_hold_event_sha256, "Agent Spawner protected hold receipt");
     assert(lifecycle.protected_hold_event_sha256 === AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256, "Stalled Spawner lacks the canonical protected-hold receipt");
   } else {
@@ -390,6 +392,8 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
     case "PROTECTED_HOLD":
       assert(lifecycle.state !== "RETIRED", "Retired Spawner cannot enter a protected hold");
       assert(lifecycle.mode === "GOVERNED_SPAWN", "Compiler-only Spawner cannot enter a protected hold");
+      assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Protected Spawner hold cannot hide local block or roster work");
+      assert(lifecycle.qa.independent_clearance_status === "PENDING_EXTERNAL_AUTHORITY", "Protected Spawner hold requires a pending external decision");
       next.state = "STALLED";
       next.protected_hold_event_sha256 = event.event_sha256;
       next.authority.temporary_worker_admission = false;
