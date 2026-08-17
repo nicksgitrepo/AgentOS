@@ -196,7 +196,8 @@ function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceAppl
   const isolatedLocalPhase = authority.isolated_local_custody === true
     && (["SPAWNER_QA_PENDING", "SPECIALIST_WAVE_ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING", "INDEPENDENT_REAUDIT_PENDING"].includes(runState?.status)
       || (runState?.status === "BLOCKED_PROTECTED" && (runState?.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID || localClearanceBoundary)));
-  if (clearanceApplicability !== null && !isolatedLocalPhase) {
+  const localOnlyProtectedHold = runState?.status === "BLOCKED_PROTECTED" && localClearanceBoundary;
+  if (clearanceApplicability !== null && !localOnlyProtectedHold && !isolatedLocalPhase) {
     return validateIndependentClearanceApplicability(clearanceApplicability);
   }
   // A previously persisted REQUIRED_PROTECTED_ROUTE receipt is stale when

@@ -218,6 +218,7 @@ const staleClearanceRun = advanceControllerImportRunState({
 const staleClearanceOrchestrator = compileImportOrchestrator({
   orchestratorId: "ORCHESTRATOR.IMPORT.STALE.CLEARANCE",
   ...governanceFor("ORCHESTRATOR.IMPORT.STALE.CLEARANCE"),
+  clearanceApplicability: heldApplicability,
   plan,
   rosterProjection: heldRoster,
   runState: staleClearanceRun,
