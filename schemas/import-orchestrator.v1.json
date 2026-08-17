@@ -69,6 +69,44 @@
     "next_action": {"enum": ["REQUEST_SPAWNER_QA", "RETRY_SPAWNER_QA", "START_ISOLATED_AUDIT_LANES", "REPAIR_BLOCKS", "START_SPECIALIST_WAVE", "START_PLATFORM_REVIEW", "START_CENTRAL_INTEGRATION", "START_INDEPENDENT_REAUDIT", "PREPARE_CANDIDATE_REVIEW", "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE", "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "RUNTIME_ATOMIC_GIT_REPOINT", "RUN_LOCAL_CANDIDATE_PROOF", "WAIT_FOR_PROTECTED_EVENT", "NONE"]},
     "orchestrator_sha256": {"$ref": "#/$defs/sha256"}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {"enum": ["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"]}
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {"not": {"const": "NONE"}}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {"const": "PROTECTED_WAIT"}
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {"const": "WAIT_FOR_PROTECTED_EVENT"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {"const": "RETIRED"}
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {"const": "NONE"}
+        }
+      }
+    }
+  ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},

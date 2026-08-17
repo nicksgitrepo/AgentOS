@@ -142,6 +142,13 @@ assert.equal(retiredAfterComplete.next_action, "PREPARE_CANDIDATE_REVIEW", "comp
 
 const importSchema = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/import-orchestrator.v1.json"), "utf8"));
 assert.deepEqual([...importSchema.properties.next_action.enum].sort(), [...IMPORT_ORCHESTRATOR_ACTIONS].sort(), "Import Orchestrator action schema is stale");
+assert(Array.isArray(importSchema.allOf) && importSchema.allOf.length === 3, "Import Orchestrator schema must encode state/action liveness constraints");
+const activeRule = importSchema.allOf.find((rule) => rule.if?.properties?.state?.enum?.includes("ACTIVE"));
+const protectedRule = importSchema.allOf.find((rule) => rule.if?.properties?.state?.const === "PROTECTED_WAIT");
+const retiredRule = importSchema.allOf.find((rule) => rule.if?.properties?.state?.const === "RETIRED");
+assert(activeRule?.then?.properties?.next_action?.not?.const === "NONE", "active Orchestrator schema must reject NONE closeouts");
+assert(protectedRule?.then?.properties?.next_action?.const === "WAIT_FOR_PROTECTED_EVENT", "protected Orchestrator schema must require the explicit event successor");
+assert(retiredRule?.then?.properties?.next_action?.const === "NONE", "retired Orchestrator schema must make terminal retirement explicit");
 const assemblyRoute = structuredClone(initialWithQueue);
 assemblyRoute.next_action = "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE";
 assemblyRoute.orchestrator_sha256 = canonicalDigest({...assemblyRoute, orchestrator_sha256: null});
