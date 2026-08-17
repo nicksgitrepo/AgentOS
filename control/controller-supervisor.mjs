@@ -13,6 +13,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import {validateStopWorkflowDecision} from "./stop-workflow-gate.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -216,11 +217,30 @@ function validateAutonomousTaskList(tasks) {
  * operator to name it.  Project adapters provide typed task candidates; this
  * function only chooses among them and never grants a new permission.
  */
-export function selectAutonomousNextTask({tasks = [], boundary, findings = [], activeCampaign}) {
+export function selectAutonomousNextTask({tasks = [], boundary, findings = [], activeCampaign, stopDecision = null}) {
   validateBoundary(boundary);
   validateFindingList(findings);
   validateAutonomousTaskList(tasks);
   assert(typeof activeCampaign === "boolean", "autonomous Controller active-campaign flag is invalid");
+  if (stopDecision !== null) {
+    validateStopWorkflowDecision(stopDecision);
+    if (stopDecision.outcome === "STOP_OWNER_DECISION" || stopDecision.outcome === "STOP_DESTRUCTIVE_BOUNDARY") {
+      return {
+        action: "STOP_HARD_BOUNDARY",
+        task_id: null,
+        reason: stopDecision.reason,
+        stop_workflow_decision_sha256: stopDecision.decision_sha256,
+      };
+    }
+    if (stopDecision.outcome === "EVIDENCE_REQUIRED") {
+      return {
+        action: "ROUTE_REPAIRABLE_PUZZLE",
+        task_id: null,
+        reason: stopDecision.reason,
+        stop_workflow_decision_sha256: stopDecision.decision_sha256,
+      };
+    }
+  }
   const hardFinding = hasOpenFinding(findings, ["HARD_SECURITY_BOUNDARY", "TRUE_OWNER_BOUNDARY"]);
   const softFinding = hasOpenFinding(findings, ["SOFT_BOUNDARY"]);
   if (boundary.hard_stop || boundary.owner_decision_required || hardFinding) {

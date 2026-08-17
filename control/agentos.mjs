@@ -16,6 +16,7 @@ export {compileControllerImportPlanningContext, validateControllerImportPlanning
 export {compileControllerImportRoutineCloseout, validateControllerImportRoutineCloseout} from "./controller-import-closeout.mjs";
 export {compileControllerEscalation, validateControllerEscalation} from "./controller-escalation-continuation.mjs";
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
+export {evaluateStopWorkflowGate, validateStopWorkflowDecision, compileStopWorkflowNoStopAnswers, STOP_WORKFLOW_QUESTIONS, STOP_WORKFLOW_OUTCOMES, STOP_WORKFLOW_NEXT_ACTIONS} from "./stop-workflow-gate.mjs";
 export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick, validateAgentSpawnerCompilerContinuation} from "./agent-spawner-lifecycle.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
@@ -91,6 +92,7 @@ export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
+export * as stopWorkflowGate from "./stop-workflow-gate.mjs";
 export * as dynamicLanes from "./dynamic-project-lanes.mjs";
 export * as featureInventory from "./canonical-feature-inventory.mjs";
 export * as projectMemory from "./project-memory.mjs";
