@@ -8,6 +8,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {compileAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
 import {
   appendAgentSpawnerDefectQueueRecord,
+  acceptAgentSpawnerDefectQueueRecord,
   compileAgentSpawnerDefectQueue,
   readAgentSpawnerDefectQueue,
   validateAgentSpawnerDefectQueue,
@@ -46,7 +47,37 @@ try {
   assert.equal(appended.entry_count, 3);
   const readback = readAgentSpawnerDefectQueue({authorityRoot: root, recordPath});
   assert.deepEqual(readback.entries.map((entry) => entry.defect_id), ["DEFECT.QUEUE.001", "DEFECT.QUEUE.002", "DEFECT.QUEUE.003"]);
-  assert.throws(() => appendAgentSpawnerDefectQueueRecord({authorityRoot: root, recordPath, expectedQueueSha256: readback.queue_sha256, intake: first}), /already contains/u);
+  const controllerReceipt = hash("controller-custody-003");
+  const accepted = acceptAgentSpawnerDefectQueueRecord({
+    authorityRoot: root,
+    recordPath,
+    expectedQueueSha256: readback.queue_sha256,
+    defectId: "DEFECT.QUEUE.003",
+    controllerReceiptSha256: controllerReceipt,
+  });
+  assert.equal(accepted.status, "ACCEPTED_FOR_CONTROLLER_CUSTODY");
+  assert.equal(accepted.reused, false);
+  const acceptedReadback = readAgentSpawnerDefectQueue({authorityRoot: root, recordPath});
+  const acceptedEntry = acceptedReadback.entries.find((entry) => entry.defect_id === "DEFECT.QUEUE.003");
+  assert.equal(acceptedEntry.handoff.controller_receipt_sha256, controllerReceipt);
+  assert.equal(acceptedEntry.handoff.next_action, "CONTROLLER_REVIEW_AND_ORCHESTRATOR_ROUTE");
+  const reused = acceptAgentSpawnerDefectQueueRecord({
+    authorityRoot: root,
+    recordPath,
+    expectedQueueSha256: acceptedReadback.queue_sha256,
+    defectId: "DEFECT.QUEUE.003",
+    controllerReceiptSha256: controllerReceipt,
+  });
+  assert.equal(reused.reused, true);
+  assert.equal(reused.queue_sha256, acceptedReadback.queue_sha256);
+  assert.throws(() => acceptAgentSpawnerDefectQueueRecord({
+    authorityRoot: root,
+    recordPath,
+    expectedQueueSha256: acceptedReadback.queue_sha256,
+    defectId: "DEFECT.QUEUE.003",
+    controllerReceiptSha256: hash("different-controller"),
+  }), /conflicts with the accepted handoff/u);
+  assert.throws(() => appendAgentSpawnerDefectQueueRecord({authorityRoot: root, recordPath, expectedQueueSha256: acceptedReadback.queue_sha256, intake: first}), /already contains/u);
   assert.throws(() => readAgentSpawnerDefectQueue({authorityRoot: root, recordPath: "../escape.json"}), /parent traversal/u);
   const linked = `${root}-link`;
   fs.symlinkSync(root, linked, "dir");

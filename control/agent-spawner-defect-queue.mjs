@@ -10,7 +10,10 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
-import {validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
+import {
+  acceptAgentSpawnerDefectRepair,
+  validateAgentSpawnerDefectIntake,
+} from "./agent-spawner-defect-intake.mjs";
 
 export const AGENT_SPAWNER_DEFECT_QUEUE_SCHEMA = "agentos.agent_spawner_defect_queue.v1";
 export const AGENT_SPAWNER_DEFECT_QUEUE_VERSION = 1;
@@ -174,4 +177,72 @@ export function appendAgentSpawnerDefectQueueRecord({authorityRoot, recordPath, 
   assert(!current.entries.some((entry) => entry.defect_id === intake.defect_id), "Spawner defect queue already contains this defect");
   const next = compileAgentSpawnerDefectQueue({queueId: queueId ?? current.queue_id, entries: [...current.entries, intake]});
   return writeAgentSpawnerDefectQueueCompareAndSwap({authorityRoot, recordPath, expectedQueueSha256, queue: next});
+}
+
+/**
+ * Move one locally-ready defect from the durable Spawner queue into typed
+ * Controller custody.  This is intentionally a queue operation rather than
+ * an in-memory helper: the successor queue digest is the durable signal the
+ * Orchestrator consumes to leave REPAIR_BLOCKS and route the accepted repair.
+ * No worker or seed is spawned by this function.
+ */
+export function acceptAgentSpawnerDefectQueueRecord({
+  authorityRoot,
+  recordPath,
+  expectedQueueSha256,
+  defectId,
+  controllerReceiptSha256,
+} = {}) {
+  requireSha(expectedQueueSha256, "expected Spawner defect queue");
+  requireIdentifier(defectId, "Spawner defect ID");
+  requireSha(controllerReceiptSha256, "Spawner defect Controller receipt");
+  const current = readAgentSpawnerDefectQueue({authorityRoot, recordPath});
+  assert(current !== null, "Spawner defect queue is missing");
+  assert(current.queue_sha256 === expectedQueueSha256, "Spawner defect queue parent is stale");
+  const entry = current.entries.find((candidate) => candidate.defect_id === defectId);
+  assert(entry !== undefined, "Spawner defect queue does not contain this defect");
+
+  // A retry after a successful CAS is safe only when it presents the same
+  // Controller receipt.  A different receipt is a custody fork and fails
+  // closed rather than silently replacing the handoff.
+  if (entry.status === "ACCEPTED_FOR_CONTROLLER_CUSTODY") {
+    assert(entry.handoff.controller_receipt_sha256 === controllerReceiptSha256, "Spawner defect custody receipt conflicts with the accepted handoff");
+    return {
+      path: recordPath,
+      queue_sha256: current.queue_sha256,
+      entry_count: current.entry_count,
+      defect_id: entry.defect_id,
+      defect_sha256: entry.defect_sha256,
+      handoff_sha256: entry.handoff.handoff_sha256,
+      status: entry.status,
+      reused: true,
+    };
+  }
+  assert(entry.status === "REPAIR_CANDIDATE_READY", "Only a ready local repair may enter Controller custody");
+  const accepted = acceptAgentSpawnerDefectRepair(entry, {controllerReceiptSha256});
+  const next = compileAgentSpawnerDefectQueue({
+    queueId: current.queue_id,
+    entries: current.entries.map((candidate) => candidate.defect_id === defectId ? accepted : candidate),
+  });
+  const written = writeAgentSpawnerDefectQueueCompareAndSwap({
+    authorityRoot,
+    recordPath,
+    expectedQueueSha256,
+    queue: next,
+  });
+  const readback = readAgentSpawnerDefectQueue({authorityRoot, recordPath});
+  const acceptedReadback = readback.entries.find((candidate) => candidate.defect_id === defectId);
+  assert(acceptedReadback?.status === "ACCEPTED_FOR_CONTROLLER_CUSTODY", "Spawner defect custody readback did not accept the repair");
+  assert(acceptedReadback.handoff.controller_receipt_sha256 === controllerReceiptSha256, "Spawner defect custody readback receipt differs");
+  assert(written.queue_sha256 === readback.queue_sha256, "Spawner defect queue custody write differs from readback");
+  return {
+    path: recordPath,
+    queue_sha256: readback.queue_sha256,
+    entry_count: readback.entry_count,
+    defect_id: acceptedReadback.defect_id,
+    defect_sha256: acceptedReadback.defect_sha256,
+    handoff_sha256: acceptedReadback.handoff.handoff_sha256,
+    status: acceptedReadback.status,
+    reused: false,
+  };
 }

@@ -654,7 +654,7 @@
     },
     "agent_spawner_defect_queue_controller": {
       "path": "control/agent-spawner-defect-queue.mjs",
-      "sha256": "ee8af2ec2abd71b53f2cb6ab70f1a12151b689ab41c1eaf4a9e4c37930ea984d"
+      "sha256": "b12106e969452954e8b02b0c2f5ae2c6f3b7c0cb2f9e81c7492b175868013ac4"
     },
     "agent_spawner_defect_queue_contract": {
       "path": "schemas/agent-spawner-defect-queue.v1.json",
@@ -662,7 +662,7 @@
     },
     "agent_spawner_defect_queue_verifier": {
       "path": "tests/verify-agent-spawner-defect-queue.mjs",
-      "sha256": "dc4d3f97f846a741975a0b9cc314a03f903528796bac82fa2c7fed1359698a34"
+      "sha256": "26edd985d44fc73c8c799ce8f0a96acf498585c5575e79315d35f539ea2c0ed7"
     },
     "controller_import_planner": {
       "path": "control/controller-import-planner.mjs",
@@ -846,7 +846,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "8fff7f6452846402a4d3bdef5e569427e0bc9684f3aad9a9a164d53cb730072d"
+      "sha256": "4b6ce242ad4023839d0e8369c1f7a0b197573f29cf461a2816d6eae7ac204f56"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
