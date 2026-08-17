@@ -11,7 +11,7 @@
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {CONTROLLER_ACTION_REGISTRY, compileControllerContinuation, controllerActionHandlerFor} from "./controller-action-dispatcher.mjs";
-import {compileActionResultContinuation} from "./action-result-continuation.mjs";
+import {compileActionResultContinuation, validateActionResultContinuation} from "./action-result-continuation.mjs";
 import {validateOrchestratorSuccessorDispatchReadback} from "./orchestrator-successor-dispatch.mjs";
 
 export const OBSERVED_DISPATCH_BINDING_SCHEMA = "agentos.observed_dispatch_successor_binding.v1";
@@ -215,6 +215,42 @@ export function compileObservedDispatchSourceSuccessor({
       same_turn: true,
       write_scope: "CONTROL_PLANE_ONLY",
     },
+    evidenceRefs,
+    hostileFixtureRefs,
+  });
+}
+
+/*
+ * Rebase a pending binding onto the source successor that is actually going
+ * to be dispatched. A pending binding may preserve an old source digest as
+ * evidence, but that stale digest must never be carried into a new dispatch
+ * by hand. This boundary validates the successor's action, handler, custody,
+ * and digest, then mints a new content-addressed pending binding.
+ */
+export function rebaseObservedDispatchPendingBinding({
+  binding,
+  sourceSuccessor,
+  bindingId,
+  evidenceRefs,
+  hostileFixtureRefs,
+} = {}) {
+  validateObservedDispatchSuccessorBinding(binding);
+  assert(binding.status === OBSERVED_DISPATCH_BINDING_REQUIRED_STATUS, "Observed dispatch rebase requires a pending binding");
+  assert(isRecord(sourceSuccessor), "Observed dispatch rebase source successor is required");
+  validateActionResultContinuation(sourceSuccessor);
+  assert(sourceSuccessor.continuation.mode === "IMMEDIATE_SAME_TURN" && sourceSuccessor.continuation.protected_event_id === null, "Observed dispatch rebase source successor must be local same-turn");
+  assert(sourceSuccessor.next_action === binding.source_action, "Observed dispatch rebase source successor action does not match the pending route");
+  assert(sourceSuccessor.next_handler === binding.source_handler, "Observed dispatch rebase source successor handler does not match the pending route");
+  assert(sourceSuccessor.result?.controller_approval_required === false, "Observed dispatch rebase source successor cannot require Controller approval");
+  assert(sourceSuccessor.result?.execution_owner === "LANE_AGENT", "Observed dispatch rebase source successor must remain lane-owned");
+  assert(sourceSuccessor.result?.direct_consumer === "INDEPENDENT_PLATFORM_REVIEW", "Observed dispatch rebase source successor must route to independent review");
+  requireIdentifier(bindingId, "Observed dispatch rebased binding id");
+  assert(bindingId !== binding.binding_id, "Observed dispatch rebase must mint a successor binding id");
+  return compileObservedDispatchSuccessorBinding({
+    bindingId,
+    sourceSuccessorSha256: sourceSuccessor.record_sha256,
+    sourceAction: sourceSuccessor.next_action,
+    sourceHandler: sourceSuccessor.next_handler,
     evidenceRefs,
     hostileFixtureRefs,
   });

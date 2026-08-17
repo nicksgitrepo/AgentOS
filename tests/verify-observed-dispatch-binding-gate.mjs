@@ -13,11 +13,13 @@ import {
   OBSERVED_DISPATCH_BINDING_REQUIRED_STATUS,
   compileObservedDispatchSourceSuccessor,
   compileObservedDispatchSuccessorBinding,
+  rebaseObservedDispatchPendingBinding,
   validateObservedDispatchSuccessorBinding,
 } from "../control/observed-dispatch-binding-gate.mjs";
 import {
   compileObservedDispatchSuccessorBinding as publicCompile,
   compileObservedDispatchSourceSuccessor as publicCompileSource,
+  rebaseObservedDispatchPendingBinding as publicRebase,
   validateObservedDispatchSuccessorBinding as publicValidate,
 } from "../control/agentos.mjs";
 
@@ -113,6 +115,85 @@ assert.equal(proven.dispatch_observation.readback_sha256, dispatchReadback.readb
 assert.equal(persisted.length, 1);
 assert.equal(typeof publicCompile, "function");
 assert.equal(typeof publicCompileSource, "function");
+assert.equal(typeof publicRebase, "function");
+
+const canonicalSourceForRebase = compileActionResultContinuation({
+  actionId: "RESULT.OBSERVED.DISPATCH.REBASE.ACTION",
+  resultId: "RESULT.OBSERVED.DISPATCH.REBASE.SOURCE",
+  result: {
+    status: "DISPATCH_REQUESTED",
+    controller_approval_required: false,
+    execution_owner: "LANE_AGENT",
+    direct_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+  },
+  semanticBeforeSha256: sha("rebase-before"),
+  semanticAfterSha256: sha("rebase-after"),
+  nextAction: pending.source_action,
+  nextHandler: pending.source_handler,
+  continuation: compileControllerContinuation(pending.source_action),
+  persistence: {
+    status: "PERSISTED",
+    receipt_ref: "ref:observed-dispatch/rebase-source",
+    receipt_sha256: sha("rebase-source-receipt"),
+    atomic: true,
+    same_turn: true,
+    write_scope: "CONTROL_PLANE_ONLY",
+  },
+  evidenceRefs: [evidence("EVIDENCE.REBASE.SOURCE")],
+  hostileFixtureRefs: ["FIXTURE.REBASE.SOURCE.NO_TIMER"],
+});
+const rebased = rebaseObservedDispatchPendingBinding({
+  binding: pending,
+  sourceSuccessor: canonicalSourceForRebase,
+  bindingId: "BINDING.OBSERVED.DISPATCH.REBASED",
+  evidenceRefs: [evidence("EVIDENCE.OBSERVED.REBASED")],
+  hostileFixtureRefs: ["FIXTURE.OBSERVED.REBASE.ACTION_MISMATCH", "FIXTURE.OBSERVED.REBASE.STALE_SOURCE"].sort(compareUtf8),
+});
+assert.equal(rebased.source_successor_sha256, canonicalSourceForRebase.record_sha256);
+assert.equal(rebased.source_action, pending.source_action);
+assert.equal(rebased.source_handler, pending.source_handler);
+assert.notEqual(rebased.binding_id, pending.binding_id);
+validateObservedDispatchSuccessorBinding(rebased);
+
+const wrongActionSource = compileActionResultContinuation({
+  actionId: "RESULT.OBSERVED.DISPATCH.REBASE.BAD.ACTION",
+  resultId: "RESULT.OBSERVED.DISPATCH.REBASE.BAD.ACTION.SOURCE",
+  result: {
+    status: "DISPATCH_REQUESTED",
+    controller_approval_required: false,
+    execution_owner: "LANE_AGENT",
+    direct_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+  },
+  semanticBeforeSha256: sha("bad-rebase-before"),
+  semanticAfterSha256: sha("bad-rebase-after"),
+  nextAction: "START_INDEPENDENT_REAUDIT",
+  nextHandler: "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT",
+  continuation: compileControllerContinuation("START_INDEPENDENT_REAUDIT"),
+  persistence: {
+    status: "PERSISTED",
+    receipt_ref: "ref:observed-dispatch/rebase-bad-action",
+    receipt_sha256: sha("rebase-bad-action-receipt"),
+    atomic: true,
+    same_turn: true,
+    write_scope: "CONTROL_PLANE_ONLY",
+  },
+  evidenceRefs: [evidence("EVIDENCE.REBASE.BAD.ACTION")],
+  hostileFixtureRefs: ["FIXTURE.REBASE.BAD.ACTION"],
+});
+assert.throws(() => rebaseObservedDispatchPendingBinding({
+  binding: pending,
+  sourceSuccessor: wrongActionSource,
+  bindingId: "BINDING.OBSERVED.DISPATCH.REBASE.BAD.ACTION",
+  evidenceRefs: [evidence("EVIDENCE.REBASE.BAD.ACTION")],
+  hostileFixtureRefs: ["FIXTURE.REBASE.BAD.ACTION"],
+}), /source successor action does not match/u);
+assert.throws(() => rebaseObservedDispatchPendingBinding({
+  binding: proven,
+  sourceSuccessor: canonicalSourceForRebase,
+  bindingId: "BINDING.OBSERVED.DISPATCH.REBASE.BAD.PROVEN",
+  evidenceRefs: [evidence("EVIDENCE.REBASE.BAD.PROVEN")],
+  hostileFixtureRefs: ["FIXTURE.REBASE.BAD.PROVEN"],
+}), /requires a pending binding/u);
 
 const sourceSuccessor = compileObservedDispatchSourceSuccessor({
   binding: pending,
