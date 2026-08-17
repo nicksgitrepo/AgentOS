@@ -84,6 +84,29 @@ assert.equal(admitted.persistent_state, "ADMITTED");
 assert.equal(admitted.wave_activation, "OFF");
 assert.equal(admitted.authority.spawn_authority, true);
 
+// Local pyramid audit/repair may be admitted without external utility/harm
+// clearance when custody is isolated, product/provider/external authority is
+// false, and the resource ceiling is enforced.  This is ordinary reversible
+// development work, not a protected release or provider route.
+const isolatedLocal = compileAgentSpawnerLifecycle({
+  ...common,
+  lifecycleId: "LIFECYCLE.SPAWNER.ISOLATED_LOCAL",
+  mode: "GOVERNED_SPAWN",
+  isolatedLocalCustody: true,
+  qa: pendingQa,
+});
+assert.equal(isolatedLocal.state, "SPAWN_ADMITTED");
+assert.equal(isolatedLocal.authority.isolated_local_custody, true);
+assert.equal(isolatedLocal.authority.spawn_authority, true);
+assert.equal(isolatedLocal.wave_activation, "OFF");
+const isolatedActive = advanceAgentSpawnerLifecycle(isolatedLocal, {
+  event_type: "START_GOVERNED_SPAWN",
+  event_sha256: canonicalDigest({event_type: "START_GOVERNED_SPAWN", event_sha256: null}),
+});
+assert.equal(isolatedActive.state, "SPAWN_ACTIVE");
+assert.equal(isolatedActive.wave_activation, "ON");
+assert.equal(isolatedActive.authority.isolated_local_custody, true);
+
 const active = compileAgentSpawnerLifecycle({
   ...common,
   lifecycleId: "LIFECYCLE.SPAWNER.ACTIVE",

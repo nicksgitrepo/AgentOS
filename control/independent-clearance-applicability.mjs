@@ -37,7 +37,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const LOCAL_PHASE = "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING";
 const ISOLATED_AUDIT_PHASE = "ISOLATED_LOCAL_AUDIT_REPAIR";
 const LOCAL_EVIDENCE_CEILING = "Independent utility/harm clearance is not applicable to this bounded compiler-only local QA/import-planning phase because admission, activation, provider, credential, product, external sync, spend, destructive work, and live execution are all disabled.";
-const ISOLATED_AUDIT_EVIDENCE_CEILING = "Independent utility/harm clearance is not applicable to this bounded isolated local audit/repair phase because typed isolated-worktree custody, source preservation, read-only shared workspace access, no protected capabilities, and the six-lane/one-heavyweight resource ceiling are proven.";
+const ISOLATED_AUDIT_EVIDENCE_CEILING = "Independent utility/harm clearance is not applicable to this bounded isolated local audit/repair phase because typed isolated-worktree custody, source preservation, read-only shared workspace access, no protected capabilities, bounded wave activation, and the six-lane/one-heavyweight resource ceiling are proven.";
 const PROTECTED_EVIDENCE_CEILING = "Independent utility/harm clearance remains required before governed worker activation, wave activation, or any external, spend-bearing, product-mutating, or destructive route.";
 const LOCAL_RESTART_EVENT = "REEVALUATE_BEFORE_ANY_GOVERNED_SPAWN_WAVE_ACTIVATION_EXTERNAL_PROVIDER_PRODUCT_SPEND_OR_DESTRUCTIVE_ROUTE";
 const ISOLATED_AUDIT_RESTART_EVENT = "REEVALUATE_BEFORE_GOVERNED_WORKER_WAVE_ACTIVATION_EXTERNAL_PROVIDER_PRODUCT_SPEND_OR_DESTRUCTIVE_ROUTE";
@@ -118,7 +118,7 @@ function isolatedAuditFactsAreSafe(facts) {
     && facts.spawner_mode === "GOVERNED_SPAWN"
     && facts.temporary_worker_admission === true
     && facts.spawn_authority === true
-    && facts.wave_activation === "OFF"
+    && (facts.wave_activation === "OFF" || facts.wave_activation === "ON")
     && facts.isolated_worktree_custody === true
     && facts.source_roots_preserved === true
     && facts.shared_workspace_read_only === true

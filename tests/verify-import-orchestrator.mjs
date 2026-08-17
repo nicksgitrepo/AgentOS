@@ -10,6 +10,7 @@ import {
   compileControllerImportRosterProjection,
   compileControllerImportRunState,
   advanceControllerImportRunState,
+  BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID,
 } from "../control/controller-import-planner.mjs";
 import {compileAgentSpawnerLifecycle} from "../control/agent-spawner-lifecycle.mjs";
 import {compileAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
@@ -239,6 +240,33 @@ const isolatedOrchestrator = compileImportOrchestrator({
 });
 assert.equal(isolatedOrchestrator.state, "ACTIVE");
 assert.equal(isolatedOrchestrator.next_action, "START_ISOLATED_AUDIT_LANES");
+
+const isolatedSpawner = compileAgentSpawnerLifecycle({
+  lifecycleId: "LIFECYCLE.SPAWNER.ISOLATED.ORCHESTRATOR",
+  mode: "GOVERNED_SPAWN",
+  candidateSha256: hash("candidate"),
+  rosterProjectionSha256: heldRoster.projection_sha256,
+  contextSha256: context.context_sha256,
+  isolatedLocalCustody: true,
+  qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
+});
+const blockedCentralRun = advanceControllerImportRunState({
+  state: compileControllerImportRunState({plan}),
+  plan,
+  event: {event_type: "PROTECTED_BOUNDARY_REACHED", finding_ids: [], protected_boundary_id: BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID},
+});
+const localCentralOrchestrator = compileImportOrchestrator({
+  orchestratorId: "ORCHESTRATOR.IMPORT.LOCAL.CENTRAL",
+  ...governanceFor("ORCHESTRATOR.IMPORT.LOCAL.CENTRAL"),
+  plan,
+  rosterProjection: heldRoster,
+  runState: blockedCentralRun,
+  spawnerLifecycle: isolatedSpawner,
+  defectQueue: emptyDefectQueue,
+});
+assert.equal(localCentralOrchestrator.state, "ACTIVE");
+assert.equal(localCentralOrchestrator.next_action, "START_CENTRAL_INTEGRATION");
+assert.equal(localCentralOrchestrator.blocked_dependency_id, null);
 
 const persistenceRoot = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "agentos-import-orchestrator-"));
 const persistencePath = "state/import-orchestrator.json";

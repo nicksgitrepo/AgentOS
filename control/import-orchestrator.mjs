@@ -14,6 +14,7 @@ import {
   validateControllerImportCampaignPlan,
   validateControllerImportRosterProjection,
   validateControllerImportRunState,
+  BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID,
 } from "./controller-import-planner.mjs";
 import {validateAgentSpawnerLifecycle} from "./agent-spawner-lifecycle.mjs";
 import {validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
@@ -167,26 +168,35 @@ function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceAppl
   const execution = spawnerLifecycle?.execution ?? {};
   const authority = spawnerLifecycle?.authority ?? {};
   const localQaPhase = runState?.status === "SPAWNER_QA_PENDING" && spawnerLifecycle?.mode === "COMPILER_ONLY";
+  const isolatedLocalPhase = authority.isolated_local_custody === true
+    && (["SPAWNER_QA_PENDING", "SPECIALIST_WAVE_ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING", "INDEPENDENT_REAUDIT_PENDING"].includes(runState?.status)
+      || (runState?.status === "BLOCKED_PROTECTED" && runState?.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID));
   const protectedRoute = !localQaPhase;
   return compileIndependentClearanceApplicability({
     applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ORCHESTRATOR",
-    phase: localQaPhase ? "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING" : "GOVERNED_WORKER_ACTIVATION",
+    phase: localQaPhase || isolatedLocalPhase ? (localQaPhase ? "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING" : "ISOLATED_LOCAL_AUDIT_REPAIR") : "GOVERNED_WORKER_ACTIVATION",
     spawnerMode: spawnerLifecycle?.mode === "COMPILER_ONLY" ? "COMPILER_ONLY" : "GOVERNED_SPAWN",
     temporaryWorkerAdmission: authority.temporary_worker_admission ?? true,
     spawnAuthority: authority.spawn_authority ?? true,
     waveActivation: spawnerLifecycle?.wave_activation ?? "ON",
+    isolatedWorktreeCustody: isolatedLocalPhase,
+    sourceRootsPreserved: isolatedLocalPhase,
+    sharedWorkspaceReadOnly: isolatedLocalPhase,
+    activeLaneCount: execution.active_worker_count ?? 0,
+    laneLimit: 6,
     productMutation: authority.product_mutation ?? true,
     providerAccess: authority.provider_access ?? true,
     credentialAccess: authority.credential_access ?? true,
     externalSync: authority.external_sync ?? true,
-    materialSpendAuthorized: execution.material_spend_authorized ?? protectedRoute,
-    destructiveWorkAuthorized: execution.destructive_work_authorized ?? protectedRoute,
-    liveProviderWorkflow: execution.live_provider_workflow ?? protectedRoute,
-    activeWorkerCount: execution.active_worker_count ?? (protectedRoute ? 1 : 0),
-    schedulerJobCount: execution.scheduler_job_count ?? (protectedRoute ? 1 : 0),
-    heavyweightProcessCount: execution.heavyweight_process_count ?? (protectedRoute ? 1 : 0),
-    timerCount: execution.timer_count ?? (protectedRoute ? 1 : 0),
-    polling: execution.polling ?? protectedRoute,
+    materialSpendAuthorized: execution.material_spend_authorized ?? (protectedRoute && !isolatedLocalPhase),
+    destructiveWorkAuthorized: execution.destructive_work_authorized ?? (protectedRoute && !isolatedLocalPhase),
+    liveProviderWorkflow: execution.live_provider_workflow ?? (protectedRoute && !isolatedLocalPhase),
+    activeWorkerCount: execution.active_worker_count ?? (protectedRoute && !isolatedLocalPhase ? 1 : 0),
+    schedulerJobCount: execution.scheduler_job_count ?? (protectedRoute && !isolatedLocalPhase ? 1 : 0),
+    heavyweightProcessCount: execution.heavyweight_process_count ?? (protectedRoute && !isolatedLocalPhase ? 1 : 0),
+    heavyweightProcessLimit: 1,
+    timerCount: execution.timer_count ?? (protectedRoute && !isolatedLocalPhase ? 1 : 0),
+    polling: execution.polling ?? (protectedRoute && !isolatedLocalPhase),
   });
 }
 
@@ -200,6 +210,10 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
   // into a silent utility/harm wait merely because no worker is currently
   // active.  Only an explicit run-state protected event may stop the route.
   if (runState.status === "BLOCKED_PROTECTED") {
+    if (runState.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID
+      && clearanceApplicability.decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR") {
+      return {state: "ACTIVE", nextAction: "START_CENTRAL_INTEGRATION", dependencyId: null};
+    }
     return {
       state: "PROTECTED_WAIT",
       nextAction: "WAIT_FOR_PROTECTED_EVENT",

@@ -47,7 +47,7 @@
     "authority": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["compiler_authority", "temporary_worker_admission", "spawn_authority", "product_mutation", "provider_access", "credential_access", "external_sync", "independent_evaluation_required"],
+      "required": ["compiler_authority", "temporary_worker_admission", "spawn_authority", "product_mutation", "provider_access", "credential_access", "external_sync", "isolated_local_custody", "independent_evaluation_required"],
       "properties": {
         "compiler_authority": {"const": true},
         "temporary_worker_admission": {"type": "boolean"},
@@ -56,6 +56,7 @@
         "provider_access": {"const": false},
         "credential_access": {"const": false},
         "external_sync": {"const": false},
+        "isolated_local_custody": {"type": "boolean"},
         "independent_evaluation_required": {"const": true}
       }
     },

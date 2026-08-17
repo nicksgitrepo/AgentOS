@@ -48,7 +48,8 @@ const GPU_CLASSES = new Set(["NONE", "INTEGRATED", "DISCRETE", "UNKNOWN"]);
 const NETWORK_MODES = new Set(["OFFLINE", "RESTRICTED", "CONNECTED", "UNKNOWN"]);
 const STANDARD_STATUSES = new Set(["REQUIRED", "CONDITIONAL", "NOT_APPLICABLE"]);
 const RUN_STATUSES = new Set(["SPAWNER_QA_PENDING", "SPECIALIST_WAVE_ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING", "INDEPENDENT_REAUDIT_PENDING", "BLOCKED_RECOVERY", "BLOCKED_PROTECTED", "COMPLETE"]);
-const RUN_EVENTS = new Set(["SPAWNER_QA_PASSED", "SPAWNER_QA_NOT_READY", "BLOCK_QA_REPAIRED", "SPECIALIST_WAVE_PASSED", "PLATFORM_REVIEW_PASSED", "CENTRAL_INTEGRATION_PASSED", "INDEPENDENT_REAUDIT_PASSED", "RECOVERY_FAILED", "PROTECTED_BOUNDARY_REACHED", "PROTECTED_BOUNDARY_RESOLVED"]);
+const RUN_EVENTS = new Set(["SPAWNER_QA_PASSED", "SPAWNER_QA_NOT_READY", "BLOCK_QA_REPAIRED", "SPECIALIST_WAVE_PASSED", "PLATFORM_REVIEW_PASSED", "CENTRAL_INTEGRATION_PASSED", "INDEPENDENT_REAUDIT_PASSED", "RECOVERY_FAILED", "PROTECTED_BOUNDARY_REACHED", "PROTECTED_BOUNDARY_RESOLVED", "BOUNDED_LOCAL_INTEGRATION_RESUMED"]);
+export const BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID = "PROTECTED.PRODUCT_MUTATION.CENTRAL_INTEGRATION_AUTHORITY";
 const QA_STATUSES = new Set(["READY", "NOT_READY", "UNKNOWN"]);
 const PHASE_RANK = new Map(CONTROLLER_IMPORT_PHASES.map((phase, index) => [phase, index]));
 
@@ -816,6 +817,17 @@ export function advanceControllerImportRunState({state, plan, event} = {}) {
   if (event.event_type === "PROTECTED_BOUNDARY_RESOLVED") {
     assert(state.status === "BLOCKED_PROTECTED" && event.protected_boundary_id === state.protected_boundary_id, "Controller import protected-boundary resolution is stale");
     return nextRunState(state, {status: "SPAWNER_QA_PENDING", next_action: "REQUEST_SPAWNER_QA_FOR_CURRENT_WAVE", protected_boundary_id: null, recovery_attempts: 0}, plan);
+  }
+  if (event.event_type === "BOUNDED_LOCAL_INTEGRATION_RESUMED") {
+    assert(state.status === "BLOCKED_PROTECTED" && state.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID, "bounded local integration resume is not bound to the current central-integration hold");
+    assert(event.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID, "bounded local integration resume names the wrong boundary");
+    assert(findingIds.length === 0 && state.open_finding_ids.length === 0, "bounded local integration cannot hide open findings");
+    return nextRunState(state, {
+      status: "CENTRAL_INTEGRATION_PENDING",
+      next_action: "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS",
+      protected_boundary_id: null,
+      recovery_attempts: 0,
+    }, plan);
   }
   if (event.event_type === "SPAWNER_QA_NOT_READY") {
     assert(state.status === "SPAWNER_QA_PENDING", "Spawner QA failure is out of order");

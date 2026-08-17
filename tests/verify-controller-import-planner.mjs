@@ -12,6 +12,7 @@ import {
   compileControllerImportRunState,
   validateControllerImportCampaignPlan,
   validateControllerImportPlanningContext,
+  BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID,
 } from "../control/controller-import-planner.mjs";
 
 const sha = (character) => character.repeat(64);
@@ -90,6 +91,24 @@ assert.equal(run.next_action, "BUILD_SOURCE_LOCK_AND_QA_MISSING_BLOCKS");
 run = advanceControllerImportRunState({state: run, plan, event: {event_type: "BLOCK_QA_REPAIRED", finding_ids: [], protected_boundary_id: null}});
 const hostileSpecialistState = advanceControllerImportRunState({state: run, plan, event: {event_type: "SPAWNER_QA_PASSED", finding_ids: [], protected_boundary_id: null}});
 assert.throws(() => advanceControllerImportRunState({state: hostileSpecialistState, plan, event: {event_type: "SPECIALIST_WAVE_PASSED", finding_ids: ["FINDING.UNRESOLVED"], protected_boundary_id: null}}), /cannot pass with open findings/u);
+const centralHold = advanceControllerImportRunState({
+  state: run,
+  plan,
+  event: {event_type: "PROTECTED_BOUNDARY_REACHED", finding_ids: [], protected_boundary_id: BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID},
+});
+assert.equal(centralHold.status, "BLOCKED_PROTECTED");
+const localCentralResume = advanceControllerImportRunState({
+  state: centralHold,
+  plan,
+  event: {event_type: "BOUNDED_LOCAL_INTEGRATION_RESUMED", finding_ids: [], protected_boundary_id: BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID},
+});
+assert.equal(localCentralResume.status, "CENTRAL_INTEGRATION_PENDING");
+assert.equal(localCentralResume.next_action, "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS");
+assert.throws(
+  () => advanceControllerImportRunState({state: centralHold, plan, event: {event_type: "BOUNDED_LOCAL_INTEGRATION_RESUMED", finding_ids: [], protected_boundary_id: "PROTECTED.OTHER"}}),
+  /wrong boundary|not bound/u,
+  "bounded local resume must not clear an unrelated protected boundary",
+);
 for (let index = 0; index < plan.waves.length; index += 1) {
   run = advanceControllerImportRunState({state: run, plan, event: {event_type: "SPAWNER_QA_PASSED", finding_ids: [], protected_boundary_id: null}});
   assert.equal(run.next_action, "START_CURRENT_SPECIALIST_AUDIT_REPAIR_WAVE");

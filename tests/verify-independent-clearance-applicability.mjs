@@ -85,6 +85,27 @@ const isolatedPreflight = compileIndependentClearanceApplicability({
 assert.equal(isolatedPreflight.decision, "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR");
 assert.equal(isolatedPreflight.action, "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR");
 
+const isolatedActiveWave = compileIndependentClearanceApplicability({
+  ...base,
+  applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ISOLATED_ACTIVE_WAVE",
+  phase: "ISOLATED_LOCAL_AUDIT_REPAIR",
+  spawnerMode: "GOVERNED_SPAWN",
+  temporaryWorkerAdmission: true,
+  spawnAuthority: true,
+  waveActivation: "ON",
+  isolatedWorktreeCustody: true,
+  sourceRootsPreserved: true,
+  sharedWorkspaceReadOnly: true,
+  activeLaneCount: 6,
+  activeWorkerCount: 6,
+  schedulerJobCount: 6,
+  heavyweightProcessCount: 1,
+  heavyweightProcessLimit: 1,
+});
+assert.equal(isolatedActiveWave.decision, "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR");
+assert.equal(isolatedActiveWave.action, "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR");
+assert.equal(isolatedActiveWave.independent_clearance_required, false);
+
 const governed = compileIndependentClearanceApplicability({...base, applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.GOVERNED", phase: "GOVERNED_WORKER_ACTIVATION", spawnerMode: "GOVERNED_SPAWN"});
 assert.equal(governed.decision, "REQUIRED_PROTECTED_ROUTE");
 assert.equal(governed.action, "WAIT_FOR_INDEPENDENT_CLEARANCE");
