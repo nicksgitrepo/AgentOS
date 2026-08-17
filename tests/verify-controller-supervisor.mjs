@@ -17,7 +17,7 @@ import {
   validateSupervisorObservation,
   writeSupervisorRecordCompareAndSwap,
 } from "../control/controller-supervisor.mjs";
-import {runControllerSupervisorIteration} from "../control/controller-supervisor-runtime.mjs";
+import {runControllerSupervisorIteration, shouldContinueSupervisorSameTurn} from "../control/controller-supervisor-runtime.mjs";
 import {validateAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
 
 const sourceCommit = "1".repeat(40);
@@ -210,9 +210,11 @@ const runtimeAdapter = {
 };
 const firstRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
 assert.equal(firstRuntime.tick.route_status, "ROUTE_FAILED");
+assert.equal(shouldContinueSupervisorSameTurn(firstRuntime), false, "a failed route must not chain");
 runtimeObservation = changedObservation;
 const secondRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
 assert.equal(secondRuntime.tick.route_status, "ROUTED");
+assert.equal(shouldContinueSupervisorSameTurn(secondRuntime), true, "a routed local action must dispatch its successor in the same turn");
 assert.equal(secondRuntime.priorSpawnerDefect?.defect_kind, "NON_PASSING_CHECK");
 assert.equal(fs.existsSync(path.join(runtimeRoot, "supervisor", "route-failures", `${firstRuntime.goal.goal_id}.json`)), true);
 const spawnerDefectDirectory = path.join(runtimeRoot, "supervisor", "spawner-defects");
@@ -225,6 +227,7 @@ assert.equal(routeFailureDefect.handoff.next_action, "ROUTE_TO_CONTROLLER_CUSTOD
 const reusedRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
 assert.equal(reusedRuntime.recovery_started_same_turn, true, "an unchanged observation must start a bounded recovery in the same turn");
 assert.equal(reusedRuntime.reused, false, "the bounded recovery must mint a distinct successor goal");
+assert.equal(shouldContinueSupervisorSameTurn(reusedRuntime), false, "a bounded recovery must stop the same-turn chain after one repair");
 assert.equal(routeAttempts, 3);
 const reusedRuntimeState = JSON.parse(fs.readFileSync(path.join(runtimeRoot, "supervisor", "runtime.json"), "utf8"));
 assert.equal(reusedRuntimeState.status, "ROUTED_OR_RECONCILED", "the bounded liveness repair must be routed immediately");
@@ -268,6 +271,7 @@ const eventWaitReuse = await runControllerSupervisorIteration({runtimeRoot: even
 assert.equal(eventWaitReuse.reused, true);
 assert.equal(JSON.parse(fs.readFileSync(path.join(eventWaitRoot, "supervisor", "runtime.json"), "utf8")).status, "ACTIVE_EVENT_WAIT");
 assert.equal(eventWaitReuse.noProgressRca, undefined);
+assert.equal(shouldContinueSupervisorSameTurn(eventWaitReuse), false, "an explicit event wait must not be replaced by timer-driven chaining");
 fs.rmSync(authorizedWaitRoot, {recursive: true, force: true});
 fs.rmSync(eventWaitRoot, {recursive: true, force: true});
 

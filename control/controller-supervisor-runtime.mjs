@@ -34,6 +34,7 @@ const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 const RUNTIME_SCHEMA = "agentos.controller_supervisor_runtime.v1";
 const LEASE_SCHEMA = "agentos.controller_supervisor_lease.v1";
 export const DEFAULT_SUPERVISOR_INTERVAL_MINUTES = 15;
+export const DEFAULT_MAX_SAME_TURN_TRANSITIONS = 16;
 const MAX_SUPERVISOR_INTERVAL_MINUTES = 24 * 60;
 export const CONTROLLER_RUNTIME_STATUSES = Object.freeze([
   "ACTIVE_EVENT_WAIT",
@@ -254,6 +255,22 @@ function isExplicitAuthorizedEventWait(tick) {
     && /^[A-Z][A-Z0-9._:-]*$/u.test(readback.resume_event_id)
     && typeof readback.resume_condition === "string"
     && readback.resume_condition.trim().length >= 8;
+}
+
+/**
+ * A successful local route is not a reason to sleep until the next cadence.
+ * Continue in the same turn unless the route is a true boundary, an explicit
+ * event wait, a failure, or the bounded recovery already ran.  The bound is a
+ * safety valve against a malformed adapter producing an endless local chain;
+ * it is not a timer-based definition of progress.
+ */
+export function shouldContinueSupervisorSameTurn(result) {
+  if (!isRecord(result) || result.reused === true || result.boundedRecovery === true) return false;
+  const tick = result.tick;
+  if (!isRecord(tick) || tick.route_status !== "ROUTED") return false;
+  if (tick.action === "WAIT_FOR_AUTHORIZED_WORK") return false;
+  if (isExplicitAuthorizedEventWait(tick)) return false;
+  return true;
 }
 
 function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
@@ -522,10 +539,11 @@ function sleep(milliseconds, signal = null) {
   });
 }
 
-export async function runControllerSupervisor({runtimeRoot, adapter, adapterFactory = null, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMinutes = DEFAULT_SUPERVISOR_INTERVAL_MINUTES, intervalMs = null, once = false, signal = null}) {
+export async function runControllerSupervisor({runtimeRoot, adapter, adapterFactory = null, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMinutes = DEFAULT_SUPERVISOR_INTERVAL_MINUTES, intervalMs = null, maxSameTurnTransitions = DEFAULT_MAX_SAME_TURN_TRANSITIONS, once = false, signal = null}) {
   assert(Number.isSafeInteger(intervalMinutes) && intervalMinutes >= 1 && intervalMinutes <= MAX_SUPERVISOR_INTERVAL_MINUTES, "supervisor interval minutes must be between 1 and 1440");
   const resolvedIntervalMs = intervalMs === null ? intervalMinutes * 60_000 : intervalMs;
   assert(Number.isSafeInteger(resolvedIntervalMs) && resolvedIntervalMs >= 250 && resolvedIntervalMs <= MAX_SUPERVISOR_INTERVAL_MINUTES * 60_000, "supervisor interval is outside the safe range");
+  assert(Number.isSafeInteger(maxSameTurnTransitions) && maxSameTurnTransitions >= 1 && maxSameTurnTransitions <= 256, "supervisor same-turn transition bound is invalid");
   assert(adapter && typeof adapter.observe === "function", "supervisor adapter must provide observe()");
   assert(adapterFactory === null || typeof adapterFactory === "function", "supervisor adapter factory must be callable");
   const root = canonicalRoot(runtimeRoot);
@@ -537,23 +555,30 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
   try {
     do {
       if (signal?.aborted === true || stopping) break;
-      const nowUtc = new Date().toISOString();
-      try {
-        const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
-        results.push(await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc}));
-      } catch (error) {
-        if (error?.code === "AGENTOS_SUPERVISOR_RESTART_REQUIRED") {
-          stopping = true;
+      let sameTurnTransitions = 0;
+      do {
+        const nowUtc = new Date().toISOString();
+        try {
+          const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
+          const result = await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc});
+          results.push(result);
+          if (!shouldContinueSupervisorSameTurn(result)) break;
+          sameTurnTransitions += 1;
+        } catch (error) {
+          if (error?.code === "AGENTOS_SUPERVISOR_RESTART_REQUIRED") {
+            stopping = true;
+            break;
+          }
+          const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
+          writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
+          if (once) {
+            const safeError = new Error(safeSupervisorText(error?.message ?? String(error), "supervisor iteration failed"));
+            safeError.code = error?.code;
+            throw safeError;
+          }
           break;
         }
-        const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
-        writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
-        if (once) {
-          const safeError = new Error(safeSupervisorText(error?.message ?? String(error), "supervisor iteration failed"));
-          safeError.code = error?.code;
-          throw safeError;
-        }
-      }
+      } while (!once && !stopping && signal?.aborted !== true && sameTurnTransitions < maxSameTurnTransitions);
       if (once || stopping) break;
       await sleep(resolvedIntervalMs, signal);
     } while (!stopping);
