@@ -6,7 +6,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema", "version", "orchestrator_id", "role_id", "mode", "governance_readiness_sha256", "governance_acceptance_sha256", "state", "campaign_plan_sha256", "roster_projection_sha256",
+    "schema", "version", "orchestrator_id", "role_id", "mode", "governance_readiness_sha256", "governance_acceptance_sha256", "clearance_applicability_sha256", "state", "campaign_plan_sha256", "roster_projection_sha256",
     "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
     "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
     "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256"
@@ -19,6 +19,7 @@
     "mode": {"const": "IMPORT"},
     "governance_readiness_sha256": {"$ref": "#/$defs/sha256"},
     "governance_acceptance_sha256": {"$ref": "#/$defs/sha256"},
+    "clearance_applicability_sha256": {"$ref": "#/$defs/sha256"},
     "state": {"enum": ["ACTIVE", "REPAIRING", "PROTECTED_WAIT", "CANDIDATE_REVIEW", "RETIRED"]},
     "campaign_plan_sha256": {"$ref": "#/$defs/sha256"},
     "roster_projection_sha256": {"$ref": "#/$defs/sha256"},

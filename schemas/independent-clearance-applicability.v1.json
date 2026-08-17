@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/independent-clearance-applicability.v1.json",
+  "title": "AgentOS Independent Clearance Applicability",
+  "description": "Project-agnostic typed applicability decision. Independent utility/harm clearance is mandatory for governed worker or wave activation, but not for a compiler-only, no-side-effect local QA/import-planning phase whose typed authority and resource facts prove that no protected action can occur.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "applicability_id", "phase", "decision", "action", "independent_clearance_required",
+    "protected_event_id", "facts", "evidence_sha256", "evidence_ceiling", "restart_event", "invalidation_rule",
+    "hostile_fixture_refs", "applicability_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.independent_clearance_applicability.v1"},
+    "version": {"const": 1},
+    "applicability_id": {"$ref": "#/$defs/identifier"},
+    "phase": {"enum": ["COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING", "GOVERNED_WORKER_ACTIVATION", "WAVE_ACTIVATION", "EXTERNAL_OR_DESTRUCTIVE_ACTION"]},
+    "decision": {"enum": ["NOT_APPLICABLE_LOCAL_COMPILER_QA", "REQUIRED_PROTECTED_ROUTE"]},
+    "action": {"enum": ["CONTINUE_LOCAL_COMPILER_QA", "WAIT_FOR_INDEPENDENT_CLEARANCE"]},
+    "independent_clearance_required": {"type": "boolean"},
+    "protected_event_id": {"anyOf": [{"type": "null"}, {"const": "INDEPENDENT.UTILITY_HARM_CLEARANCE"}]},
+    "facts": {"$ref": "#/$defs/facts"},
+    "evidence_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_ceiling": {"type": "string", "minLength": 1},
+    "restart_event": {"type": "string", "minLength": 1},
+    "invalidation_rule": {"const": "Any change to phase, authority facts, resource facts, or protected-route scope invalidates this applicability receipt and requires recompilation."},
+    "hostile_fixture_refs": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "minItems": 1, "uniqueItems": true},
+    "applicability_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase", "spawner_mode", "temporary_worker_admission", "spawn_authority", "wave_activation",
+        "product_mutation", "provider_access", "credential_access", "external_sync", "material_spend_authorized",
+        "destructive_work_authorized", "live_provider_workflow", "active_worker_count", "scheduler_job_count",
+        "heavyweight_process_count", "timer_count", "polling"
+      ],
+      "properties": {
+        "phase": {"enum": ["COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING", "GOVERNED_WORKER_ACTIVATION", "WAVE_ACTIVATION", "EXTERNAL_OR_DESTRUCTIVE_ACTION"]},
+        "spawner_mode": {"enum": ["COMPILER_ONLY", "GOVERNED_SPAWN"]},
+        "temporary_worker_admission": {"type": "boolean"},
+        "spawn_authority": {"type": "boolean"},
+        "wave_activation": {"enum": ["OFF", "ON"]},
+        "product_mutation": {"type": "boolean"},
+        "provider_access": {"type": "boolean"},
+        "credential_access": {"type": "boolean"},
+        "external_sync": {"type": "boolean"},
+        "material_spend_authorized": {"type": "boolean"},
+        "destructive_work_authorized": {"type": "boolean"},
+        "live_provider_workflow": {"type": "boolean"},
+        "active_worker_count": {"type": "integer", "minimum": 0},
+        "scheduler_job_count": {"type": "integer", "minimum": 0},
+        "heavyweight_process_count": {"type": "integer", "minimum": 0},
+        "timer_count": {"type": "integer", "minimum": 0},
+        "polling": {"type": "boolean"}
+      }
+    }
+  }
+}

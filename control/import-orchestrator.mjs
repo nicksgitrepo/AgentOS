@@ -19,6 +19,10 @@ import {validateAgentSpawnerLifecycle} from "./agent-spawner-lifecycle.mjs";
 import {validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
 import {validateAgentSpawnerDefectQueue} from "./agent-spawner-defect-queue.mjs";
 import {validateImportOrchestratorCampaignAcceptance, validateImportOrchestratorGovernanceReadiness} from "./import-orchestrator-governance-readiness.mjs";
+import {
+  compileIndependentClearanceApplicability,
+  validateIndependentClearanceApplicability,
+} from "./independent-clearance-applicability.mjs";
 
 export const IMPORT_ORCHESTRATOR_SCHEMA = "agentos.import_orchestrator.v1";
 export const IMPORT_ORCHESTRATOR_VERSION = 1;
@@ -124,7 +128,37 @@ function summarizeDefectQueue({defectQueue, defectIntakes} = {}) {
   return {defectQueueSha256: defectQueue.queue_sha256, ...defectSummary};
 }
 
-function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary}) {
+function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability = null} = {}) {
+  if (clearanceApplicability !== null) {
+    return validateIndependentClearanceApplicability(clearanceApplicability);
+  }
+  const execution = spawnerLifecycle?.execution ?? {};
+  const authority = spawnerLifecycle?.authority ?? {};
+  const localQaPhase = runState?.status === "SPAWNER_QA_PENDING" && spawnerLifecycle?.mode === "COMPILER_ONLY";
+  const protectedRoute = !localQaPhase;
+  return compileIndependentClearanceApplicability({
+    applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ORCHESTRATOR",
+    phase: localQaPhase ? "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING" : "GOVERNED_WORKER_ACTIVATION",
+    spawnerMode: spawnerLifecycle?.mode === "COMPILER_ONLY" ? "COMPILER_ONLY" : "GOVERNED_SPAWN",
+    temporaryWorkerAdmission: authority.temporary_worker_admission ?? true,
+    spawnAuthority: authority.spawn_authority ?? true,
+    waveActivation: spawnerLifecycle?.wave_activation ?? "ON",
+    productMutation: authority.product_mutation ?? true,
+    providerAccess: authority.provider_access ?? true,
+    credentialAccess: authority.credential_access ?? true,
+    externalSync: authority.external_sync ?? true,
+    materialSpendAuthorized: execution.material_spend_authorized ?? protectedRoute,
+    destructiveWorkAuthorized: execution.destructive_work_authorized ?? protectedRoute,
+    liveProviderWorkflow: execution.live_provider_workflow ?? protectedRoute,
+    activeWorkerCount: execution.active_worker_count ?? (protectedRoute ? 1 : 0),
+    schedulerJobCount: execution.scheduler_job_count ?? (protectedRoute ? 1 : 0),
+    heavyweightProcessCount: execution.heavyweight_process_count ?? (protectedRoute ? 1 : 0),
+    timerCount: execution.timer_count ?? (protectedRoute ? 1 : 0),
+    polling: execution.polling ?? protectedRoute,
+  });
+}
+
+function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary, clearanceApplicability}) {
   if (defectSummary.repairCandidateCount > 0 || defectSummary.controllerCustodyCount > 0) {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
@@ -142,6 +176,9 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
   if (runState.status === "SPAWNER_QA_PENDING") {
+    if (clearanceApplicability.decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA") {
+      return {state: "ACTIVE", nextAction: "REQUEST_SPAWNER_QA", dependencyId: null};
+    }
     if (rosterProjection.pending_role_request_ids.length === 0
       && rosterProjection.available_wave_ids.length === 0
       && rosterProjection.activation_blocked_wave_ids.length > 0) {
@@ -208,9 +245,9 @@ function validateContinuation(continuation) {
   for (const field of ["same_turn_next_action", "heartbeat_is_not_progress", "timer_is_not_progress", "active_worker_counts_as_progress", "protected_wait_requires_exact_event"]) assert(continuation[field] === true, `Import Orchestrator continuation rule is weakened: ${field}`);
 }
 
-export function validateImportOrchestrator(orchestrator, {governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function validateImportOrchestrator(orchestrator, {governanceReadiness, governanceAcceptance, clearanceApplicability = null, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   exactKeys(orchestrator, [
-    "schema", "version", "orchestrator_id", "role_id", "mode", "governance_readiness_sha256", "governance_acceptance_sha256", "state", "campaign_plan_sha256", "roster_projection_sha256",
+    "schema", "version", "orchestrator_id", "role_id", "mode", "governance_readiness_sha256", "governance_acceptance_sha256", "clearance_applicability_sha256", "state", "campaign_plan_sha256", "roster_projection_sha256",
     "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
     "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
     "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256",
@@ -220,6 +257,7 @@ export function validateImportOrchestrator(orchestrator, {governanceReadiness, g
   assert(orchestrator.role_id === IMPORT_ORCHESTRATOR_ROLE && orchestrator.mode === IMPORT_ORCHESTRATOR_MODE, "Import Orchestrator role or mode is invalid");
   requireSha(orchestrator.governance_readiness_sha256, "Import Orchestrator governance readiness binding");
   requireSha(orchestrator.governance_acceptance_sha256, "Import Orchestrator governance acceptance binding");
+  requireSha(orchestrator.clearance_applicability_sha256, "Import Orchestrator clearance applicability binding");
   assert(IMPORT_ORCHESTRATOR_STATES.includes(orchestrator.state), "Import Orchestrator state is invalid");
   assert(IMPORT_ORCHESTRATOR_ACTIONS.includes(orchestrator.next_action), "Import Orchestrator action is invalid");
   if (["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"].includes(orchestrator.state)) {
@@ -269,8 +307,10 @@ export function validateImportOrchestrator(orchestrator, {governanceReadiness, g
     const derivedDefectSummary = defectQueue !== undefined
       ? summarizeDefectQueue({defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries})
       : summarizeDefectIntakes(defectIntakes ?? []);
-    const derived = deriveOrchestration({runState: runState ?? {status: "COMPLETE", current_wave_id: null}, rosterProjection: rosterProjection ?? {pending_role_request_ids: [], available_wave_ids: [], activation_blocked_wave_ids: []}, spawnerLifecycle: spawnerLifecycle ?? {state: "COMPILER_ACTIVE"}, defectSummary: derivedDefectSummary});
-    assert(orchestrator.state === derived.state && orchestrator.next_action === derived.nextAction, "Import Orchestrator action is not derived from current run state");
+    const resolvedClearanceApplicability = deriveClearanceApplicability({runState: runState ?? {status: "COMPLETE", current_wave_id: null}, spawnerLifecycle: spawnerLifecycle ?? {state: "COMPILER_ACTIVE"}, clearanceApplicability});
+    assert(orchestrator.clearance_applicability_sha256 === resolvedClearanceApplicability.applicability_sha256, "Import Orchestrator clearance applicability binding is stale");
+    const derived = deriveOrchestration({runState: runState ?? {status: "COMPLETE", current_wave_id: null}, rosterProjection: rosterProjection ?? {pending_role_request_ids: [], available_wave_ids: [], activation_blocked_wave_ids: []}, spawnerLifecycle: spawnerLifecycle ?? {state: "COMPILER_ACTIVE"}, defectSummary: derivedDefectSummary, clearanceApplicability: resolvedClearanceApplicability});
+    assert(orchestrator.state === derived.state && orchestrator.next_action === derived.nextAction, "Import Orchestrator action is not derived from current run state and clearance applicability");
     assert(orchestrator.blocked_dependency_id === derived.dependencyId, "Import Orchestrator protected dependency is stale");
     if (orchestrator.state === "PROTECTED_WAIT") assert(orchestrator.next_action === "WAIT_FOR_PROTECTED_EVENT", "Protected Orchestrator wait is not explicit");
     if (orchestrator.state !== "PROTECTED_WAIT") assert(orchestrator.blocked_dependency_id === null, "Non-protected Orchestrator retains a blocker");
@@ -289,7 +329,7 @@ export function validateImportOrchestrator(orchestrator, {governanceReadiness, g
   return orchestrator;
 }
 
-export function compileImportOrchestrator({orchestratorId, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function compileImportOrchestrator({orchestratorId, governanceReadiness, governanceAcceptance, clearanceApplicability = null, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   validateImportOrchestratorGovernanceReadiness(governanceReadiness);
   validateImportOrchestratorCampaignAcceptance(governanceAcceptance, {readiness: governanceReadiness});
   assert(governanceReadiness.status === "READY_TO_PLAN" && governanceAcceptance.orchestrator_id === orchestratorId, "Import Orchestrator governance is not ready for this orchestrator");
@@ -300,7 +340,8 @@ export function compileImportOrchestrator({orchestratorId, governanceReadiness, 
   const defectSummary = summarizeDefectQueue({defectQueue, defectIntakes: defectIntakes ?? defectQueue?.entries});
   assert(spawnerLifecycle.roster_projection_sha256 === rosterProjection.projection_sha256, "Spawner roster binding is stale");
   requireIdentifier(orchestratorId, "Import Orchestrator ID");
-  const derived = deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary});
+  const resolvedClearanceApplicability = deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability});
+  const derived = deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary, clearanceApplicability: resolvedClearanceApplicability});
   const orchestrator = {
     schema: IMPORT_ORCHESTRATOR_SCHEMA,
     version: IMPORT_ORCHESTRATOR_VERSION,
@@ -309,6 +350,7 @@ export function compileImportOrchestrator({orchestratorId, governanceReadiness, 
     mode: IMPORT_ORCHESTRATOR_MODE,
     governance_readiness_sha256: governanceReadiness.readiness_sha256,
     governance_acceptance_sha256: governanceAcceptance.acceptance_sha256,
+    clearance_applicability_sha256: resolvedClearanceApplicability.applicability_sha256,
     state: derived.state,
     campaign_plan_sha256: plan.plan_sha256,
     roster_projection_sha256: rosterProjection.projection_sha256,
@@ -372,17 +414,17 @@ export function compileImportOrchestrator({orchestratorId, governanceReadiness, 
     orchestrator_sha256: null,
   };
   orchestrator.orchestrator_sha256 = canonicalDigest(body(orchestrator));
-  return validateImportOrchestrator(orchestrator, {governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
+  return validateImportOrchestrator(orchestrator, {governanceReadiness, governanceAcceptance, clearanceApplicability: resolvedClearanceApplicability, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
 }
 
-export function advanceImportOrchestrator({orchestrator, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function advanceImportOrchestrator({orchestrator, governanceReadiness, governanceAcceptance, clearanceApplicability = null, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   validateImportOrchestrator(orchestrator);
-  const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
-  const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
+  const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, governanceReadiness, governanceAcceptance, clearanceApplicability, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
+  const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "clearance_applicability_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
   assert(changed, "Import Orchestrator cannot advance without a material bound transition");
   next.transition_sequence = orchestrator.transition_sequence + 1;
   next.orchestrator_sha256 = canonicalDigest(body(next));
-  return validateImportOrchestrator(next, {governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
+  return validateImportOrchestrator(next, {governanceReadiness, governanceAcceptance, clearanceApplicability: clearanceApplicability ?? undefined, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
 }
 
 /*
@@ -465,11 +507,11 @@ export function writeImportOrchestratorRecordCompareAndSwap({authorityRoot, reco
   return {path: recordPath, orchestrator_sha256: readback.orchestrator_sha256};
 }
 
-export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, governanceReadiness, governanceAcceptance, clearanceApplicability = null, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   requireSha(expectedOrchestratorSha256, "expected Orchestrator record");
   const current = readImportOrchestratorRecord({authorityRoot, recordPath});
   assert(current !== null, "Orchestrator record is missing");
   assert(current.orchestrator_sha256 === expectedOrchestratorSha256, "Orchestrator record parent is stale");
-  const next = advanceImportOrchestrator({orchestrator: current, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
+  const next = advanceImportOrchestrator({orchestrator: current, governanceReadiness, governanceAcceptance, clearanceApplicability, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
   return writeImportOrchestratorRecordCompareAndSwap({authorityRoot, recordPath, expectedOrchestratorSha256, orchestrator: next});
 }

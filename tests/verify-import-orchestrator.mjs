@@ -28,6 +28,7 @@ import {
   compileImportOrchestratorGovernance,
   compileImportOrchestratorGovernanceReadiness,
 } from "../control/import-orchestrator-governance-readiness.mjs";
+import {compileIndependentClearanceApplicability} from "../control/independent-clearance-applicability.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const hash = (value) => canonicalDigest({value});
@@ -145,10 +146,35 @@ const heldLifecycle = compileAgentSpawnerLifecycle({
   qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
   state: "COMPILER_ACTIVE",
 });
-const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", ...heldGovernance, plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
+const heldApplicability = compileIndependentClearanceApplicability({
+  applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.HELD_WAVE",
+  phase: "WAVE_ACTIVATION",
+  spawnerMode: "COMPILER_ONLY",
+  temporaryWorkerAdmission: false,
+  spawnAuthority: false,
+  waveActivation: "OFF",
+  productMutation: false,
+  providerAccess: false,
+  credentialAccess: false,
+  externalSync: false,
+  materialSpendAuthorized: false,
+  destructiveWorkAuthorized: false,
+  liveProviderWorkflow: false,
+  activeWorkerCount: 0,
+  schedulerJobCount: 0,
+  heavyweightProcessCount: 0,
+  timerCount: 0,
+  polling: false,
+});
+const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", ...heldGovernance, clearanceApplicability: heldApplicability, plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
 assert.equal(held.state, "PROTECTED_WAIT");
 assert.equal(held.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(held.continuation.timer_is_not_progress, true);
+
+const localQa = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.LOCAL_QA", ...governanceFor("ORCHESTRATOR.IMPORT.LOCAL_QA"), plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
+assert.equal(localQa.state, "ACTIVE");
+assert.equal(localQa.next_action, "REQUEST_SPAWNER_QA");
+assert.notEqual(localQa.clearance_applicability_sha256, heldApplicability.applicability_sha256);
 
 const persistenceRoot = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "agentos-import-orchestrator-"));
 const persistencePath = "state/import-orchestrator.json";

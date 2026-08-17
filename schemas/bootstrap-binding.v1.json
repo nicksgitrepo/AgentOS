@@ -562,11 +562,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "b65512f9a74e6ef460fdf2e6c455a8bd99ea5a44b5ef5b9253b3b4207c5efa6b"
+      "sha256": "9dae73ee363863aa2c42a0d1a35f5fdf2c5b471ab0da28245f28b24ab7b78be1"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "05a606b872c137979e06123189f83c3d27cfe474117a6847f60b473647cbe25a"
+      "sha256": "98487112df62dba56641ebfd5e5125759f8e2080c17680f2ab1f0a116e76fb05"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -574,7 +574,19 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "6df12f36988d87706c6dc0e569daf34dc8fcae984c0c72760f72db7be222934e"
+      "sha256": "6948daf8aa88e0861432c84a75fd6361aaf5d5c5ec1c7a406af708302bd3fd89"
+    },
+    "independent_clearance_applicability_controller": {
+      "path": "control/independent-clearance-applicability.mjs",
+      "sha256": "1db7335a736f5fabf185f9912f3fdc906843e2e21afb1b03de1e67c08b9c66f3"
+    },
+    "independent_clearance_applicability_contract": {
+      "path": "schemas/independent-clearance-applicability.v1.json",
+      "sha256": "84314de42963ffdc84f5405ecfa046930df44e8db92f0ce370232d561aec8144"
+    },
+    "independent_clearance_applicability_verifier": {
+      "path": "tests/verify-independent-clearance-applicability.mjs",
+      "sha256": "bd9dd5719766a9874d9130e045b21cb96877012b7850e42fd6d08e031b33ccf5"
     },
     "import_orchestrator_governance_readiness_controller": {
       "path": "control/import-orchestrator-governance-readiness.mjs",
@@ -786,7 +798,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "c455bd6ab142a8b530d646074011efab2afcab68ad7d8d260649ed34da07688a"
+      "sha256": "3a8d07db695f3e694406eb36367099ae3091ae87c5483476d4a061dd4c3d6630"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
