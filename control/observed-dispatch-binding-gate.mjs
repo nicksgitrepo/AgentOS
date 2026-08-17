@@ -10,7 +10,8 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
-import {controllerActionHandlerFor} from "./controller-action-dispatcher.mjs";
+import {CONTROLLER_ACTION_REGISTRY, compileControllerContinuation, controllerActionHandlerFor} from "./controller-action-dispatcher.mjs";
+import {compileActionResultContinuation} from "./action-result-continuation.mjs";
 import {validateOrchestratorSuccessorDispatchReadback} from "./orchestrator-successor-dispatch.mjs";
 
 export const OBSERVED_DISPATCH_BINDING_SCHEMA = "agentos.observed_dispatch_successor_binding.v1";
@@ -165,6 +166,58 @@ export function compileObservedDispatchSuccessorBinding({
   };
   binding.binding_sha256 = canonicalDigest({...binding, binding_sha256: null});
   return validateObservedDispatchSuccessorBinding(binding);
+}
+
+/*
+ * Turn a pending binding into the one canonical source record that the
+ * dispatch adapter can invoke.  The source action/handler come from the
+ * registry-bound pending binding; callers cannot hand-edit a second action,
+ * handler, or continuation record and accidentally create a circular or
+ * unobserved rebind.  The returned record is still only a dispatch request;
+ * progress is unclaimed until compileObservedDispatchSuccessorBinding is
+ * called with the adapter's real readback.
+ */
+export function compileObservedDispatchSourceSuccessor({
+  binding,
+  actionId,
+  resultId,
+  result,
+  semanticBeforeSha256,
+  semanticAfterSha256,
+  receiptRef,
+  receiptSha256,
+  evidenceRefs,
+  hostileFixtureRefs,
+} = {}) {
+  validateObservedDispatchSuccessorBinding(binding);
+  assert(binding.status === OBSERVED_DISPATCH_BINDING_REQUIRED_STATUS, "Observed dispatch source successor requires a pending binding");
+  assert(CONTROLLER_ACTION_REGISTRY[binding.source_action]?.mode === "LOCAL", "Observed dispatch source action must be a local registered route");
+  assert(actionId === binding.source_action, "Observed dispatch source action ID must match the pending binding");
+  assert(isRecord(result), "Observed dispatch source result is required");
+  assert(result.controller_approval_required === false, "Observed dispatch source result cannot require Controller approval");
+  assert(result.execution_owner === "LANE_AGENT", "Observed dispatch source result must remain lane-owned");
+  assert(result.direct_consumer === "INDEPENDENT_PLATFORM_REVIEW", "Observed dispatch source result must route to independent review");
+  const continuation = compileControllerContinuation(binding.source_action);
+  return compileActionResultContinuation({
+    actionId,
+    resultId,
+    result: structuredClone(result),
+    semanticBeforeSha256,
+    semanticAfterSha256,
+    nextAction: binding.source_action,
+    nextHandler: binding.source_handler,
+    continuation,
+    persistence: {
+      status: "PERSISTED",
+      receipt_ref: receiptRef,
+      receipt_sha256: receiptSha256,
+      atomic: true,
+      same_turn: true,
+      write_scope: "CONTROL_PLANE_ONLY",
+    },
+    evidenceRefs,
+    hostileFixtureRefs,
+  });
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Observed dispatch successor binding gate loaded\n");

@@ -11,11 +11,13 @@ import {dispatchOrchestratorSuccessor} from "../control/orchestrator-successor-d
 import {
   OBSERVED_DISPATCH_BINDING_PROVEN_STATUS,
   OBSERVED_DISPATCH_BINDING_REQUIRED_STATUS,
+  compileObservedDispatchSourceSuccessor,
   compileObservedDispatchSuccessorBinding,
   validateObservedDispatchSuccessorBinding,
 } from "../control/observed-dispatch-binding-gate.mjs";
 import {
   compileObservedDispatchSuccessorBinding as publicCompile,
+  compileObservedDispatchSourceSuccessor as publicCompileSource,
   validateObservedDispatchSuccessorBinding as publicValidate,
 } from "../control/agentos.mjs";
 
@@ -110,6 +112,29 @@ assert.equal(proven.dispatch_observation.handler_invoked, true);
 assert.equal(proven.dispatch_observation.readback_sha256, dispatchReadback.readback_sha256);
 assert.equal(persisted.length, 1);
 assert.equal(typeof publicCompile, "function");
+assert.equal(typeof publicCompileSource, "function");
+
+const sourceSuccessor = compileObservedDispatchSourceSuccessor({
+  binding: pending,
+  actionId: pending.source_action,
+  resultId: "RESULT.OBSERVED.DISPATCH.CANONICAL.SOURCE",
+  result: {
+    status: "DISPATCH_REQUESTED",
+    controller_approval_required: false,
+    execution_owner: "LANE_AGENT",
+    direct_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+  },
+  semanticBeforeSha256: sha("canonical-source-before"),
+  semanticAfterSha256: sha("canonical-source-after"),
+  receiptRef: "ref:observed-dispatch/canonical-source",
+  receiptSha256: sha("canonical-source-receipt"),
+  evidenceRefs: [evidence("EVIDENCE.CANONICAL.SOURCE")],
+  hostileFixtureRefs: ["FIXTURE.CANONICAL.SOURCE.NO_CONTROLLER", "FIXTURE.CANONICAL.SOURCE.NO_TIMER"].sort(compareUtf8),
+});
+assert.equal(sourceSuccessor.next_action, pending.source_action);
+assert.equal(sourceSuccessor.next_handler, pending.source_handler);
+assert.equal(sourceSuccessor.continuation.same_turn_dispatch, true);
+assert.equal(sourceSuccessor.persistence.same_turn, true);
 
 const rejects = (mutator, pattern) => {
   const candidate = structuredClone(proven);
@@ -151,6 +176,30 @@ rejects((candidate) => {
 rejects((candidate) => {
   candidate.binding_sha256 = sha("tampered-binding");
 }, /binding digest/u);
+assert.throws(() => compileObservedDispatchSourceSuccessor({
+  binding: proven,
+  actionId: proven.source_action,
+  resultId: "RESULT.OBSERVED.DISPATCH.BAD.PROVEN",
+  result: {status: "BAD", controller_approval_required: false, execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW"},
+  semanticBeforeSha256: sha("bad-before"), semanticAfterSha256: sha("bad-after"),
+  receiptRef: "ref:bad/source", receiptSha256: sha("bad-receipt"), evidenceRefs: [evidence("EVIDENCE.BAD")], hostileFixtureRefs: ["FIXTURE.BAD"],
+}), /pending binding/u);
+assert.throws(() => compileObservedDispatchSourceSuccessor({
+  binding: pending,
+  actionId: "START_INDEPENDENT_REAUDIT",
+  resultId: "RESULT.OBSERVED.DISPATCH.BAD.ACTION",
+  result: {status: "BAD", controller_approval_required: false, execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW"},
+  semanticBeforeSha256: sha("bad-action-before"), semanticAfterSha256: sha("bad-action-after"),
+  receiptRef: "ref:bad/action", receiptSha256: sha("bad-action-receipt"), evidenceRefs: [evidence("EVIDENCE.BAD.ACTION")], hostileFixtureRefs: ["FIXTURE.BAD.ACTION"],
+}), /action ID/u);
+assert.throws(() => compileObservedDispatchSourceSuccessor({
+  binding: pending,
+  actionId: pending.source_action,
+  resultId: "RESULT.OBSERVED.DISPATCH.BAD.CUSTODY",
+  result: {status: "BAD", controller_approval_required: true, execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW"},
+  semanticBeforeSha256: sha("bad-custody-before"), semanticAfterSha256: sha("bad-custody-after"),
+  receiptRef: "ref:bad/custody", receiptSha256: sha("bad-custody-receipt"), evidenceRefs: [evidence("EVIDENCE.BAD.CUSTODY")], hostileFixtureRefs: ["FIXTURE.BAD.CUSTODY"],
+}), /Controller approval/u);
 
 const schemaPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/observed-dispatch-binding-gate.v1.json");
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
