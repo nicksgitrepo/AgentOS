@@ -5,12 +5,15 @@ imported project. It consumes the Controller-generated plan and the typed
 Spawner roster projection, then routes the complete pyramid:
 
 1. request and verify Spawner QA;
-2. start only complete, independently evaluated specialist waves;
-3. retain one named custody/worktree owner per lane;
-4. accept source-bound worker handoffs and repair candidates;
-5. route Platform review, test, and typed handoff;
-6. route Central integration from accepted Platform handoffs only;
-7. require independent re-audit before advancing the candidate or wave.
+2. start bounded isolated audit/repair lanes when the applicability receipt
+   proves typed custody, source preservation, read-only shared access, no
+   protected capabilities, and the six-lane/one-heavyweight ceiling;
+3. start only complete, independently evaluated specialist waves;
+4. retain one named custody/worktree owner per lane;
+5. accept source-bound worker handoffs and repair candidates;
+6. route Platform review, test, and typed handoff;
+7. route Central integration from accepted Platform handoffs only;
+8. require independent re-audit before advancing the candidate or wave.
 
 The persistent Controller does not perform this project work. It observes the
 Orchestrator, detects unexplained idle or failed continuation, and performs a
@@ -39,3 +42,8 @@ transition.
 The Orchestrator can route campaign work, but it cannot mutate Product source,
 access credentials or external providers, synchronize externally, or publish
 or release a candidate. Those actions remain separate protected boundaries.
+The isolated-audit route is deliberately narrower: local governed spawn
+authority may admit up to six read-only/source-preserving audit tasks, but wave
+activation, product mutation, provider or credential access, external sync,
+spend, destructive work, deployment, and release remain protected. The route
+must be re-evaluated before any of those capabilities are introduced.

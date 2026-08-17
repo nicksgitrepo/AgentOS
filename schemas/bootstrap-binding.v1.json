@@ -570,7 +570,7 @@
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
-      "sha256": "9e8509932881b1a768922ad38861726d39d2ef85d303aa84d2e73f7b62471a16"
+      "sha256": "37966d8a97079616f095be75cde9edfb79f8c05c04981c5a05f9a44b43d3d749"
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
