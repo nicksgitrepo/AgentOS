@@ -23,6 +23,24 @@ import {
   compileIndependentClearanceApplicability,
   validateIndependentClearanceApplicability,
 } from "./independent-clearance-applicability.mjs";
+// The pyramid campaign contract is the generic successor state machine for
+// applicable specialist derivation, six-lane waves, typed platform review,
+// cumulative candidate custody, and the final protected integration handoff.
+export {
+  PYRAMID_CAMPAIGN_ACTIONS,
+  PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA,
+  PYRAMID_CAMPAIGN_GOVERNANCE_VERSION,
+  advancePyramidCampaign,
+  compilePyramidCampaignContext,
+  compilePyramidCampaignState,
+  compilePyramidPlatformReview,
+  compilePyramidSpecialistHandoff,
+  deriveApplicableSpecialistRoster,
+  validatePyramidCampaignState,
+  validatePyramidPlatformReview,
+  validatePyramidSpecialistHandoff,
+  validatePyramidSpecialistRoster,
+} from "./pyramid-campaign-governance.mjs";
 // The semantic successor contract is re-exported here so every Orchestrator
 // adapter can use the same queue/readback gate instead of inventing a private
 // JSON convention.  The contract itself remains project-agnostic and performs
