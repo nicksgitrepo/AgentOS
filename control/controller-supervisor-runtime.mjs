@@ -777,6 +777,13 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
           const fingerprint = canonicalDigest({error_code: errorCode, error_message: errorMessage});
           iterationFailureCount = fingerprint === iterationFailureFingerprint ? iterationFailureCount + 1 : 1;
           iterationFailureFingerprint = fingerprint;
+          if (once) {
+            const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: errorMessage, nowUtc});
+            writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
+            const safeError = new Error(errorMessage);
+            safeError.code = error?.code;
+            throw safeError;
+          }
           if (typeof activeAdapter?.repair === "function") {
             try {
               await activeAdapter.repair({

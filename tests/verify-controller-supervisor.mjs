@@ -324,6 +324,24 @@ const repeatedFailureRuntime = JSON.parse(fs.readFileSync(path.join(repeatedFail
 assert.equal(repeatedFailureRuntime.error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_ITERATION_FAILURES");
 fs.rmSync(repeatedFailureRoot, {recursive: true, force: true});
 
+// `--once` is a diagnostic mode, not a silent-success mode: an adapter error
+// must be surfaced to its caller and retained in the runtime record.
+const onceFailureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-once-failure-"));
+await assert.rejects(
+  () => runControllerSupervisor({
+    runtimeRoot: onceFailureRoot,
+    once: true,
+    adapter: {observe: () => { throw new Error("one-shot observation failure"); }},
+    runtimeId: "SUPERVISOR-ONCE-FAILURE-TEST",
+  }),
+  /one-shot observation failure/u,
+  "once-mode adapter failures must not be reported as a silent empty run",
+);
+const onceFailureRuntime = JSON.parse(fs.readFileSync(path.join(onceFailureRoot, "supervisor", "runtime.json"), "utf8"));
+assert.equal(onceFailureRuntime.status, "ITERATION_FAILED_RETAINED");
+assert.equal(onceFailureRuntime.error, "one-shot observation failure");
+fs.rmSync(onceFailureRoot, {recursive: true, force: true});
+
 // Reaching the bounded same-turn transition count must re-observe immediately,
 // not sleep until the cadence. A long interval plus an external abort makes a
 // timer-based regression observable without waiting a full cadence in CI.
