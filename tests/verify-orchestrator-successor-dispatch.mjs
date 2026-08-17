@@ -23,6 +23,7 @@ import {compileActionResultContinuation} from "../control/action-result-continua
 const sha = (value) => canonicalDigest({value});
 const evidence = (id) => ({evidence_id: id, reference: `opaque:${id.toLowerCase()}`, sha256: sha(id)});
 assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("REQUEST_SPAWNER_QA"));
+assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("RETRY_SPAWNER_QA"));
 assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("RUN_LOCAL_CANDIDATE_PROOF"));
 assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("REPAIR_BLOCKS"));
 assert(!ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("RUNTIME_ATOMIC_GIT_REPOINT"));
@@ -58,6 +59,17 @@ const chainProtectedEvent = {
   resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
 };
 const handlers = {
+  "HANDLER.ORCHESTRATOR_SPAWNER_QA": (current) => ({
+    semantic_after_sha256: sha(`${current.semantic_after_sha256}:spawner-retried`),
+    next_action: "WAIT_FOR_PROTECTED_EVENT",
+    next_handler: "HANDLER.PROTECTED_EVENT_WAIT",
+    continuation: compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: chainProtectedEvent.blocker_id}),
+    continuation_sha256: canonicalDigest(compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: chainProtectedEvent.blocker_id})),
+    evidence_refs: [evidence("EVIDENCE.SPAWNER.RETRY")],
+    hostile_fixture_refs: ["FIXTURE.DISPATCH.NO_TIMER", "FIXTURE.SPAWNER.RETRY.DIRECT"],
+    protected_event: chainProtectedEvent,
+    defect: null,
+  }),
   "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION": (current) => ({
     semantic_after_sha256: sha(`${current.semantic_after_sha256}:integrated`),
     next_action: "START_INDEPENDENT_REAUDIT",
@@ -100,6 +112,33 @@ assert.equal(readback.final_next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(readback.final_next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
 assert.equal(readback.scope.control_plane_only, true);
 assert.equal(readback.scope.consumer_product_mutated, false);
+
+// A failed Spawner handoff must have a first-class autonomous retry route.
+// The retry invokes the Orchestrator→Spawner handler directly and never asks
+// the persistent Controller to approve ordinary lane completion.
+const retrySuccessor = compileActionResultContinuation({
+  actionId: "RUN_LOCAL_CANDIDATE_PROOF",
+  resultId: "RESULT.ORCHESTRATOR.SPAWNER.RETRY.SOURCE",
+  result: {status: "RETRY_REQUIRED", controller_approval_required: false},
+  semanticBeforeSha256: sha("retry-before"),
+  semanticAfterSha256: sha("retry-after"),
+  nextAction: "RETRY_SPAWNER_QA",
+  nextHandler: "HANDLER.ORCHESTRATOR_SPAWNER_QA",
+  continuation: compileControllerContinuation("RETRY_SPAWNER_QA"),
+  persistence: {status: "PERSISTED", receipt_ref: "ref:control-plane/spawner-retry", receipt_sha256: sha("spawner-retry-receipt"), atomic: true, same_turn: true, write_scope: "CONTROL_PLANE_ONLY"},
+  evidenceRefs: [evidence("EVIDENCE.SPAWNER.RETRY.SOURCE")],
+  hostileFixtureRefs: ["FIXTURE.SPAWNER.RETRY.NO_APPROVAL", "FIXTURE.SPAWNER.RETRY.NO_TIMER"],
+});
+const retryReadback = dispatchOrchestratorSuccessor({
+  successor: retrySuccessor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.SPAWNER.RETRY.001",
+  handlers,
+  persist: (receipt) => { persisted.push(receipt); return true; },
+});
+validateOrchestratorSuccessorDispatchReadback(retryReadback);
+assert.equal(retryReadback.source_action, "RETRY_SPAWNER_QA");
+assert.equal(retryReadback.final_next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(retryReadback.status, "DISPATCHED_TO_PROTECTED_WAIT");
 
 const rejects = (mutator, pattern) => {
   const candidate = structuredClone(successor);
