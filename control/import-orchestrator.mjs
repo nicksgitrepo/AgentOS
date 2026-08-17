@@ -321,6 +321,13 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
       dependencyId: runState.protected_boundary_id ?? "SPAWNER.INDEPENDENT_CLEARANCE",
     };
   }
+  // Retirement is an explicit lifecycle boundary, not a synonym for an
+  // unavailable-but-retryable compiler.  Never route a retired Spawner back
+  // into QA or wave planning; repair the roster/role binding first so a fresh
+  // compiler can be admitted with new custody and digests.
+  if (spawnerLifecycle.state === "RETIRED") {
+    return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
+  }
   if (spawnerLifecycle.state === "STALLED") {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }

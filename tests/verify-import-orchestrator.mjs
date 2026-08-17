@@ -96,6 +96,30 @@ assert.equal(initialWithQueue.handoff_contract.spawner_defect_intake, "TYPED_SPA
 assert.equal(initialWithQueue.handoff_contract.lane_execution, "AUTONOMOUS_TYPED_HANDOFF");
 assert.equal(initialWithQueue.handoff_contract.controller_approval, "NOT_REQUIRED_FOR_ORDINARY_LANE_COMPLETION");
 assert(IMPORT_ORCHESTRATOR_ACTIONS.includes("ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE"), "isolated cumulative assembly must be an Orchestrator successor");
+
+// A retired Spawner is a lifecycle boundary, not an idle compiler.  The
+// Orchestrator must repair the role binding before it can request QA again;
+// otherwise a stale retired identity could silently re-enter the campaign.
+const retiredSpawner = compileAgentSpawnerLifecycle({
+  lifecycleId: "LIFECYCLE.SPAWNER.RETIRED",
+  candidateSha256: hash("candidate"),
+  rosterProjectionSha256: roster.projection_sha256,
+  contextSha256: context.context_sha256,
+  qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
+  state: "RETIRED",
+});
+const retiredSpawnerOrchestrator = compileImportOrchestrator({
+  orchestratorId: "ORCHESTRATOR.IMPORT.RETIRED_SPAWNER",
+  ...governanceFor("ORCHESTRATOR.IMPORT.RETIRED_SPAWNER"),
+  plan,
+  rosterProjection: roster,
+  runState: run,
+  spawnerLifecycle: retiredSpawner,
+  defectQueue: emptyDefectQueue,
+});
+assert.equal(retiredSpawnerOrchestrator.state, "REPAIRING", "retired Spawner must not re-enter ordinary orchestration");
+assert.equal(retiredSpawnerOrchestrator.next_action, "REPAIR_BLOCKS", "retired Spawner must route to a replacement-binding repair");
+
 const importSchema = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/import-orchestrator.v1.json"), "utf8"));
 assert.deepEqual([...importSchema.properties.next_action.enum].sort(), [...IMPORT_ORCHESTRATOR_ACTIONS].sort(), "Import Orchestrator action schema is stale");
 const assemblyRoute = structuredClone(initialWithQueue);

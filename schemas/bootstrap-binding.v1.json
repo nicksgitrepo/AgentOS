@@ -570,11 +570,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "d00e1d235dba85c84d7b5af6b264807a48ae15f9f1cdd2d349d372b52f8bc627"
+      "sha256": "01723b44432bc8f09377b43f0aa65a901dabed1ce4caf15cb926a8f1becadf94"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "4c5504e037ff17cb940275a44de5e1684b3ac2472ad11803517f201d65a10923"
+      "sha256": "8e7470b85f1e9cddf033225c8de3d24b38e61b79b643f56f93646a1ae2892f9a"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -582,19 +582,19 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "eae23eab3082454b3365b9ed542b6592b3031fe58d4507cbc7dc6e71d5ba508c"
+      "sha256": "dfd687782aa786263fb805b7e5bf00dfa2580d0bd1167ae5cc1b4b7187bd00cd"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "3ac32027ffc4bbaed63d375a2ccf02076e5d4ddf64f92d60246c3bf9f9a9192a"
+      "sha256": "2d0e1cefc52fbef5d8f8ba647d65bd4eb18f21b0e6ff811073026548a0c086bc"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
-      "sha256": "ab07a1b7dac9320ba9d9248991eaa080772744b086791545f3e4cb1c51fb0216"
+      "sha256": "797b0f7fb73b8870c05aeaaef49c43e32224eb08a0ec02d265b3a758968eaf47"
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "bbb9747330e7747c3019c00732771b827d49af2dfde1f2e07ae30c9b66a20727"
+      "sha256": "cff1fb5553afccbac4feb49ad832b60081c5c13a37a52c7a6515ea96eefdb757"
     },
     "candidate_reaudit_continuation_controller": {
       "path": "control/candidate-reaudit-continuation.mjs",
@@ -678,7 +678,7 @@
     },
     "agent_spawner_controller_bridge_controller": {
       "path": "control/agent-spawner-controller-bridge.mjs",
-      "sha256": "fa19689b99c3c5a69a6ad19a531c70e117ebaf4147343cf9b97d60b292cc5689"
+      "sha256": "a5af906d77d99ad87cfc6524a7657628d55c7607703c26eb4ae021f286410443"
     },
     "agent_spawner_controller_bridge_contract": {
       "path": "schemas/agent-spawner-controller-bridge.v1.json",
@@ -690,7 +690,7 @@
     },
     "agent_spawner_controller_bridge_verifier": {
       "path": "tests/verify-agent-spawner-controller-bridge.mjs",
-      "sha256": "b1d78d194ee49a04c7d2419076989d075e2f89f7ca33ec41006177370865f611"
+      "sha256": "7afd0ad7f8311322b05c02290f43cef2db427b2bb557650d6cbaaebc9d03f0cd"
     },
     "agent_spawner_defect_queue_controller": {
       "path": "control/agent-spawner-defect-queue.mjs",
@@ -730,15 +730,15 @@
     },
     "stop_workflow_gate_controller": {
       "path": "control/stop-workflow-gate.mjs",
-      "sha256": "6a3e166406d7fbfeeb95fb80a8f4006984a463cd17689ce26e6da41c5439cb5e"
+      "sha256": "81ebfbad72461c97faf5b660424a783765ff706b6cd986a58048933c34a3fc86"
     },
     "stop_workflow_gate_contract": {
       "path": "schemas/stop-workflow-gate.v1.json",
-      "sha256": "40f79d6555fc4299654b1cd951c35e925289ca557f0eee3ead61cb326ec4abf4"
+      "sha256": "a530176289fc1e7b31132a77db44f1e3adf15bc1f9342f32dc40bc198b3c620c"
     },
     "stop_workflow_gate_verifier": {
       "path": "tests/verify-stop-workflow-gate.mjs",
-      "sha256": "f442ce448fb3eebedbf9efd547cb7be10f4834ad1ec245594cd53c1024ecaa9a"
+      "sha256": "a2897ec3439f4c9c3f2a0c9c95770fc4067f1360c8a8007fb7fbaa10019d1ecc"
     },
     "candidate_scope_gate_controller": {
       "path": "control/candidate-scope-gate.mjs",
@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "66b4e71be6aa138a85b0950447646a2c7ebb1b8a5f90ecad456206805b9619bf"
+      "sha256": "ba01820920105415d10f2f7e6472258483301ac9e4635634db8f7ecf63c5bfa6"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -914,15 +914,15 @@
     },
     "orchestrator_successor_dispatch_controller": {
       "path": "control/orchestrator-successor-dispatch.mjs",
-      "sha256": "d1a452b814d24a30af543bf58e5d4c7cebdec5797ee586476ba1bc0dbae514fa"
+      "sha256": "7beda352b35679259987cb8699d0a606f5bd489fee6f192f9a12db5aadbbcc53"
     },
     "orchestrator_successor_dispatch_contract": {
       "path": "schemas/orchestrator-successor-dispatch.v1.json",
-      "sha256": "ba948ca6b24fb7539dfade4215a9a917e317dbd726a26bd2b38bfe715135f78d"
+      "sha256": "8459aba37e645c9f8e81c64cfd6146941a8f6dd40a7e5abb38ab7674bdfbe5a8"
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "8957e9fb08990258baeffec19497b972683b89d2865d0f942423b722cec9d4f4"
+      "sha256": "b0ff3fcaae4d91930392bb10655af3daab3fb6c8639d72fa418e54cd728a7a1a"
     },
     "local_proof_evidence_gate_controller": {
       "path": "control/local-proof-evidence-gate.mjs",
@@ -1010,15 +1010,15 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "e7502beeb7897262c6c4e925e426729511a94504f7c1cded3b3f74842e09790d"
+      "sha256": "34935a4793353f103f3c21a2a4f153c3b8c4af54e82614e73f986bc2b938d5c3"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "3c0e6cd4eb542f332868b745e56e0ec0ee3797f6c2b31fa54d34f152f91b8b48"
+      "sha256": "cc3b0190a9543c5f9adbb6c7c81c173b9785a3455ee0a83b810ecb99ba6a5308"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "5bde428df162cc7c4af2306aa8c763761e0dbf6c4f77e3e5672aeb5b5afa37a6"
+      "sha256": "b2d224399d48abd2b0e91ecf5390d7f0c245f439498776718c5cd3b33777189a"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
@@ -1538,7 +1538,7 @@
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
-      "sha256": "801f5524a3758ec51583b82b775a91f6b2be0c0d00c9f5087bfb7260dceee9f7"
+      "sha256": "d29a8f3c04a182ac20e2fc462c72c32698f02cd1182e3aad59cf30a91910b950"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
@@ -1686,7 +1686,7 @@
     },
     "parallel_campaign_records_controller": {
       "path": "control/parallel-campaign-records.mjs",
-      "sha256": "627548ec38d042f7d3e74930bd95b3bdb517a53d3881269dc292e872922eaf1f"
+      "sha256": "d2cd34e8cd3952fed2c1e3f0e3a148524f2a3d836ba837cecf9710c88ca75461"
     },
     "hybrid_scheduler_article": {
       "path": "docs/hybrid-scheduler.md",
