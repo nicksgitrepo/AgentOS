@@ -66,6 +66,10 @@ for (const actionId of emittedInventory) {
 }
 assert.equal(CONTROLLER_ACTION_COVERAGE.NONE.mode, "INVALID_TERMINAL");
 assert.equal(CONTROLLER_ACTION_COVERAGE.NONE.handler, null);
+assert.equal(CONTROLLER_ACTION_COVERAGE.PREPARE_CANDIDATE_REVIEW.mode, "LOCAL");
+assert.equal(CONTROLLER_ACTION_COVERAGE.PREPARE_DEVELOPMENT_CANDIDATE_REVIEW.mode, "LOCAL");
+assert.equal(CONTROLLER_ACTION_COVERAGE.PREPARE_CANDIDATE_REVIEW.handler, "HANDLER.CONTROLLER_CANDIDATE_REVIEW");
+assert.equal(CONTROLLER_ACTION_COVERAGE.PREPARE_DEVELOPMENT_CANDIDATE_REVIEW.handler, "HANDLER.CONTROLLER_CANDIDATE_REVIEW");
 assert.throws(() => controllerActionHandlerFor("NONE"), (error) => error instanceof ControllerActionDefect && error.code === "INVALID_SUCCESSOR");
 
 for (const actionId of CONTROLLER_ACTION_IDS) {
