@@ -158,7 +158,7 @@
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
-      "sha256": "9940cc74e0bb7a65b5d9ce87b2c57d16be69e8c54b42f16b3c959efdc871194b"
+      "sha256": "6f1df5ccd913aedd8347c8a560ca75ef7176714d04a0bab9f62a611ee9b4ec8e"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",
@@ -166,7 +166,7 @@
     },
     "pyramid_import_output_contract": {
       "path": "schemas/pyramid-import-output.v1.json",
-      "sha256": "a32ea047acf7999c89949a31a13752e93fa36751432d7c6f87bc4c96cb757d5f"
+      "sha256": "6e4dd62b31fee856f12cce63abb7819424c97893b4d2b7cddf027659ea4df4a3"
     },
     "git_repoint_plan_contract": {
       "path": "schemas/git-repoint-plan.v1.json",
@@ -178,7 +178,7 @@
     },
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
-      "sha256": "61adb462e5bc58a1769e19cc7fc0aabe655a8efc4fb7675f9a53fd80f0dd63e5"
+      "sha256": "929f447713352b31c6fa4e1f4a59dd063b6e5f9cf991acb35eca0add710db13f"
     },
     "normalization_policy_controller": {
       "path": "control/normalization-policy.mjs",
@@ -586,15 +586,15 @@
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "38278a36bb28e6410528f187df2d4cefeec099e7162264eeddf4ed007af3fb36"
+      "sha256": "258bd4644b98af9f987f8912ccd0f1138082fd04ce06b55aef60c83154b7670e"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
-      "sha256": "95fd7e6178e9d30d7ab6b0f8501231a6bc976ebbd3a7f1bf4f0c1ec8e313e4f8"
+      "sha256": "08d11b3ae2a141377369de180c3609450c417b273155703d5aea085d35d4e85f"
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "b116e0d6cae8a094ec59486eeb0b5e4704c8384b2f06af76ceae7cbb6910003e"
+      "sha256": "d84f301f707ad5ae17a0a67b1e48405fdc47fca8ddb6fb26434b90ba21ac4043"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
@@ -2173,8 +2173,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "The host task-kind and task-host assertions are provider-specific execution context; portable authority consumes typed host-attachment contracts instead.",
       "replacement_bindings": [
-        {"historical_reference":"provider_host_task_readback","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"},
-        {"historical_reference":"provider_runtime_readback","replacement":"schemas/visible-task-parity-readback.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"}
+        {
+          "historical_reference": "provider_host_task_readback",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        },
+        {
+          "historical_reference": "provider_runtime_readback",
+          "replacement": "schemas/visible-task-parity-readback.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
+        }
       ]
     },
     "roadmap03_controller_intent_handoff_historical_compatibility": {
@@ -2184,8 +2192,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "This append-only feature handoff preserves historical branch and provider context; current portability proof consumes the typed state and normative contracts instead.",
       "replacement_bindings": [
-        {"historical_reference":"roadmap03_typed_handoff_projection","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
-        {"historical_reference":"roadmap03_source_contract","replacement":"schemas/audit-repair-integration-state.v1.json","status":"RETAINED_NORMATIVE_STATE_CONTRACT"}
+        {
+          "historical_reference": "roadmap03_typed_handoff_projection",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "roadmap03_source_contract",
+          "replacement": "schemas/audit-repair-integration-state.v1.json",
+          "status": "RETAINED_NORMATIVE_STATE_CONTRACT"
+        }
       ]
     },
     "roadmap03_controller_intent_audit_report_historical_compatibility": {
@@ -2195,8 +2211,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "This append-only feature audit preserves historical provider and branch context; it does not define current portable-kernel authority or current comprehensive-proof input.",
       "replacement_bindings": [
-        {"historical_reference":"roadmap03_audit_observation","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
-        {"historical_reference":"roadmap03_feature_handoff","replacement":"docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md","status":"RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"}
+        {
+          "historical_reference": "roadmap03_audit_observation",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "roadmap03_feature_handoff",
+          "replacement": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
+          "status": "RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"
+        }
       ]
     },
     "platform_gate_response_handoff_historical_compatibility": {
@@ -2206,8 +2230,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "This append-only platform handoff preserves provider-specific historical context and custody evidence; it is not current portable-kernel authority or current comprehensive-proof input.",
       "replacement_bindings": [
-        {"historical_reference":"gate_catalog_and_response_boundary","replacement":"schemas/gate-catalog.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"},
-        {"historical_reference":"typed_platform_handoff_contract","replacement":"schemas/platform-foundation-handoff.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"}
+        {
+          "historical_reference": "gate_catalog_and_response_boundary",
+          "replacement": "schemas/gate-catalog.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"
+        },
+        {
+          "historical_reference": "typed_platform_handoff_contract",
+          "replacement": "schemas/platform-foundation-handoff.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"
+        }
       ]
     },
     "historical_platform_foundation_independent_audit": {
@@ -2217,8 +2249,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Provider-specific historical paths and context are preserved for traceability and do not define the current portable-kernel contract.",
       "replacement_bindings": [
-        {"historical_reference": "provider_specific_host_readback", "replacement": "schemas/visible-task-parity-readback.v1.json", "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"},
-        {"historical_reference": "provider_specific_native_host_bridge", "replacement": "schemas/native-host-attachment.v1.json", "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"}
+        {
+          "historical_reference": "provider_specific_host_readback",
+          "replacement": "schemas/visible-task-parity-readback.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
+        },
+        {
+          "historical_reference": "provider_specific_native_host_bridge",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        }
       ]
     },
     "visible_task_parity_readback_contract": {
@@ -2268,8 +2308,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only central audit context is retained for traceability and replaced in current authority by typed state, map, and platform receipts.",
       "replacement_bindings": [
-        {"historical_reference":"central_audit_context","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"},
-        {"historical_reference":"central_platform_readback","replacement":"docs/platform-feature-map.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_PLATFORM_MAP"}
+        {
+          "historical_reference": "central_audit_context",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "central_platform_readback",
+          "replacement": "docs/platform-feature-map.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_PLATFORM_MAP"
+        }
       ]
     },
     "proof_acceptance_intake_manifest_historical_compatibility": {
@@ -2279,8 +2327,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "The held proof-acceptance intake manifest preserves historical custody context and is replaced by current typed proof receipts before admission.",
       "replacement_bindings": [
-        {"historical_reference":"proof_acceptance_intake_context","replacement":"docs/privacy-public-projection.v1.json","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"},
-        {"historical_reference":"proof_acceptance_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+        {
+          "historical_reference": "proof_acceptance_intake_context",
+          "replacement": "docs/privacy-public-projection.v1.json",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        },
+        {
+          "historical_reference": "proof_acceptance_state",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        }
       ]
     },
     "structured_memory_audit_report_historical_compatibility": {
@@ -2290,8 +2346,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Memory architecture evidence remains preserved outside ordinary feature and Platform intake until explicit owner acceptance and governed integration decision.",
       "replacement_bindings": [
-        {"historical_reference":"memory_architecture_audit_context","replacement":"docs/memory-routing-amendment.v1.json","status":"RETAINED_SPECIAL_LANE_ROUTING_ONLY"},
-        {"historical_reference":"memory_acceptance_boundary","replacement":"docs/privacy-public-projection.v1.json","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+        {
+          "historical_reference": "memory_architecture_audit_context",
+          "replacement": "docs/memory-routing-amendment.v1.json",
+          "status": "RETAINED_SPECIAL_LANE_ROUTING_ONLY"
+        },
+        {
+          "historical_reference": "memory_acceptance_boundary",
+          "replacement": "docs/privacy-public-projection.v1.json",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
       ]
     },
     "release_readme_historical_compatibility": {
@@ -2301,8 +2365,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",
       "replacement_bindings": [
-        {"historical_reference":"adapter_documentation","replacement":"schemas/native-host-attachment.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"},
-        {"historical_reference":"controller_documentation","replacement":"docs/maintainer-guide.md","status":"RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"}
+        {
+          "historical_reference": "adapter_documentation",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        },
+        {
+          "historical_reference": "controller_documentation",
+          "replacement": "docs/maintainer-guide.md",
+          "status": "RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"
+        }
       ]
     },
     "release_migration_audit_report_historical_compatibility": {
@@ -2312,8 +2384,16 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only release-migration evidence preserves historical provider and deployment context; current portability proof consumes typed release contracts and current state receipts instead.",
       "replacement_bindings": [
-        {"historical_reference":"release_migration_audit_context","replacement":"schemas/release-migration.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"},
-        {"historical_reference":"release_migration_state","replacement":"docs/audit-repair-integration-state.v1.json","status":"RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"}
+        {
+          "historical_reference": "release_migration_audit_context",
+          "replacement": "schemas/release-migration.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"
+        },
+        {
+          "historical_reference": "release_migration_state",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        }
       ]
     },
     "portability_historical_compatibility_contract": {
@@ -2323,7 +2403,11 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Additive selector contract preserves exact custody bytes and excludes project-local records from portable-kernel input.",
       "replacement_bindings": [
-        {"historical_reference":"project_local_custody_records","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+        {
+          "historical_reference": "project_local_custody_records",
+          "replacement": "typed-project-agnostic-portable-kernel-contracts",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
       ]
     },
     "portability_historical_compatibility_record": {
@@ -2333,7 +2417,11 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "Append-only custody records remain byte- and digest-verified while the portability selector consumes only normative portable artifacts.",
       "replacement_bindings": [
-        {"historical_reference":"historical_custody_payload","replacement":"typed-project-agnostic-portable-kernel-contracts","status":"RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"}
+        {
+          "historical_reference": "historical_custody_payload",
+          "replacement": "typed-project-agnostic-portable-kernel-contracts",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
       ]
     },
     "audit_repair_integration_state_private_payload": {
@@ -2343,7 +2431,11 @@
       "current_portable_kernel_input": false,
       "supersession_reason": "The append-only state payload retains custody history and opaque source bindings; the public projection contains only project-agnostic fields.",
       "replacement_bindings": [
-        {"historical_reference":"audit_repair_integration_state_payload","replacement":"docs/audit-repair-integration-state-public.v1.json","status":"CURRENT_PUBLIC_PROJECTION"}
+        {
+          "historical_reference": "audit_repair_integration_state_payload",
+          "replacement": "docs/audit-repair-integration-state-public.v1.json",
+          "status": "CURRENT_PUBLIC_PROJECTION"
+        }
       ]
     },
     "legacy_contracts": [
