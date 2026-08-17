@@ -216,10 +216,16 @@ export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, 
   const finalReceipt = dispatched.receipt;
   const protectedWait = dispatched.status === "PROTECTED_EVENT_WAIT" || finalReceipt.continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT";
   const ownerReview = dispatched.status === "OWNER_REVIEW_REQUIRED" || finalReceipt.continuation.mode === "EXPLICIT_OWNER_REVIEW";
-  const finalDescriptor = CONTROLLER_ACTION_REGISTRY[finalReceipt.next_action];
-  if (dispatched.status === "ROUTED_SAME_TURN" && dispatched.dispatched_count >= maxTransitions && finalDescriptor?.mode === "LOCAL") {
-    throw new Error("Orchestrator local successor reached the safe transition cap before a protected/owner boundary; persist an exact retry checkpoint and continue same-turn dispatch");
-  }
+  /*
+   * Reaching the bounded local-chain cap is not itself a workflow failure.
+   * Every transition up to the cap has already been handler-invoked and
+   * atomically persisted, and `finalReceipt` names the registry-bound next
+   * action.  Treating this healthy bounded handoff as an exception caused a
+   * retry loop that discarded real progress and made the Orchestrator look
+   * idle.  The next lifecycle turn must consume the persisted successor; the
+   * readback below proves the boundary without pretending that an additional
+   * handler ran.
+   */
   const readback = {
     schema: ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA,
     version: ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION,

@@ -174,13 +174,19 @@ assert.throws(() => dispatchOrchestratorSuccessor({
   handlers,
   persist: () => true,
 }), /independent platform review/u);
-assert.throws(() => dispatchOrchestratorSuccessor({
+const boundedReadback = dispatchOrchestratorSuccessor({
   successor,
   dispatchId: "DISPATCH.ORCHESTRATOR.MAX_TRANSITIONS_ONE",
   handlers,
   persist: () => true,
   maxTransitions: 1,
-}), /safe transition cap|retry checkpoint/u);
+});
+validateOrchestratorSuccessorDispatchReadback(boundedReadback);
+assert.equal(boundedReadback.status, "DISPATCHED_SAME_TURN");
+assert.equal(boundedReadback.dispatch_observed, true);
+assert.equal(boundedReadback.dispatched_count, 1);
+assert.equal(boundedReadback.final_next_action, "START_INDEPENDENT_REAUDIT");
+assert.equal(boundedReadback.final_next_handler, "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT");
 
 assert.throws(() => dispatchOrchestratorSuccessor({
   successor,

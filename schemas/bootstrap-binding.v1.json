@@ -914,7 +914,7 @@
     },
     "orchestrator_successor_dispatch_controller": {
       "path": "control/orchestrator-successor-dispatch.mjs",
-      "sha256": "7beda352b35679259987cb8699d0a606f5bd489fee6f192f9a12db5aadbbcc53"
+      "sha256": "f75cc65f38244a3ba3354b3e329d25d49573eff4460977f81f288a244c2ded4d"
     },
     "orchestrator_successor_dispatch_contract": {
       "path": "schemas/orchestrator-successor-dispatch.v1.json",
@@ -922,7 +922,7 @@
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "b0ff3fcaae4d91930392bb10655af3daab3fb6c8639d72fa418e54cd728a7a1a"
+      "sha256": "ce9ac64e8c89ff035e478c155607c9f22e8cbeb0e99c27703bd2fa3633500e99"
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",
