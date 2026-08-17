@@ -898,7 +898,31 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "a4fb1f854e4cad0c1dbf0489c3cd6c7ca52c350ebda9a8a7d304324f7616f62e"
+      "sha256": "d0d967ec3d65e8a4b085d2b043b42fd20239a93557256c021d06e3fc9c9a76e0"
+    },
+    "orchestrator_successor_dispatch_controller": {
+      "path": "control/orchestrator-successor-dispatch.mjs",
+      "sha256": "d1a452b814d24a30af543bf58e5d4c7cebdec5797ee586476ba1bc0dbae514fa"
+    },
+    "orchestrator_successor_dispatch_contract": {
+      "path": "schemas/orchestrator-successor-dispatch.v1.json",
+      "sha256": "ba948ca6b24fb7539dfade4215a9a917e317dbd726a26bd2b38bfe715135f78d"
+    },
+    "orchestrator_successor_dispatch_verifier": {
+      "path": "tests/verify-orchestrator-successor-dispatch.mjs",
+      "sha256": "8957e9fb08990258baeffec19497b972683b89d2865d0f942423b722cec9d4f4"
+    },
+    "local_proof_evidence_gate_controller": {
+      "path": "control/local-proof-evidence-gate.mjs",
+      "sha256": "680ab15ceea38511ac773e202b8726faf683695de7ba81eba823db9cc5c7f2e1"
+    },
+    "local_proof_evidence_gate_contract": {
+      "path": "schemas/local-proof-evidence-gate.v1.json",
+      "sha256": "ba6751c6411d2a002d345ed1878f5299fbc30c45553da3885aaf584267727cec"
+    },
+    "local_proof_evidence_gate_verifier": {
+      "path": "tests/verify-local-proof-evidence-gate.mjs",
+      "sha256": "48cb3b1afd4036e7d3f606b0a06c9ae0ae36bbfcccd73ad61c4018c756ef246f"
     },
     "liveness_digest_gate_controller": {
       "path": "control/liveness-digest-gate.mjs",

@@ -23,11 +23,14 @@ import {validateActionResultContinuation} from "./action-result-continuation.mjs
 
 export const ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA = "agentos.orchestrator_successor_dispatch.v1";
 export const ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION = 1;
+export const ORCHESTRATOR_LOCAL_RUNTIME_SUCCESSOR_ACTIONS = Object.freeze(["REPAIR_BLOCKS", "REQUEST_SPAWNER_QA", "RUN_LOCAL_CANDIDATE_PROOF"].sort(compareUtf8));
+export const ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS = Object.freeze(["RUNTIME_ATOMIC_GIT_REPOINT"].sort(compareUtf8));
+export const ORCHESTRATOR_SAFE_TRANSITION_CAP = 16;
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const REFERENCE = /^(?:opaque:|ref:)[^\s]+$/u;
-const DISPATCHABLE_ACTIONS = Object.freeze([
+const ORCHESTRATOR_BASE_SUCCESSOR_ACTIONS = Object.freeze([
   "START_ISOLATED_AUDIT_LANES",
   "START_SPECIALIST_WAVE",
   "START_PLATFORM_REVIEW",
@@ -36,6 +39,10 @@ const DISPATCHABLE_ACTIONS = Object.freeze([
   "PREPARE_CANDIDATE_REVIEW",
   "PREPARE_PYRAMID_IMPORT_OUTPUT",
   "MATERIALIZE_NEW_PROJECT_REPOSITORIES",
+]);
+export const ORCHESTRATOR_DISPATCHABLE_ACTIONS = Object.freeze([
+  ...ORCHESTRATOR_BASE_SUCCESSOR_ACTIONS,
+  ...ORCHESTRATOR_LOCAL_RUNTIME_SUCCESSOR_ACTIONS,
 ].filter((action) => Object.hasOwn(CONTROLLER_ACTION_REGISTRY, action)).sort(compareUtf8));
 const READBACK_KEYS = Object.freeze([
   "schema", "version", "dispatch_id", "status", "source_successor_sha256", "source_action", "source_handler",
@@ -101,7 +108,7 @@ function validateHostileRefs(refs) {
 
 function validateSuccessor(successor) {
   validateActionResultContinuation(successor);
-  assert(DISPATCHABLE_ACTIONS.includes(successor.next_action), `Orchestrator successor action ${successor.next_action} is not dispatchable`);
+  assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes(successor.next_action), `Orchestrator successor action ${successor.next_action} is not dispatchable`);
   assert(successor.next_handler === controllerActionHandlerFor(successor.next_action), "Orchestrator successor handler is stale");
   assert(successor.continuation.mode === "IMMEDIATE_SAME_TURN" && successor.continuation.same_turn_dispatch === true, "Orchestrator successor must require same-turn dispatch");
   assert(successor.continuation.timer_deferral === false && successor.continuation.heartbeat_deferral === false, "Orchestrator successor cannot defer to a timer or heartbeat");
@@ -112,7 +119,7 @@ function validateSuccessor(successor) {
 
 function validateContinuation(continuation) {
   exactKeys(continuation, CONTINUATION_KEYS, "Orchestrator dispatch continuation");
-  assert(["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT"].includes(continuation.mode), "Orchestrator dispatch continuation mode is invalid");
+  assert(["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT", "EXPLICIT_OWNER_REVIEW"].includes(continuation.mode), "Orchestrator dispatch continuation mode is invalid");
   assert(continuation.timer_deferral === false && continuation.heartbeat_deferral === false, "Orchestrator dispatch continuation cannot defer");
   assert(continuation.same_turn_dispatch === (continuation.mode === "IMMEDIATE_SAME_TURN"), "Orchestrator dispatch same-turn binding is invalid");
   if (continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT") requireIdentifier(continuation.protected_event_id, "Orchestrator dispatch protected event");
@@ -134,11 +141,11 @@ export function validateOrchestratorSuccessorDispatchReadback(readback) {
   exactKeys(readback, READBACK_KEYS, "Orchestrator successor dispatch readback");
   assert(readback.schema === ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA && readback.version === ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION, "Orchestrator successor dispatch identity is invalid");
   requireIdentifier(readback.dispatch_id, "Orchestrator successor dispatch id");
-  assert(["DISPATCHED_SAME_TURN", "DISPATCHED_TO_PROTECTED_WAIT"].includes(readback.status), "Orchestrator successor dispatch did not produce a typed successor");
+  assert(["DISPATCHED_SAME_TURN", "DISPATCHED_TO_OWNER_REVIEW", "DISPATCHED_TO_PROTECTED_WAIT"].includes(readback.status), "Orchestrator successor dispatch did not produce a typed successor");
   requireSha(readback.source_successor_sha256, "Orchestrator source successor digest");
   requireIdentifier(readback.source_action, "Orchestrator source action");
   requireIdentifier(readback.source_handler, "Orchestrator source handler");
-  assert(DISPATCHABLE_ACTIONS.includes(readback.source_action), "Orchestrator source action is not dispatchable");
+  assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes(readback.source_action), "Orchestrator source action is not dispatchable");
   assert(readback.source_handler === controllerActionHandlerFor(readback.source_action), "Orchestrator source handler is stale");
   assert(Number.isSafeInteger(readback.dispatched_count) && readback.dispatched_count > 0, "Orchestrator dispatch must invoke at least one handler");
   assert(Array.isArray(readback.persisted_receipt_sha256s) && readback.persisted_receipt_sha256s.length === readback.dispatched_count, "Orchestrator dispatch persistence count does not prove every transition");
@@ -150,7 +157,8 @@ export function validateOrchestratorSuccessorDispatchReadback(readback) {
   assert(readback.dispatch_observed === true, "Orchestrator dispatch observation is missing");
   validateContinuation(readback.continuation);
   validateScope(readback.scope);
-  assert((readback.status === "DISPATCHED_TO_PROTECTED_WAIT") === (readback.continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT"), "Orchestrator dispatch status and continuation mode disagree");
+  assert((readback.status === "DISPATCHED_TO_PROTECTED_WAIT") === (readback.continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT"), "Orchestrator dispatch protected status and continuation mode disagree");
+  assert((readback.status === "DISPATCHED_TO_OWNER_REVIEW") === (readback.continuation.mode === "EXPLICIT_OWNER_REVIEW"), "Orchestrator dispatch owner status and continuation mode disagree");
   assert(readback.scope.protected_event_id === readback.continuation.protected_event_id, "Orchestrator dispatch protected-event scope is stale");
   validateEvidenceRefs(readback.evidence_refs);
   validateHostileRefs(readback.hostile_fixture_refs);
@@ -159,7 +167,7 @@ export function validateOrchestratorSuccessorDispatchReadback(readback) {
   return readback;
 }
 
-export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, persist, onDefect, maxTransitions = 1} = {}) {
+export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, persist, onDefect, maxTransitions = ORCHESTRATOR_SAFE_TRANSITION_CAP} = {}) {
   validateSuccessor(successor);
   requireIdentifier(dispatchId, "Orchestrator dispatch id");
   assert(isRecord(handlers), "Orchestrator dispatch handlers are required");
@@ -187,15 +195,20 @@ export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, 
     onDefect,
     maxTransitions,
   });
-  assert(["ROUTED_SAME_TURN", "PROTECTED_EVENT_WAIT"].includes(dispatched.status), "Orchestrator successor did not complete a local dispatch or typed protected handoff");
+  assert(["ROUTED_SAME_TURN", "PROTECTED_EVENT_WAIT", "OWNER_REVIEW_REQUIRED"].includes(dispatched.status), "Orchestrator successor did not complete a local dispatch or typed boundary");
   assert(dispatched.dispatched_count > 0 && dispatched.persisted_receipts.length === dispatched.dispatched_count, "Orchestrator successor dispatch was not observed and persisted");
   const finalReceipt = dispatched.receipt;
   const protectedWait = dispatched.status === "PROTECTED_EVENT_WAIT" || finalReceipt.continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT";
+  const ownerReview = dispatched.status === "OWNER_REVIEW_REQUIRED" || finalReceipt.continuation.mode === "EXPLICIT_OWNER_REVIEW";
+  const finalDescriptor = CONTROLLER_ACTION_REGISTRY[finalReceipt.next_action];
+  if (dispatched.status === "ROUTED_SAME_TURN" && dispatched.dispatched_count >= maxTransitions && finalDescriptor?.mode === "LOCAL") {
+    throw new Error("Orchestrator local successor reached the safe transition cap before a protected/owner boundary; persist an exact retry checkpoint and continue same-turn dispatch");
+  }
   const readback = {
     schema: ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA,
     version: ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION,
     dispatch_id: dispatchId,
-    status: protectedWait ? "DISPATCHED_TO_PROTECTED_WAIT" : "DISPATCHED_SAME_TURN",
+    status: protectedWait ? "DISPATCHED_TO_PROTECTED_WAIT" : ownerReview ? "DISPATCHED_TO_OWNER_REVIEW" : "DISPATCHED_SAME_TURN",
     source_successor_sha256: successor.record_sha256,
     source_action: successor.next_action,
     source_handler: successor.next_handler,

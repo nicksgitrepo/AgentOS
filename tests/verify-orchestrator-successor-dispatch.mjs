@@ -15,11 +15,18 @@ import {
 import {
   dispatchOrchestratorSuccessor,
   validateOrchestratorSuccessorDispatchReadback,
+  ORCHESTRATOR_DISPATCHABLE_ACTIONS,
+  ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS,
 } from "../control/orchestrator-successor-dispatch.mjs";
 import {compileActionResultContinuation} from "../control/action-result-continuation.mjs";
 
 const sha = (value) => canonicalDigest({value});
 const evidence = (id) => ({evidence_id: id, reference: `opaque:${id.toLowerCase()}`, sha256: sha(id)});
+assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("REQUEST_SPAWNER_QA"));
+assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("RUN_LOCAL_CANDIDATE_PROOF"));
+assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("REPAIR_BLOCKS"));
+assert(!ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("RUNTIME_ATOMIC_GIT_REPOINT"));
+assert.deepEqual(ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS, ["RUNTIME_ATOMIC_GIT_REPOINT"]);
 const baseResult = {
   status: "CANDIDATE_REVIEW_PASS_NO_DELTA",
   candidate_sha256: sha("candidate"),
@@ -43,6 +50,13 @@ const successor = compileCandidateStageContinuation({
 });
 
 const nextEvidence = [evidence("EVIDENCE.INTEGRATION"), evidence("EVIDENCE.SUCCESSOR")];
+const chainProtectedEvent = {
+  blocker_id: "PROTECTED.ORCHESTRATOR.CHAIN.BOUNDARY",
+  blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
+  evidence_ceiling: "Only local compiler evidence is available; the protected boundary remains unperformed.",
+  restart_event: "EXPLICIT_PROTECTED_BOUNDARY_AUTHORIZATION",
+  resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
+};
 const handlers = {
   "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION": (current) => ({
     semantic_after_sha256: sha(`${current.semantic_after_sha256}:integrated`),
@@ -53,6 +67,17 @@ const handlers = {
     evidence_refs: nextEvidence,
     hostile_fixture_refs: ["FIXTURE.DISPATCH.NO_DUPLICATE", "FIXTURE.DISPATCH.NO_TIMER"],
     protected_event: null,
+    defect: null,
+  }),
+  "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT": (current) => ({
+    semantic_after_sha256: sha(`${current.semantic_after_sha256}:reaudited`),
+    next_action: "WAIT_FOR_PROTECTED_EVENT",
+    next_handler: "HANDLER.PROTECTED_EVENT_WAIT",
+    continuation: compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: chainProtectedEvent.blocker_id}),
+    continuation_sha256: canonicalDigest(compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: chainProtectedEvent.blocker_id})),
+    evidence_refs: [evidence("EVIDENCE.REAUDIT.BOUNDARY.A"), evidence("EVIDENCE.REAUDIT.BOUNDARY.B")],
+    hostile_fixture_refs: ["FIXTURE.DISPATCH.NO_TIMER", "FIXTURE.DISPATCH.PROTECTED_BOUNDARY"],
+    protected_event: chainProtectedEvent,
     defect: null,
   }),
 };
@@ -67,12 +92,12 @@ const readback = dispatchOrchestratorSuccessor({
   },
 });
 validateOrchestratorSuccessorDispatchReadback(readback);
-assert.equal(readback.status, "DISPATCHED_SAME_TURN");
+assert.equal(readback.status, "DISPATCHED_TO_PROTECTED_WAIT");
 assert.equal(readback.dispatch_observed, true);
-assert.equal(readback.dispatched_count, 1);
-assert.equal(persisted.length, 1);
-assert.equal(readback.final_next_action, "START_INDEPENDENT_REAUDIT");
-assert.equal(readback.final_next_handler, "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT");
+assert.equal(readback.dispatched_count, 2);
+assert.equal(persisted.length, 2);
+assert.equal(readback.final_next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(readback.final_next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
 assert.equal(readback.scope.control_plane_only, true);
 assert.equal(readback.scope.consumer_product_mutated, false);
 
@@ -89,6 +114,13 @@ const rejects = (mutator, pattern) => {
 rejects((candidate) => { candidate.continuation.same_turn_dispatch = false; }, /same-turn|digest/u);
 rejects((candidate) => { candidate.next_action = "WAIT_FOR_PROTECTED_EVENT"; }, /dispatchable|handler|digest/u);
 rejects((candidate) => { candidate.persistence.write_scope = "PRODUCT"; }, /control-plane|write scope|persistence|digest/u);
+assert.throws(() => dispatchOrchestratorSuccessor({
+  successor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.MAX_TRANSITIONS_ONE",
+  handlers,
+  persist: () => true,
+  maxTransitions: 1,
+}), /safe transition cap|retry checkpoint/u);
 
 assert.throws(() => dispatchOrchestratorSuccessor({
   successor,
@@ -166,6 +198,17 @@ const materializationReadback = dispatchOrchestratorSuccessor({
       protected_event: null,
       defect: null,
     }),
+    "HANDLER.CONTROLLER_CANDIDATE_REVIEW": (current) => ({
+      semantic_after_sha256: sha(`${current.semantic_after_sha256}:reviewed`),
+      next_action: "WAIT_FOR_PROTECTED_EVENT",
+      next_handler: "HANDLER.PROTECTED_EVENT_WAIT",
+      continuation: compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: chainProtectedEvent.blocker_id}),
+      continuation_sha256: canonicalDigest(compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: chainProtectedEvent.blocker_id})),
+      evidence_refs: [evidence("EVIDENCE.REVIEW.BOUNDARY.A"), evidence("EVIDENCE.REVIEW.BOUNDARY.B")],
+      hostile_fixture_refs: ["FIXTURE.MATERIALIZE.PROTECTED.CUTOVER", "FIXTURE.MATERIALIZE.RESULT.ROLLBACK"],
+      protected_event: chainProtectedEvent,
+      defect: null,
+    }),
   },
   persist: (receipt) => {
     materializationPersisted.push(receipt);
@@ -174,10 +217,10 @@ const materializationReadback = dispatchOrchestratorSuccessor({
 });
 validateOrchestratorSuccessorDispatchReadback(materializationReadback);
 assert.equal(materializationReadback.dispatch_observed, true);
-assert.equal(materializationReadback.dispatched_count, 1);
-assert.equal(materializationPersisted.length, 1);
+assert.equal(materializationReadback.dispatched_count, 2);
+assert.equal(materializationPersisted.length, 2);
 assert.equal(materializationReadback.source_action, "MATERIALIZE_NEW_PROJECT_REPOSITORIES");
-assert.equal(materializationReadback.final_next_action, "PREPARE_CANDIDATE_REVIEW");
+assert.equal(materializationReadback.final_next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(materializationReadback.scope.control_plane_only, true);
 assert.equal(materializationReadback.scope.consumer_product_mutated, false);
 
@@ -222,7 +265,7 @@ assert.equal(protectedPersisted.length, 1);
 
 const schemaPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/orchestrator-successor-dispatch.v1.json");
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
-assert.deepEqual(schema.properties.status.enum, ["DISPATCHED_SAME_TURN", "DISPATCHED_TO_PROTECTED_WAIT"]);
+assert.deepEqual(schema.properties.status.enum, ["DISPATCHED_SAME_TURN", "DISPATCHED_TO_OWNER_REVIEW", "DISPATCHED_TO_PROTECTED_WAIT"]);
 assert.equal(schema.properties.dispatch_observed.const, true);
 assert.equal(schema.properties.scope.properties.control_plane_only.const, true);
 assert.equal(schema.properties.scope.properties.consumer_product_mutated.const, false);

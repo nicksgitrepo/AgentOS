@@ -27,7 +27,8 @@ export {compileAgentSpawnerControllerBridge, validateAgentSpawnerControllerBridg
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord, acceptAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
-export {dispatchOrchestratorSuccessor, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION} from "./orchestrator-successor-dispatch.mjs";
+export {dispatchOrchestratorSuccessor, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION, ORCHESTRATOR_LOCAL_RUNTIME_SUCCESSOR_ACTIONS, ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS, ORCHESTRATOR_SAFE_TRANSITION_CAP, ORCHESTRATOR_DISPATCHABLE_ACTIONS} from "./orchestrator-successor-dispatch.mjs";
+export {compileLocalProofEvidenceGate, validateLocalProofEvidenceGate, LOCAL_PROOF_EVIDENCE_GATE_SCHEMA, LOCAL_PROOF_EVIDENCE_GATE_VERSION, LOCAL_PROOF_EVIDENCE_BLOCKED_STATUS, LOCAL_PROOF_EVIDENCE_REPAIR_ACTION, LOCAL_PROOF_EVIDENCE_REPAIR_HANDLER} from "./local-proof-evidence-gate.mjs";
 export {compileLivenessDigestGate, validateLivenessDigestGate, evaluateLivenessBindingFreshness, LIVENESS_DIGEST_GATE_SCHEMA, LIVENESS_DIGEST_GATE_VERSION, LIVENESS_ROSTER_INVALIDATION_RULE, LIVENESS_ROSTER_REFRESH_TRIGGERS} from "./liveness-digest-gate.mjs";
 export {compileAutonomousDispatchLivenessGate, validateAutonomousDispatchLivenessGate, evaluateAutonomousDispatchLiveness, AUTONOMOUS_DISPATCH_LIVENESS_GATE_SCHEMA, AUTONOMOUS_DISPATCH_LIVENESS_GATE_VERSION, AUTONOMOUS_DISPATCH_RETRY_ACTION, AUTONOMOUS_DISPATCH_RETRY_HANDLER, AUTONOMOUS_DISPATCH_RETRY_ROUTE} from "./autonomous-dispatch-liveness-gate.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
@@ -103,6 +104,7 @@ export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as orchestratorSuccessorDispatch from "./orchestrator-successor-dispatch.mjs";
+export * as localProofEvidenceGate from "./local-proof-evidence-gate.mjs";
 export * as autonomousDispatchLivenessGate from "./autonomous-dispatch-liveness-gate.mjs";
 export * as projectImport from "./project-import.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
