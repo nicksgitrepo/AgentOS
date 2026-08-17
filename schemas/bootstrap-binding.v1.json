@@ -678,19 +678,19 @@
     },
     "agent_spawner_controller_bridge_controller": {
       "path": "control/agent-spawner-controller-bridge.mjs",
-      "sha256": "a5af906d77d99ad87cfc6524a7657628d55c7607703c26eb4ae021f286410443"
+      "sha256": "a45c0cb74e42f8019ac19925c331ef5d5cb42185ea00b26ea0eda082603044a5"
     },
     "agent_spawner_controller_bridge_contract": {
       "path": "schemas/agent-spawner-controller-bridge.v1.json",
-      "sha256": "5ded77af5b674f574c48354d2f8f911fe4b7e311ec4d855bc256a75d15608d3c"
+      "sha256": "cddb4178c3de7397beabcd3e6f8889e88f3eef358b9aee98616b1a9417af0d9e"
     },
     "agent_spawner_controller_bridge_article": {
       "path": "docs/agent-spawner-controller-bridge.md",
-      "sha256": "b2c90b18e43bc86c311478aaff5f36f46317f4add816662ebc357db4bb857d2a"
+      "sha256": "834f309345af1d89153f585c29cbbcd8c371a1a3d52f14626b4997f86dc65742"
     },
     "agent_spawner_controller_bridge_verifier": {
       "path": "tests/verify-agent-spawner-controller-bridge.mjs",
-      "sha256": "7afd0ad7f8311322b05c02290f43cef2db427b2bb557650d6cbaaebc9d03f0cd"
+      "sha256": "1b99fc0866d8061396b0f932a7750ad6f5d4bc528999ac3ba9f34f4653380fb5"
     },
     "agent_spawner_defect_queue_controller": {
       "path": "control/agent-spawner-defect-queue.mjs",
@@ -1042,7 +1042,7 @@
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "b2d224399d48abd2b0e91ecf5390d7f0c245f439498776718c5cd3b33777189a"
+      "sha256": "20b7fbec3407059ec4eb2cdf0365ca5ccf92bb7fcdcfc0934bd48564a763cac1"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",

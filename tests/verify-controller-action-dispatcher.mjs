@@ -14,6 +14,7 @@ import {
   compileControllerActionDefect,
   compileControllerActionReceipt,
   compileControllerContinuation,
+  compileControllerNextLifecycleHandoff,
   controllerActionCoverageFor,
   controllerActionHandlerFor,
   controllerContinuationDigest,
@@ -152,11 +153,22 @@ assert.deepEqual(persisted[1].protected_event.resources, {jobs: 0, workers: 0, h
 assert.equal(persisted[1].stop_workflow_decision.primary_trigger_question_id, "OWNER_DECISION_REQUIRED");
 assert.equal(persisted[1].stop_workflow_decision.stop, true);
 const boundedPersisted = [];
-const bounded = advanceControllerAction(initial, {handlers, maxTransitions: 1, persist: (receipt) => { boundedPersisted.push(receipt); return true; }});
+const bounded = advanceControllerAction(initial, {
+  handlers,
+  maxTransitions: 1,
+  persist: (receipt) => { boundedPersisted.push(receipt); return true; },
+  startNextLifecycle: (cursor) => compileControllerNextLifecycleHandoff({
+    sourceReceiptSha256: cursor.receipt_sha256,
+    nextAction: cursor.next_action,
+    nextHandler: cursor.next_handler,
+    handoffRef: "ref:controller-action/bounded-successor",
+  }),
+});
 assert.equal(bounded.status, "ROUTED_SAME_TURN", "a healthy chain at the safety bound must remain routable");
 assert.equal(bounded.dispatched_count, 1);
 assert.equal(bounded.receipt.next_action, "INJECT_ORCHESTRATOR_GOVERNANCE");
 assert.equal(boundedPersisted.length, 1);
+assert.equal(bounded.next_lifecycle.started_same_turn, true);
 const missingStopDecision = structuredClone(persisted[1]);
 missingStopDecision.stop_workflow_decision = null;
 assert.throws(() => validateControllerActionReceipt(missingStopDecision), /stop-workflow decision/u);
