@@ -10,9 +10,21 @@
     "schema": {"const": "agentos.orchestrator_successor_bundle.v1"},
     "version": {"const": 1},
     "bundle_id": {"$ref": "#/$defs/identifier"},
-    "source_successor": {"type": "object", "description": "Must validate against agentos.action_result_continuation.v1."},
-    "dispatch_readback": {"type": "object", "description": "Must validate against agentos.orchestrator_successor_dispatch.v1."},
-    "final_receipt": {"type": "object", "description": "Must validate against agentos.controller_action_receipt.v1."},
+    "source_successor": {
+      "type": "object",
+      "description": "Must validate against agentos.action_result_continuation.v1 before persistence; every nested digest is required and non-null.",
+      "required": ["result_sha256", "continuation_sha256", "record_sha256", "next_action", "next_handler"]
+    },
+    "dispatch_readback": {
+      "type": "object",
+      "description": "Must validate against agentos.orchestrator_successor_dispatch.v1 before persistence and cross-bind source_successor and final_receipt.",
+      "required": ["source_successor_sha256", "final_receipt_sha256", "readback_sha256"]
+    },
+    "final_receipt": {
+      "type": "object",
+      "description": "Must validate against agentos.controller_action_receipt.v1 before persistence; receipt_sha256, next_action, and next_handler are required.",
+      "required": ["receipt_sha256", "next_action", "next_handler"]
+    },
     "execution_owner": {"$ref": "#/$defs/identifier"},
     "direct_consumer": {"$ref": "#/$defs/identifier"},
     "controller_approval_required": {"const": false},
@@ -28,5 +40,11 @@
       "type": "object", "additionalProperties": false, "required": ["evidence_id", "reference", "sha256"],
       "properties": {"evidence_id": {"$ref": "#/$defs/identifier"}, "reference": {"$ref": "#/$defs/reference"}, "sha256": {"$ref": "#/$defs/sha256"}}
     }
+  },
+  "state_rules": {
+    "canonical_construction": "Construct and validate source_successor, dispatch_readback, and final_receipt with the executable AgentOS contracts before writing the bundle; malformed or null-digest artifacts remain rejected history.",
+    "cross_binding": "source_successor.record_sha256 must equal dispatch_readback.source_successor_sha256, and final_receipt.receipt_sha256 must equal dispatch_readback.final_receipt_sha256; action and handler identities must also match.",
+    "autonomous_custody": "execution_owner must be LANE_AGENT, direct_consumer must be INDEPENDENT_PLATFORM_REVIEW, and controller_approval_required is always false.",
+    "continuation": "A valid local successor is same-turn and carries an explicit next action/handler; timer-only, heartbeat-only, NONE, DONE, and unexplained idle closeouts are invalid."
   }
 }
