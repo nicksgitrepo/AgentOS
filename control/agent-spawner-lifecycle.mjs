@@ -6,6 +6,8 @@
  * governed route still needs independent clearance.  Once its blocks and
  * roster are complete it emits the governed-admission successor; only the
  * explicit adapter/readback can cross into worker admission or activation.
+ * Compiler-only state cannot be converted into a protected hold; only a
+ * governed activation route may wait on an external/owner boundary.
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
@@ -216,6 +218,7 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   assert(lifecycle.persistent_state === derivePersistentState(lifecycle), "Agent Spawner persistent lifecycle state is not bound to its operational state");
   for (const field of ["candidate_sha256", "roster_projection_sha256", "context_sha256"]) requireSha(lifecycle[field], `Agent Spawner ${field}`);
   if (lifecycle.state === "STALLED") {
+    assert(lifecycle.mode === "GOVERNED_SPAWN", "Compiler-only Spawner cannot enter a protected stall");
     requireSha(lifecycle.protected_hold_event_sha256, "Agent Spawner protected hold receipt");
     assert(lifecycle.protected_hold_event_sha256 === AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256, "Stalled Spawner lacks the canonical protected-hold receipt");
   } else {
@@ -386,6 +389,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       break;
     case "PROTECTED_HOLD":
       assert(lifecycle.state !== "RETIRED", "Retired Spawner cannot enter a protected hold");
+      assert(lifecycle.mode === "GOVERNED_SPAWN", "Compiler-only Spawner cannot enter a protected hold");
       next.state = "STALLED";
       next.protected_hold_event_sha256 = event.event_sha256;
       next.authority.temporary_worker_admission = false;

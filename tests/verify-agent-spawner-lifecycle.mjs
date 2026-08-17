@@ -130,31 +130,45 @@ assert.equal(active.wave_activation, "ON");
 
 const stalled = compileAgentSpawnerLifecycle({
   ...common,
+  mode: "GOVERNED_SPAWN",
   lifecycleId: "LIFECYCLE.SPAWNER.STALLED",
   state: "STALLED",
   protectedHoldEventSha256: AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256,
   qa: pendingQa,
 });
 assert.equal(stalled.persistent_state, "STALLED");
-assert.equal(stalled.mode, "COMPILER_ONLY");
+assert.equal(stalled.mode, "GOVERNED_SPAWN");
 assert.equal(stalled.wave_activation, "OFF");
 assert.equal(stalled.authority.temporary_worker_admission, false);
 assert.equal(stalled.authority.spawn_authority, false);
 assert.deepEqual(stalled.execution, {compiler_ticks: 0, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false});
 assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
+  mode: "GOVERNED_SPAWN",
   lifecycleId: "LIFECYCLE.SPAWNER.UNBOUND_STALLED",
   state: "STALLED",
   qa: pendingQa,
 }), /protected hold receipt/u, "Spawner cannot be stalled without a typed protected-hold receipt");
 
-const resumedCompiler = advanceAgentSpawnerLifecycle(stalled, {
+const resumedCompiler = advanceAgentSpawnerLifecycle(prepared, {
   event_type: "START_COMPILER",
   event_sha256: canonicalDigest({event_type: "START_COMPILER", event_sha256: null}),
 });
 assert.equal(resumedCompiler.state, "COMPILER_ACTIVE");
 assert.equal(resumedCompiler.persistent_state, "COMPILER_ACTIVE");
 assert.equal(resumedCompiler.mode, "COMPILER_ONLY");
+assert.throws(() => compileAgentSpawnerLifecycle({
+  ...common,
+  lifecycleId: "LIFECYCLE.SPAWNER.COMPILER_ONLY.STALLED",
+  state: "STALLED",
+  protectedHoldEventSha256: AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256,
+  qa: pendingQa,
+}), /cannot enter a protected stall/u, "compiler-only Spawner cannot park behind a protected hold");
+
+assert.throws(() => advanceAgentSpawnerLifecycle(compilerOnly, {
+  event_type: "PROTECTED_HOLD",
+  event_sha256: canonicalDigest({event_type: "PROTECTED_HOLD", event_sha256: null}),
+}), /cannot enter a protected hold/u, "compiler-only Spawner cannot be parked by an external hold event");
 
 const retired = advanceAgentSpawnerLifecycle(active, {
   event_type: "RETIRE",
@@ -196,7 +210,7 @@ assert.throws(
   "pending utility/harm must reject wave activation",
 );
 
-const fakeAdmission = structuredClone(stalled);
+const fakeAdmission = structuredClone(compilerOnly);
 fakeAdmission.authority.temporary_worker_admission = true;
 fakeAdmission.lifecycle_sha256 = canonicalDigest({...fakeAdmission, lifecycle_sha256: null});
 assert.throws(

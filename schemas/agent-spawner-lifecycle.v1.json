@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/agent-spawner-lifecycle.v1.json",
   "title": "AgentOS Agent Spawner Lifecycle",
-  "description": "Project-agnostic lifecycle for the persistent no-side-effect Agent Spawner compiler and separately admitted governed worker spawning. In COMPILER_ONLY mode, complete local QA/import planning must hand off to ADMIT_GOVERNED_SPAWN even when independent clearance is pending; only the governed adapter/readback may admit workers or activate waves.",
+  "description": "Project-agnostic lifecycle for the persistent no-side-effect Agent Spawner compiler and separately admitted governed worker spawning. In COMPILER_ONLY mode, local QA/import planning must continue and complete routes must hand off to ADMIT_GOVERNED_SPAWN even when independent clearance is pending; compiler-only state cannot enter a protected stall, and only the governed adapter/readback may admit workers or activate waves.",
   "type": "object",
   "additionalProperties": false,
   "required": [
