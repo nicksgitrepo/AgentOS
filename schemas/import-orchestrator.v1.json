@@ -116,6 +116,7 @@
   "state_rules": {
     "ordinary_progress": "A local compiler or isolated audit route must publish and dispatch its next action in the same lifecycle turn; timer-only, heartbeat-only, NONE, and unexplained idle states are invalid.",
     "stale_clearance_hold": "INDEPENDENT.UTILITY_HARM_CLEARANCE and SPAWNER.INDEPENDENT_CLEARANCE are applicability-only markers. They may be cleared only by a typed current NOT_APPLICABLE_LOCAL_COMPILER_QA or NOT_APPLICABLE_LOCAL_AUDIT_REPAIR receipt with zero protected capabilities, no open findings, and preserved custody.",
+    "persisted_receipt_precedence": "A persisted REQUIRED_PROTECTED_ROUTE applicability receipt remains binding unless the run state contains one of the exact local-only markers as BLOCKED_PROTECTED and current typed custody facts recompile a local decision; a compiler-QA status alone is not permission to discard a protected receipt.",
     "protected_boundary": "Every other protected boundary remains event-driven and fail-closed. No applicability receipt may authorize product mutation, provider or credential access, spend, destructive work, deployment, publication, merge, or release."
   }
 }
