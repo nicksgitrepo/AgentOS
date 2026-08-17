@@ -16,6 +16,7 @@ import {
   dispatchOrchestratorSuccessor,
   validateOrchestratorSuccessorDispatchReadback,
 } from "../control/orchestrator-successor-dispatch.mjs";
+import {compileActionResultContinuation} from "../control/action-result-continuation.mjs";
 
 const sha = (value) => canonicalDigest({value});
 const evidence = (id) => ({evidence_id: id, reference: `opaque:${id.toLowerCase()}`, sha256: sha(id)});
@@ -119,6 +120,66 @@ assert.throws(() => dispatchOrchestratorSuccessor({
 const tamperedReadback = structuredClone(readback);
 tamperedReadback.readback_sha256 = sha("tampered");
 assert.throws(() => validateOrchestratorSuccessorDispatchReadback(tamperedReadback), /readback digest/u);
+
+const materializationContinuation = compileControllerContinuation("MATERIALIZE_NEW_PROJECT_REPOSITORIES");
+const materializationSuccessor = compileActionResultContinuation({
+  actionId: "PREPARE_PYRAMID_IMPORT_OUTPUT",
+  resultId: "RESULT.ORCHESTRATOR.DISPATCH.MATERIALIZE",
+  result: {
+    status: "PYRAMID_IMPORT_OUTPUT_PREPARED_LOCAL_ISOLATED",
+    candidate_sha256: sha("candidate"),
+    candidate_before_sha256: sha("candidate"),
+    candidate_after_sha256: sha("candidate"),
+    product_mutation: false,
+    source_roots_preserved: true,
+  },
+  semanticBeforeSha256: sha("prepare-before"),
+  semanticAfterSha256: sha("prepare-after"),
+  nextAction: "MATERIALIZE_NEW_PROJECT_REPOSITORIES",
+  nextHandler: "HANDLER.ORCHESTRATOR.MATERIALIZE_NEW_PROJECT_REPOSITORIES",
+  continuation: materializationContinuation,
+  continuation_sha256: canonicalDigest(materializationContinuation),
+  persistence: {
+    status: "PERSISTED",
+    receipt_ref: "ref:control-plane/orchestrator/materialization-source",
+    receipt_sha256: sha("materialization-source"),
+    atomic: true,
+    same_turn: true,
+    write_scope: "CONTROL_PLANE_ONLY",
+  },
+  evidenceRefs: [evidence("EVIDENCE.MATERIALIZE.A"), evidence("EVIDENCE.MATERIALIZE.B")],
+  hostileFixtureRefs: ["FIXTURE.MATERIALIZE.NO_PRODUCT", "FIXTURE.MATERIALIZE.SOURCE_PRESERVED"],
+});
+const materializationPersisted = [];
+const materializationReadback = dispatchOrchestratorSuccessor({
+  successor: materializationSuccessor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.MATERIALIZE",
+  handlers: {
+    "HANDLER.ORCHESTRATOR.MATERIALIZE_NEW_PROJECT_REPOSITORIES": (current) => ({
+      semantic_after_sha256: sha(`${current.semantic_after_sha256}:materialized`),
+      next_action: "PREPARE_CANDIDATE_REVIEW",
+      next_handler: "HANDLER.CONTROLLER_CANDIDATE_REVIEW",
+      continuation: compileControllerContinuation("PREPARE_CANDIDATE_REVIEW"),
+      continuation_sha256: canonicalDigest(compileControllerContinuation("PREPARE_CANDIDATE_REVIEW")),
+      evidence_refs: [evidence("EVIDENCE.MATERIALIZE.RESULT.A"), evidence("EVIDENCE.MATERIALIZE.RESULT.B")],
+      hostile_fixture_refs: ["FIXTURE.MATERIALIZE.RESULT.NO_PRODUCT", "FIXTURE.MATERIALIZE.RESULT.ROLLBACK"],
+      protected_event: null,
+      defect: null,
+    }),
+  },
+  persist: (receipt) => {
+    materializationPersisted.push(receipt);
+    return true;
+  },
+});
+validateOrchestratorSuccessorDispatchReadback(materializationReadback);
+assert.equal(materializationReadback.dispatch_observed, true);
+assert.equal(materializationReadback.dispatched_count, 1);
+assert.equal(materializationPersisted.length, 1);
+assert.equal(materializationReadback.source_action, "MATERIALIZE_NEW_PROJECT_REPOSITORIES");
+assert.equal(materializationReadback.final_next_action, "PREPARE_CANDIDATE_REVIEW");
+assert.equal(materializationReadback.scope.control_plane_only, true);
+assert.equal(materializationReadback.scope.consumer_product_mutated, false);
 
 const schemaPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/orchestrator-successor-dispatch.v1.json");
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));

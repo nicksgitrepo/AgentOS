@@ -35,6 +35,7 @@ const DISPATCHABLE_ACTIONS = Object.freeze([
   "START_INDEPENDENT_REAUDIT",
   "PREPARE_CANDIDATE_REVIEW",
   "PREPARE_PYRAMID_IMPORT_OUTPUT",
+  "MATERIALIZE_NEW_PROJECT_REPOSITORIES",
 ].filter((action) => Object.hasOwn(CONTROLLER_ACTION_REGISTRY, action)).sort(compareUtf8));
 const READBACK_KEYS = Object.freeze([
   "schema", "version", "dispatch_id", "status", "source_successor_sha256", "source_action", "source_handler",
