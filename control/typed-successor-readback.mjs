@@ -222,9 +222,11 @@ export function writeTypedSuccessorReadbackCompareAndSwap({authorityRoot, record
   target = safeRecordPath(authorityRoot, recordPath);
   const lockPath = `${target}.lock`;
   let lockDescriptor;
+  let lockHeld = false;
   let temporary;
   try {
     lockDescriptor = fs.openSync(lockPath, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
+    lockHeld = true;
     const current = readTypedSuccessorReadback({authorityRoot, recordPath});
     if (expectedSuccessorSha256 === null) assert(current === null, "Typed successor record already exists");
     else assert(current !== null && current.successor_sha256 === expectedSuccessorSha256, "Typed successor compare-and-swap parent is stale");
@@ -237,7 +239,9 @@ export function writeTypedSuccessorReadbackCompareAndSwap({authorityRoot, record
   } finally {
     if (temporary !== undefined && fs.existsSync(temporary)) fs.unlinkSync(temporary);
     if (lockDescriptor !== undefined) fs.closeSync(lockDescriptor);
-    try { fs.unlinkSync(lockPath); } catch (error) { if (error.code !== "ENOENT") throw error; }
+    if (lockHeld) {
+      try { fs.unlinkSync(lockPath); } catch (error) { if (error.code !== "ENOENT") throw error; }
+    }
   }
   const readback = readTypedSuccessorReadback({authorityRoot, recordPath});
   assert(readback.successor_sha256 === validated.successor_sha256 && readback.readback_sha256 === validated.readback_sha256, "Typed successor readback differs");

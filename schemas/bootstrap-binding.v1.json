@@ -578,7 +578,7 @@
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
-      "sha256": "489f5566b4656df9b3e3f6c6c5796d59f2c8b9c46e8d70b0696cc6ce27da8aee"
+      "sha256": "9dcccf8d9f254895ed0bc038114787af9ba5f59f5cfb3645a54ed07428fc4fba"
     },
     "typed_successor_readback_contract": {
       "path": "schemas/typed-successor-readback.v1.json",
