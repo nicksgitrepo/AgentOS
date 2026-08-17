@@ -558,7 +558,7 @@
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
-      "sha256": "2e44f8aa4b6458612d1acf23273ca50e1763ea481fff180c6d52aae1afe2c653"
+      "sha256": "569f348de78abf3ecb24037899aa9561e23578ec8600b87611e77a5190f1685e"
     },
     "continuous_operating_loop_contract": {
       "path": "schemas/continuous-operating-loop.v1.json",
@@ -566,7 +566,7 @@
     },
     "continuous_operating_loop_verifier": {
       "path": "tests/verify-continuous-operating-loop.mjs",
-      "sha256": "1ba1b914a9446e4572142ff058988173e883bb6cdd6bd7b0f615d17e4c31376a"
+      "sha256": "9f3ef1ed9bd2a0a8c1f1251456f606c4574daaac6c07896ebe2b8f16cbed3788"
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",

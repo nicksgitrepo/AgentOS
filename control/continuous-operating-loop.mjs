@@ -22,6 +22,7 @@ export const REPAIR_RECORD_SCHEMA = "agentos.continuous_operating_loop_repair_re
 export const REPLACEMENT_GOAL_SCHEMA = "agentos.continuous_operating_loop_replacement_goal.v1";
 export const REPLACEMENT_RECEIPT_SCHEMA = "agentos.continuous_operating_loop_replacement_receipt.v1";
 export const DEFAULT_MEANINGFUL_PROGRESS_WINDOW_MINUTES = 15;
+export const DEFAULT_MAX_SAME_TURN_REPLACEMENTS = 16;
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -1152,6 +1153,7 @@ export async function runContinuousOperatingLoop({
   onIteration = null,
   intervalMinutes = DEFAULT_MEANINGFUL_PROGRESS_WINDOW_MINUTES,
   intervalMs = null,
+  maxSameTurnReplacements = DEFAULT_MAX_SAME_TURN_REPLACEMENTS,
   once = false,
   signal = null,
 }) {
@@ -1160,7 +1162,9 @@ export async function runContinuousOperatingLoop({
   assert(Number.isSafeInteger(intervalMinutes) && intervalMinutes >= 1 && intervalMinutes <= 24 * 60, "continuous loop interval minutes are invalid");
   const resolvedIntervalMs = intervalMs === null ? intervalMinutes * 60_000 : intervalMs;
   assert(Number.isSafeInteger(resolvedIntervalMs) && resolvedIntervalMs >= 250 && resolvedIntervalMs <= 24 * 60 * 60_000, "continuous loop interval is invalid");
+  assert(Number.isSafeInteger(maxSameTurnReplacements) && maxSameTurnReplacements >= 1 && maxSameTurnReplacements <= 256, "continuous loop same-turn replacement bound is invalid");
   const results = [];
+  let sameTurnReplacements = 0;
   do {
     if (signal?.aborted === true) break;
     const observation = await observe();
@@ -1169,6 +1173,18 @@ export async function runContinuousOperatingLoop({
     results.push(result);
     if (onIteration !== null) await onIteration(result);
     if (once || signal?.aborted === true) break;
+    // A repair-required, blocked, or hard-stop result is a routed workflow
+    // decision, not a reason to sleep until the next inspection window. Return
+    // it to the owning handler immediately. A typed replacement is the one
+    // local successor that may continue in this turn, bounded against a
+    // malformed adapter that keeps returning the same replacement.
+    if (result.status === "REPLACED_AND_CLEARED") {
+      sameTurnReplacements += 1;
+      if (sameTurnReplacements >= maxSameTurnReplacements) break;
+      continue;
+    }
+    if (result.continuation_allowed !== true) break;
+    sameTurnReplacements = 0;
     await sleep(resolvedIntervalMs, signal);
   } while (signal?.aborted !== true);
   return results;

@@ -398,6 +398,24 @@ const timerRun = await runContinuousOperatingLoop({
 assert.equal(timerRun.length, 1, "background runner must perform one requested inspection");
 assert.deepEqual(timerEvents, [timerRun[0].status], "background runner must report its iteration");
 assert.equal(timerRun[0].status, "REPAIR_REQUIRED", "background runner must expose the timer finding");
+
+// A repair-required result must return to its owning Controller immediately;
+// it must not be hidden behind the next meaningful-progress timer window.
+const repairRequiredAbort = new AbortController();
+const repairRequiredTimer = setTimeout(() => repairRequiredAbort.abort(), 300);
+let repairRequiredObservations = 0;
+const repairRequiredRun = await runContinuousOperatingLoop({
+  intervalMs: 60_000,
+  signal: repairRequiredAbort.signal,
+  observe: () => {
+    repairRequiredObservations += 1;
+    return {loop, workers: roster(), observedAtUtc: NOW};
+  },
+});
+clearTimeout(repairRequiredTimer);
+assert.equal(repairRequiredObservations, 1, "repair-required monitoring must return immediately instead of waiting for cadence");
+assert.equal(repairRequiredRun.length, 1, "repair-required monitoring must expose one routed result");
+assert.equal(repairRequiredRun[0].status, "REPAIR_REQUIRED");
 await assert.rejects(
   () => runContinuousOperatingLoop({
     once: true,
