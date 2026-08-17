@@ -15,6 +15,8 @@ for (const name of [
   "createProjectMemoryRuntime",
   "compileGeneratedProjectRoleLibrary",
   "compileReleasePromotionGate",
+  "compileAutonomousLaneHandoff",
+  "validateAutonomousLaneHandoff",
 ]) {
   assert.equal(typeof publicKernel[name], "function", `public kernel export is unavailable: ${name}`);
 }

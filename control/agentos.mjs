@@ -33,6 +33,7 @@ export {compileLocalProofEvidenceGate, validateLocalProofEvidenceGate, LOCAL_PRO
 export {compileLivenessDigestGate, validateLivenessDigestGate, evaluateLivenessBindingFreshness, LIVENESS_DIGEST_GATE_SCHEMA, LIVENESS_DIGEST_GATE_VERSION, LIVENESS_ROSTER_INVALIDATION_RULE, LIVENESS_ROSTER_REFRESH_TRIGGERS} from "./liveness-digest-gate.mjs";
 export {compileAutonomousDispatchLivenessGate, validateAutonomousDispatchLivenessGate, evaluateAutonomousDispatchLiveness, AUTONOMOUS_DISPATCH_LIVENESS_GATE_SCHEMA, AUTONOMOUS_DISPATCH_LIVENESS_GATE_VERSION, AUTONOMOUS_DISPATCH_RETRY_ACTION, AUTONOMOUS_DISPATCH_RETRY_HANDLER, AUTONOMOUS_DISPATCH_RETRY_ROUTE} from "./autonomous-dispatch-liveness-gate.mjs";
 export {compileHarnessCollisionGate, validateHarnessCollisionGate, inspectHarnessSource, HARNESS_COLLISION_GATE_SCHEMA, HARNESS_COLLISION_GATE_VERSION, HARNESS_COLLISION_REPAIR_ACTION, HARNESS_COLLISION_REPAIR_HANDLER, HARNESS_COLLISION_DIRECT_CONSUMER, HARNESS_COLLISION_DEFECT_CODE, HARNESS_COLLISION_HOSTILE_FIXTURE_REFS} from "./harness-collision-gate.mjs";
+export {compileAutonomousLaneHandoff, validateAutonomousLaneHandoff, AUTONOMOUS_LANE_HANDOFF_SCHEMA, AUTONOMOUS_LANE_HANDOFF_VERSION, AUTONOMOUS_LANE_EXECUTION_OWNER, AUTONOMOUS_LANE_CONTROLLER_ROLE, AUTONOMOUS_LANE_NEXT_ACTION, AUTONOMOUS_LANE_NEXT_HANDLER} from "./autonomous-lane-handoff.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,

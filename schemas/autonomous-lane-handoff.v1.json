@@ -6,7 +6,7 @@
   "required": [
     "schema", "version", "lane_id", "worker_ref", "campaign_id", "campaign_version",
     "goal_sha256", "source", "writable_scope", "execution_owner", "controller_role",
-    "controller_approval_required", "handoff_status", "next_consumer", "result_type",
+    "controller_approval_required", "handoff_status", "next_consumer", "next_action", "next_handler", "result_type",
     "summary", "artifact_sha256", "evidence_sha256", "handoff_ref", "roster_policy",
     "handoff_sha256"
   ],
@@ -25,6 +25,8 @@
     "controller_approval_required": {"const": false},
     "handoff_status": {"const": "READY_FOR_INDEPENDENT_CONSUMPTION"},
     "next_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+    "next_action": {"const": "START_PLATFORM_REVIEW"},
+    "next_handler": {"const": "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW"},
     "result_type": {"$ref": "#/$defs/identifier"},
     "summary": {"type": "string", "minLength": 16},
     "artifact_sha256": {"$ref": "#/$defs/sha256"},

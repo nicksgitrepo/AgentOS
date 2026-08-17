@@ -33,6 +33,8 @@ import {
 import {
   compileAutonomousLaneHandoff,
   validateAutonomousLaneHandoff,
+  AUTONOMOUS_LANE_NEXT_ACTION,
+  AUTONOMOUS_LANE_NEXT_HANDLER,
 } from "./autonomous-lane-handoff.mjs";
 
 export {
@@ -346,6 +348,8 @@ export function createParallelCampaignLifecycle({
       source: worker.source,
       writableScope: worker.writable_scope,
       resultType: handoff.result_type,
+      nextAction: AUTONOMOUS_LANE_NEXT_ACTION,
+      nextHandler: AUTONOMOUS_LANE_NEXT_HANDLER,
       summary: handoff.summary,
       artifactSha256: handoff.artifact_sha256,
       evidenceSha256: handoff.evidence_sha256,

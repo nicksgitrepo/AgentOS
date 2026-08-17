@@ -16,6 +16,8 @@ export const AUTONOMOUS_LANE_HANDOFF_SCHEMA = "agentos.autonomous_lane_handoff.v
 export const AUTONOMOUS_LANE_HANDOFF_VERSION = 1;
 export const AUTONOMOUS_LANE_EXECUTION_OWNER = "LANE_AGENT";
 export const AUTONOMOUS_LANE_CONTROLLER_ROLE = "LIVENESS_CUSTODIAN";
+export const AUTONOMOUS_LANE_NEXT_ACTION = "START_PLATFORM_REVIEW";
+export const AUTONOMOUS_LANE_NEXT_HANDLER = "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$/u;
@@ -24,7 +26,7 @@ const HANDOFF_STATUS = "READY_FOR_INDEPENDENT_CONSUMPTION";
 const HANDOFF_KEYS = Object.freeze([
   "schema", "version", "lane_id", "worker_ref", "campaign_id", "campaign_version",
   "goal_sha256", "source", "writable_scope", "execution_owner", "controller_role",
-  "controller_approval_required", "handoff_status", "next_consumer", "result_type",
+  "controller_approval_required", "handoff_status", "next_consumer", "next_action", "next_handler", "result_type",
   "summary", "artifact_sha256", "evidence_sha256", "handoff_ref", "roster_policy",
   "handoff_sha256",
 ]);
@@ -89,6 +91,12 @@ export function validateAutonomousLaneHandoff(handoff) {
   assert(handoff.controller_approval_required === false, "ordinary lane handoff may not require Controller approval");
   assert(handoff.handoff_status === HANDOFF_STATUS, "autonomous lane handoff is not ready for consumption");
   assert(handoff.next_consumer === "INDEPENDENT_PLATFORM_REVIEW", "lane handoff must route to an independent consumer");
+  requireIdentifier(handoff.next_action, "autonomous lane next action");
+  requireIdentifier(handoff.next_handler, "autonomous lane next handler");
+  assert(handoff.next_action === AUTONOMOUS_LANE_NEXT_ACTION, "lane handoff next action must start independent platform review");
+  assert(handoff.next_handler === AUTONOMOUS_LANE_NEXT_HANDLER, "lane handoff next handler is not the platform review handler");
+  assert(handoff.next_action !== "NONE" && handoff.next_action !== "DONE", "lane handoff cannot close without a successor action");
+  assert(!handoff.next_handler.startsWith("HANDLER.CONTROLLER"), "lane handoff cannot route ordinary work through Controller approval");
   requireIdentifier(handoff.result_type, "autonomous lane result type");
   requireText(handoff.summary, "autonomous lane summary", 16);
   requireSha(handoff.artifact_sha256, "autonomous lane artifact digest");
@@ -109,6 +117,8 @@ export function compileAutonomousLaneHandoff({
   source,
   writableScope,
   resultType,
+  nextAction,
+  nextHandler,
   summary,
   artifactSha256,
   evidenceSha256,
@@ -122,6 +132,8 @@ export function compileAutonomousLaneHandoff({
   validateSource(source);
   requireIdentifier(writableScope, "autonomous lane writable scope");
   requireIdentifier(resultType, "autonomous lane result type");
+  requireIdentifier(nextAction, "autonomous lane next action");
+  requireIdentifier(nextHandler, "autonomous lane next handler");
   requireText(summary, "autonomous lane summary", 16);
   requireSha(artifactSha256, "autonomous lane artifact digest");
   requireSha(evidenceSha256, "autonomous lane evidence digest");
@@ -141,6 +153,8 @@ export function compileAutonomousLaneHandoff({
     controller_approval_required: false,
     handoff_status: HANDOFF_STATUS,
     next_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+    next_action: nextAction,
+    next_handler: nextHandler,
     result_type: resultType,
     summary,
     artifact_sha256: artifactSha256,
