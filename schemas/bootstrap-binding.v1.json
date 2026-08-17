@@ -910,7 +910,7 @@
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
-      "sha256": "429faf3f3389152cc815fab3c92af590cf9186a8c7bdfdb363179343ed38c5ee"
+      "sha256": "1c0fd6db2a3940eb2832eed6c901cb0dbe8d404b945d109ff45bdb1270181f82"
     },
     "controller_startup_sequence_contract": {
       "path": "schemas/controller-startup-sequence.v1.json",

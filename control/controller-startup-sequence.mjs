@@ -197,7 +197,8 @@ export function validateControllerStartupSuccessor(sequence) {
   requireIdentifier(sequence.next_action, "Controller startup next action");
   assert(sequence.next_handler === controllerActionHandlerFor(sequence.next_action), "Controller startup next handler is stale");
   assert(sequence.continuation_sha256 === controllerContinuationDigest(sequence.continuation), "Controller startup continuation digest is stale");
-  assert(sequence.continuation === compileControllerContinuation(sequence.next_action, {protectedEventId: sequence.protected_event?.blocker_id ?? null}) || sequence.continuation_sha256 === controllerContinuationDigest(sequence.continuation), "Controller startup continuation is invalid");
+  const expectedContinuation = compileControllerContinuation(sequence.next_action, {protectedEventId: sequence.protected_event?.blocker_id ?? null});
+  assert(sequence.continuation_sha256 === controllerContinuationDigest(expectedContinuation), "Controller startup continuation is invalid");
   requireBoolean(sequence.true_blocker, "Controller startup true blocker");
   if (sequence.protected_event !== null) validateProtectedEvent(sequence.protected_event);
   assert(sequence.true_blocker === (sequence.protected_event !== null), "Controller startup true-blocker flag is inconsistent");
@@ -205,6 +206,7 @@ export function validateControllerStartupSuccessor(sequence) {
   const expected = deriveStartupRoute({stage: sequence.stage, routeFacts: sequence.route_facts, protectedEvent: sequence.protected_event});
   assert(sequence.next_action === expected.next_action && sequence.next_handler === expected.next_handler, "Controller startup successor is not derived from the current stage");
   assert(sequence.continuation_sha256 === expected.continuation_sha256, "Controller startup continuation is not derived from the current stage");
+  assert(sequence.true_blocker === (expected.protected_event !== null), "Controller startup protected route is not derived from a true blocker");
   assert(sequence.sequence_sha256 === canonicalDigest(body(sequence)), "Controller startup successor digest mismatch");
   return sequence;
 }
