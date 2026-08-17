@@ -18,6 +18,7 @@ import {
   writeSupervisorRecordCompareAndSwap,
 } from "../control/controller-supervisor.mjs";
 import {runControllerSupervisorIteration} from "../control/controller-supervisor-runtime.mjs";
+import {validateAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
 
 const sourceCommit = "1".repeat(40);
 const sourceTree = "2".repeat(40);
@@ -212,7 +213,15 @@ assert.equal(firstRuntime.tick.route_status, "ROUTE_FAILED");
 runtimeObservation = changedObservation;
 const secondRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
 assert.equal(secondRuntime.tick.route_status, "ROUTED");
+assert.equal(secondRuntime.priorSpawnerDefect?.defect_kind, "NON_PASSING_CHECK");
 assert.equal(fs.existsSync(path.join(runtimeRoot, "supervisor", "route-failures", `${firstRuntime.goal.goal_id}.json`)), true);
+const spawnerDefectDirectory = path.join(runtimeRoot, "supervisor", "spawner-defects");
+const routeFailureDefectFiles = fs.readdirSync(spawnerDefectDirectory).filter((name) => name.endsWith(".json"));
+assert.equal(routeFailureDefectFiles.length, 1, "a route failure must produce one typed Spawner intake");
+const routeFailureDefect = JSON.parse(fs.readFileSync(path.join(spawnerDefectDirectory, routeFailureDefectFiles[0]), "utf8"));
+validateAgentSpawnerDefectIntake(routeFailureDefect);
+assert.equal(routeFailureDefect.repair.kind, "REUSABLE_BLOCK_PATCH");
+assert.equal(routeFailureDefect.handoff.next_action, "ROUTE_TO_CONTROLLER_CUSTODY");
 const reusedRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
 assert.equal(reusedRuntime.reused, true, "an unchanged observation must not retry the same route");
 assert.equal(routeAttempts, 2);
@@ -220,6 +229,9 @@ const reusedRuntimeState = JSON.parse(fs.readFileSync(path.join(runtimeRoot, "su
 assert.equal(reusedRuntimeState.status, "ROUTE_FAILED_RETAINED", "unchanged post-route observations must become a repairable liveness failure");
 assert.equal(reusedRuntime.noProgressRca.error_message_exact, "NO_SEMANTIC_PROGRESS_AFTER_ROUTED_SUCCESS");
 assert.equal(fs.existsSync(path.join(runtimeRoot, "supervisor", "no-progress", `${secondRuntime.goal.goal_id}.json`)), true);
+const noProgressDefectFiles = fs.readdirSync(spawnerDefectDirectory).filter((name) => name.endsWith(".json"));
+assert.equal(noProgressDefectFiles.length, 2, "a no-progress RCA must add a typed Spawner intake");
+assert.equal(reusedRuntime.spawnerDefect.repair.block_id, "BLOCK.CONTROLLER.SUPERVISOR.LIVENESS");
 fs.rmSync(runtimeRoot, {recursive: true, force: true});
 
 const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));

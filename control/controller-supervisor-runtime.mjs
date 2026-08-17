@@ -23,6 +23,8 @@ import {
   validateSupervisorTick,
   writeSupervisorRecordCompareAndSwap,
 } from "./controller-supervisor.mjs";
+import {canonicalDigest} from "./content-addressing.mjs";
+import {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
 import {redactPersistedText} from "./persisted-record-privacy.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -299,6 +301,58 @@ function compileNoProgressRca({runtimeId, priorGoal, priorTick, currentObservati
   return rca;
 }
 
+function compileSpawnerDefectIntake({observation, rca, defectId, defectKind = "NON_PASSING_CHECK"}) {
+  const sourceBinding = {
+    candidate_sha256: canonicalDigest({project_id: observation.project_id, campaign_id: observation.campaign_id, campaign_version: observation.campaign_version, source_commit: observation.source_commit, source_tree: observation.source_tree}),
+    context_sha256: canonicalDigest({project_id: observation.project_id, campaign_id: observation.campaign_id, campaign_version: observation.campaign_version, parent_handoff_sha256: observation.parent_handoff_sha256}),
+    roster_projection_sha256: canonicalDigest({findings: observation.findings, next_action: observation.next_action}),
+    source_identity_sha256: canonicalDigest({source_commit: observation.source_commit, source_tree: observation.source_tree}),
+  };
+  const evidenceRefs = [
+    {evidence_id: "EVIDENCE.CONTROLLER.SUPERVISOR.OBSERVATION", kind: "SUPERVISOR_OBSERVATION", reference: `opaque:supervisor-observation:${observation.observation_sha256}`, sha256: observation.observation_sha256},
+    {evidence_id: "EVIDENCE.CONTROLLER.SUPERVISOR.RCA", kind: "SUPERVISOR_RCA", reference: `opaque:supervisor-rca:${rca.rca_sha256}`, sha256: rca.rca_sha256},
+  ];
+  return compileAgentSpawnerDefectIntake({
+    defectId,
+    defectKind,
+    sourceBinding,
+    evidenceRefs,
+    observation: {
+      summary: "The Controller supervisor observed a routed workflow result that did not advance semantic state.",
+      expected: "A routed action changes the control-plane state or records an exact authorized resume event.",
+      observed: rca.error_message_exact,
+      observed_at_utc: rca.observed_at_utc,
+      details_sha256: rca.rca_sha256,
+    },
+    classification: "REPAIRABLE_GATE_GAP",
+    rootCause: {
+      category: "MISSING_SEMANTIC_CONTINUATION",
+      statement: "A routed Controller action returned without a durable semantic successor or exact authorized resume event.",
+      evidence_class: "OBSERVED",
+    },
+    blockId: "BLOCK.CONTROLLER.SUPERVISOR.LIVENESS",
+    gateId: "GATE.CONTROLLER.SUPERVISOR.NEXT_ACTION",
+    graphId: "GRAPH.CONTROLLER.SUPERVISOR",
+    question: "Did the routed Controller action produce semantic progress or an exact authorized resume event?",
+    requiredEvidence: ["evidence.controller_observation", "evidence.route_readback", "evidence.semantic_successor", "evidence.independent_recheck"],
+    hostileFixtureRefs: ["FIXTURE.CONTROLLER.SUPERVISOR.NO_PROGRESS", "FIXTURE.CONTROLLER.SUPERVISOR.UNBOUND_EVENT_WAIT", "FIXTURE.CONTROLLER.SUPERVISOR.STALE_ROUTE"],
+    authorityScope: ["COMPILE_REUSABLE_GATE", "REFRESH_TYPED_BINDINGS", "INVALIDATE_DEPENDENT_ROSTER", "REPAIR_CONTROLLER_ROUTE"],
+    stopConditions: ["INCOMPLETE_BLOCK", "MISSING_ROUTE_READBACK", "PROTECTED_BOUNDARY", "INDEPENDENT_EVALUATION_NOT_CLEARED"],
+    bindingsToRefresh: ["BLOCK_DIGEST", "GATE_DIGEST", "ROSTER_PROJECTION_DIGEST", "DEPENDENT_SEED_DIGEST", "CONTROLLER_RUNTIME_DIGEST"],
+    deterministicRule: "Pass only when semantic_after differs from semantic_before or the route readback contains WAITING_FOR_AUTHORIZED_WORK with a stable resume_event_id and nonempty resume_condition; otherwise route a bounded repair and re-observe.",
+  });
+}
+
+function persistSpawnerDefect({runtimeRoot, intake}) {
+  return writeOrVerify({
+    runtimeRoot,
+    recordPath: `supervisor/spawner-defects/${intake.defect_id}.json`,
+    record: intake,
+    digestField: "defect_sha256",
+    validate: validateAgentSpawnerDefectIntake,
+  });
+}
+
 function writeOrVerify({runtimeRoot, recordPath, record, digestField, validate}) {
   const existing = readSupervisorRecord({authorityRoot: runtimeRoot, recordPath});
   if (existing !== null) {
@@ -318,6 +372,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   const observation = await adapter.observe();
   validateSupervisorObservation(observation);
   const existingTick = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/tick.json"});
+  let priorSpawnerDefect = null;
   if (existingTick !== null && existingTick.route_status === "ROUTE_FAILED" && existingTick.observation_sha256 !== observation.observation_sha256) {
     const priorGoal = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/goal.json"});
     validateSupervisorTick(existingTick);
@@ -337,6 +392,12 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     });
     if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
     else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor route failure RCA differs");
+    priorSpawnerDefect = compileSpawnerDefectIntake({
+      observation,
+      rca,
+      defectId: `DEFECT.SUPERVISOR.ROUTE_FAILURE.${priorGoal.goal_id}.${observation.observation_sha256.slice(0, 16).toUpperCase()}`,
+    });
+    persistSpawnerDefect({runtimeRoot: root, intake: priorSpawnerDefect});
   }
   if (existingTick !== null && existingTick.observation_sha256 === observation.observation_sha256) {
     validateSupervisorTick(existingTick);
@@ -344,15 +405,15 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     validateSupervisorGoal(existingGoal);
     if (existingTick.route_status === "STOPPED_HARD_BOUNDARY") {
       writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ACTIVE_PROTECTED_WAIT", observation, goal: existingGoal, tick: existingTick, nowUtc}));
-      return {observation, goal: existingGoal, tick: existingTick, reused: true};
+      return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
     }
     if (existingTick.route_status === "ROUTE_FAILED") {
       writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, nowUtc}));
-      return {observation, goal: existingGoal, tick: existingTick, reused: true};
+      return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
     }
     if (isExplicitAuthorizedEventWait(existingTick)) {
       writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ACTIVE_EVENT_WAIT", observation, goal: existingGoal, tick: existingTick, nowUtc}));
-      return {observation, goal: existingGoal, tick: existingTick, reused: true};
+      return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
     }
     const rcaPath = `supervisor/no-progress/${existingGoal.goal_id}.json`;
     const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
@@ -365,8 +426,14 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     });
     if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
     else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor no-progress RCA differs");
+    const spawnerDefect = compileSpawnerDefectIntake({
+      observation,
+      rca,
+      defectId: `DEFECT.SUPERVISOR.NO_PROGRESS.${existingGoal.goal_id}`,
+    });
+    persistSpawnerDefect({runtimeRoot: root, intake: spawnerDefect});
     writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, error: "NO_SEMANTIC_PROGRESS_AFTER_ROUTED_SUCCESS", nowUtc}));
-    return {observation, goal: existingGoal, tick: existingTick, reused: true, noProgressRca: rca};
+    return {observation, goal: existingGoal, tick: existingTick, reused: true, noProgressRca: rca, spawnerDefect};
   }
   const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
   const result = await runSupervisorIterationAsync({observation, route});
@@ -378,7 +445,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   writeJsonAtomic(safeChild(root, "supervisor/tick.json"), result.tick);
   const status = runtimeStatusForTick(result.tick);
   writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status, observation, goal: result.goal, tick: result.tick, error: result.tick.route_error, nowUtc}));
-  return {...result, observation, reused: false};
+  return {...result, observation, reused: false, priorSpawnerDefect};
 }
 
 function sleep(milliseconds, signal = null) {
