@@ -16,6 +16,7 @@ import {
   controllerActionHandlerFor,
   validateControllerActionReceipt,
 } from "./controller-action-dispatcher.mjs";
+import {validateStopWorkflowDecision} from "./stop-workflow-gate.mjs";
 
 export const AGENT_SPAWNER_CONTROLLER_BRIDGE_SCHEMA = "agentos.agent_spawner_controller_bridge.v1";
 export const AGENT_SPAWNER_CONTROLLER_BRIDGE_VERSION = 1;
@@ -39,9 +40,12 @@ const LOCAL_ROUTES = new Set(["COMPILE_BLOCK_PATCH", "REPAIR_ORCHESTRATOR_ROUTE"
 const BRIDGE_KEYS = Object.freeze([
   "schema", "version", "bridge_id", "defect_id", "source_handoff_sha256", "source_controller_receipt_sha256",
   "source_route", "mapped_action", "mapped_handler", "controller_action_receipt", "roster_invalidation",
-  "dispatch", "readback_sha256", "bridge_sha256",
+  "dispatch", "protected_gate", "readback_sha256", "bridge_sha256",
 ]);
 const DISPATCH_KEYS = Object.freeze(["mode", "same_turn_dispatch", "status"]);
+const PROTECTED_GATE_KEYS = Object.freeze([
+  "local_work_present", "incomplete_block_count", "pending_route_count", "stop_workflow_decision",
+]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -69,6 +73,10 @@ function requireSha(value, label, {allowNull = false} = {}) {
 
 function requireReference(value, label) {
   assert(typeof value === "string" && REFERENCE.test(value), `${label} must be an opaque or reference URI`);
+}
+
+function requireNonNegativeInteger(value, label) {
+  assert(Number.isInteger(value) && value >= 0, `${label} must be a non-negative integer`);
 }
 
 function sortedUniqueIdentifiers(values, label) {
@@ -159,6 +167,24 @@ function validateRouteBindings(bridge, intake) {
   assert(routeStatusIsValid(intake), "Spawner intake is not eligible for Controller bridging");
 }
 
+function validateProtectedGate(gate, {protectedEvent, expectedStopDecision = null} = {}) {
+  if (protectedEvent === null) {
+    assert(gate === null, "Local Spawner bridge carries a protected gate");
+    return;
+  }
+  exactKeys(gate, PROTECTED_GATE_KEYS, "Agent Spawner protected-route gate");
+  assert(gate.local_work_present === false, "Protected Spawner bridge cannot hide local work");
+  requireNonNegativeInteger(gate.incomplete_block_count, "Protected Spawner incomplete block count");
+  requireNonNegativeInteger(gate.pending_route_count, "Protected Spawner pending route count");
+  assert(gate.incomplete_block_count === 0, "Protected Spawner bridge cannot hide incomplete blocks");
+  assert(gate.pending_route_count === 0, "Protected Spawner bridge cannot hide pending routes");
+  validateStopWorkflowDecision(gate.stop_workflow_decision);
+  assert(gate.stop_workflow_decision.stop === true, "Protected Spawner bridge stop gate must stop");
+  if (expectedStopDecision !== null) {
+    assert(gate.stop_workflow_decision.decision_sha256 === expectedStopDecision.decision_sha256, "Protected Spawner bridge stop gate is stale");
+  }
+}
+
 export function validateAgentSpawnerControllerBridge(bridge, intake) {
   validateAgentSpawnerDefectIntake(intake);
   exactKeys(bridge, BRIDGE_KEYS, "Agent Spawner Controller bridge");
@@ -184,8 +210,13 @@ export function validateAgentSpawnerControllerBridge(bridge, intake) {
   assert(bridge.controller_action_receipt.continuation.same_turn_dispatch === bridge.dispatch.same_turn_dispatch, "Agent Spawner bridge continuation mode is stale");
   if (bridge.source_route === "ESCALATE_PROTECTED") {
     assert(bridge.controller_action_receipt.protected_event !== null, "Protected Spawner bridge lacks protected event");
+    validateProtectedGate(bridge.protected_gate, {
+      protectedEvent: bridge.controller_action_receipt.protected_event,
+      expectedStopDecision: bridge.controller_action_receipt.stop_workflow_decision,
+    });
   } else {
     assert(bridge.controller_action_receipt.protected_event === null, "Local Spawner bridge carries a protected event");
+    validateProtectedGate(bridge.protected_gate, {protectedEvent: null});
   }
   requireSha(bridge.readback_sha256, "Agent Spawner bridge readback digest");
   assert(bridge.readback_sha256 === canonicalDigest(readbackBody(bridge)), "Agent Spawner bridge readback digest mismatch");
@@ -198,6 +229,7 @@ export function compileAgentSpawnerControllerBridge({
   bridgeId,
   intake,
   protectedEvent = null,
+  protectedGate = null,
   semanticBeforeSha256 = null,
   semanticAfterSha256 = null,
 } = {}) {
@@ -209,6 +241,7 @@ export function compileAgentSpawnerControllerBridge({
   const protectedRoute = intake.route === "ESCALATE_PROTECTED";
   if (protectedRoute) {
     assert(protectedEvent !== null, "Protected Spawner route requires a typed protected event");
+    assert(protectedGate !== null, "Protected Spawner route requires an explicit zero-local-work gate");
     assert(semanticBeforeSha256 === null && semanticAfterSha256 === null, "Protected Spawner bridge derives its held semantic state");
   }
   const before = semanticBeforeSha256 ?? derivedSemanticState(intake, mappedAction, "SPAWNER_HANDOFF");
@@ -240,6 +273,7 @@ export function compileAgentSpawnerControllerBridge({
     controller_action_receipt: receipt,
     roster_invalidation: intake.admission.roster_status,
     dispatch: expectedDispatch(intake.route),
+    protected_gate: structuredClone(protectedGate),
     readback_sha256: null,
     bridge_sha256: null,
   };

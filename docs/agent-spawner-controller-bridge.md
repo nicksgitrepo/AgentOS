@@ -10,8 +10,11 @@ executable Controller action. The bridge validates the complete Spawner intake,
 checks its custody status and source handoff digest, maps the route to a
 registered action and handler, and emits a content-addressed Controller action
 receipt. Local routes are dispatched in the same turn. A protected route is
-converted to `WAIT_FOR_PROTECTED_EVENT` and must carry a typed blocker with
-zero resources; no protected permission is inferred.
+converted to `WAIT_FOR_PROTECTED_EVENT` only when it carries a typed blocker
+with zero resources, an explicit five-question stop decision, and machine-
+readable proof that local work is exhausted (`local_work_present=false`,
+`incomplete_block_count=0`, and `pending_route_count=0`). A protected label
+alone is never permission to wait.
 
 The mapping is deliberately small and closed:
 
@@ -26,6 +29,7 @@ The mapping is deliberately small and closed:
 Every bridge preserves the source handoff, Controller receipt predecessor,
 roster invalidation status, evidence, hostile fixtures, continuation, and
 canonical readback. Unknown actions, stale source bindings, missing protected
-events, digest tampering, incomplete blocks, and unqualified intakes fail
-closed. The bridge never spawns, admits, activates, mutates a consumer
-project, accesses a provider, or performs a merge/deployment.
+events, missing stop decisions, local-work counts above zero, digest tampering,
+incomplete blocks, and unqualified intakes fail closed. The bridge never
+spawns, admits, activates, mutates a consumer project, accesses a provider, or
+performs a merge/deployment.

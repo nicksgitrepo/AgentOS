@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {compileAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "../control/agent-spawner-defect-intake.mjs";
 import {compileAgentSpawnerControllerBridge, validateAgentSpawnerControllerBridge} from "../control/agent-spawner-controller-bridge.mjs";
+import {compileControllerProtectedStopDecision} from "../control/controller-action-dispatcher.mjs";
 
 const hash = (value) => canonicalDigest({value});
 const sourceBinding = {candidate_sha256: hash("candidate"), context_sha256: hash("context"), roster_projection_sha256: hash("roster"), source_identity_sha256: hash("source")};
@@ -57,11 +58,29 @@ const protectedEvent = {
   restart_event: "Resume only on a typed protected event or explicit owner resumption.",
   resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
 };
-const protectedBridge = compileAgentSpawnerControllerBridge({bridgeId: "BRIDGE.SPAWNER.PROTECTED.001", intake: protectedIntake, protectedEvent});
+const protectedGate = {
+  local_work_present: false,
+  incomplete_block_count: 0,
+  pending_route_count: 0,
+  stop_workflow_decision: compileControllerProtectedStopDecision({protectedEvent, nextAction: "WAIT_FOR_PROTECTED_EVENT"}),
+};
+const protectedBridge = compileAgentSpawnerControllerBridge({bridgeId: "BRIDGE.SPAWNER.PROTECTED.001", intake: protectedIntake, protectedEvent, protectedGate});
 assert.equal(protectedBridge.mapped_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedBridge.dispatch.same_turn_dispatch, false);
 assert.equal(protectedBridge.controller_action_receipt.protected_event.blocker_id, protectedEvent.blocker_id);
-assert.throws(() => compileAgentSpawnerControllerBridge({bridgeId: "BRIDGE.SPAWNER.PROTECTED.BAD", intake: protectedIntake}), /typed protected event/u);
+assert.throws(() => compileAgentSpawnerControllerBridge({bridgeId: "BRIDGE.SPAWNER.PROTECTED.BAD", intake: protectedIntake, protectedEvent}), /explicit zero-local-work gate/u);
+assert.throws(() => compileAgentSpawnerControllerBridge({
+  bridgeId: "BRIDGE.SPAWNER.PROTECTED.LOCAL_WORK",
+  intake: protectedIntake,
+  protectedEvent,
+  protectedGate: {...protectedGate, local_work_present: true},
+}), /cannot hide local work/u);
+assert.throws(() => compileAgentSpawnerControllerBridge({
+  bridgeId: "BRIDGE.SPAWNER.PROTECTED.QUEUED_ROUTE",
+  intake: protectedIntake,
+  protectedEvent,
+  protectedGate: {...protectedGate, pending_route_count: 1},
+}), /cannot hide pending routes/u);
 
 const tampered = structuredClone(bridge);
 tampered.mapped_action = "WAIT_FOR_PROTECTED_EVENT";

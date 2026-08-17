@@ -5,7 +5,7 @@
   "description": "Maps a validated project-agnostic Agent Spawner defect handoff to a closed Controller action without permitting an unknown route, admission, activation, or protected-boundary bypass.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "bridge_id", "defect_id", "source_handoff_sha256", "source_controller_receipt_sha256", "source_route", "mapped_action", "mapped_handler", "controller_action_receipt", "roster_invalidation", "dispatch", "readback_sha256", "bridge_sha256"],
+  "required": ["schema", "version", "bridge_id", "defect_id", "source_handoff_sha256", "source_controller_receipt_sha256", "source_route", "mapped_action", "mapped_handler", "controller_action_receipt", "roster_invalidation", "dispatch", "protected_gate", "readback_sha256", "bridge_sha256"],
   "properties": {
     "schema": {"const": "agentos.agent_spawner_controller_bridge.v1"},
     "version": {"const": 1},
@@ -27,12 +27,28 @@
         "status": {"enum": ["DISPATCHED", "PROTECTED_WAIT"]}
       }
     },
+    "protected_gate": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/protectedGate"}
+      ]
+    },
     "readback_sha256": {"$ref": "#/$defs/sha256"},
     "bridge_sha256": {"$ref": "#/$defs/sha256"}
   },
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "nullableSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
-    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"}
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "protectedGate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["local_work_present", "incomplete_block_count", "pending_route_count", "stop_workflow_decision"],
+      "properties": {
+        "local_work_present": {"const": false},
+        "incomplete_block_count": {"const": 0},
+        "pending_route_count": {"const": 0},
+        "stop_workflow_decision": {"$ref": "https://agentos.dev/schemas/controller-action-dispatcher.v1.json#/$defs/stopWorkflowDecision"}
+      }
+    }
   }
 }
