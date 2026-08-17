@@ -257,6 +257,17 @@ function isExplicitAuthorizedEventWait(tick) {
     && readback.resume_condition.trim().length >= 8;
 }
 
+function hasTypedSemanticProgress(result) {
+  const readback = result?.tick?.route_readback;
+  if (!isRecord(readback)) return false;
+  if (readback.semantic_progress === true) return true;
+  return typeof readback.semantic_before_sha256 === "string"
+    && SHA256.test(readback.semantic_before_sha256)
+    && typeof readback.semantic_after_sha256 === "string"
+    && SHA256.test(readback.semantic_after_sha256)
+    && readback.semantic_before_sha256 !== readback.semantic_after_sha256;
+}
+
 /**
  * A successful local route is not a reason to sleep until the next cadence.
  * Continue in the same turn unless the route is a true boundary, an explicit
@@ -691,11 +702,14 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
   if (signal) signal.addEventListener("abort", stop, {once: true});
   const results = [];
   let routeAdapterMissingAttempts = 0;
+  let boundedRecoveryFingerprint = null;
+  let boundedRecoveryCount = 0;
   try {
     do {
       if (signal?.aborted === true || stopping) break;
       let sameTurnTransitions = 0;
       let iterationFailures = 0;
+      let immediateTurnRequested = false;
       do {
         const nowUtc = new Date().toISOString();
         try {
@@ -720,6 +734,34 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
             break;
           }
           routeAdapterMissingAttempts = 0;
+          if (result.boundedRecovery === true) {
+            const fingerprint = result.noProgressRca?.rca_sha256
+              ?? result.routeFailureRca?.rca_sha256
+              ?? result.spawnerDefect?.defect_sha256
+              ?? "UNKNOWN_BOUNDED_RECOVERY";
+            boundedRecoveryCount = fingerprint === boundedRecoveryFingerprint ? boundedRecoveryCount + 1 : 1;
+            boundedRecoveryFingerprint = fingerprint;
+            if (boundedRecoveryCount >= 3) {
+              const exhausted = new Error("BLOCKED_EXACT_AFTER_THREE_IDENTICAL_BOUNDED_RECOVERIES");
+              exhausted.code = "AGENTOS_SUPERVISOR_BLOCKED_EXACT";
+              const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", observation: result.observation, goal: result.goal, tick: result.tick, error: exhausted.message, nowUtc});
+              writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
+              if (typeof activeAdapter.onBlockedExact === "function") {
+                await activeAdapter.onBlockedExact({runtimeId, result, error: exhausted.message, recovery_count: boundedRecoveryCount});
+              }
+              stopping = true;
+              break;
+            }
+            // The recovery itself is not a reason to wait for cadence. Start
+            // the next observation immediately; only an explicit typed
+            // semantic-progress readback clears the repeated-recovery ceiling.
+            immediateTurnRequested = true;
+            break;
+          }
+          if (hasTypedSemanticProgress(result)) {
+            boundedRecoveryFingerprint = null;
+            boundedRecoveryCount = 0;
+          }
           if (!shouldContinueSupervisorSameTurn(result)) break;
           sameTurnTransitions += 1;
         } catch (error) {
@@ -745,6 +787,7 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
         }
       } while (!once && !stopping && signal?.aborted !== true && sameTurnTransitions < maxSameTurnTransitions);
       if (once || stopping) break;
+      if (immediateTurnRequested) continue;
       // Exhausting the same-turn safety bound is not a reason to sleep until
       // the cadence. Re-observe immediately so the Controller can prove a
       // semantic successor, trigger its bounded no-progress recovery, or

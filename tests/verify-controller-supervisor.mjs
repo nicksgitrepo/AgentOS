@@ -76,6 +76,10 @@ const puzzle = observation({
 assert.equal(deriveSupervisorAction(puzzle), "ROUTE_REPAIRABLE_PUZZLE");
 const sameObservationLater = observation({observedAtUtc: "2026-08-04T12:00:01.000Z", findings: puzzle.findings});
 assert.equal(sameObservationLater.observation_sha256, puzzle.observation_sha256, "observation identity must ignore the heartbeat clock");
+const sameGoal = compileSupervisorGoal({observation: puzzle});
+const tickAtFirstObservation = compileSupervisorTick({observation: puzzle, goal: sameGoal, routeStatus: "ROUTED", routeReadback: {status: "ROUTED"}});
+const tickAtLaterObservation = compileSupervisorTick({observation: sameObservationLater, goal: compileSupervisorGoal({observation: sameObservationLater}), routeStatus: "ROUTED", routeReadback: {status: "ROUTED"}});
+assert.equal(tickAtLaterObservation.tick_sha256, tickAtFirstObservation.tick_sha256, "equivalent observations must not collide with timestamp-only tick drift");
 let routed = 0;
 const routedResult = runSupervisorIteration({
   observation: puzzle,
@@ -311,6 +315,31 @@ assert(turnBoundObservations >= 2, "same-turn safety bound must re-observe befor
 assert(turnBoundRoutes >= 2, "same-turn safety bound must start the next route immediately");
 assert(turnBoundResults.length >= 2, "same-turn safety-bound continuation must persist the next iteration");
 fs.rmSync(turnBoundRoot, {recursive: true, force: true});
+
+// A bounded no-progress repair must start the next observation immediately,
+// not sleep for the configured cadence. Three repeated identical repairs then
+// become a durable exhausted BLOCKED_EXACT result instead of an infinite spin.
+const noProgressLoopRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-no-progress-loop-"));
+let blockedExactCalls = 0;
+const noProgressLoopResults = await runControllerSupervisor({
+  runtimeRoot: noProgressLoopRoot,
+  adapter: {
+    observe: () => puzzle,
+    route: () => ({status: "ROUTED"}),
+    onBlockedExact: ({error}) => {
+      blockedExactCalls += 1;
+      assert.equal(error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_BOUNDED_RECOVERIES");
+    },
+  },
+  runtimeId: "SUPERVISOR-NO-PROGRESS-LOOP-TEST",
+  intervalMinutes: 1,
+  maxSameTurnTransitions: 1,
+});
+assert(noProgressLoopResults.length >= 6, "the next turn must start immediately after each bounded recovery");
+assert.equal(blockedExactCalls, 1, "three identical bounded recoveries must produce one exhausted callback");
+const noProgressLoopRuntime = JSON.parse(fs.readFileSync(path.join(noProgressLoopRoot, "supervisor", "runtime.json"), "utf8"));
+assert.equal(noProgressLoopRuntime.error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_BOUNDED_RECOVERIES");
+fs.rmSync(noProgressLoopRoot, {recursive: true, force: true});
 
 // A missing route must be reloaded immediately rather than sleeping until the
 // configured cadence. The factory simulates a startup repair that exposes a

@@ -121,6 +121,13 @@ function stableGoalDigest(value) {
   return supervisorDigest(body);
 }
 
+function stableTickDigest(value) {
+  const body = structuredClone(value);
+  body.tick_sha256 = null;
+  body.observed_at_utc = null;
+  return supervisorDigest(body);
+}
+
 function exactKeys(value, keys, label) {
   requireRecord(value, label);
   assert(JSON.stringify(Object.keys(value).sort(compareUtf8)) === JSON.stringify([...keys].sort(compareUtf8)), `${label} fields mismatch`);
@@ -473,7 +480,7 @@ export function compileSupervisorTick({observation, goal, routeStatus, routeRead
     observed_at_utc: observation.observed_at_utc,
     tick_sha256: null,
   };
-  tick.tick_sha256 = digestWithout(tick, "tick_sha256");
+  tick.tick_sha256 = stableTickDigest(tick);
   return validateSupervisorTick(tick);
 }
 
@@ -492,7 +499,7 @@ export function validateSupervisorTick(tick) {
   else assert(tick.route_error === null, "supervisor tick has an unexpected route error");
   requireUtc(tick.observed_at_utc, "supervisor tick time");
   requireSha(tick.tick_sha256, "supervisor tick digest");
-  assert(tick.tick_sha256 === digestWithout(tick, "tick_sha256"), "supervisor tick digest mismatch");
+  assert(tick.tick_sha256 === stableTickDigest(tick), "supervisor tick digest mismatch");
   return tick;
 }
 
