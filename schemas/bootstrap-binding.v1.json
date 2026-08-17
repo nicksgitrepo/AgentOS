@@ -676,6 +676,22 @@
       "path": "tests/verify-agent-spawner-defect-intake.mjs",
       "sha256": "7f22681bf555a2f76924e8c28f586479765e02bc65f808bc1739786216c0032f"
     },
+    "agent_spawner_controller_bridge_controller": {
+      "path": "control/agent-spawner-controller-bridge.mjs",
+      "sha256": "fa19689b99c3c5a69a6ad19a531c70e117ebaf4147343cf9b97d60b292cc5689"
+    },
+    "agent_spawner_controller_bridge_contract": {
+      "path": "schemas/agent-spawner-controller-bridge.v1.json",
+      "sha256": "5ded77af5b674f574c48354d2f8f911fe4b7e311ec4d855bc256a75d15608d3c"
+    },
+    "agent_spawner_controller_bridge_article": {
+      "path": "docs/agent-spawner-controller-bridge.md",
+      "sha256": "b2c90b18e43bc86c311478aaff5f36f46317f4add816662ebc357db4bb857d2a"
+    },
+    "agent_spawner_controller_bridge_verifier": {
+      "path": "tests/verify-agent-spawner-controller-bridge.mjs",
+      "sha256": "b1d78d194ee49a04c7d2419076989d075e2f89f7ca33ec41006177370865f611"
+    },
     "agent_spawner_defect_queue_controller": {
       "path": "control/agent-spawner-defect-queue.mjs",
       "sha256": "b12106e969452954e8b02b0c2f5ae2c6f3b7c0cb2f9e81c7492b175868013ac4"
@@ -882,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "98bbcbb14ec1f922923f4414669a93cf6e3e69f56e51d7520541e3cb673331d0"
+      "sha256": "487f4f01ebfe4d57edca59e3849a6b22312101d60d4388a9e4b13d2a2bcb9c28"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -934,15 +950,15 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "ca743037638c3eb695b7f3f2ebfebc7a425b8156367a6350ea92fd3822d9979a"
+      "sha256": "e7502beeb7897262c6c4e925e426729511a94504f7c1cded3b3f74842e09790d"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "6b8458dddfa9e7182940603ebc2a31d15db8637f48260b3b0a19f080045fe885"
+      "sha256": "3c0e6cd4eb542f332868b745e56e0ec0ee3797f6c2b31fa54d34f152f91b8b48"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "c478c18c0f4f9b2b20d96e71cef3a05ad0203824c04a15cf68652fc0e821f956"
+      "sha256": "5bde428df162cc7c4af2306aa8c763761e0dbf6c4f77e3e5672aeb5b5afa37a6"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
