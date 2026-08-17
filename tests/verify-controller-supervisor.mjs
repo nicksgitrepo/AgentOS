@@ -238,6 +238,26 @@ assert.equal(noProgressDefectFiles.length, 2, "a no-progress RCA must add a type
 assert.equal(reusedRuntime.spawnerDefect.repair.block_id, "BLOCK.CONTROLLER.SUPERVISOR.LIVENESS");
 fs.rmSync(runtimeRoot, {recursive: true, force: true});
 
+const routeRetryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-route-retry-"));
+let routeRetryAttempts = 0;
+const routeRetryAdapter = {
+  observe: () => puzzle,
+  route: () => {
+    routeRetryAttempts += 1;
+    if (routeRetryAttempts === 1) throw new Error("route adapter temporarily unavailable");
+    return {status: "ROUTED", attempt: routeRetryAttempts};
+  },
+};
+const firstRouteRetry = await runControllerSupervisorIteration({runtimeRoot: routeRetryRoot, adapter: routeRetryAdapter, runtimeId: "SUPERVISOR-ROUTE-RETRY-TEST"});
+assert.equal(firstRouteRetry.tick.route_status, "ROUTE_FAILED");
+const secondRouteRetry = await runControllerSupervisorIteration({runtimeRoot: routeRetryRoot, adapter: routeRetryAdapter, runtimeId: "SUPERVISOR-ROUTE-RETRY-TEST"});
+assert.equal(secondRouteRetry.recovery_started_same_turn, true, "a failed route must be retried through one bounded same-turn recovery");
+assert.equal(secondRouteRetry.tick.route_status, "ROUTED");
+assert.match(secondRouteRetry.routeFailureRca.error_message_exact, /^opaque:error:[0-9a-f]{64}$/u);
+assert.equal(secondRouteRetry.spawnerDefect.repair.block_id, "BLOCK.CONTROLLER.SUPERVISOR.LIVENESS");
+assert.equal(routeRetryAttempts, 2);
+fs.rmSync(routeRetryRoot, {recursive: true, force: true});
+
 const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));
 const authorizedWaitAdapter = {
   observe: () => liveness,

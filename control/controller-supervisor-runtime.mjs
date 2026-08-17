@@ -396,6 +396,31 @@ function compileLivenessRecoveryObservation({observation, spawnerDefect, nowUtc}
   });
 }
 
+function compileRouteFailureRecoveryObservation({observation, spawnerDefect, nowUtc}) {
+  const finding = {
+    finding_id: `FINDING.CONTROLLER.SUPERVISOR.ROUTE_FAILURE.${spawnerDefect.defect_sha256.slice(0, 16).toUpperCase()}`,
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "A bounded same-turn route retry is required after the prior Controller action failed.",
+    source_sha256: spawnerDefect.defect_sha256,
+  };
+  return compileSupervisorObservation({
+    controllerDisplayName: observation.controller_display_name,
+    projectId: observation.project_id,
+    campaignId: observation.campaign_id,
+    campaignVersion: observation.campaign_version,
+    activeCampaign: observation.active_campaign,
+    ownerDecisionRequired: observation.owner_decision_required,
+    boundary: structuredClone(observation.boundary),
+    findings: [...observation.findings, finding].sort((left, right) => Buffer.compare(Buffer.from(left.finding_id, "utf8"), Buffer.from(right.finding_id, "utf8"))),
+    nextAction: "Retry the failed Controller route once, then return a typed successor or retained route failure.",
+    sourceCommit: observation.source_commit,
+    sourceTree: observation.source_tree,
+    parentHandoffSha256: observation.parent_handoff_sha256,
+    observedAtUtc: nowUtc,
+  });
+}
+
 function writeOrVerify({runtimeRoot, recordPath, record, digestField, validate}) {
   const existing = readSupervisorRecord({authorityRoot: runtimeRoot, recordPath});
   if (existing !== null) {
@@ -452,6 +477,52 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
       return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
     }
     if (existingTick.route_status === "ROUTE_FAILED") {
+      if (route !== null) {
+        const rcaPath = `supervisor/route-failures/${existingGoal.goal_id}.json`;
+        const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
+        const rca = compileRouteFailureRca({
+          runtimeId,
+          priorGoal: existingGoal,
+          priorTick: existingTick,
+          currentObservation: observation,
+          observedAtUtc: existingRca?.observed_at_utc ?? nowUtc,
+        });
+        if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
+        else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor route failure RCA differs");
+        const spawnerDefect = compileSpawnerDefectIntake({
+          observation,
+          rca,
+          defectId: `DEFECT.SUPERVISOR.ROUTE_FAILURE.${existingGoal.goal_id}`,
+        });
+        persistSpawnerDefect({runtimeRoot: root, intake: spawnerDefect});
+        const recoveryObservation = compileRouteFailureRecoveryObservation({observation, spawnerDefect, nowUtc});
+        const recoveryResult = await runSupervisorIterationAsync({observation: recoveryObservation, route});
+        const recoveryGoalPath = `supervisor/goals/${recoveryObservation.observation_sha256}.json`;
+        const recoveryTickPath = `supervisor/ticks/${recoveryObservation.observation_sha256}.json`;
+        writeOrVerify({runtimeRoot: root, recordPath: recoveryGoalPath, record: recoveryResult.goal, digestField: "goal_sha256", validate: validateSupervisorGoal});
+        writeOrVerify({runtimeRoot: root, recordPath: recoveryTickPath, record: recoveryResult.tick, digestField: "tick_sha256", validate: validateSupervisorTick});
+        writeJsonAtomic(safeChild(root, "supervisor/goal.json"), recoveryResult.goal);
+        writeJsonAtomic(safeChild(root, "supervisor/tick.json"), recoveryResult.tick);
+        writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({
+          runtimeId,
+          status: runtimeStatusForTick(recoveryResult.tick),
+          observation: recoveryObservation,
+          goal: recoveryResult.goal,
+          tick: recoveryResult.tick,
+          error: recoveryResult.tick.route_error,
+          nowUtc,
+        }));
+        return {
+          ...recoveryResult,
+          observation: recoveryObservation,
+          reused: false,
+          priorSpawnerDefect: null,
+          routeFailureRca: rca,
+          spawnerDefect,
+          boundedRecovery: true,
+          recovery_started_same_turn: true,
+        };
+      }
       writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, nowUtc}));
       return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
     }
