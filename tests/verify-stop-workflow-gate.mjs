@@ -5,6 +5,7 @@ import fs from "node:fs";
 import {
   STOP_WORKFLOW_QUESTIONS,
   STOP_WORKFLOW_OUTCOMES,
+  compileRoutineDevelopmentStopDecision,
   compileStopWorkflowNoStopAnswers,
   evaluateStopWorkflowGate,
   validateStopWorkflowDecision,
@@ -25,6 +26,21 @@ assert.equal(continueDecision.next_action, "CONTINUE_NEXT_ACTION");
 assert.deepEqual(continueDecision.triggered_question_ids, []);
 assert.deepEqual(continueDecision.unknown_question_ids, []);
 validateStopWorkflowDecision(continueDecision);
+
+const routineDevelopment = compileRoutineDevelopmentStopDecision({
+  decisionId: "DECISION.STOP_WORKFLOW.ROUTINE_DEVELOPMENT",
+  actionRef: "ref:action/routine-development",
+  rollbackRef: "ref:rollback/routine-development",
+  admittedScopeRef: "ref:evidence/admitted-development-scope",
+  zeroCostRef: "ref:evidence/zero-cost",
+  preservationRef: "ref:evidence/source-preserved",
+  rollbackEvidenceRef: "ref:evidence/rollback-verified",
+  delegatedAuthorityRef: "ref:evidence/delegated-development-authority",
+});
+assert.equal(routineDevelopment.outcome, "CONTINUE_AUTONOMOUS");
+assert.equal(routineDevelopment.stop, false);
+assert.equal(routineDevelopment.next_action, "CONTINUE_NEXT_ACTION");
+validateStopWorkflowDecision(routineDevelopment);
 
 function withAnswer(questionId, answer) {
   return noAnswers.map((entry) => entry.question_id === questionId ? {...entry, answer} : entry);

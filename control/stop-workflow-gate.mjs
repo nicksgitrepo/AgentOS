@@ -25,9 +25,9 @@ export const STOP_WORKFLOW_QUESTIONS = Object.freeze([
   }),
   Object.freeze({
     question_id: "CHANGES_PROTECTED_PROJECT_OR_SCOPE",
-    question: "Does this action change the protected/shared project or expand product intent?",
+    question: "Does this action change the protected/shared project outside the admitted development scope or expand product intent?",
     yes_outcome: "STOP_OWNER_DECISION",
-    reason: "The action changes protected project state or product scope.",
+    reason: "The action changes protected project state outside the admitted scope or expands product scope.",
   }),
   Object.freeze({
     question_id: "DELETES_UNSAVED_OR_UNBACKED_UP_WORK",
@@ -231,6 +231,47 @@ export function compileStopWorkflowNoStopAnswers({evidenceRefPrefix = "opaque:st
     evidence_refs: [`${evidenceRefPrefix}/${question_id.toLowerCase()}`],
   }));
   return answers;
+}
+
+/*
+ * Bounded development is an explicit route, not an implicit bypass.  The
+ * caller must bind evidence for the admitted scope, zero-cost result,
+ * preservation/backup, rollback, and delegated authority.  Those typed
+ * facts make the five answers NO; any missing or contrary fact must use the
+ * normal gate and can therefore stop the dependent action.
+ */
+export function compileRoutineDevelopmentStopDecision({
+  decisionId,
+  actionRef,
+  rollbackRef,
+  admittedScopeRef,
+  zeroCostRef,
+  preservationRef,
+  rollbackEvidenceRef,
+  delegatedAuthorityRef,
+} = {}) {
+  requireIdentifier(decisionId, "Routine development stop decision ID");
+  requireReference(actionRef, "Routine development action reference");
+  requireReference(rollbackRef, "Routine development rollback reference");
+  for (const [value, label] of [
+    [admittedScopeRef, "Routine development admitted-scope evidence"],
+    [zeroCostRef, "Routine development zero-cost evidence"],
+    [preservationRef, "Routine development preservation evidence"],
+    [rollbackEvidenceRef, "Routine development rollback evidence"],
+    [delegatedAuthorityRef, "Routine development delegated-authority evidence"],
+  ]) requireReference(value, label);
+  return evaluateStopWorkflowGate({
+    decisionId,
+    actionRef,
+    rollbackRef,
+    answers: [
+      {question_id: "COSTS_MONEY", answer: "NO", evidence_refs: [zeroCostRef]},
+      {question_id: "CHANGES_PROTECTED_PROJECT_OR_SCOPE", answer: "NO", evidence_refs: [admittedScopeRef]},
+      {question_id: "DELETES_UNSAVED_OR_UNBACKED_UP_WORK", answer: "NO", evidence_refs: [preservationRef]},
+      {question_id: "DESTROYS_OR_IRREVERSIBLY_MODIFIES", answer: "NO", evidence_refs: [rollbackEvidenceRef, rollbackRef].sort(compareUtf8)},
+      {question_id: "OWNER_DECISION_REQUIRED", answer: "NO", evidence_refs: [delegatedAuthorityRef]},
+    ],
+  });
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("stop-workflow gate loaded\n");

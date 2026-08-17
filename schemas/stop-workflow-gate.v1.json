@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/stop-workflow-gate.v1.json",
   "title": "AgentOS fail-closed stop-workflow decision tree",
-  "description": "The Controller may stop only when cost, protected project/scope change, unbacked deletion, destruction, or a genuine owner-level decision is explicitly YES. UNKNOWN routes bounded evidence recovery instead of a stop.",
+  "description": "The Controller may stop only when cost, a project/scope change outside the admitted development scope, unbacked deletion, destruction, or a genuine owner-level decision is explicitly YES. Typed in-scope development evidence answers the project/scope question NO. UNKNOWN routes bounded evidence recovery instead of a stop.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -61,7 +61,7 @@
     "Evaluate the five questions in declared order.",
     "The first YES selects the corresponding stop outcome; all YES questions remain in triggered_question_ids.",
     "If there is no YES but any UNKNOWN, route RUN_NEXT_BOUNDED_RECOVERY and do not stop the workflow.",
-    "Only five explicit NO answers select CONTINUE_NEXT_ACTION.",
+    "Only five explicit NO answers select CONTINUE_NEXT_ACTION; an in-scope development NO must be backed by typed admitted-scope and rollback evidence.",
     "The Controller must not treat a timer, heartbeat, commentary, or missing work as a stop condition."
   ]
 }
