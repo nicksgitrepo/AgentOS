@@ -25,6 +25,16 @@ const context = compilePyramidCampaignContext({
   hostSha256: HASH("host"),
   environmentSha256: HASH("environment"),
 });
+const sourceScope = (() => {
+  const value = {
+    required_repository_ids: ["synthetic-source"],
+    opaque_repository_ids: [],
+    source_mapping_sha256: HASH("synthetic-source-mapping"),
+    scope_sha256: null,
+  };
+  value.scope_sha256 = canonicalDigest({...value, scope_sha256: null});
+  return value;
+})();
 
 const specialistTypes = Array.from({length: 7}, (_, index) => {
   const id = `SPECIALIST_${String(index + 1).padStart(2, "0")}`;
@@ -60,6 +70,7 @@ const initial = compilePyramidCampaignState({
   candidateSha256: HASH("candidate-0"),
   worktreeRef: "opaque:cumulative-candidate-worktree",
   rollbackRef: "opaque:cumulative-candidate-rollback",
+  sourceScope,
 });
 assert.equal(initial.status, "PREPARED");
 assert.equal(initial.next_action, "START_SPECIALIST_WAVE");
@@ -73,6 +84,7 @@ const initiallyProtected = compilePyramidCampaignState({
   candidateSha256: HASH("initial-protected-candidate"),
   worktreeRef: "opaque:initial-protected-worktree",
   rollbackRef: "opaque:initial-protected-rollback",
+  sourceScope,
   initialProtectedWait: true,
   protectedEvent: {
     blocker_id: "PROTECTED.INITIAL.DECISION",
@@ -261,6 +273,7 @@ const pyramidImportOutput = compilePyramidImportOutput({
   preservationReceiptSha256: HASH("legacy-preservation"),
   candidateRepositories: [{
     repository_id: "synthetic-candidate",
+    source_repository_ids: ["synthetic-source"],
     repository_ref: "opaque:candidate/synthetic",
     branch_ref: "candidate/synthetic",
     commit: "3".repeat(40),
@@ -284,6 +297,17 @@ const pyramidImportOutput = compilePyramidImportOutput({
     independent_reaudit_complete: true,
     wave_count: 2,
   },
+  sourceCoverage: (() => {
+    const value = {
+      required_repository_ids: ["synthetic-source"],
+      candidate_source_repository_ids: ["synthetic-source"],
+      opaque_exclusion_repository_ids: [],
+      source_mapping_sha256: sourceScope.source_mapping_sha256,
+      coverage_sha256: null,
+    };
+    value.coverage_sha256 = canonicalDigest({...value, coverage_sha256: null});
+    return value;
+  })(),
   rollbackRef: "opaque:rollback/synthetic",
 });
 const protectedWait = advancePyramidCampaign(importOutputPending, {roster, event: "PYRAMID_IMPORT_OUTPUT_READY", pyramidImportOutput});
@@ -302,6 +326,16 @@ assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolated
 assert.equal(protectedWait.independent_reaudit.reaudit_sha256, independentReaudit.reaudit_sha256);
 assert.equal(protectedWait.pyramid_import_output.output_sha256, pyramidImportOutput.output_sha256);
 validatePyramidCampaignState(protectedWait, {roster});
+const staleSourceCoverage = structuredClone(pyramidImportOutput);
+staleSourceCoverage.source_coverage.required_repository_ids = ["unbound-source"];
+staleSourceCoverage.source_coverage.candidate_source_repository_ids = ["unbound-source"];
+staleSourceCoverage.source_coverage.coverage_sha256 = canonicalDigest({...staleSourceCoverage.source_coverage, coverage_sha256: null});
+staleSourceCoverage.output_sha256 = canonicalDigest({...staleSourceCoverage, output_sha256: null});
+assert.throws(
+  () => advancePyramidCampaign(importOutputPending, {roster, event: "PYRAMID_IMPORT_OUTPUT_READY", pyramidImportOutput: staleSourceCoverage}),
+  /source coverage is not bound to the campaign source scope/u,
+  "pyramid output cannot omit or substitute a bound source root",
+);
 
 assert.throws(
   () => advancePyramidCampaign(assemblyPending, {roster, event: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", assembly: {...isolatedAssembly, base_candidate_sha256: HASH("stale-base"), assembly_sha256: canonicalDigest({...isolatedAssembly, base_candidate_sha256: HASH("stale-base"), assembly_sha256: null})}}),
@@ -356,6 +390,7 @@ const emptyState = compilePyramidCampaignState({
   candidateSha256: HASH("empty-candidate"),
   worktreeRef: "opaque:empty-worktree",
   rollbackRef: "opaque:empty-rollback",
+  sourceScope,
 });
 assert.equal(emptyState.next_action, "PREPARE_CANDIDATE_REVIEW");
 assert.notEqual(emptyState.next_action, "NONE");
@@ -368,7 +403,7 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "source_scope", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");

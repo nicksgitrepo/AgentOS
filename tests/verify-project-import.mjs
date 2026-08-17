@@ -119,6 +119,7 @@ const pyramidOutput = compilePyramidImportOutput({
   preservationReceiptSha256: preserved.receipt.receipt_sha256,
   candidateRepositories: [{
     repository_id: "main",
+    source_repository_ids: ["synthetic-source"],
     repository_ref: "opaque:repository/synthetic-main",
     branch_ref: "refs/heads/agentos/import-candidate",
     commit: "3".repeat(40),
@@ -131,6 +132,17 @@ const pyramidOutput = compilePyramidImportOutput({
     clean: true,
     status: "INDEPENDENT_REAUDITED_CANDIDATE",
   }],
+  sourceCoverage: (() => {
+    const coverage = {
+      required_repository_ids: ["synthetic-source"],
+      candidate_source_repository_ids: ["synthetic-source"],
+      opaque_exclusion_repository_ids: [],
+      source_mapping_sha256: canonicalDigest({source: "synthetic-source-mapping"}),
+      coverage_sha256: null,
+    };
+    coverage.coverage_sha256 = canonicalDigest({...coverage, coverage_sha256: null});
+    return coverage;
+  })(),
   pyramid: {
     specialist_audit_repair_sha256: canonicalDigest({stage: "specialist"}),
     platform_review_sha256: canonicalDigest({stage: "platform"}),
@@ -148,6 +160,12 @@ validatePyramidImportOutput(pyramidOutput);
 assert.equal(pyramidOutput.status, "READY_FOR_GIT_REPOINT");
 assert.equal(pyramidOutput.legacy.retention, "LEGACY_REPOSITORY_UNTOUCHED");
 assert.equal(pyramidOutput.git_repoint.next_action, "WAIT_FOR_GIT_REPOINT_AUTHORIZATION");
+const incompleteCoverage = structuredClone(pyramidOutput);
+incompleteCoverage.source_coverage.required_repository_ids = ["different-source"];
+incompleteCoverage.source_coverage.candidate_source_repository_ids = ["different-source"];
+incompleteCoverage.source_coverage.coverage_sha256 = canonicalDigest({...incompleteCoverage.source_coverage, coverage_sha256: null});
+incompleteCoverage.output_sha256 = canonicalDigest({...incompleteCoverage, output_sha256: null});
+assert.throws(() => validatePyramidImportOutput(incompleteCoverage), /candidate repositories do not cover|source coverage does not account/u);
 const repointPlan = compileGitRepointPlan({output: pyramidOutput, targetProjectRef: "opaque:project/synthetic-import"});
 validateGitRepointPlan(repointPlan);
 assert.equal(repointPlan.execution_allowed, false);

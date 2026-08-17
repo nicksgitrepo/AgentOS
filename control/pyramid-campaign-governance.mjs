@@ -109,11 +109,12 @@ const PROTECTED_EVENT_KEYS = Object.freeze([
   "blocker_id", "blocker_class", "affected_action", "evidence_ceiling", "restart_event", "resources",
 ]);
 const RESOURCE_KEYS = Object.freeze(["jobs", "workers", "heavyweight_processes", "timers"]);
+const SOURCE_SCOPE_KEYS = Object.freeze(["required_repository_ids", "opaque_repository_ids", "source_mapping_sha256", "scope_sha256"]);
 const STATE_KEYS = Object.freeze([
   "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index",
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
   "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
-  "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
+  "source_scope", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
 ]);
 
 function assert(condition, message, code = "PYRAMID_CAMPAIGN_INVALID") {
@@ -164,6 +165,25 @@ function requireSortedIdentifiers(values, label) {
   assert(Array.isArray(values) && values.length > 0, `${label} are required`);
   values.forEach((value, index) => requireIdentifier(value, `${label} ${index}`));
   sortedUnique(values, label);
+}
+
+const REPOSITORY_ID = /^[A-Za-z][A-Za-z0-9._:-]{0,191}$/u;
+
+function requireSortedRepositoryIds(values, label, {allowEmpty = false} = {}) {
+  assert(Array.isArray(values) && (allowEmpty || values.length > 0), `${label} are required`);
+  values.forEach((value, index) => assert(typeof value === "string" && REPOSITORY_ID.test(value), `${label} ${index} is invalid`));
+  sortedUnique(values, label);
+}
+
+function validateSourceScope(sourceScope) {
+  exactKeys(sourceScope, SOURCE_SCOPE_KEYS, "pyramid source scope");
+  requireSortedRepositoryIds(sourceScope.required_repository_ids, "pyramid source scope required repository IDs");
+  requireSortedRepositoryIds(sourceScope.opaque_repository_ids, "pyramid source scope opaque repository IDs", {allowEmpty: true});
+  assert(sourceScope.opaque_repository_ids.every((value) => sourceScope.required_repository_ids.includes(value)), "pyramid source scope opaque repository is unbound");
+  requireSha(sourceScope.source_mapping_sha256, "pyramid source mapping");
+  requireSha(sourceScope.scope_sha256, "pyramid source scope digest");
+  assert(sourceScope.scope_sha256 === digestWithout(sourceScope, "scope_sha256"), "pyramid source scope digest mismatch");
+  return sourceScope;
 }
 
 function digestWithout(value, field) {
@@ -603,9 +623,13 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.isolated_candidate_assembly.worktree_ref === state.candidate.worktree_ref, "pyramid isolated candidate worktree binding is stale");
     assert(state.isolated_candidate_assembly.rollback_ref === state.candidate.rollback_ref, "pyramid isolated candidate rollback binding is stale");
   }
+  validateSourceScope(state.source_scope);
   validateIndependentReaudit(state.independent_reaudit, state.candidate.candidate_sha256);
   if (state.pyramid_import_output !== null) {
-    validatePyramidImportOutput(state.pyramid_import_output);
+    validatePyramidImportOutput(state.pyramid_import_output, {
+      requiredSourceRepositoryIds: state.source_scope.required_repository_ids,
+      sourceMappingSha256: state.source_scope.source_mapping_sha256,
+    });
     assert(state.pyramid_import_output.status === "READY_FOR_GIT_REPOINT", "pyramid import output must remain a prepared cutover candidate");
     assert(state.independent_reaudit?.accepted === true, "pyramid import output lacks an accepted independent re-audit");
     assert(state.pyramid_import_output.pyramid.independent_reaudit_sha256 === state.independent_reaudit.reaudit_sha256, "pyramid import output independent re-audit binding is stale");
@@ -657,7 +681,7 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
   return state;
 }
 
-export function compilePyramidCampaignState({campaignId, roster, candidateId, candidateSha256, worktreeRef, rollbackRef, initialProtectedWait = false, protectedEvent = null} = {}) {
+export function compilePyramidCampaignState({campaignId, roster, candidateId, candidateSha256, worktreeRef, rollbackRef, sourceScope, initialProtectedWait = false, protectedEvent = null} = {}) {
   validatePyramidSpecialistRoster(roster);
   requireIdentifier(campaignId, "pyramid campaign ID");
   const candidate = {
@@ -670,6 +694,7 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     status: "PREPARED_ISOLATED_CANDIDATE",
   };
   validateCandidate(candidate);
+  validateSourceScope(sourceScope);
   const shouldWait = initialProtectedWait === true;
   const initialProtectedEvent = shouldWait ? compileProtectedEvent(protectedEvent) : null;
   const route = shouldWait ? compileRoute("WAIT_FOR_PROTECTED_EVENT", initialProtectedEvent) : compileRoute(roster.applicable_specialist_ids.length === 0 ? "PREPARE_CANDIDATE_REVIEW" : "START_SPECIALIST_WAVE");
@@ -680,6 +705,7 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     context_sha256: roster.context.context_sha256,
     roster_sha256: roster.roster_sha256,
     candidate,
+    source_scope: structuredClone(sourceScope),
     status: shouldWait ? "PROTECTED_WAIT" : (roster.applicable_specialist_ids.length === 0 ? "FINAL_REVIEW_PENDING" : "PREPARED"),
     wave_index: 0,
     pending_specialist_ids: [...roster.applicable_specialist_ids],
@@ -807,7 +833,10 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
   if (event === "PYRAMID_IMPORT_OUTPUT_READY") {
     assert(state.next_action === "PREPARE_PYRAMID_IMPORT_OUTPUT", "pyramid import output is not the current successor");
     assert(state.independent_reaudit?.accepted === true && state.isolated_candidate_assembly !== null, "pyramid import output lacks an accepted candidate");
-    validatePyramidImportOutput(pyramidImportOutput);
+    validatePyramidImportOutput(pyramidImportOutput, {
+      requiredSourceRepositoryIds: state.source_scope.required_repository_ids,
+      sourceMappingSha256: state.source_scope.source_mapping_sha256,
+    });
     assert(pyramidImportOutput.status === "READY_FOR_GIT_REPOINT", "pyramid import output must stop before Git cutover");
     assert(pyramidImportOutput.pyramid.independent_reaudit_sha256 === state.independent_reaudit.reaudit_sha256, "pyramid import output re-audit evidence is stale");
     assert(pyramidImportOutput.pyramid.central_integration_sha256 === state.isolated_candidate_assembly.assembly_sha256, "pyramid import output central-integration evidence is stale");

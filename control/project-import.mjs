@@ -519,13 +519,50 @@ function validatePyramidImportLegacy(legacy) {
   return legacy;
 }
 
+const PYRAMID_SOURCE_COVERAGE_KEYS = [
+  "required_repository_ids", "candidate_source_repository_ids", "opaque_exclusion_repository_ids",
+  "source_mapping_sha256", "coverage_sha256",
+];
+
+function sortedUniqueRepositoryIds(values, label, {allowEmpty = false} = {}) {
+  assert(Array.isArray(values), `${label} are required`);
+  const ordered = [...values].sort(compareUtf8);
+  assert(JSON.stringify(ordered) === JSON.stringify(values), `${label} are not sorted`);
+  assert(new Set(values).size === values.length, `${label} are duplicated`);
+  values.forEach((value, index) => requireRepositoryId(value, `${label} ${index}`));
+  if (!allowEmpty) assert(values.length > 0, `${label} cannot be empty`);
+  return values;
+}
+
+function validatePyramidSourceCoverage(coverage, {requiredRepositoryIds = null, sourceMappingSha256 = null} = {}) {
+  requireRecord(coverage, "pyramid import source coverage");
+  exactKeys(coverage, PYRAMID_SOURCE_COVERAGE_KEYS, "pyramid import source coverage");
+  const required = sortedUniqueRepositoryIds(coverage.required_repository_ids, "pyramid import required repository IDs");
+  const candidate = sortedUniqueRepositoryIds(coverage.candidate_source_repository_ids, "pyramid import candidate source repository IDs");
+  const opaque = sortedUniqueRepositoryIds(coverage.opaque_exclusion_repository_ids, "pyramid import opaque exclusion repository IDs", {allowEmpty: true});
+  assert(candidate.every((value) => required.includes(value)), "pyramid import candidate source coverage contains an unbound repository");
+  assert(opaque.every((value) => required.includes(value)), "pyramid import opaque exclusion contains an unbound repository");
+  assert(candidate.every((value) => !opaque.includes(value)), "pyramid import source coverage overlaps candidate and opaque repositories");
+  assert(JSON.stringify([...candidate, ...opaque].sort(compareUtf8)) === JSON.stringify(required), "pyramid import source coverage does not account for every bound repository");
+  requireSha(coverage.source_mapping_sha256, "pyramid import source mapping");
+  if (requiredRepositoryIds !== null) {
+    const expected = sortedUniqueRepositoryIds([...requiredRepositoryIds], "pyramid import expected repository IDs");
+    assert(JSON.stringify(expected) === JSON.stringify(required), "pyramid import source coverage is not bound to the campaign source scope");
+  }
+  if (sourceMappingSha256 !== null) assert(coverage.source_mapping_sha256 === sourceMappingSha256, "pyramid import source mapping binding is stale");
+  requireSha(coverage.coverage_sha256, "pyramid import source coverage digest");
+  assert(coverage.coverage_sha256 === canonicalDigest({...coverage, coverage_sha256: null}), "pyramid import source coverage digest mismatch");
+  return coverage;
+}
+
 function validatePyramidImportRepository(repository, index, legacy) {
   const keys = [
-    "repository_id", "repository_ref", "branch_ref", "commit", "tree", "candidate_sha256",
+    "repository_id", "source_repository_ids", "repository_ref", "branch_ref", "commit", "tree", "candidate_sha256",
     "source_content_sha256", "source_observation_sha256", "pyramid_candidate_sha256", "rollback_ref", "clean", "status",
   ];
   exactKeys(repository, keys, `pyramid import candidate repository ${index}`);
   requireRepositoryId(repository.repository_id, `pyramid import candidate repository ${index} ID`);
+  sortedUniqueRepositoryIds(repository.source_repository_ids, `pyramid import candidate repository ${index} source repository IDs`);
   requireReference(repository.repository_ref, `pyramid import candidate repository ${index} reference`);
   requireString(repository.branch_ref, `pyramid import candidate repository ${index} branch`);
   assert(!repository.branch_ref.startsWith("/") && !repository.branch_ref.includes("\\") && !repository.branch_ref.split("/").includes(".."), `pyramid import candidate repository ${index} branch is unsafe`);
@@ -577,7 +614,7 @@ function validateGitRepointPolicy(policy, repositoryIds, {allowExecuted = false}
   return policy;
 }
 
-export function compilePyramidImportOutput({projectId, sourceIdentity, preservationRef, preservationReceiptSha256, candidateRepositories, pyramid, rollbackRef} = {}) {
+export function compilePyramidImportOutput({projectId, sourceIdentity, preservationRef, preservationReceiptSha256, candidateRepositories, pyramid, rollbackRef, sourceCoverage} = {}) {
   assert(typeof projectId === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(projectId), "pyramid import output project ID is required");
   requireRecord(sourceIdentity, "pyramid import output source identity");
   const legacy = {
@@ -598,6 +635,9 @@ export function compilePyramidImportOutput({projectId, sourceIdentity, preservat
   const repositories = [...candidateRepositories].sort((left, right) => compareUtf8(left.repository_id, right.repository_id));
   assert(new Set(repositories.map((repository) => repository.repository_id)).size === repositories.length, "pyramid import output candidate repository IDs are duplicated");
   repositories.forEach((repository, index) => validatePyramidImportRepository(repository, index, legacy));
+  validatePyramidSourceCoverage(sourceCoverage);
+  const coveredByCandidates = [...new Set(repositories.flatMap((repository) => repository.source_repository_ids))].sort(compareUtf8);
+  assert(JSON.stringify(coveredByCandidates) === JSON.stringify(sourceCoverage.candidate_source_repository_ids), "pyramid import candidate repositories do not cover the declared source roots");
   validatePyramidImportPyramid(pyramid);
   requireReference(rollbackRef, "pyramid import output rollback");
   const repositoryIds = repositories.map((repository) => repository.repository_id);
@@ -623,6 +663,7 @@ export function compilePyramidImportOutput({projectId, sourceIdentity, preservat
     project_id: projectId,
     status: "READY_FOR_GIT_REPOINT",
     legacy,
+    source_coverage: structuredClone(sourceCoverage),
     candidate_repositories: repositories,
     pyramid: structuredClone(pyramid),
     git_repoint: gitRepoint,
@@ -632,18 +673,21 @@ export function compilePyramidImportOutput({projectId, sourceIdentity, preservat
   return validatePyramidImportOutput(output);
 }
 
-export function validatePyramidImportOutput(output) {
-  const keys = ["schema", "version", "project_id", "status", "legacy", "candidate_repositories", "pyramid", "git_repoint", "output_sha256"];
+export function validatePyramidImportOutput(output, {requiredSourceRepositoryIds = null, sourceMappingSha256 = null} = {}) {
+  const keys = ["schema", "version", "project_id", "status", "legacy", "source_coverage", "candidate_repositories", "pyramid", "git_repoint", "output_sha256"];
   exactKeys(output, keys, "pyramid import output");
   assert(output.schema === PYRAMID_IMPORT_OUTPUT_SCHEMA && output.version === 1, "pyramid import output identity is invalid");
   assert(typeof output.project_id === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(output.project_id), "pyramid import output project ID is invalid");
   assert(PYRAMID_IMPORT_OUTPUT_STATUSES.includes(output.status), "pyramid import output status is invalid");
   validatePyramidImportLegacy(output.legacy);
+  validatePyramidSourceCoverage(output.source_coverage, {requiredRepositoryIds: requiredSourceRepositoryIds, sourceMappingSha256});
   assert(Array.isArray(output.candidate_repositories) && output.candidate_repositories.length > 0, "pyramid import output candidate repositories are required");
   const repositories = [...output.candidate_repositories].sort((left, right) => compareUtf8(left.repository_id, right.repository_id));
   assert(JSON.stringify(repositories) === JSON.stringify(output.candidate_repositories), "pyramid import output candidate repositories are not sorted");
   assert(new Set(repositories.map((repository) => repository.repository_id)).size === repositories.length, "pyramid import output candidate repositories are duplicated");
   repositories.forEach((repository, index) => validatePyramidImportRepository(repository, index, output.legacy));
+  const coveredByCandidates = [...new Set(repositories.flatMap((repository) => repository.source_repository_ids))].sort(compareUtf8);
+  assert(JSON.stringify(coveredByCandidates) === JSON.stringify(output.source_coverage.candidate_source_repository_ids), "pyramid import candidate repositories do not cover the declared source roots");
   validatePyramidImportPyramid(output.pyramid);
   validateGitRepointPolicy(output.git_repoint, repositories.map((repository) => repository.repository_id), {allowExecuted: output.status === "GIT_REPOINTED"});
   if (output.status === "READY_FOR_GIT_REPOINT") assert(output.git_repoint.status === "READY_FOR_PROTECTED_CUTOVER", "pyramid import output cannot claim an unverified Git repoint");
