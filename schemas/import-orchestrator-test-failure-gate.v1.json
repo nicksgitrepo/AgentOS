@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.import_orchestrator_test_failure_gate.v1",
+  "title": "AgentOS Import Orchestrator focused-check failure gate",
+  "description": "Project-agnostic repair gate for stale expectations and failed local orchestration checks; protected routes remain fail-closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "authority_binding", "failed_check", "route_facts", "decision", "repair_block", "custody", "evidence_refs", "hostile_fixture_refs", "status", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.import_orchestrator_test_failure_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/identifier"},
+    "authority_binding": {"$ref": "#/$defs/authority"},
+    "failed_check": {"$ref": "#/$defs/failedCheck"},
+    "route_facts": {"$ref": "#/$defs/routeFacts"},
+    "decision": {"enum": ["STALE_EXPECTATION_REPAIR_REQUIRED", "PROTECTED_ROUTE_REPAIR_REQUIRED"]},
+    "repair_block": {"$ref": "#/$defs/repair"},
+    "custody": {"$ref": "#/$defs/custody"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
+    "hostile_fixture_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "status": {"const": "REPAIR_REQUIRED"},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+    "authority": {
+      "type": "object", "additionalProperties": false, "required": ["commit", "tree", "receipt_sha256"],
+      "properties": {"commit": {"$ref": "#/$defs/sha256"}, "tree": {"$ref": "#/$defs/sha256"}, "receipt_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "failedCheck": {
+      "type": "object", "additionalProperties": false,
+      "required": ["defect_code", "command", "file", "line", "actual", "expected", "assertion"],
+      "properties": {
+        "defect_code": {"$ref": "#/$defs/identifier"}, "command": {"type": "string", "minLength": 1}, "file": {"type": "string", "minLength": 1},
+        "line": {"type": "integer", "minimum": 1}, "actual": {"type": "string", "minLength": 1}, "expected": {"type": "string", "minLength": 1}, "assertion": {"type": "string", "minLength": 1}
+      }
+    },
+    "routeFacts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["boundary_id", "boundary_scope", "clearance_applicability", "run_state", "open_findings_count", "isolated_local_custody", "source_roots_preserved", "shared_workspace_read_only", "wave_activation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "derived_next_action", "derived_next_handler"],
+      "properties": {
+        "boundary_id": {"$ref": "#/$defs/identifier"}, "boundary_scope": {"enum": ["APPLICABILITY_ONLY_LOCAL", "PROTECTED_EXTERNAL", "PROTECTED_PRODUCT", "PROTECTED_INTEGRATION"]},
+        "clearance_applicability": {"enum": ["NOT_APPLICABLE_LOCAL_COMPILER_QA", "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR", "REQUIRED_PROTECTED_ROUTE"]},
+        "run_state": {"enum": ["BLOCKED_PROTECTED", "SPAWNER_QA_PENDING", "ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING"]},
+        "open_findings_count": {"type": "integer", "minimum": 0}, "isolated_local_custody": {"type": "boolean"}, "source_roots_preserved": {"type": "boolean"}, "shared_workspace_read_only": {"type": "boolean"}, "wave_activation": {"const": "OFF"},
+        "provider_access": {"const": false}, "credential_access": {"const": false}, "external_sync": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false},
+        "derived_next_action": {"$ref": "#/$defs/identifier"}, "derived_next_handler": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "repair": {
+      "type": "object", "additionalProperties": false, "required": ["next_action", "next_handler", "route_kind", "same_turn_dispatch", "restart_event", "hostile_rejection_rule"],
+      "properties": {"next_action": {"const": "REPAIR_BLOCKS"}, "next_handler": {"const": "HANDLER.ORCHESTRATOR_BLOCK_REPAIR"}, "route_kind": {"enum": ["LOCAL_COMPILER_QA", "LOCAL_AUDIT_REPAIR", "PROTECTED_ROUTE_REPAIR"]}, "same_turn_dispatch": {"const": true}, "restart_event": {"$ref": "#/$defs/identifier"}, "hostile_rejection_rule": {"type": "string", "minLength": 16}}
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false, "required": ["execution_owner", "direct_consumer", "controller_approval_required", "controller_role", "product_mutation", "protected_action"],
+      "properties": {"execution_owner": {"const": "LANE_AGENT"}, "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"}, "controller_approval_required": {"const": false}, "controller_role": {"const": "LIVENESS_CUSTODIAN"}, "product_mutation": {"const": false}, "protected_action": {"const": false}}
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false, "required": ["evidence_id", "reference", "sha256"],
+      "properties": {"evidence_id": {"$ref": "#/$defs/identifier"}, "reference": {"$ref": "#/$defs/reference"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    }
+  }
+}
