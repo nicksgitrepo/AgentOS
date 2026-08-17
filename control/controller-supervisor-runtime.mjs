@@ -660,6 +660,12 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
         }
       } while (!once && !stopping && signal?.aborted !== true && sameTurnTransitions < maxSameTurnTransitions);
       if (once || stopping) break;
+      // Exhausting the same-turn safety bound is not a reason to sleep until
+      // the cadence. Re-observe immediately so the Controller can prove a
+      // semantic successor, trigger its bounded no-progress recovery, or
+      // reach an explicit protected event. The cadence is only a backstop
+      // after a route has already yielded a legitimate nonterminal result.
+      if (sameTurnTransitions >= maxSameTurnTransitions) continue;
       await sleep(resolvedIntervalMs, signal);
     } while (!stopping);
   } finally {

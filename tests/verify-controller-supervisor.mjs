@@ -274,6 +274,36 @@ assert.equal(transientObserveAttempts, 2, "a transient supervisor failure must r
 assert.equal(transientResults.length, 1, "the successful retry must produce a durable result");
 fs.rmSync(transientRuntimeRoot, {recursive: true, force: true});
 
+// Reaching the bounded same-turn transition count must re-observe immediately,
+// not sleep until the cadence. A long interval plus an external abort makes a
+// timer-based regression observable without waiting a full cadence in CI.
+const turnBoundRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-turn-bound-"));
+const turnBoundAbort = new AbortController();
+let turnBoundObservations = 0;
+let turnBoundRoutes = 0;
+const turnBoundAdapter = {
+  observe: () => observation({nextAction: `Advance bounded transition ${turnBoundObservations++}`}),
+  route: () => {
+    turnBoundRoutes += 1;
+    if (turnBoundRoutes >= 2) turnBoundAbort.abort();
+    return {status: "ROUTED", transition: turnBoundRoutes};
+  },
+};
+const turnBoundTimer = setTimeout(() => turnBoundAbort.abort(), 300);
+const turnBoundResults = await runControllerSupervisor({
+  runtimeRoot: turnBoundRoot,
+  adapter: turnBoundAdapter,
+  runtimeId: "SUPERVISOR-TURN-BOUND-TEST",
+  intervalMinutes: 1,
+  maxSameTurnTransitions: 1,
+  signal: turnBoundAbort.signal,
+});
+clearTimeout(turnBoundTimer);
+assert(turnBoundObservations >= 2, "same-turn safety bound must re-observe before cadence sleep");
+assert(turnBoundRoutes >= 2, "same-turn safety bound must start the next route immediately");
+assert(turnBoundResults.length >= 2, "same-turn safety-bound continuation must persist the next iteration");
+fs.rmSync(turnBoundRoot, {recursive: true, force: true});
+
 const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));
 const authorizedWaitAdapter = {
   observe: () => liveness,
