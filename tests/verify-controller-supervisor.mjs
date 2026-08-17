@@ -7,10 +7,12 @@ import path from "node:path";
 import {
   compileSupervisorGoal,
   compileSupervisorObservation,
+  compileSupervisorTick,
   deriveSupervisorAction,
   readSupervisorRecord,
   selectAutonomousNextTask,
   runSupervisorIteration,
+  supervisorDigest,
   validateSupervisorGoal,
   validateSupervisorObservation,
   writeSupervisorRecordCompareAndSwap,
@@ -215,8 +217,46 @@ const reusedRuntime = await runControllerSupervisorIteration({runtimeRoot, adapt
 assert.equal(reusedRuntime.reused, true, "an unchanged observation must not retry the same route");
 assert.equal(routeAttempts, 2);
 const reusedRuntimeState = JSON.parse(fs.readFileSync(path.join(runtimeRoot, "supervisor", "runtime.json"), "utf8"));
-assert.equal(reusedRuntimeState.status, "ACTIVE_EVENT_WAIT", "unchanged observations must remain an active event-driven wait, not idle");
+assert.equal(reusedRuntimeState.status, "ROUTE_FAILED_RETAINED", "unchanged post-route observations must become a repairable liveness failure");
+assert.equal(reusedRuntime.noProgressRca.error_message_exact, "NO_SEMANTIC_PROGRESS_AFTER_ROUTED_SUCCESS");
+assert.equal(fs.existsSync(path.join(runtimeRoot, "supervisor", "no-progress", `${secondRuntime.goal.goal_id}.json`)), true);
 fs.rmSync(runtimeRoot, {recursive: true, force: true});
+
+const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));
+const authorizedWaitAdapter = {
+  observe: () => liveness,
+  route: () => ({
+    status: "WAITING_FOR_AUTHORIZED_WORK",
+    resume_event_id: "OWNER-EVENT-1",
+    resume_condition: "Resume only when the exact owner event arrives.",
+  }),
+};
+const authorizedWaitRuntime = await runControllerSupervisorIteration({runtimeRoot: authorizedWaitRoot, adapter: authorizedWaitAdapter, runtimeId: "SUPERVISOR-AUTHORIZED-WAIT-TEST"});
+assert.equal(JSON.parse(fs.readFileSync(path.join(authorizedWaitRoot, "supervisor", "runtime.json"), "utf8")).status, "ROUTED_OR_RECONCILED", "a normal routed result is not a wait without an explicit event action");
+// The runtime must recognize an explicit event readback when the goal itself requests it.
+const eventWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-event-wait-"));
+const eventWaitObservation = observation({nextAction: "Wait for the exact owner event before continuing."});
+const eventWaitAdapter = {
+  observe: () => eventWaitObservation,
+  route: () => ({
+    status: "WAITING_FOR_AUTHORIZED_WORK",
+    resume_event_id: "OWNER-EVENT-1",
+    resume_condition: "Resume only when the exact owner event arrives.",
+  }),
+};
+const eventWaitRuntime = await runControllerSupervisorIteration({runtimeRoot: eventWaitRoot, adapter: eventWaitAdapter, runtimeId: "SUPERVISOR-EVENT-WAIT-TEST"});
+const eventWaitGoal = {...eventWaitRuntime.goal, action: "WAIT_FOR_AUTHORIZED_WORK", goal_sha256: null};
+eventWaitGoal.goal_sha256 = supervisorDigest({...eventWaitGoal, created_at_utc: null});
+const reboundEventWaitTick = compileSupervisorTick({observation: eventWaitObservation, goal: eventWaitGoal, routeStatus: "ROUTED", routeReadback: eventWaitRuntime.tick.route_readback});
+fs.writeFileSync(path.join(eventWaitRoot, "supervisor", "goal.json"), `${JSON.stringify(eventWaitGoal)}\n`);
+fs.writeFileSync(path.join(eventWaitRoot, "supervisor", "tick.json"), `${JSON.stringify(reboundEventWaitTick)}\n`);
+// The synthetic route is accepted only when its exact event binding is present; no no-progress RCA is produced.
+const eventWaitReuse = await runControllerSupervisorIteration({runtimeRoot: eventWaitRoot, adapter: eventWaitAdapter, runtimeId: "SUPERVISOR-EVENT-WAIT-TEST"});
+assert.equal(eventWaitReuse.reused, true);
+assert.equal(JSON.parse(fs.readFileSync(path.join(eventWaitRoot, "supervisor", "runtime.json"), "utf8")).status, "ACTIVE_EVENT_WAIT");
+assert.equal(eventWaitReuse.noProgressRca, undefined);
+fs.rmSync(authorizedWaitRoot, {recursive: true, force: true});
+fs.rmSync(eventWaitRoot, {recursive: true, force: true});
 
 const evolvingFailureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-evolving-failure-"));
 let evolvingObservation = puzzle;

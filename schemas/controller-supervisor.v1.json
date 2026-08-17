@@ -35,8 +35,8 @@
     "soft": "Ask the campaign Orchestrator to review the changed scope or operating choice while unrelated safe work continues.",
     "puzzle": "Route one bounded repair through the existing campaign custody, then require Auditor and Controller rechecks.",
     "liveness": "Observe active roles and receipts and repair safe liveness gaps without changing owner intent.",
-    "idle": "Compatibility-only legacy label; an inactive or empty workflow is reconciled before waiting, and a persistent supervisor uses ACTIVE_EVENT_WAIT only after the workflow records a genuine protected dependency or event-driven boundary.",
-    "event_driven_wait": "Remain alive with zero workers and no external activity until a material observation, owner event, or protected dependency change arrives."
+    "idle": "Compatibility-only legacy label; an inactive or empty workflow is reconciled before waiting. An unchanged observation after a routed action is a liveness defect: persist a durable no-progress RCA and perform one bounded recovery. ACTIVE_EVENT_WAIT is valid only when the routed tick records an explicit authorized resume event and condition.",
+    "event_driven_wait": "Remain alive with zero workers only when the routed readback records an exact resume event and condition or a protected dependency. Otherwise persist a no-progress RCA and repair the workflow before any wait."
   },
   "persistence": {
     "controller": "control/controller-supervisor.mjs",

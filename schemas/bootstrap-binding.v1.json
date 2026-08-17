@@ -678,15 +678,15 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "2fd95187e10dcdd3414aa8881faffc920f0612bda7afe442ecf29a5ce8bf0038"
+      "sha256": "1b5a3b5afe586c4e8b2303147c5520603c207a8d7a8de6b80fe3f69cba6e72a8"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
-      "sha256": "d1db7924aecf038b522b8575780ff1ab356f007879adfdfc56d50015a9bf2c42"
+      "sha256": "fd4e291b74264f594dc5c896fd11e792c951a14d772a26a42a762c2c0cc3bb16"
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "4fbac3063a239d5185d7f73358f71c2b83ba9f1dd1bdf5b937926964c5e58bc7"
+      "sha256": "112e81f300b0028bab9517259f81fd1b24c8477ff7e3ad8bf0c07cb7c8691773"
     },
     "stop_workflow_gate_controller": {
       "path": "control/stop-workflow-gate.mjs",
@@ -2268,7 +2268,7 @@
     },
     "release_readme_historical_compatibility": {
       "path": "control/README.md",
-      "sha256": "e17edbb622cf45969fa337bd1abf6e638ee794515486452191b7584184c1f8da",
+      "sha256": "2c330842adb482d6b9789f4dbdb994ecf625dfcfa59f8b78185c5b31840c7735",
       "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_ADAPTER_DOCUMENTATION",
       "current_portable_kernel_input": false,
       "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",

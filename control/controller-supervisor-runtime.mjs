@@ -68,6 +68,10 @@ function requireRuntimeStatus(value) {
   assert(CONTROLLER_RUNTIME_STATUSES.includes(value), "supervisor runtime status is invalid");
 }
 
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 function safeSupervisorText(value, fallback = null) {
   if (value === null || value === undefined) return fallback;
   try {
@@ -234,8 +238,19 @@ function compileRuntimeState({runtimeId, status, observation = null, goal = null
 function runtimeStatusForTick(tick) {
   if (tick.route_status === "STOPPED_HARD_BOUNDARY") return "ACTIVE_PROTECTED_WAIT";
   if (tick.route_status === "ROUTE_FAILED") return "ROUTE_FAILED_RETAINED";
-  if (tick.action === "WAIT_FOR_AUTHORIZED_WORK") return "ACTIVE_EVENT_WAIT";
+  if (tick.action === "WAIT_FOR_AUTHORIZED_WORK" && isExplicitAuthorizedEventWait(tick)) return "ACTIVE_EVENT_WAIT";
   return "ROUTED_OR_RECONCILED";
+}
+
+function isExplicitAuthorizedEventWait(tick) {
+  const readback = tick?.route_readback;
+  return tick?.route_status === "ROUTED"
+    && isRecord(readback)
+    && readback.status === "WAITING_FOR_AUTHORIZED_WORK"
+    && typeof readback.resume_event_id === "string"
+    && /^[A-Z][A-Z0-9._:-]*$/u.test(readback.resume_event_id)
+    && typeof readback.resume_condition === "string"
+    && readback.resume_condition.trim().length >= 8;
 }
 
 function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
@@ -253,6 +268,29 @@ function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObserva
     error_message_exact: safeSupervisorText(priorTick.route_error, "UNAVAILABLE"),
     current_observation_sha256: currentObservation.observation_sha256,
     required_action: "Retain the exact failed route, change the source-bound route or repair the stale boundary rule, then re-observe before retrying.",
+    external_actions_attempted: false,
+    observed_at_utc: observedAtUtc,
+    rca_sha256: null,
+  };
+  rca.rca_sha256 = digestWithout(rca, "rca_sha256");
+  return rca;
+}
+
+function compileNoProgressRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
+  const rca = {
+    schema: "agentos.controller_supervisor_route_failure_rca.v1",
+    version: 1,
+    status: "OPEN_REPAIR_REQUIRED",
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    controller_role: "AGENTOS_CONTROLLER",
+    runtime_id: runtimeId,
+    prior_goal_id: priorGoal.goal_id,
+    prior_goal_sha256: priorGoal.goal_sha256,
+    prior_observation_sha256: priorTick.observation_sha256,
+    failed_route_status: priorTick.route_status,
+    error_message_exact: "NO_SEMANTIC_PROGRESS_AFTER_ROUTED_SUCCESS",
+    current_observation_sha256: currentObservation.observation_sha256,
+    required_action: "Treat unchanged post-route state as a liveness defect; perform one bounded recovery and re-observe before any wait.",
     external_actions_attempted: false,
     observed_at_utc: observedAtUtc,
     rca_sha256: null,
@@ -304,11 +342,31 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
     validateSupervisorTick(existingTick);
     const existingGoal = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/goal.json"});
     validateSupervisorGoal(existingGoal);
-    const status = existingTick.route_status === "STOPPED_HARD_BOUNDARY"
-      ? "ACTIVE_PROTECTED_WAIT"
-      : existingTick.route_status === "ROUTE_FAILED" ? "ROUTE_FAILED_RETAINED" : "ACTIVE_EVENT_WAIT";
-    writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status, observation, goal: existingGoal, tick: existingTick, nowUtc}));
-    return {observation, goal: existingGoal, tick: existingTick, reused: true};
+    if (existingTick.route_status === "STOPPED_HARD_BOUNDARY") {
+      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ACTIVE_PROTECTED_WAIT", observation, goal: existingGoal, tick: existingTick, nowUtc}));
+      return {observation, goal: existingGoal, tick: existingTick, reused: true};
+    }
+    if (existingTick.route_status === "ROUTE_FAILED") {
+      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, nowUtc}));
+      return {observation, goal: existingGoal, tick: existingTick, reused: true};
+    }
+    if (isExplicitAuthorizedEventWait(existingTick)) {
+      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ACTIVE_EVENT_WAIT", observation, goal: existingGoal, tick: existingTick, nowUtc}));
+      return {observation, goal: existingGoal, tick: existingTick, reused: true};
+    }
+    const rcaPath = `supervisor/no-progress/${existingGoal.goal_id}.json`;
+    const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
+    const rca = compileNoProgressRca({
+      runtimeId,
+      priorGoal: existingGoal,
+      priorTick: existingTick,
+      currentObservation: observation,
+      observedAtUtc: existingRca?.observed_at_utc ?? nowUtc,
+    });
+    if (existingRca === null) writeSupervisorRecordCompareAndSwap({authorityRoot: root, recordPath: rcaPath, expectedDigest: null, record: rca, digestField: "rca_sha256"});
+    else assert(existingRca.rca_sha256 === rca.rca_sha256, "supervisor no-progress RCA differs");
+    writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, error: "NO_SEMANTIC_PROGRESS_AFTER_ROUTED_SUCCESS", nowUtc}));
+    return {observation, goal: existingGoal, tick: existingTick, reused: true, noProgressRca: rca};
   }
   const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
   const result = await runSupervisorIterationAsync({observation, route});
