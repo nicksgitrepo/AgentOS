@@ -326,6 +326,9 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
   // into QA or wave planning; repair the roster/role binding first so a fresh
   // compiler can be admitted with new custody and digests.
   if (spawnerLifecycle.state === "RETIRED") {
+    if (runState.status === "COMPLETE") {
+      return {state: "CANDIDATE_REVIEW", nextAction: "PREPARE_CANDIDATE_REVIEW", dependencyId: null};
+    }
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
   if (spawnerLifecycle.state === "STALLED") {

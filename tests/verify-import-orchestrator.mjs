@@ -119,6 +119,26 @@ const retiredSpawnerOrchestrator = compileImportOrchestrator({
 });
 assert.equal(retiredSpawnerOrchestrator.state, "REPAIRING", "retired Spawner must not re-enter ordinary orchestration");
 assert.equal(retiredSpawnerOrchestrator.next_action, "REPAIR_BLOCKS", "retired Spawner must route to a replacement-binding repair");
+const completeRun = {
+  ...run,
+  status: "COMPLETE",
+  wave_index: plan.waves.length,
+  current_wave_id: null,
+  next_action: "PREPARE_DEVELOPMENT_CANDIDATE_REVIEW",
+  state_sha256: null,
+};
+completeRun.state_sha256 = canonicalDigest({...completeRun, state_sha256: null});
+const retiredAfterComplete = compileImportOrchestrator({
+  orchestratorId: "ORCHESTRATOR.IMPORT.RETIRED_AFTER_COMPLETE",
+  ...governanceFor("ORCHESTRATOR.IMPORT.RETIRED_AFTER_COMPLETE"),
+  plan,
+  rosterProjection: roster,
+  runState: completeRun,
+  spawnerLifecycle: retiredSpawner,
+  defectQueue: emptyDefectQueue,
+});
+assert.equal(retiredAfterComplete.state, "CANDIDATE_REVIEW", "retirement after campaign completion must preserve candidate review");
+assert.equal(retiredAfterComplete.next_action, "PREPARE_CANDIDATE_REVIEW", "completed campaign must not reopen repair after Spawner retirement");
 
 const importSchema = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/import-orchestrator.v1.json"), "utf8"));
 assert.deepEqual([...importSchema.properties.next_action.enum].sort(), [...IMPORT_ORCHESTRATOR_ACTIONS].sort(), "Import Orchestrator action schema is stale");
