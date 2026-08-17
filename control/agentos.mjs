@@ -110,6 +110,13 @@ export * as independentClearanceApplicability from "./independent-clearance-appl
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as orchestratorSuccessorDispatch from "./orchestrator-successor-dispatch.mjs";
 export * as observedDispatchBinding from "./observed-dispatch-binding-gate.mjs";
+export {
+  AUTHORITY_REBIND_RECEIPT_SCHEMA,
+  AUTHORITY_REBIND_RECEIPT_VERSION,
+  compileAuthorityRebindReceipt,
+  validateAuthorityRebindReceipt,
+} from "./authority-rebind-receipt.mjs";
+export * as authorityRebindReceipt from "./authority-rebind-receipt.mjs";
 export * as localProofEvidenceGate from "./local-proof-evidence-gate.mjs";
 export * as autonomousDispatchLivenessGate from "./autonomous-dispatch-liveness-gate.mjs";
 export * as harnessCollisionGate from "./harness-collision-gate.mjs";

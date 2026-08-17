@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "2cd88a2d5fe6173475578ac64adc00b9a76001e437a1ecd2083c6d525e26ad6f"
+      "sha256": "3499adc037a7f29ec2d4a5183a840a609d5b5d6a9a9276d7218c71cc23e962a6"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -935,6 +935,18 @@
     "observed_dispatch_binding_verifier": {
       "path": "tests/verify-observed-dispatch-binding-gate.mjs",
       "sha256": "3ba1e64ab5860dac110f227209ac1b5e5b4fd093b1a21d9b1d35b9bea1180f79"
+    },
+    "authority_rebind_receipt_controller": {
+      "path": "control/authority-rebind-receipt.mjs",
+      "sha256": "b34d7d0accffc1a1a1f2ea4816951a3ddca96b9ce6e50794081433fe8ca05f60"
+    },
+    "authority_rebind_receipt_contract": {
+      "path": "schemas/authority-rebind-receipt.v1.json",
+      "sha256": "441ba3aff279d71ede02959fcdcd06c499bf1521c5777e7118db5295a21271da"
+    },
+    "authority_rebind_receipt_verifier": {
+      "path": "tests/verify-authority-rebind-receipt.mjs",
+      "sha256": "405025d78d8210428168149ca98d342a0f8879d0dc8c11527d9231838fb5408e"
     },
     "local_proof_evidence_gate_controller": {
       "path": "control/local-proof-evidence-gate.mjs",

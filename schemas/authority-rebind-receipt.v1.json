@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/authority-rebind-receipt.v1.json",
+  "title": "AgentOS Authority Rebind Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "receipt_id", "status", "authority", "repair", "focused_checks", "check_status", "custody", "superseded_history", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.authority_rebind_receipt.v1"},
+    "version": {"const": 1},
+    "receipt_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "status": {"const": "CURRENT_AUTHORITY_REBOUND"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "repair": {"$ref": "#/$defs/repair"},
+    "focused_checks": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "check_status": {"const": "PASS"},
+    "custody": {"$ref": "#/$defs/custody"},
+    "superseded_history": {"type": "array", "items": {"$ref": "#/$defs/history"}},
+    "receipt_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "textId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:|refs/)[^\\s]+$"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "branch", "remote_ref", "commit", "tree", "parent", "remote_verified", "worktree_clean"],
+      "properties": {
+        "repository": {"$ref": "#/$defs/textId"}, "branch": {"$ref": "#/$defs/textId"}, "remote_ref": {"$ref": "#/$defs/reference"},
+        "commit": {"$ref": "#/$defs/git"}, "tree": {"$ref": "#/$defs/git"}, "parent": {"$ref": "#/$defs/git"},
+        "remote_verified": {"const": true}, "worktree_clean": {"const": true}
+      }
+    },
+    "repair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["helper", "source_helper", "schema", "rule"],
+      "properties": {"helper": {"$ref": "#/$defs/textId"}, "source_helper": {"$ref": "#/$defs/textId"}, "schema": {"$ref": "#/$defs/textId"}, "rule": {"type": "string", "minLength": 24}}
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false,
+      "required": ["execution_owner", "direct_consumer", "controller_approval_required", "control_plane_only", "consumer_product_mutated", "protected_action", "provider_access", "credential_access", "spend", "destructive_work", "wave_activation"],
+      "properties": {
+        "execution_owner": {"const": "LANE_AGENT"}, "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"}, "controller_approval_required": {"const": false},
+        "control_plane_only": {"const": true}, "consumer_product_mutated": {"const": false}, "protected_action": {"const": false},
+        "provider_access": {"const": false}, "credential_access": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false}, "wave_activation": {"const": "OFF"}
+      }
+    },
+    "history": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "tree", "status", "preserved"],
+      "properties": {"commit": {"$ref": "#/$defs/git"}, "tree": {"$ref": "#/$defs/git"}, "status": {"$ref": "#/$defs/textId"}, "preserved": {"const": true}}
+    }
+  }
+}
