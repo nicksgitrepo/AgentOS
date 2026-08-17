@@ -28,6 +28,7 @@ export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAge
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
 export {dispatchOrchestratorSuccessor, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION} from "./orchestrator-successor-dispatch.mjs";
+export {compileLivenessDigestGate, validateLivenessDigestGate, evaluateLivenessBindingFreshness, LIVENESS_DIGEST_GATE_SCHEMA, LIVENESS_DIGEST_GATE_VERSION, LIVENESS_ROSTER_INVALIDATION_RULE, LIVENESS_ROSTER_REFRESH_TRIGGERS} from "./liveness-digest-gate.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,

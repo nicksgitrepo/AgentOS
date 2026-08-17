@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/liveness-digest-gate.v1.json",
+  "title": "AgentOS Cross-Record Liveness Digest Gate",
+  "description": "Project-agnostic gate binding an action result, continuation, record, typed semantic successor, readback, authority, and roster fingerprints. Null, placeholder, stale, or mismatched bindings are not admissible.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "defect_id", "action_id", "action_result", "result_sha256", "continuation_sha256", "record_sha256", "typed_successor", "readback", "readback_sha256", "authority_binding", "roster_binding", "evidence_refs", "hostile_fixture_refs", "status", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.liveness_digest_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/identifier"},
+    "defect_id": {"$ref": "#/$defs/identifier"},
+    "action_id": {"$ref": "#/$defs/identifier"},
+    "action_result": {
+      "type": "object",
+      "description": "Must validate against agentos.action_result_continuation.v1 using the executable contract.",
+      "required": ["schema", "version", "action_id", "result_id", "result", "result_sha256", "continuation", "continuation_sha256", "next_action", "next_handler", "record_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.action_result_continuation.v1"},
+        "version": {"const": 1},
+        "action_id": {"$ref": "#/$defs/identifier"},
+        "result_id": {"$ref": "#/$defs/identifier"},
+        "result": {"type": "object"},
+        "result_sha256": {"$ref": "#/$defs/sha256"},
+        "continuation": {"type": "object"},
+        "continuation_sha256": {"$ref": "#/$defs/sha256"},
+        "next_action": {"$ref": "#/$defs/identifier"},
+        "next_handler": {"$ref": "#/$defs/identifier"},
+        "record_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "result_sha256": {"$ref": "#/$defs/sha256"},
+    "continuation_sha256": {"$ref": "#/$defs/sha256"},
+    "record_sha256": {"$ref": "#/$defs/sha256"},
+    "typed_successor": {
+      "type": "object",
+      "description": "Must validate against agentos.typed_successor_readback.v1 using the executable contract.",
+      "required": ["schema", "version", "next_action", "next_handler", "readback", "readback_sha256", "successor_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.typed_successor_readback.v1"},
+        "version": {"const": 1},
+        "next_action": {"$ref": "#/$defs/identifier"},
+        "next_handler": {"$ref": "#/$defs/identifier"},
+        "readback": {"type": "object"},
+        "readback_sha256": {"$ref": "#/$defs/sha256"},
+        "successor_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "readback": {"type": "object"},
+    "readback_sha256": {"$ref": "#/$defs/sha256"},
+    "authority_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_commit", "authority_tree", "authority_receipt_sha256", "source_mapping_sha256"],
+      "properties": {
+        "authority_commit": {"$ref": "#/$defs/gitObject"},
+        "authority_tree": {"$ref": "#/$defs/gitObject"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "source_mapping_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "roster_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roster_projection_sha256", "applicability_sha256", "invalidation_rule", "refresh_triggers"],
+      "properties": {
+        "roster_projection_sha256": {"$ref": "#/$defs/sha256"},
+        "applicability_sha256": {"$ref": "#/$defs/sha256"},
+        "invalidation_rule": {"const": "INVALIDATE_AND_REBUILD_DEPENDENTS_ON_BLOCK_CHANGE"},
+        "refresh_triggers": {"type": "array", "const": ["ACTION_MAPPING_CHANGE", "APPLICABILITY_CHANGE", "AUTHORITY_CHANGE", "CONTINUATION_CHANGE", "READBACK_CHANGE", "RESULT_CHANGE", "ROSTER_CHANGE"]}
+      }
+    },
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
+    "hostile_fixture_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/identifier"}},
+    "status": {"const": "PASS"},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/identifier"},
+        "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}
