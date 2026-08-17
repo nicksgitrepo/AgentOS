@@ -47,6 +47,7 @@ export const AGENT_SPAWNER_COMPILER_CONTINUATION_VERSION = 1;
 export const AGENT_SPAWNER_COMPILER_OUTCOMES = Object.freeze(["BLOCK_COMPILED", "TYPED_ROSTER_PUBLISHED", "PROTECTED_EVENT_WAIT"]);
 export const AGENT_SPAWNER_COMPILER_CONTINUATION_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE"]);
 export const AGENT_SPAWNER_COMPILER_NEXT_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT", "ADMIT_GOVERNED_SPAWN"]);
+export const AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256 = canonicalDigest({event_type: "PROTECTED_HOLD", event_sha256: null});
 
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -195,7 +196,7 @@ function validateExecution(execution, lifecycle) {
 export function validateAgentSpawnerLifecycle(lifecycle) {
   exactKeys(lifecycle, [
     "schema", "version", "lifecycle_id", "role_id", "mode", "state", "persistent_state", "wave_activation", "candidate_sha256",
-    "roster_projection_sha256", "context_sha256", "qa", "authority", "execution", "next_action",
+    "roster_projection_sha256", "context_sha256", "qa", "authority", "execution", "protected_hold_event_sha256", "next_action",
     "lifecycle_sha256",
   ], "Agent Spawner lifecycle");
   assert(lifecycle.schema === AGENT_SPAWNER_LIFECYCLE_SCHEMA && lifecycle.version === AGENT_SPAWNER_LIFECYCLE_VERSION, "Agent Spawner lifecycle identity is invalid");
@@ -207,6 +208,12 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   assert(AGENT_SPAWNER_WAVE_ACTIVATION_STATES.includes(lifecycle.wave_activation), "Agent Spawner wave activation state is invalid");
   assert(lifecycle.persistent_state === derivePersistentState(lifecycle), "Agent Spawner persistent lifecycle state is not bound to its operational state");
   for (const field of ["candidate_sha256", "roster_projection_sha256", "context_sha256"]) requireSha(lifecycle[field], `Agent Spawner ${field}`);
+  if (lifecycle.state === "STALLED") {
+    requireSha(lifecycle.protected_hold_event_sha256, "Agent Spawner protected hold receipt");
+    assert(lifecycle.protected_hold_event_sha256 === AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256, "Stalled Spawner lacks the canonical protected-hold receipt");
+  } else {
+    assert(lifecycle.protected_hold_event_sha256 === null, "Non-stalled Spawner cannot retain a protected-hold receipt");
+  }
   validateQa(lifecycle.qa);
   validateAuthority(lifecycle.authority, lifecycle);
   validateExecution(lifecycle.execution, lifecycle);
@@ -241,6 +248,7 @@ export function compileAgentSpawnerLifecycle({
   contextSha256,
   qa,
   isolatedLocalCustody = false,
+  protectedHoldEventSha256 = null,
   execution = {compiler_ticks: 0, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false},
 } = {}) {
   requireIdentifier(lifecycleId, "Agent Spawner lifecycle ID");
@@ -276,6 +284,7 @@ export function compileAgentSpawnerLifecycle({
       independent_evaluation_required: true,
     },
     execution: structuredClone(execution),
+    protected_hold_event_sha256: protectedHoldEventSha256,
     next_action: null,
     lifecycle_sha256: null,
   };
@@ -336,12 +345,14 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       assert(lifecycle.mode === "COMPILER_ONLY", "Only compiler-only mode may start without spawn admission");
       assert(["PREPARED", "QA_READY", "STALLED"].includes(lifecycle.state), "Spawner cannot start compiler from its current state");
       next.state = "COMPILER_ACTIVE";
+      next.protected_hold_event_sha256 = null;
       next.execution.compiler_ticks += 1;
       break;
     case "BLOCK_LIBRARY_UPDATED":
       assert(lifecycle.mode === "COMPILER_ONLY", "Block-library updates must use compiler-only mode");
       assert(lifecycle.state !== "RETIRED", "Retired Spawner cannot update its library");
       next.state = "COMPILER_ACTIVE";
+      next.protected_hold_event_sha256 = null;
       next.execution.compiler_ticks += 1;
       break;
     case "INDEPENDENT_CLEARANCE_GRANTED":
@@ -369,6 +380,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
     case "PROTECTED_HOLD":
       assert(lifecycle.state !== "RETIRED", "Retired Spawner cannot enter a protected hold");
       next.state = "STALLED";
+      next.protected_hold_event_sha256 = event.event_sha256;
       next.authority.temporary_worker_admission = false;
       next.authority.spawn_authority = false;
       next.wave_activation = "OFF";
@@ -380,6 +392,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       break;
     case "RETIRE":
       next.state = "RETIRED";
+      next.protected_hold_event_sha256 = null;
       next.authority.temporary_worker_admission = false;
       next.authority.spawn_authority = false;
       next.wave_activation = "OFF";
@@ -424,7 +437,7 @@ function validateContinuationEvidence(evidenceRefs) {
 }
 
 function changedLifecycleFields(before, after) {
-  return ["candidate_sha256", "roster_projection_sha256", "context_sha256", "qa", "state", "persistent_state", "wave_activation", "execution", "next_action"]
+  return ["candidate_sha256", "roster_projection_sha256", "context_sha256", "qa", "state", "persistent_state", "wave_activation", "execution", "protected_hold_event_sha256", "next_action"]
     .filter((field) => JSON.stringify(before[field]) !== JSON.stringify(after[field]))
     .sort(compareUtf8);
 }

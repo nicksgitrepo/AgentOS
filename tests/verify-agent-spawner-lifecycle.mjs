@@ -5,6 +5,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   advanceAgentSpawnerLifecycle,
   compileAgentSpawnerLifecycle,
+  AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256,
   runAgentSpawnerCompilerTick,
   validateAgentSpawnerLifecycle,
 } from "../control/agent-spawner-lifecycle.mjs";
@@ -123,6 +124,7 @@ const stalled = compileAgentSpawnerLifecycle({
   ...common,
   lifecycleId: "LIFECYCLE.SPAWNER.STALLED",
   state: "STALLED",
+  protectedHoldEventSha256: AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256,
   qa: pendingQa,
 });
 assert.equal(stalled.persistent_state, "STALLED");
@@ -131,6 +133,12 @@ assert.equal(stalled.wave_activation, "OFF");
 assert.equal(stalled.authority.temporary_worker_admission, false);
 assert.equal(stalled.authority.spawn_authority, false);
 assert.deepEqual(stalled.execution, {compiler_ticks: 0, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false});
+assert.throws(() => compileAgentSpawnerLifecycle({
+  ...common,
+  lifecycleId: "LIFECYCLE.SPAWNER.UNBOUND_STALLED",
+  state: "STALLED",
+  qa: pendingQa,
+}), /protected hold receipt/u, "Spawner cannot be stalled without a typed protected-hold receipt");
 
 const resumedCompiler = advanceAgentSpawnerLifecycle(stalled, {
   event_type: "START_COMPILER",

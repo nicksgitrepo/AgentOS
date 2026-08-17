@@ -18,7 +18,8 @@ export {compilePyramidImportOutput, validatePyramidImportOutput, compileGitRepoi
 export {compileControllerEscalation, validateControllerEscalation} from "./controller-escalation-continuation.mjs";
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
 export {evaluateStopWorkflowGate, validateStopWorkflowDecision, compileStopWorkflowNoStopAnswers, STOP_WORKFLOW_QUESTIONS, STOP_WORKFLOW_OUTCOMES, STOP_WORKFLOW_NEXT_ACTIONS} from "./stop-workflow-gate.mjs";
-export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick, validateAgentSpawnerCompilerContinuation} from "./agent-spawner-lifecycle.mjs";
+export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick, validateAgentSpawnerCompilerContinuation, admitAgentSpawnerIsolatedLocalCustody, AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256} from "./agent-spawner-lifecycle.mjs";
+export {compileControllerStartupSuccessor, validateControllerStartupSuccessor, CONTROLLER_STARTUP_STAGES, CONTROLLER_STARTUP_SEQUENCE_SCHEMA, CONTROLLER_STARTUP_SEQUENCE_VERSION} from "./controller-startup-sequence.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord, acceptAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
@@ -88,6 +89,7 @@ export * as controllerImportCloseout from "./controller-import-closeout.mjs";
 export * as controllerEscalation from "./controller-escalation-continuation.mjs";
 export * as controllerOwnerEventWake from "./controller-owner-event-wake.mjs";
 export * as agentSpawnerLifecycle from "./agent-spawner-lifecycle.mjs";
+export * as controllerStartup from "./controller-startup-sequence.mjs";
 export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";
 export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";

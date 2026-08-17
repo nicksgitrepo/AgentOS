@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": [
     "schema", "version", "lifecycle_id", "role_id", "mode", "state", "persistent_state", "wave_activation", "candidate_sha256",
-    "roster_projection_sha256", "context_sha256", "qa", "authority", "execution", "next_action",
+    "roster_projection_sha256", "context_sha256", "qa", "authority", "execution", "protected_hold_event_sha256", "next_action",
     "lifecycle_sha256"
   ],
   "properties": {
@@ -25,6 +25,7 @@
     "qa": {"$ref": "#/$defs/qa"},
     "authority": {"$ref": "#/$defs/authority"},
     "execution": {"$ref": "#/$defs/execution"},
+    "protected_hold_event_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
     "next_action": {"enum": ["START_COMPILER", "COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE", "ADMIT_GOVERNED_SPAWN", "START_GOVERNED_SPAWN", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "NONE"]},
     "lifecycle_sha256": {"$ref": "#/$defs/sha256"}
   },
