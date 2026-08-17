@@ -3,6 +3,7 @@
 /* QA and admit permanent AgentOS control-plane roles one at a time. */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {controllerActionHandlerFor, compileControllerContinuation} from "./controller-action-dispatcher.mjs";
 import {validateTypedSpawnerAdmission} from "./typed-spawner-admission.mjs";
 
 export const PERMANENT_ROLE_ROSTER_SCHEMA = "agentos.permanent_role_roster.v1";
@@ -34,7 +35,7 @@ const CANDIDATE_KEYS = Object.freeze([
 ]);
 const ROSTER_KEYS = Object.freeze([
   "schema", "version", "spawner_admission_sha256", "controller_role_alias", "duplicate_controller_forbidden", "permanent_role_ids",
-  "candidates", "admitted_role_ids", "next_role_id", "status", "activation_state", "worker_spawned_count", "next_action", "roster_sha256",
+  "candidates", "admitted_role_ids", "next_role_id", "status", "activation_state", "worker_spawned_count", "next_action", "next_handler", "continuation", "continuation_sha256", "roster_sha256",
 ]);
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
@@ -56,6 +57,11 @@ function sortedUnique(values, label) {
 }
 function nonPlaceholder(value, label, minimumLength = 24) { assert(typeof value === "string" && value.trim().length >= minimumLength && !/^(?:TBD|TODO|FIXME|PLACEHOLDER|LATER)$/iu.test(value.trim()), `${label} is incomplete or a placeholder`); }
 function digestWithout(value, field) { return canonicalDigest({...structuredClone(value), [field]: null}); }
+function bindSuccessor(roster) {
+  roster.next_handler = controllerActionHandlerFor(roster.next_action);
+  roster.continuation = compileControllerContinuation(roster.next_action);
+  roster.continuation_sha256 = canonicalDigest(roster.continuation);
+}
 
 export function validatePermanentRoleCandidate(candidate) {
   exactKeys(candidate, CANDIDATE_KEYS, "Permanent role candidate");
@@ -132,6 +138,10 @@ export function validatePermanentRoleRoster(roster, {spawnerAdmission = null} = 
   assert(roster.activation_state === "OFF", "Permanent roster activation must remain off");
   assert(roster.worker_spawned_count === 0, "Permanent roster cannot spawn workers");
   assert(roster.next_action === (complete ? "INJECT_ORCHESTRATOR_GOVERNANCE" : "ADMIT_NEXT_PERMANENT_ROLE"), "Permanent roster next action is inconsistent");
+  assert(roster.next_handler === controllerActionHandlerFor(roster.next_action), "Permanent roster next handler is inconsistent");
+  assert(JSON.stringify(roster.continuation) === JSON.stringify(compileControllerContinuation(roster.next_action)), "Permanent roster continuation is inconsistent");
+  requireSha(roster.continuation_sha256, "Permanent roster continuation digest");
+  assert(roster.continuation_sha256 === canonicalDigest(roster.continuation), "Permanent roster continuation digest mismatch");
   requireSha(roster.roster_sha256, "Permanent roster digest");
   assert(roster.roster_sha256 === digestWithout(roster, "roster_sha256"), "Permanent roster digest mismatch");
   if (spawnerAdmission !== null) {
@@ -160,6 +170,9 @@ export function compilePermanentRoleRoster({spawnerAdmissionSha256, candidates, 
     activation_state: "OFF",
     worker_spawned_count: 0,
     next_action: "ADMIT_NEXT_PERMANENT_ROLE",
+    next_handler: null,
+    continuation: null,
+    continuation_sha256: null,
     roster_sha256: null,
   };
   roster.next_role_id = roster.admitted_role_ids.length < PERMANENT_ROLE_IDS.length ? PERMANENT_ROLE_IDS[roster.admitted_role_ids.length] : null;
@@ -167,6 +180,7 @@ export function compilePermanentRoleRoster({spawnerAdmissionSha256, candidates, 
     roster.status = "PERMANENT_ROSTER_READY";
     roster.next_action = "INJECT_ORCHESTRATOR_GOVERNANCE";
   }
+  bindSuccessor(roster);
   roster.roster_sha256 = digestWithout(roster, "roster_sha256");
   return validatePermanentRoleRoster(roster);
 }
@@ -184,6 +198,7 @@ export function admitNextPermanentRole(roster, roleId) {
   next.next_role_id = next.admitted_role_ids.length < PERMANENT_ROLE_IDS.length ? PERMANENT_ROLE_IDS[next.admitted_role_ids.length] : null;
   next.status = next.next_role_id === null ? "PERMANENT_ROSTER_READY" : "READY_FOR_NEXT_ROLE";
   next.next_action = next.next_role_id === null ? "INJECT_ORCHESTRATOR_GOVERNANCE" : "ADMIT_NEXT_PERMANENT_ROLE";
+  bindSuccessor(next);
   next.roster_sha256 = digestWithout(next, "roster_sha256");
   return validatePermanentRoleRoster(next);
 }

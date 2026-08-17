@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/controller-action-dispatcher.v1.json",
+  "title": "AgentOS Controller closed successor dispatcher",
+  "description": "Every accepted action has a registered next action, next handler, continuation digest, and same-turn dispatch or a narrow protected/owner route. Missing handlers, failed persistence, unchanged semantic state, and dead ends become typed Spawner defects.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "receipt_id", "action_id", "previous_receipt_sha256", "semantic_before_sha256", "semantic_after_sha256", "progress_delta_sha256", "evidence_refs", "hostile_fixture_refs", "next_action", "next_handler", "continuation", "continuation_sha256", "authority", "protected_event", "defect", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.controller_action_receipt.v1"},
+    "version": {"const": 1},
+    "receipt_id": {"$ref": "#/$defs/identifier"},
+    "action_id": {"$ref": "#/$defs/identifier"},
+    "previous_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "semantic_before_sha256": {"$ref": "#/$defs/sha256"},
+    "semantic_after_sha256": {"$ref": "#/$defs/sha256"},
+    "progress_delta_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceRef"}},
+    "hostile_fixture_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "next_action": {"enum": ["ADMIT_GOVERNED_SPAWN", "ADMIT_NEXT_PERMANENT_ROLE", "ADMIT_TYPED_AGENT_SPAWNER", "BUILD_SOURCE_LOCK_AND_QA_MISSING_BLOCKS", "COMPILE_NEXT_BLOCK", "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME", "INJECT_ORCHESTRATOR_GOVERNANCE", "OWNER_REVIEW", "PREPARE_CANDIDATE_REVIEW", "PREPARE_DEVELOPMENT_CANDIDATE_REVIEW", "PUBLISH_TYPED_ROSTER", "RECORD_BLOCKED_EXACT_AND_CONTINUE_UNAFFECTED_WORK", "REPAIR_BLOCKS", "REQUEST_SPAWNER_QA", "REQUEST_SPAWNER_QA_FOR_CURRENT_WAVE", "RUN_NEXT_BOUNDED_RECOVERY", "SELF_REPAIR_WORKFLOW_DEAD_END", "START_CENTRAL_INTEGRATION", "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS", "START_COMPILER", "START_CURRENT_SPECIALIST_AUDIT_REPAIR_WAVE", "START_GOVERNED_SPAWN", "START_INDEPENDENT_REAUDIT", "START_INDEPENDENT_REAUDIT_OF_CUMULATIVE_CANDIDATE", "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION", "START_NEXT_LOCAL_BLOCK_REPAIR", "START_PLATFORM_REVIEW", "START_PLATFORM_REVIEW_TEST_AND_INTEGRATION", "START_SPECIALIST_WAVE", "WAIT_FOR_EXACT_PROTECTED_BOUNDARY_RESOLUTION", "WAIT_FOR_INDEPENDENT_CLEARANCE", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "WAIT_FOR_PROTECTED_EVENT", "WAIT_FOR_PROTECTED_WAVE_ACTIVATION"]},
+    "next_handler": {"enum": ["HANDLER.CONTROLLER_AVAILABLE_TRANSITION", "HANDLER.CONTROLLER_BLOCK_REPAIR", "HANDLER.CONTROLLER_CENTRAL_INTEGRATION", "HANDLER.CONTROLLER_CONTINUE_UNAFFECTED", "HANDLER.CONTROLLER_INDEPENDENT_REAUDIT", "HANDLER.CONTROLLER_LOCAL_BLOCK_REPAIR", "HANDLER.CONTROLLER_PLATFORM_REVIEW", "HANDLER.CONTROLLER_RECOVERY", "HANDLER.CONTROLLER_SPAWNER_QA", "HANDLER.CONTROLLER_SPECIALIST_WAVE", "HANDLER.GOVERNED_SPAWN_ADAPTER", "HANDLER.ORCHESTRATOR_BLOCK_REPAIR", "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION", "HANDLER.ORCHESTRATOR_GOVERNANCE", "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT", "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW", "HANDLER.ORCHESTRATOR_SPAWNER_QA", "HANDLER.ORCHESTRATOR_SPECIALIST_WAVE", "HANDLER.OWNER_REVIEW", "HANDLER.PERMANENT_ROLE_ADMISSION", "HANDLER.PERMANENT_ROLE_CONSTRUCTION", "HANDLER.PROTECTED_EVENT_WAIT", "HANDLER.SELF_REPAIR_WORKFLOW", "HANDLER.SPAWNER_ADMISSION", "HANDLER.SPAWNER_BLOCK_COMPILER", "HANDLER.SPAWNER_COMPILER", "HANDLER.SPAWNER_ROSTER_PUBLISHER"]},
+    "continuation": {"$ref": "#/$defs/continuation"},
+    "continuation_sha256": {"$ref": "#/$defs/sha256"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "protected_event": {"anyOf": [{"$ref": "#/$defs/protectedEvent"}, {"type": "null"}]},
+    "defect": {"anyOf": [{"$ref": "#/$defs/defect"}, {"type": "null"}]},
+    "receipt_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "evidenceRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {"evidence_id": {"$ref": "#/$defs/identifier"}, "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "continuation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
+      "properties": {
+        "mode": {"enum": ["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT", "EXPLICIT_OWNER_REVIEW"]},
+        "timer_deferral": {"const": false}, "heartbeat_deferral": {"const": false}, "same_turn_dispatch": {"type": "boolean"},
+        "protected_event_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]}, "resume_condition": {"type": "string", "minLength": 8}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work"],
+      "properties": {"compiler_only": {"const": true}, "admission": {"const": false}, "activation": {"const": false}, "product_mutation": {"const": false}, "provider_access": {"const": false}, "credential_access": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false}}
+    },
+    "protectedEvent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["blocker_id", "blocker_class", "evidence_ceiling", "restart_event", "resources"],
+      "properties": {
+        "blocker_id": {"$ref": "#/$defs/identifier"},
+        "blocker_class": {"enum": ["CREDENTIAL_OR_AUTHENTICATION", "IRREVERSIBLE_DESTRUCTIVE_USER_WORK", "MAJOR_PRODUCT_OR_PRODUCTION_DECISION", "MATERIAL_SPEND_OR_FINANCIAL_AUTHORITY", "PROTECTED_EXTERNAL_DEPENDENCY"]},
+        "evidence_ceiling": {"type": "string", "minLength": 24}, "restart_event": {"type": "string", "minLength": 8},
+        "resources": {"type": "object", "additionalProperties": false, "required": ["jobs", "workers", "heavyweight_processes", "timers"], "properties": {"jobs": {"const": 0}, "workers": {"const": 0}, "heavyweight_processes": {"const": 0}, "timers": {"const": 0}}}
+      }
+    },
+    "defect": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "defect_id", "defect_class", "evidence_refs", "required_gate", "stop_condition", "roster_invalidation", "defect_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.controller_action_defect.v1"}, "version": {"const": 1}, "defect_id": {"$ref": "#/$defs/identifier"},
+        "defect_class": {"enum": ["DISPATCH_FAILED", "INVALID_SUCCESSOR", "MISSING_ATOMIC_PERSISTENCE", "STALE_OR_UNKNOWN_HANDLER", "UNCHANGED_SEMANTIC_STATE", "UNKNOWN_ACTION_ROUTE", "WORKFLOW_DEAD_END"]},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceRef"}}, "required_gate": {"$ref": "#/$defs/identifier"},
+        "stop_condition": {"type": "string", "minLength": 24}, "roster_invalidation": {"$ref": "#/$defs/identifier"}, "defect_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "state_rules": {
+    "registry": "Only the closed action registry may select a next handler; unknown or stale routes fail closed.",
+    "continuation": "Every accepted receipt binds next_action, next_handler, continuation, continuation_sha256, and receipt_sha256; the continuation digest must equal the canonical digest of continuation. Null, done, timer-only, and commentary-only closeouts are invalid.",
+    "dispatch": "Local successors are persisted and dispatched in the same lifecycle turn. A handler must return a typed successor with semantic progress.",
+    "protected_wait": "WAIT_FOR_PROTECTED_EVENT is valid only with a typed protected blocker, evidence ceiling, restart event, and zero resources.",
+    "repair": "Dead ends, missing handlers, failed dispatch, persistence failure, and unchanged semantic state become typed Spawner defects with roster invalidation."
+  }
+}

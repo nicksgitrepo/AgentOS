@@ -19,6 +19,7 @@ import {
   compilePermanentRoleRoster,
   validatePermanentRoleRoster,
 } from "../control/permanent-role-roster.mjs";
+import {controllerActionHandlerFor, controllerContinuationDigest} from "../control/controller-action-dispatcher.mjs";
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
@@ -90,6 +91,9 @@ assert.deepEqual(roster.admitted_role_ids, []);
 assert.equal(roster.next_role_id, PERMANENT_ROLE_IDS[0]);
 assert.equal(roster.status, "READY_FOR_NEXT_ROLE");
 assert.equal(roster.next_action, "ADMIT_NEXT_PERMANENT_ROLE");
+assert.equal(roster.next_handler, controllerActionHandlerFor("ADMIT_NEXT_PERMANENT_ROLE"));
+assert.equal(roster.continuation_sha256, controllerContinuationDigest(roster.continuation));
+assert.equal(roster.continuation.same_turn_dispatch, true);
 assert.equal(roster.activation_state, "OFF");
 assert.equal(roster.worker_spawned_count, 0);
 
@@ -100,8 +104,20 @@ for (let index = 0; index < PERMANENT_ROLE_IDS.length; index += 1) {
   assert.equal(roster.activation_state, "OFF");
   assert.equal(roster.next_role_id, index + 1 < PERMANENT_ROLE_IDS.length ? PERMANENT_ROLE_IDS[index + 1] : null);
   assert.equal(roster.next_action, index + 1 < PERMANENT_ROLE_IDS.length ? "ADMIT_NEXT_PERMANENT_ROLE" : "INJECT_ORCHESTRATOR_GOVERNANCE");
+  assert.equal(roster.next_handler, controllerActionHandlerFor(roster.next_action));
+  assert.equal(roster.continuation_sha256, controllerContinuationDigest(roster.continuation));
 }
 assert.equal(roster.status, "PERMANENT_ROSTER_READY");
+
+const unknownSuccessorHandler = structuredClone(roster);
+unknownSuccessorHandler.next_handler = "HANDLER.UNKNOWN";
+redigest(unknownSuccessorHandler, "roster_sha256");
+assert.throws(() => validatePermanentRoleRoster(unknownSuccessorHandler), /next handler is inconsistent/u);
+
+const tamperedSuccessorContinuation = structuredClone(roster);
+tamperedSuccessorContinuation.continuation.same_turn_dispatch = false;
+redigest(tamperedSuccessorContinuation, "roster_sha256");
+assert.throws(() => validatePermanentRoleRoster(tamperedSuccessorContinuation), /continuation is inconsistent|continuation digest mismatch/u);
 
 const reordered = structuredClone(roster);
 reordered.candidates.reverse();

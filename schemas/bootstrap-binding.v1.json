@@ -562,7 +562,7 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "33d520d28f8f1a15252dcbb0fe60c2182d7f7c4e662fa9f51710049fb2dc98e5"
+      "sha256": "1a4646afc47ac1ac533983fb37a7fd41d46099a96876cbd208d2c82dee509b04"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
@@ -574,7 +574,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "a0bb78eaa5bb6e00dd7831c37760973c98dcc00fb1d27af3e3046b3b69777f40"
+      "sha256": "fb510a25ca8c6339245918abd358a164dbdc05d0ea81a62a69c703c284afcf7f"
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",
@@ -824,17 +824,29 @@
       "path": "tests/verify-typed-spawner-admission.mjs",
       "sha256": "c1de736b814db64261be1b8e8713d697d6104a4baa79a78024b61c3abc2bdf78"
     },
+    "controller_action_dispatcher_controller": {
+      "path": "control/controller-action-dispatcher.mjs",
+      "sha256": "679bb72f713b31e3ddf9cad409d9503d1c3aceb1ec7c1523fabfdce283f3d534"
+    },
+    "controller_action_dispatcher_contract": {
+      "path": "schemas/controller-action-dispatcher.v1.json",
+      "sha256": "9f7aaa662efe8622940b857863f9627f7f719da4d9274fe35102251f2229b723"
+    },
+    "controller_action_dispatcher_verifier": {
+      "path": "tests/verify-controller-action-dispatcher.mjs",
+      "sha256": "b9c60e0884e7f633e76551348ab998e1f351b812d1df632b94866b5d0e21bd5b"
+    },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
-      "sha256": "d2f592f7e622cea756a1d0490b2ba90cb5a36628c04ac3f220206f7c27664db5"
+      "sha256": "d1ce0f3d4ffb0d14db19279471677603fa5345e289b5af8b785252ed85225535"
     },
     "permanent_role_roster_contract": {
       "path": "schemas/permanent-role-roster.v1.json",
-      "sha256": "c56e39edc3c63ea8a79baaba6a4fa70966918ce34eab913a83ea1c0c851331c5"
+      "sha256": "55deae85d4b445db2ae109405dd860b141efa22c98dd4dfb426ea555d97ad890"
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "a32abdfc37b995fcf76add795912a8977a8e988c21d3e081f30dc4f280e13a5e"
+      "sha256": "7dd5c17d5a800959d315ed550e4132f498c62be68f6642f9a3d73afc484af412"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",

@@ -63,6 +63,13 @@ assert.equal(initialWithQueue.next_action, "REQUEST_SPAWNER_QA");
 assert.equal(initialWithQueue.authority.product_mutation, false);
 assert.equal(initialWithQueue.authority.protected_release, false);
 assert.equal(initialWithQueue.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
+for (const activeState of ["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"]) {
+  const activeNone = structuredClone(initialWithQueue);
+  activeNone.state = activeState;
+  activeNone.next_action = "NONE";
+  activeNone.orchestrator_sha256 = canonicalDigest({...activeNone, orchestrator_sha256: null});
+  assert.throws(() => validateImportOrchestrator(activeNone), /Active Import Orchestrator cannot publish NONE/u);
+}
 
 const defectRepair = compileAgentSpawnerDefectIntake({
   defectId: "DEFECT.ORCHESTRATOR.CONTINUATION.001",

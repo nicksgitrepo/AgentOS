@@ -10,6 +10,14 @@
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
     "roleId": {"enum": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER"]},
+    "continuation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
+      "properties": {
+        "mode": {"const": "IMMEDIATE_SAME_TURN"}, "timer_deferral": {"const": false}, "heartbeat_deferral": {"const": false},
+        "same_turn_dispatch": {"const": true}, "protected_event_id": {"type": "null"}, "resume_condition": {"type": "string", "minLength": 8}
+      }
+    },
     "candidate": {
       "type": "object", "additionalProperties": false,
       "required": ["schema", "version", "role_id", "role_kind", "block_set_sha256", "independent_evaluation_sha256", "hostile_fixture_ids", "authority", "stop_conditions", "qa_status", "admission_state", "activation_state", "worker_spawned", "candidate_sha256"],
@@ -32,13 +40,15 @@
     "next_role_id": {"anyOf": [{"$ref": "#/$defs/roleId"}, {"type": "null"}]},
     "status": {"enum": ["READY_FOR_NEXT_ROLE", "PERMANENT_ROSTER_READY"]}, "activation_state": {"const": "OFF"},
     "worker_spawned_count": {"const": 0}, "next_action": {"enum": ["ADMIT_NEXT_PERMANENT_ROLE", "INJECT_ORCHESTRATOR_GOVERNANCE"]},
+    "next_handler": {"enum": ["HANDLER.PERMANENT_ROLE_ADMISSION", "HANDLER.ORCHESTRATOR_GOVERNANCE"]},
+    "continuation": {"$ref": "#/$defs/continuation"}, "continuation_sha256": {"$ref": "#/$defs/sha256"},
     "roster_sha256": {"$ref": "#/$defs/sha256"}
   },
-  "required": ["schema", "version", "spawner_admission_sha256", "controller_role_alias", "duplicate_controller_forbidden", "permanent_role_ids", "candidates", "admitted_role_ids", "next_role_id", "status", "activation_state", "worker_spawned_count", "next_action", "roster_sha256"],
+  "required": ["schema", "version", "spawner_admission_sha256", "controller_role_alias", "duplicate_controller_forbidden", "permanent_role_ids", "candidates", "admitted_role_ids", "next_role_id", "status", "activation_state", "worker_spawned_count", "next_action", "next_handler", "continuation", "continuation_sha256", "roster_sha256"],
   "state_rules": {
     "order": "Only the typed next_role_id may be admitted; admitted_role_ids must be a canonical prefix.",
     "roles": "The Intent Regulator is the Controller alias; a duplicate Controller role is forbidden. The canonical permanent roles are Intent Regulator, Memory, Runtime, and Scheduler.",
     "qa": "Every candidate must have complete non-placeholder blocks, hostile fixtures, independent evaluation, explicit authority, and stop conditions before admission.",
-    "closeout": "All roles admitted yields next_action=INJECT_ORCHESTRATOR_GOVERNANCE; activation remains OFF."
+    "closeout": "All roles admitted yields next_action=INJECT_ORCHESTRATOR_GOVERNANCE with a registered next_handler and same-turn continuation; activation remains OFF."
   }
 }

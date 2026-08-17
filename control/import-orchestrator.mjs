@@ -219,6 +219,9 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
   assert(orchestrator.role_id === IMPORT_ORCHESTRATOR_ROLE && orchestrator.mode === IMPORT_ORCHESTRATOR_MODE, "Import Orchestrator role or mode is invalid");
   assert(IMPORT_ORCHESTRATOR_STATES.includes(orchestrator.state), "Import Orchestrator state is invalid");
   assert(IMPORT_ORCHESTRATOR_ACTIONS.includes(orchestrator.next_action), "Import Orchestrator action is invalid");
+  if (["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"].includes(orchestrator.state)) {
+    assert(orchestrator.next_action !== "NONE", "Active Import Orchestrator cannot publish NONE; route a typed successor or defect");
+  }
   for (const field of ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256"]) requireSha(orchestrator[field], `Import Orchestrator ${field}`);
   requireSha(orchestrator.defect_queue_sha256, "Import Orchestrator defect queue binding");
   requireSha(orchestrator.defect_intake_sha256, "Import Orchestrator defect intake binding");
