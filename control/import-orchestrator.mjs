@@ -55,6 +55,15 @@ export {
   validateTypedSuccessorReadback as validateImportOrchestratorSuccessorReadback,
   writeTypedSuccessorReadbackCompareAndSwap as writeImportOrchestratorSuccessorReadbackCompareAndSwap,
 } from "./typed-successor-readback.mjs";
+// A successor declaration is not proof that its handler ran.  This adapter
+// binds Orchestrator declarations to the closed Controller dispatcher and
+// returns a digest-bound observation of the real same-turn invocation.
+export {
+  dispatchOrchestratorSuccessor,
+  validateOrchestratorSuccessorDispatchReadback,
+  ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA,
+  ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION,
+} from "./orchestrator-successor-dispatch.mjs";
 
 export const IMPORT_ORCHESTRATOR_SCHEMA = "agentos.import_orchestrator.v1";
 export const IMPORT_ORCHESTRATOR_VERSION = 1;

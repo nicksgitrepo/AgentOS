@@ -27,6 +27,7 @@ export {compileAgentSpawnerControllerBridge, validateAgentSpawnerControllerBridg
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord, acceptAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
+export {dispatchOrchestratorSuccessor, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION} from "./orchestrator-successor-dispatch.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,
@@ -99,6 +100,7 @@ export * as agentSpawnerControllerBridge from "./agent-spawner-controller-bridge
 export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
+export * as orchestratorSuccessorDispatch from "./orchestrator-successor-dispatch.mjs";
 export * as projectImport from "./project-import.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as stopWorkflowGate from "./stop-workflow-gate.mjs";
