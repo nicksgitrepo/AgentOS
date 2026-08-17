@@ -398,6 +398,36 @@ assert.throws(
   /must cover every required local step/u,
   "protected wait cannot open with missing local proof steps",
 );
+const relabeledUnexecutedProof = {
+  schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.local_candidate_proof`,
+  version: 1,
+  materialization_sha256: materialization.materialization_sha256,
+  development_cutover_result_sha256: developmentCutoverResult.result_sha256,
+  target_root_ref: developmentCutoverResult.target_root_ref,
+  rollback_ref: materialization.rollback_ref,
+  steps: PYRAMID_LOCAL_PROOF_STEP_IDS.map((stepId) => ({
+    step_id: stepId,
+    status: "NOT_APPLICABLE",
+    disposition: "Not executed in this candidate proof route",
+    evidence_refs: [`ref:evidence/local-proof/unexecuted/${stepId.toLowerCase()}`],
+  })),
+  source_roots_preserved: true,
+  legacy_roots_untouched: true,
+  product_mutation: false,
+  provider_access: false,
+  credential_access: false,
+  external_sync: false,
+  spend: false,
+  destructive_work: false,
+  clean_target: true,
+  proof_sha256: null,
+};
+relabeledUnexecutedProof.proof_sha256 = canonicalDigest({...relabeledUnexecutedProof, proof_sha256: null});
+assert.throws(
+  () => advancePyramidCampaign(localProofPending, {roster, event: "LOCAL_CANDIDATE_PROOF_COMPLETED", assembly: relabeledUnexecutedProof}),
+  /requires an explicit bound-scope reason|cannot relabel an unexecuted check/u,
+  "unexecuted mandatory checks cannot be relabeled as NOT_APPLICABLE",
+);
 const localCandidateProof = {
   schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.local_candidate_proof`,
   version: 1,

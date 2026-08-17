@@ -575,6 +575,13 @@ function validateLocalProofStep(step, expectedStepId) {
   assert(step.step_id === expectedStepId, `pyramid local proof step ${expectedStepId} is missing or out of order`);
   assert(step.status === "PASS" || step.status === "NOT_APPLICABLE", `pyramid local proof step ${expectedStepId} status is invalid`);
   assert(typeof step.disposition === "string" && step.disposition.trim().length >= 16, `pyramid local proof step ${expectedStepId} disposition is too short`);
+  if (step.status === "NOT_APPLICABLE") {
+    const allowedPrefix = expectedStepId === "PROVE_LOCAL_INSTALLATION" || expectedStepId === "ZERO_TRACE_ROLLBACK_AND_UNINSTALL_PROOF"
+      ? /^(?:EXCLUDED_BY_BOUND_SCOPE|NO_INSTALL_SURFACE):\s/u
+      : /^EXCLUDED_BY_BOUND_SCOPE:\s/u;
+    assert(allowedPrefix.test(step.disposition), `pyramid local proof step ${expectedStepId} NOT_APPLICABLE requires an explicit bound-scope reason`);
+    assert(!/\b(?:not executed|not run|unexecuted|missing execution|skipped)\b/iu.test(step.disposition), `pyramid local proof step ${expectedStepId} cannot relabel an unexecuted check as NOT_APPLICABLE`);
+  }
   requireSortedReferences(step.evidence_refs, `pyramid local proof step ${expectedStepId} evidence refs`);
   return step;
 }
