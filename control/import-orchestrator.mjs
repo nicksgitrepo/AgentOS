@@ -94,6 +94,18 @@ export const IMPORT_ORCHESTRATOR_ACTIONS = Object.freeze([
   "NONE",
 ]);
 
+/*
+ * These two identifiers are applicability markers, not product or release
+ * authority. A prior compiler-only/isolated run may have persisted one before
+ * current custody facts were available. They can be cleared only after the
+ * current typed facts recompile to a local NOT_APPLICABLE decision; every
+ * other protected boundary remains a hard stop.
+ */
+export const LOCAL_CLEARANCE_ONLY_BOUNDARY_IDS = Object.freeze([
+  "INDEPENDENT.UTILITY_HARM_CLEARANCE",
+  "SPAWNER.INDEPENDENT_CLEARANCE",
+].sort(compareUtf8));
+
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 
@@ -178,10 +190,12 @@ function summarizeDefectQueue({defectQueue, defectIntakes} = {}) {
 function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability = null} = {}) {
   const execution = spawnerLifecycle?.execution ?? {};
   const authority = spawnerLifecycle?.authority ?? {};
-  const localQaPhase = runState?.status === "SPAWNER_QA_PENDING" && spawnerLifecycle?.mode === "COMPILER_ONLY";
+  const localClearanceBoundary = LOCAL_CLEARANCE_ONLY_BOUNDARY_IDS.includes(runState?.protected_boundary_id);
+  const localQaPhase = spawnerLifecycle?.mode === "COMPILER_ONLY"
+    && (runState?.status === "SPAWNER_QA_PENDING" || (runState?.status === "BLOCKED_PROTECTED" && localClearanceBoundary));
   const isolatedLocalPhase = authority.isolated_local_custody === true
     && (["SPAWNER_QA_PENDING", "SPECIALIST_WAVE_ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING", "INDEPENDENT_REAUDIT_PENDING"].includes(runState?.status)
-      || (runState?.status === "BLOCKED_PROTECTED" && runState?.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID));
+      || (runState?.status === "BLOCKED_PROTECTED" && (runState?.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID || localClearanceBoundary)));
   if (clearanceApplicability !== null && !isolatedLocalPhase) {
     return validateIndependentClearanceApplicability(clearanceApplicability);
   }
@@ -251,6 +265,31 @@ export function resumeBoundedLocalIntegration({runState, plan, spawnerLifecycle,
   });
 }
 
+/*
+ * Clear a stale applicability-only utility/harm hold through the normal
+ * planner transition. This never opens a protected capability: current facts
+ * must prove compiler-only QA or isolated local audit custody, there can be no
+ * open findings, and the boundary ID must be one of the exact markers above.
+ */
+export function resumeBoundedLocalClearanceHold({runState, plan, spawnerLifecycle, clearanceApplicability = null} = {}) {
+  validateControllerImportRunState(runState, {plan});
+  validateAgentSpawnerLifecycle(spawnerLifecycle);
+  assert(runState.status === "BLOCKED_PROTECTED", "Local clearance resume requires a protected run-state hold");
+  assert(LOCAL_CLEARANCE_ONLY_BOUNDARY_IDS.includes(runState.protected_boundary_id), "Only an applicability-only clearance hold may be resumed locally");
+  assert(runState.open_finding_ids.length === 0, "Local clearance resume cannot hide open findings");
+  const applicability = deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability});
+  assert(["NOT_APPLICABLE_LOCAL_COMPILER_QA", "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"].includes(applicability.decision), "Current facts still require protected clearance");
+  return advanceControllerImportRunState({
+    state: runState,
+    plan,
+    event: {
+      event_type: "PROTECTED_BOUNDARY_RESOLVED",
+      finding_ids: [],
+      protected_boundary_id: runState.protected_boundary_id,
+    },
+  });
+}
+
 function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defectSummary, clearanceApplicability}) {
   if (defectSummary.repairCandidateCount > 0 || defectSummary.controllerCustodyCount > 0) {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
@@ -261,6 +300,16 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
   // into a silent utility/harm wait merely because no worker is currently
   // active.  Only an explicit run-state protected event may stop the route.
   if (runState.status === "BLOCKED_PROTECTED") {
+    if (LOCAL_CLEARANCE_ONLY_BOUNDARY_IDS.includes(runState.protected_boundary_id)
+      && ["NOT_APPLICABLE_LOCAL_COMPILER_QA", "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"].includes(clearanceApplicability.decision)) {
+      return {
+        state: "ACTIVE",
+        nextAction: clearanceApplicability.decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA"
+          ? "REQUEST_SPAWNER_QA"
+          : "START_ISOLATED_AUDIT_LANES",
+        dependencyId: null,
+      };
+    }
     if (runState.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID
       && clearanceApplicability.decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR") {
       return {state: "ACTIVE", nextAction: "START_CENTRAL_INTEGRATION", dependencyId: null};

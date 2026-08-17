@@ -19,6 +19,7 @@ import {
   advanceImportOrchestrator,
   advanceImportOrchestratorRecord,
   compileImportOrchestrator,
+  resumeBoundedLocalClearanceHold,
   resumeBoundedLocalIntegration,
   readImportOrchestratorRecord,
   validateImportOrchestrator,
@@ -204,6 +205,45 @@ const localQa = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.
 assert.equal(localQa.state, "ACTIVE");
 assert.equal(localQa.next_action, "REQUEST_SPAWNER_QA");
 assert.notEqual(localQa.clearance_applicability_sha256, heldApplicability.applicability_sha256);
+
+// A stale generic utility/harm hold must not strand ordinary compiler QA.
+// Current compiler-only facts reclassify the applicability-only marker as
+// local, and the typed resume helper clears it through the planner before QA
+// continues. Other protected boundaries remain unaffected.
+const staleClearanceRun = advanceControllerImportRunState({
+  state: compileControllerImportRunState({plan}),
+  plan,
+  event: {event_type: "PROTECTED_BOUNDARY_REACHED", finding_ids: [], protected_boundary_id: "INDEPENDENT.UTILITY_HARM_CLEARANCE"},
+});
+const staleClearanceOrchestrator = compileImportOrchestrator({
+  orchestratorId: "ORCHESTRATOR.IMPORT.STALE.CLEARANCE",
+  ...governanceFor("ORCHESTRATOR.IMPORT.STALE.CLEARANCE"),
+  plan,
+  rosterProjection: heldRoster,
+  runState: staleClearanceRun,
+  spawnerLifecycle: heldLifecycle,
+  defectQueue: emptyDefectQueue,
+});
+assert.equal(staleClearanceOrchestrator.state, "ACTIVE");
+assert.equal(staleClearanceOrchestrator.next_action, "REQUEST_SPAWNER_QA");
+assert.equal(staleClearanceOrchestrator.blocked_dependency_id, null);
+const resumedStaleClearance = resumeBoundedLocalClearanceHold({
+  runState: staleClearanceRun,
+  plan,
+  spawnerLifecycle: heldLifecycle,
+});
+assert.equal(resumedStaleClearance.status, "SPAWNER_QA_PENDING");
+assert.equal(resumedStaleClearance.protected_boundary_id, null);
+const hostileStaleClearance = advanceControllerImportRunState({
+  state: compileControllerImportRunState({plan}),
+  plan,
+  event: {event_type: "PROTECTED_BOUNDARY_REACHED", finding_ids: [], protected_boundary_id: BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID},
+});
+assert.throws(() => resumeBoundedLocalClearanceHold({
+  runState: hostileStaleClearance,
+  plan,
+  spawnerLifecycle: heldLifecycle,
+}), /applicability-only clearance hold/u);
 
 const isolatedApplicability = compileIndependentClearanceApplicability({
   applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ISOLATED_ORCHESTRATOR",

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/import-orchestrator.v1.json",
   "title": "AgentOS Import Campaign Orchestrator",
-  "description": "Project-agnostic campaign execution contract. The Orchestrator must first bind its own verified governance readiness and campaign acceptance, then owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, candidate advance, and durable digest-CAS state persistence; the persistent Controller supervises liveness and bounded workflow repair.",
+  "description": "Project-agnostic campaign execution contract. The Orchestrator must first bind its own verified governance readiness and campaign acceptance, then owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, candidate advance, and durable digest-CAS state persistence; the persistent Controller supervises liveness and bounded workflow repair. A stale applicability-only utility/harm hold may be resumed only when current typed facts recompile to a local compiler-only or isolated-audit decision; product, provider, credential, spend, destructive, release, and other protected boundaries remain hard stops.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -112,5 +112,10 @@
         "protected_release": {"const": false}
       }
     }
+  },
+  "state_rules": {
+    "ordinary_progress": "A local compiler or isolated audit route must publish and dispatch its next action in the same lifecycle turn; timer-only, heartbeat-only, NONE, and unexplained idle states are invalid.",
+    "stale_clearance_hold": "INDEPENDENT.UTILITY_HARM_CLEARANCE and SPAWNER.INDEPENDENT_CLEARANCE are applicability-only markers. They may be cleared only by a typed current NOT_APPLICABLE_LOCAL_COMPILER_QA or NOT_APPLICABLE_LOCAL_AUDIT_REPAIR receipt with zero protected capabilities, no open findings, and preserved custody.",
+    "protected_boundary": "Every other protected boundary remains event-driven and fail-closed. No applicability receipt may authorize product mutation, provider or credential access, spend, destructive work, deployment, publication, merge, or release."
   }
 }
