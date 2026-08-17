@@ -15,6 +15,7 @@ import {execFileSync, spawn} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {
   canonicalSupervisorJson,
+  compileSupervisorObservation,
   readSupervisorRecord,
   runSupervisorIterationAsync,
   supervisorDigest,
@@ -353,6 +354,31 @@ function persistSpawnerDefect({runtimeRoot, intake}) {
   });
 }
 
+function compileLivenessRecoveryObservation({observation, spawnerDefect, nowUtc}) {
+  const finding = {
+    finding_id: `FINDING.CONTROLLER.SUPERVISOR.NO_PROGRESS.${spawnerDefect.defect_sha256.slice(0, 16).toUpperCase()}`,
+    classification: "REPAIRABLE_ENGINEERING_PUZZLE",
+    status: "OPEN_REPAIR_REQUIRED",
+    summary: "A bounded liveness recovery is required because the prior routed action produced no semantic successor.",
+    source_sha256: spawnerDefect.defect_sha256,
+  };
+  return compileSupervisorObservation({
+    controllerDisplayName: observation.controller_display_name,
+    projectId: observation.project_id,
+    campaignId: observation.campaign_id,
+    campaignVersion: observation.campaign_version,
+    activeCampaign: observation.active_campaign,
+    ownerDecisionRequired: observation.owner_decision_required,
+    boundary: structuredClone(observation.boundary),
+    findings: [...observation.findings, finding].sort((left, right) => Buffer.compare(Buffer.from(left.finding_id, "utf8"), Buffer.from(right.finding_id, "utf8"))),
+    nextAction: "Run one bounded liveness repair and return a semantic successor readback.",
+    sourceCommit: observation.source_commit,
+    sourceTree: observation.source_tree,
+    parentHandoffSha256: observation.parent_handoff_sha256,
+    observedAtUtc: nowUtc,
+  });
+}
+
 function writeOrVerify({runtimeRoot, recordPath, record, digestField, validate}) {
   const existing = readSupervisorRecord({authorityRoot: runtimeRoot, recordPath});
   if (existing !== null) {
@@ -371,6 +397,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   const root = canonicalRoot(runtimeRoot);
   const observation = await adapter.observe();
   validateSupervisorObservation(observation);
+  const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
   const existingTick = readSupervisorRecord({authorityRoot: root, recordPath: "supervisor/tick.json"});
   let priorSpawnerDefect = null;
   if (existingTick !== null && existingTick.route_status === "ROUTE_FAILED" && existingTick.observation_sha256 !== observation.observation_sha256) {
@@ -432,10 +459,41 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
       defectId: `DEFECT.SUPERVISOR.NO_PROGRESS.${existingGoal.goal_id}`,
     });
     persistSpawnerDefect({runtimeRoot: root, intake: spawnerDefect});
+    // Do not leave a liveness defect parked until the next cadence tick. The
+    // supervisor immediately starts one bounded repair route, then records its
+    // distinct goal/tick so a later turn can verify the resulting state.
+    if (route !== null) {
+      const recoveryObservation = compileLivenessRecoveryObservation({observation, spawnerDefect, nowUtc});
+      const recoveryResult = await runSupervisorIterationAsync({observation: recoveryObservation, route});
+      const recoveryGoalPath = `supervisor/goals/${recoveryObservation.observation_sha256}.json`;
+      const recoveryTickPath = `supervisor/ticks/${recoveryObservation.observation_sha256}.json`;
+      writeOrVerify({runtimeRoot: root, recordPath: recoveryGoalPath, record: recoveryResult.goal, digestField: "goal_sha256", validate: validateSupervisorGoal});
+      writeOrVerify({runtimeRoot: root, recordPath: recoveryTickPath, record: recoveryResult.tick, digestField: "tick_sha256", validate: validateSupervisorTick});
+      writeJsonAtomic(safeChild(root, "supervisor/goal.json"), recoveryResult.goal);
+      writeJsonAtomic(safeChild(root, "supervisor/tick.json"), recoveryResult.tick);
+      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({
+        runtimeId,
+        status: runtimeStatusForTick(recoveryResult.tick),
+        observation: recoveryObservation,
+        goal: recoveryResult.goal,
+        tick: recoveryResult.tick,
+        error: recoveryResult.tick.route_error,
+        nowUtc,
+      }));
+      return {
+        ...recoveryResult,
+        observation: recoveryObservation,
+        reused: false,
+        priorSpawnerDefect: null,
+        noProgressRca: rca,
+        spawnerDefect,
+        boundedRecovery: true,
+        recovery_started_same_turn: true,
+      };
+    }
     writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, error: "NO_SEMANTIC_PROGRESS_AFTER_ROUTED_SUCCESS", nowUtc}));
     return {observation, goal: existingGoal, tick: existingTick, reused: true, noProgressRca: rca, spawnerDefect};
   }
-  const route = typeof adapter.route === "function" ? (goal) => adapter.route(goal) : null;
   const result = await runSupervisorIterationAsync({observation, route});
   const goalRecordPath = `supervisor/goals/${observation.observation_sha256}.json`;
   const tickRecordPath = `supervisor/ticks/${observation.observation_sha256}.json`;
