@@ -3,6 +3,11 @@
 /* Closed, same-turn successor dispatch for project-agnostic Controller actions. */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {
+  compileStopWorkflowNoStopAnswers,
+  evaluateStopWorkflowGate,
+  validateStopWorkflowDecision,
+} from "./stop-workflow-gate.mjs";
 
 export const CONTROLLER_ACTION_RECEIPT_SCHEMA = "agentos.controller_action_receipt.v1";
 export const CONTROLLER_ACTION_DEFECT_SCHEMA = "agentos.controller_action_defect.v1";
@@ -78,7 +83,7 @@ const REFERENCE = /^(?:opaque:|ref:)[^\s]+$/u;
 const RECEIPT_KEYS = Object.freeze([
   "schema", "version", "receipt_id", "action_id", "previous_receipt_sha256", "semantic_before_sha256", "semantic_after_sha256",
   "progress_delta_sha256", "evidence_refs", "hostile_fixture_refs", "next_action", "next_handler", "continuation", "continuation_sha256", "authority",
-  "protected_event", "defect", "receipt_sha256",
+  "protected_event", "stop_workflow_decision", "defect", "receipt_sha256",
 ]);
 const CONTINUATION_KEYS = Object.freeze(["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"]);
 const AUTHORITY_KEYS = Object.freeze(["compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work"]);
@@ -164,6 +169,43 @@ function validateProtectedEvent(event) {
   exactKeys(event.resources, RESOURCE_KEYS, "Controller protected resources");
   for (const key of RESOURCE_KEYS) assert(event.resources[key] === 0, `Controller protected resource ${key} must be zero`);
   return event;
+}
+
+/*
+ * Every Controller protected wait carries the same five-question stop tree as
+ * the pyramid campaign.  The dispatcher does not infer permission from a
+ * missing handler, timer, or commentary; it derives the exact decision from
+ * the typed protected-event class and binds a deterministic rollback ref.
+ */
+const STOP_QUESTION_BY_PROTECTED_CLASS = Object.freeze({
+  CREDENTIAL_OR_AUTHENTICATION: "OWNER_DECISION_REQUIRED",
+  IRREVERSIBLE_DESTRUCTIVE_USER_WORK: "DESTROYS_OR_IRREVERSIBLY_MODIFIES",
+  MAJOR_PRODUCT_OR_PRODUCTION_DECISION: "CHANGES_PROTECTED_PROJECT_OR_SCOPE",
+  MATERIAL_SPEND_OR_FINANCIAL_AUTHORITY: "COSTS_MONEY",
+  PROTECTED_EXTERNAL_DEPENDENCY: "OWNER_DECISION_REQUIRED",
+});
+
+export function compileControllerProtectedStopDecision({protectedEvent, nextAction, rollbackRef = null} = {}) {
+  validateProtectedEvent(protectedEvent);
+  requireIdentifier(nextAction, "Controller protected affected action");
+  const mappedQuestionId = STOP_QUESTION_BY_PROTECTED_CLASS[protectedEvent.blocker_class];
+  assert(mappedQuestionId !== undefined, "Controller protected event has no stop-workflow question mapping");
+  const answers = compileStopWorkflowNoStopAnswers({evidenceRefPrefix: `opaque:stop-gate/${protectedEvent.blocker_id}`});
+  const answerIndex = answers.findIndex((answer) => answer.question_id === mappedQuestionId);
+  assert(answerIndex >= 0, "Controller stop-workflow mapped question is unavailable");
+  answers[answerIndex] = {
+    question_id: mappedQuestionId,
+    answer: "YES",
+    evidence_refs: [`opaque:protected-event/${protectedEvent.blocker_id}`],
+  };
+  const actionRollbackRef = rollbackRef ?? `opaque:controller-protected-rollback/${protectedEvent.blocker_id.toLowerCase()}`;
+  const decisionToken = canonicalDigest({blocker_id: protectedEvent.blocker_id, affected_action: nextAction}).slice(0, 32).toUpperCase();
+  return evaluateStopWorkflowGate({
+    decisionId: `DECISION.CONTROLLER.PROTECTED.${decisionToken}`,
+    actionRef: `opaque:protected-action/${nextAction}`,
+    rollbackRef: actionRollbackRef,
+    answers,
+  });
 }
 
 export function compileControllerActionDefect({defectId, defectClass, evidenceRefs, stopCondition = "Reject the successor and route the defect through the project-agnostic Spawner compiler.", requiredGate = "AGENTOS.CONTROLLER.ACTION_CONTINUATION", rosterInvalidation = "INVALIDATE_DEPENDENT_SUCCESSORS"} = {}) {
@@ -289,8 +331,17 @@ export function validateControllerActionReceipt(receipt) {
   if (descriptor.mode === "PROTECTED_WAIT") {
     validateProtectedEvent(receipt.protected_event);
     assert(receipt.continuation.protected_event_id === receipt.protected_event.blocker_id, "Protected continuation event differs");
+    assert(receipt.stop_workflow_decision !== null, "Protected Controller wait lacks stop-workflow decision");
+    validateStopWorkflowDecision(receipt.stop_workflow_decision);
+    const expectedStopDecision = compileControllerProtectedStopDecision({
+      protectedEvent: receipt.protected_event,
+      nextAction: receipt.next_action,
+    });
+    assert(receipt.stop_workflow_decision.stop === true, "Protected Controller wait stop-workflow decision must stop");
+    assert(receipt.stop_workflow_decision.decision_sha256 === expectedStopDecision.decision_sha256, "Protected Controller wait stop-workflow decision is stale");
   } else {
     assert(receipt.protected_event === null, "Non-protected Controller action cannot carry a protected event");
+    assert(receipt.stop_workflow_decision === null, "Non-protected Controller action cannot carry a stop-workflow decision");
   }
   if (receipt.next_action === "SELF_REPAIR_WORKFLOW_DEAD_END") validateControllerActionDefect(receipt.defect);
   else assert(receipt.defect === null, "Only a workflow dead-end self-repair route may carry a defect");
@@ -300,7 +351,7 @@ export function validateControllerActionReceipt(receipt) {
   return receipt;
 }
 
-export function compileControllerActionReceipt({receiptId, actionId, previousReceiptSha256 = null, semanticBeforeSha256, semanticAfterSha256, evidenceRefs, hostileFixtureRefs, nextAction, nextHandler = null, continuation = null, authority = CONTROLLER_ACTION_AUTHORITY, protectedEvent = null, defect = null} = {}) {
+export function compileControllerActionReceipt({receiptId, actionId, previousReceiptSha256 = null, semanticBeforeSha256, semanticAfterSha256, evidenceRefs, hostileFixtureRefs, nextAction, nextHandler = null, continuation = null, authority = CONTROLLER_ACTION_AUTHORITY, protectedEvent = null, stopWorkflowDecision = null, defect = null} = {}) {
   requireIdentifier(receiptId, "Controller action receipt id");
   requireIdentifier(actionId, "Controller action id");
   const expectedHandler = controllerActionHandlerFor(nextAction);
@@ -321,6 +372,9 @@ export function compileControllerActionReceipt({receiptId, actionId, previousRec
     continuation_sha256: null,
     authority: structuredClone(authority),
     protected_event: structuredClone(protectedEvent),
+    stop_workflow_decision: protectedEvent === null
+      ? structuredClone(stopWorkflowDecision)
+      : structuredClone(stopWorkflowDecision ?? compileControllerProtectedStopDecision({protectedEvent, nextAction})),
     defect: structuredClone(defect),
     receipt_sha256: null,
   };
@@ -337,6 +391,7 @@ function successorRoute(nextAction, {protectedEvent = null, defect = null} = {})
     continuation,
     continuation_sha256: controllerContinuationDigest(continuation),
     protected_event: structuredClone(protectedEvent),
+    stop_workflow_decision: protectedEvent === null ? null : compileControllerProtectedStopDecision({protectedEvent, nextAction}),
     defect: structuredClone(defect),
   };
 }

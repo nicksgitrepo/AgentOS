@@ -145,6 +145,14 @@ assert.equal(persisted.length, 2);
 assert.equal(persisted[0].next_action, "INJECT_ORCHESTRATOR_GOVERNANCE");
 assert.equal(persisted[1].next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.deepEqual(persisted[1].protected_event.resources, {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0});
+assert.equal(persisted[1].stop_workflow_decision.primary_trigger_question_id, "OWNER_DECISION_REQUIRED");
+assert.equal(persisted[1].stop_workflow_decision.stop, true);
+const missingStopDecision = structuredClone(persisted[1]);
+missingStopDecision.stop_workflow_decision = null;
+assert.throws(() => validateControllerActionReceipt(missingStopDecision), /stop-workflow decision/u);
+const staleStopDecision = structuredClone(persisted[1]);
+staleStopDecision.stop_workflow_decision.answers[0].answer = "YES";
+assert.throws(() => validateControllerActionReceipt(staleStopDecision), /decision|digest|outcome/u);
 
 const deadEndRoute = deriveControllerSuccessor({localActions: []});
 assert.equal(deadEndRoute.next_action, "SELF_REPAIR_WORKFLOW_DEAD_END");

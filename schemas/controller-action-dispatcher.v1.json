@@ -5,7 +5,7 @@
   "description": "Every accepted action has a registered next action, next handler, continuation digest, and same-turn dispatch or a narrow protected/owner route. Missing handlers, failed persistence, unchanged semantic state, and dead ends become typed Spawner defects.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "receipt_id", "action_id", "previous_receipt_sha256", "semantic_before_sha256", "semantic_after_sha256", "progress_delta_sha256", "evidence_refs", "hostile_fixture_refs", "next_action", "next_handler", "continuation", "continuation_sha256", "authority", "protected_event", "defect", "receipt_sha256"],
+  "required": ["schema", "version", "receipt_id", "action_id", "previous_receipt_sha256", "semantic_before_sha256", "semantic_after_sha256", "progress_delta_sha256", "evidence_refs", "hostile_fixture_refs", "next_action", "next_handler", "continuation", "continuation_sha256", "authority", "protected_event", "stop_workflow_decision", "defect", "receipt_sha256"],
   "properties": {
     "schema": {"const": "agentos.controller_action_receipt.v1"},
     "version": {"const": 1},
@@ -23,6 +23,7 @@
     "continuation_sha256": {"$ref": "#/$defs/sha256"},
     "authority": {"$ref": "#/$defs/authority"},
     "protected_event": {"anyOf": [{"$ref": "#/$defs/protectedEvent"}, {"type": "null"}]},
+    "stop_workflow_decision": {"anyOf": [{"$ref": "#/$defs/stopWorkflowDecision"}, {"type": "null"}]},
     "defect": {"anyOf": [{"$ref": "#/$defs/defect"}, {"type": "null"}]},
     "receipt_sha256": {"$ref": "#/$defs/sha256"}
   },
@@ -56,6 +57,40 @@
         "blocker_class": {"enum": ["CREDENTIAL_OR_AUTHENTICATION", "IRREVERSIBLE_DESTRUCTIVE_USER_WORK", "MAJOR_PRODUCT_OR_PRODUCTION_DECISION", "MATERIAL_SPEND_OR_FINANCIAL_AUTHORITY", "PROTECTED_EXTERNAL_DEPENDENCY"]},
         "evidence_ceiling": {"type": "string", "minLength": 24}, "restart_event": {"type": "string", "minLength": 8},
         "resources": {"type": "object", "additionalProperties": false, "required": ["jobs", "workers", "heavyweight_processes", "timers"], "properties": {"jobs": {"const": 0}, "workers": {"const": 0}, "heavyweight_processes": {"const": 0}, "timers": {"const": 0}}}
+      }
+    },
+    "stopWorkflowDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "decision_id", "action_ref", "rollback_ref", "question_order", "answers", "outcome", "primary_trigger_question_id", "triggered_question_ids", "unknown_question_ids", "next_action", "stop", "owner_decision_required", "reason", "decision_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.stop_workflow_gate.v1"},
+        "version": {"const": 1},
+        "decision_id": {"$ref": "#/$defs/identifier"},
+        "action_ref": {"type": "string", "pattern": "^(opaque:|ref:)[A-Za-z0-9._:/-]+$"},
+        "rollback_ref": {"type": "string", "pattern": "^(opaque:|ref:)[A-Za-z0-9._:/-]+$"},
+        "question_order": {"const": ["COSTS_MONEY", "CHANGES_PROTECTED_PROJECT_OR_SCOPE", "DELETES_UNSAVED_OR_UNBACKED_UP_WORK", "DESTROYS_OR_IRREVERSIBLY_MODIFIES", "OWNER_DECISION_REQUIRED"]},
+        "answers": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/stopWorkflowAnswer"}},
+        "outcome": {"enum": ["CONTINUE_AUTONOMOUS", "EVIDENCE_REQUIRED", "STOP_OWNER_DECISION", "STOP_DESTRUCTIVE_BOUNDARY"]},
+        "primary_trigger_question_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/stopWorkflowQuestionId"}]},
+        "triggered_question_ids": {"type": "array", "items": {"$ref": "#/$defs/stopWorkflowQuestionId"}, "uniqueItems": true},
+        "unknown_question_ids": {"type": "array", "items": {"$ref": "#/$defs/stopWorkflowQuestionId"}, "uniqueItems": true},
+        "next_action": {"enum": ["CONTINUE_NEXT_ACTION", "RUN_NEXT_BOUNDED_RECOVERY", "STOP_DEPENDENT_WORK_OWNER_REVIEW", "STOP_DEPENDENT_WORK_DESTRUCTIVE_REVIEW"]},
+        "stop": {"type": "boolean"},
+        "owner_decision_required": {"type": "boolean"},
+        "reason": {"type": "string", "minLength": 24},
+        "decision_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "stopWorkflowQuestionId": {"enum": ["COSTS_MONEY", "CHANGES_PROTECTED_PROJECT_OR_SCOPE", "DELETES_UNSAVED_OR_UNBACKED_UP_WORK", "DESTROYS_OR_IRREVERSIBLY_MODIFIES", "OWNER_DECISION_REQUIRED"]},
+    "stopWorkflowAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question_id", "answer", "evidence_refs"],
+      "properties": {
+        "question_id": {"$ref": "#/$defs/stopWorkflowQuestionId"},
+        "answer": {"enum": ["YES", "NO", "UNKNOWN"]},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^(opaque:|ref:)[A-Za-z0-9._:/-]+$"}}
       }
     },
     "defect": {

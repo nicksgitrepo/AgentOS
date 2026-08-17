@@ -890,15 +890,15 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "169b0f0182856e3fd77b7cc81114d7575483ef6d8db271acd0ea2c1426e76fb2"
+      "sha256": "91a075894cf8ca94c4b7faaf29b30588d6730b8f71dde7159a1e533e3ef8fbc0"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "80410763a767b79f4aa5edf8c912b8dcb4374cb3cefaa8eb81893f2128f1ce85"
+      "sha256": "2b65500548b40bd43aee5ac0b4535d626783b81fbbedf22ee88166825cd62db7"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "efea49fa15cf30997a61b1593e63a907502fadbdeb5dbbb0a360ca8c41f91279"
+      "sha256": "d8bd054600cb53770bbb2687c43c63aaed39f64d40f7bbc78b94a6f6f1eb419f"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
