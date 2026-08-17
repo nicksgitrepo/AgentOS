@@ -926,15 +926,15 @@
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",
-      "sha256": "85dbd93857c42d9280c5cb899a77d4f665fdece85a972d5bd87128f0110ffe19"
+      "sha256": "f8dee8771501c25417134047d3025d04cd93d8cbba6de3d0acf4c81e2a216754"
     },
     "observed_dispatch_binding_contract": {
       "path": "schemas/observed-dispatch-binding-gate.v1.json",
-      "sha256": "c6d3303a95549c99bec6341db89b0f6e9f032ba7fd9aaeaee1b5399f9075ed28"
+      "sha256": "f68604cc7320ccd555a55a4fac7193918a842c2b081518d12de0bde2fae0c3bf"
     },
     "observed_dispatch_binding_verifier": {
       "path": "tests/verify-observed-dispatch-binding-gate.mjs",
-      "sha256": "3ba1e64ab5860dac110f227209ac1b5e5b4fd093b1a21d9b1d35b9bea1180f79"
+      "sha256": "df40b4947038883c2b381f962efdf98d10dcdceeff6e65e4b857cc880fc1315c"
     },
     "authority_rebind_receipt_controller": {
       "path": "control/authority-rebind-receipt.mjs",

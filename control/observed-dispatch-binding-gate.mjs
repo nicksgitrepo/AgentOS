@@ -10,6 +10,7 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {validateAuthorityRebindReceipt} from "./authority-rebind-receipt.mjs";
 import {CONTROLLER_ACTION_REGISTRY, compileControllerContinuation, controllerActionHandlerFor} from "./controller-action-dispatcher.mjs";
 import {compileActionResultContinuation, validateActionResultContinuation} from "./action-result-continuation.mjs";
 import {validateOrchestratorSuccessorDispatchReadback} from "./orchestrator-successor-dispatch.mjs";
@@ -24,7 +25,7 @@ const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const REFERENCE = /^(?:opaque:|ref:)[^\s]+$/u;
 const BINDING_KEYS = Object.freeze([
   "schema", "version", "binding_id", "status", "source_successor_sha256", "source_action", "source_handler",
-  "execution_owner", "direct_consumer", "controller_approval_required", "same_turn_dispatch", "progress_claimed",
+  "authority_rebind_receipt_sha256", "execution_owner", "direct_consumer", "controller_approval_required", "same_turn_dispatch", "progress_claimed",
   "dispatch_readback", "dispatch_observation", "evidence_refs", "hostile_fixture_refs", "binding_sha256",
 ]);
 const OBSERVATION_KEYS = Object.freeze(["status", "handler_invoked", "handler", "dispatch_id", "readback_sha256"]);
@@ -99,6 +100,7 @@ export function validateObservedDispatchSuccessorBinding(binding) {
   requireSha(binding.source_successor_sha256, "Observed dispatch source successor digest");
   requireIdentifier(binding.source_action, "Observed dispatch source action");
   requireIdentifier(binding.source_handler, "Observed dispatch source handler");
+  requireSha(binding.authority_rebind_receipt_sha256, "Observed dispatch authority rebind receipt");
   assert(binding.source_handler === controllerActionHandlerFor(binding.source_action), "Observed dispatch source handler is not registry-bound");
   assert(binding.execution_owner === "LANE_AGENT", "Observed dispatch successor must remain lane-owned");
   assert(binding.direct_consumer === "INDEPENDENT_PLATFORM_REVIEW", "Observed dispatch successor must route to independent platform review");
@@ -131,6 +133,8 @@ export function compileObservedDispatchSuccessorBinding({
   sourceSuccessorSha256,
   sourceAction,
   sourceHandler = controllerActionHandlerFor(sourceAction),
+  authorityRebindReceipt,
+  authorityRebindReceiptSha256 = authorityRebindReceipt?.receipt_sha256,
   dispatchReadback = null,
   evidenceRefs,
   hostileFixtureRefs,
@@ -139,6 +143,10 @@ export function compileObservedDispatchSuccessorBinding({
   controllerApprovalRequired = false,
 } = {}) {
   const progressClaimed = dispatchReadback !== null;
+  assert(isRecord(authorityRebindReceipt), "Observed dispatch authority rebind receipt is required");
+  validateAuthorityRebindReceipt(authorityRebindReceipt);
+  assert(authorityRebindReceipt.receipt_sha256 === authorityRebindReceiptSha256, "Observed dispatch authority rebind receipt digest is stale");
+  requireSha(authorityRebindReceiptSha256, "Observed dispatch authority rebind receipt");
   const binding = {
     schema: OBSERVED_DISPATCH_BINDING_SCHEMA,
     version: OBSERVED_DISPATCH_BINDING_VERSION,
@@ -147,6 +155,7 @@ export function compileObservedDispatchSuccessorBinding({
     source_successor_sha256: sourceSuccessorSha256,
     source_action: sourceAction,
     source_handler: sourceHandler,
+    authority_rebind_receipt_sha256: authorityRebindReceiptSha256,
     execution_owner: executionOwner,
     direct_consumer: directConsumer,
     controller_approval_required: controllerApprovalRequired,
@@ -230,12 +239,15 @@ export function compileObservedDispatchSourceSuccessor({
 export function rebaseObservedDispatchPendingBinding({
   binding,
   sourceSuccessor,
+  authorityRebindReceipt,
   bindingId,
   evidenceRefs,
   hostileFixtureRefs,
 } = {}) {
   validateObservedDispatchSuccessorBinding(binding);
   assert(binding.status === OBSERVED_DISPATCH_BINDING_REQUIRED_STATUS, "Observed dispatch rebase requires a pending binding");
+  assert(isRecord(authorityRebindReceipt), "Observed dispatch rebase authority receipt is required");
+  validateAuthorityRebindReceipt(authorityRebindReceipt);
   assert(isRecord(sourceSuccessor), "Observed dispatch rebase source successor is required");
   validateActionResultContinuation(sourceSuccessor);
   assert(sourceSuccessor.continuation.mode === "IMMEDIATE_SAME_TURN" && sourceSuccessor.continuation.protected_event_id === null, "Observed dispatch rebase source successor must be local same-turn");
@@ -251,6 +263,8 @@ export function rebaseObservedDispatchPendingBinding({
     sourceSuccessorSha256: sourceSuccessor.record_sha256,
     sourceAction: sourceSuccessor.next_action,
     sourceHandler: sourceSuccessor.next_handler,
+    authorityRebindReceipt,
+    authorityRebindReceiptSha256: authorityRebindReceipt.receipt_sha256,
     evidenceRefs,
     hostileFixtureRefs,
   });

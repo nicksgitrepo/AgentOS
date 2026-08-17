@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest, compareUtf8} from "../control/content-addressing.mjs";
+import {compileAuthorityRebindReceipt} from "../control/authority-rebind-receipt.mjs";
 import {compileActionResultContinuation} from "../control/action-result-continuation.mjs";
 import {compileControllerContinuation} from "../control/controller-action-dispatcher.mjs";
 import {dispatchOrchestratorSuccessor} from "../control/orchestrator-successor-dispatch.mjs";
@@ -58,6 +59,14 @@ const source = compileActionResultContinuation({
   evidenceRefs: [evidence("EVIDENCE.OBSERVED.AUTHORITY"), evidence("EVIDENCE.OBSERVED.SOURCE")].sort((left, right) => compareUtf8(left.evidence_id, right.evidence_id)),
   hostileFixtureRefs: ["FIXTURE.OBSERVED.SOURCE.NO_APPROVAL", "FIXTURE.OBSERVED.SOURCE.NO_TIMER"].sort(compareUtf8),
 });
+const authorityRebindReceipt = compileAuthorityRebindReceipt({
+  receiptId: "RECEIPT.AGENTOS.AUTHORITY.REBIND.OBSERVED.TEST",
+  authority: {repository: "AgentOS", branch: "codex/observed-dispatch", remote_ref: "refs/heads/codex/observed-dispatch", commit: "a".repeat(40), tree: "b".repeat(40), parent: "c".repeat(40), remote_verified: true, worktree_clean: true},
+  repair: {helper: "control/observed-dispatch-binding-gate.mjs#rebaseObservedDispatchPendingBinding", source_helper: "control/observed-dispatch-binding-gate.mjs#compileObservedDispatchSourceSuccessor", schema: "schemas/observed-dispatch-binding-gate.v1.json", rule: "Rebase the pending route onto the validated current authority before dispatch."},
+  focusedChecks: ["node:observed-dispatch", "node:authority-rebind"],
+  custody: {execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW", controller_approval_required: false, control_plane_only: true, consumer_product_mutated: false, protected_action: false, provider_access: false, credential_access: false, spend: false, destructive_work: false, wave_activation: "OFF"},
+  supersededHistory: [{commit: "d".repeat(40), tree: "e".repeat(40), status: "HISTORICAL", preserved: true}],
+});
 
 const persisted = [];
 const dispatchReadback = dispatchOrchestratorSuccessor({
@@ -82,6 +91,8 @@ const dispatchReadback = dispatchOrchestratorSuccessor({
 const common = {
   sourceSuccessorSha256: source.record_sha256,
   sourceAction: source.next_action,
+  authorityRebindReceipt,
+  authorityRebindReceiptSha256: authorityRebindReceipt.receipt_sha256,
   evidenceRefs: [evidence("EVIDENCE.OBSERVED.AUTHORITY"), evidence("EVIDENCE.OBSERVED.DISPATCH")].sort((left, right) => compareUtf8(left.evidence_id, right.evidence_id)),
   hostileFixtureRefs: [
     "FIXTURE.OBSERVED.DISPATCH.HANDLER_FALSE",
@@ -145,6 +156,7 @@ const canonicalSourceForRebase = compileActionResultContinuation({
 const rebased = rebaseObservedDispatchPendingBinding({
   binding: pending,
   sourceSuccessor: canonicalSourceForRebase,
+  authorityRebindReceipt,
   bindingId: "BINDING.OBSERVED.DISPATCH.REBASED",
   evidenceRefs: [evidence("EVIDENCE.OBSERVED.REBASED")],
   hostileFixtureRefs: ["FIXTURE.OBSERVED.REBASE.ACTION_MISMATCH", "FIXTURE.OBSERVED.REBASE.STALE_SOURCE"].sort(compareUtf8),
@@ -183,13 +195,22 @@ const wrongActionSource = compileActionResultContinuation({
 assert.throws(() => rebaseObservedDispatchPendingBinding({
   binding: pending,
   sourceSuccessor: wrongActionSource,
+  authorityRebindReceipt,
   bindingId: "BINDING.OBSERVED.DISPATCH.REBASE.BAD.ACTION",
   evidenceRefs: [evidence("EVIDENCE.REBASE.BAD.ACTION")],
   hostileFixtureRefs: ["FIXTURE.REBASE.BAD.ACTION"],
 }), /source successor action does not match/u);
 assert.throws(() => rebaseObservedDispatchPendingBinding({
+  binding: pending,
+  sourceSuccessor: canonicalSourceForRebase,
+  bindingId: "BINDING.OBSERVED.DISPATCH.REBASE.NO.AUTHORITY",
+  evidenceRefs: [evidence("EVIDENCE.REBASE.NO.AUTHORITY")],
+  hostileFixtureRefs: ["FIXTURE.OBSERVED.REBASE.NO_AUTHORITY"],
+}), /authority receipt is required/u);
+assert.throws(() => rebaseObservedDispatchPendingBinding({
   binding: proven,
   sourceSuccessor: canonicalSourceForRebase,
+  authorityRebindReceipt,
   bindingId: "BINDING.OBSERVED.DISPATCH.REBASE.BAD.PROVEN",
   evidenceRefs: [evidence("EVIDENCE.REBASE.BAD.PROVEN")],
   hostileFixtureRefs: ["FIXTURE.REBASE.BAD.PROVEN"],
@@ -222,6 +243,10 @@ const rejects = (mutator, pattern) => {
   mutator(candidate);
   assert.throws(() => validateObservedDispatchSuccessorBinding(candidate), pattern);
 };
+rejects((candidate) => {
+  candidate.authority_rebind_receipt_sha256 = null;
+  candidate.binding_sha256 = canonicalDigest({...candidate, binding_sha256: null});
+}, /authority rebind receipt/u);
 rejects((candidate) => {
   candidate.dispatch_readback = null;
 }, /requires a dispatch readback/u);
@@ -286,7 +311,7 @@ const schemaPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "../s
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
 assert.deepEqual(schema.required, [
   "schema", "version", "binding_id", "status", "source_successor_sha256", "source_action", "source_handler",
-  "execution_owner", "direct_consumer", "controller_approval_required", "same_turn_dispatch", "progress_claimed",
+  "authority_rebind_receipt_sha256", "execution_owner", "direct_consumer", "controller_approval_required", "same_turn_dispatch", "progress_claimed",
   "dispatch_readback", "dispatch_observation", "evidence_refs", "hostile_fixture_refs", "binding_sha256",
 ]);
 assert.equal(schema.properties.progress_claimed.type, "boolean");
