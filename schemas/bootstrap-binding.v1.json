@@ -898,7 +898,19 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "487f4f01ebfe4d57edca59e3849a6b22312101d60d4388a9e4b13d2a2bcb9c28"
+      "sha256": "2687f9d77dc1896c2b2b0be13c977f76fa7a5507e5d39d1bb610a0ce03f9a2f8"
+    },
+    "liveness_digest_gate_controller": {
+      "path": "control/liveness-digest-gate.mjs",
+      "sha256": "be8503e15d7f0c31054683ed237e67225f526093ddc308293171033f5d6e7bc6"
+    },
+    "liveness_digest_gate_contract": {
+      "path": "schemas/liveness-digest-gate.v1.json",
+      "sha256": "40ae2ec3e3b1c693ccb730bb4450e563e108bd009a9501e1eb26cb4613c1758d"
+    },
+    "liveness_digest_gate_verifier": {
+      "path": "tests/verify-liveness-digest-gate.mjs",
+      "sha256": "f6c47b6e84c7178d8f7a54b4eec471a25062bc4ff7f164750e5e9dafb80e3f75"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
