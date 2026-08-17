@@ -824,6 +824,18 @@
       "path": "tests/verify-typed-spawner-admission.mjs",
       "sha256": "c1de736b814db64261be1b8e8713d697d6104a4baa79a78024b61c3abc2bdf78"
     },
+    "permanent_role_roster_controller": {
+      "path": "control/permanent-role-roster.mjs",
+      "sha256": "d2f592f7e622cea756a1d0490b2ba90cb5a36628c04ac3f220206f7c27664db5"
+    },
+    "permanent_role_roster_contract": {
+      "path": "schemas/permanent-role-roster.v1.json",
+      "sha256": "c56e39edc3c63ea8a79baaba6a4fa70966918ce34eab913a83ea1c0c851331c5"
+    },
+    "permanent_role_roster_verifier": {
+      "path": "tests/verify-permanent-role-roster.mjs",
+      "sha256": "a32abdfc37b995fcf76add795912a8977a8e988c21d3e081f30dc4f280e13a5e"
+    },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
       "sha256": "4dac8ce5b38ac476ae8eec549cea1a73c690e9d61dc08389ee8426162c81567b"
