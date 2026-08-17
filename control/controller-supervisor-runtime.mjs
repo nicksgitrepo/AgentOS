@@ -704,19 +704,22 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
   let routeAdapterMissingAttempts = 0;
   let boundedRecoveryFingerprint = null;
   let boundedRecoveryCount = 0;
+  let iterationFailureFingerprint = null;
+  let iterationFailureCount = 0;
   try {
     do {
       if (signal?.aborted === true || stopping) break;
       let sameTurnTransitions = 0;
-      let iterationFailures = 0;
       let immediateTurnRequested = false;
       do {
         const nowUtc = new Date().toISOString();
+        let activeAdapter = adapter;
         try {
-          const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
+          activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
           const result = await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc});
           results.push(result);
-          iterationFailures = 0;
+          iterationFailureFingerprint = null;
+          iterationFailureCount = 0;
           if (result.routeAdapterMissing === true) {
             routeAdapterMissingAttempts += 1;
             // An adapter may repair/reload its own route surface.  Give that
@@ -769,20 +772,42 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
             stopping = true;
             break;
           }
-          if (iterationFailures === 0) {
-            // A transient adapter/observation failure is itself a liveness
-            // defect. Retry it once in this turn before retaining the error;
-            // the cadence must not be the first recovery mechanism.
-            iterationFailures = 1;
-            continue;
+          const errorMessage = safeSupervisorText(error?.message ?? String(error), "supervisor iteration failed");
+          const errorCode = typeof error?.code === "string" && error.code.length > 0 ? error.code : "UNCLASSIFIED";
+          const fingerprint = canonicalDigest({error_code: errorCode, error_message: errorMessage});
+          iterationFailureCount = fingerprint === iterationFailureFingerprint ? iterationFailureCount + 1 : 1;
+          iterationFailureFingerprint = fingerprint;
+          if (typeof activeAdapter?.repair === "function") {
+            try {
+              await activeAdapter.repair({
+                runtimeId,
+                error: errorMessage,
+                error_code: errorCode,
+                error_fingerprint: fingerprint,
+                attempt: iterationFailureCount,
+              });
+            } catch (repairError) {
+              // A repair hook is advisory and cannot turn an immediate retry
+              // into a cadence wait. The original failure remains the bound
+              // liveness signal; the next turn re-observes the repaired route.
+              void repairError;
+            }
           }
-          const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
-          writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
-          if (once) {
-            const safeError = new Error(safeSupervisorText(error?.message ?? String(error), "supervisor iteration failed"));
-            safeError.code = error?.code;
-            throw safeError;
+          if (iterationFailureCount >= 3) {
+            const exhausted = new Error("BLOCKED_EXACT_AFTER_THREE_IDENTICAL_ITERATION_FAILURES");
+            exhausted.code = "AGENTOS_SUPERVISOR_ITERATION_BLOCKED_EXACT";
+            const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: exhausted.message, nowUtc});
+            writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
+            if (typeof activeAdapter?.onBlockedExact === "function") {
+              await activeAdapter.onBlockedExact({runtimeId, result: null, error: exhausted.message, original_error: errorMessage, error_code: errorCode, error_fingerprint: fingerprint, recovery_count: iterationFailureCount});
+            }
+            stopping = true;
+            break;
           }
+          // Observation, module-load, and adapter failures are local liveness
+          // defects. Re-enter the supervisor immediately; cadence is only a
+          // backstop after a valid nonterminal route, never the first repair.
+          immediateTurnRequested = true;
           break;
         }
       } while (!once && !stopping && signal?.aborted !== true && sameTurnTransitions < maxSameTurnTransitions);

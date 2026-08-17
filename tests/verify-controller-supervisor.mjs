@@ -286,6 +286,44 @@ assert.equal(transientObserveAttempts, 2, "a transient supervisor failure must r
 assert.equal(transientResults.length, 1, "the successful retry must produce a durable result");
 fs.rmSync(transientRuntimeRoot, {recursive: true, force: true});
 
+// Persistent observation/adapter failures must not fall through to the
+// cadence timer. The supervisor gives the adapter an immediate repair hook,
+// retries the exact failure in the same lifecycle turn, and records an
+// exhausted local blocker after three identical failures.
+const repeatedFailureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-repeated-failure-"));
+let repeatedFailureAttempts = 0;
+let repeatedFailureRepairs = 0;
+let repeatedFailureBlocked = 0;
+const repeatedFailureResults = await runControllerSupervisor({
+  runtimeRoot: repeatedFailureRoot,
+  adapter: {
+    observe: () => {
+      repeatedFailureAttempts += 1;
+      throw new Error("persistent observation failure");
+    },
+    repair: ({error, attempt}) => {
+      repeatedFailureRepairs += 1;
+      assert.equal(error, "persistent observation failure");
+      assert.equal(attempt, repeatedFailureRepairs);
+    },
+    onBlockedExact: ({error, original_error, recovery_count}) => {
+      repeatedFailureBlocked += 1;
+      assert.equal(error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_ITERATION_FAILURES");
+      assert.equal(original_error, "persistent observation failure");
+      assert.equal(recovery_count, 3);
+    },
+  },
+  runtimeId: "SUPERVISOR-REPEATED-FAILURE-TEST",
+  intervalMinutes: 1,
+});
+assert.equal(repeatedFailureAttempts, 3, "persistent failures must exhaust after three immediate retries");
+assert.equal(repeatedFailureRepairs, 3, "each persistent failure must receive an immediate repair hook");
+assert.equal(repeatedFailureBlocked, 1, "persistent failures must emit one exhausted blocker callback");
+assert.equal(repeatedFailureResults.length, 0, "no invalid result may be treated as workflow progress");
+const repeatedFailureRuntime = JSON.parse(fs.readFileSync(path.join(repeatedFailureRoot, "supervisor", "runtime.json"), "utf8"));
+assert.equal(repeatedFailureRuntime.error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_ITERATION_FAILURES");
+fs.rmSync(repeatedFailureRoot, {recursive: true, force: true});
+
 // Reaching the bounded same-turn transition count must re-observe immediately,
 // not sleep until the cadence. A long interval plus an external abort makes a
 // timer-based regression observable without waiting a full cadence in CI.
