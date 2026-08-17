@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.autonomous_lane_handoff.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "lane_id", "worker_ref", "campaign_id", "campaign_version",
+    "goal_sha256", "source", "writable_scope", "execution_owner", "controller_role",
+    "controller_approval_required", "handoff_status", "next_consumer", "result_type",
+    "summary", "artifact_sha256", "evidence_sha256", "handoff_ref", "roster_policy",
+    "handoff_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.autonomous_lane_handoff.v1"},
+    "version": {"const": 1},
+    "lane_id": {"$ref": "#/$defs/identifier"},
+    "worker_ref": {"$ref": "#/$defs/identifier"},
+    "campaign_id": {"$ref": "#/$defs/identifier"},
+    "campaign_version": {"$ref": "#/$defs/identifier"},
+    "goal_sha256": {"$ref": "#/$defs/sha256"},
+    "source": {"$ref": "#/$defs/source"},
+    "writable_scope": {"$ref": "#/$defs/identifier"},
+    "execution_owner": {"const": "LANE_AGENT"},
+    "controller_role": {"const": "LIVENESS_CUSTODIAN"},
+    "controller_approval_required": {"const": false},
+    "handoff_status": {"const": "READY_FOR_INDEPENDENT_CONSUMPTION"},
+    "next_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+    "result_type": {"$ref": "#/$defs/identifier"},
+    "summary": {"type": "string", "minLength": 16},
+    "artifact_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_sha256": {"$ref": "#/$defs/sha256"},
+    "handoff_ref": {"$ref": "#/$defs/reference"},
+    "roster_policy": {"const": "INVALIDATE_AND_REBUILD_DEPENDENTS_ON_BLOCK_CHANGE"},
+    "handoff_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree", "worktree_id"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/identifier"},
+        "tree": {"$ref": "#/$defs/identifier"},
+        "worktree_id": {"$ref": "#/$defs/identifier"}
+      }
+    }
+  }
+}

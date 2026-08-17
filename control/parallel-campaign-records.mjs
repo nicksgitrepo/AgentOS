@@ -15,6 +15,7 @@ import {
   canonicalDigest,
   compareUtf8,
 } from "./content-addressing.mjs";
+import {validateAutonomousLaneHandoff} from "./autonomous-lane-handoff.mjs";
 
 export const PARALLEL_CAMPAIGN_PLAN_SCHEMA = "agentos.parallel_campaign_plan.v1";
 export const PARALLEL_CAMPAIGN_STATE_SCHEMA = "agentos.parallel_campaign_state.v1";
@@ -82,7 +83,7 @@ const WORKER_KEYS = [
   "schema", "version", "worker_ref", "display_name", "role", "lane_id", "campaign_id",
   "campaign_version", "logical_lineage_id", "goal_id", "goal_sha256", "source", "dependencies",
   "writable_scope", "task_sha256", "attempt", "state", "lease", "session_ref", "progress",
-  "handoff", "audit", "failure",
+  "handoff", "autonomous_handoff", "audit", "failure",
 ];
 const LEASE_KEYS = [
   "schema", "version", "lease_id", "campaign_id", "campaign_version", "worker_ref", "lane_id",
@@ -346,6 +347,7 @@ function compileWorker(plan, lane, attempt = 1) {
     session_ref: null,
     progress: null,
     handoff: null,
+    autonomous_handoff: null,
     audit: null,
     failure: null,
   };
@@ -618,15 +620,30 @@ function validateWorker(worker, plan, label = "parallel campaign worker") {
   if (worker.lease !== null) validateLease(worker.lease, plan, worker, `${label} lease`);
   if (worker.progress !== null) validateParallelCampaignProgress(worker.progress, plan, worker, `${label} progress`);
   if (worker.handoff !== null) validateParallelCampaignHandoff(worker.handoff, plan, worker, worker.progress, `${label} handoff`);
+  if (worker.autonomous_handoff !== null) {
+    validateAutonomousLaneHandoff(worker.autonomous_handoff);
+    assert(worker.autonomous_handoff.lane_id === worker.lane_id, `${label} autonomous handoff lane differs`);
+    assert(worker.autonomous_handoff.worker_ref === worker.worker_ref, `${label} autonomous handoff worker differs`);
+    assert(worker.autonomous_handoff.campaign_id === worker.campaign_id, `${label} autonomous handoff campaign differs`);
+    assert(worker.autonomous_handoff.campaign_version === worker.campaign_version, `${label} autonomous handoff version differs`);
+    assert(worker.autonomous_handoff.goal_sha256 === worker.goal_sha256, `${label} autonomous handoff goal differs`);
+    assert(worker.autonomous_handoff.writable_scope === worker.writable_scope, `${label} autonomous handoff scope differs`);
+  }
   if (worker.audit !== null) validateParallelCampaignAudit(worker.audit, plan, worker, worker.handoff, `${label} audit`);
   if (worker.failure !== null) validateFailure(worker.failure, plan, worker, `${label} failure`);
   const activeStates = new Set(["LEASED", "RUNNING", "PROGRESS_RECORDED", "HANDOFF_READY", "CLOSING"]);
-  if (worker.state === "READY") assert(worker.lease === null && worker.session_ref === null && worker.progress === null && worker.handoff === null && worker.audit === null && worker.failure === null, `${label} READY state has execution data`);
+  if (worker.state === "READY") assert(worker.lease === null && worker.session_ref === null && worker.progress === null && worker.handoff === null && worker.autonomous_handoff === null && worker.audit === null && worker.failure === null, `${label} READY state has execution data`);
   if (activeStates.has(worker.state)) assert(worker.lease?.status === "ACTIVE", `${label} active state lacks an active lease`);
   if (["RUNNING", "PROGRESS_RECORDED", "HANDOFF_READY", "CLOSING", "CLOSED"].includes(worker.state)) assert(worker.session_ref !== null, `${label} execution state lacks a session reference`);
   if (["PROGRESS_RECORDED", "HANDOFF_READY", "CLOSING", "CLOSED"].includes(worker.state)) assert(worker.progress !== null, `${label} handoff state lacks progress`);
   if (["HANDOFF_READY", "CLOSING", "CLOSED", "REPAIR_REQUIRED"].includes(worker.state)) assert(worker.handoff !== null, `${label} terminal handoff state lacks a handoff`);
-  if (["CLOSING", "CLOSED"].includes(worker.state)) assert(worker.audit?.accepted === true, `${label} closing state lacks accepted audit`);
+  if (["CLOSING", "CLOSED"].includes(worker.state)) {
+    if (worker.autonomous_handoff !== null) {
+      assert(worker.audit === null, `${label} autonomous closing state may not carry a Controller audit`);
+    } else {
+      assert(worker.audit?.accepted === true, `${label} closing state lacks accepted audit`);
+    }
+  }
   if (worker.state === "CLOSED") assert(worker.lease?.status === "RELEASED", `${label} closed worker has an active lease`);
   if (["FAILED", "REPAIR_REQUIRED"].includes(worker.state)) assert(worker.failure !== null || worker.audit !== null, `${label} failed worker lacks failure or audit evidence`);
   assertPersistedRecordSafe(worker);

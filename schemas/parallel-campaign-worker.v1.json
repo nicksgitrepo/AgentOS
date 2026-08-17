@@ -26,6 +26,7 @@
     "session_ref",
     "progress",
     "handoff",
+    "autonomous_handoff",
     "audit",
     "failure"
   ],
@@ -145,6 +146,12 @@
         {
           "$ref": "#/$defs/handoff"
         }
+      ]
+    },
+    "autonomous_handoff": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "autonomous-lane-handoff.v1.json"}
       ]
     },
     "audit": {

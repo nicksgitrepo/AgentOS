@@ -30,6 +30,10 @@ import {
   validateParallelCampaignAudit,
   validateParallelCampaignState,
 } from "./parallel-campaign-records.mjs";
+import {
+  compileAutonomousLaneHandoff,
+  validateAutonomousLaneHandoff,
+} from "./autonomous-lane-handoff.mjs";
 
 export {
   CAMPAIGN_STATES,
@@ -321,6 +325,54 @@ export function createParallelCampaignLifecycle({
     });
   }
 
+  /*
+   * Release a lane-owned handoff without turning the Controller into an
+   * approval gate.  The typed handoff is complete evidence for custody
+   * transfer; independent platform review remains a downstream consumer.
+   */
+  function releaseAutonomousHandoff(laneId, leaseId, {atUtc = null} = {}) {
+    const worker = findWorker(state, laneId);
+    activeLease(worker, leaseId);
+    assert(worker.state === "HANDOFF_READY", "lane " + laneId + " must have a ready handoff");
+    const now = timestamp(atUtc, clock);
+    ensureNotExpired(worker, now);
+    const handoff = worker.handoff;
+    const autonomy = compileAutonomousLaneHandoff({
+      laneId: worker.lane_id,
+      workerRef: worker.worker_ref,
+      campaignId: worker.campaign_id,
+      campaignVersion: worker.campaign_version,
+      goalSha256: worker.goal_sha256,
+      source: worker.source,
+      writableScope: worker.writable_scope,
+      resultType: handoff.result_type,
+      summary: handoff.summary,
+      artifactSha256: handoff.artifact_sha256,
+      evidenceSha256: handoff.evidence_sha256,
+      handoffRef: `opaque:campaign-handoff/${handoff.handoff_sha256}`,
+    });
+    validateAutonomousLaneHandoff(autonomy);
+    return commit({
+      eventType: "WORKER_AUTONOMOUS_HANDOFF_RELEASED",
+      workerRef: worker.worker_ref,
+      leaseId,
+      payload: {
+        lane_id: laneId,
+        worker_ref: worker.worker_ref,
+        handoff_sha256: handoff.handoff_sha256,
+        autonomy_handoff_sha256: autonomy.handoff_sha256,
+        controller_approval_required: false,
+        next_consumer: autonomy.next_consumer,
+      },
+      atUtc: now,
+      mutate(next) {
+        const target = findWorker(next, laneId);
+        target.state = "CLOSING";
+        target.autonomous_handoff = autonomy;
+      },
+    });
+  }
+
   function acceptHandoff(laneId, leaseId, input, {atUtc = null} = {}) {
     const worker = findWorker(state, laneId);
     activeLease(worker, leaseId);
@@ -552,6 +604,68 @@ export function createParallelCampaignLifecycle({
     return snapshot();
   }
 
+  /*
+   * Autonomous lane runner.  Each lane executes, records meaningful progress,
+   * emits its typed handoff, and releases custody directly.  No Controller or
+   * supervisory callback is required to approve ordinary completion.  A
+   * downstream platform evaluator may consume the handoff independently.
+   */
+  async function runAutonomous({executeWorker} = {}) {
+    assert(typeof executeWorker === "function", "autonomous campaign executeWorker callback is required");
+    while (!["BLOCKED", "CLOSED"].includes(state.status)) {
+      const selected = selectReadyWorkers(state);
+      if (selected.length === 0) {
+        if (state.workers.every((worker) => worker.state === "CLOSED")) break;
+        throw new Error("autonomous campaign scheduler found no runnable lane");
+      }
+      const leases = selected.map((worker) => {
+        const next = acquireWorker(worker.lane_id);
+        return {
+          laneId: worker.lane_id,
+          leaseId: findWorker(next, worker.lane_id).lease.lease_id,
+        };
+      });
+      const settled = await Promise.allSettled(leases.map(async ({laneId, leaseId}) => {
+        try {
+          const assignment = plan.lanes.find((lane) => lane.lane_id === laneId);
+          const workerBeforeStart = workerSnapshot(laneId);
+          const output = await executeWorker({
+            assignment: clone(assignment),
+            worker: workerBeforeStart,
+            lease: clone(workerBeforeStart.lease),
+          });
+          exactKeys(output, ["session_ref", "progress"], "autonomous worker execution output");
+          startWorker(laneId, leaseId, output.session_ref);
+          recordProgress(laneId, leaseId, output.progress);
+          recordHandoff(laneId, leaseId);
+          releaseAutonomousHandoff(laneId, leaseId);
+          if (findWorker(state, laneId).state === "CLOSING") closeWorker(laneId, leaseId);
+        } catch (error) {
+          const current = findWorker(state, laneId);
+          if (current.lease?.status === "ACTIVE" && !["FAILED", "REPAIR_REQUIRED", "CLOSED"].includes(current.state)) {
+            failWorker(laneId, leaseId, error, {code: error?.code ?? "AUTONOMOUS_WORKER_FAILED"});
+          }
+        }
+      }));
+      const persistenceFailure = settled.find((result) => result.status === "rejected");
+      if (persistenceFailure) throw persistenceFailure.reason;
+    }
+    if (state.status === "RUNNING" && state.workers.every((worker) => worker.state === "CLOSED")) {
+      const now = timestamp(null, clock);
+      commit({
+        eventType: "CAMPAIGN_CLOSED",
+        payload: {campaign_id: plan.campaign_id, campaign_version: plan.campaign_version, mode: "AUTONOMOUS_TYPED_HANDOFF"},
+        atUtc: now,
+        toCampaignStatus: "CLOSED",
+        mutate(next) {
+          next.status = "CLOSED";
+          next.closed_at_utc = now;
+        },
+      });
+    }
+    return snapshot();
+  }
+
   return Object.freeze({
     snapshot,
     worker: workerSnapshot,
@@ -563,10 +677,12 @@ export function createParallelCampaignLifecycle({
     startWorker,
     recordProgress,
     recordHandoff,
+    releaseAutonomousHandoff,
     acceptHandoff,
     closeWorker,
     failWorker,
     expireLease,
     run,
+    runAutonomous,
   });
 }

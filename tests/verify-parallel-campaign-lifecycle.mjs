@@ -96,6 +96,38 @@ async function runParallelCampaign() {
   return {result, lifecycle};
 }
 
+async function runAutonomousLaneCampaign() {
+  const plan = compileParallelCampaignPlan({
+    campaignId: "CAMPAIGN-AUTONOMOUS-1",
+    campaignVersion: "v3.0.0-rc.1",
+    logicalLineageId: "LINEAGE-AUTONOMOUS-1",
+    goalId: "GOAL-AUTONOMOUS-1",
+    goalSha256: SHA_A,
+    source: SOURCE,
+    maxConcurrentWorkers: 2,
+    lanes: [
+      {lane_id: "lane-a", dependencies: [], writable_scope: "SCOPE-A", task_sha256: SHA_A},
+      {lane_id: "lane-b", dependencies: [], writable_scope: "SCOPE-B", task_sha256: SHA_B},
+    ],
+  });
+  const lifecycle = createParallelCampaignLifecycle({plan, clock: () => START});
+  const result = await lifecycle.runAutonomous({
+    async executeWorker({assignment}) {
+      return {
+        session_ref: opaqueSessionRef(`autonomous:${assignment.lane_id}`),
+        progress: progress("BOUNDED_HANDOFF", `${assignment.lane_id} completed its lane autonomously.`),
+      };
+    },
+  });
+  assert.equal(result.status, "CLOSED");
+  assert(result.workers.every((worker) => worker.state === "CLOSED"));
+  assert(result.workers.every((worker) => worker.handoff?.handoff_sha256));
+  assert(result.workers.every((worker) => worker.audit === null), "autonomous lane must not require a Controller audit approval");
+  assert(result.events.some((event) => event.event_type === "WORKER_AUTONOMOUS_HANDOFF_RELEASED"));
+  assert(result.events.some((event) => event.payload_sha256));
+  return {result, lifecycle};
+}
+
 async function main() {
   const plan = planFixture();
   assert.deepEqual(plan.lanes.map((lane) => lane.lane_id), ["followup", "foundation", "independent"]);
@@ -117,6 +149,7 @@ async function main() {
   }), /dependency cycle/u);
 
   const {result, lifecycle} = await runParallelCampaign();
+  await runAutonomousLaneCampaign();
   const foundation = result.workers.find((worker) => worker.lane_id === "foundation");
   assert(foundation);
   assert.throws(() => lifecycle.acquireWorker("followup", {atUtc: START}), /not accepting worker leases|dependencies are incomplete/u);

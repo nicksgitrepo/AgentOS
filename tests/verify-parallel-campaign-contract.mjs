@@ -43,7 +43,7 @@ const KEYS = Object.freeze({
     "schema", "version", "worker_ref", "display_name", "role", "lane_id", "campaign_id",
     "campaign_version", "logical_lineage_id", "goal_id", "goal_sha256", "source",
     "dependencies", "writable_scope", "task_sha256", "attempt", "state", "lease",
-    "session_ref", "progress", "handoff", "audit", "failure",
+    "session_ref", "progress", "handoff", "autonomous_handoff", "audit", "failure",
   ],
   lease: [
     "schema", "version", "lease_id", "campaign_id", "campaign_version", "worker_ref",
