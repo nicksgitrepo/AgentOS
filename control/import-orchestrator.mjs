@@ -37,6 +37,7 @@ export const IMPORT_ORCHESTRATOR_STATES = Object.freeze([
 ]);
 export const IMPORT_ORCHESTRATOR_ACTIONS = Object.freeze([
   "REQUEST_SPAWNER_QA",
+  "START_ISOLATED_AUDIT_LANES",
   "REPAIR_BLOCKS",
   "START_SPECIALIST_WAVE",
   "START_PLATFORM_REVIEW",
@@ -174,6 +175,10 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
   }
   if (runState.status === "BLOCKED_RECOVERY") {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
+  }
+  if (runState.status === "SPAWNER_QA_PENDING"
+    && clearanceApplicability.decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR") {
+    return {state: "ACTIVE", nextAction: "START_ISOLATED_AUDIT_LANES", dependencyId: null};
   }
   if (runState.status === "SPAWNER_QA_PENDING") {
     if (clearanceApplicability.decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA") {

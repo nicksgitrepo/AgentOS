@@ -176,6 +176,45 @@ assert.equal(localQa.state, "ACTIVE");
 assert.equal(localQa.next_action, "REQUEST_SPAWNER_QA");
 assert.notEqual(localQa.clearance_applicability_sha256, heldApplicability.applicability_sha256);
 
+const isolatedApplicability = compileIndependentClearanceApplicability({
+  applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ISOLATED_ORCHESTRATOR",
+  phase: "ISOLATED_LOCAL_AUDIT_REPAIR",
+  spawnerMode: "GOVERNED_SPAWN",
+  temporaryWorkerAdmission: true,
+  spawnAuthority: true,
+  waveActivation: "OFF",
+  isolatedWorktreeCustody: true,
+  sourceRootsPreserved: true,
+  sharedWorkspaceReadOnly: true,
+  activeLaneCount: 0,
+  laneLimit: 6,
+  productMutation: false,
+  providerAccess: false,
+  credentialAccess: false,
+  externalSync: false,
+  materialSpendAuthorized: false,
+  destructiveWorkAuthorized: false,
+  liveProviderWorkflow: false,
+  activeWorkerCount: 0,
+  schedulerJobCount: 0,
+  heavyweightProcessCount: 0,
+  heavyweightProcessLimit: 1,
+  timerCount: 0,
+  polling: false,
+});
+const isolatedOrchestrator = compileImportOrchestrator({
+  orchestratorId: "ORCHESTRATOR.IMPORT.ISOLATED",
+  ...governanceFor("ORCHESTRATOR.IMPORT.ISOLATED"),
+  clearanceApplicability: isolatedApplicability,
+  plan,
+  rosterProjection: heldRoster,
+  runState: compileControllerImportRunState({plan}),
+  spawnerLifecycle: heldLifecycle,
+  defectQueue: emptyDefectQueue,
+});
+assert.equal(isolatedOrchestrator.state, "ACTIVE");
+assert.equal(isolatedOrchestrator.next_action, "START_ISOLATED_AUDIT_LANES");
+
 const persistenceRoot = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "agentos-import-orchestrator-"));
 const persistencePath = "state/import-orchestrator.json";
 const persistedInitial = writeImportOrchestratorRecordCompareAndSwap({

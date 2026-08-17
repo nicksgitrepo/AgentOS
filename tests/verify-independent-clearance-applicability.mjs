@@ -49,6 +49,42 @@ assert.equal(local.action, "CONTINUE_LOCAL_COMPILER_QA");
 assert.equal(local.independent_clearance_required, false);
 assert.equal(local.protected_event_id, null);
 
+const isolated = compileIndependentClearanceApplicability({
+  ...base,
+  applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ISOLATED_AUDIT",
+  phase: "ISOLATED_LOCAL_AUDIT_REPAIR",
+  spawnerMode: "GOVERNED_SPAWN",
+  temporaryWorkerAdmission: true,
+  spawnAuthority: true,
+  isolatedWorktreeCustody: true,
+  sourceRootsPreserved: true,
+  sharedWorkspaceReadOnly: true,
+  activeLaneCount: 6,
+  activeWorkerCount: 6,
+  schedulerJobCount: 6,
+  heavyweightProcessCount: 1,
+  heavyweightProcessLimit: 1,
+});
+validateIndependentClearanceApplicability(isolated);
+assert.equal(isolated.decision, "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR");
+assert.equal(isolated.action, "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR");
+assert.equal(isolated.independent_clearance_required, false);
+assert.equal(isolated.protected_event_id, null);
+
+const isolatedPreflight = compileIndependentClearanceApplicability({
+  ...base,
+  applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.ISOLATED_PREFLIGHT",
+  phase: "ISOLATED_LOCAL_AUDIT_REPAIR",
+  spawnerMode: "GOVERNED_SPAWN",
+  temporaryWorkerAdmission: true,
+  spawnAuthority: true,
+  isolatedWorktreeCustody: true,
+  sourceRootsPreserved: true,
+  sharedWorkspaceReadOnly: true,
+});
+assert.equal(isolatedPreflight.decision, "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR");
+assert.equal(isolatedPreflight.action, "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR");
+
 const governed = compileIndependentClearanceApplicability({...base, applicabilityId: "APPLICABILITY.INDEPENDENT_CLEARANCE.GOVERNED", phase: "GOVERNED_WORKER_ACTIVATION", spawnerMode: "GOVERNED_SPAWN"});
 assert.equal(governed.decision, "REQUIRED_PROTECTED_ROUTE");
 assert.equal(governed.action, "WAIT_FOR_INDEPENDENT_CLEARANCE");
@@ -69,6 +105,35 @@ for (const [label, change] of [
 ]) {
   const result = compileIndependentClearanceApplicability({...base, applicabilityId: `APPLICABILITY.INDEPENDENT_CLEARANCE.${label}`, ...change});
   assert.equal(result.decision, "REQUIRED_PROTECTED_ROUTE", `${label} must make the protected route applicable`);
+}
+
+for (const [label, change] of [
+  ["NO_CUSTODY", {isolatedWorktreeCustody: false}],
+  ["SOURCE_MUTATION", {sourceRootsPreserved: false}],
+  ["SHARED_WRITE", {sharedWorkspaceReadOnly: false}],
+  ["LANE_OVER_LIMIT", {activeLaneCount: 7}],
+  ["HEAVYWEIGHT_OVER_LIMIT", {heavyweightProcessCount: 2}],
+  ["PRODUCT_MUTATION", {productMutation: true}],
+  ["PROVIDER_ACCESS", {providerAccess: true}],
+]) {
+  const result = compileIndependentClearanceApplicability({
+    ...base,
+    applicabilityId: `APPLICABILITY.INDEPENDENT_CLEARANCE.ISOLATED_${label}`,
+    phase: "ISOLATED_LOCAL_AUDIT_REPAIR",
+    spawnerMode: "GOVERNED_SPAWN",
+    temporaryWorkerAdmission: true,
+    spawnAuthority: true,
+    isolatedWorktreeCustody: true,
+    sourceRootsPreserved: true,
+    sharedWorkspaceReadOnly: true,
+    activeLaneCount: 6,
+    activeWorkerCount: 6,
+    schedulerJobCount: 6,
+    heavyweightProcessCount: 1,
+    heavyweightProcessLimit: 1,
+    ...change,
+  });
+  assert.equal(result.decision, "REQUIRED_PROTECTED_ROUTE", `${label} must keep the protected route`);
 }
 
 const tampered = structuredClone(local);

@@ -3,7 +3,8 @@
  *
  * Clearance is mandatory for governed worker or wave activation. It is not a
  * prerequisite for a compiler-only, no-side-effect local QA/import-planning
- * phase when every protected capability and execution resource is disabled.
+ * phase or an isolated local audit/repair phase when typed custody, source
+ * preservation, and resource ceilings prove that no protected action can occur.
  * The decision is derived from typed facts and is invalidated when any fact
  * changes.
  */
@@ -14,16 +15,19 @@ export const INDEPENDENT_CLEARANCE_APPLICABILITY_SCHEMA = "agentos.independent_c
 export const INDEPENDENT_CLEARANCE_APPLICABILITY_VERSION = 1;
 export const INDEPENDENT_CLEARANCE_APPLICABILITY_PHASES = Object.freeze([
   "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING",
+  "ISOLATED_LOCAL_AUDIT_REPAIR",
   "GOVERNED_WORKER_ACTIVATION",
   "WAVE_ACTIVATION",
   "EXTERNAL_OR_DESTRUCTIVE_ACTION",
 ]);
 export const INDEPENDENT_CLEARANCE_APPLICABILITY_DECISIONS = Object.freeze([
   "NOT_APPLICABLE_LOCAL_COMPILER_QA",
+  "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR",
   "REQUIRED_PROTECTED_ROUTE",
 ]);
 export const INDEPENDENT_CLEARANCE_APPLICABILITY_ACTIONS = Object.freeze([
   "CONTINUE_LOCAL_COMPILER_QA",
+  "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR",
   "WAIT_FOR_INDEPENDENT_CLEARANCE",
 ]);
 export const INDEPENDENT_CLEARANCE_PROTECTED_EVENT = "INDEPENDENT.UTILITY_HARM_CLEARANCE";
@@ -31,9 +35,12 @@ export const INDEPENDENT_CLEARANCE_PROTECTED_EVENT = "INDEPENDENT.UTILITY_HARM_C
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const SHA256 = /^[0-9a-f]{64}$/u;
 const LOCAL_PHASE = "COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING";
+const ISOLATED_AUDIT_PHASE = "ISOLATED_LOCAL_AUDIT_REPAIR";
 const LOCAL_EVIDENCE_CEILING = "Independent utility/harm clearance is not applicable to this bounded compiler-only local QA/import-planning phase because admission, activation, provider, credential, product, external sync, spend, destructive work, and live execution are all disabled.";
+const ISOLATED_AUDIT_EVIDENCE_CEILING = "Independent utility/harm clearance is not applicable to this bounded isolated local audit/repair phase because typed isolated-worktree custody, source preservation, read-only shared workspace access, no protected capabilities, and the six-lane/one-heavyweight resource ceiling are proven.";
 const PROTECTED_EVIDENCE_CEILING = "Independent utility/harm clearance remains required before governed worker activation, wave activation, or any external, spend-bearing, product-mutating, or destructive route.";
 const LOCAL_RESTART_EVENT = "REEVALUATE_BEFORE_ANY_GOVERNED_SPAWN_WAVE_ACTIVATION_EXTERNAL_PROVIDER_PRODUCT_SPEND_OR_DESTRUCTIVE_ROUTE";
+const ISOLATED_AUDIT_RESTART_EVENT = "REEVALUATE_BEFORE_GOVERNED_WORKER_WAVE_ACTIVATION_EXTERNAL_PROVIDER_PRODUCT_SPEND_OR_DESTRUCTIVE_ROUTE";
 const PROTECTED_RESTART_EVENT = "EXPLICIT_INDEPENDENT_UTILITY_HARM_CLEARANCE_RECEIPT_OR_EXPLICIT_OWNER_RESUMPTION_FOR_AFFECTED_LOCAL_ROUTE";
 const INVALIDATION_RULE = "Any change to phase, authority facts, resource facts, or protected-route scope invalidates this applicability receipt and requires recompilation.";
 
@@ -106,25 +113,59 @@ function localFactsAreSafe(facts) {
     && facts.polling === false;
 }
 
+function isolatedAuditFactsAreSafe(facts) {
+  return facts.phase === ISOLATED_AUDIT_PHASE
+    && facts.spawner_mode === "GOVERNED_SPAWN"
+    && facts.temporary_worker_admission === true
+    && facts.spawn_authority === true
+    && facts.wave_activation === "OFF"
+    && facts.isolated_worktree_custody === true
+    && facts.source_roots_preserved === true
+    && facts.shared_workspace_read_only === true
+    && facts.product_mutation === false
+    && facts.provider_access === false
+    && facts.credential_access === false
+    && facts.external_sync === false
+    && facts.material_spend_authorized === false
+    && facts.destructive_work_authorized === false
+    && facts.live_provider_workflow === false
+    && facts.active_lane_count >= 0
+    && facts.active_lane_count <= facts.lane_limit
+    && facts.lane_limit === 6
+    && facts.active_worker_count >= 0
+    && facts.active_worker_count <= facts.lane_limit
+    && facts.heavyweight_process_count <= facts.heavyweight_process_limit
+    && facts.heavyweight_process_limit === 1
+    && facts.scheduler_job_count <= facts.lane_limit
+    && facts.timer_count === 0
+    && facts.polling === false;
+}
+
 function expectedDecision(facts) {
-  return localFactsAreSafe(facts) ? "NOT_APPLICABLE_LOCAL_COMPILER_QA" : "REQUIRED_PROTECTED_ROUTE";
+  if (localFactsAreSafe(facts)) return "NOT_APPLICABLE_LOCAL_COMPILER_QA";
+  if (isolatedAuditFactsAreSafe(facts)) return "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR";
+  return "REQUIRED_PROTECTED_ROUTE";
 }
 
 function validateFacts(facts) {
   exactKeys(facts, [
     "phase", "spawner_mode", "temporary_worker_admission", "spawn_authority", "wave_activation",
+    "isolated_worktree_custody", "source_roots_preserved", "shared_workspace_read_only", "active_lane_count", "lane_limit",
     "product_mutation", "provider_access", "credential_access", "external_sync", "material_spend_authorized",
-    "destructive_work_authorized", "live_provider_workflow", "active_worker_count", "scheduler_job_count",
-    "heavyweight_process_count", "timer_count", "polling",
+    "destructive_work_authorized", "live_provider_workflow", "active_worker_count", "scheduler_job_count", "heavyweight_process_count",
+    "heavyweight_process_limit", "timer_count", "polling",
   ], "Independent clearance applicability facts");
   assert(INDEPENDENT_CLEARANCE_APPLICABILITY_PHASES.includes(facts.phase), "Independent clearance applicability phase is invalid");
   assert(facts.spawner_mode === "COMPILER_ONLY" || facts.spawner_mode === "GOVERNED_SPAWN", "Independent clearance Spawner mode is invalid");
   for (const field of [
     "temporary_worker_admission", "spawn_authority", "product_mutation", "provider_access", "credential_access",
     "external_sync", "material_spend_authorized", "destructive_work_authorized", "live_provider_workflow", "polling",
+    "isolated_worktree_custody", "source_roots_preserved", "shared_workspace_read_only",
   ]) requireBoolean(facts[field], `Independent clearance ${field}`);
   assert(facts.wave_activation === "OFF" || facts.wave_activation === "ON", "Independent clearance wave activation is invalid");
-  for (const field of ["active_worker_count", "scheduler_job_count", "heavyweight_process_count", "timer_count"]) requireCount(facts[field], `Independent clearance ${field}`);
+  for (const field of ["active_worker_count", "scheduler_job_count", "heavyweight_process_count", "active_lane_count", "lane_limit", "heavyweight_process_limit", "timer_count"]) requireCount(facts[field], `Independent clearance ${field}`);
+  assert(facts.lane_limit === 6, "Independent clearance lane limit must be six");
+  assert(facts.heavyweight_process_limit === 1, "Independent clearance heavyweight limit must be one");
 }
 
 export function validateIndependentClearanceApplicability(receipt) {
@@ -149,6 +190,12 @@ export function validateIndependentClearanceApplicability(receipt) {
     assert(receipt.protected_event_id === null, "Local compiler applicability cannot bind a protected event");
     assert(receipt.evidence_ceiling === LOCAL_EVIDENCE_CEILING, "Local compiler applicability evidence ceiling is invalid");
     assert(receipt.restart_event === LOCAL_RESTART_EVENT, "Local compiler applicability restart event is invalid");
+  } else if (expected === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR") {
+    assert(receipt.action === "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR", "Isolated local audit applicability must continue isolated audit/repair");
+    assert(receipt.independent_clearance_required === false, "Isolated local audit applicability cannot require clearance");
+    assert(receipt.protected_event_id === null, "Isolated local audit applicability cannot bind a protected event");
+    assert(receipt.evidence_ceiling === ISOLATED_AUDIT_EVIDENCE_CEILING, "Isolated local audit applicability evidence ceiling is invalid");
+    assert(receipt.restart_event === ISOLATED_AUDIT_RESTART_EVENT, "Isolated local audit applicability restart event is invalid");
   } else {
     assert(receipt.action === "WAIT_FOR_INDEPENDENT_CLEARANCE", "Protected applicability must wait for clearance");
     assert(receipt.independent_clearance_required === true, "Protected applicability must require clearance");
@@ -178,9 +225,15 @@ export function compileIndependentClearanceApplicability({
   materialSpendAuthorized,
   destructiveWorkAuthorized,
   liveProviderWorkflow,
+  isolatedWorktreeCustody = false,
+  sourceRootsPreserved = false,
+  sharedWorkspaceReadOnly = true,
+  activeLaneCount = 0,
+  laneLimit = 6,
   activeWorkerCount,
   schedulerJobCount,
   heavyweightProcessCount,
+  heavyweightProcessLimit = 1,
   timerCount,
   polling,
   hostileFixtureRefs = [
@@ -195,6 +248,11 @@ export function compileIndependentClearanceApplicability({
     temporary_worker_admission: temporaryWorkerAdmission,
     spawn_authority: spawnAuthority,
     wave_activation: waveActivation,
+    isolated_worktree_custody: isolatedWorktreeCustody,
+    source_roots_preserved: sourceRootsPreserved,
+    shared_workspace_read_only: sharedWorkspaceReadOnly,
+    active_lane_count: activeLaneCount,
+    lane_limit: laneLimit,
     product_mutation: productMutation,
     provider_access: providerAccess,
     credential_access: credentialAccess,
@@ -205,6 +263,7 @@ export function compileIndependentClearanceApplicability({
     active_worker_count: activeWorkerCount,
     scheduler_job_count: schedulerJobCount,
     heavyweight_process_count: heavyweightProcessCount,
+    heavyweight_process_limit: heavyweightProcessLimit,
     timer_count: timerCount,
     polling,
   };
@@ -216,13 +275,25 @@ export function compileIndependentClearanceApplicability({
     applicability_id: applicabilityId,
     phase,
     decision,
-    action: decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA" ? "CONTINUE_LOCAL_COMPILER_QA" : "WAIT_FOR_INDEPENDENT_CLEARANCE",
+    action: decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA"
+      ? "CONTINUE_LOCAL_COMPILER_QA"
+      : decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"
+        ? "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR"
+        : "WAIT_FOR_INDEPENDENT_CLEARANCE",
     independent_clearance_required: decision === "REQUIRED_PROTECTED_ROUTE",
     protected_event_id: decision === "REQUIRED_PROTECTED_ROUTE" ? INDEPENDENT_CLEARANCE_PROTECTED_EVENT : null,
     facts,
     evidence_sha256: canonicalDigest(facts),
-    evidence_ceiling: decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA" ? LOCAL_EVIDENCE_CEILING : PROTECTED_EVIDENCE_CEILING,
-    restart_event: decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA" ? LOCAL_RESTART_EVENT : PROTECTED_RESTART_EVENT,
+    evidence_ceiling: decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA"
+      ? LOCAL_EVIDENCE_CEILING
+      : decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"
+        ? ISOLATED_AUDIT_EVIDENCE_CEILING
+        : PROTECTED_EVIDENCE_CEILING,
+    restart_event: decision === "NOT_APPLICABLE_LOCAL_COMPILER_QA"
+      ? LOCAL_RESTART_EVENT
+      : decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR"
+        ? ISOLATED_AUDIT_RESTART_EVENT
+        : PROTECTED_RESTART_EVENT,
     invalidation_rule: INVALIDATION_RULE,
     hostile_fixture_refs: [...hostileFixtureRefs].sort(compareUtf8),
     applicability_sha256: null,

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/independent-clearance-applicability.v1.json",
   "title": "AgentOS Independent Clearance Applicability",
-  "description": "Project-agnostic typed applicability decision. Independent utility/harm clearance is mandatory for governed worker or wave activation, but not for a compiler-only, no-side-effect local QA/import-planning phase whose typed authority and resource facts prove that no protected action can occur.",
+  "description": "Project-agnostic typed applicability decision. Independent utility/harm clearance is mandatory for governed worker or wave activation, but not for compiler-only local QA or a bounded isolated audit/repair wave whose typed custody, preservation, authority, and resource facts prove that no protected action can occur.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,9 +14,9 @@
     "schema": {"const": "agentos.independent_clearance_applicability.v1"},
     "version": {"const": 1},
     "applicability_id": {"$ref": "#/$defs/identifier"},
-    "phase": {"enum": ["COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING", "GOVERNED_WORKER_ACTIVATION", "WAVE_ACTIVATION", "EXTERNAL_OR_DESTRUCTIVE_ACTION"]},
-    "decision": {"enum": ["NOT_APPLICABLE_LOCAL_COMPILER_QA", "REQUIRED_PROTECTED_ROUTE"]},
-    "action": {"enum": ["CONTINUE_LOCAL_COMPILER_QA", "WAIT_FOR_INDEPENDENT_CLEARANCE"]},
+    "phase": {"enum": ["COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING", "ISOLATED_LOCAL_AUDIT_REPAIR", "GOVERNED_WORKER_ACTIVATION", "WAVE_ACTIVATION", "EXTERNAL_OR_DESTRUCTIVE_ACTION"]},
+    "decision": {"enum": ["NOT_APPLICABLE_LOCAL_COMPILER_QA", "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR", "REQUIRED_PROTECTED_ROUTE"]},
+    "action": {"enum": ["CONTINUE_LOCAL_COMPILER_QA", "CONTINUE_ISOLATED_LOCAL_AUDIT_REPAIR", "WAIT_FOR_INDEPENDENT_CLEARANCE"]},
     "independent_clearance_required": {"type": "boolean"},
     "protected_event_id": {"anyOf": [{"type": "null"}, {"const": "INDEPENDENT.UTILITY_HARM_CLEARANCE"}]},
     "facts": {"$ref": "#/$defs/facts"},
@@ -35,16 +35,22 @@
       "additionalProperties": false,
       "required": [
         "phase", "spawner_mode", "temporary_worker_admission", "spawn_authority", "wave_activation",
+        "isolated_worktree_custody", "source_roots_preserved", "shared_workspace_read_only", "active_lane_count", "lane_limit",
         "product_mutation", "provider_access", "credential_access", "external_sync", "material_spend_authorized",
         "destructive_work_authorized", "live_provider_workflow", "active_worker_count", "scheduler_job_count",
-        "heavyweight_process_count", "timer_count", "polling"
+        "heavyweight_process_count", "heavyweight_process_limit", "timer_count", "polling"
       ],
       "properties": {
-        "phase": {"enum": ["COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING", "GOVERNED_WORKER_ACTIVATION", "WAVE_ACTIVATION", "EXTERNAL_OR_DESTRUCTIVE_ACTION"]},
+        "phase": {"enum": ["COMPILER_ONLY_LOCAL_QA_IMPORT_PLANNING", "ISOLATED_LOCAL_AUDIT_REPAIR", "GOVERNED_WORKER_ACTIVATION", "WAVE_ACTIVATION", "EXTERNAL_OR_DESTRUCTIVE_ACTION"]},
         "spawner_mode": {"enum": ["COMPILER_ONLY", "GOVERNED_SPAWN"]},
         "temporary_worker_admission": {"type": "boolean"},
         "spawn_authority": {"type": "boolean"},
         "wave_activation": {"enum": ["OFF", "ON"]},
+        "isolated_worktree_custody": {"type": "boolean"},
+        "source_roots_preserved": {"type": "boolean"},
+        "shared_workspace_read_only": {"type": "boolean"},
+        "active_lane_count": {"type": "integer", "minimum": 0, "maximum": 6},
+        "lane_limit": {"const": 6},
         "product_mutation": {"type": "boolean"},
         "provider_access": {"type": "boolean"},
         "credential_access": {"type": "boolean"},
@@ -55,6 +61,7 @@
         "active_worker_count": {"type": "integer", "minimum": 0},
         "scheduler_job_count": {"type": "integer", "minimum": 0},
         "heavyweight_process_count": {"type": "integer", "minimum": 0},
+        "heavyweight_process_limit": {"const": 1},
         "timer_count": {"type": "integer", "minimum": 0},
         "polling": {"type": "boolean"}
       }
