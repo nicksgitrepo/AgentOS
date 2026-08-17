@@ -60,6 +60,7 @@ hostile((candidate) => { candidate.gate_sha256 = sha("e"); }, /digest mismatch/u
 hostile((candidate) => { candidate.authority_binding.tree = sha("f"); }, /authority is stale/u);
 hostile((candidate) => { candidate.custody.controller_approval_required = true; }, /Controller approval/u);
 hostile((candidate) => { candidate.route_facts.clearance_applicability = "REQUIRED_PROTECTED_ROUTE"; }, /gate digest mismatch|route facts/u);
+hostile((candidate) => { candidate.route_facts.derived_next_handler = "HANDLER.OWNER_REVIEW"; }, /action registry/u);
 hostile((candidate) => { candidate.hostile_fixture_refs.push("FIXTURE.TEST.NULL_DIGEST"); }, /sorted and unique/u);
 hostile((candidate) => { candidate.failed_check.actual = candidate.failed_check.expected; }, /real mismatch/u);
 
@@ -84,7 +85,7 @@ assert.equal(protectedGate.repair_block.route_kind, "PROTECTED_ROUTE_REPAIR");
 console.log(JSON.stringify({
   status: "PASS",
   schema: gate.schema,
-  hostile_cases: 7,
+  hostile_cases: 8,
   local_route: gate.route_facts.derived_next_action,
   protected_route: protectedGate.decision,
   next_action: gate.repair_block.next_action,

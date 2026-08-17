@@ -9,6 +9,7 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {CONTROLLER_ACTION_REGISTRY, controllerActionHandlerFor} from "./controller-action-dispatcher.mjs";
 
 export const IMPORT_ORCHESTRATOR_TEST_FAILURE_GATE_SCHEMA = "agentos.import_orchestrator_test_failure_gate.v1";
 export const IMPORT_ORCHESTRATOR_TEST_FAILURE_GATE_VERSION = 1;
@@ -114,6 +115,8 @@ function validateRouteFacts(facts) {
   assert(facts.wave_activation === "OFF", "test-failure route cannot activate a wave");
   requireIdentifier(facts.derived_next_action, "test-failure derived next action");
   requireIdentifier(facts.derived_next_handler, "test-failure derived next handler");
+  assert(CONTROLLER_ACTION_REGISTRY[facts.derived_next_action] !== undefined, "test-failure derived next action is not registered");
+  assert(facts.derived_next_handler === controllerActionHandlerFor(facts.derived_next_action), "test-failure derived next handler does not match the action registry");
 }
 
 function validateRepair(repair) {

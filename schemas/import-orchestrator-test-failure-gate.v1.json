@@ -46,7 +46,7 @@
         "run_state": {"enum": ["BLOCKED_PROTECTED", "SPAWNER_QA_PENDING", "ACTIVE", "PLATFORM_REVIEW_PENDING", "CENTRAL_INTEGRATION_PENDING"]},
         "open_findings_count": {"type": "integer", "minimum": 0}, "isolated_local_custody": {"type": "boolean"}, "source_roots_preserved": {"type": "boolean"}, "shared_workspace_read_only": {"type": "boolean"}, "wave_activation": {"const": "OFF"},
         "provider_access": {"const": false}, "credential_access": {"const": false}, "external_sync": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false},
-        "derived_next_action": {"$ref": "#/$defs/identifier"}, "derived_next_handler": {"$ref": "#/$defs/identifier"}
+        "derived_next_action": {"$ref": "#/$defs/identifier", "description": "Must be present in the executable Controller action registry."}, "derived_next_handler": {"$ref": "#/$defs/identifier", "description": "Must equal the executable registry handler for derived_next_action."}
       }
     },
     "repair": {
