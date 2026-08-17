@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/autonomous-dispatch-liveness-gate.v1.json",
+  "title": "AgentOS Autonomous Dispatch Liveness Gate",
+  "description": "Project-agnostic gate proving same-turn registered direct-consumer dispatch/readback or a durable same-turn block-repair retry. Commentary-only, timer-only, approval-only, missing-invocation, and missing-readback closeouts are rejected.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "gate_id", "defect_id", "turn_window", "source_handoff", "expected_dispatch",
+    "observed_dispatch", "retry_checkpoint", "lane_execution", "direct_consumer", "controller_approval_required",
+    "commentary_only", "authority_binding", "scope", "evidence_refs", "hostile_fixture_refs", "status", "gate_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.autonomous_dispatch_liveness_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/identifier"},
+    "defect_id": {"$ref": "#/$defs/identifier"},
+    "turn_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_at_utc", "observed_at_utc", "elapsed_seconds", "threshold_seconds", "overlong", "measurement_ref"],
+      "properties": {
+        "start_at_utc": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/utc"}]},
+        "observed_at_utc": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/utc"}]},
+        "elapsed_seconds": {"type": "integer", "minimum": 0},
+        "threshold_seconds": {"type": "integer", "minimum": 1},
+        "overlong": {"const": true},
+        "measurement_ref": {"$ref": "#/$defs/reference"}
+      }
+    },
+    "source_handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handoff_ref", "handoff_sha256", "handoff_status", "expected_next_action", "expected_next_handler", "direct_consumer", "controller_approval_required", "same_turn_dispatch", "lane_execution"],
+      "properties": {
+        "handoff_ref": {"$ref": "#/$defs/reference"},
+        "handoff_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_status": {"$ref": "#/$defs/identifier"},
+        "expected_next_action": {"$ref": "#/$defs/identifier"},
+        "expected_next_handler": {"$ref": "#/$defs/identifier"},
+        "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+        "controller_approval_required": {"const": false},
+        "same_turn_dispatch": {"const": true},
+        "lane_execution": {"const": "AUTONOMOUS_TYPED_HANDOFF"}
+      }
+    },
+    "expected_dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "handler", "direct_consumer", "same_turn_dispatch", "registered"],
+      "properties": {
+        "action": {"$ref": "#/$defs/identifier"},
+        "handler": {"$ref": "#/$defs/identifier"},
+        "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+        "same_turn_dispatch": {"const": true},
+        "registered": {"const": true}
+      }
+    },
+    "observed_dispatch": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "invocation_ref", "invocation_sha256", "action", "handler", "direct_consumer", "invoked", "same_turn_dispatch", "result_ref", "result_sha256", "readback_ref", "readback_sha256", "readback_status"],
+          "properties": {
+            "status": {"const": "OBSERVED"},
+            "invocation_ref": {"$ref": "#/$defs/reference"},
+            "invocation_sha256": {"$ref": "#/$defs/sha256"},
+            "action": {"$ref": "#/$defs/identifier"},
+            "handler": {"$ref": "#/$defs/identifier"},
+            "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+            "invoked": {"const": true},
+            "same_turn_dispatch": {"const": true},
+            "result_ref": {"$ref": "#/$defs/reference"},
+            "result_sha256": {"$ref": "#/$defs/sha256"},
+            "readback_ref": {"$ref": "#/$defs/reference"},
+            "readback_sha256": {"$ref": "#/$defs/sha256"},
+            "readback_status": {"enum": ["PASS", "DISPATCHED_SAME_TURN"]}
+          }
+        }
+      ]
+    },
+    "retry_checkpoint": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "version", "checkpoint_id", "status", "reason_code", "next_action", "next_handler", "direct_consumer", "controller_approval_required", "lane_execution", "same_turn_dispatch", "persistence", "checkpoint_sha256"],
+          "properties": {
+            "schema": {"const": "agentos.typed_retry_checkpoint.v1"},
+            "version": {"const": 1},
+            "checkpoint_id": {"$ref": "#/$defs/identifier"},
+            "status": {"const": "RETRY_REQUIRED"},
+            "reason_code": {"$ref": "#/$defs/identifier"},
+            "next_action": {"const": "REPAIR_BLOCKS"},
+            "next_handler": {"const": "HANDLER.ORCHESTRATOR_BLOCK_REPAIR"},
+            "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+            "controller_approval_required": {"const": false},
+            "lane_execution": {"const": "AUTONOMOUS_TYPED_HANDOFF"},
+            "same_turn_dispatch": {"const": true},
+            "persistence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["receipt_ref", "receipt_sha256", "atomic", "same_turn", "write_scope"],
+              "properties": {
+                "receipt_ref": {"$ref": "#/$defs/reference"},
+                "receipt_sha256": {"$ref": "#/$defs/sha256"},
+                "atomic": {"const": true},
+                "same_turn": {"const": true},
+                "write_scope": {"const": "CONTROL_PLANE_ONLY"}
+              }
+            },
+            "checkpoint_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      ]
+    },
+    "lane_execution": {"const": "AUTONOMOUS_TYPED_HANDOFF"},
+    "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+    "controller_approval_required": {"const": false},
+    "commentary_only": {"const": false},
+    "authority_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_commit", "authority_tree", "authority_receipt_ref", "authority_receipt_sha256", "source_mapping_sha256"],
+      "properties": {
+        "authority_commit": {"$ref": "#/$defs/gitObject"},
+        "authority_tree": {"$ref": "#/$defs/gitObject"},
+        "authority_receipt_ref": {"$ref": "#/$defs/reference"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "source_mapping_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control_plane_only", "consumer_product_mutated", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "deployment", "publication", "merge", "protected_event_id", "timers", "polling"],
+      "properties": {
+        "control_plane_only": {"const": true},
+        "consumer_product_mutated": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false},
+        "external_sync": {"const": false},
+        "spend": {"const": false},
+        "destructive_work": {"const": false},
+        "deployment": {"const": false},
+        "publication": {"const": false},
+        "merge": {"const": false},
+        "protected_event_id": {"type": "null"},
+        "timers": {"const": 0},
+        "polling": {"const": false}
+      }
+    },
+    "evidence_refs": {"$ref": "#/$defs/evidenceRefs"},
+    "hostile_fixture_refs": {"$ref": "#/$defs/identifierArray"},
+    "status": {"enum": ["PASS", "RETRY_REQUIRED"]},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "identifierArray": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "reference", "sha256"],
+        "properties": {
+          "evidence_id": {"$ref": "#/$defs/identifier"},
+          "reference": {"$ref": "#/$defs/reference"},
+          "sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    }
+  }
+}

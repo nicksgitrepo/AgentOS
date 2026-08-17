@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "2687f9d77dc1896c2b2b0be13c977f76fa7a5507e5d39d1bb610a0ce03f9a2f8"
+      "sha256": "a4fb1f854e4cad0c1dbf0489c3cd6c7ca52c350ebda9a8a7d304324f7616f62e"
     },
     "liveness_digest_gate_controller": {
       "path": "control/liveness-digest-gate.mjs",
@@ -911,6 +911,18 @@
     "liveness_digest_gate_verifier": {
       "path": "tests/verify-liveness-digest-gate.mjs",
       "sha256": "6075bf3e4858c9e3f73ab5a8c1f21f859fdd54ff166a3ea12ba0a85575477538"
+    },
+    "autonomous_dispatch_liveness_gate_controller": {
+      "path": "control/autonomous-dispatch-liveness-gate.mjs",
+      "sha256": "7dd418854ced5556c69290630fcbfeab9771d9f3e9ee27de1467e56f11e04096"
+    },
+    "autonomous_dispatch_liveness_gate_contract": {
+      "path": "schemas/autonomous-dispatch-liveness-gate.v1.json",
+      "sha256": "00d40610258c40e27a81c2c1530b451b883ceaffa7a6bfa8377be4f7064f1fcb"
+    },
+    "autonomous_dispatch_liveness_gate_verifier": {
+      "path": "tests/verify-autonomous-dispatch-liveness-gate.mjs",
+      "sha256": "23d796d3b6106de41b66014fb614c115cfb2ef90ef3a9a756512e007a92eaf5e"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",

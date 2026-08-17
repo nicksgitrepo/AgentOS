@@ -29,6 +29,7 @@ export {compileIndependentClearanceApplicability, validateIndependentClearanceAp
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
 export {dispatchOrchestratorSuccessor, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION} from "./orchestrator-successor-dispatch.mjs";
 export {compileLivenessDigestGate, validateLivenessDigestGate, evaluateLivenessBindingFreshness, LIVENESS_DIGEST_GATE_SCHEMA, LIVENESS_DIGEST_GATE_VERSION, LIVENESS_ROSTER_INVALIDATION_RULE, LIVENESS_ROSTER_REFRESH_TRIGGERS} from "./liveness-digest-gate.mjs";
+export {compileAutonomousDispatchLivenessGate, validateAutonomousDispatchLivenessGate, evaluateAutonomousDispatchLiveness, AUTONOMOUS_DISPATCH_LIVENESS_GATE_SCHEMA, AUTONOMOUS_DISPATCH_LIVENESS_GATE_VERSION, AUTONOMOUS_DISPATCH_RETRY_ACTION, AUTONOMOUS_DISPATCH_RETRY_HANDLER, AUTONOMOUS_DISPATCH_RETRY_ROUTE} from "./autonomous-dispatch-liveness-gate.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
 export {
   compileTaskProfile,
@@ -102,6 +103,7 @@ export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as orchestratorSuccessorDispatch from "./orchestrator-successor-dispatch.mjs";
+export * as autonomousDispatchLivenessGate from "./autonomous-dispatch-liveness-gate.mjs";
 export * as projectImport from "./project-import.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as stopWorkflowGate from "./stop-workflow-gate.mjs";
