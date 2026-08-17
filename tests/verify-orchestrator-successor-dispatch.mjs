@@ -181,9 +181,48 @@ assert.equal(materializationReadback.final_next_action, "PREPARE_CANDIDATE_REVIE
 assert.equal(materializationReadback.scope.control_plane_only, true);
 assert.equal(materializationReadback.scope.consumer_product_mutated, false);
 
+const protectedEvent = {
+  blocker_id: "PROTECTED.RUNTIME.GIT_REPOINT_OR_RELEASE",
+  blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
+  evidence_ceiling: "Only isolated candidate output is proven; runtime Git cutover and release remain unperformed.",
+  restart_event: "CURRENT_TYPED_RUNTIME_CUTOVER_OR_RELEASE_AUTHORIZATION",
+  resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
+};
+const protectedContinuation = compileControllerContinuation("WAIT_FOR_PROTECTED_EVENT", {protectedEventId: protectedEvent.blocker_id});
+const protectedPersisted = [];
+const protectedReadback = dispatchOrchestratorSuccessor({
+  successor: materializationSuccessor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.MATERIALIZE.PROTECTED",
+  handlers: {
+    "HANDLER.ORCHESTRATOR.MATERIALIZE_NEW_PROJECT_REPOSITORIES": (current) => ({
+      semantic_after_sha256: sha(`${current.semantic_after_sha256}:materialized`),
+      next_action: "WAIT_FOR_PROTECTED_EVENT",
+      next_handler: "HANDLER.PROTECTED_EVENT_WAIT",
+      continuation: protectedContinuation,
+      continuation_sha256: canonicalDigest(protectedContinuation),
+      evidence_refs: [evidence("EVIDENCE.MATERIALIZE.PROTECTED.A"), evidence("EVIDENCE.MATERIALIZE.PROTECTED.B")],
+      hostile_fixture_refs: ["FIXTURE.MATERIALIZE.PROTECTED.CUTOVER", "FIXTURE.MATERIALIZE.PROTECTED.ZERO_RESOURCE"],
+      protected_event: protectedEvent,
+      defect: null,
+    }),
+  },
+  persist: (receipt) => {
+    protectedPersisted.push(receipt);
+    return true;
+  },
+});
+validateOrchestratorSuccessorDispatchReadback(protectedReadback);
+assert.equal(protectedReadback.status, "DISPATCHED_TO_PROTECTED_WAIT");
+assert.equal(protectedReadback.final_next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(protectedReadback.continuation.mode, "EVENT_DRIVEN_PROTECTED_WAIT");
+assert.equal(protectedReadback.continuation.same_turn_dispatch, false);
+assert.equal(protectedReadback.continuation.protected_event_id, protectedEvent.blocker_id);
+assert.equal(protectedReadback.scope.protected_event_id, protectedEvent.blocker_id);
+assert.equal(protectedPersisted.length, 1);
+
 const schemaPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/orchestrator-successor-dispatch.v1.json");
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
-assert.equal(schema.properties.status.const, "DISPATCHED_SAME_TURN");
+assert.deepEqual(schema.properties.status.enum, ["DISPATCHED_SAME_TURN", "DISPATCHED_TO_PROTECTED_WAIT"]);
 assert.equal(schema.properties.dispatch_observed.const, true);
 assert.equal(schema.properties.scope.properties.control_plane_only.const, true);
 assert.equal(schema.properties.scope.properties.consumer_product_mutated.const, false);

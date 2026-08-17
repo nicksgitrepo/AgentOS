@@ -14,7 +14,7 @@
     "schema": {"const": "agentos.orchestrator_successor_dispatch.v1"},
     "version": {"const": 1},
     "dispatch_id": {"$ref": "#/$defs/identifier"},
-    "status": {"const": "DISPATCHED_SAME_TURN"},
+    "status": {"enum": ["DISPATCHED_SAME_TURN", "DISPATCHED_TO_PROTECTED_WAIT"]},
     "source_successor_sha256": {"$ref": "#/$defs/sha256"},
     "source_action": {"$ref": "#/$defs/identifier"},
     "source_handler": {"$ref": "#/$defs/identifier"},
@@ -29,11 +29,11 @@
       "additionalProperties": false,
       "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
       "properties": {
-        "mode": {"const": "IMMEDIATE_SAME_TURN"},
+        "mode": {"enum": ["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT"]},
         "timer_deferral": {"const": false},
         "heartbeat_deferral": {"const": false},
-        "same_turn_dispatch": {"const": true},
-        "protected_event_id": {"type": "null"},
+        "same_turn_dispatch": {"type": "boolean"},
+        "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
         "resume_condition": {"type": "string", "minLength": 8}
       }
     },
@@ -49,7 +49,7 @@
         "spend": {"const": false},
         "destructive_work": {"const": false},
         "deployment_publication_merge": {"const": false},
-        "protected_event_id": {"type": "null"}
+        "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}
       }
     },
     "evidence_refs": {"$ref": "#/$defs/evidenceRefs"},
