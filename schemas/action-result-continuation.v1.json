@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/action-result-continuation.v1.json",
+  "title": "AgentOS persisted action-result continuation",
+  "description": "A Controller or Spawner action must persist a typed result and an immediate successor. Planning-only, timer-only, commentary-only, null-result, and DONE/NONE closeouts are invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "action_id", "result_id", "result", "result_sha256", "semantic_before_sha256", "semantic_after_sha256", "next_action", "next_handler", "continuation", "continuation_sha256", "persistence", "evidence_refs", "hostile_fixture_refs", "status", "record_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.action_result_continuation.v1"},
+    "version": {"const": 1},
+    "action_id": {"$ref": "#/$defs/identifier"},
+    "result_id": {"$ref": "#/$defs/identifier"},
+    "result": {"type": "object", "minProperties": 1},
+    "result_sha256": {"$ref": "#/$defs/sha256"},
+    "semantic_before_sha256": {"$ref": "#/$defs/sha256"},
+    "semantic_after_sha256": {"$ref": "#/$defs/sha256"},
+    "next_action": {"$ref": "#/$defs/identifier"},
+    "next_handler": {"$ref": "#/$defs/identifier"},
+    "continuation": {"$ref": "#/$defs/continuation"},
+    "continuation_sha256": {"$ref": "#/$defs/sha256"},
+    "persistence": {"$ref": "#/$defs/persistence"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceRef"}},
+    "hostile_fixture_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "status": {"enum": ["RESULT_PERSISTED", "PROTECTED_WAIT_PERSISTED", "OWNER_REVIEW_PERSISTED"]},
+    "record_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+    "evidenceRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {"evidence_id": {"$ref": "#/$defs/identifier"}, "reference": {"$ref": "#/$defs/reference"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "continuation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
+      "properties": {
+        "mode": {"enum": ["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT", "EXPLICIT_OWNER_REVIEW"]},
+        "timer_deferral": {"const": false},
+        "heartbeat_deferral": {"const": false},
+        "same_turn_dispatch": {"type": "boolean"},
+        "protected_event_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "resume_condition": {"type": "string", "minLength": 8}
+      }
+    },
+    "persistence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "receipt_ref", "receipt_sha256", "atomic", "same_turn", "write_scope"],
+      "properties": {
+        "status": {"enum": ["PERSISTED", "PERSISTED_PROTECTED_WAIT"]},
+        "receipt_ref": {"$ref": "#/$defs/reference"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "atomic": {"const": true},
+        "same_turn": {"const": true},
+        "write_scope": {"const": "CONTROL_PLANE_ONLY"}
+      }
+    }
+  },
+  "state_rules": {
+    "result": "A handler cannot close on reasoning or commentary; a non-empty typed result must be persisted and content-addressed.",
+    "successor": "Every result binds a non-terminal next_action and next_handler; NONE, DONE, null, and timer-only closeouts are rejected.",
+    "continuation": "Local actions dispatch in the same turn; protected waits are event-driven with zero resources and an explicit blocker.",
+    "repair": "Missing result persistence, missing successor, or unchanged semantic state is a typed project-agnostic Spawner defect."
+  }
+}
