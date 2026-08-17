@@ -109,12 +109,27 @@ function validateHostileRefs(refs) {
 
 function validateSuccessor(successor) {
   validateActionResultContinuation(successor);
+  validateAutonomousSuccessorMetadata(successor);
   assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes(successor.next_action), `Orchestrator successor action ${successor.next_action} is not dispatchable`);
   assert(successor.next_handler === controllerActionHandlerFor(successor.next_action), "Orchestrator successor handler is stale");
   assert(successor.continuation.mode === "IMMEDIATE_SAME_TURN" && successor.continuation.same_turn_dispatch === true, "Orchestrator successor must require same-turn dispatch");
   assert(successor.continuation.timer_deferral === false && successor.continuation.heartbeat_deferral === false, "Orchestrator successor cannot defer to a timer or heartbeat");
   assert(successor.continuation.protected_event_id === null, "Orchestrator local successor cannot carry a protected event");
   assert(successor.persistence.write_scope === "CONTROL_PLANE_ONLY", "Orchestrator dispatch may only persist control-plane state");
+  return successor;
+}
+
+/*
+ * The Orchestrator may route a lane, but it may not become the lane owner or
+ * an approval queue.  Keep this binding on the executable dispatch boundary
+ * (not only on an optional wrapper) so hand-written receipts cannot bypass
+ * the autonomous custody contract.
+ */
+export function validateAutonomousSuccessorMetadata(successor) {
+  assert(isRecord(successor.result), "Orchestrator successor result is required for autonomous custody");
+  assert(successor.result.controller_approval_required === false, "Orchestrator successor cannot require Controller approval");
+  assert(successor.result.execution_owner === "LANE_AGENT", "Orchestrator successor must remain lane-owned");
+  assert(successor.result.direct_consumer === "INDEPENDENT_PLATFORM_REVIEW", "Orchestrator successor must route to independent platform review");
   return successor;
 }
 

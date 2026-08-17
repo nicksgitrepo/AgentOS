@@ -35,6 +35,9 @@ const baseResult = {
   candidate_after_sha256: sha("after"),
   product_mutation: false,
   source_roots_preserved: true,
+  execution_owner: "LANE_AGENT",
+  direct_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+  controller_approval_required: false,
 };
 
 const successor = compileCandidateStageContinuation({
@@ -119,7 +122,7 @@ assert.equal(readback.scope.consumer_product_mutated, false);
 const retrySuccessor = compileActionResultContinuation({
   actionId: "RUN_LOCAL_CANDIDATE_PROOF",
   resultId: "RESULT.ORCHESTRATOR.SPAWNER.RETRY.SOURCE",
-  result: {status: "RETRY_REQUIRED", controller_approval_required: false},
+  result: {status: "RETRY_REQUIRED", controller_approval_required: false, execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW"},
   semanticBeforeSha256: sha("retry-before"),
   semanticAfterSha256: sha("retry-after"),
   nextAction: "RETRY_SPAWNER_QA",
@@ -153,6 +156,24 @@ const rejects = (mutator, pattern) => {
 rejects((candidate) => { candidate.continuation.same_turn_dispatch = false; }, /same-turn|digest/u);
 rejects((candidate) => { candidate.next_action = "WAIT_FOR_PROTECTED_EVENT"; }, /dispatchable|handler|digest/u);
 rejects((candidate) => { candidate.persistence.write_scope = "PRODUCT"; }, /control-plane|write scope|persistence|digest/u);
+const missingCustody = compileCandidateStageContinuation({
+  actionId: "PREPARE_CANDIDATE_REVIEW",
+  resultId: "RESULT.ORCHESTRATOR.DISPATCH.MISSING.CUSTODY",
+  result: {...baseResult, direct_consumer: undefined},
+  semanticBeforeSha256: sha("missing-custody-before"),
+  semanticAfterSha256: sha("missing-custody-after"),
+  nextAction: "START_CENTRAL_INTEGRATION",
+  evidenceRefs: [evidence("EVIDENCE.MISSING.CUSTODY")],
+  hostileFixtureRefs: ["FIXTURE.DISPATCH.MISSING.CUSTODY"],
+  receiptRef: "ref:control-plane/orchestrator/missing-custody",
+  receiptSha256: sha("missing-custody-receipt"),
+});
+assert.throws(() => dispatchOrchestratorSuccessor({
+  successor: missingCustody,
+  dispatchId: "DISPATCH.ORCHESTRATOR.MISSING.CUSTODY",
+  handlers,
+  persist: () => true,
+}), /independent platform review/u);
 assert.throws(() => dispatchOrchestratorSuccessor({
   successor,
   dispatchId: "DISPATCH.ORCHESTRATOR.MAX_TRANSITIONS_ONE",
@@ -203,6 +224,9 @@ const materializationSuccessor = compileActionResultContinuation({
     candidate_after_sha256: sha("candidate"),
     product_mutation: false,
     source_roots_preserved: true,
+    execution_owner: "LANE_AGENT",
+    direct_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+    controller_approval_required: false,
   },
   semanticBeforeSha256: sha("prepare-before"),
   semanticAfterSha256: sha("prepare-after"),
