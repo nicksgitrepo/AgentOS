@@ -898,7 +898,19 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "d0d967ec3d65e8a4b085d2b043b42fd20239a93557256c021d06e3fc9c9a76e0"
+      "sha256": "66b4e71be6aa138a85b0950447646a2c7ebb1b8a5f90ecad456206805b9619bf"
+    },
+    "harness_collision_gate_controller": {
+      "path": "control/harness-collision-gate.mjs",
+      "sha256": "bbbbc0a6337c6f37bd01c42115325de1e4872280151021ca717bd81637191a5d"
+    },
+    "harness_collision_gate_contract": {
+      "path": "schemas/harness-collision-gate.v1.json",
+      "sha256": "b0160b61657ec32da25246c220d84bdc8df12925ef706bf81d40d267cf380fda"
+    },
+    "harness_collision_gate_verifier": {
+      "path": "tests/verify-harness-collision-gate.mjs",
+      "sha256": "2eb11c054359c39315209cb50afd0d0acde373aecab7400487e838d66bff5d51"
     },
     "orchestrator_successor_dispatch_controller": {
       "path": "control/orchestrator-successor-dispatch.mjs",
