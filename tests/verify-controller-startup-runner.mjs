@@ -119,6 +119,14 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/controller-startup
 assert.equal(schema.properties.schema.const, CONTROLLER_STARTUP_RUNNER_SCHEMA);
 assert.deepEqual(schema.properties.status.enum, ["ROUTED_SAME_TURN", "PROTECTED_EVENT_WAIT", "OWNER_REVIEW_REQUIRED"]);
 assert.equal(schema.required.includes("next_lifecycle"), true);
+const startupSequenceSchema = JSON.parse(fs.readFileSync(new URL("../schemas/controller-startup-sequence.v1.json", import.meta.url), "utf8"));
+assert.equal(startupSequenceSchema.allOf.length, 10, "startup sequence schema must encode every ordered stage successor");
+const bootstrapRule = startupSequenceSchema.allOf.find((rule) => rule.if?.properties?.stage?.const === "SEALED_BOOTSTRAP_ACCEPTED");
+const spawnerRule = startupSequenceSchema.allOf.find((rule) => rule.if?.properties?.stage?.const === "SPAWNER_ADMITTED");
+const orchestratorRule = startupSequenceSchema.allOf.find((rule) => rule.if?.properties?.stage?.const === "IMPORT_ORCHESTRATOR_ACTIVE");
+assert.equal(bootstrapRule?.then?.properties?.next_action?.const, "ADMIT_TYPED_AGENT_SPAWNER", "bootstrap must route directly to Spawner admission");
+assert.equal(spawnerRule?.then?.properties?.next_action?.const, "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME", "Spawner admission must route to permanent-role construction");
+assert.equal(orchestratorRule?.then?.properties?.next_action?.const, "REQUEST_SPAWNER_QA", "active import Orchestrator must remain in the typed QA loop");
 assert.equal(compileControllerStartupRunReadback({sequence, initialReceipt: run.initial_receipt, result: run}).runner_sha256, readbacks[0].runner_sha256);
 
 console.log("PASS Controller startup runner: durable initial cursor, same-turn Bootstrap→Spawner→roles→Orchestrator dispatch, typed protected boundary, and non-null readback");
