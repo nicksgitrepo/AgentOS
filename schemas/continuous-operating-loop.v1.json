@@ -31,7 +31,9 @@
     "heartbeat_is_not_meaningful_progress": true,
     "failure_list_is_not_meaningful_progress": true,
     "plan_is_not_meaningful_progress": true,
-    "timer_rule": "At each expiry the Intent Regulator inspects every active worker's scope, exact source identity, evidence, handoff, and progress signal. Runtime and Intent Regulator are inspected but never cycled."
+    "timer_rule": "At each expiry the Intent Regulator inspects every active worker's scope, exact source identity, evidence, handoff, and progress signal. Runtime and Intent Regulator are inspected but never cycled.",
+    "same_turn_repair_resolution": "The runner may resolve a repair-required observation in the same turn through a typed resolver that supplies the predecessor, repair, replacement, and independent-clearance evidence; it must never silently wait for cadence.",
+    "same_turn_bound_failure": "If repeated replacements exhaust the same-turn bound, emit a typed AGENTOS_CONTINUOUS_LOOP_REPLACEMENT_BOUND_EXHAUSTED event or throw that exact failure; never return a silent closeout."
   },
   "worker_naming": {
     "format": "<clear role or lane> v<version>-tb-<two-digit test build>",

@@ -558,15 +558,15 @@
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
-      "sha256": "569f348de78abf3ecb24037899aa9561e23578ec8600b87611e77a5190f1685e"
+      "sha256": "3246895c6debee14983e6bd83926ef950e201417a6c0fe5fd8198ce095efdada"
     },
     "continuous_operating_loop_contract": {
       "path": "schemas/continuous-operating-loop.v1.json",
-      "sha256": "7f2ce3c3e14fb4a8d226ae58dfed4be45eb4ae12a951459692b1cf9509ce0f82"
+      "sha256": "799dc4b6314188e1870c2a9a3cde93a3d367168cd2618f7b7297e78c702619b6"
     },
     "continuous_operating_loop_verifier": {
       "path": "tests/verify-continuous-operating-loop.mjs",
-      "sha256": "9f3ef1ed9bd2a0a8c1f1251456f606c4574daaac6c07896ebe2b8f16cbed3788"
+      "sha256": "663b2bbd98cc9cbf98b02bc3c018deb1f9ed38feb6762d68ac4c23eb2d1587c1"
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
@@ -842,7 +842,7 @@
     },
     "intent_regulator_runtime_controller": {
       "path": "control/intent-regulator-runtime.mjs",
-      "sha256": "ab0cde4cf5d23b4949bb2f4bfb8dfe2cec6bb6b7d7914238cb048c1aacfd3bfc"
+      "sha256": "756323c8555f3e69e5689c217ab7b92bc6642429df89e5961c38b60817dede90"
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",

@@ -416,6 +416,50 @@ clearTimeout(repairRequiredTimer);
 assert.equal(repairRequiredObservations, 1, "repair-required monitoring must return immediately instead of waiting for cadence");
 assert.equal(repairRequiredRun.length, 1, "repair-required monitoring must expose one routed result");
 assert.equal(repairRequiredRun[0].status, "REPAIR_REQUIRED");
+
+// The runner must be able to receive a typed repair/replacement resolution in
+// the same turn.  When the bounded replacement chain is exhausted it must
+// emit an explicit failure event rather than silently ending the workflow.
+let resolvedReplacementCalls = 0;
+const sameTurnBoundEvents = [];
+const resolvedReplacementRun = await runContinuousOperatingLoop({
+  intervalMs: 60_000,
+  maxSameTurnReplacements: 2,
+  observe: () => ({loop, workers: roster(), observedAtUtc: NOW}),
+  resolveIteration: () => {
+    resolvedReplacementCalls += 1;
+    const sessionId = `SESSION-SECURITY-SAME-TURN-${String(resolvedReplacementCalls).padStart(2, "0")}`;
+    return {
+      predecessor,
+      repair: appliedPatch,
+      createReplacement: ({goal}) => compileReplacementReceipt({
+        sessionId,
+        predecessor,
+        goal,
+        hostReceipts: hostReceiptsFor(sessionId),
+        typedHandoffSha256: "1".repeat(64),
+        model: "ADMITTED-MODEL",
+        reasoningEffort: "max",
+      }),
+      independentClearance: {
+        status: "PASS",
+        independent: true,
+        auditor_id: loop.auditor_id,
+        source_commit: NEXT_COMMIT,
+        source_tree: NEXT_TREE,
+        handoff_sha256: "2".repeat(64),
+        receipt_sha256: "3".repeat(64),
+      },
+    };
+  },
+  onSameTurnBoundExhausted: (event) => sameTurnBoundEvents.push(event),
+});
+assert.equal(resolvedReplacementCalls, 2, "typed resolver must run immediately for each replacement");
+assert.equal(resolvedReplacementRun.length, 2, "same-turn replacements must be durable before the bound event");
+assert.equal(resolvedReplacementRun.every((result) => result.status === "REPLACED_AND_CLEARED"), true);
+assert.equal(sameTurnBoundEvents.length, 1, "replacement bound exhaustion must be explicit");
+assert.equal(sameTurnBoundEvents[0].code, "AGENTOS_CONTINUOUS_LOOP_REPLACEMENT_BOUND_EXHAUSTED");
+assert.equal(sameTurnBoundEvents[0].replacement_count, 2);
 await assert.rejects(
   () => runContinuousOperatingLoop({
     once: true,

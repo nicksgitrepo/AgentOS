@@ -242,12 +242,14 @@ export function createIntentRegulatorRuntime({
     }
   };
 
-  const monitor = async ({observe, onIteration = null, signal = null, once = false, intervalMinutes = configuration.review_interval_minutes, intervalMs = null} = {}) => {
+  const monitor = async ({observe, onIteration = null, resolveIteration = null, onSameTurnBoundExhausted = null, signal = null, once = false, intervalMinutes = configuration.review_interval_minutes, intervalMs = null} = {}) => {
     assert(typeof observe === "function", "Intent Regulator monitor requires a typed observation callback");
     requireInterval(intervalMinutes);
     lastMonitor = await runContinuousOperatingLoop({
       observe,
       onIteration,
+      resolveIteration,
+      onSameTurnBoundExhausted,
       signal,
       once,
       intervalMinutes,

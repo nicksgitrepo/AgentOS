@@ -1151,6 +1151,8 @@ function sleep(milliseconds, signal = null) {
 export async function runContinuousOperatingLoop({
   observe,
   onIteration = null,
+  resolveIteration = null,
+  onSameTurnBoundExhausted = null,
   intervalMinutes = DEFAULT_MEANINGFUL_PROGRESS_WINDOW_MINUTES,
   intervalMs = null,
   maxSameTurnReplacements = DEFAULT_MAX_SAME_TURN_REPLACEMENTS,
@@ -1159,6 +1161,8 @@ export async function runContinuousOperatingLoop({
 }) {
   assert(typeof observe === "function", "continuous loop observe function is required");
   assert(onIteration === null || typeof onIteration === "function", "continuous loop iteration callback is invalid");
+  assert(resolveIteration === null || typeof resolveIteration === "function", "continuous loop iteration resolver is invalid");
+  assert(onSameTurnBoundExhausted === null || typeof onSameTurnBoundExhausted === "function", "continuous loop bound callback is invalid");
   assert(Number.isSafeInteger(intervalMinutes) && intervalMinutes >= 1 && intervalMinutes <= 24 * 60, "continuous loop interval minutes are invalid");
   const resolvedIntervalMs = intervalMs === null ? intervalMinutes * 60_000 : intervalMs;
   assert(Number.isSafeInteger(resolvedIntervalMs) && resolvedIntervalMs >= 250 && resolvedIntervalMs <= 24 * 60 * 60_000, "continuous loop interval is invalid");
@@ -1169,7 +1173,14 @@ export async function runContinuousOperatingLoop({
     if (signal?.aborted === true) break;
     const observation = await observe();
     requireRecord(observation, "continuous loop observation");
-    const result = runContinuousOperatingLoopIteration(observation);
+    const resolvedOptions = resolveIteration === null
+      ? {}
+      : await resolveIteration({observation: structuredClone(observation), previous_result: results.at(-1) ?? null});
+    if (resolvedOptions !== null) requireRecord(resolvedOptions, "continuous loop resolved iteration options");
+    const result = runContinuousOperatingLoopIteration({
+      ...observation,
+      ...(resolvedOptions ?? {}),
+    });
     results.push(result);
     if (onIteration !== null) await onIteration(result);
     if (once || signal?.aborted === true) break;
@@ -1180,7 +1191,22 @@ export async function runContinuousOperatingLoop({
     // malformed adapter that keeps returning the same replacement.
     if (result.status === "REPLACED_AND_CLEARED") {
       sameTurnReplacements += 1;
-      if (sameTurnReplacements >= maxSameTurnReplacements) break;
+      if (sameTurnReplacements >= maxSameTurnReplacements) {
+        const boundFailure = new Error("CONTINUOUS_LOOP_SAME_TURN_REPLACEMENT_BOUND_EXHAUSTED");
+        boundFailure.code = "AGENTOS_CONTINUOUS_LOOP_REPLACEMENT_BOUND_EXHAUSTED";
+        const event = {
+          code: boundFailure.code,
+          error: boundFailure.message,
+          replacement_count: sameTurnReplacements,
+          max_same_turn_replacements: maxSameTurnReplacements,
+          last_result: structuredClone(result),
+        };
+        if (onSameTurnBoundExhausted !== null) {
+          await onSameTurnBoundExhausted(event);
+          break;
+        }
+        throw boundFailure;
+      }
       continue;
     }
     if (result.continuation_allowed !== true) break;
