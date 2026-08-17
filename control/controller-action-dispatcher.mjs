@@ -398,13 +398,43 @@ function successorRoute(nextAction, {protectedEvent = null, defect = null} = {})
 }
 
 export function deriveControllerSuccessor({localActions = [], protectedEvent = null, protectedActionId = "WAIT_FOR_PROTECTED_EVENT", ownerReview = false, defectId = "DEFECT.CONTROLLER.WORKFLOW.DEAD_END", evidenceRefs = [{evidence_id: "EVIDENCE.CONTROLLER.WORKFLOW.DEAD_END", reference: "opaque:controller-workflow-dead-end", sha256: canonicalDigest({evidence: "controller-workflow-dead-end"})}]} = {}) {
+  assert(Array.isArray(localActions), "Controller local successor actions are required");
+  const hasLocalSuccessor = localActions.length > 0;
+  // A stale protected event or owner-review flag must never silently mask an
+  // ordinary eligible action.  Such an ambiguous route is a typed defect so
+  // the Controller/Spawner can repair the decision tree in the same turn.
+  if (protectedEvent !== null && (hasLocalSuccessor || ownerReview)) {
+    const defect = compileControllerActionDefect({
+      defectId: "DEFECT.CONTROLLER.SUCCESSOR.AMBIGUOUS_PROTECTED_ROUTE",
+      defectClass: "INVALID_SUCCESSOR",
+      evidenceRefs: [{
+        evidence_id: "EVIDENCE.CONTROLLER.SUCCESSOR.AMBIGUOUS_PROTECTED_ROUTE",
+        reference: "opaque:controller-successor-ambiguous-protected-route",
+        sha256: canonicalDigest({protected_event: protectedEvent, local_actions: localActions, owner_review: ownerReview}),
+      }],
+      stopCondition: "Reject a protected route that masks an eligible local successor or owner review; compile and dispatch a corrected route.",
+    });
+    throw new ControllerActionDefect(defect, "Protected Controller route conflicts with an eligible local successor or owner review");
+  }
+  if (ownerReview && hasLocalSuccessor) {
+    const defect = compileControllerActionDefect({
+      defectId: "DEFECT.CONTROLLER.SUCCESSOR.AMBIGUOUS_OWNER_ROUTE",
+      defectClass: "INVALID_SUCCESSOR",
+      evidenceRefs: [{
+        evidence_id: "EVIDENCE.CONTROLLER.SUCCESSOR.AMBIGUOUS_OWNER_ROUTE",
+        reference: "opaque:controller-successor-ambiguous-owner-route",
+        sha256: canonicalDigest({local_actions: localActions, owner_review: ownerReview}),
+      }],
+      stopCondition: "Reject owner review that masks an eligible local successor; dispatch the local successor or a typed protected route.",
+    });
+    throw new ControllerActionDefect(defect, "Owner review conflicts with an eligible local successor");
+  }
   if (protectedEvent !== null) {
     validateProtectedEvent(protectedEvent);
     assert(CONTROLLER_ACTION_REGISTRY[protectedActionId]?.mode === "PROTECTED_WAIT", "Controller protected successor action is invalid");
     return successorRoute(protectedActionId, {protectedEvent});
   }
   if (ownerReview) return successorRoute("OWNER_REVIEW");
-  assert(Array.isArray(localActions), "Controller local successor actions are required");
   if (localActions.length > 0) {
     const nextAction = localActions[0];
     if (nextAction === "SELF_REPAIR_WORKFLOW_DEAD_END") {

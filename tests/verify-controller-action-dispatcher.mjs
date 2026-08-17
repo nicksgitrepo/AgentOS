@@ -244,4 +244,16 @@ assert.equal(deadWatchdog.next_action, "SELF_REPAIR_WORKFLOW_DEAD_END");
 assert.notEqual(deadWatchdog.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(deadWatchdog.continuation.same_turn_dispatch, true);
 
+// A stale protected event must not mask ordinary work.  The route compiler
+// rejects this as a typed successor defect so Spawner/Controller repair it
+// rather than parking the campaign behind a false wait.
+assert.throws(
+  () => deriveControllerSuccessor({localActions: ["START_SPECIALIST_WAVE"], protectedEvent}),
+  (error) => error instanceof ControllerActionDefect && error.code === "INVALID_SUCCESSOR" && /conflicts/u.test(error.message),
+);
+assert.throws(
+  () => deriveControllerSuccessor({localActions: ["START_SPECIALIST_WAVE"], ownerReview: true}),
+  (error) => error instanceof ControllerActionDefect && error.code === "INVALID_SUCCESSOR" && /conflicts/u.test(error.message),
+);
+
 console.log("PASS Controller successor dispatcher: closed registry coverage, same-turn local chaining, protected wait narrowing, self-repair dead ends, and typed defect routing");
