@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/candidate-reaudit-continuation.v1.json",
+  "title": "AgentOS candidate re-audit continuation",
+  "description": "An accepted independent candidate re-audit must immediately emit an ordinary local successor; a proof file alone is not a workflow transition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "candidate_sha256", "evidence_sha256", "residual_risk_sha256", "accepted", "reaudit_sha256", "successor"],
+  "properties": {
+    "schema": {"type": "string", "pattern": "^agentos\\."},
+    "version": {"const": 1},
+    "candidate_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_sha256": {"$ref": "#/$defs/sha256"},
+    "residual_risk_sha256": {"$ref": "#/$defs/sha256"},
+    "accepted": {"const": true},
+    "reaudit_sha256": {"$ref": "#/$defs/sha256"},
+    "successor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["next_action", "next_handler", "mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch"],
+      "properties": {
+        "next_action": {"enum": ["START_PLATFORM_REVIEW", "PREPARE_PYRAMID_IMPORT_OUTPUT"]},
+        "next_handler": {"type": "string", "pattern": "^HANDLER\\.ORCHESTRATOR\\."},
+        "mode": {"const": "IMMEDIATE_SAME_TURN"},
+        "timer_deferral": {"const": false},
+        "heartbeat_deferral": {"const": false},
+        "same_turn_dispatch": {"const": true}
+      }
+    }
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+  "state_rules": {
+    "accepted_reaudit": "accepted=true and all evidence digests are required before a successor is compiled.",
+    "successor": "The only successors are ordinary local platform/output routes; protected waits, NONE, DONE, and timer-only closeouts are invalid.",
+    "liveness": "The successor is persisted atomically and dispatched in the same lifecycle turn."
+  }
+}

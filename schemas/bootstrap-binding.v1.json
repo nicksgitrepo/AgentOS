@@ -596,6 +596,18 @@
       "path": "tests/verify-pyramid-campaign-governance.mjs",
       "sha256": "bbb9747330e7747c3019c00732771b827d49af2dfde1f2e07ae30c9b66a20727"
     },
+    "candidate_reaudit_continuation_controller": {
+      "path": "control/candidate-reaudit-continuation.mjs",
+      "sha256": "0f857cf7dbcedfe16149a61493534c0e41a2846f7535df4fb7155e02df001645"
+    },
+    "candidate_reaudit_continuation_contract": {
+      "path": "schemas/candidate-reaudit-continuation.v1.json",
+      "sha256": "65ab71c2815086e461187d9196f8eaeecdd35ac1fe2272280564e13c095579ef"
+    },
+    "candidate_reaudit_continuation_verifier": {
+      "path": "tests/verify-candidate-reaudit-continuation.mjs",
+      "sha256": "38afc4f20dbfa750429d90b3acac32b7543acb52c3dfe6793476850d883d01e1"
+    },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
       "sha256": "6ce7319103aacb87384b37eda1906edba69eecc0fbb243ee637f1803d38cba07"
