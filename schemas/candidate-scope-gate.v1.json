@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/candidate-scope-gate.v1.json",
+  "title": "AgentOS isolated-candidate versus final-cutover scope gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "mode", "action_ref", "rollback_ref", "candidate_scope_ref", "final_cutover_scope_ref", "stop_decision", "successor", "hostile_fixture_refs", "invalidation_rule", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.candidate_scope_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "mode": {"enum": ["ISOLATED_CANDIDATE_CUSTODY", "FINAL_RUNTIME_GIT_REPOINT_OR_RELEASE"]},
+    "action_ref": {"$ref": "stop-workflow-gate.v1.json#/$defs/reference"},
+    "rollback_ref": {"$ref": "stop-workflow-gate.v1.json#/$defs/reference"},
+    "candidate_scope_ref": {"$ref": "stop-workflow-gate.v1.json#/$defs/reference"},
+    "final_cutover_scope_ref": {"$ref": "stop-workflow-gate.v1.json#/$defs/reference"},
+    "stop_decision": {"$ref": "stop-workflow-gate.v1.json"},
+    "successor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "next_action", "stop"],
+      "properties": {
+        "route": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+        "next_action": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+        "stop": {"type": "boolean"}
+      }
+    },
+    "hostile_fixture_refs": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"}},
+    "invalidation_rule": {"const": "Any governing block, gate, source, applicability, or authority change invalidates dependent seeds and rebuilds them before reuse."},
+    "gate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "decision_rules": [
+    "ISOLATED_CANDIDATE_CUSTODY answers all five stop questions NO and routes CONTINUE_NEXT_ACTION.",
+    "FINAL_RUNTIME_GIT_REPOINT_OR_RELEASE answers CHANGES_PROTECTED_PROJECT_OR_SCOPE YES and routes STOP_DEPENDENT_WORK_OWNER_REVIEW.",
+    "Scope mismatch is invalid and requires dependent roster invalidation and rebuild before reuse.",
+    "A timer, heartbeat, commentary, or absent worker is never a valid stop reason."
+  ]
+}

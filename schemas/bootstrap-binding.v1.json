@@ -724,6 +724,18 @@
       "path": "tests/verify-stop-workflow-gate.mjs",
       "sha256": "f442ce448fb3eebedbf9efd547cb7be10f4834ad1ec245594cd53c1024ecaa9a"
     },
+    "candidate_scope_gate_controller": {
+      "path": "control/candidate-scope-gate.mjs",
+      "sha256": "98f150e552bf2ccfd660422643479cab086704fb010ff253693c58e3593b0932"
+    },
+    "candidate_scope_gate_contract": {
+      "path": "schemas/candidate-scope-gate.v1.json",
+      "sha256": "d50cde33977035d51c2dafc9290a4663880f2c66532312d39eaabbe277f39a75"
+    },
+    "candidate_scope_gate_verifier": {
+      "path": "tests/verify-candidate-scope-gate.mjs",
+      "sha256": "5bad913bdd3e1eadaa3385023619fb36795ee644fb23a1875594189e8b1b01bb"
+    },
     "controller_intent_hardening_verifier": {
       "path": "tests/verify-controller-intent-hardening.mjs",
       "sha256": "a728d39237f39fa5b21ddfae604362f446875e369e003bfc8477304a9dbf3819"
@@ -870,7 +882,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "3584f1c11f61408c94ea276bd5f5f97c5d4d2c638ce4d921c6d6be783f3b7022"
+      "sha256": "98bbcbb14ec1f922923f4414669a93cf6e3e69f56e51d7520541e3cb673331d0"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
