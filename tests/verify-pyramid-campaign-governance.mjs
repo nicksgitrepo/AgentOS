@@ -16,6 +16,7 @@ import {
 } from "../control/pyramid-campaign-governance.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {controllerActionHandlerFor} from "../control/controller-action-dispatcher.mjs";
+import {compilePyramidImportOutput} from "../control/project-import.mjs";
 
 const HASH = (value) => canonicalDigest({value});
 const context = compilePyramidCampaignContext({
@@ -241,7 +242,51 @@ const independentReaudit = {
   reaudit_sha256: null,
 };
 independentReaudit.reaudit_sha256 = canonicalDigest({...independentReaudit, reaudit_sha256: null});
-const protectedWait = advancePyramidCampaign(reauditPending, {roster, event: "INDEPENDENT_REAUDIT_COMPLETED", independentReaudit});
+const importOutputPending = advancePyramidCampaign(reauditPending, {roster, event: "INDEPENDENT_REAUDIT_COMPLETED", independentReaudit});
+assert.equal(importOutputPending.status, "IMPORT_OUTPUT_PENDING");
+assert.equal(importOutputPending.next_action, "PREPARE_PYRAMID_IMPORT_OUTPUT");
+assert.equal(importOutputPending.next_handler, "HANDLER.ORCHESTRATOR.PREPARE_PYRAMID_IMPORT_OUTPUT");
+assert.equal(importOutputPending.protected_event, null);
+
+const pyramidImportOutput = compilePyramidImportOutput({
+  projectId: "SYNTHETIC_PROJECT",
+  sourceIdentity: {
+    source_root_ref: "opaque:source/synthetic",
+    source_commit: "1".repeat(40),
+    source_tree: "2".repeat(40),
+    source_content_sha256: HASH("source-content"),
+    source_observation_sha256: HASH("source-observation"),
+  },
+  preservationRef: "opaque:legacy/synthetic",
+  preservationReceiptSha256: HASH("legacy-preservation"),
+  candidateRepositories: [{
+    repository_id: "synthetic-candidate",
+    repository_ref: "opaque:candidate/synthetic",
+    branch_ref: "candidate/synthetic",
+    commit: "3".repeat(40),
+    tree: "4".repeat(40),
+    candidate_sha256: HASH("candidate-repository"),
+    source_content_sha256: HASH("source-content"),
+    source_observation_sha256: HASH("source-observation"),
+    pyramid_candidate_sha256: importOutputPending.candidate.candidate_sha256,
+    rollback_ref: "opaque:rollback/synthetic",
+    clean: true,
+    status: "INDEPENDENT_REAUDITED_CANDIDATE",
+  }],
+  pyramid: {
+    specialist_audit_repair_sha256: HASH("specialist-audit"),
+    platform_review_sha256: HASH("platform-review"),
+    central_integration_sha256: isolatedAssembly.assembly_sha256,
+    independent_reaudit_sha256: independentReaudit.reaudit_sha256,
+    audit_repair_complete: true,
+    platform_review_complete: true,
+    central_integration_complete: true,
+    independent_reaudit_complete: true,
+    wave_count: 2,
+  },
+  rollbackRef: "opaque:rollback/synthetic",
+});
+const protectedWait = advancePyramidCampaign(importOutputPending, {roster, event: "PYRAMID_IMPORT_OUTPUT_READY", pyramidImportOutput});
 assert.equal(protectedWait.status, "PROTECTED_WAIT");
 assert.equal(protectedWait.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
@@ -255,12 +300,18 @@ assert.equal(protectedWait.stop_workflow_decision.stop, true);
 assert.equal(protectedWait.stop_workflow_decision.rollback_ref, protectedWait.candidate.rollback_ref);
 assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolatedAssembly.assembly_sha256);
 assert.equal(protectedWait.independent_reaudit.reaudit_sha256, independentReaudit.reaudit_sha256);
+assert.equal(protectedWait.pyramid_import_output.output_sha256, pyramidImportOutput.output_sha256);
 validatePyramidCampaignState(protectedWait, {roster});
 
 assert.throws(
   () => advancePyramidCampaign(assemblyPending, {roster, event: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", assembly: {...isolatedAssembly, base_candidate_sha256: HASH("stale-base"), assembly_sha256: canonicalDigest({...isolatedAssembly, base_candidate_sha256: HASH("stale-base"), assembly_sha256: null})}}),
   /baseline is stale|candidate digest mismatch/u,
   "isolated assembly must bind the exact cumulative candidate baseline",
+);
+assert.throws(
+  () => advancePyramidCampaign(importOutputPending, {roster, event: "PYRAMID_IMPORT_OUTPUT_READY", pyramidImportOutput: {...pyramidImportOutput, pyramid: {...pyramidImportOutput.pyramid, independent_reaudit_sha256: HASH("stale-reaudit")}, output_sha256: HASH("tampered")}}),
+  /digest mismatch|re-audit evidence is stale/u,
+  "pyramid import output must bind the exact independent re-audit",
 );
 assert.throws(
   () => compilePyramidIsolatedCandidateAssembly({candidate: assemblyPending.candidate, proofRefs: isolatedAssembly.proof_refs, custody: {...assemblyCustody(), product_mutation: true}}),
@@ -317,7 +368,7 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "stop_workflow_decision", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");

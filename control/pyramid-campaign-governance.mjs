@@ -25,6 +25,7 @@ import {
   evaluateStopWorkflowGate,
   validateStopWorkflowDecision,
 } from "./stop-workflow-gate.mjs";
+import {validatePyramidImportOutput} from "./project-import.mjs";
 
 export const PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA = "agentos.pyramid_campaign_governance.v1";
 export const PYRAMID_CAMPAIGN_GOVERNANCE_VERSION = 1;
@@ -36,6 +37,7 @@ export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "PREPARE_CANDIDATE_REVIEW",
   "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE",
   "START_INDEPENDENT_REAUDIT",
+  "PREPARE_PYRAMID_IMPORT_OUTPUT",
   "WAIT_FOR_PROTECTED_EVENT",
 ]);
 export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
@@ -44,6 +46,7 @@ export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
   "FINAL_REVIEW_PENDING",
   "CANDIDATE_ASSEMBLY_PENDING",
   "INDEPENDENT_REAUDIT_PENDING",
+  "IMPORT_OUTPUT_PENDING",
   "PROTECTED_WAIT",
 ]);
 
@@ -110,7 +113,7 @@ const STATE_KEYS = Object.freeze([
   "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index",
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
   "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
-  "protected_event", "stop_workflow_decision", "state_sha256",
+  "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
 ]);
 
 function assert(condition, message, code = "PYRAMID_CAMPAIGN_INVALID") {
@@ -601,6 +604,13 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.isolated_candidate_assembly.rollback_ref === state.candidate.rollback_ref, "pyramid isolated candidate rollback binding is stale");
   }
   validateIndependentReaudit(state.independent_reaudit, state.candidate.candidate_sha256);
+  if (state.pyramid_import_output !== null) {
+    validatePyramidImportOutput(state.pyramid_import_output);
+    assert(state.pyramid_import_output.status === "READY_FOR_GIT_REPOINT", "pyramid import output must remain a prepared cutover candidate");
+    assert(state.independent_reaudit?.accepted === true, "pyramid import output lacks an accepted independent re-audit");
+    assert(state.pyramid_import_output.pyramid.independent_reaudit_sha256 === state.independent_reaudit.reaudit_sha256, "pyramid import output independent re-audit binding is stale");
+    assert(state.pyramid_import_output.legacy.untouched === true && state.pyramid_import_output.legacy.read_only === true, "pyramid import output legacy source is not preserved");
+  }
   assert(Array.isArray(state.platform_review_batch), "pyramid platform review batch is required");
   state.platform_review_batch.forEach((handoff) => validatePyramidSpecialistHandoff(handoff));
   sortedUnique(state.platform_review_batch.map((handoff) => handoff.lane_id), "pyramid platform review batch lanes");
@@ -632,6 +642,14 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.next_action === "START_INDEPENDENT_REAUDIT", "pyramid independent re-audit successor is not ready");
     assert(state.final_review?.accepted === true && state.isolated_candidate_assembly !== null, "pyramid independent re-audit lacks assembled candidate");
     assert(state.independent_reaudit === null, "pyramid independent re-audit is already recorded");
+  }
+  if (state.status === "IMPORT_OUTPUT_PENDING") {
+    assert(state.next_action === "PREPARE_PYRAMID_IMPORT_OUTPUT", "pyramid import-output successor is not ready");
+    assert(state.independent_reaudit?.accepted === true && state.isolated_candidate_assembly !== null, "pyramid import-output preparation lacks an accepted candidate");
+    assert(state.pyramid_import_output === null, "pyramid import output is already recorded");
+  }
+  if (state.status !== "IMPORT_OUTPUT_PENDING" && state.pyramid_import_output !== null) {
+    assert(state.status === "PROTECTED_WAIT", "pyramid import output advanced without the protected cutover boundary");
   }
   validateRoute(state);
   requireSha(state.state_sha256, "pyramid state digest");
@@ -672,6 +690,7 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     final_review: null,
     isolated_candidate_assembly: null,
     independent_reaudit: null,
+    pyramid_import_output: null,
     lane_policy: {max_active_lanes: PYRAMID_CAMPAIGN_MAX_LANES, max_heavyweight_processes: PYRAMID_CAMPAIGN_MAX_HEAVYWEIGHT_PROCESSES, heavyweight_processes: 0, timers: 0, polling: false},
     authority: structuredClone(PYRAMID_AUTHORITY),
     next_action: route.next_action,
@@ -706,7 +725,7 @@ function finishState(next, {status, nextAction, protectedEvent = null} = {}) {
   return next;
 }
 
-export function advancePyramidCampaign(state, {roster, event, handoffs = [], reviews = [], finalReview = null, assembly = null, independentReaudit = null, protectedEvent = null} = {}) {
+export function advancePyramidCampaign(state, {roster, event, handoffs = [], reviews = [], finalReview = null, assembly = null, independentReaudit = null, pyramidImportOutput = null, protectedEvent = null} = {}) {
   validatePyramidCampaignState(state, {roster});
   const next = cloneState(state);
   if (event === "SPECIALIST_WAVE_HANDOFFS_READY") {
@@ -779,11 +798,25 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
     assert(state.isolated_candidate_assembly !== null && state.final_review?.accepted === true, "pyramid independent re-audit lacks an assembled candidate");
     validateIndependentReaudit(independentReaudit, state.candidate.candidate_sha256);
     next.independent_reaudit = structuredClone(independentReaudit);
+    // Materializing the promised pyramid output is ordinary isolated work.
+    // Do not jump directly from re-audit to a protected cutover; the output
+    // must first name clean candidate repositories and preserve the old
+    // repositories as immutable legacy evidence.
+    return finishState(next, {status: "IMPORT_OUTPUT_PENDING", nextAction: "PREPARE_PYRAMID_IMPORT_OUTPUT"});
+  }
+  if (event === "PYRAMID_IMPORT_OUTPUT_READY") {
+    assert(state.next_action === "PREPARE_PYRAMID_IMPORT_OUTPUT", "pyramid import output is not the current successor");
+    assert(state.independent_reaudit?.accepted === true && state.isolated_candidate_assembly !== null, "pyramid import output lacks an accepted candidate");
+    validatePyramidImportOutput(pyramidImportOutput);
+    assert(pyramidImportOutput.status === "READY_FOR_GIT_REPOINT", "pyramid import output must stop before Git cutover");
+    assert(pyramidImportOutput.pyramid.independent_reaudit_sha256 === state.independent_reaudit.reaudit_sha256, "pyramid import output re-audit evidence is stale");
+    assert(pyramidImportOutput.pyramid.central_integration_sha256 === state.isolated_candidate_assembly.assembly_sha256, "pyramid import output central-integration evidence is stale");
+    next.pyramid_import_output = structuredClone(pyramidImportOutput);
     const cutoverEvent = protectedEvent ?? {
       blocker_id: "PROTECTED.RUNTIME.GIT_REPOINT_OR_RELEASE",
       blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
       affected_action: "RUNTIME_ATOMIC_GIT_REPOINT_OR_RELEASE",
-      evidence_ceiling: "Independent re-audit and isolated candidate evidence are complete; runtime cutover or release evidence is not inferred.",
+      evidence_ceiling: "The pyramid output names clean candidate repositories and preserves the old repositories as immutable legacy evidence; runtime Git cutover or release evidence is not inferred.",
       restart_event: "CURRENT_TYPED_RUNTIME_CUTOVER_OR_RELEASE_AUTHORIZATION",
       resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
     };
