@@ -18,6 +18,7 @@ import {
   controllerActionHandlerFor,
   advanceControllerAction,
   validateControllerActionReceipt,
+  validateControllerNextLifecycleHandoff,
 } from "./controller-action-dispatcher.mjs";
 import {validateActionResultContinuation} from "./action-result-continuation.mjs";
 
@@ -48,7 +49,7 @@ export const ORCHESTRATOR_DISPATCHABLE_ACTIONS = Object.freeze([
 const READBACK_KEYS = Object.freeze([
   "schema", "version", "dispatch_id", "status", "source_successor_sha256", "source_action", "source_handler",
   "dispatched_count", "persisted_receipt_sha256s", "final_receipt_sha256", "final_next_action", "final_next_handler",
-  "dispatch_observed", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256",
+  "dispatch_observed", "next_lifecycle", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256",
 ]);
 const CONTINUATION_KEYS = Object.freeze([
   "mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition",
@@ -171,6 +172,13 @@ export function validateOrchestratorSuccessorDispatchReadback(readback) {
   requireIdentifier(readback.final_next_handler, "Orchestrator final next handler");
   assert(readback.final_next_handler === controllerActionHandlerFor(readback.final_next_action), "Orchestrator final next handler is stale");
   assert(readback.dispatch_observed === true, "Orchestrator dispatch observation is missing");
+  if (readback.status === "DISPATCHED_SAME_TURN") {
+    validateControllerNextLifecycleHandoff(readback.next_lifecycle, {
+      sourceReceiptSha256: readback.final_receipt_sha256,
+      nextAction: readback.final_next_action,
+      nextHandler: readback.final_next_handler,
+    });
+  } else assert(readback.next_lifecycle === null, "Protected or owner dispatch cannot claim a next local lifecycle start");
   validateContinuation(readback.continuation);
   validateScope(readback.scope);
   assert((readback.status === "DISPATCHED_TO_PROTECTED_WAIT") === (readback.continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT"), "Orchestrator dispatch protected status and continuation mode disagree");
@@ -183,7 +191,7 @@ export function validateOrchestratorSuccessorDispatchReadback(readback) {
   return readback;
 }
 
-export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, persist, onDefect, maxTransitions = ORCHESTRATOR_SAFE_TRANSITION_CAP} = {}) {
+export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, persist, onDefect, startNextLifecycle, maxTransitions = ORCHESTRATOR_SAFE_TRANSITION_CAP} = {}) {
   validateSuccessor(successor);
   requireIdentifier(dispatchId, "Orchestrator dispatch id");
   assert(isRecord(handlers), "Orchestrator dispatch handlers are required");
@@ -209,6 +217,7 @@ export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, 
     handlers,
     persist,
     onDefect,
+    startNextLifecycle,
     maxTransitions,
   });
   assert(["ROUTED_SAME_TURN", "PROTECTED_EVENT_WAIT", "OWNER_REVIEW_REQUIRED"].includes(dispatched.status), "Orchestrator successor did not complete a local dispatch or typed boundary");
@@ -217,14 +226,11 @@ export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, 
   const protectedWait = dispatched.status === "PROTECTED_EVENT_WAIT" || finalReceipt.continuation.mode === "EVENT_DRIVEN_PROTECTED_WAIT";
   const ownerReview = dispatched.status === "OWNER_REVIEW_REQUIRED" || finalReceipt.continuation.mode === "EXPLICIT_OWNER_REVIEW";
   /*
-   * Reaching the bounded local-chain cap is not itself a workflow failure.
-   * Every transition up to the cap has already been handler-invoked and
-   * atomically persisted, and `finalReceipt` names the registry-bound next
-   * action.  Treating this healthy bounded handoff as an exception caused a
-   * retry loop that discarded real progress and made the Orchestrator look
-   * idle.  The next lifecycle turn must consume the persisted successor; the
-   * readback below proves the boundary without pretending that an additional
-   * handler ran.
+   * Reaching the bounded local-chain cap is only valid when the next lifecycle
+   * starter has synchronously returned a typed STARTED handoff.  A receipt
+   * naming a future handler without that proof is a workflow dead-end, not
+   * progress; advanceControllerAction rejects it through the Spawner repair
+   * route.
    */
   const readback = {
     schema: ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA,
@@ -240,6 +246,7 @@ export function dispatchOrchestratorSuccessor({successor, dispatchId, handlers, 
     final_next_action: finalReceipt.next_action,
     final_next_handler: finalReceipt.next_handler,
     dispatch_observed: true,
+    next_lifecycle: structuredClone(dispatched.next_lifecycle ?? null),
     continuation: structuredClone(finalReceipt.continuation),
     scope: {
       control_plane_only: true,

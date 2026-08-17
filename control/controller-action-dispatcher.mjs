@@ -100,6 +100,12 @@ const RECEIPT_KEYS = Object.freeze([
   "protected_event", "stop_workflow_decision", "defect", "receipt_sha256",
 ]);
 const CONTINUATION_KEYS = Object.freeze(["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"]);
+const NEXT_LIFECYCLE_HANDOFF_KEYS = Object.freeze([
+  "schema", "version", "status", "source_receipt_sha256", "next_action", "next_handler",
+  "handoff_ref", "handoff_sha256", "started_same_turn",
+]);
+export const CONTROLLER_NEXT_LIFECYCLE_HANDOFF_SCHEMA = "agentos.controller_next_lifecycle_handoff.v1";
+export const CONTROLLER_NEXT_LIFECYCLE_HANDOFF_VERSION = 1;
 const AUTHORITY_KEYS = Object.freeze(["compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work"]);
 const PROTECTED_EVENT_KEYS = Object.freeze(["blocker_id", "blocker_class", "evidence_ceiling", "restart_event", "resources"]);
 const RESOURCE_KEYS = Object.freeze(["jobs", "workers", "heavyweight_processes", "timers"]);
@@ -132,6 +138,45 @@ function requireIdentifier(value, label) {
 
 function requireText(value, label, minimumLength = 1) {
   assert(typeof value === "string" && value.trim().length >= minimumLength && !/[\u0000-\u001f\u007f]/u.test(value), `${label} is incomplete`);
+}
+
+export function validateControllerNextLifecycleHandoff(handoff, {sourceReceiptSha256, nextAction, nextHandler} = {}) {
+  exactKeys(handoff, NEXT_LIFECYCLE_HANDOFF_KEYS, "Controller next-lifecycle handoff");
+  assert(handoff.schema === CONTROLLER_NEXT_LIFECYCLE_HANDOFF_SCHEMA && handoff.version === CONTROLLER_NEXT_LIFECYCLE_HANDOFF_VERSION, "Controller next-lifecycle handoff identity is invalid");
+  assert(handoff.status === "STARTED", "Controller next-lifecycle handoff did not start the next turn");
+  requireSha(handoff.source_receipt_sha256, "Controller next-lifecycle source receipt");
+  if (sourceReceiptSha256 !== undefined) assert(handoff.source_receipt_sha256 === sourceReceiptSha256, "Controller next-lifecycle source receipt is stale");
+  requireIdentifier(handoff.next_action, "Controller next-lifecycle action");
+  if (nextAction !== undefined) assert(handoff.next_action === nextAction, "Controller next-lifecycle action diverges from the persisted successor");
+  requireIdentifier(handoff.next_handler, "Controller next-lifecycle handler");
+  assert(handoff.next_handler === controllerActionHandlerFor(handoff.next_action), "Controller next-lifecycle handler is stale");
+  if (nextHandler !== undefined) assert(handoff.next_handler === nextHandler, "Controller next-lifecycle handler diverges from the persisted successor");
+  assert(typeof handoff.handoff_ref === "string" && REFERENCE.test(handoff.handoff_ref), "Controller next-lifecycle handoff reference is invalid");
+  requireSha(handoff.handoff_sha256, "Controller next-lifecycle handoff digest");
+  assert(handoff.handoff_sha256 === canonicalDigest({...handoff, handoff_sha256: null}), "Controller next-lifecycle handoff digest mismatch");
+  assert(handoff.started_same_turn === true, "Controller next-lifecycle handoff must start in the same turn");
+  return handoff;
+}
+
+export function compileControllerNextLifecycleHandoff({sourceReceiptSha256, nextAction, nextHandler = controllerActionHandlerFor(nextAction), handoffRef} = {}) {
+  requireSha(sourceReceiptSha256, "Controller next-lifecycle source receipt");
+  requireIdentifier(nextAction, "Controller next-lifecycle action");
+  requireIdentifier(nextHandler, "Controller next-lifecycle handler");
+  assert(nextHandler === controllerActionHandlerFor(nextAction), "Controller next-lifecycle handler is stale");
+  assert(typeof handoffRef === "string" && REFERENCE.test(handoffRef), "Controller next-lifecycle handoff reference is invalid");
+  const handoff = {
+    schema: CONTROLLER_NEXT_LIFECYCLE_HANDOFF_SCHEMA,
+    version: CONTROLLER_NEXT_LIFECYCLE_HANDOFF_VERSION,
+    status: "STARTED",
+    source_receipt_sha256: sourceReceiptSha256,
+    next_action: nextAction,
+    next_handler: nextHandler,
+    handoff_ref: handoffRef,
+    handoff_sha256: null,
+    started_same_turn: true,
+  };
+  handoff.handoff_sha256 = canonicalDigest({...handoff, handoff_sha256: null});
+  return validateControllerNextLifecycleHandoff(handoff, {sourceReceiptSha256, nextAction, nextHandler});
 }
 
 function validateEvidenceRefs(refs, label = "Controller action evidence refs") {
@@ -499,7 +544,7 @@ function validateHandlerResult(result) {
   return result;
 }
 
-export function advanceControllerAction(currentReceipt, {handlers, persist, onDefect, maxTransitions = 16} = {}) {
+export function advanceControllerAction(currentReceipt, {handlers, persist, onDefect, startNextLifecycle, maxTransitions = 16} = {}) {
   try { validateControllerActionReceipt(currentReceipt); }
   catch (error) { return dispatchDefect({currentReceipt, defectClass: /handler/u.test(error.message) ? "STALE_OR_UNKNOWN_HANDLER" : "UNKNOWN_ACTION_ROUTE", message: error.message, onDefect}); }
   assert(isRecord(handlers), "Controller action handlers are required");
@@ -509,8 +554,8 @@ export function advanceControllerAction(currentReceipt, {handlers, persist, onDe
   const persisted = [];
   for (let step = 0; step < maxTransitions; step += 1) {
     const descriptor = CONTROLLER_ACTION_REGISTRY[cursor.next_action];
-    if (descriptor.mode === "PROTECTED_WAIT") return {status: "PROTECTED_EVENT_WAIT", dispatched_count: step, receipt: cursor, persisted_receipts: persisted};
-    if (descriptor.mode === "OWNER_REVIEW") return {status: "OWNER_REVIEW_REQUIRED", dispatched_count: step, receipt: cursor, persisted_receipts: persisted};
+    if (descriptor.mode === "PROTECTED_WAIT") return {status: "PROTECTED_EVENT_WAIT", dispatched_count: step, receipt: cursor, persisted_receipts: persisted, next_lifecycle: null};
+    if (descriptor.mode === "OWNER_REVIEW") return {status: "OWNER_REVIEW_REQUIRED", dispatched_count: step, receipt: cursor, persisted_receipts: persisted, next_lifecycle: null};
     const handler = handlers[cursor.next_handler];
     if (typeof handler !== "function") return dispatchDefect({currentReceipt: cursor, defectClass: "STALE_OR_UNKNOWN_HANDLER", message: `Missing handler ${cursor.next_handler}`, onDefect});
     let result;
@@ -551,12 +596,38 @@ export function advanceControllerAction(currentReceipt, {handlers, persist, onDe
     persisted.push(successor);
     cursor = successor;
   }
-  // A valid local chain can legitimately outlive one bounded dispatch turn.
-  // The last successor is already persisted and carries the next registered
-  // action, so return it for immediate re-observation rather than converting
-  // healthy progress into a false dispatch failure. Malformed handlers and
-  // persistence failures are still rejected above.
-  return {status: "ROUTED_SAME_TURN", dispatched_count: maxTransitions, receipt: cursor, persisted_receipts: persisted};
+  /*
+   * A bounded local chain may not silently end with a local action.  The old
+   * behavior returned a receipt that merely named the next handler; callers
+   * then went idle and the workflow appeared healthy even though the next
+   * turn had never started.  Require an executable starter and a typed,
+   * content-addressed proof that the successor turn began before returning.
+   */
+  if (typeof startNextLifecycle !== "function") {
+    return dispatchDefect({
+      currentReceipt: cursor,
+      defectClass: "WORKFLOW_DEAD_END",
+      message: "Bounded local successor has no next-lifecycle starter",
+      onDefect,
+    });
+  }
+  let nextLifecycle;
+  try {
+    nextLifecycle = startNextLifecycle(structuredClone(cursor));
+    validateControllerNextLifecycleHandoff(nextLifecycle, {
+      sourceReceiptSha256: cursor.receipt_sha256,
+      nextAction: cursor.next_action,
+      nextHandler: cursor.next_handler,
+    });
+  } catch (error) {
+    return dispatchDefect({
+      currentReceipt: cursor,
+      defectClass: "DISPATCH_FAILED",
+      message: error instanceof Error ? error.message : "Next lifecycle starter failed",
+      onDefect,
+    });
+  }
+  return {status: "ROUTED_SAME_TURN", dispatched_count: maxTransitions, receipt: cursor, persisted_receipts: persisted, next_lifecycle: nextLifecycle};
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Controller action dispatcher contract loaded\n");

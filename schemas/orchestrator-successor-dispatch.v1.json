@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/orchestrator-successor-dispatch.v1.json",
   "title": "AgentOS Orchestrator same-turn successor dispatch",
-  "description": "A typed Orchestrator successor is not considered dispatched until a registered handler is invoked and each resulting receipt is atomically persisted. A bounded local chain may end at its transition cap after valid progress; the final persisted receipt is the immediate successor for the next lifecycle turn, not a retry failure. Ordinary work remains lane-owned: the successor must not require Controller approval and must route directly to independent platform review.",
+  "description": "A typed Orchestrator successor is not considered dispatched until a registered handler is invoked and each resulting receipt is atomically persisted. A bounded local chain may end at its transition cap only after an executable next-lifecycle starter returns a content-addressed STARTED handoff; a receipt that merely names a future handler is a workflow defect. Ordinary work remains lane-owned: the successor must not require Controller approval and must route directly to independent platform review.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema", "version", "dispatch_id", "status", "source_successor_sha256", "source_action", "source_handler",
     "dispatched_count", "persisted_receipt_sha256s", "final_receipt_sha256", "final_next_action", "final_next_handler",
-    "dispatch_observed", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256"
+    "dispatch_observed", "next_lifecycle", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256"
   ],
   "properties": {
     "schema": {"const": "agentos.orchestrator_successor_dispatch.v1"},
@@ -24,6 +24,27 @@
     "final_next_action": {"$ref": "#/$defs/identifier"},
     "final_next_handler": {"$ref": "#/$defs/identifier"},
     "dispatch_observed": {"const": true},
+    "next_lifecycle": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "version", "status", "source_receipt_sha256", "next_action", "next_handler", "handoff_ref", "handoff_sha256", "started_same_turn"],
+          "properties": {
+            "schema": {"const": "agentos.controller_next_lifecycle_handoff.v1"},
+            "version": {"const": 1},
+            "status": {"const": "STARTED"},
+            "source_receipt_sha256": {"$ref": "#/$defs/sha256"},
+            "next_action": {"$ref": "#/$defs/identifier"},
+            "next_handler": {"$ref": "#/$defs/identifier"},
+            "handoff_ref": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+            "handoff_sha256": {"$ref": "#/$defs/sha256"},
+            "started_same_turn": {"const": true}
+          }
+        }
+      ]
+    },
     "continuation": {
       "type": "object",
       "additionalProperties": false,
@@ -79,7 +100,7 @@
   "state_rules": {
     "dispatch": "A successor is dispatchable only after the executable adapter validates its action, handler, continuation, persistence, and lane-custody metadata; a hand-written receipt or claimed same-turn flag is never sufficient.",
     "custody": "The source successor result must declare controller_approval_required=false, execution_owner=LANE_AGENT, and direct_consumer=INDEPENDENT_PLATFORM_REVIEW. The Controller observes liveness and custody only; it is not an ordinary approval gate.",
-    "continuation": "Every dispatched local successor is invoked in the same turn with timer_deferral=false and heartbeat_deferral=false. If the bounded local-chain cap is reached, the final receipt must name the registry-bound next action for immediate consumption by the next lifecycle turn; this is a handoff, never a timer wait or retry failure. NONE, DONE, timer-only, heartbeat-only, and silent terminal states are invalid; protected or owner boundaries must be explicit typed continuations.",
+    "continuation": "Every dispatched local successor is invoked in the same turn with timer_deferral=false and heartbeat_deferral=false. If the bounded local-chain cap is reached, an executable next-lifecycle starter must return a content-addressed STARTED handoff bound to the final receipt before the readback can close; naming a registry-bound action without starting it is a workflow defect. NONE, DONE, timer-only, heartbeat-only, and silent terminal states are invalid; protected or owner boundaries must be explicit typed continuations.",
     "failure": "Missing handlers, false persistence, unchanged semantic state, invalid custody metadata, or null/mismatched digests fail closed before the transition is accepted and must route to a typed repair or retry action."
   }
 }
