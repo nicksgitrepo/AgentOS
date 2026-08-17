@@ -918,7 +918,7 @@
     },
     "controller_startup_sequence_verifier": {
       "path": "tests/verify-controller-startup-sequence.mjs",
-      "sha256": "3056146c091929e6c4d1872192c9e157b929dcee5a59cb71c63ac371e3cd9609"
+      "sha256": "2456a390d35677a24f56ff7e8c0a74be77a2cbed9205850eb7ee38057d03007a"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",

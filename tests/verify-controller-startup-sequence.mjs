@@ -10,6 +10,7 @@ import {
   compileControllerStartupSuccessor,
   validateControllerStartupSuccessor,
 } from "../control/controller-startup-sequence.mjs";
+import * as publicKernel from "../control/agentos.mjs";
 
 const HASH = (value) => canonicalDigest({value});
 const evidence = (id) => ({evidence_id: id, reference: `opaque:${id.toLowerCase()}`, sha256: HASH(id)});
@@ -107,6 +108,10 @@ assert.throws(() => compileControllerStartupSuccessor({
 const schema = JSON.parse(fs.readFileSync(new URL("../schemas/controller-startup-sequence.v1.json", import.meta.url), "utf8"));
 assert.equal(schema.$id, "https://agentos.dev/schemas/controller-startup-sequence.v1.json");
 assert.deepEqual(schema.properties.stage.enum, CONTROLLER_STARTUP_STAGES);
+assert.equal(publicKernel.compileControllerStartupSuccessor, compileControllerStartupSuccessor);
+assert.equal(publicKernel.validateControllerStartupSuccessor, validateControllerStartupSuccessor);
+assert.equal(publicKernel.controllerStartup.compileControllerStartupSuccessor, compileControllerStartupSuccessor);
+assert.equal(typeof publicKernel.admitAgentSpawnerIsolatedLocalCustody, "function");
 for (const action of ["START_IMPORT_ORCHESTRATOR", ...Object.values(expected)]) assert(CONTROLLER_ACTION_IDS.includes(action), `startup action is not registered: ${action}`);
 
 console.log("PASS Controller startup sequence: same-turn Bootstrap→Spawner→roles→governance→compiler→roster→spawn→Orchestrator routing, true-blocker-only waits, and hostile false-idle rejection");
