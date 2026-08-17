@@ -5,6 +5,8 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "controller": "control/project-import.mjs",
   "result": "agentos.project_import.v1",
+  "pyramid_output_contract": "agentos.pyramid_import_output.v1",
+  "git_repoint_contract": "agentos.git_repoint_plan.v1",
   "project_id": "SOURCE_BOUND_PROJECT_IDENTIFIER",
   "source_root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256",
   "destination_root_ref": "opaque:worktree:64_LOWERCASE_HEX_SHA256_OR_NULL",
@@ -58,6 +60,14 @@
   "minimum_audit_coverage": ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"],
   "maximum_parallel_cognitive_lanes": 6,
   "pyramid_cycle": ["SPECIALIST_AUDIT_AND_REPAIR", "PLATFORM_REVIEW_TEST_AND_INTEGRATION", "CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT"],
+  "pyramid_output": {
+    "output_kind": "NEW_PROJECT_REPOSITORIES_FOR_COPY_NORMALIZE_AND_RECONSTRUCT;EXISTING_REPOSITORY_BINDING_FOR_ADOPT_IN_PLACE",
+    "candidate_repository_rule": "Each accepted pyramid run emits one or more clean new repositories with exact commit, tree, source-lineage, independent-re-audit, and rollback identity.",
+    "legacy_policy": "The original repositories remain untouched, read-only legacy evidence and are never deleted by import.",
+    "git_repoint": "Runtime performs an atomic repoint only after source/candidate rechecks and an exact cutover authorization; preparation never mutates Git or the source.",
+    "execution_authority": "RUNTIME_ONLY",
+    "contract": "schemas/pyramid-import-output.v1.json"
+  },
   "audit_scheduler": "control/campaign-cascade.mjs",
   "governed_scheduler": "control/hybrid-scheduler.mjs",
   "universal_closeout": {

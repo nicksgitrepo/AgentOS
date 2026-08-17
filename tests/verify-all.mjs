@@ -103,6 +103,8 @@ const importOrchestratorContract = JSON.parse(read("schemas/import-orchestrator.
 assert.equal(importOrchestratorContract.properties.role_id.const, "CAMPAIGN_ORCHESTRATOR");
 assert.equal(importOrchestratorContract.properties.mode.const, "IMPORT");
 assert.equal(importOrchestratorContract.properties.handoff_contract.properties.spawner_defect_intake.const, "TYPED_SPAWNER_DEFECT_INTAKE");
+assert.equal(importOrchestratorContract.properties.handoff_contract.properties.pyramid_output.const, "PYRAMID_IMPORT_OUTPUT_REPOSITORIES");
+assert.equal(importOrchestratorContract.properties.handoff_contract.properties.git_repoint.const, "RUNTIME_ONLY_ATOMIC_GIT_REPOINT_WITH_LEGACY_RETENTION");
 assert.equal(importOrchestratorContract.properties.continuation.properties.same_turn_next_action.const, true);
 const spawnerDefectIntakeContract = JSON.parse(read("schemas/agent-spawner-defect-intake.v1.json"));
 assert.equal(spawnerDefectIntakeContract.properties.spawner_role_id.const, "AGENT.SPAWNER_COMPILER");

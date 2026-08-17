@@ -38,14 +38,16 @@
     "handoff_contract": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["spawn_request", "worker_handoff", "spawner_defect_intake", "platform_review", "central_integration", "candidate_advance"],
+      "required": ["spawn_request", "worker_handoff", "spawner_defect_intake", "platform_review", "central_integration", "candidate_advance", "pyramid_output", "git_repoint"],
       "properties": {
         "spawn_request": {"const": "TYPED_SPAWNER_REQUEST"},
         "worker_handoff": {"const": "SOURCE_BOUND_TYPED_HANDOFF"},
         "spawner_defect_intake": {"const": "TYPED_SPAWNER_DEFECT_INTAKE"},
         "platform_review": {"const": "INDEPENDENT_PLATFORM_TYPED_HANDOFF"},
         "central_integration": {"const": "ACCEPTED_PLATFORM_HANDOFFS_ONLY"},
-        "candidate_advance": {"const": "INDEPENDENT_REAUDIT_REQUIRED"}
+        "candidate_advance": {"const": "INDEPENDENT_REAUDIT_REQUIRED"},
+        "pyramid_output": {"const": "PYRAMID_IMPORT_OUTPUT_REPOSITORIES"},
+        "git_repoint": {"const": "RUNTIME_ONLY_ATOMIC_GIT_REPOINT_WITH_LEGACY_RETENTION"}
       }
     },
     "continuation": {

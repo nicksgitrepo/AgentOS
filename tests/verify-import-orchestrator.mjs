@@ -175,8 +175,8 @@ const heldApplicability = compileIndependentClearanceApplicability({
   polling: false,
 });
 const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", ...heldGovernance, clearanceApplicability: heldApplicability, plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
-assert.equal(held.state, "PROTECTED_WAIT");
-assert.equal(held.next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(held.state, "REPAIRING");
+assert.equal(held.next_action, "REPAIR_BLOCKS");
 assert.equal(held.continuation.timer_is_not_progress, true);
 
 const localQa = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.LOCAL_QA", ...governanceFor("ORCHESTRATOR.IMPORT.LOCAL_QA"), plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});

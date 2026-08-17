@@ -9,6 +9,10 @@ import {compileNormalizationPolicy} from "../control/normalization-policy.mjs";
 import {
   compileProjectImportPlan,
   compileSourcePreservationPlan,
+  compilePyramidImportOutput,
+  validatePyramidImportOutput,
+  compileGitRepointPlan,
+  validateGitRepointPlan,
   canonicalDigest,
   inspectProjectSource,
   preserveProjectSource,
@@ -55,7 +59,7 @@ const repeated = compileProjectImportPlan({
   normalizationPolicy: normalization,
 });
 assert.deepEqual(plan, repeated, "project import plan is not deterministic");
-assert.deepEqual(plan.phases, ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING", "CONTROLLER_DERIVED_AUDIT_REPAIR_PYRAMID", "PLATFORM_AND_CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "CUTOVER_OR_ROLLBACK"]);
+assert.deepEqual(plan.phases, ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING", "CONTROLLER_DERIVED_AUDIT_REPAIR_PYRAMID", "PLATFORM_AND_CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "PREPARE_GIT_REPOINT", "CUTOVER_OR_ROLLBACK"]);
 assert.deepEqual(plan.audit.lanes.map((lane) => lane.discipline), ["FUNCTIONALITY", "DESIGN_UI_SHELL_NAVIGATION", "SECURITY", "CODE_QUALITY_HYGIENE"]);
 assert(plan.audit.lanes.every((lane) => lane.disposition === "REQUIRED" && lane.writer === "NONE_READ_ONLY"));
 assert.equal(plan.audit.lanes_are_minimum_coverage_not_roster, true);
@@ -64,6 +68,11 @@ assert.equal(plan.controller_planning.authority, "AGENTOS_CONTROLLER");
 assert.equal(plan.controller_planning.fixed_project_roster_forbidden, true);
 assert.equal(plan.controller_planning.routine_transition, "AUTOMATIC_EVENT_DRIVEN");
 assert.equal(plan.controller_planning.seed_rule, "SEEDS_NEVER_WORK");
+assert.equal(plan.pyramid_output.output_kind, "NEW_PROJECT_REPOSITORIES");
+assert.equal(plan.pyramid_output.legacy_policy, "PRESERVE_OLD_REPOSITORIES_UNTOUCHED_AS_LEGACY_READ_ONLY_EVIDENCE");
+assert.equal(plan.pyramid_output.git_repoint_executor, "RUNTIME_ONLY_ATOMIC_REPOINT_AFTER_SOURCE_AND_CANDIDATE_RECHECK");
+assert.equal(plan.cutover.target, "NEW_PROJECT_REPOSITORIES");
+assert.equal(plan.cutover.legacy_repository_policy, "RETAIN_OLD_REPOSITORIES_UNTOUCHED");
 validateProjectImportPlan(plan);
 assert.equal(plan.universal_closeout.mode, "IMPORT");
 assert.equal(plan.universal_closeout.archive_is_dynamic, true);
@@ -102,6 +111,59 @@ assert.equal(verifySourcePreservation(preservation).status, "VERIFIED_EXACT");
 assert(fs.readFileSync(path.join(preservation, "import-exclusions.md"), "utf8").includes(".env"));
 assert(fs.readFileSync(path.join(preservation, "import-exclusions.md"), "utf8").includes("dist"));
 assert(fs.readFileSync(path.join(preservation, "import-exclusions.md"), "utf8").includes("settings.json"));
+
+const pyramidOutput = compilePyramidImportOutput({
+  projectId,
+  sourceIdentity: before,
+  preservationRef: "opaque:preservation/synthetic-import",
+  preservationReceiptSha256: preserved.receipt.receipt_sha256,
+  candidateRepositories: [{
+    repository_id: "main",
+    repository_ref: "opaque:repository/synthetic-main",
+    branch_ref: "refs/heads/agentos/import-candidate",
+    commit: "3".repeat(40),
+    tree: "4".repeat(40),
+    candidate_sha256: canonicalDigest({candidate: "synthetic-main"}),
+    source_content_sha256: before.source_content_sha256,
+    source_observation_sha256: before.source_observation_sha256,
+    pyramid_candidate_sha256: canonicalDigest({pyramid: "synthetic-main"}),
+    rollback_ref: "opaque:rollback/synthetic-main",
+    clean: true,
+    status: "INDEPENDENT_REAUDITED_CANDIDATE",
+  }],
+  pyramid: {
+    specialist_audit_repair_sha256: canonicalDigest({stage: "specialist"}),
+    platform_review_sha256: canonicalDigest({stage: "platform"}),
+    central_integration_sha256: canonicalDigest({stage: "central"}),
+    independent_reaudit_sha256: canonicalDigest({stage: "reaudit"}),
+    audit_repair_complete: true,
+    platform_review_complete: true,
+    central_integration_complete: true,
+    independent_reaudit_complete: true,
+    wave_count: 1,
+  },
+  rollbackRef: "opaque:rollback/synthetic-import",
+});
+validatePyramidImportOutput(pyramidOutput);
+assert.equal(pyramidOutput.status, "READY_FOR_GIT_REPOINT");
+assert.equal(pyramidOutput.legacy.retention, "LEGACY_REPOSITORY_UNTOUCHED");
+assert.equal(pyramidOutput.git_repoint.next_action, "WAIT_FOR_GIT_REPOINT_AUTHORIZATION");
+const repointPlan = compileGitRepointPlan({output: pyramidOutput, targetProjectRef: "opaque:project/synthetic-import"});
+validateGitRepointPlan(repointPlan);
+assert.equal(repointPlan.execution_allowed, false);
+assert.equal(repointPlan.next_action, "WAIT_FOR_GIT_REPOINT_AUTHORIZATION");
+const authorizedRepoint = compileGitRepointPlan({
+  output: pyramidOutput,
+  targetProjectRef: "opaque:project/synthetic-import",
+  authorizationRef: "opaque:authorization/synthetic-cutover",
+});
+assert.equal(authorizedRepoint.status, "AUTHORIZED_PENDING_RUNTIME_EXECUTION");
+assert.equal(authorizedRepoint.next_action, "RUNTIME_ATOMIC_GIT_REPOINT");
+assert.equal(authorizedRepoint.execution_allowed, false);
+const outputTamper = structuredClone(pyramidOutput);
+outputTamper.legacy.untouched = false;
+outputTamper.output_sha256 = canonicalDigest({...outputTamper, output_sha256: null});
+assert.throws(() => validatePyramidImportOutput(outputTamper), /immutable, untouched, and read-only/u);
 
 const recommendation = recommendProjectImportMode([{fact_id: "authority-corpus.candidate.docs", status: "OBSERVED_FACT"}]);
 assert.equal(recommendation.recommended_mode, "NORMALIZE_AND_AUDIT");

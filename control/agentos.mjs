@@ -14,6 +14,7 @@ export {compileLayeredGovernanceContract, validateLayeredGovernanceContract, act
 export {compileProjectContract, compileProjectContractWithReceipt, reassessProjectContract} from "./bootstrap-project-contract.mjs";
 export {compileControllerImportPlanningContext, validateControllerImportPlanningContext, compileControllerImportCampaignPlan, validateControllerImportCampaignPlan, compileControllerImportRosterProjection, validateControllerImportRosterProjection, compileControllerImportRunState, validateControllerImportRunState, advanceControllerImportRunState} from "./controller-import-planner.mjs";
 export {compileControllerImportRoutineCloseout, validateControllerImportRoutineCloseout} from "./controller-import-closeout.mjs";
+export {compilePyramidImportOutput, validatePyramidImportOutput, compileGitRepointPlan, validateGitRepointPlan} from "./project-import.mjs";
 export {compileControllerEscalation, validateControllerEscalation} from "./controller-escalation-continuation.mjs";
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
 export {evaluateStopWorkflowGate, validateStopWorkflowDecision, compileStopWorkflowNoStopAnswers, STOP_WORKFLOW_QUESTIONS, STOP_WORKFLOW_OUTCOMES, STOP_WORKFLOW_NEXT_ACTIONS} from "./stop-workflow-gate.mjs";
@@ -91,6 +92,7 @@ export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";
 export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
+export * as projectImport from "./project-import.mjs";
 export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as stopWorkflowGate from "./stop-workflow-gate.mjs";
 export * as dynamicLanes from "./dynamic-project-lanes.mjs";

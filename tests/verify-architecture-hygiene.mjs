@@ -157,6 +157,7 @@ const explicitlyRetainedLargeBoundaries = new Set([
   "control/native-session-team.mjs",
   "control/owner-review.mjs",
   "control/proof-carrying-work.mjs",
+  "control/project-import.mjs",
   "control/release-lifecycle.mjs",
   "control/task-model-routing.mjs",
 ]);

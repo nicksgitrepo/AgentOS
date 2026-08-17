@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/git-repoint-plan.v1.json",
+  "title": "AgentOS Runtime Git Repoint Plan",
+  "description": "A non-executing, content-addressed plan for atomically repointing a project to accepted pyramid output repositories while retaining the original repositories as untouched legacy evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "output_sha256", "target_project_ref", "target_repository_ids", "legacy_source_ref", "legacy_policy", "authorization_ref", "status", "execution_allowed", "source_recheck_required", "candidate_recheck_required", "legacy_delete_forbidden", "source_mutation_forbidden", "destructive_work_forbidden", "rollback_ref", "next_action", "plan_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.git_repoint_plan.v1"},
+    "version": {"const": 1},
+    "output_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_project_ref": {"$ref": "#/$defs/reference"},
+    "target_repository_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/repositoryId"}},
+    "legacy_source_ref": {"$ref": "#/$defs/reference"},
+    "legacy_policy": {"const": "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED"},
+    "authorization_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "status": {"enum": ["READY_FOR_PROTECTED_CUTOVER", "AUTHORIZED_PENDING_RUNTIME_EXECUTION", "EXECUTED"]},
+    "execution_allowed": {"const": false},
+    "source_recheck_required": {"const": true},
+    "candidate_recheck_required": {"const": true},
+    "legacy_delete_forbidden": {"const": true},
+    "source_mutation_forbidden": {"const": true},
+    "destructive_work_forbidden": {"const": true},
+    "rollback_ref": {"$ref": "#/$defs/reference"},
+    "next_action": {"enum": ["WAIT_FOR_GIT_REPOINT_AUTHORIZATION", "RUNTIME_ATOMIC_GIT_REPOINT", "GIT_REPOINT_COMPLETE"]},
+    "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:)[A-Za-z0-9._:/-]+$"},
+    "repositoryId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,191}$"}
+  }
+}

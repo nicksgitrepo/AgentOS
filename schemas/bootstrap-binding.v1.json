@@ -158,19 +158,27 @@
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
-      "sha256": "0b779926755bcc13b1db60c686ac6c6227b4f01ee5cd879be9963cf7f01a50ac"
+      "sha256": "9940cc74e0bb7a65b5d9ce87b2c57d16be69e8c54b42f16b3c959efdc871194b"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",
-      "sha256": "cdd14a000311c50cdce9bf211b95d65b3401b05fa6d1e445bbe169127109fd26"
+      "sha256": "6ec74fb9787c12821327a96a89d41411ab637e57bd5687c36fb0151892ef720d"
+    },
+    "pyramid_import_output_contract": {
+      "path": "schemas/pyramid-import-output.v1.json",
+      "sha256": "a32ea047acf7999c89949a31a13752e93fa36751432d7c6f87bc4c96cb757d5f"
+    },
+    "git_repoint_plan_contract": {
+      "path": "schemas/git-repoint-plan.v1.json",
+      "sha256": "7cfd586bf011cf9fcf5167bffef53044517c8d95a6e2dbbe3f1b9472a85da15b"
     },
     "project_import_article": {
       "path": "governance/2.1rc/project-import.md",
-      "sha256": "8148efa0733be318b3d953ddde203370db5f1e47e6086d47d369e3467c19e2a7"
+      "sha256": "4a33e6606eaee20d723ef21624ef5ed05540d9da3660b650e1b913d8bf2726d8"
     },
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
-      "sha256": "1c8c83955b6150a90fdd37fb272ca96e800b681cccc64923bda561d409cec43a"
+      "sha256": "61adb462e5bc58a1769e19cc7fc0aabe655a8efc4fb7675f9a53fd80f0dd63e5"
     },
     "normalization_policy_controller": {
       "path": "control/normalization-policy.mjs",
@@ -562,11 +570,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "606b8e9d14c7dbc27fb9a7dad1ae3008c1e5cf5cdf0185ff4a7a5cbcf12eaec7"
+      "sha256": "e5ec59c0e0f5d3ab395cf1c047b964249f817156b0913d2f229fc83bcaef86e7"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "1698147266bb99987ce4adf103a3dcce6f3dc404c76a71f0180ffaf75057eb00"
+      "sha256": "8f2c770f8727b20aeabb4ec09e6f819a5790873d322ca92f287cdac43b8a2eab"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -574,7 +582,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "e339bea67fde96255ec1309e3c0317ab3921a1433d25fab26a1c2c476571ba99"
+      "sha256": "3efde68501293e56b1236d8a14803912214450d58db41aea25a6829a73e44891"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
@@ -590,7 +598,7 @@
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
-      "sha256": "9dcccf8d9f254895ed0bc038114787af9ba5f59f5cfb3645a54ed07428fc4fba"
+      "sha256": "6ce7319103aacb87384b37eda1906edba69eecc0fbb243ee637f1803d38cba07"
     },
     "typed_successor_readback_contract": {
       "path": "schemas/typed-successor-readback.v1.json",
@@ -602,7 +610,7 @@
     },
     "typed_successor_readback_verifier": {
       "path": "tests/verify-typed-successor-readback.mjs",
-      "sha256": "2e4d48df646610b271cfd5d21c881286c46586bf8eb5415e3c615e3f7b44b0ba"
+      "sha256": "8023e6dc4deab21d69e7d85c59aa7635a80406306e0f7d46e0f37e0ecc23bbf6"
     },
     "independent_clearance_applicability_controller": {
       "path": "control/independent-clearance-applicability.mjs",
@@ -838,7 +846,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "7c50dfb9aab546014073d344a640e659a7aaab18a9d7282921eab316bfe5bb76"
+      "sha256": "8fff7f6452846402a4d3bdef5e569427e0bc9684f3aad9a9a164d53cb730072d"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -1434,7 +1442,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "af63c696fcc25ce39174d1b9dc47ffc36722ded53faaa9590ff57ed893d61f8b"
+      "sha256": "baa035d6346d92f5d0c1617f93cd342dcd11e00c1619cbcc461281ab78e99d78"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
@@ -1446,7 +1454,7 @@
     },
     "architecture_hygiene_verifier": {
       "path": "tests/verify-architecture-hygiene.mjs",
-      "sha256": "85c5367faa5f0c9df1d53096939e6b16c150d044909f746d89866f7c89ff2be9"
+      "sha256": "f2479287db807f6d1190d0edced249ab32fb763f5820732def40c46622f1584d"
     },
     "bootstrap_output_definitions": {
       "path": "control/bootstrap-output-definitions.mjs",

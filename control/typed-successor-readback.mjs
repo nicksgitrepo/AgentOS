@@ -102,7 +102,7 @@ function validateResourceBoundary(boundary) {
   for (const field of ["active_lane_count", "lane_limit", "heavyweight_process_count", "heavyweight_process_limit"]) requireNonNegativeInteger(boundary[field], `Typed successor ${field}`);
   assert(boundary.active_lane_count <= boundary.lane_limit, "Typed successor active lanes exceed limit");
   assert(boundary.heavyweight_process_count <= boundary.heavyweight_process_limit, "Typed successor heavyweight processes exceed limit");
-  assert(boundary.wave_activation === "ON" || boundary.wave_activation === "OFF", "Typed successor wave activation is invalid");
+  assert(boundary.wave_activation === "ON" || boundary.wave_activation === "OFF", "Typed successor activation state is invalid");
 }
 
 export function validateTypedSuccessorReadback(record) {

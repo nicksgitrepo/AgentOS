@@ -194,12 +194,20 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
   if (defectSummary.repairCandidateCount > 0 || defectSummary.controllerCustodyCount > 0) {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
-  if (runState.status === "BLOCKED_PROTECTED" || spawnerLifecycle.state === "STALLED") {
+  // A stalled Spawner is a workflow defect until a typed protected boundary
+  // is present in the run state.  Spawner QA, block compilation, isolated
+  // custody, and pyramid planning are local work; they must not be converted
+  // into a silent utility/harm wait merely because no worker is currently
+  // active.  Only an explicit run-state protected event may stop the route.
+  if (runState.status === "BLOCKED_PROTECTED") {
     return {
       state: "PROTECTED_WAIT",
       nextAction: "WAIT_FOR_PROTECTED_EVENT",
       dependencyId: runState.protected_boundary_id ?? "SPAWNER.INDEPENDENT_CLEARANCE",
     };
+  }
+  if (spawnerLifecycle.state === "STALLED") {
+    return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
   if (defectSummary.protectedDefectCount > 0) {
     return {state: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", dependencyId: "SPAWNER.DEFECT.PROTECTED_DECISION"};
@@ -218,7 +226,11 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
     if (rosterProjection.pending_role_request_ids.length === 0
       && rosterProjection.available_wave_ids.length === 0
       && rosterProjection.activation_blocked_wave_ids.length > 0) {
-      return {state: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", dependencyId: "SPAWNER.INDEPENDENT_CLEARANCE"};
+      // An empty queue with no explicit protected run-state event is not a
+      // legitimate wait.  Repair the missing route/blocks and let the next
+      // same-turn transition re-derive the wave.  Protected waits belong only
+      // to a concrete, typed boundary after a candidate is ready.
+      return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
     }
     return {state: "ACTIVE", nextAction: "REQUEST_SPAWNER_QA", dependencyId: null};
   }
@@ -266,13 +278,15 @@ function validateOwnership(ownership) {
 }
 
 function validateHandoffContract(contract) {
-  exactKeys(contract, ["spawn_request", "worker_handoff", "spawner_defect_intake", "platform_review", "central_integration", "candidate_advance"], "Import Orchestrator handoff contract");
+  exactKeys(contract, ["spawn_request", "worker_handoff", "spawner_defect_intake", "platform_review", "central_integration", "candidate_advance", "pyramid_output", "git_repoint"], "Import Orchestrator handoff contract");
   assert(contract.spawn_request === "TYPED_SPAWNER_REQUEST", "Import Orchestrator spawn request contract is invalid");
   assert(contract.worker_handoff === "SOURCE_BOUND_TYPED_HANDOFF", "Import Orchestrator worker handoff contract is invalid");
   assert(contract.spawner_defect_intake === "TYPED_SPAWNER_DEFECT_INTAKE", "Import Orchestrator Spawner defect intake contract is invalid");
   assert(contract.platform_review === "INDEPENDENT_PLATFORM_TYPED_HANDOFF", "Import Orchestrator platform review contract is invalid");
   assert(contract.central_integration === "ACCEPTED_PLATFORM_HANDOFFS_ONLY", "Import Orchestrator central integration contract is invalid");
   assert(contract.candidate_advance === "INDEPENDENT_REAUDIT_REQUIRED", "Import Orchestrator candidate advance contract is invalid");
+  assert(contract.pyramid_output === "PYRAMID_IMPORT_OUTPUT_REPOSITORIES", "Import Orchestrator pyramid output contract is invalid");
+  assert(contract.git_repoint === "RUNTIME_ONLY_ATOMIC_GIT_REPOINT_WITH_LEGACY_RETENTION", "Import Orchestrator Git repoint contract is invalid");
 }
 
 function validateContinuation(continuation) {
@@ -436,6 +450,8 @@ export function compileImportOrchestrator({orchestratorId, governanceReadiness, 
       platform_review: "INDEPENDENT_PLATFORM_TYPED_HANDOFF",
       central_integration: "ACCEPTED_PLATFORM_HANDOFFS_ONLY",
       candidate_advance: "INDEPENDENT_REAUDIT_REQUIRED",
+      pyramid_output: "PYRAMID_IMPORT_OUTPUT_REPOSITORIES",
+      git_repoint: "RUNTIME_ONLY_ATOMIC_GIT_REPOINT_WITH_LEGACY_RETENTION",
     },
     continuation: {
       mode: "EVENT_DRIVEN_AUTOMATIC",

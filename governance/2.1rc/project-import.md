@@ -67,6 +67,23 @@ Every wave follows the same acceptance pyramid:
 4. the Central Integrator converges accepted Platform handoffs; and
 5. independent specialists re-audit the resulting cumulative candidate.
 
+For `CLEAN_COPY`, `NORMALIZE_AND_AUDIT`, and `RECONSTRUCT_FROM_INTENT`, the
+accepted pyramid does not become the old project in place. It emits one or
+more clean, independently re-audited **new project repositories**. Each output
+repository carries its exact commit, tree, source-content lineage, candidate
+digest, and rollback reference. The original repositories remain separate
+legacy evidence: immutable, untouched, read-only, and never deleted by the
+import workflow.
+
+Only after those output repositories exist and their source/candidate
+identities are rechecked may Runtime prepare an atomic Git repoint. The
+repoint is represented by `agentos.git_repoint_plan.v1`; preparation does not
+change Git, the source, or the legacy repositories. Execution is Runtime-only,
+requires the applicable protected cutover authorization, records a rollback
+receipt, and fails closed if any precondition changes. A missing candidate
+repository is an unfinished import step, not a reason to wait for protected
+authority: the Controller repairs or advances the pyramid first.
+
 The Agent Spawner compiles only roles requested by the Controller. It must
 select a dependency-complete block set, source-lock it, run independent QA,
 and return `NOT_READY` while any required block is incomplete. Seeds are

@@ -35,9 +35,16 @@ export const PROJECT_IMPORT_STATUSES = Object.freeze([
 ]);
 export const IMPORT_AUDIT_LANES = Object.freeze([...AUDIT_DISCIPLINES]);
 export const PROJECT_IMPORT_STORAGE_MODES = Object.freeze(["PROJECT_SIDE_CAR", "EXTERNAL_CONTROL_PLANE"]);
+export const PYRAMID_IMPORT_OUTPUT_SCHEMA = "agentos.pyramid_import_output.v1";
+export const PYRAMID_IMPORT_OUTPUT_STATUSES = Object.freeze(["READY_FOR_GIT_REPOINT", "GIT_REPOINTED"]);
+export const GIT_REPOINT_PLAN_SCHEMA = "agentos.git_repoint_plan.v1";
+export const GIT_REPOINT_PLAN_STATUSES = Object.freeze(["READY_FOR_PROTECTED_CUTOVER", "AUTHORIZED_PENDING_RUNTIME_EXECUTION", "EXECUTED"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
+const GIT_OBJECT = /^[0-9a-f]{40}$/u;
+const REFERENCE = /^(?:opaque:|ref:)[A-Za-z0-9._:/-]+$/u;
+const REPOSITORY_ID = /^[A-Za-z][A-Za-z0-9._:-]{0,191}$/u;
 const SECRET_NAME = /(?:^|[._-])(?:env|credentials?|secrets?|private[-_]?keys?|id_(?:rsa|dsa|ecdsa|ed25519)|access[-_]?tokens?)(?:$|[._-])/iu;
 const ENV_NAME = /^\.env(?:$|\.)/u;
 const SENSITIVE_ASSIGNMENT = /(?:^|[,{]\s*)["']?(?:[A-Z][A-Z0-9_]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|PRIVATE)|api[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token|client[_-]?secret|password|secret|private[_-]?key)["']?\s*[:=]\s*["']?([^\s"'#,}\]]+)/imu;
@@ -67,12 +74,33 @@ function requireRecord(value, label) {
   assert(isRecord(value), `${label} must be an object`);
 }
 
+function exactKeys(value, expected, label) {
+  requireRecord(value, label);
+  const actual = Object.keys(value).sort(compareUtf8);
+  const required = [...expected].sort(compareUtf8);
+  assert(JSON.stringify(actual) === JSON.stringify(required), `${label} fields mismatch`);
+}
+
 function requireString(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
 }
 
 function requireSha(value, label) {
   assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+function requireGitObject(value, label, {nullable = false} = {}) {
+  if (nullable && value === null) return;
+  assert(typeof value === "string" && GIT_OBJECT.test(value), `${label} must be a Git object ID`);
+}
+
+function requireReference(value, label, {nullable = false} = {}) {
+  if (nullable && value === null) return;
+  assert(typeof value === "string" && REFERENCE.test(value), `${label} must be an opaque or content-addressed reference`);
+}
+
+function requireRepositoryId(value, label) {
+  assert(typeof value === "string" && REPOSITORY_ID.test(value), `${label} must be a stable repository identifier`);
 }
 
 function requireUtc(value, label) {
@@ -457,8 +485,8 @@ export function preserveProjectSource(sourceRoot, destinationRoot, nowUtc, {allo
 function phaseNames(mode) {
   const planning = "CONTROLLER_PROJECT_DISCOVERY_AND_CAMPAIGN_PLANNING";
   if (mode === "ADOPT_IN_PLACE") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", planning, "BIND_GOVERNANCE", "CUTOVER_OR_CONTINUE"];
-  if (mode === "CLEAN_COPY") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", planning, "BIND_GOVERNANCE", "CUTOVER_OR_ROLLBACK"];
-  const pyramid = [planning, "CONTROLLER_DERIVED_AUDIT_REPAIR_PYRAMID", "PLATFORM_AND_CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "CUTOVER_OR_ROLLBACK"];
+  if (mode === "CLEAN_COPY") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", planning, "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "PREPARE_GIT_REPOINT", "BIND_GOVERNANCE", "CUTOVER_OR_ROLLBACK"];
+  const pyramid = [planning, "CONTROLLER_DERIVED_AUDIT_REPAIR_PYRAMID", "PLATFORM_AND_CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "PREPARE_GIT_REPOINT", "CUTOVER_OR_ROLLBACK"];
   if (mode === "NORMALIZE_AND_AUDIT") return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "COPY_ALLOWED_SOURCE", "NORMALIZE_STRUCTURE_AND_NAMES", ...pyramid];
   return ["PRESERVE_SOURCE", "BASELINE_EXISTING_PROJECT", "RECONSTRUCT_FROM_ACCEPTED_INTENT", ...pyramid];
 }
@@ -471,6 +499,215 @@ function auditSchedule(mode) {
     schedule: full ? "PARALLEL_READ_ONLY_AT_SUBSTANTIAL_CHECKPOINTS" : "BASELINE_ONLY_UNTIL_CAMPAIGN_ADMISSION",
     writer: "NONE_READ_ONLY",
   }));
+}
+
+function validatePyramidImportLegacy(legacy) {
+  const keys = [
+    "source_root_ref", "source_commit", "source_tree", "source_content_sha256", "source_observation_sha256",
+    "preservation_ref", "preservation_receipt_sha256", "immutable", "untouched", "read_only", "retention",
+  ];
+  exactKeys(legacy, keys, "pyramid import legacy source");
+  requireReference(legacy.source_root_ref, "pyramid import legacy source root");
+  requireGitObject(legacy.source_commit, "pyramid import legacy source commit", {nullable: true});
+  requireGitObject(legacy.source_tree, "pyramid import legacy source tree", {nullable: true});
+  requireSha(legacy.source_content_sha256, "pyramid import legacy source content");
+  requireSha(legacy.source_observation_sha256, "pyramid import legacy source observation");
+  requireReference(legacy.preservation_ref, "pyramid import legacy preservation");
+  requireSha(legacy.preservation_receipt_sha256, "pyramid import legacy preservation receipt");
+  assert(legacy.immutable === true && legacy.untouched === true && legacy.read_only === true, "pyramid import legacy source must be immutable, untouched, and read-only");
+  assert(legacy.retention === "LEGACY_REPOSITORY_UNTOUCHED", "pyramid import legacy retention policy is invalid");
+  return legacy;
+}
+
+function validatePyramidImportRepository(repository, index, legacy) {
+  const keys = [
+    "repository_id", "repository_ref", "branch_ref", "commit", "tree", "candidate_sha256",
+    "source_content_sha256", "source_observation_sha256", "pyramid_candidate_sha256", "rollback_ref", "clean", "status",
+  ];
+  exactKeys(repository, keys, `pyramid import candidate repository ${index}`);
+  requireRepositoryId(repository.repository_id, `pyramid import candidate repository ${index} ID`);
+  requireReference(repository.repository_ref, `pyramid import candidate repository ${index} reference`);
+  requireString(repository.branch_ref, `pyramid import candidate repository ${index} branch`);
+  assert(!repository.branch_ref.startsWith("/") && !repository.branch_ref.includes("\\") && !repository.branch_ref.split("/").includes(".."), `pyramid import candidate repository ${index} branch is unsafe`);
+  requireGitObject(repository.commit, `pyramid import candidate repository ${index} commit`);
+  requireGitObject(repository.tree, `pyramid import candidate repository ${index} tree`);
+  requireSha(repository.candidate_sha256, `pyramid import candidate repository ${index} candidate`);
+  requireSha(repository.source_content_sha256, `pyramid import candidate repository ${index} source content`);
+  requireSha(repository.source_observation_sha256, `pyramid import candidate repository ${index} source observation`);
+  requireSha(repository.pyramid_candidate_sha256, `pyramid import candidate repository ${index} pyramid candidate`);
+  requireReference(repository.rollback_ref, `pyramid import candidate repository ${index} rollback`);
+  assert(repository.clean === true, `pyramid import candidate repository ${index} must be clean`);
+  assert(repository.status === "INDEPENDENT_REAUDITED_CANDIDATE", `pyramid import candidate repository ${index} is not independently re-audited`);
+  assert(repository.source_content_sha256 === legacy.source_content_sha256, `pyramid import candidate repository ${index} source content lineage is stale`);
+  assert(repository.source_observation_sha256 === legacy.source_observation_sha256, `pyramid import candidate repository ${index} source observation lineage is stale`);
+  return repository;
+}
+
+function validatePyramidImportPyramid(pyramid) {
+  const keys = [
+    "specialist_audit_repair_sha256", "platform_review_sha256", "central_integration_sha256", "independent_reaudit_sha256",
+    "audit_repair_complete", "platform_review_complete", "central_integration_complete", "independent_reaudit_complete", "wave_count",
+  ];
+  exactKeys(pyramid, keys, "pyramid import acceptance");
+  for (const field of ["specialist_audit_repair_sha256", "platform_review_sha256", "central_integration_sha256", "independent_reaudit_sha256"]) requireSha(pyramid[field], `pyramid import ${field}`);
+  for (const field of ["audit_repair_complete", "platform_review_complete", "central_integration_complete", "independent_reaudit_complete"]) assert(pyramid[field] === true, `pyramid import ${field} is incomplete`);
+  assert(Number.isSafeInteger(pyramid.wave_count) && pyramid.wave_count >= 1, "pyramid import wave count is invalid");
+  return pyramid;
+}
+
+function validateGitRepointPolicy(policy, repositoryIds, {allowExecuted = false} = {}) {
+  const keys = [
+    "status", "operation", "target_repository_ids", "legacy_policy", "source_recheck_required", "candidate_recheck_required",
+    "rollback_receipt_required", "legacy_delete_forbidden", "source_mutation_forbidden", "destructive_work_forbidden", "authorization_ref", "rollback_ref", "next_action",
+  ];
+  exactKeys(policy, keys, "pyramid import Git repoint policy");
+  assert(GIT_REPOINT_PLAN_STATUSES.includes(policy.status), "pyramid import Git repoint status is invalid");
+  if (!allowExecuted) assert(policy.status !== "EXECUTED", "pyramid import output cannot claim Git repoint execution");
+  assert(policy.operation === "ATOMIC_REPOINT_PROJECT_GIT_TO_NEW_REPOSITORIES", "pyramid import Git repoint operation is invalid");
+  assert(Array.isArray(policy.target_repository_ids) && JSON.stringify(policy.target_repository_ids) === JSON.stringify([...repositoryIds].sort(compareUtf8)), "pyramid import Git repoint repository projection is stale");
+  policy.target_repository_ids.forEach((value, index) => requireRepositoryId(value, `pyramid import Git repoint repository ${index}`));
+  assert(policy.legacy_policy === "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED", "pyramid import Git repoint legacy policy is unsafe");
+  for (const field of ["source_recheck_required", "candidate_recheck_required", "rollback_receipt_required", "legacy_delete_forbidden", "source_mutation_forbidden", "destructive_work_forbidden"]) assert(policy[field] === true, `pyramid import Git repoint ${field} is weakened`);
+  requireReference(policy.authorization_ref, "pyramid import Git repoint authorization", {nullable: true});
+  requireReference(policy.rollback_ref, "pyramid import Git repoint rollback");
+  assert(["WAIT_FOR_GIT_REPOINT_AUTHORIZATION", "RUNTIME_ATOMIC_GIT_REPOINT", "GIT_REPOINT_COMPLETE"].includes(policy.next_action), "pyramid import Git repoint next action is invalid");
+  if (policy.status === "READY_FOR_PROTECTED_CUTOVER") assert(policy.authorization_ref === null && policy.next_action === "WAIT_FOR_GIT_REPOINT_AUTHORIZATION", "unapproved Git repoint must wait for authorization");
+  if (policy.status === "AUTHORIZED_PENDING_RUNTIME_EXECUTION") assert(policy.authorization_ref !== null && policy.next_action === "RUNTIME_ATOMIC_GIT_REPOINT", "authorized Git repoint is not runtime-bound");
+  if (policy.status === "EXECUTED") assert(policy.authorization_ref !== null && policy.next_action === "GIT_REPOINT_COMPLETE", "executed Git repoint lacks authorization or completion action");
+  return policy;
+}
+
+export function compilePyramidImportOutput({projectId, sourceIdentity, preservationRef, preservationReceiptSha256, candidateRepositories, pyramid, rollbackRef} = {}) {
+  assert(typeof projectId === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(projectId), "pyramid import output project ID is required");
+  requireRecord(sourceIdentity, "pyramid import output source identity");
+  const legacy = {
+    source_root_ref: sourceIdentity.source_root_ref,
+    source_commit: sourceIdentity.source_commit ?? null,
+    source_tree: sourceIdentity.source_tree ?? null,
+    source_content_sha256: sourceIdentity.source_content_sha256,
+    source_observation_sha256: sourceIdentity.source_observation_sha256,
+    preservation_ref: preservationRef,
+    preservation_receipt_sha256: preservationReceiptSha256,
+    immutable: true,
+    untouched: true,
+    read_only: true,
+    retention: "LEGACY_REPOSITORY_UNTOUCHED",
+  };
+  validatePyramidImportLegacy(legacy);
+  assert(Array.isArray(candidateRepositories) && candidateRepositories.length > 0, "pyramid import output candidate repositories are required");
+  const repositories = [...candidateRepositories].sort((left, right) => compareUtf8(left.repository_id, right.repository_id));
+  assert(new Set(repositories.map((repository) => repository.repository_id)).size === repositories.length, "pyramid import output candidate repository IDs are duplicated");
+  repositories.forEach((repository, index) => validatePyramidImportRepository(repository, index, legacy));
+  validatePyramidImportPyramid(pyramid);
+  requireReference(rollbackRef, "pyramid import output rollback");
+  const repositoryIds = repositories.map((repository) => repository.repository_id);
+  const gitRepoint = {
+    status: "READY_FOR_PROTECTED_CUTOVER",
+    operation: "ATOMIC_REPOINT_PROJECT_GIT_TO_NEW_REPOSITORIES",
+    target_repository_ids: repositoryIds,
+    legacy_policy: "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED",
+    source_recheck_required: true,
+    candidate_recheck_required: true,
+    rollback_receipt_required: true,
+    legacy_delete_forbidden: true,
+    source_mutation_forbidden: true,
+    destructive_work_forbidden: true,
+    authorization_ref: null,
+    rollback_ref: rollbackRef,
+    next_action: "WAIT_FOR_GIT_REPOINT_AUTHORIZATION",
+  };
+  validateGitRepointPolicy(gitRepoint, repositoryIds);
+  const output = {
+    schema: PYRAMID_IMPORT_OUTPUT_SCHEMA,
+    version: 1,
+    project_id: projectId,
+    status: "READY_FOR_GIT_REPOINT",
+    legacy,
+    candidate_repositories: repositories,
+    pyramid: structuredClone(pyramid),
+    git_repoint: gitRepoint,
+    output_sha256: null,
+  };
+  output.output_sha256 = canonicalDigest({...output, output_sha256: null});
+  return validatePyramidImportOutput(output);
+}
+
+export function validatePyramidImportOutput(output) {
+  const keys = ["schema", "version", "project_id", "status", "legacy", "candidate_repositories", "pyramid", "git_repoint", "output_sha256"];
+  exactKeys(output, keys, "pyramid import output");
+  assert(output.schema === PYRAMID_IMPORT_OUTPUT_SCHEMA && output.version === 1, "pyramid import output identity is invalid");
+  assert(typeof output.project_id === "string" && /^[A-Za-z][A-Za-z0-9._:-]*$/u.test(output.project_id), "pyramid import output project ID is invalid");
+  assert(PYRAMID_IMPORT_OUTPUT_STATUSES.includes(output.status), "pyramid import output status is invalid");
+  validatePyramidImportLegacy(output.legacy);
+  assert(Array.isArray(output.candidate_repositories) && output.candidate_repositories.length > 0, "pyramid import output candidate repositories are required");
+  const repositories = [...output.candidate_repositories].sort((left, right) => compareUtf8(left.repository_id, right.repository_id));
+  assert(JSON.stringify(repositories) === JSON.stringify(output.candidate_repositories), "pyramid import output candidate repositories are not sorted");
+  assert(new Set(repositories.map((repository) => repository.repository_id)).size === repositories.length, "pyramid import output candidate repositories are duplicated");
+  repositories.forEach((repository, index) => validatePyramidImportRepository(repository, index, output.legacy));
+  validatePyramidImportPyramid(output.pyramid);
+  validateGitRepointPolicy(output.git_repoint, repositories.map((repository) => repository.repository_id), {allowExecuted: output.status === "GIT_REPOINTED"});
+  if (output.status === "READY_FOR_GIT_REPOINT") assert(output.git_repoint.status === "READY_FOR_PROTECTED_CUTOVER", "pyramid import output cannot claim an unverified Git repoint");
+  if (output.status === "GIT_REPOINTED") assert(output.git_repoint.status === "EXECUTED", "repointed pyramid output lacks an executed Git repoint receipt");
+  requireSha(output.output_sha256, "pyramid import output digest");
+  assert(output.output_sha256 === canonicalDigest({...output, output_sha256: null}), "pyramid import output digest mismatch");
+  return output;
+}
+
+export function compileGitRepointPlan({output, targetProjectRef, authorizationRef = null} = {}) {
+  validatePyramidImportOutput(output);
+  requireReference(targetProjectRef, "Git repoint target project");
+  requireReference(authorizationRef, "Git repoint authorization", {nullable: true});
+  const authorized = authorizationRef !== null;
+  const body = {
+    schema: GIT_REPOINT_PLAN_SCHEMA,
+    version: 1,
+    output_sha256: output.output_sha256,
+    target_project_ref: targetProjectRef,
+    target_repository_ids: output.candidate_repositories.map((repository) => repository.repository_id),
+    legacy_source_ref: output.legacy.source_root_ref,
+    legacy_policy: "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED",
+    authorization_ref: authorizationRef,
+    status: authorized ? "AUTHORIZED_PENDING_RUNTIME_EXECUTION" : "READY_FOR_PROTECTED_CUTOVER",
+    execution_allowed: false,
+    source_recheck_required: true,
+    candidate_recheck_required: true,
+    legacy_delete_forbidden: true,
+    source_mutation_forbidden: true,
+    destructive_work_forbidden: true,
+    rollback_ref: output.git_repoint.rollback_ref,
+    next_action: authorized ? "RUNTIME_ATOMIC_GIT_REPOINT" : "WAIT_FOR_GIT_REPOINT_AUTHORIZATION",
+    plan_sha256: null,
+  };
+  body.plan_sha256 = canonicalDigest({...body, plan_sha256: null});
+  return validateGitRepointPlan(body);
+}
+
+export function validateGitRepointPlan(plan) {
+  const keys = [
+    "schema", "version", "output_sha256", "target_project_ref", "target_repository_ids", "legacy_source_ref", "legacy_policy",
+    "authorization_ref", "status", "execution_allowed", "source_recheck_required", "candidate_recheck_required", "legacy_delete_forbidden",
+    "source_mutation_forbidden", "destructive_work_forbidden", "rollback_ref", "next_action", "plan_sha256",
+  ];
+  exactKeys(plan, keys, "Git repoint plan");
+  assert(plan.schema === GIT_REPOINT_PLAN_SCHEMA && plan.version === 1, "Git repoint plan identity is invalid");
+  requireSha(plan.output_sha256, "Git repoint output binding");
+  requireReference(plan.target_project_ref, "Git repoint target project");
+  assert(Array.isArray(plan.target_repository_ids) && plan.target_repository_ids.length > 0, "Git repoint target repositories are required");
+  const ids = [...plan.target_repository_ids].sort(compareUtf8);
+  assert(JSON.stringify(ids) === JSON.stringify(plan.target_repository_ids), "Git repoint target repositories are not sorted");
+  ids.forEach((value, index) => requireRepositoryId(value, `Git repoint target repository ${index}`));
+  requireReference(plan.legacy_source_ref, "Git repoint legacy source");
+  assert(plan.legacy_policy === "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED", "Git repoint legacy policy is unsafe");
+  requireReference(plan.authorization_ref, "Git repoint authorization", {nullable: true});
+  assert(GIT_REPOINT_PLAN_STATUSES.includes(plan.status), "Git repoint plan status is invalid");
+  assert(plan.execution_allowed === false, "Git repoint plan may not grant execution authority");
+  for (const field of ["source_recheck_required", "candidate_recheck_required", "legacy_delete_forbidden", "source_mutation_forbidden", "destructive_work_forbidden"]) assert(plan[field] === true, `Git repoint plan ${field} is weakened`);
+  requireReference(plan.rollback_ref, "Git repoint rollback");
+  if (plan.status === "READY_FOR_PROTECTED_CUTOVER") assert(plan.authorization_ref === null && plan.next_action === "WAIT_FOR_GIT_REPOINT_AUTHORIZATION", "unapproved Git repoint plan must wait");
+  if (plan.status === "AUTHORIZED_PENDING_RUNTIME_EXECUTION") assert(plan.authorization_ref !== null && plan.next_action === "RUNTIME_ATOMIC_GIT_REPOINT", "authorized Git repoint plan is not runtime-bound");
+  requireSha(plan.plan_sha256, "Git repoint plan digest");
+  assert(plan.plan_sha256 === canonicalDigest({...plan, plan_sha256: null}), "Git repoint plan digest mismatch");
+  return plan;
 }
 
 export function recommendProjectImportMode(discoveryFacts = []) {
@@ -594,6 +831,22 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
       independent_reaudit_after_every_wave: true,
       writer_rule: "AUDITORS_READ_ONLY;_ONE_MIGRATION_WRITER_CUSTODY_AT_A_TIME",
     },
+    pyramid_output: {
+      contract: "agentos.pyramid_import_output.v1",
+      compiler: "control/project-import.mjs",
+      output_kind: mode === "ADOPT_IN_PLACE" ? "EXISTING_REPOSITORY_BINDING" : "NEW_PROJECT_REPOSITORIES",
+      source_lineage: "EVERY_CANDIDATE_REPOSITORY_BINDS_TO_THE_EXACT_PRESERVED_SOURCE_CONTENT_AND_OBSERVATION",
+      required_stages: mode === "ADOPT_IN_PLACE"
+        ? ["SOURCE_PRESERVATION", "GOVERNANCE_BINDING", "REVIEWABLE_EXISTING_REPOSITORY"]
+        : ["SPECIALIST_AUDIT_REPAIR", "PLATFORM_REVIEW_TEST_INTEGRATION", "CENTRAL_INTEGRATION", "INDEPENDENT_REAUDIT", "MATERIALIZE_NEW_PROJECT_REPOSITORIES"],
+      candidate_repository_rule: "PYRAMID_OUTPUT_IS_ONE_OR_MORE_CLEAN_NEW_PROJECT_REPOSITORIES_WITH_EXACT_COMMIT_TREE_AND_ROLLBACK_IDENTITY",
+      legacy_policy: "PRESERVE_OLD_REPOSITORIES_UNTOUCHED_AS_LEGACY_READ_ONLY_EVIDENCE",
+      git_repoint_contract: "agentos.git_repoint_plan.v1",
+      git_repoint_executor: "RUNTIME_ONLY_ATOMIC_REPOINT_AFTER_SOURCE_AND_CANDIDATE_RECHECK",
+      git_repoint_default: "READY_FOR_PROTECTED_CUTOVER",
+      legacy_delete_forbidden: true,
+      source_mutation_forbidden: true,
+    },
     universal_closeout: universalTaskCloseoutPolicy("IMPORT"),
     normalization: {
       execute_in_first_governed_campaign: fullAudit,
@@ -606,6 +859,12 @@ export function compileProjectImportPlan({projectId, mode, sourceRoot, destinati
       requires_exact_source_destination_and_candidate_identity: true,
       requires_independent_audit_for_full_modes: fullAudit,
       never_rewrites_source_in_place: true,
+      target: mode === "ADOPT_IN_PLACE" ? "EXISTING_REPOSITORY_BINDING" : "NEW_PROJECT_REPOSITORIES",
+      git_repoint: mode === "ADOPT_IN_PLACE" ? "NOT_APPLICABLE" : "RUNTIME_ONLY_ATOMIC_REPOINT",
+      legacy_repository_policy: "RETAIN_OLD_REPOSITORIES_UNTOUCHED",
+      legacy_delete_forbidden: true,
+      source_mutation_forbidden: true,
+      rollback_contract: "agentos.git_repoint_plan.v1",
     },
     rollback: {
       required: mode !== "ADOPT_IN_PLACE",
@@ -690,7 +949,18 @@ export function validateProjectImportPlan(plan) {
     "project import universal closeout policy differs from general governance");
   assert(plan.audit.acceptance.includes("PLATFORM_REVIEW_TEST_INTEGRATION_THEN_CENTRAL_INTEGRATION_THEN_INDEPENDENT_REAUDIT"), "project import acceptance pyramid is invalid");
   assert(plan.audit.platform_review_after_every_wave === true && plan.audit.central_integration_after_every_wave === true && plan.audit.independent_reaudit_after_every_wave === true, "project import pyramid does not re-integrate and re-audit every wave");
+  requireRecord(plan.pyramid_output, "project import pyramid output policy");
+  assert(plan.pyramid_output.contract === "agentos.pyramid_import_output.v1" && plan.pyramid_output.compiler === "control/project-import.mjs", "project import pyramid output contract is invalid");
+  const expectedOutputKind = plan.mode === "ADOPT_IN_PLACE" ? "EXISTING_REPOSITORY_BINDING" : "NEW_PROJECT_REPOSITORIES";
+  assert(plan.pyramid_output.output_kind === expectedOutputKind, "project import pyramid output kind is inconsistent with mode");
+  assert(plan.pyramid_output.source_lineage.includes("EXACT_PRESERVED_SOURCE_CONTENT_AND_OBSERVATION"), "project import pyramid output source lineage is weakened");
+  assert(plan.pyramid_output.legacy_policy === "PRESERVE_OLD_REPOSITORIES_UNTOUCHED_AS_LEGACY_READ_ONLY_EVIDENCE", "project import pyramid output legacy policy is unsafe");
+  assert(plan.pyramid_output.git_repoint_contract === "agentos.git_repoint_plan.v1" && plan.pyramid_output.git_repoint_executor === "RUNTIME_ONLY_ATOMIC_REPOINT_AFTER_SOURCE_AND_CANDIDATE_RECHECK", "project import Git repoint executor is invalid");
+  assert(plan.pyramid_output.legacy_delete_forbidden === true && plan.pyramid_output.source_mutation_forbidden === true, "project import pyramid output protection is weakened");
   assert(plan.cutover.status === "NOT_AUTHORIZED" && plan.cutover.never_rewrites_source_in_place === true, "project import cutover boundary is weakened");
+  assert(plan.cutover.target === expectedOutputKind, "project import cutover target is stale");
+  assert(plan.cutover.legacy_repository_policy === "RETAIN_OLD_REPOSITORIES_UNTOUCHED" && plan.cutover.legacy_delete_forbidden === true && plan.cutover.source_mutation_forbidden === true, "project import cutover legacy policy is unsafe");
+  assert(plan.cutover.rollback_contract === "agentos.git_repoint_plan.v1", "project import cutover rollback contract is invalid");
   assert(plan.normalization.execute_in_first_governed_campaign === fullAudit, "project import normalization phase is not bound to its mode");
   assert(plan.rollback.required === (plan.mode !== "ADOPT_IN_PLACE"), "project import rollback requirement is invalid");
   assert(plan.rollback.rule.includes("RETAIN_SOURCE") && plan.rollback.rule.includes("RECEIPT"), "project import rollback does not retain source evidence");
