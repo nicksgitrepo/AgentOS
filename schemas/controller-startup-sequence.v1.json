@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/controller-startup-sequence.v1.json",
+  "title": "AgentOS Controller startup successor",
+  "description": "A project-agnostic startup state machine that must emit the next local action in the same turn; a protected wait requires a typed true blocker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "sequence_id", "stage", "state_sha256", "route_facts", "next_action", "next_handler", "continuation", "continuation_sha256", "evidence_refs", "hostile_fixture_refs", "true_blocker", "protected_event", "authority", "sequence_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.controller_startup_sequence.v1"},
+    "version": {"const": 1},
+    "sequence_id": {"$ref": "#/$defs/identifier"},
+    "stage": {"enum": ["SEALED_BOOTSTRAP_ACCEPTED", "SPAWNER_ADMITTED", "PERMANENT_ROLES_IN_PROGRESS", "PERMANENT_ROLES_READY", "ORCHESTRATOR_GOVERNANCE_READY", "SPAWNER_COMPILER_ACTIVE", "SPAWNER_ROSTER_PUBLISHED", "GOVERNED_SPAWN_ADMITTED", "GOVERNED_SPAWN_ACTIVE", "IMPORT_ORCHESTRATOR_ACTIVE"]},
+    "state_sha256": {"$ref": "#/$defs/sha256"},
+    "route_facts": {"$ref": "#/$defs/routeFacts"},
+    "next_action": {"$ref": "#/$defs/identifier"},
+    "next_handler": {"$ref": "#/$defs/identifier"},
+    "continuation": {"$ref": "#/$defs/continuation"},
+    "continuation_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceRef"}},
+    "hostile_fixture_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "true_blocker": {"type": "boolean"},
+    "protected_event": {"anyOf": [{"$ref": "#/$defs/protectedEvent"}, {"type": "null"}]},
+    "authority": {"$ref": "#/$defs/authority"},
+    "sequence_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "routeFacts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["next_role_id", "incomplete_block_count", "pending_route_count", "isolated_local_custody", "independent_clearance_status"],
+      "properties": {
+        "next_role_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "incomplete_block_count": {"type": "integer", "minimum": 0},
+        "pending_route_count": {"type": "integer", "minimum": 0},
+        "isolated_local_custody": {"type": "boolean"},
+        "independent_clearance_status": {"enum": ["PENDING_EXTERNAL_AUTHORITY", "CLEARED"]}
+      }
+    },
+    "evidenceRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {"evidence_id": {"$ref": "#/$defs/identifier"}, "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "continuation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
+      "properties": {"mode": {"enum": ["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT", "EXPLICIT_OWNER_REVIEW"]}, "timer_deferral": {"const": false}, "heartbeat_deferral": {"const": false}, "same_turn_dispatch": {"type": "boolean"}, "protected_event_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]}, "resume_condition": {"type": "string", "minLength": 8}}
+    },
+    "protectedEvent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["blocker_id", "blocker_class", "evidence_ceiling", "restart_event", "resources"],
+      "properties": {
+        "blocker_id": {"$ref": "#/$defs/identifier"},
+        "blocker_class": {"enum": ["CREDENTIAL_OR_AUTHENTICATION", "IRREVERSIBLE_DESTRUCTIVE_USER_WORK", "MAJOR_PRODUCT_OR_PRODUCTION_DECISION", "MATERIAL_SPEND_OR_FINANCIAL_AUTHORITY", "PROTECTED_EXTERNAL_DEPENDENCY"]},
+        "evidence_ceiling": {"type": "string", "minLength": 24}, "restart_event": {"type": "string", "minLength": 8},
+        "resources": {"type": "object", "additionalProperties": false, "required": ["jobs", "workers", "heavyweight_processes", "timers"], "properties": {"jobs": {"const": 0}, "workers": {"const": 0}, "heavyweight_processes": {"const": 0}, "timers": {"const": 0}}}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work"],
+      "properties": {"compiler_only": {"const": true}, "admission": {"const": false}, "activation": {"const": false}, "product_mutation": {"const": false}, "provider_access": {"const": false}, "credential_access": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false}}
+    }
+  }
+}
