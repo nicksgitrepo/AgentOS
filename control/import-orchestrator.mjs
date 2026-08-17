@@ -18,6 +18,7 @@ import {
 import {validateAgentSpawnerLifecycle} from "./agent-spawner-lifecycle.mjs";
 import {validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
 import {validateAgentSpawnerDefectQueue} from "./agent-spawner-defect-queue.mjs";
+import {validateImportOrchestratorCampaignAcceptance, validateImportOrchestratorGovernanceReadiness} from "./import-orchestrator-governance-readiness.mjs";
 
 export const IMPORT_ORCHESTRATOR_SCHEMA = "agentos.import_orchestrator.v1";
 export const IMPORT_ORCHESTRATOR_VERSION = 1;
@@ -207,9 +208,9 @@ function validateContinuation(continuation) {
   for (const field of ["same_turn_next_action", "heartbeat_is_not_progress", "timer_is_not_progress", "active_worker_counts_as_progress", "protected_wait_requires_exact_event"]) assert(continuation[field] === true, `Import Orchestrator continuation rule is weakened: ${field}`);
 }
 
-export function validateImportOrchestrator(orchestrator, {plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function validateImportOrchestrator(orchestrator, {governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   exactKeys(orchestrator, [
-    "schema", "version", "orchestrator_id", "role_id", "mode", "state", "campaign_plan_sha256", "roster_projection_sha256",
+    "schema", "version", "orchestrator_id", "role_id", "mode", "governance_readiness_sha256", "governance_acceptance_sha256", "state", "campaign_plan_sha256", "roster_projection_sha256",
     "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
     "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
     "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256",
@@ -217,6 +218,8 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
   assert(orchestrator.schema === IMPORT_ORCHESTRATOR_SCHEMA && orchestrator.version === IMPORT_ORCHESTRATOR_VERSION, "Import Orchestrator identity is invalid");
   requireIdentifier(orchestrator.orchestrator_id, "Import Orchestrator ID");
   assert(orchestrator.role_id === IMPORT_ORCHESTRATOR_ROLE && orchestrator.mode === IMPORT_ORCHESTRATOR_MODE, "Import Orchestrator role or mode is invalid");
+  requireSha(orchestrator.governance_readiness_sha256, "Import Orchestrator governance readiness binding");
+  requireSha(orchestrator.governance_acceptance_sha256, "Import Orchestrator governance acceptance binding");
   assert(IMPORT_ORCHESTRATOR_STATES.includes(orchestrator.state), "Import Orchestrator state is invalid");
   assert(IMPORT_ORCHESTRATOR_ACTIONS.includes(orchestrator.next_action), "Import Orchestrator action is invalid");
   if (["ACTIVE", "REPAIRING", "CANDIDATE_REVIEW"].includes(orchestrator.state)) {
@@ -275,10 +278,21 @@ export function validateImportOrchestrator(orchestrator, {plan, rosterProjection
   if (orchestrator.state === "RETIRED") assert(orchestrator.next_action === "NONE", "Retired Orchestrator must have no action");
   requireSha(orchestrator.orchestrator_sha256, "Import Orchestrator digest");
   assert(orchestrator.orchestrator_sha256 === canonicalDigest(body(orchestrator)), "Import Orchestrator digest mismatch");
+  if (governanceReadiness !== undefined || governanceAcceptance !== undefined) {
+    assert(governanceReadiness !== undefined && governanceAcceptance !== undefined, "Import Orchestrator governance readiness and acceptance must be bound together");
+    validateImportOrchestratorGovernanceReadiness(governanceReadiness);
+    validateImportOrchestratorCampaignAcceptance(governanceAcceptance, {readiness: governanceReadiness});
+    assert(orchestrator.governance_readiness_sha256 === governanceReadiness.readiness_sha256, "Import Orchestrator governance readiness is stale");
+    assert(orchestrator.governance_acceptance_sha256 === governanceAcceptance.acceptance_sha256, "Import Orchestrator governance acceptance is stale");
+    assert(governanceAcceptance.orchestrator_id === orchestrator.orchestrator_id, "Import Orchestrator governance acceptance targets another orchestrator");
+  }
   return orchestrator;
 }
 
-export function compileImportOrchestrator({orchestratorId, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function compileImportOrchestrator({orchestratorId, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+  validateImportOrchestratorGovernanceReadiness(governanceReadiness);
+  validateImportOrchestratorCampaignAcceptance(governanceAcceptance, {readiness: governanceReadiness});
+  assert(governanceReadiness.status === "READY_TO_PLAN" && governanceAcceptance.orchestrator_id === orchestratorId, "Import Orchestrator governance is not ready for this orchestrator");
   validateControllerImportCampaignPlan(plan);
   validateControllerImportRosterProjection(rosterProjection, {plan});
   validateControllerImportRunState(runState, {plan});
@@ -293,6 +307,8 @@ export function compileImportOrchestrator({orchestratorId, plan, rosterProjectio
     orchestrator_id: orchestratorId,
     role_id: IMPORT_ORCHESTRATOR_ROLE,
     mode: IMPORT_ORCHESTRATOR_MODE,
+    governance_readiness_sha256: governanceReadiness.readiness_sha256,
+    governance_acceptance_sha256: governanceAcceptance.acceptance_sha256,
     state: derived.state,
     campaign_plan_sha256: plan.plan_sha256,
     roster_projection_sha256: rosterProjection.projection_sha256,
@@ -356,17 +372,17 @@ export function compileImportOrchestrator({orchestratorId, plan, rosterProjectio
     orchestrator_sha256: null,
   };
   orchestrator.orchestrator_sha256 = canonicalDigest(body(orchestrator));
-  return validateImportOrchestrator(orchestrator, {plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
+  return validateImportOrchestrator(orchestrator, {governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
 }
 
-export function advanceImportOrchestrator({orchestrator, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function advanceImportOrchestrator({orchestrator, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   validateImportOrchestrator(orchestrator);
-  const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
+  const next = compileImportOrchestrator({orchestratorId: orchestrator.orchestrator_id, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
   const changed = ["campaign_plan_sha256", "roster_projection_sha256", "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count", "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "state", "next_action"].some((field) => next[field] !== orchestrator[field]);
   assert(changed, "Import Orchestrator cannot advance without a material bound transition");
   next.transition_sequence = orchestrator.transition_sequence + 1;
   next.orchestrator_sha256 = canonicalDigest(body(next));
-  return validateImportOrchestrator(next, {plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
+  return validateImportOrchestrator(next, {governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes: defectIntakes ?? defectQueue.entries});
 }
 
 /*
@@ -449,11 +465,11 @@ export function writeImportOrchestratorRecordCompareAndSwap({authorityRoot, reco
   return {path: recordPath, orchestrator_sha256: readback.orchestrator_sha256};
 }
 
-export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
+export function advanceImportOrchestratorRecord({authorityRoot, recordPath, expectedOrchestratorSha256, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes} = {}) {
   requireSha(expectedOrchestratorSha256, "expected Orchestrator record");
   const current = readImportOrchestratorRecord({authorityRoot, recordPath});
   assert(current !== null, "Orchestrator record is missing");
   assert(current.orchestrator_sha256 === expectedOrchestratorSha256, "Orchestrator record parent is stale");
-  const next = advanceImportOrchestrator({orchestrator: current, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
+  const next = advanceImportOrchestrator({orchestrator: current, governanceReadiness, governanceAcceptance, plan, rosterProjection, runState, spawnerLifecycle, defectQueue, defectIntakes});
   return writeImportOrchestratorRecordCompareAndSwap({authorityRoot, recordPath, expectedOrchestratorSha256, orchestrator: next});
 }

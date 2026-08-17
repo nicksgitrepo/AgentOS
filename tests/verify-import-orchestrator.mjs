@@ -22,9 +22,33 @@ import {
   validateImportOrchestrator,
   writeImportOrchestratorRecordCompareAndSwap,
 } from "../control/import-orchestrator.mjs";
+import {
+  IMPORT_ORCHESTRATOR_GOVERNANCE_GATE_IDS,
+  compileImportOrchestratorCampaignAcceptance,
+  compileImportOrchestratorGovernance,
+  compileImportOrchestratorGovernanceReadiness,
+} from "../control/import-orchestrator-governance-readiness.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const hash = (value) => canonicalDigest({value});
+const NOW = "2026-08-16T00:00:00.000Z";
+const orchestratorGovernance = compileImportOrchestratorGovernance({
+  sourceCommit: "AGENTOS-COMMIT-ORCHESTRATOR", sourceTree: "AGENTOS-TREE-ORCHESTRATOR",
+  gates: IMPORT_ORCHESTRATOR_GOVERNANCE_GATE_IDS.map((gate_id) => ({
+    gate_id, status: "PASS", rule: `The ${gate_id} gate has a deterministic project-agnostic rule and exact stop behavior.`, evidence_sha256: hash(`orchestrator-evidence:${gate_id}`),
+    hostile_fixture_ids: [`FIXTURE.ORCHESTRATOR.${gate_id.split(".").at(-1)}.BYPASS`, `FIXTURE.ORCHESTRATOR.${gate_id.split(".").at(-1)}.MISSING`].sort(), authority: "PROJECT_AGNOSTIC_ORCHESTRATOR",
+    stop_condition: "Reject campaign planning and preserve the typed blocked readiness receipt until this gate passes.",
+  })),
+});
+const governanceFor = (orchestratorId) => {
+  const readiness = compileImportOrchestratorGovernanceReadiness({orchestratorId, governance: orchestratorGovernance, observedAtUtc: NOW});
+  const acceptance = compileImportOrchestratorCampaignAcceptance({readiness, campaignRequestSha256: hash(`campaign-request:${orchestratorId}`), acceptedAtUtc: NOW});
+  return {governanceReadiness: readiness, governanceAcceptance: acceptance};
+};
+const {governanceReadiness: orchestratorReadiness, governanceAcceptance: orchestratorAcceptance} = governanceFor("ORCHESTRATOR.IMPORT.SYNTHETIC");
+const repairGovernance = governanceFor("ORCHESTRATOR.IMPORT.REPAIR");
+const divergedGovernance = governanceFor("ORCHESTRATOR.IMPORT.DIVERGED");
+const heldGovernance = governanceFor("ORCHESTRATOR.IMPORT.HELD");
 const context = compileControllerImportPlanningContext({
   projectContractSha256: hash("contract"),
   goals: [{goal_id: "GOAL.PRIMARY", priority: 100, outcome: "Complete the first useful workflow", success_conditions: ["Independent evidence exists"]}],
@@ -54,8 +78,9 @@ let lifecycle = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
 });
 const emptyDefectQueue = compileAgentSpawnerDefectQueue({queueId: "QUEUE.SPAWNER.DEFECTS.SYNTHETIC", entries: []});
-const initialWithQueue = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.SYNTHETIC", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
-validateImportOrchestrator(initialWithQueue, {plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
+const initialWithQueue = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.SYNTHETIC", governanceReadiness: orchestratorReadiness, governanceAcceptance: orchestratorAcceptance, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
+const orchestratorGovernanceForInitial = {governanceReadiness: orchestratorReadiness, governanceAcceptance: orchestratorAcceptance};
+validateImportOrchestrator(initialWithQueue, {governanceReadiness: orchestratorReadiness, governanceAcceptance: orchestratorAcceptance, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
 assert.throws(() => validateImportOrchestrator(initialWithQueue, {defectIntakes: []}), /require typed Spawner queue custody/u);
 assert.equal(initialWithQueue.defect_queue_sha256, emptyDefectQueue.queue_sha256);
 assert.equal(initialWithQueue.state, "ACTIVE");
@@ -84,15 +109,15 @@ const defectRepair = compileAgentSpawnerDefectIntake({
   graphId: "GRAPH.IMPORT.ORCHESTRATOR",
 });
 const repairDefectQueue = compileAgentSpawnerDefectQueue({queueId: "QUEUE.SPAWNER.DEFECTS.SYNTHETIC", entries: [defectRepair]});
-assert.throws(() => compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.DIVERGED", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue, defectIntakes: [defectRepair]}), /queue and intake entries diverge/u);
-const repairOrchestrator = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.REPAIR", plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: repairDefectQueue});
+assert.throws(() => compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.DIVERGED", ...divergedGovernance, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue, defectIntakes: [defectRepair]}), /queue and intake entries diverge/u);
+const repairOrchestrator = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.REPAIR", ...repairGovernance, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: repairDefectQueue});
 assert.equal(repairOrchestrator.state, "REPAIRING");
 assert.equal(repairOrchestrator.next_action, "REPAIR_BLOCKS");
 assert.equal(repairOrchestrator.repair_candidate_count, 1);
 assert.equal(repairOrchestrator.controller_custody_count, 0);
 assert.equal(repairOrchestrator.protected_defect_count, 0);
 assert.equal(repairOrchestrator.rejected_duplicate_count, 0);
-const repairedTransition = advanceImportOrchestrator({orchestrator: initialWithQueue, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: repairDefectQueue});
+const repairedTransition = advanceImportOrchestrator({orchestrator: initialWithQueue, ...orchestratorGovernanceForInitial, plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: repairDefectQueue});
 assert.equal(repairedTransition.transition_sequence, 1);
 assert.equal(repairedTransition.next_action, "REPAIR_BLOCKS");
 
@@ -106,10 +131,10 @@ lifecycle = compileAgentSpawnerLifecycle({
   qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
   state: "COMPILER_ACTIVE",
 });
-const progressed = advanceImportOrchestrator({orchestrator: initialWithQueue, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
+const progressed = advanceImportOrchestrator({orchestrator: initialWithQueue, ...orchestratorGovernanceForInitial, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue});
 assert.equal(progressed.transition_sequence, 1);
 assert.equal(progressed.next_action, "START_SPECIALIST_WAVE");
-assert.throws(() => advanceImportOrchestrator({orchestrator: progressed, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue}), /without a material bound transition/u);
+assert.throws(() => advanceImportOrchestrator({orchestrator: progressed, ...orchestratorGovernanceForInitial, plan, rosterProjection: activeRoster, runState: run, spawnerLifecycle: lifecycle, defectQueue: emptyDefectQueue}), /without a material bound transition/u);
 
 const heldRoster = compileControllerImportRosterProjection({plan, qaRecords: qa, waveActivationAllowed: false});
 const heldLifecycle = compileAgentSpawnerLifecycle({
@@ -120,7 +145,7 @@ const heldLifecycle = compileAgentSpawnerLifecycle({
   qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
   state: "COMPILER_ACTIVE",
 });
-const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
+const held = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.HELD", ...heldGovernance, plan, rosterProjection: heldRoster, runState: compileControllerImportRunState({plan}), spawnerLifecycle: heldLifecycle, defectQueue: emptyDefectQueue});
 assert.equal(held.state, "PROTECTED_WAIT");
 assert.equal(held.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(held.continuation.timer_is_not_progress, true);
@@ -145,6 +170,7 @@ const persistedAdvance = advanceImportOrchestratorRecord({
   authorityRoot: persistenceRoot,
   recordPath: persistencePath,
   expectedOrchestratorSha256: initialWithQueue.orchestrator_sha256,
+  ...orchestratorGovernanceForInitial,
   plan,
   rosterProjection: activeRoster,
   runState: run,

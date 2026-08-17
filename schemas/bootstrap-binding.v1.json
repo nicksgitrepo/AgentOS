@@ -562,11 +562,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "1a4646afc47ac1ac533983fb37a7fd41d46099a96876cbd208d2c82dee509b04"
+      "sha256": "b65512f9a74e6ef460fdf2e6c455a8bd99ea5a44b5ef5b9253b3b4207c5efa6b"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "3728949c35755ed29bfd8602b9f0fd03cd6488b46c89dfe5935a42ab1459dc31"
+      "sha256": "05a606b872c137979e06123189f83c3d27cfe474117a6847f60b473647cbe25a"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -574,7 +574,19 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "fb510a25ca8c6339245918abd358a164dbdc05d0ea81a62a69c703c284afcf7f"
+      "sha256": "6df12f36988d87706c6dc0e569daf34dc8fcae984c0c72760f72db7be222934e"
+    },
+    "import_orchestrator_governance_readiness_controller": {
+      "path": "control/import-orchestrator-governance-readiness.mjs",
+      "sha256": "5d3c8c7fd14721723a3d4eb9d6a7325fe80ab3fe7fa32d0fd61f4eccd3271c30"
+    },
+    "import_orchestrator_governance_readiness_contract": {
+      "path": "schemas/import-orchestrator-governance-readiness.v1.json",
+      "sha256": "406109f9cbf4e0126bd83b0b03940e451df13af7c42a63d9c0c4b1d9556cf8d0"
+    },
+    "import_orchestrator_governance_readiness_verifier": {
+      "path": "tests/verify-import-orchestrator-governance-readiness.mjs",
+      "sha256": "4e65d048d8c5e92140f84992b1aed9fe645f825c9713d05b95199be92ba15766"
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",

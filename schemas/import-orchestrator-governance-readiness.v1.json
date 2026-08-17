@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/import-orchestrator-governance-readiness.v1.json",
+  "title": "Project-agnostic Import Orchestrator governance injection and readiness",
+  "description": "The Import Orchestrator must inject and verify its own complete governance envelope before campaign planning, wave routing, Spawner QA, spawning, custody, handoffs, or candidate advancement. This contract is compiler-only and does not activate workers or bypass protected gates.",
+  "type": "object",
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "gateId": {"type": "string", "pattern": "^ORCHESTRATOR\\.GOVERNANCE\\.[A-Z0-9_]+$"},
+    "gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate_id", "status", "rule", "evidence_sha256", "hostile_fixture_ids", "authority", "stop_condition"],
+      "properties": {
+        "gate_id": {"$ref": "#/$defs/gateId"}, "status": {"const": "PASS"}, "rule": {"type": "string", "minLength": 24},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"}, "hostile_fixture_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/token"}},
+        "authority": {"const": "PROJECT_AGNOSTIC_ORCHESTRATOR"}, "stop_condition": {"type": "string", "minLength": 24}
+      }
+    },
+    "governance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "role", "scope", "source_commit", "source_tree", "required_gate_ids", "gates", "forbidden_capabilities", "governance_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.import_orchestrator_governance.v1"}, "version": {"const": 1}, "role": {"const": "AGENTOS_IMPORT_ORCHESTRATOR"}, "scope": {"const": "PROJECT_AGNOSTIC_IMPORT_CONTROL_PLANE"},
+        "source_commit": {"$ref": "#/$defs/token"}, "source_tree": {"$ref": "#/$defs/token"},
+        "required_gate_ids": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"$ref": "#/$defs/gateId"}},
+        "gates": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"$ref": "#/$defs/gate"}},
+        "forbidden_capabilities": {"type": "array", "minItems": 9, "uniqueItems": true, "items": {"$ref": "#/$defs/token"}}, "governance_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "readiness": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "orchestrator_id", "injection_order", "observed_at_utc", "governance_sha256", "required_gate_ids", "verified_gate_ids", "status", "acceptance_state", "failure_code", "readiness_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.import_orchestrator_governance_readiness.v1"}, "version": {"const": 1}, "orchestrator_id": {"$ref": "#/$defs/token"}, "injection_order": {"const": 5}, "observed_at_utc": {"type": "string", "format": "date-time"},
+        "governance_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "required_gate_ids": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"$ref": "#/$defs/gateId"}}, "verified_gate_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/gateId"}},
+        "status": {"enum": ["READY_TO_PLAN", "BLOCKED"]}, "acceptance_state": {"enum": ["CAMPAIGN_PLANNING_ALLOWED", "CAMPAIGN_PLANNING_REJECTED"]}, "failure_code": {"anyOf": [{"enum": ["GOVERNANCE_MISSING", "GOVERNANCE_INVALID"]}, {"type": "null"}]}, "readiness_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "acceptance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "version", "orchestrator_id", "readiness_sha256", "campaign_request_sha256", "status", "accepted_at_utc", "acceptance_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.import_orchestrator_campaign_acceptance.v1"}, "version": {"const": 1}, "orchestrator_id": {"$ref": "#/$defs/token"}, "readiness_sha256": {"$ref": "#/$defs/sha256"}, "campaign_request_sha256": {"$ref": "#/$defs/sha256"}, "status": {"const": "CAMPAIGN_PLANNING_ACCEPTED"}, "accepted_at_utc": {"type": "string", "format": "date-time"}, "acceptance_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "oneOf": [{"$ref": "#/$defs/governance"}, {"$ref": "#/$defs/readiness"}, {"$ref": "#/$defs/acceptance"}],
+  "state_rules": {
+    "ordering": "Orchestrator governance injection/readiness follows permanent-role readiness and precedes campaign planning or any project-bound route.",
+    "blocked": "Missing, incomplete, placeholder, stale, or tampered governance yields BLOCKED and rejects campaign planning.",
+    "side_effects": "Governance compilation and readiness are compiler-only; they cannot mutate Product, use providers or credentials, spend, activate waves, or admit incomplete roles.",
+    "continuation": "A READY_TO_PLAN readiness must be followed by the typed campaign acceptance receipt; no timer-only or commentary-only transition is valid."
+  }
+}

@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/import-orchestrator.v1.json",
   "title": "AgentOS Import Campaign Orchestrator",
-  "description": "Project-agnostic campaign execution contract. The Orchestrator owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, candidate advance, and durable digest-CAS state persistence; the persistent Controller supervises liveness and bounded workflow repair.",
+  "description": "Project-agnostic campaign execution contract. The Orchestrator must first bind its own verified governance readiness and campaign acceptance, then owns import planning, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, candidate advance, and durable digest-CAS state persistence; the persistent Controller supervises liveness and bounded workflow repair.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema", "version", "orchestrator_id", "role_id", "mode", "state", "campaign_plan_sha256", "roster_projection_sha256",
+    "schema", "version", "orchestrator_id", "role_id", "mode", "governance_readiness_sha256", "governance_acceptance_sha256", "state", "campaign_plan_sha256", "roster_projection_sha256",
     "run_state_sha256", "spawner_lifecycle_sha256", "defect_queue_sha256", "defect_intake_sha256", "repair_candidate_count", "controller_custody_count",
     "protected_defect_count", "rejected_duplicate_count", "current_wave_id", "blocked_dependency_id", "ownership", "authority",
     "handoff_contract", "continuation", "transition_sequence", "next_action", "orchestrator_sha256"
@@ -17,6 +17,8 @@
     "orchestrator_id": {"$ref": "#/$defs/identifier"},
     "role_id": {"const": "CAMPAIGN_ORCHESTRATOR"},
     "mode": {"const": "IMPORT"},
+    "governance_readiness_sha256": {"$ref": "#/$defs/sha256"},
+    "governance_acceptance_sha256": {"$ref": "#/$defs/sha256"},
     "state": {"enum": ["ACTIVE", "REPAIRING", "PROTECTED_WAIT", "CANDIDATE_REVIEW", "RETIRED"]},
     "campaign_plan_sha256": {"$ref": "#/$defs/sha256"},
     "roster_projection_sha256": {"$ref": "#/$defs/sha256"},
