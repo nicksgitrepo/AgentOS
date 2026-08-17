@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/typed-successor-readback.v1.json",
+  "title": "AgentOS Typed Semantic Successor Readback",
+  "description": "Project-agnostic atomic successor contract binding queue facts, derived counts, the registered next action, and a non-null semantic readback.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "successor_id", "parent_successor_sha256", "parent_next_action", "transition_sequence", "state", "next_action", "next_handler", "queue", "accepted_current_authority_count", "collected_count", "released_slot_count", "resource_boundary", "readback", "readback_sha256", "successor_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.typed_successor_readback.v1"},
+    "version": {"const": 1},
+    "successor_id": {"$ref": "#/$defs/identifier"},
+    "parent_successor_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "parent_next_action": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+    "transition_sequence": {"type": "integer", "minimum": 0},
+    "state": {"enum": ["ACTIVE", "REPAIRING", "PROTECTED_WAIT", "CANDIDATE_REVIEW"]},
+    "next_action": {"$ref": "#/$defs/identifier"},
+    "next_handler": {"$ref": "#/$defs/identifier"},
+    "queue": {
+      "type": "object", "additionalProperties": false, "required": ["entries", "queue_sha256"],
+      "properties": {
+        "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+        "queue_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "accepted_current_authority_count": {"type": "integer", "minimum": 0},
+    "collected_count": {"type": "integer", "minimum": 0},
+    "released_slot_count": {"type": "integer", "minimum": 0},
+    "resource_boundary": {"$ref": "#/$defs/resourceBoundary"},
+    "readback": {"$ref": "#/$defs/readback"},
+    "readback_sha256": {"$ref": "#/$defs/sha256"},
+    "successor_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "entry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entry_id", "record_sha256", "authority_status", "collection_status", "slot_status"],
+      "properties": {
+        "entry_id": {"$ref": "#/$defs/identifier"},
+        "record_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_status": {"enum": ["CURRENT", "STALE", "INVALID", "PENDING"]},
+        "collection_status": {"enum": ["COLLECTED", "HELD", "PENDING"]},
+        "slot_status": {"enum": ["RELEASED", "HELD"]}
+      }
+    },
+    "resourceBoundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["active_lane_count", "lane_limit", "heavyweight_process_count", "heavyweight_process_limit", "wave_activation"],
+      "properties": {
+        "active_lane_count": {"type": "integer", "minimum": 0},
+        "lane_limit": {"type": "integer", "minimum": 0},
+        "heavyweight_process_count": {"type": "integer", "minimum": 0},
+        "heavyweight_process_limit": {"type": "integer", "minimum": 0},
+        "wave_activation": {"enum": ["ON", "OFF"]}
+      }
+    },
+    "readback": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "next_action", "next_handler", "queue_sha256", "accepted_current_authority_count", "collected_count", "released_slot_count", "entry_record_sha256s"],
+      "properties": {
+        "state": {"enum": ["ACTIVE", "REPAIRING", "PROTECTED_WAIT", "CANDIDATE_REVIEW"]},
+        "next_action": {"$ref": "#/$defs/identifier"},
+        "next_handler": {"$ref": "#/$defs/identifier"},
+        "queue_sha256": {"$ref": "#/$defs/sha256"},
+        "accepted_current_authority_count": {"type": "integer", "minimum": 0},
+        "collected_count": {"type": "integer", "minimum": 0},
+        "released_slot_count": {"type": "integer", "minimum": 0},
+        "entry_record_sha256s": {"type": "array", "items": {"$ref": "#/$defs/sha256"}}
+      }
+    }
+  }
+}

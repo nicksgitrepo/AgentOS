@@ -23,6 +23,16 @@ import {
   compileIndependentClearanceApplicability,
   validateIndependentClearanceApplicability,
 } from "./independent-clearance-applicability.mjs";
+// The semantic successor contract is re-exported here so every Orchestrator
+// adapter can use the same queue/readback gate instead of inventing a private
+// JSON convention.  The contract itself remains project-agnostic and performs
+// its own atomic CAS and hostile-state validation.
+export {
+  compileTypedSuccessorReadback as compileImportOrchestratorSuccessorReadback,
+  readTypedSuccessorReadback as readImportOrchestratorSuccessorReadback,
+  validateTypedSuccessorReadback as validateImportOrchestratorSuccessorReadback,
+  writeTypedSuccessorReadbackCompareAndSwap as writeImportOrchestratorSuccessorReadbackCompareAndSwap,
+} from "./typed-successor-readback.mjs";
 
 export const IMPORT_ORCHESTRATOR_SCHEMA = "agentos.import_orchestrator.v1";
 export const IMPORT_ORCHESTRATOR_VERSION = 1;
