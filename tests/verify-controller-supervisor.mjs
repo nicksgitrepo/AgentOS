@@ -17,7 +17,7 @@ import {
   validateSupervisorObservation,
   writeSupervisorRecordCompareAndSwap,
 } from "../control/controller-supervisor.mjs";
-import {runControllerSupervisorIteration, shouldContinueSupervisorSameTurn} from "../control/controller-supervisor-runtime.mjs";
+import {runControllerSupervisor, runControllerSupervisorIteration, shouldContinueSupervisorSameTurn} from "../control/controller-supervisor-runtime.mjs";
 import {validateAgentSpawnerDefectIntake} from "../control/agent-spawner-defect-intake.mjs";
 
 const sourceCommit = "1".repeat(40);
@@ -257,6 +257,22 @@ assert.match(secondRouteRetry.routeFailureRca.error_message_exact, /^opaque:erro
 assert.equal(secondRouteRetry.spawnerDefect.repair.block_id, "BLOCK.CONTROLLER.SUPERVISOR.LIVENESS");
 assert.equal(routeRetryAttempts, 2);
 fs.rmSync(routeRetryRoot, {recursive: true, force: true});
+
+const transientRuntimeRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-transient-retry-"));
+const transientAbort = new AbortController();
+let transientObserveAttempts = 0;
+const transientAdapter = {
+  observe: () => {
+    transientObserveAttempts += 1;
+    if (transientObserveAttempts === 1) throw new Error("transient observation failure");
+    transientAbort.abort();
+    return puzzle;
+  },
+};
+const transientResults = await runControllerSupervisor({runtimeRoot: transientRuntimeRoot, adapter: transientAdapter, runtimeId: "SUPERVISOR-TRANSIENT-RETRY-TEST", intervalMs: 250, signal: transientAbort.signal});
+assert.equal(transientObserveAttempts, 2, "a transient supervisor failure must retry before any cadence sleep");
+assert.equal(transientResults.length, 1, "the successful retry must produce a durable result");
+fs.rmSync(transientRuntimeRoot, {recursive: true, force: true});
 
 const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));
 const authorizedWaitAdapter = {

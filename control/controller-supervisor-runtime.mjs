@@ -627,18 +627,27 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
     do {
       if (signal?.aborted === true || stopping) break;
       let sameTurnTransitions = 0;
+      let iterationFailures = 0;
       do {
         const nowUtc = new Date().toISOString();
         try {
           const activeAdapter = adapterFactory === null ? adapter : await adapterFactory();
           const result = await runControllerSupervisorIteration({runtimeRoot: root, adapter: activeAdapter, runtimeId, nowUtc});
           results.push(result);
+          iterationFailures = 0;
           if (!shouldContinueSupervisorSameTurn(result)) break;
           sameTurnTransitions += 1;
         } catch (error) {
           if (error?.code === "AGENTOS_SUPERVISOR_RESTART_REQUIRED") {
             stopping = true;
             break;
+          }
+          if (iterationFailures === 0) {
+            // A transient adapter/observation failure is itself a liveness
+            // defect. Retry it once in this turn before retaining the error;
+            // the cadence must not be the first recovery mechanism.
+            iterationFailures = 1;
+            continue;
           }
           const failure = compileRuntimeState({runtimeId, status: "ITERATION_FAILED_RETAINED", error: error?.message ?? String(error), nowUtc});
           writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), failure);
