@@ -250,6 +250,24 @@ assert.equal(noProgressDefectFiles.length, 2, "a no-progress RCA must add a type
 assert.equal(reusedRuntime.spawnerDefect.repair.block_id, "BLOCK.CONTROLLER.SUPERVISOR.LIVENESS");
 fs.rmSync(runtimeRoot, {recursive: true, force: true});
 
+const disappearedRouteRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-disappeared-route-"));
+const firstDisappearedRoute = await runControllerSupervisorIteration({
+  runtimeRoot: disappearedRouteRoot,
+  adapter: {observe: () => puzzle, route: () => ({status: "ROUTED", attempt: 1})},
+  runtimeId: "SUPERVISOR-DISAPPEARED-ROUTE-TEST",
+});
+const disappearedRoute = await runControllerSupervisorIteration({
+  runtimeRoot: disappearedRouteRoot,
+  adapter: {observe: () => puzzle},
+  runtimeId: "SUPERVISOR-DISAPPEARED-ROUTE-TEST",
+});
+assert.equal(firstDisappearedRoute.tick.route_status, "ROUTED");
+assert.equal(disappearedRoute.routeAdapterMissing, true, "a disappeared route adapter must be a typed route defect");
+assert.equal(disappearedRoute.routeFailureRca.error_message_exact, "CONTROLLER_ROUTE_ADAPTER_MISSING");
+assert.equal(disappearedRoute.tick.route_status, "ROUTED", "the prior routed tick remains immutable evidence");
+assert.equal(JSON.parse(fs.readFileSync(path.join(disappearedRouteRoot, "supervisor", "runtime.json"), "utf8")).status, "ROUTE_FAILED_RETAINED");
+fs.rmSync(disappearedRouteRoot, {recursive: true, force: true});
+
 const routeRetryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-route-retry-"));
 let routeRetryAttempts = 0;
 const routeRetryAdapter = {

@@ -668,6 +668,23 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
       writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ACTIVE_EVENT_WAIT", observation, goal: existingGoal, tick: existingTick, nowUtc}));
       return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, reused: true};
     }
+    if (route === null) {
+      // A previously routed lane whose adapter disappeared is a route
+      // configuration defect, not an ordinary no-progress observation. Keep
+      // the exact missing-adapter RCA and make the caller reload/repair in
+      // the same turn instead of sleeping until cadence.
+      const rcaPath = `supervisor/route-failures/${existingGoal.goal_id}.json`;
+      const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
+      const missingRouteRca = ensureMissingRouteAdapterRca({runtimeId, goal: existingGoal, observation, observedAtUtc: nowUtc, authorityRoot: root, recordPath: rcaPath, existingRca});
+      const missingRouteDefect = compileSpawnerDefectIntake({
+        observation,
+        rca: missingRouteRca,
+        defectId: `DEFECT.SUPERVISOR.ROUTE_ADAPTER_MISSING.${existingGoal.goal_id}`,
+      });
+      persistSpawnerDefect({runtimeRoot: root, intake: missingRouteDefect});
+      writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status: "ROUTE_FAILED_RETAINED", observation, goal: existingGoal, tick: existingTick, error: "CONTROLLER_ROUTE_ADAPTER_MISSING", nowUtc}));
+      return {observation, goal: existingGoal, tick: existingTick, priorSpawnerDefect, routeFailureRca: missingRouteRca, spawnerDefect: missingRouteDefect, routeAdapterMissing: true, reused: true};
+    }
     const rcaPath = `supervisor/no-progress/${existingGoal.goal_id}.json`;
     const existingRca = readSupervisorRecord({authorityRoot: root, recordPath: rcaPath});
     const rca = compileNoProgressRca({
