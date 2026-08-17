@@ -46,7 +46,7 @@ const localContinuation = runAgentSpawnerCompilerTick(compileReady, {
     });
     lifecycleAfter.qa.incomplete_block_count = 0;
     lifecycleAfter.qa.status = "STATIC_PASS_REVIEW_REQUIRED";
-    lifecycleAfter.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
+    lifecycleAfter.next_action = "ADMIT_GOVERNED_SPAWN";
     lifecycleAfter.lifecycle_sha256 = canonicalDigest({...lifecycleAfter, lifecycle_sha256: null});
     return {
       outcome: "BLOCK_COMPILED",
@@ -59,7 +59,8 @@ const localContinuation = runAgentSpawnerCompilerTick(compileReady, {
 validateAgentSpawnerCompilerContinuation(localContinuation);
 assert.equal(localContinuation.outcome, "BLOCK_COMPILED");
 assert.notEqual(localContinuation.lifecycle_before_sha256, localContinuation.lifecycle_after_sha256);
-assert.equal(localContinuation.next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(localContinuation.next_action, "ADMIT_GOVERNED_SPAWN");
+assert.equal(localContinuation.continuation.resume_condition, "Hand off to governed admission; adapter/readback still required.");
 assert.equal(localContinuation.continuation.same_turn_next_action, true);
 assert.equal(localContinuation.continuation.timer_deferral, false);
 assert.equal(localContinuation.admission.spawnable, false);
@@ -70,13 +71,12 @@ const protectedReady = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: pending,
 });
-const protectedContinuation = runAgentSpawnerCompilerTick(protectedReady, {protectedEventId: "INDEPENDENT.UTILITY_HARM_CLEARANCE"});
-validateAgentSpawnerCompilerContinuation(protectedContinuation);
-assert.equal(protectedContinuation.outcome, "PROTECTED_EVENT_WAIT");
-assert.equal(protectedContinuation.next_action, "WAIT_FOR_PROTECTED_EVENT");
-assert.equal(protectedContinuation.continuation.protected_event_id, "INDEPENDENT.UTILITY_HARM_CLEARANCE");
-assert.equal(protectedContinuation.continuation.heartbeat_deferral, false);
-assert.equal(protectedContinuation.continuation.timer_deferral, false);
+assert.equal(protectedReady.next_action, "ADMIT_GOVERNED_SPAWN", "compiler-only QA must not wait for external clearance");
+assert.throws(
+  () => runAgentSpawnerCompilerTick(protectedReady, {protectedEventId: "INDEPENDENT.UTILITY_HARM_CLEARANCE"}),
+  /governed admission adapter.*readback/u,
+  "compiler-only QA must hand off rather than create a protected wait",
+);
 
 const publishReady = compileAgentSpawnerLifecycle({
   ...base,

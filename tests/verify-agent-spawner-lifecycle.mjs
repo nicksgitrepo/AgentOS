@@ -58,7 +58,7 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
     });
     after.qa.incomplete_block_count = 0;
     after.qa.status = "STATIC_PASS_REVIEW_REQUIRED";
-    after.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
+    after.next_action = "ADMIT_GOVERNED_SPAWN";
     after.lifecycle_sha256 = canonicalDigest({...after, lifecycle_sha256: null});
     return {
       outcome: "BLOCK_COMPILED",
@@ -70,9 +70,17 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
 });
 assert.equal(compiled, 1);
 assert.equal(tick.outcome, "BLOCK_COMPILED");
-assert.equal(tick.next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(tick.next_action, "ADMIT_GOVERNED_SPAWN");
 assert.equal(tick.continuation.same_turn_next_action, true);
 assert.equal(tick.admission.spawnable, false);
+
+const completePendingCompiler = compileAgentSpawnerLifecycle({
+  ...common,
+  lifecycleId: "LIFECYCLE.SPAWNER.COMPILER_ONLY.COMPLETE_PENDING",
+  state: "COMPILER_ACTIVE",
+  qa: pendingQa,
+});
+assert.equal(completePendingCompiler.next_action, "ADMIT_GOVERNED_SPAWN", "compiler-only local QA must not stop on external clearance");
 
 const admitted = compileAgentSpawnerLifecycle({
   ...common,

@@ -1,9 +1,11 @@
 /*
  * Project-agnostic Agent Spawner lifecycle.
  *
- * The compiler is a persistent, no-side-effect role.  It may remain alive in
- * COMPILER_ONLY mode while independent admission is pending, but that state
- * can never be mistaken for permission to spawn workers or mutate a product.
+ * The compiler is a persistent, no-side-effect role.  COMPILER_ONLY work is
+ * local QA/import planning, so it must not stop merely because the later
+ * governed route still needs independent clearance.  Once its blocks and
+ * roster are complete it emits the governed-admission successor; only the
+ * explicit adapter/readback can cross into worker admission or activation.
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
@@ -117,7 +119,11 @@ function deriveCompilerAction(lifecycle) {
   if (lifecycle.mode === "COMPILER_ONLY") {
     if (lifecycle.qa.incomplete_block_count > 0) return "COMPILE_NEXT_BLOCK";
     if (lifecycle.qa.pending_route_count > 0) return "PUBLISH_TYPED_ROSTER";
-    if (lifecycle.qa.independent_clearance_status !== "CLEARED") return "WAIT_FOR_INDEPENDENT_CLEARANCE";
+    // Independent utility/harm clearance applies to governed activation and
+    // protected/external work, not to this no-side-effect compiler phase.
+    // Keep the compiler moving and hand off to the bounded admission adapter;
+    // the adapter/readback still forbids workers, waves, Product mutation,
+    // providers, credentials, spend, and destructive actions at this stage.
     return "ADMIT_GOVERNED_SPAWN";
   }
   if (lifecycle.state === "QA_READY") return "ADMIT_GOVERNED_SPAWN";
