@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/controller-startup-runner.v1.json",
+  "title": "AgentOS Controller Startup Runner",
+  "description": "Project-agnostic durable same-turn runner/readback for the Bootstrap-to-Orchestrator startup sequence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "startup_sequence_sha256", "initial_receipt_sha256", "status", "dispatched_count",
+    "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "runner_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.controller_startup_runner.v1"},
+    "version": {"const": 1},
+    "startup_sequence_sha256": {"$ref": "#/$defs/sha256"},
+    "initial_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "status": {"enum": ["ROUTED_SAME_TURN", "PROTECTED_EVENT_WAIT", "OWNER_REVIEW_REQUIRED"]},
+    "dispatched_count": {"type": "integer", "minimum": 0},
+    "next_action": {"$ref": "#/$defs/identifier"},
+    "next_handler": {"$ref": "#/$defs/identifier"},
+    "continuation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
+      "properties": {
+        "mode": {"enum": ["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT", "EXPLICIT_OWNER_REVIEW"]},
+        "timer_deferral": {"const": false},
+        "heartbeat_deferral": {"const": false},
+        "same_turn_dispatch": {"type": "boolean"},
+        "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+        "resume_condition": {"type": "string", "minLength": 8}
+      }
+    },
+    "continuation_sha256": {"$ref": "#/$defs/sha256"},
+    "protected_event": {"oneOf": [{"type": "null"}, {"type": "object"}]},
+    "runner_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"}
+  }
+}

@@ -846,7 +846,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "eda4a1796a629d1e9bf4dfae4e473788cc3c6a8e75bc5f931e42f55aa6147e28"
+      "sha256": "3584f1c11f61408c94ea276bd5f5f97c5d4d2c638ce4d921c6d6be783f3b7022"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
@@ -919,6 +919,18 @@
     "controller_startup_sequence_verifier": {
       "path": "tests/verify-controller-startup-sequence.mjs",
       "sha256": "2456a390d35677a24f56ff7e8c0a74be77a2cbed9205850eb7ee38057d03007a"
+    },
+    "controller_startup_runner_controller": {
+      "path": "control/controller-startup-runner.mjs",
+      "sha256": "90c7554f7f7a85fa0479f73ad2c8ac51bff0a01699469937f732835a6c454477"
+    },
+    "controller_startup_runner_contract": {
+      "path": "schemas/controller-startup-runner.v1.json",
+      "sha256": "46f6f8954ad810e9fc9aba6adb7e16ac1f6e7fa05d5505caf1fad4c04e7accb6"
+    },
+    "controller_startup_runner_verifier": {
+      "path": "tests/verify-controller-startup-runner.mjs",
+      "sha256": "47caa5e188d547a6fc2fdaf5830364e84f68f98743fc130732d440197a6ab972"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
