@@ -28,6 +28,7 @@ export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAge
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, resumeBoundedLocalClearanceHold, resumeBoundedLocalIntegration, LOCAL_CLEARANCE_ONLY_BOUNDARY_IDS, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
 export {dispatchOrchestratorSuccessor, validateAutonomousSuccessorMetadata, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION, ORCHESTRATOR_LOCAL_RUNTIME_SUCCESSOR_ACTIONS, ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS, ORCHESTRATOR_SAFE_TRANSITION_CAP, ORCHESTRATOR_DISPATCHABLE_ACTIONS} from "./orchestrator-successor-dispatch.mjs";
+export {compileObservedDispatchSuccessorBinding, validateObservedDispatchSuccessorBinding, OBSERVED_DISPATCH_BINDING_SCHEMA, OBSERVED_DISPATCH_BINDING_VERSION, OBSERVED_DISPATCH_BINDING_REQUIRED_STATUS, OBSERVED_DISPATCH_BINDING_PROVEN_STATUS} from "./observed-dispatch-binding-gate.mjs";
 export {compileOrchestratorSuccessorBundle, validateOrchestratorSuccessorBundle, ORCHESTRATOR_SUCCESSOR_BUNDLE_SCHEMA, ORCHESTRATOR_SUCCESSOR_BUNDLE_VERSION} from "./orchestrator-successor-bundle-gate.mjs";
 export {compileImportOrchestratorTestFailureGate, validateImportOrchestratorTestFailureGate, IMPORT_ORCHESTRATOR_TEST_FAILURE_GATE_SCHEMA, IMPORT_ORCHESTRATOR_TEST_FAILURE_GATE_VERSION, IMPORT_ORCHESTRATOR_TEST_FAILURE_REPAIR_ACTION, IMPORT_ORCHESTRATOR_TEST_FAILURE_REPAIR_HANDLER} from "./import-orchestrator-test-failure-gate.mjs";
 export {compileLocalProofEvidenceGate, validateLocalProofEvidenceGate, LOCAL_PROOF_EVIDENCE_GATE_SCHEMA, LOCAL_PROOF_EVIDENCE_GATE_VERSION, LOCAL_PROOF_EVIDENCE_BLOCKED_STATUS, LOCAL_PROOF_EVIDENCE_REPAIR_ACTION, LOCAL_PROOF_EVIDENCE_REPAIR_HANDLER} from "./local-proof-evidence-gate.mjs";
@@ -108,6 +109,7 @@ export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as orchestratorSuccessorDispatch from "./orchestrator-successor-dispatch.mjs";
+export * as observedDispatchBinding from "./observed-dispatch-binding-gate.mjs";
 export * as localProofEvidenceGate from "./local-proof-evidence-gate.mjs";
 export * as autonomousDispatchLivenessGate from "./autonomous-dispatch-liveness-gate.mjs";
 export * as harnessCollisionGate from "./harness-collision-gate.mjs";

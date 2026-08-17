@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "ba01820920105415d10f2f7e6472258483301ac9e4635634db8f7ecf63c5bfa6"
+      "sha256": "36aad28d039c6b333bae8cdd95fc6a733e4a3a3608601d1211623e05f3ad2541"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -923,6 +923,18 @@
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
       "sha256": "b0ff3fcaae4d91930392bb10655af3daab3fb6c8639d72fa418e54cd728a7a1a"
+    },
+    "observed_dispatch_binding_controller": {
+      "path": "control/observed-dispatch-binding-gate.mjs",
+      "sha256": "c20ac29f209372caf1d930898e88534a65fa6ebc7b16f3b1293b5ca2f0a8d9b2"
+    },
+    "observed_dispatch_binding_contract": {
+      "path": "schemas/observed-dispatch-binding-gate.v1.json",
+      "sha256": "4bf5175843747f83df9a3d343f9f88be89e56a0051a6805735ebf23175df7663"
+    },
+    "observed_dispatch_binding_verifier": {
+      "path": "tests/verify-observed-dispatch-binding-gate.mjs",
+      "sha256": "b91b71319870f5a846460df661a1062d336d982365633d09c8728b4acf23dcca"
     },
     "local_proof_evidence_gate_controller": {
       "path": "control/local-proof-evidence-gate.mjs",
