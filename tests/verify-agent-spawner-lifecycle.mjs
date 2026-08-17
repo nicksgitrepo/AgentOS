@@ -148,6 +148,28 @@ assert.equal(resumedCompiler.state, "COMPILER_ACTIVE");
 assert.equal(resumedCompiler.persistent_state, "COMPILER_ACTIVE");
 assert.equal(resumedCompiler.mode, "COMPILER_ONLY");
 
+const retired = advanceAgentSpawnerLifecycle(active, {
+  event_type: "RETIRE",
+  event_sha256: canonicalDigest({event_type: "RETIRE", event_sha256: null}),
+});
+assert.equal(retired.state, "RETIRED");
+assert.equal(retired.persistent_state, "RETIRED", "retirement must not be persisted as an active/stalled state");
+assert.equal(retired.next_action, "NONE", "retirement is an explicit terminal lifecycle record, not an unexplained idle");
+assert.equal(retired.execution.active_worker_count, 0);
+assert.equal(retired.execution.scheduler_job_count, 0);
+assert.equal(retired.execution.heavyweight_process_count, 0);
+assert.equal(retired.execution.timer_count, 0);
+assert.equal(retired.execution.polling, false);
+assert.throws(() => advanceAgentSpawnerLifecycle(retired, {
+  event_type: "START_COMPILER",
+  event_sha256: canonicalDigest({event_type: "START_COMPILER", event_sha256: null}),
+}), /compiler-only mode|current state/u, "retired Spawner cannot silently re-enter the workflow");
+
+const retiredWithStalledProjection = structuredClone(retired);
+retiredWithStalledProjection.persistent_state = "STALLED";
+retiredWithStalledProjection.lifecycle_sha256 = canonicalDigest({...retiredWithStalledProjection, lifecycle_sha256: null});
+assert.throws(() => validateAgentSpawnerLifecycle(retiredWithStalledProjection), /persistent lifecycle state is not bound/u, "retirement cannot masquerade as a stalled hold");
+
 const fakeActivePending = structuredClone(stalled);
 fakeActivePending.persistent_state = "ACTIVE";
 fakeActivePending.lifecycle_sha256 = canonicalDigest({...fakeActivePending, lifecycle_sha256: null});
@@ -175,4 +197,4 @@ assert.throws(
   "compiler-only Spawner must reject temporary admission",
 );
 
-console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/COMPILER_ACTIVE/ADMITTED/ACTIVE/STALLED state, compiler-only safe mode, separate wave activation, and hostile gate checks");
+console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/COMPILER_ACTIVE/ADMITTED/ACTIVE/STALLED/RETIRED state, compiler-only safe mode, separate wave activation, and hostile gate checks");

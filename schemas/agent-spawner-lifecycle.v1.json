@@ -17,7 +17,7 @@
     "role_id": {"const": "AGENT.SPAWNER_COMPILER"},
     "mode": {"enum": ["COMPILER_ONLY", "GOVERNED_SPAWN"]},
     "state": {"enum": ["PREPARED", "QA_READY", "COMPILER_ACTIVE", "SPAWN_ADMITTED", "SPAWN_ACTIVE", "STALLED", "RETIRED"]},
-    "persistent_state": {"enum": ["PREPARED", "QA_READY", "COMPILER_ACTIVE", "ADMITTED", "ACTIVE", "STALLED"]},
+    "persistent_state": {"enum": ["PREPARED", "QA_READY", "COMPILER_ACTIVE", "ADMITTED", "ACTIVE", "STALLED", "RETIRED"]},
     "wave_activation": {"enum": ["OFF", "ON"]},
     "candidate_sha256": {"$ref": "#/$defs/sha256"},
     "roster_projection_sha256": {"$ref": "#/$defs/sha256"},

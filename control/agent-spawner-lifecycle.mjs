@@ -21,7 +21,7 @@ export const AGENT_SPAWNER_STATES = Object.freeze([
   "STALLED",
   "RETIRED",
 ]);
-export const AGENT_SPAWNER_PERSISTENT_STATES = Object.freeze(["PREPARED", "QA_READY", "COMPILER_ACTIVE", "ADMITTED", "ACTIVE", "STALLED"]);
+export const AGENT_SPAWNER_PERSISTENT_STATES = Object.freeze(["PREPARED", "QA_READY", "COMPILER_ACTIVE", "ADMITTED", "ACTIVE", "STALLED", "RETIRED"]);
 export const AGENT_SPAWNER_WAVE_ACTIVATION_STATES = Object.freeze(["OFF", "ON"]);
 export const AGENT_SPAWNER_NEXT_ACTIONS = Object.freeze([
   "START_COMPILER",
@@ -132,7 +132,8 @@ function derivePersistentState(lifecycle) {
   if (lifecycle.state === "COMPILER_ACTIVE") return "COMPILER_ACTIVE";
   if (lifecycle.state === "SPAWN_ADMITTED") return "ADMITTED";
   if (lifecycle.state === "SPAWN_ACTIVE") return "ACTIVE";
-  if (lifecycle.state === "STALLED" || lifecycle.state === "RETIRED") return "STALLED";
+  if (lifecycle.state === "STALLED") return "STALLED";
+  if (lifecycle.state === "RETIRED") return "RETIRED";
   return lifecycle.mode === "COMPILER_ONLY" ? "QA_READY" : "ACTIVE";
 }
 
