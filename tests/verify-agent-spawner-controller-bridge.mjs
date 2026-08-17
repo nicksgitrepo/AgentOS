@@ -40,7 +40,8 @@ assert.equal(bridge.controller_action_receipt.next_action, bridge.mapped_action)
 const compilePatch = compileAgentSpawnerDefectIntake({...base, defectId: "DEFECT.BRIDGE.COMPILE.001", classification: "REPAIRABLE_GATE_GAP"});
 const compileAccepted = acceptAgentSpawnerDefectRepair(compilePatch, {controllerReceiptSha256: hash("controller-receipt-2")});
 const compileBridge = compileAgentSpawnerControllerBridge({bridgeId: "BRIDGE.SPAWNER.COMPILE.001", intake: compileAccepted});
-assert.equal(compileBridge.mapped_action, "START_NEXT_LOCAL_BLOCK_REPAIR");
+assert.equal(compileBridge.mapped_action, "REPAIR_BLOCKS");
+assert.equal(compileBridge.mapped_handler, "HANDLER.ORCHESTRATOR_BLOCK_REPAIR");
 
 const roster = compileAgentSpawnerDefectIntake({...base, defectId: "DEFECT.BRIDGE.ROSTER.001", classification: "AUTHORITY_CONFLICT"});
 const rosterAccepted = acceptAgentSpawnerDefectRepair(roster, {controllerReceiptSha256: hash("controller-receipt-3")});

@@ -21,7 +21,11 @@ export const AGENT_SPAWNER_CONTROLLER_BRIDGE_SCHEMA = "agentos.agent_spawner_con
 export const AGENT_SPAWNER_CONTROLLER_BRIDGE_VERSION = 1;
 
 export const SPAWNER_ROUTE_TO_CONTROLLER_ACTION = Object.freeze({
-  COMPILE_BLOCK_PATCH: "START_NEXT_LOCAL_BLOCK_REPAIR",
+  // A compiled block patch is a campaign repair, not an unbound Controller
+  // implementation detail.  Route it to the Orchestrator's callable repair
+  // handler so an accepted Spawner handoff cannot land on a registry-only
+  // HANDLER.CONTROLLER_LOCAL_BLOCK_REPAIR and stall the workflow.
+  COMPILE_BLOCK_PATCH: "REPAIR_BLOCKS",
   REPAIR_ORCHESTRATOR_ROUTE: "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION",
   REBUILD_DEPENDENT_ROSTER: "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION",
   REJECT_DUPLICATE: "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION",
