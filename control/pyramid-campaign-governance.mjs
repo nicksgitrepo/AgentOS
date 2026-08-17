@@ -496,19 +496,28 @@ function compileRoute(nextAction, protectedEvent = null) {
 
 /*
  * A protected wait is only terminal for the dependent route when the same
- * state carries a valid five-question stop decision.  Protected events are
- * intentionally mapped to OWNER_DECISION_REQUIRED: the event is already a
- * protected external/owner boundary, while ordinary isolated work remains
- * explicitly all-NO and therefore continues autonomously.
+ * state carries a valid five-question stop decision.  The protected-event
+ * class selects the matching question: product/production changes, spend,
+ * destruction, credentials, or an external dependency.  Ordinary isolated
+ * work remains explicitly all-NO and therefore continues autonomously.
  */
 export function compilePyramidProtectedStopDecision({protectedEvent, rollbackRef} = {}) {
   const event = compileProtectedEvent(protectedEvent);
   requireReference(rollbackRef, "pyramid protected stop rollback reference");
   const answers = compileStopWorkflowNoStopAnswers({evidenceRefPrefix: `opaque:stop-gate/${event.blocker_id}`});
-  const ownerAnswerIndex = answers.findIndex((answer) => answer.question_id === "OWNER_DECISION_REQUIRED");
-  assert(ownerAnswerIndex >= 0, "pyramid stop gate owner question is unavailable");
-  answers[ownerAnswerIndex] = {
-    question_id: "OWNER_DECISION_REQUIRED",
+  const questionByClass = {
+    CREDENTIAL_OR_AUTHENTICATION: "OWNER_DECISION_REQUIRED",
+    IRREVERSIBLE_DESTRUCTIVE_USER_WORK: "DESTROYS_OR_IRREVERSIBLY_MODIFIES",
+    MAJOR_PRODUCT_OR_PRODUCTION_DECISION: "CHANGES_PROTECTED_PROJECT_OR_SCOPE",
+    MATERIAL_SPEND_OR_FINANCIAL_AUTHORITY: "COSTS_MONEY",
+    PROTECTED_EXTERNAL_DEPENDENCY: "OWNER_DECISION_REQUIRED",
+  };
+  const questionId = questionByClass[event.blocker_class];
+  assert(questionId !== undefined, "pyramid protected event has no stop-gate question mapping");
+  const answerIndex = answers.findIndex((answer) => answer.question_id === questionId);
+  assert(answerIndex >= 0, "pyramid stop gate mapped question is unavailable");
+  answers[answerIndex] = {
+    question_id: questionId,
     answer: "YES",
     evidence_refs: [`opaque:protected-event/${event.blocker_id}`],
   };
@@ -584,10 +593,9 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     compileProtectedEvent(state.protected_event);
     assert(state.stop_workflow_decision !== null, "pyramid protected wait lacks stop-workflow decision");
     validateStopWorkflowDecision(state.stop_workflow_decision);
+    const expectedStopDecision = compilePyramidProtectedStopDecision({protectedEvent: state.protected_event, rollbackRef: state.candidate.rollback_ref});
     assert(state.stop_workflow_decision.stop === true, "pyramid protected wait stop-workflow decision must stop");
-    assert(state.stop_workflow_decision.primary_trigger_question_id === "OWNER_DECISION_REQUIRED", "pyramid protected wait must bind the owner-decision stop question");
-    assert(state.stop_workflow_decision.rollback_ref === state.candidate.rollback_ref, "pyramid protected wait stop rollback binding is stale");
-    assert(state.stop_workflow_decision.action_ref === `opaque:protected-action/${state.protected_event.affected_action}`, "pyramid protected wait stop action binding is stale");
+    assert(state.stop_workflow_decision.decision_sha256 === expectedStopDecision.decision_sha256, "pyramid protected wait stop-workflow decision is stale");
     if (state.final_review !== null) assert(state.isolated_candidate_assembly !== null, "pyramid protected promotion wait lacks isolated candidate assembly");
   } else {
     assert(state.protected_event === null, "pyramid non-protected state carries a protected event");

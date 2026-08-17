@@ -83,7 +83,7 @@ const initiallyProtected = compilePyramidCampaignState({
   },
 });
 assert.equal(initiallyProtected.status, "PROTECTED_WAIT");
-assert.equal(initiallyProtected.stop_workflow_decision.primary_trigger_question_id, "OWNER_DECISION_REQUIRED");
+assert.equal(initiallyProtected.stop_workflow_decision.primary_trigger_question_id, "CHANGES_PROTECTED_PROJECT_OR_SCOPE");
 assert.equal(initiallyProtected.stop_workflow_decision.stop, true);
 const missingProtectedDecision = structuredClone(initiallyProtected);
 missingProtectedDecision.stop_workflow_decision = null;
@@ -234,7 +234,8 @@ assert.equal(protectedWait.protected_event.affected_action, "PROMOTE_ISOLATED_CU
 assert.deepEqual(protectedWait.protected_event.resources, {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0});
 assert.equal(protectedWait.authority.central_integration, false);
 assert.equal(protectedWait.stop_workflow_decision.outcome, "STOP_OWNER_DECISION");
-assert.equal(protectedWait.stop_workflow_decision.primary_trigger_question_id, "OWNER_DECISION_REQUIRED");
+assert.equal(protectedWait.stop_workflow_decision.primary_trigger_question_id, "CHANGES_PROTECTED_PROJECT_OR_SCOPE");
+assert.deepEqual(protectedWait.stop_workflow_decision.triggered_question_ids, ["CHANGES_PROTECTED_PROJECT_OR_SCOPE"]);
 assert.equal(protectedWait.stop_workflow_decision.stop, true);
 assert.equal(protectedWait.stop_workflow_decision.rollback_ref, protectedWait.candidate.rollback_ref);
 assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolatedAssembly.assembly_sha256);

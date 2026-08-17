@@ -578,7 +578,7 @@
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "77490c68d1a88f9c037deda805b19d24b000eb9f4671384e7d522c3246c73ed0"
+      "sha256": "18bdd2976afc612992f0e94a40cfcb78bdc341eba6c4f9e5cbcc07de62eb09ab"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
@@ -586,7 +586,7 @@
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "dca949e5b663df5e7bd5552e7936085eac1cddcd5a4582e9d3920568be8facfd"
+      "sha256": "37849353c392276f5b2df79b4b552db79066566e3a32daeafb474f0447dc8f4d"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
