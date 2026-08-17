@@ -17,6 +17,8 @@ for (const name of [
   "compileReleasePromotionGate",
   "compileAutonomousLaneHandoff",
   "validateAutonomousLaneHandoff",
+  "compileControllerNextLifecycleHandoff",
+  "validateControllerNextLifecycleHandoff",
 ]) {
   assert.equal(typeof publicKernel[name], "function", `public kernel export is unavailable: ${name}`);
 }
