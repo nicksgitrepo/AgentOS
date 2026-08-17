@@ -120,6 +120,7 @@ const pyramidOutput = compilePyramidImportOutput({
   candidateRepositories: [{
     repository_id: "main",
     source_repository_ids: ["synthetic-source"],
+    source_mapping_sha256: canonicalDigest({source: "synthetic-source-mapping"}),
     repository_ref: "opaque:repository/synthetic-main",
     branch_ref: "refs/heads/agentos/import-candidate",
     commit: "3".repeat(40),

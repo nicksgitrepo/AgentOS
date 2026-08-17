@@ -158,7 +158,7 @@
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
-      "sha256": "6f1df5ccd913aedd8347c8a560ca75ef7176714d04a0bab9f62a611ee9b4ec8e"
+      "sha256": "0cd0bc954e5eefef6ff5bda4c7a5cf04a3a2e231800c162f3d3d2f6aa3b42a84"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",
@@ -166,7 +166,7 @@
     },
     "pyramid_import_output_contract": {
       "path": "schemas/pyramid-import-output.v1.json",
-      "sha256": "6e4dd62b31fee856f12cce63abb7819424c97893b4d2b7cddf027659ea4df4a3"
+      "sha256": "7445b2031abf1390023966e9cf55707ce3b20b3f163d884fb81c667d4c8ca045"
     },
     "git_repoint_plan_contract": {
       "path": "schemas/git-repoint-plan.v1.json",
@@ -178,7 +178,7 @@
     },
     "project_import_verifier": {
       "path": "tests/verify-project-import.mjs",
-      "sha256": "929f447713352b31c6fa4e1f4a59dd063b6e5f9cf991acb35eca0add710db13f"
+      "sha256": "226aba3b5c64559aee6fa5b9a6782424c1c9c78cacd2091a2ed594e4885a649f"
     },
     "normalization_policy_controller": {
       "path": "control/normalization-policy.mjs",
@@ -594,7 +594,7 @@
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "d84f301f707ad5ae17a0a67b1e48405fdc47fca8ddb6fb26434b90ba21ac4043"
+      "sha256": "3596c6909faf05676a3f0d69fbef0aeef319565801fd88dc2ad3a75c2dae8ae3"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",

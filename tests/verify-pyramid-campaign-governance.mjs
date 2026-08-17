@@ -274,6 +274,7 @@ const pyramidImportOutput = compilePyramidImportOutput({
   candidateRepositories: [{
     repository_id: "synthetic-candidate",
     source_repository_ids: ["synthetic-source"],
+    source_mapping_sha256: sourceScope.source_mapping_sha256,
     repository_ref: "opaque:candidate/synthetic",
     branch_ref: "candidate/synthetic",
     commit: "3".repeat(40),
