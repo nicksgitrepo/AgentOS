@@ -570,11 +570,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "123e656a453cdb4c7ef97b334af4f89ec7c3ad8a762b385234bd75c959e18ad7"
+      "sha256": "f031b99cc533376c51b871167bec14370cf041ac357fe067d0520e6a0e9b1663"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "8e7470b85f1e9cddf033225c8de3d24b38e61b79b643f56f93646a1ae2892f9a"
+      "sha256": "db5b2ecd185f7ae9885a3645821bc99be8a4fb09c2d0c087d017356df8b0f8ff"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -582,7 +582,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "f334da59ac18286f91fcd1c03137fca06a7e0c26512bf302751f29bb7893810f"
+      "sha256": "9d72563c892b0996b754db76de0e7fe85c100c33ef91f5a4d2f65fabbd97b0c6"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
@@ -718,7 +718,7 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "03dec45608b42c125433f4c347f4457fa6ad2a9ac8400c65f3c5d3959a12f7d1"
+      "sha256": "9467ff4a397fc014c5e734e78d6f42c175ee27c7ab6533d937ebf0027a32a9d2"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
@@ -726,7 +726,7 @@
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "499c5b286c4fa42eb1d2159cd4ad2bfe8f6ce3f0e9524e7422141eadf7140ede"
+      "sha256": "e857c2602d2360e4090f7ed0dabd2d6114fe3795cc5e2bcfdd260e6b3f3bc3f6"
     },
     "stop_workflow_gate_controller": {
       "path": "control/stop-workflow-gate.mjs",
@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "3499adc037a7f29ec2d4a5183a840a609d5b5d6a9a9276d7218c71cc23e962a6"
+      "sha256": "16c49f3070c74f8ab03a4f21e730f48b0a45de776491f1a00e48d7d4c6131123"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -914,15 +914,15 @@
     },
     "orchestrator_successor_dispatch_controller": {
       "path": "control/orchestrator-successor-dispatch.mjs",
-      "sha256": "f75cc65f38244a3ba3354b3e329d25d49573eff4460977f81f288a244c2ded4d"
+      "sha256": "d9ffa721c1979ee9d0e314af27b1f59ecb4aa9fae6b79cb7507b9b4362005615"
     },
     "orchestrator_successor_dispatch_contract": {
       "path": "schemas/orchestrator-successor-dispatch.v1.json",
-      "sha256": "8e83200ec89418b039c6ec9359809ce593a5bf2c0ad5a161703631ae248fb0e5"
+      "sha256": "bc50194bc6704716f0a1146f1bbfc14cf4a8f5b9304379ee01c0ce049e1ab3e5"
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "5236638599c5d24a9dbddd9a7faf7610c0837275ac6ea5117ae159796e7a940d"
+      "sha256": "8aba729cfff54141ba36414cd6d9328c9f573dae440d81624cf2bbfe79fc9e2c"
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",
@@ -930,7 +930,7 @@
     },
     "observed_dispatch_binding_contract": {
       "path": "schemas/observed-dispatch-binding-gate.v1.json",
-      "sha256": "f68604cc7320ccd555a55a4fac7193918a842c2b081518d12de0bde2fae0c3bf"
+      "sha256": "bd546d70538827a5de040add1682f616f5d2c9d851e2da7297b4fe1c56221f13"
     },
     "observed_dispatch_binding_verifier": {
       "path": "tests/verify-observed-dispatch-binding-gate.mjs",
@@ -1034,7 +1034,7 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "34935a4793353f103f3c21a2a4f153c3b8c4af54e82614e73f986bc2b938d5c3"
+      "sha256": "bdb9019f5c6a9445f6c47213f11e52484cf4319c6c07e6a14f7dcbb64b4016fc"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
@@ -1046,23 +1046,23 @@
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
-      "sha256": "1c0fd6db2a3940eb2832eed6c901cb0dbe8d404b945d109ff45bdb1270181f82"
+      "sha256": "c2f078e807b415bfc78742c1a0c8f849d7d8d1f44096b46386d58e430b84cafe"
     },
     "controller_startup_sequence_contract": {
       "path": "schemas/controller-startup-sequence.v1.json",
-      "sha256": "ce825a6917e95869318ce99fb29e41651d981f16b858a210b4922e7489e6219f"
+      "sha256": "f71c3130f5e27b97364032ef3ee506ffac904cd2f15dff6bd81ec6cf72865640"
     },
     "controller_startup_sequence_verifier": {
       "path": "tests/verify-controller-startup-sequence.mjs",
-      "sha256": "2456a390d35677a24f56ff7e8c0a74be77a2cbed9205850eb7ee38057d03007a"
+      "sha256": "41580b1a4b03615c7688f94e64a0dfe77f01d197df6783fd8891ccebcfa0a975"
     },
     "controller_startup_runner_controller": {
       "path": "control/controller-startup-runner.mjs",
-      "sha256": "90c7554f7f7a85fa0479f73ad2c8ac51bff0a01699469937f732835a6c454477"
+      "sha256": "afa17a8a526a257944dba49f92674311ef2473baec26a7faf58b2a23c02dcc9f"
     },
     "controller_startup_runner_contract": {
       "path": "schemas/controller-startup-runner.v1.json",
-      "sha256": "46f6f8954ad810e9fc9aba6adb7e16ac1f6e7fa05d5505caf1fad4c04e7accb6"
+      "sha256": "35e26976e35619e32b896fd4d4f5a804e205ea94522ad5ab7311fbc062c55ef8"
     },
     "controller_startup_runner_verifier": {
       "path": "tests/verify-controller-startup-runner.mjs",
