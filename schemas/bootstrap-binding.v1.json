@@ -930,11 +930,11 @@
     },
     "observed_dispatch_binding_contract": {
       "path": "schemas/observed-dispatch-binding-gate.v1.json",
-      "sha256": "4bf5175843747f83df9a3d343f9f88be89e56a0051a6805735ebf23175df7663"
+      "sha256": "c6d3303a95549c99bec6341db89b0f6e9f032ba7fd9aaeaee1b5399f9075ed28"
     },
     "observed_dispatch_binding_verifier": {
       "path": "tests/verify-observed-dispatch-binding-gate.mjs",
-      "sha256": "b91b71319870f5a846460df661a1062d336d982365633d09c8728b4acf23dcca"
+      "sha256": "d09bc48bd93141080efa3e214997bfeb3a09d3a2721f0b071fe650fced40ac04"
     },
     "local_proof_evidence_gate_controller": {
       "path": "control/local-proof-evidence-gate.mjs",

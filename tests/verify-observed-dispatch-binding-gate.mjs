@@ -162,5 +162,11 @@ assert.deepEqual(schema.required, [
 assert.equal(schema.properties.progress_claimed.type, "boolean");
 assert.equal(schema.properties.execution_owner.const, "LANE_AGENT");
 assert.equal(schema.properties.direct_consumer.const, "INDEPENDENT_PLATFORM_REVIEW");
+const readbackSchema = schema.properties.dispatch_readback.oneOf.find((entry) => entry.type === "object");
+assert(readbackSchema, "schema must define the dispatch readback object");
+assert(readbackSchema.additionalProperties === false, "dispatch readback schema must reject placeholders and unknown fields");
+assert(readbackSchema.required.includes("dispatch_observed"), "dispatch readback schema must require observed dispatch");
+assert(readbackSchema.required.includes("readback_sha256"), "dispatch readback schema must require its digest");
+assert(readbackSchema.properties.dispatch_observed.const === true, "dispatch readback schema must fail closed on unobserved dispatch");
 
 console.log("PASS observed dispatch successor binding gate: registry-bound handler invocation/readback required for same-turn progress, pending routes remain unclaimed, and hostile cross-binding/custody coverage rejects false claims");

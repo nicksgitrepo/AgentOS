@@ -26,7 +26,55 @@
     "dispatch_readback": {
       "oneOf": [
         {"type": "null"},
-        {"type": "object", "description": "Canonical agentos.orchestrator_successor_dispatch.v1 readback validated by the executable dispatch gate."}
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Canonical agentos.orchestrator_successor_dispatch.v1 readback validated by the executable dispatch gate.",
+          "required": [
+            "schema", "version", "dispatch_id", "status", "source_successor_sha256", "source_action", "source_handler",
+            "dispatched_count", "persisted_receipt_sha256s", "final_receipt_sha256", "final_next_action", "final_next_handler",
+            "dispatch_observed", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256"
+          ],
+          "properties": {
+            "schema": {"const": "agentos.orchestrator_successor_dispatch.v1"},
+            "version": {"const": 1},
+            "dispatch_id": {"$ref": "#/$defs/identifier"},
+            "status": {"enum": ["DISPATCHED_SAME_TURN", "DISPATCHED_TO_OWNER_REVIEW", "DISPATCHED_TO_PROTECTED_WAIT"]},
+            "source_successor_sha256": {"$ref": "#/$defs/sha256"},
+            "source_action": {"$ref": "#/$defs/identifier"},
+            "source_handler": {"$ref": "#/$defs/identifier"},
+            "dispatched_count": {"type": "integer", "minimum": 1},
+            "persisted_receipt_sha256s": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sha256"}},
+            "final_receipt_sha256": {"$ref": "#/$defs/sha256"},
+            "final_next_action": {"$ref": "#/$defs/identifier"},
+            "final_next_handler": {"$ref": "#/$defs/identifier"},
+            "dispatch_observed": {"const": true},
+            "continuation": {
+              "type": "object", "additionalProperties": false,
+              "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
+              "properties": {
+                "mode": {"enum": ["IMMEDIATE_SAME_TURN", "EVENT_DRIVEN_PROTECTED_WAIT", "EXPLICIT_OWNER_REVIEW"]},
+                "timer_deferral": {"const": false}, "heartbeat_deferral": {"const": false},
+                "same_turn_dispatch": {"type": "boolean"},
+                "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+                "resume_condition": {"type": "string", "minLength": 8}
+              }
+            },
+            "scope": {
+              "type": "object", "additionalProperties": false,
+              "required": ["control_plane_only", "consumer_product_mutated", "provider_access", "credential_access", "spend", "destructive_work", "deployment_publication_merge", "protected_event_id"],
+              "properties": {
+                "control_plane_only": {"const": true}, "consumer_product_mutated": {"const": false},
+                "provider_access": {"const": false}, "credential_access": {"const": false}, "spend": {"const": false},
+                "destructive_work": {"const": false}, "deployment_publication_merge": {"const": false},
+                "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}
+              }
+            },
+            "evidence_refs": {"$ref": "#/$defs/evidenceRefs"},
+            "hostile_fixture_refs": {"$ref": "#/$defs/identifierArray"},
+            "readback_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
       ]
     },
     "dispatch_observation": {
