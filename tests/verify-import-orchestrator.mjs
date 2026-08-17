@@ -92,6 +92,8 @@ assert.equal(initialWithQueue.next_action, "REQUEST_SPAWNER_QA");
 assert.equal(initialWithQueue.authority.product_mutation, false);
 assert.equal(initialWithQueue.authority.protected_release, false);
 assert.equal(initialWithQueue.handoff_contract.spawner_defect_intake, "TYPED_SPAWNER_DEFECT_INTAKE");
+assert.equal(initialWithQueue.handoff_contract.lane_execution, "AUTONOMOUS_TYPED_HANDOFF");
+assert.equal(initialWithQueue.handoff_contract.controller_approval, "NOT_REQUIRED_FOR_ORDINARY_LANE_COMPLETION");
 assert(IMPORT_ORCHESTRATOR_ACTIONS.includes("ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE"), "isolated cumulative assembly must be an Orchestrator successor");
 const importSchema = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../schemas/import-orchestrator.v1.json"), "utf8"));
 assert.deepEqual([...importSchema.properties.next_action.enum].sort(), [...IMPORT_ORCHESTRATOR_ACTIONS].sort(), "Import Orchestrator action schema is stale");

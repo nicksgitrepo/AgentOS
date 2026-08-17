@@ -350,8 +350,10 @@ function validateOwnership(ownership) {
 }
 
 function validateHandoffContract(contract) {
-  exactKeys(contract, ["spawn_request", "worker_handoff", "spawner_defect_intake", "platform_review", "central_integration", "candidate_advance", "pyramid_output", "git_repoint"], "Import Orchestrator handoff contract");
+  exactKeys(contract, ["spawn_request", "lane_execution", "controller_approval", "worker_handoff", "spawner_defect_intake", "platform_review", "central_integration", "candidate_advance", "pyramid_output", "git_repoint"], "Import Orchestrator handoff contract");
   assert(contract.spawn_request === "TYPED_SPAWNER_REQUEST", "Import Orchestrator spawn request contract is invalid");
+  assert(contract.lane_execution === "AUTONOMOUS_TYPED_HANDOFF", "Import Orchestrator lane execution contract is invalid");
+  assert(contract.controller_approval === "NOT_REQUIRED_FOR_ORDINARY_LANE_COMPLETION", "Import Orchestrator Controller approval contract is invalid");
   assert(contract.worker_handoff === "SOURCE_BOUND_TYPED_HANDOFF", "Import Orchestrator worker handoff contract is invalid");
   assert(contract.spawner_defect_intake === "TYPED_SPAWNER_DEFECT_INTAKE", "Import Orchestrator Spawner defect intake contract is invalid");
   assert(contract.platform_review === "INDEPENDENT_PLATFORM_TYPED_HANDOFF", "Import Orchestrator platform review contract is invalid");
@@ -517,6 +519,8 @@ export function compileImportOrchestrator({orchestratorId, governanceReadiness, 
     },
     handoff_contract: {
       spawn_request: "TYPED_SPAWNER_REQUEST",
+      lane_execution: "AUTONOMOUS_TYPED_HANDOFF",
+      controller_approval: "NOT_REQUIRED_FOR_ORDINARY_LANE_COMPLETION",
       worker_handoff: "SOURCE_BOUND_TYPED_HANDOFF",
       spawner_defect_intake: "TYPED_SPAWNER_DEFECT_INTAKE",
       platform_review: "INDEPENDENT_PLATFORM_TYPED_HANDOFF",
