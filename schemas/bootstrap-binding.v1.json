@@ -918,11 +918,11 @@
     },
     "orchestrator_successor_dispatch_contract": {
       "path": "schemas/orchestrator-successor-dispatch.v1.json",
-      "sha256": "8459aba37e645c9f8e81c64cfd6146941a8f6dd40a7e5abb38ab7674bdfbe5a8"
+      "sha256": "8e83200ec89418b039c6ec9359809ce593a5bf2c0ad5a161703631ae248fb0e5"
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "ce9ac64e8c89ff035e478c155607c9f22e8cbeb0e99c27703bd2fa3633500e99"
+      "sha256": "5236638599c5d24a9dbddd9a7faf7610c0837275ac6ea5117ae159796e7a940d"
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",

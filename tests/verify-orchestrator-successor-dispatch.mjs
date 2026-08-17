@@ -338,5 +338,7 @@ assert.deepEqual(schema.properties.status.enum, ["DISPATCHED_SAME_TURN", "DISPAT
 assert.equal(schema.properties.dispatch_observed.const, true);
 assert.equal(schema.properties.scope.properties.control_plane_only.const, true);
 assert.equal(schema.properties.scope.properties.consumer_product_mutated.const, false);
+assert.match(schema.description, /bounded local chain may end at its transition cap/u);
+assert.match(schema.state_rules.continuation, /immediate consumption by the next lifecycle turn/u);
 
 console.log("PASS Orchestrator successor dispatch: handler invocation, atomic same-turn persistence, closed route binding, protected-boundary rejection, and hostile false-dispatch coverage");
