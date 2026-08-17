@@ -114,7 +114,7 @@ function validateProtectedEvent(event) {
 }
 function body(sequence) { const copy = structuredClone(sequence); copy.sequence_sha256 = null; return copy; }
 
-function safeSpawnRoute(routeFacts) {
+function safeGovernedSpawnRoute(routeFacts) {
   return routeFacts.isolated_local_custody || routeFacts.independent_clearance_status === "CLEARED";
 }
 
@@ -131,15 +131,21 @@ function deriveStartupRoute({stage, routeFacts, protectedEvent = null} = {}) {
     case "SPAWNER_COMPILER_ACTIVE":
       if (routeFacts.incomplete_block_count > 0) return local("COMPILE_NEXT_BLOCK");
       if (routeFacts.pending_route_count > 0) return local("PUBLISH_TYPED_ROSTER");
-      if (safeSpawnRoute(routeFacts)) return local("ADMIT_GOVERNED_SPAWN");
-      assert(protectedEvent !== null, "Spawner compiler cannot stop without a typed true blocker");
-      return deriveControllerSuccessor({protectedEvent, protectedActionId: "WAIT_FOR_INDEPENDENT_CLEARANCE"});
+      // Compiler-only QA/import planning is bounded local work.  It must
+      // hand off to the governed adapter even before clearance/custody is
+      // materialized; the adapter/readback is the boundary that decides
+      // whether isolated local custody is safe.  A compiler cannot park on
+      // the later activation dependency.
+      return local("ADMIT_GOVERNED_SPAWN");
     case "SPAWNER_ROSTER_PUBLISHED":
-      if (safeSpawnRoute(routeFacts)) return local("ADMIT_GOVERNED_SPAWN");
-      assert(protectedEvent !== null, "Published Spawner roster cannot stop without a typed true blocker");
+      return local("ADMIT_GOVERNED_SPAWN");
+    case "GOVERNED_SPAWN_ADMITTED":
+      if (safeGovernedSpawnRoute(routeFacts)) return local("START_GOVERNED_SPAWN");
+      assert(protectedEvent !== null, "Governed spawn cannot activate without a typed true blocker");
       return deriveControllerSuccessor({protectedEvent, protectedActionId: "WAIT_FOR_INDEPENDENT_CLEARANCE"});
-    case "GOVERNED_SPAWN_ADMITTED": return local("START_GOVERNED_SPAWN");
-    case "GOVERNED_SPAWN_ACTIVE": return local("START_IMPORT_ORCHESTRATOR");
+    case "GOVERNED_SPAWN_ACTIVE":
+      assert(safeGovernedSpawnRoute(routeFacts), "Active governed spawn requires clearance or isolated local custody");
+      return local("START_IMPORT_ORCHESTRATOR");
     case "IMPORT_ORCHESTRATOR_ACTIVE": return local("REQUEST_SPAWNER_QA");
     default: throw new Error(`Unsupported Controller startup stage: ${stage}`);
   }

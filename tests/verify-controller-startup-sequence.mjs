@@ -74,16 +74,41 @@ const publishNext = compileControllerStartupSuccessor({
 });
 assert.equal(publishNext.next_action, "PUBLISH_TYPED_ROSTER");
 
-const protectedWait = compileControllerStartupSuccessor({
+assert.throws(() => compileControllerStartupSuccessor({
   ...base,
   stage: "SPAWNER_COMPILER_ACTIVE",
   routeFacts: facts({isolatedLocalCustody: false}),
   protectedEvent: event,
   hostileFixtureRefs: hostile("PROTECTED"),
+}), /cannot mask an eligible startup successor/u, "compiler-only handoff cannot be hidden by a protected event");
+
+const compilerHandoff = compileControllerStartupSuccessor({
+  ...base,
+  stage: "SPAWNER_COMPILER_ACTIVE",
+  routeFacts: facts({isolatedLocalCustody: false}),
+  hostileFixtureRefs: hostile("COMPILER_HANDOFF"),
 });
-assert.equal(protectedWait.next_action, "WAIT_FOR_INDEPENDENT_CLEARANCE");
-assert.equal(protectedWait.true_blocker, true);
-assert.equal(protectedWait.protected_event.blocker_id, event.blocker_id);
+assert.equal(compilerHandoff.next_action, "ADMIT_GOVERNED_SPAWN", "completed compiler-only work must hand off to the adapter");
+assert.equal(compilerHandoff.true_blocker, false);
+assert.equal(compilerHandoff.protected_event, null);
+
+assert.throws(() => compileControllerStartupSuccessor({
+  ...base,
+  stage: "GOVERNED_SPAWN_ADMITTED",
+  routeFacts: facts({isolatedLocalCustody: false}),
+  hostileFixtureRefs: hostile("GOVERNED_MISSING_CLEARANCE"),
+}), /cannot activate without a typed true blocker/u, "governed activation cannot silently bypass clearance");
+
+const governedWait = compileControllerStartupSuccessor({
+  ...base,
+  stage: "GOVERNED_SPAWN_ADMITTED",
+  routeFacts: facts({isolatedLocalCustody: false}),
+  protectedEvent: event,
+  hostileFixtureRefs: hostile("GOVERNED_PROTECTED"),
+});
+assert.equal(governedWait.next_action, "WAIT_FOR_INDEPENDENT_CLEARANCE");
+assert.equal(governedWait.true_blocker, true);
+assert.equal(governedWait.protected_event.blocker_id, event.blocker_id);
 
 assert.throws(() => compileControllerStartupSuccessor({
   ...base,
@@ -92,12 +117,13 @@ assert.throws(() => compileControllerStartupSuccessor({
   protectedEvent: event,
   hostileFixtureRefs: hostile("FALSE_WAIT"),
 }), /cannot mask an eligible startup successor/u);
-assert.throws(() => compileControllerStartupSuccessor({
+const compilerHandoffWithoutEvent = compileControllerStartupSuccessor({
   ...base,
   stage: "SPAWNER_COMPILER_ACTIVE",
   routeFacts: facts({isolatedLocalCustody: false}),
   hostileFixtureRefs: hostile("MISSING_EVENT"),
-}), /cannot stop without a typed true blocker/u);
+});
+assert.equal(compilerHandoffWithoutEvent.next_action, "ADMIT_GOVERNED_SPAWN");
 assert.throws(() => compileControllerStartupSuccessor({
   ...base,
   stage: "PERMANENT_ROLES_IN_PROGRESS",
@@ -108,6 +134,10 @@ assert.throws(() => compileControllerStartupSuccessor({
 const schema = JSON.parse(fs.readFileSync(new URL("../schemas/controller-startup-sequence.v1.json", import.meta.url), "utf8"));
 assert.equal(schema.$id, "https://agentos.dev/schemas/controller-startup-sequence.v1.json");
 assert.deepEqual(schema.properties.stage.enum, CONTROLLER_STARTUP_STAGES);
+const compilerRule = schema.allOf.find((rule) => rule.if?.properties?.stage?.const === "SPAWNER_COMPILER_ACTIVE");
+assert.deepEqual(compilerRule.then.properties.next_action.enum, ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "ADMIT_GOVERNED_SPAWN"]);
+const rosterRule = schema.allOf.find((rule) => rule.if?.properties?.stage?.const === "SPAWNER_ROSTER_PUBLISHED");
+assert.equal(rosterRule.then.properties.next_action.const, "ADMIT_GOVERNED_SPAWN");
 assert.equal(publicKernel.compileControllerStartupSuccessor, compileControllerStartupSuccessor);
 assert.equal(publicKernel.validateControllerStartupSuccessor, validateControllerStartupSuccessor);
 assert.equal(publicKernel.controllerStartup.compileControllerStartupSuccessor, compileControllerStartupSuccessor);

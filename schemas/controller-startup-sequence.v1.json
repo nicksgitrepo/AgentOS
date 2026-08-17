@@ -30,9 +30,9 @@
     {"if": {"properties": {"stage": {"const": "PERMANENT_ROLES_IN_PROGRESS"}}}, "then": {"properties": {"next_action": {"const": "ADMIT_NEXT_PERMANENT_ROLE"}}}},
     {"if": {"properties": {"stage": {"const": "PERMANENT_ROLES_READY"}}}, "then": {"properties": {"next_action": {"const": "INJECT_ORCHESTRATOR_GOVERNANCE"}}}},
     {"if": {"properties": {"stage": {"const": "ORCHESTRATOR_GOVERNANCE_READY"}}}, "then": {"properties": {"next_action": {"const": "START_COMPILER"}}}},
-    {"if": {"properties": {"stage": {"const": "SPAWNER_COMPILER_ACTIVE"}}}, "then": {"properties": {"next_action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "ADMIT_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"]}}}},
-    {"if": {"properties": {"stage": {"const": "SPAWNER_ROSTER_PUBLISHED"}}}, "then": {"properties": {"next_action": {"enum": ["ADMIT_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"]}}}},
-    {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ADMITTED"}}}, "then": {"properties": {"next_action": {"const": "START_GOVERNED_SPAWN"}}}},
+    {"if": {"properties": {"stage": {"const": "SPAWNER_COMPILER_ACTIVE"}}}, "then": {"properties": {"next_action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "ADMIT_GOVERNED_SPAWN"]}}}},
+    {"if": {"properties": {"stage": {"const": "SPAWNER_ROSTER_PUBLISHED"}}}, "then": {"properties": {"next_action": {"const": "ADMIT_GOVERNED_SPAWN"}}}},
+    {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ADMITTED"}}}, "then": {"properties": {"next_action": {"enum": ["START_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"]}}}},
     {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ACTIVE"}}}, "then": {"properties": {"next_action": {"const": "START_IMPORT_ORCHESTRATOR"}}}},
     {"if": {"properties": {"stage": {"const": "IMPORT_ORCHESTRATOR_ACTIVE"}}}, "then": {"properties": {"next_action": {"const": "REQUEST_SPAWNER_QA"}}}}
   ],
