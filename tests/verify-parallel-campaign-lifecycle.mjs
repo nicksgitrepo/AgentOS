@@ -123,6 +123,11 @@ async function runAutonomousLaneCampaign() {
   assert(result.workers.every((worker) => worker.state === "CLOSED"));
   assert(result.workers.every((worker) => worker.handoff?.handoff_sha256));
   assert(result.workers.every((worker) => worker.audit === null), "autonomous lane must not require a Controller audit approval");
+  assert(result.workers.every((worker) => worker.autonomous_handoff?.controller_approval_required === false), "autonomous lane must release without Controller approval");
+  assert(result.workers.every((worker) => worker.autonomous_handoff?.execution_owner === "LANE_AGENT"), "autonomous lane must retain lane execution custody");
+  assert(result.workers.every((worker) => worker.autonomous_handoff?.next_consumer === "INDEPENDENT_PLATFORM_REVIEW"), "autonomous lane must route directly to independent platform review");
+  assert(result.workers.every((worker) => worker.autonomous_handoff?.next_action === "START_PLATFORM_REVIEW"), "autonomous lane must publish a concrete successor action");
+  assert(result.workers.every((worker) => worker.autonomous_handoff?.next_handler === "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW"), "autonomous lane must publish its concrete successor handler");
   assert(result.events.some((event) => event.event_type === "WORKER_AUTONOMOUS_HANDOFF_RELEASED"));
   assert(result.events.some((event) => event.payload_sha256));
   return {result, lifecycle};

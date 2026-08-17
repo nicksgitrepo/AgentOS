@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/orchestrator-successor-dispatch.v1.json",
   "title": "AgentOS Orchestrator same-turn successor dispatch",
-  "description": "A typed Orchestrator successor is not considered dispatched until a registered handler is invoked and each resulting Controller receipt is atomically persisted.",
+  "description": "A typed Orchestrator successor is not considered dispatched until a registered handler is invoked and each resulting receipt is atomically persisted. Ordinary work remains lane-owned: the successor must not require Controller approval and must route directly to independent platform review.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -75,5 +75,11 @@
         }
       }
     }
+  },
+  "state_rules": {
+    "dispatch": "A successor is dispatchable only after the executable adapter validates its action, handler, continuation, persistence, and lane-custody metadata; a hand-written receipt or claimed same-turn flag is never sufficient.",
+    "custody": "The source successor result must declare controller_approval_required=false, execution_owner=LANE_AGENT, and direct_consumer=INDEPENDENT_PLATFORM_REVIEW. The Controller observes liveness and custody only; it is not an ordinary approval gate.",
+    "continuation": "Every local successor is invoked in the same turn with timer_deferral=false and heartbeat_deferral=false. NONE, DONE, timer-only, heartbeat-only, and silent terminal states are invalid; protected or owner boundaries must be explicit typed continuations.",
+    "failure": "Missing handlers, false persistence, unchanged semantic state, invalid custody metadata, or null/mismatched digests fail closed before the transition is accepted and must route to a typed repair or retry action."
   }
 }
