@@ -10,6 +10,7 @@ import {
 } from "../control/candidate-stage-continuation.mjs";
 import {
   compileControllerContinuation,
+  compileControllerNextLifecycleHandoff,
   ControllerActionDefect,
 } from "../control/controller-action-dispatcher.mjs";
 import {
@@ -179,6 +180,12 @@ const boundedReadback = dispatchOrchestratorSuccessor({
   dispatchId: "DISPATCH.ORCHESTRATOR.MAX_TRANSITIONS_ONE",
   handlers,
   persist: () => true,
+  startNextLifecycle: (cursor) => compileControllerNextLifecycleHandoff({
+    sourceReceiptSha256: cursor.receipt_sha256,
+    nextAction: cursor.next_action,
+    nextHandler: cursor.next_handler,
+    handoffRef: "ref:controller/next-lifecycle/orchestrator-test",
+  }),
   maxTransitions: 1,
 });
 validateOrchestratorSuccessorDispatchReadback(boundedReadback);
@@ -187,6 +194,15 @@ assert.equal(boundedReadback.dispatch_observed, true);
 assert.equal(boundedReadback.dispatched_count, 1);
 assert.equal(boundedReadback.final_next_action, "START_INDEPENDENT_REAUDIT");
 assert.equal(boundedReadback.final_next_handler, "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT");
+assert.equal(boundedReadback.next_lifecycle.status, "STARTED");
+assert.equal(boundedReadback.next_lifecycle.started_same_turn, true);
+assert.throws(() => dispatchOrchestratorSuccessor({
+  successor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.MISSING_NEXT_LIFECYCLE_STARTER",
+  handlers,
+  persist: () => true,
+  maxTransitions: 1,
+}), (error) => error instanceof ControllerActionDefect && error.code === "WORKFLOW_DEAD_END");
 
 assert.throws(() => dispatchOrchestratorSuccessor({
   successor,
@@ -336,9 +352,10 @@ const schemaPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "../s
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
 assert.deepEqual(schema.properties.status.enum, ["DISPATCHED_SAME_TURN", "DISPATCHED_TO_OWNER_REVIEW", "DISPATCHED_TO_PROTECTED_WAIT"]);
 assert.equal(schema.properties.dispatch_observed.const, true);
+assert.equal(schema.required.includes("next_lifecycle"), true);
 assert.equal(schema.properties.scope.properties.control_plane_only.const, true);
 assert.equal(schema.properties.scope.properties.consumer_product_mutated.const, false);
-assert.match(schema.description, /bounded local chain may end at its transition cap/u);
-assert.match(schema.state_rules.continuation, /immediate consumption by the next lifecycle turn/u);
+assert.match(schema.description, /next-lifecycle starter.*STARTED handoff/u);
+assert.match(schema.state_rules.continuation, /next-lifecycle starter.*STARTED handoff/u);
 
 console.log("PASS Orchestrator successor dispatch: handler invocation, atomic same-turn persistence, closed route binding, protected-boundary rejection, and hostile false-dispatch coverage");

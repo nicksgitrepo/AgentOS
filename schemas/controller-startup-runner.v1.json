@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": [
     "schema", "version", "startup_sequence_sha256", "initial_receipt_sha256", "status", "dispatched_count",
-    "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "runner_sha256"
+    "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "next_lifecycle", "runner_sha256"
   ],
   "properties": {
     "schema": {"const": "agentos.controller_startup_runner.v1"},
@@ -33,6 +33,27 @@
     },
     "continuation_sha256": {"$ref": "#/$defs/sha256"},
     "protected_event": {"oneOf": [{"type": "null"}, {"type": "object"}]},
+    "next_lifecycle": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "version", "status", "source_receipt_sha256", "next_action", "next_handler", "handoff_ref", "handoff_sha256", "started_same_turn"],
+          "properties": {
+            "schema": {"const": "agentos.controller_next_lifecycle_handoff.v1"},
+            "version": {"const": 1},
+            "status": {"const": "STARTED"},
+            "source_receipt_sha256": {"$ref": "#/$defs/sha256"},
+            "next_action": {"$ref": "#/$defs/identifier"},
+            "next_handler": {"$ref": "#/$defs/identifier"},
+            "handoff_ref": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+            "handoff_sha256": {"$ref": "#/$defs/sha256"},
+            "started_same_turn": {"const": true}
+          }
+        }
+      ]
+    },
     "runner_sha256": {"$ref": "#/$defs/sha256"}
   },
   "$defs": {

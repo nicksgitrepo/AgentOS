@@ -34,7 +34,7 @@
           "required": [
             "schema", "version", "dispatch_id", "status", "source_successor_sha256", "source_action", "source_handler",
             "dispatched_count", "persisted_receipt_sha256s", "final_receipt_sha256", "final_next_action", "final_next_handler",
-            "dispatch_observed", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256"
+            "dispatch_observed", "next_lifecycle", "continuation", "scope", "evidence_refs", "hostile_fixture_refs", "readback_sha256"
           ],
           "properties": {
             "schema": {"const": "agentos.orchestrator_successor_dispatch.v1"},
@@ -50,6 +50,27 @@
             "final_next_action": {"$ref": "#/$defs/identifier"},
             "final_next_handler": {"$ref": "#/$defs/identifier"},
             "dispatch_observed": {"const": true},
+            "next_lifecycle": {
+              "oneOf": [
+                {"type": "null"},
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["schema", "version", "status", "source_receipt_sha256", "next_action", "next_handler", "handoff_ref", "handoff_sha256", "started_same_turn"],
+                  "properties": {
+                    "schema": {"const": "agentos.controller_next_lifecycle_handoff.v1"},
+                    "version": {"const": 1},
+                    "status": {"const": "STARTED"},
+                    "source_receipt_sha256": {"$ref": "#/$defs/sha256"},
+                    "next_action": {"$ref": "#/$defs/identifier"},
+                    "next_handler": {"$ref": "#/$defs/identifier"},
+                    "handoff_ref": {"$ref": "#/$defs/reference"},
+                    "handoff_sha256": {"$ref": "#/$defs/sha256"},
+                    "started_same_turn": {"const": true}
+                  }
+                }
+              ]
+            },
             "continuation": {
               "type": "object", "additionalProperties": false,
               "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],

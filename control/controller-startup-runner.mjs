@@ -17,6 +17,7 @@ import {
   advanceControllerAction,
   compileControllerActionReceipt,
   validateControllerActionReceipt,
+  validateControllerNextLifecycleHandoff,
 } from "./controller-action-dispatcher.mjs";
 import {validateControllerStartupSuccessor} from "./controller-startup-sequence.mjs";
 
@@ -27,7 +28,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const RUNNER_KEYS = Object.freeze([
   "schema", "version", "startup_sequence_sha256", "initial_receipt_sha256", "status", "dispatched_count",
-  "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "runner_sha256",
+  "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "next_lifecycle", "runner_sha256",
 ]);
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
@@ -93,6 +94,7 @@ export function compileControllerStartupRunReadback({sequence, initialReceipt, r
     continuation: structuredClone(result.receipt.continuation),
     continuation_sha256: result.receipt.continuation_sha256,
     protected_event: structuredClone(result.receipt.protected_event),
+    next_lifecycle: structuredClone(result.next_lifecycle ?? null),
     runner_sha256: null,
   };
   readback.runner_sha256 = canonicalDigest(body(readback));
@@ -118,17 +120,24 @@ export function validateControllerStartupRunReadback(readback) {
     assert(CONTROLLER_ACTION_REGISTRY[readback.next_action].mode !== "PROTECTED_WAIT", "Local startup runner status hides a protected wait");
     assert(readback.protected_event === null, "Local startup runner status carries a protected event");
   }
+  if (readback.status === "ROUTED_SAME_TURN") {
+    validateControllerNextLifecycleHandoff(readback.next_lifecycle, {
+      sourceReceiptSha256: readback.next_lifecycle.source_receipt_sha256,
+      nextAction: readback.next_action,
+      nextHandler: readback.next_handler,
+    });
+  } else assert(readback.next_lifecycle === null, "Protected or owner startup runner status cannot claim a local next lifecycle start");
   assert(readback.runner_sha256 === canonicalDigest(body(readback)), "Controller startup runner readback digest mismatch");
   return readback;
 }
 
-export function runControllerStartupCycle({sequence, handlers, persist, persistReadback, onDefect, maxTransitions = 16, receiptId = "RECEIPT.CONTROLLER.STARTUP.ROOT", previousReceiptSha256 = null} = {}) {
+export function runControllerStartupCycle({sequence, handlers, persist, persistReadback, onDefect, startNextLifecycle, maxTransitions = 16, receiptId = "RECEIPT.CONTROLLER.STARTUP.ROOT", previousReceiptSha256 = null} = {}) {
   assert(isRecord(handlers), "Controller startup runner handlers are required");
   assert(typeof persist === "function", "Controller startup runner receipt persistence is required");
   assert(typeof persistReadback === "function", "Controller startup runner readback persistence is required");
   const initialReceipt = compileControllerStartupCursor(sequence, {receiptId, previousReceiptSha256});
   assert(persist(initialReceipt) !== false, "Controller startup runner initial persistence returned false");
-  const result = advanceControllerAction(initialReceipt, {handlers, persist, onDefect, maxTransitions});
+  const result = advanceControllerAction(initialReceipt, {handlers, persist, onDefect, startNextLifecycle, maxTransitions});
   const readback = compileControllerStartupRunReadback({sequence, initialReceipt, result});
   assert(persistReadback(readback) !== false, "Controller startup runner readback persistence returned false");
   return {...result, initial_receipt: initialReceipt, readback};

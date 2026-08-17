@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import * as publicKernel from "../control/agentos.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {controllerActionHandlerFor, compileControllerContinuation} from "../control/controller-action-dispatcher.mjs";
+import {controllerActionHandlerFor, compileControllerContinuation, compileControllerNextLifecycleHandoff} from "../control/controller-action-dispatcher.mjs";
 import {compileControllerStartupSuccessor} from "../control/controller-startup-sequence.mjs";
 import {
   CONTROLLER_STARTUP_RUNNER_SCHEMA,
@@ -97,6 +97,12 @@ const boundedRun = runControllerStartupCycle({
   sequence,
   handlers,
   maxTransitions: 1,
+  startNextLifecycle: (cursor) => compileControllerNextLifecycleHandoff({
+    sourceReceiptSha256: cursor.receipt_sha256,
+    nextAction: cursor.next_action,
+    nextHandler: cursor.next_handler,
+    handoffRef: "ref:controller/next-lifecycle/startup-test",
+  }),
   persist: () => true,
   persistReadback: (readback) => { boundedRunReadbacks.push(readback); return true; },
 });
@@ -104,6 +110,7 @@ assert.equal(boundedRun.status, "ROUTED_SAME_TURN");
 assert.equal(boundedRun.receipt.next_action, "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME");
 assert.equal(boundedRunReadbacks[0].next_action, "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME");
 assert.equal(boundedRunReadbacks[0].status, "ROUTED_SAME_TURN");
+assert.equal(boundedRunReadbacks[0].next_lifecycle.status, "STARTED");
 
 const tampered = structuredClone(readbacks[0]);
 tampered.next_action = "NONE";
@@ -111,6 +118,7 @@ assert.throws(() => validateControllerStartupRunReadback(tampered), /handler|act
 const schema = JSON.parse(fs.readFileSync(new URL("../schemas/controller-startup-runner.v1.json", import.meta.url), "utf8"));
 assert.equal(schema.properties.schema.const, CONTROLLER_STARTUP_RUNNER_SCHEMA);
 assert.deepEqual(schema.properties.status.enum, ["ROUTED_SAME_TURN", "PROTECTED_EVENT_WAIT", "OWNER_REVIEW_REQUIRED"]);
+assert.equal(schema.required.includes("next_lifecycle"), true);
 assert.equal(compileControllerStartupRunReadback({sequence, initialReceipt: run.initial_receipt, result: run}).runner_sha256, readbacks[0].runner_sha256);
 
 console.log("PASS Controller startup runner: durable initial cursor, same-turn Bootstrap→Spawner→roles→Orchestrator dispatch, typed protected boundary, and non-null readback");
