@@ -226,11 +226,26 @@ assert.equal(isolatedAssembly.candidate_id, assemblyPending.candidate.candidate_
 assert.equal(isolatedAssembly.base_candidate_sha256, assemblyPending.candidate.candidate_sha256);
 assert.equal(isolatedAssembly.source_roots_preserved, true);
 assert.equal(isolatedAssembly.zero_trace, true);
-const protectedWait = advancePyramidCampaign(assemblyPending, {roster, event: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", assembly: isolatedAssembly});
+const reauditPending = advancePyramidCampaign(assemblyPending, {roster, event: "ISOLATED_CUMULATIVE_CANDIDATE_ASSEMBLED", assembly: isolatedAssembly});
+assert.equal(reauditPending.status, "INDEPENDENT_REAUDIT_PENDING");
+assert.equal(reauditPending.next_action, "START_INDEPENDENT_REAUDIT");
+assert.equal(reauditPending.next_handler, "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT");
+assert.equal(reauditPending.protected_event, null);
+assert.equal(reauditPending.independent_reaudit, null);
+const independentReaudit = {
+  reviewer_role: "INDEPENDENT_CANDIDATE_REAUDITOR",
+  candidate_sha256: reauditPending.candidate.candidate_sha256,
+  evidence_sha256: HASH("independent-reaudit-evidence"),
+  residual_risk_sha256: HASH("independent-reaudit-risk"),
+  accepted: true,
+  reaudit_sha256: null,
+};
+independentReaudit.reaudit_sha256 = canonicalDigest({...independentReaudit, reaudit_sha256: null});
+const protectedWait = advancePyramidCampaign(reauditPending, {roster, event: "INDEPENDENT_REAUDIT_COMPLETED", independentReaudit});
 assert.equal(protectedWait.status, "PROTECTED_WAIT");
 assert.equal(protectedWait.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
-assert.equal(protectedWait.protected_event.affected_action, "PROMOTE_ISOLATED_CUMULATIVE_CANDIDATE_TO_PRODUCT");
+assert.equal(protectedWait.protected_event.affected_action, "RUNTIME_ATOMIC_GIT_REPOINT_OR_RELEASE");
 assert.deepEqual(protectedWait.protected_event.resources, {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0});
 assert.equal(protectedWait.authority.central_integration, false);
 assert.equal(protectedWait.stop_workflow_decision.outcome, "STOP_OWNER_DECISION");
@@ -239,6 +254,7 @@ assert.deepEqual(protectedWait.stop_workflow_decision.triggered_question_ids, ["
 assert.equal(protectedWait.stop_workflow_decision.stop, true);
 assert.equal(protectedWait.stop_workflow_decision.rollback_ref, protectedWait.candidate.rollback_ref);
 assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolatedAssembly.assembly_sha256);
+assert.equal(protectedWait.independent_reaudit.reaudit_sha256, independentReaudit.reaudit_sha256);
 validatePyramidCampaignState(protectedWait, {roster});
 
 assert.throws(
@@ -301,7 +317,7 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "stop_workflow_decision", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "stop_workflow_decision", "state_sha256",
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");

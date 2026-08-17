@@ -7,9 +7,11 @@
  * host, and environment evidence.  The Orchestrator advances one bounded
  * audit/repair wave at a time, never more than six lanes, and platform review
  * changes only the isolated cumulative candidate when a typed handoff is
- * accepted.  The final coherence/polish route ends at the existing protected
- * central-integration event until an exact authorization and candidate
- * identity are supplied.
+ * accepted.  The final coherence/polish route assembles an isolated
+ * candidate, dispatches an independent re-audit, and only then reaches the
+ * protected runtime cutover/release boundary. Candidate assembly and
+ * re-audit are ordinary project-agnostic work and must not become a silent
+ * wait.
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
@@ -33,6 +35,7 @@ export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "START_PLATFORM_REVIEW",
   "PREPARE_CANDIDATE_REVIEW",
   "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE",
+  "START_INDEPENDENT_REAUDIT",
   "WAIT_FOR_PROTECTED_EVENT",
 ]);
 export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
@@ -40,6 +43,7 @@ export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
   "PLATFORM_REVIEW_PENDING",
   "FINAL_REVIEW_PENDING",
   "CANDIDATE_ASSEMBLY_PENDING",
+  "INDEPENDENT_REAUDIT_PENDING",
   "PROTECTED_WAIT",
 ]);
 
@@ -79,6 +83,9 @@ const REVIEW_KEYS = Object.freeze([
 const FINAL_REVIEW_KEYS = Object.freeze([
   "reviewer_role", "candidate_sha256", "coherence_evidence_sha256", "release_evidence_sha256", "residual_risk_sha256", "accepted", "review_sha256",
 ]);
+const INDEPENDENT_REAUDIT_KEYS = Object.freeze([
+  "reviewer_role", "candidate_sha256", "evidence_sha256", "residual_risk_sha256", "accepted", "reaudit_sha256",
+]);
 const ISOLATED_CANDIDATE_ASSEMBLY_KEYS = Object.freeze([
   "schema", "version", "candidate_id", "base_candidate_sha256", "assembled_candidate_sha256", "worktree_ref", "rollback_ref",
   "source_roots_preserved", "zero_trace", "custody", "proof_refs", "status", "assembly_sha256",
@@ -102,7 +109,7 @@ const RESOURCE_KEYS = Object.freeze(["jobs", "workers", "heavyweight_processes",
 const STATE_KEYS = Object.freeze([
   "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index",
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
-  "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
+  "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
   "protected_event", "stop_workflow_decision", "state_sha256",
 ]);
 
@@ -368,6 +375,21 @@ function validateFinalReview(review, candidateSha256) {
   return review;
 }
 
+function validateIndependentReaudit(reaudit, candidateSha256) {
+  if (reaudit === null) return null;
+  exactKeys(reaudit, INDEPENDENT_REAUDIT_KEYS, "pyramid independent re-audit");
+  requireIdentifier(reaudit.reviewer_role, "pyramid independent re-audit reviewer");
+  assert(reaudit.reviewer_role === "INDEPENDENT_CANDIDATE_REAUDITOR", "pyramid independent re-audit role is invalid");
+  requireSha(reaudit.candidate_sha256, "pyramid independent re-audit candidate");
+  assert(reaudit.candidate_sha256 === candidateSha256, "pyramid independent re-audit candidate binding is stale");
+  requireSha(reaudit.evidence_sha256, "pyramid independent re-audit evidence");
+  requireSha(reaudit.residual_risk_sha256, "pyramid independent re-audit residual risk");
+  assert(reaudit.accepted === true, "pyramid independent re-audit must be accepted");
+  requireSha(reaudit.reaudit_sha256, "pyramid independent re-audit digest");
+  assert(reaudit.reaudit_sha256 === digestWithout(reaudit, "reaudit_sha256"), "pyramid independent re-audit digest mismatch");
+  return reaudit;
+}
+
 function validateIsolatedCandidateCustody(custody) {
   exactKeys(custody, ISOLATED_CANDIDATE_CUSTODY_KEYS, "pyramid isolated candidate custody");
   for (const key of ["isolated_worktree", "shared_workspace_read_only", "source_roots_preserved"]) {
@@ -578,6 +600,7 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.isolated_candidate_assembly.worktree_ref === state.candidate.worktree_ref, "pyramid isolated candidate worktree binding is stale");
     assert(state.isolated_candidate_assembly.rollback_ref === state.candidate.rollback_ref, "pyramid isolated candidate rollback binding is stale");
   }
+  validateIndependentReaudit(state.independent_reaudit, state.candidate.candidate_sha256);
   assert(Array.isArray(state.platform_review_batch), "pyramid platform review batch is required");
   state.platform_review_batch.forEach((handoff) => validatePyramidSpecialistHandoff(handoff));
   sortedUnique(state.platform_review_batch.map((handoff) => handoff.lane_id), "pyramid platform review batch lanes");
@@ -604,6 +627,11 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
   if (state.status === "CANDIDATE_ASSEMBLY_PENDING") {
     assert(state.next_action === "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE" && state.final_review?.accepted === true, "pyramid candidate assembly successor is not ready");
     assert(state.isolated_candidate_assembly === null, "pyramid candidate assembly is already recorded");
+  }
+  if (state.status === "INDEPENDENT_REAUDIT_PENDING") {
+    assert(state.next_action === "START_INDEPENDENT_REAUDIT", "pyramid independent re-audit successor is not ready");
+    assert(state.final_review?.accepted === true && state.isolated_candidate_assembly !== null, "pyramid independent re-audit lacks assembled candidate");
+    assert(state.independent_reaudit === null, "pyramid independent re-audit is already recorded");
   }
   validateRoute(state);
   requireSha(state.state_sha256, "pyramid state digest");
@@ -643,6 +671,7 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     accepted_platform_lane_ids: [],
     final_review: null,
     isolated_candidate_assembly: null,
+    independent_reaudit: null,
     lane_policy: {max_active_lanes: PYRAMID_CAMPAIGN_MAX_LANES, max_heavyweight_processes: PYRAMID_CAMPAIGN_MAX_HEAVYWEIGHT_PROCESSES, heavyweight_processes: 0, timers: 0, polling: false},
     authority: structuredClone(PYRAMID_AUTHORITY),
     next_action: route.next_action,
@@ -677,7 +706,7 @@ function finishState(next, {status, nextAction, protectedEvent = null} = {}) {
   return next;
 }
 
-export function advancePyramidCampaign(state, {roster, event, handoffs = [], reviews = [], finalReview = null, assembly = null, protectedEvent = null} = {}) {
+export function advancePyramidCampaign(state, {roster, event, handoffs = [], reviews = [], finalReview = null, assembly = null, independentReaudit = null, protectedEvent = null} = {}) {
   validatePyramidCampaignState(state, {roster});
   const next = cloneState(state);
   if (event === "SPECIALIST_WAVE_HANDOFFS_READY") {
@@ -743,7 +772,22 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
     assert(assembled.worktree_ref === state.candidate.worktree_ref, "pyramid isolated candidate assembly worktree is stale");
     assert(assembled.rollback_ref === state.candidate.rollback_ref, "pyramid isolated candidate assembly rollback is stale");
     next.isolated_candidate_assembly = structuredClone(assembled);
-    return finishState(next, {status: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", protectedEvent: compileProtectedEvent(protectedEvent)});
+    return finishState(next, {status: "INDEPENDENT_REAUDIT_PENDING", nextAction: "START_INDEPENDENT_REAUDIT"});
+  }
+  if (event === "INDEPENDENT_REAUDIT_COMPLETED") {
+    assert(state.next_action === "START_INDEPENDENT_REAUDIT", "pyramid independent re-audit is not the current successor");
+    assert(state.isolated_candidate_assembly !== null && state.final_review?.accepted === true, "pyramid independent re-audit lacks an assembled candidate");
+    validateIndependentReaudit(independentReaudit, state.candidate.candidate_sha256);
+    next.independent_reaudit = structuredClone(independentReaudit);
+    const cutoverEvent = protectedEvent ?? {
+      blocker_id: "PROTECTED.RUNTIME.GIT_REPOINT_OR_RELEASE",
+      blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
+      affected_action: "RUNTIME_ATOMIC_GIT_REPOINT_OR_RELEASE",
+      evidence_ceiling: "Independent re-audit and isolated candidate evidence are complete; runtime cutover or release evidence is not inferred.",
+      restart_event: "CURRENT_TYPED_RUNTIME_CUTOVER_OR_RELEASE_AUTHORIZATION",
+      resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
+    };
+    return finishState(next, {status: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", protectedEvent: compileProtectedEvent(cutoverEvent)});
   }
   assert(false, `Unsupported pyramid campaign event: ${event}`);
 }
