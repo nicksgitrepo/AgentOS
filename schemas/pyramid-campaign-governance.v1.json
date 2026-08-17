@@ -3,7 +3,7 @@
   "$id": "agentos.pyramid_campaign_governance.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "state_sha256"],
+  "required": ["schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "stop_workflow_decision", "state_sha256"],
   "properties": {
     "schema": {"const": "agentos.pyramid_campaign_governance.v1"},
     "version": {"const": 1},
@@ -27,6 +27,7 @@
     "continuation": {"type": "object", "additionalProperties": false, "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"], "properties": {"mode": {"type": "string"}, "timer_deferral": {"const": false}, "heartbeat_deferral": {"const": false}, "same_turn_dispatch": {"type": "boolean"}, "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}, "resume_condition": {"type": "string"}}},
     "continuation_sha256": {"$ref": "#/$defs/sha256"},
     "protected_event": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/protectedEvent"}]},
+    "stop_workflow_decision": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/stopWorkflowDecision"}]},
     "state_sha256": {"$ref": "#/$defs/sha256"}
   },
   "$defs": {
@@ -42,6 +43,31 @@
     "lanePolicy": {"type": "object", "additionalProperties": false, "required": ["max_active_lanes", "max_heavyweight_processes", "heavyweight_processes", "timers", "polling"], "properties": {"max_active_lanes": {"const": 6}, "max_heavyweight_processes": {"const": 1}, "heavyweight_processes": {"type": "integer", "minimum": 0, "maximum": 1}, "timers": {"const": 0}, "polling": {"const": false}}},
     "authority": {"type": "object", "additionalProperties": false, "required": ["roster_derivation", "wave_routing", "isolated_audit_admission", "platform_review_routing", "cumulative_candidate_write", "central_integration", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "release"], "properties": {"roster_derivation": {"const": true}, "wave_routing": {"const": true}, "isolated_audit_admission": {"const": true}, "platform_review_routing": {"const": true}, "cumulative_candidate_write": {"const": true}, "central_integration": {"const": false}, "product_mutation": {"const": false}, "provider_access": {"const": false}, "credential_access": {"const": false}, "external_sync": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false}, "release": {"const": false}}},
     "handler": {"type": "string", "pattern": "^HANDLER\\.[A-Z0-9._:-]+$"},
-    "protectedEvent": {"type": "object", "additionalProperties": false, "required": ["blocker_id", "blocker_class", "affected_action", "evidence_ceiling", "restart_event", "resources"], "properties": {"blocker_id": {"$ref": "#/$defs/identifier"}, "blocker_class": {"type": "string"}, "affected_action": {"$ref": "#/$defs/identifier"}, "evidence_ceiling": {"type": "string", "minLength": 24}, "restart_event": {"type": "string", "minLength": 8}, "resources": {"type": "object", "additionalProperties": false, "required": ["jobs", "workers", "heavyweight_processes", "timers"], "properties": {"jobs": {"const": 0}, "workers": {"const": 0}, "heavyweight_processes": {"const": 0}, "timers": {"const": 0}}}}}
+    "protectedEvent": {"type": "object", "additionalProperties": false, "required": ["blocker_id", "blocker_class", "affected_action", "evidence_ceiling", "restart_event", "resources"], "properties": {"blocker_id": {"$ref": "#/$defs/identifier"}, "blocker_class": {"type": "string"}, "affected_action": {"$ref": "#/$defs/identifier"}, "evidence_ceiling": {"type": "string", "minLength": 24}, "restart_event": {"type": "string", "minLength": 8}, "resources": {"type": "object", "additionalProperties": false, "required": ["jobs", "workers", "heavyweight_processes", "timers"], "properties": {"jobs": {"const": 0}, "workers": {"const": 0}, "heavyweight_processes": {"const": 0}, "timers": {"const": 0}}}}},
+    "stopWorkflowDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "decision_id", "action_ref", "rollback_ref", "question_order", "answers", "outcome", "primary_trigger_question_id", "triggered_question_ids", "unknown_question_ids", "next_action", "stop", "owner_decision_required", "reason", "decision_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.stop_workflow_gate.v1"},
+        "version": {"const": 1},
+        "decision_id": {"$ref": "#/$defs/identifier"},
+        "action_ref": {"$ref": "#/$defs/reference"},
+        "rollback_ref": {"$ref": "#/$defs/reference"},
+        "question_order": {"const": ["COSTS_MONEY", "CHANGES_PROTECTED_PROJECT_OR_SCOPE", "DELETES_UNSAVED_OR_UNBACKED_UP_WORK", "DESTROYS_OR_IRREVERSIBLY_MODIFIES", "OWNER_DECISION_REQUIRED"]},
+        "answers": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/stopWorkflowAnswer"}},
+        "outcome": {"enum": ["CONTINUE_AUTONOMOUS", "EVIDENCE_REQUIRED", "STOP_OWNER_DECISION", "STOP_DESTRUCTIVE_BOUNDARY"]},
+        "primary_trigger_question_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/stopWorkflowQuestionId"}]},
+        "triggered_question_ids": {"type": "array", "items": {"$ref": "#/$defs/stopWorkflowQuestionId"}, "uniqueItems": true},
+        "unknown_question_ids": {"type": "array", "items": {"$ref": "#/$defs/stopWorkflowQuestionId"}, "uniqueItems": true},
+        "next_action": {"enum": ["CONTINUE_NEXT_ACTION", "RUN_NEXT_BOUNDED_RECOVERY", "STOP_DEPENDENT_WORK_OWNER_REVIEW", "STOP_DEPENDENT_WORK_DESTRUCTIVE_REVIEW"]},
+        "stop": {"type": "boolean"},
+        "owner_decision_required": {"type": "boolean"},
+        "reason": {"type": "string", "minLength": 24},
+        "decision_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "stopWorkflowQuestionId": {"enum": ["COSTS_MONEY", "CHANGES_PROTECTED_PROJECT_OR_SCOPE", "DELETES_UNSAVED_OR_UNBACKED_UP_WORK", "DESTROYS_OR_IRREVERSIBLY_MODIFIES", "OWNER_DECISION_REQUIRED"]},
+    "stopWorkflowAnswer": {"type": "object", "additionalProperties": false, "required": ["question_id", "answer", "evidence_refs"], "properties": {"question_id": {"$ref": "#/$defs/stopWorkflowQuestionId"}, "answer": {"enum": ["YES", "NO", "UNKNOWN"]}, "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}}}}
   }
 }

@@ -18,6 +18,11 @@ import {
   compileControllerContinuation,
   controllerContinuationDigest,
 } from "./controller-action-dispatcher.mjs";
+import {
+  compileStopWorkflowNoStopAnswers,
+  evaluateStopWorkflowGate,
+  validateStopWorkflowDecision,
+} from "./stop-workflow-gate.mjs";
 
 export const PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA = "agentos.pyramid_campaign_governance.v1";
 export const PYRAMID_CAMPAIGN_GOVERNANCE_VERSION = 1;
@@ -98,7 +103,7 @@ const STATE_KEYS = Object.freeze([
   "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index",
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
   "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
-  "protected_event", "state_sha256",
+  "protected_event", "stop_workflow_decision", "state_sha256",
 ]);
 
 function assert(condition, message, code = "PYRAMID_CAMPAIGN_INVALID") {
@@ -489,6 +494,33 @@ function compileRoute(nextAction, protectedEvent = null) {
   return {next_action: nextAction, next_handler: nextHandler, continuation, continuation_sha256: controllerContinuationDigest(continuation)};
 }
 
+/*
+ * A protected wait is only terminal for the dependent route when the same
+ * state carries a valid five-question stop decision.  Protected events are
+ * intentionally mapped to OWNER_DECISION_REQUIRED: the event is already a
+ * protected external/owner boundary, while ordinary isolated work remains
+ * explicitly all-NO and therefore continues autonomously.
+ */
+export function compilePyramidProtectedStopDecision({protectedEvent, rollbackRef} = {}) {
+  const event = compileProtectedEvent(protectedEvent);
+  requireReference(rollbackRef, "pyramid protected stop rollback reference");
+  const answers = compileStopWorkflowNoStopAnswers({evidenceRefPrefix: `opaque:stop-gate/${event.blocker_id}`});
+  const ownerAnswerIndex = answers.findIndex((answer) => answer.question_id === "OWNER_DECISION_REQUIRED");
+  assert(ownerAnswerIndex >= 0, "pyramid stop gate owner question is unavailable");
+  answers[ownerAnswerIndex] = {
+    question_id: "OWNER_DECISION_REQUIRED",
+    answer: "YES",
+    evidence_refs: [`opaque:protected-event/${event.blocker_id}`],
+  };
+  const decisionToken = canonicalDigest({blocker_id: event.blocker_id, affected_action: event.affected_action}).slice(0, 32).toUpperCase();
+  return evaluateStopWorkflowGate({
+    decisionId: `DECISION.PROTECTED.${decisionToken}`,
+    actionRef: `opaque:protected-action/${event.affected_action}`,
+    rollbackRef,
+    answers,
+  });
+}
+
 function validateRoute(state) {
   const route = compileRoute(state.next_action, state.protected_event);
   assert(state.next_handler === route.next_handler, "pyramid next handler is stale");
@@ -550,8 +582,17 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
   if (state.status === "PROTECTED_WAIT") {
     assert(state.next_action === "WAIT_FOR_PROTECTED_EVENT" && state.protected_event !== null, "pyramid protected wait is not explicit");
     compileProtectedEvent(state.protected_event);
+    assert(state.stop_workflow_decision !== null, "pyramid protected wait lacks stop-workflow decision");
+    validateStopWorkflowDecision(state.stop_workflow_decision);
+    assert(state.stop_workflow_decision.stop === true, "pyramid protected wait stop-workflow decision must stop");
+    assert(state.stop_workflow_decision.primary_trigger_question_id === "OWNER_DECISION_REQUIRED", "pyramid protected wait must bind the owner-decision stop question");
+    assert(state.stop_workflow_decision.rollback_ref === state.candidate.rollback_ref, "pyramid protected wait stop rollback binding is stale");
+    assert(state.stop_workflow_decision.action_ref === `opaque:protected-action/${state.protected_event.affected_action}`, "pyramid protected wait stop action binding is stale");
     if (state.final_review !== null) assert(state.isolated_candidate_assembly !== null, "pyramid protected promotion wait lacks isolated candidate assembly");
-  } else assert(state.protected_event === null, "pyramid non-protected state carries a protected event");
+  } else {
+    assert(state.protected_event === null, "pyramid non-protected state carries a protected event");
+    assert(state.stop_workflow_decision === null, "pyramid non-protected state carries a stop-workflow decision");
+  }
   if (state.status === "CANDIDATE_ASSEMBLY_PENDING") {
     assert(state.next_action === "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE" && state.final_review?.accepted === true, "pyramid candidate assembly successor is not ready");
     assert(state.isolated_candidate_assembly === null, "pyramid candidate assembly is already recorded");
@@ -576,7 +617,8 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
   };
   validateCandidate(candidate);
   const shouldWait = initialProtectedWait === true;
-  const route = shouldWait ? compileRoute("WAIT_FOR_PROTECTED_EVENT", compileProtectedEvent(protectedEvent)) : compileRoute(roster.applicable_specialist_ids.length === 0 ? "PREPARE_CANDIDATE_REVIEW" : "START_SPECIALIST_WAVE");
+  const initialProtectedEvent = shouldWait ? compileProtectedEvent(protectedEvent) : null;
+  const route = shouldWait ? compileRoute("WAIT_FOR_PROTECTED_EVENT", initialProtectedEvent) : compileRoute(roster.applicable_specialist_ids.length === 0 ? "PREPARE_CANDIDATE_REVIEW" : "START_SPECIALIST_WAVE");
   const state = {
     schema: PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA,
     version: PYRAMID_CAMPAIGN_GOVERNANCE_VERSION,
@@ -599,7 +641,8 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     next_handler: route.next_handler,
     continuation: route.continuation,
     continuation_sha256: route.continuation_sha256,
-    protected_event: shouldWait ? compileProtectedEvent(protectedEvent) : null,
+    protected_event: initialProtectedEvent,
+    stop_workflow_decision: shouldWait ? compilePyramidProtectedStopDecision({protectedEvent: initialProtectedEvent, rollbackRef}) : null,
     state_sha256: null,
   };
   state.state_sha256 = digestWithout(state, "state_sha256");
@@ -611,13 +654,17 @@ function cloneState(state) {
 }
 
 function finishState(next, {status, nextAction, protectedEvent = null} = {}) {
-  const route = compileRoute(nextAction, protectedEvent);
+  const compiledProtectedEvent = protectedEvent === null ? null : compileProtectedEvent(protectedEvent);
+  const route = compileRoute(nextAction, compiledProtectedEvent);
   next.status = status;
   next.next_action = route.next_action;
   next.next_handler = route.next_handler;
   next.continuation = route.continuation;
   next.continuation_sha256 = route.continuation_sha256;
-  next.protected_event = protectedEvent;
+  next.protected_event = compiledProtectedEvent;
+  next.stop_workflow_decision = status === "PROTECTED_WAIT"
+    ? compilePyramidProtectedStopDecision({protectedEvent: compiledProtectedEvent, rollbackRef: next.candidate.rollback_ref})
+    : null;
   next.state_sha256 = digestWithout(next, "state_sha256");
   return next;
 }

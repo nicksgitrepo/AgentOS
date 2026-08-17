@@ -578,15 +578,15 @@
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "fccc5b287c8226660812be4615d3221adcf298bc21f73b3b5ec00a660f57c98f"
+      "sha256": "77490c68d1a88f9c037deda805b19d24b000eb9f4671384e7d522c3246c73ed0"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
-      "sha256": "8bb8a92672ae336f314d040eded5176cd43e4f9e6678a2307bef44d5866f1260"
+      "sha256": "a61439f7a2e879363993a0585da11ebeb61d433d01fa331616f4ec90d2d2ce06"
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "a07121c4ce6e2f7432fe663258d58e1a846234e1047aa17a9106e7baebb5bff3"
+      "sha256": "dca949e5b663df5e7bd5552e7936085eac1cddcd5a4582e9d3920568be8facfd"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",

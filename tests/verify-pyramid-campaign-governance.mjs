@@ -65,6 +65,31 @@ assert.equal(initial.next_action, "START_SPECIALIST_WAVE");
 assert.equal(initial.next_handler, controllerActionHandlerFor(initial.next_action));
 assert.ok(PYRAMID_CAMPAIGN_ACTIONS.includes(initial.next_action));
 
+const initiallyProtected = compilePyramidCampaignState({
+  campaignId: "CAMPAIGN.PYRAMID.INITIAL_PROTECTED",
+  roster,
+  candidateId: "CANDIDATE.INITIAL.PROTECTED",
+  candidateSha256: HASH("initial-protected-candidate"),
+  worktreeRef: "opaque:initial-protected-worktree",
+  rollbackRef: "opaque:initial-protected-rollback",
+  initialProtectedWait: true,
+  protectedEvent: {
+    blocker_id: "PROTECTED.INITIAL.DECISION",
+    blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
+    affected_action: "INITIAL_PROTECTED_ACTION",
+    evidence_ceiling: "Only typed local evidence is available before protected review.",
+    restart_event: "CURRENT_TYPED_OWNER_DECISION",
+    resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
+  },
+});
+assert.equal(initiallyProtected.status, "PROTECTED_WAIT");
+assert.equal(initiallyProtected.stop_workflow_decision.primary_trigger_question_id, "OWNER_DECISION_REQUIRED");
+assert.equal(initiallyProtected.stop_workflow_decision.stop, true);
+const missingProtectedDecision = structuredClone(initiallyProtected);
+missingProtectedDecision.stop_workflow_decision = null;
+missingProtectedDecision.state_sha256 = canonicalDigest({...missingProtectedDecision, state_sha256: null});
+assert.throws(() => validatePyramidCampaignState(missingProtectedDecision, {roster}), /lacks stop-workflow decision/u);
+
 function custody() {
   return {
     isolated_worktree: true,
@@ -208,6 +233,10 @@ assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
 assert.equal(protectedWait.protected_event.affected_action, "PROMOTE_ISOLATED_CUMULATIVE_CANDIDATE_TO_PRODUCT");
 assert.deepEqual(protectedWait.protected_event.resources, {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0});
 assert.equal(protectedWait.authority.central_integration, false);
+assert.equal(protectedWait.stop_workflow_decision.outcome, "STOP_OWNER_DECISION");
+assert.equal(protectedWait.stop_workflow_decision.primary_trigger_question_id, "OWNER_DECISION_REQUIRED");
+assert.equal(protectedWait.stop_workflow_decision.stop, true);
+assert.equal(protectedWait.stop_workflow_decision.rollback_ref, protectedWait.candidate.rollback_ref);
 assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolatedAssembly.assembly_sha256);
 validatePyramidCampaignState(protectedWait, {roster});
 
@@ -271,11 +300,12 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "protected_event", "stop_workflow_decision", "state_sha256",
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");
 assert(schema.$defs.protectedEvent.required.includes("affected_action"), "protected promotion event must name its affected action");
+assert(schema.$defs.stopWorkflowDecision, "protected waits must bind the stop-workflow decision tree");
 for (const relative of ["control/pyramid-campaign-governance.mjs", "schemas/pyramid-campaign-governance.v1.json", "control/import-orchestrator.mjs"]) {
   const source = fs.readFileSync(new URL(`../${relative}`, import.meta.url), "utf8");
   assert(!/Sociuna|JobSight|WellSight/iu.test(source), `${relative} contains consumer-specific policy`);
