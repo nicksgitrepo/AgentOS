@@ -340,7 +340,35 @@ assert.throws(
   /has not completed/u,
   "candidate cutover wait cannot open before local repositories are materialized",
 );
-const protectedWait = advancePyramidCampaign(materializationPending, {roster, event: "CANDIDATE_REPOSITORIES_MATERIALIZED", assembly: materialization});
+const candidateCutoverPending = advancePyramidCampaign(materializationPending, {roster, event: "CANDIDATE_REPOSITORIES_MATERIALIZED", assembly: materialization});
+assert.equal(candidateCutoverPending.status, "CANDIDATE_CUTOVER_PENDING");
+assert.equal(candidateCutoverPending.next_action, "RUNTIME_ATOMIC_GIT_REPOINT");
+assert.equal(candidateCutoverPending.next_handler, "HANDLER.RUNTIME_ATOMIC_GIT_REPOINT");
+assert.equal(candidateCutoverPending.protected_event, null);
+assert.equal(candidateCutoverPending.stop_workflow_decision, null);
+validatePyramidCampaignState(candidateCutoverPending, {roster});
+const developmentCutoverResult = {
+  schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.development_cutover`,
+  version: 1,
+  result_id: "RESULT.PYRAMID.DEVELOPMENT.CUTOVER.SYNTHETIC",
+  materialization_sha256: materialization.materialization_sha256,
+  target_root_ref: "opaque:candidate/synthetic/runtime-target",
+  rollback_ref: materialization.rollback_ref,
+  source_roots_preserved: true,
+  legacy_roots_untouched: true,
+  product_mutation: false,
+  provider_access: false,
+  credential_access: false,
+  external_sync: false,
+  spend: false,
+  destructive_work: false,
+  clean_target: true,
+  status: "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE",
+  evidence_refs: ["ref:evidence/candidate-cutover", "ref:evidence/candidate-target-clean"].sort(),
+  result_sha256: null,
+};
+developmentCutoverResult.result_sha256 = canonicalDigest({...developmentCutoverResult, result_sha256: null});
+const protectedWait = advancePyramidCampaign(candidateCutoverPending, {roster, event: "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE", assembly: developmentCutoverResult});
 assert.equal(protectedWait.status, "PROTECTED_WAIT");
 assert.equal(protectedWait.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
@@ -438,6 +466,7 @@ assert.deepEqual([...schema.required].sort(), [
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");
+assert(schema.$defs.developmentCutoverResult, "schema must bind isolated development cutover results");
 assert(schema.$defs.protectedEvent.required.includes("affected_action"), "protected promotion event must name its affected action");
 assert(schema.$defs.stopWorkflowDecision, "protected waits must bind the stop-workflow decision tree");
 for (const relative of ["control/pyramid-campaign-governance.mjs", "schemas/pyramid-campaign-governance.v1.json", "control/import-orchestrator.mjs"]) {

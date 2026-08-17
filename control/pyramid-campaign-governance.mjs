@@ -25,6 +25,10 @@ import {
   evaluateStopWorkflowGate,
   validateStopWorkflowDecision,
 } from "./stop-workflow-gate.mjs";
+import {
+  compileCandidateScopeGate,
+  CANDIDATE_SCOPE_MODES,
+} from "./candidate-scope-gate.mjs";
 import {validatePyramidImportOutput} from "./project-import.mjs";
 
 export const PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA = "agentos.pyramid_campaign_governance.v1";
@@ -39,6 +43,7 @@ export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "START_INDEPENDENT_REAUDIT",
   "PREPARE_PYRAMID_IMPORT_OUTPUT",
   "MATERIALIZE_NEW_PROJECT_REPOSITORIES",
+  "RUNTIME_ATOMIC_GIT_REPOINT",
   "WAIT_FOR_PROTECTED_EVENT",
 ]);
 export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
@@ -49,6 +54,7 @@ export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
   "INDEPENDENT_REAUDIT_PENDING",
   "IMPORT_OUTPUT_PENDING",
   "CANDIDATE_REPOSITORIES_PENDING",
+  "CANDIDATE_CUTOVER_PENDING",
   "PROTECTED_WAIT",
 ]);
 
@@ -562,6 +568,28 @@ export function compilePyramidCandidateMaterialization({
   return validateCandidateMaterialization(materialization, {pyramidImportOutput});
 }
 
+/*
+ * The materialized destination is still an isolated development target.  It
+ * is not the consumer Product and it is not a public Git/release cutover.
+ * Compile the five-question gate here so the subsequent Runtime action is
+ * explicitly autonomous and cannot inherit the final-cutover YES answer.
+ */
+function compilePyramidIsolatedCandidateScopeGate(materialization) {
+  requireIdentifier(materialization.materialization_id, "pyramid candidate materialization ID");
+  return compileCandidateScopeGate({
+    gateId: `GATE.PYRAMID.CANDIDATE_SCOPE.${materialization.materialization_id}`,
+    mode: CANDIDATE_SCOPE_MODES[0],
+    actionRef: `opaque:pyramid-candidate-cutover/${materialization.materialization_id.toLowerCase()}`,
+    rollbackRef: materialization.rollback_ref,
+    candidateScopeRef: `opaque:pyramid-candidate-scope/${materialization.materialization_id.toLowerCase()}`,
+    finalCutoverScopeRef: `opaque:pyramid-final-cutover/${materialization.materialization_id.toLowerCase()}`,
+    zeroCostRef: `opaque:pyramid-candidate-cost/${materialization.materialization_id.toLowerCase()}`,
+    preservationRef: `opaque:pyramid-candidate-preservation/${materialization.materialization_id.toLowerCase()}`,
+    rollbackEvidenceRef: `opaque:pyramid-candidate-rollback-evidence/${materialization.materialization_id.toLowerCase()}`,
+    delegatedAuthorityRef: "opaque:agentos-owner-voice/development-candidate-custody",
+  });
+}
+
 function compileProtectedEvent(protectedEvent) {
   const event = protectedEvent ?? {
     blocker_id: "PROTECTED.PRODUCT_MUTATION.CENTRAL_INTEGRATION_AUTHORITY",
@@ -743,6 +771,13 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     if (state.pyramid_import_output !== null) {
       assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid protected cutover wait requires materialized candidate repositories");
     }
+  } else if (state.status === "CANDIDATE_CUTOVER_PENDING") {
+    assert(state.next_action === "RUNTIME_ATOMIC_GIT_REPOINT", "pyramid candidate cutover successor is not the Runtime action");
+    assert(state.protected_event === null && state.stop_workflow_decision === null, "isolated candidate cutover must not carry a protected wait");
+    assert(state.pyramid_import_output !== null, "pyramid candidate cutover lacks import output");
+    assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid candidate cutover requires materialized candidate repositories");
+    const scopeGate = compilePyramidIsolatedCandidateScopeGate(state.candidate_materialization);
+    assert(scopeGate.stop_decision.outcome === "CONTINUE_AUTONOMOUS" && scopeGate.stop_decision.stop === false, "isolated candidate cutover must pass the all-NO stop gate");
   } else {
     assert(state.protected_event === null, "pyramid non-protected state carries a protected event");
     assert(state.stop_workflow_decision === null, "pyramid non-protected state carries a stop-workflow decision");
@@ -766,7 +801,7 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.pyramid_import_output !== null && state.candidate_materialization === null, "pyramid candidate materialization route is already resolved");
   }
   if (state.status !== "IMPORT_OUTPUT_PENDING" && state.pyramid_import_output !== null) {
-    assert(["CANDIDATE_REPOSITORIES_PENDING", "PROTECTED_WAIT"].includes(state.status), "pyramid import output advanced without materialization or protected cutover");
+    assert(["CANDIDATE_REPOSITORIES_PENDING", "CANDIDATE_CUTOVER_PENDING", "PROTECTED_WAIT"].includes(state.status), "pyramid import output advanced without materialization or protected cutover");
   }
   validateRoute(state);
   requireSha(state.state_sha256, "pyramid state digest");
@@ -946,12 +981,47 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
     const materialization = validateCandidateMaterialization(assembly, {pyramidImportOutput: state.pyramid_import_output});
     assert(materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid candidate materialization has not completed");
     next.candidate_materialization = structuredClone(materialization);
+    /*
+     * This is still a bounded, isolated development action.  The old route
+     * incorrectly treated the materialized destination as a Product/public
+     * Git cutover and stopped here.  The candidate-scope gate proves the
+     * distinction and hands Runtime the local cutover in the same turn.
+     */
+    const scopeGate = compilePyramidIsolatedCandidateScopeGate(materialization);
+    assert(scopeGate.stop_decision.outcome === "CONTINUE_AUTONOMOUS" && scopeGate.stop_decision.stop === false, "candidate materialization crossed the isolated-custody boundary");
+    return finishState(next, {status: "CANDIDATE_CUTOVER_PENDING", nextAction: "RUNTIME_ATOMIC_GIT_REPOINT"});
+  }
+  if (event === "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE") {
+    assert(state.next_action === "RUNTIME_ATOMIC_GIT_REPOINT", "pyramid development cutover is not the current successor");
+    assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid development cutover lacks materialized candidate repositories");
+    assert(isRecord(assembly), "pyramid development cutover requires a typed Runtime result");
+    exactKeys(assembly, [
+      "schema", "version", "result_id", "materialization_sha256", "target_root_ref", "rollback_ref",
+      "source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access",
+      "external_sync", "spend", "destructive_work", "clean_target", "status", "evidence_refs", "result_sha256",
+    ], "pyramid development cutover result");
+    assert(assembly.schema === `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.development_cutover`, "pyramid development cutover result schema is invalid");
+    assert(assembly.version === PYRAMID_CAMPAIGN_GOVERNANCE_VERSION, "pyramid development cutover result version is invalid");
+    requireIdentifier(assembly.result_id, "pyramid development cutover result ID");
+    requireSha(assembly.materialization_sha256, "pyramid development cutover materialization binding");
+    assert(assembly.materialization_sha256 === state.candidate_materialization.materialization_sha256, "pyramid development cutover materialization binding is stale");
+    requireReference(assembly.target_root_ref, "pyramid development cutover target");
+    requireReference(assembly.rollback_ref, "pyramid development cutover rollback");
+    assert(assembly.rollback_ref === state.candidate_materialization.rollback_ref, "pyramid development cutover rollback is stale");
+    for (const field of ["source_roots_preserved", "legacy_roots_untouched", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "clean_target"]) assert(typeof assembly[field] === "boolean", `pyramid development cutover ${field} is invalid`);
+    assert(assembly.source_roots_preserved === true && assembly.legacy_roots_untouched === true && assembly.product_mutation === false
+      && assembly.provider_access === false && assembly.credential_access === false && assembly.external_sync === false
+      && assembly.spend === false && assembly.destructive_work === false && assembly.clean_target === true, "pyramid development cutover crossed a protected boundary");
+    assert(assembly.status === "DEVELOPMENT_CANDIDATE_CUTOVER_COMPLETE", "pyramid development cutover result is incomplete");
+    requireSortedReferences(assembly.evidence_refs, "pyramid development cutover evidence refs");
+    requireSha(assembly.result_sha256, "pyramid development cutover result digest");
+    assert(assembly.result_sha256 === canonicalDigest({...assembly, result_sha256: null}), "pyramid development cutover result digest mismatch");
     const cutoverEvent = protectedEvent ?? {
       blocker_id: "PROTECTED.RUNTIME.GIT_REPOINT_OR_RELEASE",
       blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",
       affected_action: "RUNTIME_ATOMIC_GIT_REPOINT_OR_RELEASE",
-      evidence_ceiling: "The pyramid output names clean candidate repositories and preserves the old repositories as immutable legacy evidence; runtime Git cutover or release evidence is not inferred.",
-      restart_event: "CURRENT_TYPED_RUNTIME_CUTOVER_OR_RELEASE_AUTHORIZATION",
+      evidence_ceiling: "The isolated Development candidate cutover is verified; the consumer Product and public Git/release state remain untouched, so only final Product repoint or release remains protected.",
+      restart_event: "CURRENT_TYPED_PUBLIC_PRODUCT_REPOINT_OR_RELEASE_AUTHORIZATION",
       resources: {jobs: 0, workers: 0, heavyweight_processes: 0, timers: 0},
     };
     return finishState(next, {status: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", protectedEvent: compileProtectedEvent(cutoverEvent)});
