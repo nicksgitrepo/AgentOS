@@ -38,6 +38,7 @@ export const PYRAMID_CAMPAIGN_ACTIONS = Object.freeze([
   "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE",
   "START_INDEPENDENT_REAUDIT",
   "PREPARE_PYRAMID_IMPORT_OUTPUT",
+  "MATERIALIZE_NEW_PROJECT_REPOSITORIES",
   "WAIT_FOR_PROTECTED_EVENT",
 ]);
 export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
@@ -47,6 +48,7 @@ export const PYRAMID_CAMPAIGN_STATUSES = Object.freeze([
   "CANDIDATE_ASSEMBLY_PENDING",
   "INDEPENDENT_REAUDIT_PENDING",
   "IMPORT_OUTPUT_PENDING",
+  "CANDIDATE_REPOSITORIES_PENDING",
   "PROTECTED_WAIT",
 ]);
 
@@ -98,6 +100,11 @@ const ISOLATED_CANDIDATE_CUSTODY_KEYS = Object.freeze([
   "credential_access", "external_sync", "spend", "destructive_work", "deployment_publication_merge", "release",
   "heavyweight_processes", "timer_count", "polling",
 ]);
+const CANDIDATE_MATERIALIZATION_KEYS = Object.freeze([
+  "schema", "version", "materialization_id", "pyramid_output_sha256", "candidate_repository_ids", "destination_root_ref",
+  "legacy_policy", "source_roots_preserved", "product_mutation", "provider_access", "credential_access", "external_sync",
+  "spend", "destructive_work", "clean_candidate", "status", "rollback_ref", "evidence_refs", "materialization_sha256",
+]);
 const LANE_POLICY_KEYS = Object.freeze([
   "max_active_lanes", "max_heavyweight_processes", "heavyweight_processes", "timers", "polling",
 ]);
@@ -115,6 +122,7 @@ const STATE_KEYS = Object.freeze([
   "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids",
   "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256",
   "source_scope", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
+  "candidate_materialization",
 ]);
 
 function assert(condition, message, code = "PYRAMID_CAMPAIGN_INVALID") {
@@ -480,6 +488,80 @@ export function validatePyramidIsolatedCandidateAssembly(assembly) {
   return assembly;
 }
 
+function candidateMaterializationBody(materialization) {
+  return {...materialization, materialization_sha256: null};
+}
+
+function validateCandidateMaterialization(materialization, {pyramidImportOutput = null} = {}) {
+  exactKeys(materialization, CANDIDATE_MATERIALIZATION_KEYS, "pyramid candidate materialization");
+  assert(materialization.schema === `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.candidate_materialization` && materialization.version === PYRAMID_CAMPAIGN_GOVERNANCE_VERSION, "pyramid candidate materialization identity is invalid");
+  requireIdentifier(materialization.materialization_id, "pyramid candidate materialization ID");
+  requireSha(materialization.pyramid_output_sha256, "pyramid candidate materialization output binding");
+  requireSortedRepositoryIds(materialization.candidate_repository_ids, "pyramid candidate materialization repositories");
+  requireReference(materialization.destination_root_ref, "pyramid candidate materialization destination");
+  assert(materialization.legacy_policy === "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED", "pyramid candidate materialization legacy policy is unsafe");
+  for (const field of ["source_roots_preserved", "product_mutation", "provider_access", "credential_access", "external_sync", "spend", "destructive_work", "clean_candidate"]) assert(typeof materialization[field] === "boolean", `pyramid candidate materialization ${field} is invalid`);
+  assert(materialization.source_roots_preserved === true && materialization.product_mutation === false && materialization.provider_access === false
+    && materialization.credential_access === false && materialization.external_sync === false && materialization.spend === false
+    && materialization.destructive_work === false && materialization.clean_candidate === true, "pyramid candidate materialization crossed a protected boundary");
+  assert(["READY_FOR_LOCAL_MATERIALIZATION", "MATERIALIZED_CANDIDATE_REPOSITORIES"].includes(materialization.status), "pyramid candidate materialization status is invalid");
+  requireReference(materialization.rollback_ref, "pyramid candidate materialization rollback");
+  requireSortedReferences(materialization.evidence_refs, "pyramid candidate materialization evidence refs");
+  requireSha(materialization.materialization_sha256, "pyramid candidate materialization digest");
+  assert(materialization.materialization_sha256 === canonicalDigest(candidateMaterializationBody(materialization)), "pyramid candidate materialization digest mismatch");
+  if (pyramidImportOutput !== null) {
+    validatePyramidImportOutput(pyramidImportOutput);
+    assert(materialization.pyramid_output_sha256 === pyramidImportOutput.output_sha256, "pyramid candidate materialization output is stale");
+    assert(JSON.stringify(materialization.candidate_repository_ids) === JSON.stringify(pyramidImportOutput.candidate_repositories.map((repository) => repository.repository_id)), "pyramid candidate materialization repositories are stale");
+    assert(materialization.rollback_ref === pyramidImportOutput.git_repoint.rollback_ref, "pyramid candidate materialization rollback is stale");
+  }
+  return materialization;
+}
+
+/**
+ * Compile the ordinary local step between a completed pyramid output and the
+ * protected Runtime cutover.  This is deliberately a plan/receipt, not a
+ * Git repoint: it creates a typed destination for new candidate repositories,
+ * retains the legacy source untouched, and keeps all protected capabilities
+ * closed.  A Runtime adapter may later turn the READY plan into a
+ * MATERIALIZED receipt without changing the source project.
+ */
+export function compilePyramidCandidateMaterialization({
+  pyramidImportOutput,
+  materializationId,
+  destinationRootRef,
+  evidenceRefs,
+  status = "READY_FOR_LOCAL_MATERIALIZATION",
+} = {}) {
+  validatePyramidImportOutput(pyramidImportOutput);
+  requireIdentifier(materializationId, "pyramid candidate materialization ID");
+  requireReference(destinationRootRef, "pyramid candidate materialization destination");
+  assert(status === "READY_FOR_LOCAL_MATERIALIZATION" || status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid candidate materialization status is invalid");
+  const materialization = {
+    schema: `${PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA}.candidate_materialization`,
+    version: PYRAMID_CAMPAIGN_GOVERNANCE_VERSION,
+    materialization_id: materializationId,
+    pyramid_output_sha256: pyramidImportOutput.output_sha256,
+    candidate_repository_ids: pyramidImportOutput.candidate_repositories.map((repository) => repository.repository_id),
+    destination_root_ref: destinationRootRef,
+    legacy_policy: "RETAIN_LEGACY_REPOSITORIES_UNTOUCHED",
+    source_roots_preserved: true,
+    product_mutation: false,
+    provider_access: false,
+    credential_access: false,
+    external_sync: false,
+    spend: false,
+    destructive_work: false,
+    clean_candidate: true,
+    status,
+    rollback_ref: pyramidImportOutput.git_repoint.rollback_ref,
+    evidence_refs: [...evidenceRefs].sort((left, right) => compareUtf8(left, right)),
+    materialization_sha256: null,
+  };
+  materialization.materialization_sha256 = canonicalDigest(candidateMaterializationBody(materialization));
+  return validateCandidateMaterialization(materialization, {pyramidImportOutput});
+}
+
 function compileProtectedEvent(protectedEvent) {
   const event = protectedEvent ?? {
     blocker_id: "PROTECTED.PRODUCT_MUTATION.CENTRAL_INTEGRATION_AUTHORITY",
@@ -635,6 +717,10 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.pyramid_import_output.pyramid.independent_reaudit_sha256 === state.independent_reaudit.reaudit_sha256, "pyramid import output independent re-audit binding is stale");
     assert(state.pyramid_import_output.legacy.untouched === true && state.pyramid_import_output.legacy.read_only === true, "pyramid import output legacy source is not preserved");
   }
+  if (state.candidate_materialization !== null) {
+    validateCandidateMaterialization(state.candidate_materialization, {pyramidImportOutput: state.pyramid_import_output});
+    assert(state.pyramid_import_output !== null, "pyramid candidate materialization lacks import output");
+  }
   assert(Array.isArray(state.platform_review_batch), "pyramid platform review batch is required");
   state.platform_review_batch.forEach((handoff) => validatePyramidSpecialistHandoff(handoff));
   sortedUnique(state.platform_review_batch.map((handoff) => handoff.lane_id), "pyramid platform review batch lanes");
@@ -654,6 +740,9 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.stop_workflow_decision.stop === true, "pyramid protected wait stop-workflow decision must stop");
     assert(state.stop_workflow_decision.decision_sha256 === expectedStopDecision.decision_sha256, "pyramid protected wait stop-workflow decision is stale");
     if (state.final_review !== null) assert(state.isolated_candidate_assembly !== null, "pyramid protected promotion wait lacks isolated candidate assembly");
+    if (state.pyramid_import_output !== null) {
+      assert(state.candidate_materialization !== null && state.candidate_materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid protected cutover wait requires materialized candidate repositories");
+    }
   } else {
     assert(state.protected_event === null, "pyramid non-protected state carries a protected event");
     assert(state.stop_workflow_decision === null, "pyramid non-protected state carries a stop-workflow decision");
@@ -672,8 +761,12 @@ export function validatePyramidCampaignState(state, {roster} = {}) {
     assert(state.independent_reaudit?.accepted === true && state.isolated_candidate_assembly !== null, "pyramid import-output preparation lacks an accepted candidate");
     assert(state.pyramid_import_output === null, "pyramid import output is already recorded");
   }
+  if (state.status === "CANDIDATE_REPOSITORIES_PENDING") {
+    assert(state.next_action === "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "pyramid candidate materialization successor is not ready");
+    assert(state.pyramid_import_output !== null && state.candidate_materialization === null, "pyramid candidate materialization route is already resolved");
+  }
   if (state.status !== "IMPORT_OUTPUT_PENDING" && state.pyramid_import_output !== null) {
-    assert(state.status === "PROTECTED_WAIT", "pyramid import output advanced without the protected cutover boundary");
+    assert(["CANDIDATE_REPOSITORIES_PENDING", "PROTECTED_WAIT"].includes(state.status), "pyramid import output advanced without materialization or protected cutover");
   }
   validateRoute(state);
   requireSha(state.state_sha256, "pyramid state digest");
@@ -717,6 +810,7 @@ export function compilePyramidCampaignState({campaignId, roster, candidateId, ca
     isolated_candidate_assembly: null,
     independent_reaudit: null,
     pyramid_import_output: null,
+    candidate_materialization: null,
     lane_policy: {max_active_lanes: PYRAMID_CAMPAIGN_MAX_LANES, max_heavyweight_processes: PYRAMID_CAMPAIGN_MAX_HEAVYWEIGHT_PROCESSES, heavyweight_processes: 0, timers: 0, polling: false},
     authority: structuredClone(PYRAMID_AUTHORITY),
     next_action: route.next_action,
@@ -841,6 +935,17 @@ export function advancePyramidCampaign(state, {roster, event, handoffs = [], rev
     assert(pyramidImportOutput.pyramid.independent_reaudit_sha256 === state.independent_reaudit.reaudit_sha256, "pyramid import output re-audit evidence is stale");
     assert(pyramidImportOutput.pyramid.central_integration_sha256 === state.isolated_candidate_assembly.assembly_sha256, "pyramid import output central-integration evidence is stale");
     next.pyramid_import_output = structuredClone(pyramidImportOutput);
+    // The output names the new repositories, but it is not itself proof that
+    // those repositories have been materialized.  Keep the campaign moving
+    // through that ordinary local step before creating the final cutover hold.
+    return finishState(next, {status: "CANDIDATE_REPOSITORIES_PENDING", nextAction: "MATERIALIZE_NEW_PROJECT_REPOSITORIES"});
+  }
+  if (event === "CANDIDATE_REPOSITORIES_MATERIALIZED") {
+    assert(state.next_action === "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "pyramid candidate materialization is not the current successor");
+    assert(state.pyramid_import_output !== null, "pyramid candidate materialization lacks import output");
+    const materialization = validateCandidateMaterialization(assembly, {pyramidImportOutput: state.pyramid_import_output});
+    assert(materialization.status === "MATERIALIZED_CANDIDATE_REPOSITORIES", "pyramid candidate materialization has not completed");
+    next.candidate_materialization = structuredClone(materialization);
     const cutoverEvent = protectedEvent ?? {
       blocker_id: "PROTECTED.RUNTIME.GIT_REPOINT_OR_RELEASE",
       blocker_class: "MAJOR_PRODUCT_OR_PRODUCTION_DECISION",

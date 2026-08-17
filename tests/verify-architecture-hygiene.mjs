@@ -159,6 +159,7 @@ const explicitlyRetainedLargeBoundaries = new Set([
   "control/owner-review.mjs",
   "control/proof-carrying-work.mjs",
   "control/project-import.mjs",
+  "control/pyramid-campaign-governance.mjs",
   "control/release-lifecycle.mjs",
   "control/task-model-routing.mjs",
 ]);

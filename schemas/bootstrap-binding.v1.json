@@ -570,11 +570,11 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "4ff71e5217606b4ac7b8ca4608d40b855f71f7c232eb59e817c9211d8613a6bc"
+      "sha256": "d00e1d235dba85c84d7b5af6b264807a48ae15f9f1cdd2d349d372b52f8bc627"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "8f2c770f8727b20aeabb4ec09e6f819a5790873d322ca92f287cdac43b8a2eab"
+      "sha256": "4c5504e037ff17cb940275a44de5e1684b3ac2472ad11803517f201d65a10923"
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
@@ -586,15 +586,15 @@
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
-      "sha256": "258bd4644b98af9f987f8912ccd0f1138082fd04ce06b55aef60c83154b7670e"
+      "sha256": "3ac32027ffc4bbaed63d375a2ccf02076e5d4ddf64f92d60246c3bf9f9a9192a"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
-      "sha256": "08d11b3ae2a141377369de180c3609450c417b273155703d5aea085d35d4e85f"
+      "sha256": "ab07a1b7dac9320ba9d9248991eaa080772744b086791545f3e4cb1c51fb0216"
     },
     "pyramid_campaign_governance_verifier": {
       "path": "tests/verify-pyramid-campaign-governance.mjs",
-      "sha256": "3596c6909faf05676a3f0d69fbef0aeef319565801fd88dc2ad3a75c2dae8ae3"
+      "sha256": "bbb9747330e7747c3019c00732771b827d49af2dfde1f2e07ae30c9b66a20727"
     },
     "typed_successor_readback_controller": {
       "path": "control/typed-successor-readback.mjs",
@@ -898,11 +898,11 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "8f1828a62a9e8a46ab541af72244e7e05b155eab9cc2e84b5331d531cb037ed7"
+      "sha256": "ca743037638c3eb695b7f3f2ebfebc7a425b8156367a6350ea92fd3822d9979a"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "7d4b288a6c54befb6e635117fa6410c403af08d4eaf051354d94d127251725fd"
+      "sha256": "6b8458dddfa9e7182940603ebc2a31d15db8637f48260b3b0a19f080045fe885"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
@@ -1482,7 +1482,7 @@
     },
     "architecture_hygiene_verifier": {
       "path": "tests/verify-architecture-hygiene.mjs",
-      "sha256": "8e9f09c587f26235adbb1df35179066446117f7b482e484bdebe48e345b37bc1"
+      "sha256": "0e6448be8e778e7f41d33450d13d45bd310516d1b179bc0ccc0355c1d1f3a2c0"
     },
     "bootstrap_output_definitions": {
       "path": "control/bootstrap-output-definitions.mjs",

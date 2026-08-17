@@ -8,6 +8,7 @@ import {
   advancePyramidCampaign,
   compilePyramidCampaignContext,
   compilePyramidCampaignState,
+  compilePyramidCandidateMaterialization,
   compilePyramidIsolatedCandidateAssembly,
   compilePyramidPlatformReview,
   compilePyramidSpecialistHandoff,
@@ -311,7 +312,35 @@ const pyramidImportOutput = compilePyramidImportOutput({
   })(),
   rollbackRef: "opaque:rollback/synthetic",
 });
-const protectedWait = advancePyramidCampaign(importOutputPending, {roster, event: "PYRAMID_IMPORT_OUTPUT_READY", pyramidImportOutput});
+const materializationPending = advancePyramidCampaign(importOutputPending, {roster, event: "PYRAMID_IMPORT_OUTPUT_READY", pyramidImportOutput});
+assert.equal(materializationPending.status, "CANDIDATE_REPOSITORIES_PENDING");
+assert.equal(materializationPending.next_action, "MATERIALIZE_NEW_PROJECT_REPOSITORIES");
+assert.equal(materializationPending.next_handler, "HANDLER.ORCHESTRATOR.MATERIALIZE_NEW_PROJECT_REPOSITORIES");
+assert.equal(materializationPending.protected_event, null);
+const materialization = compilePyramidCandidateMaterialization({
+  pyramidImportOutput,
+  materializationId: "MATERIALIZATION.SYNTHETIC.CANDIDATE",
+  destinationRootRef: "opaque:candidate/synthetic/root",
+  evidenceRefs: ["ref:evidence/materialization-plan"],
+  status: "MATERIALIZED_CANDIDATE_REPOSITORIES",
+});
+assert.throws(
+  () => compilePyramidCandidateMaterialization({
+    pyramidImportOutput: {...pyramidImportOutput, output_sha256: HASH("stale-output")},
+    materializationId: "MATERIALIZATION.SYNTHETIC.STALE",
+    destinationRootRef: "opaque:candidate/synthetic/root",
+    evidenceRefs: ["ref:evidence/materialization-plan"],
+    status: "MATERIALIZED_CANDIDATE_REPOSITORIES",
+  }),
+  /digest mismatch|output binding|pyramid output/u,
+  "candidate materialization must bind the exact pyramid output",
+);
+assert.throws(
+  () => advancePyramidCampaign(materializationPending, {roster, event: "CANDIDATE_REPOSITORIES_MATERIALIZED", assembly: {...materialization, status: "READY_FOR_LOCAL_MATERIALIZATION", materialization_sha256: canonicalDigest({...materialization, status: "READY_FOR_LOCAL_MATERIALIZATION", materialization_sha256: null})}}),
+  /has not completed/u,
+  "candidate cutover wait cannot open before local repositories are materialized",
+);
+const protectedWait = advancePyramidCampaign(materializationPending, {roster, event: "CANDIDATE_REPOSITORIES_MATERIALIZED", assembly: materialization});
 assert.equal(protectedWait.status, "PROTECTED_WAIT");
 assert.equal(protectedWait.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(protectedWait.next_handler, "HANDLER.PROTECTED_EVENT_WAIT");
@@ -326,6 +355,7 @@ assert.equal(protectedWait.stop_workflow_decision.rollback_ref, protectedWait.ca
 assert.equal(protectedWait.isolated_candidate_assembly.assembly_sha256, isolatedAssembly.assembly_sha256);
 assert.equal(protectedWait.independent_reaudit.reaudit_sha256, independentReaudit.reaudit_sha256);
 assert.equal(protectedWait.pyramid_import_output.output_sha256, pyramidImportOutput.output_sha256);
+assert.equal(protectedWait.candidate_materialization.materialization_sha256, materialization.materialization_sha256);
 validatePyramidCampaignState(protectedWait, {roster});
 const staleSourceCoverage = structuredClone(pyramidImportOutput);
 staleSourceCoverage.source_coverage.required_repository_ids = ["unbound-source"];
@@ -404,7 +434,7 @@ const schema = JSON.parse(fs.readFileSync(new URL("../schemas/pyramid-campaign-g
 assert.equal(schema.$id, PYRAMID_CAMPAIGN_GOVERNANCE_SCHEMA);
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert.deepEqual([...schema.required].sort(), [
-  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "source_scope", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "protected_event", "stop_workflow_decision", "state_sha256",
+  "schema", "version", "campaign_id", "context_sha256", "roster_sha256", "candidate", "source_scope", "status", "wave_index", "pending_specialist_ids", "completed_specialist_ids", "active_lane_ids", "platform_review_batch", "accepted_platform_lane_ids", "final_review", "isolated_candidate_assembly", "independent_reaudit", "lane_policy", "authority", "next_action", "next_handler", "continuation", "continuation_sha256", "pyramid_import_output", "candidate_materialization", "protected_event", "stop_workflow_decision", "state_sha256",
 ].sort());
 assert.deepEqual([...schema.properties.next_action.enum].sort(), [...PYRAMID_CAMPAIGN_ACTIONS].sort());
 assert(schema.$defs.isolatedCandidateAssembly, "schema must bind isolated candidate assembly");
