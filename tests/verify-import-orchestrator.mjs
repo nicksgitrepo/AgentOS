@@ -130,6 +130,23 @@ const repairedTransition = advanceImportOrchestrator({orchestrator: initialWithQ
 assert.equal(repairedTransition.transition_sequence, 1);
 assert.equal(repairedTransition.next_action, "REPAIR_BLOCKS");
 
+const protectedDefect = compileAgentSpawnerDefectIntake({
+  defectId: "DEFECT.ORCHESTRATOR.PROTECTED.CLAIM.001",
+  defectKind: "CONTRADICTION",
+  sourceBinding: {candidate_sha256: hash("candidate"), context_sha256: context.context_sha256, roster_projection_sha256: roster.projection_sha256, source_identity_sha256: hash("source")},
+  evidenceRefs: [{evidence_id: "EVIDENCE.ORCHESTRATOR.PROTECTED.CLAIM", kind: "BOUNDARY_CLAIM", reference: "opaque:orchestrator-protected-claim", sha256: hash("protected-claim")}],
+  observation: {summary: "A route was described as protected without a run-state boundary.", expected: "Only an exact protected event may stop the campaign.", observed: "The intake had no bound protected event.", observed_at_utc: NOW, details_sha256: hash("protected-claim-details")},
+  classification: "PROTECTED_BOUNDARY",
+  rootCause: {category: "MISSING_PROTECTED_EVENT_BINDING", statement: "The protected claim was not bound to the planner run state.", evidence_class: "OBSERVED"},
+  blockId: "BLOCK.PROTECTED.EVENT.BINDING",
+  gateId: "GATE.PROTECTED.EVENT.EXACT",
+  graphId: "GRAPH.IMPORT.ORCHESTRATOR",
+});
+const protectedDefectQueue = compileAgentSpawnerDefectQueue({queueId: "QUEUE.SPAWNER.DEFECTS.SYNTHETIC", entries: [protectedDefect]});
+const unboundProtectedClaim = compileImportOrchestrator({orchestratorId: "ORCHESTRATOR.IMPORT.PROTECTED_CLAIM", ...governanceFor("ORCHESTRATOR.IMPORT.PROTECTED_CLAIM"), plan, rosterProjection: roster, runState: run, spawnerLifecycle: lifecycle, defectQueue: protectedDefectQueue});
+assert.equal(unboundProtectedClaim.state, "REPAIRING", "an unbound protected claim must repair its missing event binding");
+assert.equal(unboundProtectedClaim.next_action, "REPAIR_BLOCKS");
+
 run = advanceControllerImportRunState({state: run, plan, event: {event_type: "SPAWNER_QA_PASSED", finding_ids: [], protected_boundary_id: null}});
 const activeRoster = compileControllerImportRosterProjection({plan, qaRecords: qa, activeWaveIds: [run.current_wave_id], waveActivationAllowed: true});
 lifecycle = compileAgentSpawnerLifecycle({

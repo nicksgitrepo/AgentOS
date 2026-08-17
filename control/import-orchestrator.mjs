@@ -210,7 +210,15 @@ function deriveOrchestration({runState, rosterProjection, spawnerLifecycle, defe
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
   if (defectSummary.protectedDefectCount > 0) {
-    return {state: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", dependencyId: "SPAWNER.DEFECT.PROTECTED_DECISION"};
+    // A Spawner intake marked protected is only a claim that still needs an
+    // exact run-state boundary.  Its presence alone must not strand ordinary
+    // campaign work behind a synthetic wait.  The planner's typed
+    // PROTECTED_BOUNDARY_REACHED event is the sole source of a protected
+    // Orchestrator route; until then repair the missing boundary binding.
+    if (runState.status === "BLOCKED_PROTECTED" && runState.protected_boundary_id !== null) {
+      return {state: "PROTECTED_WAIT", nextAction: "WAIT_FOR_PROTECTED_EVENT", dependencyId: runState.protected_boundary_id};
+    }
+    return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
   }
   if (runState.status === "BLOCKED_RECOVERY") {
     return {state: "REPAIRING", nextAction: "REPAIR_BLOCKS", dependencyId: null};
