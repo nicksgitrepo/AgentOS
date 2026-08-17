@@ -39,7 +39,7 @@ const GATE_KEYS = Object.freeze([
   "evidence_refs", "hostile_fixture_refs", "status", "gate_sha256",
 ]);
 const AUTHORITY_BINDING_KEYS = Object.freeze([
-  "authority_commit", "authority_tree", "authority_receipt_sha256", "source_mapping_sha256",
+  "authority_commit", "authority_tree", "authority_receipt_ref", "authority_receipt_sha256", "source_mapping_sha256",
 ]);
 const ROSTER_BINDING_KEYS = Object.freeze([
   "roster_projection_sha256", "applicability_sha256", "invalidation_rule", "refresh_triggers",
@@ -86,9 +86,25 @@ function validateAuthorityBinding(binding) {
   exactKeys(binding, AUTHORITY_BINDING_KEYS, "Liveness authority binding");
   requireGitObject(binding.authority_commit, "Liveness authority commit");
   requireGitObject(binding.authority_tree, "Liveness authority tree");
+  requireReference(binding.authority_receipt_ref, "Liveness authority receipt reference");
   requireCanonicalSha(binding.authority_receipt_sha256, "Liveness authority receipt digest");
   requireCanonicalSha(binding.source_mapping_sha256, "Liveness source mapping digest");
   return binding;
+}
+
+function validateNestedAuthorityProvenance(actionResult, authorityBinding, gateEvidenceRefs) {
+  const provenance = actionResult.result;
+  requireGitObject(provenance.authority_commit, "Nested liveness authority commit");
+  requireGitObject(provenance.authority_tree, "Nested liveness authority tree");
+  requireReference(provenance.authority_receipt_ref, "Nested liveness authority receipt reference");
+  requireCanonicalSha(provenance.authority_receipt_sha256, "Nested liveness authority receipt digest");
+  assert(provenance.authority_commit === authorityBinding.authority_commit, "Nested liveness authority commit diverges from gate authority");
+  assert(provenance.authority_tree === authorityBinding.authority_tree, "Nested liveness authority tree diverges from gate authority");
+  assert(provenance.authority_receipt_ref === authorityBinding.authority_receipt_ref, "Nested liveness authority receipt reference diverges from gate authority");
+  assert(provenance.authority_receipt_sha256 === authorityBinding.authority_receipt_sha256, "Nested liveness authority receipt digest diverges from gate authority");
+  const boundEvidence = actionResult.evidence_refs.some((ref) => ref.reference === authorityBinding.authority_receipt_ref && ref.sha256 === authorityBinding.authority_receipt_sha256);
+  assert(boundEvidence, "Nested liveness evidence does not carry the current authority receipt binding");
+  assert(canonicalJson(actionResult.evidence_refs) === canonicalJson(gateEvidenceRefs), "Nested liveness evidence refs diverge from gate evidence refs");
 }
 
 function validateRosterBinding(binding) {
@@ -174,6 +190,7 @@ export function validateLivenessDigestGate(gate, {expectedAuthorityBinding = nul
   assertExpectedBinding(authorityBinding, expectedAuthorityBinding, "Liveness authority binding");
   assertExpectedBinding(rosterBinding, expectedRosterBinding, "Liveness roster binding");
   validateEvidenceRefs(gate.evidence_refs);
+  validateNestedAuthorityProvenance(gate.action_result, authorityBinding, gate.evidence_refs);
   validateHostileRefs(gate.hostile_fixture_refs);
   requireCanonicalSha(gate.gate_sha256, "Liveness gate digest");
   assert(gate.gate_sha256 === canonicalDigest(gateBody(gate)), "Liveness gate digest mismatch");

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/liveness-digest-gate.v1.json",
   "title": "AgentOS Cross-Record Liveness Digest Gate",
-  "description": "Project-agnostic gate binding an action result, continuation, record, typed semantic successor, readback, authority, and roster fingerprints. Null, placeholder, stale, or mismatched bindings are not admissible.",
+  "description": "Project-agnostic gate binding an action result, continuation, record, typed semantic successor, readback, and current nested authority/evidence to roster fingerprints. Null, placeholder, stale, mixed, or mismatched bindings are not admissible.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "gate_id", "defect_id", "action_id", "action_result", "result_sha256", "continuation_sha256", "record_sha256", "typed_successor", "readback", "readback_sha256", "authority_binding", "roster_binding", "evidence_refs", "hostile_fixture_refs", "status", "gate_sha256"],
@@ -15,18 +15,28 @@
     "action_result": {
       "type": "object",
       "description": "Must validate against agentos.action_result_continuation.v1 using the executable contract.",
-      "required": ["schema", "version", "action_id", "result_id", "result", "result_sha256", "continuation", "continuation_sha256", "next_action", "next_handler", "record_sha256"],
+      "required": ["schema", "version", "action_id", "result_id", "result", "result_sha256", "continuation", "continuation_sha256", "next_action", "next_handler", "evidence_refs", "record_sha256"],
       "properties": {
         "schema": {"const": "agentos.action_result_continuation.v1"},
         "version": {"const": 1},
         "action_id": {"$ref": "#/$defs/identifier"},
         "result_id": {"$ref": "#/$defs/identifier"},
-        "result": {"type": "object"},
+        "result": {
+          "type": "object",
+          "required": ["authority_commit", "authority_tree", "authority_receipt_ref", "authority_receipt_sha256"],
+          "properties": {
+            "authority_commit": {"$ref": "#/$defs/gitObject"},
+            "authority_tree": {"$ref": "#/$defs/gitObject"},
+            "authority_receipt_ref": {"$ref": "#/$defs/reference"},
+            "authority_receipt_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
         "result_sha256": {"$ref": "#/$defs/sha256"},
         "continuation": {"type": "object"},
         "continuation_sha256": {"$ref": "#/$defs/sha256"},
         "next_action": {"$ref": "#/$defs/identifier"},
         "next_handler": {"$ref": "#/$defs/identifier"},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
         "record_sha256": {"$ref": "#/$defs/sha256"}
       }
     },
@@ -52,10 +62,11 @@
     "authority_binding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["authority_commit", "authority_tree", "authority_receipt_sha256", "source_mapping_sha256"],
+      "required": ["authority_commit", "authority_tree", "authority_receipt_ref", "authority_receipt_sha256", "source_mapping_sha256"],
       "properties": {
         "authority_commit": {"$ref": "#/$defs/gitObject"},
         "authority_tree": {"$ref": "#/$defs/gitObject"},
+        "authority_receipt_ref": {"$ref": "#/$defs/reference"},
         "authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
         "source_mapping_sha256": {"$ref": "#/$defs/sha256"}
       }
@@ -79,6 +90,7 @@
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
     "evidence": {
       "type": "object",

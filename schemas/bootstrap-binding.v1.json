@@ -902,15 +902,15 @@
     },
     "liveness_digest_gate_controller": {
       "path": "control/liveness-digest-gate.mjs",
-      "sha256": "be8503e15d7f0c31054683ed237e67225f526093ddc308293171033f5d6e7bc6"
+      "sha256": "3363186a081998a9dffd9df3a31ffce3cb336a797d24cd2d2dc5ee465ebe5ce2"
     },
     "liveness_digest_gate_contract": {
       "path": "schemas/liveness-digest-gate.v1.json",
-      "sha256": "40ae2ec3e3b1c693ccb730bb4450e563e108bd009a9501e1eb26cb4613c1758d"
+      "sha256": "0c14eeefa30f448248c1c0553dfb52abd9d2ca48a5c19cd207aecc08fbbdd946"
     },
     "liveness_digest_gate_verifier": {
       "path": "tests/verify-liveness-digest-gate.mjs",
-      "sha256": "f6c47b6e84c7178d8f7a54b4eec471a25062bc4ff7f164750e5e9dafb80e3f75"
+      "sha256": "6075bf3e4858c9e3f73ab5a8c1f21f859fdd54ff166a3ea12ba0a85575477538"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",

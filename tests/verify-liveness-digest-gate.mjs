@@ -14,6 +14,20 @@ import {
 
 const sha = (value) => canonicalDigest({value});
 const evidence = (id) => ({evidence_id: id, reference: `opaque:${id.toLowerCase()}`, sha256: sha(id)});
+const authorityBinding = {
+  authority_commit: "a".repeat(40),
+  authority_tree: "b".repeat(40),
+  authority_receipt_ref: "ref:authority/current",
+  authority_receipt_sha256: sha("authority-receipt"),
+  source_mapping_sha256: sha("source-mapping"),
+};
+const authorityEvidence = {
+  evidence_id: "EVIDENCE.AUTHORITY.BINDING",
+  reference: authorityBinding.authority_receipt_ref,
+  sha256: authorityBinding.authority_receipt_sha256,
+};
+const gateEvidenceRefs = [authorityEvidence, evidence("EVIDENCE.ACTION.RESULT"), evidence("EVIDENCE.TYPED.SUCCESSOR")]
+  .sort((left, right) => left.evidence_id.localeCompare(right.evidence_id));
 const continuation = {
   mode: "IMMEDIATE_SAME_TURN",
   timer_deferral: false,
@@ -36,6 +50,10 @@ const actionResult = compileActionResultContinuation({
   resultId: "RESULT.LIVENESS.DIGEST.GATE.001",
   result: {
     status: "LIVENESS_DIGEST_SUCCESSOR_COMPILED",
+    authority_commit: authorityBinding.authority_commit,
+    authority_tree: authorityBinding.authority_tree,
+    authority_receipt_ref: authorityBinding.authority_receipt_ref,
+    authority_receipt_sha256: authorityBinding.authority_receipt_sha256,
     product_mutation: false,
     protected_event: null,
   },
@@ -45,7 +63,7 @@ const actionResult = compileActionResultContinuation({
   nextHandler: "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW",
   continuation,
   persistence,
-  evidenceRefs: [evidence("EVIDENCE.ACTION.RESULT")],
+  evidenceRefs: gateEvidenceRefs,
   hostileFixtureRefs: ["FIXTURE.ACTION.RESULT.NULL_DIGEST", "FIXTURE.ACTION.RESULT.TIMER_ONLY"],
 });
 
@@ -74,12 +92,6 @@ const typedSuccessor = compileTypedSuccessorReadback({
   resourceBoundary,
 });
 
-const authorityBinding = {
-  authority_commit: "a".repeat(40),
-  authority_tree: "b".repeat(40),
-  authority_receipt_sha256: sha("authority-receipt"),
-  source_mapping_sha256: sha("source-mapping"),
-};
 const rosterBinding = {
   roster_projection_sha256: sha("roster"),
   applicability_sha256: sha("applicability"),
@@ -94,13 +106,16 @@ const gate = compileLivenessDigestGate({
   typedSuccessor,
   authorityBinding,
   rosterBinding,
-  evidenceRefs: [evidence("EVIDENCE.ACTION.RESULT"), evidence("EVIDENCE.TYPED.SUCCESSOR")].sort((left, right) => left.evidence_id.localeCompare(right.evidence_id)),
+  evidenceRefs: gateEvidenceRefs,
   hostileFixtureRefs: [
     "FIXTURE.LIVENESS.NULL.RESULT.DIGEST",
     "FIXTURE.LIVENESS.NULL.CONTINUATION.DIGEST",
     "FIXTURE.LIVENESS.NULL.RECORDBACK.DIGEST",
     "FIXTURE.LIVENESS.NULL.RECORD.DIGEST",
     "FIXTURE.LIVENESS.PLACEHOLDER.DIGEST",
+    "FIXTURE.LIVENESS.MIXED.NESTED.AUTHORITY",
+    "FIXTURE.LIVENESS.MIXED.NESTED.EVIDENCE",
+    "FIXTURE.LIVENESS.MIXED.NESTED.BINDING",
     "FIXTURE.LIVENESS.TAMPERED.RECORD",
     "FIXTURE.LIVENESS.TAMPERED.READBACK",
     "FIXTURE.LIVENESS.STALE.AUTHORITY.BINDING",
@@ -131,6 +146,106 @@ rejects((candidate) => { candidate.readback.next_handler = "HANDLER.TAMPERED"; }
 rejects((candidate) => { candidate.typed_successor.next_action = "OTHER_ACTION"; }, /successor action diverges|semantic readback diverges/u);
 rejects((candidate) => { candidate.typed_successor.parent_successor_sha256 = sha("stale-parent"); }, /parent is not the action result|successor digest mismatch/u);
 rejects((candidate) => { candidate.roster_binding.refresh_triggers = ["ROSTER_CHANGE"]; }, /refresh triggers must be sorted|incomplete/u);
+
+const compileAuthorityVariant = ({authority, evidenceRefs, resultId}) => compileActionResultContinuation({
+  actionId: actionResult.action_id,
+  resultId,
+  result: {
+    ...structuredClone(actionResult.result),
+    authority_commit: authority.authority_commit,
+    authority_tree: authority.authority_tree,
+    authority_receipt_ref: authority.authority_receipt_ref,
+    authority_receipt_sha256: authority.authority_receipt_sha256,
+  },
+  semanticBeforeSha256: actionResult.semantic_before_sha256,
+  semanticAfterSha256: actionResult.semantic_after_sha256,
+  nextAction: actionResult.next_action,
+  nextHandler: actionResult.next_handler,
+  continuation: actionResult.continuation,
+  persistence: actionResult.persistence,
+  evidenceRefs,
+  hostileFixtureRefs: actionResult.hostile_fixture_refs,
+});
+const compileSuccessorVariant = (nestedResult, successorId) => compileTypedSuccessorReadback({
+  successorId,
+  parentSuccessorSha256: nestedResult.record_sha256,
+  parentNextAction: nestedResult.next_action,
+  transitionSequence: 1,
+  state: "ACTIVE",
+  nextAction: nestedResult.next_action,
+  nextHandler: nestedResult.next_handler,
+  entries: [{
+    entry_id: "ENTRY.MIXED.AUTHORITY",
+    record_sha256: sha(`${successorId}:entry`),
+    authority_status: "CURRENT",
+    collection_status: "COLLECTED",
+    slot_status: "HELD",
+  }],
+  resourceBoundary,
+});
+const staleNestedAuthority = {
+  authority_commit: "c".repeat(40),
+  authority_tree: "d".repeat(40),
+  authority_receipt_ref: "ref:authority/stale",
+  authority_receipt_sha256: sha("stale-authority"),
+};
+const mixedAuthorityResult = compileAuthorityVariant({
+  authority: staleNestedAuthority,
+  evidenceRefs: gateEvidenceRefs,
+  resultId: "RESULT.LIVENESS.MIXED.AUTHORITY.001",
+});
+const mixedAuthoritySuccessor = compileSuccessorVariant(mixedAuthorityResult, "SUCCESSOR.LIVENESS.MIXED.AUTHORITY.001");
+assert.throws(() => compileLivenessDigestGate({
+  gateId: gate.gate_id,
+  defectId: gate.defect_id,
+  actionResult: mixedAuthorityResult,
+  typedSuccessor: mixedAuthoritySuccessor,
+  authorityBinding,
+  rosterBinding,
+  evidenceRefs: gateEvidenceRefs,
+  hostileFixtureRefs: gate.hostile_fixture_refs,
+}), /Nested liveness authority commit diverges/u);
+
+const staleNestedEvidence = [{
+  evidence_id: "EVIDENCE.STALE.NESTED",
+  reference: "ref:authority/stale",
+  sha256: sha("stale-nested-evidence"),
+}];
+const mixedEvidenceResult = compileAuthorityVariant({
+  authority: authorityBinding,
+  evidenceRefs: staleNestedEvidence,
+  resultId: "RESULT.LIVENESS.MIXED.EVIDENCE.001",
+});
+const mixedEvidenceSuccessor = compileSuccessorVariant(mixedEvidenceResult, "SUCCESSOR.LIVENESS.MIXED.EVIDENCE.001");
+assert.throws(() => compileLivenessDigestGate({
+  gateId: gate.gate_id,
+  defectId: gate.defect_id,
+  actionResult: mixedEvidenceResult,
+  typedSuccessor: mixedEvidenceSuccessor,
+  authorityBinding,
+  rosterBinding,
+  evidenceRefs: gateEvidenceRefs,
+  hostileFixtureRefs: gate.hostile_fixture_refs,
+}), /current authority receipt binding/u);
+
+const extraNestedEvidence = [...gateEvidenceRefs, evidence("EVIDENCE.STALE.EXTRA")]
+  .sort((left, right) => left.evidence_id.localeCompare(right.evidence_id));
+const divergentEvidenceResult = compileAuthorityVariant({
+  authority: authorityBinding,
+  evidenceRefs: extraNestedEvidence,
+  resultId: "RESULT.LIVENESS.MIXED.BINDING.001",
+});
+const divergentEvidenceSuccessor = compileSuccessorVariant(divergentEvidenceResult, "SUCCESSOR.LIVENESS.MIXED.BINDING.001");
+assert.throws(() => compileLivenessDigestGate({
+  gateId: gate.gate_id,
+  defectId: gate.defect_id,
+  actionResult: divergentEvidenceResult,
+  typedSuccessor: divergentEvidenceSuccessor,
+  authorityBinding,
+  rosterBinding,
+  evidenceRefs: gateEvidenceRefs,
+  hostileFixtureRefs: gate.hostile_fixture_refs,
+}), /Nested liveness evidence refs diverge/u);
 
 const staleAuthority = {...authorityBinding, authority_commit: "c".repeat(40)};
 const staleAuthorityEvaluation = evaluateLivenessBindingFreshness(gate, {authorityBinding: staleAuthority});
