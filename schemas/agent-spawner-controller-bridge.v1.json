@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/agent-spawner-controller-bridge.v1.json",
+  "title": "AgentOS Agent Spawner to Controller bridge",
+  "description": "Maps a validated project-agnostic Agent Spawner defect handoff to a closed Controller action without permitting an unknown route, admission, activation, or protected-boundary bypass.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "bridge_id", "defect_id", "source_handoff_sha256", "source_controller_receipt_sha256", "source_route", "mapped_action", "mapped_handler", "controller_action_receipt", "roster_invalidation", "dispatch", "readback_sha256", "bridge_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.agent_spawner_controller_bridge.v1"},
+    "version": {"const": 1},
+    "bridge_id": {"$ref": "#/$defs/identifier"},
+    "defect_id": {"$ref": "#/$defs/identifier"},
+    "source_handoff_sha256": {"$ref": "#/$defs/sha256"},
+    "source_controller_receipt_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "source_route": {"enum": ["COMPILE_BLOCK_PATCH", "REPAIR_ORCHESTRATOR_ROUTE", "REBUILD_DEPENDENT_ROSTER", "ESCALATE_PROTECTED", "REJECT_DUPLICATE"]},
+    "mapped_action": {"$ref": "#/$defs/identifier"},
+    "mapped_handler": {"$ref": "#/$defs/identifier"},
+    "controller_action_receipt": {"$ref": "https://agentos.dev/schemas/controller-action-dispatcher.v1.json"},
+    "roster_invalidation": {"enum": ["INVALIDATE_DEPENDENTS", "PRESERVE_EXISTING_AND_REBUILD", "NO_DEPENDENTS"]},
+    "dispatch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "same_turn_dispatch", "status"],
+      "properties": {
+        "mode": {"enum": ["LOCAL", "PROTECTED_WAIT"]},
+        "same_turn_dispatch": {"type": "boolean"},
+        "status": {"enum": ["DISPATCHED", "PROTECTED_WAIT"]}
+      }
+    },
+    "readback_sha256": {"$ref": "#/$defs/sha256"},
+    "bridge_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"}
+  }
+}

@@ -23,6 +23,7 @@ export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgen
 export {compileControllerStartupSuccessor, validateControllerStartupSuccessor, CONTROLLER_STARTUP_STAGES, CONTROLLER_STARTUP_SEQUENCE_SCHEMA, CONTROLLER_STARTUP_SEQUENCE_VERSION} from "./controller-startup-sequence.mjs";
 export {compileControllerStartupCursor, compileControllerStartupRunReadback, validateControllerStartupRunReadback, runControllerStartupCycle, CONTROLLER_STARTUP_RUNNER_SCHEMA, CONTROLLER_STARTUP_RUNNER_VERSION} from "./controller-startup-runner.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
+export {compileAgentSpawnerControllerBridge, validateAgentSpawnerControllerBridge, SPAWNER_ROUTE_TO_CONTROLLER_ACTION, AGENT_SPAWNER_CONTROLLER_BRIDGE_SCHEMA, AGENT_SPAWNER_CONTROLLER_BRIDGE_VERSION} from "./agent-spawner-controller-bridge.mjs";
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord, acceptAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
@@ -94,6 +95,7 @@ export * as agentSpawnerLifecycle from "./agent-spawner-lifecycle.mjs";
 export * as controllerStartup from "./controller-startup-sequence.mjs";
 export * as controllerStartupRunner from "./controller-startup-runner.mjs";
 export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";
+export * as agentSpawnerControllerBridge from "./agent-spawner-controller-bridge.mjs";
 export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
