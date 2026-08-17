@@ -838,7 +838,7 @@
     },
     "bootstrap_runtime_controller": {
       "path": "control/bootstrap-runtime.mjs",
-      "sha256": "01cc7e5fc7bd5f135716373ca44168b64b623cbb11e6aa90fb0b61094a2c98ab"
+      "sha256": "e2f3deed5cc4ef12c1381b57bdc2627049c863135d20d204105ffcada38100ca"
     },
     "intent_regulator_runtime_controller": {
       "path": "control/intent-regulator-runtime.mjs",
@@ -1023,6 +1023,10 @@
     "persistent_intent_runtime_owner_replacement_verifier": {
       "path": "tests/verify-persistent-intent-runtime-owner-replacement.mjs",
       "sha256": "f38b2b2d0e414f2476f5c4cacffeeabb31eddf2eeac240b38017acfd1c58c53c"
+    },
+    "bootstrap_monitor_routing_verifier": {
+      "path": "tests/verify-bootstrap-monitor-routing.mjs",
+      "sha256": "efcbf5a30d196e8bbbd684f3121a89d1ab02d1e7c6ac70ac2044b35f14ade8a4"
     },
     "platform_foundation_merge_controller": {
       "path": "control/platform-foundation-merge.mjs",

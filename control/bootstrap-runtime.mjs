@@ -160,6 +160,8 @@ export async function bootstrapAndStartAgentOS({
   archiveTask = null,
   monitorObservation = null,
   monitorOnIteration = null,
+  monitorResolveIteration = null,
+  monitorOnSameTurnBoundExhausted = null,
   monitorOptions = {},
   startMonitor = monitorObservation !== null,
 } = {}) {
@@ -272,6 +274,8 @@ export async function bootstrapAndStartAgentOS({
   }
   assert(monitorObservation === null || typeof monitorObservation === "function", "Bootstrap Runtime monitor observation must be callable");
   assert(monitorOnIteration === null || typeof monitorOnIteration === "function", "Bootstrap Runtime monitor callback must be callable");
+  assert(monitorResolveIteration === null || typeof monitorResolveIteration === "function", "Bootstrap Runtime monitor resolver must be callable");
+  assert(monitorOnSameTurnBoundExhausted === null || typeof monitorOnSameTurnBoundExhausted === "function", "Bootstrap Runtime monitor bound callback must be callable");
   assert(monitorOptions !== null && typeof monitorOptions === "object" && !Array.isArray(monitorOptions), "Bootstrap Runtime monitor options must be an object");
   let monitor = null;
   if (startMonitor) {
@@ -285,6 +289,8 @@ export async function bootstrapAndStartAgentOS({
     monitor = regulator.monitor({
       observe: monitorObservation,
       onIteration: monitorOnIteration,
+      resolveIteration: monitorResolveIteration,
+      onSameTurnBoundExhausted: monitorOnSameTurnBoundExhausted,
       signal,
       once,
       intervalMinutes,
