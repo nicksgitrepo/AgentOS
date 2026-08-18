@@ -71,7 +71,7 @@
         "provider_access": {"const": false},
         "credential_access": {"const": false},
         "external_sync": {"const": false},
-        "isolated_local_custody": {"type": "boolean"},
+        "isolated_local_custody": {"const": false},
         "independent_evaluation_required": {"const": true}
       }
     },

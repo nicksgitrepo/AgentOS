@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.GIT_INTEGRATION",
+  "question": "Did the project-agnostic repair pass deterministic QA, hostile tests, binding parity, clean diff checks, commit, push, exact remote readback, and clean status?",
+  "pass": "EMIT_READY_FOR_INDEPENDENT_EVALUATION",
+  "fail": "CREATE_GIT_INTEGRATION_DEFECT_AND_REENTER",
+  "unknown": "DENY_COMPLETION_AND_REFRESH_READBACK",
+  "gate_sha256": "d64cb50a12c41c9db0306c2026b61e7c89720be3f8614b487e16b7613085b2d4"
+}

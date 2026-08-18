@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.GLOBAL_MEMORY",
+  "question": "Does current readback bind the live ledger event count, head, and snapshot digest while preserving the immutable historical activation receipt and project-memory isolation?",
+  "pass": "INJECT_READ_ONLY_POLICY_PROJECTION",
+  "fail": "DENY_AND_REFRESH_GLOBAL_MEMORY_READBACK",
+  "unknown": "DENY_MEMORY_STATE_INCONCLUSIVE",
+  "gate_sha256": "2712f067731009758ec9ee2fe1d06916ef48a9f364b974dabe30e651dd895c95"
+}

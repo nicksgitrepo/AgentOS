@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.scope-non-goal-gate.v1",
   "block_id": "specialist.foundation.scope-non-goal-gate",
   "candidate_digest": "2c0839e0136ea166099434d65dbe70a296307379a9eac6744aa6dc8eba2f5c72",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
   "cases": [
     {

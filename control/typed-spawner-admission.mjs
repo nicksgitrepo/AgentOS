@@ -5,6 +5,7 @@
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {validateControllerGovernanceReadiness} from "./controller-governance-readiness.mjs";
 import {validateSealedBootstrapHandoff} from "./sealed-bootstrap-handoff.mjs";
+import {SPAWNER_BLOCK_LAYERS} from "./spawner-bootstrap-governance.mjs";
 
 export const TYPED_SPAWNER_ADMISSION_SCHEMA = "agentos.typed_spawner_admission.v1";
 export const TYPED_SPAWNER_BLOCK_SET_SCHEMA = "agentos.spawner_governing_block_set.v1";
@@ -23,7 +24,7 @@ const ADMISSION_KEYS = Object.freeze([
   "product_mutation", "provider_access", "credential_access", "permanent_roles_constructed", "next_action", "admission_sha256",
 ]);
 const BLOCK_SET_KEYS = Object.freeze([
-  "schema", "version", "block_set_id", "block_ids", "status", "non_placeholder", "hostile_fixture_ids",
+  "schema", "version", "block_set_id", "required_layers", "block_evidence", "validated_at_utc", "status", "hostile_fixture_ids",
   "independent_evaluation_sha256", "authority", "stop_conditions", "block_set_sha256",
 ]);
 const CUSTODY_KEYS = Object.freeze(["route", "controller_id", "spawner_id", "source_readiness_sha256", "source_handoff_sha256", "custody_sha256"]);
@@ -62,9 +63,40 @@ export function validateSpawnerGoverningBlockSet(blockSet) {
   exactKeys(blockSet, BLOCK_SET_KEYS, "Spawner governing block set");
   assert(blockSet.schema === TYPED_SPAWNER_BLOCK_SET_SCHEMA && blockSet.version === TYPED_SPAWNER_ADMISSION_VERSION, "Spawner block set identity is invalid");
   requireToken(blockSet.block_set_id, "Spawner block set id");
-  sortedUnique(blockSet.block_ids, "Spawner governing block ids");
+  requireUtc(blockSet.validated_at_utc, "Spawner block-set validation time");
+  assert(Array.isArray(blockSet.required_layers) && blockSet.required_layers.length > 0, "Spawner required layers are missing");
+  const requiredLayers = [...blockSet.required_layers].sort(compareUtf8);
+  assert(JSON.stringify(requiredLayers) === JSON.stringify(blockSet.required_layers) && new Set(requiredLayers).size === requiredLayers.length, "Spawner required layers must be sorted and unique");
+  requiredLayers.forEach((layer) => assert(SPAWNER_BLOCK_LAYERS.includes(layer), `Spawner required layer is invalid: ${layer}`));
+  assert(Array.isArray(blockSet.block_evidence) && blockSet.block_evidence.length > 0, "Spawner exact block evidence is missing");
+  const blockIds = [];
+  const coveredLayers = new Set();
+  for (const block of blockSet.block_evidence) {
+    exactKeys(block, ["block_id", "layer", "block_sha256", "status", "non_placeholder", "evaluation", "expires_at_utc", "contradictions", "gate_evidence", "evidence_sha256"], "Spawner exact block evidence");
+    requireToken(block.block_id, "Spawner exact block id");
+    assert(SPAWNER_BLOCK_LAYERS.includes(block.layer), `Spawner exact block layer is invalid: ${block.block_id}`);
+    requireSha(block.block_sha256, "Spawner exact block digest");
+    assert(block.status === "COMPLETE_QA_PASS", `Spawner exact block is not QA complete: ${block.block_id}`);
+    assert(block.non_placeholder === true, `Spawner exact block contains placeholder content: ${block.block_id}`);
+    assert(block.evaluation === "PASS", `Spawner exact block evaluation is inconclusive: ${block.block_id}`);
+    requireUtc(block.expires_at_utc, "Spawner exact block expiry");
+    assert(Date.parse(block.expires_at_utc) > Date.parse(blockSet.validated_at_utc), `Spawner exact block is stale: ${block.block_id}`);
+    assert(Array.isArray(block.contradictions) && block.contradictions.length === 0, `Spawner exact block is contradictory: ${block.block_id}`);
+    assert(Array.isArray(block.gate_evidence) && block.gate_evidence.length > 0, `Spawner exact block lacks gate evidence: ${block.block_id}`);
+    for (const gate of block.gate_evidence) {
+      exactKeys(gate, ["gate_id", "outcome", "evidence_sha256"], "Spawner exact gate evidence");
+      requireToken(gate.gate_id, "Spawner exact gate id");
+      assert(gate.outcome === "PASS", `Spawner exact gate did not pass: ${block.block_id}/${gate.gate_id}`);
+      requireSha(gate.evidence_sha256, "Spawner exact gate evidence digest");
+    }
+    requireSha(block.evidence_sha256, "Spawner exact block evidence digest");
+    assert(block.evidence_sha256 === digestWithout(block, "evidence_sha256"), `Spawner exact block evidence digest mismatch: ${block.block_id}`);
+    blockIds.push(block.block_id);
+    coveredLayers.add(block.layer);
+  }
+  assert(JSON.stringify(blockIds) === JSON.stringify([...blockIds].sort(compareUtf8)) && new Set(blockIds).size === blockIds.length, "Spawner exact block evidence must be sorted and unique");
+  requiredLayers.forEach((layer) => assert(coveredLayers.has(layer), `Spawner required block layer is missing: ${layer}`));
   assert(blockSet.status === "COMPLETE_QA_PASS", "Spawner governing block set is not QA complete");
-  assert(blockSet.non_placeholder === true, "Spawner governing block set contains placeholder content");
   sortedUnique(blockSet.hostile_fixture_ids, "Spawner governing hostile fixtures", {rejectPlaceholder: false});
   requireSha(blockSet.independent_evaluation_sha256, "Spawner independent evaluation");
   assert(blockSet.authority === "INDEPENDENT_ADMISSION_AUTHORITY", "Spawner block-set authority is invalid");
@@ -74,16 +106,18 @@ export function validateSpawnerGoverningBlockSet(blockSet) {
   return blockSet;
 }
 
-export function compileSpawnerGoverningBlockSet({blockSetId, blockIds, hostileFixtureIds, independentEvaluationSha256, stopConditions} = {}) {
-  assert(Array.isArray(blockIds), "Spawner block ids input is required");
+export function compileSpawnerGoverningBlockSet({blockSetId, requiredLayers, blockEvidence, validatedAtUtc, hostileFixtureIds, independentEvaluationSha256, stopConditions} = {}) {
+  assert(Array.isArray(requiredLayers), "Spawner required layers input is required");
+  assert(Array.isArray(blockEvidence), "Spawner block evidence input is required");
   assert(Array.isArray(hostileFixtureIds), "Spawner hostile fixture ids input is required");
   const blockSet = {
     schema: TYPED_SPAWNER_BLOCK_SET_SCHEMA,
     version: TYPED_SPAWNER_ADMISSION_VERSION,
     block_set_id: blockSetId,
-    block_ids: [...blockIds].sort(compareUtf8),
+    required_layers: [...requiredLayers].sort(compareUtf8),
+    block_evidence: structuredClone(blockEvidence).sort((left, right) => compareUtf8(left.block_id, right.block_id)),
+    validated_at_utc: validatedAtUtc,
     status: "COMPLETE_QA_PASS",
-    non_placeholder: true,
     hostile_fixture_ids: [...hostileFixtureIds].sort(compareUtf8),
     independent_evaluation_sha256: independentEvaluationSha256,
     authority: "INDEPENDENT_ADMISSION_AUTHORITY",

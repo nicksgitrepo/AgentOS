@@ -6,15 +6,15 @@
  * A compiler-only Spawner may not grant itself worker authority, but a
  * complete local roster must not become a prose-only handoff.  This contract
  * makes the bounded adapter invocation explicit and digest-bound: it proves
- * that the compiler successor was consumed, isolated local custody was
- * established, no protected capability opened, and the next governed action
+ * that the compiler successor was consumed, independent clearance was
+ * verified, no protected capability opened, and the next governed action
  * was started in the same turn.  It does not start workers or activate a
  * wave; that remains the next registered lifecycle action.
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {
-  admitAgentSpawnerIsolatedLocalCustody,
+  admitAgentSpawnerIndependentClearance,
   validateAgentSpawnerCompilerContinuation,
   validateAgentSpawnerLifecycle,
 } from "./agent-spawner-lifecycle.mjs";
@@ -82,7 +82,7 @@ function validateAdmission(admission) {
   assert(admission.spawnable === true, "Governed-admission adapter must expose the next spawn action");
   assert(admission.worker_spawned === false, "Governed-admission adapter cannot spawn a worker");
   assert(admission.wave_activation === "OFF", "Governed-admission adapter cannot activate a wave");
-  assert(admission.isolated_local_custody === true, "Governed-admission adapter requires isolated local custody");
+  assert(admission.isolated_local_custody === false, "Governed admission cannot substitute isolated custody for independent clearance");
 }
 
 export function validateAgentSpawnerGovernedAdmission(readback, {sourceContinuation = null, lifecycleBefore = null, lifecycleAfter = null} = {}) {
@@ -118,7 +118,8 @@ export function validateAgentSpawnerGovernedAdmission(readback, {sourceContinuat
     validateAgentSpawnerLifecycle(lifecycleAfter);
     assert(lifecycleAfter.lifecycle_sha256 === readback.lifecycle_after_sha256, "Governed-admission lifecycle-after is stale");
     assert(lifecycleAfter.mode === "GOVERNED_SPAWN" && lifecycleAfter.state === "SPAWN_ADMITTED", "Governed-admission did not establish the governed lifecycle");
-    assert(lifecycleAfter.authority.isolated_local_custody === true, "Governed-admission lifecycle lacks isolated custody");
+    assert(lifecycleAfter.authority.isolated_local_custody === false, "Governed-admission lifecycle used the removed isolated-custody bypass");
+    assert(lifecycleAfter.qa.independent_clearance_status === "CLEARED", "Governed-admission lifecycle lacks independent clearance");
     assert(lifecycleAfter.next_action === "START_GOVERNED_SPAWN", "Governed-admission lifecycle did not expose the next action");
   }
   return readback;
@@ -129,7 +130,8 @@ export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuat
   validateAgentSpawnerLifecycle(lifecycleBefore);
   assert(sourceContinuation.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission source must be the compiler admission successor");
   assert(sourceContinuation.lifecycle_after_sha256 === lifecycleBefore.lifecycle_sha256, "Governed-admission source lifecycle does not match compiler continuation");
-  const lifecycleAfter = admitAgentSpawnerIsolatedLocalCustody(lifecycleBefore);
+  assert(lifecycleBefore.qa.independent_clearance_status === "CLEARED" && lifecycleBefore.qa.status === "INDEPENDENT_PASS", "Governed admission requires independent clearance");
+  const lifecycleAfter = admitAgentSpawnerIndependentClearance(lifecycleBefore);
   const readback = {
     schema: AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA,
     version: AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION,
@@ -142,7 +144,7 @@ export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuat
     next_handler: AGENT_SPAWNER_GOVERNED_ADMISSION_NEXT_HANDLER,
     same_turn_dispatch: true,
     authority: {compiler_only: false, admission: true, activation: false, product_mutation: false, provider_access: false, credential_access: false},
-    admission: {spawnable: true, worker_spawned: false, wave_activation: "OFF", isolated_local_custody: true},
+    admission: {spawnable: true, worker_spawned: false, wave_activation: "OFF", isolated_local_custody: false},
     evidence_refs: structuredClone(evidenceRefs).sort((left, right) => compareUtf8(left.evidence_id, right.evidence_id)),
     hostile_fixture_refs: [...hostileFixtureRefs].sort(compareUtf8),
     readback_sha256: null,

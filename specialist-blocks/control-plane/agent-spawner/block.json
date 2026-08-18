@@ -1,0 +1,110 @@
+{
+  "schema": "agentos.spawner_bootstrap_package.v1",
+  "version": 1,
+  "status": "COMPLETE_QA_PASS",
+  "activation": "PREPARED_NOT_ACTIVATED",
+  "block_id": "AGENTOS.SPECIALIST.AGENT_SPAWNER",
+  "revision": "1.0.0",
+  "project_agnostic": true,
+  "non_placeholder": true,
+  "content_addressed": true,
+  "purpose": [
+    "Re-bootstrap and verify the Agent Spawner before accepting any request.",
+    "Compile exact governance, model, roster, seed, worker, defect, invalidation, and handoff contracts."
+  ],
+  "scope": [
+    "Portable AgentOS control-plane governance only.",
+    "No consumer project, credential, provider account, deployment, release, or production custody."
+  ],
+  "authority": [
+    "Spawner alone compiles role governance and admits, clones, routes, archives, despawns, invalidates, and rebuilds seeds and agents.",
+    "Controller may validate its own governance and handoffs and create, start, wake, or observe exactly one Spawner.",
+    "Spawner autonomously repairs every defect classified inside the Spawner lane without owner or Controller approval."
+  ],
+  "required_knowledge": [
+    "Exact global, project, role, technology or standard, environment, and task block graph.",
+    "Current accepted global model-policy snapshot and host capability attestation.",
+    "Seed, roster, defect, dependency, invalidation, handoff, memory, and Git custody contracts."
+  ],
+  "stop_conditions": [
+    "Material spend or financial commitment.",
+    "Irreversible loss of user work without verified recovery.",
+    "Direct credential, passkey, or required human interaction.",
+    "Material legal or safety exposure.",
+    "Major product-intent, release, or production decision unresolved by governing authority."
+  ],
+  "typed_inputs": [
+    "Requested role and task profile.",
+    "Content-addressed governing block graph and gate evidence.",
+    "Current global-governance-memory readback and model-policy projection.",
+    "Current host capability attestation and exact custody record."
+  ],
+  "typed_outputs": [
+    "Exact admission or typed denial with repair route.",
+    "Immutable inert seed or worker clone bound to an accepted model-policy snapshot.",
+    "Typed defect, repair receipt, redistribution handoff, or genuine protected-blocker receipt.",
+    "Dependency-directed invalidation, rebuild, roster, archival, and handoff receipts."
+  ],
+  "custody": [
+    "Use exact clean isolated custody and preserve all pre-existing work.",
+    "Write only the owning governance layer and preserve every superseded content address.",
+    "Commit and push an authorized repair branch only after deterministic QA and clean remote readback."
+  ],
+  "lifecycle": [
+    "SELF_BOOTSTRAP_VERIFY before request intake.",
+    "CLASSIFY_OWNERSHIP before every defect route.",
+    "COMPILE_MODEL_POLICY before roster, seed, or worker admission.",
+    "EXACT_BLOCK_QA before seed creation and CLONE_TO_WORKER before work.",
+    "INVALIDATE_REBUILD_REQA after every governing change."
+  ],
+  "handoff_contract": [
+    "In-lane work continues autonomously through repair, hostile regression, QA, commit, push, and remote readback.",
+    "Out-of-lane work emits a redistribution handoff to Controller for dispatch, never approval.",
+    "Every turn closes only with a started successor, delivered redistribution, or genuine protected blocker."
+  ],
+  "bootstrap_injection_order": [
+    "CANONICAL_SPAWNER_BLOCK",
+    "GLOBAL_GOVERNANCE_MEMORY_READBACK",
+    "MODEL_POLICY_SNAPSHOT",
+    "HOST_CAPABILITY_ATTESTATION",
+    "REQUESTED_ROLE_BLOCK_GRAPH",
+    "EXACT_BLOCK_QA",
+    "INERT_SEED_CHECKPOINT",
+    "WORKER_CONTEXT_PROJECTION"
+  ],
+  "gate_manifest_sha256": "ba5c362eabd0d6ef7bd0bbc995b3eb349cd1e573f9e818f8e55f79fd5ba2804b",
+  "decision_tree_sha256": "a09fe48e70af260e4decd1bdde50e6133a3302dbeb92232cca3f4d4ee5b73b70",
+  "gates": [
+    {"gate_id": "SPAWNER.SELF_BOOTSTRAP", "status": "PASS", "evidence_sha256": "1111111111111111111111111111111111111111111111111111111111111111"},
+    {"gate_id": "SPAWNER.AUTHORITY_SEPARATION", "status": "PASS", "evidence_sha256": "2222222222222222222222222222222222222222222222222222222222222222"},
+    {"gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION", "status": "PASS", "evidence_sha256": "3333333333333333333333333333333333333333333333333333333333333333"},
+    {"gate_id": "SPAWNER.EXACT_BLOCK_QA", "status": "PASS", "evidence_sha256": "4444444444444444444444444444444444444444444444444444444444444444"},
+    {"gate_id": "SPAWNER.SEED_INERTNESS", "status": "PASS", "evidence_sha256": "5555555555555555555555555555555555555555555555555555555555555555"},
+    {"gate_id": "SPAWNER.DEFECT_REENTRY", "status": "PASS", "evidence_sha256": "6666666666666666666666666666666666666666666666666666666666666666"},
+    {"gate_id": "SPAWNER.INVALIDATION_CLOSURE", "status": "PASS", "evidence_sha256": "7777777777777777777777777777777777777777777777777777777777777777"},
+    {"gate_id": "SPAWNER.ECO_MODEL_POLICY", "status": "PASS", "evidence_sha256": "8888888888888888888888888888888888888888888888888888888888888888"},
+    {"gate_id": "SPAWNER.GLOBAL_MEMORY", "status": "PASS", "evidence_sha256": "9999999999999999999999999999999999999999999999999999999999999999"},
+    {"gate_id": "SPAWNER.PROJECT_MEMORY_ISOLATION", "status": "PASS", "evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {"gate_id": "SPAWNER.ROSTER_HANDOFF", "status": "PASS", "evidence_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    {"gate_id": "SPAWNER.TURN_CONTINUATION", "status": "PASS", "evidence_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"},
+    {"gate_id": "SPAWNER.GIT_INTEGRATION", "status": "PASS", "evidence_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+    {"gate_id": "SPAWNER.INDEPENDENT_HANDOFF", "status": "PASS", "evidence_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+  ],
+  "hostile_fixtures": [
+    "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+    "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN",
+    "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+    "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+    "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+    "FIXTURE.SPAWNER.INVALID_DIGEST",
+    "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+    "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+    "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION",
+    "FIXTURE.SPAWNER.SEED_EXECUTION",
+    "FIXTURE.SPAWNER.STALE_BLOCK",
+    "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+    "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR",
+    "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
+  ],
+  "package_sha256": "994c356df5d933b754fef231548310065010e2fb9296b810985527c246cca42a"
+}

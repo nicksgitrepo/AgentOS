@@ -2,12 +2,11 @@
 
 /* Shared host-boundary constants kept separate so the binder and team controller do not cycle. */
 
-// Ordinary AgentOS execution is pinned to the visible Luna/max profile. A
-// caller may still provide an explicit typed profile when a governed host
-// boundary requires it, but no ordinary path may fall back to an unspecified
-// or lower-tier identity.
-export const DEFAULT_AGENT_MODEL = "gpt-5.6-luna";
-export const DEFAULT_AGENT_REASONING_EFFORT = "max";
+// These are fail-closed route sentinels, not executable defaults. Bootstrap
+// must replace both values with a selection from the accepted global model
+// policy snapshot before any native session request reaches admission.
+export const DEFAULT_AGENT_MODEL = "GLOBAL_MODEL_POLICY_SELECTION_REQUIRED";
+export const DEFAULT_AGENT_REASONING_EFFORT = "POLICY_SELECTED_REASONING_REQUIRED";
 export const NATIVE_SESSION_TOOLS = Object.freeze([
   "create_thread",
   "list_threads",

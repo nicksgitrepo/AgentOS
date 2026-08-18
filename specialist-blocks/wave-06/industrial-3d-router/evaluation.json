@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.industrial-3d-router.v1",
   "block_id": "specialist.graphics.industrial-3d-router",
   "candidate_digest": "d1d3ce94e7c58178825521e84b6d37fab52e94174007821f3f1947d113f9deb5",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-p5-domain-ai-3d-reg-finance-harness.v1",
   "cases": [
     {

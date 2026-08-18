@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.nist-ai-rmf-1-0.v1",
   "block_id": "specialist.standard.nist-ai-rmf-1-0",
   "candidate_digest": "9e7c1372f4f8c79d1e6958a631000d072633c643bb206cd4ff548bedd4c6a87f",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-standard-harness.v1",
   "cases": [
     {

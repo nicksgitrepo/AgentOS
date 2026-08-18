@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.wcag-2-2.v1",
   "block_id": "specialist.standard.wcag-2-2",
   "candidate_digest": "7a0d2e6f035734428252503053236789aae198b92373638de04ee1ed382b8c82",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-standard-harness.v1",
   "cases": [
     {

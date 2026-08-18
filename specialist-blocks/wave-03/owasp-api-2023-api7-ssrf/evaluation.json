@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.owasp-api-2023-api7-ssrf.v1",
   "block_id": "specialist.security.owasp-api-2023-api7-ssrf",
   "candidate_digest": "6d8b40fed998f7d8b0703b3ad315fb4abe6e394a4873a09744222156d9c36b6a",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

@@ -127,7 +127,7 @@ export function prescreenSpecialistUtilityHarm({repositoryRoot = process.cwd()} 
     version: 1,
     evaluator_id: "agentos.deterministic-utility-harm-prescreen",
     evaluator_version: "1.0.0",
-    model_requirement: "gpt-5.6-luna/max",
+    model_requirement: "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
     candidate: {branch: handoff.candidate.branch, commit: handoff.candidate.commit, tree: handoff.candidate.tree},
     candidate_roster_digest: staticReceipt.candidate_roster_digest,
     status: pendingCases > 0 ? "PRESCREEN_PENDING_EXTERNAL_REVIEW" : "PRESCREEN_PASS_REVIEW_REQUIRED",

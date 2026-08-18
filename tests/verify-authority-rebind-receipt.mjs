@@ -6,7 +6,7 @@ import {compileAuthorityRebindReceipt, validateAuthorityRebindReceipt} from "../
 import * as publicKernel from "../control/agentos.mjs";
 
 const git = (char) => char.repeat(40);
-const authority = {repository: "AgentOS", branch: "codex/authority-rebind", remote_ref: "refs/heads/codex/authority-rebind", commit: git("a"), tree: git("b"), parent: git("c"), remote_verified: true, worktree_clean: true};
+const authority = {repository: "AgentOS", branch: "repair/authority-rebind", remote_ref: "refs/heads/repair/authority-rebind", commit: git("a"), tree: git("b"), parent: git("c"), remote_verified: true, worktree_clean: true};
 const repair = {helper: "control/observed-dispatch-binding-gate.mjs:rebaseObservedDispatchPendingBinding", source_helper: "control/observed-dispatch-binding-gate.mjs:compileObservedDispatchSourceSuccessor", schema: "schemas/observed-dispatch-binding-gate.v1.json", rule: "Rebase the pending route onto a validated current source successor before dispatch."};
 const custody = {execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW", controller_approval_required: false, control_plane_only: true, consumer_product_mutated: false, protected_action: false, provider_access: false, credential_access: false, spend: false, destructive_work: false, wave_activation: "OFF"};
 const receipt = compileAuthorityRebindReceipt({

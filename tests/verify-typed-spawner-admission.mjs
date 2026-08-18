@@ -16,6 +16,12 @@ import {
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
+const LAYERS = ["ENVIRONMENT", "GLOBAL", "PROJECT", "ROLE", "TASK", "TECHNOLOGY_OR_STANDARD"];
+const blockEvidence = LAYERS.map((layer, index) => {
+  const block = {block_id: `SPAWNER.BLOCK.${layer}`, layer, block_sha256: SHA(String(index + 1)), status: "COMPLETE_QA_PASS", non_placeholder: true, evaluation: "PASS", expires_at_utc: "2026-09-16T00:00:00.000Z", contradictions: [], gate_evidence: [{gate_id: `SPAWNER.GATE.${layer}`, outcome: "PASS", evidence_sha256: SHA(String(index + 2))}], evidence_sha256: null};
+  block.evidence_sha256 = canonicalDigest({...block, evidence_sha256: null});
+  return block;
+});
 const gateFor = (gateId) => ({
   gate_id: gateId,
   status: "PASS",
@@ -33,11 +39,13 @@ const handoff = compileSealedBootstrapHandoff({
   setupAuditSha256: SHA("f"), runtimeReadbackSha256: SHA("0"), controllerRuntimeReadbackSha256: SHA("1"), capabilitySetSha256: SHA("2"),
   sourceMappingSha256: SHA("3"), memoryPlanSha256: SHA("4"), quarantineGateStateSha256: SHA("5"), productZeroTraceReceiptSha256: SHA("6"),
 });
-assert.throws(() => compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER-BLOCK-SET-INVALID"}), /block ids input is required/u);
-assert.throws(() => compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER-BLOCK-SET-INVALID", blockIds: []}), /hostile fixture ids input is required/u);
+assert.throws(() => compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER-BLOCK-SET-INVALID"}), /required layers input is required/u);
+assert.throws(() => compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER-BLOCK-SET-INVALID", requiredLayers: []}), /block evidence input is required/u);
 const blockSet = compileSpawnerGoverningBlockSet({
   blockSetId: "SPAWNER-BLOCK-SET-1",
-  blockIds: ["SPAWNER.BLOCK.AUTHORITY", "SPAWNER.BLOCK.CUSTODY", "SPAWNER.BLOCK.COMPILER"],
+  requiredLayers: LAYERS,
+  blockEvidence,
+  validatedAtUtc: NOW,
   hostileFixtureIds: ["FIXTURE.SPAWNER.INCOMPLETE", "FIXTURE.SPAWNER.PLACEHOLDER", "FIXTURE.SPAWNER.ACTIVATION_BYPASS"],
   independentEvaluationSha256: SHA("7"),
   stopConditions: "Reject admission whenever a governing block is incomplete, placeholder, stale, or independently unevaluated.",
@@ -71,7 +79,10 @@ const incompleteBlocks = {...blockSet, status: "INCOMPLETE", block_set_sha256: n
 incompleteBlocks.block_set_sha256 = canonicalDigest({...incompleteBlocks, block_set_sha256: null});
 assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: handoff, blockSet: incompleteBlocks, admittedAtUtc: NOW}), /not QA complete/u);
 
-const placeholderBlocks = {...blockSet, non_placeholder: false, block_set_sha256: null};
+const placeholderBlocks = structuredClone(blockSet);
+placeholderBlocks.block_evidence[0].non_placeholder = false;
+placeholderBlocks.block_evidence[0].evidence_sha256 = canonicalDigest({...placeholderBlocks.block_evidence[0], evidence_sha256: null});
+placeholderBlocks.block_set_sha256 = null;
 placeholderBlocks.block_set_sha256 = canonicalDigest({...placeholderBlocks, block_set_sha256: null});
 assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: handoff, blockSet: placeholderBlocks, admittedAtUtc: NOW}), /placeholder/u);
 

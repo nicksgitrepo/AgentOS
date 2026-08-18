@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+  "question": "Did Controller restrict itself to governance and handoff validation plus exactly one Spawner start, wake, observation, or redistribution dispatch?",
+  "pass": "CONTINUE_SPAWNER_BOOTSTRAP",
+  "fail": "DENY_CONTROLLER_OPERATION_AND_CREATE_GLOBAL_DEFECT",
+  "unknown": "DENY_AND_REFRESH_CONTROLLER_READBACK",
+  "gate_sha256": "e7d8e5e8f3d2298792985070611d9a5bc0db435e636ee53e1fb5124f2fd26dd6"
+}

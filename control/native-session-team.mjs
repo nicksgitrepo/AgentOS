@@ -227,6 +227,8 @@ function sortedTools(tools) {
 function validateExecution({model, reasoningEffort}) {
   requireString(model, "native session model");
   requireString(reasoningEffort, "native session reasoning effort");
+  assert(model !== DEFAULT_AGENT_MODEL && reasoningEffort !== DEFAULT_AGENT_REASONING_EFFORT,
+    "MODEL_POLICY_REFRESH_REQUIRED: native session execution must be selected from an accepted current model-policy snapshot");
 }
 
 const UNKNOWN_HOST_EXECUTION_VALUES = new Set(["UNKNOWN", "UNAVAILABLE", "NOT_REPORTED", "NOT_AVAILABLE", "N/A"]);

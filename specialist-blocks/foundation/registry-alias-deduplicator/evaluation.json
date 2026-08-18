@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.registry-alias-deduplicator.v1",
   "block_id": "specialist.foundation.registry-alias-deduplicator",
   "candidate_digest": "c90492d0e3cf8b604aaf83ec9ae24f04c21fa4d6a6ea6dd0da434d5e2ecd6838",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
   "cases": [
     {

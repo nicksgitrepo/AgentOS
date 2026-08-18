@@ -58,7 +58,7 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
     });
     after.qa.incomplete_block_count = 0;
     after.qa.status = "STATIC_PASS_REVIEW_REQUIRED";
-    after.next_action = "ADMIT_GOVERNED_SPAWN";
+    after.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
     after.lifecycle_sha256 = canonicalDigest({...after, lifecycle_sha256: null});
     return {
       outcome: "BLOCK_COMPILED",
@@ -70,7 +70,7 @@ const tick = runAgentSpawnerCompilerTick(compilerOnly, {
 });
 assert.equal(compiled, 1);
 assert.equal(tick.outcome, "BLOCK_COMPILED");
-assert.equal(tick.next_action, "ADMIT_GOVERNED_SPAWN");
+assert.equal(tick.next_action, "WAIT_FOR_PROTECTED_EVENT");
 assert.equal(tick.continuation.same_turn_next_action, true);
 assert.equal(tick.admission.spawnable, false);
 
@@ -80,7 +80,7 @@ const completePendingCompiler = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: pendingQa,
 });
-assert.equal(completePendingCompiler.next_action, "ADMIT_GOVERNED_SPAWN", "compiler-only local QA must not stop on external clearance");
+assert.equal(completePendingCompiler.next_action, "WAIT_FOR_INDEPENDENT_CLEARANCE", "governed spawn must wait for independent clearance");
 
 const admitted = compileAgentSpawnerLifecycle({
   ...common,
@@ -101,28 +101,13 @@ assert.throws(() => compileAgentSpawnerLifecycle({
   qa: {...clearedQa, pending_route_count: 1},
 }), /pending roster route|published roster/u, "Spawner cannot admit workers before the roster is published");
 
-// Local pyramid audit/repair may be admitted without external utility/harm
-// clearance when custody is isolated, product/provider/external authority is
-// false, and the resource ceiling is enforced.  This is ordinary reversible
-// development work, not a protected release or provider route.
-const isolatedLocal = compileAgentSpawnerLifecycle({
+assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
   lifecycleId: "LIFECYCLE.SPAWNER.ISOLATED_LOCAL",
   mode: "GOVERNED_SPAWN",
   isolatedLocalCustody: true,
   qa: pendingQa,
-});
-assert.equal(isolatedLocal.state, "SPAWN_ADMITTED");
-assert.equal(isolatedLocal.authority.isolated_local_custody, true);
-assert.equal(isolatedLocal.authority.spawn_authority, true);
-assert.equal(isolatedLocal.wave_activation, "OFF");
-const isolatedActive = advanceAgentSpawnerLifecycle(isolatedLocal, {
-  event_type: "START_GOVERNED_SPAWN",
-  event_sha256: canonicalDigest({event_type: "START_GOVERNED_SPAWN", event_sha256: null}),
-});
-assert.equal(isolatedActive.state, "SPAWN_ACTIVE");
-assert.equal(isolatedActive.wave_activation, "ON");
-assert.equal(isolatedActive.authority.isolated_local_custody, true);
+}), /independent clearance is required/iu, "isolated custody cannot bypass independent clearance");
 
 const active = compileAgentSpawnerLifecycle({
   ...common,

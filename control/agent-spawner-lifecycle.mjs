@@ -121,12 +121,9 @@ function deriveCompilerAction(lifecycle) {
   if (lifecycle.mode === "COMPILER_ONLY") {
     if (lifecycle.qa.incomplete_block_count > 0) return "COMPILE_NEXT_BLOCK";
     if (lifecycle.qa.pending_route_count > 0) return "PUBLISH_TYPED_ROSTER";
-    // Independent utility/harm clearance applies to governed activation and
-    // protected/external work, not to this no-side-effect compiler phase.
-    // Keep the compiler moving and hand off to the bounded admission adapter;
-    // the adapter/readback still forbids workers, waves, Product mutation,
-    // providers, credentials, spend, and destructive actions at this stage.
-    return "ADMIT_GOVERNED_SPAWN";
+    return lifecycle.qa.independent_clearance_status === "CLEARED"
+      ? "ADMIT_GOVERNED_SPAWN"
+      : "WAIT_FOR_INDEPENDENT_CLEARANCE";
   }
   if (lifecycle.state === "QA_READY") return "ADMIT_GOVERNED_SPAWN";
   if (lifecycle.state === "SPAWN_ADMITTED") return "START_GOVERNED_SPAWN";
@@ -167,19 +164,16 @@ function validateAuthority(authority, lifecycle) {
   assert(typeof authority.compiler_authority === "boolean", "Agent Spawner compiler authority is invalid");
   for (const field of ["temporary_worker_admission", "spawn_authority", "product_mutation", "provider_access", "credential_access", "external_sync", "isolated_local_custody", "independent_evaluation_required"]) assert(typeof authority[field] === "boolean", `Agent Spawner ${field} authority is invalid`);
   assert(authority.compiler_authority === true, "Agent Spawner compiler authority is required");
+  assert(authority.isolated_local_custody === false, "Isolated-local-custody cannot replace independent clearance");
   if (lifecycle.mode === "COMPILER_ONLY") {
     assert(authority.temporary_worker_admission === false && authority.spawn_authority === false, "Compiler-only Spawner cannot admit or spawn workers");
     assert(authority.isolated_local_custody === false, "Compiler-only Spawner cannot claim isolated spawn custody");
     assert(authority.product_mutation === false && authority.provider_access === false && authority.credential_access === false && authority.external_sync === false, "Compiler-only Spawner crossed a protected boundary");
   }
-  if (authority.isolated_local_custody) {
-    assert(lifecycle.mode === "GOVERNED_SPAWN", "Isolated local custody requires governed-spawn mode");
-    assert(authority.product_mutation === false && authority.provider_access === false && authority.credential_access === false && authority.external_sync === false, "Isolated local custody crossed a protected boundary");
-  }
   if (authority.spawn_authority) {
     assert(lifecycle.mode === "GOVERNED_SPAWN", "Spawn authority requires governed-spawn mode");
     assert(authority.temporary_worker_admission === true, "Spawn authority requires worker admission");
-    assert(lifecycle.qa.independent_clearance_status === "CLEARED" || authority.isolated_local_custody === true, "Spawn authority requires independent clearance or proven isolated local custody");
+    assert(lifecycle.qa.independent_clearance_status === "CLEARED", "Spawn authority requires independent clearance");
     assert(lifecycle.qa.incomplete_block_count === 0, "Spawn authority cannot use incomplete blocks");
     assert(lifecycle.qa.pending_route_count === 0, "Spawn authority cannot use an unpublished roster");
   }
@@ -189,12 +183,6 @@ function validateExecution(execution, lifecycle) {
   exactKeys(execution, ["compiler_ticks", "active_worker_count", "scheduler_job_count", "heavyweight_process_count", "timer_count", "polling"], "Agent Spawner execution");
   for (const field of ["compiler_ticks", "active_worker_count", "scheduler_job_count", "heavyweight_process_count", "timer_count"]) requireNonNegativeInteger(execution[field], `Agent Spawner execution ${field}`);
   assert(typeof execution.polling === "boolean", "Agent Spawner polling state is invalid");
-  if (lifecycle.authority.isolated_local_custody) {
-    assert(execution.active_worker_count <= 6, "Isolated local Spawner custody exceeds six workers");
-    assert(execution.scheduler_job_count <= 6, "Isolated local Spawner custody exceeds six scheduler jobs");
-    assert(execution.heavyweight_process_count <= 1, "Isolated local Spawner custody exceeds one heavyweight process");
-    assert(execution.timer_count === 0 && execution.polling === false, "Isolated local Spawner custody cannot use timers or polling");
-  }
   if (lifecycle.mode === "COMPILER_ONLY") {
     assert(execution.active_worker_count === 0, "Compiler-only Spawner cannot own active workers");
     assert(execution.scheduler_job_count === 0 && execution.heavyweight_process_count === 0, "Compiler-only Spawner cannot own heavyweight jobs");
@@ -239,12 +227,12 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
     assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Governed spawn state cannot hide incomplete blocks or pending roster routes");
   }
   if (lifecycle.qa.independent_clearance_status === "PENDING_EXTERNAL_AUTHORITY") {
-    assert(!(lifecycle.mode === "GOVERNED_SPAWN" && (lifecycle.state === "SPAWN_ADMITTED" || lifecycle.state === "SPAWN_ACTIVE") && lifecycle.authority.isolated_local_custody === false), "Pending utility/harm cannot admit or activate non-isolated governed spawning");
-    if (lifecycle.authority.isolated_local_custody === false) assert(lifecycle.persistent_state !== "ACTIVE" && lifecycle.wave_activation === "OFF", "Pending utility/harm must keep governed activation off");
+    assert(!(lifecycle.mode === "GOVERNED_SPAWN" && (lifecycle.state === "SPAWN_ADMITTED" || lifecycle.state === "SPAWN_ACTIVE")), "Pending utility/harm cannot admit or activate governed spawning");
+    assert(lifecycle.persistent_state !== "ACTIVE" && lifecycle.wave_activation === "OFF", "Pending utility/harm must keep governed activation off");
   }
   if (lifecycle.wave_activation === "ON") {
     assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ACTIVE", "Wave activation requires governed active spawn");
-    assert(lifecycle.qa.independent_clearance_status === "CLEARED" || lifecycle.authority.isolated_local_custody === true, "Wave activation requires independent clearance or isolated local custody");
+    assert(lifecycle.qa.independent_clearance_status === "CLEARED", "Wave activation requires independent clearance");
   }
   if (lifecycle.state === "STALLED") assert(lifecycle.next_action === "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "Stalled Spawner must wait on an event");
   requireSha(lifecycle.lifecycle_sha256, "Agent Spawner lifecycle digest");
@@ -269,10 +257,9 @@ export function compileAgentSpawnerLifecycle({
   assert(AGENT_SPAWNER_MODES.includes(mode), "Agent Spawner mode is invalid");
   const complete = qa.incomplete_block_count === 0;
   const clearance = qa.independent_clearance_status === "CLEARED";
-  const derivedState = state ?? (mode === "COMPILER_ONLY" ? "COMPILER_ACTIVE" : complete && (clearance || isolatedLocalCustody) ? "SPAWN_ADMITTED" : "QA_READY");
+  const derivedState = state ?? (mode === "COMPILER_ONLY" ? "COMPILER_ACTIVE" : complete && clearance ? "SPAWN_ADMITTED" : "QA_READY");
   const governed = mode === "GOVERNED_SPAWN";
-  assert(!(isolatedLocalCustody && !governed), "Isolated local custody requires governed-spawn mode");
-  const localAdmission = governed && isolatedLocalCustody && complete;
+  assert(isolatedLocalCustody === false, "Isolated-local-custody admission is forbidden; independent clearance is required");
   const lifecycle = {
     schema: AGENT_SPAWNER_LIFECYCLE_SCHEMA,
     version: AGENT_SPAWNER_LIFECYCLE_VERSION,
@@ -288,8 +275,8 @@ export function compileAgentSpawnerLifecycle({
     qa: structuredClone(qa),
     authority: {
       compiler_authority: true,
-      temporary_worker_admission: governed && (clearance || localAdmission) && complete && (derivedState === "SPAWN_ADMITTED" || derivedState === "SPAWN_ACTIVE"),
-      spawn_authority: governed && (clearance || localAdmission) && complete && (derivedState === "SPAWN_ADMITTED" || derivedState === "SPAWN_ACTIVE"),
+      temporary_worker_admission: governed && clearance && complete && (derivedState === "SPAWN_ADMITTED" || derivedState === "SPAWN_ACTIVE"),
+      spawn_authority: governed && clearance && complete && (derivedState === "SPAWN_ADMITTED" || derivedState === "SPAWN_ACTIVE"),
       product_mutation: false,
       provider_access: false,
       credential_access: false,
@@ -310,19 +297,18 @@ export function compileAgentSpawnerLifecycle({
 
 /*
  * The compiler is intentionally not allowed to admit workers itself.  Once it
- * emits ADMIT_GOVERNED_SPAWN, however, the Controller needs a concrete,
+ * emits ADMIT_GOVERNED_SPAWN, however, the governed Spawner path needs a concrete,
  * project-agnostic adapter rather than a prose handoff that can strand the
  * campaign.  This adapter performs only the bounded local transition: the
- * source roots remain preserved, the candidate is isolated, and every
- * provider/credential/product/external capability stays closed.  Protected
- * clearance is still required for any non-isolated route.
+ * source roots remain preserved, independent clearance is verified, and every
+ * provider/credential/product/external capability stays closed.
  */
-export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalCustody = true} = {}) {
+export function admitAgentSpawnerIndependentClearance(lifecycle) {
   validateAgentSpawnerLifecycle(lifecycle);
-  assert(lifecycle.mode === "COMPILER_ONLY", "Isolated governed admission must start from the compiler lifecycle");
-  assert(lifecycle.state === "COMPILER_ACTIVE" && ["ADMIT_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"].includes(lifecycle.next_action), "Spawner is not at a governed-admission successor");
-  assert(isolatedLocalCustody === true, "Isolated governed admission requires explicit local custody proof");
-  assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Isolated governed admission requires complete blocks and a published roster");
+  assert(lifecycle.mode === "COMPILER_ONLY", "Governed admission must start from the compiler lifecycle");
+  assert(lifecycle.state === "COMPILER_ACTIVE" && lifecycle.next_action === "ADMIT_GOVERNED_SPAWN", "Spawner is not at an independently cleared admission successor");
+  assert(lifecycle.qa.independent_clearance_status === "CLEARED" && lifecycle.qa.status === "INDEPENDENT_PASS", "Governed admission requires independent QA clearance");
+  assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Governed admission requires complete blocks and a published roster");
   return compileAgentSpawnerLifecycle({
     lifecycleId: lifecycle.lifecycle_id,
     mode: "GOVERNED_SPAWN",
@@ -331,10 +317,16 @@ export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalC
     candidateSha256: lifecycle.candidate_sha256,
     rosterProjectionSha256: lifecycle.roster_projection_sha256,
     contextSha256: lifecycle.context_sha256,
-    isolatedLocalCustody: true,
+    isolatedLocalCustody: false,
     qa: structuredClone(lifecycle.qa),
     execution: structuredClone(lifecycle.execution),
   });
+}
+
+export function admitAgentSpawnerIsolatedLocalCustody() {
+  const error = new Error("Isolated-local-custody admission was removed; independent clearance is required");
+  error.code = "INDEPENDENT_CLEARANCE_REQUIRED";
+  throw error;
 }
 
 function eventBody(event) {
@@ -370,6 +362,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       next.execution.compiler_ticks += 1;
       break;
     case "INDEPENDENT_CLEARANCE_GRANTED":
+      next.qa.status = "INDEPENDENT_PASS";
       next.qa.independent_clearance_status = "CLEARED";
       next.qa.independent_clearance_receipt_sha256 = event.event_sha256;
       if (next.mode === "GOVERNED_SPAWN" && next.qa.incomplete_block_count === 0 && next.qa.pending_route_count === 0) {
@@ -380,7 +373,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       break;
     case "ADMIT_GOVERNED_SPAWN":
       assert(lifecycle.mode === "GOVERNED_SPAWN", "Governed spawn admission requires governed-spawn mode");
-      assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0 && (lifecycle.qa.independent_clearance_status === "CLEARED" || lifecycle.authority.isolated_local_custody === true), "Governed spawn admission requires complete blocks, a published roster, and clearance or isolated local custody");
+      assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0 && lifecycle.qa.independent_clearance_status === "CLEARED", "Governed spawn admission requires complete blocks, a published roster, and independent clearance");
       next.state = "SPAWN_ADMITTED";
       next.authority.temporary_worker_admission = true;
       next.authority.spawn_authority = true;
@@ -606,7 +599,7 @@ export function runAgentSpawnerCompilerTick(lifecycle, {onCompileBlock = null, o
   if (lifecycle.next_action === "WAIT_FOR_INDEPENDENT_CLEARANCE") {
     assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Protected compiler wait cannot hide local block or roster work");
     requireIdentifier(protectedEventId, "Compiler protected event");
-    const event = {event_type: "PROTECTED_HOLD", event_sha256: canonicalDigest({event_type: "PROTECTED_HOLD", event_sha256: null})};
+    const event = {event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: canonicalDigest({event_type: "BLOCK_LIBRARY_UPDATED", event_sha256: null})};
     const lifecycleAfter = advanceAgentSpawnerLifecycle(lifecycle, event);
     const evidenceDigest = canonicalDigest({lifecycle_sha256: lifecycle.lifecycle_sha256, protected_event_id: protectedEventId});
     return compileAgentSpawnerCompilerContinuation({

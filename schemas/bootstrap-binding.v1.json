@@ -58,7 +58,7 @@
     },
     "bootstrap_contract": {
       "path": "schemas/bootstrap-plan.v1.json",
-      "sha256": "af2a1ec037b1beb0145e0ed5a62a5027197f71d00b506e426bdda3015d73016f"
+      "sha256": "a5120414f88c75796f8d7680db58e87e65f25bb08a4d7546589470d5033cc123"
     },
     "bootstrap_conversation_controller": {
       "path": "control/bootstrap-conversation.mjs",
@@ -546,7 +546,7 @@
     },
     "agentos_controller": {
       "path": "control/agentos-controller.mjs",
-      "sha256": "47a4a2bc03dfd49de80111d4b02026a6c6888b151f62fd332af21e01861744a4"
+      "sha256": "20f4381d96fa9f8b47ccd2399129750e89ea0ae6d269b6415206db8ad041b88d"
     },
     "controller_role_display": {
       "path": "control/controller-role-display.mjs",
@@ -554,7 +554,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "5c7240f9f1edab5f80811db2b52d7b27a432ff57e1c33f29d6a7ec97c4b8468a"
+      "sha256": "83167bcc6b4b690ca7d26e19a92ae3bf5712508070624796fbe8dae2dbee09de"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -570,7 +570,7 @@
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
-      "sha256": "f031b99cc533376c51b871167bec14370cf041ac357fe067d0520e6a0e9b1663"
+      "sha256": "1bc75a0f6aa6c9c5641a9645fe3e45a1af387d2a56380b1aa476d15c96852f7a"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
@@ -582,7 +582,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "9d72563c892b0996b754db76de0e7fe85c100c33ef91f5a4d2f65fabbd97b0c6"
+      "sha256": "ec0e28b37a047e4bb8d37697f80dbb4ae5627f49219ff6a89a7ca4b496dfb1e5"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
@@ -818,7 +818,7 @@
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",
-      "sha256": "20d1b41f3020c875a6d2b9f527cb18d5997b52b454ac686f85c4852ca44fc38c"
+      "sha256": "9b927e3420b017dc0b8fb54a29e1d9d782268d85170bbbaa93398c1ff5b3fb7e"
     },
     "project_context_store_controller": {
       "path": "control/project-context-store.mjs",
@@ -862,7 +862,7 @@
     },
     "rapid_prototype_plan_contract": {
       "path": "schemas/rapid-prototype-plan.v1.json",
-      "sha256": "2c229b514cbd3ad22a249f823f5b926109a2c1c887f1bce256303f12d49fc691"
+      "sha256": "577767a31c8aa00b2d92b87e923fc3caa648cc53b08dab68e2ea3e3323b2fa09"
     },
     "rapid_prototype_workflow_controller": {
       "path": "control/rapid-prototype-workflow.mjs",
@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "27119bf28e5cf3cc7939df7c8a3f2f6a84737c07c7d5401ce60ec82ada0b649d"
+      "sha256": "b4ec6567f479762565506f52e29d7a41b72e5076dfda43108627c3ec1041fa7e"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -934,7 +934,7 @@
     },
     "observed_dispatch_binding_verifier": {
       "path": "tests/verify-observed-dispatch-binding-gate.mjs",
-      "sha256": "df40b4947038883c2b381f962efdf98d10dcdceeff6e65e4b857cc880fc1315c"
+      "sha256": "e2eb817ea499b39d815372e9cca0c36384b84cde257ddfdff3da2869c147a5c3"
     },
     "authority_rebind_receipt_controller": {
       "path": "control/authority-rebind-receipt.mjs",
@@ -946,7 +946,7 @@
     },
     "authority_rebind_receipt_verifier": {
       "path": "tests/verify-authority-rebind-receipt.mjs",
-      "sha256": "405025d78d8210428168149ca98d342a0f8879d0dc8c11527d9231838fb5408e"
+      "sha256": "238699b33aec723389e2f3e8d6ec1ee8d7406eef911ce6f228e34dda8c50a099"
     },
     "local_proof_evidence_gate_controller": {
       "path": "control/local-proof-evidence-gate.mjs",
@@ -1046,11 +1046,11 @@
     },
     "sealed_bootstrap_handoff_controller": {
       "path": "control/sealed-bootstrap-handoff.mjs",
-      "sha256": "570ce7b6cf0a32eca6892c7eadef44618828ea1161d7005eaa396193ce8af2c9"
+      "sha256": "2da2a0d7166ed78b34bdbc8c1f55a963184f5eff1fa0675d6ba2d098f14c1833"
     },
     "sealed_bootstrap_handoff_contract": {
       "path": "schemas/sealed-bootstrap-handoff.v1.json",
-      "sha256": "8a492dd198ad03c49d25e65c9e47e2609b7aad5b76e6750c958f0680289e15f9"
+      "sha256": "9c4752c16998a073304da7eb61ab236e88be3983bc1fa7bc99d00e8c42e354fa"
     },
     "sealed_bootstrap_handoff_verifier": {
       "path": "tests/verify-sealed-bootstrap-handoff.mjs",
@@ -1058,15 +1058,15 @@
     },
     "typed_spawner_admission_controller": {
       "path": "control/typed-spawner-admission.mjs",
-      "sha256": "e97744c95106a5bfef435ad07685bbfaac4be45c6fb56fb40130f7bc3a12b806"
+      "sha256": "abde85b74ea0f903c8368b7fe765f2b158d413d6e8c7282bf6948d1abf941763"
     },
     "typed_spawner_admission_contract": {
       "path": "schemas/typed-spawner-admission.v1.json",
-      "sha256": "def7961a90c3d3b01b8c0c5a06c1bae8b25bd30ae3ac8861f1149df6eaaa2a7b"
+      "sha256": "f995ff9cf8ae5368dcc1f5a6065ecf22e3300c56508ca59d6063885cbfcab378"
     },
     "typed_spawner_admission_verifier": {
       "path": "tests/verify-typed-spawner-admission.mjs",
-      "sha256": "c1de736b814db64261be1b8e8713d697d6104a4baa79a78024b61c3abc2bdf78"
+      "sha256": "346934886b8a76859efbea83ca51013ada1ece52764fddebe1b6cc835c7050f8"
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
@@ -1114,11 +1114,11 @@
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "7dd5c17d5a800959d315ed550e4132f498c62be68f6642f9a3d73afc484af412"
+      "sha256": "ddcdae348c934ebde96975956bdbd61957a864eb04bac36516821bee421c29eb"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "f95d2d459b5ed974b893a6dc22781f539c9957133de6ccee9bbabd6f8ee51421"
+      "sha256": "95f9945dba9339762485a11e21efabfa0e12c0ae34877b66b22179d31d0e5399"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1126,15 +1126,15 @@
     },
     "agent_spawner_compiler_continuation_verifier": {
       "path": "tests/verify-agent-spawner-compiler-continuation.mjs",
-      "sha256": "ea7ba0e24275b04e8687aac3aebc4b0ba1a54ed56aa6f36925025b4204662174"
+      "sha256": "4fa71b6dc9aaf327f1db4f0b6d3698d82b4d551297438c046560baa7062bdacc"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "33e11d2fc4d07804e53e14abf78f0e0a27326ffb4e476666ed259474d3d4e7e6"
+      "sha256": "145cdadd486255645308121eb79ffd1975a4f93b6ad975e10ffa11d9dca0c163"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "1d5853685445115125ba574aedb19a0cfcde4c4d08a15cb0e8c9af3e57b44997"
+      "sha256": "b895cefec07946ce94aebf6b1db2d9169c1210cb0898ed98b71467d92e795a09"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
@@ -1286,7 +1286,7 @@
     },
     "project_memory_runtime_controller": {
       "path": "control/project-memory-runtime.mjs",
-      "sha256": "8ed653c8fff9d5c681baa18854c4b6f749ba5c9bc6391e17dfde74d2e4fe138b"
+      "sha256": "459f142e304ee3a37dac01a21fe2482334262717da4b0e4909d11711861ef917"
     },
     "project_memory_common_controller": {
       "path": "control/map-memory-common.mjs",
@@ -1374,7 +1374,7 @@
     },
     "project_memory_runtime_verifier": {
       "path": "tests/verify-project-memory-runtime.mjs",
-      "sha256": "ac1fb76ab505c2b96b2d6b8ba2b1fc5ed3fb65d56535704bbd5063d6088e3316"
+      "sha256": "3013e88ff1e77b883f6f2374dca038057258ac2a503975ee2d3838b14bb793c7"
     },
     "portability_source_hygiene_audit_report": {
       "path": "docs/feature-audits/PORTABILITY_SOURCE_HYGIENE/auditreport.md",
@@ -1530,7 +1530,7 @@
     },
     "native_session_team_controller": {
       "path": "control/native-session-team.mjs",
-      "sha256": "518ed7f0e28d077aaa4f6825ccfe4b117601d46b5dcfc4f26a00d77d3f017a95"
+      "sha256": "0320abaf2cc0a55fb1149ba792581e2266a17ff85ccbff0484ab838da6c54c20"
     },
     "native_session_team_contract": {
       "path": "schemas/native-session-team.v1.json",
@@ -1538,7 +1538,7 @@
     },
     "native_session_team_verifier": {
       "path": "tests/verify-native-session-team.mjs",
-      "sha256": "7b4bdb23de2c68b28a9434b0daf1b0dc45a803bbce1ef3ddad7adc8c45403c56"
+      "sha256": "db54b03fb586da5ee05903dfea0cf0a2c5488def539673947be5b28d993923c4"
     },
     "native_session_runner_controller": {
       "path": "control/native-session-runner.mjs",
@@ -1642,7 +1642,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "baa035d6346d92f5d0c1617f93cd342dcd11e00c1619cbcc461281ab78e99d78"
+      "sha256": "0191320cfc5d6cc70be794d902237de3fd28dddc6c8772eeaf7fb3d8c71a890e"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
@@ -1662,7 +1662,7 @@
     },
     "rapid_lane_runner": {
       "path": "tests/run-rapid-prototype-lanes.mjs",
-      "sha256": "a591fd57842943198c165b77a643d7d93a692f827b0c4d8a40a251800e365f92"
+      "sha256": "4da04142e3766d141dd87ecb548637f8ad4dbe58ada3788a44c72aa2eca1eeda"
     },
     "source_hygiene_verifier": {
       "path": "tests/verify-source-hygiene.mjs",
@@ -1942,7 +1942,7 @@
     },
     "native_host_contract_controller": {
       "path": "control/native-host-contract.mjs",
-      "sha256": "fd1d8d5214e023606644376162b4974e479914cfbde0b07a3aa084d32d465b03"
+      "sha256": "ce65a3cc1a72ff6561eeb03b58cd76305bc88fec222117443634eb939804e833"
     },
     "native_host_loader_controller": {
       "path": "control/native-host-loader.mjs",
@@ -2294,11 +2294,11 @@
     },
     "audit_repair_integration_pyramid_controller": {
       "path": "control/audit-repair-integration-pyramid.mjs",
-      "sha256": "6c12e7cb4828b633e0513582499924fbca63d2870b596cc983b62cfc9fa36c04"
+      "sha256": "8153f3f03ac153b294e515abe79427b21032d743153fafb149692f5ca9da3aa8"
     },
     "audit_repair_integration_state_contract": {
       "path": "schemas/audit-repair-integration-state.v1.json",
-      "sha256": "d0530de190059b132c55771d9d75b7ea72c8cc406b687aa1d17bd34fcca2c875"
+      "sha256": "69860723613335220fc3f9ad782753af268accbe7490a0938cd8753a6bc0ccad"
     },
     "audit_repair_integration_state_record": {
       "path": "docs/audit-repair-integration-state-public.v1.json",
@@ -2338,27 +2338,140 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "fd4ff1ef0147f1d80f8c5c2f43247bbeaf3e62f5f65cc2f6ebe4043feca884c7"
+      "sha256": "69b292336919b71db5f064a4c4d1822778a2d78251c372931da05ae2adf957c3"
     },
     "agent_spawner_governed_admission_contract": {
       "path": "schemas/agent-spawner-governed-admission.v1.json",
-      "sha256": "dfcb4e1f2abf377c5f47cb971369ebbd4445838a7e5232f25d6e554fb081b9e3"
+      "sha256": "8f9002bc9415224c9665c59812ebd30d8e8495413eb468c9273f0156479fc519"
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
-      "sha256": "58a5fc4544a2f8322f7be297e60899566975bedefe590f826ca954ca2274f794"
+      "sha256": "23b52cc09b6f9e9a7e1fc5c2b3bf6cc8ab82b1b9171c5705589b603c5d653297"
     },
     "turn_continuation_gate_controller": {
       "path": "control/turn-continuation-gate.mjs",
-      "sha256": "01ebc98189fb017f5d950f99a0d2e3f7f174c808034f3b4e4bb02009d9aa6a42"
+      "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"
     },
     "turn_continuation_gate_contract": {
       "path": "schemas/turn-continuation-gate.v1.json",
-      "sha256": "4a230e26180574ecfbc98d55b0789ecf353790c3b20f572064b94f4f7610f315"
+      "sha256": "487d23fbc00c0dbe291641da45ca27276dd0676ae8ca7eeccf2bf81b6989b9e6"
     },
     "turn_continuation_gate_verifier": {
       "path": "tests/verify-turn-continuation-gate.mjs",
-      "sha256": "9169e49427c71a853b861125c9711ca7500fa40dcb14d20684a47ab83d0acac6"
+      "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
+    },
+    "spawner_bootstrap_governance_controller": {
+      "path": "control/spawner-bootstrap-governance.mjs",
+      "sha256": "8ffd63a2dea0fcd877ad152271469beec36b0f34656efb4766f777b18e6385b4"
+    },
+    "spawner_defect_repair_loop_controller": {
+      "path": "control/spawner-defect-repair-loop.mjs",
+      "sha256": "f32ba90bb457d1a0626103db4a56be0562e0be7ac58bee7b1d1c4895e2883c2d"
+    },
+    "eco_model_policy_controller": {
+      "path": "control/eco-model-policy.mjs",
+      "sha256": "f2d163b41d0d349bc155b5db87d480a7f7e5342006b4bd40128f4bcb2af37a28"
+    },
+    "global_governance_memory_controller": {
+      "path": "control/global-governance-memory.mjs",
+      "sha256": "051713c6fd5930ffe13ee88c2b115184b3488a4e0d906bb3bdd54caf65594253"
+    },
+    "spawner_bootstrap_package_contract": {
+      "path": "schemas/spawner-bootstrap-package.v1.json",
+      "sha256": "d93d73de416278c611b62e64d4b5a52d1df12d31c147c616752543e106f70988"
+    },
+    "spawner_defect_envelope_contract": {
+      "path": "schemas/spawner-defect-envelope.v2.json",
+      "sha256": "80ae773d6149930fbf24011a24ab627ffe2bf4220d6799a38256dbb52d2080c4"
+    },
+    "spawner_ownership_classification_contract": {
+      "path": "schemas/spawner-ownership-classification.v1.json",
+      "sha256": "e30b922096d00de1e0264bb0bedcc41347595d223026f7b849d143e285a866da"
+    },
+    "spawner_redistribution_handoff_contract": {
+      "path": "schemas/spawner-redistribution-handoff.v1.json",
+      "sha256": "cdc9ded8b4662ad1f70779da89666744592ee13b2dbbbae655f155f023fa0da0"
+    },
+    "spawner_turn_closeout_contract": {
+      "path": "schemas/spawner-turn-closeout.v1.json",
+      "sha256": "8fa97b9b0e3a114b2d5360f9665410285371a71c31e185362ac125167cc79aad"
+    },
+    "inert_seed_lifecycle_contract": {
+      "path": "schemas/inert-seed-lifecycle.v1.json",
+      "sha256": "6c3e95c0ba4a7e8a7c7e0bcd5c1ea0aa0262f194ec9496c99a04964879f38ab7"
+    },
+    "model_policy_snapshot_contract": {
+      "path": "schemas/model-policy-snapshot.v1.json",
+      "sha256": "3bb37b9aa81de6175d01717cf080610a062198a596a4ba0283f9df44e92fa801"
+    },
+    "global_governance_memory_contract": {
+      "path": "schemas/global-governance-memory.v1.json",
+      "sha256": "fb544bf44676258638e1be954a916dafc584d150b57cd589e4ff5d0ff25a1530"
+    },
+    "project_memory_current_readback_contract": {
+      "path": "schemas/project-memory-current-readback.v1.json",
+      "sha256": "532acde2d31d28e38c49fea4edac5f1e7084c7d473bf9c9c3eba6727984c7005"
+    },
+    "initial_model_policy_snapshot_fixture": {
+      "path": "fixtures/model-policy-snapshot.initial.v1.json",
+      "sha256": "d8b1096c6e8d8bb5b935b1393062cd2bc4175d8dc30fbf6ff672d61608947c1a",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "canonical_spawner_specialist_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/block.json",
+      "sha256": "55e9fe8819208c299f012048a476d05f8e39a11167af11a60af7ac8fb37dfb20"
+    },
+    "canonical_spawner_decision_tree": {
+      "path": "specialist-blocks/control-plane/agent-spawner/decision-tree.json",
+      "sha256": "9979b29815a4122fcbe833e9f2b9a2f95e413635df1e91c732b3a6ad6da22f54"
+    },
+    "canonical_spawner_gate_manifest": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
+      "sha256": "a41715a5fcc4e5e13b9aa0cf87428aaf3d1b7993f48644b85fb0899b688e3289"
+    },
+    "canonical_spawner_controller_authority_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/controller-authority.gate",
+      "sha256": "b90ca0a3e039dfe26b2cd6e27f5350c287f5b15035954a25a1debff29395e15f"
+    },
+    "canonical_spawner_exact_block_qa_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/exact-block-qa.gate",
+      "sha256": "61cef996119bca989c389a0b0361ce9144072c32143894b1b766b1f17646a3ec"
+    },
+    "canonical_spawner_git_integration_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/git-integration.gate",
+      "sha256": "43e1f1e57b5a4a5fa1fab5535c11283b7811c271bdc9afc6ed5993160ef07d9e"
+    },
+    "canonical_spawner_memory_readback_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/memory-readback.gate",
+      "sha256": "0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3"
+    },
+    "canonical_spawner_model_policy_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/model-policy.gate",
+      "sha256": "cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58"
+    },
+    "canonical_spawner_ownership_classification_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/ownership-classification.gate",
+      "sha256": "c7a02b4886d777bea05ab8fca7997b90b517996ae359f9c74edd92c33dc3f987"
+    },
+    "canonical_spawner_seed_inertness_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/seed-inertness.gate",
+      "sha256": "8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff"
+    },
+    "canonical_spawner_turn_closeout_gate": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
+      "sha256": "fc8ae6ae68c5b75c468a8754413dcde956540c73f04b851defd86ed51c0f73ec"
+    },
+    "canonical_spawner_registry": {
+      "path": "specialist-blocks/registry/spawner-bootstrap.v1.json",
+      "sha256": "ef09b8760d182e87c22e3da6d4ee7aafc2374878c881193deb7731b4f7a91574"
+    },
+    "spawner_bootstrap_repair_verifier": {
+      "path": "tests/verify-spawner-bootstrap-repair.mjs",
+      "sha256": "729cade84445ed81423a241683feb9e242bc3f25d1c580e903041a24ac710d1c"
+    },
+    "global_governance_memory_verifier": {
+      "path": "tests/verify-global-governance-memory.mjs",
+      "sha256": "fda6ef693a94e65c0ed3f65bcaafe40e05f105727f9451d0f030507e1a77943b"
     }
   },
   "compatibility_only": {

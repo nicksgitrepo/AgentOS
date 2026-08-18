@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_turn_closeout.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "turn_id", "outcome", "successor_started_sha256", "redistribution_handoff_sha256", "protected_blocker", "resources_active", "restart_event", "closeout_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_turn_closeout.v1"},
+    "version": {"const": 1},
+    "status": {"const": "VALID_CLOSEOUT"},
+    "outcome": {"enum": ["NEXT_REPAIR_STARTED", "REPAIR_COMPLETED_AND_NEXT_STARTED", "REDISTRIBUTION_DELIVERED", "GENUINE_PROTECTED_BLOCKER"]},
+    "resources_active": {"type": "integer", "minimum": 0},
+    "closeout_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

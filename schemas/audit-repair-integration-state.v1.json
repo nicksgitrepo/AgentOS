@@ -85,8 +85,8 @@
       "properties": {
         "target_active_slots": {"const": 6},
         "fill_rule": {"const": "MINIMUM_OF_SIX_ELIGIBLE_FEATURES"},
-        "model": {"const": "gpt-5.6-luna"},
-        "reasoning_effort": {"const": "max"},
+        "model": {"const": "GLOBAL_MODEL_POLICY_SNAPSHOT"},
+        "reasoning_effort": {"const": "TASK_CLASS_ROUTE"},
         "lane_cycle": {"type": "array", "const": ["AUDIT", "SMALLEST_REPAIR", "HOSTILE_SELF_AUDIT", "AFFECTED_PROOF", "HANDOFF"]},
         "feature_self_merge": {"const": false},
         "feature_self_acceptance": {"const": false},
@@ -124,8 +124,8 @@
         "lane_id": {"type": "string"},
         "task_id": {"type": "string"},
         "worktree_id": {"type": "string"},
-        "model": {"const": "gpt-5.6-luna"},
-        "reasoning_effort": {"const": "max"},
+        "model": {"const": "GLOBAL_MODEL_POLICY_SNAPSHOT"},
+        "reasoning_effort": {"const": "TASK_CLASS_ROUTE"},
         "domain_ids": {"type": "array", "items": {"type": "string"}},
         "cursor": {"type": "string"}
       }

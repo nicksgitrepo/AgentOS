@@ -355,7 +355,7 @@ function validateEvaluation(evaluation, block) {
   assert(evaluation.schema === SPECIALIST_EVALUATION_SCHEMA && evaluation.version === 1, `${block.block_id} evaluation schema mismatch`);
   assert(evaluation.block_id === block.block_id, `${block.block_id} evaluation block mismatch`);
   assert(evaluation.candidate_digest === block.block_sha256, `${block.block_id} evaluation digest mismatch`);
-  assert(evaluation.model_requirement === "gpt-5.6-luna/max", `${block.block_id} evaluation model requirement mismatch`);
+  assert(evaluation.model_requirement === "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE", `${block.block_id} evaluation model requirement mismatch`);
   assert(Array.isArray(evaluation.cases) && evaluation.cases.length >= CORE_EVALUATION_CLASSES.length + ATOMIC_EVALUATION_CLASSES.length, `${block.block_id} evaluation case set is incomplete`);
   const classes = new Set(evaluation.cases.map((item) => item.class));
   for (const className of [...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES]) assert(classes.has(className), `${block.block_id} evaluation lacks ${className}`);

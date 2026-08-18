@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.owasp-web-2025-a05-injection.v1",
   "block_id": "specialist.security.owasp-web-2025-a05-injection",
   "candidate_digest": "c4bd5ec70145090d9a65131a12532e5a6c583675eaa10eeec199af07b6ba5520",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

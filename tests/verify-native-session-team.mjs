@@ -33,6 +33,8 @@ import {compileNativeHostAttachment} from "../control/native-host-attachment.mjs
 const COMMIT = "1".repeat(40);
 const TREE = "2".repeat(40);
 const NOW = "2026-08-04T12:00:00.000Z";
+const TEST_MODEL = "gpt-5.6-luna";
+const TEST_REASONING = "max";
 const CLIENT_THREAD = `client-new-thread:${["00000000", "0000", "4000", "8000", "000000000001"].join("-")}`;
 const THREAD_ID = ["00000000", "0000", "4000", "8000", "000000000002"].join("-");
 const hostAttachment = compileNativeHostAttachment({
@@ -44,10 +46,19 @@ const hostAttachment = compileNativeHostAttachment({
   reasoningEffort: "max",
   attachedAtUtc: NOW,
 });
+const createTestTeam = (options) => createNativeSessionTeam({...options, model: TEST_MODEL, reasoningEffort: TEST_REASONING});
 
-assert.deepEqual(DEFAULT_AGENT_EXECUTION, {model: "gpt-5.6-luna", reasoning_effort: "max"});
-assert.equal(DEFAULT_AGENT_MODEL, "gpt-5.6-luna");
-assert.equal(DEFAULT_AGENT_REASONING_EFFORT, "max");
+assert.deepEqual(DEFAULT_AGENT_EXECUTION, {model: "GLOBAL_MODEL_POLICY_SELECTION_REQUIRED", reasoning_effort: "POLICY_SELECTED_REASONING_REQUIRED"});
+assert.equal(DEFAULT_AGENT_MODEL, "GLOBAL_MODEL_POLICY_SELECTION_REQUIRED");
+assert.equal(DEFAULT_AGENT_REASONING_EFFORT, "POLICY_SELECTED_REASONING_REQUIRED");
+assert.throws(() => compileNativeCampaignTeamPlan({
+  teamId: "TEAM-POLICY-MISSING",
+  projectId: "project-context",
+  campaignId: "CAMPAIGN-POLICY-MISSING",
+  campaignVersion: "v1",
+  sourceCommit: COMMIT,
+  sourceTree: TREE,
+}), /MODEL_POLICY_REFRESH_REQUIRED/u, "native session admission must fail closed without a snapshot-selected execution profile");
 assert.deepEqual(NATIVE_SESSION_TOOLS, ["create_thread", "list_threads", "read_thread", "send_message_to_thread", "set_thread_archived", "set_thread_pinned", "wait_threads"]);
 assert.equal(FOUNDATION_LANE_ROLES.length, 12);
 assert.equal(IMPLEMENTATION_LANE_ROLES.length, 12);
@@ -62,6 +73,8 @@ const plan = compileNativeCampaignTeamPlan({
   campaignVersion: "v1",
   sourceCommit: COMMIT,
   sourceTree: TREE,
+  model: TEST_MODEL,
+  reasoningEffort: TEST_REASONING,
 });
 assert.equal(plan.model, "gpt-5.6-luna");
 assert.equal(plan.reasoning_effort, "max");
@@ -78,6 +91,8 @@ const implementationPlan = compileNativeImplementationTeamPlan({
   campaignVersion: "v1",
   sourceCommit: COMMIT,
   sourceTree: TREE,
+  model: TEST_MODEL,
+  reasoningEffort: TEST_REASONING,
 });
 assert.equal(implementationPlan.phase, "IMPLEMENT_FOUNDATION_LANES");
 assert.equal(implementationPlan.roles.length, 12);
@@ -103,6 +118,8 @@ const implementationHandoff = compileNativeImplementationLaneHandoff({
   laneRole: "IMPLEMENTATION_FUNCTIONALITY",
   taskId: IMPLEMENTATION_TASK_ID,
   hostId: "local",
+  model: TEST_MODEL,
+  reasoningEffort: TEST_REASONING,
   projectRoot: "/saved/project",
   cwd: "/saved/project",
   gitTopLevel: "/saved/project",
@@ -173,6 +190,8 @@ assert.throws(() => compileNativeSessionSpawnRequest({
   prompt: "Work in scope.",
   sourceCommit: COMMIT,
   sourceTree: TREE,
+  model: TEST_MODEL,
+  reasoningEffort: TEST_REASONING,
   tools: ["create_thread"],
 }), /tooling is incomplete/u);
 assert.throws(() => createLocalSelfDevelopmentAdapters({}), /NATIVE_SESSION_TOOLING_REQUIRED/u);
@@ -227,7 +246,7 @@ function makeHost({createResult = null} = {}) {
 
 assert.throws(() => validateNativeSessionHostCapabilities({}), (error) => error.code === "NATIVE_SESSION_TOOLING_UNAVAILABLE");
 const disappearingHost = makeHost();
-const disappearingTeam = createNativeSessionTeam({host: disappearingHost, hostAttachment, projectId: "project-context", now: () => NOW});
+const disappearingTeam = createTestTeam({host: disappearingHost, hostAttachment, projectId: "project-context", now: () => NOW});
 const disappearingSpawn = await disappearingTeam.spawn(request);
 delete disappearingHost.read_thread;
 await assert.rejects(() => disappearingTeam.readback(disappearingSpawn.session), (error) => error.code === "NATIVE_SESSION_TOOLING_UNAVAILABLE");
@@ -240,7 +259,7 @@ assert.deepEqual(compileNativeSessionHostSpawnPayload(request), {
 });
 const isolatedRequest = compileNativeSessionSpawnRequest({
   teamId: "TEAM-1", projectId: "project-context", campaignId: "CAMPAIGN-1", campaignVersion: "v1",
-  role: "FOUNDATION_UI_UX", sourceCommit: COMMIT, sourceTree: TREE, worktreeMode: "ISOLATED_WORKTREE",
+  role: "FOUNDATION_UI_UX", sourceCommit: COMMIT, sourceTree: TREE, worktreeMode: "ISOLATED_WORKTREE", model: TEST_MODEL, reasoningEffort: TEST_REASONING,
 });
 assert.deepEqual(compileNativeSessionHostSpawnPayload(isolatedRequest).target, {
   type: "project", projectId: "project-context", environment: {type: "worktree"},
@@ -252,7 +271,7 @@ const mismatchedWorkspaceHost = makeHost({createResult: {
   gitTopLevel: "/synthetic/host-boundary",
   worktreeInitialized: true, sourceCommit: COMMIT, sourceTree: TREE,
 }});
-const mismatchedWorkspaceTeam = createNativeSessionTeam({
+const mismatchedWorkspaceTeam = createTestTeam({
   host: mismatchedWorkspaceHost,
   hostAttachment,
   projectId: "project-context",
@@ -270,7 +289,7 @@ const identityUnavailableHost = makeHost({createResult: {
   status: "THREAD_BOUND", threadId: THREAD_ID, hostId: "local", projectId: "project-context",
   worktreePath: "synthetic-worktree", worktreeInitialized: true, sourceCommit: COMMIT, sourceTree: TREE,
 }});
-const identityUnavailableTeam = createNativeSessionTeam({
+const identityUnavailableTeam = createTestTeam({
   host: identityUnavailableHost,
   hostAttachment,
   projectId: "project-context",
@@ -300,7 +319,7 @@ const identityMismatchHost = makeHost({createResult: {
   model: "gpt-5.6-sol", reasoningEffort: "medium", worktreePath: "synthetic-worktree", worktreeInitialized: true,
   sourceCommit: COMMIT, sourceTree: TREE,
 }});
-const identityMismatchTeam = createNativeSessionTeam({host: identityMismatchHost, hostAttachment, projectId: "project-context", teamId: "TEAM-1", campaignId: "CAMPAIGN-1", campaignVersion: "v1", now: () => NOW});
+const identityMismatchTeam = createTestTeam({host: identityMismatchHost, hostAttachment, projectId: "project-context", teamId: "TEAM-1", campaignId: "CAMPAIGN-1", campaignVersion: "v1", now: () => NOW});
 await assert.rejects(
   () => identityMismatchTeam.spawn(request),
   (error) => error instanceof NativeSessionBoundaryError
@@ -328,7 +347,7 @@ assert.throws(() => validateNativeSessionHostIdentityBoundary({...unavailableBou
 assert.throws(() => validateNativeSessionHostExecutionIdentity({request, value: {model: request.model}, observedAtUtc: NOW}), (error) => error.code === "HOST_MODEL_REASONING_READBACK_UNAVAILABLE");
 calls.length = 0;
 
-const team = createNativeSessionTeam({
+const team = createTestTeam({
   host: makeHost(),
   hostAttachment,
   projectId: "project-context",
@@ -362,29 +381,29 @@ assert.doesNotThrow(() => validateNativeSessionClosureReceipt(closed.receipt));
 
 const wrongProjectRequest = compileNativeSessionSpawnRequest({
   teamId: "TEAM-1", projectId: "other-project", campaignId: "CAMPAIGN-1", campaignVersion: "v1", role: "FOUNDATION_FUNCTIONALITY",
-  sourceCommit: COMMIT, sourceTree: TREE,
+  sourceCommit: COMMIT, sourceTree: TREE, model: TEST_MODEL, reasoningEffort: TEST_REASONING,
 });
 await assert.rejects(() => team.spawn(wrongProjectRequest), /wrong project binding/u);
 
 const wrongModelRequest = compileNativeSessionSpawnRequest({
   teamId: "TEAM-1", projectId: "project-context", campaignId: "CAMPAIGN-1", campaignVersion: "v1", role: "FOUNDATION_UI_UX",
-  sourceCommit: COMMIT, sourceTree: TREE, model: "gpt-5.6-sol",
+  sourceCommit: COMMIT, sourceTree: TREE, model: "gpt-5.6-sol", reasoningEffort: TEST_REASONING,
 });
 await assert.rejects(() => team.spawn(wrongModelRequest), /wrong model/u);
 
 const wrongReasoningRequest = compileNativeSessionSpawnRequest({
   teamId: "TEAM-1", projectId: "project-context", campaignId: "CAMPAIGN-1", campaignVersion: "v1", role: "FOUNDATION_UI_UX",
-  sourceCommit: COMMIT, sourceTree: TREE, reasoningEffort: "high",
+  sourceCommit: COMMIT, sourceTree: TREE, model: TEST_MODEL, reasoningEffort: "high",
 });
 await assert.rejects(() => team.spawn(wrongReasoningRequest), /wrong reasoning effort/u);
 
 const staleRequest = compileNativeSessionSpawnRequest({
   teamId: "TEAM-1", projectId: "project-context", campaignId: "CAMPAIGN-1", campaignVersion: "v1", role: "FOUNDATION_UI_UX",
-  sourceCommit: COMMIT, sourceTree: TREE,
+  sourceCommit: COMMIT, sourceTree: TREE, model: TEST_MODEL, reasoningEffort: TEST_REASONING,
 });
 await assert.rejects(() => team.spawn(staleRequest, {predecessor: closed.removal.session}), /STALE_PREDECESSOR|stale/u);
 
-const failedTeam = createNativeSessionTeam({
+const failedTeam = createTestTeam({
   host: makeHost({createResult: {
     status: "WORKTREE_FAILED",
     clientThreadId: CLIENT_THREAD,
@@ -401,7 +420,7 @@ const failedTeam = createNativeSessionTeam({
 await assert.rejects(() => failedTeam.spawn(staleRequest), (error) => error instanceof NativeSessionBoundaryError && error.code === "WORKTREE_INITIALIZATION_FAILED" && error.readback?.status === "FAILED");
 assert.equal(failedTeam.roster().length, 0, "failed worktree initialization must not leak a roster entry");
 
-const duplicateArchiveTeam = createNativeSessionTeam({
+const duplicateArchiveTeam = createTestTeam({
   host: makeHost(), hostAttachment, projectId: "project-context", teamId: "TEAM-1", campaignId: "CAMPAIGN-1", campaignVersion: "v1", now: () => NOW,
 });
 const duplicateArchiveSpawn = await duplicateArchiveTeam.spawn(staleRequest);
@@ -412,7 +431,7 @@ assert.equal(duplicateArchiveTeam.roster().length, 0);
 
 const leakHost = makeHost();
 leakHost.list_threads = async () => ({threads: [{threadId: THREAD_ID, hostId: "local", archived: false, pinned: false, active: true}]});
-const leakTeam = createNativeSessionTeam({
+const leakTeam = createTestTeam({
   host: leakHost, hostAttachment, projectId: "project-context", teamId: "TEAM-1", campaignId: "CAMPAIGN-1", campaignVersion: "v1", now: () => NOW,
 });
 const leakSpawn = await leakTeam.spawn(staleRequest);
@@ -420,7 +439,7 @@ const leakArchived = await leakTeam.archive(leakSpawn.session);
 await assert.rejects(() => leakTeam.removeFromRoster(leakArchived.session), /active session|ROSTER_NOT_REMOVED/u);
 assert.equal(leakTeam.roster().length, 1, "host roster leak must keep the local roster entry for repair");
 
-const shellTeam = createNativeSessionTeam({
+const shellTeam = createTestTeam({
   host: makeHost({createResult: {
     status: "THREAD_BOUND", threadId: "shell output: fake", hostId: "local", projectId: "project-context", model: "gpt-5.6-luna",
     reasoningEffort: "max", worktreePath: "synthetic-worktree", worktreeInitialized: true, sourceCommit: COMMIT, sourceTree: TREE,
@@ -432,6 +451,6 @@ await assert.rejects(() => shellTeam.spawn(staleRequest), (error) => error.code 
 assert.equal(shellTeam.roster().length, 0, "fabricated or shell-derived IDs must not enter the roster");
 
 const duplicateRoster = [spawned.session, spawned.session];
-assert.throws(() => createNativeSessionTeam({host: makeHost(), hostAttachment, projectId: "project-context", activeRoster: duplicateRoster}), /duplicate session/u);
+assert.throws(() => createTestTeam({host: makeHost(), hostAttachment, projectId: "project-context", activeRoster: duplicateRoster}), /duplicate session/u);
 
-console.log("PASS native session team: typed host lifecycle, Luna/max defaults, exact identity binding, fail-closed capability checks, closure, and hostile coverage");
+console.log("PASS native session team: typed host lifecycle, fail-closed model-policy selection, exact identity binding, closure, and hostile coverage");

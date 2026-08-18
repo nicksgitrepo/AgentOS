@@ -32,7 +32,7 @@ assert.equal(verificationExecution?.bare_executable_path_lookup_forbidden, true,
 assert.equal(verificationExecution?.runtime_unavailable_code, "NODE_EXECUTABLE_UNAVAILABLE", "verification runtime failure code is missing");
 assert.deepEqual(verificationExecution?.sequence, ["SOURCE_SNAPSHOT", "BOUNDED_SCAN", "FOCUSED_HOSTILE", "FULL_DIRECT_NODE_SUITE"], "verification sequence is incomplete");
 assert.equal(handoffContract?.schema, "agentos.native_implementation_lane_handoff.v1", "implementation lane handoff schema binding is missing");
-assert.deepEqual(handoffContract?.required_worker_profile, {model: "gpt-5.6-luna", reasoning_effort: "max"}, "implementation lane worker profile contract is incomplete");
+assert.deepEqual(handoffContract?.required_worker_profile, {model: "GLOBAL_MODEL_POLICY_SNAPSHOT", reasoning_effort: "TASK_CLASS_ROUTE"}, "implementation lane worker profile contract is incomplete");
 assert.deepEqual(handoffContract?.required_source_identity_fields, ["project_root", "cwd", "git_top_level", "source_commit", "source_tree"], "implementation lane source identity contract is incomplete");
 assert.equal(handoffContract?.git_object_pattern, "^[0-9a-f]{40}$", "implementation lane Git identity contract is incomplete");
 assert.equal(handoffContract?.path_sha256_pattern, "^[0-9a-f]{64}$", "implementation lane path digest contract is incomplete");

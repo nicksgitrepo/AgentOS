@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.cloudflare-dns.v1",
   "block_id": "specialist.platform.cloudflare-dns",
   "candidate_digest": "1a3bffa788c03d2ee2d20796bc59f0ede08688a321e0b6078d30b3af62cc8298",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [
     {

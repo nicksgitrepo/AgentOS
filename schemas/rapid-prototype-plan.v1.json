@@ -58,8 +58,8 @@
     "repaired_method": "DIRECT_PROJECT_LOCAL_SESSION_AGAINST_EXACT_SAVED_PROJECT_BINDING"
   },
   "temporary_worker_contract": {
-    "model": "gpt-5.6-luna",
-    "reasoning_effort": "max",
+    "model": "GLOBAL_MODEL_POLICY_SNAPSHOT",
+    "reasoning_effort": "TASK_CLASS_ROUTE",
     "environment": "LOCAL_PROJECT",
     "worktree_mode": "PROJECT_LOCAL_SESSION",
     "pre_write_identity_check": true,
@@ -166,8 +166,8 @@
     "lane_handoff_contract": {
       "schema": "agentos.native_implementation_lane_handoff.v1",
       "required_worker_profile": {
-        "model": "gpt-5.6-luna",
-        "reasoning_effort": "max"
+        "model": "GLOBAL_MODEL_POLICY_SNAPSHOT",
+        "reasoning_effort": "TASK_CLASS_ROUTE"
       },
       "required_source_identity_fields": ["project_root", "cwd", "git_top_level", "source_commit", "source_tree"],
       "git_object_pattern": "^[0-9a-f]{40}$",

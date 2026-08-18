@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.aws-iam-current.v1",
   "block_id": "specialist.standard.aws-iam-current",
   "candidate_digest": "b3ef939cb57279f6a88bbd416226829e2e6bb20e6aa5b2613fa9fe6d6dd3ec48",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-standard-harness.v1",
   "cases": [
     {

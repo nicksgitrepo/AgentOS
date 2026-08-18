@@ -23,6 +23,7 @@ import {controllerActionHandlerFor, controllerContinuationDigest} from "../contr
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
+const LAYERS = ["ENVIRONMENT", "GLOBAL", "PROJECT", "ROLE", "TASK", "TECHNOLOGY_OR_STANDARD"];
 const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b"];
 const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f"];
 const redigest = (value, field) => {
@@ -51,9 +52,16 @@ const handoff = compileSealedBootstrapHandoff({
   setupAuditSha256: SHA("f"), runtimeReadbackSha256: SHA("0"), controllerRuntimeReadbackSha256: SHA("1"), capabilitySetSha256: SHA("2"),
   sourceMappingSha256: SHA("3"), memoryPlanSha256: SHA("4"), quarantineGateStateSha256: SHA("5"), productZeroTraceReceiptSha256: SHA("6"),
 });
+const blockEvidence = LAYERS.map((layer, index) => {
+  const block = {block_id: `SPAWNER.BLOCK.${layer}`, layer, block_sha256: SHA(String(index + 1)), status: "COMPLETE_QA_PASS", non_placeholder: true, evaluation: "PASS", expires_at_utc: "2026-09-16T00:00:00.000Z", contradictions: [], gate_evidence: [{gate_id: `SPAWNER.GATE.${layer}`, outcome: "PASS", evidence_sha256: SHA(String(index + 2))}], evidence_sha256: null};
+  block.evidence_sha256 = canonicalDigest({...block, evidence_sha256: null});
+  return block;
+});
 const blockSet = compileSpawnerGoverningBlockSet({
   blockSetId: "SPAWNER-BLOCK-SET-1",
-  blockIds: ["SPAWNER.BLOCK.AUTHORITY", "SPAWNER.BLOCK.CUSTODY", "SPAWNER.BLOCK.COMPILER"],
+  requiredLayers: LAYERS,
+  blockEvidence,
+  validatedAtUtc: NOW,
   hostileFixtureIds: ["FIXTURE.SPAWNER.ACTIVATION_BYPASS", "FIXTURE.SPAWNER.INCOMPLETE", "FIXTURE.SPAWNER.PLACEHOLDER"],
   independentEvaluationSha256: SHA("7"),
   stopConditions: "Reject admission whenever a governing block is incomplete, placeholder, stale, or independently unevaluated.",

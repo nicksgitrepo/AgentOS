@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/agent-spawner-governed-admission.v1.json",
   "title": "AgentOS Agent Spawner Governed Admission",
-  "description": "Same-turn, project-agnostic adapter readback for consuming a complete compiler-only Spawner admission successor. It establishes isolated local custody, exposes the next governed action, and proves that no worker, wave, Product, provider, or credential capability was opened.",
+  "description": "Same-turn, project-agnostic adapter readback for consuming an independently cleared compiler-only Spawner admission successor. It exposes the next governed action and proves that isolated-custody, worker, wave, Product, provider, and credential bypasses remain closed.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -42,7 +42,7 @@
         "spawnable": {"const": true},
         "worker_spawned": {"const": false},
         "wave_activation": {"const": "OFF"},
-        "isolated_local_custody": {"const": true}
+        "isolated_local_custody": {"const": false}
       }
     },
     "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceRef"}},

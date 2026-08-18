@@ -10,7 +10,7 @@
     "version": {"const": 1},
     "package_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "receipt_id": {"type": "string", "minLength": 1},
-    "model_requirement": {"const": "gpt-5.6-luna/max"},
+    "model_requirement": {"const": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE"},
     "independent_reviewer_required": {"const": true},
     "disposition": {"enum": ["STATIC_PACKAGE_VALID;_INDEPENDENT_UTILITY_HARM_PENDING", "REJECTED", "BLOCKED_EXACT"]},
     "tests": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["class", "expected", "observed"], "properties": {"class": {"type": "string", "minLength": 1}, "expected": {"enum": ["PASS", "DENY", "ESCALATE"]}, "observed": {"enum": ["PASS", "PENDING", "FAIL"]}}}, "minItems": 1},

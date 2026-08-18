@@ -22,6 +22,8 @@ const request = compileNativeSessionSpawnRequest({
   role: "FOUNDATION_FUNCTIONALITY",
   sourceCommit: COMMIT,
   sourceTree: TREE,
+  model: "gpt-5.6-luna",
+  reasoningEffort: "max",
 });
 
 const acceptedWithoutReadback = compileNativeSessionHostSpawnAttestation({

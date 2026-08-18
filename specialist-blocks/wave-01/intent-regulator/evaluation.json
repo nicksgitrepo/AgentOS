@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.intent-regulator.v1",
   "block_id": "specialist.control.intent-regulator",
   "candidate_digest": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
   "cases": [
     {"case_id": "intent-regulator-authority_conflict", "class": "authority_conflict", "expected": "ESCALATE", "observed": "PENDING"},

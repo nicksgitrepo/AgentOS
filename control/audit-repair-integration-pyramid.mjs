@@ -23,7 +23,7 @@ export const PLATFORM_DOMAIN_IDS = Object.freeze([
   "PRIVATE_CONTROL_MEMORY_PROJECTIONS",
   "RELEASE_MIGRATION_DELIVERY_SECURITY_OWNER_SURFACE",
 ]);
-export const FEATURE_LANE_MODELS = Object.freeze({model: "gpt-5.6-luna", reasoning_effort: "max"});
+export const FEATURE_LANE_MODELS = Object.freeze({model: "GLOBAL_MODEL_POLICY_SNAPSHOT", reasoning_effort: "TASK_CLASS_ROUTE"});
 export const PRE_REAL_HOST_STATES = Object.freeze([
   "PRODUCTION_READY_PENDING_REAL_HOST",
   "PREPARED_NOT_ACTIVATED",

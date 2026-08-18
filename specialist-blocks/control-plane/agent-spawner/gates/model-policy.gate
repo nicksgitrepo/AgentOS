@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+  "question": "Is the accepted global model-policy snapshot current, source-backed, digest-valid, host-available, capability-sufficient, cost-bounded, and reasoning-mode supported?",
+  "pass": "SELECT_LEAST_COST_CAPABLE_ROUTE",
+  "fail": "DENY_WITH_REFRESH_OR_ESCALATION_ROUTE",
+  "unknown": "DENY_MODEL_POLICY_INCONCLUSIVE",
+  "gate_sha256": "beee49d7229a3922fd94ce5e42ea360863933d476cec0a79c50ab77bc5b48761"
+}

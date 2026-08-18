@@ -38,6 +38,8 @@ import {requireIdentifier, requireSha} from "./map-memory-common.mjs";
 import {compileTaskContextItem} from "./task-context-firewall.mjs";
 
 export const PROJECT_MEMORY_RUNTIME_SCHEMA = "agentos.project_memory_runtime.v1";
+export const PROJECT_MEMORY_ACTIVATION_RECEIPT_SCHEMA = "agentos.project_memory_activation_receipt.v1";
+export const PROJECT_MEMORY_CURRENT_READBACK_SCHEMA = "agentos.project_memory_current_readback.v1";
 
 const DEFAULT_ALLOWED_SCOPES = Object.freeze([
   "PROJECT_CONTEXT",
@@ -57,6 +59,14 @@ const BINDING_FIELDS = Object.freeze([
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function requireUtc(value, label) {
+  assert(typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u.test(value) && Number.isFinite(Date.parse(value)), `${label} must be UTC`);
+}
+
+function digestWithout(value, field) {
+  return canonicalDigest({...structuredClone(value), [field]: null});
 }
 
 function semanticPayloads(projectContract) {
@@ -364,6 +374,72 @@ export function assertProjectMemoryRuntimeReady(runtimeState) {
   requireSha(runtimeState.ledger_head_sha256, "project-memory runtime ledger head");
   assert(runtimeState.semantic_context.length > 0, "project-memory runtime has no hydrated semantic context");
   return runtimeState;
+}
+
+export function compileProjectMemoryActivationReceipt({memoryState, activatedAtUtc} = {}) {
+  assertProjectMemoryRuntimeReady(memoryState);
+  requireUtc(activatedAtUtc, "project-memory activation time");
+  const receipt = {
+    schema: PROJECT_MEMORY_ACTIVATION_RECEIPT_SCHEMA,
+    version: 1,
+    status: "HISTORICAL_IMMUTABLE",
+    project_ref: memoryState.replay.binding.project_ref,
+    activation_event_count: memoryState.event_count,
+    activation_ledger_head_sha256: memoryState.ledger_head_sha256,
+    activation_snapshot_sha256: memoryState.snapshot.snapshot_sha256,
+    activated_at_utc: activatedAtUtc,
+    receipt_sha256: null,
+  };
+  receipt.receipt_sha256 = digestWithout(receipt, "receipt_sha256");
+  return validateProjectMemoryActivationReceipt(receipt);
+}
+
+export function validateProjectMemoryActivationReceipt(receipt) {
+  assert(receipt?.schema === PROJECT_MEMORY_ACTIVATION_RECEIPT_SCHEMA && receipt.version === 1 && receipt.status === "HISTORICAL_IMMUTABLE", "project-memory activation receipt identity is invalid");
+  requireIdentifier(receipt.project_ref, "project-memory activation project");
+  assert(Number.isSafeInteger(receipt.activation_event_count) && receipt.activation_event_count >= 0, "project-memory activation event count is invalid");
+  requireSha(receipt.activation_ledger_head_sha256, "project-memory activation ledger head");
+  requireSha(receipt.activation_snapshot_sha256, "project-memory activation snapshot");
+  requireUtc(receipt.activated_at_utc, "project-memory activation time");
+  requireSha(receipt.receipt_sha256, "project-memory activation receipt digest");
+  assert(receipt.receipt_sha256 === digestWithout(receipt, "receipt_sha256"), "project-memory activation receipt digest mismatch");
+  return receipt;
+}
+
+export function compileProjectMemoryCurrentReadback({activationReceipt, memoryState, observedAtUtc} = {}) {
+  validateProjectMemoryActivationReceipt(activationReceipt);
+  assertProjectMemoryRuntimeReady(memoryState);
+  assert(memoryState.replay.binding.project_ref === activationReceipt.project_ref, "project-memory current readback crosses projects");
+  requireUtc(observedAtUtc, "project-memory current readback time");
+  const readback = {
+    schema: PROJECT_MEMORY_CURRENT_READBACK_SCHEMA,
+    version: 1,
+    status: "CURRENT",
+    project_ref: activationReceipt.project_ref,
+    historical_activation_receipt_sha256: activationReceipt.receipt_sha256,
+    live_event_count: memoryState.event_count,
+    live_ledger_head_sha256: memoryState.ledger_head_sha256,
+    current_snapshot_sha256: memoryState.snapshot.snapshot_sha256,
+    observed_at_utc: observedAtUtc,
+    readback_sha256: null,
+  };
+  readback.readback_sha256 = digestWithout(readback, "readback_sha256");
+  return validateProjectMemoryCurrentReadback(readback, {activationReceipt, memoryState});
+}
+
+export function validateProjectMemoryCurrentReadback(readback, {activationReceipt, memoryState} = {}) {
+  validateProjectMemoryActivationReceipt(activationReceipt);
+  assertProjectMemoryRuntimeReady(memoryState);
+  assert(readback?.schema === PROJECT_MEMORY_CURRENT_READBACK_SCHEMA && readback.version === 1 && readback.status === "CURRENT", "project-memory current readback identity is invalid");
+  assert(readback.project_ref === activationReceipt.project_ref && readback.project_ref === memoryState.replay.binding.project_ref, "project-memory current readback crosses projects");
+  assert(readback.historical_activation_receipt_sha256 === activationReceipt.receipt_sha256, "project-memory current readback changed its historical activation receipt");
+  assert(readback.live_event_count === memoryState.event_count, "project-memory current readback event count is stale");
+  assert(readback.live_ledger_head_sha256 === memoryState.ledger_head_sha256, "project-memory current readback ledger head is stale");
+  assert(readback.current_snapshot_sha256 === memoryState.snapshot.snapshot_sha256, "project-memory current readback snapshot is stale");
+  requireUtc(readback.observed_at_utc, "project-memory current readback time");
+  requireSha(readback.readback_sha256, "project-memory current readback digest");
+  assert(readback.readback_sha256 === digestWithout(readback, "readback_sha256"), "project-memory current readback digest mismatch");
+  return readback;
 }
 
 export function initializeBootstrapProjectMemory({projectContract, observedAtUtc, ...runtimeOptions} = {}) {

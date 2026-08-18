@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.workflow-router.v1",
   "block_id": "specialist.domain.workflow-router",
   "candidate_digest": "d7ecb00de4a5baf1b4fcfd46968e43bae82567dfd630baf02af45620e1f00d79",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-p5-domain-ai-3d-reg-finance-harness.v1",
   "cases": [
     {

@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.provider-edge-router.v1",
   "block_id": "specialist.platform.provider-edge-router",
   "candidate_digest": "e4b8b7db4f57a25a82ecb75124bb6d194053059be3fada0840b30e38da205925",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [
     {

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   advanceAgentSpawnerLifecycle,
+  admitAgentSpawnerIndependentClearance,
   admitAgentSpawnerIsolatedLocalCustody,
   compileAgentSpawnerLifecycle,
   runAgentSpawnerCompilerTick,
@@ -46,7 +47,7 @@ const localContinuation = runAgentSpawnerCompilerTick(compileReady, {
     });
     lifecycleAfter.qa.incomplete_block_count = 0;
     lifecycleAfter.qa.status = "STATIC_PASS_REVIEW_REQUIRED";
-    lifecycleAfter.next_action = "ADMIT_GOVERNED_SPAWN";
+    lifecycleAfter.next_action = "WAIT_FOR_INDEPENDENT_CLEARANCE";
     lifecycleAfter.lifecycle_sha256 = canonicalDigest({...lifecycleAfter, lifecycle_sha256: null});
     return {
       outcome: "BLOCK_COMPILED",
@@ -59,8 +60,8 @@ const localContinuation = runAgentSpawnerCompilerTick(compileReady, {
 validateAgentSpawnerCompilerContinuation(localContinuation);
 assert.equal(localContinuation.outcome, "BLOCK_COMPILED");
 assert.notEqual(localContinuation.lifecycle_before_sha256, localContinuation.lifecycle_after_sha256);
-assert.equal(localContinuation.next_action, "ADMIT_GOVERNED_SPAWN");
-assert.equal(localContinuation.continuation.resume_condition, "Hand off to governed admission; adapter/readback still required.");
+assert.equal(localContinuation.next_action, "WAIT_FOR_PROTECTED_EVENT");
+assert.equal(localContinuation.continuation.protected_event_id, "INDEPENDENT.UTILITY_HARM_CLEARANCE");
 assert.equal(localContinuation.continuation.same_turn_next_action, true);
 assert.equal(localContinuation.continuation.timer_deferral, false);
 assert.equal(localContinuation.admission.spawnable, false);
@@ -71,12 +72,10 @@ const protectedReady = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: pending,
 });
-assert.equal(protectedReady.next_action, "ADMIT_GOVERNED_SPAWN", "compiler-only QA must not wait for external clearance");
-assert.throws(
-  () => runAgentSpawnerCompilerTick(protectedReady, {protectedEventId: "INDEPENDENT.UTILITY_HARM_CLEARANCE"}),
-  /governed admission adapter.*readback/u,
-  "compiler-only QA must hand off rather than create a protected wait",
-);
+assert.equal(protectedReady.next_action, "WAIT_FOR_INDEPENDENT_CLEARANCE");
+const protectedContinuation = runAgentSpawnerCompilerTick(protectedReady, {protectedEventId: "INDEPENDENT.UTILITY_HARM_CLEARANCE"});
+assert.equal(protectedContinuation.outcome, "PROTECTED_EVENT_WAIT");
+assert.equal(protectedContinuation.next_action, "WAIT_FOR_PROTECTED_EVENT");
 
 const publishReady = compileAgentSpawnerLifecycle({
   ...base,
@@ -124,13 +123,14 @@ assert.equal(validPublish.continuation.resume_condition, "Hand off to governed a
 assert.equal(validPublish.admission.spawnable, false);
 assert.throws(() => runAgentSpawnerCompilerTick(validPublishAfter), /governed admission adapter.*readback/u, "compiler must not perform governed admission");
 
-const isolatedAdmission = admitAgentSpawnerIsolatedLocalCustody(validPublishAfter);
-assert.equal(isolatedAdmission.mode, "GOVERNED_SPAWN");
-assert.equal(isolatedAdmission.state, "SPAWN_ADMITTED");
-assert.equal(isolatedAdmission.authority.isolated_local_custody, true);
-assert.equal(isolatedAdmission.authority.spawn_authority, true);
-assert.equal(isolatedAdmission.wave_activation, "OFF");
-assert.equal(isolatedAdmission.qa.independent_clearance_status, "CLEARED");
+const independentAdmission = admitAgentSpawnerIndependentClearance(validPublishAfter);
+assert.equal(independentAdmission.mode, "GOVERNED_SPAWN");
+assert.equal(independentAdmission.state, "SPAWN_ADMITTED");
+assert.equal(independentAdmission.authority.isolated_local_custody, false);
+assert.equal(independentAdmission.authority.spawn_authority, true);
+assert.equal(independentAdmission.wave_activation, "OFF");
+assert.equal(independentAdmission.qa.independent_clearance_status, "CLEARED");
+assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(validPublishAfter), /independent clearance is required/u);
 
 const pendingLocalCompiler = compileAgentSpawnerLifecycle({
   ...base,
@@ -138,9 +138,8 @@ const pendingLocalCompiler = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: pending,
 });
-const pendingLocalAdmission = admitAgentSpawnerIsolatedLocalCustody(pendingLocalCompiler);
-assert.equal(pendingLocalAdmission.state, "SPAWN_ADMITTED");
-assert.equal(pendingLocalAdmission.authority.isolated_local_custody, true);
+assert.throws(() => admitAgentSpawnerIndependentClearance(pendingLocalCompiler), /independently cleared admission successor|independent QA clearance/u);
+assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(pendingLocalCompiler), /independent clearance is required/u);
 
 const incompleteLocalCompiler = compileAgentSpawnerLifecycle({
   ...base,
@@ -148,7 +147,7 @@ const incompleteLocalCompiler = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: {...pending, incomplete_block_count: 1, status: "NOT_READY"},
 });
-assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(incompleteLocalCompiler), /governed-admission successor|complete blocks/u, "isolated admission must not bypass an incomplete roster route");
+assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(incompleteLocalCompiler), /independent clearance is required/u, "isolated admission must not bypass an incomplete roster route");
 
 assert.throws(
   () => runAgentSpawnerCompilerTick(compileReady, {onCompileBlock: () => ({
@@ -171,4 +170,4 @@ admitted.authority.admission = true;
 admitted.continuation_sha256 = canonicalDigest({...admitted, continuation_sha256: null});
 assert.throws(() => validateAgentSpawnerCompilerContinuation(admitted), /crossed protected boundary/u);
 
-console.log("PASS Agent Spawner compiler continuation: typed local progress, protected event wait, lifecycle delta, no timer deferral, and hostile boundary checks");
+console.log("PASS Agent Spawner compiler continuation: typed local progress, independent-clearance wait, lifecycle delta, no timer deferral, and isolated-bypass denial");

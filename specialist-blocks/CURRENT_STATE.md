@@ -23,7 +23,7 @@ Activation: `OFF`
 
 Admission: `NOT_ADMITTED`
 
-Model/reasoning requirement: `gpt-5.6-luna / max`
+Model/reasoning requirement: `GLOBAL_MODEL_POLICY_SNAPSHOT / TASK_CLASS_ROUTE`
 
 Controller boundary: this isolated AgentOS candidate worktree only. The source
 publication, the active 3.0 integration worktree, the Agent Builder checkpoint,

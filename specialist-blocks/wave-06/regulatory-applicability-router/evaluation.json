@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.regulatory-applicability-router.v1",
   "block_id": "specialist.regulatory.applicability-router",
   "candidate_digest": "6fa79f0afe0c30e57d4f44d506a9f4ca16169ff1888a60a5793bb960c64b5ad4",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-p5-domain-ai-3d-reg-finance-harness.v1",
   "cases": [
     {

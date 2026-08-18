@@ -362,8 +362,8 @@ const isolatedSpawner = compileAgentSpawnerLifecycle({
   candidateSha256: hash("candidate"),
   rosterProjectionSha256: heldRoster.projection_sha256,
   contextSha256: context.context_sha256,
-  isolatedLocalCustody: true,
-  qa: {status: "STATIC_PASS_REVIEW_REQUIRED", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY", independent_clearance_receipt_sha256: null},
+  isolatedLocalCustody: false,
+  qa: {status: "INDEPENDENT_PASS", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "CLEARED", independent_clearance_receipt_sha256: hash("independent-clearance")},
 });
 const blockedCentralRun = advanceControllerImportRunState({
   state: compileControllerImportRunState({plan}),
@@ -377,6 +377,7 @@ const localCentralOrchestrator = compileImportOrchestrator({
   rosterProjection: heldRoster,
   runState: blockedCentralRun,
   spawnerLifecycle: isolatedSpawner,
+  clearanceApplicability: isolatedApplicability,
   defectQueue: emptyDefectQueue,
 });
 assert.equal(localCentralOrchestrator.state, "ACTIVE");
@@ -386,7 +387,7 @@ const resumedCentralRun = resumeBoundedLocalIntegration({
   runState: blockedCentralRun,
   plan,
   spawnerLifecycle: isolatedSpawner,
-  clearanceApplicability: heldApplicability,
+  clearanceApplicability: isolatedApplicability,
 });
 assert.equal(resumedCentralRun.status, "CENTRAL_INTEGRATION_PENDING");
 assert.equal(resumedCentralRun.next_action, "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS");
@@ -395,7 +396,7 @@ assert.throws(() => resumeBoundedLocalIntegration({
   runState: blockedCentralRun,
   plan,
   spawnerLifecycle: lifecycle,
-}), /isolated governed Spawner custody/u, "central integration must not resume without isolated custody");
+}), /independently cleared governed Spawner custody/u, "central integration must not resume without independent clearance");
 
 const persistenceRoot = fs.mkdtempSync(path.join(process.env.TMPDIR ?? "/tmp", "agentos-import-orchestrator-"));
 const persistencePath = "state/import-orchestrator.json";

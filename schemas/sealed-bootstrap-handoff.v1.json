@@ -64,7 +64,7 @@
     "model_policy": {
       "type": "object", "additionalProperties": false,
       "required": ["model", "reasoning_effort", "continuity"],
-      "properties": {"model": {"const": "gpt-5.6-luna"}, "reasoning_effort": {"const": "max"}, "continuity": {"const": "ECO_CONTINUOUS"}}
+      "properties": {"model": {"const": "GLOBAL_MODEL_POLICY_SNAPSHOT"}, "reasoning_effort": {"const": "TASK_CLASS_ROUTE"}, "continuity": {"const": "ECO_CONTINUOUS"}}
     },
     "source_boundaries": {"$ref": "#/$defs/sourceBoundaries"},
     "next_action": {"const": "ADMIT_TYPED_AGENT_SPAWNER"},

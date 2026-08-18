@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.typescript-5-9.v1",
   "block_id": "specialist.standard.typescript-5-9",
   "candidate_digest": "a4fee33b93f943b2af855c429ae2bb68668ad8bcea39f1a8903e6aa4375c533d",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-standard-harness.v1",
   "cases": [
     {

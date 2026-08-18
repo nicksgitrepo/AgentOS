@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.software-language-runtime-router.v1",
   "block_id": "specialist.software-language-runtime.router",
   "candidate_digest": "7bd4d8295523dd38fa34ab7ae360c4d3f366ab100b18be0818bded5ba4c7c133",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [
     {

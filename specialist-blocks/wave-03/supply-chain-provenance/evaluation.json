@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.supply-chain-provenance.v1",
   "block_id": "specialist.security.supply-chain-provenance",
   "candidate_digest": "a0ffc1dd9bce8b8b1f7e6b9d36ecdd98bf64808c1263e1cd981234fb644715f9",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

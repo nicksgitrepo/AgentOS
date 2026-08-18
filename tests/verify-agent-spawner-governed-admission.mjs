@@ -18,12 +18,12 @@ const common = {
   rosterProjectionSha256: SHA("b"),
   contextSha256: SHA("c"),
   qa: {
-    status: "STATIC_PASS_REVIEW_REQUIRED",
+    status: "INDEPENDENT_PASS",
     complete_block_count: 4,
     incomplete_block_count: 0,
     pending_route_count: 1,
-    independent_clearance_status: "PENDING_EXTERNAL_AUTHORITY",
-    independent_clearance_receipt_sha256: null,
+    independent_clearance_status: "CLEARED",
+    independent_clearance_receipt_sha256: SHA("9"),
   },
   execution: {compiler_ticks: 2, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false},
 };
@@ -57,6 +57,7 @@ assert.equal(readback.next_action, "START_GOVERNED_SPAWN");
 assert.equal(readback.same_turn_dispatch, true);
 assert.equal(readback.authority.activation, false);
 assert.equal(readback.admission.worker_spawned, false);
+assert.equal(readback.admission.isolated_local_custody, false);
 assert.throws(() => validateAgentSpawnerGovernedAdmission({...readback, next_action: "WAIT_FOR_PROTECTED_EVENT", readback_sha256: null}), /next action is invalid/u);
 const stale = structuredClone(readback);
 stale.source_continuation_sha256 = SHA("1");
@@ -66,4 +67,4 @@ const bypass = structuredClone(readback);
 bypass.admission.worker_spawned = true;
 bypass.readback_sha256 = canonicalDigest({...bypass, readback_sha256: null});
 assert.throws(() => validateAgentSpawnerGovernedAdmission(bypass), /cannot spawn a worker/u);
-console.log("PASS governed-admission adapter: complete compiler successor is consumed same-turn, isolated custody is explicit, and activation/protected bypasses fail closed");
+console.log("PASS governed-admission adapter: independently cleared compiler successor is consumed same-turn, isolated-custody bypass is rejected, and activation/protected bypasses fail closed");

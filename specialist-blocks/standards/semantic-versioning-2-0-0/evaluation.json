@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.semantic-versioning-2-0-0.v1",
   "block_id": "specialist.standard.semantic-versioning-2-0-0",
   "candidate_digest": "aa710de5ba5de251e1dbd629238f2b598e38628bbe3a60589f25c4ddaf96ca85",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-standard-harness.v1",
   "cases": [
     {

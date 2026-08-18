@@ -14,7 +14,7 @@ const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
 
 assert.equal(schema.$id, "https://agentos.dev/schemas/specialist-utility-harm-prescreen.v1.json");
 assert.equal(schema.properties.schema.const, actual.schema);
-assert.equal(schema.properties.model_requirement.const, "gpt-5.6-luna/max");
+assert.equal(schema.properties.model_requirement.const, "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE");
 assert.deepEqual(actual, receipt, "checked prescreen output must equal the committed receipt");
 assert.equal(actual.status, "PRESCREEN_PENDING_EXTERNAL_REVIEW");
 assert.equal(actual.packages_checked, 123);

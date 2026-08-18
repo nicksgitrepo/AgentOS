@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.function-scope.v1",
   "block_id": "specialist.security.function-scope",
   "candidate_digest": "48d011f88b7340358988a6e6c496d535e1d5cccbc7292d0d204c95b8384ea24d",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.owasp-web-2025-a09-security-logging-alerting-failures.v1",
   "block_id": "specialist.security.owasp-web-2025-a09-security-logging-alerting-failures",
   "candidate_digest": "0596b66087597af496868771440b9cff1dfcb4cff2e6d39a349bcfc23c58f6af",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

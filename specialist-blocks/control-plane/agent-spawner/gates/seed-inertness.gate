@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.SEED_INERTNESS",
+  "question": "Is the seed immutable, execution-denied, mutation-denied, network-denied, and bound to exact admission, context, roster, and model-policy digests?",
+  "pass": "ALLOW_CLONE_TO_WORKER_ONLY",
+  "fail": "DENY_SEED_AND_INVALIDATE_DEPENDENTS",
+  "unknown": "DENY_SEED_QA_INCONCLUSIVE",
+  "gate_sha256": "a0204753eefac1f79375851d21d213a9e27d9b600b942df7a21f5dea5f627086"
+}

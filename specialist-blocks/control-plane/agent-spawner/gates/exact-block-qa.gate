@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+  "question": "Does every applicable global, project, role, technology or standard, environment, and task block have fresh content-addressed conclusive passing evidence?",
+  "pass": "ALLOW_INERT_SEED_COMPILATION",
+  "fail": "DENY_WITH_FAILED_BLOCK_AND_EXACT_REPAIR_ROUTE",
+  "unknown": "DENY_QA_INCONCLUSIVE",
+  "gate_sha256": "59c530490f030d947cf6e7961ea8b6bae7f593d7ea81db35025c29820df3a75d"
+}

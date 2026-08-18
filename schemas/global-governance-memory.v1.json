@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.global_governance_memory.v1",
+  "title": "Project-agnostic global governance memory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_agnostic", "writers", "readers", "canonical_event", "current_readback", "project_memory_isolation"],
+  "properties": {
+    "schema": {"const": "agentos.global_governance_memory.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "project_agnostic": {"const": true},
+    "writers": {"const": ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"]},
+    "readers": {"const": ["CONTROLLER", "SPAWNER", "SCHEDULER", "RUNTIME", "ORCHESTRATOR", "PERMANENT_ROLE", "INERT_SEED", "WORKING_AGENT"]},
+    "canonical_event": {"const": "agentos.global_governance_memory_event.v1"},
+    "current_readback": {"const": "agentos.global_governance_memory_readback.v1"},
+    "project_memory_isolation": {"const": "NO_PROJECT_RECORD_OR_TRANSCRIPT_MAY_ENTER_GLOBAL_GOVERNANCE_MEMORY"}
+  }
+}

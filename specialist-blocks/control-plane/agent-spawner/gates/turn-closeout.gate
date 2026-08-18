@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.TURN_CONTINUATION",
+  "question": "Does the turn end with a started successor, delivered redistribution handoff, or genuine protected blocker with zero resources and an exact restart event?",
+  "pass": "CLOSE_TURN_WITH_TYPED_RECEIPT",
+  "fail": "REJECT_CLOSEOUT_AND_START_NEXT_ELIGIBLE_ACTION",
+  "unknown": "REJECT_CLOSEOUT",
+  "gate_sha256": "61b11aad1466127dd47a88be0a106bcb473afe921c8f6d081a72e4f58e95bfd8"
+}

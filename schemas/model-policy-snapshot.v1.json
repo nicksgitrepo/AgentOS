@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.model_policy_snapshot.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_agnostic", "visibility", "contains_consumer_context", "raw_browsing_transcripts", "observed_at_utc", "expires_at_utc", "evidence", "conflicts", "models", "task_classes", "snapshot_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.model_policy_snapshot.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_INACTIVE", "ACCEPTED_ACTIVE", "SUPERSEDED"]},
+    "project_agnostic": {"const": true},
+    "visibility": {"const": "PRIVATE_GLOBAL_GOVERNANCE"},
+    "contains_consumer_context": {"const": false},
+    "raw_browsing_transcripts": {"const": false},
+    "evidence": {"type": "array", "minItems": 3},
+    "conflicts": {"type": "array"},
+    "models": {"type": "array", "minItems": 1},
+    "task_classes": {"type": "array", "minItems": 8, "maxItems": 8},
+    "snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -10,16 +10,33 @@
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
     "identity": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "blockEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["block_id", "layer", "block_sha256", "status", "non_placeholder", "evaluation", "expires_at_utc", "contradictions", "gate_evidence", "evidence_sha256"],
+      "properties": {
+        "block_id": {"$ref": "#/$defs/id"},
+        "layer": {"enum": ["GLOBAL", "PROJECT", "ROLE", "TECHNOLOGY_OR_STANDARD", "ENVIRONMENT", "TASK"]},
+        "block_sha256": {"$ref": "#/$defs/sha256"},
+        "status": {"const": "COMPLETE_QA_PASS"},
+        "non_placeholder": {"const": true},
+        "evaluation": {"const": "PASS"},
+        "expires_at_utc": {"type": "string", "format": "date-time"},
+        "contradictions": {"const": []},
+        "gate_evidence": {"type": "array", "minItems": 1},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
     "blockSet": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema", "version", "block_set_id", "block_ids", "status", "non_placeholder", "hostile_fixture_ids", "independent_evaluation_sha256", "authority", "stop_conditions", "block_set_sha256"],
+      "required": ["schema", "version", "block_set_id", "required_layers", "block_evidence", "validated_at_utc", "status", "hostile_fixture_ids", "independent_evaluation_sha256", "authority", "stop_conditions", "block_set_sha256"],
       "properties": {
         "schema": {"const": "agentos.spawner_governing_block_set.v1"},
         "version": {"const": 1},
         "block_set_id": {"$ref": "#/$defs/id"},
-        "block_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "required_layers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["GLOBAL", "PROJECT", "ROLE", "TECHNOLOGY_OR_STANDARD", "ENVIRONMENT", "TASK"]}},
+        "block_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/blockEvidence"}},
+        "validated_at_utc": {"type": "string", "format": "date-time"},
         "status": {"const": "COMPLETE_QA_PASS"},
-        "non_placeholder": {"const": true},
         "hostile_fixture_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
         "independent_evaluation_sha256": {"$ref": "#/$defs/sha256"},
         "authority": {"const": "INDEPENDENT_ADMISSION_AUTHORITY"},

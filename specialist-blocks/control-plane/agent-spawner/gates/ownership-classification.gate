@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+  "question": "Is the defect inside portable Spawner governance authority and outside every genuine protected boundary?",
+  "pass": "START_AUTONOMOUS_REPAIR_WITHOUT_APPROVAL",
+  "fail": "DELIVER_REDISTRIBUTION_HANDOFF_TO_CONTROLLER_DISPATCH",
+  "unknown": "CREATE_MISSING_EVIDENCE_DEFECT_AND_REENTER",
+  "gate_sha256": "c0285e659a393d38b7b722a6c21684a907b65d5f2b51b064bada47e260fc3f60"
+}

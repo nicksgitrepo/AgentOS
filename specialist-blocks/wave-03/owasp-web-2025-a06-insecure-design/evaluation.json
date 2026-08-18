@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.owasp-web-2025-a06-insecure-design.v1",
   "block_id": "specialist.security.owasp-web-2025-a06-insecure-design",
   "candidate_digest": "645e36261f98e3cc7ae35f51d0c3b0c7fdbec1b4aa0f56bf8c4c894e4f55456a",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

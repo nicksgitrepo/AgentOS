@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_redistribution_handoff.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "classification_sha256", "affected_scope", "reason_outside_lane", "required_capabilities", "suggested_destination", "dependencies", "urgency", "custody_state", "rollback", "next_action", "controller_is_dispatcher_not_approver", "handoff_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_redistribution_handoff.v1"},
+    "version": {"const": 1},
+    "status": {"const": "DELIVERED_TO_CONTROLLER_DISPATCH"},
+    "controller_is_dispatcher_not_approver": {"const": true},
+    "handoff_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

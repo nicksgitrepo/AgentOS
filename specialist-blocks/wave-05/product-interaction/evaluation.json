@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.product-interaction.v1",
   "block_id": "specialist.product-client.product-interaction",
   "candidate_digest": "73a220145aaf3e49a1821b178033fbe0aabcb878f9546a0d9c4b2e0d170439a3",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-client-ux-p4-harness.v1",
   "cases": [
     {

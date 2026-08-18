@@ -29,10 +29,13 @@ import {
 import {
   assertProjectMemoryRuntimeReady,
   compileBootstrapProjectMemoryBinding,
+  compileProjectMemoryActivationReceipt,
+  compileProjectMemoryCurrentReadback,
   compileProjectMemoryTaskContext,
   createProjectMemoryRuntime,
   importProjectMemoryCapsuleAuthoritatively,
   initializeBootstrapProjectMemory,
+  validateProjectMemoryCurrentReadback,
 } from "../control/project-memory-runtime.mjs";
 import {canonicalDigest, canonicalJson} from "../control/content-addressing.mjs";
 
@@ -42,6 +45,7 @@ const operationalSchemas = Object.fromEntries([
   "project-memory-runtime.v1.json",
   "project-memory-task-context.v1.json",
   "project-memory-capsule-import-receipt.v1.json",
+  "project-memory-current-readback.v1.json",
 ].map((name) => [name, JSON.parse(fs.readFileSync(path.join(repositoryRoot, "schemas", name), "utf8"))]));
 
 function assertSchemaKeyParity(value, schemaName) {
@@ -108,6 +112,18 @@ try {
   assert(initialized.state.semantic_context.length >= 8, "Bootstrap semantics were not hydrated");
   assert.equal(initialized.state.snapshot_disposition, "REBUILT_FROM_LEDGER");
   assert.deepEqual(fs.readdirSync(projectRoot), [], "project-memory wrote into the project tree");
+  const historicalActivationReceipt = compileProjectMemoryActivationReceipt({
+    memoryState: initialized.state,
+    activatedAtUtc: "2026-08-11T00:00:15.000Z",
+  });
+  const initialCurrentReadback = compileProjectMemoryCurrentReadback({
+    activationReceipt: historicalActivationReceipt,
+    memoryState: initialized.state,
+    observedAtUtc: "2026-08-11T00:00:20.000Z",
+  });
+  assertSchemaKeyParity(initialCurrentReadback, "project-memory-current-readback.v1.json");
+  assert.equal(initialCurrentReadback.live_event_count, initialized.state.event_count);
+  assert.equal(initialCurrentReadback.live_ledger_head_sha256, initialized.state.ledger_head_sha256);
   const taskContext = compileProjectMemoryTaskContext({
     memoryState: initialized.state,
     taskRefSha256: canonicalDigest({task: "memory-consumer"}),
@@ -175,6 +191,20 @@ try {
   assert.equal(refreshed.snapshot_disposition, "REBUILT_FROM_LEDGER");
   assert.notEqual(refreshed.snapshot.snapshot_sha256, restartState.snapshot.snapshot_sha256, "stale snapshot was returned as current");
   assert(refreshed.semantic_context.some((entry) => entry.artifact.payload_sha256 === handoffArtifact.payload_sha256));
+  assert.throws(
+    () => validateProjectMemoryCurrentReadback(initialCurrentReadback, {activationReceipt: historicalActivationReceipt, memoryState: refreshed}),
+    /stale/u,
+    "historical activation receipt must remain immutable while its old live readback becomes stale",
+  );
+  const refreshedReadback = compileProjectMemoryCurrentReadback({
+    activationReceipt: historicalActivationReceipt,
+    memoryState: refreshed,
+    observedAtUtc: "2026-08-11T00:02:10.000Z",
+  });
+  assert.equal(refreshedReadback.historical_activation_receipt_sha256, historicalActivationReceipt.receipt_sha256);
+  assert.equal(refreshedReadback.live_event_count, refreshed.event_count);
+  assert.equal(refreshedReadback.live_ledger_head_sha256, refreshed.ledger_head_sha256);
+  assert.equal(refreshedReadback.current_snapshot_sha256, refreshed.snapshot.snapshot_sha256);
 
   const portable = compileProjectMemoryCapsule({
     binding,

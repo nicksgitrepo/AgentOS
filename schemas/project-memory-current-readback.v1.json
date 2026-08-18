@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_memory_current_readback.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_ref", "historical_activation_receipt_sha256", "live_event_count", "live_ledger_head_sha256", "current_snapshot_sha256", "observed_at_utc", "readback_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.project_memory_current_readback.v1"},
+    "version": {"const": 1},
+    "status": {"const": "CURRENT"},
+    "project_ref": {"type": "string", "minLength": 1},
+    "historical_activation_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "live_event_count": {"type": "integer", "minimum": 0},
+    "live_ledger_head_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "current_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "readback_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

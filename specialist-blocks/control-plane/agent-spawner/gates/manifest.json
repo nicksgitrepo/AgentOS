@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.spawner_gate_manifest.v1",
+  "version": 1,
+  "block_id": "AGENTOS.SPECIALIST.AGENT_SPAWNER",
+  "ordered_gate_paths": [
+    "gates/ownership-classification.gate",
+    "gates/controller-authority.gate",
+    "gates/exact-block-qa.gate",
+    "gates/seed-inertness.gate",
+    "gates/model-policy.gate",
+    "gates/memory-readback.gate",
+    "gates/turn-closeout.gate",
+    "gates/git-integration.gate"
+  ],
+  "manifest_sha256": "ba5c362eabd0d6ef7bd0bbc995b3eb349cd1e573f9e818f8e55f79fd5ba2804b"
+}

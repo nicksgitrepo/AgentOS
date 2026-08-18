@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.idempotency.v1",
   "block_id": "specialist.security.idempotency",
   "candidate_digest": "1853c0f1cea9e03d21a1b5150e16aead9a60212edf801c8bcc33ff7d03dbcdcc",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

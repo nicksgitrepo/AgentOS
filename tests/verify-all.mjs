@@ -23,6 +23,10 @@ const PORTABLE_FORBIDDEN = [
   new RegExp(["CHAT", "GPT", "_SITES"].join(""), "u"),
   new RegExp(`${["A", "WS"].join("")}\\s+(?:account|region|resource)`, "iu"),
 ];
+const PROJECT_AGNOSTIC_PROVIDER_EVIDENCE_ALLOWED = [
+  new RegExp(["Open", "AI"].join(""), "iu"),
+  new RegExp(["Code", "x"].join(""), "iu"),
+];
 const STALE_NORMATIVE_TERMS = [
   ["PENDING", "_ADMISSION"].join(""),
   ["PLATFORM_AGENT", "_WAVE"].join(""),
@@ -133,11 +137,16 @@ for (const file of scriptFiles) {
   assert.equal(check.status, 0, `script syntax failed: ${path.relative(root, file)}\n${check.stderr}`);
 }
 
-const normativeFiles = Object.values(binding.normative).map((entry) => path.join(root, entry.path));
-for (const file of normativeFiles) {
+const normativeFiles = Object.values(binding.normative);
+for (const entry of normativeFiles) {
+  const file = path.join(root, entry.path);
   const relative = path.relative(root, file);
   const text = fs.readFileSync(file, "utf8");
-  for (const pattern of PORTABLE_FORBIDDEN) assert(!pattern.test(text), `portable authority contains product-specific context: ${relative}`);
+  for (const pattern of PORTABLE_FORBIDDEN) {
+    const providerEvidenceException = entry.classification === "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+      && PROJECT_AGNOSTIC_PROVIDER_EVIDENCE_ALLOWED.some((allowed) => allowed.source === pattern.source);
+    if (!providerEvidenceException) assert(!pattern.test(text), `portable authority contains product-specific context: ${relative}`);
+  }
   if (!relative.startsWith("tests/")) {
     for (const term of STALE_NORMATIVE_TERMS) assert(!text.includes(term), `normative authority contains stale lifecycle term ${term}: ${relative}`);
   }

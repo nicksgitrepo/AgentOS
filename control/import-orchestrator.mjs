@@ -242,9 +242,9 @@ function deriveClearanceApplicability({runState, spawnerLifecycle, clearanceAppl
 
 /*
  * Convert the exact central-integration hold into the next local run-state
- * successor when the current Spawner and applicability readback prove that
- * this is only an isolated candidate write.  This is the Controller's
- * bounded-resume adapter: it never opens Product/provider/credential/spend,
+ * successor when the independently cleared Spawner and applicability readback
+ * prove that this is only an isolated candidate write. This bounded-resume
+ * adapter never opens Product/provider/credential/spend,
  * destructive, deployment, publication, merge, or release authority.
  */
 export function resumeBoundedLocalIntegration({runState, plan, spawnerLifecycle, clearanceApplicability = null} = {}) {
@@ -252,7 +252,11 @@ export function resumeBoundedLocalIntegration({runState, plan, spawnerLifecycle,
   validateAgentSpawnerLifecycle(spawnerLifecycle);
   assert(runState.status === "BLOCKED_PROTECTED" && runState.protected_boundary_id === BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID, "Bounded local integration resume requires the exact central-integration hold");
   assert(runState.open_finding_ids.length === 0, "Bounded local integration cannot hide open findings");
-  assert(spawnerLifecycle.mode === "GOVERNED_SPAWN" && spawnerLifecycle.authority.isolated_local_custody === true, "Bounded local integration requires isolated governed Spawner custody");
+  assert(spawnerLifecycle.mode === "GOVERNED_SPAWN"
+    && spawnerLifecycle.qa.status === "INDEPENDENT_PASS"
+    && spawnerLifecycle.qa.independent_clearance_status === "CLEARED"
+    && spawnerLifecycle.authority.isolated_local_custody === false,
+  "Bounded local integration requires independently cleared governed Spawner custody");
   const applicability = deriveClearanceApplicability({runState, spawnerLifecycle, clearanceApplicability});
   assert(applicability.decision === "NOT_APPLICABLE_LOCAL_AUDIT_REPAIR", "Bounded local integration is not safe under the current applicability facts");
   return advanceControllerImportRunState({

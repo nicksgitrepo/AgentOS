@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.fmcsa-part-390-2025.v1",
   "block_id": "specialist.standard.fmcsa-part-390-2025",
   "candidate_digest": "f56608f1f853c2ca32178cba501f1077124c3b1e68e764c34ce52ebbff37e029",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-standard-harness.v1",
   "cases": [
     {

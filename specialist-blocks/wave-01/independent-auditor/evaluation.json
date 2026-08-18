@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.independent-auditor.v1",
   "block_id": "specialist.control.independent-auditor",
   "candidate_digest": "b02d5aecfac19a63f4d6307b2893473a3e859defe761a75287c1ce7c3fb9570d",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
   "cases": [
     {

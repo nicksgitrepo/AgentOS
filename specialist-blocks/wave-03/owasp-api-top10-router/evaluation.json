@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.owasp-api-top10-router.v1",
   "block_id": "specialist.security.owasp-api-top10-router",
   "candidate_digest": "b0298acf1d545ac342bba74238c44717d8079daa28df98f2038daf58d2e9854e",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
     {

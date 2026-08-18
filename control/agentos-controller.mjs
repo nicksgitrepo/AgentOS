@@ -25,6 +25,7 @@ import {
   validateGovernanceArchitecture,
 } from "./role-governance-library.mjs";
 import {ARCHITECTURE_ACCEPTANCE_REQUIREMENTS} from "./governance-library.mjs";
+import {assertControllerOperationAuthorized} from "./spawner-bootstrap-governance.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -38,6 +39,9 @@ const ADAPTER_READBACK_SCHEMA = "agentos.controller_adapter_readback.v1";
 const ARCHITECTURE_REPAIR_GATE_SCHEMA = "agentos.controller_architecture_repair_gate.v1";
 const EVENT_TYPES = Object.freeze([
   "BOOTSTRAP_REQUESTED",
+  "SPAWNER_START_REQUESTED",
+  "SPAWNER_WAKE_REQUESTED",
+  "REDISTRIBUTION_RECEIVED",
   "BOOTSTRAP_PROMOTED",
   "USER_REVIEW_RETURNED",
   "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
@@ -53,6 +57,12 @@ const EVENT_TYPES = Object.freeze([
 ]);
 const OPERATION_NAMES = Object.freeze([
   "runBootstrap",
+  "validateControllerGovernance",
+  "validateSpawnerHandoff",
+  "startAgentSpawner",
+  "wakeAgentSpawner",
+  "observeAgentSpawner",
+  "dispatchRedistribution",
   "bindPersistentRuntime",
   "reconcileUserReview",
   "admitLocalSelfDevelopment",
@@ -603,6 +613,7 @@ export function compileControllerEvent({eventId, eventType, sourceRole, controll
 }
 
 function requireReadback({adapters, operation, state, event, payload = {}}) {
+  assertControllerOperationAuthorized(operation);
   assert(isRecord(adapters) && typeof adapters[operation] === "function", `required project adapter is unavailable: ${operation}`);
   const actionId = `${event.event_id}:${operation.toUpperCase()}`;
   const readback = adapters[operation]({
@@ -808,6 +819,42 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
   };
 
   switch (event.event_type) {
+    case "SPAWNER_START_REQUESTED": {
+      assert(state.active_campaign === null, "Controller cannot start Spawner while a legacy campaign is active");
+      assert(!state.action_receipts.some((record) => record.operation === "startAgentSpawner"), "Controller may start exactly one Agent Spawner");
+      requireIdentifier(payload.spawner_id, "Agent Spawner identity");
+      requireSha(payload.bootstrap_package_sha256, "Agent Spawner bootstrap package");
+      const governance = add("validateControllerGovernance", payload);
+      requireDetails(governance, ["status"], "Controller governance validation");
+      assert(governance.details.status === "PASS", "Controller governance validation did not pass");
+      const handoff = add("validateSpawnerHandoff", payload);
+      requireDetails(handoff, ["status", "spawner_id"], "Spawner handoff validation");
+      assert(handoff.details.status === "PASS" && handoff.details.spawner_id === payload.spawner_id, "Spawner handoff validation differs");
+      const started = add("startAgentSpawner", payload);
+      requireDetails(started, ["spawner_id", "bootstrap_package_sha256", "started_count"], "Spawner start");
+      assert(started.details.spawner_id === payload.spawner_id && started.details.bootstrap_package_sha256 === payload.bootstrap_package_sha256 && started.details.started_count === 1, "Controller did not start exactly one bound Spawner");
+      next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
+      break;
+    }
+    case "SPAWNER_WAKE_REQUESTED": {
+      const starts = state.action_receipts.filter((record) => record.operation === "startAgentSpawner");
+      assert(starts.length === 1, "Controller cannot wake an absent or duplicate Spawner");
+      requireIdentifier(payload.spawner_id, "Agent Spawner identity");
+      const wake = add("wakeAgentSpawner", payload);
+      requireDetails(wake, ["spawner_id", "status"], "Spawner wake");
+      assert(wake.details.spawner_id === payload.spawner_id && wake.details.status === "WOKEN", "Spawner wake readback differs");
+      next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
+      break;
+    }
+    case "REDISTRIBUTION_RECEIVED": {
+      requireSha(payload.redistribution_handoff_sha256, "Redistribution handoff");
+      const dispatched = add("dispatchRedistribution", payload);
+      requireDetails(dispatched, ["status", "approval_required", "destination"], "Redistribution dispatch");
+      assert(dispatched.details.status === "DISPATCHED" && dispatched.details.approval_required === false, "Controller treated redistribution as approval");
+      requireString(dispatched.details.destination, "Redistribution destination");
+      next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
+      break;
+    }
     case "BOOTSTRAP_REQUESTED": {
       assert(state.active_campaign === null, "Bootstrap cannot start while a campaign is active");
       add("runBootstrap");

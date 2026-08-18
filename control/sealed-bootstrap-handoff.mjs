@@ -106,8 +106,8 @@ function validateSourceBoundaries(boundaries) {
 
 function validateModelPolicy(policy) {
   exactKeys(policy, MODEL_POLICY_KEYS, "sealed Bootstrap model policy");
-  assert(policy.model === "gpt-5.6-luna", "sealed Bootstrap model policy is invalid");
-  assert(policy.reasoning_effort === "max", "sealed Bootstrap reasoning policy is invalid");
+  assert(policy.model === "GLOBAL_MODEL_POLICY_SNAPSHOT", "sealed Bootstrap model policy is invalid");
+  assert(policy.reasoning_effort === "TASK_CLASS_ROUTE", "sealed Bootstrap reasoning policy is invalid");
   assert(policy.continuity === "ECO_CONTINUOUS", "sealed Bootstrap continuity policy is invalid");
   return policy;
 }
@@ -165,7 +165,7 @@ export function compileSealedBootstrapHandoff({
   memoryPlanSha256,
   quarantineGateStateSha256,
   productZeroTraceReceiptSha256,
-  modelPolicy = {model: "gpt-5.6-luna", reasoning_effort: "max", continuity: "ECO_CONTINUOUS"},
+  modelPolicy = {model: "GLOBAL_MODEL_POLICY_SNAPSHOT", reasoning_effort: "TASK_CLASS_ROUTE", continuity: "ECO_CONTINUOUS"},
   sourceBoundaries = SEALED_BOOTSTRAP_SOURCE_BOUNDARIES,
 } = {}) {
   const handoff = {

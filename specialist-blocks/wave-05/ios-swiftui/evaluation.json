@@ -4,7 +4,7 @@
   "receipt_id": "specialist-eval.ios-swiftui.v1",
   "block_id": "specialist.product-client.ios-swiftui",
   "candidate_digest": "1b1f3da311173ab52148a061c9c21411c9cad5246726388b358115f84a638770",
-  "model_requirement": "gpt-5.6-luna/max",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-client-ux-p4-harness.v1",
   "cases": [
     {

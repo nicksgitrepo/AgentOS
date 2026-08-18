@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.inert_seed_lifecycle.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "seed_id", "state", "immutable", "work_authority", "execution_authority", "network_authority", "mutation_authority", "admission_sha256", "context_sha256", "roster_sha256", "model_policy_snapshot_sha256", "predecessor_seed_sha256", "created_at_utc", "invalidated_at_utc", "invalidation_reason", "allowed_transitions", "seed_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.inert_seed_lifecycle.v1"},
+    "version": {"const": 1},
+    "state": {"enum": ["VERIFIED_INERT", "INVALIDATED", "ARCHIVED", "SUPERSEDED"]},
+    "immutable": {"const": true},
+    "work_authority": {"const": false},
+    "execution_authority": {"const": false},
+    "network_authority": {"const": false},
+    "mutation_authority": {"const": false},
+    "allowed_transitions": {"const": ["CLONE_TO_WORKER", "INVALIDATE", "ARCHIVE", "SUPERSEDE"]},
+    "seed_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
