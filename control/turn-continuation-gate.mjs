@@ -24,6 +24,7 @@ export const TURN_CONTINUATION_HOSTILE_FIXTURE_REFS = Object.freeze([
   "FIXTURE.TURN_CONTINUATION.FALSE_PROTECTED_WAIT",
   "FIXTURE.TURN_CONTINUATION.TIMER_ONLY",
   "FIXTURE.TURN_CONTINUATION.AUTHORITY_DRIFT",
+  "FIXTURE.TURN_CONTINUATION.MISSING_SUCCESSOR_DISPATCH_READBACK",
 ]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -42,7 +43,7 @@ const AUTHORITY_KEYS = Object.freeze(["commit", "tree", "receipt_ref", "receipt_
 const TURN_KEYS = Object.freeze(["turn_id", "role", "started_at_utc", "observed_at_utc", "elapsed_seconds", "max_seconds", "overlong"]);
 const OBSERVED_ROUTE_KEYS = Object.freeze(["current_action", "current_handler", "handler_invoked", "readback_sha256"]);
 const DEFECT_KEYS = Object.freeze(["defect_code", "reason_code", "evidence_ceiling", "protected_event_id", "restart_event"]);
-const SUCCESSOR_KEYS = Object.freeze(["next_action", "next_handler", "same_turn_dispatch", "controller_approval_required", "started_same_turn", "continuation_sha256"]);
+const SUCCESSOR_KEYS = Object.freeze(["next_action", "next_handler", "same_turn_dispatch", "controller_approval_required", "started_same_turn", "dispatch_ref", "dispatch_readback_sha256", "continuation_sha256"]);
 const CUSTODY_KEYS = Object.freeze(["control_plane_only", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work", "deployment", "publication", "merge", "resources", "timers", "polling"]);
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
@@ -122,6 +123,8 @@ function validateSuccessor(successor) {
   assert(successor.same_turn_dispatch === true, "turn continuation successor must dispatch in the same turn");
   assert(successor.controller_approval_required === false, "turn continuation successor may not require Controller approval");
   assert(successor.started_same_turn === true, "turn continuation successor was not started in the same turn");
+  requireReference(successor.dispatch_ref, "turn continuation successor dispatch reference");
+  requireSha(successor.dispatch_readback_sha256, "turn continuation successor dispatch readback");
   requireSha(successor.continuation_sha256, "turn continuation continuation digest");
 }
 
@@ -168,17 +171,21 @@ export function validateTurnContinuationGate(gate) {
   return gate;
 }
 
-export function compileTurnContinuationRepair({gateId, authority, turn, observedRoute, defectCode = "DEFECT.WORKFLOW.OVERLONG_TURN", evidenceCeiling, hostileFixtureRefs = TURN_CONTINUATION_HOSTILE_FIXTURE_REFS} = {}) {
+export function compileTurnContinuationRepair({gateId, authority, turn, observedRoute, successorDispatchRef, successorDispatchReadbackSha256, defectCode = "DEFECT.WORKFLOW.OVERLONG_TURN", evidenceCeiling, hostileFixtureRefs = TURN_CONTINUATION_HOSTILE_FIXTURE_REFS} = {}) {
   validateAuthority(authority);
   validateTurn(turn);
   validateObservedRoute(observedRoute);
   assert(turn.overlong === true, "turn continuation repair requires an overlong turn");
+  requireReference(successorDispatchRef, "turn continuation successor dispatch reference");
+  requireSha(successorDispatchReadbackSha256, "turn continuation successor dispatch readback");
   const successor = {
     next_action: TURN_CONTINUATION_REPAIR_ACTION,
     next_handler: TURN_CONTINUATION_REPAIR_HANDLER,
     same_turn_dispatch: true,
     controller_approval_required: false,
     started_same_turn: true,
+    dispatch_ref: successorDispatchRef,
+    dispatch_readback_sha256: successorDispatchReadbackSha256,
     continuation_sha256: null,
   };
   successor.continuation_sha256 = digestWithout(successor, "continuation_sha256");

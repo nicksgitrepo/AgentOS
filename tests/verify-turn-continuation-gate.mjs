@@ -37,6 +37,8 @@ const repaired = compileTurnContinuationRepair({
   authority,
   turn,
   observedRoute,
+  successorDispatchRef: "ref:controller/turn-continuation/dispatch/CURRENT",
+  successorDispatchReadbackSha256: "d".repeat(64),
   evidenceCeiling: "No handler invocation or readback was observed; only control-plane liveness evidence is available.",
 });
 assert.equal(repaired.schema, TURN_CONTINUATION_GATE_SCHEMA);
@@ -71,5 +73,18 @@ falseProtectedWait.successor.continuation_sha256 = canonicalDigest({...falseProt
 falseProtectedWait.gate_sha256 = canonicalDigest({...falseProtectedWait, gate_sha256: null});
 assert.throws(() => validateTurnContinuationGate(falseProtectedWait), /protected event/u);
 
-assert.equal(TURN_CONTINUATION_HOSTILE_FIXTURE_REFS.length, 7);
-console.log("PASS turn continuation gate: overlong turns route to Spawner block compilation, malformed retries, commentary-only closeouts, null reasons, false protected waits, and timer-only liveness fail closed");
+const missingDispatchReadback = structuredClone(repaired);
+missingDispatchReadback.successor.dispatch_readback_sha256 = null;
+missingDispatchReadback.gate_sha256 = canonicalDigest({...missingDispatchReadback, gate_sha256: null});
+assert.throws(() => validateTurnContinuationGate(missingDispatchReadback), /successor dispatch readback/u);
+
+assert.throws(() => compileTurnContinuationRepair({
+  gateId: "GATE.TURN.CONTINUATION.MISSING-DISPATCH",
+  authority,
+  turn,
+  observedRoute,
+  evidenceCeiling: "Dispatch evidence was not supplied.",
+}), /successor dispatch reference/u);
+
+assert.equal(TURN_CONTINUATION_HOSTILE_FIXTURE_REFS.length, 8);
+console.log("PASS turn continuation gate: overlong turns require a real same-turn dispatch readback; malformed retries, commentary-only closeouts, null reasons, false protected waits, and timer-only liveness fail closed");

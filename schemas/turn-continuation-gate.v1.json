@@ -49,8 +49,8 @@
     },
     "successor": {
       "type": "object", "additionalProperties": false,
-      "required": ["next_action", "next_handler", "same_turn_dispatch", "controller_approval_required", "started_same_turn", "continuation_sha256"],
-      "properties": {"next_action": {"$ref": "#/$defs/identifier"}, "next_handler": {"$ref": "#/$defs/identifier"}, "same_turn_dispatch": {"const": true}, "controller_approval_required": {"const": false}, "started_same_turn": {"const": true}, "continuation_sha256": {"$ref": "#/$defs/sha256"}}
+      "required": ["next_action", "next_handler", "same_turn_dispatch", "controller_approval_required", "started_same_turn", "dispatch_ref", "dispatch_readback_sha256", "continuation_sha256"],
+      "properties": {"next_action": {"$ref": "#/$defs/identifier"}, "next_handler": {"$ref": "#/$defs/identifier"}, "same_turn_dispatch": {"const": true}, "controller_approval_required": {"const": false}, "started_same_turn": {"const": true}, "dispatch_ref": {"$ref": "#/$defs/reference"}, "dispatch_readback_sha256": {"$ref": "#/$defs/sha256"}, "continuation_sha256": {"$ref": "#/$defs/sha256"}}
     },
     "custody": {
       "type": "object", "additionalProperties": false,

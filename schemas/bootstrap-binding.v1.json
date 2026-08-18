@@ -984,6 +984,18 @@
       "path": "tests/verify-autonomous-dispatch-liveness-gate.mjs",
       "sha256": "23d796d3b6106de41b66014fb614c115cfb2ef90ef3a9a756512e007a92eaf5e"
     },
+    "turn_continuation_gate_controller": {
+      "path": "control/turn-continuation-gate.mjs",
+      "sha256": "ad3ccef6ef1d5fdb2ade536e733f9796d7c043a2ed8178bb003118bbddea9c16"
+    },
+    "turn_continuation_gate_contract": {
+      "path": "schemas/turn-continuation-gate.v1.json",
+      "sha256": "487d23fbc00c0dbe291641da45ca27276dd0676ae8ca7eeccf2bf81b6989b9e6"
+    },
+    "turn_continuation_gate_verifier": {
+      "path": "tests/verify-turn-continuation-gate.mjs",
+      "sha256": "f7a713895ee2d84739cc9cb724a3ef8a2da3261813acb4eee805c1caac49102e"
+    },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
       "sha256": "ed2a8f9ffcfffd020c73c7a03301a164a3ea3d5621c38864a1f5bdd94df520ec"
