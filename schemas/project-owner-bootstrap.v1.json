@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_owner_bootstrap.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "agentos_home_ref", "sibling_project_refs", "environment_summary_ref", "discovery_complete", "interview_complete", "bootstrap_role_before", "bootstrap_role_after", "owner_display_name", "human_facing_role", "default_explanation_level", "spawner_spawn_receipt_sha256", "bootstrap_may_spawn_again", "spawner_roster_request", "development_workflow", "project_owner_monitor_minutes", "controller_progress_monitor_minutes", "bootstrap_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.project_owner_bootstrap.v1"}, "version": {"const": 1},
+    "status": {"enum": ["WAITING_FOR_WORKFLOW_CHOICE", "READY_FOR_SPAWNER_ROSTER_REQUEST"]},
+    "agentos_home_ref": {"type": "string", "pattern": "^opaque:agentos-home:"},
+    "sibling_project_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^opaque:sibling-project:"}},
+    "environment_summary_ref": {"type": "string", "pattern": "^opaque:environment:"},
+    "discovery_complete": {"const": true}, "interview_complete": {"const": true},
+    "bootstrap_role_before": {"const": "AGENTOS.BOOTSTRAP"}, "bootstrap_role_after": {"const": "AGENTOS.PROJECT_OWNER"},
+    "owner_display_name": {"type": "string", "minLength": 15}, "human_facing_role": {"const": "AGENTOS.PROJECT_OWNER"}, "default_explanation_level": {"const": "SIMPLE"},
+    "spawner_spawn_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "bootstrap_may_spawn_again": {"const": false},
+    "spawner_roster_request": {
+      "type": "object", "additionalProperties": false,
+      "required": ["existing_roles", "requested_roles", "exactly_one_spawner", "creation_authority", "ordinary_agent_spawn_authority", "all_despawn_authority"],
+      "properties": {
+        "existing_roles": {"const": ["AGENTOS.SPAWNER"]},
+        "requested_roles": {"const": ["AGENTOS.CONTROLLER", "AGENTOS.MEMORY", "AGENTOS.ORCHESTRATOR", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER"]},
+        "exactly_one_spawner": {"const": true},
+        "creation_authority": {"const": "AGENTOS.SPAWNER"}, "ordinary_agent_spawn_authority": {"const": "AGENTOS.SPAWNER"}, "all_despawn_authority": {"const": "AGENTOS.SPAWNER"}
+      }
+    }, "development_workflow": {"type": ["string", "null"], "enum": ["PYRAMID", "COLLABORATIVE_AUDIT", null]},
+    "project_owner_monitor_minutes": {"const": 15}, "controller_progress_monitor_minutes": {"const": 15}, "bootstrap_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

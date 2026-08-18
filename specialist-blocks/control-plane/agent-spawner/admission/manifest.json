@@ -1,1 +1,69 @@
-{"schema":"agentos.spawner_admission_block_manifest.v1","version":1,"applicable_layers":["ENVIRONMENT","GLOBAL","PROJECT","ROLE","TASK","TECHNOLOGY_OR_STANDARD"],"entries":[{"block_id":"BLOCK.SPAWNER.GLOBAL","layer":"GLOBAL","version":"1.0.0","path":"global.block.json","file_sha256":"c35a7bb47fdf6358d3a14b0b3cf4cf8dcced370bb66eb4caf60802d1bc1e0777","block_sha256":"e57be5b15b7ee519b9b975e0ada10fe0fc98e7cc5ac010434825d25207ae9e75"},{"block_id":"BLOCK.SPAWNER.PROJECT","layer":"PROJECT","version":"1.0.0","path":"project.block.json","file_sha256":"2756d85746784eba68b23cd40758248d1018d5e2a946e16cca7bbbc477e99904","block_sha256":"d53ff57a37cff54b00b57c61db6c86952dafdfb6c7535a014bd5dfe9daf17de6"},{"block_id":"BLOCK.SPAWNER.ROLE","layer":"ROLE","version":"1.0.0","path":"role.block.json","file_sha256":"15a36ccfbcf73eb0160c7b226a40d91b169c6d69c263a6c550d8fc666c8b8592","block_sha256":"0967ff153e868a4eaef0c55e6bbadbe1a8b9264a4a94186bfd697bb0c4599dcc"},{"block_id":"BLOCK.SPAWNER.TECHNOLOGY_STANDARD","layer":"TECHNOLOGY_OR_STANDARD","version":"1.0.0","path":"technology-standard.block.json","file_sha256":"2c68d7dda6da8618c55746f0792b12a91958c47f505166d3a6f651d23eb49f85","block_sha256":"f6502109b09df66d665aef33fd08c3e647a544b2ac5afd4f67b19aac09d36463"},{"block_id":"BLOCK.SPAWNER.ENVIRONMENT","layer":"ENVIRONMENT","version":"1.0.0","path":"environment.block.json","file_sha256":"153e9a662e2a9d6b6051880a39766eeb5878a56efa82d0fa97bf15e9bb0ec9b5","block_sha256":"37695e9fa46bec79b5313efa31f0460cab00e281bb6ac1ec8297fecf43965485"},{"block_id":"BLOCK.SPAWNER.TASK","layer":"TASK","version":"1.0.0","path":"task.block.json","file_sha256":"afbdab9e03c6c83dbc067b1b36e50c25dc8a1114cfff76714710664948a72600","block_sha256":"a53ca4a1d4955c4d9a5a257d99bdc4e75db9ee24c66b76a9910c3ba738e32e94"}],"manifest_sha256":"f027733048c94b1df03330e721e38b0d86c50abde42f2714377f459ef592575f"}
+{
+  "schema": "agentos.spawner_admission_block_manifest.v1",
+  "version": 1,
+  "applicable_layers": [
+    "ENVIRONMENT",
+    "GLOBAL",
+    "PROJECT",
+    "ROLE",
+    "TASK",
+    "TECHNOLOGY_OR_STANDARD"
+  ],
+  "entries": [
+    {
+      "block_id": "BLOCK.SPAWNER.GLOBAL",
+      "layer": "GLOBAL",
+      "version": "1.0.0",
+      "path": "global.block.json",
+      "file_sha256": "3aaacf5e592b7248059af555612249979ffea539c248c27a1fe0669f149c820c",
+      "block_sha256": "e57be5b15b7ee519b9b975e0ada10fe0fc98e7cc5ac010434825d25207ae9e75",
+      "content_sha256": "5ea545c6cbdabb04a5a44df2d36e6d0cf06793a077722651d5f8884a33c34844"
+    },
+    {
+      "block_id": "BLOCK.SPAWNER.PROJECT",
+      "layer": "PROJECT",
+      "version": "1.0.0",
+      "path": "project.block.json",
+      "file_sha256": "1ff0f574e90f6f3d04276db8046de36c295480b80bd3a30aea00c1e50bffecd0",
+      "block_sha256": "701b358d2b7046ac84e4f3acd1fb4a01389f408a91434ad63089a75014ebde8a",
+      "content_sha256": "c44a36aeb54703be0a4d7f3a9de867090ce12fe8e2596f7e86d1c21a91967b9c"
+    },
+    {
+      "block_id": "BLOCK.SPAWNER.ROLE",
+      "layer": "ROLE",
+      "version": "1.0.0",
+      "path": "role.block.json",
+      "file_sha256": "ab0d9906358871dda74beac320f163846134f79d839bfde349ed42a5844ed8f1",
+      "block_sha256": "3b3ae92c5e634d56b68920a3ba79d610aba9378307cf1a727fa793f68ad035ff",
+      "content_sha256": "d4a470d48841b12dcbbef38f8c27db7def416dce62cf18ec6f0d02ad0be7eda6"
+    },
+    {
+      "block_id": "BLOCK.SPAWNER.TECHNOLOGY_STANDARD",
+      "layer": "TECHNOLOGY_OR_STANDARD",
+      "version": "1.0.0",
+      "path": "technology-standard.block.json",
+      "file_sha256": "df31eadacfd23edd70b2c3b0fae96202d9caa1ab35ea385927cdfe3ea2741461",
+      "block_sha256": "b1fbd48889203ee20daa484a0fc71bebff43914f86050d58d44119794664883f",
+      "content_sha256": "195d5969e912c41e28637fcb1f9aed48b165aff799150dd3c1f43ac627b66d90"
+    },
+    {
+      "block_id": "BLOCK.SPAWNER.ENVIRONMENT",
+      "layer": "ENVIRONMENT",
+      "version": "1.0.0",
+      "path": "environment.block.json",
+      "file_sha256": "23cd8df38fd8af9cb3ee1ea021aedaa38a33b314b21ce570b7418d88b88b2e12",
+      "block_sha256": "37695e9fa46bec79b5313efa31f0460cab00e281bb6ac1ec8297fecf43965485",
+      "content_sha256": "1f8d651fb4b97876f407ef6fb51a5b76964f8de266c5beb5cf9073dba97f215a"
+    },
+    {
+      "block_id": "BLOCK.SPAWNER.TASK",
+      "layer": "TASK",
+      "version": "1.0.0",
+      "path": "task.block.json",
+      "file_sha256": "f04e4c6191bd896b04179f885865e5a37d824c8f9b5910592dd5f59ad1a17bc3",
+      "block_sha256": "18dd20b31a5b75277e5e5dfa161bb8c33c3f13c80cba8e3287d8e387f1d1224e",
+      "content_sha256": "2e56cc3c686e6148fa4a316bf73e503f96def854f131f196ac3abd76d54a2b4e"
+    }
+  ],
+  "manifest_sha256": "6caaf4e52d2167c07d3aed91b02c088b6f44c5e3e96acd24cde2a460f8aa3af0"
+}

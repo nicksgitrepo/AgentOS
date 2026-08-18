@@ -52,12 +52,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "starting_point", "existing_invariants", "capabilities", "experience_channels", "backend_behavior", "data_posture", "data_lifecycle", "access_model",
+        "starting_point", "development_workflow", "existing_invariants", "capabilities", "experience_channels", "backend_behavior", "data_posture", "data_lifecycle", "access_model",
         "ai_behavior", "ai_truth_boundary", "integration_boundaries", "hardware_constraints", "commerce_boundaries",
         "risk_applicability", "technology_constraints", "operating_conditions", "quality_priorities"
       ],
       "properties": {
         "starting_point": {"$ref": "#/$defs/typedValue"},
+        "development_workflow": {"$ref": "#/$defs/typedValue"},
         "existing_invariants": {"$ref": "#/$defs/typedValue"},
         "capabilities": {"$ref": "#/$defs/typedValue"},
         "experience_channels": {"$ref": "#/$defs/typedValue"},

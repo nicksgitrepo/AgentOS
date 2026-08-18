@@ -1,1 +1,45 @@
-{"schema":"agentos.governance_block.v1","version":1,"block_id":"BLOCK.SPAWNER.PROJECT","layer":"PROJECT","revision":"1.0.0","status":"COMPLETE_QA_PASS","availability":"AVAILABLE","observed_at_utc":"2026-08-17T00:00:00.000Z","expires_at_utc":"2026-09-16T00:00:00.000Z","semantic_content":{"purpose":"Define the empty portable project-extension boundary used when no consumer project is in scope, while preserving exact Controller and Spawner custody separation.","scope":"This block contains no project identity, path, task data, deployment state, credentials, or consumer memory and cannot weaken global governance.","admission":"Only canonical content-store bytes and exact gate bindings may satisfy this layer."},"content_sha256":"c44a36aeb54703be0a4d7f3a9de867090ce12fe8e2596f7e86d1c21a91967b9c","source_identity":{"source_id":"SOURCE.AGENTOS.PROJECT_EXTENSION","source_version":"1.0.0","content_sha256":"c44a36aeb54703be0a4d7f3a9de867090ce12fe8e2596f7e86d1c21a91967b9c"},"dependencies":["BLOCK.SPAWNER.GLOBAL"],"contradictions":[],"gate_bindings":[{"gate_id":"SPAWNER.AUTHORITY_SEPARATION","gate_file_sha256":"b90ca0a3e039dfe26b2cd6e27f5350c287f5b15035954a25a1debff29395e15f","gate_sha256":"e7d8e5e8f3d2298792985070611d9a5bc0db435e636ee53e1fb5124f2fd26dd6","hostile_fixture_ids":["FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"]},{"gate_id":"SPAWNER.EXACT_BLOCK_QA","gate_file_sha256":"61cef996119bca989c389a0b0361ce9144072c32143894b1b766b1f17646a3ec","gate_sha256":"59c530490f030d947cf6e7961ea8b6bae7f593d7ea81db35025c29820df3a75d","hostile_fixture_ids":["FIXTURE.SPAWNER.CALLER_ASSERTED_QA"]}],"block_sha256":"d53ff57a37cff54b00b57c61db6c86952dafdfb6c7535a014bd5dfe9daf17de6"}
+{
+  "schema": "agentos.governance_block.v1",
+  "version": 1,
+  "block_id": "BLOCK.SPAWNER.PROJECT",
+  "layer": "PROJECT",
+  "revision": "1.0.0",
+  "status": "COMPLETE_QA_PASS",
+  "availability": "AVAILABLE",
+  "observed_at_utc": "2026-08-17T00:00:00.000Z",
+  "expires_at_utc": "2026-09-16T00:00:00.000Z",
+  "semantic_content": {
+    "purpose": "Define the empty portable project-extension boundary used when no consumer project is in scope, while preserving exact Controller and Spawner custody separation.",
+    "scope": "This block contains no project identity, path, task data, deployment state, credentials, or consumer memory and cannot weaken global governance.",
+    "admission": "Only canonical content-store bytes and exact gate bindings may satisfy this layer."
+  },
+  "content_sha256": "c44a36aeb54703be0a4d7f3a9de867090ce12fe8e2596f7e86d1c21a91967b9c",
+  "source_identity": {
+    "source_id": "SOURCE.AGENTOS.PROJECT_EXTENSION",
+    "source_version": "1.0.0",
+    "content_sha256": "c44a36aeb54703be0a4d7f3a9de867090ce12fe8e2596f7e86d1c21a91967b9c"
+  },
+  "dependencies": [
+    "BLOCK.SPAWNER.GLOBAL"
+  ],
+  "contradictions": [],
+  "gate_bindings": [
+    {
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "gate_file_sha256": "0b5976cb74f0835f6dac395b4545d0402a56c53c482c6473ece32208a0f104c2",
+      "gate_sha256": "e47bc23bb2d3cb90d87f79d13718dce153ad230057f5935686eb35300f004f3e",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "gate_file_sha256": "ad8cc25928bb3d61b7f98bdbb399f15f0f31c09425ab1ad6c890a8adf98d128d",
+      "gate_sha256": "5f399565bd172d55d00475a3d8902ab2e5edb768e6a184ed9d8a81b5cfc869c6",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.CALLER_ASSERTED_QA"
+      ]
+    }
+  ],
+  "block_sha256": "701b358d2b7046ac84e4f3acd1fb4a01389f408a91434ad63089a75014ebde8a"
+}

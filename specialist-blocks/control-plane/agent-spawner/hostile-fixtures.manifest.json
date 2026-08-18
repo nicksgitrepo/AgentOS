@@ -1,1 +1,259 @@
-{"schema":"agentos.spawner_hostile_fixture_manifest.v1","version":1,"entries":[{"fixture_id":"FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/admission-evidence-injection.json","file_sha256":"e0559be1eed9c73f9ddc5f4f9c1654b9b829801f9fd2ea066e0918f92c4cf64d","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH","gate_id":"SPAWNER.GIT_INTEGRATION","path":"fixtures/authority-chain-mismatch.json","file_sha256":"f1cb6b54512b8d25ad59ed7453866998b7fa6901b6fd673c9849da7bbb062b09","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION","gate_id":"SPAWNER.GLOBAL_MEMORY","path":"fixtures/authority-root-substitution.json","file_sha256":"f6da1dd8a427e8f29ef8a95df5b9dcbf73f3f6b2e5e9ddbed4e7e610475b7e9a","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.CALLER_ASSERTED_QA","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/caller-asserted-qa.json","file_sha256":"bde42a6e0605cb343899983943d6006f594960af51d3c7d9dfee9c260fd677ef","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","gate_id":"SPAWNER.AUTHORITY_SEPARATION","path":"fixtures/controller-async-side-effect.json","file_sha256":"c041d4dbb93d33e25706b2a207a5b2d135a2cf447f7571ea201766c2776d8d35","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN","gate_id":"SPAWNER.AUTHORITY_SEPARATION","path":"fixtures/controller-direct-spawn.json","file_sha256":"4d3f4c65c1329fdefd11c7cab73f14a4c3fbcda5511ea2c92d7ef2ec91f5ddb0","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE","gate_id":"SPAWNER.GLOBAL_MEMORY","path":"fixtures/cross-project-leakage.json","file_sha256":"d3d61530451bcf4102b5ad95cf92df127027c8884b04832d7fb54d22fc2e0640","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.DIGEST_ALIAS","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/digest-alias.json","file_sha256":"4af9ef1dec2a33a0fc764f5ecdb9e138c89e98426d95f04748b44f80036e75fb","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK","gate_id":"SPAWNER.GIT_INTEGRATION","path":"fixtures/dirty-remote-readback.json","file_sha256":"e3dcc8d4f198fb7c348d091da0ae236e5831621e50132ac2940f2ffc286646da","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.DUPLICATE_GATE_ID","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/duplicate-gate-id.json","file_sha256":"67c326f7cc137168443dbd634c86c73b75249a2817ce283025713e29df373ae7","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION","gate_id":"SPAWNER.GLOBAL_MEMORY","path":"fixtures/event-id-substitution.json","file_sha256":"cc04fc10744118b63efad63d65690f31ecc09ecf5eed81f53d038f774724acdb","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.FABRICATED_ECONOMICS","gate_id":"SPAWNER.ECO_MODEL_POLICY","path":"fixtures/fabricated-economics.json","file_sha256":"eb3568095273a2297238cda243c807606801c9458a45bb03da63b72645330afc","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER","gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","path":"fixtures/false-protected-blocker.json","file_sha256":"f8403be5daa15c15eca724e7166b3ada1a9de580d0f204d0b37b9f6873c73d04","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/fixture-inventory-alias.json","file_sha256":"610bed398fdf8d8d2272b62234edce6cb92c8890206e00bce39d18a6674b4ed4","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.FORGED_MANIFEST","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/forged-manifest.json","file_sha256":"7f1c59beae665631bdb958a0e9a769fdbe108c6bd88516ae02ac5c975ba0d68e","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.INCOMPLETE_LAYER","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/incomplete-layer.json","file_sha256":"7f6b49674f24f21a59be01c4639c32ba2c4d0ca8b14faffeb54a1f97244107c4","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.INCONCLUSIVE_QA","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/inconclusive-qa.json","file_sha256":"0fbec39c692c068c700e83537ae9ea814590dc52ac89be011c406a2faeaafec6","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.INVALID_DIGEST","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/invalid-digest.json","file_sha256":"7ed21526a4990000c5e38703e065c65f7badfda925876eb9adf4afb9955fdbb2","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.MISSING_FILE","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/missing-file.json","file_sha256":"a25cbc9f3b750a01306145fc1644775bfa5ad47fd235b873b6d2c8bcd8c0a081","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE","gate_id":"SPAWNER.ECO_MODEL_POLICY","path":"fixtures/missing-model-evidence.json","file_sha256":"406d00ca44d46aee5e038471cc0150dbc2a80fa3c947986e6f3dc98ea70a2a8f","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.MODEL_UNAVAILABLE","gate_id":"SPAWNER.ECO_MODEL_POLICY","path":"fixtures/model-unavailable.json","file_sha256":"79e188baa76829d105d745b87b58b3fd9ca2776d58034f770a8831164d43bd5f","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION","gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","path":"fixtures/out-of-lane-mutation.json","file_sha256":"6d1636c20eb2d1d5791f9806e1129b6ff4ceae9ff49225f97cdc8da024a4a8ee","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.PLACEHOLDER_CONTENT","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/placeholder-content.json","file_sha256":"435f5a8b4b3e4a15c00d257628b1b48045d71f17329b65c48d53278e1716851e","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/review-issuer-unbound.json","file_sha256":"e1238470cccdfd89d9756f73c6f9a8e29c1ed4ec24f73561cf0e9919a0019add","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.SEALED_LOADER_MUTATION","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/sealed-loader-mutation.json","file_sha256":"1f70d09575999de0962911728533f74cafc386f922affb085209ce9e1bae0198","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.SEED_EXECUTION","gate_id":"SPAWNER.SEED_INERTNESS","path":"fixtures/seed-execution.json","file_sha256":"29f125aca032cae813718e276c15f6c5d58e16d5d9e9a568e6560f75a76772c2","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE","gate_id":"SPAWNER.SEED_INERTNESS","path":"fixtures/self-issued-clearance.json","file_sha256":"fd0157eb8fe8438cd596f0162588b4e63296d237433ccee90233c10b0ad0b433","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.STALE_BLOCK","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/stale-block.json","file_sha256":"d0792526596d0aba13c49f22fdaba134f56664388d251793559e6a520774f10a","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.STALE_MEMORY_READBACK","gate_id":"SPAWNER.GLOBAL_MEMORY","path":"fixtures/stale-memory-readback.json","file_sha256":"0b7b3da4143a2b0801b4c5c1fc3c9edc1d4049b47346acbf7651f71ec104f658","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.SWAPPED_FILE","gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"fixtures/swapped-file.json","file_sha256":"e980a65005fa590fde03114a3e8c83d97e574494dc82dbbe133572f6d9f6c38a","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR","gate_id":"SPAWNER.TURN_CONTINUATION","path":"fixtures/turn-without-successor.json","file_sha256":"a7e7c9e2588c2cd8b240d18642f9b21363cd0f4406d4f8ca7c74d05f61d3e116","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.UNLISTED_MODEL","gate_id":"SPAWNER.ECO_MODEL_POLICY","path":"fixtures/unlisted-model.json","file_sha256":"b32dc53900fbc962f4c2a38bd9f2fa822e91f89511fcd8c26f9f75f9599d0e0f","expected_outcome":"REJECT_WITH_TYPED_DEFECT"},{"fixture_id":"FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER","gate_id":"SPAWNER.GLOBAL_MEMORY","path":"fixtures/wrong-global-memory-writer.json","file_sha256":"25e0fddc7cb6b8e02de6b85992edf1f18222d7502f2aa69c29048c4e8ceeb8ec","expected_outcome":"REJECT_WITH_TYPED_DEFECT"}],"manifest_sha256":"e2409aaf6c750f032724ca0783f3b8b521e3a0890ab377c259c68a56fb648790"}
+{
+  "schema": "agentos.spawner_hostile_fixture_manifest.v1",
+  "version": 1,
+  "entries": [
+    {
+      "fixture_id": "FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/admission-evidence-injection.json",
+      "file_sha256": "e0559be1eed9c73f9ddc5f4f9c1654b9b829801f9fd2ea066e0918f92c4cf64d",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.AGENT_LIFECYCLE_BYPASS",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "path": "fixtures/agent-lifecycle-bypass.json",
+      "file_sha256": "d515e8c7683731bbbf8d0803cd27fab284bc54f9bff3e5c6c19d591ecd3318c9",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH",
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "path": "fixtures/authority-chain-mismatch.json",
+      "file_sha256": "f1cb6b54512b8d25ad59ed7453866998b7fa6901b6fd673c9849da7bbb062b09",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "path": "fixtures/authority-root-substitution.json",
+      "file_sha256": "f6da1dd8a427e8f29ef8a95df5b9dcbf73f3f6b2e5e9ddbed4e7e610475b7e9a",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/caller-asserted-qa.json",
+      "file_sha256": "bde42a6e0605cb343899983943d6006f594960af51d3c7d9dfee9c260fd677ef",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "path": "fixtures/collaborative-auditor-undersubscription.json",
+      "file_sha256": "c7741522cc4952fa3c6bfbd0f859310771123bbcb1ffd6b17a6016e9dbc2ada4",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "path": "fixtures/controller-async-side-effect.json",
+      "file_sha256": "c041d4dbb93d33e25706b2a207a5b2d135a2cf447f7571ea201766c2776d8d35",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "path": "fixtures/controller-direct-spawn.json",
+      "file_sha256": "4d3f4c65c1329fdefd11c7cab73f14a4c3fbcda5511ea2c92d7ef2ec91f5ddb0",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "path": "fixtures/cross-project-leakage.json",
+      "file_sha256": "d3d61530451bcf4102b5ad95cf92df127027c8884b04832d7fb54d22fc2e0640",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DIGEST_ALIAS",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/digest-alias.json",
+      "file_sha256": "4af9ef1dec2a33a0fc764f5ecdb9e138c89e98426d95f04748b44f80036e75fb",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK",
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "path": "fixtures/dirty-remote-readback.json",
+      "file_sha256": "e3dcc8d4f198fb7c348d091da0ae236e5831621e50132ac2940f2ffc286646da",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/duplicate-gate-id.json",
+      "file_sha256": "67c326f7cc137168443dbd634c86c73b75249a2817ce283025713e29df373ae7",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "path": "fixtures/event-id-substitution.json",
+      "file_sha256": "cc04fc10744118b63efad63d65690f31ecc09ecf5eed81f53d038f774724acdb",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "path": "fixtures/fabricated-economics.json",
+      "file_sha256": "eb3568095273a2297238cda243c807606801c9458a45bb03da63b72645330afc",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "path": "fixtures/false-protected-blocker.json",
+      "file_sha256": "f8403be5daa15c15eca724e7166b3ada1a9de580d0f204d0b37b9f6873c73d04",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/fixture-inventory-alias.json",
+      "file_sha256": "610bed398fdf8d8d2272b62234edce6cb92c8890206e00bce39d18a6674b4ed4",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FORGED_MANIFEST",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/forged-manifest.json",
+      "file_sha256": "7f1c59beae665631bdb958a0e9a769fdbe108c6bd88516ae02ac5c975ba0d68e",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.HUMAN_TECHNICAL_LEAK",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/human-technical-leak.json",
+      "file_sha256": "f8d85aea22f44f1632464cb4aff5fc8ea4d7f8a196dd3903065af5404d058155",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/incomplete-layer.json",
+      "file_sha256": "7f6b49674f24f21a59be01c4639c32ba2c4d0ca8b14faffeb54a1f97244107c4",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/inconclusive-qa.json",
+      "file_sha256": "0fbec39c692c068c700e83537ae9ea814590dc52ac89be011c406a2faeaafec6",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INVALID_DIGEST",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/invalid-digest.json",
+      "file_sha256": "7ed21526a4990000c5e38703e065c65f7badfda925876eb9adf4afb9955fdbb2",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MISSING_FILE",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/missing-file.json",
+      "file_sha256": "a25cbc9f3b750a01306145fc1644775bfa5ad47fd235b873b6d2c8bcd8c0a081",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "path": "fixtures/missing-model-evidence.json",
+      "file_sha256": "406d00ca44d46aee5e038471cc0150dbc2a80fa3c947986e6f3dc98ea70a2a8f",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "path": "fixtures/model-unavailable.json",
+      "file_sha256": "79e188baa76829d105d745b87b58b3fd9ca2776d58034f770a8831164d43bd5f",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION",
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "path": "fixtures/out-of-lane-mutation.json",
+      "file_sha256": "6d1636c20eb2d1d5791f9806e1129b6ff4ceae9ff49225f97cdc8da024a4a8ee",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/placeholder-content.json",
+      "file_sha256": "435f5a8b4b3e4a15c00d257628b1b48045d71f17329b65c48d53278e1716851e",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/review-issuer-unbound.json",
+      "file_sha256": "e1238470cccdfd89d9756f73c6f9a8e29c1ed4ec24f73561cf0e9919a0019add",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SEALED_LOADER_MUTATION",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/sealed-loader-mutation.json",
+      "file_sha256": "1f70d09575999de0962911728533f74cafc386f922affb085209ce9e1bae0198",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SEED_EXECUTION",
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "path": "fixtures/seed-execution.json",
+      "file_sha256": "29f125aca032cae813718e276c15f6c5d58e16d5d9e9a568e6560f75a76772c2",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE",
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "path": "fixtures/self-issued-clearance.json",
+      "file_sha256": "fd0157eb8fe8438cd596f0162588b4e63296d237433ccee90233c10b0ad0b433",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.STALE_BLOCK",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/stale-block.json",
+      "file_sha256": "d0792526596d0aba13c49f22fdaba134f56664388d251793559e6a520774f10a",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "path": "fixtures/stale-memory-readback.json",
+      "file_sha256": "0b7b3da4143a2b0801b4c5c1fc3c9edc1d4049b47346acbf7651f71ec104f658",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SWAPPED_FILE",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "fixtures/swapped-file.json",
+      "file_sha256": "e980a65005fa590fde03114a3e8c83d97e574494dc82dbbe133572f6d9f6c38a",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR",
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "path": "fixtures/turn-without-successor.json",
+      "file_sha256": "a7e7c9e2588c2cd8b240d18642f9b21363cd0f4406d4f8ca7c74d05f61d3e116",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.UNLISTED_MODEL",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "path": "fixtures/unlisted-model.json",
+      "file_sha256": "b32dc53900fbc962f4c2a38bd9f2fa822e91f89511fcd8c26f9f75f9599d0e0f",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "path": "fixtures/wrong-global-memory-writer.json",
+      "file_sha256": "25e0fddc7cb6b8e02de6b85992edf1f18222d7502f2aa69c29048c4e8ceeb8ec",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    }
+  ],
+  "manifest_sha256": "13b461e0344bdf842bf406c270e1af12f8bf51ff71cedb1d0ece048affbd2ef0"
+}

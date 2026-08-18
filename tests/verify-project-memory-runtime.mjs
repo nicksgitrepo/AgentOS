@@ -60,6 +60,7 @@ const answers = {
   "intent.outcome": "Keep one bounded plan current across restarts",
   "intent.first_result": "A reviewable first plan",
   "project.starting_point": "1",
+  "development.workflow": "2",
   "scope.allowed": "The agreed planning workflow",
   "scope.non_goals": "Unrelated delivery work",
   "project.capabilities": "10",

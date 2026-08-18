@@ -18,6 +18,7 @@ const BASE_REPLIES = Object.freeze({
   "intent.outcome": "Make daily decisions faster and clearer",
   "intent.first_result": "One complete workflow the owner can review",
   "project.starting_point": "1",
+  "development.workflow": "2",
   "scope.allowed": "The first workflow and its supporting records",
   "scope.non_goals": "Later workflows and public release",
   "workflow.steps": "Describe the need, produce the result, check it, and hand it over",
@@ -69,6 +70,7 @@ const simpleContract = compileProjectContract({conversation: simple});
 validateProjectContract(simpleContract);
 assert.equal(simpleContract.project_profile.data_posture.value, "NOT_APPLICABLE");
 assert.equal(simpleContract.project_profile.ai_behavior.value, "NOT_APPLICABLE");
+assert.equal(simpleContract.project_profile.development_workflow.value, "COLLABORATIVE_AUDIT");
 
 const complexReplies = {
   ...BASE_REPLIES,

@@ -1,1 +1,45 @@
-{"schema":"agentos.governance_block.v1","version":1,"block_id":"BLOCK.SPAWNER.ENVIRONMENT","layer":"ENVIRONMENT","revision":"1.0.0","status":"COMPLETE_QA_PASS","availability":"AVAILABLE","observed_at_utc":"2026-08-17T00:00:00.000Z","expires_at_utc":"2026-09-16T00:00:00.000Z","semantic_content":{"purpose":"Bind host capabilities, model availability, reasoning support, resource ceilings, custody, concurrency, and global-governance-memory readback before admission.","host_rule":"Declared availability is insufficient when a required live readback is absent, stale, incompatible, or below the role capability floor.","memory_rule":"Only compact read-only accepted projections enter role contexts."},"content_sha256":"1f8d651fb4b97876f407ef6fb51a5b76964f8de266c5beb5cf9073dba97f215a","source_identity":{"source_id":"SOURCE.AGENTOS.ENVIRONMENT","source_version":"1.0.0","content_sha256":"1f8d651fb4b97876f407ef6fb51a5b76964f8de266c5beb5cf9073dba97f215a"},"dependencies":["BLOCK.SPAWNER.GLOBAL"],"contradictions":[],"gate_bindings":[{"gate_id":"SPAWNER.GLOBAL_MEMORY","gate_file_sha256":"0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3","gate_sha256":"2712f067731009758ec9ee2fe1d06916ef48a9f364b974dabe30e651dd895c95","hostile_fixture_ids":["FIXTURE.SPAWNER.STALE_MEMORY_READBACK"]},{"gate_id":"SPAWNER.ECO_MODEL_POLICY","gate_file_sha256":"cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58","gate_sha256":"beee49d7229a3922fd94ce5e42ea360863933d476cec0a79c50ab77bc5b48761","hostile_fixture_ids":["FIXTURE.SPAWNER.MODEL_UNAVAILABLE"]}],"block_sha256":"37695e9fa46bec79b5313efa31f0460cab00e281bb6ac1ec8297fecf43965485"}
+{
+  "schema": "agentos.governance_block.v1",
+  "version": 1,
+  "block_id": "BLOCK.SPAWNER.ENVIRONMENT",
+  "layer": "ENVIRONMENT",
+  "revision": "1.0.0",
+  "status": "COMPLETE_QA_PASS",
+  "availability": "AVAILABLE",
+  "observed_at_utc": "2026-08-17T00:00:00.000Z",
+  "expires_at_utc": "2026-09-16T00:00:00.000Z",
+  "semantic_content": {
+    "purpose": "Bind host capabilities, model availability, reasoning support, resource ceilings, custody, concurrency, and global-governance-memory readback before admission.",
+    "host_rule": "Declared availability is insufficient when a required live readback is absent, stale, incompatible, or below the role capability floor.",
+    "memory_rule": "Only compact read-only accepted projections enter role contexts."
+  },
+  "content_sha256": "1f8d651fb4b97876f407ef6fb51a5b76964f8de266c5beb5cf9073dba97f215a",
+  "source_identity": {
+    "source_id": "SOURCE.AGENTOS.ENVIRONMENT",
+    "source_version": "1.0.0",
+    "content_sha256": "1f8d651fb4b97876f407ef6fb51a5b76964f8de266c5beb5cf9073dba97f215a"
+  },
+  "dependencies": [
+    "BLOCK.SPAWNER.GLOBAL"
+  ],
+  "contradictions": [],
+  "gate_bindings": [
+    {
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "gate_file_sha256": "0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3",
+      "gate_sha256": "2712f067731009758ec9ee2fe1d06916ef48a9f364b974dabe30e651dd895c95",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.STALE_MEMORY_READBACK"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "gate_file_sha256": "cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58",
+      "gate_sha256": "beee49d7229a3922fd94ce5e42ea360863933d476cec0a79c50ab77bc5b48761",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.MODEL_UNAVAILABLE"
+      ]
+    }
+  ],
+  "block_sha256": "37695e9fa46bec79b5313efa31f0460cab00e281bb6ac1ec8297fecf43965485"
+}

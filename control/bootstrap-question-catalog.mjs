@@ -30,6 +30,17 @@ export const BOOTSTRAP_QUESTIONS = Object.freeze([
     required: true,
   }),
   Object.freeze({
+    id: "development.workflow",
+    kind: "CHOICE",
+    prompt: "How would you like the team to build and check the project?",
+    choices: Object.freeze([
+      Object.freeze({value: "PYRAMID", label: "Build and check in layers"}),
+      Object.freeze({value: "COLLABORATIVE_AUDIT", label: "Use six focused checkers at a time"}),
+      Object.freeze({value: "RECOMMEND", label: "Recommend the best fit after discovery"}),
+    ]),
+    required: true,
+  }),
+  Object.freeze({
     id: "scope.allowed",
     kind: "TEXT",
     prompt: "What should this work touch?",

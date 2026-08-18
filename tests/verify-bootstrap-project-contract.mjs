@@ -26,6 +26,7 @@ function answerAllRequired(conversation) {
     "intent.outcome": "One complete planning result they can review",
     "intent.first_result": "The first bounded planning workflow",
     "project.starting_point": "1",
+    "development.workflow": "2",
     "scope.allowed": "Planning notes and agreed scope",
     "scope.non_goals": "Anything outside that first workflow",
     "project.capabilities": "10",

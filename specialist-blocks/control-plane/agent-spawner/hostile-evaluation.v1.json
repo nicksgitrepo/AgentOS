@@ -1,1 +1,547 @@
-{"schema":"agentos.spawner_hostile_evaluation.v1","version":1,"candidate_package_file_sha256":"05f23a1b707b64945bbced195da29a7a857ea971caf993a30af66fe21c84f0fb","fixture_manifest_sha256":"e2409aaf6c750f032724ca0783f3b8b521e3a0890ab377c259c68a56fb648790","gate_contracts_sha256":"598b4d9d5825fd237b3eb75e686cdcadc2c2f17c161904d912c7c34084e09186","result_count":33,"negative_assertion_count":67,"mutation_sensitivity":[{"gate_id":"SPAWNER.AUTHORITY_SEPARATION","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"],"failed_fixture_count":2,"result":"PASS"},{"gate_id":"SPAWNER.ECO_MODEL_POLICY","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.FABRICATED_ECONOMICS","FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE","FIXTURE.SPAWNER.MODEL_UNAVAILABLE","FIXTURE.SPAWNER.UNLISTED_MODEL"],"failed_fixture_count":4,"result":"PASS"},{"gate_id":"SPAWNER.EXACT_BLOCK_QA","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION","FIXTURE.SPAWNER.CALLER_ASSERTED_QA","FIXTURE.SPAWNER.DIGEST_ALIAS","FIXTURE.SPAWNER.DUPLICATE_GATE_ID","FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS","FIXTURE.SPAWNER.FORGED_MANIFEST","FIXTURE.SPAWNER.INCOMPLETE_LAYER","FIXTURE.SPAWNER.INCONCLUSIVE_QA","FIXTURE.SPAWNER.INVALID_DIGEST","FIXTURE.SPAWNER.MISSING_FILE","FIXTURE.SPAWNER.PLACEHOLDER_CONTENT","FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND","FIXTURE.SPAWNER.SEALED_LOADER_MUTATION","FIXTURE.SPAWNER.STALE_BLOCK","FIXTURE.SPAWNER.SWAPPED_FILE"],"failed_fixture_count":15,"result":"PASS"},{"gate_id":"SPAWNER.GIT_INTEGRATION","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH","FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"],"failed_fixture_count":2,"result":"PASS"},{"gate_id":"SPAWNER.GLOBAL_MEMORY","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION","FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE","FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION","FIXTURE.SPAWNER.STALE_MEMORY_READBACK","FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"],"failed_fixture_count":5,"result":"PASS"},{"gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER","FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION"],"failed_fixture_count":2,"result":"PASS"},{"gate_id":"SPAWNER.SEED_INERTNESS","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.SEED_EXECUTION","FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE"],"failed_fixture_count":2,"result":"PASS"},{"gate_id":"SPAWNER.TURN_CONTINUATION","mutation":"NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE","failed_fixture_ids":["FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"],"failed_fixture_count":1,"result":"PASS"}],"results":[{"fixture_id":"FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"ADMISSION_EVIDENCE_INJECTION","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/agent-spawner-governed-admission.mjs#compileAgentSpawnerGovernedAdmission","negative_assertion_count":2,"error_code":"Error","error_message_sha256":"5cb77888d85d65ec4a532fb18848d1809cfe986042d8b36e32f91599d5dc0304","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH","gate_id":"SPAWNER.GIT_INTEGRATION","attack_vector":"AUTHORITY_CHAIN_MISMATCH","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-git-ancestry.mjs#validateSpawnerGitAncestry","negative_assertion_count":2,"error_code":"SPAWNER_AUTHORITY_CHAIN_MISMATCH","error_message_sha256":"2ad0fec511531618d9496a74bc7b6a54a92e787da459562b342bf287d9df74a4","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION","gate_id":"SPAWNER.GLOBAL_MEMORY","attack_vector":"AUTHORITY_ROOT_SUBSTITUTION","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/global-governance-bootstrap.mjs#openGlobalGovernanceAuthorityStore","negative_assertion_count":2,"error_code":"GLOBAL_GOVERNANCE_ROOT_CALLER_FORBIDDEN","error_message_sha256":"f4a93fe97d767cb7f1fcd5d5b8050fadfc451ee8cb1a0e4e2af8fa623c271454","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.CALLER_ASSERTED_QA","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"CALLER_ASSERTED_QA","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#CALLER_ASSERTED_QA","negative_assertion_count":2,"error_code":"CALLER_EVIDENCE_FORBIDDEN","error_message_sha256":"7889b83e02dde98eb03a82712c5b3238a108080408146a571b0708b2e5e8dde9","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","gate_id":"SPAWNER.AUTHORITY_SEPARATION","attack_vector":"CONTROLLER_ASYNC_SIDE_EFFECT","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/agentos-controller.mjs#applyAndWriteAgentOSControllerEventAsync","negative_assertion_count":3,"error_code":"CONTROLLER_ASYNC_OPERATIONAL_DENIAL_PROVED","error_message_sha256":"831164e5ad5a187b654e0709733914f29e8d0f21f98861e394c6091cb0ea8572","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN","gate_id":"SPAWNER.AUTHORITY_SEPARATION","attack_vector":"CONTROLLER_DIRECT_SPAWN","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#CONTROLLER_DIRECT_SPAWN","negative_assertion_count":2,"error_code":"CONTROLLER_OPERATION_FORBIDDEN","error_message_sha256":"6ec35931bbd961a9729bce72dbd03083c32d6e09a1814a612fb77003f02d1625","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE","gate_id":"SPAWNER.GLOBAL_MEMORY","attack_vector":"CROSS_PROJECT_LEAKAGE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#CROSS_PROJECT_LEAKAGE","negative_assertion_count":2,"error_code":"GLOBAL_MEMORY_PRIVATE_CONTENT","error_message_sha256":"5a38d3ee23ee375467a02b8639455d35abfb171784f1ef3ef77c124f3292ab5f","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.DIGEST_ALIAS","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"DIGEST_ALIAS","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#DIGEST_ALIAS","negative_assertion_count":2,"error_code":"BLOCK_FILE_DIGEST_MISMATCH","error_message_sha256":"cf93c822cec6eda8c9370e7672b69ad50475dace0fbaaad0926f2645287f7b2d","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK","gate_id":"SPAWNER.GIT_INTEGRATION","attack_vector":"DIRTY_REMOTE_READBACK","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#DIRTY_REMOTE_READBACK","negative_assertion_count":2,"error_code":"Error","error_message_sha256":"785d985eaa8a842457be578cd03051e3e0c8246bd57f8a2cad0393ec300ccf01","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.DUPLICATE_GATE_ID","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"DUPLICATE_GATE_ID","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#DUPLICATE_GATE_ID","negative_assertion_count":2,"error_code":"SPAWNER_GOVERNANCE_INVALID","error_message_sha256":"847305c3b3e88e5be1ffd94b61fd2464542554c58177cc3bd7d4f9edb7b96054","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION","gate_id":"SPAWNER.GLOBAL_MEMORY","attack_vector":"EVENT_ID_SUBSTITUTION","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/global-governance-memory.mjs#compileGlobalGovernanceMemoryEvent","negative_assertion_count":2,"error_code":"GLOBAL_MEMORY_EVENT_ID_CALLER_FORBIDDEN","error_message_sha256":"16ab27f2951af6bb1d2314b055ed95e423016c693653405d74bf329a3b4fbcc9","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.FABRICATED_ECONOMICS","gate_id":"SPAWNER.ECO_MODEL_POLICY","attack_vector":"FABRICATED_ECONOMICS","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#FABRICATED_ECONOMICS","negative_assertion_count":2,"error_code":"MODEL_POLICY_INVALID","error_message_sha256":"da3eccc9fc8e0093b3d40e45134460b2a7bd7881cba15941d068e25c97d7cbb3","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER","gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","attack_vector":"FALSE_PROTECTED_BLOCKER","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#FALSE_PROTECTED_BLOCKER","negative_assertion_count":2,"error_code":"FALSE_PROTECTED_BLOCKER","error_message_sha256":"83deb64ca3c86759aebfd795a05828dd83d691581cd7dcf025bcd2a1ae074e5c","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"FIXTURE_INVENTORY_ALIAS","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#evaluateCanonicalSpawnerHostileFixtures","negative_assertion_count":2,"error_code":"HOSTILE_FIXTURE_INVENTORY_ALIAS","error_message_sha256":"5aad23e52c52707f1bea8aa0669b8587819bab5aaf4b044adf9b5c21e88b344b","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.FORGED_MANIFEST","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"FORGED_MANIFEST","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#FORGED_MANIFEST","negative_assertion_count":2,"error_code":"SPAWNER_GOVERNANCE_INVALID","error_message_sha256":"8f9f672101b7a0d817555846054e6af78c4f605c528f2e7f286dd6d809ad71bf","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.INCOMPLETE_LAYER","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"INCOMPLETE_LAYER","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#INCOMPLETE_LAYER","negative_assertion_count":2,"error_code":"SPAWNER_GOVERNANCE_INVALID","error_message_sha256":"59612e13d2f4a2c2b5cffecca3a3524a79326177f3258741d8421d9b7453fa45","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.INCONCLUSIVE_QA","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"INCONCLUSIVE_QA","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#INCONCLUSIVE_QA","negative_assertion_count":2,"error_code":"CALLER_EVIDENCE_FORBIDDEN","error_message_sha256":"9912831f02d02257082c0b21b12cf92cc6db19e09502e6980c5cdd651e666054","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.INVALID_DIGEST","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"INVALID_DIGEST","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#INVALID_DIGEST","negative_assertion_count":2,"error_code":"PLACEHOLDER_EVIDENCE","error_message_sha256":"411103858a4fca5f373270a6c6307c2dda578c80c54e90b68ebc3f91744ad2ce","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.MISSING_FILE","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"MISSING_FILE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#MISSING_FILE","negative_assertion_count":2,"error_code":"ENOENT","error_message_sha256":"d5583adb9698fe0371f7a914852c6bbb79e140e82010d65cec65652c2770e7c1","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE","gate_id":"SPAWNER.ECO_MODEL_POLICY","attack_vector":"MISSING_MODEL_EVIDENCE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#MISSING_MODEL_EVIDENCE","negative_assertion_count":2,"error_code":"BENCHMARK_EVIDENCE_MISSING","error_message_sha256":"91fbedbad60a4745218c02d88b0894f498dcf212b00f361af8eef9b77060fcbe","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.MODEL_UNAVAILABLE","gate_id":"SPAWNER.ECO_MODEL_POLICY","attack_vector":"MODEL_UNAVAILABLE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#MODEL_UNAVAILABLE","negative_assertion_count":2,"error_code":"MODEL_POLICY_INVALID","error_message_sha256":"b0e2f4082a474325afcfa82886f34734d88730a8f3d4668da6f07e53fd103d01","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION","gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","attack_vector":"OUT_OF_LANE_MUTATION","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#OUT_OF_LANE_MUTATION","negative_assertion_count":2,"error_code":"SPAWNER_DEFECT_LOOP_INVALID","error_message_sha256":"726d313082ddae04b1d5675ede639d521203db02a483181ba1138167ff3db4ef","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.PLACEHOLDER_CONTENT","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"PLACEHOLDER_CONTENT","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#PLACEHOLDER_CONTENT","negative_assertion_count":2,"error_code":"BLOCK_FILE_DIGEST_MISMATCH","error_message_sha256":"86a0c3191fe1875383271face032274505a1dc7dd6251282de1c18a4e0ca276f","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"REVIEW_ISSUER_UNBOUND","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-bootstrap-governance.mjs#resolveCanonicalSpawnerBootstrapPackage","negative_assertion_count":2,"error_code":"SEALED_AUTHORITY_REQUIRED","error_message_sha256":"bd20bd347bff83009e68bf7944341acb8024e68ddb636f665cef12d808e767b4","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.SEALED_LOADER_MUTATION","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"SEALED_LOADER_MUTATION","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/sealed-canonical-authority.mjs#getSealedCanonicalAuthority","negative_assertion_count":2,"error_code":"SEALED_LOADER_MUTATION_DENIED","error_message_sha256":"d554d6f4974e098c4d4fd237d24417c82a7325f39a18d35ee7bc502af9b3f5c3","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.SEED_EXECUTION","gate_id":"SPAWNER.SEED_INERTNESS","attack_vector":"SEED_EXECUTION","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#SEED_EXECUTION","negative_assertion_count":2,"error_code":"DIRECT_SEED_AUTHORITY_FORBIDDEN","error_message_sha256":"01d985aa1405ca5e2da72f276ca1e7df03d84bf887c1617d8668178af0993e6a","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE","gate_id":"SPAWNER.SEED_INERTNESS","attack_vector":"SELF_ISSUED_CLEARANCE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#SELF_ISSUED_CLEARANCE","negative_assertion_count":2,"error_code":"SEALED_CLEARANCE_AUTHORITY_REQUIRED","error_message_sha256":"e9c62841861dcd1578a6501d005d9737d87e60a17830a49a5c0983eb77f0b45e","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.STALE_BLOCK","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"STALE_BLOCK","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#STALE_BLOCK","negative_assertion_count":2,"error_code":"BLOCK_FILE_DIGEST_MISMATCH","error_message_sha256":"c6a8b64a988c852808b6a03ce28ca41e7b941c83486e45196e9984731c27d1eb","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.STALE_MEMORY_READBACK","gate_id":"SPAWNER.GLOBAL_MEMORY","attack_vector":"STALE_MEMORY_READBACK","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#STALE_MEMORY_READBACK","negative_assertion_count":2,"error_code":"GLOBAL_MEMORY_READBACK_STALE","error_message_sha256":"fbc0cf216d93fcbd00c5512c6499596a72f7a2ec7c3b240ddd25aa75fe7bcd71","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.SWAPPED_FILE","gate_id":"SPAWNER.EXACT_BLOCK_QA","attack_vector":"SWAPPED_FILE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#SWAPPED_FILE","negative_assertion_count":2,"error_code":"BLOCK_FILE_DIGEST_MISMATCH","error_message_sha256":"e83e0c4b269582eb8da5334bc88aadc4458a2c6668d418c5dafd28e0b1383e34","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR","gate_id":"SPAWNER.TURN_CONTINUATION","attack_vector":"TURN_WITHOUT_SUCCESSOR","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#TURN_WITHOUT_SUCCESSOR","negative_assertion_count":2,"error_code":"SPAWNER_GOVERNANCE_INVALID","error_message_sha256":"fd5c41152c3ef234d2228cf2adc64c6608e082b3a5b847504e51eb004d5a3458","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.UNLISTED_MODEL","gate_id":"SPAWNER.ECO_MODEL_POLICY","attack_vector":"UNLISTED_MODEL","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#UNLISTED_MODEL","negative_assertion_count":2,"error_code":"MODEL_SOURCE_UNLISTED","error_message_sha256":"3dfd4b51d51c3758305eecfdf258bacc8681209178b2007f3391ae59d8ea0e5f","result":"PASS"},{"fixture_id":"FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER","gate_id":"SPAWNER.GLOBAL_MEMORY","attack_vector":"WRONG_GLOBAL_MEMORY_WRITER","expected_outcome":"REJECT_WITH_TYPED_DEFECT","actual_outcome":"REJECT_WITH_TYPED_DEFECT","implementation_entrypoint":"control/spawner-hostile-fixture-evaluator.mjs#WRONG_GLOBAL_MEMORY_WRITER","negative_assertion_count":2,"error_code":"GLOBAL_MEMORY_WRITER_FORBIDDEN","error_message_sha256":"4135d566a1aec01413f0b54db9a9b11d960df0b2b08d7135a061155ccc3cc64d","result":"PASS"}],"status":"PASS","evaluation_sha256":"2fc4f8e6c5cc3eb3345712a31727ebca295263c4bcb6eecd9e29965427d3620d"}
+{
+  "schema": "agentos.spawner_hostile_evaluation.v1",
+  "version": 1,
+  "candidate_package_file_sha256": "9aad662a873fb07f5b60d0949da7026001459bbeffbe1106a148053866f311b1",
+  "fixture_manifest_sha256": "13b461e0344bdf842bf406c270e1af12f8bf51ff71cedb1d0ece048affbd2ef0",
+  "gate_contracts_sha256": "ab56182a6fe89817c0d3dd3401beb94f4fde5b7ec9a99221b36a834292310f21",
+  "result_count": 36,
+  "negative_assertion_count": 73,
+  "mutation_sensitivity": [
+    {
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.AGENT_LIFECYCLE_BYPASS",
+        "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+        "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"
+      ],
+      "failed_fixture_count": 3,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+        "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+        "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+        "FIXTURE.SPAWNER.UNLISTED_MODEL"
+      ],
+      "failed_fixture_count": 4,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION",
+        "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+        "FIXTURE.SPAWNER.DIGEST_ALIAS",
+        "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+        "FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS",
+        "FIXTURE.SPAWNER.FORGED_MANIFEST",
+        "FIXTURE.SPAWNER.HUMAN_TECHNICAL_LEAK",
+        "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+        "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+        "FIXTURE.SPAWNER.INVALID_DIGEST",
+        "FIXTURE.SPAWNER.MISSING_FILE",
+        "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+        "FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND",
+        "FIXTURE.SPAWNER.SEALED_LOADER_MUTATION",
+        "FIXTURE.SPAWNER.STALE_BLOCK",
+        "FIXTURE.SPAWNER.SWAPPED_FILE"
+      ],
+      "failed_fixture_count": 16,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH",
+        "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION",
+        "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+        "FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION",
+        "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+        "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
+      ],
+      "failed_fixture_count": 5,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+        "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.SEED_EXECUTION",
+        "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
+        "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    }
+  ],
+  "results": [
+    {
+      "fixture_id": "FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "ADMISSION_EVIDENCE_INJECTION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/agent-spawner-governed-admission.mjs#compileAgentSpawnerGovernedAdmission",
+      "negative_assertion_count": 2,
+      "error_code": "Error",
+      "error_message_sha256": "5cb77888d85d65ec4a532fb18848d1809cfe986042d8b36e32f91599d5dc0304",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.AGENT_LIFECYCLE_BYPASS",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "attack_vector": "AGENT_LIFECYCLE_BYPASS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/agent-lifecycle-custody.mjs#authorizeAgentDespawn",
+      "negative_assertion_count": 2,
+      "error_code": "Error",
+      "error_message_sha256": "9229d48f16e5834c04b2cd326cb121736bcd88c4ae5d60e612ecac5875dd57ee",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH",
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "attack_vector": "AUTHORITY_CHAIN_MISMATCH",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-git-ancestry.mjs#validateSpawnerGitAncestry",
+      "negative_assertion_count": 2,
+      "error_code": "SPAWNER_AUTHORITY_CHAIN_MISMATCH",
+      "error_message_sha256": "2ad0fec511531618d9496a74bc7b6a54a92e787da459562b342bf287d9df74a4",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "AUTHORITY_ROOT_SUBSTITUTION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/global-governance-bootstrap.mjs#openGlobalGovernanceAuthorityStore",
+      "negative_assertion_count": 2,
+      "error_code": "GLOBAL_GOVERNANCE_ROOT_CALLER_FORBIDDEN",
+      "error_message_sha256": "f4a93fe97d767cb7f1fcd5d5b8050fadfc451ee8cb1a0e4e2af8fa623c271454",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "CALLER_ASSERTED_QA",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#CALLER_ASSERTED_QA",
+      "negative_assertion_count": 2,
+      "error_code": "CALLER_EVIDENCE_FORBIDDEN",
+      "error_message_sha256": "7889b83e02dde98eb03a82712c5b3238a108080408146a571b0708b2e5e8dde9",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "attack_vector": "COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/collaborative-audit-workflow.mjs#compileCollaborativeAuditWave",
+      "negative_assertion_count": 2,
+      "error_code": "Error",
+      "error_message_sha256": "fbff7dccabb44d1427cad9046feacd1d41490777602c4deb1d388c88e6cc7d1d",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "attack_vector": "CONTROLLER_ASYNC_SIDE_EFFECT",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/agentos-controller.mjs#applyAndWriteAgentOSControllerEventAsync",
+      "negative_assertion_count": 3,
+      "error_code": "CONTROLLER_ASYNC_OPERATIONAL_DENIAL_PROVED",
+      "error_message_sha256": "831164e5ad5a187b654e0709733914f29e8d0f21f98861e394c6091cb0ea8572",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "attack_vector": "CONTROLLER_DIRECT_SPAWN",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#CONTROLLER_DIRECT_SPAWN",
+      "negative_assertion_count": 2,
+      "error_code": "CONTROLLER_OPERATION_FORBIDDEN",
+      "error_message_sha256": "6ec35931bbd961a9729bce72dbd03083c32d6e09a1814a612fb77003f02d1625",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "CROSS_PROJECT_LEAKAGE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#CROSS_PROJECT_LEAKAGE",
+      "negative_assertion_count": 2,
+      "error_code": "GLOBAL_MEMORY_PRIVATE_CONTENT",
+      "error_message_sha256": "5a38d3ee23ee375467a02b8639455d35abfb171784f1ef3ef77c124f3292ab5f",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DIGEST_ALIAS",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "DIGEST_ALIAS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#DIGEST_ALIAS",
+      "negative_assertion_count": 2,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "cf93c822cec6eda8c9370e7672b69ad50475dace0fbaaad0926f2645287f7b2d",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK",
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "attack_vector": "DIRTY_REMOTE_READBACK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#DIRTY_REMOTE_READBACK",
+      "negative_assertion_count": 2,
+      "error_code": "Error",
+      "error_message_sha256": "785d985eaa8a842457be578cd03051e3e0c8246bd57f8a2cad0393ec300ccf01",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "DUPLICATE_GATE_ID",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#DUPLICATE_GATE_ID",
+      "negative_assertion_count": 2,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "847305c3b3e88e5be1ffd94b61fd2464542554c58177cc3bd7d4f9edb7b96054",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "EVENT_ID_SUBSTITUTION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/global-governance-memory.mjs#compileGlobalGovernanceMemoryEvent",
+      "negative_assertion_count": 2,
+      "error_code": "GLOBAL_MEMORY_EVENT_ID_CALLER_FORBIDDEN",
+      "error_message_sha256": "16ab27f2951af6bb1d2314b055ed95e423016c693653405d74bf329a3b4fbcc9",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "FABRICATED_ECONOMICS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#FABRICATED_ECONOMICS",
+      "negative_assertion_count": 2,
+      "error_code": "MODEL_POLICY_INVALID",
+      "error_message_sha256": "da3eccc9fc8e0093b3d40e45134460b2a7bd7881cba15941d068e25c97d7cbb3",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "attack_vector": "FALSE_PROTECTED_BLOCKER",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#FALSE_PROTECTED_BLOCKER",
+      "negative_assertion_count": 2,
+      "error_code": "FALSE_PROTECTED_BLOCKER",
+      "error_message_sha256": "83deb64ca3c86759aebfd795a05828dd83d691581cd7dcf025bcd2a1ae074e5c",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "FIXTURE_INVENTORY_ALIAS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#evaluateCanonicalSpawnerHostileFixtures",
+      "negative_assertion_count": 2,
+      "error_code": "HOSTILE_FIXTURE_INVENTORY_ALIAS",
+      "error_message_sha256": "5aad23e52c52707f1bea8aa0669b8587819bab5aaf4b044adf9b5c21e88b344b",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FORGED_MANIFEST",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "FORGED_MANIFEST",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#FORGED_MANIFEST",
+      "negative_assertion_count": 2,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "8f9f672101b7a0d817555846054e6af78c4f605c528f2e7f286dd6d809ad71bf",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.HUMAN_TECHNICAL_LEAK",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "HUMAN_TECHNICAL_LEAK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/project-owner-conversation.mjs#compileProjectOwnerResponse",
+      "negative_assertion_count": 2,
+      "error_code": "Error",
+      "error_message_sha256": "eeba1fa09a8ee8a75f92bd687d887f4dd07cb2d9667de0a28c3d2d8c0becffc2",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "INCOMPLETE_LAYER",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#INCOMPLETE_LAYER",
+      "negative_assertion_count": 2,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "59612e13d2f4a2c2b5cffecca3a3524a79326177f3258741d8421d9b7453fa45",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "INCONCLUSIVE_QA",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#INCONCLUSIVE_QA",
+      "negative_assertion_count": 2,
+      "error_code": "CALLER_EVIDENCE_FORBIDDEN",
+      "error_message_sha256": "9912831f02d02257082c0b21b12cf92cc6db19e09502e6980c5cdd651e666054",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INVALID_DIGEST",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "INVALID_DIGEST",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#INVALID_DIGEST",
+      "negative_assertion_count": 2,
+      "error_code": "PLACEHOLDER_EVIDENCE",
+      "error_message_sha256": "411103858a4fca5f373270a6c6307c2dda578c80c54e90b68ebc3f91744ad2ce",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MISSING_FILE",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "MISSING_FILE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#MISSING_FILE",
+      "negative_assertion_count": 2,
+      "error_code": "ENOENT",
+      "error_message_sha256": "d5583adb9698fe0371f7a914852c6bbb79e140e82010d65cec65652c2770e7c1",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "MISSING_MODEL_EVIDENCE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#MISSING_MODEL_EVIDENCE",
+      "negative_assertion_count": 2,
+      "error_code": "BENCHMARK_EVIDENCE_MISSING",
+      "error_message_sha256": "91fbedbad60a4745218c02d88b0894f498dcf212b00f361af8eef9b77060fcbe",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "MODEL_UNAVAILABLE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#MODEL_UNAVAILABLE",
+      "negative_assertion_count": 2,
+      "error_code": "MODEL_POLICY_INVALID",
+      "error_message_sha256": "b0e2f4082a474325afcfa82886f34734d88730a8f3d4668da6f07e53fd103d01",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION",
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "attack_vector": "OUT_OF_LANE_MUTATION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#OUT_OF_LANE_MUTATION",
+      "negative_assertion_count": 2,
+      "error_code": "SPAWNER_DEFECT_LOOP_INVALID",
+      "error_message_sha256": "726d313082ddae04b1d5675ede639d521203db02a483181ba1138167ff3db4ef",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "PLACEHOLDER_CONTENT",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#PLACEHOLDER_CONTENT",
+      "negative_assertion_count": 2,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "86a0c3191fe1875383271face032274505a1dc7dd6251282de1c18a4e0ca276f",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "REVIEW_ISSUER_UNBOUND",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-bootstrap-governance.mjs#resolveCanonicalSpawnerBootstrapPackage",
+      "negative_assertion_count": 2,
+      "error_code": "SEALED_AUTHORITY_REQUIRED",
+      "error_message_sha256": "bd20bd347bff83009e68bf7944341acb8024e68ddb636f665cef12d808e767b4",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SEALED_LOADER_MUTATION",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "SEALED_LOADER_MUTATION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/sealed-canonical-authority.mjs#getSealedCanonicalAuthority",
+      "negative_assertion_count": 2,
+      "error_code": "SEALED_LOADER_MUTATION_DENIED",
+      "error_message_sha256": "d554d6f4974e098c4d4fd237d24417c82a7325f39a18d35ee7bc502af9b3f5c3",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SEED_EXECUTION",
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "attack_vector": "SEED_EXECUTION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#SEED_EXECUTION",
+      "negative_assertion_count": 2,
+      "error_code": "DIRECT_SEED_AUTHORITY_FORBIDDEN",
+      "error_message_sha256": "01d985aa1405ca5e2da72f276ca1e7df03d84bf887c1617d8668178af0993e6a",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE",
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "attack_vector": "SELF_ISSUED_CLEARANCE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#SELF_ISSUED_CLEARANCE",
+      "negative_assertion_count": 2,
+      "error_code": "SEALED_CLEARANCE_AUTHORITY_REQUIRED",
+      "error_message_sha256": "e9c62841861dcd1578a6501d005d9737d87e60a17830a49a5c0983eb77f0b45e",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.STALE_BLOCK",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "STALE_BLOCK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#STALE_BLOCK",
+      "negative_assertion_count": 2,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "c6a8b64a988c852808b6a03ce28ca41e7b941c83486e45196e9984731c27d1eb",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "STALE_MEMORY_READBACK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#STALE_MEMORY_READBACK",
+      "negative_assertion_count": 2,
+      "error_code": "GLOBAL_MEMORY_READBACK_STALE",
+      "error_message_sha256": "fbc0cf216d93fcbd00c5512c6499596a72f7a2ec7c3b240ddd25aa75fe7bcd71",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SWAPPED_FILE",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "SWAPPED_FILE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#SWAPPED_FILE",
+      "negative_assertion_count": 2,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "e83e0c4b269582eb8da5334bc88aadc4458a2c6668d418c5dafd28e0b1383e34",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR",
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "attack_vector": "TURN_WITHOUT_SUCCESSOR",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#TURN_WITHOUT_SUCCESSOR",
+      "negative_assertion_count": 2,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "fd5c41152c3ef234d2228cf2adc64c6608e082b3a5b847504e51eb004d5a3458",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.UNLISTED_MODEL",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "UNLISTED_MODEL",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#UNLISTED_MODEL",
+      "negative_assertion_count": 2,
+      "error_code": "MODEL_SOURCE_UNLISTED",
+      "error_message_sha256": "3dfd4b51d51c3758305eecfdf258bacc8681209178b2007f3391ae59d8ea0e5f",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "WRONG_GLOBAL_MEMORY_WRITER",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs#WRONG_GLOBAL_MEMORY_WRITER",
+      "negative_assertion_count": 2,
+      "error_code": "GLOBAL_MEMORY_WRITER_FORBIDDEN",
+      "error_message_sha256": "4135d566a1aec01413f0b54db9a9b11d960df0b2b08d7135a061155ccc3cc64d",
+      "result": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "evaluation_sha256": "d41dce6c982961785d3eef00df14931420deb0bb20d0f998044fe47216c6e471"
+}

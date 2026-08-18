@@ -10,6 +10,8 @@ The Bootstrap entrypoint is:
 
 `bootstrap/START-HERE.md`
 
+For the short, plain-language start sequence, read [`BOOTSTRAP.md`](BOOTSTRAP.md). It describes the one-time Bootstrap-to-Spawner start, the Project Owner role, and the Pyramid and Collaborative Audit workflow choices. The typed files under `control/` and `schemas/` remain authoritative.
+
 From this checkout, its full path is:
 
 `<AGENTOS_ROOT>/bootstrap/START-HERE.md`
@@ -67,8 +69,8 @@ conversations, owner handoffs, credentials, or runtime state from another
 project. A clean public distribution is prepared from the development copy
 only after the portability and hostile-boundary checks pass.
 
-Rapid prototyping follows the project-agnostic Audit-Driven Integration
-Pyramid. For a new project, the Controller records the selected stack,
+Rapid prototyping can follow the project-agnostic Audit-Driven Integration
+Pyramid or the six-at-a-time Collaborative Audit workflow. For a new project, the Controller records the selected stack,
 repository plan, and directory structure before work begins. For an imported
 project, it binds the source readback and waits for explicit owner approval
 before rapid development. The campaign first establishes and merges the

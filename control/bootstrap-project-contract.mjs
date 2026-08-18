@@ -560,6 +560,7 @@ function conditionalProfileField(conversation, questionId) {
 function compileProjectProfile(conversation) {
   return {
     starting_point: ownerField(conversation, "project.starting_point"),
+    development_workflow: ownerField(conversation, "development.workflow"),
     existing_invariants: conditionalProfileField(conversation, "existing.invariants"),
     capabilities: ownerField(conversation, "project.capabilities"),
     experience_channels: conditionalProfileField(conversation, "experience.channels"),
@@ -757,7 +758,7 @@ export function validateProjectContract(contract) {
   assert(isRecord(contract.intent) && isRecord(contract.scope) && isRecord(contract.boundaries), "project contract intent, scope, or boundaries are missing");
   assertExactKeys(contract.intent, ["audience", "outcome", "first_result", "summary"], "project contract intent");
   assertExactKeys(contract.project_profile, [
-    "starting_point", "existing_invariants", "capabilities", "experience_channels", "backend_behavior", "data_posture", "data_lifecycle", "access_model",
+    "starting_point", "development_workflow", "existing_invariants", "capabilities", "experience_channels", "backend_behavior", "data_posture", "data_lifecycle", "access_model",
     "ai_behavior", "ai_truth_boundary", "integration_boundaries", "hardware_constraints", "commerce_boundaries",
     "risk_applicability", "technology_constraints", "operating_conditions", "quality_priorities",
   ], "project contract project profile");

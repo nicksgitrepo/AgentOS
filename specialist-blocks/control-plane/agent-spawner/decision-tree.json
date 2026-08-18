@@ -1,8 +1,38 @@
 {
   "schema": "agentos.spawner_decision_tree.v1",
   "version": 1,
-  "entry": "OWNERSHIP_CLASSIFICATION",
+  "entry": "BOOTSTRAP_DISCOVERY_AND_INTERVIEW",
   "nodes": [
+    {
+      "node_id": "BOOTSTRAP_DISCOVERY_AND_INTERVIEW",
+      "yes": "BOOTSTRAP_START_EXACTLY_ONE_SPAWNER",
+      "no": "WAIT_FOR_DISCOVERY_OR_OWNER_ANSWER",
+      "unknown": "WAIT_FOR_DISCOVERY_OR_OWNER_ANSWER"
+    },
+    {
+      "node_id": "BOOTSTRAP_START_EXACTLY_ONE_SPAWNER",
+      "yes": "SPAWNER_CREATE_PERMANENT_PROJECT_ROSTER",
+      "no": "DENY_NON_SPAWNER_CREATION",
+      "unknown": "DENY_NON_SPAWNER_CREATION"
+    },
+    {
+      "node_id": "SPAWNER_CREATE_PERMANENT_PROJECT_ROSTER",
+      "yes": "BOOTSTRAP_BECOME_PROJECT_OWNER",
+      "no": "SPAWNER_REPAIR_ROSTER_ADMISSION",
+      "unknown": "SPAWNER_REPAIR_ROSTER_ADMISSION"
+    },
+    {
+      "node_id": "BOOTSTRAP_BECOME_PROJECT_OWNER",
+      "yes": "PROJECT_OWNER_SELECT_DEVELOPMENT_WORKFLOW",
+      "no": "DENY_HUMAN_FACING_ROLE_GAP",
+      "unknown": "DENY_HUMAN_FACING_ROLE_GAP"
+    },
+    {
+      "node_id": "PROJECT_OWNER_SELECT_DEVELOPMENT_WORKFLOW",
+      "yes": "OWNERSHIP_CLASSIFICATION",
+      "no": "WAIT_FOR_BOUNDED_OWNER_CHOICE",
+      "unknown": "WAIT_FOR_BOUNDED_OWNER_CHOICE"
+    },
     {
       "node_id": "OWNERSHIP_CLASSIFICATION",
       "yes": "AUTONOMOUS_REPAIR_STARTED",
@@ -89,5 +119,13 @@
   "verifier_may_patch_evaluated_candidate": false,
   "verifier_selection_rule": "MOST_ECONOMICAL_CURRENTLY_AVAILABLE_MODEL_THAT_MEETS_THE_INDEPENDENT_HOSTILE_VERIFIER_CAPABILITY_FLOOR",
   "elapsed_time_may_weaken_sequence": false,
-  "decision_tree_sha256": "3e7d0dffbbffbbf9d577dd948f037f01ad68b03bb8e89d30a3a6fbedf83c1f5b"
+  "decision_tree_sha256": "cf1c8f022663dfb85c6d9ef505b73e76b8b1d184b6a4eca9fd50545b8cf944d1",
+  "project_owner_human_surface": "SIMPLE_NATURAL_LANGUAGE_DEFAULT_WITH_ELABORATE_AND_ADVANCED_OPT_IN",
+  "agent_lifecycle_authority": "BOOTSTRAP_MAY_START_FIRST_SPAWNER_THEN_SPAWNER_ONLY_FOR_ALL_CREATE_AND_DESPAWN",
+  "auditor_closeout": "DESPAWN_AFTER_ACCEPTED_HANDOFF_CLOSED_SCOPE_PRESERVED_EVIDENCE_AND_ZERO_REFERENCES",
+  "development_workflows": [
+    "COLLABORATIVE_AUDIT",
+    "PYRAMID"
+  ],
+  "collaborative_audit": "SIX_READ_ONLY_AUDITORS_THEN_ONE_BULK_BUILDER_WITH_THREE_ATTEMPTS_AND_GOVERNED_SOL_ULTRA_ESCALATION"
 }

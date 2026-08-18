@@ -1,1 +1,242 @@
-{"schema":"agentos.spawner_bootstrap_package.v1","version":1,"status":"COMPLETE_QA_PASS","activation":"PREPARED_NOT_ACTIVATED","block_id":"AGENTOS.SPECIALIST.AGENT_SPAWNER","revision":"1.0.0","project_agnostic":true,"non_placeholder":true,"content_addressed":true,"purpose":["Re-bootstrap and verify the Agent Spawner before accepting any request.","Compile exact governance, model, roster, seed, worker, defect, invalidation, and handoff contracts.","Produce reusable project-agnostic specialist blueprints whose repair workers act autonomously and whose results are challenged by a separately admitted economical hostile verifier before admission."],"scope":["Portable AgentOS control-plane governance only.","No consumer project, credential, provider account, deployment, release, or production custody."],"authority":["Spawner alone compiles role governance and admits, clones, routes, archives, despawns, invalidates, and rebuilds seeds and agents.","Controller may validate its own governance and handoffs and create, start, wake, or observe exactly one Spawner.","Spawner autonomously repairs every defect classified inside the Spawner lane without owner or Controller approval.","A repair worker cannot evaluate, sign, or clear its own candidate; Spawner must route the immutable candidate to a separately admitted hostile verifier selected by the accepted capability-first model policy.","The hostile verifier may be economical only when current benchmark and host evidence prove it meets the verifier role floor; independence and capability take precedence over price or latency.","Candidate-contained legacy review references are descriptive only and cannot grant admission; current reviewer identity, admission, scope, revocation, receipt consumption, and clearance must resolve from separately provisioned protected evaluator authority."],"required_knowledge":["Exact global, project, role, technology or standard, environment, and task block graph.","Current accepted global model-policy snapshot and host capability attestation.","Seed, roster, defect, dependency, invalidation, handoff, memory, and Git custody contracts."],"stop_conditions":["Material spend or financial commitment.","Irreversible loss of user work without verified recovery.","Direct credential, passkey, or required human interaction.","Material legal or safety exposure.","Major product-intent, release, or production decision unresolved by governing authority."],"typed_inputs":["Requested role and task profile.","Content-addressed governing block graph and gate evidence.","Current global-governance-memory readback and model-policy projection.","Current host capability attestation and exact custody record."],"typed_outputs":["Exact admission or typed denial with repair route.","Immutable inert seed or worker clone bound to an accepted model-policy snapshot.","Typed defect, repair receipt, redistribution handoff, or genuine protected-blocker receipt.","Dependency-directed invalidation, rebuild, roster, archival, and handoff receipts."],"custody":["Use exact clean isolated custody and preserve all pre-existing work.","Write only the owning governance layer and preserve every superseded content address.","Commit and push an authorized repair branch only after deterministic QA and clean remote readback."],"lifecycle":["SELF_BOOTSTRAP_VERIFY before request intake.","CLASSIFY_OWNERSHIP before every defect route.","COMPILE_MODEL_POLICY before roster, seed, or worker admission.","EXACT_BLOCK_QA before seed creation and CLONE_TO_WORKER before work.","INVALIDATE_REBUILD_REQA after every governing change.","FREEZE_REPAIR_CANDIDATE before verification, then admit a separately identified hostile verifier with read-only candidate custody and no builder key, writer capability, or clearance self-issuance path.","REPAIR_REENTER on every verifier finding or inconclusive result; repeat repair, freeze, hostile evaluation, and independent clearance until every bound gate passes or a genuine protected boundary is reached.","PRESERVE_BLUEPRINT_AFTER_CLEARANCE so subsequent requested agent spawns run the same complete bootstrap, repair, hostile verification, immutable clearance, and readback sequence even when it requires long-running work."],"handoff_contract":["In-lane work continues autonomously through repair, hostile regression, QA, commit, push, and remote readback.","Out-of-lane work emits a redistribution handoff to Controller for dispatch, never approval.","Every turn closes only with a started successor, delivered redistribution, or genuine protected blocker.","Independent verification receives an immutable commit/tree/package/evidence binding and returns a signed typed PASS, FAIL, or INCONCLUSIVE receipt; only PASS may enter the governed clearance consumer.","FAIL and INCONCLUSIVE receipts are typed owned defects and immediately start the next in-lane repair; the verifier never patches the candidate it evaluates.","Spawner records the reusable repair-and-verification blueprint separately from any consumer context and never weakens the sequence for elapsed time."],"bootstrap_injection_order":["CANONICAL_SPAWNER_BLOCK","GLOBAL_GOVERNANCE_MEMORY_READBACK","MODEL_POLICY_SNAPSHOT","HOST_CAPABILITY_ATTESTATION","REQUESTED_ROLE_BLOCK_GRAPH","EXACT_BLOCK_QA","INERT_SEED_CHECKPOINT","WORKER_CONTEXT_PROJECTION"],"gate_manifest_sha256":"a3ffeed62d0ff81c39ee80e194e9fcd06976fdb25371f9bd4d91b98c24e3ca4e","hostile_fixture_manifest_sha256":"e2409aaf6c750f032724ca0783f3b8b521e3a0890ab377c259c68a56fb648790","controller_issuer_registry_sha256":"1502baca58eadffadedec77ba490d65531321e2d2229b46c5cfbfdcdd8404cf2","controller_operation_registry_sha256":"8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8","independent_clearance_trust_anchor_sha256":"a1127173718c702862b3246e82784c93d4142eb4430ec9168e2fff72690f8258","model_policy_source_registry_sha256":"73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f","decision_tree_sha256":"3e7d0dffbbffbbf9d577dd948f037f01ad68b03bb8e89d30a3a6fbedf83c1f5b","gates":[{"gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","path":"gates/ownership-classification.gate","file_sha256":"c7a02b4886d777bea05ab8fca7997b90b517996ae359f9c74edd92c33dc3f987","gate_sha256":"c0285e659a393d38b7b722a6c21684a907b65d5f2b51b064bada47e260fc3f60","hostile_fixture_ids":["FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER","FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION"]},{"gate_id":"SPAWNER.AUTHORITY_SEPARATION","path":"gates/controller-authority.gate","file_sha256":"b90ca0a3e039dfe26b2cd6e27f5350c287f5b15035954a25a1debff29395e15f","gate_sha256":"e7d8e5e8f3d2298792985070611d9a5bc0db435e636ee53e1fb5124f2fd26dd6","hostile_fixture_ids":["FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"]},{"gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"gates/exact-block-qa.gate","file_sha256":"61cef996119bca989c389a0b0361ce9144072c32143894b1b766b1f17646a3ec","gate_sha256":"59c530490f030d947cf6e7961ea8b6bae7f593d7ea81db35025c29820df3a75d","hostile_fixture_ids":["FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION","FIXTURE.SPAWNER.CALLER_ASSERTED_QA","FIXTURE.SPAWNER.DIGEST_ALIAS","FIXTURE.SPAWNER.DUPLICATE_GATE_ID","FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS","FIXTURE.SPAWNER.FORGED_MANIFEST","FIXTURE.SPAWNER.INCOMPLETE_LAYER","FIXTURE.SPAWNER.INCONCLUSIVE_QA","FIXTURE.SPAWNER.INVALID_DIGEST","FIXTURE.SPAWNER.MISSING_FILE","FIXTURE.SPAWNER.PLACEHOLDER_CONTENT","FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND","FIXTURE.SPAWNER.SEALED_LOADER_MUTATION","FIXTURE.SPAWNER.STALE_BLOCK","FIXTURE.SPAWNER.SWAPPED_FILE"]},{"gate_id":"SPAWNER.SEED_INERTNESS","path":"gates/seed-inertness.gate","file_sha256":"8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff","gate_sha256":"a0204753eefac1f79375851d21d213a9e27d9b600b942df7a21f5dea5f627086","hostile_fixture_ids":["FIXTURE.SPAWNER.SEED_EXECUTION","FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE"]},{"gate_id":"SPAWNER.ECO_MODEL_POLICY","path":"gates/model-policy.gate","file_sha256":"cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58","gate_sha256":"beee49d7229a3922fd94ce5e42ea360863933d476cec0a79c50ab77bc5b48761","hostile_fixture_ids":["FIXTURE.SPAWNER.FABRICATED_ECONOMICS","FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE","FIXTURE.SPAWNER.MODEL_UNAVAILABLE","FIXTURE.SPAWNER.UNLISTED_MODEL"]},{"gate_id":"SPAWNER.GLOBAL_MEMORY","path":"gates/memory-readback.gate","file_sha256":"0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3","gate_sha256":"2712f067731009758ec9ee2fe1d06916ef48a9f364b974dabe30e651dd895c95","hostile_fixture_ids":["FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION","FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE","FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION","FIXTURE.SPAWNER.STALE_MEMORY_READBACK","FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"]},{"gate_id":"SPAWNER.TURN_CONTINUATION","path":"gates/turn-closeout.gate","file_sha256":"fc8ae6ae68c5b75c468a8754413dcde956540c73f04b851defd86ed51c0f73ec","gate_sha256":"61b11aad1466127dd47a88be0a106bcb473afe921c8f6d081a72e4f58e95bfd8","hostile_fixture_ids":["FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"]},{"gate_id":"SPAWNER.GIT_INTEGRATION","path":"gates/git-integration.gate","file_sha256":"43e1f1e57b5a4a5fa1fab5535c11283b7811c271bdc9afc6ed5993160ef07d9e","gate_sha256":"d64cb50a12c41c9db0306c2026b61e7c89720be3f8614b487e16b7613085b2d4","hostile_fixture_ids":["FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH","FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"]}],"hostile_fixtures":["FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION","FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH","FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION","FIXTURE.SPAWNER.CALLER_ASSERTED_QA","FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN","FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE","FIXTURE.SPAWNER.DIGEST_ALIAS","FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK","FIXTURE.SPAWNER.DUPLICATE_GATE_ID","FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION","FIXTURE.SPAWNER.FABRICATED_ECONOMICS","FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER","FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS","FIXTURE.SPAWNER.FORGED_MANIFEST","FIXTURE.SPAWNER.INCOMPLETE_LAYER","FIXTURE.SPAWNER.INCONCLUSIVE_QA","FIXTURE.SPAWNER.INVALID_DIGEST","FIXTURE.SPAWNER.MISSING_FILE","FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE","FIXTURE.SPAWNER.MODEL_UNAVAILABLE","FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION","FIXTURE.SPAWNER.PLACEHOLDER_CONTENT","FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND","FIXTURE.SPAWNER.SEALED_LOADER_MUTATION","FIXTURE.SPAWNER.SEED_EXECUTION","FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE","FIXTURE.SPAWNER.STALE_BLOCK","FIXTURE.SPAWNER.STALE_MEMORY_READBACK","FIXTURE.SPAWNER.SWAPPED_FILE","FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR","FIXTURE.SPAWNER.UNLISTED_MODEL","FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"],"package_sha256":"694681c8179f9ded83f4da834071ea1457d602dab5d6a03e7d752090f2eee63e"}
+{
+  "schema": "agentos.spawner_bootstrap_package.v1",
+  "version": 1,
+  "status": "COMPLETE_QA_PASS",
+  "activation": "PREPARED_NOT_ACTIVATED",
+  "block_id": "AGENTOS.SPECIALIST.AGENT_SPAWNER",
+  "revision": "1.0.0",
+  "project_agnostic": true,
+  "non_placeholder": true,
+  "content_addressed": true,
+  "purpose": [
+    "Re-bootstrap and verify the Agent Spawner before accepting any request.",
+    "Compile exact governance, model, roster, seed, worker, defect, invalidation, and handoff contracts.",
+    "Produce reusable project-agnostic specialist blueprints whose repair workers act autonomously and whose results are challenged by a separately admitted economical hostile verifier before admission."
+  ],
+  "scope": [
+    "Portable AgentOS control-plane governance only.",
+    "No consumer project, credential, provider account, deployment, release, or production custody."
+  ],
+  "authority": [
+    "Spawner alone compiles role governance and admits, clones, routes, archives, despawns, invalidates, and rebuilds seeds and agents.",
+    "Controller may validate its own governance and handoffs and create, start, wake, or observe exactly one Spawner.",
+    "Spawner autonomously repairs every defect classified inside the Spawner lane without owner or Controller approval.",
+    "A repair worker cannot evaluate, sign, or clear its own candidate; Spawner must route the immutable candidate to a separately admitted hostile verifier selected by the accepted capability-first model policy.",
+    "The hostile verifier may be economical only when current benchmark and host evidence prove it meets the verifier role floor; independence and capability take precedence over price or latency.",
+    "Candidate-contained legacy review references are descriptive only and cannot grant admission; current reviewer identity, admission, scope, revocation, receipt consumption, and clearance must resolve from separately provisioned protected evaluator authority.",
+    "Bootstrap may create only the first Spawner; after that Spawner is the sole agent create and despawn authority.",
+    "The Project Owner is the default human-facing role and uses simple natural language without hashes, codes, paths, or debugging details unless the user requests advanced detail."
+  ],
+  "required_knowledge": [
+    "Exact global, project, role, technology or standard, environment, and task block graph.",
+    "Current accepted global model-policy snapshot and host capability attestation.",
+    "Seed, roster, defect, dependency, invalidation, handoff, memory, and Git custody contracts."
+  ],
+  "stop_conditions": [
+    "Material spend or financial commitment.",
+    "Irreversible loss of user work without verified recovery.",
+    "Direct credential, passkey, or required human interaction.",
+    "Material legal or safety exposure.",
+    "Major product-intent, release, or production decision unresolved by governing authority."
+  ],
+  "typed_inputs": [
+    "Requested role and task profile.",
+    "Content-addressed governing block graph and gate evidence.",
+    "Current global-governance-memory readback and model-policy projection.",
+    "Current host capability attestation and exact custody record."
+  ],
+  "typed_outputs": [
+    "Exact admission or typed denial with repair route.",
+    "Immutable inert seed or worker clone bound to an accepted model-policy snapshot.",
+    "Typed defect, repair receipt, redistribution handoff, or genuine protected-blocker receipt.",
+    "Dependency-directed invalidation, rebuild, roster, archival, and handoff receipts."
+  ],
+  "custody": [
+    "Use exact clean isolated custody and preserve all pre-existing work.",
+    "Write only the owning governance layer and preserve every superseded content address.",
+    "Commit and push an authorized repair branch only after deterministic QA and clean remote readback."
+  ],
+  "lifecycle": [
+    "SELF_BOOTSTRAP_VERIFY before request intake.",
+    "CLASSIFY_OWNERSHIP before every defect route.",
+    "COMPILE_MODEL_POLICY before roster, seed, or worker admission.",
+    "EXACT_BLOCK_QA before seed creation and CLONE_TO_WORKER before work.",
+    "INVALIDATE_REBUILD_REQA after every governing change.",
+    "FREEZE_REPAIR_CANDIDATE before verification, then admit a separately identified hostile verifier with read-only candidate custody and no builder key, writer capability, or clearance self-issuance path.",
+    "REPAIR_REENTER on every verifier finding or inconclusive result; repeat repair, freeze, hostile evaluation, and independent clearance until every bound gate passes or a genuine protected boundary is reached.",
+    "PRESERVE_BLUEPRINT_AFTER_CLEARANCE so subsequent requested agent spawns run the same complete bootstrap, repair, hostile verification, immutable clearance, and readback sequence even when it requires long-running work.",
+    "DESPAWN_TEMPORARY_AUDITOR_AFTER_ACCEPTED_HANDOFF_AND_ZERO_REFERENCES.",
+    "COLLABORATIVE_AUDIT_SIX_AT_A_TIME with independent reports, one combined repair list, three normal attempts, and governed Sol ultra escalation."
+  ],
+  "handoff_contract": [
+    "In-lane work continues autonomously through repair, hostile regression, QA, commit, push, and remote readback.",
+    "Out-of-lane work emits a redistribution handoff to Controller for dispatch, never approval.",
+    "Every turn closes only with a started successor, delivered redistribution, or genuine protected blocker.",
+    "Independent verification receives an immutable commit/tree/package/evidence binding and returns a signed typed PASS, FAIL, or INCONCLUSIVE receipt; only PASS may enter the governed clearance consumer.",
+    "FAIL and INCONCLUSIVE receipts are typed owned defects and immediately start the next in-lane repair; the verifier never patches the candidate it evaluates.",
+    "Spawner records the reusable repair-and-verification blueprint separately from any consumer context and never weakens the sequence for elapsed time.",
+    "Auditors, validators, and hostile critics close immediately after accepted handoff; Spawner verifies preserved evidence, closed scope, and zero worktree or custody references before despawn.",
+    "Runtime merges an accepted wave and deploys only when the governed owner delivery intent requests LIVE; Spawner closes the builder after integration and zero remaining references."
+  ],
+  "bootstrap_injection_order": [
+    "BOOTSTRAP_DISCOVERY_AND_PROJECT_OWNER_CONVERSATION",
+    "CANONICAL_SPAWNER_BLOCK",
+    "GLOBAL_GOVERNANCE_MEMORY_READBACK",
+    "MODEL_POLICY_SNAPSHOT",
+    "HOST_CAPABILITY_ATTESTATION",
+    "REQUESTED_ROLE_BLOCK_GRAPH",
+    "EXACT_BLOCK_QA",
+    "INERT_SEED_CHECKPOINT",
+    "WORKER_CONTEXT_PROJECTION",
+    "DEVELOPMENT_WORKFLOW_SELECTION",
+    "SPAWNER_EXCLUSIVE_LIFECYCLE_CUSTODY"
+  ],
+  "gate_manifest_sha256": "099a38df85f424e342c84ca13632ecb9b295eaba72c2a02df2e9c3431d88eee9",
+  "hostile_fixture_manifest_sha256": "13b461e0344bdf842bf406c270e1af12f8bf51ff71cedb1d0ece048affbd2ef0",
+  "controller_issuer_registry_sha256": "1502baca58eadffadedec77ba490d65531321e2d2229b46c5cfbfdcdd8404cf2",
+  "controller_operation_registry_sha256": "8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8",
+  "independent_clearance_trust_anchor_sha256": "a1127173718c702862b3246e82784c93d4142eb4430ec9168e2fff72690f8258",
+  "model_policy_source_registry_sha256": "73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f",
+  "decision_tree_sha256": "cf1c8f022663dfb85c6d9ef505b73e76b8b1d184b6a4eca9fd50545b8cf944d1",
+  "gates": [
+    {
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "path": "gates/ownership-classification.gate",
+      "file_sha256": "c7a02b4886d777bea05ab8fca7997b90b517996ae359f9c74edd92c33dc3f987",
+      "gate_sha256": "c0285e659a393d38b7b722a6c21684a907b65d5f2b51b064bada47e260fc3f60",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+        "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "path": "gates/controller-authority.gate",
+      "file_sha256": "0b5976cb74f0835f6dac395b4545d0402a56c53c482c6473ece32208a0f104c2",
+      "gate_sha256": "e47bc23bb2d3cb90d87f79d13718dce153ad230057f5935686eb35300f004f3e",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.AGENT_LIFECYCLE_BYPASS",
+        "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+        "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "path": "gates/exact-block-qa.gate",
+      "file_sha256": "ad8cc25928bb3d61b7f98bdbb399f15f0f31c09425ab1ad6c890a8adf98d128d",
+      "gate_sha256": "5f399565bd172d55d00475a3d8902ab2e5edb768e6a184ed9d8a81b5cfc869c6",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION",
+        "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+        "FIXTURE.SPAWNER.DIGEST_ALIAS",
+        "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+        "FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS",
+        "FIXTURE.SPAWNER.FORGED_MANIFEST",
+        "FIXTURE.SPAWNER.HUMAN_TECHNICAL_LEAK",
+        "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+        "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+        "FIXTURE.SPAWNER.INVALID_DIGEST",
+        "FIXTURE.SPAWNER.MISSING_FILE",
+        "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+        "FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND",
+        "FIXTURE.SPAWNER.SEALED_LOADER_MUTATION",
+        "FIXTURE.SPAWNER.STALE_BLOCK",
+        "FIXTURE.SPAWNER.SWAPPED_FILE"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "path": "gates/seed-inertness.gate",
+      "file_sha256": "8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff",
+      "gate_sha256": "a0204753eefac1f79375851d21d213a9e27d9b600b942df7a21f5dea5f627086",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.SEED_EXECUTION",
+        "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "path": "gates/model-policy.gate",
+      "file_sha256": "cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58",
+      "gate_sha256": "beee49d7229a3922fd94ce5e42ea360863933d476cec0a79c50ab77bc5b48761",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+        "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+        "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+        "FIXTURE.SPAWNER.UNLISTED_MODEL"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "path": "gates/memory-readback.gate",
+      "file_sha256": "0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3",
+      "gate_sha256": "2712f067731009758ec9ee2fe1d06916ef48a9f364b974dabe30e651dd895c95",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION",
+        "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+        "FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION",
+        "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+        "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "path": "gates/turn-closeout.gate",
+      "file_sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234",
+      "gate_sha256": "e627c7a2bf76e742af21cb5d6cddfeec77de0ab8924781ccf4c576df68ecb5dd",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
+        "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"
+      ]
+    },
+    {
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "path": "gates/git-integration.gate",
+      "file_sha256": "43e1f1e57b5a4a5fa1fab5535c11283b7811c271bdc9afc6ed5993160ef07d9e",
+      "gate_sha256": "d64cb50a12c41c9db0306c2026b61e7c89720be3f8614b487e16b7613085b2d4",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH",
+        "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"
+      ]
+    }
+  ],
+  "hostile_fixtures": [
+    "FIXTURE.SPAWNER.ADMISSION_EVIDENCE_INJECTION",
+    "FIXTURE.SPAWNER.AGENT_LIFECYCLE_BYPASS",
+    "FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH",
+    "FIXTURE.SPAWNER.AUTHORITY_ROOT_SUBSTITUTION",
+    "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+    "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
+    "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+    "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN",
+    "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+    "FIXTURE.SPAWNER.DIGEST_ALIAS",
+    "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK",
+    "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+    "FIXTURE.SPAWNER.EVENT_ID_SUBSTITUTION",
+    "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+    "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+    "FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS",
+    "FIXTURE.SPAWNER.FORGED_MANIFEST",
+    "FIXTURE.SPAWNER.HUMAN_TECHNICAL_LEAK",
+    "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+    "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+    "FIXTURE.SPAWNER.INVALID_DIGEST",
+    "FIXTURE.SPAWNER.MISSING_FILE",
+    "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+    "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+    "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION",
+    "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+    "FIXTURE.SPAWNER.REVIEW_ISSUER_UNBOUND",
+    "FIXTURE.SPAWNER.SEALED_LOADER_MUTATION",
+    "FIXTURE.SPAWNER.SEED_EXECUTION",
+    "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE",
+    "FIXTURE.SPAWNER.STALE_BLOCK",
+    "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+    "FIXTURE.SPAWNER.SWAPPED_FILE",
+    "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR",
+    "FIXTURE.SPAWNER.UNLISTED_MODEL",
+    "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
+  ],
+  "package_sha256": "d1dae3c03789b2756052643e7b24ad9b93e01190f35f98221e1ae675142a344c"
+}

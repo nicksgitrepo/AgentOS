@@ -167,3 +167,7 @@ export * as deliveryOperationGovernance from "./delivery-operation-governance.mj
 export * as repairRecovery from "./repair-recovery.mjs";
 export * as continuousLoop from "./continuous-operating-loop.mjs";
 export * as apprenticeshipRunner from "./apprenticeship-native-runner.mjs";
+export * as projectOwnerConversation from "./project-owner-conversation.mjs";
+export * as projectOwnerBootstrap from "./project-owner-bootstrap.mjs";
+export * as agentLifecycleCustody from "./agent-lifecycle-custody.mjs";
+export * as collaborativeAuditWorkflow from "./collaborative-audit-workflow.mjs";

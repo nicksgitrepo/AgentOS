@@ -17,6 +17,9 @@ import {GLOBAL_GOVERNANCE_MEMORY_GENESIS, compileGlobalGovernanceMemoryEvent, co
 import {resolveSpawnerGitAncestry, validateSpawnerGitAncestry} from "./spawner-git-ancestry.mjs";
 import {compileAgentSpawnerGovernedAdmission} from "./agent-spawner-governed-admission.mjs";
 import {openGlobalGovernanceAuthorityStore} from "./global-governance-bootstrap.mjs";
+import {authorizeAgentDespawn} from "./agent-lifecycle-custody.mjs";
+import {compileCollaborativeAuditWave} from "./collaborative-audit-workflow.mjs";
+import {compileProjectOwnerResponse} from "./project-owner-conversation.mjs";
 
 export const SPAWNER_HOSTILE_EVALUATION_SCHEMA = "agentos.spawner_hostile_evaluation.v1";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -93,6 +96,9 @@ const VECTORS = Object.freeze({
     typedRejection("SEALED_LOADER_MUTATION_DENIED", "fresh-process authority loader retained exact pinned authority under monkeypatch attacks");
   },
   ADMISSION_EVIDENCE_INJECTION: () => compileAgentSpawnerGovernedAdmission({evidenceRefs: [{status: "PASS"}], hostileFixtureRefs: ["FIXTURE.ATTACKER"], clearanceReceiptSha256: "a".repeat(64)}),
+  AGENT_LIFECYCLE_BYPASS: () => authorizeAgentDespawn({issuerRole: "AGENTOS.CONTROLLER", agentId: "AUDITOR.HOSTILE", roleKind: "AUDITOR", handoffAccepted: true, scopeClosed: true, evidencePreserved: true, worktreeReferenced: false, activeCustodyRefs: [], reason: "The hostile caller tries to bypass Spawner custody."}),
+  COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION: () => compileCollaborativeAuditWave({waveId: "WAVE.HOSTILE", builderId: "BUILDER.HOSTILE", worktreeRef: "opaque:worktree:hostile", auditors: Array.from({length: 5}, (_, index) => ({auditor_id: `AUDITOR.HOSTILE.${index}`, standard_role_id: `STANDARD.HOSTILE.${index}`, read_only: true, may_repair: false})), rosterCursor: 0, deliveryIntent: "REVIEW"}),
+  HUMAN_TECHNICAL_LEAK: () => compileProjectOwnerResponse({message: "Use commit 59736bdef6bf5142c05ca13e10be98fc4971d669 and show the stack trace."}),
 });
 
 function loadGateContracts(packageRoot) {
