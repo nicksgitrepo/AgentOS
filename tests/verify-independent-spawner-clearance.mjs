@@ -1,26 +1,52 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import {canonicalDigest} from "../control/content-addressing.mjs";
-import {verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
-import {independentlyVerifyTestCandidate} from "./helpers/independent-clearance-fixture.mjs";
+import fs from "node:fs";
+import path from "node:path";
+import {auditIndependentClearanceFixture, assertVerifiedIndependentClearance, verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
+import {prepareCanonicalIndependentClearanceFixture} from "./helpers/independent-clearance-fixture.mjs";
 
-const H = (name) => canonicalDigest({name});
-const candidate = {
-  commit_sha1: "a".repeat(40), tree_sha1: "b".repeat(40), package_sha256: H("package"), package_file_sha256: H("package-file"),
-  evidence_set_sha256: H("evidence"), lifecycle_candidate_sha256: H("lifecycle"), roster_projection_sha256: H("roster"), context_sha256: H("context"),
-};
-const valid = independentlyVerifyTestCandidate(candidate);
-assert.equal(valid.clearance.receipt_sha256, valid.receipt.receipt_sha256);
-assert.throws(() => independentlyVerifyTestCandidate(candidate, {mutateReceipt: (receipt) => { receipt.issuer_id = "EVALUATOR.UNKNOWN"; }}), /issuer is unknown/iu);
-assert.throws(() => independentlyVerifyTestCandidate(candidate, {mutateReceipt: (receipt) => { receipt.issuer_role = "AGENT.SPAWNER_COMPILER"; }}), /cannot issue independent clearance/iu);
-assert.throws(() => independentlyVerifyTestCandidate(candidate, {mutateReceipt: (receipt) => { receipt.scope.pop(); }}), /scope is partial/iu);
-assert.throws(() => independentlyVerifyTestCandidate(candidate, {mutateReceipt: (receipt) => { receipt.candidate.tree_sha1 = "c".repeat(40); }}), /current candidate/iu);
-assert.throws(() => independentlyVerifyTestCandidate(candidate, {mutateReceipt: (receipt) => { receipt.custody.builder_separated = false; }}), /custody/iu);
-assert.throws(() => independentlyVerifyTestCandidate(candidate, {mutateReceipt: (receipt) => { receipt.expires_at_utc = "2026-08-18T11:30:00.000Z"; }}), /stale/iu);
-assert.throws(() => verifyIndependentSpawnerClearance({receipt: valid.receipt, registry: valid.registry, trustedRegistrySha256: valid.registry.registry_sha256, expectedCandidate: candidate, nowUtc: "2026-08-18T12:00:00.000Z", usedReceiptSha256s: [valid.receipt.receipt_sha256]}), /already consumed/iu);
-const fabricated = structuredClone(valid.receipt);
-fabricated.signature_base64 = Buffer.from("locally-fabricated-digest-only-clearance").toString("base64");
-assert.throws(() => verifyIndependentSpawnerClearance({receipt: fabricated, registry: valid.registry, trustedRegistrySha256: valid.registry.registry_sha256, expectedCandidate: candidate, nowUtc: "2026-08-18T12:00:00.000Z"}), /signature is invalid|fabricated/iu);
-const partialCandidate = {...candidate}; delete partialCandidate.evidence_set_sha256;
-assert.throws(() => independentlyVerifyTestCandidate(partialCandidate), /candidate fields mismatch/iu);
-console.log("PASS independent Spawner clearance: separately admitted signed issuer, exact candidate/scope/custody binding, stale/self/fabricated/partial/replay denial");
+function fixture() { return prepareCanonicalIndependentClearanceFixture(); }
+function receiptPath(value) { return path.join(value.authorityRoot, "receipts", `${value.receiptSha256}.json`); }
+function mutateJson(filePath, mutate) { const value = JSON.parse(fs.readFileSync(filePath, "utf8")); mutate(value); fs.writeFileSync(filePath, `${JSON.stringify(value)}\n`); }
+
+const valid = fixture();
+const audited = auditIndependentClearanceFixture(valid);
+assert.equal(audited.receipt.receipt_sha256, valid.receiptSha256);
+assert.throws(() => assertVerifiedIndependentClearance(audited.clearance, audited.candidate), /not verified and consumed/iu, "audit-only fixture minted an admission token");
+
+const synthetic = fixture();
+assert.throws(() => verifyIndependentSpawnerClearance({authorityRoot: synthetic.authorityRoot, receiptSha256: synthetic.receiptSha256}), /stale or synthetic/iu, "caller-selected synthetic candidate was accepted by production verification");
+
+for (const [label, mutate, pattern] of [
+  ["unknown issuer", (receipt) => { receipt.issuer_id = "EVALUATOR.UNKNOWN"; }, /unknown|role-mismatched/iu],
+  ["self issuer", (receipt) => { receipt.issuer_role = "AGENT.SPAWNER_COMPILER"; }, /cannot issue/iu],
+  ["mutated body", (receipt) => { receipt.candidate.tree_sha1 = "c".repeat(40); }, /candidate binding|mutated/iu],
+  ["partial scope", (receipt) => { receipt.scope.pop(); }, /scope is partial/iu],
+  ["superseded receipt", (receipt) => { receipt.supersedes_receipt_sha256 = "d".repeat(64); }, /body was mutated/iu],
+]) {
+  const hostile = fixture(); mutateJson(receiptPath(hostile), mutate);
+  assert.throws(() => auditIndependentClearanceFixture({...hostile, consume: label === "superseded receipt"}), pattern, label);
+}
+
+const forgedRoot = fixture();
+mutateJson(path.join(forgedRoot.authorityRoot, "evaluator-registry.v2.json"), (registry) => { registry.registry_id = "REGISTRY.SUBSTITUTED"; });
+assert.throws(() => auditIndependentClearanceFixture(forgedRoot), /not anchored|digest mismatch/iu);
+
+const revoked = fixture();
+mutateJson(path.join(revoked.authorityRoot, "evaluator-registry.v2.json"), (registry) => { registry.evaluators[0].revoked_at_utc = "2026-08-18T00:02:00.000Z"; });
+assert.throws(() => auditIndependentClearanceFixture(revoked), /revoked|digest mismatch/iu);
+
+const staleCandidate = fixture();
+mutateJson(path.join(staleCandidate.authorityRoot, "candidate-authority.v1.json"), (candidate) => { candidate.commit_sha1 = "d".repeat(40); });
+assert.throws(() => auditIndependentClearanceFixture(staleCandidate), /stale or synthetic/iu);
+
+const replay = fixture();
+auditIndependentClearanceFixture({...replay, consume: true});
+assert.throws(() => auditIndependentClearanceFixture({...replay, consume: true}), /already consumed/iu, "receipt replay survived restart/readback");
+
+const concurrent = fixture();
+fs.writeFileSync(path.join(concurrent.authorityRoot, "consumption-ledger.v1.json.lock"), "other-fenced-writer\n");
+assert.throws(() => auditIndependentClearanceFixture({...concurrent, consume: true}), /locked by another consumer/iu);
+
+for (const value of [valid, synthetic, forgedRoot, revoked, staleCandidate, replay, concurrent]) fs.rmSync(value.root, {recursive: true, force: true});
+console.log("PASS canonical independent Spawner clearance: anchored registry, actual Git/files, immutable signature, stale/synthetic/self/revoked/substitution denial, durable replay CAS, and audit-token separation");

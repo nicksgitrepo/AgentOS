@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.operational_global_governance_context.v1",
+  "title": "Canonical operational global-governance projection context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "operational_id", "role_class", "read_only_projection", "global_memory_write_capability", "ledger_head_sha256", "memory_readback_sha256", "bootstrap_sha256", "snapshot_sha256", "projection_sha256", "compact_selection", "worker_binding_rule", "context_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.operational_global_governance_context.v1"},
+    "version": {"const": 1},
+    "status": {"const": "READY"},
+    "operational_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "role_class": {"enum": ["CONTROLLER", "SPAWNER", "SCHEDULER", "RUNTIME", "ORCHESTRATOR", "PERMANENT_ROLE", "INERT_SEED", "WORKING_AGENT"]},
+    "read_only_projection": {"const": true},
+    "global_memory_write_capability": {"type": "boolean"},
+    "ledger_head_sha256": {"$ref": "#/$defs/sha256"},
+    "memory_readback_sha256": {"$ref": "#/$defs/sha256"},
+    "bootstrap_sha256": {"$ref": "#/$defs/sha256"},
+    "snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "projection_sha256": {"$ref": "#/$defs/sha256"},
+    "compact_selection": {"anyOf": [{"type": "null"}, {"type": "object"}]},
+    "worker_binding_rule": {"enum": ["CURRENT_HEAD_REQUIRED_BEFORE_WORK", "BOUND_UNTIL_HANDOFF_OR_TYPED_SAFE_REFRESH"]},
+    "context_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+  "authority_rules": {
+    "writer": "Only the SPAWNER role class receives global_memory_write_capability=true; the governed Memory adapter writes through its separate append contract.",
+    "readers": "All eight role classes receive compact read-only projections resolved from the current accepted global-governance memory head.",
+    "supersession": "Non-worker contexts fail closed on a changed head; active workers retain the exact bound snapshot only until handoff or typed safe refresh."
+  }
+}

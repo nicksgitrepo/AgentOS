@@ -15,6 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawn} from "node:child_process";
 import {createHybridScheduler, opaqueSchedulerWorktreeRef} from "./hybrid-scheduler.mjs";
+import {compileOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 import {createLocalWorkerLaunchAdmission} from "./local-agent-runtime.mjs";
 import {pathToFileURL} from "node:url";
 import {validateLocalTaskKindForRole} from "./local-task-kinds.mjs";
@@ -282,6 +283,8 @@ function commandArgs(base, workerScript, overrides) {
     source_tree: base.sourceTree,
     worktree: base.worktreePath,
     scheduler_root: base.schedulerRoot,
+    global_governance_authority_root: base.globalGovernanceAuthorityRoot,
+    global_governance_bootstrap_sha256: base.globalGovernanceBootstrapSha256,
     task: overrides.task,
     task_id: overrides.taskId,
     task_kind: overrides.taskKind,
@@ -394,6 +397,8 @@ async function runSession() {
     worktreePath: path.resolve(args.worktree ?? ""),
     schedulerRoot: path.resolve(schedulerRootInput),
     repositoryRoot: path.resolve(repositoryRootInput),
+    globalGovernanceAuthorityRoot: path.resolve(args.global_governance_authority_root),
+    globalGovernanceBootstrapSha256: args.global_governance_bootstrap_sha256,
   };
   requireIdentifier(base.role, "durable worker role");
   validateLocalTaskKindForRole({role: base.role, taskKind: base.taskKind});
@@ -404,7 +409,8 @@ async function runSession() {
   requireGitObject(base.sourceCommit, "durable worker source commit");
   requireGitObject(base.sourceTree, "durable worker source tree");
   assert(fs.existsSync(base.worktreePath) && fs.statSync(base.worktreePath).isDirectory(), "durable worker worktree is unavailable");
-  const scheduler = createHybridScheduler({authorityRoot: base.schedulerRoot});
+  const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityRoot: args.global_governance_authority_root, bootstrapSha256: args.global_governance_bootstrap_sha256, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.SESSION.${crypto.createHash("sha256").update(base.sessionId).digest("hex").slice(0, 24).toUpperCase()}`});
+  const scheduler = createHybridScheduler({authorityRoot: base.schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityRoot: args.global_governance_authority_root, globalGovernanceBootstrapSha256: args.global_governance_bootstrap_sha256});
   process.env.AGENTOS_SCHEDULER_ROOT = base.schedulerRoot;
   const workerScript = path.resolve(args.worker_script ?? path.join(path.dirname(new URL(import.meta.url).pathname), "local-agent-worker.mjs"));
   assert(fs.existsSync(workerScript) && fs.statSync(workerScript).isFile(), "durable worker script is unavailable");

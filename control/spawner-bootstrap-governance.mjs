@@ -6,6 +6,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
 
 export const SPAWNER_BOOTSTRAP_SCHEMA = "agentos.spawner_bootstrap_package.v1";
 export const SPAWNER_ADMISSION_SCHEMA = "agentos.exact_spawner_admission.v1";
@@ -86,7 +87,7 @@ function assertDigest(value, field, label) {
 function sha256Bytes(bytes) { return crypto.createHash("sha256").update(bytes).digest("hex"); }
 function safeArtifactPath(authorityRoot, relativePath, label) {
   requireString(authorityRoot, "Authority root");
-  requireString(relativePath, label);
+  assert(typeof relativePath === "string" && relativePath.length > 0 && !/[\u0000-\u001f\u007f]/u.test(relativePath), `${label} must be a safe path`);
   assert(!path.isAbsolute(relativePath) && !relativePath.split("/").includes(".."), `${label} must be a safe relative path`, "ARTIFACT_PATH_INVALID");
   const root = fs.realpathSync.native(authorityRoot);
   const target = path.resolve(root, relativePath);
@@ -126,6 +127,12 @@ function validateCanonicalSpawnerBootstrapPackageShape(spawnerPackage) {
   }
   assert(JSON.stringify(spawnerPackage.bootstrap_injection_order) === JSON.stringify(SPAWNER_BOOTSTRAP_INJECTION_ORDER), "Spawner bootstrap injection order is invalid");
   assertNonPlaceholderSha(spawnerPackage.gate_manifest_sha256, "Spawner gate manifest");
+  assertNonPlaceholderSha(spawnerPackage.hostile_fixture_manifest_sha256, "Spawner hostile fixture manifest");
+  assertNonPlaceholderSha(spawnerPackage.gate_review_manifest_sha256, "Spawner gate review manifest");
+  assertNonPlaceholderSha(spawnerPackage.gate_review_trust_root_sha256, "Spawner gate review trust root");
+  assertNonPlaceholderSha(spawnerPackage.controller_issuer_registry_sha256, "Spawner Controller issuer registry");
+  assertNonPlaceholderSha(spawnerPackage.independent_clearance_trust_anchor_sha256, "Spawner independent-clearance trust anchor");
+  assertNonPlaceholderSha(spawnerPackage.model_policy_source_registry_sha256, "Spawner model-policy source registry");
   assertNonPlaceholderSha(spawnerPackage.decision_tree_sha256, "Spawner decision tree");
   assert(Array.isArray(spawnerPackage.gates) && spawnerPackage.gates.length >= 8, "Spawner bootstrap gate pack is incomplete");
   assert(Array.isArray(spawnerPackage.hostile_fixtures) && spawnerPackage.hostile_fixtures.length >= 12, "Spawner bootstrap hostile fixtures are incomplete");
@@ -144,10 +151,68 @@ function validateCanonicalSpawnerBootstrapPackageShape(spawnerPackage) {
   return spawnerPackage;
 }
 
+function resolveCanonicalHostileFixturesAndReviews({authorityRoot, packageDirectory, spawnerPackage, resolvedGates}) {
+  const fixtureManifestArtifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "hostile-fixtures.manifest.json"), "Spawner hostile fixture manifest");
+  const reviewManifestArtifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "reviews/manifest.json"), "Spawner gate review manifest");
+  const trustRootArtifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "gate-review-trust-root.v1.json"), "Spawner gate review trust root");
+  const fixtureManifest = fixtureManifestArtifact.value, reviewManifest = reviewManifestArtifact.value, trustRoot = trustRootArtifact.value;
+  assert(fixtureManifest.schema === "agentos.spawner_hostile_fixture_manifest.v1" && fixtureManifest.version === 1, "Spawner hostile fixture manifest identity is invalid");
+  assertDigest(fixtureManifest, "manifest_sha256", "Spawner hostile fixture manifest");
+  assert(fixtureManifest.manifest_sha256 === spawnerPackage.hostile_fixture_manifest_sha256, "Spawner hostile fixture manifest binding differs");
+  assert(reviewManifest.schema === "agentos.spawner_gate_review_manifest.v1" && reviewManifest.version === 1, "Spawner gate review manifest identity is invalid");
+  assertDigest(reviewManifest, "manifest_sha256", "Spawner gate review manifest");
+  assert(reviewManifest.manifest_sha256 === spawnerPackage.gate_review_manifest_sha256, "Spawner gate review manifest binding differs");
+  assert(trustRoot.schema === "agentos.spawner_gate_review_trust_root.v1" && trustRoot.version === 1, "Spawner gate review trust root identity is invalid");
+  assert(trustRoot.reviewer_role === "AGENT.INDEPENDENT_EVALUATOR" && !["AGENT.BUILDER", "AGENT.CONTROLLER", "AGENT.SPAWNER_COMPILER"].includes(trustRoot.reviewer_role), "Spawner gates are self-reviewed");
+  assert(Array.isArray(trustRoot.separated_from_roles) && ["AGENT.BUILDER", "AGENT.CONTROLLER", "AGENT.SPAWNER_COMPILER"].every((role) => trustRoot.separated_from_roles.includes(role)), "Spawner gate reviewer separation is incomplete");
+  assertDigest(trustRoot, "trust_root_sha256", "Spawner gate review trust root");
+  assert(trustRoot.trust_root_sha256 === spawnerPackage.gate_review_trust_root_sha256, "Spawner gate review trust root binding differs");
+  const declaredIds = [...spawnerPackage.hostile_fixtures].sort(compareUtf8);
+  const boundIds = resolvedGates.flatMap((gate) => gate.hostile_fixture_ids).sort(compareUtf8);
+  assert(new Set(boundIds).size === boundIds.length && JSON.stringify(boundIds) === JSON.stringify(declaredIds), "Spawner hostile fixture inventory is incomplete, duplicated, or unbound");
+  assert(Array.isArray(fixtureManifest.entries) && fixtureManifest.entries.length === declaredIds.length, "Spawner hostile fixture manifest coverage is incomplete");
+  const fixtureIds = new Set(), fixtureHashes = new Set();
+  for (const entry of fixtureManifest.entries) {
+    requireId(entry.fixture_id, "Spawner hostile fixture ID"); requireId(entry.gate_id, "Spawner hostile fixture gate ID"); assert(typeof entry.path === "string" && entry.path.length > 0, "Spawner hostile fixture path is invalid"); requireSha(entry.file_sha256, "Spawner hostile fixture file digest");
+    assert(entry.expected_outcome === "REJECT_WITH_TYPED_DEFECT", `Spawner hostile fixture lacks a negative expected outcome: ${entry.fixture_id}`);
+    assert(!fixtureIds.has(entry.fixture_id) && !fixtureHashes.has(entry.file_sha256), `Spawner hostile fixture is duplicated or digest-aliased: ${entry.fixture_id}`); fixtureIds.add(entry.fixture_id); fixtureHashes.add(entry.file_sha256);
+    const gate = resolvedGates.find((candidate) => candidate.gate_id === entry.gate_id); assert(gate?.hostile_fixture_ids.includes(entry.fixture_id), `Spawner hostile fixture is not bound to its gate: ${entry.fixture_id}`);
+    const artifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, entry.path), `Spawner hostile fixture ${entry.fixture_id}`);
+    assert(artifact.file_sha256 === entry.file_sha256, `Spawner hostile fixture file digest differs: ${entry.fixture_id}`);
+    assert(artifact.value.schema === "agentos.spawner_hostile_fixture.v1" && artifact.value.fixture_id === entry.fixture_id && artifact.value.gate_id === entry.gate_id && artifact.value.expected_outcome === entry.expected_outcome, `Spawner hostile fixture content differs: ${entry.fixture_id}`);
+  }
+  assert(JSON.stringify([...fixtureIds].sort(compareUtf8)) === JSON.stringify(declaredIds), "Spawner hostile fixture manifest IDs differ from package");
+  assert(Array.isArray(reviewManifest.entries) && reviewManifest.entries.length === resolvedGates.length, "Spawner gate review coverage is incomplete");
+  const reviewed = new Set();
+  for (const entry of reviewManifest.entries) {
+    requireId(entry.gate_id, "Spawner gate review gate ID"); requireString(entry.path, "Spawner gate review path"); requireSha(entry.file_sha256, "Spawner gate review file digest"); requireSha(entry.review_sha256, "Spawner gate review digest");
+    assert(!reviewed.has(entry.gate_id), `Spawner gate review is duplicated: ${entry.gate_id}`); reviewed.add(entry.gate_id);
+    const gate = resolvedGates.find((candidate) => candidate.gate_id === entry.gate_id); assert(gate !== undefined, `Spawner gate review targets an unknown gate: ${entry.gate_id}`);
+    const artifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, entry.path), `Spawner gate review ${entry.gate_id}`), review = artifact.value;
+    assert(artifact.file_sha256 === entry.file_sha256 && review.review_sha256 === entry.review_sha256, `Spawner gate review artifact differs: ${entry.gate_id}`);
+    assert(review.schema === "agentos.spawner_gate_independent_review.v1" && review.reviewer_id === trustRoot.reviewer_id && review.reviewer_role === trustRoot.reviewer_role && review.trust_root_sha256 === trustRoot.trust_root_sha256, `Spawner gate review authority differs: ${entry.gate_id}`);
+    assert(review.gate_id === gate.gate_id && review.gate_file_sha256 === gate.file_sha256 && review.gate_sha256 === gate.gate_sha256, `Spawner gate review target differs: ${entry.gate_id}`);
+    assert(review.fixture_manifest_sha256 === fixtureManifest.manifest_sha256 && JSON.stringify(review.hostile_fixture_ids) === JSON.stringify([...gate.hostile_fixture_ids].sort(compareUtf8)), `Spawner gate review fixture scope differs: ${entry.gate_id}`);
+    assert(review.result === "PASS", `Spawner gate independent review did not pass: ${entry.gate_id}`);
+    assert(review.review_sha256 === canonicalDigest({...review, review_sha256: null, signature_base64: null}), `Spawner gate review body was mutated: ${entry.gate_id}`);
+    assert(crypto.verify(null, Buffer.from(review.review_sha256, "hex"), trustRoot.public_key_pem, Buffer.from(review.signature_base64, "base64")), `Spawner gate review signature is invalid: ${entry.gate_id}`);
+  }
+  return {fixture_manifest: fixtureManifest, review_manifest: reviewManifest, review_trust_root: trustRoot};
+}
+
 export function resolveCanonicalSpawnerBootstrapPackage({authorityRoot, packagePath = CANONICAL_PACKAGE_PATH} = {}) {
   const packageArtifact = readJsonArtifact(authorityRoot, packagePath, "Spawner package artifact");
   const spawnerPackage = validateCanonicalSpawnerBootstrapPackageShape(packageArtifact.value);
   const packageDirectory = path.posix.dirname(packagePath);
+  const controllerIssuerRegistry = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "controller-issuer-registry.v1.json"), "Spawner Controller issuer registry").value;
+  const clearanceTrustAnchor = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "independent-clearance-trust-anchor.v1.json"), "Spawner independent-clearance trust anchor").value;
+  const modelSourceRegistry = readJsonArtifact(authorityRoot, "fixtures/model-policy-evidence/source-registry.v1.json", "Spawner model-policy source registry").value;
+  assertDigest(controllerIssuerRegistry, "registry_sha256", "Spawner Controller issuer registry");
+  assertDigest(clearanceTrustAnchor, "anchor_sha256", "Spawner independent-clearance trust anchor");
+  assertDigest(modelSourceRegistry, "registry_sha256", "Spawner model-policy source registry");
+  assert(controllerIssuerRegistry.registry_sha256 === spawnerPackage.controller_issuer_registry_sha256, "Spawner Controller issuer registry binding differs");
+  assert(clearanceTrustAnchor.anchor_sha256 === spawnerPackage.independent_clearance_trust_anchor_sha256, "Spawner independent-clearance trust anchor binding differs");
+  assert(modelSourceRegistry.registry_sha256 === spawnerPackage.model_policy_source_registry_sha256, "Spawner model-policy source registry binding differs");
   const manifestPath = path.posix.join(packageDirectory, "gates/manifest.json");
   const decisionTreePath = path.posix.join(packageDirectory, "decision-tree.json");
   const manifestArtifact = readJsonArtifact(authorityRoot, manifestPath, "Spawner gate manifest artifact");
@@ -183,7 +248,8 @@ export function resolveCanonicalSpawnerBootstrapPackage({authorityRoot, packageP
     const actual = resolved.find((entry) => entry.gate_id === declared.gate_id);
     assert(actual.path === declared.path && actual.file_sha256 === declared.file_sha256 && actual.gate_sha256 === declared.gate_sha256, `Spawner package gate binding differs: ${declared.gate_id}`);
   }
-  return {spawner_package: spawnerPackage, package_file_sha256: packageArtifact.file_sha256, manifest, manifest_file_sha256: manifestArtifact.file_sha256, decision_tree: decisionArtifact.value, decision_tree_file_sha256: decisionArtifact.file_sha256, resolved_gates: resolved};
+  const reviewedEvidence = resolveCanonicalHostileFixturesAndReviews({authorityRoot, packageDirectory, spawnerPackage, resolvedGates: resolved});
+  return {spawner_package: spawnerPackage, package_file_sha256: packageArtifact.file_sha256, manifest, manifest_file_sha256: manifestArtifact.file_sha256, decision_tree: decisionArtifact.value, decision_tree_file_sha256: decisionArtifact.file_sha256, resolved_gates: resolved, ...reviewedEvidence};
 }
 
 export function validateCanonicalSpawnerBootstrapPackage(spawnerPackage, resolution = null) {
@@ -268,19 +334,20 @@ function resolveAdmissionBlocks({authorityRoot, manifestPath, requiredLayers, re
   return {manifest, manifest_file_sha256: manifestArtifact.file_sha256, blocks};
 }
 
-export function compileExactSpawnerAdmission({requestId, authorityRoot, packagePath = CANONICAL_PACKAGE_PATH, blockManifestPath = CANONICAL_BLOCK_MANIFEST_PATH, requiredLayers, modelPolicyProjection, observedAtUtc, applicableBlocks = undefined, spawnerPackage: callerSpawnerPackage = undefined}) {
+export function compileExactSpawnerAdmission({requestId, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256, applicableBlocks = undefined, spawnerPackage: callerSpawnerPackage = undefined, modelPolicyProjection = undefined, requiredLayers = undefined} = {}) {
   assert(applicableBlocks === undefined && callerSpawnerPackage === undefined, "Caller-supplied package or PASS evidence is forbidden; canonical artifacts must be resolved", "CALLER_EVIDENCE_FORBIDDEN");
-  const resolvedPackage = resolveCanonicalSpawnerBootstrapPackage({authorityRoot, packagePath});
+  assert(modelPolicyProjection === undefined, "Caller-supplied model-policy projection is forbidden", "CALLER_EVIDENCE_FORBIDDEN");
+  assert(requiredLayers === undefined, "Caller-supplied applicable layers are forbidden", "CALLER_EVIDENCE_FORBIDDEN");
+  const resolvedPackage = resolveCanonicalSpawnerBootstrapPackage({authorityRoot, packagePath: CANONICAL_PACKAGE_PATH});
   const spawnerPackage = resolvedPackage.spawner_package;
   requireId(requestId, "Spawner admission request ID");
+  const governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "INERT_SEED"});
+  const observedAtUtc = governed.observed_at_utc;
   requireUtc(observedAtUtc, "Spawner admission time");
-  const layers = sortedUnique(requiredLayers, "Required block layers");
-  layers.forEach((layer) => assert(SPAWNER_BLOCK_LAYERS.includes(layer), `Required block layer is invalid: ${layer}`));
-  const resolvedBlocks = resolveAdmissionBlocks({authorityRoot, manifestPath: blockManifestPath, requiredLayers: layers, resolvedGates: resolvedPackage.resolved_gates, observedAtUtc});
-  requireRecord(modelPolicyProjection, "Model-policy projection");
-  assert(modelPolicyProjection.status === "READY" && modelPolicyProjection.spawn_eligible === true, "Model-policy projection is not spawn eligible", "MODEL_POLICY_UNAVAILABLE");
-  requireSha(modelPolicyProjection.snapshot_sha256, "Model-policy snapshot");
-  requireSha(modelPolicyProjection.projection_sha256, "Model-policy projection");
+  const layers = [...SPAWNER_BLOCK_LAYERS].sort(compareUtf8);
+  const resolvedBlocks = resolveAdmissionBlocks({authorityRoot, manifestPath: CANONICAL_BLOCK_MANIFEST_PATH, requiredLayers: layers, resolvedGates: resolvedPackage.resolved_gates, observedAtUtc});
+  const canonicalProjection = governed.projection;
+  assert(canonicalProjection.status === "READY" && canonicalProjection.spawn_eligible === true && canonicalProjection.selected !== null, "Canonical model-policy projection is not spawn eligible", "MODEL_POLICY_UNAVAILABLE");
   const admission = {
     schema: SPAWNER_ADMISSION_SCHEMA,
     version: 1,
@@ -292,8 +359,10 @@ export function compileExactSpawnerAdmission({requestId, authorityRoot, packageP
     block_manifest_file_sha256: resolvedBlocks.manifest_file_sha256,
     required_layers: layers,
     block_evidence: resolvedBlocks.blocks.map((block) => ({block_id: block.block_id, layer: block.layer, revision: block.revision, artifact_path: block.artifact_path, file_sha256: block.file_sha256, block_sha256: block.block_sha256, content_sha256: block.content_sha256})).sort((left, right) => compareUtf8(left.block_id, right.block_id)),
-    model_policy_snapshot_sha256: modelPolicyProjection.snapshot_sha256,
-    model_policy_projection_sha256: modelPolicyProjection.projection_sha256,
+    model_policy_snapshot_sha256: canonicalProjection.snapshot_sha256,
+    model_policy_projection_sha256: canonicalProjection.projection_sha256,
+    global_governance_ledger_head_sha256: governed.ledger_head_sha256,
+    global_governance_bootstrap_sha256: governed.bootstrap_sha256,
     observed_at_utc: observedAtUtc,
     admission_sha256: null,
   };
@@ -301,19 +370,21 @@ export function compileExactSpawnerAdmission({requestId, authorityRoot, packageP
   return admission;
 }
 
-export function compileInertSeed({seedId, admission, contextSha256, rosterSha256, modelPolicySnapshotSha256, modelPolicyProjection, createdAtUtc}) {
+export function compileInertSeed({seedId, admission, contextSha256, rosterSha256, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
   requireId(seedId, "Seed ID");
   assert(admission?.schema === SPAWNER_ADMISSION_SCHEMA && admission.status === "READY_FOR_INERT_SEED", "Seed requires exact passing admission");
-  [contextSha256, rosterSha256, modelPolicySnapshotSha256].forEach((value) => requireSha(value, "Seed binding"));
-  assert(modelPolicySnapshotSha256 === admission.model_policy_snapshot_sha256, "Seed model-policy snapshot differs from admission");
-  assert(modelPolicyProjection?.role_class === "INERT_SEED" && modelPolicyProjection.read_only === true && modelPolicyProjection.snapshot_sha256 === modelPolicySnapshotSha256 && modelPolicyProjection.selected !== null, "Seed compact model-policy projection is missing, widened, or stale");
-  requireSha(modelPolicyProjection.projection_sha256, "Seed model-policy projection");
-  requireUtc(createdAtUtc, "Seed creation time");
+  [contextSha256, rosterSha256].forEach((value) => requireSha(value, "Seed binding"));
+  const governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "INERT_SEED"});
+  const modelPolicyProjection = governed.projection;
+  const modelPolicySnapshotSha256 = governed.snapshot.snapshot_sha256;
+  const createdAtUtc = new Date().toISOString();
+  assert(modelPolicySnapshotSha256 === admission.model_policy_snapshot_sha256 && governed.ledger_head_sha256 === admission.global_governance_ledger_head_sha256 && governed.bootstrap_sha256 === admission.global_governance_bootstrap_sha256, "Seed model policy or governance head differs from admission");
   const seed = {
     schema: INERT_SEED_SCHEMA, version: 1, seed_id: seedId, state: "VERIFIED_INERT", immutable: true,
     work_authority: false, execution_authority: false, network_authority: false, mutation_authority: false,
     admission_sha256: admission.admission_sha256, context_sha256: contextSha256, roster_sha256: rosterSha256,
     model_policy_snapshot_sha256: modelPolicySnapshotSha256, model_policy_projection_sha256: modelPolicyProjection.projection_sha256,
+    global_governance_ledger_head_sha256: governed.ledger_head_sha256, global_governance_bootstrap_sha256: governed.bootstrap_sha256,
     compact_model_policy: structuredClone(modelPolicyProjection.selected), predecessor_seed_sha256: null,
     created_at_utc: createdAtUtc, invalidated_at_utc: null, invalidation_reason: null,
     allowed_transitions: ["CLONE_TO_WORKER", "INVALIDATE", "ARCHIVE", "SUPERSEDE"], seed_sha256: null,
@@ -328,22 +399,26 @@ export function validateInertSeed(seed) {
   requireId(seed.seed_id, "Seed ID");
   assert(["VERIFIED_INERT", "INVALIDATED", "ARCHIVED", "SUPERSEDED"].includes(seed.state), "Inert seed state is invalid");
   assert(seed.immutable === true && seed.work_authority === false && seed.execution_authority === false && seed.network_authority === false && seed.mutation_authority === false, "Seed is not inert", "SEED_EXECUTION_FORBIDDEN");
-  for (const field of ["admission_sha256", "context_sha256", "roster_sha256", "model_policy_snapshot_sha256", "model_policy_projection_sha256"]) requireSha(seed[field], `Seed ${field}`);
+  for (const field of ["admission_sha256", "context_sha256", "roster_sha256", "model_policy_snapshot_sha256", "model_policy_projection_sha256", "global_governance_ledger_head_sha256", "global_governance_bootstrap_sha256"]) requireSha(seed[field], `Seed ${field}`);
   requireRecord(seed.compact_model_policy, "Seed compact model policy");
   assertDigest(seed, "seed_sha256", "Inert seed");
   return seed;
 }
 
-export function transitionInertSeed(seed, {transition, observedAtUtc, reason = null, replacementSeedSha256 = null, workerModelPolicyProjection = null} = {}) {
+export function transitionInertSeed(seed, {transition, observedAtUtc, reason = null, replacementSeedSha256 = null, globalGovernanceAuthorityRoot = null, globalGovernanceBootstrapSha256 = null, workerModelPolicyProjection = undefined} = {}) {
   validateInertSeed(seed);
   assert(seed.state === "VERIFIED_INERT", "Only a verified inert seed may transition");
   requireUtc(observedAtUtc, "Seed transition time");
   if (transition === "EXECUTE_WORK") assert(false, "An inert seed can never execute work", "SEED_EXECUTION_FORBIDDEN");
   if (transition === "CLONE_TO_WORKER") {
-    assert(workerModelPolicyProjection?.role_class === "WORKING_AGENT" && workerModelPolicyProjection.read_only === true && workerModelPolicyProjection.snapshot_sha256 === seed.model_policy_snapshot_sha256 && workerModelPolicyProjection.selected !== null, "Worker compact model-policy projection is missing, widened, or stale");
-    requireSha(workerModelPolicyProjection.projection_sha256, "Worker model-policy projection");
-    const clone = {schema: "agentos.seed_worker_clone.v1", version: 1, status: "WORKER_CONTEXT_CANDIDATE", source_seed_sha256: seed.seed_sha256, bound_model_policy_snapshot_sha256: seed.model_policy_snapshot_sha256, model_policy_projection_sha256: workerModelPolicyProjection.projection_sha256, compact_model_policy: structuredClone(workerModelPolicyProjection.selected), refresh_rule: "BOUND_UNTIL_HANDOFF_OR_TYPED_SAFE_REFRESH", created_at_utc: observedAtUtc, clone_sha256: null};
+    assert(workerModelPolicyProjection === undefined, "Caller-supplied worker projection is forbidden");
+    const governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "WORKING_AGENT"});
+    assert(governed.snapshot.snapshot_sha256 === seed.model_policy_snapshot_sha256 && governed.ledger_head_sha256 === seed.global_governance_ledger_head_sha256 && governed.bootstrap_sha256 === seed.global_governance_bootstrap_sha256, "Inert seed is stale after model-policy supersession and must be invalidated/rebuilt");
+    const canonicalWorkerProjection = governed.projection;
+    const clone = {schema: "agentos.seed_worker_clone.v1", version: 1, status: "WORKER_CONTEXT_CANDIDATE", source_seed_sha256: seed.seed_sha256, bound_model_policy_snapshot_sha256: seed.model_policy_snapshot_sha256, bound_global_governance_ledger_head_sha256: governed.ledger_head_sha256, model_policy_projection_sha256: canonicalWorkerProjection.projection_sha256, compact_model_policy: structuredClone(canonicalWorkerProjection.selected), refresh_rule: "BOUND_UNTIL_HANDOFF_OR_TYPED_SAFE_REFRESH", created_at_utc: observedAtUtc, clone_sha256: null};
     clone.clone_sha256 = canonicalDigest(body(clone, "clone_sha256"));
+    const readback = resolveCanonicalGlobalGovernanceProjection({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "WORKING_AGENT"});
+    assert(readback.ledger_head_sha256 === governed.ledger_head_sha256 && readback.projection.projection_sha256 === canonicalWorkerProjection.projection_sha256, "Global model policy changed during worker clone; retry after invalidation/rebuild");
     return clone;
   }
   assert(["INVALIDATE", "ARCHIVE", "SUPERSEDE"].includes(transition), "Seed transition is invalid");

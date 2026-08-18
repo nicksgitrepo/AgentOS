@@ -25,6 +25,7 @@ import {
   canonicalDigest,
   canonicalJson,
 } from "./content-addressing.mjs";
+import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 
 export const HYBRID_SCHEDULER_POLICY_SCHEMA = "agentos.hybrid_scheduler_policy.v1";
 export const HYBRID_SCHEDULER_REQUEST_SCHEMA = "agentos.hybrid_scheduler_request.v1";
@@ -1150,14 +1151,19 @@ export function createHybridScheduler({
   authorityRoot,
   policy = compileHybridSchedulerPolicy(),
   clock = () => new Date().toISOString(),
+  globalGovernanceContext,
+  globalGovernanceAuthorityRoot,
+  globalGovernanceBootstrapSha256,
 } = {}) {
   assert(authorityRoot !== null && authorityRoot !== undefined, "hybrid scheduler requires a durable authority root", "SCHEDULER_AUTHORITY_REQUIRED");
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "SCHEDULER", bootstrapSha256: globalGovernanceBootstrapSha256});
   validateHybridSchedulerPolicy(policy);
   assert(typeof clock === "function", "hybrid scheduler clock must be callable");
   const root = ensureSchedulerRoot(authorityRoot);
 
   const scheduler = {
     policy: () => clone(policy),
+    globalGovernanceContext: () => globalGovernanceContext,
     root: () => root,
     runSync({request, admission, execute, resolveCandidate = null, waitMs = DEFAULT_WAIT_MS} = {}) {
       validateHybridSchedulerRequest(request);

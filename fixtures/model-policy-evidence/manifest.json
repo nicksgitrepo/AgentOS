@@ -1,10 +1,29 @@
 {
   "schema": "agentos.model_policy_evidence_manifest.v1",
   "version": 1,
+  "source_registry_sha256": "d658f5443ce8e182618c372213876fa55ffcb61652cd06ffc091f49bcf699e34",
   "entries": [
-    {"evidence_id":"ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18","path":"artificial-analysis.2026-08-18.json","authority_class":"COMPARATIVE_BENCHMARK","artifact_sha256":"36775513ae6e6f9b329438fd1ba174ebc4d60cdce140a927bd5313f9322e9e8a","file_sha256":"9bd0c413a6460c82e1e5c47c6fd0255f69c9d276bb57903edfb0fc8b9be826fe"},
-    {"evidence_id":"HOST.CODEX_MODEL_CATALOG.2026-08-18","path":"current-host.2026-08-18.json","authority_class":"HOST_ATTESTATION","artifact_sha256":"9e3d3a6ecf04aa07340188ab85e43da9559970555ac178dc890054e78a827fc2","file_sha256":"86756e6e401703d92de7e06e44a221eaae0ceef1aef115b2e6e135e8155c0d0c"},
-    {"evidence_id":"OPENAI.MODEL_CATALOG.2026-08-18","path":"openai-model-catalog.2026-08-18.json","authority_class":"FIRST_PARTY_PROVIDER","artifact_sha256":"b935101dcc9773f813207ec07cfb7bd1d4918e6d5a81d845cd10b82855594c30","file_sha256":"ecbe0cc9f6bb6b9004b3990787e1b2a9b3549e8a80dad5e50512e23176f4666e"}
+    {
+      "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
+      "path": "artificial-analysis.2026-08-18.json",
+      "authority_class": "COMPARATIVE_BENCHMARK",
+      "artifact_sha256": "b0281528e3054918a388dc19de8cbee593a215c1e500d100c4d5811c69662b58",
+      "file_sha256": "5e3280d3373689dbfe39b724751421fe709e2ec42d20e29647c7ce172bcc5070"
+    },
+    {
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-18",
+      "path": "current-host.2026-08-18.json",
+      "authority_class": "HOST_ATTESTATION",
+      "artifact_sha256": "9e3d3a6ecf04aa07340188ab85e43da9559970555ac178dc890054e78a827fc2",
+      "file_sha256": "86756e6e401703d92de7e06e44a221eaae0ceef1aef115b2e6e135e8155c0d0c"
+    },
+    {
+      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
+      "path": "openai-model-catalog.2026-08-18.json",
+      "authority_class": "FIRST_PARTY_PROVIDER",
+      "artifact_sha256": "b935101dcc9773f813207ec07cfb7bd1d4918e6d5a81d845cd10b82855594c30",
+      "file_sha256": "ecbe0cc9f6bb6b9004b3990787e1b2a9b3549e8a80dad5e50512e23176f4666e"
+    }
   ],
-  "manifest_sha256": "5758bdd622a83488b3604cd59827c9b797775a4bc48e4afbc2f91490626bd406"
+  "manifest_sha256": "583f0cfaf78fffef27ce58992f2b44d2fc3dcb51e708a1ccca6dd89394e2703a"
 }

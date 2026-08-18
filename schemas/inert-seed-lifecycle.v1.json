@@ -3,7 +3,7 @@
   "$id": "agentos.inert_seed_lifecycle.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "seed_id", "state", "immutable", "work_authority", "execution_authority", "network_authority", "mutation_authority", "admission_sha256", "context_sha256", "roster_sha256", "model_policy_snapshot_sha256", "predecessor_seed_sha256", "created_at_utc", "invalidated_at_utc", "invalidation_reason", "allowed_transitions", "seed_sha256"],
+  "required": ["schema", "version", "seed_id", "state", "immutable", "work_authority", "execution_authority", "network_authority", "mutation_authority", "admission_sha256", "context_sha256", "roster_sha256", "model_policy_snapshot_sha256", "model_policy_projection_sha256", "global_governance_ledger_head_sha256", "global_governance_bootstrap_sha256", "compact_model_policy", "predecessor_seed_sha256", "created_at_utc", "invalidated_at_utc", "invalidation_reason", "allowed_transitions", "seed_sha256"],
   "properties": {
     "schema": {"const": "agentos.inert_seed_lifecycle.v1"},
     "version": {"const": 1},
@@ -14,6 +14,10 @@
     "network_authority": {"const": false},
     "mutation_authority": {"const": false},
     "allowed_transitions": {"const": ["CLONE_TO_WORKER", "INVALIDATE", "ARCHIVE", "SUPERSEDE"]},
+    "model_policy_projection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "global_governance_ledger_head_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "global_governance_bootstrap_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "compact_model_policy": {"type": "object", "additionalProperties": false, "required": ["model_id", "reasoning_effort", "capability_floor", "context_floor_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "fallback_models", "escalation_triggers"], "properties": {"model_id": {"type": "string"}, "reasoning_effort": {"type": "string"}, "capability_floor": {"type": "number"}, "context_floor_tokens": {"type": "integer"}, "input_usd_per_million": {"type": "number"}, "output_usd_per_million": {"type": "number"}, "max_concurrency": {"type": "integer"}, "max_heavyweight_processes": {"type": "integer"}, "fallback_models": {"type": "array"}, "escalation_triggers": {"type": "array"}}},
     "seed_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   }
 }

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {canonicalDigest} from "../../control/content-addressing.mjs";
+import {canonicalDigest, canonicalJson} from "../../control/content-addressing.mjs";
 import {selectEcoModelRoute} from "../../control/eco-model-policy.mjs";
 import {compileGlobalGovernanceBootstrap, requireGlobalGovernanceRoleProjection} from "../../control/global-governance-bootstrap.mjs";
 import {GLOBAL_GOVERNANCE_MEMORY_GENESIS, compileGlobalGovernanceMemoryEvent, compileGlobalGovernanceMemoryReadback} from "../../control/global-governance-memory.mjs";
@@ -17,4 +17,14 @@ export function compileTestGlobalGovernance({nowUtc = "2026-08-18T16:30:00.000Z"
   const bootstrap = compileGlobalGovernanceBootstrap({events, readback, workerRoute: route, observedAtUtc: nowUtc});
   const context = {bootstrap, events, readback, observedAtUtc: nowUtc};
   return {snapshot, route, ...context, projection: (roleClass) => requireGlobalGovernanceRoleProjection({...context, roleClass})};
+}
+
+export function materializeTestGlobalGovernanceStore({authorityRoot, nowUtc = "2026-08-18T16:30:00.000Z"} = {}) {
+  const fixture = compileTestGlobalGovernance({nowUtc});
+  const directory = path.join(authorityRoot, "global-governance");
+  fs.mkdirSync(directory, {recursive: true});
+  fs.writeFileSync(path.join(directory, "model-policy-events.jsonl"), `${fixture.events.map((event) => canonicalJson(event)).join("\n")}\n`);
+  fs.writeFileSync(path.join(directory, "current-readback.v1.json"), `${canonicalJson(fixture.readback)}\n`);
+  fs.writeFileSync(path.join(directory, "current-bootstrap.v1.json"), `${canonicalJson(fixture.bootstrap)}\n`);
+  return fixture;
 }

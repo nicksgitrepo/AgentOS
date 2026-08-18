@@ -5,6 +5,7 @@
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {controllerActionHandlerFor, compileControllerContinuation} from "./controller-action-dispatcher.mjs";
 import {validateTypedSpawnerAdmission} from "./typed-spawner-admission.mjs";
+import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 
 export const PERMANENT_ROLE_ROSTER_SCHEMA = "agentos.permanent_role_roster.v1";
 export const PERMANENT_ROLE_CANDIDATE_SCHEMA = "agentos.permanent_role_candidate.v1";
@@ -30,7 +31,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const TOKEN = /^[A-Z][A-Z0-9._:-]*$/u;
 const PLACEHOLDER = /(?:^|[^A-Z])(TBD|TODO|FIXME|PLACEHOLDER|FILL[ _-]?ME|LATER)(?:$|[^A-Z])/iu;
 const CANDIDATE_KEYS = Object.freeze([
-  "schema", "version", "role_id", "role_kind", "block_set_sha256", "independent_evaluation_sha256", "hostile_fixture_ids",
+  "schema", "version", "role_id", "role_kind", "block_set_sha256", "independent_evaluation_sha256", "global_governance_context_sha256", "hostile_fixture_ids",
   "authority", "stop_conditions", "qa_status", "admission_state", "activation_state", "worker_spawned", "candidate_sha256",
 ]);
 const ROSTER_KEYS = Object.freeze([
@@ -71,6 +72,7 @@ export function validatePermanentRoleCandidate(candidate) {
   assert(candidate.role_kind === PERMANENT_ROLE_KINDS[candidate.role_id], "Permanent role candidate kind differs");
   requireSha(candidate.block_set_sha256, "Permanent role candidate block set");
   requireSha(candidate.independent_evaluation_sha256, "Permanent role candidate evaluation");
+  requireSha(candidate.global_governance_context_sha256, "Permanent role candidate global-governance context");
   sortedUnique(candidate.hostile_fixture_ids, "Permanent role candidate hostile fixtures");
   assert(candidate.authority === "INDEPENDENT_ADMISSION_AUTHORITY", "Permanent role candidate authority is invalid");
   nonPlaceholder(candidate.stop_conditions, "Permanent role candidate stop conditions");
@@ -83,11 +85,12 @@ export function validatePermanentRoleCandidate(candidate) {
   return candidate;
 }
 
-export function compilePermanentRoleCandidate({roleId, blockSetSha256, independentEvaluationSha256, hostileFixtureIds, stopConditions} = {}) {
+export function compilePermanentRoleCandidate({roleId, blockSetSha256, independentEvaluationSha256, hostileFixtureIds, stopConditions, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256} = {}) {
   requireToken(roleId, "Permanent role candidate role");
   requireSha(blockSetSha256, "Permanent role candidate block set");
   requireSha(independentEvaluationSha256, "Permanent role candidate evaluation");
   assert(Array.isArray(hostileFixtureIds), "Permanent role candidate hostile fixture ids input is required");
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "PERMANENT_ROLE", bootstrapSha256: globalGovernanceBootstrapSha256});
   const candidate = {
     schema: PERMANENT_ROLE_CANDIDATE_SCHEMA,
     version: PERMANENT_ROLE_ROSTER_VERSION,
@@ -95,6 +98,7 @@ export function compilePermanentRoleCandidate({roleId, blockSetSha256, independe
     role_kind: PERMANENT_ROLE_KINDS[roleId],
     block_set_sha256: blockSetSha256,
     independent_evaluation_sha256: independentEvaluationSha256,
+    global_governance_context_sha256: globalGovernanceContext.context_sha256,
     hostile_fixture_ids: [...hostileFixtureIds].sort(compareUtf8),
     authority: "INDEPENDENT_ADMISSION_AUTHORITY",
     stop_conditions: stopConditions,
@@ -185,12 +189,14 @@ export function compilePermanentRoleRoster({spawnerAdmissionSha256, candidates, 
   return validatePermanentRoleRoster(roster);
 }
 
-export function admitNextPermanentRole(roster, roleId) {
+export function admitNextPermanentRole(roster, roleId, {globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256} = {}) {
   validatePermanentRoleRoster(roster);
   requireToken(roleId, "Permanent roster requested role");
   assert(roster.next_role_id === roleId, "Permanent role admission must follow the typed next role");
   const next = structuredClone(roster);
   const candidate = next.candidates.find((item) => item.role_id === roleId);
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "PERMANENT_ROLE", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assert(candidate.global_governance_context_sha256 === globalGovernanceContext.context_sha256, "Permanent role candidate global-governance context is stale");
   assert(candidate !== undefined && candidate.admission_state === "QA_READY_NOT_ADMITTED", "Permanent role candidate is not independently ready");
   candidate.admission_state = "ADMITTED_CONTROL_PLANE_ONLY";
   candidate.candidate_sha256 = digestWithout(candidate, "candidate_sha256");

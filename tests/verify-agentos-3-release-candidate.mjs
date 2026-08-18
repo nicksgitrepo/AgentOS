@@ -5,12 +5,19 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const run = (relativePath, env = {}) => {
+  const started = Date.now();
+  process.stdout.write(`RELEASE_CHILD_START ${relativePath}\n`);
   const result = spawnSync(process.execPath, [join(root, relativePath)], {
     cwd: root,
     env: { ...process.env, ...env },
     encoding: "utf8",
+    timeout: 60_000,
+    maxBuffer: 16 * 1024 * 1024,
   });
-  assert.equal(result.status, 0, `${relativePath} failed\n${result.stdout}\n${result.stderr}`);
+  const elapsedMs = Date.now() - started;
+  assert.equal(result.error?.code, undefined, `${relativePath} did not finish within the bounded release proof window; code=${result.error?.code ?? "UNKNOWN"}; signal=${result.signal ?? "NONE"}; elapsed_ms=${elapsedMs}\n${result.stdout ?? ""}\n${result.stderr ?? ""}`);
+  assert.equal(result.status, 0, `${relativePath} failed; signal=${result.signal ?? "NONE"}; elapsed_ms=${elapsedMs}\n${result.stdout}\n${result.stderr}`);
+  process.stdout.write(`RELEASE_CHILD_PASS ${relativePath} elapsed_ms=${elapsedMs}\n`);
   return result.stdout.trim();
 };
 

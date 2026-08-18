@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {canonicalDigest, compareUtf8} from "../control/content-addressing.mjs";
 import {
   CONTROLLER_GOVERNANCE_GATE_IDS,
@@ -20,12 +24,15 @@ import {
   validatePermanentRoleRoster,
 } from "../control/permanent-role-roster.mjs";
 import {controllerActionHandlerFor, controllerContinuationDigest} from "../control/controller-action-dispatcher.mjs";
-import {compileTestGlobalGovernance} from "./helpers/global-governance-fixture.mjs";
+import {compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
+import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
-const globalFixture = compileTestGlobalGovernance();
-const LAYERS = ["ENVIRONMENT", "GLOBAL", "PROJECT", "ROLE", "TASK", "TECHNOLOGY_OR_STANDARD"];
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const governanceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-permanent-role-governance-"));
+const globalFixture = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot});
+const permanentRoleContext = compileOperationalGlobalGovernanceContext({authorityRoot: governanceRoot, bootstrapSha256: globalFixture.bootstrap.bootstrap_sha256, roleClass: "PERMANENT_ROLE", operationalId: "CONTEXT.PERMANENT.ROLE.ROSTER.TEST"});
 const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b"];
 const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f"];
 const redigest = (value, field) => {
@@ -54,38 +61,31 @@ const handoff = compileSealedBootstrapHandoff({
   setupAuditSha256: SHA("f"), runtimeReadbackSha256: SHA("0"), controllerRuntimeReadbackSha256: SHA("1"), capabilitySetSha256: SHA("2"),
   sourceMappingSha256: SHA("3"), memoryPlanSha256: SHA("4"), quarantineGateStateSha256: SHA("5"), productZeroTraceReceiptSha256: SHA("6"),
 });
-const blockEvidence = LAYERS.map((layer, index) => {
-  const block = {block_id: `SPAWNER.BLOCK.${layer}`, layer, block_sha256: SHA(String(index + 1)), status: "COMPLETE_QA_PASS", non_placeholder: true, evaluation: "PASS", expires_at_utc: "2026-09-16T00:00:00.000Z", contradictions: [], gate_evidence: [{gate_id: `SPAWNER.GATE.${layer}`, outcome: "PASS", evidence_sha256: SHA(String(index + 2))}], evidence_sha256: null};
-  block.evidence_sha256 = canonicalDigest({...block, evidence_sha256: null});
-  return block;
-});
 const blockSet = compileSpawnerGoverningBlockSet({
-  blockSetId: "SPAWNER-BLOCK-SET-1",
-  requiredLayers: LAYERS,
-  blockEvidence,
-  validatedAtUtc: NOW,
-  hostileFixtureIds: ["FIXTURE.SPAWNER.ACTIVATION_BYPASS", "FIXTURE.SPAWNER.INCOMPLETE", "FIXTURE.SPAWNER.PLACEHOLDER"],
-  independentEvaluationSha256: SHA("7"),
-  stopConditions: "Reject admission whenever a governing block is incomplete, placeholder, stale, or independently unevaluated.",
+  blockSetId: "SPAWNER.BLOCK.SET.PERMANENT.ROLE.TEST",
+  authorityRoot: repositoryRoot,
+  globalGovernanceAuthorityRoot: governanceRoot,
+  globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
 });
 const admission = compileTypedSpawnerAdmission({
   spawnerId: "AGENTOS-SPAWNER-1",
   controllerId: "CONTROLLER-TASK-1",
   governanceReadiness: readiness,
   sealedBootstrapHandoff: handoff,
-  blockSet,
-  globalPolicyProjection: globalFixture.projection("SPAWNER"),
-  modelPolicySnapshot: globalFixture.snapshot,
-  admittedAtUtc: NOW,
+  authorityRoot: repositoryRoot,
+  globalGovernanceAuthorityRoot: governanceRoot,
+  globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
 });
 
 assert.throws(() => compilePermanentRoleCandidate({
   roleId: PERMANENT_ROLE_IDS[0], blockSetSha256: SHA("8"), independentEvaluationSha256: SHA("9"),
   stopConditions: "Reject incomplete permanent role governance before admission.",
+  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
 }), /hostile fixture ids input is required/u);
 assert.throws(() => compilePermanentRoleCandidate({
   roleId: "AGENTOS.UNKNOWN", blockSetSha256: SHA("8"), independentEvaluationSha256: SHA("9"),
   hostileFixtureIds: ["FIXTURE.PERMANENT.UNKNOWN"], stopConditions: "Reject incomplete permanent role governance before admission.",
+  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
 }), /role is not canonical/u);
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: [null]}), /Permanent role candidate must be an object/u);
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: [], admittedRoleIds: null}), /admitted roles are required/u);
@@ -96,6 +96,7 @@ const candidates = PERMANENT_ROLE_IDS.map((roleId, index) => compilePermanentRol
   independentEvaluationSha256: SHA(EVALUATION_DIGEST_CHARS[index]),
   hostileFixtureIds: [`FIXTURE.PERMANENT.${roleId.split(".").at(-1)}.ADMISSION`, `FIXTURE.PERMANENT.${roleId.split(".").at(-1)}.QA`],
   stopConditions: "Reject incomplete permanent role governance before admission.",
+  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
 }));
 
 let roster = compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates});
@@ -110,7 +111,7 @@ assert.equal(roster.activation_state, "OFF");
 assert.equal(roster.worker_spawned_count, 0);
 
 for (let index = 0; index < PERMANENT_ROLE_IDS.length; index += 1) {
-  roster = admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[index]);
+  roster = admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[index], {globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256});
   assert.deepEqual(roster.admitted_role_ids, PERMANENT_ROLE_IDS.slice(0, index + 1));
   assert.equal(roster.worker_spawned_count, 0);
   assert.equal(roster.activation_state, "OFF");
@@ -148,7 +149,7 @@ redigest(duplicateRoleSet, "roster_sha256");
 assert.throws(() => validatePermanentRoleRoster(duplicateRoleSet), /role set is incomplete or reordered/u);
 
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: candidates.slice(0, -1)}), /candidates are incomplete/u);
-assert.throws(() => admitNextPermanentRole(compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates}), PERMANENT_ROLE_IDS[1]), /typed next role/u);
+assert.throws(() => admitNextPermanentRole(compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates}), PERMANENT_ROLE_IDS[1], {globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256}), /typed next role/u);
 
 const badQa = structuredClone(roster);
 badQa.candidates[0].qa_status = "QA_PENDING";
@@ -171,6 +172,7 @@ const staleAdmission = structuredClone(admission);
 staleAdmission.block_set.independent_evaluation_sha256 = SHA("e");
 redigest(staleAdmission.block_set, "block_set_sha256");
 redigest(staleAdmission, "admission_sha256");
-assert.throws(() => validatePermanentRoleRoster(roster, {spawnerAdmission: staleAdmission}), /Spawner admission is stale/u);
+assert.throws(() => validatePermanentRoleRoster(roster, {spawnerAdmission: staleAdmission}), /not resolved from canonical reviewed artifacts|Spawner admission is stale/u);
 
-console.log("PASS permanent role roster: one-at-a-time canonical admission, compiler-only boundaries, successor handoff, malformed-input rejection, stale custody, and hostile lifecycle checks");
+fs.rmSync(governanceRoot, {recursive: true, force: true});
+console.log("PASS permanent role roster: one-at-a-time canonical admission, canonical global-policy context, compiler-only boundaries, successor handoff, malformed-input rejection, stale custody, and hostile lifecycle checks");

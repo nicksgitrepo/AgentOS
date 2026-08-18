@@ -3,10 +3,13 @@
 /* Admit the persistent project-agnostic Spawner/Compiler through typed custody. */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import fs from "node:fs";
+import path from "node:path";
 import {validateControllerGovernanceReadiness} from "./controller-governance-readiness.mjs";
 import {validateSealedBootstrapHandoff} from "./sealed-bootstrap-handoff.mjs";
-import {SPAWNER_BLOCK_LAYERS} from "./spawner-bootstrap-governance.mjs";
+import {SPAWNER_BLOCK_LAYERS, compileExactSpawnerAdmission, resolveCanonicalSpawnerBootstrapPackage} from "./spawner-bootstrap-governance.mjs";
 import {validateModelPolicyProjection} from "./eco-model-policy.mjs";
+import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
 
 export const TYPED_SPAWNER_ADMISSION_SCHEMA = "agentos.typed_spawner_admission.v1";
 export const TYPED_SPAWNER_BLOCK_SET_SCHEMA = "agentos.spawner_governing_block_set.v1";
@@ -30,6 +33,7 @@ const BLOCK_SET_KEYS = Object.freeze([
   "independent_evaluation_sha256", "authority", "stop_conditions", "block_set_sha256",
 ]);
 const CUSTODY_KEYS = Object.freeze(["route", "controller_id", "spawner_id", "source_readiness_sha256", "source_handoff_sha256", "custody_sha256"]);
+const canonicalBlockSets = new WeakSet();
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function isRecord(value) { return value !== null && typeof value === "object" && !Array.isArray(value); }
@@ -62,6 +66,7 @@ function nonPlaceholder(value, label, minimumLength = 24) {
 }
 
 export function validateSpawnerGoverningBlockSet(blockSet) {
+  assert(canonicalBlockSets.has(blockSet), "Spawner governing block set was not resolved from canonical reviewed artifacts");
   exactKeys(blockSet, BLOCK_SET_KEYS, "Spawner governing block set");
   assert(blockSet.schema === TYPED_SPAWNER_BLOCK_SET_SCHEMA && blockSet.version === TYPED_SPAWNER_ADMISSION_VERSION, "Spawner block set identity is invalid");
   requireToken(blockSet.block_set_id, "Spawner block set id");
@@ -101,32 +106,43 @@ export function validateSpawnerGoverningBlockSet(blockSet) {
   assert(blockSet.status === "COMPLETE_QA_PASS", "Spawner governing block set is not QA complete");
   sortedUnique(blockSet.hostile_fixture_ids, "Spawner governing hostile fixtures", {rejectPlaceholder: false});
   requireSha(blockSet.independent_evaluation_sha256, "Spawner independent evaluation");
-  assert(blockSet.authority === "INDEPENDENT_ADMISSION_AUTHORITY", "Spawner block-set authority is invalid");
+  assert(blockSet.authority === "CANONICAL_SIGNED_GATE_REVIEW_AUTHORITY", "Spawner block-set authority is invalid");
   nonPlaceholder(blockSet.stop_conditions, "Spawner block-set stop conditions");
   requireSha(blockSet.block_set_sha256, "Spawner block-set digest");
   assert(blockSet.block_set_sha256 === digestWithout(blockSet, "block_set_sha256"), "Spawner block-set digest mismatch");
   return blockSet;
 }
 
-export function compileSpawnerGoverningBlockSet({blockSetId, requiredLayers, blockEvidence, validatedAtUtc, hostileFixtureIds, independentEvaluationSha256, stopConditions} = {}) {
-  assert(Array.isArray(requiredLayers), "Spawner required layers input is required");
-  assert(Array.isArray(blockEvidence), "Spawner block evidence input is required");
-  assert(Array.isArray(hostileFixtureIds), "Spawner hostile fixture ids input is required");
+export function compileSpawnerGoverningBlockSet({blockSetId, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256, requiredLayers = undefined, blockEvidence = undefined, hostileFixtureIds = undefined, independentEvaluationSha256 = undefined} = {}) {
+  assert(requiredLayers === undefined && blockEvidence === undefined && hostileFixtureIds === undefined && independentEvaluationSha256 === undefined, "Caller-authored governing block evidence is forbidden");
+  const exactAdmission = compileExactSpawnerAdmission({requestId: `${blockSetId}.EXACT_ADMISSION`, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  const resolution = resolveCanonicalSpawnerBootstrapPackage({authorityRoot});
+  const canonicalBlockEvidence = exactAdmission.block_evidence.map((block) => {
+    const artifact = JSON.parse(fs.readFileSync(path.join(authorityRoot, block.artifact_path), "utf8"));
+    const evidence = {
+      block_id: block.block_id, layer: block.layer, block_sha256: block.block_sha256, status: "COMPLETE_QA_PASS", non_placeholder: true, evaluation: "PASS",
+      expires_at_utc: artifact.expires_at_utc, contradictions: [],
+      gate_evidence: artifact.gate_bindings.map((gate) => ({gate_id: gate.gate_id, outcome: "PASS", evidence_sha256: gate.gate_sha256})).sort((left, right) => compareUtf8(left.gate_id, right.gate_id)),
+      evidence_sha256: null,
+    };
+    evidence.evidence_sha256 = digestWithout(evidence, "evidence_sha256"); return evidence;
+  });
   const blockSet = {
     schema: TYPED_SPAWNER_BLOCK_SET_SCHEMA,
     version: TYPED_SPAWNER_ADMISSION_VERSION,
     block_set_id: blockSetId,
-    required_layers: [...requiredLayers].sort(compareUtf8),
-    block_evidence: structuredClone(blockEvidence).sort((left, right) => compareUtf8(left.block_id, right.block_id)),
-    validated_at_utc: validatedAtUtc,
+    required_layers: [...SPAWNER_BLOCK_LAYERS].sort(compareUtf8),
+    block_evidence: canonicalBlockEvidence.sort((left, right) => compareUtf8(left.block_id, right.block_id)),
+    validated_at_utc: exactAdmission.observed_at_utc,
     status: "COMPLETE_QA_PASS",
-    hostile_fixture_ids: [...hostileFixtureIds].sort(compareUtf8),
-    independent_evaluation_sha256: independentEvaluationSha256,
-    authority: "INDEPENDENT_ADMISSION_AUTHORITY",
-    stop_conditions: stopConditions,
+    hostile_fixture_ids: [...resolution.spawner_package.hostile_fixtures].sort(compareUtf8),
+    independent_evaluation_sha256: resolution.review_manifest.manifest_sha256,
+    authority: "CANONICAL_SIGNED_GATE_REVIEW_AUTHORITY",
+    stop_conditions: resolution.spawner_package.stop_conditions.join(" "),
     block_set_sha256: null,
   };
   blockSet.block_set_sha256 = digestWithout(blockSet, "block_set_sha256");
+  canonicalBlockSets.add(blockSet);
   return validateSpawnerGoverningBlockSet(blockSet);
 }
 
@@ -186,15 +202,18 @@ export function validateTypedSpawnerAdmission(admission, {governanceReadiness = 
   return admission;
 }
 
-export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanceReadiness, sealedBootstrapHandoff, blockSet, globalPolicyProjection, modelPolicySnapshot, admittedAtUtc} = {}) {
+export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanceReadiness, sealedBootstrapHandoff, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256, blockSet = undefined, globalPolicyProjection = undefined, modelPolicySnapshot = undefined} = {}) {
   validateControllerGovernanceReadiness(governanceReadiness);
   validateSealedBootstrapHandoff(sealedBootstrapHandoff);
   assert(governanceReadiness.status === "READY_TO_ACCEPT_WORK", "Spawner admission requires Controller governance readiness");
   assert(sealedBootstrapHandoff.next_action === "ADMIT_TYPED_AGENT_SPAWNER", "Spawner admission requires sealed-handoff successor");
-  validateSpawnerGoverningBlockSet(blockSet);
-  validateModelPolicyProjection(globalPolicyProjection, {snapshot: modelPolicySnapshot, expectedRoleClass: "SPAWNER"});
+  assert(blockSet === undefined && globalPolicyProjection === undefined && modelPolicySnapshot === undefined, "Caller-authored block sets or model-policy projections are forbidden");
+  const canonicalBlockSet = compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER.BLOCK.SET.CANONICAL", authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  const governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "SPAWNER"});
+  const canonicalProjection = governed.projection;
   requireToken(spawnerId, "Spawner admission spawner");
   requireIdentityToken(controllerId, "Spawner admission Controller");
+  const admittedAtUtc = governed.observed_at_utc;
   requireUtc(admittedAtUtc, "Spawner admission time");
   assert(controllerId === sealedBootstrapHandoff.controller_task_id, "Spawner admission Controller differs from sealed handoff");
   const custody = {
@@ -213,8 +232,8 @@ export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanc
     controller_id: controllerId,
     governance_readiness_sha256: governanceReadiness.readiness_sha256,
     sealed_handoff_sha256: sealedBootstrapHandoff.handoff_sha256,
-    global_model_policy_projection_sha256: globalPolicyProjection.projection_sha256,
-    block_set: structuredClone(blockSet),
+    global_model_policy_projection_sha256: canonicalProjection.projection_sha256,
+    block_set: canonicalBlockSet,
     custody,
     admission_state: "ADMITTED_COMPILER_ONLY",
     mode: "COMPILER_ONLY",
@@ -229,7 +248,7 @@ export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanc
     admission_sha256: null,
   };
   admission.admission_sha256 = digestWithout(admission, "admission_sha256");
-  return validateTypedSpawnerAdmission(admission, {governanceReadiness, sealedBootstrapHandoff, globalPolicyProjection, modelPolicySnapshot});
+  return validateTypedSpawnerAdmission(admission, {governanceReadiness, sealedBootstrapHandoff, globalPolicyProjection: canonicalProjection, modelPolicySnapshot: governed.snapshot});
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Typed Spawner admission contract loaded\n");

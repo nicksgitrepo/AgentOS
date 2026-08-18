@@ -4,11 +4,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {spawn} from "node:child_process";
+import {once} from "node:events";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {MODEL_POLICY_ROLE_CLASSES, compileBootstrapModelPolicyContext, compileModelPolicyProjection, selectEcoModelRoute, validateModelPolicyProjection} from "../control/eco-model-policy.mjs";
 import {
   GLOBAL_GOVERNANCE_MEMORY_GENESIS,
-  appendGlobalGovernanceMemoryEvent,
+  assertProjectAgnosticGovernanceValue,
   assertGlobalPolicyVisibility,
   compileGlobalGovernanceMemoryEvent,
   compileGlobalGovernanceMemoryReadback,
@@ -19,6 +21,8 @@ import {
 } from "../control/global-governance-memory.mjs";
 import {computeInvalidationClosure} from "../control/spawner-bootstrap-governance.mjs";
 import {compileGlobalGovernanceBootstrap, requireGlobalGovernanceRoleProjection, validateGlobalGovernanceBootstrap} from "../control/global-governance-bootstrap.mjs";
+import {appendAuthorizedGlobalGovernanceMemoryEvent, compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
+import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 
 const NOW = "2026-08-18T16:30:00.000Z";
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
@@ -63,32 +67,47 @@ const leaked = structuredClone(active);
 leaked.project_ref = "FORBIDDEN_PROJECT";
 leaked.snapshot_sha256 = canonicalDigest({...leaked, snapshot_sha256: null});
 assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.BAD.LEAK", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: leaked, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /fields mismatch|forbidden project|private/iu);
-
-const conflicted = structuredClone(active);
-conflicted.snapshot_sha256 = canonicalDigest({...conflicted, snapshot_sha256: null});
-compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.CONFLICT.RESOLVED", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: conflicted, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
-const unresolved = structuredClone(conflicted);
-unresolved.conflicts.find((conflict) => conflict.field === "gpt-5.6-terra.input_usd_per_million").resolution = "COMPARATIVE_GOVERNS";
-unresolved.snapshot_sha256 = canonicalDigest({...unresolved, snapshot_sha256: null});
-assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.CONFLICT.BAD", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: unresolved, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /first-party authority/iu);
+for (const privateValue of [
+  {safe_label: "ExampleConsumer context"},
+  {safe_label: ["/", "Users", "/example/", "private", "/model-notes.json"].join("")},
+  {safe_label: ["/", "tmp", "/raw-browser-capture.txt"].join("")},
+  {safe_label: "user: retain this raw chat\nassistant: acknowledged"},
+  {safe_label: "Bearer abcdefghijklmnopqrstuvwxyz"},
+  {safe_label: "api_key=not-a-real-key-but-forbidden"},
+  {safe_label: Buffer.from("password=encoded-private-value").toString("base64")},
+  {safe_label: [{nested: {conversation: "prompt text"}}]},
+]) assert.throws(() => assertProjectAgnosticGovernanceValue(privateValue), /private|transcript|secret|filesystem|forbidden/iu);
+const unknownSource = structuredClone(active);
+unknownSource.evidence[0].source_url = "https://unknown.invalid/model-research";
+unknownSource.snapshot_sha256 = canonicalDigest({...unknownSource, snapshot_sha256: null});
+assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.BAD.URL", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: unknownSource, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /canonical registry|source identity/iu);
 
 const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-global-memory-"));
 try {
-  const appended = appendGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, event});
+  const fixture = materializeTestGlobalGovernanceStore({authorityRoot, nowUtc: NOW});
+  const writerContext = compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256: fixture.bootstrap.bootstrap_sha256, roleClass: "SPAWNER", operationalId: "CONTEXT.SPAWNER.MEMORY.TEST"});
+  const controllerContext = compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256: fixture.bootstrap.bootstrap_sha256, roleClass: "CONTROLLER", operationalId: "CONTEXT.CONTROLLER.MEMORY.TEST"});
+  const supersessionEvent = compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.MODEL_POLICY.TEST.SUPERSEDED", sequence: 1, eventType: "MODEL_POLICY_SUPERSEDED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: fixture.snapshot.snapshot_sha256, reasonCode: "ROUTING_POLICY_REFRESH", priorEventSha256: fixture.events[0].event_sha256, observedAtUtc: NOW});
+  assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext: controllerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256}), /Only a canonical Spawner|writer/iu);
+  const appended = appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256});
   assert.equal(appended.status, "APPENDED");
-  const idempotent = appendGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: event.event_sha256, event});
+  const idempotent = appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: supersessionEvent.event_sha256, event: supersessionEvent, writerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256});
   assert.equal(idempotent.status, "IDEMPOTENT");
-  assert.throws(() => appendGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, event}), /stale/iu);
-  assert.deepEqual(readGlobalGovernanceMemory({authorityRoot}), [event]);
+  assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, event: supersessionEvent, writerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256}), /stale/iu);
+  assert.deepEqual(readGlobalGovernanceMemory({authorityRoot}), [fixture.events[0], supersessionEvent]);
   const lockPath = path.join(authorityRoot, "global-governance/model-policy-events.jsonl.lock");
-  const lock = {schema: "agentos.global_governance_memory_lock.v1", version: 1, process_id: 999999, target_relative_path: "global-governance/model-policy-events.jsonl", acquired_at_utc: NOW, fence_sha256: null};
+  const competingWriter = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], {stdio: "ignore"});
+  const lock = {schema: "agentos.global_governance_memory_lock.v1", version: 1, process_id: competingWriter.pid, target_relative_path: "global-governance/model-policy-events.jsonl", acquired_at_utc: NOW, fence_sha256: null};
   lock.fence_sha256 = canonicalDigest({...lock, fence_sha256: null});
   fs.writeFileSync(lockPath, `${JSON.stringify(lock)}\n`, {mode: 0o600});
-  assert.throws(() => appendGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: event.event_sha256, event}), /locked/iu);
+  assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: supersessionEvent.event_sha256, event: supersessionEvent, writerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256}), /locked/iu);
+  assert.throws(() => recoverGlobalGovernanceMemoryLock({authorityRoot}), /still alive|locked/iu);
+  competingWriter.kill("SIGTERM");
+  await once(competingWriter, "exit");
   const recovered = recoverGlobalGovernanceMemoryLock({authorityRoot, isProcessAlive: () => false});
   assert.equal(recovered.status, "RECOVERED_DEAD_LOCK");
   assert(fs.existsSync(recovered.recovered_lock_path));
-  assert.equal(appendGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: event.event_sha256, event}).status, "IDEMPOTENT");
+  assert.equal(appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: supersessionEvent.event_sha256, event: supersessionEvent, writerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256}).status, "IDEMPOTENT");
 } finally {
   fs.rmSync(authorityRoot, {recursive: true, force: true});
 }

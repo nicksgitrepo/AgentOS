@@ -118,7 +118,7 @@ assert.throws(() => compileControllerEvent({
   priorControllerHeadSha256: null,
   payload: {},
   occurredAtUtc: NOW,
-}), /stable identifier/u);
+}), /event type is invalid|stable identifier/u);
 const generatedEventId = localStartEventId("a".repeat(40));
 assert.match(generatedEventId, /LOCAL-SELF-DEVELOPMENT-AUTHORIZED-A{12}/u);
 assert.throws(() => compileControllerEvent({

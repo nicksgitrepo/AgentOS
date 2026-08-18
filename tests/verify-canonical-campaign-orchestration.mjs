@@ -16,6 +16,8 @@ import {canonicalDigest, assertPersistedRecordSafe} from "../control/content-add
 import {compileBootstrapPlan} from "../control/bootstrap-compiler.mjs";
 import {discoverProject} from "../control/bootstrap-discovery.mjs";
 import {compileNativeHostAttachment} from "../control/native-host-attachment.mjs";
+import {compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
+import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 import {
   compileCanonicalCampaignAdmission,
   runCanonicalCampaign,
@@ -290,7 +292,11 @@ const attachment = compileNativeHostAttachment({
 const fake = makeFakeHost();
 const recorder = persistRecorder();
 const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-runtime-"));
+const globalFixture = materializeTestGlobalGovernanceStore({authorityRoot});
+const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256: globalFixture.bootstrap.bootstrap_sha256, roleClass: "SCHEDULER", operationalId: "CONTEXT.SCHEDULER.CANONICAL.CAMPAIGN.TEST"});
+const governanceOptions = {globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityRoot: authorityRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256};
 const result = await runCanonicalCampaign({
+  ...governanceOptions,
   bootstrapPlan,
   admission,
   host: fake.host,
@@ -376,12 +382,18 @@ await assert.rejects(
 
 const rejectedFake = makeFakeHost({acceptAudits: false});
 const rejectedRecorder = persistRecorder();
+const rejectedAuthorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-rejected-"));
+const rejectedGlobalFixture = materializeTestGlobalGovernanceStore({authorityRoot: rejectedAuthorityRoot});
+const rejectedSchedulerContext = compileOperationalGlobalGovernanceContext({authorityRoot: rejectedAuthorityRoot, bootstrapSha256: rejectedGlobalFixture.bootstrap.bootstrap_sha256, roleClass: "SCHEDULER", operationalId: "CONTEXT.SCHEDULER.CANONICAL.REJECTED.TEST"});
 const rejectedResult = await runCanonicalCampaign({
   bootstrapPlan,
   admission,
   host: rejectedFake.host,
   hostAttachment: attachment,
-  authorityRoot: fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-rejected-")),
+  authorityRoot: rejectedAuthorityRoot,
+  globalGovernanceContext: rejectedSchedulerContext,
+  globalGovernanceAuthorityRoot: rejectedAuthorityRoot,
+  globalGovernanceBootstrapSha256: rejectedGlobalFixture.bootstrap.bootstrap_sha256,
   laneWork: laneWork(),
   projectBinding: {project_id: PROJECT_ID},
   persistCampaignState: rejectedRecorder.persist,

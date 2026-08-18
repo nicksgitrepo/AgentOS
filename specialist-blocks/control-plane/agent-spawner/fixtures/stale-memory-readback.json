@@ -1,0 +1,1 @@
+{"schema":"agentos.spawner_hostile_fixture.v1","version":1,"fixture_id":"FIXTURE.SPAWNER.STALE_MEMORY_READBACK","gate_id":"SPAWNER.GLOBAL_MEMORY","attack_vector":"STALE_MEMORY_READBACK","input_class":"HOSTILE_NEGATIVE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","verifier_path":"tests/verify-spawner-bootstrap-repair.mjs"}

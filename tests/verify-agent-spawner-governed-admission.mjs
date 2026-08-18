@@ -7,17 +7,12 @@ import {
   runAgentSpawnerCompilerTick,
 } from "../control/agent-spawner-lifecycle.mjs";
 import {
+  assertCanonicalGovernedAdmission,
   compileAgentSpawnerGovernedAdmission,
   validateAgentSpawnerGovernedAdmission,
 } from "../control/agent-spawner-governed-admission.mjs";
-import {independentlyVerifyTestCandidate} from "./helpers/independent-clearance-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
-const clearanceCandidate = {
-  commit_sha1: "1".repeat(40), tree_sha1: "2".repeat(40), package_sha256: SHA("3"), package_file_sha256: SHA("4"),
-  evidence_set_sha256: SHA("5"), lifecycle_candidate_sha256: SHA("a"), roster_projection_sha256: SHA("e"), context_sha256: SHA("c"),
-};
-const {clearance, receipt: clearanceReceipt} = independentlyVerifyTestCandidate(clearanceCandidate);
 const common = {
   lifecycleId: "LIFECYCLE.SPAWNER.GOVERNED_ADMISSION",
   candidateSha256: SHA("a"),
@@ -29,7 +24,7 @@ const common = {
     incomplete_block_count: 0,
     pending_route_count: 1,
     independent_clearance_status: "CLEARED",
-    independent_clearance_receipt_sha256: clearanceReceipt.receipt_sha256,
+    independent_clearance_receipt_sha256: SHA("9"),
   },
   execution: {compiler_ticks: 2, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false},
 };
@@ -47,32 +42,26 @@ const realContinuation = runAgentSpawnerCompilerTick(compiler, {
   }),
 });
 assert.equal(realContinuation.next_action, "ADMIT_GOVERNED_SPAWN");
-const readback = compileAgentSpawnerGovernedAdmission({
-  adapterId: "ADAPTER.SPAWNER.GOVERNED_ADMISSION",
-  sourceContinuation: realContinuation,
-  lifecycleBefore: published,
-  independentClearance: clearance,
-  clearanceCandidate,
-  evidenceRefs: [
-    {evidence_id: "EVIDENCE.SPAWNER.ADAPTER.CUSTODY", reference: "opaque:spawner/isolated-custody", sha256: SHA("f")},
-    {evidence_id: "EVIDENCE.SPAWNER.ADAPTER.ROSTER", reference: "opaque:spawner/published-roster", sha256: SHA("0")},
-  ],
-  hostileFixtureRefs: ["FIXTURE.SPAWNER.ADAPTER.PRODUCT_BYPASS", "FIXTURE.SPAWNER.ADAPTER.WORKER_EAGER_START"],
-});
-validateAgentSpawnerGovernedAdmission(readback, {sourceContinuation: realContinuation, lifecycleBefore: published});
-assert.equal(readback.status, "ADAPTER_STARTED");
-assert.equal(readback.next_action, "START_GOVERNED_SPAWN");
-assert.equal(readback.same_turn_dispatch, true);
-assert.equal(readback.authority.activation, false);
-assert.equal(readback.admission.worker_spawned, false);
-assert.equal(readback.admission.isolated_local_custody, false);
-assert.throws(() => validateAgentSpawnerGovernedAdmission({...readback, next_action: "WAIT_FOR_PROTECTED_EVENT", readback_sha256: null}), /next action is invalid/u);
-const stale = structuredClone(readback);
-stale.source_continuation_sha256 = SHA("1");
-stale.readback_sha256 = canonicalDigest({...stale, readback_sha256: null});
-assert.throws(() => validateAgentSpawnerGovernedAdmission(stale, {sourceContinuation: realContinuation}), /source continuation is stale/u);
-const bypass = structuredClone(readback);
-bypass.admission.worker_spawned = true;
-bypass.readback_sha256 = canonicalDigest({...bypass, readback_sha256: null});
-assert.throws(() => validateAgentSpawnerGovernedAdmission(bypass), /cannot spawn a worker/u);
-console.log("PASS governed-admission adapter: independently cleared compiler successor is consumed same-turn, isolated-custody bypass is rejected, and activation/protected bypasses fail closed");
+assert.throws(() => compileAgentSpawnerGovernedAdmission({
+  adapterId: "ADAPTER.SPAWNER.GOVERNED_ADMISSION", sourceContinuation: realContinuation, lifecycleBefore: published,
+  independentClearance: {status: "PASS"}, clearanceCandidate: {candidate_sha256: SHA("a")},
+  evidenceRefs: [{evidence_id: "EVIDENCE.SPAWNER.ADAPTER.CUSTODY", reference: "opaque:spawner/isolated-custody", sha256: SHA("f")}],
+  hostileFixtureRefs: ["FIXTURE.SPAWNER.ADAPTER.PRODUCT_BYPASS"],
+}), /authority root|canonical|clearance/iu, "caller-authored independent clearance must never promote");
+
+const fabricated = {
+  schema: "agentos.agent_spawner_governed_admission.v1", version: 1, adapter_id: "ADAPTER.SPAWNER.GOVERNED_ADMISSION",
+  source_continuation_sha256: realContinuation.continuation_sha256, source_lifecycle_sha256: published.lifecycle_sha256,
+  lifecycle_after_sha256: SHA("8"), status: "ADAPTER_STARTED", next_action: "START_GOVERNED_SPAWN",
+  next_handler: "HANDLER.GOVERNED_SPAWN_ADAPTER", same_turn_dispatch: true,
+  authority: {compiler_only: false, admission: true, activation: false, product_mutation: false, provider_access: false, credential_access: false},
+  admission: {spawnable: true, worker_spawned: false, wave_activation: "OFF", isolated_local_custody: false},
+  evidence_refs: [{evidence_id: "EVIDENCE.SPAWNER.ADAPTER.CUSTODY", reference: "opaque:spawner/isolated-custody", sha256: SHA("f")}],
+  hostile_fixture_refs: ["FIXTURE.SPAWNER.ADAPTER.PRODUCT_BYPASS"], readback_sha256: null,
+};
+fabricated.readback_sha256 = canonicalDigest({...fabricated, readback_sha256: null});
+assert.throws(() => validateAgentSpawnerGovernedAdmission(fabricated, {sourceContinuation: realContinuation, lifecycleBefore: published}), /not produced by the canonical clearance-consuming adapter/u);
+assert.throws(() => assertCanonicalGovernedAdmission(fabricated), /not produced by the canonical clearance-consuming adapter/u);
+const bypass = structuredClone(fabricated); bypass.admission.worker_spawned = true; bypass.readback_sha256 = canonicalDigest({...bypass, readback_sha256: null});
+assert.throws(() => validateAgentSpawnerGovernedAdmission(bypass), /not produced by the canonical clearance-consuming adapter/u);
+console.log("PASS governed-admission adapter: caller clearance cannot promote, only canonical receipt consumption mints authority, and fabricated/activation bypasses fail closed");

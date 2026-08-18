@@ -1,0 +1,23 @@
+{
+  "schema": "agentos.controller_issuer_registry.v1",
+  "version": 1,
+  "authority_epoch": 1,
+  "maximum_event_age_seconds": 300,
+  "maximum_future_skew_seconds": 5,
+  "issuers": [
+    {
+      "issuer_role": "AGENTOS_CONTROLLER",
+      "event_types": [
+        "SPAWNER_START_REQUESTED",
+        "SPAWNER_WAKE_REQUESTED"
+      ]
+    },
+    {
+      "issuer_role": "AGENT_SPAWNER",
+      "event_types": [
+        "REDISTRIBUTION_RECEIVED"
+      ]
+    }
+  ],
+  "registry_sha256": "cb8469a3fe019da9e6823afc34a6d2e81b04b11f46a2acb96cb454fbdc8ac4fa"
+}

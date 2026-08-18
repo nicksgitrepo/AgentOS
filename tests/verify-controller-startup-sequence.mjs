@@ -156,7 +156,8 @@ assert.equal(rosterRule.then.properties.next_action.const, "ADMIT_GOVERNED_SPAWN
 assert.equal(publicKernel.compileControllerStartupSuccessor, compileControllerStartupSuccessor);
 assert.equal(publicKernel.validateControllerStartupSuccessor, validateControllerStartupSuccessor);
 assert.equal(publicKernel.controllerStartup.compileControllerStartupSuccessor, compileControllerStartupSuccessor);
-assert.equal(typeof publicKernel.admitAgentSpawnerIsolatedLocalCustody, "function");
+assert.equal(publicKernel.admitAgentSpawnerIsolatedLocalCustody, undefined, "isolated-custody admission bypass must not be publicly exported");
+assert.equal(publicKernel.admitAgentSpawnerIndependentClearance, undefined, "direct lifecycle clearance promotion must not be publicly exported");
 for (const action of ["START_IMPORT_ORCHESTRATOR", ...Object.values(expected)]) assert(CONTROLLER_ACTION_IDS.includes(action), `startup action is not registered: ${action}`);
 
 console.log("PASS Controller startup sequence: same-turn Bootstrap→Spawner→roles→governance→compiler→roster→spawn→Orchestrator routing, true-blocker-only waits, and hostile false-idle rejection");

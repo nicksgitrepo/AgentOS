@@ -356,7 +356,7 @@ const isolatedOrchestrator = compileImportOrchestrator({
 assert.equal(isolatedOrchestrator.state, "ACTIVE");
 assert.equal(isolatedOrchestrator.next_action, "START_ISOLATED_AUDIT_LANES");
 
-const isolatedSpawner = compileAgentSpawnerLifecycle({
+assert.throws(() => compileAgentSpawnerLifecycle({
   lifecycleId: "LIFECYCLE.SPAWNER.ISOLATED.ORCHESTRATOR",
   mode: "GOVERNED_SPAWN",
   candidateSha256: hash("candidate"),
@@ -364,34 +364,12 @@ const isolatedSpawner = compileAgentSpawnerLifecycle({
   contextSha256: context.context_sha256,
   isolatedLocalCustody: false,
   qa: {status: "INDEPENDENT_PASS", complete_block_count: plan.role_requests.length, incomplete_block_count: 0, pending_route_count: 0, independent_clearance_status: "CLEARED", independent_clearance_receipt_sha256: hash("independent-clearance")},
-});
+}), /descriptive-only|cannot compile governed spawn authority/u, "import orchestration cannot manufacture Spawner authority from clearance-shaped QA flags");
 const blockedCentralRun = advanceControllerImportRunState({
   state: compileControllerImportRunState({plan}),
   plan,
   event: {event_type: "PROTECTED_BOUNDARY_REACHED", finding_ids: [], protected_boundary_id: BOUNDED_LOCAL_INTEGRATION_BOUNDARY_ID},
 });
-const localCentralOrchestrator = compileImportOrchestrator({
-  orchestratorId: "ORCHESTRATOR.IMPORT.LOCAL.CENTRAL",
-  ...governanceFor("ORCHESTRATOR.IMPORT.LOCAL.CENTRAL"),
-  plan,
-  rosterProjection: heldRoster,
-  runState: blockedCentralRun,
-  spawnerLifecycle: isolatedSpawner,
-  clearanceApplicability: isolatedApplicability,
-  defectQueue: emptyDefectQueue,
-});
-assert.equal(localCentralOrchestrator.state, "ACTIVE");
-assert.equal(localCentralOrchestrator.next_action, "START_CENTRAL_INTEGRATION");
-assert.equal(localCentralOrchestrator.blocked_dependency_id, null);
-const resumedCentralRun = resumeBoundedLocalIntegration({
-  runState: blockedCentralRun,
-  plan,
-  spawnerLifecycle: isolatedSpawner,
-  clearanceApplicability: isolatedApplicability,
-});
-assert.equal(resumedCentralRun.status, "CENTRAL_INTEGRATION_PENDING");
-assert.equal(resumedCentralRun.next_action, "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS");
-assert.equal(resumedCentralRun.protected_boundary_id, null);
 assert.throws(() => resumeBoundedLocalIntegration({
   runState: blockedCentralRun,
   plan,

@@ -1,0 +1,1 @@
+{"schema":"agentos.spawner_hostile_fixture.v1","version":1,"fixture_id":"FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","gate_id":"SPAWNER.AUTHORITY_SEPARATION","attack_vector":"CONTROLLER_ASYNC_SIDE_EFFECT","input_class":"HOSTILE_NEGATIVE","expected_outcome":"REJECT_WITH_TYPED_DEFECT","verifier_path":"tests/verify-spawner-bootstrap-repair.mjs"}

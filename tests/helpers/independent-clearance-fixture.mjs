@@ -1,31 +1,23 @@
-import {generateKeyPairSync, randomUUID, sign} from "node:crypto";
-import {canonicalDigest} from "../../control/content-addressing.mjs";
-import {INDEPENDENT_CLEARANCE_SCOPE, verifyIndependentSpawnerClearance} from "../../control/independent-spawner-clearance.mjs";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {execFileSync} from "node:child_process";
 
-export function independentlyVerifyTestCandidate(candidate, {nowUtc = "2026-08-18T12:00:00.000Z", mutateReceipt = null, mutateRegistry = null, usedReceiptSha256s = []} = {}) {
-  const {publicKey, privateKey} = generateKeyPairSync("ed25519");
-  const registry = {
-    schema: "agentos.independent_evaluator_registry.v1", version: 1, registry_id: "REGISTRY.INDEPENDENT.EVALUATORS.TEST",
-    evaluators: [{
-      issuer_id: "EVALUATOR.INDEPENDENT.TEST", role_id: "AGENT.INDEPENDENT_EVALUATOR", status: "ADMITTED",
-      admission_receipt_sha256: canonicalDigest({admission: "independently-admitted-test-evaluator"}),
-      public_key_pem: publicKey.export({type: "spki", format: "pem"}),
-      separated_from_roles: ["AGENT.BUILDER", "AGENT.CONTROLLER", "AGENT.SPAWNER_COMPILER"],
-      valid_from_utc: "2026-08-17T00:00:00.000Z", expires_at_utc: "2026-08-25T00:00:00.000Z",
-    }], registry_sha256: null,
-  };
-  if (mutateRegistry) mutateRegistry(registry);
-  registry.registry_sha256 = canonicalDigest({...registry, registry_sha256: null});
-  const receipt = {
-    schema: "agentos.independent_spawner_clearance.v1", version: 1, receipt_id: "CLEARANCE.SPAWNER.TEST",
-    issuer_id: "EVALUATOR.INDEPENDENT.TEST", issuer_role: "AGENT.INDEPENDENT_EVALUATOR", subject_role: "AGENT.SPAWNER_COMPILER", result: "PASS",
-    candidate: structuredClone(candidate), scope: [...INDEPENDENT_CLEARANCE_SCOPE],
-    custody: {worktree_id: "WORKTREE.INDEPENDENT.TEST", detached: true, clean: true, source_preserved: true, builder_separated: true},
-    issued_at_utc: "2026-08-18T11:00:00.000Z", expires_at_utc: "2026-08-19T11:00:00.000Z",
-    nonce_sha256: canonicalDigest({nonce: randomUUID()}), receipt_sha256: null, signature_base64: null,
-  };
-  if (mutateReceipt) mutateReceipt(receipt);
-  receipt.receipt_sha256 = canonicalDigest({...receipt, receipt_sha256: null, signature_base64: null});
-  receipt.signature_base64 = sign(null, Buffer.from(receipt.receipt_sha256, "hex"), privateKey).toString("base64");
-  return {clearance: verifyIndependentSpawnerClearance({receipt, registry, trustedRegistrySha256: registry.registry_sha256, expectedCandidate: candidate, nowUtc, usedReceiptSha256s}), receipt, registry};
+export const CANONICAL_FIXTURE_RECEIPT_SHA256 = "be24556276d410d030de1f4be81f5400e96b82627289351e5d963d1b69a4c85b";
+
+export function prepareCanonicalIndependentClearanceFixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-independent-clearance-canonical-"));
+  const repositoryRoot = path.join(root, "repository");
+  const authorityRoot = path.join(root, "authority");
+  fs.cpSync(new URL("../fixtures/independent-clearance/repository/", import.meta.url), repositoryRoot, {recursive: true});
+  fs.cpSync(new URL("../fixtures/independent-clearance/authority/", import.meta.url), authorityRoot, {recursive: true});
+  execFileSync("git", ["init", "-q"], {cwd: repositoryRoot});
+  execFileSync("git", ["config", "user.name", "Independent Fixture Evaluator"], {cwd: repositoryRoot});
+  execFileSync("git", ["config", "user.email", "fixture@example.invalid"], {cwd: repositoryRoot});
+  execFileSync("git", ["add", "."], {cwd: repositoryRoot});
+  execFileSync("git", ["commit", "-q", "-m", "Canonical independent clearance fixture"], {
+    cwd: repositoryRoot,
+    env: {...process.env, GIT_AUTHOR_DATE: "2026-08-18T00:00:00Z", GIT_COMMITTER_DATE: "2026-08-18T00:00:00Z"},
+  });
+  return {root, repositoryRoot, authorityRoot, receiptSha256: CANONICAL_FIXTURE_RECEIPT_SHA256};
 }

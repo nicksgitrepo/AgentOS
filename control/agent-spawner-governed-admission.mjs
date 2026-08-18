@@ -14,10 +14,10 @@
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {
-  admitAgentSpawnerIndependentClearance,
   validateAgentSpawnerCompilerContinuation,
   validateAgentSpawnerLifecycle,
 } from "./agent-spawner-lifecycle.mjs";
+import {assertVerifiedIndependentClearance, verifyIndependentSpawnerClearance} from "./independent-spawner-clearance.mjs";
 
 export const AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA = "agentos.agent_spawner_governed_admission.v1";
 export const AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION = 1;
@@ -37,6 +37,7 @@ const AUTHORITY_KEYS = Object.freeze([
   "compiler_only", "admission", "activation", "product_mutation", "provider_access", "credential_access",
 ]);
 const ADMISSION_KEYS = Object.freeze(["spawnable", "worker_spawned", "wave_activation", "isolated_local_custody"]);
+const canonicalGovernedAdmissions = new WeakSet();
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function isRecord(value) { return value !== null && typeof value === "object" && !Array.isArray(value); }
@@ -85,7 +86,7 @@ function validateAdmission(admission) {
   assert(admission.isolated_local_custody === false, "Governed admission cannot substitute isolated custody for independent clearance");
 }
 
-export function validateAgentSpawnerGovernedAdmission(readback, {sourceContinuation = null, lifecycleBefore = null, lifecycleAfter = null} = {}) {
+function validateGovernedAdmissionStructure(readback, {sourceContinuation = null, lifecycleBefore = null, lifecycleAfter = null} = {}) {
   exactKeys(readback, KEYS, "Agent Spawner governed-admission readback");
   assert(readback.schema === AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA && readback.version === AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION, "Governed-admission identity is invalid");
   requireIdentifier(readback.adapter_id, "Governed-admission adapter id");
@@ -115,30 +116,34 @@ export function validateAgentSpawnerGovernedAdmission(readback, {sourceContinuat
     assert(lifecycleBefore.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission compiler route is stale");
   }
   if (lifecycleAfter !== null) {
-    validateAgentSpawnerLifecycle(lifecycleAfter);
-    assert(lifecycleAfter.lifecycle_sha256 === readback.lifecycle_after_sha256, "Governed-admission lifecycle-after is stale");
-    assert(lifecycleAfter.mode === "GOVERNED_SPAWN" && lifecycleAfter.state === "SPAWN_ADMITTED", "Governed-admission did not establish the governed lifecycle");
-    assert(lifecycleAfter.authority.isolated_local_custody === false, "Governed-admission lifecycle used the removed isolated-custody bypass");
-    assert(lifecycleAfter.qa.independent_clearance_status === "CLEARED", "Governed-admission lifecycle lacks independent clearance");
-    assert(lifecycleAfter.next_action === "START_GOVERNED_SPAWN", "Governed-admission lifecycle did not expose the next action");
+    throw new Error("Governed admission no longer accepts a caller-constructed lifecycle-after");
   }
   return readback;
 }
 
-export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuation, lifecycleBefore, independentClearance, clearanceCandidate, usedClearanceReceiptSha256s = [], evidenceRefs, hostileFixtureRefs} = {}) {
+export function validateAgentSpawnerGovernedAdmission(readback, options = {}) {
+  assert(canonicalGovernedAdmissions.has(readback), "Governed admission was not produced by the canonical clearance-consuming adapter");
+  return validateGovernedAdmissionStructure(readback, options);
+}
+
+export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuation, lifecycleBefore, clearanceAuthorityRoot, clearanceReceiptSha256, evidenceRefs, hostileFixtureRefs} = {}) {
   validateAgentSpawnerCompilerContinuation(sourceContinuation);
   validateAgentSpawnerLifecycle(lifecycleBefore);
   assert(sourceContinuation.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission source must be the compiler admission successor");
   assert(sourceContinuation.lifecycle_after_sha256 === lifecycleBefore.lifecycle_sha256, "Governed-admission source lifecycle does not match compiler continuation");
-  assert(lifecycleBefore.qa.independent_clearance_status === "CLEARED" && lifecycleBefore.qa.status === "INDEPENDENT_PASS", "Governed admission requires independent clearance");
-  const lifecycleAfter = admitAgentSpawnerIndependentClearance(lifecycleBefore, {clearance: independentClearance, candidate: clearanceCandidate, usedReceiptSha256s: usedClearanceReceiptSha256s});
+  const clearance = verifyIndependentSpawnerClearance({authorityRoot: clearanceAuthorityRoot, receiptSha256: clearanceReceiptSha256});
+  assertVerifiedIndependentClearance(clearance, clearance.candidate);
+  assert(clearance.candidate.lifecycle_candidate_sha256 === lifecycleBefore.candidate_sha256 && clearance.candidate.roster_projection_sha256 === lifecycleBefore.roster_projection_sha256 && clearance.candidate.context_sha256 === lifecycleBefore.context_sha256, "Canonical independent clearance does not bind the current lifecycle");
+  assert(lifecycleBefore.qa.independent_clearance_receipt_sha256 === clearance.receipt_sha256, "Lifecycle clearance reference does not bind the consumed canonical receipt");
+  assert(lifecycleBefore.qa.incomplete_block_count === 0 && lifecycleBefore.qa.pending_route_count === 0, "Governed admission requires complete canonical blocks and roster");
+  const lifecycleAfterSha256 = canonicalDigest({source_lifecycle_sha256: lifecycleBefore.lifecycle_sha256, clearance_receipt_sha256: clearance.receipt_sha256, candidate_authority_sha256: clearance.candidate_authority_sha256, transition: "CANONICAL_GOVERNED_ADMISSION_VERIFIED"});
   const readback = {
     schema: AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA,
     version: AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION,
     adapter_id: adapterId,
     source_continuation_sha256: sourceContinuation.continuation_sha256,
     source_lifecycle_sha256: lifecycleBefore.lifecycle_sha256,
-    lifecycle_after_sha256: lifecycleAfter.lifecycle_sha256,
+    lifecycle_after_sha256: lifecycleAfterSha256,
     status: AGENT_SPAWNER_GOVERNED_ADMISSION_STATUS,
     next_action: AGENT_SPAWNER_GOVERNED_ADMISSION_NEXT_ACTION,
     next_handler: AGENT_SPAWNER_GOVERNED_ADMISSION_NEXT_HANDLER,
@@ -150,7 +155,13 @@ export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuat
     readback_sha256: null,
   };
   readback.readback_sha256 = canonicalDigest(body(readback));
-  return validateAgentSpawnerGovernedAdmission(readback, {sourceContinuation, lifecycleBefore, lifecycleAfter});
+  canonicalGovernedAdmissions.add(readback);
+  validateAgentSpawnerGovernedAdmission(readback, {sourceContinuation, lifecycleBefore});
+  return Object.freeze(readback);
+}
+
+export function assertCanonicalGovernedAdmission(readback) {
+  return validateAgentSpawnerGovernedAdmission(readback);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Agent Spawner governed-admission contract loaded\n");

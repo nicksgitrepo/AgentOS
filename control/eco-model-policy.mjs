@@ -24,6 +24,7 @@ const MODEL = /^[a-z0-9][a-z0-9._:-]{0,127}$/u;
 const EFFORTS = new Set(["none", "low", "medium", "high", "xhigh", "max"]);
 const MODULE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DEFAULT_EVIDENCE_MANIFEST = "fixtures/model-policy-evidence/manifest.json";
+const CANONICAL_SOURCE_REGISTRY = "fixtures/model-policy-evidence/source-registry.v1.json";
 
 function assert(condition, message, code = "MODEL_POLICY_INVALID") {
   if (!condition) { const error = new Error(message); error.code = code; throw error; }
@@ -55,11 +56,11 @@ function resolveArtifact(root, relativePath) {
   return {resolved, bytes, value: JSON.parse(bytes.toString("utf8"))};
 }
 
-function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, artifactResolution) {
+function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, artifactResolution, sourceEntry) {
   exactKeys(evidence, ["evidence_id", "authority_class", "source_url", "observed_at_utc", "expires_at_utc", "max_age_days", "uncertainty", "artifact_path", "artifact_sha256", "file_sha256", "summary_sha256", "raw_transcript_stored"], "Model evidence");
   requireString(evidence.evidence_id, "Model evidence ID");
   assert(["FIRST_PARTY_PROVIDER", "COMPARATIVE_BENCHMARK", "HOST_ATTESTATION"].includes(evidence.authority_class), "Model evidence authority class is invalid");
-  assert(/^https:\/\//u.test(evidence.source_url) || evidence.source_url.startsWith("host-attestation:"), "Model evidence source identity is invalid");
+  assert(evidence.source_url === sourceEntry.canonical_source_url && evidence.authority_class === sourceEntry.authority_class, "Model evidence source identity is not in the canonical registry");
   requireUtc(evidence.observed_at_utc, "Model evidence observation time");
   requireUtc(evidence.expires_at_utc, "Model evidence expiry");
   const observedMs = Date.parse(evidence.observed_at_utc);
@@ -79,6 +80,11 @@ function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, ar
   exactKeys(artifact, ["schema", "version", "evidence_id", "authority_class", "provider_id", "source_url", "observed_at_utc", "expires_at_utc", "max_age_days", "uncertainty", "summary", "summary_sha256", "artifact_sha256"], "Model source artifact");
   assert(artifact.schema === "agentos.model_policy_source_artifact.v1" && artifact.version === 1, "Model source artifact identity is invalid");
   assert(artifact.evidence_id === evidence.evidence_id && artifact.authority_class === evidence.authority_class && artifact.source_url === evidence.source_url, "Model evidence source identity differs from artifact");
+  assert(artifact.provider_id === sourceEntry.provider_id && evidence.artifact_path === sourceEntry.artifact_path, "Model evidence provider or artifact path differs from canonical source registry");
+  if (sourceEntry.allowed_domain !== "HOST_ATTESTATION") assert(new URL(artifact.source_url).hostname === sourceEntry.allowed_domain, "Model evidence source domain is redirected or lookalike");
+  const acquisitionReceipt = canonicalDigest({evidence_id: sourceEntry.evidence_id, canonical_source_url: sourceEntry.canonical_source_url, source_revision: sourceEntry.source_revision, acquired_at_utc: sourceEntry.acquired_at_utc, provider_id: sourceEntry.provider_id});
+  assert(acquisitionReceipt === sourceEntry.acquisition_receipt_sha256, "Model evidence acquisition receipt is invalid");
+  assert(Date.parse(sourceEntry.acquired_at_utc) <= Date.parse(evidence.observed_at_utc) && Date.parse(sourceEntry.acquired_at_utc) <= nowMs, "Model evidence acquisition time is future or inconsistent");
   assert(artifact.observed_at_utc === evidence.observed_at_utc && artifact.expires_at_utc === evidence.expires_at_utc && artifact.max_age_days === evidence.max_age_days && artifact.uncertainty === evidence.uncertainty, "Model evidence freshness differs from artifact");
   assert(artifact.summary_sha256 === canonicalDigest(artifact.summary) && artifact.summary_sha256 === evidence.summary_sha256, "Model evidence summary digest mismatch");
   assert(artifact.artifact_sha256 === canonicalDigest(digestBody(artifact, "artifact_sha256")) && artifact.artifact_sha256 === evidence.artifact_sha256, "Model evidence artifact digest mismatch");
@@ -87,7 +93,11 @@ function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, ar
     artifact.summary.models.forEach((model) => exactKeys(model, ["model_id", "input_usd_per_million", "output_usd_per_million", "context_tokens", "supported_reasoning_efforts", "capabilities"], "First-party model fact"));
   } else if (artifact.authority_class === "COMPARATIVE_BENCHMARK") {
     exactKeys(artifact.summary, ["methodology_scope", "models"], "Comparative evidence summary");
-    artifact.summary.models.forEach((model) => exactKeys(model, ["model_id", "reasoning_effort", "capability_score", "output_tokens_per_second", "input_usd_per_million", "output_usd_per_million"], "Comparative model fact"));
+    artifact.summary.models.forEach((model) => {
+      exactKeys(model, ["model_id", "source_url", "reasoning_effort", "capability_score", "output_tokens_per_second", "input_usd_per_million", "output_usd_per_million"], "Comparative model fact");
+      assert(sourceEntry.model_source_urls?.[model.model_id] === model.source_url, `Comparative model source is not canonically bound: ${model.model_id}`);
+      assert(new URL(model.source_url).hostname === sourceEntry.allowed_domain, `Comparative model source is redirected or lookalike: ${model.model_id}`);
+    });
   } else {
     exactKeys(artifact.summary, ["host_id", "models"], "Host evidence summary");
     artifact.summary.models.forEach((model) => exactKeys(model, ["model_id", "available", "supported_reasoning_efforts"], "Host model fact"));
@@ -95,7 +105,7 @@ function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, ar
   return artifact;
 }
 
-export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot = MODULE_ROOT, evidenceManifestPath = DEFAULT_EVIDENCE_MANIFEST} = {}) {
+function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot, evidenceManifestPath} = {}) {
   exactKeys(snapshot, ["schema", "version", "status", "project_agnostic", "visibility", "contains_consumer_context", "raw_browsing_transcripts", "observed_at_utc", "expires_at_utc", "evidence", "conflicts", "models", "task_classes", "snapshot_sha256"], "Model-policy snapshot");
   assert(snapshot.schema === MODEL_POLICY_SNAPSHOT_SCHEMA && snapshot.version === 1, "Model-policy snapshot identity is invalid");
   assert(["PREPARED_INACTIVE", "ACCEPTED_ACTIVE", "SUPERSEDED"].includes(snapshot.status), "Model-policy snapshot status is invalid");
@@ -112,26 +122,53 @@ export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observ
   assert(Array.isArray(snapshot.evidence) && snapshot.evidence.length >= 3, "Model-policy evidence is missing", "BENCHMARK_EVIDENCE_MISSING");
   const manifestResolution = resolveArtifact(authorityRoot, evidenceManifestPath);
   const manifest = manifestResolution.value;
-  exactKeys(manifest, ["schema", "version", "entries", "manifest_sha256"], "Model evidence manifest");
+  exactKeys(manifest, ["schema", "version", "source_registry_sha256", "entries", "manifest_sha256"], "Model evidence manifest");
   assert(manifest.schema === "agentos.model_policy_evidence_manifest.v1" && manifest.version === 1, "Model evidence manifest identity is invalid");
   assert(manifest.manifest_sha256 === canonicalDigest(digestBody(manifest, "manifest_sha256")), "Model evidence manifest digest mismatch");
+  const sourceRegistry = resolveArtifact(authorityRoot, CANONICAL_SOURCE_REGISTRY).value;
+  exactKeys(sourceRegistry, ["schema", "version", "entries", "registry_sha256"], "Model evidence source registry");
+  assert(sourceRegistry.schema === "agentos.model_policy_source_registry.v1" && sourceRegistry.version === 1, "Model evidence source registry identity is invalid");
+  assert(sourceRegistry.registry_sha256 === canonicalDigest(digestBody(sourceRegistry, "registry_sha256")) && sourceRegistry.registry_sha256 === manifest.source_registry_sha256, "Model evidence source registry digest is invalid or substituted");
+  assert(Array.isArray(sourceRegistry.entries) && sourceRegistry.entries.length === manifest.entries.length, "Model evidence source registry coverage is incomplete");
+  for (const sourceEntry of sourceRegistry.entries) {
+    const sourceKeys = ["evidence_id", "authority_class", "provider_id", "canonical_source_url", "allowed_domain", "source_revision", "acquired_at_utc", "acquisition_receipt_sha256", "artifact_path"];
+    if (sourceEntry.authority_class === "COMPARATIVE_BENCHMARK") sourceKeys.push("model_source_urls");
+    exactKeys(sourceEntry, sourceKeys, "Model evidence source registry entry");
+    assert(["FIRST_PARTY_PROVIDER", "COMPARATIVE_BENCHMARK", "HOST_ATTESTATION"].includes(sourceEntry.authority_class), "Model source authority class is invalid");
+    requireSha(sourceEntry.acquisition_receipt_sha256, "Model source acquisition receipt"); requireUtc(sourceEntry.acquired_at_utc, "Model source acquisition time");
+    if (sourceEntry.authority_class === "FIRST_PARTY_PROVIDER") assert(sourceEntry.provider_id === "OPENAI" && sourceEntry.allowed_domain === "developers.openai.com", "First-party model source identity is not allowlisted");
+    if (sourceEntry.authority_class === "COMPARATIVE_BENCHMARK") {
+      assert(sourceEntry.provider_id === "ARTIFICIAL_ANALYSIS" && sourceEntry.allowed_domain === "artificialanalysis.ai", "Comparative model source identity is not allowlisted");
+      exactKeys(sourceEntry.model_source_urls, ["gpt-5.6-luna", "gpt-5.6-sol", "gpt-5.6-terra"], "Comparative model source URL registry");
+      const allowedComparativeUrls = {
+        "gpt-5.6-luna": "https://artificialanalysis.ai/models/gpt-5-6-luna",
+        "gpt-5.6-sol": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+        "gpt-5.6-terra": "https://artificialanalysis.ai/models/gpt-5-6-terra",
+      };
+      for (const [modelId, sourceUrl] of Object.entries(sourceEntry.model_source_urls)) {
+        assert(new URL(sourceUrl).hostname === sourceEntry.allowed_domain && sourceUrl === allowedComparativeUrls[modelId], `Comparative model source URL is not canonical: ${modelId}`);
+      }
+    }
+    if (sourceEntry.authority_class === "HOST_ATTESTATION") assert(sourceEntry.provider_id === "CURRENT_CODEX_HOST" && sourceEntry.allowed_domain === "HOST_ATTESTATION", "Host source identity is not allowlisted");
+  }
   assert(Array.isArray(manifest.entries) && manifest.entries.length === snapshot.evidence.length, "Model evidence manifest coverage is incomplete");
   manifest.entries.forEach((entry) => exactKeys(entry, ["evidence_id", "path", "authority_class", "artifact_sha256", "file_sha256"], "Model evidence manifest entry"));
   const artifactByEvidence = new Map();
   snapshot.evidence.forEach((entry) => {
     const manifestEntry = manifest.entries.find((candidate) => candidate.evidence_id === entry.evidence_id);
+    const sourceEntry = sourceRegistry.entries.find((candidate) => candidate.evidence_id === entry.evidence_id);
     assert(manifestEntry, `Model evidence is absent from canonical manifest: ${entry.evidence_id}`, "BENCHMARK_EVIDENCE_MISSING");
+    assert(sourceEntry, `Model evidence is absent from canonical source registry: ${entry.evidence_id}`, "BENCHMARK_EVIDENCE_MISSING");
     assert(entry.artifact_path === path.posix.join(path.posix.dirname(evidenceManifestPath), manifestEntry.path), "Model evidence artifact path differs from canonical manifest");
-    artifactByEvidence.set(entry.evidence_id, validateEvidence(entry, snapshotObservedMs, nowMs, manifestEntry, resolveArtifact(authorityRoot, entry.artifact_path)));
+    artifactByEvidence.set(entry.evidence_id, validateEvidence(entry, snapshotObservedMs, nowMs, manifestEntry, resolveArtifact(authorityRoot, entry.artifact_path), sourceEntry));
   });
   assert(new Set(snapshot.evidence.map((entry) => entry.evidence_id)).size === snapshot.evidence.length, "Model evidence IDs contain duplicates");
   assert(snapshot.evidence.some((entry) => entry.authority_class === "FIRST_PARTY_PROVIDER") && snapshot.evidence.some((entry) => entry.authority_class === "COMPARATIVE_BENCHMARK") && snapshot.evidence.some((entry) => entry.authority_class === "HOST_ATTESTATION"), "Model evidence authority coverage is incomplete");
   assert(Array.isArray(snapshot.conflicts), "Model-policy conflicts must be explicit");
   for (const conflict of snapshot.conflicts) {
     exactKeys(conflict, ["field", "first_party_value", "comparative_value", "resolution"], "Model-policy conflict");
-    requireString(conflict.field, "Model-policy conflict field");
-    requireString(conflict.first_party_value, "Model-policy first-party conflict value");
-    requireString(conflict.comparative_value, "Model-policy comparative conflict value");
+    assert(/^gpt-[a-z0-9.-]+\.(?:input|output)_usd_per_million$/u.test(conflict.field), "Model-policy conflict field is not an allowlisted pricing identifier");
+    assert(/^\d+(?:\.\d+)?$/u.test(conflict.first_party_value) && /^\d+(?:\.\d+)?$/u.test(conflict.comparative_value), "Model-policy conflict values must be numeric facts");
     assert(conflict.resolution === "FIRST_PARTY_GOVERNS", "Model-policy conflict does not honor first-party authority");
   }
   assert(Array.isArray(snapshot.models) && snapshot.models.length > 0, "Model-policy models are missing");
@@ -145,6 +182,7 @@ export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observ
     assert(!modelIds.has(model.model_id), "Model-policy contains duplicate models");
     modelIds.add(model.model_id);
     assert(model.host_available === true || model.host_available === false, "Host availability is unknown", "HOST_MODEL_AVAILABILITY_UNKNOWN");
+    assert(["HOST_DECLARED_NOT_EXECUTION_PROVEN", "EXECUTION_PROVEN_MEDIUM_ONLY_OTHER_EFFORTS_DECLARED", "HOST_EXECUTION_PROVEN", "HOST_UNAVAILABLE"].includes(model.availability_evidence), "Host availability evidence is not an allowlisted state");
     assert(Number.isFinite(model.capability_score) && model.capability_score >= 0, "Model capability score is invalid");
     assert(Number.isFinite(model.input_usd_per_million) && model.input_usd_per_million >= 0, "Model input cost is unknown", "MODEL_COST_UNKNOWN");
     assert(Number.isFinite(model.output_usd_per_million) && model.output_usd_per_million >= 0, "Model output cost is unknown", "MODEL_COST_UNKNOWN");
@@ -154,7 +192,7 @@ export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observ
     model.supported_reasoning_efforts.forEach((effort) => assert(EFFORTS.has(effort), `Unsupported reasoning mode in policy: ${effort}`));
     assert(Array.isArray(model.host_supported_reasoning_efforts) && model.host_supported_reasoning_efforts.length > 0, "Host reasoning modes are missing");
     model.host_supported_reasoning_efforts.forEach((effort) => assert(EFFORTS.has(effort), `Unsupported host reasoning mode in policy: ${effort}`));
-    assert(Array.isArray(model.capabilities), "Model capabilities are missing");
+    assert(Array.isArray(model.capabilities) && model.capabilities.every((capability) => /^[A-Z][A-Z0-9_]{1,63}$/u.test(capability)), "Model capabilities are missing or invalid");
     assert(model.provider_id === providerArtifact.provider_id, "Model provider identity conflicts with first-party evidence");
     assert(model.provider_evidence_id === providerArtifact.evidence_id && model.benchmark_evidence_id === benchmarkArtifact.evidence_id && model.host_evidence_id === hostArtifact.evidence_id, "Model source bindings are incomplete");
     const providerModel = providerArtifact.summary.models.find((entry) => entry.model_id === model.model_id);
@@ -188,13 +226,22 @@ export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observ
     assert(new Set(task.fallback_models).size === task.fallback_models.length, "Task fallback models must be unique");
     task.fallback_models.forEach((model) => assert(modelIds.has(model), `Task references an unknown fallback model: ${model}`));
     assert(task.preferred_models.every((model) => !task.fallback_models.includes(model)), "Task preferred and fallback routes overlap");
-    assert(Array.isArray(task.required_capabilities), "Task capabilities are invalid");
-    assert(Array.isArray(task.escalation_triggers) && task.escalation_triggers.length > 0, "Task escalation triggers are missing");
+    assert(Array.isArray(task.required_capabilities) && task.required_capabilities.every((capability) => /^[A-Z][A-Z0-9_]{1,63}$/u.test(capability)), "Task capabilities are invalid");
+    assert(Array.isArray(task.escalation_triggers) && task.escalation_triggers.length > 0 && task.escalation_triggers.every((trigger) => /^[A-Z][A-Z0-9_]{1,63}$/u.test(trigger)), "Task escalation triggers are missing or invalid");
   }
   assert(taskIds.size === MODEL_POLICY_TASK_CLASSES.length, "Model-policy task classes contain duplicates");
   requireSha(snapshot.snapshot_sha256, "Model-policy snapshot digest");
   assert(snapshot.snapshot_sha256 === canonicalDigest(digestBody(snapshot, "snapshot_sha256")), "Model-policy snapshot digest mismatch", "DIGEST_INVALID");
   return snapshot;
+}
+
+export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot = undefined, evidenceManifestPath = undefined} = {}) {
+  assert(authorityRoot === undefined && evidenceManifestPath === undefined, "Caller-supplied model evidence roots or manifests are forbidden");
+  return validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc, requireActive, authorityRoot: MODULE_ROOT, evidenceManifestPath: DEFAULT_EVIDENCE_MANIFEST});
+}
+
+export function auditModelPolicyEvidenceStore(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot, evidenceManifestPath = DEFAULT_EVIDENCE_MANIFEST} = {}) {
+  return validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc, requireActive, authorityRoot, evidenceManifestPath});
 }
 
 function projectedCost(model) { return model.input_usd_per_million + (model.output_usd_per_million * 3); }

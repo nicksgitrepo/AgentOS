@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {selectEcoModelRoute, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
+import {auditModelPolicyEvidenceStore, selectEcoModelRoute, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const NOW = "2026-08-18T16:30:00.000Z";
@@ -38,7 +38,7 @@ function rebindArtifact(authorityRoot, snapshot, evidenceId, mutate) {
 }
 function hostile(mutate, pattern) {
   const authorityRoot = copiedAuthority(); const snapshot = structuredClone(active);
-  try { mutate({authorityRoot, snapshot}); assert.throws(() => validateModelPolicySnapshot(snapshot, {nowUtc: NOW, requireActive: true, authorityRoot}), pattern); }
+  try { mutate({authorityRoot, snapshot}); assert.throws(() => auditModelPolicyEvidenceStore(snapshot, {nowUtc: NOW, requireActive: true, authorityRoot}), pattern); }
   finally { fs.rmSync(authorityRoot, {recursive: true, force: true}); }
 }
 hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, "fixtures/model-policy-evidence/current-host.2026-08-18.json")), /ENOENT|artifact/iu);
@@ -53,5 +53,17 @@ hostile(({authorityRoot, snapshot}) => {
   const artifactPath = path.join(authorityRoot, "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json");
   const artifact = JSON.parse(fs.readFileSync(artifactPath)); artifact.summary.observation_note = "tampered summary without digest repair"; fs.writeFileSync(artifactPath, JSON.stringify(artifact));
 }, /file digest mismatch|summary digest mismatch/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-18", (artifact) => { artifact.source_url = "https://untrusted.invalid/models"; }), /canonical registry|source identity/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-18", (artifact) => { artifact.source_url = "https://developers.openai.com.lookalike.invalid/models"; }), /canonical registry|source identity|lookalike/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18", (artifact) => { artifact.summary.models[0].source_url = artifact.summary.models[1].source_url; }), /canonically bound/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18", (artifact) => { artifact.summary.models[0].source_url = "https://artificialanalysis.ai.lookalike.invalid/models/gpt-5-6-luna"; }), /canonically bound|lookalike/iu);
+hostile(({authorityRoot}) => {
+  const registryPath = path.join(authorityRoot, "fixtures/model-policy-evidence/source-registry.v1.json");
+  const registry = JSON.parse(fs.readFileSync(registryPath));
+  registry.entries[0].model_source_urls["gpt-5.6-luna"] = "https://untrusted.invalid/models/gpt-5-6-luna";
+  registry.registry_sha256 = canonicalDigest({...registry, registry_sha256: null});
+  fs.writeFileSync(registryPath, `${JSON.stringify(registry, null, 2)}\n`);
+}, /registry digest|source URL|allowlisted|canonical/iu);
+assert.throws(() => validateModelPolicySnapshot(active, {nowUtc: NOW, requireActive: true, authorityRoot: copiedAuthority()}), /Caller-supplied model evidence roots/iu, "source registry substitution reached production validation");
 
 console.log("PASS ECO model policy source binding: canonical files, trusted time, listed identity, first-party economics, host/reasoning support, and preferred economical routing");

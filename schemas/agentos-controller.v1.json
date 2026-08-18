@@ -61,6 +61,14 @@
     "SPAWNER_WAKE_REQUESTED",
     "REDISTRIBUTION_RECEIVED"
   ],
+  "event_authority": {
+    "registry": "specialist-blocks/control-plane/agent-spawner/controller-issuer-registry.v1.json",
+    "controller_issuer_operations": ["SPAWNER_START_REQUESTED", "SPAWNER_WAKE_REQUESTED"],
+    "spawner_issuer_operations": ["REDISTRIBUTION_RECEIVED"],
+    "required_event_bindings": ["authority_epoch", "nonce", "monotonic_sequence", "prior_ledger_head", "trusted_time"],
+    "caller_overrides_forbidden": ["source_role", "occurred_at_utc", "authority_registry", "replay_state", "trusted_time"],
+    "adapter_rule": "Resolve and validate canonical issuer, current authority epoch, trusted time, nonce, sequence, replay head, state, custody, and global policy before any adapter invocation."
+  },
   "campaign_boundary": {
     "orchestrator": "CAMPAIGN_SCOPED",
     "import_orchestrator_contract": "schemas/import-orchestrator.v1.json",

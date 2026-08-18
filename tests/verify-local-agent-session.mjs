@@ -15,12 +15,15 @@ import {
   validateLocalDurableSessionRecord,
   validateLocalWorkerHeartbeat,
 } from "../control/local-agent-runtime.mjs";
+import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const sourceCommit = execFileSync("git", ["-C", root, "rev-parse", "HEAD"], {encoding: "utf8"}).trim();
 const sourceTree = execFileSync("git", ["-C", root, "rev-parse", "HEAD^{tree}"], {encoding: "utf8"}).trim();
 fs.mkdirSync(path.join(root, "tmp"), {recursive: true});
 const runtimeRoot = fs.mkdtempSync(path.join(root, "tmp/agentos-durable-session-"));
+const globalFixture = materializeTestGlobalGovernanceStore({authorityRoot: runtimeRoot});
+const governanceOptions = {globalGovernanceAuthorityRoot: runtimeRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256};
 const campaignId = `CAMPAIGN-DURABLE-TEST-${process.pid}`;
 const workerKey = "FEATURE_AGENT-SMOKE-1";
 const recordPath = path.join(runtimeRoot, "sessions", `${campaignId}-v1`, workerKey, "session.json");
@@ -29,6 +32,7 @@ let worktreePath = null;
 
 try {
   await assert.rejects(() => startDurableWorkerSession({
+    ...governanceOptions,
     repoRoot: root,
     runtimeRoot,
     role: "FEATURE_AGENT",
@@ -42,6 +46,7 @@ try {
     taskKind: "INITIAL",
   }), /not admitted for FEATURE_AGENT/u);
   started = await startDurableWorkerSession({
+    ...governanceOptions,
     repoRoot: root,
     runtimeRoot,
     role: "FEATURE_AGENT",
@@ -105,6 +110,7 @@ try {
   const stoppedHeartbeat = JSON.parse(fs.readFileSync(stopped.heartbeat_path, "utf8"));
   assert.equal(stoppedHeartbeat.status, "STOPPED");
   const unexpected = await startDurableWorkerSession({
+    ...governanceOptions,
     repoRoot: root,
     runtimeRoot,
     role: "FEATURE_AGENT",

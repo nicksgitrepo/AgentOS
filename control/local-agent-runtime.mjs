@@ -16,6 +16,7 @@ import {
   createHybridScheduler,
   opaqueSchedulerWorktreeRef,
 } from "./hybrid-scheduler.mjs";
+import {compileOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -243,6 +244,8 @@ export function createLocalWorkerLaunchAdmission({
   taskKind,
   mode = "ASYNC",
   effectiveArgv,
+  globalGovernanceAuthorityRoot,
+  globalGovernanceBootstrapSha256,
 } = {}) {
   requireString(schedulerRoot, "local worker scheduler root");
   assert(path.isAbsolute(schedulerRoot), "local worker scheduler root must be absolute");
@@ -308,7 +311,10 @@ export function createLocalWorkerLaunchAdmission({
     cachePolicy: "NONE",
     secretPolicy: "REDACTED",
   });
-  const boundScheduler = scheduler ?? createHybridScheduler({authorityRoot: schedulerRoot});
+  const schedulerGovernanceContext = scheduler === null
+    ? compileOperationalGlobalGovernanceContext({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.${requestId}`})
+    : null;
+  const boundScheduler = scheduler ?? createHybridScheduler({authorityRoot: schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
   const assertBound = (admitted) => {
     if (admitted.request_id !== requestId
       || admitted.requester_id !== requesterId
@@ -830,7 +836,7 @@ export function validateDurableWorkerSessionCommand(command, session) {
   return command;
 }
 
-export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, task, taskId = "INITIAL", taskKind = "INITIAL", featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, workerScriptPath = null, sessionId = null, timeoutMs = 30_000}) {
+export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, task, taskId = "INITIAL", taskKind = "INITIAL", featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, workerScriptPath = null, sessionId = null, timeoutMs = 30_000, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
   assert(LOCAL_WORKER_ROLES.includes(role), `unsupported durable worker role: ${role}`);
   requireString(repoRoot, "durable adapter repository root");
   requireString(runtimeRoot, "durable adapter runtime root");
@@ -859,6 +865,7 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   const commandPath = path.join(sessionDirectory, "command.json");
   const commandResultPath = path.join(sessionDirectory, "command-result.json");
   const initialReadbackPath = path.join(sessionDirectory, "initial-readback.json");
+  const childLogPath = path.join(sessionDirectory, "child-provenance.log");
   const existing = readJson(recordPath);
   if (existing !== null) {
     const restored = restoreSessionPaths(recordPath, existing);
@@ -877,18 +884,21 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   const workerScript = workerScriptPath === null ? new URL("./local-agent-worker.mjs", import.meta.url).pathname : safeChild(root, path.relative(root, workerScriptPath));
   const sessionScript = new URL("./local-agent-session.mjs", import.meta.url).pathname;
   const schedulerRoot = safeChild(runtime, "scheduler-authority");
-  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath];
+  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath, "--global-governance-authority-root", globalGovernanceAuthorityRoot, "--global-governance-bootstrap-sha256", globalGovernanceBootstrapSha256];
   if (feature !== null) args.push("--feature-worktree", feature);
   if (evidence !== null) args.push("--evidence-worktree", evidence);
   if (decisionTree !== null) args.push("--decision-tree", decisionTree);
   const effectiveArgv = [process.execPath, ...args];
-  const binding = createLocalWorkerLaunchAdmission({schedulerRoot, repositoryRoot: root, worktreePath: worktree, workerScriptPath: sessionScript, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, sessionId: durableSessionId, launchId: durableSessionId, task, taskId, taskKind, mode: "ASYNC", effectiveArgv});
+  const binding = createLocalWorkerLaunchAdmission({schedulerRoot, repositoryRoot: root, worktreePath: worktree, workerScriptPath: sessionScript, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, sessionId: durableSessionId, launchId: durableSessionId, task, taskId, taskKind, mode: "ASYNC", effectiveArgv, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
   const scheduled = await binding.scheduler.run({
     request: binding.request,
     admission: binding.admission,
     resolveCandidate: binding.resolveCandidate,
     execute: async () => {
-      const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {cwd: worktree, detached: true, stdio: "ignore"});
+      fs.mkdirSync(sessionDirectory, {recursive: true, mode: 0o700});
+      const logDescriptor = fs.openSync(childLogPath, "a", 0o600);
+      const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {cwd: worktree, detached: true, stdio: ["ignore", logDescriptor, logDescriptor]});
+      fs.closeSync(logDescriptor);
       child.unref();
       return child;
     },
@@ -913,10 +923,13 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
     await sleep(100);
   }
   if (initial === null) {
+    const childProvenance = fs.existsSync(childLogPath) ? fs.readFileSync(childLogPath, "utf8").trim() : "NO_CHILD_PROVENANCE";
+    if (fs.existsSync(childLogPath)) fs.unlinkSync(childLogPath);
     sessionRecord = compileDurableSessionRecord({status: "FAILED", role: sessionRecord.role, sessionId: sessionRecord.session_id, taskId: sessionRecord.task_id, taskKind: sessionRecord.task_kind, campaignId: sessionRecord.campaign_id, campaignVersion: sessionRecord.campaign_version, candidateSha256: sessionRecord.candidate_sha256, sourceCommit: sessionRecord.source_commit, sourceTree: sessionRecord.source_tree, worktreePath: sessionRecord.worktree_path, pid: sessionRecord.pid, heartbeatPath: sessionRecord.heartbeat_path, commandPath: sessionRecord.command_path, commandResultPath: sessionRecord.command_result_path, initialReadback: sessionRecord.initial_readback, lastCommandId: sessionRecord.last_command_id, failure: `durable worker did not return initial readback within ${timeoutMs}ms`, startedAtUtc: sessionRecord.started_at_utc, updatedAtUtc: new Date().toISOString()});
     writeJsonAtomic(recordPath, sessionRecord);
-    throw new Error(sessionRecord.failure);
+    throw new Error(`${sessionRecord.failure}; child_provenance=${safeRuntimeText(childProvenance)}`);
   }
+  if (fs.existsSync(childLogPath)) fs.unlinkSync(childLogPath);
   if (initial.status !== "COMPLETED") {
     sessionRecord = compileDurableSessionRecord({status: "FAILED", role: sessionRecord.role, sessionId: sessionRecord.session_id, taskId: sessionRecord.task_id, taskKind: sessionRecord.task_kind, campaignId: sessionRecord.campaign_id, campaignVersion: sessionRecord.campaign_version, candidateSha256: sessionRecord.candidate_sha256, sourceCommit: sessionRecord.source_commit, sourceTree: sessionRecord.source_tree, worktreePath: sessionRecord.worktree_path, pid: sessionRecord.pid, heartbeatPath: sessionRecord.heartbeat_path, commandPath: sessionRecord.command_path, commandResultPath: sessionRecord.command_result_path, initialReadback: sessionRecord.initial_readback, lastCommandId: sessionRecord.last_command_id, failure: initial.error ?? "durable worker initial task failed", startedAtUtc: sessionRecord.started_at_utc, updatedAtUtc: new Date().toISOString()});
     writeJsonAtomic(recordPath, sessionRecord);

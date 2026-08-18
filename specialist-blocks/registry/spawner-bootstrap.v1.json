@@ -4,11 +4,11 @@
   "status": "PREPARED_NOT_ACTIVATED",
   "canonical_block_path": "specialist-blocks/control-plane/agent-spawner/block.json",
   "canonical_block_id": "AGENTOS.SPECIALIST.AGENT_SPAWNER",
-  "canonical_block_sha256": "e883d2078898f3713a3de923fa4ca3e15708cd6ee00459649038a9e78212d6d6",
-  "canonical_block_file_sha256": "7dc2e7a49cc9b831b763f2999f39af0131d880e0a5a977bbf0099e5f09ab6461",
-  "gate_manifest_file_sha256": "af7c99c419c0c4ec00414122bc7173c358f9f8f51a2ecae7dbd70567c84a83a7",
+  "canonical_block_sha256": "528160d0ac6fb467edf3e3da1f28960edfd32f6547d7c762a24f3b4dfe71fd44",
+  "canonical_block_file_sha256": "2ce907d8c2d4a071a235829da60397e9735a2a59f6adabc50f861f555198ba43",
+  "gate_manifest_file_sha256": "98bdcb3b2250964b2bacb90bee1a357897372b2e4d01277dea382afc43724841",
   "admission_manifest_file_sha256": "fcf5fed89fd5a3cfd8d7a26b8950fedf25c10a7d9b4274deaab6f3ae67ececdc",
   "required_before_request_intake": true,
   "controller_may_start_only_this_role": true,
-  "registry_sha256": "eb71e64ecc548677cb6c03f047f307dcda0abacbc2c7b68f7dec42e8f0b4a2a2"
+  "registry_sha256": "23c0d77f05e338abf65763e870ae8a110dd84508a5b603cd0f7c94db3c22208d"
 }

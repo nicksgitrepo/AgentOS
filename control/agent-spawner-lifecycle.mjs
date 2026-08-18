@@ -11,7 +11,6 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
-import {assertVerifiedIndependentClearance} from "./independent-spawner-clearance.mjs";
 
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
 export const AGENT_SPAWNER_LIFECYCLE_VERSION = 1;
@@ -255,10 +254,10 @@ export function compileAgentSpawnerLifecycle({
 } = {}) {
   requireIdentifier(lifecycleId, "Agent Spawner lifecycle ID");
   assert(AGENT_SPAWNER_MODES.includes(mode), "Agent Spawner mode is invalid");
-  const complete = qa.incomplete_block_count === 0;
-  const clearance = qa.independent_clearance_status === "CLEARED";
-  const derivedState = state ?? (mode === "COMPILER_ONLY" ? "COMPILER_ACTIVE" : complete && clearance ? "SPAWN_ADMITTED" : "QA_READY");
-  const governed = mode === "GOVERNED_SPAWN";
+  assert(mode === "COMPILER_ONLY", "Public lifecycle compiler is descriptive-only and cannot compile governed spawn authority");
+  const derivedState = state ?? "COMPILER_ACTIVE";
+  assert(!["SPAWN_ADMITTED", "SPAWN_ACTIVE"].includes(derivedState), "Public lifecycle compiler cannot derive spawn authority from QA flags");
+  assert(waveActivation === "OFF", "Public lifecycle compiler cannot activate a wave");
   assert(isolatedLocalCustody === false, "Isolated-local-custody admission is forbidden; independent clearance is required");
   const lifecycle = {
     schema: AGENT_SPAWNER_LIFECYCLE_SCHEMA,
@@ -275,8 +274,8 @@ export function compileAgentSpawnerLifecycle({
     qa: structuredClone(qa),
     authority: {
       compiler_authority: true,
-      temporary_worker_admission: governed && clearance && complete && (derivedState === "SPAWN_ADMITTED" || derivedState === "SPAWN_ACTIVE"),
-      spawn_authority: governed && clearance && complete && (derivedState === "SPAWN_ADMITTED" || derivedState === "SPAWN_ACTIVE"),
+      temporary_worker_admission: false,
+      spawn_authority: false,
       product_mutation: false,
       provider_access: false,
       credential_access: false,
@@ -303,27 +302,10 @@ export function compileAgentSpawnerLifecycle({
  * source roots remain preserved, independent clearance is verified, and every
  * provider/credential/product/external capability stays closed.
  */
-export function admitAgentSpawnerIndependentClearance(lifecycle, {clearance, candidate, usedReceiptSha256s = []} = {}) {
-  validateAgentSpawnerLifecycle(lifecycle);
-  assert(lifecycle.mode === "COMPILER_ONLY", "Governed admission must start from the compiler lifecycle");
-  assert(lifecycle.state === "COMPILER_ACTIVE" && lifecycle.next_action === "ADMIT_GOVERNED_SPAWN", "Spawner is not at an independently cleared admission successor");
-  assertVerifiedIndependentClearance(clearance, candidate, usedReceiptSha256s);
-  assert(candidate.lifecycle_candidate_sha256 === lifecycle.candidate_sha256 && candidate.roster_projection_sha256 === lifecycle.roster_projection_sha256 && candidate.context_sha256 === lifecycle.context_sha256, "Independent clearance does not bind the current lifecycle");
-  assert(lifecycle.qa.independent_clearance_status === "CLEARED" && lifecycle.qa.status === "INDEPENDENT_PASS", "Governed admission requires independently verified QA clearance");
-  assert(lifecycle.qa.independent_clearance_receipt_sha256 === clearance.receipt_sha256, "Lifecycle clearance claim does not bind the verified receipt");
-  assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Governed admission requires complete blocks and a published roster");
-  return compileAgentSpawnerLifecycle({
-    lifecycleId: lifecycle.lifecycle_id,
-    mode: "GOVERNED_SPAWN",
-    state: "SPAWN_ADMITTED",
-    waveActivation: "OFF",
-    candidateSha256: lifecycle.candidate_sha256,
-    rosterProjectionSha256: lifecycle.roster_projection_sha256,
-    contextSha256: lifecycle.context_sha256,
-    isolatedLocalCustody: false,
-    qa: structuredClone(lifecycle.qa),
-    execution: structuredClone(lifecycle.execution),
-  });
+export function admitAgentSpawnerIndependentClearance() {
+  const error = new Error("DIRECT_LIFECYCLE_ADMISSION_FORBIDDEN: only the canonical governed admission adapter may consume clearance and promote");
+  error.code = "DIRECT_LIFECYCLE_ADMISSION_FORBIDDEN";
+  throw error;
 }
 
 export function admitAgentSpawnerIsolatedLocalCustody() {
@@ -365,18 +347,9 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       next.execution.compiler_ticks += 1;
       break;
     case "ADMIT_GOVERNED_SPAWN":
-      assert(lifecycle.mode === "GOVERNED_SPAWN", "Governed spawn admission requires governed-spawn mode");
-      assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0 && lifecycle.qa.independent_clearance_status === "CLEARED", "Governed spawn admission requires complete blocks, a published roster, and independent clearance");
-      next.state = "SPAWN_ADMITTED";
-      next.authority.temporary_worker_admission = true;
-      next.authority.spawn_authority = true;
-      break;
+      throw new Error("DIRECT_LIFECYCLE_ADMISSION_FORBIDDEN: lifecycle events cannot promote spawn authority");
     case "START_GOVERNED_SPAWN":
-      assert(lifecycle.state === "SPAWN_ADMITTED", "Governed spawn must be admitted before activation");
-      assert(lifecycle.authority.spawn_authority === true, "Governed spawn lacks spawn authority");
-      next.state = "SPAWN_ACTIVE";
-      next.wave_activation = "ON";
-      break;
+      throw new Error("DIRECT_LIFECYCLE_ACTIVATION_FORBIDDEN: lifecycle events cannot activate workers");
     case "PROTECTED_HOLD":
       assert(lifecycle.state !== "RETIRED", "Retired Spawner cannot enter a protected hold");
       assert(lifecycle.mode === "GOVERNED_SPAWN", "Compiler-only Spawner cannot enter a protected hold");

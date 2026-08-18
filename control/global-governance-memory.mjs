@@ -4,7 +4,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
+import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {MODEL_POLICY_ROLE_CLASSES, MODEL_POLICY_SNAPSHOT_SCHEMA, validateModelPolicySnapshot} from "./eco-model-policy.mjs";
 
 export const GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA = "agentos.global_governance_memory_event.v1";
@@ -16,6 +16,9 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const EVENT_KEYS = ["schema", "version", "event_id", "sequence", "event_type", "writer_role", "prior_event_sha256", "snapshot", "target_snapshot_sha256", "reason_code", "observed_at_utc", "event_sha256"];
 const READBACK_KEYS = ["schema", "version", "status", "historical_activation_receipt_sha256", "live_event_count", "live_ledger_head_sha256", "current_snapshot_sha256", "observed_at_utc", "readback_sha256"];
 const LOCK_KEYS = ["schema", "version", "process_id", "target_relative_path", "acquired_at_utc", "fence_sha256"];
+const FORBIDDEN_KEY = /(?:consumer|customer|project_(?:id|name|path|context)|credential|secret|password|passkey|api_?key|access_?token|bearer|session_(?:id|state)|deployment|raw_(?:chat|prompt|transcript)|conversation)/iu;
+const FORBIDDEN_VALUE = /(?:(?:consumer|customer)[._ -]?(?:name|id|data|context)?|\b(?:user|assistant|system)\s*:|system prompt|raw (?:chat|prompt|browsing transcript)|bearer\s+[a-z0-9._~+/-]+=*|(?:api[_ -]?key|password|credential|access[_ -]?token)\s*[:=]|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bsk-[A-Za-z0-9_-]{12,}|(?:^|[\s"'])(?:\/Users\/|\/home\/|\/tmp\/|~\/|[A-Za-z]:\\))/iu;
+const SAFE_FALSE_KEYS = new Set(["contains_consumer_context", "raw_browsing_transcripts", "raw_transcript_stored"]);
 
 function assert(condition, message, code = "GLOBAL_GOVERNANCE_MEMORY_INVALID") {
   if (!condition) { const error = new Error(message); error.code = code; throw error; }
@@ -34,8 +37,37 @@ function resolveRegularRoot(authorityRoot, relativePath) {
   return target;
 }
 
+function decodedVariants(value) {
+  const variants = [];
+  if (/^[A-Za-z0-9+/]{24,}={0,2}$/u.test(value) && value.length % 4 === 0) {
+    try { const decoded = Buffer.from(value, "base64").toString("utf8"); if (/^[\x09\x0a\x0d\x20-\x7e]+$/u.test(decoded)) variants.push(decoded); } catch {}
+  }
+  if (/^[0-9a-f]{24,}$/iu.test(value) && value.length % 2 === 0) {
+    try { const decoded = Buffer.from(value, "hex").toString("utf8"); if (/^[\x09\x0a\x0d\x20-\x7e]+$/u.test(decoded)) variants.push(decoded); } catch {}
+  }
+  return variants;
+}
+
+export function assertProjectAgnosticGovernanceValue(value, trail = "global_governance") {
+  if (Array.isArray(value)) { value.forEach((entry, index) => assertProjectAgnosticGovernanceValue(entry, `${trail}[${index}]`)); return value; }
+  if (value !== null && typeof value === "object") {
+    for (const [key, entry] of Object.entries(value)) {
+      if (SAFE_FALSE_KEYS.has(key)) assert(entry === false, `${trail}.${key} must remain false`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+      else assert(!FORBIDDEN_KEY.test(key), `${trail}.${key} is a forbidden private/project field`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+      assertProjectAgnosticGovernanceValue(entry, `${trail}.${key}`);
+    }
+    return value;
+  }
+  if (typeof value === "string") {
+    assert(!FORBIDDEN_VALUE.test(value), `${trail} contains private, transcript, secret, or filesystem content`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+    for (const decoded of decodedVariants(value)) assert(!FORBIDDEN_VALUE.test(decoded), `${trail} contains encoded private content`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+  }
+  return value;
+}
+
 function validateGlobalEvent(event, {nowUtc = event?.observed_at_utc} = {}) {
   exactKeys(event, EVENT_KEYS, "Global governance memory event");
+  assertProjectAgnosticGovernanceValue(event);
   assert(event.schema === GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA && event.version === 1, "Global governance memory event identity is invalid");
   assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(event.writer_role), "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(["MODEL_POLICY_ACCEPTED", "MODEL_POLICY_SUPERSEDED", "MODEL_POLICY_INVALIDATED"].includes(event.event_type), "Global governance memory event type is invalid");
@@ -71,6 +103,7 @@ export function replayGlobalGovernanceMemory(events, {observedAtUtc = events.at(
   const history = [];
   for (let index = 0; index < events.length; index += 1) {
     const event = events[index];
+    assertProjectAgnosticGovernanceValue(event);
     validateGlobalEvent(event, {nowUtc: event.observed_at_utc});
     assert(event.sequence === index && event.prior_event_sha256 === head, "Global governance memory chain is stale or noncontiguous", "GLOBAL_MEMORY_CAS_STALE");
     if (event.event_type === "MODEL_POLICY_ACCEPTED") {
@@ -96,42 +129,6 @@ export function readGlobalGovernanceMemory({authorityRoot, relativePath = "globa
   if (text.length === 0) return [];
   assert(text.endsWith("\n"), "Global governance memory ledger is truncated");
   return text.trimEnd().split("\n").map((line) => JSON.parse(line));
-}
-
-export function appendGlobalGovernanceMemoryEvent({authorityRoot, relativePath = "global-governance/model-policy-events.jsonl", expectedHeadSha256, event}) {
-  const target = resolveRegularRoot(authorityRoot, relativePath);
-  fs.mkdirSync(path.dirname(target), {recursive: true});
-  const lockPath = `${target}.lock`;
-  const lock = {schema: "agentos.global_governance_memory_lock.v1", version: 1, process_id: process.pid, target_relative_path: relativePath, acquired_at_utc: new Date().toISOString(), fence_sha256: null};
-  lock.fence_sha256 = canonicalDigest(digestBody(lock, "fence_sha256"));
-  let lockFd;
-  try {
-    lockFd = fs.openSync(lockPath, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
-    fs.writeFileSync(lockFd, `${canonicalJson(lock)}\n`); fs.fsyncSync(lockFd); fs.closeSync(lockFd); lockFd = undefined;
-  } catch (error) {
-    if (lockFd !== undefined) fs.closeSync(lockFd);
-    if (error.code === "EEXIST") assert(false, "Global governance memory ledger is locked", "GLOBAL_MEMORY_LOCKED");
-    throw error;
-  }
-  try {
-    const events = readGlobalGovernanceMemory({authorityRoot, relativePath});
-    const replay = replayGlobalGovernanceMemory(events, {observedAtUtc: event.observed_at_utc});
-    assert(replay.head_sha256 === expectedHeadSha256, "Global governance memory compare-and-swap head is stale", "GLOBAL_MEMORY_CAS_STALE");
-    if (events.some((entry) => entry.event_sha256 === event.event_sha256)) return {status: "IDEMPOTENT", replay, fence_sha256: lock.fence_sha256};
-    assert(event.sequence === events.length && event.prior_event_sha256 === replay.head_sha256, "Global governance memory append is not bound to the current head");
-    const nextReplay = replayGlobalGovernanceMemory([...events, event], {observedAtUtc: event.observed_at_utc});
-    const temporary = `${target}.tmp.${lock.fence_sha256}`;
-    const descriptor = fs.openSync(temporary, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
-    try { fs.writeFileSync(descriptor, `${[...events, event].map((entry) => canonicalJson(entry)).join("\n")}\n`); fs.fsyncSync(descriptor); } finally { fs.closeSync(descriptor); }
-    fs.renameSync(temporary, target);
-    const directoryFd = fs.openSync(path.dirname(target), fs.constants.O_RDONLY | (fs.constants.O_DIRECTORY ?? 0));
-    try { fs.fsyncSync(directoryFd); } finally { fs.closeSync(directoryFd); }
-    const readback = readGlobalGovernanceMemory({authorityRoot, relativePath});
-    assert(readback.length === events.length + 1 && readback.at(-1).event_sha256 === event.event_sha256, "Global governance memory durable readback differs");
-    return {status: "APPENDED", replay: nextReplay, fence_sha256: lock.fence_sha256};
-  } finally {
-    try { fs.unlinkSync(lockPath); } catch (error) { if (error.code !== "ENOENT") throw error; }
-  }
 }
 
 export function recoverGlobalGovernanceMemoryLock({authorityRoot, relativePath = "global-governance/model-policy-events.jsonl", isProcessAlive = (pid) => { try { process.kill(pid, 0); return true; } catch (error) { if (error.code === "ESRCH") return false; throw error; } }} = {}) {

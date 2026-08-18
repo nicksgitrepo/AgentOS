@@ -546,7 +546,7 @@
     },
     "agentos_controller": {
       "path": "control/agentos-controller.mjs",
-      "sha256": "97f7fb906f04d6369a2609c32baf23942d3ef6ff3f89cb0d42a810c31053caf7"
+      "sha256": "36d2f0502584d315ad05710bbec14a5b0849e09a10d627cac0caf59d586e2faf"
     },
     "controller_role_display": {
       "path": "control/controller-role-display.mjs",
@@ -554,7 +554,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "007330764fbecc7e89d35e50bb62c9c8968ccaa0ec4db178a19061fa95654eec"
+      "sha256": "73c850696d681527373b88159743c38d66aa9b9aff1645047643792d4d5278f4"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -582,7 +582,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "ec0e28b37a047e4bb8d37697f80dbb4ae5627f49219ff6a89a7ca4b496dfb1e5"
+      "sha256": "8310fbda2eb6c34be705b28e3f67159b932958bc3129e3137b60554c4cb09894"
     },
     "pyramid_campaign_governance_controller": {
       "path": "control/pyramid-campaign-governance.mjs",
@@ -758,7 +758,7 @@
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",
-      "sha256": "026b64d18108d34d3208e259c5f14cb0f7a618c8d56a316fca7b4030008eb23f"
+      "sha256": "79621e2b7562eca5a82dc8a476408ce462a4d225ed2a9383b74138ca1755e152"
     },
     "local_agent_session_contract": {
       "path": "schemas/local-agent-session.v1.json",
@@ -766,7 +766,7 @@
     },
     "local_agent_session_verifier": {
       "path": "tests/verify-local-agent-session.mjs",
-      "sha256": "84754b8ef5a8cce139ae6c2a088b6739ce870a2a7afa8b8cdf23e4722e9a879d"
+      "sha256": "9e1df939b11dd8aa8b75c672f41186be81eb36348991b3947c9ea0cdf5c3ee3f"
     },
     "durable_session_process_provenance_controller": {
       "path": "control/durable-session-process-provenance.mjs",
@@ -782,7 +782,7 @@
     },
     "local_agent_worker_controller": {
       "path": "control/local-agent-worker.mjs",
-      "sha256": "0045478d89590fb2d1f35e7dd7bfb093d7c65da6818e2d38890f3e0298b65b4c"
+      "sha256": "55142c0f3fc15195a4c13221eba50f0719aa450312354b96b4575d210b0a8fa7"
     },
     "check_runner_controller": {
       "path": "control/check-runner.mjs",
@@ -798,7 +798,7 @@
     },
     "local_agent_runtime_controller": {
       "path": "control/local-agent-runtime.mjs",
-      "sha256": "0b795a0f9916f965556deead1f22a074254076d91ee9b088fc6876110532be0b"
+      "sha256": "a8872a592b389a46bc2fc86325d5360d08728e28f39a7ab95be6b1e0c1c1f00c"
     },
     "local_campaign_admission_controller": {
       "path": "control/local-campaign-admission.mjs",
@@ -810,7 +810,7 @@
     },
     "local_campaign_admission_verifier": {
       "path": "tests/verify-local-campaign-admission.mjs",
-      "sha256": "bbf140dd537cc399e9bc622933e1ffba8417ef62615bd2a29d5c5cf4f807b161"
+      "sha256": "72d68c25cb19a6d37c98c1ab35138fa0b583b09e99a29af691e23fee401320fc"
     },
     "controller_supervisor_liveness_verifier": {
       "path": "tests/verify-controller-supervisor-liveness.mjs",
@@ -818,7 +818,7 @@
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",
-      "sha256": "3b96a5e70f0abc50919a2b88176375e6317a01d7ec61c98bfec49def8a1d8757"
+      "sha256": "dcbc5d2efbad54364ecb3df019c2dc3fe366671bc155f68e8e65b025e7915c5a"
     },
     "project_context_store_controller": {
       "path": "control/project-context-store.mjs",
@@ -890,15 +890,15 @@
     },
     "bootstrap_runtime_controller": {
       "path": "control/bootstrap-runtime.mjs",
-      "sha256": "2315e62bba8e433dd2d5a8277300cf159a219664c7efc9eccb0f2884af59f7da"
+      "sha256": "777c05ce64f9d5fdc1f0639a438629a5e6ddc81135bad3ad25ce0f502f922325"
     },
     "intent_regulator_runtime_controller": {
       "path": "control/intent-regulator-runtime.mjs",
-      "sha256": "756323c8555f3e69e5689c217ab7b92bc6642429df89e5961c38b60817dede90"
+      "sha256": "0dcb9322ed462b76ae7b1977cceb9bccccc184077294ad09bc6e1087e9f0fae7"
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "56febd1258c95d5f60eb29e30ce8d477a88a7a388c401c64ef42a2149fffe5d4"
+      "sha256": "b0d105eaa503557c537edcf4116f90b831c15c444838da164066e67186568ac3"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -1058,15 +1058,15 @@
     },
     "typed_spawner_admission_controller": {
       "path": "control/typed-spawner-admission.mjs",
-      "sha256": "4509dcc8aa03ee88355e7f3117f1086030223f604f7e479f27b5a80651ce0163"
+      "sha256": "d118b461449f64aa171dd51bb64e7465efdc4a9f89d90a1df4d9487903ad1216"
     },
     "typed_spawner_admission_contract": {
       "path": "schemas/typed-spawner-admission.v1.json",
-      "sha256": "880adad005a79dcc92fc047c5b2c2c4a294c87c49bbddb50efcd194f375db282"
+      "sha256": "6f35068c5ff690a581e96519d8cc34d9671f2468bf19c5d0e6dee965ecfee006"
     },
     "typed_spawner_admission_verifier": {
       "path": "tests/verify-typed-spawner-admission.mjs",
-      "sha256": "d872d1c4dbb0f0dd5fe07e99d65e55df1327937a26f819232bed086b7231092f"
+      "sha256": "da12ef19c97a7893dcdce60587d838a73e2d2ed8e7c065cecf57e48f17cc5c1d"
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
@@ -1090,7 +1090,7 @@
     },
     "controller_startup_sequence_verifier": {
       "path": "tests/verify-controller-startup-sequence.mjs",
-      "sha256": "8d465b02ccef899f841851801f3a59656e4420533f9d6284653bffd8605f31f9"
+      "sha256": "c25a008d082eaec8f58570145da8b5ed72648789114027104e2f0719a6c7b7fc"
     },
     "controller_startup_runner_controller": {
       "path": "control/controller-startup-runner.mjs",
@@ -1106,19 +1106,19 @@
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
-      "sha256": "d1ce0f3d4ffb0d14db19279471677603fa5345e289b5af8b785252ed85225535"
+      "sha256": "c33ba2c4df553ee130912ebc6e7aa82ec2253192759b18a89925a88bf3f8ba24"
     },
     "permanent_role_roster_contract": {
       "path": "schemas/permanent-role-roster.v1.json",
-      "sha256": "55deae85d4b445db2ae109405dd860b141efa22c98dd4dfb426ea555d97ad890"
+      "sha256": "1c790d84be93b125ee6ee007e478f2f760fc082de626211f5149d395f89f1ea5"
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "e48f45d6283801b20ca7653a4f112856769865680b1585db4e0b61f434d1a04b"
+      "sha256": "b3405628d6feee2d8dfe14f0028e3050ea918a068166bafd0b1197524c7e6b5c"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "2f3dd8b7d1ad8925d0264ab6e42540809237dee03453067cf7dea7580b227f11"
+      "sha256": "c5af0e65aa5194a186942a33f059d6e1cd81f3ebd271db5a8ec93e3d65c5c799"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1126,15 +1126,15 @@
     },
     "agent_spawner_compiler_continuation_verifier": {
       "path": "tests/verify-agent-spawner-compiler-continuation.mjs",
-      "sha256": "a2f58da33575b3c85393b5d050f25deda420c5d78edbb32694f8930af4ac5fa2"
+      "sha256": "28b4655ab21a3d3e89daf849561f323f73e17ed45d299c190897382424ddeac8"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "145cdadd486255645308121eb79ffd1975a4f93b6ad975e10ffa11d9dca0c163"
+      "sha256": "aace94644bc230ecafb92a19e5f78fd5025805bd3093f2c5c73800b70825dd84"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "b895cefec07946ce94aebf6b1db2d9169c1210cb0898ed98b71467d92e795a09"
+      "sha256": "be93a32b4e2b9d21d0d7737151359d8a4e270ff87dda1f8d21a16862b9b1e918"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
@@ -1642,7 +1642,7 @@
     },
     "all_verifier": {
       "path": "tests/verify-all.mjs",
-      "sha256": "0191320cfc5d6cc70be794d902237de3fd28dddc6c8772eeaf7fb3d8c71a890e"
+      "sha256": "8713c981c5999ae612a7f2a3e227a88f194bfb70c337bed861e9c3994c6c8714"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
@@ -1730,7 +1730,7 @@
     },
     "audited_canonical_campaign_orchestration_adapter": {
       "path": "control/canonical-campaign-orchestration-adapter.mjs",
-      "sha256": "de4bbfe8f7454e19d77627eb04663b5c0a163db526a7e9b4e82c78022498d400"
+      "sha256": "0f6826c47476498937df489552ada9fd071eb04b7740891251dc657ceefd6481"
     },
     "audited_canonical_campaign_orchestration_support": {
       "path": "control/canonical-campaign-orchestration-support.mjs",
@@ -1738,7 +1738,7 @@
     },
     "hybrid_scheduler_controller": {
       "path": "control/hybrid-scheduler.mjs",
-      "sha256": "69e2c9e7935f64d0e0bd99b26519f63bdc2fbc496e4f8200c356f225a4d12752"
+      "sha256": "405e0cd7c515a96982e33da8ccd6c0ed928f70c1d86778167af5e91679974202"
     },
     "hybrid_scheduler_contract": {
       "path": "schemas/hybrid-scheduler.v1.json",
@@ -2338,7 +2338,7 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "9d4ac33ee51c40aab073d17ab8a38406ee4d15ca7e87150f8e4c1bfd9a413fe3"
+      "sha256": "0fdd16cd452e434301d4a9c9fe9bc04b975dcee764a2e4823a9583d45d09d92d"
     },
     "agent_spawner_governed_admission_contract": {
       "path": "schemas/agent-spawner-governed-admission.v1.json",
@@ -2346,11 +2346,11 @@
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
-      "sha256": "b9157ef8dc328610922c408985e768d5c154ff20f7c476b847fdd3e3a8767e7a"
+      "sha256": "819212f88b2194080787a2c8d93e368d2592ea55c4e9f4e37ef211f9b2860aea"
     },
     "spawner_bootstrap_governance_controller": {
       "path": "control/spawner-bootstrap-governance.mjs",
-      "sha256": "430d75dce3b90e00827b341fee430f27ccbe0001b4de2a2fbbc837a93182a7cf"
+      "sha256": "76b0041edefdb234f87cb52d1a8ca01e2fa8d11c22474cf8cdfc82bdfa4e5fb2"
     },
     "spawner_defect_repair_loop_controller": {
       "path": "control/spawner-defect-repair-loop.mjs",
@@ -2358,15 +2358,16 @@
     },
     "eco_model_policy_controller": {
       "path": "control/eco-model-policy.mjs",
-      "sha256": "06f68ff8b9a280dcebfacef89643659431678072c367abf3239cc22ea36f2681"
+      "sha256": "3a93823c0c20add9cc72ce68a98d86a270bc661a6d71669b05848bd0751a273c",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "global_governance_memory_controller": {
       "path": "control/global-governance-memory.mjs",
-      "sha256": "b1a2c5e2e0081e0d9651ffeab18476353242294ac8b2a984be8820cd2a3e1028"
+      "sha256": "3ccb04d8abb81a22f4ba963126ce27d922c7c89a39a5c7ef96f9640781bc0146"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",
-      "sha256": "477a671b43299d8ef05e9ffceda3c2f51a7a14df85b83e880b49be1d78e643c3"
+      "sha256": "32980d88b00d623ab1844893d8783f69288951a31afe4255f7ddd3468feeae1c"
     },
     "spawner_defect_envelope_contract": {
       "path": "schemas/spawner-defect-envelope.v2.json",
@@ -2386,7 +2387,7 @@
     },
     "inert_seed_lifecycle_contract": {
       "path": "schemas/inert-seed-lifecycle.v1.json",
-      "sha256": "6c3e95c0ba4a7e8a7c7e0bcd5c1ea0aa0262f194ec9496c99a04964879f38ab7"
+      "sha256": "ead450bb38ce5c4eec1e985ab8f265ee1dccd800c94e2d8d26c1c9c9df2afd1d"
     },
     "model_policy_snapshot_contract": {
       "path": "schemas/model-policy-snapshot.v1.json",
@@ -2402,12 +2403,12 @@
     },
     "initial_model_policy_snapshot_fixture": {
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
-      "sha256": "1e20be5cbfd41bb9a8d6ee9f4e9ab5614311fd16a55632a46ff6377d20078090",
+      "sha256": "75603176c749e0636b4151aebf54793e9c4e58ba9a555a78b1d1fa6b38a709cf",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "7dc2e7a49cc9b831b763f2999f39af0131d880e0a5a977bbf0099e5f09ab6461"
+      "sha256": "2ce907d8c2d4a071a235829da60397e9735a2a59f6adabc50f861f555198ba43"
     },
     "canonical_spawner_decision_tree": {
       "path": "specialist-blocks/control-plane/agent-spawner/decision-tree.json",
@@ -2415,7 +2416,7 @@
     },
     "canonical_spawner_gate_manifest": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
-      "sha256": "af7c99c419c0c4ec00414122bc7173c358f9f8f51a2ecae7dbd70567c84a83a7"
+      "sha256": "98bdcb3b2250964b2bacb90bee1a357897372b2e4d01277dea382afc43724841"
     },
     "canonical_spawner_controller_authority_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/controller-authority.gate",
@@ -2451,31 +2452,31 @@
     },
     "canonical_spawner_registry": {
       "path": "specialist-blocks/registry/spawner-bootstrap.v1.json",
-      "sha256": "88a578951d57ba329812b9c07497aadeec79875456ee0171fdf67a006e21a6bb"
+      "sha256": "9ffc8441271f986d1823de2ce82fc587bfe64baf9fcf8e28387eb3246f42d6ad"
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "643682bf847f59eb7521048f071987d82996c5cf847308e469df143e370b8a81"
+      "sha256": "98840419f1aa6ce33558610b1c454a6ad568f7c3c199a864eaa09d44f2da4a77"
     },
     "global_governance_memory_verifier": {
       "path": "tests/verify-global-governance-memory.mjs",
-      "sha256": "dc8fa88e1beff91e164182862df745a8b22c98746413ff135f16c2a0c6dcb7c8"
+      "sha256": "d02bb8aee02c24416b6bf0a9b868b54dfc152d0680b5c6de2485d189e4b74448"
     },
     "independent_spawner_clearance_controller": {
       "path": "control/independent-spawner-clearance.mjs",
-      "sha256": "6e0570f0931072dca7aeee184154a645d602167ed8f991af0d786d27dcfce5fa"
+      "sha256": "5976338b3b222801b323446143d3c553306943b7928ae37ce06227f31684d919"
     },
     "independent_spawner_clearance_contract": {
       "path": "schemas/independent-spawner-clearance.v1.json",
-      "sha256": "3641b7110a0efa440d38027e208671ffc828df2dc86b10a16a9a17acb39b1d70"
+      "sha256": "69d5cedb9c8c17d92a0ea3d6929fd416c501c44845abb93d78c8e14053105a9b"
     },
     "independent_spawner_clearance_verifier": {
       "path": "tests/verify-independent-spawner-clearance.mjs",
-      "sha256": "f3d7b0e0834274c1da4a3c7f693f108aac409ab71ed605a06011a86a0717d69b"
+      "sha256": "8631c08ea081756deca2ab9c4994c5fa82ddc7e3a8e613892a1b791f93631e28"
     },
     "global_governance_bootstrap_controller": {
       "path": "control/global-governance-bootstrap.mjs",
-      "sha256": "a95765e32d004b22a80cf3c4c185162d21a0ece4b9e7c3fa5975a5d7efed26fe"
+      "sha256": "c4728aa228801f51710829cbf2aaf0474e3261167faefa88479e71dd65543f69"
     },
     "global_governance_bootstrap_contract": {
       "path": "schemas/global-governance-bootstrap.v1.json",
@@ -2483,12 +2484,12 @@
     },
     "eco_model_policy_source_binding_verifier": {
       "path": "tests/verify-eco-model-policy-source-binding.mjs",
-      "sha256": "3a3f61a6bd69d16befaebdceb3919a94615b22a9a4889035b1a85eabb4a5f105",
+      "sha256": "b886541c91f7e3b2c94009ce60b8927ebe5422fd91c547a1de25259e780b2af8",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_evidence_manifest": {
       "path": "fixtures/model-policy-evidence/manifest.json",
-      "sha256": "14e0f8970f5ed9ff8530d2d47402dcf90b6f5ef0fbd4ccad2e3aac0bdcdec95f",
+      "sha256": "cbd10c815bcb20f01c3e8820f70d468fd3e28739f4650baf410a1f9c9666e941",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_openai_source_artifact": {
@@ -2498,7 +2499,7 @@
     },
     "model_policy_comparative_source_artifact": {
       "path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-18.json",
-      "sha256": "9bd0c413a6460c82e1e5c47c6fd0255f69c9d276bb57903edfb0fc8b9be826fe",
+      "sha256": "5e3280d3373689dbfe39b724751421fe709e2ec42d20e29647c7ce172bcc5070",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_host_source_artifact": {
@@ -2536,12 +2537,225 @@
     },
     "global_governance_test_fixture_helper": {
       "path": "tests/helpers/global-governance-fixture.mjs",
-      "sha256": "c954110c8887f08e33548baa20ec527de9d0b87fcb72406d1eb49f264453b2f1",
+      "sha256": "02ba6a24a6662be3df7aec7b4d746c6af5e879b6baa4d2b5dae543f678b644d4",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "independent_clearance_test_fixture_helper": {
       "path": "tests/helpers/independent-clearance-fixture.mjs",
-      "sha256": "19eaf5460a4fe26f946d324ce93bde432d1fa7889a27c96dcff668163acfbe72"
+      "sha256": "d00b72d6c90000ffbff50442fe37f734bb8cf46c296106a821ea63d5015c21d0"
+    },
+    "controller_event_authority_controller": {
+      "path": "control/controller-event-authority.mjs",
+      "sha256": "173effaef8f86047437be3e6bce7f7bf6087ba78f817e5ef6e2fc6d1df2f05d3"
+    },
+    "controller_issuer_registry": {
+      "path": "specialist-blocks/control-plane/agent-spawner/controller-issuer-registry.v1.json",
+      "sha256": "7027bd3090201059f6e2bf3eee47a21bc5457cea5b515b307674cac2a49eca06"
+    },
+    "global_governance_operational_context_controller": {
+      "path": "control/global-governance-operational-context.mjs",
+      "sha256": "c9a4b43b9450715c8438c74c7218ff5d86780e848631648639574a94af48d96e"
+    },
+    "global_governance_operational_context_contract": {
+      "path": "schemas/global-governance-operational-context.v1.json",
+      "sha256": "059624627d0e96b79c3b33d6985ce18cd86b6603712c9aee82a9afc0df9620a9"
+    },
+    "global_governance_operational_context_verifier": {
+      "path": "tests/verify-global-governance-operational-integration.mjs",
+      "sha256": "19288b56e2dc98244c09352c11c063c322a423affd4c21dac23a39236ee766c3"
+    },
+    "model_policy_source_registry": {
+      "path": "fixtures/model-policy-evidence/source-registry.v1.json",
+      "sha256": "4bb0a13497ce7643acb2a2b9afe51f7d60630b944635ef056563ed38d3affd54",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_hostile_fixtures_manifest_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/hostile-fixtures.manifest.json",
+      "sha256": "9ce59d93be75213fc39ae7dd49d9bb2e512996f05ce7fea8452f2ae4fd0353b4"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_gate_review_trust_root_v1_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/gate-review-trust-root.v1.json",
+      "sha256": "3005e273a9543ff309cc38f3d3a00d4ca3835d6fad11b487a6f68dc235a1ad90"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_independent_clearance_trust_anchor_v1_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/independent-clearance-trust-anchor.v1.json",
+      "sha256": "52ee70d4e98dc50a0b78701e1b640b1d4853d14c86d782ad918e1cf4a0bbebc0"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_caller_asserted_qa_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/caller-asserted-qa.json",
+      "sha256": "8b9b6eb79ad3f76e89b01687e0cf284c272c367dd2f9f9d9a36d2959511c78cc"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_controller_async_side_effect_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/controller-async-side-effect.json",
+      "sha256": "02b5ce2bb163f30f81d3a8e8b83d762b2032f18de418b8b54416a5c37a87c967"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_controller_direct_spawn_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/controller-direct-spawn.json",
+      "sha256": "cc5a5dfccacd8f51e136de50e5cfddd555918c2956705ba3724e096fcdfd496d"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_cross_project_leakage_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/cross-project-leakage.json",
+      "sha256": "13dc9523aac5a2bdcd763840f42b25e6e628ed67e6a74ab6582a2f73100cb11d"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_digest_alias_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/digest-alias.json",
+      "sha256": "59204209ccedfa877d61f607a24004bc7bd54312b3c59d02f512974ae2506468"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_dirty_remote_readback_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/dirty-remote-readback.json",
+      "sha256": "28c6b52c408e51d77d275f260c63fe65e01b81fe879656c5f975ae0ca3929fbd"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_duplicate_gate_id_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/duplicate-gate-id.json",
+      "sha256": "049c1eaf5a6ddffa130008fa22d2e29e50d4496788f63492fb092c90a57bdfa0"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_fabricated_economics_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/fabricated-economics.json",
+      "sha256": "e483e45aa3a3794f9ab083801b116c8bcb1d07b1d0e8cb2f5ca064bf823a5337"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_false_protected_blocker_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/false-protected-blocker.json",
+      "sha256": "56e14888e4e57084c2cd38a3ca8c0d2f120e8f65514f39f8c542c15c0e324eb1"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_forged_manifest_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/forged-manifest.json",
+      "sha256": "6adf5fb034ab0b9c7b295a6f6cbfd545a358a8b72850708beed5708670c68daa"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_incomplete_layer_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/incomplete-layer.json",
+      "sha256": "fa48a7d2b1032b9164f54a8d77f417d7262d078209f49e8b9f573ac6c4adddc7"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_inconclusive_qa_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/inconclusive-qa.json",
+      "sha256": "49d16fae7a5d3b91099b72d127d52d820ea1fdc008148b409daa89378b197285"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_invalid_digest_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/invalid-digest.json",
+      "sha256": "cb74626b6a28f61bbf7322f99e5464095b8ca7ba62c1b27aa07a7acf0856010e"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_missing_file_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/missing-file.json",
+      "sha256": "488eae91b0cd41c8dd6e91ac770d914218cfde0f8d78eb95362b8957b88ebcb3"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_missing_model_evidence_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/missing-model-evidence.json",
+      "sha256": "6a991e4c099dd0c467975be376abb1273c8f76c0b021111a04d36499331b534e"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_model_unavailable_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/model-unavailable.json",
+      "sha256": "15d239ebb36dbfe4a1b508641621e351f6d3adce3b52d5e078e78e3ae285da70"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_out_of_lane_mutation_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/out-of-lane-mutation.json",
+      "sha256": "4cb19861fe26f02a28fd6c206056aee83608ef72bb7349abbe0b9f3dbe56275e"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_placeholder_content_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/placeholder-content.json",
+      "sha256": "357714be8b8be6ec4da97990634bd83ce7dc20b6a7b47f0eda01953145ea3984"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_seed_execution_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/seed-execution.json",
+      "sha256": "1c32814eca4a3bee45f5a2f13e97369e5db76ea6e36ac8aa0e2ab74121f77b7e"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_self_issued_clearance_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/self-issued-clearance.json",
+      "sha256": "332ff342a9f8f752ddb7bb2daec03baac508a80a44557986074106116f0f72d4"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_stale_block_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/stale-block.json",
+      "sha256": "3a5143e862f8c10a80e2d515181931793868d5215d6ba2911c818910abc03155"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_stale_memory_readback_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/stale-memory-readback.json",
+      "sha256": "fb308f57e9d48258250fc8dd2ef7369d02e38a641a7cbe126d3e23d49d33179c"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_swapped_file_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/swapped-file.json",
+      "sha256": "3814b00b860ea1ee183459925be8fbf321871a50864937185cef68ecc96417ca"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_turn_without_successor_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/turn-without-successor.json",
+      "sha256": "c1d4865fea389f2e793757d30bd2dc8d157888c07aebacf36e110b99ad71f466"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_unlisted_model_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/unlisted-model.json",
+      "sha256": "f23fb1185f7010c9fb55e418d89479fba38176c40dad47e3c54e13be813c8605"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_wrong_global_memory_writer_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/fixtures/wrong-global-memory-writer.json",
+      "sha256": "178992f2b112a6afdb10be1ec0c297b192507b2746cbc40dbc4748b6dbe7a1cd"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_manifest_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/manifest.json",
+      "sha256": "043ab3abac84298ee0a7caf6cfff28baf0daee9e15cb497e3a08206379f5da21"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_authority_separation_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-authority_separation.json",
+      "sha256": "a165f131953ce91bc994ce9648634bf654b04a453c5f25cecaa26a56af444ee5"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_eco_model_policy_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-eco_model_policy.json",
+      "sha256": "8e2ca060788b8fe22158c12292c5c0e6c9147384d83426f0ed9279dadad275e2"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_exact_block_qa_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-exact_block_qa.json",
+      "sha256": "9434da9b58c82b5c8381c0d126d0a8a8f924b82fefa67e7f42c1527a39094bcd"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_git_integration_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-git_integration.json",
+      "sha256": "23cdaeb7d8bb617d5e379aeb6c6457f51e7425dea24fece34ac2dfe7d015a204"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_global_memory_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-global_memory.json",
+      "sha256": "1785e0f7560ac0703a2ce20a9e3c45c87fa9a0b63e282e46ede35af693ebf75f"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_ownership_classification_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-ownership_classification.json",
+      "sha256": "c8e5591a1d59ca239596e8c559657ee6cc43a085b4f2778c70347591d848c559"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_seed_inertness_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-seed_inertness.json",
+      "sha256": "7a6710f944f7e4db7b856e16951ca3019dfd1902eda3f8135f430e5cb0483075"
+    },
+    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_turn_continuation_json": {
+      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-turn_continuation.json",
+      "sha256": "7d4150ffc5a6ca085e01b76d0425a5aff372cfc0176265ec050c3a3d6f10262f"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_repository_schemas_agent_spawner_lifecycle_v1_json": {
+      "path": "tests/fixtures/independent-clearance/repository/schemas/agent-spawner-lifecycle.v1.json",
+      "sha256": "cc720a2fd15324c930c2e3a2452cbf39ec5b9a792bdcd176a2e656c3ce4766cc"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_repository_schemas_bootstrap_binding_v1_json": {
+      "path": "tests/fixtures/independent-clearance/repository/schemas/bootstrap-binding.v1.json",
+      "sha256": "642dd890a91cdbf961c8265cdf077c45737b1b5895a4ac3e06f956c5bca4de44"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_repository_specialist_blocks_control_plane_agent_spawner_block_json": {
+      "path": "tests/fixtures/independent-clearance/repository/specialist-blocks/control-plane/agent-spawner/block.json",
+      "sha256": "e9b27ee088d56e9a1c035d7da00f9cb3b21aaf5681b45299b861da80d039d872"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_repository_specialist_blocks_control_plane_agent_spawner_gates_manifest_json": {
+      "path": "tests/fixtures/independent-clearance/repository/specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
+      "sha256": "b34f6eb46e2dec89510d4213a9c9a03ecc132059bf33e367a8b93a4ec5a97dce"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_repository_specialist_blocks_control_plane_agent_spawner_admission_manifest_json": {
+      "path": "tests/fixtures/independent-clearance/repository/specialist-blocks/control-plane/agent-spawner/admission/manifest.json",
+      "sha256": "c99ca4c1029b6152f15ffbc92815c800ed3b94e0e0ea6a79a556ffec11540540"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_repository_specialist_blocks_registry_roster_v1_json": {
+      "path": "tests/fixtures/independent-clearance/repository/specialist-blocks/registry/roster.v1.json",
+      "sha256": "7d0b3ddd3b8ddbdb3f2b01911841f9c90a80c7da7d11b1aa6e4fa28efdfd0165"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_evaluator_registry_v2_json": {
+      "path": "tests/fixtures/independent-clearance/authority/evaluator-registry.v2.json",
+      "sha256": "c30d9a6ef1b26317f3239700320fc357fe65d8e2cbe8cbc9c18057876c4cdd37"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_candidate_authority_v1_json": {
+      "path": "tests/fixtures/independent-clearance/authority/candidate-authority.v1.json",
+      "sha256": "5c14fdc72e73ef51c5d9b04215ad4a90f49b3ef79589abd68794eafc6ff73a1a"
+    },
+    "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_receipts_be24556276d410d030de1f4be81f5400e96b82627289351e5d963d1b69a4c85b_json": {
+      "path": "tests/fixtures/independent-clearance/authority/receipts/be24556276d410d030de1f4be81f5400e96b82627289351e5d963d1b69a4c85b.json",
+      "sha256": "3498f70adba5a5e58b53a5bfbcfffcbf77faf5f49327aba3d9b403f82f97671d"
     }
   },
   "compatibility_only": {

@@ -10,7 +10,6 @@ import {
   runAgentSpawnerCompilerTick,
   validateAgentSpawnerCompilerContinuation,
 } from "../control/agent-spawner-lifecycle.mjs";
-import {independentlyVerifyTestCandidate} from "./helpers/independent-clearance-fixture.mjs";
 
 const HASH = (value) => canonicalDigest({value});
 const base = {
@@ -19,12 +18,6 @@ const base = {
   rosterProjectionSha256: HASH("roster"),
   contextSha256: HASH("context"),
 };
-const clearanceCandidate = {
-  commit_sha1: "1".repeat(40), tree_sha1: "2".repeat(40), package_sha256: HASH("package"), package_file_sha256: HASH("package-file"),
-  evidence_set_sha256: HASH("evidence-set"), lifecycle_candidate_sha256: base.candidateSha256,
-  roster_projection_sha256: base.rosterProjectionSha256, context_sha256: base.contextSha256,
-};
-const {clearance, receipt: clearanceReceipt} = independentlyVerifyTestCandidate(clearanceCandidate);
 const pending = {
   status: "STATIC_PASS_REVIEW_REQUIRED",
   complete_block_count: 148,
@@ -37,7 +30,7 @@ const cleared = {
   ...pending,
   status: "INDEPENDENT_PASS",
   independent_clearance_status: "CLEARED",
-  independent_clearance_receipt_sha256: clearanceReceipt.receipt_sha256,
+  independent_clearance_receipt_sha256: HASH("external-clearance-receipt-reference-only"),
 };
 
 const compileReady = compileAgentSpawnerLifecycle({
@@ -130,13 +123,11 @@ assert.equal(validPublish.continuation.resume_condition, "Hand off to governed a
 assert.equal(validPublish.admission.spawnable, false);
 assert.throws(() => runAgentSpawnerCompilerTick(validPublishAfter), /governed admission adapter.*readback/u, "compiler must not perform governed admission");
 
-const independentAdmission = admitAgentSpawnerIndependentClearance(validPublishAfter, {clearance, candidate: clearanceCandidate});
-assert.equal(independentAdmission.mode, "GOVERNED_SPAWN");
-assert.equal(independentAdmission.state, "SPAWN_ADMITTED");
-assert.equal(independentAdmission.authority.isolated_local_custody, false);
-assert.equal(independentAdmission.authority.spawn_authority, true);
-assert.equal(independentAdmission.wave_activation, "OFF");
-assert.equal(independentAdmission.qa.independent_clearance_status, "CLEARED");
+assert.throws(
+  () => admitAgentSpawnerIndependentClearance(validPublishAfter, {clearance: {status: "PASS"}, candidate: {candidate_sha256: base.candidateSha256}}),
+  /DIRECT_LIFECYCLE_ADMISSION_FORBIDDEN|governed admission adapter/iu,
+  "public lifecycle helpers must never promote even caller-authored PASS/clearance claims",
+);
 assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(validPublishAfter), /independent clearance is required/u);
 
 const pendingLocalCompiler = compileAgentSpawnerLifecycle({
@@ -145,7 +136,7 @@ const pendingLocalCompiler = compileAgentSpawnerLifecycle({
   state: "COMPILER_ACTIVE",
   qa: pending,
 });
-assert.throws(() => admitAgentSpawnerIndependentClearance(pendingLocalCompiler, {clearance, candidate: clearanceCandidate}), /independently cleared admission successor|independently verified QA clearance/u);
+assert.throws(() => admitAgentSpawnerIndependentClearance(pendingLocalCompiler, {clearance: {status: "PASS"}}), /DIRECT_LIFECYCLE_ADMISSION_FORBIDDEN|governed admission adapter/iu);
 assert.throws(() => admitAgentSpawnerIsolatedLocalCustody(pendingLocalCompiler), /independent clearance is required/u);
 
 const incompleteLocalCompiler = compileAgentSpawnerLifecycle({

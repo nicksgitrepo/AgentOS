@@ -278,8 +278,13 @@ assert.equal(runtime.seam_review.scheduler, "control/campaign-cascade.mjs");
 assert.deepEqual(runtime.seam_review.always_required, []);
 
 const run = (relativePath) => {
-  const result = spawnSync(process.execPath, [relativePath], {cwd: root, encoding: "utf8"});
-  assert.equal(result.status, 0, `${relativePath} failed\n${result.stdout}\n${result.stderr}`);
+  const started = Date.now();
+  process.stdout.write(`VERIFY_CHILD_START ${relativePath}\n`);
+  const result = spawnSync(process.execPath, [relativePath], {cwd: root, encoding: "utf8", timeout: 120_000, maxBuffer: 16 * 1024 * 1024});
+  const elapsedMs = Date.now() - started;
+  assert.equal(result.error?.code, undefined, `${relativePath} verifier child did not complete within the bounded execution window; code=${result.error?.code ?? "UNKNOWN"}; signal=${result.signal ?? "NONE"}; elapsed_ms=${elapsedMs}\n${result.stdout ?? ""}\n${result.stderr ?? ""}`);
+  assert.equal(result.status, 0, `${relativePath} failed; signal=${result.signal ?? "NONE"}; elapsed_ms=${elapsedMs}\n${result.stdout}\n${result.stderr}`);
+  process.stdout.write(`VERIFY_CHILD_PASS ${relativePath} elapsed_ms=${elapsedMs}\n`);
 };
 const canonicalVerifierPaths = allFiles
   .map((file) => path.relative(root, file))

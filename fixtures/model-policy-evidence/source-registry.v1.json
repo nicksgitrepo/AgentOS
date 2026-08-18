@@ -1,0 +1,45 @@
+{
+  "schema": "agentos.model_policy_source_registry.v1",
+  "version": 1,
+  "entries": [
+    {
+      "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
+      "authority_class": "COMPARATIVE_BENCHMARK",
+      "provider_id": "ARTIFICIAL_ANALYSIS",
+      "canonical_source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+      "model_source_urls": {
+        "gpt-5.6-luna": "https://artificialanalysis.ai/models/gpt-5-6-luna",
+        "gpt-5.6-sol": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+        "gpt-5.6-terra": "https://artificialanalysis.ai/models/gpt-5-6-terra"
+      },
+      "allowed_domain": "artificialanalysis.ai",
+      "source_revision": "OBSERVATION.2026-08-18",
+      "acquired_at_utc": "2026-08-18T16:00:00.000Z",
+      "acquisition_receipt_sha256": "59f120026c3fe695500de8ca3aad7c45277cc90104fdde0826c711e4b7ee312d",
+      "artifact_path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-18.json"
+    },
+    {
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-18",
+      "authority_class": "HOST_ATTESTATION",
+      "provider_id": "CURRENT_CODEX_HOST",
+      "canonical_source_url": "host-attestation:codex-model-catalog",
+      "allowed_domain": "HOST_ATTESTATION",
+      "source_revision": "HOST.CATALOG.2026-08-18",
+      "acquired_at_utc": "2026-08-18T16:00:00.000Z",
+      "acquisition_receipt_sha256": "a0c78fffc7a78f61549d3431fc6f39e00b9946d368f775f7f1047b2d01193fb8",
+      "artifact_path": "fixtures/model-policy-evidence/current-host.2026-08-18.json"
+    },
+    {
+      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
+      "authority_class": "FIRST_PARTY_PROVIDER",
+      "provider_id": "OPENAI",
+      "canonical_source_url": "https://developers.openai.com/api/docs/models/compare",
+      "allowed_domain": "developers.openai.com",
+      "source_revision": "DOCS.MODEL_COMPARE.2026-08-18",
+      "acquired_at_utc": "2026-08-18T16:00:00.000Z",
+      "acquisition_receipt_sha256": "545ccfe713020519ec960a2109107a7b8f739471c26d8358854a5dec3399be9e",
+      "artifact_path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json"
+    }
+  ],
+  "registry_sha256": "d658f5443ce8e182618c372213876fa55ffcb61652cd06ffc091f49bcf699e34"
+}

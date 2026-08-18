@@ -24,6 +24,7 @@ import {runCanonicalCampaign, validateCanonicalCampaignAdmission} from "./canoni
 import {runContinuousOperatingLoop} from "./continuous-operating-loop.mjs";
 import {createOpaqueRuntimeReference} from "./persistent-intent-runtime.mjs";
 import {createHybridScheduler} from "./hybrid-scheduler.mjs";
+import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 import {
   createRapidPrototypeWorkflowController,
   RAPID_PROTOTYPE_PHASES,
@@ -180,8 +181,15 @@ export function createIntentRegulatorRuntime({
   schedulerPolicy = null,
   clock = () => new Date().toISOString(),
   leaseDurationSeconds = 60,
+  operationalGlobalGovernanceContexts,
+  globalGovernanceAuthorityRoot,
+  globalGovernanceBootstrapSha256,
 } = {}) {
   requireRecord(configuration, "Intent Regulator configuration");
+  requireRecord(operationalGlobalGovernanceContexts, "Intent Regulator global-governance contexts");
+  assertOperationalGlobalGovernanceContext(operationalGlobalGovernanceContexts.RUNTIME, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "RUNTIME", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assertOperationalGlobalGovernanceContext(operationalGlobalGovernanceContexts.SCHEDULER, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "SCHEDULER", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assertOperationalGlobalGovernanceContext(operationalGlobalGovernanceContexts.ORCHESTRATOR, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "ORCHESTRATOR", bootstrapSha256: globalGovernanceBootstrapSha256});
   assert(configuration.schema === INTENT_REGULATOR_RUNTIME_SCHEMA && configuration.version === 1, "Intent Regulator configuration identity is invalid");
   requireDigest(configuration.configuration_sha256, "Intent Regulator configuration digest");
   assert(configuration.configuration_sha256 === canonicalDigest({...configuration, configuration_sha256: null}), "Intent Regulator configuration digest mismatch");
@@ -206,6 +214,9 @@ export function createIntentRegulatorRuntime({
     authorityRoot: schedulerAuthorityRoot,
     policy: schedulerPolicy ?? undefined,
     clock,
+    globalGovernanceContext: operationalGlobalGovernanceContexts.SCHEDULER,
+    globalGovernanceAuthorityRoot,
+    globalGovernanceBootstrapSha256,
   });
   let status = "PREPARED_NOT_ACTIVATED";
   let lastCampaign = null;
@@ -233,6 +244,9 @@ export function createIntentRegulatorRuntime({
         leaseDurationSeconds,
         schedulerRoot: schedulerRootOverride ?? schedulerAuthorityRoot ?? runtimeAuthorityRoot,
         schedulerPolicy: scheduler.policy(),
+        globalGovernanceContext: operationalGlobalGovernanceContexts.SCHEDULER,
+        globalGovernanceAuthorityRoot,
+        globalGovernanceBootstrapSha256,
       });
       status = lastCampaign.status === "CLOSED" ? "CLOSED" : lastCampaign.status === "BLOCKED" ? "BLOCKED" : "ACTIVE";
       return lastCampaign;
@@ -395,6 +409,7 @@ export function createIntentRegulatorRuntime({
     configuration_sha256: configuration.configuration_sha256,
     runtime_ref: boundRuntimeRef,
     scheduler: scheduler.inspect(),
+    global_governance_context_sha256: operationalGlobalGovernanceContexts.RUNTIME.context_sha256,
     last_campaign_status: lastCampaign?.status ?? null,
     last_monitor_iterations: Array.isArray(lastMonitor) ? lastMonitor.length : 0,
   });

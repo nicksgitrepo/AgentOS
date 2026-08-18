@@ -82,16 +82,13 @@ const completePendingCompiler = compileAgentSpawnerLifecycle({
 });
 assert.equal(completePendingCompiler.next_action, "WAIT_FOR_INDEPENDENT_CLEARANCE", "governed spawn must wait for independent clearance");
 
-const admitted = compileAgentSpawnerLifecycle({
+assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
   lifecycleId: "LIFECYCLE.SPAWNER.ADMITTED",
   mode: "GOVERNED_SPAWN",
   state: "SPAWN_ADMITTED",
   qa: clearedQa,
-});
-assert.equal(admitted.persistent_state, "ADMITTED");
-assert.equal(admitted.wave_activation, "OFF");
-assert.equal(admitted.authority.spawn_authority, true);
+}), /descriptive-only|cannot compile governed spawn authority/u, "caller QA flags cannot mint admission");
 
 assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
@@ -99,7 +96,7 @@ assert.throws(() => compileAgentSpawnerLifecycle({
   mode: "GOVERNED_SPAWN",
   state: "SPAWN_ADMITTED",
   qa: {...clearedQa, pending_route_count: 1},
-}), /pending roster route|published roster/u, "Spawner cannot admit workers before the roster is published");
+}), /descriptive-only|cannot compile governed spawn authority/u, "public lifecycle cannot admit workers regardless of caller roster flags");
 
 assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
@@ -107,9 +104,9 @@ assert.throws(() => compileAgentSpawnerLifecycle({
   mode: "GOVERNED_SPAWN",
   isolatedLocalCustody: true,
   qa: pendingQa,
-}), /independent clearance is required/iu, "isolated custody cannot bypass independent clearance");
+}), /descriptive-only|cannot compile governed spawn authority/iu, "isolated custody cannot bypass independent clearance");
 
-const active = compileAgentSpawnerLifecycle({
+assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
   lifecycleId: "LIFECYCLE.SPAWNER.ACTIVE",
   mode: "GOVERNED_SPAWN",
@@ -117,31 +114,23 @@ const active = compileAgentSpawnerLifecycle({
   waveActivation: "ON",
   qa: clearedQa,
   execution: {compiler_ticks: 0, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false},
-});
-assert.equal(active.persistent_state, "ACTIVE");
-assert.equal(active.wave_activation, "ON");
+}), /descriptive-only|cannot compile governed spawn authority/u, "caller flags cannot mint active spawn authority");
 
-const stalled = compileAgentSpawnerLifecycle({
+assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
   mode: "GOVERNED_SPAWN",
   lifecycleId: "LIFECYCLE.SPAWNER.STALLED",
   state: "STALLED",
   protectedHoldEventSha256: AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256,
   qa: pendingQa,
-});
-assert.equal(stalled.persistent_state, "STALLED");
-assert.equal(stalled.mode, "GOVERNED_SPAWN");
-assert.equal(stalled.wave_activation, "OFF");
-assert.equal(stalled.authority.temporary_worker_admission, false);
-assert.equal(stalled.authority.spawn_authority, false);
-assert.deepEqual(stalled.execution, {compiler_ticks: 0, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false});
+}), /descriptive-only|cannot compile governed spawn authority/u);
 assert.throws(() => compileAgentSpawnerLifecycle({
   ...common,
   mode: "GOVERNED_SPAWN",
   lifecycleId: "LIFECYCLE.SPAWNER.UNBOUND_STALLED",
   state: "STALLED",
   qa: pendingQa,
-}), /protected hold receipt/u, "Spawner cannot be stalled without a typed protected-hold receipt");
+}), /descriptive-only|cannot compile governed spawn authority/u, "public lifecycle cannot construct governed protected holds");
 
 const resumedCompiler = advanceAgentSpawnerLifecycle(prepared, {
   event_type: "START_COMPILER",
@@ -163,46 +152,6 @@ assert.throws(() => advanceAgentSpawnerLifecycle(compilerOnly, {
   event_sha256: canonicalDigest({event_type: "PROTECTED_HOLD", event_sha256: null}),
 }), /cannot enter a protected hold/u, "compiler-only Spawner cannot be parked by an external hold event");
 
-const retired = advanceAgentSpawnerLifecycle(active, {
-  event_type: "RETIRE",
-  event_sha256: canonicalDigest({event_type: "RETIRE", event_sha256: null}),
-});
-assert.equal(retired.state, "RETIRED");
-assert.equal(retired.persistent_state, "RETIRED", "retirement must not be persisted as an active/stalled state");
-assert.equal(retired.next_action, "NONE", "retirement is an explicit terminal lifecycle record, not an unexplained idle");
-assert.equal(retired.execution.active_worker_count, 0);
-assert.equal(retired.execution.scheduler_job_count, 0);
-assert.equal(retired.execution.heavyweight_process_count, 0);
-assert.equal(retired.execution.timer_count, 0);
-assert.equal(retired.execution.polling, false);
-assert.throws(() => advanceAgentSpawnerLifecycle(retired, {
-  event_type: "START_COMPILER",
-  event_sha256: canonicalDigest({event_type: "START_COMPILER", event_sha256: null}),
-}), /compiler-only mode|current state/u, "retired Spawner cannot silently re-enter the workflow");
-
-const retiredWithStalledProjection = structuredClone(retired);
-retiredWithStalledProjection.persistent_state = "STALLED";
-retiredWithStalledProjection.lifecycle_sha256 = canonicalDigest({...retiredWithStalledProjection, lifecycle_sha256: null});
-assert.throws(() => validateAgentSpawnerLifecycle(retiredWithStalledProjection), /persistent lifecycle state is not bound/u, "retirement cannot masquerade as a stalled hold");
-
-const fakeActivePending = structuredClone(stalled);
-fakeActivePending.persistent_state = "ACTIVE";
-fakeActivePending.lifecycle_sha256 = canonicalDigest({...fakeActivePending, lifecycle_sha256: null});
-assert.throws(
-  () => validateAgentSpawnerLifecycle(fakeActivePending),
-  /persistent lifecycle state is not bound|Pending utility\/harm/u,
-  "pending utility/harm must reject an active persistent Spawner claim",
-);
-
-const fakeWave = structuredClone(stalled);
-fakeWave.wave_activation = "ON";
-fakeWave.lifecycle_sha256 = canonicalDigest({...fakeWave, lifecycle_sha256: null});
-assert.throws(
-  () => validateAgentSpawnerLifecycle(fakeWave),
-  /Pending utility\/harm must keep governed activation off/u,
-  "pending utility/harm must reject wave activation",
-);
-
 const fakeAdmission = structuredClone(compilerOnly);
 fakeAdmission.authority.temporary_worker_admission = true;
 fakeAdmission.lifecycle_sha256 = canonicalDigest({...fakeAdmission, lifecycle_sha256: null});
@@ -212,23 +161,4 @@ assert.throws(
   "compiler-only Spawner must reject temporary admission",
 );
 
-const clearedStall = structuredClone(stalled);
-clearedStall.qa.independent_clearance_status = "CLEARED";
-clearedStall.qa.independent_clearance_receipt_sha256 = HASH("clearance");
-clearedStall.lifecycle_sha256 = canonicalDigest({...clearedStall, lifecycle_sha256: null});
-assert.throws(
-  () => validateAgentSpawnerLifecycle(clearedStall),
-  /requires a pending external decision/u,
-  "a cleared governed Spawner cannot masquerade as a protected wait",
-);
-
-const queuedStall = structuredClone(stalled);
-queuedStall.qa.pending_route_count = 1;
-queuedStall.lifecycle_sha256 = canonicalDigest({...queuedStall, lifecycle_sha256: null});
-assert.throws(
-  () => validateAgentSpawnerLifecycle(queuedStall),
-  /cannot hide local block or roster work/u,
-  "a protected Spawner hold cannot hide queued local work",
-);
-
-console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/COMPILER_ACTIVE/ADMITTED/ACTIVE/STALLED/RETIRED state, compiler-only safe mode, separate wave activation, and hostile gate checks");
+console.log("PASS Agent Spawner lifecycle: public lifecycle is descriptive compiler-only state, caller QA cannot promote or activate, and hostile gate checks fail closed");
