@@ -32,6 +32,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const REFERENCE = /^(?:opaque:|ref:)[^\s]+$/u;
 const ORCHESTRATOR_BASE_SUCCESSOR_ACTIONS = Object.freeze([
+  "COMPILE_BLOCK_PATCH",
   "START_ISOLATED_AUDIT_LANES",
   "START_SPECIALIST_WAVE",
   "RETRY_SPAWNER_QA",

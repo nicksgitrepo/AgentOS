@@ -914,7 +914,7 @@
     },
     "orchestrator_successor_dispatch_controller": {
       "path": "control/orchestrator-successor-dispatch.mjs",
-      "sha256": "d9ffa721c1979ee9d0e314af27b1f59ecb4aa9fae6b79cb7507b9b4362005615"
+      "sha256": "b08ffabe3addac42500b1b0cd183077ccfb0ec1d5cb64b5b920091bdb1d64ac4"
     },
     "orchestrator_successor_dispatch_contract": {
       "path": "schemas/orchestrator-successor-dispatch.v1.json",
@@ -922,7 +922,7 @@
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "8aba729cfff54141ba36414cd6d9328c9f573dae440d81624cf2bbfe79fc9e2c"
+      "sha256": "a82abc87786531018333e65a05cf4ea0dbb965e5fa02167965db4cec42775122"
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",
@@ -1046,15 +1046,15 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "bdb9019f5c6a9445f6c47213f11e52484cf4319c6c07e6a14f7dcbb64b4016fc"
+      "sha256": "7ee0e7e056df26eed86cf6f623814360b6409227cd1e55627e210e405d1a6070"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "cc3b0190a9543c5f9adbb6c7c81c173b9785a3455ee0a83b810ecb99ba6a5308"
+      "sha256": "0e2447febe4e4675194bf470cab8f2f78a7528f525e43a1c5f85af08e2786a82"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "20b7fbec3407059ec4eb2cdf0365ca5ccf92bb7fcdcfc0934bd48564a763cac1"
+      "sha256": "c29d7c9170e4cc9cb0d0629e99015535317db999cf6a525f12059d51e450e659"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
