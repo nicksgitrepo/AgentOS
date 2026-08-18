@@ -20,6 +20,7 @@ export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resum
 export {evaluateStopWorkflowGate, validateStopWorkflowDecision, compileStopWorkflowNoStopAnswers, compileRoutineDevelopmentStopDecision, STOP_WORKFLOW_QUESTIONS, STOP_WORKFLOW_OUTCOMES, STOP_WORKFLOW_NEXT_ACTIONS} from "./stop-workflow-gate.mjs";
 export {compileCandidateScopeGate, validateCandidateScopeGate, CANDIDATE_SCOPE_MODES, CANDIDATE_SCOPE_GATE_HOSTILE_FIXTURES} from "./candidate-scope-gate.mjs";
 export {compileAgentSpawnerLifecycle, validateAgentSpawnerLifecycle, advanceAgentSpawnerLifecycle, runAgentSpawnerCompilerTick, validateAgentSpawnerCompilerContinuation, admitAgentSpawnerIsolatedLocalCustody, AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256} from "./agent-spawner-lifecycle.mjs";
+export {compileAgentSpawnerGovernedAdmission, validateAgentSpawnerGovernedAdmission, AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA, AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION} from "./agent-spawner-governed-admission.mjs";
 export {compileControllerStartupSuccessor, validateControllerStartupSuccessor, CONTROLLER_STARTUP_STAGES, CONTROLLER_STARTUP_SEQUENCE_SCHEMA, CONTROLLER_STARTUP_SEQUENCE_VERSION} from "./controller-startup-sequence.mjs";
 export {compileControllerStartupCursor, compileControllerStartupRunReadback, validateControllerStartupRunReadback, runControllerStartupCycle, CONTROLLER_STARTUP_RUNNER_SCHEMA, CONTROLLER_STARTUP_RUNNER_VERSION} from "./controller-startup-runner.mjs";
 export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, acceptAgentSpawnerDefectRepair} from "./agent-spawner-defect-intake.mjs";
@@ -102,6 +103,7 @@ export * as controllerImportCloseout from "./controller-import-closeout.mjs";
 export * as controllerEscalation from "./controller-escalation-continuation.mjs";
 export * as controllerOwnerEventWake from "./controller-owner-event-wake.mjs";
 export * as agentSpawnerLifecycle from "./agent-spawner-lifecycle.mjs";
+export * as agentSpawnerGovernedAdmission from "./agent-spawner-governed-admission.mjs";
 export * as controllerStartup from "./controller-startup-sequence.mjs";
 export * as controllerStartupRunner from "./controller-startup-runner.mjs";
 export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";

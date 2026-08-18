@@ -2299,6 +2299,18 @@
     "roadmap_amendment": {
       "path": "docs/roadmap.md",
       "sha256": "a7acbd58e99b031ce64cbc612956302262e5b0540cd2ce36862dfbbdc0c507c9"
+    },
+    "agent_spawner_governed_admission_controller": {
+      "path": "control/agent-spawner-governed-admission.mjs",
+      "sha256": "fd4ff1ef0147f1d80f8c5c2f43247bbeaf3e62f5f65cc2f6ebe4043feca884c7"
+    },
+    "agent_spawner_governed_admission_contract": {
+      "path": "schemas/agent-spawner-governed-admission.v1.json",
+      "sha256": "dfcb4e1f2abf377c5f47cb971369ebbd4445838a7e5232f25d6e554fb081b9e3"
+    },
+    "agent_spawner_governed_admission_verifier": {
+      "path": "tests/verify-agent-spawner-governed-admission.mjs",
+      "sha256": "58a5fc4544a2f8322f7be297e60899566975bedefe590f826ca954ca2274f794"
     }
   },
   "compatibility_only": {
