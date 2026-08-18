@@ -36,6 +36,7 @@ export {compileImportOrchestratorTestFailureGate, validateImportOrchestratorTest
 export {compileLocalProofEvidenceGate, validateLocalProofEvidenceGate, LOCAL_PROOF_EVIDENCE_GATE_SCHEMA, LOCAL_PROOF_EVIDENCE_GATE_VERSION, LOCAL_PROOF_EVIDENCE_BLOCKED_STATUS, LOCAL_PROOF_EVIDENCE_REPAIR_ACTION, LOCAL_PROOF_EVIDENCE_REPAIR_HANDLER} from "./local-proof-evidence-gate.mjs";
 export {compileLivenessDigestGate, validateLivenessDigestGate, evaluateLivenessBindingFreshness, LIVENESS_DIGEST_GATE_SCHEMA, LIVENESS_DIGEST_GATE_VERSION, LIVENESS_ROSTER_INVALIDATION_RULE, LIVENESS_ROSTER_REFRESH_TRIGGERS} from "./liveness-digest-gate.mjs";
 export {compileAutonomousDispatchLivenessGate, validateAutonomousDispatchLivenessGate, evaluateAutonomousDispatchLiveness, AUTONOMOUS_DISPATCH_LIVENESS_GATE_SCHEMA, AUTONOMOUS_DISPATCH_LIVENESS_GATE_VERSION, AUTONOMOUS_DISPATCH_RETRY_ACTION, AUTONOMOUS_DISPATCH_RETRY_HANDLER, AUTONOMOUS_DISPATCH_RETRY_ROUTE} from "./autonomous-dispatch-liveness-gate.mjs";
+export {compileTurnContinuationRepair, validateTurnContinuationGate, TURN_CONTINUATION_GATE_SCHEMA, TURN_CONTINUATION_GATE_VERSION, TURN_CONTINUATION_REPAIR_ACTION, TURN_CONTINUATION_REPAIR_HANDLER, TURN_CONTINUATION_PROTECTED_ACTION, TURN_CONTINUATION_HOSTILE_FIXTURE_REFS} from "./turn-continuation-gate.mjs";
 export {compileHarnessCollisionGate, validateHarnessCollisionGate, inspectHarnessSource, HARNESS_COLLISION_GATE_SCHEMA, HARNESS_COLLISION_GATE_VERSION, HARNESS_COLLISION_REPAIR_ACTION, HARNESS_COLLISION_REPAIR_HANDLER, HARNESS_COLLISION_DIRECT_CONSUMER, HARNESS_COLLISION_DEFECT_CODE, HARNESS_COLLISION_HOSTILE_FIXTURE_REFS} from "./harness-collision-gate.mjs";
 export {compileAutonomousLaneHandoff, validateAutonomousLaneHandoff, AUTONOMOUS_LANE_HANDOFF_SCHEMA, AUTONOMOUS_LANE_HANDOFF_VERSION, AUTONOMOUS_LANE_EXECUTION_OWNER, AUTONOMOUS_LANE_CONTROLLER_ROLE, AUTONOMOUS_LANE_NEXT_ACTION, AUTONOMOUS_LANE_NEXT_HANDLER} from "./autonomous-lane-handoff.mjs";
 export {discoverDynamicLanes, compileDynamicDependencyGraph, compileDynamicLaneManifest, selectDynamicLaneRolePackets} from "./dynamic-project-lanes.mjs";
@@ -104,6 +105,7 @@ export * as controllerEscalation from "./controller-escalation-continuation.mjs"
 export * as controllerOwnerEventWake from "./controller-owner-event-wake.mjs";
 export * as agentSpawnerLifecycle from "./agent-spawner-lifecycle.mjs";
 export * as agentSpawnerGovernedAdmission from "./agent-spawner-governed-admission.mjs";
+export * as turnContinuation from "./turn-continuation-gate.mjs";
 export * as controllerStartup from "./controller-startup-sequence.mjs";
 export * as controllerStartupRunner from "./controller-startup-runner.mjs";
 export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";

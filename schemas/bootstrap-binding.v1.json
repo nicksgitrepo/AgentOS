@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "16c49f3070c74f8ab03a4f21e730f48b0a45de776491f1a00e48d7d4c6131123"
+      "sha256": "ece39f332b1196b75cc1d71703684e1d9210d09c76cf81143e73d66fa24c455e"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -2311,6 +2311,18 @@
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
       "sha256": "58a5fc4544a2f8322f7be297e60899566975bedefe590f826ca954ca2274f794"
+    },
+    "turn_continuation_gate_controller": {
+      "path": "control/turn-continuation-gate.mjs",
+      "sha256": "01ebc98189fb017f5d950f99a0d2e3f7f174c808034f3b4e4bb02009d9aa6a42"
+    },
+    "turn_continuation_gate_contract": {
+      "path": "schemas/turn-continuation-gate.v1.json",
+      "sha256": "4a230e26180574ecfbc98d55b0789ecf353790c3b20f572064b94f4f7610f315"
+    },
+    "turn_continuation_gate_verifier": {
+      "path": "tests/verify-turn-continuation-gate.mjs",
+      "sha256": "9169e49427c71a853b861125c9711ca7500fa40dcb14d20684a47ab83d0acac6"
     }
   },
   "compatibility_only": {

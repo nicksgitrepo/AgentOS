@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/turn-continuation-gate.v1.json",
+  "title": "AgentOS Turn Continuation Gate",
+  "description": "Project-agnostic gate requiring a real same-turn successor or a typed Spawner block-repair route for every overlong turn. Commentary, timer-only waiting, false protected waits, null reasons, and mismatched retry routes fail closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "authority", "turn", "observed_route", "defect", "successor", "custody", "status", "hostile_fixture_refs", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.turn_continuation_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/id"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "turn": {"$ref": "#/$defs/turn"},
+    "observed_route": {"$ref": "#/$defs/observedRoute"},
+    "defect": {"$ref": "#/$defs/defect"},
+    "successor": {"$ref": "#/$defs/successor"},
+    "custody": {"$ref": "#/$defs/custody"},
+    "status": {"enum": ["PROGRESS_STARTED", "REPAIR_REQUIRED", "PROTECTED_WAIT"]},
+    "hostile_fixture_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "tree", "receipt_ref", "receipt_sha256"],
+      "properties": {"commit": {"$ref": "#/$defs/gitObject"}, "tree": {"$ref": "#/$defs/gitObject"}, "receipt_ref": {"$ref": "#/$defs/reference"}, "receipt_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "turn": {
+      "type": "object", "additionalProperties": false,
+      "required": ["turn_id", "role", "started_at_utc", "observed_at_utc", "elapsed_seconds", "max_seconds", "overlong"],
+      "properties": {"turn_id": {"$ref": "#/$defs/id"}, "role": {"$ref": "#/$defs/identifier"}, "started_at_utc": {"$ref": "#/$defs/utc"}, "observed_at_utc": {"$ref": "#/$defs/utc"}, "elapsed_seconds": {"type": "integer", "minimum": 0}, "max_seconds": {"type": "integer", "minimum": 1, "maximum": 3600}, "overlong": {"type": "boolean"}}
+    },
+    "observedRoute": {
+      "type": "object", "additionalProperties": false,
+      "required": ["current_action", "current_handler", "handler_invoked", "readback_sha256"],
+      "properties": {"current_action": {"$ref": "#/$defs/identifier"}, "current_handler": {"$ref": "#/$defs/identifier"}, "handler_invoked": {"type": "boolean"}, "readback_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}}
+    },
+    "defect": {
+      "type": "object", "additionalProperties": false,
+      "required": ["defect_code", "reason_code", "evidence_ceiling", "protected_event_id", "restart_event"],
+      "properties": {"defect_code": {"$ref": "#/$defs/identifier"}, "reason_code": {"$ref": "#/$defs/identifier"}, "evidence_ceiling": {"type": "string", "minLength": 1}, "protected_event_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}, "restart_event": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]}}
+    },
+    "successor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["next_action", "next_handler", "same_turn_dispatch", "controller_approval_required", "started_same_turn", "continuation_sha256"],
+      "properties": {"next_action": {"$ref": "#/$defs/identifier"}, "next_handler": {"$ref": "#/$defs/identifier"}, "same_turn_dispatch": {"const": true}, "controller_approval_required": {"const": false}, "started_same_turn": {"const": true}, "continuation_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false,
+      "required": ["control_plane_only", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work", "deployment", "publication", "merge", "resources", "timers", "polling"],
+      "properties": {"control_plane_only": {"const": true}, "product_mutation": {"const": false}, "provider_access": {"const": false}, "credential_access": {"const": false}, "spend": {"const": false}, "destructive_work": {"const": false}, "deployment": {"const": false}, "publication": {"const": false}, "merge": {"const": false}, "resources": {"type": "integer", "minimum": 0}, "timers": {"const": 0}, "polling": {"const": false}}
+    }
+  }
+}
