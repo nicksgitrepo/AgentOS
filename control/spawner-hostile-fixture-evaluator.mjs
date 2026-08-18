@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import crypto from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -109,7 +110,7 @@ export function evaluateCanonicalSpawnerHostileFixtures({fixtureManifestPath = p
     return {gate_id: gateId, mutation: "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE", failed_fixture_ids: failedFixtureIds, failed_fixture_count: failedFixtureIds.length, result: failedFixtureIds.length > 0 ? "PASS" : "FAIL"};
   }).sort((left, right) => compareUtf8(left.gate_id, right.gate_id));
   const evaluation = {schema: SPAWNER_HOSTILE_EVALUATION_SCHEMA, version: 1, candidate_package_file_sha256: null, fixture_manifest_sha256: manifest.manifest_sha256, gate_contracts_sha256: canonicalDigest([...gateContracts.entries()].map(([gateId, {gate}]) => ({gate_id: gateId, gate_sha256: gate.gate_sha256})).sort((left, right) => compareUtf8(left.gate_id, right.gate_id))), result_count: results.length, negative_assertion_count: results.reduce((sum, result) => sum + result.negative_assertion_count, 0), mutation_sensitivity: mutationSensitivity, results, status: results.every((result) => result.result === "PASS") && mutationSensitivity.every((entry) => entry.result === "PASS") ? "PASS" : "FAIL", evaluation_sha256: null};
-  evaluation.candidate_package_file_sha256 = canonicalDigest({package_bytes: fs.readFileSync(path.join(PACKAGE_ROOT, "block.json"), "utf8")});
+  evaluation.candidate_package_file_sha256 = crypto.createHash("sha256").update(fs.readFileSync(path.join(PACKAGE_ROOT, "block.json"))).digest("hex");
   evaluation.evaluation_sha256 = canonicalDigest({...evaluation, evaluation_sha256: null});
   return Object.freeze(evaluation);
 }

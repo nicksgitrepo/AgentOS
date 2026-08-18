@@ -634,7 +634,7 @@
     },
     "canonical_spawner_registry": {
       "path": "specialist-blocks/registry/spawner-bootstrap.v1.json",
-      "sha256": "76575af870250f4f823c3c4e509da8300f1f73234b3cf7e907e6e4fdd36a1539"
+      "sha256": "82549f655eeca722ef4fe53e133a10ead04859a97bfb5dc77e7c6ee0fd824f03"
     },
     "canonical_spawner_seed_inertness_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/seed-inertness.gate",
@@ -642,7 +642,7 @@
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "336cfa261d9a2d24f579bf868ae4d9659240ee3612ea87a45de3694c3e26ab8d"
+      "sha256": "6292c59921f125db1012758b7b03f24f843775fe2822788f2276a3a4c092b6bb"
     },
     "canonical_spawner_turn_closeout_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
@@ -2431,7 +2431,7 @@
     },
     "spawner_bootstrap_governance_controller": {
       "path": "control/spawner-bootstrap-governance.mjs",
-      "sha256": "45c0eda70831972a8fae3a3e580eb6ce4ca6ddef05923fb86b453ef73beb0989"
+      "sha256": "696b05a37192d97f63354ea77ee88069943ea2fc44240b4d1118fa22ca53d01d"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",
@@ -2547,7 +2547,7 @@
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_gate_review_trust_root_v1_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/gate-review-trust-root.v1.json",
-      "sha256": "3005e273a9543ff309cc38f3d3a00d4ca3835d6fad11b487a6f68dc235a1ad90"
+      "sha256": "a9c35d0aee54b8a08d603eaf8d4816816be2c7919c777b68949339c7af02c4cf"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_hostile_fixtures_manifest_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/hostile-fixtures.manifest.json",
@@ -2559,39 +2559,39 @@
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_manifest_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/manifest.json",
-      "sha256": "043ab3abac84298ee0a7caf6cfff28baf0daee9e15cb497e3a08206379f5da21"
+      "sha256": "02fe25f955f595f8d83d35806ea0fe3bc9cd2e0c52eada3ab2c7131cef5ca934"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_authority_separation_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-authority_separation.json",
-      "sha256": "a165f131953ce91bc994ce9648634bf654b04a453c5f25cecaa26a56af444ee5"
+      "sha256": "be20ea96a2261dc65b4062601c2be3d4aa81cacac8d341d2b0e0c056d8b3478d"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_eco_model_policy_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-eco_model_policy.json",
-      "sha256": "8e2ca060788b8fe22158c12292c5c0e6c9147384d83426f0ed9279dadad275e2"
+      "sha256": "e700c560b72ff2fc6503e2e33d96690aa4fa27a9dde227a08632bfbb68cddcba"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_exact_block_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-exact_block_qa.json",
-      "sha256": "9434da9b58c82b5c8381c0d126d0a8a8f924b82fefa67e7f42c1527a39094bcd"
+      "sha256": "f1caa27969e45449cdc259b8a370a748e951582f25f7352c9c2a3749622a82c5"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_git_integration_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-git_integration.json",
-      "sha256": "23cdaeb7d8bb617d5e379aeb6c6457f51e7425dea24fece34ac2dfe7d015a204"
+      "sha256": "210b30a4daee12a2cb8f10e75ef7bc28e62cbb4059fded6e0504b0da2e37d038"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_global_memory_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-global_memory.json",
-      "sha256": "1785e0f7560ac0703a2ce20a9e3c45c87fa9a0b63e282e46ede35af693ebf75f"
+      "sha256": "8f06c8bf8ea9a1cd23dbe3186e9480c68bf539bfe9a4599a86ac284e7dc256e3"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_ownership_classification_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-ownership_classification.json",
-      "sha256": "c8e5591a1d59ca239596e8c559657ee6cc43a085b4f2778c70347591d848c559"
+      "sha256": "90a02a92f784f871101f190f48c12a465eed9beaef85fa94e72a21e6e5578759"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_seed_inertness_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-seed_inertness.json",
-      "sha256": "7a6710f944f7e4db7b856e16951ca3019dfd1902eda3f8135f430e5cb0483075"
+      "sha256": "9111a8060a29ea4c8d56d4487c18a1937b6f5b8d82e191e4e97a70f6b11c2cee"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_turn_continuation_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-turn_continuation.json",
-      "sha256": "7d4150ffc5a6ca085e01b76d0425a5aff372cfc0176265ec050c3a3d6f10262f"
+      "sha256": "f6a25af8f50a4bcfd045f01c6482abc2bb03f963ef5181221beb8519b13b15cd"
     },
     "spawner_defect_envelope_contract": {
       "path": "schemas/spawner-defect-envelope.v2.json",
@@ -2603,11 +2603,11 @@
     },
     "spawner_hostile_fixture_evaluator_controller": {
       "path": "control/spawner-hostile-fixture-evaluator.mjs",
-      "sha256": "c87363de9ff5b933a2828ccd95eeb371439650138b6ad3ee8f803611ac11b728"
+      "sha256": "a252e462918762ea3a98f88d33e48b9da93438b330e8445918230a3903411759"
     },
     "spawner_hostile_evaluation_receipt": {
       "path": "specialist-blocks/control-plane/agent-spawner/hostile-evaluation.v1.json",
-      "sha256": "7867c04f7585bc1a893d92d65cd49e04b0dcc2865671468b32bb2bff928ef4fe"
+      "sha256": "72677688d9d79de218fce4cef196592024e5a76c27fd188202136dc995128c83"
     },
     "spawner_ownership_classification_contract": {
       "path": "schemas/spawner-ownership-classification.v1.json",
@@ -2784,6 +2784,22 @@
     "workflow_registry": {
       "path": "schemas/capability-and-worktree-registry.v1.json",
       "sha256": "a4414e8f803adf4a336c9a4af778027dae1a6476a27a6ab0233ef6e07f0b6588"
+    },
+    "spawner_independent_hostile_review_receipt": {
+      "path": "specialist-blocks/control-plane/agent-spawner/independent-hostile-review.v1.json",
+      "sha256": "40e0a24f16d3775f95eed91f5de76ece96eeba5b183407a8587cefb1d6428c5d"
+    },
+    "spawner_gate_review_trust_root_contract": {
+      "path": "schemas/spawner-gate-review-trust-root.v2.json",
+      "sha256": "be15c026745ee4611801166af3a93f47650b4e794e15346fd87a900882d383f3"
+    },
+    "spawner_gate_independent_review_contract": {
+      "path": "schemas/spawner-gate-independent-review.v2.json",
+      "sha256": "3501725a52096f69c4f8a0de2c61b8bbf7bf315dbe614432c7f418f43cbfe6f3"
+    },
+    "spawner_independent_hostile_review_contract": {
+      "path": "schemas/spawner-independent-hostile-review.v1.json",
+      "sha256": "0ff4d4757c77c59bc47e77d2cf45be2230b55a593cab5dec35b97d80c232a62a"
     }
   },
   "compatibility_only": {

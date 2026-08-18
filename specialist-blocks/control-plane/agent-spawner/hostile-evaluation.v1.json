@@ -1,7 +1,7 @@
 {
   "schema": "agentos.spawner_hostile_evaluation.v1",
   "version": 1,
-  "candidate_package_file_sha256": "34b2c0ba1fde14c817d9812ed325bd8f885204b7b7823920ec293b4cfbe4f713",
+  "candidate_package_file_sha256": "6292c59921f125db1012758b7b03f24f843775fe2822788f2276a3a4c092b6bb",
   "fixture_manifest_sha256": "06e9f0a1d149dc0ff8f8da2ef50bf674030fed62b5bc5b2f5ec0d6977a580b03",
   "gate_contracts_sha256": "598b4d9d5825fd237b3eb75e686cdcadc2c2f17c161904d912c7c34084e09186",
   "result_count": 26,
@@ -155,8 +155,8 @@
       "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
       "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
       "negative_assertion_count": 1,
-      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
-      "error_message_sha256": "cf93c822cec6eda8c9370e7672b69ad50475dace0fbaaad0926f2645287f7b2d",
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "4d51b671a27a9061278470c93865100bff3ba5b7dfec82904f65ca0f403e671f",
       "result": "PASS"
     },
     {
@@ -251,8 +251,8 @@
       "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
       "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
       "negative_assertion_count": 1,
-      "error_code": "PLACEHOLDER_EVIDENCE",
-      "error_message_sha256": "411103858a4fca5f373270a6c6307c2dda578c80c54e90b68ebc3f91744ad2ce",
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "e72cd6e85e425ed32004f3fe446506838ef24313c6456cb3c05d8de7b95e6ac3",
       "result": "PASS"
     },
     {
@@ -371,8 +371,8 @@
       "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
       "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
       "negative_assertion_count": 1,
-      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
-      "error_message_sha256": "e83e0c4b269582eb8da5334bc88aadc4458a2c6668d418c5dafd28e0b1383e34",
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "7912519392db2b474a357b5b576ea6f466c83c276150f50eddb89324b3bd9626",
       "result": "PASS"
     },
     {
@@ -413,5 +413,5 @@
     }
   ],
   "status": "PASS",
-  "evaluation_sha256": "21d46b487ba562b15de156ab662bd6c4a714ff610d416d389f48dde1edfd5779"
+  "evaluation_sha256": "180c6c09aedebf73d32612e9b792a618ab7531e9748e967cca75fad2509208ab"
 }
