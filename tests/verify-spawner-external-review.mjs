@@ -30,5 +30,15 @@ const registryPath = path.join(revoked.root, "reviewer-registry.v1.json"), regis
 const revokedProvision = prepareProtectedSpawnerReviewProvisioning({sealedAuthority: sealed, reviewStoreRoot: revoked.root});
 assert.throws(() => installExternalSpawnerReviewStore({sealedAuthority: sealed, reviewProvisioning: revokedProvision}), /not separately admitted/iu);
 
-for (const value of [valid, stale, revoked]) fs.rmSync(value.root, {recursive: true, force: true});
-console.log("PASS external Spawner review: absent provisioning fails closed, separately admitted evaluator receipt enables real resolution, replay/candidate mutation/revocation fail, and candidate-supplied provisioning is rejected");
+const omittedParent = provisionTestExternalSpawnerReview({candidate, install: false});
+const omittedPath = path.join(omittedParent.root, "receipts", `${omittedParent.receipt.receipt_sha256}.json`);
+const omittedReceipt = JSON.parse(fs.readFileSync(omittedPath));
+omittedReceipt.git_ancestry.direct_parent_commits = [];
+omittedReceipt.git_ancestry.ancestry_sha256 = canonicalDigest({...omittedReceipt.git_ancestry, ancestry_sha256: null});
+omittedReceipt.receipt_sha256 = canonicalDigest({...omittedReceipt, receipt_sha256: null, signature_base64: null});
+fs.writeFileSync(omittedPath, JSON.stringify(omittedReceipt));
+const omittedProvision = prepareProtectedSpawnerReviewProvisioning({sealedAuthority: sealed, reviewStoreRoot: omittedParent.root}); installExternalSpawnerReviewStore({sealedAuthority: sealed, reviewProvisioning: omittedProvision});
+assert.throws(() => resolveCanonicalSpawnerBootstrapPackage(), /ancestry|omits|substitutes|chain/iu);
+
+for (const value of [valid, stale, revoked, omittedParent]) fs.rmSync(value.root, {recursive: true, force: true});
+console.log("PASS external Spawner review: protected evaluator and actual Git ancestry enable resolution; replay, mutation, revocation, omitted parents, and candidate provisioning fail closed");

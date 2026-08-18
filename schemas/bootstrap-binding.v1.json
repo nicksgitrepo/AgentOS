@@ -2611,7 +2611,7 @@
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",
-      "sha256": "9158e36293e0fcc825b8b3605cf051175ce70040d04ddd2e8e19d4e54f76ddb8"
+      "sha256": "2a0e5fc17793c62943b7c51e4d79f82cf682817c92c0e9f8f0e65493ef95715d"
     },
     "spawner_gate_independent_review_contract": {
       "path": "schemas/spawner-gate-independent-review.v2.json",
