@@ -19,6 +19,7 @@ import {
   controllerActionHandlerFor,
   controllerContinuationDigest,
   deriveControllerSuccessor,
+  validateControllerActionTransition,
   validateControllerActionReceipt,
 } from "../control/controller-action-dispatcher.mjs";
 
@@ -47,6 +48,21 @@ assert.equal(initial.next_handler, "HANDLER.PERMANENT_ROLE_ADMISSION");
 assert.equal(initial.continuation.mode, "IMMEDIATE_SAME_TURN");
 assert.equal(initial.continuation.timer_deferral, false);
 assert.equal(initial.continuation.heartbeat_deferral, false);
+assert.equal(validateControllerActionTransition("COMPILE_BLOCK_PATCH", "REPAIR_BLOCKS"), true);
+assert.throws(
+  () => validateControllerActionTransition("COMPILE_BLOCK_PATCH", "COMPILE_BLOCK_PATCH"),
+  /must hand off to one of/u,
+  "one-shot compiler routes must not self-loop",
+);
+assert.throws(() => compileControllerActionReceipt({
+  receiptId: "RECEIPT.CONTROLLER.COMPILER.SELF_LOOP",
+  actionId: "COMPILE_BLOCK_PATCH",
+  semanticBeforeSha256: HASH("compiler-loop-before"),
+  semanticAfterSha256: HASH("compiler-loop-after"),
+  evidenceRefs: [evidence("EVIDENCE.CONTROLLER.COMPILER.SELF_LOOP")],
+  hostileFixtureRefs: hostile("COMPILER_SELF_LOOP"),
+  nextAction: "COMPILE_BLOCK_PATCH",
+}), /must hand off to one of/u, "a persisted compiler self-loop must fail closed");
 
 const unsortedEvidenceReceipt = compileControllerActionReceipt({
   receiptId: "RECEIPT.CONTROLLER.UNSORTED_EVIDENCE",

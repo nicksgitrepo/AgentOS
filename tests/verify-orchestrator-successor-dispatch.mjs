@@ -11,6 +11,7 @@ import {
   compileControllerContinuation,
   compileControllerNextLifecycleHandoff,
   ControllerActionDefect,
+  validateControllerActionTransition,
 } from "../control/controller-action-dispatcher.mjs";
 import {
   dispatchOrchestratorSuccessor,
@@ -251,6 +252,27 @@ assert.equal(compilerReadback.source_action, "COMPILE_BLOCK_PATCH");
 assert.equal(compilerReadback.source_handler, "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER");
 assert.equal(compilerReadback.dispatch_observed, true);
 assert.equal(compilerReadback.status, "DISPATCHED_SAME_TURN");
+assert.equal(validateControllerActionTransition("COMPILE_BLOCK_PATCH", "REPAIR_BLOCKS"), true);
+
+const compilerSelfLoopHandlers = {
+  "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER": (current) => ({
+    semantic_after_sha256: sha(`${current.semantic_after_sha256}:compiler-self-loop`),
+    next_action: "COMPILE_BLOCK_PATCH",
+    next_handler: "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER",
+    continuation: compileControllerContinuation("COMPILE_BLOCK_PATCH"),
+    continuation_sha256: canonicalDigest(compileControllerContinuation("COMPILE_BLOCK_PATCH")),
+    evidence_refs: [evidence("EVIDENCE.SPAWNER.COMPILER.SELF_LOOP")],
+    hostile_fixture_refs: ["FIXTURE.SPAWNER.COMPILER.SELF_LOOP"],
+    protected_event: null,
+    defect: null,
+  }),
+};
+assert.throws(() => dispatchOrchestratorSuccessor({
+  successor: compilerSuccessor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.TURN.CONTINUATION.SELF_LOOP",
+  handlers: compilerSelfLoopHandlers,
+  persist: () => true,
+}), (error) => error instanceof ControllerActionDefect && error.code === "INVALID_SUCCESSOR", "a compiler self-loop must route as a typed invalid successor");
 
 assert.throws(() => dispatchOrchestratorSuccessor({
   successor,

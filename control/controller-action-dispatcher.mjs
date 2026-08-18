@@ -92,6 +92,13 @@ export const CONTROLLER_ACTION_DEFECT_CLASSES = Object.freeze([
   "WORKFLOW_DEAD_END",
 ].sort(compareUtf8));
 
+/* One-shot repair routes must hand their result to the consumer.  A compiler
+ * receipt that points back to the compiler is a workflow self-loop, even when
+ * its semantic digest changes, so it must become a typed Spawner defect. */
+export const CONTROLLER_REQUIRED_SUCCESSORS = Object.freeze({
+  COMPILE_BLOCK_PATCH: Object.freeze(["REPAIR_BLOCKS"]),
+});
+
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const REFERENCE = /^(?:opaque:|ref:)[^\s]+$/u;
@@ -351,6 +358,16 @@ export function controllerActionCoverageFor(actionId) {
   return CONTROLLER_ACTION_COVERAGE[actionId] ?? null;
 }
 
+export function validateControllerActionTransition(actionId, nextAction) {
+  requireIdentifier(actionId, "Controller current action");
+  requireIdentifier(nextAction, "Controller next action");
+  const required = CONTROLLER_REQUIRED_SUCCESSORS[actionId];
+  if (required !== undefined) {
+    assert(required.includes(nextAction), `Controller action ${actionId} must hand off to one of: ${required.join(", ")}`);
+  }
+  return true;
+}
+
 export function compileControllerContinuation(actionId, {protectedEventId = null, resumeCondition = null} = {}) {
   const mode = expectedContinuationMode(actionId);
   const continuation = {
@@ -397,6 +414,7 @@ export function validateControllerActionReceipt(receipt) {
   validateEvidenceRefs(receipt.evidence_refs);
   validateHostileRefs(receipt.hostile_fixture_refs);
   requireIdentifier(receipt.next_action, "Controller next action");
+  validateControllerActionTransition(receipt.action_id, receipt.next_action);
   const descriptor = CONTROLLER_ACTION_REGISTRY[receipt.next_action];
   assert(descriptor !== undefined, "Controller next action is not registered");
   assert(receipt.next_handler === descriptor.handler, "Controller next handler does not match the action registry");
@@ -542,7 +560,7 @@ function dispatchDefect({currentReceipt, defectClass, message, onDefect}) {
   throw new ControllerActionDefect(defect, message);
 }
 
-function validateHandlerResult(result) {
+function validateHandlerResult(result, {currentAction = null} = {}) {
   const normalized = {
     ...structuredClone(result),
     evidence_refs: canonicalEvidenceRefs(result?.evidence_refs),
@@ -552,6 +570,7 @@ function validateHandlerResult(result) {
   requireSha(normalized.semantic_after_sha256, "Controller handler semantic state after");
   requireIdentifier(normalized.next_action, "Controller handler next action");
   requireIdentifier(normalized.next_handler, "Controller handler next handler");
+  if (currentAction !== null) validateControllerActionTransition(currentAction, normalized.next_action);
   validateControllerContinuation(normalized.continuation, normalized.next_action);
   requireSha(normalized.continuation_sha256, "Controller handler continuation digest");
   assert(normalized.continuation_sha256 === controllerContinuationDigest(normalized.continuation), "Controller handler continuation digest mismatch");
@@ -568,7 +587,14 @@ function validateHandlerResult(result) {
 
 export function advanceControllerAction(currentReceipt, {handlers, persist, onDefect, startNextLifecycle, maxTransitions = 16} = {}) {
   try { validateControllerActionReceipt(currentReceipt); }
-  catch (error) { return dispatchDefect({currentReceipt, defectClass: /handler/u.test(error.message) ? "STALE_OR_UNKNOWN_HANDLER" : "UNKNOWN_ACTION_ROUTE", message: error.message, onDefect}); }
+  catch (error) {
+    const defectClass = /handler/u.test(error.message)
+      ? "STALE_OR_UNKNOWN_HANDLER"
+      : /must hand off to one of/u.test(error.message)
+        ? "INVALID_SUCCESSOR"
+        : "UNKNOWN_ACTION_ROUTE";
+    return dispatchDefect({currentReceipt, defectClass, message: error.message, onDefect});
+  }
   assert(isRecord(handlers), "Controller action handlers are required");
   if (typeof persist !== "function") return dispatchDefect({currentReceipt, defectClass: "MISSING_ATOMIC_PERSISTENCE", message: "Controller successor persistence is required", onDefect});
   assert(Number.isInteger(maxTransitions) && maxTransitions > 0, "Controller dispatch transition bound is invalid");
@@ -584,7 +610,7 @@ export function advanceControllerAction(currentReceipt, {handlers, persist, onDe
     try { result = handler(structuredClone(cursor)); }
     catch (error) { return dispatchDefect({currentReceipt: cursor, defectClass: "DISPATCH_FAILED", message: error instanceof Error ? error.message : "Controller handler failed", onDefect}); }
     try {
-      result = validateHandlerResult(result);
+      result = validateHandlerResult(result, {currentAction: cursor.next_action});
       assert(result.next_handler === controllerActionHandlerFor(result.next_action), "Controller handler successor does not match the action registry");
     } catch (error) {
       return dispatchDefect({currentReceipt: cursor, defectClass: /semantic state after|semantic state/u.test(error.message) ? "UNCHANGED_SEMANTIC_STATE" : "INVALID_SUCCESSOR", message: error.message, onDefect});

@@ -922,7 +922,7 @@
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "82b22f0ca2fcbdd68d8e98c9c02342e12339d6877c5f79a543ce01c168da9d1f"
+      "sha256": "8d8f1f87047dac5d0c726a72072eb106197bac58728ceb407bff3c0ff9394b65"
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",
@@ -1058,15 +1058,15 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "31ae2551e5ce82a4446ff1aadc5211695dfb8157c53644a3a516d64eaf3a60c1"
+      "sha256": "382dc0e837e9dbadca0c221d83bcc698edfa23b71fe7c6e8c1de0939c02dfdfd"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
-      "sha256": "0e2447febe4e4675194bf470cab8f2f78a7528f525e43a1c5f85af08e2786a82"
+      "sha256": "af6311837f5c254cd37266cffdc9725345f305a1e0e9f96d5e360cf56212d9f9"
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "81639c81f39b6405a7c3a6f4d8e8d5a10d791293c4946197b9a56ef816154f3b"
+      "sha256": "4e52c94b195e3cf7df6fcd78a454fcdaa438e453cd9734a55ad57043e35d94ad"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
