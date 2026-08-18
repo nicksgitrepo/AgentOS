@@ -21,6 +21,7 @@ staleWithoutCallerClock.observed_at_utc = "2020-01-01T00:00:00.000Z";
 staleWithoutCallerClock.expires_at_utc = "2020-01-02T00:00:00.000Z";
 staleWithoutCallerClock.snapshot_sha256 = canonicalDigest({...staleWithoutCallerClock, snapshot_sha256: null});
 assert.throws(() => validateModelPolicySnapshot(staleWithoutCallerClock, {requireActive: true}), /stale/iu, "omitting validation time trusted the stale snapshot's own timestamp");
+assert.throws(() => validateModelPolicySnapshot(staleWithoutCallerClock, {nowUtc: "2020-01-01T00:00:00.000Z", requireActive: true}), /stale/iu, "a caller-controlled historical clock revived a stale snapshot");
 
 const narrowRoute = selectEcoModelRoute({snapshot: active, taskClass: "NARROW_CODING", roleCapabilityFloor: 49, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc: NOW});
 const forgedExpensivePreferred = structuredClone(narrowRoute);
@@ -53,6 +54,10 @@ Object.assign(forgedFloors.selected, {capability_floor: 0, context_floor_tokens:
 forgedFloors.projection_sha256 = canonicalDigest({...forgedFloors, projection_sha256: null});
 assert.throws(() => validateModelPolicyProjection(forgedFloors, {snapshot: active, expectedRoleClass: "WORKING_AGENT", nowUtc: NOW}), /floors differ/iu);
 assert.throws(() => selectEcoModelRoute({snapshot: active, taskClass: "NARROW_CODING", roleCapabilityFloor: 60, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc: NOW}), /cannot widen/iu);
+const expiredRoute = structuredClone(narrowRoute);
+assert.throws(() => validateEcoModelRoute(expiredRoute, {snapshot: staleWithoutCallerClock}), /stale/iu, "public route validation accepted an expired snapshot");
+assert.throws(() => compileModelPolicyProjection({snapshot: staleWithoutCallerClock, roleClass: "WORKING_AGENT", selectedRoute: expiredRoute, projectedAtUtc: "2020-01-01T00:00:00.000Z"}), /stale/iu, "historical projection compilation revived an expired snapshot");
+assert.throws(() => compileModelPolicyProjection({snapshot: active, roleClass: "WORKING_AGENT", selectedRoute: narrowRoute, projectedAtUtc: "2999-01-01T00:00:00.000Z"}), /future/iu, "future projection compilation minted READY authority");
 
 function copiedAuthority() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-model-evidence-"));

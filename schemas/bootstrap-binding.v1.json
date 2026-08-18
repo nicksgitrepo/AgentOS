@@ -998,12 +998,12 @@
     },
     "eco_model_policy_controller": {
       "path": "control/eco-model-policy.mjs",
-      "sha256": "3eaff96b19cf5b0d14244f2af6347b0ee5ae14fa17e0fedee68c1f197cb65814",
+      "sha256": "84830add0ed0d70da2148c723c91096ce275d5045fd6fd41c5b7067b8df3126c",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "eco_model_policy_source_binding_verifier": {
       "path": "tests/verify-eco-model-policy-source-binding.mjs",
-      "sha256": "41ffb4c8898616f293cba427c7a411400283f6b4f9c0ad031f707c8b9466c161",
+      "sha256": "a88829bba84146508549887713165536dbc0c021bbccc36ad28389d03b06bbf4",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "evidence_library_compiler": {

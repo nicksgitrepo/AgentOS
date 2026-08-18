@@ -275,7 +275,10 @@ function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = tru
 
 export function validateModelPolicySnapshot(snapshot, {nowUtc = trustedNowUtc(), requireActive = false, authorityRoot = undefined, evidenceManifestPath = undefined} = {}) {
   assert(authorityRoot === undefined && evidenceManifestPath === undefined, "Caller-supplied model evidence roots or manifests are forbidden");
-  return validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc, requireActive, authorityRoot: MODULE_ROOT, evidenceManifestPath: DEFAULT_EVIDENCE_MANIFEST});
+  requireUtc(nowUtc, "Requested model-policy validation ceiling");
+  const trustedUtc = trustedNowUtc();
+  const effectiveNowUtc = Date.parse(nowUtc) > Date.parse(trustedUtc) ? nowUtc : trustedUtc;
+  return validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc: effectiveNowUtc, requireActive, authorityRoot: MODULE_ROOT, evidenceManifestPath: DEFAULT_EVIDENCE_MANIFEST});
 }
 
 export function auditModelPolicyEvidenceStore(snapshot, {nowUtc = trustedNowUtc(), requireActive = false, authorityRoot, evidenceManifestPath = DEFAULT_EVIDENCE_MANIFEST} = {}) {
@@ -331,6 +334,7 @@ export function selectEcoModelRoute({snapshot, taskClass, roleCapabilityFloor, r
 }
 
 export function validateEcoModelRoute(route, {snapshot} = {}) {
+  validateModelPolicySnapshot(snapshot, {requireActive: true});
   exactKeys(route, ["schema", "version", "status", "task_class", "model_id", "reasoning_effort", "capability_floor", "required_capabilities", "selected_capability_score", "context_floor_tokens", "selected_context_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "route_class", "fallback_models", "escalation_triggers", "snapshot_sha256", "route_sha256"], "ECO model route");
   assert(route.schema === "agentos.eco_model_route.v1" && route.version === 1 && route.status === "READY", "ECO route identity is invalid");
   assert(snapshot?.snapshot_sha256 === route.snapshot_sha256, "ECO route is bound to another snapshot");
@@ -361,7 +365,8 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
   assert(projection.schema === MODEL_POLICY_PROJECTION_SCHEMA && projection.version === 1 && projection.status === "READY" && projection.read_only === true && projection.spawn_eligible === true, "Model-policy projection identity is invalid");
   requireUtc(projection.projected_at_utc, "Model-policy projection time");
   requireUtc(nowUtc, "Model-policy projection validation time");
-  assert(Date.parse(projection.projected_at_utc) >= Date.parse(snapshot.observed_at_utc) && Date.parse(projection.projected_at_utc) <= Date.parse(nowUtc), "Model-policy projection time is stale or future", "POLICY_PROJECTION_TIME_INVALID");
+  const trustedValidationUtc = trustedNowUtc();
+  assert(Date.parse(projection.projected_at_utc) >= Date.parse(snapshot.observed_at_utc) && Date.parse(projection.projected_at_utc) <= Date.parse(trustedValidationUtc), "Model-policy projection time is stale or future", "POLICY_PROJECTION_TIME_INVALID");
   assert(MODEL_POLICY_ROLE_CLASSES.includes(projection.role_class) && (expectedRoleClass === null || projection.role_class === expectedRoleClass), "Model-policy projection role differs");
   assert(projection.snapshot_sha256 === snapshot.snapshot_sha256 && projection.expires_at_utc === snapshot.expires_at_utc, "Model-policy projection snapshot is stale");
   assert(projection.mutation_authority === ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"].includes(projection.role_class), "Model-policy projection writer authority differs");
@@ -389,7 +394,9 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
 
 export function compileModelPolicyProjection({snapshot, roleClass, selectedRoute = null, projectedAtUtc}) {
   requireUtc(projectedAtUtc, "Model-policy projection time");
-  validateModelPolicySnapshot(snapshot, {nowUtc: projectedAtUtc, requireActive: true});
+  const trustedCompileUtc = trustedNowUtc();
+  assert(Date.parse(projectedAtUtc) <= Date.parse(trustedCompileUtc), "Model-policy projection time is future", "POLICY_PROJECTION_TIME_INVALID");
+  validateModelPolicySnapshot(snapshot, {requireActive: true});
   assert(MODEL_POLICY_ROLE_CLASSES.includes(roleClass), "Model-policy projection role class is invalid");
   if (MODEL_POLICY_COMPACT_SELECTION_ROLES.includes(roleClass)) assert(selectedRoute !== null, `${roleClass} requires a selected compact route`);
   if (selectedRoute !== null) validateEcoModelRoute(selectedRoute, {snapshot});
