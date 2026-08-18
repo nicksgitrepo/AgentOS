@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.global_governance_process_attachment.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "issuer_process_id", "consumer_role", "authority_root", "bootstrap_sha256", "memory_identity", "nonce_sha256", "mac_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.global_governance_process_attachment.v1"},
+    "version": {"const": 1},
+    "issuer_process_id": {"type": "integer", "minimum": 1},
+    "consumer_role": {"enum": ["SESSION", "WORKER"]},
+    "authority_root": {"type": "string", "minLength": 1},
+    "bootstrap_sha256": {"$ref": "#/$defs/sha"},
+    "memory_identity": {"$ref": "#/$defs/sha"},
+    "nonce_sha256": {"$ref": "#/$defs/sha"},
+    "mac_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {"sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

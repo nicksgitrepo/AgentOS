@@ -16,7 +16,7 @@ import path from "node:path";
 import {spawn} from "node:child_process";
 import {createHybridScheduler, opaqueSchedulerWorktreeRef} from "./hybrid-scheduler.mjs";
 import {compileOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
-import {openGlobalGovernanceAuthorityStore} from "./global-governance-bootstrap.mjs";
+import {issueGlobalGovernanceProcessAttachment, reattachGlobalGovernanceAuthorityStore} from "./global-governance-bootstrap.mjs";
 import {getSealedCanonicalAuthority} from "./sealed-canonical-authority.mjs";
 import {createLocalWorkerLaunchAdmission} from "./local-agent-runtime.mjs";
 import {pathToFileURL} from "node:url";
@@ -285,8 +285,7 @@ function commandArgs(base, workerScript, overrides) {
     source_tree: base.sourceTree,
     worktree: base.worktreePath,
     scheduler_root: base.schedulerRoot,
-    global_governance_store_root: base.globalGovernanceStoreRoot,
-    global_governance_store_bootstrap: base.globalGovernanceStoreBootstrap,
+    global_governance_attachment: base.workerGovernanceAttachmentBase64,
     task: overrides.task,
     task_id: overrides.taskId,
     task_kind: overrides.taskKind,
@@ -304,6 +303,7 @@ function runWorkerProcess({base, effectiveArgv, onSpawn = null}) {
     const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {
       cwd: base.worktreePath,
       stdio: ["ignore", "pipe", "pipe"],
+      env: {...process.env, AGENTOS_GLOBAL_GOVERNANCE_ATTACHMENT_SECRET: base.workerGovernanceAttachmentSecret},
     });
     if (typeof onSpawn === "function") onSpawn(child);
     let stdout = "";
@@ -399,8 +399,8 @@ async function runSession() {
     worktreePath: path.resolve(args.worktree ?? ""),
     schedulerRoot: path.resolve(schedulerRootInput),
     repositoryRoot: path.resolve(repositoryRootInput),
-    globalGovernanceStoreRoot: path.resolve(args.global_governance_store_root),
-    globalGovernanceStoreBootstrap: args.global_governance_store_bootstrap,
+    workerGovernanceAttachmentBase64: null,
+    workerGovernanceAttachmentSecret: null,
   };
   requireIdentifier(base.role, "durable worker role");
   validateLocalTaskKindForRole({role: base.role, taskKind: base.taskKind});
@@ -411,7 +411,13 @@ async function runSession() {
   requireGitObject(base.sourceCommit, "durable worker source commit");
   requireGitObject(base.sourceTree, "durable worker source tree");
   assert(fs.existsSync(base.worktreePath) && fs.statSync(base.worktreePath).isDirectory(), "durable worker worktree is unavailable");
-  const globalGovernanceAuthorityStore = openGlobalGovernanceAuthorityStore({sealedAuthority: getSealedCanonicalAuthority(), authorityRoot: base.globalGovernanceStoreRoot, bootstrapSha256: base.globalGovernanceStoreBootstrap});
+  const sealedAuthority = getSealedCanonicalAuthority();
+  const incomingAttachment = JSON.parse(Buffer.from(args.global_governance_attachment, "base64").toString("utf8"));
+  const globalGovernanceAuthorityStore = reattachGlobalGovernanceAuthorityStore({sealedAuthority, attachment: incomingAttachment, secretBase64: process.env.AGENTOS_GLOBAL_GOVERNANCE_ATTACHMENT_SECRET, expectedConsumerRole: "SESSION"});
+  delete process.env.AGENTOS_GLOBAL_GOVERNANCE_ATTACHMENT_SECRET;
+  const workerAttachment = issueGlobalGovernanceProcessAttachment({authorityStore: globalGovernanceAuthorityStore, consumerRole: "WORKER"});
+  base.workerGovernanceAttachmentBase64 = Buffer.from(JSON.stringify(workerAttachment.attachment)).toString("base64");
+  base.workerGovernanceAttachmentSecret = workerAttachment.secret_base64;
   const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityStore: globalGovernanceAuthorityStore, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.SESSION.${crypto.createHash("sha256").update(base.sessionId).digest("hex").slice(0, 24).toUpperCase()}`});
   const scheduler = createHybridScheduler({authorityRoot: base.schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityStore});
   process.env.AGENTOS_SCHEDULER_ROOT = base.schedulerRoot;

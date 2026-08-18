@@ -18,6 +18,7 @@ import {
   validateAgentSpawnerLifecycle,
 } from "./agent-spawner-lifecycle.mjs";
 import {assertVerifiedIndependentClearance, verifyIndependentSpawnerClearance} from "./independent-spawner-clearance.mjs";
+import {resolveCanonicalSpawnerBootstrapPackage} from "./spawner-bootstrap-governance.mjs";
 
 export const AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA = "agentos.agent_spawner_governed_admission.v1";
 export const AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION = 1;
@@ -128,8 +129,8 @@ export function validateAgentSpawnerGovernedAdmission(readback, options = {}) {
 
 export function compileAgentSpawnerGovernedAdmission(options = {}) {
   assert(options && typeof options === "object" && !Array.isArray(options), "Governed admission input must be an object");
-  assert(Object.keys(options).every((key) => ["adapterId", "sourceContinuation", "lifecycleBefore", "clearanceReceiptSha256", "evidenceRefs", "hostileFixtureRefs"].includes(key)), "Governed admission rejects caller clearance authority, roots, candidates, and PASS claims");
-  const {adapterId, sourceContinuation, lifecycleBefore, clearanceReceiptSha256, evidenceRefs, hostileFixtureRefs} = options;
+  assert(Object.keys(options).every((key) => ["adapterId", "sourceContinuation", "lifecycleBefore", "clearanceReceiptSha256"].includes(key)), "Governed admission rejects caller evidence, fixtures, clearance authority, roots, candidates, projections, and PASS claims");
+  const {adapterId, sourceContinuation, lifecycleBefore, clearanceReceiptSha256} = options;
   validateAgentSpawnerCompilerContinuation(sourceContinuation);
   validateAgentSpawnerLifecycle(lifecycleBefore);
   assert(sourceContinuation.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission source must be the compiler admission successor");
@@ -139,6 +140,16 @@ export function compileAgentSpawnerGovernedAdmission(options = {}) {
   assert(clearance.candidate.lifecycle_candidate_sha256 === lifecycleBefore.candidate_sha256 && clearance.candidate.roster_projection_sha256 === lifecycleBefore.roster_projection_sha256 && clearance.candidate.context_sha256 === lifecycleBefore.context_sha256, "Canonical independent clearance does not bind the current lifecycle");
   assert(lifecycleBefore.qa.independent_clearance_receipt_sha256 === clearance.receipt_sha256, "Lifecycle clearance reference does not bind the consumed canonical receipt");
   assert(lifecycleBefore.qa.incomplete_block_count === 0 && lifecycleBefore.qa.pending_route_count === 0, "Governed admission requires complete canonical blocks and roster");
+  const packageResolution = resolveCanonicalSpawnerBootstrapPackage();
+  const hostileEvaluation = packageResolution.hostile_evaluation;
+  assert(hostileEvaluation?.status === "PASS" && hostileEvaluation.results.every((entry) => entry.result === "PASS"), "Governed admission requires canonical executed hostile evidence");
+  const evidenceRefs = [
+    {evidence_id: "EVIDENCE.SPAWNER.CLEARANCE", reference: `ref:clearance/${clearance.receipt_sha256}`, sha256: clearance.receipt_sha256},
+    {evidence_id: "EVIDENCE.SPAWNER.HOSTILE_EXECUTION", reference: `ref:hostile-evaluation/${hostileEvaluation.evaluation_sha256}`, sha256: hostileEvaluation.evaluation_sha256},
+    {evidence_id: "EVIDENCE.SPAWNER.PACKAGE", reference: `ref:package/${packageResolution.spawner_package.package_sha256}`, sha256: packageResolution.package_file_sha256},
+    {evidence_id: "EVIDENCE.SPAWNER.EXTERNAL_REVIEW", reference: `ref:external-review/${packageResolution.external_review.receipt_sha256}`, sha256: packageResolution.external_review.receipt_sha256},
+  ].sort((left, right) => compareUtf8(left.evidence_id, right.evidence_id));
+  const hostileFixtureRefs = hostileEvaluation.results.map((entry) => entry.fixture_id).sort(compareUtf8);
   const lifecycleAfterSha256 = canonicalDigest({source_lifecycle_sha256: lifecycleBefore.lifecycle_sha256, clearance_receipt_sha256: clearance.receipt_sha256, candidate_authority_sha256: clearance.candidate_authority_sha256, transition: "CANONICAL_GOVERNED_ADMISSION_VERIFIED"});
   const readback = {
     schema: AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA,
@@ -153,8 +164,8 @@ export function compileAgentSpawnerGovernedAdmission(options = {}) {
     same_turn_dispatch: true,
     authority: {compiler_only: false, admission: true, activation: false, product_mutation: false, provider_access: false, credential_access: false},
     admission: {spawnable: true, worker_spawned: false, wave_activation: "OFF", isolated_local_custody: false},
-    evidence_refs: structuredClone(evidenceRefs).sort((left, right) => compareUtf8(left.evidence_id, right.evidence_id)),
-    hostile_fixture_refs: [...hostileFixtureRefs].sort(compareUtf8),
+    evidence_refs: evidenceRefs,
+    hostile_fixture_refs: hostileFixtureRefs,
     readback_sha256: null,
   };
   readback.readback_sha256 = canonicalDigest(body(readback));

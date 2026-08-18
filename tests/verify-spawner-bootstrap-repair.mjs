@@ -17,6 +17,8 @@ import {
   compileRedistributionHandoff,
   compileSpawnerTurnCloseout,
   transitionInertSeed,
+  auditSpawnerAdmissionArtifactsAtUntrustedRoot,
+  prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation,
   resolveCanonicalSpawnerBootstrapPackage,
   validateCanonicalSpawnerBootstrapPackage,
 } from "../control/spawner-bootstrap-governance.mjs";
@@ -34,6 +36,7 @@ import {
 import {admitAgentSpawnerIsolatedLocalCustody} from "../control/agent-spawner-lifecycle.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 import {auditHostileGateMutationAtUntrustedRoot} from "../control/spawner-hostile-fixture-evaluator.mjs";
+import {provisionTestExternalSpawnerReview} from "./helpers/spawner-external-review-fixture.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const NOW = "2026-08-18T08:30:00.000Z";
@@ -43,8 +46,15 @@ const preparedPolicy = JSON.parse(fs.readFileSync(path.join(root, "fixtures/mode
 const governanceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-spawner-global-governance-"));
 const governedFixture = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot, nowUtc: NOW});
 
-const resolvedPackage = resolveCanonicalSpawnerBootstrapPackage({});
-validateCanonicalSpawnerBootstrapPackage(blockPackage, resolvedPackage);
+const resolvedPackage = prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation({});
+assert.equal(resolvedPackage.disposition, "PREPARED_FOR_EXTERNAL_REVIEW_NOT_ADMITTED");
+assert.equal(resolvedPackage.hostile_evaluation.result_count, 33);
+assert.equal(new Set(resolvedPackage.hostile_evaluation.results.map((entry) => entry.fixture_id)).size, 33);
+assert(resolvedPackage.hostile_evaluation.results.every((entry) => entry.implementation_entrypoint.startsWith("control/") && entry.negative_assertion_count >= 2));
+assert.equal(resolvedPackage.spawner_package.package_sha256, blockPackage.package_sha256);
+assert.throws(() => validateCanonicalSpawnerBootstrapPackage(blockPackage, resolvedPackage), /sealed canonical artifact resolution/iu);
+assert.throws(() => resolveCanonicalSpawnerBootstrapPackage({}), /separately provisioned reviewer|external review/iu);
+const externalReviewFixture = provisionTestExternalSpawnerReview({candidate: resolvedPackage});
 const packageRoot = path.join(root, "specialist-blocks/control-plane/agent-spawner");
 const gateManifest = JSON.parse(fs.readFileSync(path.join(packageRoot, "gates/manifest.json"), "utf8"));
 assert.equal(gateManifest.manifest_sha256, canonicalDigest({...gateManifest, manifest_sha256: null}));
@@ -101,6 +111,7 @@ const admission = compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.TEST
 assert.equal(admission.status, "READY_FOR_INERT_SEED");
 assert.equal(admission.block_evidence.length, SPAWNER_BLOCK_LAYERS.length);
 assert(admission.block_evidence.every((entry) => fs.existsSync(path.join(root, entry.artifact_path))));
+assert.throws(() => resolveCanonicalSpawnerBootstrapPackage({}), /already consumed|external review/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.CALLER", spawnerPackage: blockPackage, applicableBlocks: [{status: "PASS"}], globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.MISSING_LAYER", requiredLayers: SPAWNER_BLOCK_LAYERS.slice(1), globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied applicable layers/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.FORGED_PROJECTION", modelPolicyProjection: projection, globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied model-policy/iu);
@@ -132,6 +143,13 @@ function rebindAdmissionBlock(temp, fileName, mutate) {
   manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
 }
+function rebindPackage(temp, mutate) {
+  const blockPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/block.json");
+  const block = JSON.parse(fs.readFileSync(blockPath, "utf8"));
+  mutate(block);
+  block.package_sha256 = canonicalDigest({...block, package_sha256: null});
+  fs.writeFileSync(blockPath, `${JSON.stringify(block)}\n`);
+}
 
 const weakenedGateRoot = hostileAuthority((temp) => {
   const gatePath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/gates/controller-authority.gate");
@@ -150,62 +168,49 @@ try {
 }
 function expectHostile(mutator, pattern) {
   const temp = hostileAuthority(mutator);
-  try { assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.HOSTILE", authorityRoot: temp, globalGovernanceAuthorityStore: governedFixture.authorityStore}), pattern); }
+  try { assert.throws(() => auditSpawnerAdmissionArtifactsAtUntrustedRoot({authorityRoot: temp, observedAtUtc: NOW}), pattern); }
   finally { fs.rmSync(temp, {recursive: true, force: true}); }
 }
-expectHostile((temp) => fs.unlinkSync(path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/task.block.json")), /Caller-supplied package roots/iu);
-expectHostile((temp) => rebindAdmissionBlock(temp, "global.block.json", (block) => { block.expires_at_utc = "2026-08-16T00:00:00.000Z"; }), /Caller-supplied package roots/iu);
-expectHostile((temp) => rebindAdmissionBlock(temp, "project.block.json", (block) => { block.semantic_content.purpose = "TODO"; }), /Caller-supplied package roots/iu);
+expectHostile((temp) => fs.unlinkSync(path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/task.block.json")), /ENOENT|missing/iu);
+expectHostile((temp) => rebindAdmissionBlock(temp, "global.block.json", (block) => { block.expires_at_utc = "2026-08-16T00:00:00.000Z"; }), /stale/iu);
+expectHostile((temp) => rebindAdmissionBlock(temp, "project.block.json", (block) => { block.semantic_content.purpose = "TODO"; }), /placeholder/iu);
 expectHostile((temp) => {
   const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/manifest.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath));
   manifest.entries[1].block_id = manifest.entries[0].block_id;
   manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
-}, /Caller-supplied package roots/iu);
+}, /duplicated|coverage|identity/iu);
 expectHostile((temp) => {
   const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/manifest.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath));
   [manifest.entries[0].path, manifest.entries[1].path] = [manifest.entries[1].path, manifest.entries[0].path];
   manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
-}, /Caller-supplied package roots/iu);
+}, /file digest differs|identity differs|binding differs/iu);
 expectHostile((temp) => {
   const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/manifest.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath));
   manifest.entries[0].file_sha256 = "a".repeat(64);
   manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
-}, /Caller-supplied package roots/iu);
+}, /placeholder-style evidence|file digest differs/iu);
 expectHostile((temp) => {
   const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/gates/manifest.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath));
   manifest.entries[1].gate_id = manifest.entries[0].gate_id;
   manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-}, /Caller-supplied package roots/iu);
-expectHostile((temp) => {
-  const reviewPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/reviews/spawner-authority_separation.json");
-  const review = JSON.parse(fs.readFileSync(reviewPath));
-  review.reviewer_role = "AGENT.SPAWNER_COMPILER";
-  review.review_sha256 = canonicalDigest({...review, review_sha256: null, signature_base64: null});
-  fs.writeFileSync(reviewPath, `${JSON.stringify(review)}\n`);
-}, /Caller-supplied package roots/iu);
+  rebindPackage(temp, (block) => { block.gate_manifest_sha256 = manifest.manifest_sha256; block.gates = manifest.entries; });
+}, /duplicate IDs|gate ID|coverage differs/iu);
 expectHostile((temp) => {
   const fixtureManifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/hostile-fixtures.manifest.json");
   const fixtureManifest = JSON.parse(fs.readFileSync(fixtureManifestPath));
   fixtureManifest.entries.pop();
   fixtureManifest.manifest_sha256 = canonicalDigest({...fixtureManifest, manifest_sha256: null});
   fs.writeFileSync(fixtureManifestPath, `${JSON.stringify(fixtureManifest)}\n`);
-}, /Caller-supplied package roots/iu);
-expectHostile((temp) => {
-  const registryPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/controller-issuer-registry.v1.json");
-  const registry = JSON.parse(fs.readFileSync(registryPath));
-  registry.authority_epoch += 1;
-  registry.registry_sha256 = canonicalDigest({...registry, registry_sha256: null});
-  fs.writeFileSync(registryPath, `${JSON.stringify(registry)}\n`);
-}, /Caller-supplied package roots/iu);
-
+  rebindPackage(temp, (block) => { block.hostile_fixture_manifest_sha256 = fixtureManifest.manifest_sha256; block.hostile_fixtures = fixtureManifest.entries.map((entry) => entry.fixture_id).sort(); block.gates = block.gates.map((gate) => ({...gate, hostile_fixture_ids: gate.hostile_fixture_ids.filter((id) => block.hostile_fixtures.includes(id))})); });
+}, /inventory|coverage|binding differs/iu);
 assert.throws(() => compileInertSeed({seedId: "SEED.SPAWNER.FORGED", admission, contextSha256: SHA("a"), rosterSha256: SHA("b"), globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Direct seed compilation/iu);
 assert.throws(() => transitionInertSeed({seed_sha256: SHA("a")}, {transition: "CLONE_TO_WORKER", observedAtUtc: NOW}), /Direct seed transition/iu);
 
@@ -247,4 +252,5 @@ stalePolicy.snapshot_sha256 = canonicalDigest({...stalePolicy, snapshot_sha256: 
 assert.throws(() => validateModelPolicySnapshot(stalePolicy, {nowUtc: NOW, requireActive: true}), /stale/iu);
 
 fs.rmSync(governanceRoot, {recursive: true, force: true});
+fs.rmSync(externalReviewFixture.root, {recursive: true, force: true});
 console.log("PASS canonical Spawner bootstrap repair: exact layered QA, canonical ECO projections, independent clearance, inert seeds, ownership recursion, redistribution, and mandatory successor closeout");

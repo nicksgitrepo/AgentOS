@@ -17,7 +17,7 @@ import {
   opaqueSchedulerWorktreeRef,
 } from "./hybrid-scheduler.mjs";
 import {compileOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
-import {globalGovernanceStoreProcessBridge} from "./global-governance-bootstrap.mjs";
+import {issueGlobalGovernanceProcessAttachment} from "./global-governance-bootstrap.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -884,8 +884,8 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   const workerScript = workerScriptPath === null ? new URL("./local-agent-worker.mjs", import.meta.url).pathname : safeChild(root, path.relative(root, workerScriptPath));
   const sessionScript = new URL("./local-agent-session.mjs", import.meta.url).pathname;
   const schedulerRoot = safeChild(runtime, "scheduler-authority");
-  const governanceBridge = globalGovernanceStoreProcessBridge(globalGovernanceAuthorityStore);
-  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath, "--global-governance-store-root", governanceBridge.authority_root, "--global-governance-store-bootstrap", governanceBridge.bootstrap_sha256];
+  const governanceAttachment = issueGlobalGovernanceProcessAttachment({authorityStore: globalGovernanceAuthorityStore, consumerRole: "SESSION"});
+  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath, "--global-governance-attachment", Buffer.from(JSON.stringify(governanceAttachment.attachment)).toString("base64")];
   if (feature !== null) args.push("--feature-worktree", feature);
   if (evidence !== null) args.push("--evidence-worktree", evidence);
   if (decisionTree !== null) args.push("--decision-tree", decisionTree);
@@ -898,7 +898,7 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
     execute: async () => {
       fs.mkdirSync(sessionDirectory, {recursive: true, mode: 0o700});
       const logDescriptor = fs.openSync(childLogPath, "a", 0o600);
-      const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {cwd: worktree, detached: true, stdio: ["ignore", logDescriptor, logDescriptor]});
+      const child = spawn(effectiveArgv[0], effectiveArgv.slice(1), {cwd: worktree, detached: true, stdio: ["ignore", logDescriptor, logDescriptor], env: {...process.env, AGENTOS_GLOBAL_GOVERNANCE_ATTACHMENT_SECRET: governanceAttachment.secret_base64}});
       fs.closeSync(logDescriptor);
       child.unref();
       return child;

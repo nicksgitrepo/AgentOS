@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_bootstrap_preparation.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["external_clearance_store", "external_review_store", "production_signing_key_embedded", "admission_before_preparation"],
+  "properties": {
+    "external_clearance_store": {"const": "REQUIRED_PROTECTED_PROVISIONING"},
+    "external_review_store": {"const": "REQUIRED_PROTECTED_PROVISIONING"},
+    "production_signing_key_embedded": {"const": false},
+    "admission_before_preparation": {"const": "FAIL_CLOSED"}
+  }
+}

@@ -2,45 +2,33 @@
 
 /* Repository-relative AgentOS authority. Callers can request canonical refs; they cannot supply roots. */
 
-import crypto from "node:crypto";
-import fs from "node:fs";
-import path from "node:path";
+import {createHash} from "node:crypto";
+import {execFileSync} from "node:child_process";
+import {dirname, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
-import {canonicalDigest} from "./content-addressing.mjs";
 
-const MODULE_ROOT = fs.realpathSync.native(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."));
-const BINDING_PATH = "schemas/bootstrap-binding.v1.json";
+const LOADER_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "bootstrap-authority-loader.mjs");
 const states = new WeakMap();
 let singleton = null;
 
 function assert(condition, message, code = "SEALED_AUTHORITY_INVALID") {
   if (!condition) { const error = new Error(message); error.code = code; throw error; }
 }
-function sha256(bytes) { return crypto.createHash("sha256").update(bytes).digest("hex"); }
-function safeCanonicalFile(relativePath) {
-  assert(typeof relativePath === "string" && relativePath.length > 0 && !path.isAbsolute(relativePath), "Canonical authority path is invalid");
-  assert(!relativePath.split(/[\\/]/u).some((part) => part === "" || part === ".."), "Canonical authority path escapes the repository");
-  const target = path.resolve(MODULE_ROOT, relativePath);
-  assert(target.startsWith(`${MODULE_ROOT}${path.sep}`), "Canonical authority path escapes the repository");
-  const stat = fs.lstatSync(target);
-  assert(stat.isFile() && !stat.isSymbolicLink(), `Canonical authority is not a regular non-symlink file: ${relativePath}`);
-  assert(fs.realpathSync.native(target) === target, `Canonical authority contains a symlinked path: ${relativePath}`);
-  return target;
+function sha256(bytes) { return createHash("sha256").update(bytes).digest("hex"); }
+function cleanLoaderEnvironment() {
+  return Object.fromEntries(Object.entries(process.env).filter(([key]) => !["NODE_OPTIONS", "NODE_PATH"].includes(key) && !key.startsWith("NODE_")));
+}
+function invokeLoader(args) {
+  assert(process.execArgv.every((arg) => !/(?:--loader|--import|--require|-r(?:$|=))/u.test(arg)), "Authority cannot be sealed under a preload/custom loader", "SEALED_AUTHORITY_RUNTIME_HOOK");
+  assert(!process.env.NODE_OPTIONS, "Authority cannot be sealed when NODE_OPTIONS can preload or hook runtime code", "SEALED_AUTHORITY_RUNTIME_HOOK");
+  const raw = execFileSync(process.execPath, [LOADER_PATH, ...args], {encoding: "utf8", env: cleanLoaderEnvironment(), cwd: dirname(LOADER_PATH), stdio: ["ignore", "pipe", "pipe"]});
+  return JSON.parse(raw);
 }
 function loadBinding() {
-  const bytes = fs.readFileSync(safeCanonicalFile(BINDING_PATH));
-  const value = JSON.parse(bytes.toString("utf8"));
-  assert(value.schema === "agentos.governance_2_1rc_bootstrap_binding.v2" && value.version === 2, "Canonical bootstrap binding identity is invalid");
-  const entries = new Map();
-  for (const section of ["normative", "compatibility_only"]) for (const [bindingId, record] of Object.entries(value[section] ?? {})) {
-    if (!record?.path) continue;
-    assert(!entries.has(bindingId), `Canonical binding ID is duplicated: ${bindingId}`);
-    assert(typeof record.sha256 === "string" && /^[0-9a-f]{64}$/u.test(record.sha256), `Canonical binding digest is invalid: ${bindingId}`);
-    const fileBytes = fs.readFileSync(safeCanonicalFile(record.path));
-    assert(sha256(fileBytes) === record.sha256, `Canonical binding bytes differ: ${bindingId}`, "SEALED_AUTHORITY_BINDING_DRIFT");
-    entries.set(bindingId, Object.freeze({binding_id: bindingId, path: record.path, sha256: record.sha256}));
-  }
-  return {binding: Object.freeze(value), binding_sha256: sha256(bytes), entries};
+  const readback = invokeLoader(["identity"]);
+  assert(readback.schema === "agentos.bootstrap_authority_loader_readback.v1", "Authority loader readback identity differs");
+  const entries = new Map(readback.entries.map((entry) => [entry.binding_id, Object.freeze(entry)]));
+  return {root: readback.root, binding_sha256: readback.binding_sha256, authority_sha256: readback.authority_sha256, entries};
 }
 
 class SealedCanonicalAuthority {
@@ -52,7 +40,7 @@ export function getSealedCanonicalAuthority() {
   if (singleton !== null) return singleton;
   const loaded = loadBinding();
   const capability = Object.freeze(new SealedCanonicalAuthority(SealedCanonicalAuthority));
-  states.set(capability, Object.freeze({root: MODULE_ROOT, ...loaded, authority_sha256: canonicalDigest({binding_sha256: loaded.binding_sha256, entries: [...loaded.entries.values()]})}));
+  states.set(capability, Object.freeze(loaded));
   singleton = capability;
   return capability;
 }
@@ -67,8 +55,8 @@ export function readSealedAuthorityBinding(capability, bindingId, {json = true} 
   const state = states.get(capability);
   const entry = state.entries.get(bindingId);
   assert(entry, `Canonical authority binding is unknown: ${bindingId}`);
-  const target = safeCanonicalFile(entry.path);
-  const bytes = fs.readFileSync(target);
+  const readback = invokeLoader(["read", bindingId]);
+  const bytes = Buffer.from(readback.bytes_base64, "base64");
   assert(sha256(bytes) === entry.sha256, `Canonical authority changed after sealing: ${bindingId}`, "SEALED_AUTHORITY_BINDING_DRIFT");
   return Object.freeze({binding_id: bindingId, relative_path: entry.path, file_sha256: entry.sha256, bytes: Buffer.from(bytes), value: json ? JSON.parse(bytes.toString("utf8")) : null});
 }

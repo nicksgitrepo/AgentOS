@@ -26,6 +26,8 @@ import {
 import {controllerActionHandlerFor, controllerContinuationDigest} from "../control/controller-action-dispatcher.mjs";
 import {compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
+import {prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation} from "../control/spawner-bootstrap-governance.mjs";
+import {provisionTestExternalSpawnerReview} from "./helpers/spawner-external-review-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
@@ -33,6 +35,7 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const governanceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-permanent-role-governance-"));
 const globalFixture = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot});
 const permanentRoleContext = compileOperationalGlobalGovernanceContext({authorityStore: globalFixture.authorityStore, roleClass: "PERMANENT_ROLE", operationalId: "CONTEXT.PERMANENT.ROLE.ROSTER.TEST"});
+const externalReviewFixture = provisionTestExternalSpawnerReview({candidate: prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation()});
 const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b"];
 const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f"];
 const redigest = (value, field) => {
@@ -65,6 +68,7 @@ const blockSet = compileSpawnerGoverningBlockSet({
   blockSetId: "SPAWNER.BLOCK.SET.PERMANENT.ROLE.TEST",
   globalGovernanceAuthorityStore: globalFixture.authorityStore,
 });
+const admissionExternalReviewFixture = provisionTestExternalSpawnerReview({candidate: prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation()});
 const admission = compileTypedSpawnerAdmission({
   spawnerId: "AGENTOS-SPAWNER-1",
   controllerId: "CONTROLLER-TASK-1",
@@ -117,6 +121,8 @@ for (let index = 0; index < PERMANENT_ROLE_IDS.length; index += 1) {
   assert.equal(roster.continuation_sha256, controllerContinuationDigest(roster.continuation));
 }
 assert.equal(roster.status, "PERMANENT_ROSTER_READY");
+fs.rmSync(externalReviewFixture.root, {recursive: true, force: true});
+fs.rmSync(admissionExternalReviewFixture.root, {recursive: true, force: true});
 
 const unknownSuccessorHandler = structuredClone(roster);
 unknownSuccessorHandler.next_handler = "HANDLER.UNKNOWN";

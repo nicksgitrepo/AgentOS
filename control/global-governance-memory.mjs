@@ -13,6 +13,7 @@ export const GLOBAL_GOVERNANCE_MEMORY_GENESIS = canonicalDigest({schema: "agento
 export const GLOBAL_GOVERNANCE_MEMORY_WRITERS = Object.freeze(["SPAWNER", "GOVERNED_MEMORY_ADAPTER"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
+const SAFE_EVENT_ID = /^GGM\.(?:ACCEPTED|SUPERSEDED|INVALIDATED)\.[0-9A-F]{48}$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
 const MAX_READBACK_AGE_MS = 24 * 60 * 60 * 1000;
 const EVENT_KEYS = ["schema", "version", "event_id", "sequence", "event_type", "writer_role", "prior_event_sha256", "snapshot", "target_snapshot_sha256", "reason_code", "observed_at_utc", "event_sha256"];
@@ -28,6 +29,16 @@ function assert(condition, message, code = "GLOBAL_GOVERNANCE_MEMORY_INVALID") {
 function requireSha(value, label) { assert(typeof value === "string" && SHA256.test(value), `${label} must be a SHA-256`); }
 function requireUtc(value, label) { assert(typeof value === "string" && ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be an exact UTC timestamp`); return Date.parse(value); }
 function digestBody(value, field) { return {...structuredClone(value), [field]: null}; }
+function eventIdentityBody(event) {
+  const body = structuredClone(event);
+  delete body.event_id;
+  delete body.event_sha256;
+  return body;
+}
+function mintedEventId(event) {
+  const kind = event.event_type.replace("MODEL_POLICY_", "");
+  return `GGM.${kind}.${canonicalDigest(eventIdentityBody(event)).slice(0, 48).toUpperCase()}`;
+}
 function exactKeys(value, keys, label) {
   assert(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
   assert(JSON.stringify(Object.keys(value).sort(compareUtf8)) === JSON.stringify([...keys].sort(compareUtf8)), `${label} fields mismatch; unknown project/private data is forbidden`, "CROSS_PROJECT_MEMORY_FORBIDDEN");
@@ -84,6 +95,7 @@ function validateGlobalEvent(event) {
   exactKeys(event, EVENT_KEYS, "Global governance memory event");
   assertProjectAgnosticGovernanceValue(event);
   assert(event.schema === GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA && event.version === 1, "Global governance memory event identity is invalid");
+  assert(typeof event.event_id === "string" && SAFE_EVENT_ID.test(event.event_id) && event.event_id === mintedEventId(event), "Global governance memory event ID is not internally derived", "GLOBAL_MEMORY_EVENT_ID_INVALID");
   assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(event.writer_role), "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(["MODEL_POLICY_ACCEPTED", "MODEL_POLICY_SUPERSEDED", "MODEL_POLICY_INVALIDATED"].includes(event.event_type), "Global governance memory event type is invalid");
   assert(Number.isSafeInteger(event.sequence) && event.sequence >= 0, "Global governance memory sequence is invalid");
@@ -105,12 +117,15 @@ function validateGlobalEvent(event) {
   return event;
 }
 
-export function compileGlobalGovernanceMemoryEvent({eventId, sequence, eventType, writerRole, snapshot = null, targetSnapshotSha256 = null, reasonCode = null, priorEventSha256, observedAtUtc}) {
+export function compileGlobalGovernanceMemoryEvent(options = {}) {
+  assert(options && typeof options === "object" && !Object.prototype.hasOwnProperty.call(options, "eventId") && !Object.prototype.hasOwnProperty.call(options, "event_id"), "Global governance event identity is minted internally", "GLOBAL_MEMORY_EVENT_ID_CALLER_FORBIDDEN");
+  const {sequence, eventType, writerRole, snapshot = null, targetSnapshotSha256 = null, reasonCode = null, priorEventSha256, observedAtUtc} = options;
   assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(writerRole), "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(["MODEL_POLICY_ACCEPTED", "MODEL_POLICY_SUPERSEDED", "MODEL_POLICY_INVALIDATED"].includes(eventType), "Global governance memory event type is invalid");
   assert(Number.isSafeInteger(sequence) && sequence >= 0, "Global governance memory sequence is invalid");
   requireSha(priorEventSha256, "Global governance memory prior head");
-  const event = {schema: GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA, version: 1, event_id: eventId, sequence, event_type: eventType, writer_role: writerRole, prior_event_sha256: priorEventSha256, snapshot, target_snapshot_sha256: targetSnapshotSha256, reason_code: reasonCode, observed_at_utc: observedAtUtc, event_sha256: null};
+  const event = {schema: GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA, version: 1, event_id: null, sequence, event_type: eventType, writer_role: writerRole, prior_event_sha256: priorEventSha256, snapshot, target_snapshot_sha256: targetSnapshotSha256, reason_code: reasonCode, observed_at_utc: observedAtUtc, event_sha256: null};
+  event.event_id = mintedEventId(event);
   event.event_sha256 = canonicalDigest(digestBody(event, "event_sha256"));
   return validateGlobalEvent(event);
 }

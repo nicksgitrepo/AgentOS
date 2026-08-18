@@ -2,26 +2,101 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "agentos.spawner_bootstrap_package.v1",
   "type": "object",
-  "required": ["schema", "version", "status", "activation", "block_id", "project_agnostic", "non_placeholder", "content_addressed", "purpose", "scope", "authority", "required_knowledge", "stop_conditions", "typed_inputs", "typed_outputs", "custody", "lifecycle", "handoff_contract", "bootstrap_injection_order", "gate_manifest_sha256", "hostile_fixture_manifest_sha256", "gate_review_manifest_sha256", "gate_review_trust_root_sha256", "controller_issuer_registry_sha256", "controller_operation_registry_sha256", "independent_clearance_trust_anchor_sha256", "model_policy_source_registry_sha256", "decision_tree_sha256", "gates", "hostile_fixtures", "package_sha256"],
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "activation",
+    "block_id",
+    "project_agnostic",
+    "non_placeholder",
+    "content_addressed",
+    "purpose",
+    "scope",
+    "authority",
+    "required_knowledge",
+    "stop_conditions",
+    "typed_inputs",
+    "typed_outputs",
+    "custody",
+    "lifecycle",
+    "handoff_contract",
+    "bootstrap_injection_order",
+    "gate_manifest_sha256",
+    "hostile_fixture_manifest_sha256",
+    "controller_issuer_registry_sha256",
+    "controller_operation_registry_sha256",
+    "independent_clearance_trust_anchor_sha256",
+    "model_policy_source_registry_sha256",
+    "decision_tree_sha256",
+    "gates",
+    "hostile_fixtures",
+    "package_sha256"
+  ],
   "properties": {
-    "schema": {"const": "agentos.spawner_bootstrap_package.v1"},
-    "version": {"const": 1},
-    "status": {"const": "COMPLETE_QA_PASS"},
-    "activation": {"const": "PREPARED_NOT_ACTIVATED"},
-    "project_agnostic": {"const": true},
-    "non_placeholder": {"const": true},
-    "content_addressed": {"const": true},
-    "gate_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "hostile_fixture_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gate_review_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gate_review_trust_root_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "controller_issuer_registry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "controller_operation_registry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "independent_clearance_trust_anchor_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "model_policy_source_registry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "decision_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gates": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true},
-    "hostile_fixtures": {"type": "array", "minItems": 8, "uniqueItems": true},
-    "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    "schema": {
+      "const": "agentos.spawner_bootstrap_package.v1"
+    },
+    "version": {
+      "const": 1
+    },
+    "status": {
+      "const": "COMPLETE_QA_PASS"
+    },
+    "activation": {
+      "const": "PREPARED_NOT_ACTIVATED"
+    },
+    "project_agnostic": {
+      "const": true
+    },
+    "non_placeholder": {
+      "const": true
+    },
+    "content_addressed": {
+      "const": true
+    },
+    "gate_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "hostile_fixture_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "controller_issuer_registry_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "controller_operation_registry_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "independent_clearance_trust_anchor_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model_policy_source_registry_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decision_tree_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true
+    },
+    "hostile_fixtures": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true
+    },
+    "package_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
   }
 }

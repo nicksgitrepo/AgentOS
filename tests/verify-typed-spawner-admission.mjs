@@ -18,6 +18,8 @@ import {
   validateTypedSpawnerAdmission,
 } from "../control/typed-spawner-admission.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
+import {prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation} from "../control/spawner-bootstrap-governance.mjs";
+import {provisionTestExternalSpawnerReview} from "./helpers/spawner-external-review-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
@@ -44,11 +46,13 @@ const handoff = compileSealedBootstrapHandoff({
   sourceMappingSha256: SHA("3"), memoryPlanSha256: SHA("4"), quarantineGateStateSha256: SHA("5"), productZeroTraceReceiptSha256: SHA("6"),
 });
 assert.throws(() => compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER-BLOCK-SET-INVALID", requiredLayers: [], blockEvidence: []}), /Caller-authored/iu);
+const blockSetReviewFixture = provisionTestExternalSpawnerReview({candidate: prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation()});
 const blockSet = compileSpawnerGoverningBlockSet({
   blockSetId: "SPAWNER-BLOCK-SET-1",
   globalGovernanceAuthorityStore: globalFixture.authorityStore,
 });
 
+const admissionReviewFixture = provisionTestExternalSpawnerReview({candidate: prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation()});
 const admission = compileTypedSpawnerAdmission({
   spawnerId: "AGENTOS-SPAWNER-1",
   controllerId: "CONTROLLER-TASK-1",
@@ -98,4 +102,6 @@ staleRosterRoute.admission_sha256 = canonicalDigest({...staleRosterRoute, admiss
 assert.throws(() => validateTypedSpawnerAdmission(staleRosterRoute), /next action is invalid/u);
 
 fs.rmSync(governanceRoot, {recursive: true, force: true});
+fs.rmSync(blockSetReviewFixture.root, {recursive: true, force: true});
+fs.rmSync(admissionReviewFixture.root, {recursive: true, force: true});
 console.log("PASS typed Spawner admission: canonical reviewed blocks and global-policy projection, predecessor custody, compiler-only lifecycle, and caller-evidence denial");

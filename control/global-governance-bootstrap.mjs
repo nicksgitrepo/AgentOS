@@ -1,9 +1,11 @@
-import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
 import fs from "node:fs";
 import path from "node:path";
+import {createHmac, randomBytes, timingSafeEqual} from "node:crypto";
 import {MODEL_POLICY_ROLE_CLASSES, compileModelPolicyProjection, validateEcoModelRoute, validateModelPolicyProjection} from "./eco-model-policy.mjs";
 import {assertProjectAgnosticGovernanceValue, readGlobalGovernanceMemory, replayGlobalGovernanceMemory, validateGlobalGovernanceMemoryReadback} from "./global-governance-memory.mjs";
 import {assertSealedCanonicalAuthority} from "./sealed-canonical-authority.mjs";
+import {consumeInstalledGlobalGovernanceProvisioning} from "./installed-global-governance-provisioning.mjs";
 
 export const GLOBAL_GOVERNANCE_BOOTSTRAP_SCHEMA = "agentos.global_governance_bootstrap.v1";
 const SHA = /^[0-9a-f]{64}$/u;
@@ -72,19 +74,18 @@ function canonicalStorePath(authorityRoot, relativePath) {
 }
 
 /* Internal bootstrap adapter. Deliberately omitted from the public AgentOS facade. */
-export function openGlobalGovernanceAuthorityStore({sealedAuthority, authorityRoot, bootstrapSha256} = {}) {
+export function openGlobalGovernanceAuthorityStore(options = {}) {
+  assert(options && typeof options === "object" && Object.keys(options).every((key) => ["sealedAuthority", "storeProvisioning"].includes(key)), "Global-governance store accepts only a one-use Bootstrap provisioning capability", "GLOBAL_GOVERNANCE_ROOT_CALLER_FORBIDDEN");
+  const {sealedAuthority, storeProvisioning} = options;
   assertSealedCanonicalAuthority(sealedAuthority);
-  assert(typeof authorityRoot === "string" && path.isAbsolute(authorityRoot), "Global governance authority root must be absolute");
-  assert(typeof bootstrapSha256 === "string" && SHA.test(bootstrapSha256), "Global governance bootstrap reference is invalid");
-  const realRoot = fs.realpathSync.native(authorityRoot);
-  assert(fs.lstatSync(realRoot).isDirectory() && !fs.lstatSync(authorityRoot).isSymbolicLink(), "Global governance authority root must be a real non-symlink directory");
+  const {realRoot, bootstrapSha256} = consumeInstalledGlobalGovernanceProvisioning(storeProvisioning);
   const events = readGlobalGovernanceMemory({authorityRoot: realRoot});
   const readback = JSON.parse(fs.readFileSync(canonicalStorePath(realRoot, "global-governance/current-readback.v1.json"), "utf8"));
   const bootstrap = JSON.parse(fs.readFileSync(canonicalStorePath(realRoot, "global-governance/current-bootstrap.v1.json"), "utf8"));
   assert(bootstrap.bootstrap_sha256 === bootstrapSha256, "Global governance bootstrap reference is stale or aliased");
   validateGlobalGovernanceBootstrap(bootstrap, {events, readback});
   const capability = Object.freeze(Object.create(null));
-  authorityStores.set(capability, Object.freeze({authorityRoot: realRoot, bootstrapSha256}));
+  authorityStores.set(capability, Object.freeze({authorityRoot: realRoot, bootstrapSha256, ledgerRelativePath: "global-governance/model-policy-events.jsonl", memoryIdentity: canonicalDigest({schema: "agentos.global_governance_memory_identity.v1", bootstrap_sha256: bootstrapSha256, authority_root_readback_sha256: canonicalDigest({real_root: realRoot})}), processAttachmentKey: randomBytes(32)}));
   return capability;
 }
 
@@ -112,8 +113,52 @@ export function inspectGlobalGovernanceAuthorityStore(authorityStore) {
 }
 
 /* Internal process bridge. It is intentionally omitted from the public AgentOS facade. */
-export function globalGovernanceStoreProcessBridge(authorityStore) {
+export function resolveGlobalGovernanceStoreForMemoryAdapter(authorityStore) {
   const sealedStore = authorityStores.get(authorityStore);
   assert(sealedStore, "A sealed global-governance authority capability is required", "SEALED_GLOBAL_AUTHORITY_REQUIRED");
-  return Object.freeze({authority_root: sealedStore.authorityRoot, bootstrap_sha256: sealedStore.bootstrapSha256});
+  return Object.freeze({authority_root: sealedStore.authorityRoot, bootstrap_sha256: sealedStore.bootstrapSha256, ledger_relative_path: sealedStore.ledgerRelativePath, memory_identity: sealedStore.memoryIdentity});
+}
+
+function attachmentMac(key, attachment) { return createHmac("sha256", key).update(JSON.stringify({...attachment, mac_sha256: null})).digest("hex"); }
+
+export function issueGlobalGovernanceProcessAttachment({authorityStore, consumerRole} = {}) {
+  const sealedStore = authorityStores.get(authorityStore);
+  assert(sealedStore, "A sealed global-governance authority capability is required", "SEALED_GLOBAL_AUTHORITY_REQUIRED");
+  assert(["SESSION", "WORKER"].includes(consumerRole), "Global-governance attachment consumer role is invalid");
+  const attachment = {schema: "agentos.global_governance_process_attachment.v1", version: 1, issuer_process_id: process.pid, consumer_role: consumerRole, authority_root: sealedStore.authorityRoot, bootstrap_sha256: sealedStore.bootstrapSha256, memory_identity: sealedStore.memoryIdentity, nonce_sha256: canonicalDigest({pid: process.pid, role: consumerRole, random: randomBytes(32).toString("hex")}), mac_sha256: null};
+  attachment.mac_sha256 = attachmentMac(sealedStore.processAttachmentKey, attachment);
+  const attachmentDirectory = path.join(sealedStore.authorityRoot, "global-governance/process-attachments");
+  fs.mkdirSync(attachmentDirectory, {recursive: true, mode: 0o700});
+  const attachmentPath = path.join(attachmentDirectory, `${attachment.nonce_sha256}.issued.json`);
+  const descriptor = fs.openSync(attachmentPath, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
+  try { fs.writeFileSync(descriptor, `${canonicalJson(attachment)}\n`); fs.fsyncSync(descriptor); } finally { fs.closeSync(descriptor); }
+  return Object.freeze({attachment: Object.freeze(attachment), secret_base64: sealedStore.processAttachmentKey.toString("base64")});
+}
+
+export function reattachGlobalGovernanceAuthorityStore({sealedAuthority, attachment, secretBase64, expectedConsumerRole} = {}) {
+  assertSealedCanonicalAuthority(sealedAuthority);
+  assert(attachment?.schema === "agentos.global_governance_process_attachment.v1" && attachment.version === 1 && attachment.consumer_role === expectedConsumerRole, "Global-governance process attachment identity/role differs", "GLOBAL_GOVERNANCE_REATTACHMENT_INVALID");
+  assert(attachment.issuer_process_id === process.ppid, "Global-governance process attachment was not issued by this process parent", "GLOBAL_GOVERNANCE_REATTACHMENT_INVALID");
+  const key = Buffer.from(secretBase64 ?? "", "base64");
+  assert(key.length === 32, "Global-governance process attachment secret is unavailable", "GLOBAL_GOVERNANCE_REATTACHMENT_INVALID");
+  const expected = Buffer.from(attachmentMac(key, attachment), "hex"), actual = Buffer.from(attachment.mac_sha256 ?? "", "hex");
+  assert(actual.length === expected.length && timingSafeEqual(actual, expected), "Global-governance process attachment MAC differs", "GLOBAL_GOVERNANCE_REATTACHMENT_INVALID");
+  const realRoot = fs.realpathSync.native(attachment.authority_root);
+  assert(realRoot === attachment.authority_root && fs.lstatSync(realRoot).isDirectory() && !fs.lstatSync(realRoot).isSymbolicLink(), "Global-governance attachment root is unsafe");
+  const events = readGlobalGovernanceMemory({authorityRoot: realRoot});
+  const readback = JSON.parse(fs.readFileSync(canonicalStorePath(realRoot, "global-governance/current-readback.v1.json"), "utf8"));
+  const bootstrap = JSON.parse(fs.readFileSync(canonicalStorePath(realRoot, "global-governance/current-bootstrap.v1.json"), "utf8"));
+  assert(bootstrap.bootstrap_sha256 === attachment.bootstrap_sha256, "Global-governance attachment bootstrap is stale");
+  validateGlobalGovernanceBootstrap(bootstrap, {events, readback});
+  const memoryIdentity = canonicalDigest({schema: "agentos.global_governance_memory_identity.v1", bootstrap_sha256: attachment.bootstrap_sha256, authority_root_readback_sha256: canonicalDigest({real_root: realRoot})});
+  assert(memoryIdentity === attachment.memory_identity, "Global-governance attachment memory identity differs");
+  const attachmentDirectory = path.join(realRoot, "global-governance/process-attachments");
+  const issuedPath = path.join(attachmentDirectory, `${attachment.nonce_sha256}.issued.json`), consumedPath = path.join(attachmentDirectory, `${attachment.nonce_sha256}.consumed.json`);
+  assert(fs.existsSync(issuedPath) && !fs.existsSync(consumedPath), "Global-governance process attachment is unknown or already consumed", "GLOBAL_GOVERNANCE_REATTACHMENT_REPLAY");
+  const issued = JSON.parse(fs.readFileSync(issuedPath, "utf8"));
+  assert(canonicalJson(issued) === canonicalJson(attachment), "Global-governance process attachment durable record differs");
+  fs.renameSync(issuedPath, consumedPath);
+  const capability = Object.freeze(Object.create(null));
+  authorityStores.set(capability, Object.freeze({authorityRoot: realRoot, bootstrapSha256: attachment.bootstrap_sha256, ledgerRelativePath: "global-governance/model-policy-events.jsonl", memoryIdentity, processAttachmentKey: key}));
+  return capability;
 }

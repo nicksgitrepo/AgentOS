@@ -9,7 +9,8 @@ import {execFileSync} from "node:child_process";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
 import {loadCanonicalControllerOperationRegistry} from "./controller-event-authority.mjs";
-import {getSealedCanonicalAuthority, readSealedAuthorityBinding, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
+import {getSealedCanonicalAuthority, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
+import {verifyAndConsumeCurrentExternalSpawnerReview} from "./spawner-external-review.mjs";
 
 export const SPAWNER_BOOTSTRAP_SCHEMA = "agentos.spawner_bootstrap_package.v1";
 export const SPAWNER_ADMISSION_SCHEMA = "agentos.exact_spawner_admission.v1";
@@ -129,8 +130,6 @@ function validateCanonicalSpawnerBootstrapPackageShape(spawnerPackage) {
   assert(JSON.stringify(spawnerPackage.bootstrap_injection_order) === JSON.stringify(SPAWNER_BOOTSTRAP_INJECTION_ORDER), "Spawner bootstrap injection order is invalid");
   assertNonPlaceholderSha(spawnerPackage.gate_manifest_sha256, "Spawner gate manifest");
   assertNonPlaceholderSha(spawnerPackage.hostile_fixture_manifest_sha256, "Spawner hostile fixture manifest");
-  assertNonPlaceholderSha(spawnerPackage.gate_review_manifest_sha256, "Spawner gate review manifest");
-  assertNonPlaceholderSha(spawnerPackage.gate_review_trust_root_sha256, "Spawner gate review trust root");
   assertNonPlaceholderSha(spawnerPackage.controller_issuer_registry_sha256, "Spawner Controller issuer registry");
   assertNonPlaceholderSha(spawnerPackage.controller_operation_registry_sha256, "Spawner Controller operation registry");
   assertNonPlaceholderSha(spawnerPackage.independent_clearance_trust_anchor_sha256, "Spawner independent-clearance trust anchor");
@@ -153,27 +152,14 @@ function validateCanonicalSpawnerBootstrapPackageShape(spawnerPackage) {
   return spawnerPackage;
 }
 
-function resolveCanonicalHostileFixturesAndReviews({authorityRoot, packageDirectory, spawnerPackage, resolvedGates}) {
+function resolveCanonicalHostileFixtureInventory({authorityRoot, packageDirectory, spawnerPackage, resolvedGates}) {
   const fixtureManifestArtifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "hostile-fixtures.manifest.json"), "Spawner hostile fixture manifest");
-  const reviewManifestArtifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "reviews/manifest.json"), "Spawner gate review manifest");
-  const trustRootArtifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "gate-review-trust-root.v1.json"), "Spawner gate review trust root");
-  const fixtureManifest = fixtureManifestArtifact.value, reviewManifest = reviewManifestArtifact.value, trustRoot = trustRootArtifact.value;
+  const fixtureManifest = fixtureManifestArtifact.value;
   const admissionManifest = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "admission/manifest.json"), "Spawner admission block manifest").value;
   const executedEvaluation = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "hostile-evaluation.v1.json"), "Spawner executed hostile evaluation").value;
   assert(fixtureManifest.schema === "agentos.spawner_hostile_fixture_manifest.v1" && fixtureManifest.version === 1, "Spawner hostile fixture manifest identity is invalid");
   assertDigest(fixtureManifest, "manifest_sha256", "Spawner hostile fixture manifest");
   assert(fixtureManifest.manifest_sha256 === spawnerPackage.hostile_fixture_manifest_sha256, "Spawner hostile fixture manifest binding differs");
-  assert(reviewManifest.schema === "agentos.spawner_gate_review_manifest.v1" && reviewManifest.version === 1, "Spawner gate review manifest identity is invalid");
-  assertDigest(reviewManifest, "manifest_sha256", "Spawner gate review manifest");
-  assert(reviewManifest.manifest_sha256 === spawnerPackage.gate_review_manifest_sha256, "Spawner gate review manifest binding differs");
-  assert(trustRoot.schema === "agentos.spawner_gate_review_trust_root.v2" && trustRoot.version === 2, "Spawner gate review trust root identity is invalid");
-  assert(trustRoot.status === "ACTIVE" && trustRoot.revoked_at_utc === null && Number.isSafeInteger(trustRoot.authority_epoch) && trustRoot.authority_epoch >= 1, "Spawner gate review trust root is stale or revoked");
-  assert(trustRoot.reviewer_role === "AGENT.INDEPENDENT_EVALUATOR" && !["AGENT.BUILDER", "AGENT.CONTROLLER", "AGENT.SPAWNER_COMPILER"].includes(trustRoot.reviewer_role), "Spawner gates are self-reviewed");
-  requireSha(trustRoot.admission_receipt_sha256, "Spawner gate reviewer admission receipt");
-  assert(JSON.stringify(trustRoot.scope) === JSON.stringify(["CANDIDATE_COMPONENT_ROOT", "GATE_BYTES", "HOSTILE_FIXTURE_EXECUTION"]), "Spawner gate reviewer scope is incomplete");
-  assert(Array.isArray(trustRoot.separated_from_roles) && ["AGENT.BUILDER", "AGENT.CONTROLLER", "AGENT.SPAWNER_COMPILER"].every((role) => trustRoot.separated_from_roles.includes(role)), "Spawner gate reviewer separation is incomplete");
-  assertDigest(trustRoot, "trust_root_sha256", "Spawner gate review trust root");
-  assert(trustRoot.trust_root_sha256 === spawnerPackage.gate_review_trust_root_sha256, "Spawner gate review trust root binding differs");
   const declaredIds = [...spawnerPackage.hostile_fixtures].sort(compareUtf8);
   const boundIds = resolvedGates.flatMap((gate) => gate.hostile_fixture_ids).sort(compareUtf8);
   assert(new Set(boundIds).size === boundIds.length && JSON.stringify(boundIds) === JSON.stringify(declaredIds), "Spawner hostile fixture inventory is incomplete, duplicated, or unbound");
@@ -189,7 +175,6 @@ function resolveCanonicalHostileFixturesAndReviews({authorityRoot, packageDirect
     assert(artifact.value.schema === "agentos.spawner_hostile_fixture.v1" && artifact.value.fixture_id === entry.fixture_id && artifact.value.gate_id === entry.gate_id && artifact.value.expected_outcome === entry.expected_outcome, `Spawner hostile fixture content differs: ${entry.fixture_id}`);
   }
   assert(JSON.stringify([...fixtureIds].sort(compareUtf8)) === JSON.stringify(declaredIds), "Spawner hostile fixture manifest IDs differ from package");
-  assert(Array.isArray(reviewManifest.entries) && reviewManifest.entries.length === resolvedGates.length, "Spawner gate review coverage is incomplete");
   assert(executedEvaluation.schema === "agentos.spawner_hostile_evaluation.v1" && executedEvaluation.status === "PASS" && executedEvaluation.evaluation_sha256 === canonicalDigest({...executedEvaluation, evaluation_sha256: null}), "Spawner executed hostile evaluation receipt is invalid");
   assert(admissionManifest.manifest_sha256 === canonicalDigest({...admissionManifest, manifest_sha256: null}), "Spawner admission manifest digest is invalid");
   const candidateRootSha256 = canonicalDigest({
@@ -201,31 +186,7 @@ function resolveCanonicalHostileFixturesAndReviews({authorityRoot, packageDirect
     gate_manifest_sha256: spawnerPackage.gate_manifest_sha256,
     model_policy_source_registry_sha256: spawnerPackage.model_policy_source_registry_sha256,
   });
-  const reviewed = new Set(), reviewNonces = new Set();
-  for (const entry of reviewManifest.entries) {
-    requireId(entry.gate_id, "Spawner gate review gate ID"); requireString(entry.path, "Spawner gate review path"); requireSha(entry.file_sha256, "Spawner gate review file digest"); requireSha(entry.review_sha256, "Spawner gate review digest");
-    assert(!reviewed.has(entry.gate_id), `Spawner gate review is duplicated: ${entry.gate_id}`); reviewed.add(entry.gate_id);
-    const gate = resolvedGates.find((candidate) => candidate.gate_id === entry.gate_id); assert(gate !== undefined, `Spawner gate review targets an unknown gate: ${entry.gate_id}`);
-    const artifact = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, entry.path), `Spawner gate review ${entry.gate_id}`), review = artifact.value;
-    assert(artifact.file_sha256 === entry.file_sha256 && review.review_sha256 === entry.review_sha256, `Spawner gate review artifact differs: ${entry.gate_id}`);
-    assert(review.schema === "agentos.spawner_gate_independent_review.v2" && review.version === 2 && review.reviewer_id === trustRoot.reviewer_id && review.reviewer_role === trustRoot.reviewer_role && review.trust_root_sha256 === trustRoot.trust_root_sha256, `Spawner gate review authority differs: ${entry.gate_id}`);
-    assert(review.authority_epoch === trustRoot.authority_epoch && review.reviewer_admission_receipt_sha256 === trustRoot.admission_receipt_sha256, `Spawner gate review admission/epoch differs: ${entry.gate_id}`);
-    assert(review.candidate_root_sha256 === candidateRootSha256 && JSON.stringify(review.scope) === JSON.stringify(trustRoot.scope), `Spawner gate review candidate root or scope differs: ${entry.gate_id}`);
-    assert(review.gate_id === gate.gate_id && review.gate_file_sha256 === gate.file_sha256 && review.gate_sha256 === gate.gate_sha256, `Spawner gate review target differs: ${entry.gate_id}`);
-    assert(review.fixture_manifest_sha256 === fixtureManifest.manifest_sha256 && JSON.stringify(review.hostile_fixture_ids) === JSON.stringify([...gate.hostile_fixture_ids].sort(compareUtf8)), `Spawner gate review fixture scope differs: ${entry.gate_id}`);
-    const executedResults = executedEvaluation.results.filter((result) => result.gate_id === gate.gate_id).map((result) => ({fixture_id: result.fixture_id, actual_outcome: result.actual_outcome, error_code: result.error_code, result: result.result})).sort((left, right) => compareUtf8(left.fixture_id, right.fixture_id));
-    const mutationResult = executedEvaluation.mutation_sensitivity.find((result) => result.gate_id === gate.gate_id);
-    assert(executedResults.length === gate.hostile_fixture_ids.length && executedResults.every((result) => result.actual_outcome === "REJECT_WITH_TYPED_DEFECT" && result.result === "PASS") && mutationResult?.result === "PASS", `Spawner gate review lacks executed negative outcomes: ${entry.gate_id}`);
-    assert(review.fixture_outcome_sha256 === canonicalDigest({gate_id: gate.gate_id, results: executedResults, mutation_sensitivity: mutationResult}), `Spawner gate review executed outcome binding differs: ${entry.gate_id}`);
-    assert(review.result === "PASS", `Spawner gate independent review did not pass: ${entry.gate_id}`);
-    assert(review.custody?.read_only_candidate === true && review.custody?.builder_separated === true && review.custody?.governance_write_capability === false, `Spawner gate reviewer custody is not independent: ${entry.gate_id}`);
-    requireUtc(review.reviewed_at_utc, "Spawner gate review time"); requireUtc(review.expires_at_utc, "Spawner gate review expiry");
-    assert(Date.parse(review.reviewed_at_utc) <= Date.now() && Date.now() < Date.parse(review.expires_at_utc), `Spawner gate review is future-dated or stale: ${entry.gate_id}`);
-    requireSha(review.nonce_sha256, "Spawner gate review nonce"); assert(!reviewNonces.has(review.nonce_sha256), `Spawner gate review nonce is replayed: ${entry.gate_id}`); reviewNonces.add(review.nonce_sha256);
-    assert(review.review_sha256 === canonicalDigest({...review, review_sha256: null, signature_base64: null}), `Spawner gate review body was mutated: ${entry.gate_id}`);
-    assert(crypto.verify(null, Buffer.from(review.review_sha256, "hex"), trustRoot.public_key_pem, Buffer.from(review.signature_base64, "base64")), `Spawner gate review signature is invalid: ${entry.gate_id}`);
-  }
-  return {fixture_manifest: fixtureManifest, review_manifest: reviewManifest, review_trust_root: trustRoot, review_candidate_root_sha256: candidateRootSha256};
+  return {fixture_manifest: fixtureManifest, review_candidate_root_sha256: candidateRootSha256, review_authority_status: "EXTERNAL_PROVISIONING_REQUIRED"};
 }
 
 export function auditSpawnerBootstrapPackageAtUntrustedRoot({authorityRoot, packagePath = CANONICAL_PACKAGE_PATH} = {}) {
@@ -279,7 +240,7 @@ export function auditSpawnerBootstrapPackageAtUntrustedRoot({authorityRoot, pack
     const actual = resolved.find((entry) => entry.gate_id === declared.gate_id);
     assert(actual.path === declared.path && actual.file_sha256 === declared.file_sha256 && actual.gate_sha256 === declared.gate_sha256, `Spawner package gate binding differs: ${declared.gate_id}`);
   }
-  const reviewedEvidence = resolveCanonicalHostileFixturesAndReviews({authorityRoot, packageDirectory, spawnerPackage, resolvedGates: resolved});
+  const reviewedEvidence = resolveCanonicalHostileFixtureInventory({authorityRoot, packageDirectory, spawnerPackage, resolvedGates: resolved});
   return {spawner_package: spawnerPackage, package_file_sha256: packageArtifact.file_sha256, manifest, manifest_file_sha256: manifestArtifact.file_sha256, decision_tree: decisionArtifact.value, decision_tree_file_sha256: decisionArtifact.file_sha256, resolved_gates: resolved, ...reviewedEvidence};
 }
 
@@ -294,26 +255,22 @@ export function resolveCanonicalSpawnerBootstrapPackage(options = undefined) {
   const canonicalRoot = sealedAuthorityRepositoryRoot(getSealedCanonicalAuthority());
   const resolution = auditSpawnerBootstrapPackageAtUntrustedRoot({authorityRoot: canonicalRoot, packagePath: CANONICAL_PACKAGE_PATH});
   const evaluation = JSON.parse(execFileSync(process.execPath, [path.join(canonicalRoot, "control/spawner-hostile-fixture-evaluator.mjs")], {cwd: canonicalRoot, encoding: "utf8", maxBuffer: 4 * 1024 * 1024}));
-  const acceptedEvaluation = readSealedAuthorityBinding(getSealedCanonicalAuthority(), "spawner_hostile_evaluation_receipt").value;
-  const independentReview = readSealedAuthorityBinding(getSealedCanonicalAuthority(), "spawner_independent_hostile_review_receipt").value;
   assert(evaluation.schema === "agentos.spawner_hostile_evaluation.v1" && evaluation.status === "PASS", "Canonical hostile fixture execution did not pass", "HOSTILE_FIXTURE_EXECUTION_FAILED");
-  assert(acceptedEvaluation.schema === evaluation.schema && acceptedEvaluation.evaluation_sha256 === canonicalDigest({...acceptedEvaluation, evaluation_sha256: null}), "Accepted hostile evaluation receipt digest is invalid", "HOSTILE_FIXTURE_EVALUATION_RECEIPT_INVALID");
-  assert(JSON.stringify(evaluation) === JSON.stringify(acceptedEvaluation), "Current hostile fixture execution differs from the immutable accepted evaluation receipt", "HOSTILE_FIXTURE_EVALUATION_RECEIPT_STALE");
-  const trustRoot = resolution.review_trust_root;
-  assert(independentReview.schema === "agentos.spawner_independent_hostile_review.v1" && independentReview.version === 1 && independentReview.result === "PASS", "Independent hostile review identity/result is invalid");
-  assert(independentReview.issuer_id === trustRoot.reviewer_id && independentReview.issuer_role === trustRoot.reviewer_role && independentReview.authority_epoch === trustRoot.authority_epoch && independentReview.trust_root_sha256 === trustRoot.trust_root_sha256 && independentReview.reviewer_admission_receipt_sha256 === trustRoot.admission_receipt_sha256, "Independent hostile review issuer authority differs");
-  assert(independentReview.candidate_package_file_sha256 === resolution.package_file_sha256 && independentReview.candidate_package_sha256 === resolution.spawner_package.package_sha256 && independentReview.candidate_root_sha256 === resolution.review_candidate_root_sha256 && independentReview.gate_review_manifest_sha256 === resolution.review_manifest.manifest_sha256 && independentReview.hostile_evaluation_sha256 === evaluation.evaluation_sha256, "Independent hostile review candidate/evidence binding differs");
-  assert(JSON.stringify(independentReview.scope) === JSON.stringify(trustRoot.scope) && independentReview.custody?.read_only_candidate === true && independentReview.custody?.builder_separated === true && independentReview.custody?.governance_write_capability === false, "Independent hostile review scope or custody is not separated");
-  requireUtc(independentReview.issued_at_utc, "Independent hostile review issue time"); requireUtc(independentReview.expires_at_utc, "Independent hostile review expiry");
-  assert(Date.parse(independentReview.issued_at_utc) <= Date.now() && Date.now() < Date.parse(independentReview.expires_at_utc), "Independent hostile review is future-dated or stale");
-  requireSha(independentReview.nonce_sha256, "Independent hostile review nonce"); requireSha(independentReview.receipt_sha256, "Independent hostile review receipt");
-  assert(independentReview.receipt_sha256 === canonicalDigest({...independentReview, receipt_sha256: null, signature_base64: null}), "Independent hostile review body was mutated");
-  assert(crypto.verify(null, Buffer.from(independentReview.receipt_sha256, "hex"), trustRoot.public_key_pem, Buffer.from(independentReview.signature_base64, "base64")), "Independent hostile review signature is invalid");
-  assert(evaluation.result_count === resolution.fixture_manifest.entries.length && evaluation.negative_assertion_count === evaluation.result_count, "Canonical hostile fixture execution coverage is incomplete", "HOSTILE_FIXTURE_EXECUTION_INCOMPLETE");
+  assert(evaluation.result_count === resolution.fixture_manifest.entries.length && evaluation.negative_assertion_count >= evaluation.result_count, "Canonical hostile fixture execution coverage is incomplete", "HOSTILE_FIXTURE_EXECUTION_INCOMPLETE");
   assert(evaluation.results.every((result) => result.actual_outcome === "REJECT_WITH_TYPED_DEFECT" && result.negative_assertion_count > 0), "Canonical hostile fixture did not produce its bound negative outcome", "HOSTILE_FIXTURE_EXECUTION_FAILED");
-  resolution.hostile_evaluation = evaluation;
+  const externalReview = verifyAndConsumeCurrentExternalSpawnerReview({candidate: resolution, hostileEvaluation: evaluation});
+  resolution.hostile_evaluation = evaluation; resolution.external_review = externalReview;
   canonicalPackageResolutions.add(resolution);
   return Object.freeze(resolution);
+}
+
+export function prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation(options = undefined) {
+  assert(options === undefined || (isRecord(options) && Object.keys(options).length === 0), "Caller-supplied package roots or paths are forbidden", "SEALED_AUTHORITY_REQUIRED");
+  const canonicalRoot = sealedAuthorityRepositoryRoot(getSealedCanonicalAuthority());
+  const resolution = auditSpawnerBootstrapPackageAtUntrustedRoot({authorityRoot: canonicalRoot, packagePath: CANONICAL_PACKAGE_PATH});
+  const evaluation = JSON.parse(execFileSync(process.execPath, [path.join(canonicalRoot, "control/spawner-hostile-fixture-evaluator.mjs")], {cwd: canonicalRoot, encoding: "utf8", maxBuffer: 4 * 1024 * 1024}));
+  assert(evaluation.status === "PASS" && evaluation.result_count === resolution.fixture_manifest.entries.length && new Set(evaluation.results.map((entry) => entry.fixture_id)).size === evaluation.result_count, "Prepared candidate hostile execution is incomplete", "HOSTILE_FIXTURE_EXECUTION_FAILED");
+  return Object.freeze({...resolution, hostile_evaluation: evaluation, disposition: "PREPARED_FOR_EXTERNAL_REVIEW_NOT_ADMITTED"});
 }
 
 export function validateCanonicalSpawnerBootstrapPackage(spawnerPackage, resolution = null) {
@@ -424,6 +381,9 @@ export function compileExactSpawnerAdmission(options = {}) {
     request_id: requestId,
     spawner_package_sha256: spawnerPackage.package_sha256,
     spawner_package_file_sha256: resolvedPackage.package_file_sha256,
+    hostile_fixture_ids: [...spawnerPackage.hostile_fixtures].sort(compareUtf8),
+    hostile_evaluation_sha256: resolvedPackage.hostile_evaluation.evaluation_sha256,
+    spawner_stop_conditions: [...spawnerPackage.stop_conditions],
     block_manifest_sha256: resolvedBlocks.manifest.manifest_sha256,
     block_manifest_file_sha256: resolvedBlocks.manifest_file_sha256,
     required_layers: layers,

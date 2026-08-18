@@ -2,7 +2,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import {auditIndependentClearanceFixture, assertVerifiedIndependentClearance, verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
+import {auditIndependentClearanceFixture, assertVerifiedIndependentClearance, installIndependentClearanceAuthorityStore, verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
+import {prepareProtectedEvaluatorProvisioning} from "../control/protected-evaluator-provisioning.mjs";
+import {getSealedCanonicalAuthority} from "../control/sealed-canonical-authority.mjs";
 import {prepareCanonicalIndependentClearanceFixture} from "./helpers/independent-clearance-fixture.mjs";
 
 function fixture() { return prepareCanonicalIndependentClearanceFixture(); }
@@ -16,6 +18,14 @@ assert.throws(() => assertVerifiedIndependentClearance(audited.clearance, audite
 
 const synthetic = fixture();
 assert.throws(() => verifyIndependentSpawnerClearance({authorityRoot: synthetic.authorityRoot, receiptSha256: synthetic.receiptSha256}), /Caller-supplied clearance authority/iu, "caller-selected synthetic candidate was accepted by production verification");
+
+const provisioned = fixture();
+const sealedAuthority = getSealedCanonicalAuthority();
+const evaluatorProvisioning = prepareProtectedEvaluatorProvisioning({sealedAuthority, clearanceStoreRoot: provisioned.authorityRoot, candidateRepositoryRoot: provisioned.repositoryRoot});
+installIndependentClearanceAuthorityStore({sealedAuthority, evaluatorProvisioning});
+const verified = verifyIndependentSpawnerClearance({receiptSha256: provisioned.receiptSha256});
+assert.doesNotThrow(() => assertVerifiedIndependentClearance(verified, verified.candidate));
+assert.throws(() => verifyIndependentSpawnerClearance({receiptSha256: provisioned.receiptSha256}), /already consumed/iu, "production clearance replay survived durable consumption");
 
 for (const [label, mutate, pattern] of [
   ["unknown issuer", (receipt) => { receipt.issuer_id = "EVALUATOR.UNKNOWN"; }, /unknown|role-mismatched/iu],
@@ -48,5 +58,5 @@ const concurrent = fixture();
 fs.writeFileSync(path.join(concurrent.authorityRoot, "consumption-ledger.v1.json.lock"), "other-fenced-writer\n");
 assert.throws(() => auditIndependentClearanceFixture({...concurrent, consume: true}), /locked by another consumer/iu);
 
-for (const value of [valid, synthetic, forgedRoot, revoked, staleCandidate, replay, concurrent]) fs.rmSync(value.root, {recursive: true, force: true});
+for (const value of [valid, synthetic, provisioned, forgedRoot, revoked, staleCandidate, replay, concurrent]) fs.rmSync(value.root, {recursive: true, force: true});
 console.log("PASS canonical independent Spawner clearance: anchored registry, actual Git/files, immutable signature, stale/synthetic/self/revoked/substitution denial, durable replay CAS, and audit-token separation");

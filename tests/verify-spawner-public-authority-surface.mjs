@@ -5,7 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import * as agentos from "../control/agentos.mjs";
-import {compileExactSpawnerAdmission, compileInertSeed, resolveCanonicalSpawnerBootstrapPackage, transitionInertSeed} from "../control/spawner-bootstrap-governance.mjs";
+import {compileExactSpawnerAdmission, compileInertSeed, prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation, resolveCanonicalSpawnerBootstrapPackage, transitionInertSeed} from "../control/spawner-bootstrap-governance.mjs";
 import {resolveCanonicalGlobalGovernanceProjection} from "../control/global-governance-bootstrap.mjs";
 import {verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
@@ -21,8 +21,9 @@ for (const forbidden of [
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-public-hostile-surface-"));
 try {
   const governance = materializeTestGlobalGovernanceStore({authorityRoot: root});
-  const packageResolution = resolveCanonicalSpawnerBootstrapPackage();
+  const packageResolution = prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation();
   assert.equal(packageResolution.hostile_evaluation.status, "PASS");
+  assert.throws(() => resolveCanonicalSpawnerBootstrapPackage(), /separately provisioned reviewer|external review/iu);
   assert.throws(() => resolveCanonicalSpawnerBootstrapPackage({authorityRoot: root}), /Caller-supplied package roots/iu);
   assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.PUBLIC.ROOT.SUBSTITUTION", authorityRoot: root, globalGovernanceAuthorityStore: governance.authorityStore}), /Caller-supplied package roots|authority objects/iu);
   assert.throws(() => resolveCanonicalGlobalGovernanceProjection({authorityRoot: root, bootstrapSha256: governance.bootstrap.bootstrap_sha256, roleClass: "SPAWNER"}), /Caller-supplied global governance roots/iu);

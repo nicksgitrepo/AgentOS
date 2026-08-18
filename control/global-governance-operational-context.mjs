@@ -2,13 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
 import {MODEL_POLICY_ROLE_CLASSES} from "./eco-model-policy.mjs";
-import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
+import {resolveCanonicalGlobalGovernanceProjection, resolveGlobalGovernanceStoreForMemoryAdapter} from "./global-governance-bootstrap.mjs";
 import {GLOBAL_GOVERNANCE_MEMORY_WRITERS, readGlobalGovernanceMemory, replayGlobalGovernanceMemory} from "./global-governance-memory.mjs";
 
 export const OPERATIONAL_GLOBAL_GOVERNANCE_CONTEXT_SCHEMA = "agentos.operational_global_governance_context.v1";
 const SHA = /^[0-9a-f]{64}$/u;
 const ID = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
-const issuedContexts = new WeakSet();
+const issuedContexts = new WeakMap();
 function assert(value, message, code = "OPERATIONAL_GLOBAL_GOVERNANCE_INVALID") { if (!value) { const error = new Error(message); error.code = code; throw error; } }
 function exact(value, keys, label) { assert(value && typeof value === "object" && !Array.isArray(value), `${label} must be an object`); assert(JSON.stringify(Object.keys(value).sort(compareUtf8)) === JSON.stringify([...keys].sort(compareUtf8)), `${label} fields mismatch`); }
 function body(value) { return {...structuredClone(value), context_sha256: null}; }
@@ -27,7 +27,7 @@ export function compileOperationalGlobalGovernanceContext({authorityStore, roleC
     context_sha256: null,
   };
   context.context_sha256 = canonicalDigest(body(context));
-  issuedContexts.add(context);
+  issuedContexts.set(context, authorityStore);
   return Object.freeze(context);
 }
 
@@ -60,7 +60,12 @@ export function assertGlobalGovernanceWriterContext(context, {bootstrapSha256, e
   return context;
 }
 
-export function appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, relativePath = "global-governance/model-policy-events.jsonl", expectedHeadSha256, event, writerContext, bootstrapSha256}) {
+export function appendAuthorizedGlobalGovernanceMemoryEvent(options = {}) {
+  assert(options && typeof options === "object" && Object.keys(options).every((key) => ["expectedHeadSha256", "event", "writerContext"].includes(key)), "Global governance append accepts only a bound writer context and event", "GLOBAL_MEMORY_ROOT_CALLER_FORBIDDEN");
+  const {expectedHeadSha256, event, writerContext} = options;
+  const authorityStore = issuedContexts.get(writerContext);
+  assert(authorityStore, "Global governance writer context is not bound to an authority store", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
+  const {authority_root: authorityRoot, bootstrap_sha256: bootstrapSha256, ledger_relative_path: relativePath} = resolveGlobalGovernanceStoreForMemoryAdapter(authorityStore);
   assertGlobalGovernanceWriterContext(writerContext, {bootstrapSha256, expectedPriorHeadSha256: event?.prior_event_sha256});
   assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(event?.writer_role), "Global governance memory event writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(typeof authorityRoot === "string" && path.isAbsolute(authorityRoot), "Global governance memory root must be absolute");

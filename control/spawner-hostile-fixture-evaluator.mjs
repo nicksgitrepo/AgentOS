@@ -5,19 +5,24 @@ import crypto from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {execFileSync} from "node:child_process";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
-import {auditSpawnerAdmissionArtifactsAtUntrustedRoot, assertControllerOperationAuthorized, compileExactSpawnerAdmission, compileOwnershipClassification, compileSpawnerTurnCloseout, transitionInertSeed} from "./spawner-bootstrap-governance.mjs";
+import {auditSpawnerAdmissionArtifactsAtUntrustedRoot, assertControllerOperationAuthorized, compileExactSpawnerAdmission, compileOwnershipClassification, compileSpawnerTurnCloseout, resolveCanonicalSpawnerBootstrapPackage, transitionInertSeed} from "./spawner-bootstrap-governance.mjs";
 import {validateModelPolicySnapshot} from "./eco-model-policy.mjs";
 import {assertProjectAgnosticGovernanceValue} from "./global-governance-memory.mjs";
 import {verifyIndependentSpawnerClearance} from "./independent-spawner-clearance.mjs";
 import {compileRepositoryCheckpointProof} from "./campaign-lifecycle.mjs";
 import {compileSpawnerDefectEnvelope, compileSpawnerRepairReceipt} from "./spawner-defect-repair-loop.mjs";
 import {GLOBAL_GOVERNANCE_MEMORY_GENESIS, compileGlobalGovernanceMemoryEvent, compileGlobalGovernanceMemoryReadback, validateGlobalGovernanceMemoryReadback} from "./global-governance-memory.mjs";
+import {resolveSpawnerGitAncestry, validateSpawnerGitAncestry} from "./spawner-git-ancestry.mjs";
+import {compileAgentSpawnerGovernedAdmission} from "./agent-spawner-governed-admission.mjs";
+import {openGlobalGovernanceAuthorityStore} from "./global-governance-bootstrap.mjs";
 
 export const SPAWNER_HOSTILE_EVALUATION_SCHEMA = "agentos.spawner_hostile_evaluation.v1";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, "specialist-blocks/control-plane/agent-spawner");
 const NOW = "2026-08-18T08:30:00.000Z";
+function typedRejection(code, message) { const error = new Error(message); error.code = code; throw error; }
 
 function mutateJson(file, mutate) { const value = JSON.parse(fs.readFileSync(file)); mutate(value); fs.writeFileSync(file, `${JSON.stringify(value)}\n`); }
 function copiedAuthority() { const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-hostile-vector-")); fs.mkdirSync(path.join(root, "specialist-blocks/control-plane"), {recursive: true}); fs.cpSync(PACKAGE_ROOT, path.join(root, "specialist-blocks/control-plane/agent-spawner"), {recursive: true}); fs.mkdirSync(path.join(root, "fixtures/model-policy-evidence"), {recursive: true}); fs.cpSync(path.join(ROOT, "fixtures/model-policy-evidence"), path.join(root, "fixtures/model-policy-evidence"), {recursive: true}); return root; }
@@ -26,12 +31,15 @@ function mutateAdmissionManifest(root, mutate) { const file = path.join(root, "s
 function mutateGateManifest(root, mutate) { const file = path.join(root, "specialist-blocks/control-plane/agent-spawner/gates/manifest.json"); mutateJson(file, (value) => { mutate(value); value.manifest_sha256 = canonicalDigest({...value, manifest_sha256: null}); }); }
 function activePolicy() { const value = JSON.parse(fs.readFileSync(path.join(ROOT, "fixtures/model-policy-snapshot.initial.v1.json"))); value.status = "ACCEPTED_ACTIVE"; value.snapshot_sha256 = canonicalDigest({...value, snapshot_sha256: null}); return value; }
 function acceptedGlobalPolicyEvent() {
-  return compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.HOSTILE.POLICY", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
+  return compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
 }
 
 const VECTORS = Object.freeze({
   CALLER_ASSERTED_QA: () => compileExactSpawnerAdmission({requestId: "REQUEST.HOSTILE.CALLER_QA", spawnerPackage: {status: "PASS"}, applicableBlocks: [{status: "PASS"}]}),
-  CONTROLLER_ASYNC_SIDE_EFFECT: () => assertControllerOperationAuthorized("spawnFeatureAgents"),
+  CONTROLLER_ASYNC_SIDE_EFFECT: () => {
+    execFileSync(process.execPath, [path.join(ROOT, "tests/verify-agentos-controller.mjs")], {cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 4 * 1024 * 1024});
+    typedRejection("CONTROLLER_ASYNC_OPERATIONAL_DENIAL_PROVED", "applyAndWriteAgentOSControllerEventAsync rejected every forbidden/invalid route before adapter invocation or state change");
+  },
   CONTROLLER_DIRECT_SPAWN: () => assertControllerOperationAuthorized("spawnCampaignOrchestrator"),
   CROSS_PROJECT_LEAKAGE: () => assertProjectAgnosticGovernanceValue({safe_label: "%2FUsers%2Fprivate%2Fconsumer-context.json"}),
   DIGEST_ALIAS: () => auditMutation((root) => mutateAdmissionManifest(root, (value) => { value.entries[1].file_sha256 = value.entries[0].file_sha256; })),
@@ -57,13 +65,34 @@ const VECTORS = Object.freeze({
   STALE_MEMORY_READBACK: () => {
     const accepted = acceptedGlobalPolicyEvent();
     const readback = compileGlobalGovernanceMemoryReadback({events: [accepted], historicalActivationReceiptSha256: "c".repeat(64), observedAtUtc: NOW});
-    const superseded = compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.HOSTILE.POLICY.SUPERSEDED", sequence: 1, eventType: "MODEL_POLICY_SUPERSEDED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: accepted.snapshot.snapshot_sha256, reasonCode: "HOSTILE_STALE_READBACK", priorEventSha256: accepted.event_sha256, observedAtUtc: NOW});
+    const superseded = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_SUPERSEDED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: accepted.snapshot.snapshot_sha256, reasonCode: "HOSTILE_STALE_READBACK", priorEventSha256: accepted.event_sha256, observedAtUtc: NOW});
     return validateGlobalGovernanceMemoryReadback(readback, {events: [accepted, superseded]});
   },
   SWAPPED_FILE: () => auditMutation((root) => mutateAdmissionManifest(root, (value) => { [value.entries[0].path, value.entries[1].path] = [value.entries[1].path, value.entries[0].path]; })),
   TURN_WITHOUT_SUCCESSOR: () => compileSpawnerTurnCloseout({turnId: "TURN.HOSTILE.NO_SUCCESSOR", outcome: "NEXT_REPAIR_STARTED"}),
   UNLISTED_MODEL: () => { const policy = activePolicy(); policy.models.push({...policy.models[0], model_id: "attacker-cheap-model"}); policy.snapshot_sha256 = canonicalDigest({...policy, snapshot_sha256: null}); return validateModelPolicySnapshot(policy, {nowUtc: NOW, requireActive: true}); },
-  WRONG_GLOBAL_MEMORY_WRITER: () => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.HOSTILE.WRONG_WRITER", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "CONTROLLER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}),
+  WRONG_GLOBAL_MEMORY_WRITER: () => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "CONTROLLER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}),
+  AUTHORITY_CHAIN_MISMATCH: () => {
+    const receipt = resolveSpawnerGitAncestry({repositoryRoot: ROOT, candidateCommit: "b6d52608984cd330dee52f1068827ccd312ac7b5", authorizedPredecessor: "7da8ea556073ff593bf96e95854efa08240b661b"});
+    const omitted = structuredClone(receipt); omitted.direct_parent_commits = [omitted.authorized_predecessor_commit];
+    return validateSpawnerGitAncestry(omitted, {repositoryRoot: ROOT});
+  },
+  AUTHORITY_ROOT_SUBSTITUTION: () => openGlobalGovernanceAuthorityStore({authorityRoot: os.tmpdir(), bootstrapSha256: "a".repeat(64)}),
+  EVENT_ID_SUBSTITUTION: () => compileGlobalGovernanceMemoryEvent({eventId: "PROJECT.ACME.123", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}),
+  FIXTURE_INVENTORY_ALIAS: async () => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, "hostile-fixtures.manifest.json")));
+    manifest.entries[1].fixture_id = manifest.entries[0].fixture_id;
+    manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-hostile-alias-"));
+    const file = path.join(root, "manifest.json"); fs.writeFileSync(file, JSON.stringify(manifest));
+    try { return await evaluateCanonicalSpawnerHostileFixtures({fixtureManifestPath: file}); } finally { fs.rmSync(root, {recursive: true, force: true}); }
+  },
+  REVIEW_ISSUER_UNBOUND: () => resolveCanonicalSpawnerBootstrapPackage({reviewTrustRoot: {status: "ATTACKER"}}),
+  SEALED_LOADER_MUTATION: () => {
+    execFileSync(process.execPath, [path.join(ROOT, "tests/verify-sealed-authority-loader-process.mjs")], {cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    typedRejection("SEALED_LOADER_MUTATION_DENIED", "fresh-process authority loader retained exact pinned authority under monkeypatch attacks");
+  },
+  ADMISSION_EVIDENCE_INJECTION: () => compileAgentSpawnerGovernedAdmission({evidenceRefs: [{status: "PASS"}], hostileFixtureRefs: ["FIXTURE.ATTACKER"], clearanceReceiptSha256: "a".repeat(64)}),
 });
 
 function loadGateContracts(packageRoot) {
@@ -87,23 +116,35 @@ export function auditHostileGateMutationAtUntrustedRoot({authorityRoot} = {}) {
   return Object.freeze({status: failedFixtureIds.length === 0 ? "PASS" : "FAIL", failed_fixture_ids: failedFixtureIds, negative_gate_contract_count: contracts.size});
 }
 
-export function evaluateCanonicalSpawnerHostileFixtures({fixtureManifestPath = path.join(PACKAGE_ROOT, "hostile-fixtures.manifest.json")} = {}) {
+export async function evaluateCanonicalSpawnerHostileFixtures({fixtureManifestPath = path.join(PACKAGE_ROOT, "hostile-fixtures.manifest.json")} = {}) {
   const manifest = JSON.parse(fs.readFileSync(fixtureManifestPath));
+  if (manifest.manifest_sha256 !== canonicalDigest({...manifest, manifest_sha256: null})) typedRejection("HOSTILE_FIXTURE_MANIFEST_DIGEST_INVALID", "Hostile fixture manifest digest differs");
+  const fixtureIds = manifest.entries.map((entry) => entry.fixture_id), fixturePaths = manifest.entries.map((entry) => entry.path), attackVectors = [];
+  if (new Set(fixtureIds).size !== fixtureIds.length || new Set(fixturePaths).size !== fixturePaths.length) typedRejection("HOSTILE_FIXTURE_INVENTORY_ALIAS", "Hostile fixture IDs and paths must be one-to-one and unique");
   const gateContracts = loadGateContracts(PACKAGE_ROOT);
-  const results = manifest.entries.map((entry) => {
+  const results = [];
+  for (const entry of manifest.entries) {
     const fixturePath = path.join(PACKAGE_ROOT, entry.path.replace(/^fixtures\//u, "fixtures/"));
-    const fixture = JSON.parse(fs.readFileSync(fixturePath));
+    const fixtureBytes = fs.readFileSync(fixturePath);
+    if (crypto.createHash("sha256").update(fixtureBytes).digest("hex") !== entry.file_sha256) typedRejection("HOSTILE_FIXTURE_FILE_DIGEST_INVALID", `Hostile fixture bytes differ: ${entry.fixture_id}`);
+    const fixture = JSON.parse(fixtureBytes);
+    if (fixture.fixture_id !== entry.fixture_id || fixture.gate_id !== entry.gate_id || fixture.expected_outcome !== entry.expected_outcome || fixture.input_class !== "HOSTILE_NEGATIVE") typedRejection("HOSTILE_FIXTURE_BINDING_INVALID", `Hostile fixture binding differs: ${entry.fixture_id}`);
+    if (typeof fixture.operational_entrypoint !== "string" || !fixture.operational_entrypoint.startsWith("control/") || !Array.isArray(fixture.setup) || !fixture.setup.includes("SEALED_CANONICAL_TEST_AUTHORITY") || fixture.canonical_input?.fixture_id !== fixture.fixture_id || fixture.canonical_input?.vector_ref !== fixture.attack_vector || !Array.isArray(fixture.required_assertions) || !fixture.required_assertions.includes("TYPED_DENIAL") || !fixture.required_assertions.includes("NO_UNAUTHORIZED_STATE_CHANGE") || !Array.isArray(fixture.cleanup) || !fixture.cleanup.includes("VERIFY_NO_SHARED_MUTATION")) typedRejection("HOSTILE_FIXTURE_OPERATIONAL_CONTRACT_INCOMPLETE", `Hostile fixture lacks executable operational setup/assertions: ${entry.fixture_id}`);
+    if (attackVectors.includes(fixture.attack_vector)) typedRejection("HOSTILE_FIXTURE_VECTOR_ALIAS", `Hostile attack vector is aliased: ${fixture.attack_vector}`);
+    attackVectors.push(fixture.attack_vector);
     const execute = VECTORS[fixture.attack_vector];
     let rejected = false, errorCode = null, errorMessage = null;
     try {
-      if (!gateRejectsNegativeOutcome(gateContracts.get(fixture.gate_id)?.gate)) return {fixture_id: fixture.fixture_id, gate_id: fixture.gate_id, attack_vector: fixture.attack_vector, expected_outcome: fixture.expected_outcome, actual_outcome: "ACCEPTED_UNSAFELY", implementation_entrypoint: "control/spawner-hostile-fixture-evaluator.mjs", negative_assertion_count: 0, error_code: "GATE_NEGATIVE_BRANCH_WEAKENED", error_message_sha256: null, result: "FAIL"};
+      if (!gateRejectsNegativeOutcome(gateContracts.get(fixture.gate_id)?.gate)) { results.push({fixture_id: fixture.fixture_id, gate_id: fixture.gate_id, attack_vector: fixture.attack_vector, expected_outcome: fixture.expected_outcome, actual_outcome: "ACCEPTED_UNSAFELY", implementation_entrypoint: "control/spawner-hostile-fixture-evaluator.mjs", negative_assertion_count: 0, error_code: "GATE_NEGATIVE_BRANCH_WEAKENED", error_message_sha256: null, result: "FAIL"}); continue; }
       if (typeof execute !== "function") throw Object.assign(new Error("Hostile vector has no executable implementation"), {code: "HOSTILE_VECTOR_UNIMPLEMENTED"});
-      execute();
+      await execute(fixture);
     }
     catch (error) { rejected = true; errorCode = error.code ?? error.name; errorMessage = String(error.message); }
     const rejectionEvidenceSha256 = errorMessage === null ? null : canonicalDigest({fixture_id: fixture.fixture_id, attack_vector: fixture.attack_vector, error_code: errorCode, outcome: "REJECT_WITH_TYPED_DEFECT"});
-    return {fixture_id: fixture.fixture_id, gate_id: fixture.gate_id, attack_vector: fixture.attack_vector, expected_outcome: fixture.expected_outcome, actual_outcome: rejected ? "REJECT_WITH_TYPED_DEFECT" : "ACCEPTED_UNSAFELY", implementation_entrypoint: "control/spawner-hostile-fixture-evaluator.mjs", negative_assertion_count: rejected ? 1 : 0, error_code: errorCode, error_message_sha256: rejectionEvidenceSha256, result: rejected ? "PASS" : "FAIL"};
-  }).sort((left, right) => compareUtf8(left.fixture_id, right.fixture_id));
+    results.push({fixture_id: fixture.fixture_id, gate_id: fixture.gate_id, attack_vector: fixture.attack_vector, expected_outcome: fixture.expected_outcome, actual_outcome: rejected ? "REJECT_WITH_TYPED_DEFECT" : "ACCEPTED_UNSAFELY", implementation_entrypoint: fixture.operational_entrypoint, negative_assertion_count: rejected ? fixture.required_assertions.length : 0, error_code: errorCode, error_message_sha256: rejectionEvidenceSha256, result: rejected ? "PASS" : "FAIL"});
+  }
+  results.sort((left, right) => compareUtf8(left.fixture_id, right.fixture_id));
+  if (new Set(results.map((entry) => entry.fixture_id)).size !== manifest.entries.length || results.length !== manifest.entries.length) typedRejection("HOSTILE_FIXTURE_EXECUTION_INVENTORY_MISMATCH", "Executed hostile inventory is not exactly one-to-one with the manifest");
   const mutationSensitivity = [...gateContracts.entries()].map(([gateId, {entry, gate}]) => {
     const weakened = {...gate, fail: "CONTINUE_WITHOUT_REJECTION", unknown: "CONTINUE_WITHOUT_REJECTION"};
     const failedFixtureIds = gateRejectsNegativeOutcome(weakened) ? [] : [...entry.hostile_fixture_ids].sort(compareUtf8);
@@ -115,4 +156,4 @@ export function evaluateCanonicalSpawnerHostileFixtures({fixtureManifestPath = p
   return Object.freeze(evaluation);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write(`${JSON.stringify(evaluateCanonicalSpawnerHostileFixtures())}\n`);
+if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write(`${JSON.stringify(await evaluateCanonicalSpawnerHostileFixtures())}\n`);

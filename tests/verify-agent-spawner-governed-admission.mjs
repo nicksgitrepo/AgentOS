@@ -48,6 +48,10 @@ assert.throws(() => compileAgentSpawnerGovernedAdmission({
   evidenceRefs: [{evidence_id: "EVIDENCE.SPAWNER.ADAPTER.CUSTODY", reference: "opaque:spawner/isolated-custody", sha256: SHA("f")}],
   hostileFixtureRefs: ["FIXTURE.SPAWNER.ADAPTER.PRODUCT_BYPASS"],
 }), /authority root|canonical|clearance/iu, "caller-authored independent clearance must never promote");
+assert.throws(() => compileAgentSpawnerGovernedAdmission({
+  adapterId: "ADAPTER.SPAWNER.GOVERNED_ADMISSION", sourceContinuation: realContinuation, lifecycleBefore: published,
+  clearanceReceiptSha256: SHA("9"), evidenceRefs: [{evidence_id: "EVIDENCE.FORGED", reference: "ref:forged", sha256: SHA("f")}], hostileFixtureRefs: ["FIXTURE.FORGED"],
+}), /rejects caller evidence/iu, "caller-authored evidence or fixture references entered spawnable readback");
 
 const fabricated = {
   schema: "agentos.agent_spawner_governed_admission.v1", version: 1, adapter_id: "ADAPTER.SPAWNER.GOVERNED_ADMISSION",

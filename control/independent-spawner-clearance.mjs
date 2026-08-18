@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
-import {assertSealedCanonicalAuthority, getSealedCanonicalAuthority, readSealedAuthorityBinding, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
+import {assertSealedCanonicalAuthority, getSealedCanonicalAuthority, readSealedAuthorityBinding} from "./sealed-canonical-authority.mjs";
+import {consumeProtectedEvaluatorProvisioning} from "./protected-evaluator-provisioning.mjs";
 
 export const INDEPENDENT_CLEARANCE_SCHEMA = "agentos.independent_spawner_clearance.v2";
 export const INDEPENDENT_CLEARANCE_REGISTRY_SCHEMA = "agentos.independent_evaluator_registry.v2";
@@ -136,16 +137,15 @@ function verifyBundle({authorityRoot, repositoryRoot, receiptSha256, consume, is
 }
 
 /* Internal bootstrap adapter. The resulting capability is opaque and is never exported from the public AgentOS facade. */
-export function installIndependentClearanceAuthorityStore({sealedAuthority, authorityRoot} = {}) {
+export function installIndependentClearanceAuthorityStore({sealedAuthority, evaluatorProvisioning} = {}) {
   assertSealedCanonicalAuthority(sealedAuthority);
-  assert(typeof authorityRoot === "string" && path.isAbsolute(authorityRoot), "Independent-clearance store root must be absolute");
-  const realRoot = fs.realpathSync.native(authorityRoot);
-  assert(fs.lstatSync(realRoot).isDirectory() && !fs.lstatSync(authorityRoot).isSymbolicLink(), "Independent-clearance store root must be a real non-symlink directory");
+  const provision = consumeProtectedEvaluatorProvisioning(evaluatorProvisioning);
+  const realRoot = provision.clearanceStoreRoot;
   const anchor = loadIndependentClearanceTrustAnchor();
   const registry = readJson(within(realRoot, "evaluator-registry.v2.json", "Evaluator registry"), "Evaluator registry");
   validateIndependentEvaluatorRegistryAuthoritatively(registry, {anchor, nowUtc: new Date().toISOString()});
   const store = Object.freeze(Object.create(null));
-  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: sealedAuthorityRepositoryRoot(sealedAuthority)}));
+  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot}));
   installedClearanceStore = store;
   return store;
 }

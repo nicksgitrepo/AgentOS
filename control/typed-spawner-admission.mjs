@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {validateControllerGovernanceReadiness} from "./controller-governance-readiness.mjs";
 import {validateSealedBootstrapHandoff} from "./sealed-bootstrap-handoff.mjs";
-import {SPAWNER_BLOCK_LAYERS, compileExactSpawnerAdmission, resolveCanonicalSpawnerBootstrapPackage} from "./spawner-bootstrap-governance.mjs";
+import {SPAWNER_BLOCK_LAYERS, compileExactSpawnerAdmission} from "./spawner-bootstrap-governance.mjs";
 import {validateModelPolicyProjection} from "./eco-model-policy.mjs";
 import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
 
@@ -116,7 +116,6 @@ export function validateSpawnerGoverningBlockSet(blockSet) {
 export function compileSpawnerGoverningBlockSet({blockSetId, globalGovernanceAuthorityStore, requiredLayers = undefined, blockEvidence = undefined, hostileFixtureIds = undefined, independentEvaluationSha256 = undefined} = {}) {
   assert(requiredLayers === undefined && blockEvidence === undefined && hostileFixtureIds === undefined && independentEvaluationSha256 === undefined, "Caller-authored governing block evidence is forbidden");
   const exactAdmission = compileExactSpawnerAdmission({requestId: `${blockSetId}.EXACT_ADMISSION`, globalGovernanceAuthorityStore});
-  const resolution = resolveCanonicalSpawnerBootstrapPackage();
   const canonicalBlockEvidence = exactAdmission.block_evidence.map((block) => {
     const artifact = JSON.parse(fs.readFileSync(path.join(path.resolve(path.dirname(new URL(import.meta.url).pathname), ".."), block.artifact_path), "utf8"));
     const evidence = {
@@ -135,10 +134,10 @@ export function compileSpawnerGoverningBlockSet({blockSetId, globalGovernanceAut
     block_evidence: canonicalBlockEvidence.sort((left, right) => compareUtf8(left.block_id, right.block_id)),
     validated_at_utc: exactAdmission.observed_at_utc,
     status: "COMPLETE_QA_PASS",
-    hostile_fixture_ids: [...resolution.spawner_package.hostile_fixtures].sort(compareUtf8),
-    independent_evaluation_sha256: resolution.hostile_evaluation.evaluation_sha256,
+    hostile_fixture_ids: [...exactAdmission.hostile_fixture_ids],
+    independent_evaluation_sha256: exactAdmission.hostile_evaluation_sha256,
     authority: "CANONICAL_SIGNED_GATE_REVIEW_AUTHORITY",
-    stop_conditions: resolution.spawner_package.stop_conditions.join(" "),
+    stop_conditions: exactAdmission.spawner_stop_conditions.join(" "),
     block_set_sha256: null,
   };
   blockSet.block_set_sha256 = digestWithout(blockSet, "block_set_sha256");

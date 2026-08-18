@@ -82,11 +82,11 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "7aa95d2810dffec4bf106581def2242d9a38a51543525e0df9b8c820e37a9b97"
+      "sha256": "ab0bd93679e6e80a56e5fe2d2aed50c80a23097ab36409c09ad91b698d2f6cae"
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
-      "sha256": "819212f88b2194080787a2c8d93e368d2592ea55c4e9f4e37ef211f9b2860aea"
+      "sha256": "0d900b666c1cbf345bd19a01cac1d0672f407813e2ef66e345369817da869563"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
@@ -291,6 +291,10 @@
     "bootstrap_answer_contract": {
       "path": "schemas/bootstrap-answer.v1.json",
       "sha256": "7fb9e9438a118e6ad3138bd0d22baf4a48860c2022cffcc350bcdec4446933e9"
+    },
+    "bootstrap_authority_loader_controller": {
+      "path": "control/bootstrap-authority-loader.mjs",
+      "sha256": "4db067dea7ad957ef47f73866099589e4876375715e3d3ce20b9bb9b57864b4e"
     },
     "bootstrap_compile_receipt_contract": {
       "path": "schemas/bootstrap-compile-receipt.v1.json",
@@ -614,7 +618,7 @@
     },
     "canonical_spawner_gate_manifest": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
-      "sha256": "98bdcb3b2250964b2bacb90bee1a357897372b2e4d01277dea382afc43724841"
+      "sha256": "3bfa5a94fdf2c4068635b180b2e3fba31416d5b8a070867ec667f047a2587a31"
     },
     "canonical_spawner_git_integration_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/git-integration.gate",
@@ -642,7 +646,7 @@
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "6292c59921f125db1012758b7b03f24f843775fe2822788f2276a3a4c092b6bb"
+      "sha256": "ecfb342c9c3f4b0de793fd00b21027e9b113652a5f576a0af772bbe90367d180"
     },
     "canonical_spawner_turn_closeout_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
@@ -1104,7 +1108,7 @@
     },
     "global_governance_bootstrap_controller": {
       "path": "control/global-governance-bootstrap.mjs",
-      "sha256": "5fea35f5df04b8a8d9fdeaadc0c7289a28f3e21104f923be1e158f0e71a66d85"
+      "sha256": "e4ad607e04f5270c43de92a1851505167696c2de42fa552dec3b7c9a522d3cf7"
     },
     "global_governance_memory_contract": {
       "path": "schemas/global-governance-memory.v1.json",
@@ -1112,11 +1116,11 @@
     },
     "global_governance_memory_controller": {
       "path": "control/global-governance-memory.mjs",
-      "sha256": "39de982d3acae88dacfedebd3b8299099fe0f43f048f60ce117631afa475fe35"
+      "sha256": "3e2b0335c305ba3f9298ba49319d45918fb6fbb2544997c4e9e9f703ce2a8385"
     },
     "global_governance_memory_verifier": {
       "path": "tests/verify-global-governance-memory.mjs",
-      "sha256": "d40d8482b83572f9b333e6daa521d2136c01448639507152e2610805ee594e33"
+      "sha256": "f9408cfb95cc7916d3d44248b8003732b9274c5e378da988a7d0be85cacb9c2f"
     },
     "global_governance_operational_context_contract": {
       "path": "schemas/global-governance-operational-context.v1.json",
@@ -1124,15 +1128,23 @@
     },
     "global_governance_operational_context_controller": {
       "path": "control/global-governance-operational-context.mjs",
-      "sha256": "83d6e2b5ee065abb16e2ce3eb284541e7ac67996b0e6de007a291111797c531b"
+      "sha256": "3ab60c2b7c75528dc007531d7aa0f96ac9d5b22388351646a5a60cbd723de109"
     },
     "global_governance_operational_context_verifier": {
       "path": "tests/verify-global-governance-operational-integration.mjs",
       "sha256": "8c538ad98edac008985922f4311095374467cf889e8558be4b7978120a19695b"
     },
+    "global_governance_process_attachment_contract": {
+      "path": "schemas/global-governance-process-attachment.v1.json",
+      "sha256": "d54eb971e64ad2fd775882e91fc40989bb3387daaad5f7e19cd26489e403e743"
+    },
+    "global_governance_process_attachment_verifier": {
+      "path": "tests/verify-global-governance-process-attachment.mjs",
+      "sha256": "e11e6f658384b758e65aa21492299fc3d91368ee21b2975b742219c54e7a7a41"
+    },
     "global_governance_test_fixture_helper": {
       "path": "tests/helpers/global-governance-fixture.mjs",
-      "sha256": "35c829248846a31629157d9341c43af403a7c80d5f8b6f2347b7403fbd5502f9",
+      "sha256": "bf4f8dc8c49a76814d508133f81f30cfd84393ba2a001ed60a4bbee3402f6ad8",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "global_policy_article": {
@@ -1297,11 +1309,11 @@
     },
     "independent_spawner_clearance_controller": {
       "path": "control/independent-spawner-clearance.mjs",
-      "sha256": "725714b28fc651b39ddf0e3332b31e202215396cf0c4af36b9dca9857cf22738"
+      "sha256": "48219cefcc74cd09ad66efecebc5ce9d24cdd11d0f2f62fe408fa62e1f4e7a33"
     },
     "independent_spawner_clearance_verifier": {
       "path": "tests/verify-independent-spawner-clearance.mjs",
-      "sha256": "18217ebe4224e75349ce294ad8d71ea8093eb74c1fa4dfa6621f6133e9254325"
+      "sha256": "537cda3a49abf607a94dc7c60fcdc76d3763caa4b45cff548273ac4b70d5041d"
     },
     "inert_seed_lifecycle_contract": {
       "path": "schemas/inert-seed-lifecycle.v1.json",
@@ -1311,6 +1323,10 @@
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
       "sha256": "6ca84e685cf8771265651ed90286707810e898f4b97c35b5430478fd62ce4135",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "installed_global_governance_provisioning_controller": {
+      "path": "control/installed-global-governance-provisioning.mjs",
+      "sha256": "0456f7d8ecf1e43ff3d67bdea6eb3e14d9b221a3c2534c836fe330e3a934c788"
     },
     "intent_regulator_runtime_contract": {
       "path": "schemas/intent-regulator-runtime.v1.json",
@@ -1374,7 +1390,7 @@
     },
     "local_agent_runtime_controller": {
       "path": "control/local-agent-runtime.mjs",
-      "sha256": "9fa9a8fe244434790517bcaa0b99650bf33574b34c9b5ce91f4ccbce8ee42796"
+      "sha256": "75138caba6d61f5fa94a11e0e24db808a405d45c4e185f015bd0c4e525e022cf"
     },
     "local_agent_session_contract": {
       "path": "schemas/local-agent-session.v1.json",
@@ -1382,7 +1398,7 @@
     },
     "local_agent_session_controller": {
       "path": "control/local-agent-session.mjs",
-      "sha256": "c6f1a6e5e89d5aedce030eebfc9cebbf05e8869d52deb4e57e3faaabb442023b"
+      "sha256": "a10f98a29cbc8a070902c3920d8e8a7cd55541c48fbf68b545b8bca5f17dfd19"
     },
     "local_agent_session_verifier": {
       "path": "tests/verify-local-agent-session.mjs",
@@ -1390,7 +1406,7 @@
     },
     "local_agent_worker_controller": {
       "path": "control/local-agent-worker.mjs",
-      "sha256": "961f080c919f4fc6f91f575105b217d2f2d76c1edc33e6ceab8cfa4a03f955fe"
+      "sha256": "879698b3e635994f09295f08ece7b34bbecfabbff66ce578a9047e19ac2ebba3"
     },
     "local_campaign_admission_controller": {
       "path": "control/local-campaign-admission.mjs",
@@ -1595,7 +1611,7 @@
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "ecd7ab63bf0f3689eddbce8041825727b569449f8fec9301a7396b08c9ef0818"
+      "sha256": "cc8cda629cfe8940359a796da6e6c130128e94bb02ccdfdf0ea161872d9f2d41"
     },
     "persistent_intent_runtime_audit_report": {
       "path": "docs/feature-audits/PERSISTENT_INTENT_RUNTIME/auditreport.md",
@@ -1936,6 +1952,14 @@
     "proof_carrying_work_verifier": {
       "path": "tests/verify-proof-carrying-work.mjs",
       "sha256": "e625834435d08ec1808b5a772bbe06d039ae1d8803dc41dbb5b87ae7e77f2e89"
+    },
+    "protected_evaluator_provisioning_controller": {
+      "path": "control/protected-evaluator-provisioning.mjs",
+      "sha256": "d27e8879145a784c9af9c160c28535a6a1ee61b3fca1ca60153e4a334822c630"
+    },
+    "protected_spawner_review_provisioning_controller": {
+      "path": "control/protected-spawner-review-provisioning.mjs",
+      "sha256": "070642374cae0bbcb9b26a0e156ed6465725c5fe128e179e93590198c0e37208"
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
@@ -2377,6 +2401,10 @@
       "path": "schemas/scheduler-admission-receipt.v1.json",
       "sha256": "7c2529c84ef4b70a0c1c9eb8963f7d33a0c29bcbdae64b4a2d7575a8f716fcd2"
     },
+    "sealed_authority_loader_process_verifier": {
+      "path": "tests/verify-sealed-authority-loader-process.mjs",
+      "sha256": "bb330e13f8acc6eb3c0123e350a29abf5fbf038f7aa884d7b4a77bf300000cb6"
+    },
     "sealed_bootstrap_handoff_contract": {
       "path": "schemas/sealed-bootstrap-handoff.v1.json",
       "sha256": "9c4752c16998a073304da7eb61ab236e88be3983bc1fa7bc99d00e8c42e354fa"
@@ -2391,7 +2419,7 @@
     },
     "sealed_canonical_authority_controller": {
       "path": "control/sealed-canonical-authority.mjs",
-      "sha256": "76b7cecf08a5d7b0c684a9e17dcbc122f911766c2cfeb3b7f98b589782cc270e"
+      "sha256": "b29c07015f0a10c8eb08a30015a7b5fe9135c96dd2ba3b8fc3974c08bcb54c77"
     },
     "source_hygiene_repair_audit_2026_08_10": {
       "path": "docs/source-hygiene-audit-2026-08-10.md",
@@ -2431,167 +2459,139 @@
     },
     "spawner_bootstrap_governance_controller": {
       "path": "control/spawner-bootstrap-governance.mjs",
-      "sha256": "696b05a37192d97f63354ea77ee88069943ea2fc44240b4d1118fa22ca53d01d"
+      "sha256": "37c517c2dcde7e4145503ed9a570295ebd41be0bb795667a8e21e28658ba4d49"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",
-      "sha256": "d01c902a16a9c70a51c3f6f81d9eacc66e1dd646c686f3259b46a6dbb4d294e5"
+      "sha256": "7516cbc2b4bb96994e002e5352251e92bc12035f82e89a7ac8309b238abae9e1"
+    },
+    "spawner_bootstrap_preparation_contract": {
+      "path": "schemas/spawner-bootstrap-preparation.v1.json",
+      "sha256": "ceb1d0295d81f9e966b711c7dfa9e45ad6b99909ff3501dcb36e21d31c811b18"
+    },
+    "spawner_bootstrap_preparation_controller": {
+      "path": "control/spawner-bootstrap-preparation.mjs",
+      "sha256": "405b2b7222456987be3556cf8d9ca40460a7278bc7d192a197f2a3a350961b09"
+    },
+    "spawner_bootstrap_preparation_verifier": {
+      "path": "tests/verify-spawner-bootstrap-preparation.mjs",
+      "sha256": "e21d9def4fb4a119878fb88a7fef7369e185726b6886d73db70a62d752dfa2e4"
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "f66e1f306c1d8b062ee1e2e65340a1df6a1509585c5ea26b63d64a805c94c8ad"
+      "sha256": "11580c98cba69d976dbb9e2685a6ee3c7ea2b7de54f371ce0c514751cc729d85"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_caller_asserted_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/caller-asserted-qa.json",
-      "sha256": "8b9b6eb79ad3f76e89b01687e0cf284c272c367dd2f9f9d9a36d2959511c78cc"
+      "sha256": "bde42a6e0605cb343899983943d6006f594960af51d3c7d9dfee9c260fd677ef"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_controller_async_side_effect_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/controller-async-side-effect.json",
-      "sha256": "02b5ce2bb163f30f81d3a8e8b83d762b2032f18de418b8b54416a5c37a87c967"
+      "sha256": "c041d4dbb93d33e25706b2a207a5b2d135a2cf447f7571ea201766c2776d8d35"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_controller_direct_spawn_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/controller-direct-spawn.json",
-      "sha256": "cc5a5dfccacd8f51e136de50e5cfddd555918c2956705ba3724e096fcdfd496d"
+      "sha256": "4d3f4c65c1329fdefd11c7cab73f14a4c3fbcda5511ea2c92d7ef2ec91f5ddb0"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_cross_project_leakage_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/cross-project-leakage.json",
-      "sha256": "13dc9523aac5a2bdcd763840f42b25e6e628ed67e6a74ab6582a2f73100cb11d"
+      "sha256": "d3d61530451bcf4102b5ad95cf92df127027c8884b04832d7fb54d22fc2e0640"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_digest_alias_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/digest-alias.json",
-      "sha256": "59204209ccedfa877d61f607a24004bc7bd54312b3c59d02f512974ae2506468"
+      "sha256": "4af9ef1dec2a33a0fc764f5ecdb9e138c89e98426d95f04748b44f80036e75fb"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_dirty_remote_readback_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/dirty-remote-readback.json",
-      "sha256": "28c6b52c408e51d77d275f260c63fe65e01b81fe879656c5f975ae0ca3929fbd"
+      "sha256": "e3dcc8d4f198fb7c348d091da0ae236e5831621e50132ac2940f2ffc286646da"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_duplicate_gate_id_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/duplicate-gate-id.json",
-      "sha256": "049c1eaf5a6ddffa130008fa22d2e29e50d4496788f63492fb092c90a57bdfa0"
+      "sha256": "67c326f7cc137168443dbd634c86c73b75249a2817ce283025713e29df373ae7"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_fabricated_economics_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/fabricated-economics.json",
-      "sha256": "e483e45aa3a3794f9ab083801b116c8bcb1d07b1d0e8cb2f5ca064bf823a5337"
+      "sha256": "eb3568095273a2297238cda243c807606801c9458a45bb03da63b72645330afc"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_false_protected_blocker_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/false-protected-blocker.json",
-      "sha256": "56e14888e4e57084c2cd38a3ca8c0d2f120e8f65514f39f8c542c15c0e324eb1"
+      "sha256": "f8403be5daa15c15eca724e7166b3ada1a9de580d0f204d0b37b9f6873c73d04"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_forged_manifest_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/forged-manifest.json",
-      "sha256": "6adf5fb034ab0b9c7b295a6f6cbfd545a358a8b72850708beed5708670c68daa"
+      "sha256": "7f1c59beae665631bdb958a0e9a769fdbe108c6bd88516ae02ac5c975ba0d68e"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_incomplete_layer_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/incomplete-layer.json",
-      "sha256": "fa48a7d2b1032b9164f54a8d77f417d7262d078209f49e8b9f573ac6c4adddc7"
+      "sha256": "7f6b49674f24f21a59be01c4639c32ba2c4d0ca8b14faffeb54a1f97244107c4"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_inconclusive_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/inconclusive-qa.json",
-      "sha256": "49d16fae7a5d3b91099b72d127d52d820ea1fdc008148b409daa89378b197285"
+      "sha256": "0fbec39c692c068c700e83537ae9ea814590dc52ac89be011c406a2faeaafec6"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_invalid_digest_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/invalid-digest.json",
-      "sha256": "cb74626b6a28f61bbf7322f99e5464095b8ca7ba62c1b27aa07a7acf0856010e"
+      "sha256": "7ed21526a4990000c5e38703e065c65f7badfda925876eb9adf4afb9955fdbb2"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_missing_file_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/missing-file.json",
-      "sha256": "488eae91b0cd41c8dd6e91ac770d914218cfde0f8d78eb95362b8957b88ebcb3"
+      "sha256": "a25cbc9f3b750a01306145fc1644775bfa5ad47fd235b873b6d2c8bcd8c0a081"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_missing_model_evidence_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/missing-model-evidence.json",
-      "sha256": "6a991e4c099dd0c467975be376abb1273c8f76c0b021111a04d36499331b534e"
+      "sha256": "406d00ca44d46aee5e038471cc0150dbc2a80fa3c947986e6f3dc98ea70a2a8f"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_model_unavailable_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/model-unavailable.json",
-      "sha256": "15d239ebb36dbfe4a1b508641621e351f6d3adce3b52d5e078e78e3ae285da70"
+      "sha256": "79e188baa76829d105d745b87b58b3fd9ca2776d58034f770a8831164d43bd5f"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_out_of_lane_mutation_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/out-of-lane-mutation.json",
-      "sha256": "4cb19861fe26f02a28fd6c206056aee83608ef72bb7349abbe0b9f3dbe56275e"
+      "sha256": "6d1636c20eb2d1d5791f9806e1129b6ff4ceae9ff49225f97cdc8da024a4a8ee"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_placeholder_content_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/placeholder-content.json",
-      "sha256": "357714be8b8be6ec4da97990634bd83ce7dc20b6a7b47f0eda01953145ea3984"
+      "sha256": "435f5a8b4b3e4a15c00d257628b1b48045d71f17329b65c48d53278e1716851e"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_seed_execution_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/seed-execution.json",
-      "sha256": "1c32814eca4a3bee45f5a2f13e97369e5db76ea6e36ac8aa0e2ab74121f77b7e"
+      "sha256": "29f125aca032cae813718e276c15f6c5d58e16d5d9e9a568e6560f75a76772c2"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_self_issued_clearance_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/self-issued-clearance.json",
-      "sha256": "332ff342a9f8f752ddb7bb2daec03baac508a80a44557986074106116f0f72d4"
+      "sha256": "fd0157eb8fe8438cd596f0162588b4e63296d237433ccee90233c10b0ad0b433"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_stale_block_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/stale-block.json",
-      "sha256": "3a5143e862f8c10a80e2d515181931793868d5215d6ba2911c818910abc03155"
+      "sha256": "d0792526596d0aba13c49f22fdaba134f56664388d251793559e6a520774f10a"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_stale_memory_readback_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/stale-memory-readback.json",
-      "sha256": "fb308f57e9d48258250fc8dd2ef7369d02e38a641a7cbe126d3e23d49d33179c"
+      "sha256": "0b7b3da4143a2b0801b4c5c1fc3c9edc1d4049b47346acbf7651f71ec104f658"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_swapped_file_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/swapped-file.json",
-      "sha256": "3814b00b860ea1ee183459925be8fbf321871a50864937185cef68ecc96417ca"
+      "sha256": "e980a65005fa590fde03114a3e8c83d97e574494dc82dbbe133572f6d9f6c38a"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_turn_without_successor_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/turn-without-successor.json",
-      "sha256": "c1d4865fea389f2e793757d30bd2dc8d157888c07aebacf36e110b99ad71f466"
+      "sha256": "a7e7c9e2588c2cd8b240d18642f9b21363cd0f4406d4f8ca7c74d05f61d3e116"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_unlisted_model_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/unlisted-model.json",
-      "sha256": "f23fb1185f7010c9fb55e418d89479fba38176c40dad47e3c54e13be813c8605"
+      "sha256": "b32dc53900fbc962f4c2a38bd9f2fa822e91f89511fcd8c26f9f75f9599d0e0f"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_wrong_global_memory_writer_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/wrong-global-memory-writer.json",
-      "sha256": "178992f2b112a6afdb10be1ec0c297b192507b2746cbc40dbc4748b6dbe7a1cd"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_gate_review_trust_root_v1_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/gate-review-trust-root.v1.json",
-      "sha256": "a9c35d0aee54b8a08d603eaf8d4816816be2c7919c777b68949339c7af02c4cf"
+      "sha256": "25e0fddc7cb6b8e02de6b85992edf1f18222d7502f2aa69c29048c4e8ceeb8ec"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_hostile_fixtures_manifest_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/hostile-fixtures.manifest.json",
-      "sha256": "9ce59d93be75213fc39ae7dd49d9bb2e512996f05ce7fea8452f2ae4fd0353b4"
+      "sha256": "e29e31ff2071691631765c06e0b0f7477d6ff158d8876113aa1e7d7c230af58f"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_independent_clearance_trust_anchor_v1_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/independent-clearance-trust-anchor.v1.json",
       "sha256": "52ee70d4e98dc50a0b78701e1b640b1d4853d14c86d782ad918e1cf4a0bbebc0"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_manifest_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/manifest.json",
-      "sha256": "02fe25f955f595f8d83d35806ea0fe3bc9cd2e0c52eada3ab2c7131cef5ca934"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_authority_separation_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-authority_separation.json",
-      "sha256": "be20ea96a2261dc65b4062601c2be3d4aa81cacac8d341d2b0e0c056d8b3478d"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_eco_model_policy_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-eco_model_policy.json",
-      "sha256": "e700c560b72ff2fc6503e2e33d96690aa4fa27a9dde227a08632bfbb68cddcba"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_exact_block_qa_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-exact_block_qa.json",
-      "sha256": "f1caa27969e45449cdc259b8a370a748e951582f25f7352c9c2a3749622a82c5"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_git_integration_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-git_integration.json",
-      "sha256": "210b30a4daee12a2cb8f10e75ef7bc28e62cbb4059fded6e0504b0da2e37d038"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_global_memory_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-global_memory.json",
-      "sha256": "8f06c8bf8ea9a1cd23dbe3186e9480c68bf539bfe9a4599a86ac284e7dc256e3"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_ownership_classification_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-ownership_classification.json",
-      "sha256": "90a02a92f784f871101f190f48c12a465eed9beaef85fa94e72a21e6e5578759"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_seed_inertness_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-seed_inertness.json",
-      "sha256": "9111a8060a29ea4c8d56d4487c18a1937b6f5b8d82e191e4e97a70f6b11c2cee"
-    },
-    "spawner_bound_specialist_blocks_control_plane_agent_spawner_reviews_spawner_turn_continuation_json": {
-      "path": "specialist-blocks/control-plane/agent-spawner/reviews/spawner-turn_continuation.json",
-      "sha256": "f6a25af8f50a4bcfd045f01c6482abc2bb03f963ef5181221beb8519b13b15cd"
     },
     "spawner_defect_envelope_contract": {
       "path": "schemas/spawner-defect-envelope.v2.json",
@@ -2601,13 +2601,49 @@
       "path": "control/spawner-defect-repair-loop.mjs",
       "sha256": "a784f7978cdb4a5d46649e635cb0c419969b6d15808b120d596c4121d8db283d"
     },
-    "spawner_hostile_fixture_evaluator_controller": {
-      "path": "control/spawner-hostile-fixture-evaluator.mjs",
-      "sha256": "a252e462918762ea3a98f88d33e48b9da93438b330e8445918230a3903411759"
+    "spawner_external_review_contract": {
+      "path": "schemas/spawner-external-review.v1.json",
+      "sha256": "cc1017a518b4da2b66406b54c25f17f2b744b82e68b535a1ddd14e0e8ae3aaad"
+    },
+    "spawner_external_review_controller": {
+      "path": "control/spawner-external-review.mjs",
+      "sha256": "8dc88e920b4f091c5892db235cfde6147adf030282ade3ecc23ec31d3f36081a"
+    },
+    "spawner_external_review_verifier": {
+      "path": "tests/verify-spawner-external-review.mjs",
+      "sha256": "9158e36293e0fcc825b8b3605cf051175ce70040d04ddd2e8e19d4e54f76ddb8"
+    },
+    "spawner_gate_independent_review_contract": {
+      "path": "schemas/spawner-gate-independent-review.v2.json",
+      "sha256": "3501725a52096f69c4f8a0de2c61b8bbf7bf315dbe614432c7f418f43cbfe6f3"
+    },
+    "spawner_gate_review_trust_root_contract": {
+      "path": "schemas/spawner-gate-review-trust-root.v2.json",
+      "sha256": "be15c026745ee4611801166af3a93f47650b4e794e15346fd87a900882d383f3"
+    },
+    "spawner_git_ancestry_controller": {
+      "path": "control/spawner-git-ancestry.mjs",
+      "sha256": "e7e2a8bbca7d23d294861fc61caf7cdc1d955f19b4ef18bbf8e0cb5c579f054f"
+    },
+    "spawner_git_ancestry_verifier": {
+      "path": "tests/verify-spawner-git-ancestry.mjs",
+      "sha256": "ea403fbd92a71c9ea4fac47f3b61f331c0a37a0130f5d2cc71703c2e8f25feb2"
     },
     "spawner_hostile_evaluation_receipt": {
       "path": "specialist-blocks/control-plane/agent-spawner/hostile-evaluation.v1.json",
-      "sha256": "72677688d9d79de218fce4cef196592024e5a76c27fd188202136dc995128c83"
+      "sha256": "2e8b65c374dbba8c079303718dc64dc212cb99217e17020e6f4bff67b72b4a1d"
+    },
+    "spawner_hostile_fixture_evaluator_controller": {
+      "path": "control/spawner-hostile-fixture-evaluator.mjs",
+      "sha256": "183ae920da544abc3d91563d0c8f840f880da501b6e861dbd35872c1e0d21003"
+    },
+    "spawner_independent_hostile_review_contract": {
+      "path": "schemas/spawner-independent-hostile-review.v1.json",
+      "sha256": "0ff4d4757c77c59bc47e77d2cf45be2230b55a593cab5dec35b97d80c232a62a"
+    },
+    "spawner_independent_repair_evaluation_handoff_contract": {
+      "path": "schemas/spawner-independent-repair-evaluation-handoff.v1.json",
+      "sha256": "98cdf34105e631ea1aa7c2126ec32b958d88cdecf1085a5b6eab358a45ead437"
     },
     "spawner_ownership_classification_contract": {
       "path": "schemas/spawner-ownership-classification.v1.json",
@@ -2615,11 +2651,7 @@
     },
     "spawner_public_authority_surface_verifier": {
       "path": "tests/verify-spawner-public-authority-surface.mjs",
-      "sha256": "8be438087bdfa5a837b0ef8190556add4ca104cf1e4a3531174aec97ef71a2da"
-    },
-    "spawner_independent_repair_evaluation_handoff_contract": {
-      "path": "schemas/spawner-independent-repair-evaluation-handoff.v1.json",
-      "sha256": "98cdf34105e631ea1aa7c2126ec32b958d88cdecf1085a5b6eab358a45ead437"
+      "sha256": "0b73abe6565652202a11443f4e2a825a4cb8df92176132bc5f3c3a244a361cc5"
     },
     "spawner_redistribution_handoff_contract": {
       "path": "schemas/spawner-redistribution-handoff.v1.json",
@@ -2727,11 +2759,11 @@
     },
     "typed_spawner_admission_controller": {
       "path": "control/typed-spawner-admission.mjs",
-      "sha256": "b0f5d24c929e66849dd8de301927e951be30868ecd9420fc4d1ac7a11fe86d01"
+      "sha256": "cfe1da6a6ca3925d26d201d8953360f6dae2394118ee5f2318fb262f22a771b4"
     },
     "typed_spawner_admission_verifier": {
       "path": "tests/verify-typed-spawner-admission.mjs",
-      "sha256": "ebe7f340470caf935a676b39b44112158784ae80024ba3ba2ffed5ca4b52dace"
+      "sha256": "d937e54f4763c0d0e2a180012daa6fc48d9ea8338573bd07a9ceaff20f4302b7"
     },
     "typed_successor_readback_article": {
       "path": "docs/typed-successor-readback.md",
@@ -2784,159 +2816,30 @@
     "workflow_registry": {
       "path": "schemas/capability-and-worktree-registry.v1.json",
       "sha256": "a4414e8f803adf4a336c9a4af778027dae1a6476a27a6ab0233ef6e07f0b6588"
-    },
-    "spawner_independent_hostile_review_receipt": {
-      "path": "specialist-blocks/control-plane/agent-spawner/independent-hostile-review.v1.json",
-      "sha256": "40e0a24f16d3775f95eed91f5de76ece96eeba5b183407a8587cefb1d6428c5d"
-    },
-    "spawner_gate_review_trust_root_contract": {
-      "path": "schemas/spawner-gate-review-trust-root.v2.json",
-      "sha256": "be15c026745ee4611801166af3a93f47650b4e794e15346fd87a900882d383f3"
-    },
-    "spawner_gate_independent_review_contract": {
-      "path": "schemas/spawner-gate-independent-review.v2.json",
-      "sha256": "3501725a52096f69c4f8a0de2c61b8bbf7bf315dbe614432c7f418f43cbfe6f3"
-    },
-    "spawner_independent_hostile_review_contract": {
-      "path": "schemas/spawner-independent-hostile-review.v1.json",
-      "sha256": "0ff4d4757c77c59bc47e77d2cf45be2230b55a593cab5dec35b97d80c232a62a"
     }
   },
   "compatibility_only": {
-    "host_runtime_adapter_controller_historical_compatibility": {
-      "path": "control/host-runtime-adapter.mjs",
-      "sha256": "3d145e843ae9c67cac75123791b4f5787e9ca1b39c328d15380b9cec1fef56a5",
-      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_HOST_ADAPTER",
-      "current_portable_kernel_input": false,
-      "supersession_reason": "The host task-kind and task-host assertions are provider-specific execution context; portable authority consumes typed host-attachment contracts instead.",
-      "replacement_bindings": [
-        {
-          "historical_reference": "provider_host_task_readback",
-          "replacement": "schemas/native-host-attachment.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
-        },
-        {
-          "historical_reference": "provider_runtime_readback",
-          "replacement": "schemas/visible-task-parity-readback.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
-        }
-      ]
-    },
-    "roadmap03_controller_intent_handoff_historical_compatibility": {
-      "path": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
-      "sha256": "2c3f77d3ce8a104855e093e447710acde4c00c12a4a6666640e0eadbacbe5d0a",
-      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
-      "current_portable_kernel_input": false,
-      "supersession_reason": "This append-only feature handoff preserves historical branch and provider context; current portability proof consumes the typed state and normative contracts instead.",
-      "replacement_bindings": [
-        {
-          "historical_reference": "roadmap03_typed_handoff_projection",
-          "replacement": "docs/audit-repair-integration-state.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
-        },
-        {
-          "historical_reference": "roadmap03_source_contract",
-          "replacement": "schemas/audit-repair-integration-state.v1.json",
-          "status": "RETAINED_NORMATIVE_STATE_CONTRACT"
-        }
-      ]
-    },
-    "roadmap03_controller_intent_audit_report_historical_compatibility": {
-      "path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
-      "sha256": "aeeaea94525d0174be0b2b43f8bdcd5bbe9157efcbc52fa7896f454b6dc99184",
-      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
-      "current_portable_kernel_input": false,
-      "supersession_reason": "This append-only feature audit preserves historical provider and branch context; it does not define current portable-kernel authority or current comprehensive-proof input.",
-      "replacement_bindings": [
-        {
-          "historical_reference": "roadmap03_audit_observation",
-          "replacement": "docs/audit-repair-integration-state.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
-        },
-        {
-          "historical_reference": "roadmap03_feature_handoff",
-          "replacement": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
-          "status": "RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"
-        }
-      ]
-    },
-    "platform_gate_response_handoff_historical_compatibility": {
-      "path": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
-      "sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347",
-      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
-      "current_portable_kernel_input": false,
-      "supersession_reason": "This append-only platform handoff preserves provider-specific historical context and custody evidence; it is not current portable-kernel authority or current comprehensive-proof input.",
-      "replacement_bindings": [
-        {
-          "historical_reference": "gate_catalog_and_response_boundary",
-          "replacement": "schemas/gate-catalog.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"
-        },
-        {
-          "historical_reference": "typed_platform_handoff_contract",
-          "replacement": "schemas/platform-foundation-handoff.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"
-        }
-      ]
-    },
-    "historical_platform_foundation_independent_audit": {
-      "path": "docs/platform-foundation-independent-audit.md",
-      "sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3",
-      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
-      "current_portable_kernel_input": false,
-      "supersession_reason": "Provider-specific historical paths and context are preserved for traceability and do not define the current portable-kernel contract.",
-      "replacement_bindings": [
-        {
-          "historical_reference": "provider_specific_host_readback",
-          "replacement": "schemas/visible-task-parity-readback.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
-        },
-        {
-          "historical_reference": "provider_specific_native_host_bridge",
-          "replacement": "schemas/native-host-attachment.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
-        }
-      ]
-    },
-    "visible_task_parity_readback_contract": {
-      "path": "schemas/visible-task-parity-readback.v1.json",
-      "sha256": "60d0429786555cbcdaf58c341d26827cd77edc3c612bc2e227668f9bd79158aa"
-    },
-    "local_start_controller": {
-      "path": "control/start-local-self-development.mjs",
-      "sha256": "a5118061b090c4af5527d98c4e5dd1f96688e8ab37493f05423ad6971fd0a34b"
-    },
-    "codex_native_host_adapter_controller": {
-      "path": "control/codex-native-host-adapter.mjs",
-      "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"
-    },
-    "bootstrap_interview_alias": {
-      "path": "control/bootstrap-interview.mjs",
-      "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"
-    },
-    "guided_bootstrap_alias": {
-      "path": "control/guided-bootstrap.mjs",
-      "sha256": "f8f8c8955907bfc207dcf0135d860f60b035930cf818410708224ea6a9052e88"
-    },
-    "dynamic_bootstrap_alias": {
-      "path": "control/dynamic-bootstrap.mjs",
-      "sha256": "1fe67f564c2484cf9ca41019660d464278320626471f0e48c02251a3749c3626"
-    },
     "assistant_exchange_controller": {
       "path": "control/assistant-exchange.mjs",
       "sha256": "72fe8ccc2727f78d9bb416d9cbd3e80dd8fbc9aaf4ffea85acea09259e7f2905"
     },
-    "provider_assistant_controller": {
-      "path": "control/gpt-assist.mjs",
-      "sha256": "fd61b14ef92bb49199da5e7920da0bb1c968d4465af5ee5463d0356df354d310"
+    "audit_repair_integration_state_private_payload": {
+      "path": "docs/audit-repair-integration-state.v1.json",
+      "sha256": "d1c617f9e011d04f21ada67ff3a3a56348cbe457ad421b078752e224e66f0625",
+      "classification": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "The append-only state payload retains custody history and opaque source bindings; the public projection contains only project-agnostic fields.",
+      "replacement_bindings": [
+        {
+          "historical_reference": "audit_repair_integration_state_payload",
+          "replacement": "docs/audit-repair-integration-state-public.v1.json",
+          "status": "CURRENT_PUBLIC_PROJECTION"
+        }
+      ]
     },
-    "provider_assistant_contract": {
-      "path": "schemas/gpt-assist.v1.json",
-      "sha256": "ed7405f1900559f609d7f7a3214cd9e7c56156d0be17f102e25498febf5d16af"
-    },
-    "provider_assistant_verifier": {
-      "path": "tests/verify-gpt-assist.mjs",
-      "sha256": "5cda43a6465494efc6ddcb7b7e7c347a8a334d65dda502ee022f0dc7f33dd421"
+    "bootstrap_interview_alias": {
+      "path": "control/bootstrap-interview.mjs",
+      "sha256": "c9fc33b1e11cc71415d1dd3fe1eaaa5b8ef7f29d1061122cb2d72e1594dcfc5e"
     },
     "central_integration_audit_2026_08_09_historical_compatibility": {
       "path": "docs/central-integration-audit-2026-08-09.md",
@@ -2957,79 +2860,81 @@
         }
       ]
     },
-    "proof_acceptance_intake_manifest_historical_compatibility": {
-      "path": "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/central-intake-preservation-manifest-2026-08-09.md",
-      "sha256": "88557d4413b912e54c96f75f42c1c940edfed2039c99fc6dbe56e1b168d29741",
+    "codex_native_host_adapter_controller": {
+      "path": "control/codex-native-host-adapter.mjs",
+      "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"
+    },
+    "dynamic_bootstrap_alias": {
+      "path": "control/dynamic-bootstrap.mjs",
+      "sha256": "1fe67f564c2484cf9ca41019660d464278320626471f0e48c02251a3749c3626"
+    },
+    "guided_bootstrap_alias": {
+      "path": "control/guided-bootstrap.mjs",
+      "sha256": "f8f8c8955907bfc207dcf0135d860f60b035930cf818410708224ea6a9052e88"
+    },
+    "historical_platform_foundation_independent_audit": {
+      "path": "docs/platform-foundation-independent-audit.md",
+      "sha256": "f063723cbe57de2d48990dd46e6f816029557ec469c56444f9325b66ffd383d3",
       "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
       "current_portable_kernel_input": false,
-      "supersession_reason": "The held proof-acceptance intake manifest preserves historical custody context and is replaced by current typed proof receipts before admission.",
+      "supersession_reason": "Provider-specific historical paths and context are preserved for traceability and do not define the current portable-kernel contract.",
       "replacement_bindings": [
         {
-          "historical_reference": "proof_acceptance_intake_context",
-          "replacement": "docs/privacy-public-projection.v1.json",
-          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+          "historical_reference": "provider_specific_host_readback",
+          "replacement": "schemas/visible-task-parity-readback.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
         },
         {
-          "historical_reference": "proof_acceptance_state",
-          "replacement": "docs/audit-repair-integration-state.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+          "historical_reference": "provider_specific_native_host_bridge",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
         }
       ]
     },
-    "structured_memory_audit_report_historical_compatibility": {
-      "path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
-      "sha256": "798d8c89ff43c5b2a46f4d72f74addbcb98bc8ac8d1c0bfe9dd5c2af56a88ea7",
-      "classification": "HISTORICAL_NON_NORMATIVE_SPECIAL_LANE_EVIDENCE",
+    "host_runtime_adapter_controller_historical_compatibility": {
+      "path": "control/host-runtime-adapter.mjs",
+      "sha256": "3d145e843ae9c67cac75123791b4f5787e9ca1b39c328d15380b9cec1fef56a5",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_HOST_ADAPTER",
       "current_portable_kernel_input": false,
-      "supersession_reason": "Memory architecture evidence remains preserved outside ordinary feature and Platform intake until explicit owner acceptance and governed integration decision.",
+      "supersession_reason": "The host task-kind and task-host assertions are provider-specific execution context; portable authority consumes typed host-attachment contracts instead.",
       "replacement_bindings": [
         {
-          "historical_reference": "memory_architecture_audit_context",
-          "replacement": "docs/memory-routing-amendment.v1.json",
-          "status": "RETAINED_SPECIAL_LANE_ROUTING_ONLY"
-        },
-        {
-          "historical_reference": "memory_acceptance_boundary",
-          "replacement": "docs/privacy-public-projection.v1.json",
-          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
-        }
-      ]
-    },
-    "release_readme_historical_compatibility": {
-      "path": "control/README.md",
-      "sha256": "2c330842adb482d6b9789f4dbdb994ecf625dfcfa59f8b78185c5b31840c7735",
-      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_ADAPTER_DOCUMENTATION",
-      "current_portable_kernel_input": false,
-      "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",
-      "replacement_bindings": [
-        {
-          "historical_reference": "adapter_documentation",
+          "historical_reference": "provider_host_task_readback",
           "replacement": "schemas/native-host-attachment.v1.json",
           "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
         },
         {
-          "historical_reference": "controller_documentation",
-          "replacement": "docs/maintainer-guide.md",
-          "status": "RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"
+          "historical_reference": "provider_runtime_readback",
+          "replacement": "schemas/visible-task-parity-readback.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_READBACK"
         }
       ]
     },
-    "release_migration_audit_report_historical_compatibility": {
-      "path": "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/auditreport.md",
-      "sha256": "3df64ce729163bc4615d61276775dd927933bf8418c6bbf7822efc72ff2a5011",
+    "legacy_contracts": [
+      "schemas/bootstrap-interview.v1.json",
+      "schemas/guided-bootstrap.v1.json",
+      "schemas/dynamic-bootstrap.v1.json"
+    ],
+    "local_start_controller": {
+      "path": "control/start-local-self-development.mjs",
+      "sha256": "a5118061b090c4af5527d98c4e5dd1f96688e8ab37493f05423ad6971fd0a34b"
+    },
+    "platform_gate_response_handoff_historical_compatibility": {
+      "path": "docs/platform-handoffs/gate-catalog-response-platform-handoff.md",
+      "sha256": "affbc37072cdeefe21cc886f7d5e538ae91d69a73d171e99d8c5685803324347",
       "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
       "current_portable_kernel_input": false,
-      "supersession_reason": "Append-only release-migration evidence preserves historical provider and deployment context; current portability proof consumes typed release contracts and current state receipts instead.",
+      "supersession_reason": "This append-only platform handoff preserves provider-specific historical context and custody evidence; it is not current portable-kernel authority or current comprehensive-proof input.",
       "replacement_bindings": [
         {
-          "historical_reference": "release_migration_audit_context",
-          "replacement": "schemas/release-migration.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"
+          "historical_reference": "gate_catalog_and_response_boundary",
+          "replacement": "schemas/gate-catalog.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_NORMATIVE_GATE_CATALOG"
         },
         {
-          "historical_reference": "release_migration_state",
-          "replacement": "docs/audit-repair-integration-state.v1.json",
-          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+          "historical_reference": "typed_platform_handoff_contract",
+          "replacement": "schemas/platform-foundation-handoff.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_HANDOFF_CONTRACT"
         }
       ]
     },
@@ -3061,26 +2966,137 @@
         }
       ]
     },
-    "audit_repair_integration_state_private_payload": {
-      "path": "docs/audit-repair-integration-state.v1.json",
-      "sha256": "d1c617f9e011d04f21ada67ff3a3a56348cbe457ad421b078752e224e66f0625",
-      "classification": "PRIVATE_RETAINED_EVIDENCE_EXCLUDED_FROM_PUBLIC_PROJECTION",
+    "proof_acceptance_intake_manifest_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_07_PROOF_ACCEPTANCE/central-intake-preservation-manifest-2026-08-09.md",
+      "sha256": "88557d4413b912e54c96f75f42c1c940edfed2039c99fc6dbe56e1b168d29741",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
       "current_portable_kernel_input": false,
-      "supersession_reason": "The append-only state payload retains custody history and opaque source bindings; the public projection contains only project-agnostic fields.",
+      "supersession_reason": "The held proof-acceptance intake manifest preserves historical custody context and is replaced by current typed proof receipts before admission.",
       "replacement_bindings": [
         {
-          "historical_reference": "audit_repair_integration_state_payload",
-          "replacement": "docs/audit-repair-integration-state-public.v1.json",
-          "status": "CURRENT_PUBLIC_PROJECTION"
+          "historical_reference": "proof_acceptance_intake_context",
+          "replacement": "docs/privacy-public-projection.v1.json",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        },
+        {
+          "historical_reference": "proof_acceptance_state",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
         }
       ]
     },
-    "legacy_contracts": [
-      "schemas/bootstrap-interview.v1.json",
-      "schemas/guided-bootstrap.v1.json",
-      "schemas/dynamic-bootstrap.v1.json"
-    ],
-    "rule": "Compatibility aliases and provider adapters may translate previous records into the canonical contracts and may delegate an already approved exact plan to the canonical controller. They cannot independently create setup state, campaign state, provider identity, Product custody, or successor rosters. Provider-specific assistant exchanges are compatibility-only and never portable-kernel authority."
+    "provider_assistant_contract": {
+      "path": "schemas/gpt-assist.v1.json",
+      "sha256": "ed7405f1900559f609d7f7a3214cd9e7c56156d0be17f102e25498febf5d16af"
+    },
+    "provider_assistant_controller": {
+      "path": "control/gpt-assist.mjs",
+      "sha256": "fd61b14ef92bb49199da5e7920da0bb1c968d4465af5ee5463d0356df354d310"
+    },
+    "provider_assistant_verifier": {
+      "path": "tests/verify-gpt-assist.mjs",
+      "sha256": "5cda43a6465494efc6ddcb7b7e7c347a8a334d65dda502ee022f0dc7f33dd421"
+    },
+    "release_migration_audit_report_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_09_RELEASE_MIGRATION/auditreport.md",
+      "sha256": "3df64ce729163bc4615d61276775dd927933bf8418c6bbf7822efc72ff2a5011",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Append-only release-migration evidence preserves historical provider and deployment context; current portability proof consumes typed release contracts and current state receipts instead.",
+      "replacement_bindings": [
+        {
+          "historical_reference": "release_migration_audit_context",
+          "replacement": "schemas/release-migration.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_TYPED_RELEASE_MIGRATION_CONTRACT"
+        },
+        {
+          "historical_reference": "release_migration_state",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        }
+      ]
+    },
+    "release_readme_historical_compatibility": {
+      "path": "control/README.md",
+      "sha256": "2c330842adb482d6b9789f4dbdb994ecf625dfcfa59f8b78185c5b31840c7735",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_ADAPTER_DOCUMENTATION",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Adapter documentation retains host-specific context; current portable authority is defined by typed contracts and current normative controllers.",
+      "replacement_bindings": [
+        {
+          "historical_reference": "adapter_documentation",
+          "replacement": "schemas/native-host-attachment.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_PORTABLE_HOST_ATTACHMENT"
+        },
+        {
+          "historical_reference": "controller_documentation",
+          "replacement": "docs/maintainer-guide.md",
+          "status": "RETAINED_NORMATIVE_MAINTENANCE_GUIDANCE"
+        }
+      ]
+    },
+    "roadmap03_controller_intent_audit_report_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_03_CONTROLLER_INTENT/auditreport.md",
+      "sha256": "aeeaea94525d0174be0b2b43f8bdcd5bbe9157efcbc52fa7896f454b6dc99184",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "This append-only feature audit preserves historical provider and branch context; it does not define current portable-kernel authority or current comprehensive-proof input.",
+      "replacement_bindings": [
+        {
+          "historical_reference": "roadmap03_audit_observation",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "roadmap03_feature_handoff",
+          "replacement": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
+          "status": "RETAINED_TYPED_HANDOFF_REQUIRES_SEPARATE_PORTABILITY_REVIEW"
+        }
+      ]
+    },
+    "roadmap03_controller_intent_handoff_historical_compatibility": {
+      "path": "docs/feature-handoffs/ROADMAP_03_CONTROLLER_INTENT-2026-08-09.md",
+      "sha256": "2c3f77d3ce8a104855e093e447710acde4c00c12a4a6666640e0eadbacbe5d0a",
+      "classification": "HISTORICAL_NON_NORMATIVE_PROVIDER_SPECIFIC_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "This append-only feature handoff preserves historical branch and provider context; current portability proof consumes the typed state and normative contracts instead.",
+      "replacement_bindings": [
+        {
+          "historical_reference": "roadmap03_typed_handoff_projection",
+          "replacement": "docs/audit-repair-integration-state.v1.json",
+          "status": "RETIRED_HISTORICAL_REPLACED_BY_CURRENT_STATE_RECEIPT"
+        },
+        {
+          "historical_reference": "roadmap03_source_contract",
+          "replacement": "schemas/audit-repair-integration-state.v1.json",
+          "status": "RETAINED_NORMATIVE_STATE_CONTRACT"
+        }
+      ]
+    },
+    "rule": "Compatibility aliases and provider adapters may translate previous records into the canonical contracts and may delegate an already approved exact plan to the canonical controller. They cannot independently create setup state, campaign state, provider identity, Product custody, or successor rosters. Provider-specific assistant exchanges are compatibility-only and never portable-kernel authority.",
+    "structured_memory_audit_report_historical_compatibility": {
+      "path": "docs/feature-audits/ROADMAP_08_MEMORY_CAPSULES/auditreport.md",
+      "sha256": "798d8c89ff43c5b2a46f4d72f74addbcb98bc8ac8d1c0bfe9dd5c2af56a88ea7",
+      "classification": "HISTORICAL_NON_NORMATIVE_SPECIAL_LANE_EVIDENCE",
+      "current_portable_kernel_input": false,
+      "supersession_reason": "Memory architecture evidence remains preserved outside ordinary feature and Platform intake until explicit owner acceptance and governed integration decision.",
+      "replacement_bindings": [
+        {
+          "historical_reference": "memory_architecture_audit_context",
+          "replacement": "docs/memory-routing-amendment.v1.json",
+          "status": "RETAINED_SPECIAL_LANE_ROUTING_ONLY"
+        },
+        {
+          "historical_reference": "memory_acceptance_boundary",
+          "replacement": "docs/privacy-public-projection.v1.json",
+          "status": "RETAINED_AS_OPAQUE_COMPATIBILITY_EVIDENCE"
+        }
+      ]
+    },
+    "visible_task_parity_readback_contract": {
+      "path": "schemas/visible-task-parity-readback.v1.json",
+      "sha256": "60d0429786555cbcdaf58c341d26827cd77edc3c612bc2e227668f9bd79158aa"
+    }
   },
   "portable_context": {
     "supplied_by": "typed project context and authority-corpus templates",
