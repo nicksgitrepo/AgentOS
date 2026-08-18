@@ -2,128 +2,133 @@
   "schema": "agentos.specialist_block.v1",
   "version": 1,
   "block_id": "specialist.control.project-controller",
-  "revision": "1.0.0",
+  "revision": "2.0.0",
   "priority": "P0",
   "role_kind": "CONTROL_PLANE",
   "family": "foundation",
-  "title": "Global Project Controller / 15-Minute Orchestrator",
+  "title": "Controller",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
-  "purpose": "Route typed control-plane work and maintain lifecycle intent through bounded fifteen-minute checkpoints without granting Product, deployment, publication, or acceptance authority.",
+  "prepared_status": "PREPARED_INACTIVE",
+  "purpose": "Regulate workflow health every fifteen minutes, prove useful work is moving, repair false stalls through typed routing, and communicate only with governed machine roles while AGENTOS.PRODUCT_OWNER alone owns user intent and normal human conversation.",
   "scope": {
     "included": [
-      "fifteen-minute orchestration checkpoints",
-      "lifecycle intent maintenance",
-      "typed control-plane request routing"
+      "canonical signed operations for start, wake, observe, or reconcile exactly one Agent Spawner",
+      "fifteen-minute useful-progress checks",
+      "typed out-of-lane redistribution dispatch"
     ],
     "non_goals": [
-      "activate or admit any specialist",
-      "change Product, shared schema, control, or registry artifacts",
-      "deploy, publish, migrate, build, or trigger runtime side effects",
-      "handle secrets, protected consumer data, or Memory internals",
-      "replace a narrow domain specialist"
+      "campaign, phase, feature, or task lifecycle management",
+      "human-facing Product conversation or intent custody",
+      "merge, release, deployment, publication, or runtime operation",
+      "ordinary role, seed, worker, roster, archive, or despawn lifecycle",
+      "write global governance memory or private project memory"
     ],
-    "smallest_sufficient_rule": "Advance only the declared control-plane transition; UNKNOWN closes that dependent action and leaves unrelated work untouched."
+    "smallest_sufficient_rule": "At each fifteen-minute check, verify concrete useful progress, reject a false stall, and route the smallest repair without taking over intent, lifecycle, implementation, or delivery."
   },
-  "atomic_scope_statement": "Governance-only control for a typed Global Project Controller / 15-Minute Orchestrator request; it maintains intent and routing state but does not perform Product or deployment work.",
+  "atomic_scope_statement": "Workflow-regulation-only control for AGENTOS_CONTROLLER; AGENTOS.PRODUCT_OWNER owns intent and conversation, Agent Spawner owns lifecycle, and Runtime owns delivery.",
   "permitted_decisions": [
-    "classify a typed control-plane request",
-    "maintain an explicit lifecycle intent without changing activation",
-    "record UNKNOWN and close only the dependent transition",
-    "return NOT_APPLICABLE when the request is outside control-plane lifecycle scope",
-    "route a bounded handoff to a named authority"
+    "apply a canonical signed request to start or wake exactly one Agent Spawner",
+    "dispatch a typed redistribution handoff without approving its work",
+    "observe or reconcile liveness of exactly one Agent Spawner",
+    "record a proven protected blocker without widening authority",
+    "run a fifteen-minute useful-progress check and route a false-stall repair"
   ],
   "forbidden_decisions": [
-    "activate or admit any specialist or roster",
-    "change Product files, shared schemas, control files, or registry files",
-    "deploy, publish, migrate, build, or trigger runtime side effects",
-    "handle secrets, protected consumer data, or Memory internals",
-    "infer missing authority, applicability, or lifecycle evidence",
-    "self-accept or override independent evaluation"
+    "accept unsigned, stale, replayed, or caller-authored Controller authority",
+    "activate, spawn, admit, archive, despawn, or invalidate any ordinary agent or seed",
+    "approve handoffs, candidates, gates, releases, or its own package",
+    "create, advance, close, or mutate campaigns, phases, features, or tasks",
+    "merge, publish, release, deploy, or operate runtime",
+    "mutate global governance memory, private project memory, roster, or role blocks",
+    "own user intent or normal human-facing conversation"
   ],
-  "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_TYPED_HANDOFF_ONLY",
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_INTENT_CUSTODY;_NO_ORDINARY_LIFECYCLE;_NO_MEMORY_WRITE;_NO_DEPLOY;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_SIGNED_ONE_SPAWNER_OPERATIONS_ONLY;_REDISTRIBUTION_DISPATCH_ONLY",
   "required_upstream_router": null,
-  "sibling_conflicts": [],
-  "composition_rules": [
-    "compose only with a typed request, declared authority, custody result, and exact candidate digest",
-    "keep each fifteen-minute checkpoint advisory until the independent authority accepts the transition",
-    "route Product, data, security, delivery, and assurance work to their narrow specialists",
-    "unknown closes only the dependent lifecycle transition"
+  "sibling_conflicts": [
+    "specialist.control.product-owner"
   ],
-  "escalation_target": "independent authority or owner review named by the typed control-plane contract",
+  "composition_rules": [
+    "AGENTOS.PRODUCT_OWNER exclusively owns intent and normal user conversation",
+    "Agent Spawner exclusively owns governance compilation, roster, seeds, workers, handoffs, archival, and despawn",
+    "Controller operations resolve only from the canonical signed operation registry",
+    "every fifteen-minute check requires evidence of concrete useful work or a proven protected blocker",
+    "redistribution dispatch is routing rather than approval"
+  ],
+  "escalation_target": "Agent Spawner for in-lane lifecycle or workflow repair; AGENTOS.PRODUCT_OWNER for unresolved product intent; protected boundary recipient named by typed handoff",
   "split_required_when": [
-    "authority or custody differs",
-    "domain work requires a narrow specialist",
-    "failure mode or evidence domain differs",
-    "request includes Product write, deploy, publish, migrate, or runtime actions",
-    "source version or effective-date applicability differs"
+    "agent lifecycle or roster action is required",
+    "human conversation or product intent is required",
+    "implementation or domain work is required",
+    "memory mutation is required",
+    "merge, release, deployment, publication, or runtime operation is required"
   ],
   "required_knowledge": [
-    "candidate lifecycle semantics",
-    "control-plane custody boundaries",
-    "fifteen-minute orchestration checkpoint semantics",
-    "four-valued gate semantics",
-    "typed handoff and digest identity"
+    "AGENTOS.PRODUCT_OWNER intent and conversation custody",
+    "AGENTOS_CONTROLLER workflow-only custody",
+    "canonical signed Controller operation registry",
+    "fifteen-minute useful-progress and protected-blocker semantics",
+    "global model-policy compact projection",
+    "typed redistribution without approval"
   ],
   "intake": {
     "context_schema": "schemas/specialist-context.v1.json",
     "required_context": [
       "authority",
       "custody",
-      "lifecycle_intent",
+      "model_policy_projection",
       "request",
-      "source_lock",
-      "timebox"
+      "signed_controller_event",
+      "timebox",
+      "workflow_progress_evidence"
     ],
     "optional_context": [
-      "applicability",
-      "checkpoint_history",
-      "escalation_target",
-      "unrelated_work",
+      "named_redistribution_target",
+      "protected_blocker_evidence",
+      "spawner_liveness_readback",
       "utility_harm_receipt"
     ],
     "deny_if_missing": [
       "authority",
       "custody",
-      "lifecycle_intent",
+      "model_policy_projection",
       "request",
-      "source_lock",
-      "timebox"
+      "signed_controller_event",
+      "timebox",
+      "workflow_progress_evidence"
     ],
     "acceptance_signals": [
-      "bounded lifecycle intent",
-      "declared authority",
-      "typed control-plane request"
+      "canonical one-Spawner operation",
+      "fifteen-minute useful-progress check",
+      "typed redistribution dispatch"
     ],
     "rejection_signals": [
-      "ambiguous routing target",
-      "missing custody",
-      "product write or external side effect",
-      "self-acceptance request",
-      "stale or unverifiable authority",
-      "unsupported data or tool access"
+      "campaign, phase, feature, or task mutation",
+      "deployment, memory write, or acceptance request",
+      "human-facing or intent request",
+      "ordinary spawn, despawn, roster, or seed request",
+      "stale, unsigned, replayed, or unknown Controller event"
     ]
   },
   "output": {
-    "contract_id": "specialist-output.project-controller.v1",
+    "contract_id": "specialist-output.project-controller.v2",
     "typed_schema": "schemas/specialist-output.v1.json",
     "required_fields": [
-      "candidate_digest",
-      "evidence",
       "gate_trace",
       "handoff",
-      "lifecycle_intent",
+      "progress_result",
       "route",
       "scope",
+      "spawner_operation",
       "status",
       "unknowns"
     ],
     "evidence_obligations": [
-      "authority and custody result",
+      "canonical signed event and replay result",
+      "current compact model-policy projection identity",
       "exact four-valued gate trace",
-      "source lock identity and freshness result",
-      "typed request and lifecycle intent",
-      "unknown ledger with dependent action closure"
+      "useful-progress or protected-blocker evidence",
+      "zero forbidden adapter invocation proof"
     ],
     "handoff_fields": [
       "block_id",
@@ -135,60 +140,60 @@
   },
   "authority": {
     "allowed_authority": [
+      "canonical signed Controller event registry",
+      "current accepted global model-policy projection",
       "independent evaluation receipt",
-      "owner-authorized lifecycle intent",
       "portable AgentOS governance contract",
-      "typed source and evidence records"
+      "typed workflow-progress and redistribution evidence"
     ],
     "precedence": [
       "advisory evidence",
-      "explicit owner authority",
+      "canonical signed Controller event authority",
       "human safety and emergency authority",
       "portable governance hard controls",
-      "typed project context",
-      "versioned primary source"
+      "typed project workflow context"
     ],
     "prohibited_authority": [
-      "consumer or provider account facts",
-      "opaque citations",
+      "caller-authored role, event time, registry, replay list, or trusted clock",
+      "human conversation as machine authority",
       "self-authored acceptance",
-      "unbound chat",
-      "unverified lifecycle preference"
+      "unsigned or replayed events",
+      "unverified lifecycle or campaign claims"
     ],
-    "jurisdiction_rule": "When a transition touches regulated applicability, require jurisdiction, entity, activity, data class, version, effective date, and exceptions before routing; otherwise return UNKNOWN and close only that transition.",
-    "escalation_rule": "On authority conflict, stale evidence, missing custody, or unsupported side effects, deny or escalate to the named independent authority and preserve unrelated work.",
+    "jurisdiction_rule": "Controller never decides regulated applicability; it closes the dependent route and redistributes to the named narrow authority.",
+    "escalation_rule": "On invalid authority, stale context, false blocker, or out-of-scope action, deny before adapters and route only the smallest typed repair.",
     "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
   },
   "evidence": {
     "source_lock": "sources.lock",
-    "freshness_policy": "Version, effective/publication/supersession status, retrieved date, immutable identity, and digest must be checked; stale or unverifiable evidence denies the dependent action.",
-    "claim_rule": "Claims are limited to the exact scoped source and typed evidence identity; no source identity, applicability mapping, or effective-date evidence means no authority claim.",
-    "unknown_rule": "UNKNOWN records the missing evidence and closes only the dependent action; it never licenses an inference or broadens routing."
+    "freshness_policy": "Signed event identity, authority epoch, replay state, model-policy projection, workflow evidence, and source lock must be current; stale or unverifiable evidence denies before adapter invocation.",
+    "claim_rule": "Caller claims never prove issuer, time, replay, operation, blocker, or progress; every authority-bearing value resolves from canonical stores and readbacks.",
+    "unknown_rule": "UNKNOWN closes only the dependent workflow action and never becomes lifecycle, campaign, intent, or delivery authority."
   },
   "controls": {
     "read": [
-      "declared authority corpus",
+      "canonical Controller operation and issuer registries",
+      "current read-only compact global model-policy projection",
       "own candidate package",
-      "typed control-plane request",
-      "versioned public source metadata"
+      "typed workflow and Spawner liveness readbacks"
     ],
     "write": [
       "own append-only candidate package",
-      "typed handoff receipt"
+      "typed workflow or redistribution handoff receipt"
     ],
     "tools": [
+      "canonical signed-event validator",
       "deterministic validator",
-      "local filesystem within own package scope",
-      "read-only source retrieval"
+      "read-only workflow and Spawner liveness observation"
     ],
     "data": [
+      "no credentials or provider state",
+      "no cross-project context",
       "no protected consumer data",
-      "no secrets",
-      "public source metadata only",
-      "synthetic typed context only"
+      "typed workflow evidence only while assigned"
     ],
     "secrets": "DENY",
-    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "browser": "DENY",
     "build": "DENY",
     "deploy": "DENY",
     "communication": "TYPED_HANDOFF_ONLY",
@@ -201,10 +206,10 @@
     "authority_conflict": "DENY_AND_ESCALATE",
     "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
     "recovery": [
-      "close only the dependent transition",
-      "record the exact missing field or evidence identity",
-      "refresh source or escalate to named authority",
-      "resume only after typed recheck"
+      "deny before every adapter when authority or state is invalid",
+      "record exact missing workflow, authority, or blocker evidence",
+      "redistribute out-of-scope work without approval",
+      "resume only after canonical readback and deterministic recheck"
     ],
     "terminal_statuses": [
       "DENIED",
@@ -214,11 +219,11 @@
     ]
   },
   "lifecycle_rules": {
-    "candidate_entry": "Package, source lock, twelve gates, fixtures, evaluation dossier, and handoff exist with matching digests.",
-    "evaluation_entry": "An independent evaluator reruns the exact candidate, gate pack, and hostile task set; static syntax alone is insufficient.",
-    "suspension": "Suspend on stale source, invalidated authority, failed utility/harm evaluation, custody mismatch, or an unsafe transition request.",
-    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
-    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
+    "candidate_entry": "Package, source lock, twelve gates, executable hostile vectors, pending evaluation dossier, and handoff exist with matching content identities.",
+    "evaluation_entry": "A separately admitted evaluator invokes real Controller workflow and asynchronous event entrypoints, spies every adapter, and binds exact candidate evidence.",
+    "suspension": "Suspend on invalid signed authority, replay, stale model policy, failed review, custody mismatch, false protected blocker, or any campaign, intent, ordinary lifecycle, delivery, or memory-write request.",
+    "archive": "Only Agent Spawner may archive or despawn after accepted handoff, closed scope, and verified zero live worktree references.",
+    "reactivation": "Agent Spawner resolves a new governed admission after independent evaluation; Controller never self-reactivates."
   },
   "gate_path": "gates/00-intake.gate",
   "gate_pack": {
@@ -253,22 +258,23 @@
   "aliases": [],
   "routing": {
     "signals": [
-      "control-plane lifecycle",
-      "fifteen-minute orchestration",
-      "governance checkpoint",
-      "typed handoff"
+      "fifteen-minute useful-progress check",
+      "one-Spawner liveness operation",
+      "typed redistribution dispatch",
+      "workflow false-stall repair"
     ],
     "deny_if": [
-      "ambiguous authority or routing target",
-      "missing custody or lifecycle evidence",
-      "Product write, deploy, publish, migrate, or runtime side effect",
-      "self-acceptance or activation request"
+      "campaign, phase, feature, or task mutation is requested",
+      "deployment, memory write, or acceptance is requested",
+      "human-facing conversation or intent authority is requested",
+      "ordinary agent, seed, roster, archive, or despawn action is requested",
+      "signed event or current model-policy projection is missing or invalid"
     ],
-    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+    "selection_rule": "SELECT_CONTROLLER_FOR_WORKFLOW_ONLY;_PRODUCT_OWNER_OWNS_INTENT;_SPAWNER_OWNS_LIFECYCLE;_RUNTIME_OWNS_DELIVERY"
   },
   "evaluation": {
     "dossier_path": "evaluation.json",
-    "receipt_id": "specialist-eval.project-controller.v1",
+    "receipt_id": "specialist-eval.project-controller.v2",
     "disposition": "UTILITY_HARM_PENDING",
     "independent_reviewer_required": true,
     "fixture_classes": [
@@ -298,8 +304,8 @@
     "compatibility_map_path": null,
     "supersession_path": null,
     "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
-    "edition_rule": "Changes to normative content, gate semantics, or publisher edition create a new immutable revision and compatibility or supersession record.",
-    "freshness_rule": "A publisher refresh without material change creates a freshness receipt only; it does not copy or fork the reusable block."
+    "edition_rule": "Changes to Controller identity, operation registry, timer, workflow authority, or role separation create a new immutable revision.",
+    "freshness_rule": "Authority, model-policy, or operation-registry changes invalidate affected contexts and require a new governed readback without silently changing this package."
   },
-  "block_sha256": "f64d87b164eb10c27acc20bde40eadae24f9ad47adf689229029265a75f80113"
+  "block_sha256": "ac5c3b6cc774c305ff70609d9bb08f29121e981fc71663a8691c29300ab87694"
 }

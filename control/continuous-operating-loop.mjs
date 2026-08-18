@@ -988,9 +988,9 @@ export function runContinuousOperatingLoopIteration({
   loop,
   workers,
   observedAtUtc,
-  observedSourceCommit = loop.source_commit,
-  observedSourceTree = loop.source_tree,
-  observedIntentSha256 = loop.intent_sha256,
+  observedSourceCommit = null,
+  observedSourceTree = null,
+  observedIntentSha256 = null,
   continuationAfterHardStop = false,
   projectBinding = null,
   predecessor = null,
@@ -999,6 +999,7 @@ export function runContinuousOperatingLoopIteration({
   createReplacement = null,
   independentClearance = null,
 }) {
+  throw Object.assign(new Error("Legacy Intent Regulator operating loop is retired; use separate Controller workflow and Product Owner intent monitors"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   const inspection = compileLoopInspection({loop, workers, observedAtUtc, observedSourceCommit, observedSourceTree, observedIntentSha256, continuationAfterHardStop, projectBinding});
   if (inspection.action === "STOP_HARD_BOUNDARY") return {inspection, status: "HARD_STOPPED", continuation_allowed: false, repair_record: null};
   if (inspection.action === "CLOSE_GOAL_SUCCEEDED_BY_REASSESSMENT") {
@@ -1159,6 +1160,7 @@ export async function runContinuousOperatingLoop({
   once = false,
   signal = null,
 }) {
+  throw Object.assign(new Error("Legacy Intent Regulator operating loop is retired; use separate Controller workflow and Product Owner intent monitors"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   assert(typeof observe === "function", "continuous loop observe function is required");
   assert(onIteration === null || typeof onIteration === "function", "continuous loop iteration callback is invalid");
   assert(resolveIteration === null || typeof resolveIteration === "function", "continuous loop iteration resolver is invalid");
@@ -1249,6 +1251,7 @@ function validateRecord(record) {
 }
 
 export function readContinuousOperatingLoopRecord({authorityRoot, recordPath}) {
+  throw Object.assign(new Error("Legacy Intent Regulator operating-loop storage is retired"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   const target = safeRecordPath(authorityRoot, recordPath);
   let stat;
   try { stat = fs.lstatSync(target); } catch (error) { if (error.code === "ENOENT") return null; throw error; }
@@ -1259,6 +1262,7 @@ export function readContinuousOperatingLoopRecord({authorityRoot, recordPath}) {
 }
 
 export function writeContinuousOperatingLoopRecordCompareAndSwap({authorityRoot, recordPath, expectedRecordSha256 = null, record}) {
+  throw Object.assign(new Error("Legacy Intent Regulator operating-loop storage is retired"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   const validated = validateRecord(record);
   const digestField = RECORD_SCHEMA_TO_DIGEST.get(record.schema);
   const target = safeRecordPath(authorityRoot, recordPath);

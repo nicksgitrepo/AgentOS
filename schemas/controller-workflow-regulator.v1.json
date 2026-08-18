@@ -1,0 +1,18 @@
+{
+  "$id": "agentos.controller_workflow_regulator.v1",
+  "title": "Project-agnostic Controller workflow regulator",
+  "description": "Controller regulates workflow health only. Product Owner owns intent and human-facing conversation; Spawner owns ordinary agent lifecycle.",
+  "schema": "agentos.controller_workflow_regulator.v1",
+  "version": 1,
+  "role_id": "AGENTOS_CONTROLLER",
+  "role_kind": "CONTROLLER",
+  "public_name": "Controller",
+  "workflow_scope": "WORKFLOW_REGULATION_ONLY",
+  "intent_owner_role_id": "AGENTOS.PRODUCT_OWNER",
+  "human_facing": false,
+  "progress_interval_minutes": 15,
+  "activation_state": "OFF",
+  "authority_rule": "Controller may validate its own governance and Spawner handoff, start or wake exactly one Spawner, observe or reconcile its liveness, and dispatch typed redistribution. It may not compile roles, mutate roster or governance memory, create or admit agents or seeds, archive or despawn agents, or approve ordinary handoffs.",
+  "hostile_fixture_rule": "Operational fixtures invoke the real Controller entrypoint and assert denied paths produce zero adapter calls and zero state changes.",
+  "public_surface_rule": "The legacy Intent Regulator campaign runtime is not a Controller authority and is not exported by the public AgentOS facade."
+}

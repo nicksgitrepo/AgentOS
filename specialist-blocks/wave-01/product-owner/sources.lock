@@ -1,0 +1,61 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.product-owner",
+  "sources": [
+    {
+      "source_id": "source.agentos-portable-governance",
+      "title": "AgentOS Portable Specialist Governance Contract",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL:agentos-portable-specialist-governance-2.1rc",
+      "version": "2.1rc",
+      "effective_date": null,
+      "retrieved_date": "2026-08-18",
+      "immutable_identity": "agentos-portable-specialist-governance-2.1rc-inactive",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Portable candidate lifecycle, typed intent custody, fail-closed gates, model-policy projection, and independent-admission boundaries."
+    },
+    {
+      "source_id": "source.json-schema-2020-12",
+      "title": "JSON Schema 2020-12",
+      "publisher": "JSON Schema",
+      "url": "https://json-schema.org/draft/2020-12",
+      "version": "2020-12",
+      "effective_date": "2020-12-01",
+      "retrieved_date": "2026-08-18",
+      "immutable_identity": "json-schema-draft-2020-12",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Machine-readable typed contract validation."
+    },
+    {
+      "source_id": "source.rfc-2119",
+      "title": "Key words for use in RFCs to Indicate Requirement Levels",
+      "publisher": "Internet Engineering Task Force",
+      "url": "https://www.rfc-editor.org/rfc/rfc2119.html",
+      "version": "RFC 2119",
+      "effective_date": "1997-03-01",
+      "retrieved_date": "2026-08-18",
+      "immutable_identity": "RFC-2119;rfc-editor-rfc2119-html",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Requirement-level language used by typed governance rules."
+    },
+    {
+      "source_id": "source.rfc-8174",
+      "title": "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words",
+      "publisher": "Internet Engineering Task Force",
+      "url": "https://www.rfc-editor.org/rfc/rfc8174.html",
+      "version": "RFC 8174",
+      "effective_date": "2017-03-01",
+      "retrieved_date": "2026-08-18",
+      "immutable_identity": "RFC-8174;rfc-editor-rfc8174-html",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Clarifies requirement-word interpretation in normative text."
+    }
+  ],
+  "freshness_rule": "DENY the dependent action when the accepted model-policy projection, intent authority, or source identity is stale, superseded, unverifiable, or missing; refresh or escalate.",
+  "manifest_sha256": "e897a569e126ad25f03c8faf9fc8474be40fb9bc8e20506b058bfa504a0975f3"
+}

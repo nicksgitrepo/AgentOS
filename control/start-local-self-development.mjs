@@ -400,6 +400,7 @@ export function compileLocalStartOutcome(error) {
 }
 
 async function main(argv = process.argv.slice(2), options = {}) {
+  throw Object.assign(new Error("Legacy local self-development start is retired; governed Bootstrap may start only one Spawner"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   const nativeMode = options.nativeHost !== undefined || options.host !== undefined || options.hostAttachment !== undefined;
   if (nativeMode) {
     assert(options.nativeHost ?? options.host, "native start requires the in-process Codex host adapter");
@@ -461,7 +462,7 @@ async function main(argv = process.argv.slice(2), options = {}) {
       owner_decision: "START_LOCAL_AGENTOS_SELF_DEVELOPMENT",
       goal: "Run AgentOS as an all-in-one system that turns complicated development into casual conversations and lets agents build from those conversations.",
       current_run: "Build and audit AgentOS itself in the writable development copy through a local governed campaign.",
-      controller_role: "Intent Regulator",
+      controller_role: "Controller",
       role_custody: {
         controller: "Supervise, compare intent with actual events and evidence, classify drift, and enforce re-checks.",
         orchestrator: "Coordinate the bounded campaign and traverse the executable four-root governance tree.",
@@ -705,7 +706,7 @@ async function main(argv = process.argv.slice(2), options = {}) {
       version: 1,
       status: "CAMPAIGN_ACTIVE_BUILDING_AND_AUDITING",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "Intent Regulator",
+      controller_display_name: "Controller",
       campaign_id: CAMPAIGN_ID,
       campaign_version: CAMPAIGN_VERSION,
       project_id: PROJECT_ID,
@@ -726,7 +727,7 @@ async function main(argv = process.argv.slice(2), options = {}) {
       runtime_authority_ref: "EXTERNAL_RUNTIME_AUTHORITY",
       spawn_readbacks: structuredClone(spawnReadbacks),
       custody: {
-        controller: "Intent Regulator supervises and enforces; it does not claim named lane worker repair completion.",
+        controller: "Controller regulates workflow; it does not claim builder completion or Product Owner intent authority.",
         orchestrator: receiptsByOperation.spawnCampaignOrchestrator.details.worker_readback.session_id,
         auditor: receiptsByOperation.spawnIndependentAuditor.details.worker_readback.session_id,
         feature_agent: receiptsByOperation.spawnFeatureAgents.details.worker_readback.session_id,

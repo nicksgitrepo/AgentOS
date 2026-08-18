@@ -16,10 +16,11 @@ const firstCampaign = {goal: "build the smallest working slice", acceptance: ["f
 assert.deepEqual(DEVELOPMENT_MODES, ["RAPID_PROTOTYPING", "ITERATION"]);
 assert.equal(DEFAULT_DEVELOPMENT_MODE, "RAPID_PROTOTYPING");
 const rapid = compileDevelopmentPlan({northStar, firstWorkflow, protectedBoundaries, firstCampaign});
+assert.deepEqual(rapid.persistent_roles, ["AGENTOS.SPAWNER", "AGENTOS_CONTROLLER", "AGENTOS.PRODUCT_OWNER", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS.ORCHESTRATOR"]);
+assert.equal(rapid.phases.at(-1).owner, "AGENTOS.ORCHESTRATOR");
 assert.equal(rapid.mode, "RAPID_PROTOTYPING");
 assert.equal(rapid.universal_closeout.mode, "RAPID_PROTOTYPING");
 assert.deepEqual(rapid.phase_order, ["BOOTSTRAP_CONTEXT", "RAPID_FOUNDATION", "RAPID_IMPLEMENTATION", "INDEPENDENT_AUDIT", "ITERATION_HANDOFF"]);
-assert.deepEqual(rapid.persistent_roles, ["INTENT_REGULATOR", "RUNTIME"]);
 assert.doesNotThrow(() => validateDevelopmentPlan(rapid, {northStar, firstWorkflow, protectedBoundaries, firstCampaign}));
 
 const iteration = compileDevelopmentPlan({mode: "ITERATION", northStar, firstWorkflow, protectedBoundaries, firstCampaign});

@@ -5,10 +5,31 @@
   "block_id": "specialist.control.project-controller",
   "status": "EXECUTABLE",
   "answer_type": "FOUR_VALUED",
-  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
-  "question": "Are the required typed control-plane fields complete, and are all missing fields recorded as UNKNOWN rather than inferred?",
-  "evidence": ["gate.05-context-completeness.answer", "required_context", "unknown_ledger"],
-  "next": {"YES": "06-tool-resource-custody", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "06-tool-resource-custody"},
-  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
-  "gate_sha256": "d5388325433362125039314f5c7466c5fd3757566f9e2b6623185811b2e8498b"
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Are signed event, workflow progress, blocker proof, custody, timebox, and current model-policy fields complete, with no caller claim inferred as authority?",
+  "evidence": [
+    "gate.05-context-completeness.answer",
+    "required_context",
+    "unknown_ledger"
+  ],
+  "next": {
+    "YES": "06-tool-resource-custody",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "06-tool-resource-custody"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "af950b03b656def91f0c6762a53b13f081acdf0bc5667e2bd1401d8f1ffb82ca"
 }

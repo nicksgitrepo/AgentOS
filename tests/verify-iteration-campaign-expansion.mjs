@@ -71,7 +71,7 @@ assert.equal(admitted.schema, ITERATION_CAMPAIGN_EXPANSION_SCHEMA);
 assert.equal(admitted.status, "ADMITTED");
 assert.equal(admitted.classification, "INTERNAL_AGENTOS_CONTINUATION");
 assert.equal(admitted.decision, "CONTINUE_WITHOUT_OWNER_APPROVAL");
-assert.equal(admitted.route, "INTENT_REGULATOR_CONTINUE");
+assert.equal(admitted.route, "CONTROLLER_CONTINUE");
 assert.equal(admitted.continuation, "CONTINUE");
 assert.equal(admitted.owner_choice_required, false);
 assert.equal(admitted.source_binding.status, "MATCH");

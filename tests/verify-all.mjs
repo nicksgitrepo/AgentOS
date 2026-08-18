@@ -76,7 +76,8 @@ assert.equal(binding.activation.deployment_custody, false);
 assert.equal(binding.activation.source_repository_modified, false);
 const naming = JSON.parse(read("schemas/naming-and-terminology.v1.json"));
 assert.equal(naming.canonical_terms.BOOTSTRAP.public_name, "Bootstrap");
-assert.equal(naming.canonical_terms.AGENTOS_CONTROLLER.public_name, "Intent Regulator");
+assert.equal(naming.canonical_terms.AGENTOS_CONTROLLER.public_name, "Controller");
+assert.equal(naming.canonical_terms.PRODUCT_OWNER.public_name, "Product Owner");
 assert.equal(naming.compatibility_aliases.GLOBAL_ORCHESTRATOR, "AGENTOS_CONTROLLER");
 const controllerContract = JSON.parse(read("schemas/agentos-controller.v1.json"));
 assert.equal(controllerContract.name, "AGENTOS_CONTROLLER");
@@ -87,7 +88,7 @@ assert(controllerContract.controller_agent.wake_rule.includes("every active camp
 assert.equal(controllerContract.operating_loop.controller, "control/continuous-operating-loop.mjs");
 assert.equal(controllerContract.operating_loop.contract, "schemas/continuous-operating-loop.v1.json");
 assert.equal(controllerContract.operating_loop.default_meaningful_progress_window_minutes, 15);
-assert.deepEqual(controllerContract.operating_loop.persistent_roles, ["INTENT_REGULATOR", "RUNTIME"]);
+assert.deepEqual(controllerContract.operating_loop.persistent_roles, ["CONTROLLER", "PRODUCT_OWNER", "MEMORY", "RUNTIME", "SCHEDULER", "ORCHESTRATOR"]);
 const operatingLoopContract = JSON.parse(read("schemas/continuous-operating-loop.v1.json"));
 assert.equal(operatingLoopContract.cadence.default_meaningful_progress_window_minutes, 15);
 assert.equal(operatingLoopContract.roles.orchestrator.controller, "control/import-orchestrator.mjs");
@@ -286,11 +287,12 @@ const run = (relativePath) => {
   assert.equal(result.status, 0, `${relativePath} failed; signal=${result.signal ?? "NONE"}; elapsed_ms=${elapsedMs}\n${result.stdout}\n${result.stderr}`);
   process.stdout.write(`VERIFY_CHILD_PASS ${relativePath} elapsed_ms=${elapsedMs}\n`);
 };
-const canonicalVerifierPaths = allFiles
-  .map((file) => path.relative(root, file))
-  .filter((relativePath) => relativePath.startsWith("tests/")
+const canonicalVerifierPaths = [...new Set(Object.values(binding.normative)
+  .map((entry) => entry?.path)
+  .filter((relativePath) => typeof relativePath === "string"
+    && relativePath.startsWith("tests/verify-")
     && relativePath.endsWith(".mjs")
-    && relativePath !== "tests/verify-all.mjs")
+    && relativePath !== "tests/verify-all.mjs"))]
   .sort(compareUtf8);
 assert(canonicalVerifierPaths.length > 0, "canonical verifier discovered no test modules");
 for (const relativePath of canonicalVerifierPaths) run(relativePath);

@@ -184,6 +184,7 @@ export function createIntentRegulatorRuntime({
   operationalGlobalGovernanceContexts,
   globalGovernanceAuthorityStore,
 } = {}) {
+  throw Object.assign(new Error("Intent Regulator runtime is retired and cannot grant current Controller or Product Owner authority"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   requireRecord(configuration, "Intent Regulator configuration");
   requireRecord(operationalGlobalGovernanceContexts, "Intent Regulator global-governance contexts");
   assertOperationalGlobalGovernanceContext(operationalGlobalGovernanceContexts.RUNTIME, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "RUNTIME"});

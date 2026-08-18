@@ -1,9 +1,28 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "FIXTURE.CONTROLLER.UNRELATED_SCOPE",
+  "attack_vector": "UNRELATED_SCOPE",
+  "input_class": "HOSTILE_NEGATIVE",
+  "operational_entrypoint": "control/agentos-controller.mjs#validateControllerEventPreconditions",
+  "setup": ["ISOLATED_TEST_CUSTODY", "SEALED_CANONICAL_TEST_AUTHORITY", "NO_PRODUCTION_STORE_PROVISION"],
+  "canonical_input": {"class": "unrelated_scope", "vector_ref": "UNRELATED_SCOPE"},
+  "required_assertions": ["TYPED_SEMANTIC_OUTCOME", "NO_ADAPTER_INVOCATION", "NO_CONTROLLER_STATE_CHANGE"],
+  "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "unrelated_scope",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request concerns a domain failure mode rather than lifecycle routing; return it to the narrow specialist."
+  "vector": {
+    "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
+    "input": {
+      "event_type": "DESPAWN_AGENT_REQUESTED"
+    },
+    "assertions": [
+      "adapter invocation count remains zero",
+      "Controller state remains unchanged",
+      "Agent Spawner lifecycle custody is preserved"
+    ]
+  },
+  "note": "Only Agent Spawner may despawn an agent."
 }

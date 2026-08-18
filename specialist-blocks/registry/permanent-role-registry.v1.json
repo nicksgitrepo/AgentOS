@@ -1,0 +1,79 @@
+{
+  "schema": "agentos.permanent_role_registry.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "bootstrap_predecessor": "AGENTOS.SPAWNER",
+  "canonical_order": [
+    "AGENTOS_CONTROLLER",
+    "AGENTOS.PRODUCT_OWNER",
+    "AGENTOS.MEMORY",
+    "AGENTOS.RUNTIME",
+    "AGENTOS.SCHEDULER",
+    "AGENTOS.ORCHESTRATOR"
+  ],
+  "roles": [
+    {
+      "role_id": "AGENTOS_CONTROLLER",
+      "role_class": "CONTROLLER",
+      "public_name": "Controller",
+      "responsibility": "WORKFLOW_REGULATION_ONLY",
+      "monitor_minutes": 15,
+      "human_facing": false,
+      "package_path": "specialist-blocks/wave-01/project-controller",
+      "readiness": "CANDIDATE_REQUIRES_EXECUTED_INDEPENDENT_REVIEW"
+    },
+    {
+      "role_id": "AGENTOS.PRODUCT_OWNER",
+      "role_class": "PRODUCT_OWNER",
+      "public_name": "Product Owner",
+      "responsibility": "USER_INTENT_AND_HUMAN_CONVERSATION_ONLY",
+      "monitor_minutes": 15,
+      "human_facing": true,
+      "package_path": "specialist-blocks/wave-01/product-owner",
+      "readiness": "CANDIDATE_REQUIRES_EXECUTED_INDEPENDENT_REVIEW"
+    },
+    {
+      "role_id": "AGENTOS.MEMORY",
+      "role_class": "MEMORY",
+      "public_name": "Memory",
+      "responsibility": "GOVERNED_MEMORY_ADAPTER",
+      "monitor_minutes": null,
+      "human_facing": false,
+      "package_path": "specialist-blocks/wave-01/memory",
+      "readiness": "PACKAGE_REQUIRED"
+    },
+    {
+      "role_id": "AGENTOS.RUNTIME",
+      "role_class": "RUNTIME",
+      "public_name": "Runtime",
+      "responsibility": "GOVERNED_RUNTIME_AND_DEPLOYMENT_CUSTODY",
+      "monitor_minutes": null,
+      "human_facing": false,
+      "package_path": "specialist-blocks/wave-01/runtime-deployment-operator",
+      "readiness": "CANDIDATE_REQUIRES_EXECUTED_INDEPENDENT_REVIEW"
+    },
+    {
+      "role_id": "AGENTOS.SCHEDULER",
+      "role_class": "SCHEDULER",
+      "public_name": "Scheduler",
+      "responsibility": "RESOURCE_AND_WORK_SCHEDULING_ONLY",
+      "monitor_minutes": null,
+      "human_facing": false,
+      "package_path": "specialist-blocks/wave-01/resource-scheduler",
+      "readiness": "CANDIDATE_REQUIRES_EXECUTED_INDEPENDENT_REVIEW"
+    },
+    {
+      "role_id": "AGENTOS.ORCHESTRATOR",
+      "role_class": "ORCHESTRATOR",
+      "public_name": "Orchestrator",
+      "responsibility": "PLAN_COORDINATION_AND_ACCEPTANCE_ONLY",
+      "monitor_minutes": null,
+      "human_facing": false,
+      "package_path": "specialist-blocks/wave-01/orchestrator",
+      "readiness": "PACKAGE_REQUIRED"
+    }
+  ],
+  "retired_current_role_ids": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.PROJECT_OWNER"],
+  "spawn_rule": "SPAWNER_ONLY_AFTER_CANONICAL_PACKAGE_EXECUTED_HOSTILE_QA_INDEPENDENT_REVIEW_CURRENT_MODEL_ROUTE_AND_ONE_USE_ADMISSION",
+  "activation": "OFF"
+}

@@ -1,9 +1,28 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "FIXTURE.CONTROLLER.STALE_SOURCE",
+  "attack_vector": "STALE_SOURCE",
+  "input_class": "HOSTILE_NEGATIVE",
+  "operational_entrypoint": "control/agentos-controller.mjs#validateControllerEventPreconditions",
+  "setup": ["ISOLATED_TEST_CUSTODY", "SEALED_CANONICAL_TEST_AUTHORITY", "NO_PRODUCTION_STORE_PROVISION"],
+  "canonical_input": {"class": "stale_source", "vector_ref": "STALE_SOURCE"},
+  "required_assertions": ["TYPED_SEMANTIC_OUTCOME", "NO_ADAPTER_INVOCATION", "NO_CONTROLLER_STATE_CHANGE"],
+  "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "stale_source",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic source record is superseded or lacks a current freshness receipt; deny or refresh before routing."
+  "vector": {
+    "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
+    "input": {
+      "authority_epoch": "superseded"
+    },
+    "assertions": [
+      "adapter invocation count remains zero",
+      "Controller state remains unchanged",
+      "current authority readback is required"
+    ]
+  },
+  "note": "Stale signed authority fails before adapters."
 }

@@ -127,7 +127,7 @@ function evaluatePackage(packageDir) {
     if (typeof block.required_upstream_router !== "string" || block.required_upstream_router.length === 0) fail(`${block.block_id} atomic specialist lacks upstream router`);
     if (!block.forbidden_decisions.some((decision) => /(?:broaden|sibling|family|provider|version)/iu.test(decision))) fail(`${block.block_id} atomic specialist lacks anti-broadening denial`);
   }
-  return {block_id: block.block_id, role_kind: block.role_kind, candidate_digest: block.block_sha256, dependencies: block.dependencies, required_upstream_router: block.required_upstream_router, sibling_conflicts: block.sibling_conflicts, candidate_standard_dependencies: block.dependencies.filter((dependency) => dependency.startsWith("specialist.standard.")), status: "PASS", checked_gate_count: SPECIALIST_GATE_IDS.length, checked_fixture_count: expectedClasses.length, independent_utility_harm: "PENDING_EXTERNAL_AUTHORITY"};
+  return {block_id: block.block_id, role_kind: block.role_kind, lifecycle: block.lifecycle, candidate_digest: block.block_sha256, dependencies: block.dependencies, required_upstream_router: block.required_upstream_router, sibling_conflicts: block.sibling_conflicts, candidate_standard_dependencies: block.dependencies.filter((dependency) => dependency.startsWith("specialist.standard.")), status: "PASS", checked_gate_count: SPECIALIST_GATE_IDS.length, checked_fixture_count: expectedClasses.length, independent_utility_harm: "PENDING_EXTERNAL_AUTHORITY"};
 }
 
 function packageDirectories(libraryRoot) {
@@ -148,7 +148,7 @@ export function independentlyEvaluateSpecialistLibrary({repositoryRoot = process
   const roster = readJson(path.join(libraryRoot, "registry", "roster.v1.json"));
   if (roster.status !== "COMPILED_CANDIDATE" || roster.activation !== "OFF") fail("roster is active or not a candidate");
   const packageDirs = packageDirectories(libraryRoot);
-  const results = packageDirs.map(evaluatePackage).sort((left, right) => left.block_id.localeCompare(right.block_id));
+  const results = packageDirs.map(evaluatePackage).filter((result) => result.lifecycle !== "ARCHIVED").sort((left, right) => left.block_id.localeCompare(right.block_id));
   const rosterIds = new Set(roster.blocks.map((block) => block.block_id));
   for (const result of results) if (!rosterIds.has(result.block_id)) fail(`${result.block_id} is absent from the roster`);
   if (results.length !== roster.blocks.length) fail("roster/package count mismatch");

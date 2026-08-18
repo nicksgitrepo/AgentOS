@@ -5,10 +5,32 @@
   "block_id": "specialist.control.project-controller",
   "status": "EXECUTABLE",
   "answer_type": "FOUR_VALUED",
-  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
-  "question": "Is independent review required and is utility or harm evidence either present from an independent authority or explicitly pending without self-acceptance?",
-  "evidence": ["candidate_digest", "evaluator_identity", "gate.10-proof-acceptance.answer", "utility_harm_receipt"],
-  "next": {"YES": "11-lifecycle-recovery-archive", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "11-lifecycle-recovery-archive"},
-  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
-  "gate_sha256": "ec408be20a5949e705f111d859c46c4d69514c29caafe4d9e5d07321ac8fc086"
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Has a separately admitted evaluator run every hostile vector through the real workflow and asynchronous Controller entrypoints, or is evaluation explicitly PENDING?",
+  "evidence": [
+    "candidate_digest",
+    "evaluator_identity",
+    "gate.10-proof-acceptance.answer",
+    "utility_harm_receipt"
+  ],
+  "next": {
+    "YES": "11-lifecycle-recovery-archive",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "11-lifecycle-recovery-archive"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "014a45ba313b111ed0f32190e41af815650f11d09b403c19946a855bafdd8013"
 }

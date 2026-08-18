@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.product_owner_operational.v1",
+  "title": "Authoritative governed Product Owner output receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "role_id", "request_id", "operation", "admission_receipt_sha256", "global_ledger_head_sha256", "model_snapshot_sha256", "model_selection_sha256", "intent_context_ref", "intent_context_readback_sha256", "boundary_result_sha256", "disposition", "request_sha256", "output_sha256", "occurred_at_utc", "output", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.product_owner_operational.v1"},
+    "version": {"const": 1},
+    "status": {"const": "AUTHORITATIVE_GOVERNED_OUTPUT"},
+    "role_id": {"const": "AGENTOS.PRODUCT_OWNER"},
+    "request_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "operation": {"enum": ["RESPOND_TO_USER", "CHECK_INTENT_ALIGNMENT"]},
+    "admission_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "global_ledger_head_sha256": {"$ref": "#/$defs/sha256"},
+    "model_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "model_selection_sha256": {"$ref": "#/$defs/sha256"},
+    "intent_context_ref": {"type": "string", "pattern": "^(?:ref|opaque):[^\\s]{1,512}$"},
+    "intent_context_readback_sha256": {"$ref": "#/$defs/sha256"},
+    "boundary_result_sha256": {"$ref": "#/$defs/sha256"},
+    "disposition": {"enum": ["ALLOW_CONVERSATION", "ROUTE_HANDOFF", "ESCALATE_USER", "DENY"]},
+    "request_sha256": {"$ref": "#/$defs/sha256"},
+    "output_sha256": {"$ref": "#/$defs/sha256"},
+    "occurred_at_utc": {"type": "string", "format": "date-time"},
+    "output": {"type": ["object", "null"]},
+    "receipt_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

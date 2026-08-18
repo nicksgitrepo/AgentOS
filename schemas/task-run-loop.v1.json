@@ -6,8 +6,8 @@
   "purpose": "Repeat one safe control-plane iteration from a continuation-ready task without requiring a new manual message.",
   "role_display": {
     "machine_role": "AGENTOS_CONTROLLER",
-    "public_name": "Intent Regulator",
-    "task_title_rule": "Queued task metadata and run-loop reconciliation identify the Intent Regulator; generic Bootstrap titles are rejected.",
+    "public_name": "Controller",
+    "task_title_rule": "Queued workflow metadata and run-loop reconciliation identify Controller; Product Owner remains the separate human-facing intent role.",
     "history_rule": "Accepted v1 queue and reconciliation records from before the display guard remain readable; newly compiled records carry the canonical role fields."
   },
   "iteration": {

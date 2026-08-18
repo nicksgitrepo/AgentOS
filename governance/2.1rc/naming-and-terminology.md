@@ -8,7 +8,8 @@ The normative map is [schemas/naming-and-terminology.v1.json](../../schemas/nami
 
 - `Bootstrap` is the read-only discovery, compact question, exact-plan, approval, and resumable setup controller.
 - `Authority Corpus` is the project-bound source of truth compiled from governance and typed Project Context.
-- `Intent Regulator` (`AGENTOS_CONTROLLER`) is project-persistent. It handles judgment and routing while its Controller Runtime performs deterministic events, state transactions, timers, and adapter readbacks.
+- `Controller` (`AGENTOS_CONTROLLER`) regulates workflow, useful progress, and typed redistribution. It does not own user intent or agent lifecycle.
+- `Product Owner` (`AGENTOS.PRODUCT_OWNER`) owns user intent and ordinary human conversation. It does not mutate workflow or agent lifecycle. `AGENTOS.PROJECT_OWNER` is a retired historical label and never grants current authority.
 - `Campaign Orchestrator` owns campaign admission, shared custody, recovery, and closure; it does not manage routine feature work.
 - `Feature Agent` owns one bounded feature outcome and directly supervises its work.
 - `Platform Agent` is a campaign-local logical capability with one stable worktree and sequential Feature-Agent supervision leases.
@@ -33,7 +34,7 @@ The acceptance roots remain exactly `FUNCTION_REQUIREMENTS`, `DESIGN_BIBLE`, and
 
 ## Migration rule
 
-Older names normalize before validation and never rewrite accepted history. `GLOBAL_ORCHESTRATOR` normalizes to `AGENTOS_CONTROLLER`; `FEATURE_LEAD` and `FEATURE_ORCHESTRATOR` normalize to `FEATURE_AGENT`; `successor_wave` normalizes to `next_campaign_candidate`; `rough_draft` normalizes to `first_pass_candidate`. Compatibility entrypoints do not own setup state, campaign state, custody, or successor creation.
+Older names normalize before validation and never rewrite accepted history. `GLOBAL_ORCHESTRATOR` normalizes to `AGENTOS_CONTROLLER`; historical `INTENT_REGULATOR` records require an explicit read-only migration to Product Owner and never create current authority; `FEATURE_LEAD` and `FEATURE_ORCHESTRATOR` normalize to `FEATURE_AGENT`; `successor_wave` normalizes to `next_campaign_candidate`; `rough_draft` normalizes to `first_pass_candidate`. Compatibility entrypoints do not own setup state, campaign state, custody, or successor creation.
 
 Keep a rename only when it removes ambiguity, makes a boundary more honest, prevents a collision, or improves long-term migration. Project, provider, repository, domain, deployment, and owner identities remain context data.
 

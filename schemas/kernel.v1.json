@@ -107,7 +107,7 @@
     "continuous_operating_loop": {
       "controller": "control/continuous-operating-loop.mjs",
       "contract": "schemas/continuous-operating-loop.v1.json",
-      "rule": "The Intent Regulator inspects every active worker on the meaningful-progress timer; the Orchestrator owns ordinary repair, the independent Auditor owns clearance, Runtime and Intent Regulator persist, and hard boundaries stop continuation."
+      "rule": "Controller checks useful workflow progress; Product Owner separately checks intent alignment; Orchestrator owns ordinary repair, independent Auditor owns clearance, Runtime persists execution evidence, and hard boundaries stop continuation."
     },
     "owner_event_wake": {
       "controller": "control/controller-owner-event-wake.mjs",

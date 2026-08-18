@@ -45,18 +45,27 @@ export const GOVERNANCE_UPDATE_MODES = Object.freeze([
 ]);
 
 export const FIXED_ROLE_IDS = Object.freeze([
+  "AGENTOS.MEMORY",
+  "AGENTOS.ORCHESTRATOR",
+  "AGENTOS.PRODUCT_OWNER",
+  "AGENTOS.RUNTIME",
+  "AGENTOS.SCHEDULER",
+  "AGENTOS_CONTROLLER",
   "CAMPAIGN_ORCHESTRATOR",
   "INDEPENDENT_AUDITOR",
-  "INTENT_REGULATOR",
-  "RUNTIME",
 ]);
 
 export const FIXED_ROLE_KINDS = Object.freeze({
+  "AGENTOS.MEMORY": "MEMORY",
+  "AGENTOS.ORCHESTRATOR": "ORCHESTRATOR",
+  "AGENTOS.PRODUCT_OWNER": "PRODUCT_OWNER",
+  "AGENTOS.RUNTIME": "RUNTIME",
+  "AGENTOS.SCHEDULER": "SCHEDULER",
+  AGENTOS_CONTROLLER: "CONTROLLER",
   CAMPAIGN_ORCHESTRATOR: "CAMPAIGN_ORCHESTRATOR",
   INDEPENDENT_AUDITOR: "INDEPENDENT_AUDITOR",
-  INTENT_REGULATOR: "INTENT_REGULATOR",
-  RUNTIME: "RUNTIME",
 });
+export const RETIRED_CURRENT_ROLE_IDS = Object.freeze(["AGENTOS.INTENT_REGULATOR", "AGENTOS.PROJECT_OWNER", "INTENT_REGULATOR", "PROJECT_OWNER"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -76,7 +85,7 @@ const HISTORY_EVENT_TYPES = Object.freeze([
 const EXPECTED_OWNERSHIP = Object.freeze({
   [BASE_GENERAL_KIND]: Object.freeze({owner_role: "RELEASE_MAINTAINER", authoring_role: "RELEASE_COMPILER"}),
   [BASE_ROLE_KIND]: Object.freeze({owner_role: "RELEASE_MAINTAINER", authoring_role: "RELEASE_COMPILER"}),
-  [PROJECT_GENERAL_KIND]: Object.freeze({owner_role: "PROJECT_OWNER", authoring_role: "INTENT_REGULATOR"}),
+  [PROJECT_GENERAL_KIND]: Object.freeze({owner_role: "AGENTOS.PRODUCT_OWNER", authoring_role: "AGENTOS.SPAWNER"}),
   [GENERATED_PROJECT_ROLE_KIND]: Object.freeze({owner_role: "GOVERNANCE_COMPILER", authoring_role: "GOVERNANCE_COMPILER"}),
 });
 
@@ -341,6 +350,7 @@ function validateBaseRolePacket(packet, label, {baseGraphIds = null, roleGraphBi
     "allowed_authority", "prohibited_authority", "required_evidence", "digest",
   ], label);
   requireIdentifier(packet.role_id, `${label}.role_id`);
+  assert(!RETIRED_CURRENT_ROLE_IDS.includes(packet.role_id), `${label}.role_id is retired and cannot hold current authority`);
   requireString(packet.display_name, `${label}.display_name`);
   assert(!PRIVATE_TEXT.test(packet.display_name), `${label}.display_name contains forbidden content`);
   requireString(packet.role_kind, `${label}.role_kind`);
@@ -394,6 +404,7 @@ function validateRoleGraphBinding(value, label, roleIdsSet) {
 function validateProjectOverlay(value, label, knownRoleIds) {
   exactKeys(value, ["role_id", "graph_ids", "additional_prohibited_authority", "additional_required_evidence"], label);
   requireIdentifier(value.role_id, `${label}.role_id`);
+  assert(!RETIRED_CURRENT_ROLE_IDS.includes(value.role_id), `${label}.role_id is retired and cannot receive a current overlay`);
   assert(value.role_id === "ALL_ROLES" || knownRoleIds === null || knownRoleIds.has(value.role_id), `${label}.role_id is not a base role`);
   sortedUniqueStrings(value.graph_ids, `${label}.graph_ids`, {allowEmpty: true});
   sortedUniqueStrings(value.additional_prohibited_authority, `${label}.additional_prohibited_authority`, {allowEmpty: true});
@@ -738,7 +749,7 @@ export function compileProjectGeneralLibrary({
     status: "COMPILED",
     library_kind: PROJECT_GENERAL_KIND,
     governance_version: GOVERNANCE_VERSION,
-    ownership: {owner_role: "PROJECT_OWNER", authoring_role: "INTENT_REGULATOR"},
+    ownership: {owner_role: "AGENTOS.PRODUCT_OWNER", authoring_role: "AGENTOS.SPAWNER"},
     lineage: makeLineage(previous),
     project_id,
     base_general_library_digest: baseGeneralLibrary.digest,

@@ -48,7 +48,7 @@
     {
       "id": "AR-01",
       "name": "Close narrow verifier goal",
-      "owner": "Intent Regulator",
+      "owner": "Controller",
       "produces": "Typed closure preserving the bounded timeout and accepted slice.",
       "check": "iteration-001-closeout.v1.json binds the timeout evidence and successor reason.",
       "status": "RECORDED"
@@ -56,7 +56,7 @@
     {
       "id": "AR-02",
       "name": "Repair Bootstrap and controller gate",
-      "owner": "Intent Regulator",
+      "owner": "Controller",
       "produces": "Typed plan fields and a controller admission gate for both governance layers.",
       "check": "Focused Bootstrap and Controller tests reject incomplete architecture envelopes.",
       "status": "COMPLETE"
@@ -80,7 +80,7 @@
     {
       "id": "AR-05",
       "name": "Independently check and preserve repair",
-      "owner": "Intent Regulator",
+      "owner": "Controller",
       "produces": "Independent repair evidence, changed-path check, and typed Iteration handoff for anything deferred.",
       "check": "All focused checks pass; no private or unrelated content is introduced.",
       "status": "COMPLETE"
@@ -91,7 +91,7 @@
     "inherit_old_records": false,
     "generic_feature_agent_admitted": false,
     "worker_creation": "NOT_REQUIRED_FOR_THIS_REPAIR",
-    "persistent_owner": "Intent Regulator"
+    "persistent_owner": "Controller"
   },
   "launch_boundary": {
     "recorded_plan_is_launch_gate": true,

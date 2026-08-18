@@ -899,7 +899,7 @@ export function compileControllerSupervision({auditIntervalMinutes = DEFAULT_CON
     version: 1,
     status: "PREPARED_NOT_ACTIVATED",
     controller_role: "AGENTOS_CONTROLLER",
-    controller_display_name: "Intent Regulator",
+    controller_display_name: "Controller",
     scope: "PROJECT_PERSISTENT",
     lifetime: "PERSISTENT",
     storage_scope: "CONTROL_PLANE_PERSISTENT",
@@ -930,7 +930,7 @@ export function validateControllerSupervision(supervision) {
   assert(supervision.schema === CONTROLLER_SUPERVISION_SCHEMA && supervision.version === 1, "Bootstrap controller supervision identity is invalid");
   assert(supervision.status === "PREPARED_NOT_ACTIVATED", "Bootstrap controller supervision cannot activate AgentOS");
   assert(supervision.controller_role === "AGENTOS_CONTROLLER", "Bootstrap controller supervision role is invalid");
-  assert(supervision.controller_display_name === "Intent Regulator", "Bootstrap controller supervision display name is invalid");
+  assert(supervision.controller_display_name === "Controller", "Bootstrap controller supervision display name is invalid");
   assert(supervision.scope === "PROJECT_PERSISTENT" && supervision.lifetime === "PERSISTENT", "Bootstrap controller supervision is not persistent");
   assert(supervision.storage_scope === "CONTROL_PLANE_PERSISTENT", "Bootstrap controller supervision storage scope is invalid");
   assert(supervision.owner_configurable_audit_interval === true, "Bootstrap audit interval is not owner-configurable");
@@ -1722,6 +1722,7 @@ export function executeBootstrapPlan(plan, {
   controllerSessionId,
   logicalControllerId = "AGENTOS-CONTROLLER",
 }) {
+  throw Object.assign(new Error("Legacy Bootstrap execution is retired; governed Bootstrap may start exactly one Spawner and cannot create Controller state or project authority directly"), {code: "LEGACY_BOOTSTRAP_EXECUTION_RETIRED"});
   validateBootstrapRunnablePlan(plan);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap execution requires the exact authority-corpus workflow");
   if (isJsaPlan(plan)) {
@@ -1843,6 +1844,7 @@ export function executeBootstrapPlan(plan, {
 }
 
 export function promoteBootstrapExecution({plan, executionState, setupAudit, projectRoot, controlPlaneRoot = null, nowUtc}) {
+  throw Object.assign(new Error("Legacy Bootstrap promotion is retired; activation requires governed Spawner admission"), {code: "LEGACY_BOOTSTRAP_EXECUTION_RETIRED"});
   validateBootstrapRunnablePlan(plan);
   if (isJsaPlan(plan)) validateBootstrapActionScope(["PROMOTE_CONTROL_PLANE_STATE"], plan.bootstrap_safety_analysis);
   validateExecutionState(executionState);
@@ -1975,6 +1977,7 @@ export function auditBootstrapSetup({
   controllerSessionId,
   logicalControllerId = "AGENTOS-CONTROLLER",
 }) {
+  throw Object.assign(new Error("Legacy Bootstrap setup audit is retired; use the governed Bootstrap-to-Spawner evaluation path"), {code: "LEGACY_BOOTSTRAP_EXECUTION_RETIRED"});
   validateBootstrapRunnablePlan(plan);
   if (isJsaPlan(plan)) validateBootstrapActionScope(["RUN_SETUP_AUDIT"], plan.bootstrap_safety_analysis);
   assert(workflow?.authority_corpus_system?.tree_template, "Bootstrap setup audit requires the exact authority-corpus workflow");

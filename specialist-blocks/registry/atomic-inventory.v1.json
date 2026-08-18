@@ -252,9 +252,9 @@
       "title": "Independent Auditor"
     },
     {
-      "generic_id": "AGENT.INTENT_REGULATOR",
-      "block_id": "specialist.control.intent-regulator",
-      "title": "Intent Regulator"
+      "generic_id": "AGENT.PRODUCT_OWNER",
+      "block_id": "specialist.control.product-owner",
+      "title": "Product Owner"
     },
     {
       "generic_id": "AGENT.PROJECT_CONTROLLER",

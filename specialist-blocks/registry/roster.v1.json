@@ -415,104 +415,44 @@
       "activation": "OFF"
     },
     {
-      "block_id": "specialist.control.intent-regulator",
-      "candidate_digest": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d",
+      "block_id": "specialist.control.product-owner",
+      "candidate_digest": "c4e596b3a484c7fdc581ff528721d31682bf995402835ee8b6be26730e0c18ab",
       "role_kind": "CONTROL_PLANE",
-      "atomic_scope_statement": "Governance-only control for preserving typed owner intent and routing true authority questions; it does not decide Product content, execute requested work, or accept its own candidate.",
+      "atomic_scope_statement": "Intent-only control for AGENTOS.PRODUCT_OWNER: it owns normal user conversation and typed intent alignment but no workflow, lifecycle, implementation, deployment, or memory-write authority.",
       "permitted_decisions": [
-        "classify an input as typed owner intent only when its authority binding is explicit",
-        "preserve the exact intent record and provenance without rewriting its meaning",
-        "record UNKNOWN and close only the dependent authority action",
-        "return NOT_APPLICABLE when no owner-intent condition is present",
-        "route a true authority question to the declared authority owner"
+        "ask one bounded intent question with simple selectable answers",
+        "classify a user statement as intent, clarification, or out-of-scope work",
+        "explain choices in simple natural language and offer elaborate or advanced detail",
+        "record an intent-alignment observation for typed handoff",
+        "return UNKNOWN when intent cannot be inferred safely"
       ],
       "forbidden_decisions": [
-        "accept or admit any candidate",
-        "convert chat, preference, or suggestion into authority",
-        "direct protected Memory internals",
-        "execute, publish, deploy, migrate, or write Product",
-        "infer missing owner identity, scope, or authority",
-        "resolve jurisdictional applicability without typed evidence",
-        "self-accept its own candidate"
+        "activate, spawn, admit, archive, despawn, or invalidate any agent or seed",
+        "change workflow state, schedule work, or enforce progress",
+        "deploy, publish, merge, release, or operate runtime",
+        "implement Product, governance, or consumer code",
+        "mutate global governance memory or private project memory",
+        "self-accept, self-review, or approve its own package"
       ],
-      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_TYPED_INTENT_PRESERVATION_AND_ROUTING_ONLY",
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_WORKFLOW_CONTROL;_NO_LIFECYCLE;_NO_MEMORY_WRITE;_NO_DEPLOY;_NO_SELF_ACCEPTANCE;_INTENT_HANDOFF_ONLY",
       "required_upstream_router": null,
-      "sibling_conflicts": [],
+      "sibling_conflicts": [
+        "specialist.control.project-controller"
+      ],
       "composition_rules": [
-        "accept no owner intent until independent authority confirms the authority binding",
-        "compose only with typed context, source lock, and explicit custody",
-        "preserve unrelated work when a dependent authority action is UNKNOWN",
-        "split a request when product execution, applicability determination, or candidate acceptance is also requested"
+        "Controller owns workflow regulation while Product Owner owns user intent",
+        "every user-facing question offers bounded simple answers and optional elaborate or advanced explanation",
+        "intent observations are advisory until accepted through the typed project authority",
+        "model choice and reasoning must come from the current accepted global model-policy projection",
+        "normal human-facing responses default to simple natural language without internal codes"
       ],
-      "escalation_target": "Route true authority questions to the declared owner authority; if no declared owner authority exists, request typed context and close the dependent action.",
+      "escalation_target": "typed Controller or named specialist for execution; user only for an unresolved material intent choice",
       "split_required_when": [
-        "authority binding differs",
-        "candidate acceptance is requested",
-        "evidence domain or source version differs",
-        "legal or regulated applicability is requested",
-        "product execution is requested"
-      ],
-      "priority": "P0",
-      "family": "foundation",
-      "revision": "1.0.0",
-      "status": "CANDIDATE",
-      "primary_sources": [
-        "source.agentos-portable-intent-control",
-        "source.json-schema-2020-12",
-        "source.rfc-2119"
-      ],
-      "dependencies": [
-        "specialist.foundation.authority-jurisdiction-gate",
-        "specialist.foundation.evaluation-admission-gate",
-        "specialist.foundation.evidence-freshness-gate",
-        "specialist.foundation.role-intake-classifier",
-        "specialist.foundation.scope-non-goal-gate",
-        "specialist.foundation.tool-custody-gate"
-      ],
-      "conflicts": [],
-      "gate_path": "gates/00-intake.gate",
-      "schema_path": "schemas/specialist-block.v1.json",
-      "evaluator_receipt": "specialist-eval.intent-regulator.v1",
-      "owner": "specialist-library-controller",
-      "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
-    },
-    {
-      "block_id": "specialist.control.project-controller",
-      "candidate_digest": "f64d87b164eb10c27acc20bde40eadae24f9ad47adf689229029265a75f80113",
-      "role_kind": "CONTROL_PLANE",
-      "atomic_scope_statement": "Governance-only control for a typed Global Project Controller / 15-Minute Orchestrator request; it maintains intent and routing state but does not perform Product or deployment work.",
-      "permitted_decisions": [
-        "classify a typed control-plane request",
-        "maintain an explicit lifecycle intent without changing activation",
-        "record UNKNOWN and close only the dependent transition",
-        "return NOT_APPLICABLE when the request is outside control-plane lifecycle scope",
-        "route a bounded handoff to a named authority"
-      ],
-      "forbidden_decisions": [
-        "activate or admit any specialist or roster",
-        "change Product files, shared schemas, control files, or registry files",
-        "deploy, publish, migrate, build, or trigger runtime side effects",
-        "handle secrets, protected consumer data, or Memory internals",
-        "infer missing authority, applicability, or lifecycle evidence",
-        "self-accept or override independent evaluation"
-      ],
-      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_TYPED_HANDOFF_ONLY",
-      "required_upstream_router": null,
-      "sibling_conflicts": [],
-      "composition_rules": [
-        "compose only with a typed request, declared authority, custody result, and exact candidate digest",
-        "keep each fifteen-minute checkpoint advisory until the independent authority accepts the transition",
-        "route Product, data, security, delivery, and assurance work to their narrow specialists",
-        "unknown closes only the dependent lifecycle transition"
-      ],
-      "escalation_target": "independent authority or owner review named by the typed control-plane contract",
-      "split_required_when": [
-        "authority or custody differs",
-        "domain work requires a narrow specialist",
-        "failure mode or evidence domain differs",
-        "request includes Product write, deploy, publish, migrate, or runtime actions",
-        "source version or effective-date applicability differs"
+        "delivery or deployment authority is required",
+        "implementation or domain work is required",
+        "lifecycle or roster authority is required",
+        "memory mutation is required",
+        "workflow regulation or scheduling is required"
       ],
       "priority": "P0",
       "family": "foundation",
@@ -531,7 +471,70 @@
       "conflicts": [],
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
-      "evaluator_receipt": "specialist-eval.project-controller.v1",
+      "evaluator_receipt": "specialist-eval.product-owner.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.project-controller",
+      "candidate_digest": "ac5c3b6cc774c305ff70609d9bb08f29121e981fc71663a8691c29300ab87694",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Workflow-regulation-only control for AGENTOS_CONTROLLER; AGENTOS.PRODUCT_OWNER owns intent and conversation, Agent Spawner owns lifecycle, and Runtime owns delivery.",
+      "permitted_decisions": [
+        "apply a canonical signed request to start or wake exactly one Agent Spawner",
+        "dispatch a typed redistribution handoff without approving its work",
+        "observe or reconcile liveness of exactly one Agent Spawner",
+        "record a proven protected blocker without widening authority",
+        "run a fifteen-minute useful-progress check and route a false-stall repair"
+      ],
+      "forbidden_decisions": [
+        "accept unsigned, stale, replayed, or caller-authored Controller authority",
+        "activate, spawn, admit, archive, despawn, or invalidate any ordinary agent or seed",
+        "approve handoffs, candidates, gates, releases, or its own package",
+        "create, advance, close, or mutate campaigns, phases, features, or tasks",
+        "merge, publish, release, deploy, or operate runtime",
+        "mutate global governance memory, private project memory, roster, or role blocks",
+        "own user intent or normal human-facing conversation"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_INTENT_CUSTODY;_NO_ORDINARY_LIFECYCLE;_NO_MEMORY_WRITE;_NO_DEPLOY;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_SIGNED_ONE_SPAWNER_OPERATIONS_ONLY;_REDISTRIBUTION_DISPATCH_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [
+        "specialist.control.product-owner"
+      ],
+      "composition_rules": [
+        "AGENTOS.PRODUCT_OWNER exclusively owns intent and normal user conversation",
+        "Agent Spawner exclusively owns governance compilation, roster, seeds, workers, handoffs, archival, and despawn",
+        "Controller operations resolve only from the canonical signed operation registry",
+        "every fifteen-minute check requires evidence of concrete useful work or a proven protected blocker",
+        "redistribution dispatch is routing rather than approval"
+      ],
+      "escalation_target": "Agent Spawner for in-lane lifecycle or workflow repair; AGENTOS.PRODUCT_OWNER for unresolved product intent; protected boundary recipient named by typed handoff",
+      "split_required_when": [
+        "agent lifecycle or roster action is required",
+        "human conversation or product intent is required",
+        "implementation or domain work is required",
+        "memory mutation is required",
+        "merge, release, deployment, publication, or runtime operation is required"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "2.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-portable-governance",
+        "source.json-schema-2020-12",
+        "source.rfc-2119",
+        "source.rfc-8174"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.project-controller.v2",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -7107,5 +7110,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08"
+  "roster_sha256": "aec27ff0587adb76c57d79b7e0829b0d181241938ea0a1564b113cc6037aac10"
 }

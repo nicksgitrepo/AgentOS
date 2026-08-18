@@ -23,7 +23,7 @@
   },
   "persistent_coordinator": {
     "machine_role": "AGENTOS_CONTROLLER",
-    "public_name": "Intent Regulator",
+    "public_name": "Controller",
     "scope": "PROJECT_WIDE",
     "lifetime": "PERSISTENT"
   },
@@ -268,7 +268,7 @@
     },
     "autonomous_continuation": {
       "repair_record": "docs/rapid-foundations/evidence/continuation-repair.v1.json",
-      "persistent_coordinator": "Intent Regulator",
+      "persistent_coordinator": "Controller",
       "backlog_source": "docs/rapid-foundations/evidence/iteration-transition.v1.json",
       "next_campaign": "docs/rapid-foundations/evidence/iteration-campaign-003.v1.json",
       "next_campaign_status": "CAMPAIGN_CLOSED_HANDOFF_PRESERVED",

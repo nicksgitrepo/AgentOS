@@ -8,13 +8,18 @@ export const ROLE_DEFINITION_SOURCE_VERSION = 1;
 
 export const ROLE_SCOPES = Object.freeze(["CAMPAIGN", "PERSISTENT"]);
 export const ROLE_KINDS = Object.freeze([
+  "CONTROLLER",
   "CAMPAIGN_ORCHESTRATOR",
   "INDEPENDENT_AUDITOR",
-  "INTENT_REGULATOR",
+  "MEMORY",
   "NAMED_ROLE",
   "ONE_LANE_WORKER",
+  "ORCHESTRATOR",
+  "PRODUCT_OWNER",
   "RUNTIME",
+  "SCHEDULER",
 ]);
+export const RETIRED_CURRENT_ROLE_IDS = Object.freeze(["AGENTOS.INTENT_REGULATOR", "AGENTOS.PROJECT_OWNER", "INTENT_REGULATOR", "PROJECT_OWNER"]);
 export const QUESTION_SELECTORS = Object.freeze(["ALL_QUESTIONS", "ROOTS", "EXPLICIT_OR_ALL"]);
 
 const GENERAL_CLAUSES = Object.freeze({
@@ -90,11 +95,49 @@ export const CANONICAL_ROLE_DEFINITION_SOURCE = deepFreeze({
       ].sort(),
     },
     {
-      template_id: "INTENT_REGULATOR",
-      role_id: "INTENT_REGULATOR",
-      public_name: "Intent Regulator",
+      template_id: "AGENTOS.MEMORY",
+      role_id: "AGENTOS.MEMORY",
+      public_name: "Memory",
       role_scope: "PERSISTENT",
-      role_kind: "INTENT_REGULATOR",
+      role_kind: "MEMORY",
+      question_selector: "ROOTS",
+      question_roots: ["SECURITY"],
+      shared_clause_ids: [
+        GENERAL_CLAUSES.DELIVERY_CLOSURE,
+        GENERAL_CLAUSES.EVIDENCE_IDENTITY,
+        GENERAL_CLAUSES.RECOVERY_BOUNDARIES,
+        GENERAL_CLAUSES.RESPONSE_HANDOFF_GATING,
+        GENERAL_CLAUSES.SECURITY_PRIVACY,
+        GENERAL_CLAUSES.SOURCE_BINDING,
+      ].sort(),
+    },
+    {
+      template_id: "AGENTOS.ORCHESTRATOR",
+      role_id: "AGENTOS.ORCHESTRATOR",
+      public_name: "Orchestrator",
+      role_scope: "PERSISTENT",
+      role_kind: "ORCHESTRATOR",
+      question_selector: "ALL_QUESTIONS",
+      question_roots: [...ALL_ROOTS],
+      shared_clause_ids: [
+        GENERAL_CLAUSES.DELIVERY_CLOSURE,
+        GENERAL_CLAUSES.EVIDENCE_IDENTITY,
+        GENERAL_CLAUSES.FUNCTIONAL_ACCEPTANCE,
+        GENERAL_CLAUSES.INTENT_SCOPE,
+        GENERAL_CLAUSES.PROGRESS_HEALTH,
+        GENERAL_CLAUSES.RECOVERY_BOUNDARIES,
+        GENERAL_CLAUSES.RESPONSE_HANDOFF_GATING,
+        GENERAL_CLAUSES.ROLE_ROUTING,
+        GENERAL_CLAUSES.SECURITY_PRIVACY,
+        GENERAL_CLAUSES.SOURCE_BINDING,
+      ].sort(),
+    },
+    {
+      template_id: "AGENTOS.PRODUCT_OWNER",
+      role_id: "AGENTOS.PRODUCT_OWNER",
+      public_name: "Product Owner",
+      role_scope: "PERSISTENT",
+      role_kind: "PRODUCT_OWNER",
       question_selector: "ALL_QUESTIONS",
       question_roots: [...ALL_ROOTS],
       shared_clause_ids: [
@@ -109,8 +152,8 @@ export const CANONICAL_ROLE_DEFINITION_SOURCE = deepFreeze({
       ].sort(),
     },
     {
-      template_id: "RUNTIME",
-      role_id: "RUNTIME",
+      template_id: "AGENTOS.RUNTIME",
+      role_id: "AGENTOS.RUNTIME",
       public_name: "Runtime",
       role_scope: "PERSISTENT",
       role_kind: "RUNTIME",
@@ -125,7 +168,43 @@ export const CANONICAL_ROLE_DEFINITION_SOURCE = deepFreeze({
         GENERAL_CLAUSES.SOURCE_BINDING,
       ].sort(),
     },
-  ],
+    {
+      template_id: "AGENTOS.SCHEDULER",
+      role_id: "AGENTOS.SCHEDULER",
+      public_name: "Scheduler",
+      role_scope: "PERSISTENT",
+      role_kind: "SCHEDULER",
+      question_selector: "ALL_QUESTIONS",
+      question_roots: [...ALL_ROOTS],
+      shared_clause_ids: [
+        GENERAL_CLAUSES.DELIVERY_CLOSURE,
+        GENERAL_CLAUSES.EVIDENCE_IDENTITY,
+        GENERAL_CLAUSES.PROGRESS_HEALTH,
+        GENERAL_CLAUSES.RECOVERY_BOUNDARIES,
+        GENERAL_CLAUSES.RESPONSE_HANDOFF_GATING,
+        GENERAL_CLAUSES.ROLE_ROUTING,
+        GENERAL_CLAUSES.SOURCE_BINDING,
+      ].sort(),
+    },
+    {
+      template_id: "AGENTOS_CONTROLLER",
+      role_id: "AGENTOS_CONTROLLER",
+      public_name: "Controller",
+      role_scope: "PERSISTENT",
+      role_kind: "CONTROLLER",
+      question_selector: "ALL_QUESTIONS",
+      question_roots: [...ALL_ROOTS],
+      shared_clause_ids: [
+        GENERAL_CLAUSES.DELIVERY_CLOSURE,
+        GENERAL_CLAUSES.EVIDENCE_IDENTITY,
+        GENERAL_CLAUSES.PROGRESS_HEALTH,
+        GENERAL_CLAUSES.RECOVERY_BOUNDARIES,
+        GENERAL_CLAUSES.RESPONSE_HANDOFF_GATING,
+        GENERAL_CLAUSES.ROLE_ROUTING,
+        GENERAL_CLAUSES.SOURCE_BINDING,
+      ].sort(),
+    },
+  ].sort((left, right) => Buffer.from(left.role_id).compare(Buffer.from(right.role_id))),
   one_lane_worker_template: {
     template_id: "ONE_LANE_WORKER",
     role_id_prefix: "WORKER_",
@@ -212,7 +291,7 @@ export function validateRoleDefinitionSource(source = CANONICAL_ROLE_DEFINITION_
   exactKeys(source, ["schema", "version", "source_kind", "role_templates", "one_lane_worker_template"], "role definition source");
   assert(source.schema === ROLE_DEFINITION_SOURCE_SCHEMA && source.version === ROLE_DEFINITION_SOURCE_VERSION, "role definition source identity is invalid");
   assert(source.source_kind === ROLE_DEFINITION_SOURCE_KIND, "role definition source kind is invalid");
-  assert(Array.isArray(source.role_templates) && source.role_templates.length === 4, "canonical role templates are incomplete");
+  assert(Array.isArray(source.role_templates) && source.role_templates.length === 8, "canonical role templates are incomplete");
   const ids = new Set();
   source.role_templates.forEach((template, index) => {
     validateTemplate(template, index);
@@ -220,7 +299,11 @@ export function validateRoleDefinitionSource(source = CANONICAL_ROLE_DEFINITION_
     ids.add(template.role_id);
   });
   assert(JSON.stringify([...ids].sort((left, right) => Buffer.from(left).compare(Buffer.from(right)))) === JSON.stringify([...ids]), "role templates must be sorted by role ID");
-  assert(JSON.stringify([...ids].sort()) === JSON.stringify(["CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR", "INTENT_REGULATOR", "RUNTIME"]), "canonical role templates must contain the persistent and campaign roles");
+  assert(JSON.stringify([...ids].sort()) === JSON.stringify([
+    "AGENTOS.MEMORY", "AGENTOS.ORCHESTRATOR", "AGENTOS.PRODUCT_OWNER", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS_CONTROLLER",
+    "CAMPAIGN_ORCHESTRATOR", "INDEPENDENT_AUDITOR",
+  ].sort()), "canonical role templates must contain the permanent registry and campaign roles");
+  assert([...ids].every((id) => !RETIRED_CURRENT_ROLE_IDS.includes(id)), "retired role identity is not admissible in current definitions");
   validateTemplate(source.one_lane_worker_template, 0, {worker: true});
   assert(source.one_lane_worker_template.role_kind === "ONE_LANE_WORKER" && source.one_lane_worker_template.role_scope === "CAMPAIGN", "one-lane worker template scope is invalid");
   assertPortable(source, "role definition source");

@@ -32,7 +32,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["owner_role", "authoring_role"],
-      "properties": {"owner_role": {"const": "PROJECT_OWNER"}, "authoring_role": {"const": "INTENT_REGULATOR"}}
+      "properties": {"owner_role": {"const": "AGENTOS.PRODUCT_OWNER"}, "authoring_role": {"const": "AGENTOS.SPAWNER"}}
     },
     "lineage": {
       "type": "object",

@@ -9,10 +9,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const publicKernel = await import(pathToFileURL(path.join(root, "control", "agentos.mjs")).href);
 
 for (const name of [
-  "bootstrapAndStartAgentOS",
+  "compileControllerWorkflowRegulatorContract",
   "compileRapidPrototypeWorkflow",
   "compileRapidPrototypeWorkflowFromInventory",
-  "createProjectMemoryRuntime",
   "compileGeneratedProjectRoleLibrary",
   "compileReleasePromotionGate",
   "compileAutonomousLaneHandoff",
@@ -22,6 +21,11 @@ for (const name of [
 ]) {
   assert.equal(typeof publicKernel[name], "function", `public kernel export is unavailable: ${name}`);
 }
+for (const forbidden of ["bootstrapAndStartAgentOS", "createIntentRegulatorRuntime", "agentLifecycleCustody", "bootstrapRuntime", "projectOwnerBootstrap", "controller", "controllerSupervisor", "continuousLoop", "openPersistentIntentRuntime", "runContinuousOperatingLoop", "createProjectMemoryRuntime", "projectMemoryStore", "projectMemoryArtifacts", "projectMemoryRuntime"]) {
+  assert.equal(Object.hasOwn(publicKernel, forbidden), false, `unsafe legacy authority remains public: ${forbidden}`);
+}
+assert.equal(typeof publicKernel.productOwnerOperational?.runProductOwnerOperationalRequest, "function", "governed Product Owner operational surface is unavailable");
+assert.equal(Object.hasOwn(publicKernel, "projectOwnerConversation"), false, "structural Product Owner conversation compiler must not bypass governed operational context");
 
 function modules(directory) {
   const result = [];
@@ -39,4 +43,4 @@ for (const modulePath of modules(path.join(root, "control"))) {
   await import(pathToFileURL(modulePath).href);
 }
 
-console.log("PASS public kernel surface: stable facade exports resolve and every reusable control module imports without CLI side effects");
+console.log("PASS public kernel surface: safe facade exports resolve, unsafe legacy lifecycle/campaign authority is absent, and every reusable control module imports without CLI side effects");

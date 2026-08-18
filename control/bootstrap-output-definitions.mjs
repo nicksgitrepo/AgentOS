@@ -200,7 +200,7 @@ export const BOOTSTRAP_OUTPUT_DEFINITIONS = Object.freeze([
     question_ids: ["project.audit_interval"],
     dependency_output_ids: ["GLOBAL_POLICY_STATE"],
     compiled_field_paths: ["controller_supervision", "exact_creation_plan.controller_supervision_sha256"],
-    safe_default: "PERSISTENT_INTENT_REGULATOR_WITH_15_MINUTE_AUDIT_AND_MEANINGFUL_PROGRESS_WINDOW",
+    safe_default: "PERSISTENT_CONTROLLER_WITH_15_MINUTE_WORKFLOW_AUDIT_AND_SEPARATE_PRODUCT_OWNER_INTENT_MONITOR",
     unavailable_behavior: "CONTINUE_ONLY_WITHIN_BOUND_SOURCE_SCOPE;_STOP_ONLY_FOR_HARD_BOUNDARY_REAL_OWNER_CHOICE_OR_VERIFIED_HOST_CAPABILITY_FAILURE",
     reopen_triggers: ["audit_interval_changed", "policy_state_changed", "source_scope_changed", "owner_intent_changed", "host_capability_changed"],
   }),

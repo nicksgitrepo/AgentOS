@@ -7,7 +7,7 @@
   "role_kind": "CONTROL_PLANE",
   "family": "foundation",
   "title": "Intent Regulator / Owner Voice",
-  "lifecycle": "CANDIDATE",
+  "lifecycle": "ARCHIVED",
   "activation": "OFF",
   "purpose": "Preserve explicit typed owner intent and route true authority questions without converting chat into authority or writing Product.",
   "scope": {
@@ -319,5 +319,5 @@
       "unsafe_action"
     ]
   },
-  "block_sha256": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d"
+  "block_sha256": "771e0e7295c1d3c2add9d2cbdfb42ea7b4274c286f231a4582cc2a22c0e545b3"
 }

@@ -15,8 +15,18 @@ export const MODEL_POLICY_TASK_CLASSES = Object.freeze([
   "SECURITY_REVIEW", "LONG_CONTEXT_SYNTHESIS", "FINAL_INTEGRATION", "REAL_HOST_DEBUGGING",
 ]);
 export const MODEL_POLICY_ROLE_CLASSES = Object.freeze([
-  "CONTROLLER", "SPAWNER", "SCHEDULER", "RUNTIME", "ORCHESTRATOR", "PERMANENT_ROLE", "INERT_SEED", "WORKING_AGENT",
+  "CONTROLLER", "PRODUCT_OWNER", "SPAWNER", "MEMORY", "SCHEDULER", "RUNTIME", "ORCHESTRATOR", "INERT_SEED", "WORKING_AGENT",
 ]);
+export const MODEL_POLICY_ROLE_TASK_CLASSES = Object.freeze({
+  CONTROLLER: "DETERMINISTIC_QA",
+  PRODUCT_OWNER: "LONG_CONTEXT_SYNTHESIS",
+  SPAWNER: "BROAD_ARCHITECTURE",
+  MEMORY: "DETERMINISTIC_QA",
+  SCHEDULER: "DETERMINISTIC_QA",
+  RUNTIME: "REAL_HOST_DEBUGGING",
+  ORCHESTRATOR: "BROAD_ARCHITECTURE",
+});
+export const MODEL_POLICY_COMPACT_SELECTION_ROLES = Object.freeze(["INERT_SEED", "WORKING_AGENT"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
@@ -330,7 +340,7 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
   assert(MODEL_POLICY_ROLE_CLASSES.includes(projection.role_class) && (expectedRoleClass === null || projection.role_class === expectedRoleClass), "Model-policy projection role differs");
   assert(projection.snapshot_sha256 === snapshot.snapshot_sha256 && projection.expires_at_utc === snapshot.expires_at_utc, "Model-policy projection snapshot is stale");
   assert(projection.mutation_authority === ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"].includes(projection.role_class), "Model-policy projection writer authority differs");
-  if (["INERT_SEED", "WORKING_AGENT"].includes(projection.role_class)) {
+  if (MODEL_POLICY_COMPACT_SELECTION_ROLES.includes(projection.role_class)) {
     exactKeys(projection.selected, ["model_id", "reasoning_effort", "capability_floor", "context_floor_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "fallback_models", "escalation_triggers"], "Compact model-policy selection");
     const model = snapshot.models.find((entry) => entry.model_id === projection.selected.model_id);
     assert(model && model.host_available && model.capability_score >= projection.selected.capability_floor && model.context_tokens >= projection.selected.context_floor_tokens, "Compact projection model is unavailable or below its floor");
@@ -345,7 +355,7 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
 export function compileModelPolicyProjection({snapshot, roleClass, selectedRoute = null, projectedAtUtc}) {
   validateModelPolicySnapshot(snapshot, {nowUtc: projectedAtUtc, requireActive: true});
   assert(MODEL_POLICY_ROLE_CLASSES.includes(roleClass), "Model-policy projection role class is invalid");
-  if (["INERT_SEED", "WORKING_AGENT"].includes(roleClass)) assert(selectedRoute !== null, `${roleClass} requires a selected compact route`);
+  if (MODEL_POLICY_COMPACT_SELECTION_ROLES.includes(roleClass)) assert(selectedRoute !== null, `${roleClass} requires a selected compact route`);
   if (selectedRoute !== null) validateEcoModelRoute(selectedRoute, {snapshot});
   const projection = {
     schema: MODEL_POLICY_PROJECTION_SCHEMA, version: 1, status: "READY", read_only: true,

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.product_owner_boundary_input.v1",
+  "title": "Product Owner deterministic authority boundary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "admission_status", "model_context_status", "intent_context_status", "project_binding_status", "detail_level"],
+  "properties": {
+    "schema": {"const": "agentos.product_owner_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string"},
+    "admission_status": {"enum": ["CURRENT", "MISSING", "STALE", "INVALID"]},
+    "model_context_status": {"enum": ["CURRENT", "MISSING", "STALE", "INVALID"]},
+    "intent_context_status": {"enum": ["CURRENT", "MISSING", "STALE", "CONTRADICTORY"]},
+    "project_binding_status": {"enum": ["MATCHED", "MISMATCHED", "UNKNOWN"]},
+    "detail_level": {"enum": ["SIMPLE", "ELABORATE", "ADVANCED"]}
+  }
+}

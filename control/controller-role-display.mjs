@@ -3,8 +3,8 @@
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 
 export const AGENTOS_CONTROLLER_ROLE = "AGENTOS_CONTROLLER";
-export const AGENTOS_CONTROLLER_DISPLAY_NAME = "Intent Regulator";
-export const LEGACY_CONTROLLER_DISPLAY_NAMES = Object.freeze(["AgentOS Controller"]);
+export const AGENTOS_CONTROLLER_DISPLAY_NAME = "Controller";
+export const LEGACY_CONTROLLER_DISPLAY_NAMES = Object.freeze(["AgentOS Controller", "Intent Regulator"]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -23,12 +23,12 @@ export function controllerDisplayTitle(taskId) {
 
 export function validateControllerRoleDisplay({controllerRole, controllerDisplayName, displayTitle = null}, {taskId = null, label = "Controller role display"} = {}) {
   assert(controllerRole === AGENTOS_CONTROLLER_ROLE, `${label} must use AGENTOS_CONTROLLER`);
-  assert(controllerDisplayName === AGENTOS_CONTROLLER_DISPLAY_NAME || LEGACY_CONTROLLER_DISPLAY_NAMES.includes(controllerDisplayName), `${label} must use Intent Regulator`);
+  assert(controllerDisplayName === AGENTOS_CONTROLLER_DISPLAY_NAME, `${label} must use Controller; legacy display names are read-only migration data`);
   if (displayTitle !== null) {
     requireString(displayTitle, `${label} title`);
     assert(!displayTitle.includes("Bootstrap"), `${label} must not present Bootstrap as the ongoing role`);
     if (taskId !== null) assert(displayTitle === controllerDisplayTitle(taskId), `${label} title does not match the Controller task`);
-    else assert(displayTitle.startsWith(`${AGENTOS_CONTROLLER_DISPLAY_NAME} — `) || LEGACY_CONTROLLER_DISPLAY_NAMES.some((name) => displayTitle.startsWith(`${name} — `)), `${label} title does not identify Intent Regulator`);
+    else assert(displayTitle.startsWith(`${AGENTOS_CONTROLLER_DISPLAY_NAME} — `), `${label} title does not identify Controller`);
   }
   return {controllerRole, controllerDisplayName, ...(displayTitle === null ? {} : {displayTitle})};
 }

@@ -39664,75 +39664,6 @@
     {
       "schema": "agentos.specialist_recipe.v1",
       "version": 1,
-      "recipe_id": "recipe.agent.intent-regulator",
-      "recipe_version": "1.0.0",
-      "source_inventory_id": "inventory.permanent-governance-control.intent-regulator-owner-voice",
-      "source_title": "Intent Regulator/Owner Voice",
-      "source_role_kind": "ROUTER",
-      "aliases": [],
-      "priority": "P0",
-      "lane": "AGENT.INTENT_REGULATOR",
-      "family": "permanent-governance-control",
-      "purpose": "Compile the bounded owner-intent regulator task shape on demand.",
-      "required_layers": [
-        "agentos-governance",
-        "owner-intent-and-authority",
-        "task-role-authority"
-      ],
-      "required_block_ids": [
-        "specialist.control.intent-regulator",
-        "specialist.foundation.authority-jurisdiction-gate",
-        "specialist.foundation.role-intake-classifier",
-        "specialist.foundation.scope-non-goal-gate"
-      ],
-      "required_context_fields": [
-        "authority",
-        "non_goals",
-        "request",
-        "scope"
-      ],
-      "non_goals": [
-        "acceptance",
-        "consumer Product writing",
-        "deployment"
-      ],
-      "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
-      "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
-      "lifecycle": "CANDIDATE",
-      "compile_allowed": true,
-      "materialization": {
-        "status": "COMPILED_CANDIDATE",
-        "role_specific_block_required": false,
-        "package_ids": [
-          "specialist.control.intent-regulator",
-          "specialist.foundation.authority-jurisdiction-gate",
-          "specialist.foundation.role-intake-classifier",
-          "specialist.foundation.scope-non-goal-gate"
-        ]
-      },
-      "required_atomic_blocks": [],
-      "required_standard_blocks": [],
-      "optional_block_ids": [],
-      "reasons": {
-        "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe.",
-        "specialist.foundation.evaluation-admission-gate": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe.",
-        "specialist.foundation.evidence-freshness-gate": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe.",
-        "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe.",
-        "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe.",
-        "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe.",
-        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Intent Regulator/Owner Voice recipe."
-      },
-      "source_requirements": [
-        "primary source or typed authority-corpus record",
-        "publisher, version, effective date, retrieved date, and immutable identity",
-        "content digest when obtainable"
-      ],
-      "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
-      "recipe_hash": "588f6a3ba29947e0e157917ad116e2f9b59b9b04997ce9cc5639cbed0fe1da6c"
-    },
-    {
-      "schema": "agentos.specialist_recipe.v1",
-      "version": 1,
       "recipe_id": "recipe.inventory.permanent-governance-control-migration-adoption-controller",
       "recipe_version": "1.0.0",
       "source_inventory_id": "inventory.permanent-governance-control.migration-adoption-controller",
@@ -39951,6 +39882,75 @@
       ],
       "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
       "recipe_hash": "c8c5c698cfe4ef2c17ec56246330adb1810499f1e60f75ef28b9e1e9b83e24bc"
+    },
+    {
+      "schema": "agentos.specialist_recipe.v1",
+      "version": 1,
+      "recipe_id": "recipe.agent.product-owner",
+      "recipe_version": "1.0.0",
+      "source_inventory_id": "inventory.permanent-governance-control.product-owner-intent-custodian",
+      "source_title": "Product Owner/Intent Custodian",
+      "source_role_kind": "ROUTER",
+      "aliases": [],
+      "priority": "P0",
+      "lane": "AGENT.PRODUCT_OWNER",
+      "family": "permanent-governance-control",
+      "purpose": "Compile the bounded Product Owner intent-custody task shape on demand.",
+      "required_layers": [
+        "agentos-governance",
+        "owner-intent-and-authority",
+        "task-role-authority"
+      ],
+      "required_block_ids": [
+        "specialist.control.product-owner",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate"
+      ],
+      "required_context_fields": [
+        "authority",
+        "non_goals",
+        "request",
+        "scope"
+      ],
+      "non_goals": [
+        "acceptance",
+        "consumer Product writing",
+        "deployment"
+      ],
+      "selection_rule": "SELECT_SMALLEST_DEPENDENCY_COMPLETE_SET;_ATOMIC_SPECIALISTS_BEAT_ROUTERS",
+      "external_overlay_rule": "PROJECT_GOVERNANCE_CONTEXT_CANDIDATE_WORKTREE_CUSTODY_TOOLS_RESOURCES_AND_PROOF_REMAIN_EXTERNAL",
+      "lifecycle": "CANDIDATE",
+      "compile_allowed": true,
+      "materialization": {
+        "status": "COMPILED_CANDIDATE",
+        "role_specific_block_required": false,
+        "package_ids": [
+          "specialist.control.product-owner",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate"
+        ]
+      },
+      "required_atomic_blocks": [],
+      "required_standard_blocks": [],
+      "optional_block_ids": [],
+      "reasons": {
+        "specialist.foundation.authority-jurisdiction-gate": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe.",
+        "specialist.foundation.evaluation-admission-gate": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe.",
+        "specialist.foundation.evidence-freshness-gate": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe.",
+        "specialist.foundation.registry-alias-deduplicator": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe.",
+        "specialist.foundation.role-intake-classifier": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe.",
+        "specialist.foundation.scope-non-goal-gate": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe.",
+        "specialist.foundation.tool-custody-gate": "Universal governance dependency for the planned Product Owner/Intent Custodian recipe."
+      },
+      "source_requirements": [
+        "primary source or typed authority-corpus record",
+        "publisher, version, effective date, retrieved date, and immutable identity",
+        "content digest when obtainable"
+      ],
+      "freshness_policy": "Versioned standards and regulations require applicability, jurisdiction, effective-date, and current-source checks; stale or unverifiable evidence denies routing.",
+      "recipe_hash": "103d2da832ded56dc70f0489c442c64b873488cdb2ad898e758cd57a815698e1"
     },
     {
       "schema": "agentos.specialist_recipe.v1",
@@ -69906,5 +69906,5 @@
       "reason": "Exact duplicate label; one documentation role owns the writing contract."
     }
   ],
-  "recipes_sha256": "f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67"
+  "recipes_sha256": "f2488cc28d057ba06942fe5a735fc2fdeef7ce8db9238a6745b38d3198b49d5b"
 }

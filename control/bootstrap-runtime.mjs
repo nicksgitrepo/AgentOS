@@ -82,6 +82,7 @@ function createBoundExternalStatePersistence({authorityRoot, repositoryRoot = pr
 }
 
 export function createCampaignStatePersistence({authorityRoot, repositoryRoot = process.cwd(), relativePath = "campaigns/current/state.json"} = {}) {
+  throw Object.assign(new Error("Legacy Bootstrap campaign persistence is retired; use sealed Runtime and Controller custody"), {code: "LEGACY_BOOTSTRAP_RUNTIME_RETIRED"});
   const persistence = createBoundExternalStatePersistence({
     authorityRoot,
     repositoryRoot,
@@ -95,6 +96,7 @@ export function createCampaignStatePersistence({authorityRoot, repositoryRoot = 
 }
 
 export function createWorkflowStatePersistence({authorityRoot, repositoryRoot = process.cwd(), relativePath = "workflows/current/state.json"} = {}) {
+  throw Object.assign(new Error("Legacy Bootstrap workflow persistence is retired; use sealed Runtime and Controller custody"), {code: "LEGACY_BOOTSTRAP_RUNTIME_RETIRED"});
   const persistence = createBoundExternalStatePersistence({
     authorityRoot,
     repositoryRoot,
@@ -108,6 +110,7 @@ export function createWorkflowStatePersistence({authorityRoot, repositoryRoot = 
 }
 
 export function createQuestionQueuePersistence({authorityRoot, repositoryRoot = process.cwd(), relativePath = "questions.txt"} = {}) {
+  throw Object.assign(new Error("Legacy Bootstrap question persistence is retired; use governed Product Owner custody"), {code: "LEGACY_BOOTSTRAP_RUNTIME_RETIRED"});
   const canonicalRepository = fs.realpathSync.native(path.resolve(repositoryRoot));
   const canonicalAuthority = fs.realpathSync.native(path.resolve(authorityRoot));
   assert(canonicalAuthority !== canonicalRepository && !canonicalAuthority.startsWith(`${canonicalRepository}${path.sep}`), "Bootstrap Runtime question queue must remain outside the Product repository");
@@ -171,6 +174,7 @@ export async function bootstrapAndStartAgentOS({
   globalGovernanceObservedAtUtc,
   globalGovernanceAuthorityStore,
 } = {}) {
+  throw Object.assign(new Error("Legacy Bootstrap-to-Intent-Regulator runtime is retired; Bootstrap may only request one sealed Spawner start"), {code: "LEGACY_BOOTSTRAP_RUNTIME_RETIRED"});
   assertUniversalDevelopmentMode("BOOTSTRAP");
   assert(globalGovernanceBootstrap === undefined && globalGovernanceEvents === undefined && globalGovernanceReadback === undefined && globalGovernanceObservedAtUtc === undefined, "Bootstrap Runtime rejects caller-supplied global-governance objects; provide only canonical store references");
   const operationalGlobalGovernanceContexts = compileAllOperationalGlobalGovernanceContexts({authorityStore: globalGovernanceAuthorityStore});

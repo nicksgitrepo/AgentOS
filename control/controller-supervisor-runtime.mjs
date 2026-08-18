@@ -550,6 +550,7 @@ function writeOrVerify({runtimeRoot, recordPath, record, digestField, validate})
 }
 
 export async function runControllerSupervisorIteration({runtimeRoot, adapter, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", nowUtc = new Date().toISOString()}) {
+  throw Object.assign(new Error("Legacy arbitrary-adapter Controller supervisor is retired; use signed canonical Controller events"), {code: "LEGACY_CONTROLLER_SUPERVISOR_RETIRED"});
   requireString(runtimeRoot, "supervisor runtime root");
   assert(adapter && typeof adapter.observe === "function", "supervisor adapter must provide observe()");
   const root = canonicalRoot(runtimeRoot);
@@ -779,6 +780,7 @@ function sleep(milliseconds, signal = null) {
 }
 
 export async function runControllerSupervisor({runtimeRoot, adapter, adapterFactory = null, runtimeId = "AGENTOS-CONTROLLER-SUPERVISOR", intervalMinutes = DEFAULT_SUPERVISOR_INTERVAL_MINUTES, intervalMs = null, maxSameTurnTransitions = DEFAULT_MAX_SAME_TURN_TRANSITIONS, once = false, signal = null}) {
+  throw Object.assign(new Error("Legacy arbitrary-adapter Controller supervisor is retired; use signed canonical Controller events"), {code: "LEGACY_CONTROLLER_SUPERVISOR_RETIRED"});
   assert(Number.isSafeInteger(intervalMinutes) && intervalMinutes >= 1 && intervalMinutes <= MAX_SUPERVISOR_INTERVAL_MINUTES, "supervisor interval minutes must be between 1 and 1440");
   const resolvedIntervalMs = intervalMs === null ? intervalMinutes * 60_000 : intervalMs;
   assert(Number.isSafeInteger(resolvedIntervalMs) && resolvedIntervalMs >= 250 && resolvedIntervalMs <= MAX_SUPERVISOR_INTERVAL_MINUTES * 60_000, "supervisor interval is outside the safe range");

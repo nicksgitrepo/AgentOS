@@ -99,10 +99,14 @@ function makeRoleInputs() {
   const role_graph_bindings = [
     {graph_id: "LANE_ALPHA", path_ref: "release/lanes/alpha.gate", graph_sha256: digest("lane-alpha"), scope_role_id: "WORKER_ALPHA", lane_id: "ALPHA"},
     {graph_id: "LANE_BETA", path_ref: "release/lanes/beta.gate", graph_sha256: digest("lane-beta"), scope_role_id: "WORKER_BETA", lane_id: "BETA"},
+    {graph_id: "ROLE_CONTROLLER", path_ref: "release/roles/controller.gate", graph_sha256: digest("role-controller"), scope_role_id: "AGENTOS_CONTROLLER", lane_id: null},
+    {graph_id: "ROLE_MEMORY", path_ref: "release/roles/memory.gate", graph_sha256: digest("role-memory"), scope_role_id: "AGENTOS.MEMORY", lane_id: null},
+    {graph_id: "ROLE_ORCHESTRATOR", path_ref: "release/roles/orchestrator.gate", graph_sha256: digest("role-orchestrator"), scope_role_id: "AGENTOS.ORCHESTRATOR", lane_id: null},
+    {graph_id: "ROLE_PRODUCT_OWNER", path_ref: "release/roles/product-owner.gate", graph_sha256: digest("role-product-owner"), scope_role_id: "AGENTOS.PRODUCT_OWNER", lane_id: null},
+    {graph_id: "ROLE_SCHEDULER", path_ref: "release/roles/scheduler.gate", graph_sha256: digest("role-scheduler"), scope_role_id: "AGENTOS.SCHEDULER", lane_id: null},
     {graph_id: "ROLE_AUDIT", path_ref: "release/roles/audit.gate", graph_sha256: digest("role-audit"), scope_role_id: "INDEPENDENT_AUDITOR", lane_id: null},
     {graph_id: "ROLE_ORCHESTRATION", path_ref: "release/roles/orchestration.gate", graph_sha256: digest("role-orchestration"), scope_role_id: "CAMPAIGN_ORCHESTRATOR", lane_id: null},
-    {graph_id: "ROLE_REGULATOR", path_ref: "release/roles/regulator.gate", graph_sha256: digest("role-regulator"), scope_role_id: "INTENT_REGULATOR", lane_id: null},
-    {graph_id: "ROLE_RUNTIME", path_ref: "release/roles/runtime.gate", graph_sha256: digest("role-runtime"), scope_role_id: "RUNTIME", lane_id: null},
+    {graph_id: "ROLE_RUNTIME", path_ref: "release/roles/runtime.gate", graph_sha256: digest("role-runtime"), scope_role_id: "AGENTOS.RUNTIME", lane_id: null},
   ];
   const general = ["GENERAL_CORE", "GENERAL_EVIDENCE", "GENERAL_SECURITY"];
   const prohibited = ["SCOPE_EXPANSION", "SELF_ACCEPTANCE"];
@@ -118,10 +122,14 @@ function makeRoleInputs() {
     required_evidence: sorted(required_evidence),
   });
   const role_definitions = [
+    role({role_id: "AGENTOS.MEMORY", display_name: "Memory", role_kind: "MEMORY", lifetime: "PERSISTENT", role_graph_id: "ROLE_MEMORY", allowed_authority: ["GOVERNED_MEMORY_ADAPTER"], required_evidence: ["MEMORY_RECEIPT"]}),
+    role({role_id: "AGENTOS.ORCHESTRATOR", display_name: "Orchestrator", role_kind: "ORCHESTRATOR", lifetime: "PERSISTENT", role_graph_id: "ROLE_ORCHESTRATOR", allowed_authority: ["PLAN_COORDINATION"], required_evidence: ["ORCHESTRATION_RECEIPT"]}),
+    role({role_id: "AGENTOS.PRODUCT_OWNER", display_name: "Product Owner", role_kind: "PRODUCT_OWNER", lifetime: "PERSISTENT", role_graph_id: "ROLE_PRODUCT_OWNER", allowed_authority: ["INTENT_CUSTODY"], required_evidence: ["OWNER_DECISION"]}),
+    role({role_id: "AGENTOS.RUNTIME", display_name: "Runtime", role_kind: "RUNTIME", lifetime: "PERSISTENT", role_graph_id: "ROLE_RUNTIME", allowed_authority: ["HOST_READBACK"], required_evidence: ["RUNTIME_RECEIPT"]}),
+    role({role_id: "AGENTOS.SCHEDULER", display_name: "Scheduler", role_kind: "SCHEDULER", lifetime: "PERSISTENT", role_graph_id: "ROLE_SCHEDULER", allowed_authority: ["RESOURCE_SCHEDULING"], required_evidence: ["SCHEDULER_RECEIPT"]}),
+    role({role_id: "AGENTOS_CONTROLLER", display_name: "Controller", role_kind: "CONTROLLER", lifetime: "PERSISTENT", role_graph_id: "ROLE_CONTROLLER", allowed_authority: ["WORKFLOW_REGULATION"], required_evidence: ["WORKFLOW_RECEIPT"]}),
     role({role_id: "CAMPAIGN_ORCHESTRATOR", display_name: "Campaign Orchestrator", role_kind: "CAMPAIGN_ORCHESTRATOR", lifetime: "CAMPAIGN", role_graph_id: "ROLE_ORCHESTRATION", allowed_authority: ["CAMPAIGN_ROUTING"], required_evidence: ["CAMPAIGN_RECEIPT"]}),
     role({role_id: "INDEPENDENT_AUDITOR", display_name: "Independent Auditor", role_kind: "INDEPENDENT_AUDITOR", lifetime: "CAMPAIGN", role_graph_id: "ROLE_AUDIT", allowed_authority: ["INDEPENDENT_CHECK"], required_evidence: ["AUDIT_RECEIPT"]}),
-    role({role_id: "INTENT_REGULATOR", display_name: "Intent Regulator", role_kind: "INTENT_REGULATOR", lifetime: "PERSISTENT", role_graph_id: "ROLE_REGULATOR", allowed_authority: ["PROJECT_GOVERNANCE_REVIEW"], required_evidence: ["OWNER_DECISION"]}),
-    role({role_id: "RUNTIME", display_name: "Runtime", role_kind: "RUNTIME", lifetime: "PERSISTENT", role_graph_id: "ROLE_RUNTIME", allowed_authority: ["HOST_READBACK"], required_evidence: ["RUNTIME_RECEIPT"]}),
     role({role_id: "WORKER_ALPHA", display_name: "Alpha Worker", role_kind: "NAMED_LANE_WORKER", lifetime: "CAMPAIGN", lane_id: "ALPHA", role_graph_id: "LANE_ALPHA", allowed_authority: ["LANE_EXECUTION"], required_evidence: ["LANE_RECEIPT"]}),
     role({role_id: "WORKER_BETA", display_name: "Beta Worker", role_kind: "NAMED_LANE_WORKER", lifetime: "CAMPAIGN", lane_id: "BETA", role_graph_id: "LANE_BETA", allowed_authority: ["LANE_EXECUTION"], required_evidence: ["LANE_RECEIPT"]}),
   ];
@@ -255,9 +263,23 @@ validateLegacyLayeredGovernanceContract(layeredContract, {
 assert.deepEqual(layeredContract.layer_order, ["SHARED_GENERAL", "BASE_ROLE", "PERSISTENT_PROJECT", "GENERATED_TASK_ROLE"]);
 assert.equal(layeredContract.activation.active, false);
 
-assert.equal(first.baseRole.role_packets.length, 6, "base role packet inventory is incomplete");
+assert.equal(first.baseRole.role_packets.length, 10, "base role packet inventory is incomplete");
 assert.equal(first.binding.status, "COMPILED", "binding compilation must not imply preparation or activation");
-assert.deepEqual(first.baseRole.role_packets.filter((packet) => packet.lifetime === "PERSISTENT").map((packet) => packet.role_id), ["INTENT_REGULATOR", "RUNTIME"]);
+assert.deepEqual(first.baseRole.role_packets.filter((packet) => packet.lifetime === "PERSISTENT").map((packet) => packet.role_id), [
+  "AGENTOS.MEMORY", "AGENTOS.ORCHESTRATOR", "AGENTOS.PRODUCT_OWNER", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS_CONTROLLER",
+]);
+assert.equal(first.baseRole.role_packets.some((packet) => /INTENT_REGULATOR|PROJECT_OWNER/u.test(packet.role_id)), false);
+assert.deepEqual(first.projectGeneral.ownership, {owner_role: "AGENTOS.PRODUCT_OWNER", authoring_role: "AGENTOS.SPAWNER"});
+assert.deepEqual(first.binding.ownership, {owner_role: "AGENTOS.PRODUCT_OWNER", authoring_role: "AGENTOS.SPAWNER"});
+const retiredRolePacket = structuredClone(first.baseRole);
+const retiredSourceRoleId = retiredRolePacket.role_packets[0].role_id;
+retiredRolePacket.role_packets[0].role_id = "INTENT_REGULATOR";
+retiredRolePacket.role_packets[0].role_kind = "NAMED_ROLE";
+retiredRolePacket.role_packets[0].digest = canonicalDigest({...retiredRolePacket.role_packets[0], digest: null});
+retiredRolePacket.role_graph_bindings.find((binding) => binding.scope_role_id === retiredSourceRoleId).scope_role_id = "INTENT_REGULATOR";
+retiredRolePacket.role_packets.sort((left, right) => Buffer.from(`${left.role_id}:${left.lane_id ?? ""}`).compare(Buffer.from(`${right.role_id}:${right.lane_id ?? ""}`)));
+retiredRolePacket.digest = canonicalDigest({...retiredRolePacket, digest: null});
+assert.throws(() => validateBaseRoleLibrary(retiredRolePacket, {baseGeneralLibrary: first.baseGeneral}), /retired and cannot hold current authority/u);
 assert.deepEqual(first.generatedProjectRole.role_packets.find((packet) => packet.role_id === "WORKER_ALPHA").project_graph_ids, ["PROJECT_ACCEPTANCE", "PROJECT_SECURITY"]);
 assert(first.generatedProjectRole.role_packets.every((packet) => packet.allowed_authority.every((item) => first.baseRole.role_packets.find((base) => base.role_id === packet.role_id && base.lane_id === packet.lane_id).allowed_authority.includes(item))), "generated role expanded authority");
 assert(first.generatedProjectRole.role_packets.find((packet) => packet.role_id === "WORKER_ALPHA").prohibited_authority.includes("UNAUTHORIZED_EXTERNAL_ACTION"), "project prohibition was not composed");

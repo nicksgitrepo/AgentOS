@@ -23,9 +23,13 @@ import {assertControllerOperationAuthorized} from "./spawner-bootstrap-governanc
 import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 import {
   assertCanonicalControllerEventAuthority,
-  consumeControllerEventOnce,
   loadCanonicalControllerOperationRegistry,
 } from "./controller-event-authority.mjs";
+import {
+  consumeControllerProjectEventOnce,
+  readControllerProjectState,
+  writeControllerProjectStateCompareAndSwap,
+} from "./controller-project-store.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -711,61 +715,34 @@ function processControllerEvent({state, event, adapters = {}, globalGovernanceCo
   });
 }
 
-function safeControllerPath(root, relativePath) {
-  const resolvedRoot = fs.realpathSync.native(root);
-  const target = path.resolve(resolvedRoot, relativePath);
-  assert(target === resolvedRoot || target.startsWith(`${resolvedRoot}${path.sep}`), "controller state path escapes authority root");
-  return {resolvedRoot, target};
+export function readAgentOSControllerState(options = {}) {
+  assert(isRecord(options), "Controller state read requires an object");
+  assert(JSON.stringify(Object.keys(options).sort(compareUtf8)) === JSON.stringify(["projectControlStoreCapability"].sort(compareUtf8)), "Controller state rejects caller roots, paths, environment, and adapters", "CONTROLLER_PROJECT_STORE_ROOT_CALLER_FORBIDDEN");
+  const state = readControllerProjectState(options.projectControlStoreCapability);
+  return state === null ? null : validateAgentOSControllerState(state);
 }
 
-export function readAgentOSControllerState({authorityRoot, statePath = "agentos/controller-state.json"}) {
-  const {target} = safeControllerPath(authorityRoot, statePath);
-  let stat;
-  try {
-    stat = fs.lstatSync(target);
-  } catch (error) {
-    if (error.code === "ENOENT") return null;
-    throw error;
-  }
-  assert(stat.isFile() && !stat.isSymbolicLink(), "controller state must be a regular non-symlink file");
-  return validateAgentOSControllerState(JSON.parse(fs.readFileSync(target, "utf8")));
+export function writeAgentOSControllerStateCompareAndSwap(options = {}) {
+  assert(isRecord(options), "Controller state write requires an object");
+  const allowed = ["expectedStateSha256", "projectControlStoreCapability", "state"];
+  assert(Object.keys(options).every((key) => allowed.includes(key)) && Object.hasOwn(options, "projectControlStoreCapability") && Object.hasOwn(options, "state"), "Controller state write rejects caller roots, paths, environment, and adapters", "CONTROLLER_PROJECT_STORE_ROOT_CALLER_FORBIDDEN");
+  validateAgentOSControllerState(options.state);
+  return writeControllerProjectStateCompareAndSwap(options.projectControlStoreCapability, {
+    expectedStateSha256: options.expectedStateSha256 ?? null,
+    state: options.state,
+    validateState: validateAgentOSControllerState,
+  });
 }
 
-export function writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256 = null, state}) {
-  validateAgentOSControllerState(state);
-  if (expectedStateSha256 !== null) requireSha(expectedStateSha256, "expected controller state digest");
-  const {target} = safeControllerPath(authorityRoot, statePath);
-  assert(!fs.existsSync(target) || !fs.lstatSync(target).isSymbolicLink(), "controller state may not be a symlink");
-  const current = readAgentOSControllerState({authorityRoot, statePath});
-  if (expectedStateSha256 === null) assert(current === null, "controller state already exists");
-  else assert(current !== null && current.state_sha256 === expectedStateSha256, "controller state compare-and-swap parent is stale");
-  fs.mkdirSync(path.dirname(target), {recursive: true});
-  const lock = `${target}.lock`;
-  const temporary = `${target}.${process.pid}.${Date.now()}.stage`;
-  let lockHeld = false;
-  try {
-    fs.writeFileSync(lock, `${process.pid}\n`, {flag: "wx", mode: 0o600});
-    lockHeld = true;
-    fs.writeFileSync(temporary, `${canonicalJson(state)}\n`, {flag: "wx", mode: 0o600});
-    fs.renameSync(temporary, target);
-  } finally {
-    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
-    if (lockHeld && fs.existsSync(lock)) fs.unlinkSync(lock);
-  }
-  const readback = readAgentOSControllerState({authorityRoot, statePath});
-  assert(readback?.state_sha256 === state.state_sha256, "controller state readback differs");
-  return {state_sha256: readback.state_sha256, path: statePath};
-}
-
-export function applyAndWriteAgentOSControllerEvent({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
+export function applyAndWriteAgentOSControllerEvent({projectControlStoreCapability, expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
   assert(Object.keys(unexpected).length === 0, "Controller event rejects caller-supplied authority overrides");
-  const current = readAgentOSControllerState({authorityRoot, statePath});
+  const current = readAgentOSControllerState({projectControlStoreCapability});
   assert(current !== null, "controller state is missing");
   if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
   validateControllerEventPreconditions({state: current, event, globalGovernanceContext, globalGovernanceAuthorityStore});
-  consumeControllerEventOnce({stateRoot: authorityRoot, event});
+  consumeControllerProjectEventOnce(projectControlStoreCapability, event);
   const state = processControllerEvent({state: current, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore});
-  const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
+  const persistence = writeAgentOSControllerStateCompareAndSwap({projectControlStoreCapability, expectedStateSha256: current.state_sha256, state});
   return {state, persistence};
 }
 
@@ -801,13 +778,13 @@ async function invokeAsyncControllerAdapter({adapters, operation, state, event, 
  * validated, and are then replayed as immutable readbacks through that same
  * state machine. This keeps provider I/O out of the state transition logic.
  */
-export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
+export async function applyAndWriteAgentOSControllerEventAsync({projectControlStoreCapability, expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
   assert(Object.keys(unexpected).length === 0, "Controller event rejects caller-supplied authority overrides");
-  const current = readAgentOSControllerState({authorityRoot, statePath});
+  const current = readAgentOSControllerState({projectControlStoreCapability});
   assert(current !== null, "controller state is missing");
   if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
   validateControllerEventPreconditions({state: current, event, globalGovernanceContext, globalGovernanceAuthorityStore});
-  consumeControllerEventOnce({stateRoot: authorityRoot, event});
+  consumeControllerProjectEventOnce(projectControlStoreCapability, event);
   const operations = nativeEventOperations(event);
   const prepared = new Map();
   for (const operation of operations) {
@@ -816,13 +793,10 @@ export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, s
   }
   const synchronousAdapters = Object.fromEntries(operations.map((operation) => [operation, () => prepared.get(operation)]));
   const state = processControllerEvent({state: current, event, adapters: synchronousAdapters, globalGovernanceContext, globalGovernanceAuthorityStore});
-  const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
+  const persistence = writeAgentOSControllerStateCompareAndSwap({projectControlStoreCapability, expectedStateSha256: current.state_sha256, state});
   return {state, persistence, host_readbacks: Object.fromEntries(prepared)};
 }
 
 if (process.argv[1] !== undefined && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync.native(path.resolve(process.argv[1]))).href) {
-  const [command, statePath] = process.argv.slice(2);
-  if (!command || !statePath || command !== "validate") throw new Error("usage: agentos-controller validate <state.json>");
-  const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
-  process.stdout.write(`${JSON.stringify(validateAgentOSControllerState(state))}\n`);
+  throw new Error("CONTROLLER_DIRECT_PATH_FORBIDDEN: use the opaque project-store capability and Controller API");
 }

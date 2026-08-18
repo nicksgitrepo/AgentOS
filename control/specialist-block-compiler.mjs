@@ -545,7 +545,7 @@ export function compileSpecialistLibrary({repositoryRoot = process.cwd(), writeG
     const standard = block.role_kind === "STANDARD_BLOCK" ? validateStandardPackage(packageDir, block, sources) : null;
     const evaluation = validateEvaluation(readJson(path.join(packageDir, "evaluation.json"), `${block.block_id}/evaluation.json`), block);
     const handoff = validateHandoff(readJson(path.join(packageDir, "handoff.json"), `${block.block_id}/handoff.json`), block, packageDir);
-    records.push({block, sources, standard, evaluation, handoff, packageDir});
+    if (block.lifecycle !== "ARCHIVED") records.push({block, sources, standard, evaluation, handoff, packageDir});
   }
   records.sort((left, right) => left.block.block_id.localeCompare(right.block.block_id));
   const ids = new Set();

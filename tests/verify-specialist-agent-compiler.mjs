@@ -12,6 +12,7 @@ import {
   validateTaskShapedAgentPackage,
 } from "../control/specialist-agent-compiler.mjs";
 import {canonicalDigest} from "../control/specialist-block-compiler.mjs";
+import {assertNoRetiredRecipeAuthority} from "../control/scaffold-recipe-catalog.mjs";
 import {
   BLOCKS,
   LIBRARY_IDENTITY,
@@ -36,6 +37,10 @@ assert.equal(recipeCatalog.aliases.length, 10, "recipe catalog must preserve eve
 assert.equal(recipeCatalog.recipes_sha256, canonicalDigest({...recipeCatalog, recipes_sha256: null}), "recipe catalog digest must be deterministic");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.source_inventory_id)).size, 621, "recipe source inventory IDs must be unique");
 assert.equal(new Set(recipeCatalog.recipes.map((recipe) => recipe.recipe_id)).size, 621, "recipe IDs must be unique");
+assert.equal(assertNoRetiredRecipeAuthority(recipeCatalog), true);
+assert.throws(() => assertNoRetiredRecipeAuthority({recipes: [{recipe_id: "recipe.agent.intent-regulator"}]}), /retired Intent Regulator/u);
+assert.throws(() => assertNoRetiredRecipeAuthority({recipes: [{recipe_id: "recipe.hostile", required_block_ids: ["specialist.control.intent-regulator"]}]}), /retired Intent Regulator/u);
+assert(recipeCatalog.recipes.some((recipe) => recipe.recipe_id === "recipe.agent.product-owner" && recipe.source_inventory_id === "inventory.permanent-governance-control.product-owner-intent-custodian" && recipe.required_block_ids.includes("specialist.control.product-owner")), "current Product Owner recipe is missing");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "CANDIDATE").length, 620, "every non-protected inventory role must compile from reusable gates and an immutable context profile");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "PLANNED").length, 0, "the on-demand roster must not advertise non-materializable roles");
 assert.equal(recipeCatalog.recipes.filter((recipe) => recipe.lifecycle === "NOT_APPLICABLE").length, 1, "the protected Memory lane must remain not applicable");
@@ -64,7 +69,7 @@ assert.equal(integrationHandoff.inventory.unique_role_titles, 621, "handoff inve
 assert.equal(integrationHandoff.outputs.utility_harm_prescreen, "specialist-blocks/registry/utility-harm-prescreen.v1.json", "handoff must expose the deterministic utility/harm prescreen receipt");
 assert(integrationHandoff.outputs.schemas.includes("schemas/specialist-utility-harm-prescreen.v1.json"), "handoff must expose the utility/harm prescreen schema");
 assert.equal(integrationHandoff.receipts.find((receipt) => receipt.receipt_id === "specialist-utility-harm-prescreen-v1")?.status, "PRESCREEN_PENDING_EXTERNAL_REVIEW", "handoff must retain the external utility/harm gate");
-assert.deepEqual(integrationHandoff.lanes.entries.map((entry) => entry.generic_id), ["AGENT.BOOTSTRAP", "AGENT.PROJECT_CONTROLLER", "AGENT.INTENT_REGULATOR", "AGENT.RESOURCE_SCHEDULER", "AGENT.RUNTIME_DEPLOYMENT", "AGENT.INDEPENDENT_AUDITOR"]);
+assert.deepEqual(integrationHandoff.lanes.entries.map((entry) => entry.generic_id), ["AGENT.BOOTSTRAP", "AGENT.PROJECT_CONTROLLER", "AGENT.PRODUCT_OWNER", "AGENT.RESOURCE_SCHEDULER", "AGENT.RUNTIME_DEPLOYMENT", "AGENT.INDEPENDENT_AUDITOR"]);
 
 function compile(name, recipe, task, external = makeExternal(name), blocks = BLOCKS) {
   return compileTaskShapedAgent({
@@ -105,6 +110,8 @@ function customRecipe(id, required, atomic = [], standards = []) {
 }
 
 try {
+  assertCode(() => compile("retired-recipe-id", customRecipe("recipe.agent.intent-regulator", [BLOCKS[0].block_id]), TASKS.web), "RETIRED_ROLE_AUTHORITY_FORBIDDEN");
+  assertCode(() => compile("retired-block-reference", customRecipe("recipe.hostile.retired-block", ["specialist.control.intent-regulator"]), TASKS.web), "RETIRED_ROLE_AUTHORITY_FORBIDDEN");
   const contextualCatalogRecipe = recipeCatalog.recipes.find((recipe) => recipe.role_profile);
   assert(contextualCatalogRecipe, "recipe catalog must contain context-profile recipes");
   const contextualBlocks = loadSpecialistBlockCatalog({repositoryRoot: root});

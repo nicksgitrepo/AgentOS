@@ -4,7 +4,7 @@
   "handoff_id": "specialist-handoff.intent-regulator.v1",
   "block_id": "specialist.control.intent-regulator",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d",
+  "candidate_digest": "771e0e7295c1d3c2add9d2cbdfb42ea7b4274c286f231a4582cc2a22c0e545b3",
   "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
   "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
   "changed_paths": [

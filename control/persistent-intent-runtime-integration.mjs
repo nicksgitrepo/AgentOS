@@ -118,6 +118,7 @@ function validateObservationEvidence(evidence, observation) {
 }
 
 export function compilePersistentRuntimeObservation({snapshot, environmentId, governanceDigest, evidence, observedAtUtc = new Date().toISOString(), reviewIntervalMinutes = DEFAULT_REVIEW_INTERVAL_MINUTES} = {}) {
+  throw Object.assign(new Error("Persistent Intent Regulator observations are retired current authority"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   validateIntentRegulatorSnapshot(snapshot);
   requireIdentifier(environmentId, "Runtime observation environment ID");
   requireSha(governanceDigest, "Runtime observation governance digest");
@@ -167,6 +168,7 @@ export function compilePersistentRuntimeObservation({snapshot, environmentId, go
 }
 
 export function validatePersistentRuntimeObservation(observation) {
+  throw Object.assign(new Error("Persistent Intent Regulator observations require read-only migration"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   exactKeys(observation, OBSERVATION_KEYS, "Runtime observation");
   assert(observation.schema === PERSISTENT_RUNTIME_OBSERVATION_SCHEMA && observation.version === PERSISTENT_INTENT_RUNTIME_INTEGRATION_VERSION, "Runtime observation identity is invalid");
   assert(observation.activation_status === ACTIVATION_STATUS, "Runtime observation activation status is invalid");
@@ -216,6 +218,7 @@ function expectedRoute(decision) {
 }
 
 export function compilePersistentRuntimeRoute({observation, commitResult, routedAtUtc = new Date().toISOString()} = {}) {
+  throw Object.assign(new Error("Persistent Intent Regulator routing is retired"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   validatePersistentRuntimeObservation(observation);
   validateCommitResult(commitResult);
   requireUtc(routedAtUtc, "Runtime route time");
@@ -261,6 +264,7 @@ export function compilePersistentRuntimeRoute({observation, commitResult, routed
 }
 
 export function validatePersistentRuntimeRoute(route) {
+  throw Object.assign(new Error("Persistent Intent Regulator routing requires read-only migration"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   exactKeys(route, ROUTE_KEYS, "Runtime route");
   assert(route.schema === PERSISTENT_RUNTIME_ROUTE_SCHEMA && route.version === PERSISTENT_INTENT_RUNTIME_INTEGRATION_VERSION, "Runtime route identity is invalid");
   assert(route.activation_status === ACTIVATION_STATUS, "Runtime route activation status is invalid");

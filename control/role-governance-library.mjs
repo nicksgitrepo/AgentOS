@@ -9,6 +9,7 @@ import {
 import {ROOTS, validateQuestionTree} from "./question-tree.mjs";
 import {
   CANONICAL_ROLE_DEFINITION_SOURCE,
+  RETIRED_CURRENT_ROLE_IDS,
   ROLE_KINDS,
   ROLE_SCOPES,
   roleDefinitionSourceDigest,
@@ -27,7 +28,7 @@ const UNIVERSAL_TASK_GATE_QUESTION_IDS = Object.freeze(TASK_GATE_QUESTIONS.map((
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
-const FORBIDDEN_ROLE_NAME = /(?:feature\s*agent|generic|shell|recursive|provider|project)/iu;
+const FORBIDDEN_ROLE_NAME = /(?:feature\s*agent|generic|shell|recursive|provider)/iu;
 const FORBIDDEN_ROLE_CONTENT = /(?:feature\s*agent|generic|shell|recursive|provider|credential|password|secret|api[_-]?key|account[_-]?identity|deployment[_-]?identity)/iu;
 const ROLE_METADATA_KEYS = ["role_scope", "role_kind", "lane_id"];
 
@@ -113,6 +114,7 @@ function defaultRoleKind(role) {
 function normalizeRoleDefinition(role, index, generalClauseIds, questionIds) {
   exactKeys(role, ["role_id", "public_name", "question_ids", "shared_clause_ids"], `role definition ${index}`, {allow: ROLE_METADATA_KEYS});
   requireIdentifier(role.role_id, `role definition ${index} ID`);
+  assert(!RETIRED_CURRENT_ROLE_IDS.includes(role.role_id), `retired role ${role.role_id} cannot be generated as current authority`);
   requireString(role.public_name, `role definition ${role.role_id} name`);
   assert(!FORBIDDEN_ROLE_NAME.test(role.public_name) && !FORBIDDEN_ROLE_NAME.test(role.role_id), `role ${role.role_id} is not an admitted named role`);
   sortedUniqueStrings(role.question_ids, `${role.role_id} question IDs`, {allowEmpty: true});
@@ -165,6 +167,7 @@ function validateGeneratedRule(rule, roleId, question = null) {
 function validateRoleRecord(record, {treeById, hasTree, generalClauseIds}) {
   exactKeys(record, ["role_id", "public_name", "role_scope", "role_kind", "lane_id", "shared_clause_ids", "question_ids", "universal_task_gate_question_ids", "generated_rules"], `generated role ${record.role_id ?? "unknown"}`);
   requireIdentifier(record.role_id, "generated role ID");
+  assert(!RETIRED_CURRENT_ROLE_IDS.includes(record.role_id), `retired role ${record.role_id} cannot be generated as current authority`);
   requireString(record.public_name, `generated role ${record.role_id} name`);
   assert(!FORBIDDEN_ROLE_NAME.test(record.public_name) && !FORBIDDEN_ROLE_NAME.test(record.role_id), `generated role ${record.role_id} is not admitted`);
   assert(ROLE_SCOPES.includes(record.role_scope), `${record.role_id} role scope is invalid`);
@@ -196,8 +199,12 @@ function validateRoleRecord(record, {treeById, hasTree, generalClauseIds}) {
 function validateFullRoleCatalog(roles) {
   const byId = new Map(roles.map((role) => [role.role_id, role]));
   const required = [
-    ["INTENT_REGULATOR", "PERSISTENT", "INTENT_REGULATOR"],
-    ["RUNTIME", "PERSISTENT", "RUNTIME"],
+    ["AGENTOS_CONTROLLER", "PERSISTENT", "CONTROLLER"],
+    ["AGENTOS.MEMORY", "PERSISTENT", "MEMORY"],
+    ["AGENTOS.ORCHESTRATOR", "PERSISTENT", "ORCHESTRATOR"],
+    ["AGENTOS.PRODUCT_OWNER", "PERSISTENT", "PRODUCT_OWNER"],
+    ["AGENTOS.RUNTIME", "PERSISTENT", "RUNTIME"],
+    ["AGENTOS.SCHEDULER", "PERSISTENT", "SCHEDULER"],
     ["CAMPAIGN_ORCHESTRATOR", "CAMPAIGN", "CAMPAIGN_ORCHESTRATOR"],
     ["INDEPENDENT_AUDITOR", "CAMPAIGN", "INDEPENDENT_AUDITOR"],
   ];
@@ -207,7 +214,10 @@ function validateFullRoleCatalog(roles) {
     assert(role.role_scope === scope && role.role_kind === kind, `${roleId} full catalog binding is invalid`);
     assert(role.lane_id === null, `${roleId} full catalog role carries a worker lane`);
   });
-  roles.forEach((role) => assert(role.role_id !== "FEATURE_AGENT" && !/^FEATURE_AGENT[:_]/u.test(role.role_id), `generic Feature Agent role is not admitted: ${role.role_id}`));
+  roles.forEach((role) => {
+    assert(role.role_id !== "FEATURE_AGENT" && !/^FEATURE_AGENT[:_]/u.test(role.role_id), `generic Feature Agent role is not admitted: ${role.role_id}`);
+    assert(!RETIRED_CURRENT_ROLE_IDS.includes(role.role_id), `retired role ${role.role_id} cannot be generated as current authority`);
+  });
 }
 
 export function validateRoleSpecificGovernanceLibrary(library, {generalLibrary = null, governanceTree = null, roleDefinitionSource = null} = {}) {

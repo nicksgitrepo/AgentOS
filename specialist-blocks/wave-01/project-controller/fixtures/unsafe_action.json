@@ -1,9 +1,28 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "FIXTURE.CONTROLLER.UNSAFE_ACTION",
+  "attack_vector": "UNSAFE_ACTION",
+  "input_class": "HOSTILE_NEGATIVE",
+  "operational_entrypoint": "control/agentos-controller.mjs#validateControllerEventPreconditions",
+  "setup": ["ISOLATED_TEST_CUSTODY", "SEALED_CANONICAL_TEST_AUTHORITY", "NO_PRODUCTION_STORE_PROVISION"],
+  "canonical_input": {"class": "unsafe_action", "vector_ref": "UNSAFE_ACTION"},
+  "required_assertions": ["TYPED_SEMANTIC_OUTCOME", "NO_ADAPTER_INVOCATION", "NO_CONTROLLER_STATE_CHANGE"],
+  "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "unsafe_action",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request asks for activation, deployment, publication, migration, or another external side effect; preserve custody and deny."
+  "vector": {
+    "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
+    "input": {
+      "event_type": "DEPLOYMENT_REQUESTED"
+    },
+    "assertions": [
+      "adapter invocation count remains zero",
+      "Controller state remains unchanged",
+      "Runtime delivery custody is preserved"
+    ]
+  },
+  "note": "Controller cannot deploy, publish, release, or merge."
 }

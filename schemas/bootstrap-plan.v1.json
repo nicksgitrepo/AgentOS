@@ -38,7 +38,7 @@
     "reassessment_on": ["SCOPE_CHANGE", "INTENT_CHANGE", "POLICY_CHANGE", "CONDITION_CHANGE"],
     "persistent_coordinator": {
       "machine_role": "AGENTOS_CONTROLLER",
-      "public_name": "Intent Regulator",
+      "public_name": "Controller",
       "runtime": "PERSISTENT_PROJECT_RUNTIME"
     },
     "foundation_lane_count": 12,
@@ -125,7 +125,7 @@
       "repair_record": "docs/rapid-foundations/evidence/continuation-repair.v1.json",
       "backlog_source": "docs/rapid-foundations/evidence/iteration-transition.v1.json",
       "next_campaign": "docs/rapid-foundations/evidence/iteration-campaign-003.v1.json",
-      "persistent_coordinator": "Intent Regulator",
+      "persistent_coordinator": "Controller",
       "fresh_role": "ITERATION_CASCADE_FINALIZER_GATE_BUILDER",
       "meaningful_progress_window_minutes": 15,
       "automatic_close_required": true,
@@ -243,7 +243,7 @@
   "controller_supervision": {
     "result": "agentos.bootstrap_controller_supervision.v1",
     "controller": "AGENTOS_CONTROLLER",
-    "public_name": "Intent Regulator",
+    "public_name": "Controller",
     "scope": "PROJECT_PERSISTENT",
     "lifetime": "PERSISTENT",
     "audit_interval": {

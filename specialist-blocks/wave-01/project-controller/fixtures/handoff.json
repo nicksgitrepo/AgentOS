@@ -1,9 +1,29 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "FIXTURE.CONTROLLER.HANDOFF",
+  "attack_vector": "HANDOFF",
+  "input_class": "HOSTILE_NEGATIVE",
+  "operational_entrypoint": "control/agentos-controller.mjs#validateControllerEventPreconditions",
+  "setup": ["ISOLATED_TEST_CUSTODY", "SEALED_CANONICAL_TEST_AUTHORITY", "NO_PRODUCTION_STORE_PROVISION"],
+  "canonical_input": {"class": "handoff", "vector_ref": "HANDOFF"},
+  "required_assertions": ["TYPED_SEMANTIC_OUTCOME", "NO_ADAPTER_INVOCATION", "NO_CONTROLLER_STATE_CHANGE"],
+  "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "handoff",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic bounded transition has an exact digest, named next authority, residuals, and inactive lifecycle intent."
+  "vector": {
+    "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
+    "input": {
+      "event_type": "REDISTRIBUTION_RECEIVED",
+      "destination": "named governed role"
+    },
+    "assertions": [
+      "only dispatchRedistribution may be invoked",
+      "no approval is recorded",
+      "ordinary lifecycle adapter counts remain zero"
+    ]
+  },
+  "note": "Controller dispatches redistribution without approval."
 }

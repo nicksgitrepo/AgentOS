@@ -63,6 +63,10 @@ const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const PRIVATE_PATH = /(?:^|[\\/])(?:Users|home|private|tmp|var)[\\/]/u;
 const SECRET = /(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret|credential)\s*[:=]/iu;
 const SORTED_OUTCOMES = [...GATE_OUTCOMES];
+const RETIRED_CURRENT_AUTHORITY_IDS = Object.freeze(new Set([
+  "recipe.agent.intent-regulator",
+  "specialist.control.intent-regulator",
+]));
 
 const RECIPE_AUTHORITY_LAYERS = Object.freeze({
   "recipe.agent.independent-auditor": ["testing-review"],
@@ -260,11 +264,13 @@ export function loadSpecialistBlockCatalog({repositoryRoot = process.cwd()} = {}
 function validateRecipe(recipe) {
   assertRecord(recipe, "recipe");
   for (const field of ["recipe_id", "family", "purpose"]) assertString(recipe[field], `recipe.${field}`);
+  if (RETIRED_CURRENT_AUTHORITY_IDS.has(recipe.recipe_id)) fail("RETIRED_ROLE_AUTHORITY_FORBIDDEN", `${recipe.recipe_id} is archived historical evidence and cannot be compiled`);
   const recipeVersion = recipe.recipe_version ?? recipe.version;
   assertString(recipeVersion, "recipe.recipe_version");
   if (!/^[0-9]+\.[0-9]+\.[0-9]+$/u.test(recipeVersion)) fail("INVALID_RECIPE", "recipe_version must be semantic");
   if (recipe.compile_allowed === false || recipe.lifecycle === "PLANNED" || recipe.lifecycle === "NOT_APPLICABLE" || recipe.materialization?.status === "PLANNED_RECIPE_ONLY" || recipe.materialization?.status === "PROTECTED_EXTERNAL_LANE") fail("RECIPE_NOT_COMPILEABLE", `${recipe.recipe_id} is not admitted for task-shaped compilation`);
   const required = [...(recipe.required_block_ids ?? recipe.block_ids ?? [])].sort();
+  if (required.some((blockId) => RETIRED_CURRENT_AUTHORITY_IDS.has(blockId))) fail("RETIRED_ROLE_AUTHORITY_FORBIDDEN", `${recipe.recipe_id} references the archived Intent Regulator package`);
   if (required.length === 0) fail("INVALID_RECIPE", "recipe has no required reusable blocks");
   sortedUnique(required, "recipe.required_block_ids", {minItems: 1});
   const atomic = [...(recipe.required_atomic_blocks ?? [])].sort();

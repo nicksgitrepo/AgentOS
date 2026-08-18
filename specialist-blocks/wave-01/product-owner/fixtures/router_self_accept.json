@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.product-owner",
+  "class": "router_self_accept",
+  "fixture_id": "product-owner-self-review-denial",
+  "expected": "DENY",
+  "hostile": true,
+  "vector": {"entrypoint":"evaluateProductOwnerBoundary","input":{"schema":"agentos.product_owner_boundary_input.v1","version":1,"request_kind":"SELF_REVIEW","admission_status":"CURRENT","model_context_status":"CURRENT","intent_context_status":"CURRENT","project_binding_status":"MATCHED","detail_level":"SIMPLE"},"expected_readback":{"disposition":"DENY","route":"INDEPENDENT_EVALUATOR","all_side_effect_counts":0}},
+  "note": "Product Owner cannot approve or activate its own package."
+}

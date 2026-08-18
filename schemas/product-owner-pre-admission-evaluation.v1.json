@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.product_owner_pre_admission_evaluation.v1",
+  "title": "Non-authoritative Product Owner executed fixture evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "authority_status", "status", "block_id", "entrypoint", "implementation_file_sha256", "operational_adapter_file_sha256", "implementation_binding_sha256", "candidate_sha256", "fixture_count", "results", "independent_admission", "activation"],
+  "properties": {
+    "schema": {"const": "agentos.product_owner_pre_admission_evaluation.v1"},
+    "version": {"const": 1},
+    "authority_status": {"const": "NON_AUTHORITATIVE_PRE_ADMISSION_EVIDENCE"},
+    "status": {"enum": ["EXECUTED_RESULTS_COMPLETE_REVIEW_PENDING", "FIXTURE_MISMATCH"]},
+    "block_id": {"const": "specialist.control.product-owner"},
+    "entrypoint": {"const": "evaluateProductOwnerBoundary"},
+    "implementation_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "operational_adapter_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "implementation_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fixture_count": {"const": 17},
+    "results": {"type": "array", "minItems": 17, "maxItems": 17},
+    "independent_admission": {"const": "PENDING_SEPARATE_EVALUATOR"},
+    "activation": {"const": "OFF"}
+  }
+}

@@ -33,9 +33,9 @@ for (const required of [
   "CODE_QUALITY_HYGIENE",
   "Optional continuity",
   "PREPARED_NOT_ACTIVATED",
-  "setup, the ongoing project-persistent role is **Intent Regulator**",
-  "`AGENTOS_CONTROLLER`. It owns the control-plane conversation",
-  "Bootstrap does not continue as that role.",
+  "may start exactly one Spawner, then becomes the **Product Owner**",
+  "**Controller** regulates workflow and useful progress",
+  "Spawner alone creates and retires agents.",
 ]) {
   assert(readme.includes(required), `README is missing required user-facing content: ${required}`);
 }

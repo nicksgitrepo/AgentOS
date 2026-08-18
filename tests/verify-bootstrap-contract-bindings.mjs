@@ -46,7 +46,7 @@ try {
   assert.equal(plan.exact_creation_plan.delivery_target_sha256, plan.delivery_target.target_sha256);
   assert.equal(plan.exact_creation_plan.boundary_contract_sha256, plan.boundary_contract.boundary_contract_sha256);
   assert.equal(plan.delivery_policy.delivery_target.target_sha256, plan.delivery_target.target_sha256);
-  assert.equal(plan.controller_supervision.controller_display_name, "Intent Regulator");
+  assert.equal(plan.controller_supervision.controller_display_name, "Controller");
   assert.equal(plan.controller_supervision.audit_interval_minutes, 15);
   assert.equal(plan.controller_supervision.default_audit_interval_minutes, 15);
   assert.equal(plan.controller_supervision.meaningful_progress_window_minutes, 15);

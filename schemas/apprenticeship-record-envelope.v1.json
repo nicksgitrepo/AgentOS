@@ -46,7 +46,7 @@
     "evidence_attestation_refs": {"$ref": "apprenticeship-common.v1.json#/$defs/referenceList"},
     "actor_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
     "actor_session_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/reference"},
-    "actor_role": {"enum": ["APPRENTICESHIP_WORKER", "WALKTHROUGH_ORCHESTRATOR", "WORKFLOW_AUDITOR", "INDEPENDENT_AUDITOR", "INTENT_REGULATOR", "RUNTIME"]},
+    "actor_role": {"enum": ["APPRENTICESHIP_WORKER", "WALKTHROUGH_ORCHESTRATOR", "WORKFLOW_AUDITOR", "INDEPENDENT_AUDITOR", "AGENTOS_CONTROLLER", "RUNTIME"]},
     "owner_decision_ref": {"$ref": "apprenticeship-common.v1.json#/$defs/nullableReference"},
     "activation_allowed": {"const": false},
     "protected_actions": {"$ref": "apprenticeship-common.v1.json#/$defs/protectedActions"},

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.permanent_role_external_review.v1",
+  "title": "Separately provisioned permanent-role evaluator review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "receipt_ref", "evaluator_id", "evaluator_admission_sha256", "authority_epoch", "role_id", "role_class", "candidate_root_sha256", "package_block_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "fixture_results", "operational_context_sha256", "model_snapshot_sha256", "model_selection_sha256", "scope", "custody", "custody_receipt_sha256", "observed_at_utc", "expires_at_utc", "disposition", "review_sha256", "evaluator_signature_base64"],
+  "properties": {
+    "schema": {"const": "agentos.permanent_role_external_review.v1"},
+    "version": {"const": 1},
+    "receipt_ref": {"type": "string", "pattern": "^ref:permanent-role-review/[A-Z0-9._:-]{1,192}$"},
+    "evaluator_id": {"type": "string", "minLength": 3, "maxLength": 192},
+    "evaluator_admission_sha256": {"$ref": "#/$defs/sha256"},
+    "authority_epoch": {"type": "integer", "minimum": 1},
+    "role_id": {"type": "string", "minLength": 3, "maxLength": 192},
+    "role_class": {"type": "string", "minLength": 3, "maxLength": 64},
+    "candidate_root_sha256": {"$ref": "#/$defs/sha256"},
+    "package_block_sha256": {"$ref": "#/$defs/sha256"},
+    "gate_inventory_sha256": {"$ref": "#/$defs/sha256"},
+    "fixture_inventory_sha256": {"$ref": "#/$defs/sha256"},
+    "fixture_results": {"type": "array", "minItems": 17, "maxItems": 17, "items": {"$ref": "#/$defs/result"}},
+    "operational_context_sha256": {"$ref": "#/$defs/sha256"},
+    "model_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "model_selection_sha256": {"$ref": "#/$defs/sha256"},
+    "scope": {"const": "FULL_PERMANENT_ROLE_PACKAGE"},
+    "custody": {"const": "SEPARATE_EXTERNAL_EVALUATOR"},
+    "custody_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "expires_at_utc": {"type": "string", "format": "date-time"},
+    "disposition": {"const": "PASS"},
+    "review_sha256": {"$ref": "#/$defs/sha256"},
+    "evaluator_signature_base64": {"type": "string", "minLength": 80, "maxLength": 128}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "fixture_class", "fixture_file_sha256", "entrypoint", "entrypoint_invoked", "semantic_execution_completed", "expected_outcome", "actual_outcome", "error_code", "exit_code", "assertion_readbacks", "side_effect_spy_readback", "executed_at_utc", "result_sha256"],
+      "properties": {
+        "fixture_id": {"type": "string", "minLength": 3}, "fixture_class": {"type": "string", "minLength": 3},
+        "fixture_file_sha256": {"$ref": "#/$defs/sha256"}, "entrypoint": {"type": "string", "minLength": 3},
+        "entrypoint_invoked": {"const": true}, "semantic_execution_completed": {"type": "boolean"}, "expected_outcome": {"enum": ["DENY", "ROUTE", "ESCALATE"]}, "actual_outcome": {"type": "string", "minLength": 3}, "error_code": {"type": ["string", "null"]}, "exit_code": {"type": "integer"},
+        "assertion_readbacks": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assertion", "observed", "evidence"],
+            "properties": {
+              "assertion": {"type": "string", "minLength": 3},
+              "observed": {"type": "boolean"},
+              "evidence": {"type": "string", "minLength": 3}
+            }
+          }
+        },
+        "side_effect_spy_readback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["adapter_calls", "state_changes", "memory_writes", "deploy_calls"],
+          "properties": {
+            "adapter_calls": {"type": "integer", "minimum": 0},
+            "state_changes": {"type": "integer", "minimum": 0},
+            "memory_writes": {"type": "integer", "minimum": 0},
+            "deploy_calls": {"type": "integer", "minimum": 0}
+          }
+        },
+        "executed_at_utc": {"type": "string", "format": "date-time"}, "result_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

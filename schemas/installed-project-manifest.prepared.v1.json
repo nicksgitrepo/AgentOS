@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.installed_project_manifest.v1",
+  "version": 1,
+  "status": "PREPARED_INACTIVE",
+  "project_identity_sha256": "cc298f8bebe0d1c012eacf5108686662f3e9ee8af6bb8961465c184909360c64",
+  "bootstrap_custody_sha256": "0523db70ef46039d2eadde5df077563af9bc4e2a78c3d96dc33098453c411ccb",
+  "store_relative_path": ".agentos/project-control",
+  "activation_rule": "REQUIRES_SEPARATE_PROJECT_INSTALL_ACCEPTANCE_AND_PINNED_BOOTSTRAP_BINDING",
+  "consumer_data_present": false,
+  "manifest_sha256": "8c56134b810fc60f26922e5b70d587f7952f9588441ba71cd2333dcc37424372"
+}

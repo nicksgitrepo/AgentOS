@@ -38,7 +38,7 @@
         "additionalProperties": false,
         "required": ["role_id", "graph_ids", "additional_prohibited_authority", "additional_required_evidence"],
         "properties": {
-          "role_id": {"type": "string"},
+          "role_id": {"type": "string", "not": {"enum": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.PROJECT_OWNER", "INTENT_REGULATOR", "PROJECT_OWNER"]}},
           "graph_ids": {"type": "array", "items": {"type": "string"}},
           "additional_prohibited_authority": {"type": "array", "items": {"type": "string"}},
           "additional_required_evidence": {"type": "array", "items": {"type": "string"}}
@@ -65,7 +65,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["owner_role", "authoring_role"],
-      "properties": {"owner_role": {"const": "PROJECT_OWNER"}, "authoring_role": {"const": "INTENT_REGULATOR"}}
+      "properties": {"owner_role": {"const": "AGENTOS.PRODUCT_OWNER"}, "authoring_role": {"const": "AGENTOS.SPAWNER"}}
     },
     "lineage": {
       "type": "object",

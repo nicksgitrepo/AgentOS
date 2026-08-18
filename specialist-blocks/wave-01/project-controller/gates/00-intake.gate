@@ -5,10 +5,32 @@
   "block_id": "specialist.control.project-controller",
   "status": "EXECUTABLE",
   "answer_type": "FOUR_VALUED",
-  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
-  "question": "Does the typed control-plane request identify the authority, custody, lifecycle intent, request, source lock, and fifteen-minute timebox needed for bounded orchestration?",
-  "evidence": ["candidate_digest", "gate.00-intake.answer", "gate.00-intake.evidence", "source_lock_identity"],
-  "next": {"YES": "01-applicability", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "01-applicability"},
-  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
-  "gate_sha256": "75c49c56fed311dd7025e9560bdf038e49b3a7b40d4340ce60a8559f91c750ea"
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Does the request bind AGENTOS_CONTROLLER, a canonical signed event, workflow custody, current model-policy projection, useful-progress evidence, and a fifteen-minute timebox?",
+  "evidence": [
+    "candidate_digest",
+    "gate.00-intake.answer",
+    "model_policy_projection",
+    "signed_controller_event"
+  ],
+  "next": {
+    "YES": "01-applicability",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "01-applicability"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "285abb81628e031e1922d73fc1499d82f86d0928c0c026f9db960a314c2d552d"
 }

@@ -3,10 +3,11 @@
   "$id": "agentos.project_owner_conversation.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "speaker_role", "explanation_level", "message", "choices", "technical_details_hidden", "private_evidence_refs", "conversation_sha256"],
+  "required": ["schema", "version", "authority_status", "speaker_role", "explanation_level", "message", "choices", "technical_details_hidden", "private_evidence_refs", "conversation_sha256"],
   "properties": {
     "schema": {"const": "agentos.project_owner_conversation.v1"}, "version": {"const": 1},
-    "speaker_role": {"const": "AGENTOS.PROJECT_OWNER"},
+    "authority_status": {"const": "NON_AUTHORITATIVE_TEMPLATE"},
+    "speaker_role": {"const": "AGENTOS.PRODUCT_OWNER"},
     "explanation_level": {"enum": ["SIMPLE", "ELABORATE", "ADVANCED"]},
     "message": {"type": "string", "minLength": 1},
     "choices": {"type": "array", "maxItems": 5, "items": {"type": "object", "additionalProperties": false, "required": ["key", "label", "meaning"], "properties": {"key": {"type": "string", "pattern": "^(?:[1-4]|[a-d]|n)$"}, "label": {"type": "string", "minLength": 1}, "meaning": {"type": "string", "minLength": 1}}}},

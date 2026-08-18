@@ -128,16 +128,18 @@ Use the returned discovery and question plan. The normal Bootstrap mode is JSA-s
 
 Running Bootstrap as an agent uses the host’s agentic execution allowance. Use ordinary Chat or a private handoff-file exchange when you want advice without repository execution; use a public Git handoff only when public source exchange is intentional. Provider APIs and unattended automation may have separate billing and credentials.
 
-The prompt above is only for first-run Bootstrap discovery and setup. After
-setup, the ongoing project-persistent role is **Intent Regulator**
-`AGENTOS_CONTROLLER`. It owns the control-plane conversation and safe
-campaign coordination; Bootstrap does not continue as that role.
+The prompt above is only for first-run Bootstrap discovery and setup. Bootstrap
+may start exactly one Spawner, then becomes the **Product Owner**. The
+**Controller** regulates workflow and useful progress; the Product Owner owns
+user intent and ordinary human conversation. They are separate permanent roles
+with separate fifteen-minute checks. Spawner alone creates and retires agents.
 
 ## AgentOS in one minute
 
 You explain what you want. Bootstrap handles the first read-only discovery and
-setup plan. After setup, Intent Regulator carries the project-persistent
-control-plane conversation and safe campaign coordination. Economical agents
+setup plan. Bootstrap becomes the Product Owner only after the one-time Spawner start.
+Product Owner keeps the work aligned with your intent, while Controller keeps
+the workflow moving. Economical agents
 build the first pass, independent checkers inspect it, a stronger Finalizer
 repairs the retained code, and persistent Runtime handles release and
 deployment.

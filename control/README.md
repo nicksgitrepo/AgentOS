@@ -30,13 +30,10 @@ Canonical executable authorities:
 - `native-session-runner.mjs` — the only host-facing rapid-team lifecycle;
 - `codex-native-host-adapter.mjs` — the in-app Codex bridge; host callbacks
   remain outside the portable kernel and are bound to one project/environment;
-- `intent-regulator-runtime.mjs` — the project-persistent Intent Regulator
-  facade, four-library mount, campaign admission boundary, and configurable
-  meaningful-progress monitor (15 minutes by default);
-- `bootstrap-runtime.mjs` — the Bootstrap-to-Intent-Regulator application
-  transition, external campaign-state persistence, optional always-on monitor
-  attachment, and the project-setup/platform-foundation/platform-merge/
-  feature-wave/central-integration route;
+- `intent-regulator-runtime.mjs` — a retired, fail-closed historical boundary;
+  it cannot create current Controller or Product Owner authority;
+- `bootstrap-runtime.mjs` — a retired campaign-transition boundary while the
+  governed Bootstrap-to-Spawner execution path is prepared;
 - `audit-driven-integration-pyramid.mjs` — the canonical project-agnostic
   rapid-prototype Controller. It handles new-project stack and repository
   setup, imported-project approval, platform foundation and platform merge,
@@ -74,17 +71,13 @@ and user-facing readbacks.
 are migration-only compatibility aliases. They cannot create setup state,
 campaign state, provider identity, Product custody, or successor rosters.
 
-After first-run setup, the ongoing project-persistent role is **Intent
-Regulator** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate discovery
-and setup authority. The public name is intentional; the machine role remains
-stable for source compatibility.
-
-`AGENTOS_CONTROLLER` persists across campaigns. The Intent Regulator may
-interpret a judgment or owner boundary, but its Controller Runtime owns the
-deterministic event/state transaction and requires external readback before
-completion. `CAMPAIGN_ORCHESTRATOR` remains campaign-scoped; the project
-controller does not write Product code, accept Product work, override the
-Auditor, deploy directly, or hold Feature/Platform worktrees.
+After first-run setup, **Controller** (`AGENTOS_CONTROLLER`) regulates workflow
+and **Product Owner** (`AGENTOS.PRODUCT_OWNER`) preserves user intent and owns
+ordinary human conversation. They are separate persistent roles with separate
+15-minute checks. Bootstrap remains the discovery/setup authority until it
+starts exactly one Spawner, requests the permanent roster, and then transitions
+to Product Owner. Controller does not write product code, accept builder work,
+override auditors, deploy, spawn, despawn, or take Product Owner authority.
 
 The portable kernel does not contain a provider-specific model host, worktree
 spawner, deployment connector, or live-site browser driver. Those are admitted

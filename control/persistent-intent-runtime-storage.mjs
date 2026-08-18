@@ -292,6 +292,7 @@ function acquireRuntimeLease(root, runtimeRef, {nowUtc, leaseDurationSeconds}) {
 }
 
 export function assertRuntimeLease(root, token, nowUtc) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage is read-only historical material"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   requireRecord(token, "Runtime lease token");
   requireOpaqueReference(token.runtime_ref, "Runtime lease token runtime reference");
   requireOpaqueReference(token.lease_id, "Runtime lease token ID");
@@ -347,6 +348,7 @@ function listFiles(root, relativeDirectory) {
 }
 
 export function readRuntimeState(root) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage requires the governed read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   const state = readJson(root, "state.json");
   if (state === null) return null;
   return validatePersistentIntentRuntimeState(state);
@@ -591,6 +593,7 @@ function ensureInitialStore(root, {snapshot, environmentId, reviewIntervalMinute
 }
 
 export function openRuntimeStorage({authorityRoot, repositoryRoot, runtimeRef, snapshot, environmentId, governanceDigest = defaultGovernanceDigest(), reviewIntervalMinutes, nowUtc, leaseDurationSeconds, faultInjector = null}) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage cannot be opened as current authority"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   const root = ensureDirectory(authorityRoot);
   assertAuthorityRootOutsideRepository(root, repositoryRoot);
   const acquired = acquireRuntimeLease(root, runtimeRef, {nowUtc, leaseDurationSeconds});
@@ -617,32 +620,39 @@ export function openRuntimeStorage({authorityRoot, repositoryRoot, runtimeRef, s
 }
 
 export function readRuntimeCheckpoint(root, state) {
+  throw Object.assign(new Error("Persistent Intent Regulator checkpoint requires the governed read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   return readCheckpoint(root, state);
 }
 
 export function readRuntimeRoles(root) {
+  throw Object.assign(new Error("Persistent Intent Regulator roles require the governed read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   return readPersistentRoles(root);
 }
 
 export function readRuntimeEvents(root, state) {
+  throw Object.assign(new Error("Persistent Intent Regulator events require the governed read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   validateEventHistory(root, state);
   return Array.from({length: state.event_cursor}, (_, index) => clone(readEvent(root, index + 1)));
 }
 
 export function resumeRuntimeStorage({root, token, nowUtc, faultInjector = null}) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage cannot resume current authority"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   const recovered = withAuthorityLock(root, () => recoverTransactions(root, {nowUtc, leaseToken: token, faultInjector}));
   return recovered;
 }
 
 export function renewRuntimeStorage({root, token, nowUtc, leaseDurationSeconds}) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage cannot renew current authority"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   return renewRuntimeLease(root, token, {nowUtc, leaseDurationSeconds});
 }
 
 export function releaseRuntimeStorage({root, token, nowUtc}) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage has no current authority lease"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   return releaseRuntimeLease(root, token, nowUtc);
 }
 
 export function commitRuntimeTransaction({root, token, expectedStateSha256, eventType, actorRole, payload, idempotencyKey, nextState, nextCheckpoint = null, nowUtc, faultInjector = null}) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage is immutable historical evidence"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   assertRuntimeLease(root, token, nowUtc);
   ensureIdempotencyKey(idempotencyKey);
   if (nextCheckpoint !== null) validateIntentRegulatorCheckpoint(nextCheckpoint);
@@ -686,6 +696,7 @@ function awaitableStateDigest(state) {
 }
 
 export function inspectRuntimeStorage({authorityRoot, repositoryRoot = process.cwd()} = {}) {
+  throw Object.assign(new Error("Persistent Intent Regulator storage requires the governed read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   const root = canonicalRoot(authorityRoot, "authority root");
   assertAuthorityRootOutsideRepository(root, repositoryRoot);
   const state = readRuntimeState(root);

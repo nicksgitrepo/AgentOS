@@ -6,22 +6,13 @@ import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {controllerActionHandlerFor, compileControllerContinuation} from "./controller-action-dispatcher.mjs";
 import {validateTypedSpawnerAdmission} from "./typed-spawner-admission.mjs";
 import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
+import {canonicalPermanentRoleIds, loadCanonicalPermanentRoleRegistry, resolveCanonicalPermanentRole, validateCanonicalPermanentRoleSet} from "./permanent-role-registry.mjs";
 
 export const PERMANENT_ROLE_ROSTER_SCHEMA = "agentos.permanent_role_roster.v1";
 export const PERMANENT_ROLE_CANDIDATE_SCHEMA = "agentos.permanent_role_candidate.v1";
 export const PERMANENT_ROLE_ROSTER_VERSION = 1;
-export const PERMANENT_ROLE_IDS = Object.freeze([
-  "AGENTOS.INTENT_REGULATOR",
-  "AGENTOS.MEMORY",
-  "AGENTOS.RUNTIME",
-  "AGENTOS.SCHEDULER",
-]);
-export const PERMANENT_ROLE_KINDS = Object.freeze({
-  "AGENTOS.INTENT_REGULATOR": "INTENT_REGULATOR",
-  "AGENTOS.MEMORY": "MEMORY",
-  "AGENTOS.RUNTIME": "RUNTIME",
-  "AGENTOS.SCHEDULER": "SCHEDULER",
-});
+export const PERMANENT_ROLE_IDS = Object.freeze(canonicalPermanentRoleIds());
+export const PERMANENT_ROLE_KINDS = Object.freeze(Object.fromEntries(loadCanonicalPermanentRoleRegistry().roles.map((role) => [role.role_id, role.role_class])));
 export const PERMANENT_ROLE_ROSTER_NEXT_ACTIONS = Object.freeze([
   "ADMIT_NEXT_PERMANENT_ROLE",
   "INJECT_ORCHESTRATOR_GOVERNANCE",
@@ -35,7 +26,7 @@ const CANDIDATE_KEYS = Object.freeze([
   "authority", "stop_conditions", "qa_status", "admission_state", "activation_state", "worker_spawned", "candidate_sha256",
 ]);
 const ROSTER_KEYS = Object.freeze([
-  "schema", "version", "spawner_admission_sha256", "controller_role_alias", "duplicate_controller_forbidden", "permanent_role_ids",
+  "schema", "version", "spawner_admission_sha256", "controller_role_id", "product_owner_role_id", "retired_intent_regulator_forbidden", "duplicate_controller_forbidden", "permanent_role_ids",
   "candidates", "admitted_role_ids", "next_role_id", "status", "activation_state", "worker_spawned_count", "next_action", "next_handler", "continuation", "continuation_sha256", "roster_sha256",
 ]);
 
@@ -64,7 +55,7 @@ function bindSuccessor(roster) {
   roster.continuation_sha256 = canonicalDigest(roster.continuation);
 }
 
-export function validatePermanentRoleCandidate(candidate) {
+function validateResolvedPermanentRoleCandidate(candidate) {
   exactKeys(candidate, CANDIDATE_KEYS, "Permanent role candidate");
   assert(candidate.schema === PERMANENT_ROLE_CANDIDATE_SCHEMA && candidate.version === PERMANENT_ROLE_ROSTER_VERSION, "Permanent role candidate identity is invalid");
   requireToken(candidate.role_id, "Permanent role candidate role");
@@ -85,31 +76,15 @@ export function validatePermanentRoleCandidate(candidate) {
   return candidate;
 }
 
+export function validatePermanentRoleCandidate() {
+  assert(false, "Standalone permanent-role candidate validation is non-authoritative; resolve the candidate through the sealed Spawner admission adapter", "SEALED_PERMANENT_ROLE_ADMISSION_REQUIRED");
+}
+
 export function compilePermanentRoleCandidate({roleId, blockSetSha256, independentEvaluationSha256, hostileFixtureIds, stopConditions, globalGovernanceContext, globalGovernanceAuthorityStore} = {}) {
   requireToken(roleId, "Permanent role candidate role");
-  requireSha(blockSetSha256, "Permanent role candidate block set");
-  requireSha(independentEvaluationSha256, "Permanent role candidate evaluation");
-  assert(Array.isArray(hostileFixtureIds), "Permanent role candidate hostile fixture ids input is required");
-  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "PERMANENT_ROLE"});
-  const candidate = {
-    schema: PERMANENT_ROLE_CANDIDATE_SCHEMA,
-    version: PERMANENT_ROLE_ROSTER_VERSION,
-    role_id: roleId,
-    role_kind: PERMANENT_ROLE_KINDS[roleId],
-    block_set_sha256: blockSetSha256,
-    independent_evaluation_sha256: independentEvaluationSha256,
-    global_governance_context_sha256: globalGovernanceContext.context_sha256,
-    hostile_fixture_ids: [...hostileFixtureIds].sort(compareUtf8),
-    authority: "INDEPENDENT_ADMISSION_AUTHORITY",
-    stop_conditions: stopConditions,
-    qa_status: "QA_PASS_INDEPENDENT_EVALUATION",
-    admission_state: "QA_READY_NOT_ADMITTED",
-    activation_state: "OFF",
-    worker_spawned: false,
-    candidate_sha256: null,
-  };
-  candidate.candidate_sha256 = digestWithout(candidate, "candidate_sha256");
-  return validatePermanentRoleCandidate(candidate);
+  resolveCanonicalPermanentRole(roleId);
+  assert(blockSetSha256 === undefined && independentEvaluationSha256 === undefined && hostileFixtureIds === undefined && stopConditions === undefined && globalGovernanceContext === undefined && globalGovernanceAuthorityStore === undefined, "Caller-authored permanent-role hashes, PASS evidence, fixtures, stop text, or authority contexts are forbidden", "PERMANENT_ROLE_CALLER_AUTHORITY_FORBIDDEN");
+  assert(false, `Permanent role ${roleId} requires canonical package execution and a separately consumed independent review receipt`, "PERMANENT_ROLE_INDEPENDENT_REVIEW_REQUIRED");
 }
 
 function validateRolePrefix(admittedRoleIds) {
@@ -122,13 +97,15 @@ export function validatePermanentRoleRoster(roster, {spawnerAdmission = null} = 
   exactKeys(roster, ROSTER_KEYS, "Permanent role roster");
   assert(roster.schema === PERMANENT_ROLE_ROSTER_SCHEMA && roster.version === PERMANENT_ROLE_ROSTER_VERSION, "Permanent role roster identity is invalid");
   requireSha(roster.spawner_admission_sha256, "Permanent roster Spawner admission");
-  assert(roster.controller_role_alias === "AGENTOS.INTENT_REGULATOR", "Controller role alias is invalid");
+  assert(roster.controller_role_id === "AGENTOS_CONTROLLER", "Controller role identity is invalid");
+  assert(roster.product_owner_role_id === "AGENTOS.PRODUCT_OWNER", "Product Owner role identity is invalid");
+  assert(roster.retired_intent_regulator_forbidden === true, "Retired Intent Regulator cannot be admitted as a current role");
   assert(roster.duplicate_controller_forbidden === true, "Permanent roster must forbid duplicate Controllers");
   assert(JSON.stringify(roster.permanent_role_ids) === JSON.stringify(PERMANENT_ROLE_IDS), "Permanent roster role set is incomplete or reordered");
   assert(Array.isArray(roster.candidates) && roster.candidates.length === PERMANENT_ROLE_IDS.length, "Permanent roster candidates are incomplete");
   const candidateIds = roster.candidates.map((candidate) => candidate.role_id);
   assert(JSON.stringify(candidateIds) === JSON.stringify(PERMANENT_ROLE_IDS), "Permanent roster candidates must be canonical and ordered");
-  for (const candidate of roster.candidates) validatePermanentRoleCandidate(candidate);
+  for (const candidate of roster.candidates) validateResolvedPermanentRoleCandidate(candidate);
   validateRolePrefix(roster.admitted_role_ids);
   const admittedSet = new Set(roster.admitted_role_ids);
   for (const candidate of roster.candidates) {
@@ -156,57 +133,15 @@ export function validatePermanentRoleRoster(roster, {spawnerAdmission = null} = 
 }
 
 export function compilePermanentRoleRoster({spawnerAdmissionSha256, candidates, admittedRoleIds = []} = {}) {
-  requireSha(spawnerAdmissionSha256, "Permanent roster Spawner admission");
-  assert(Array.isArray(candidates), "Permanent roster candidate list is required");
-  assert(Array.isArray(admittedRoleIds), "Permanent roster admitted roles are required");
-  for (const candidate of candidates) validatePermanentRoleCandidate(candidate);
-  const roster = {
-    schema: PERMANENT_ROLE_ROSTER_SCHEMA,
-    version: PERMANENT_ROLE_ROSTER_VERSION,
-    spawner_admission_sha256: spawnerAdmissionSha256,
-    controller_role_alias: "AGENTOS.INTENT_REGULATOR",
-    duplicate_controller_forbidden: true,
-    permanent_role_ids: [...PERMANENT_ROLE_IDS],
-    candidates: [...candidates].sort((left, right) => compareUtf8(left.role_id, right.role_id)),
-    admitted_role_ids: [...admittedRoleIds],
-    next_role_id: null,
-    status: "READY_FOR_NEXT_ROLE",
-    activation_state: "OFF",
-    worker_spawned_count: 0,
-    next_action: "ADMIT_NEXT_PERMANENT_ROLE",
-    next_handler: null,
-    continuation: null,
-    continuation_sha256: null,
-    roster_sha256: null,
-  };
-  roster.next_role_id = roster.admitted_role_ids.length < PERMANENT_ROLE_IDS.length ? PERMANENT_ROLE_IDS[roster.admitted_role_ids.length] : null;
-  if (roster.next_role_id === null) {
-    roster.status = "PERMANENT_ROSTER_READY";
-    roster.next_action = "INJECT_ORCHESTRATOR_GOVERNANCE";
-  }
-  bindSuccessor(roster);
-  roster.roster_sha256 = digestWithout(roster, "roster_sha256");
-  return validatePermanentRoleRoster(roster);
+  assert(spawnerAdmissionSha256 === undefined && candidates === undefined && admittedRoleIds.length === 0, "Caller-authored permanent-role rosters, candidates, or admission claims are forbidden", "PERMANENT_ROLE_CALLER_AUTHORITY_FORBIDDEN");
+  assert(false, "Permanent roster construction requires the sealed Spawner admission adapter", "SEALED_PERMANENT_ROLE_ADMISSION_REQUIRED");
 }
 
 export function admitNextPermanentRole(roster, roleId, {globalGovernanceContext, globalGovernanceAuthorityStore} = {}) {
-  validatePermanentRoleRoster(roster);
   requireToken(roleId, "Permanent roster requested role");
-  assert(roster.next_role_id === roleId, "Permanent role admission must follow the typed next role");
-  const next = structuredClone(roster);
-  const candidate = next.candidates.find((item) => item.role_id === roleId);
-  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "PERMANENT_ROLE"});
-  assert(candidate.global_governance_context_sha256 === globalGovernanceContext.context_sha256, "Permanent role candidate global-governance context is stale");
-  assert(candidate !== undefined && candidate.admission_state === "QA_READY_NOT_ADMITTED", "Permanent role candidate is not independently ready");
-  candidate.admission_state = "ADMITTED_CONTROL_PLANE_ONLY";
-  candidate.candidate_sha256 = digestWithout(candidate, "candidate_sha256");
-  next.admitted_role_ids = [...next.admitted_role_ids, roleId];
-  next.next_role_id = next.admitted_role_ids.length < PERMANENT_ROLE_IDS.length ? PERMANENT_ROLE_IDS[next.admitted_role_ids.length] : null;
-  next.status = next.next_role_id === null ? "PERMANENT_ROSTER_READY" : "READY_FOR_NEXT_ROLE";
-  next.next_action = next.next_role_id === null ? "INJECT_ORCHESTRATOR_GOVERNANCE" : "ADMIT_NEXT_PERMANENT_ROLE";
-  bindSuccessor(next);
-  next.roster_sha256 = digestWithout(next, "roster_sha256");
-  return validatePermanentRoleRoster(next);
+  resolveCanonicalPermanentRole(roleId);
+  assert(roster === undefined && globalGovernanceContext === undefined && globalGovernanceAuthorityStore === undefined, "Caller-authored roster, policy context, or authority store is forbidden", "PERMANENT_ROLE_CALLER_AUTHORITY_FORBIDDEN");
+  assert(false, "Permanent role promotion requires the sealed Spawner adapter to resolve and consume canonical evidence", "SEALED_PERMANENT_ROLE_ADMISSION_REQUIRED");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Permanent role roster contract loaded\n");

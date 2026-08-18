@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.project_lifecycle_custody.v1",
+  "title": "Project lifecycle custody readback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_identity_sha256", "bootstrap_custody_sha256", "project_store_id", "store_id", "attachment_generation"],
+  "properties": {
+    "schema": {"const": "agentos.project_lifecycle_custody.v1"},
+    "version": {"const": 1},
+    "project_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "bootstrap_custody_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_store_id": {"type": "string", "pattern": "^PROJECT\\.STORE\\.[A-F0-9]{64}$"},
+    "store_id": {"type": "string", "pattern": "^LIFECYCLE\\.STORE\\.[A-F0-9]{64}$"},
+    "attachment_generation": {"type": "integer", "minimum": 1}
+  }
+}

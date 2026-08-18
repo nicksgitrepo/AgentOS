@@ -248,7 +248,7 @@ it does not authorize a guess or silently block unrelated work.
 ## Active wave
 
 P0 is the only active priority wave. It has six lanes: `AGENT.BOOTSTRAP`,
-`AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
+`AGENT.PROJECT_CONTROLLER`, `AGENT.PRODUCT_OWNER`,
 `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
 `AGENT.INDEPENDENT_AUDITOR`. Unbuilt P1–P6 entries remain planned until the
 foundation and preceding wave receipts exist; the P1–P5 packages above are

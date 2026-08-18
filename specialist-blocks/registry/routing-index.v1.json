@@ -230,34 +230,31 @@
       "priority": 0
     },
     {
-      "route_id": "route.control.intent-regulator",
+      "route_id": "route.control.product-owner",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
       "signals": [
-        "authority conflict",
-        "explicit owner-intent record",
-        "owner authority question",
-        "typed intent provenance"
+        "fifteen-minute intent alignment",
+        "normal human-facing Product conversation",
+        "product intent clarification",
+        "simple choice explanation"
       ],
       "required_context": [
         "authority",
         "custody",
+        "intent_baseline",
+        "model_policy_projection",
         "request",
-        "requested_action",
-        "signals",
-        "source_lock",
-        "typed_intent_provenance"
+        "timebox"
       ],
       "select": [
-        "specialist.control.intent-regulator"
+        "specialist.control.product-owner"
       ],
       "deny_if": [
-        "authority binding is absent",
-        "chat-only assertion is presented as authority",
-        "missing custody",
-        "self-acceptance is requested",
-        "stale source",
-        "unsupported tool or data access"
+        "implementation, merge, release, or deployment authority is requested",
+        "lifecycle, spawn, despawn, roster, or seed authority is requested",
+        "model-policy projection is missing, stale, or invalid",
+        "workflow regulation or scheduling authority is requested"
       ],
       "priority": 0
     },
@@ -266,27 +263,29 @@
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
       "signals": [
-        "control-plane lifecycle",
-        "fifteen-minute orchestration",
-        "governance checkpoint",
-        "typed handoff"
+        "fifteen-minute useful-progress check",
+        "one-Spawner liveness operation",
+        "typed redistribution dispatch",
+        "workflow false-stall repair"
       ],
       "required_context": [
         "authority",
         "custody",
-        "lifecycle_intent",
+        "model_policy_projection",
         "request",
-        "source_lock",
-        "timebox"
+        "signed_controller_event",
+        "timebox",
+        "workflow_progress_evidence"
       ],
       "select": [
         "specialist.control.project-controller"
       ],
       "deny_if": [
-        "ambiguous authority or routing target",
-        "missing custody or lifecycle evidence",
-        "Product write, deploy, publish, migrate, or runtime side effect",
-        "self-acceptance or activation request"
+        "campaign, phase, feature, or task mutation is requested",
+        "deployment, memory write, or acceptance is requested",
+        "human-facing conversation or intent authority is requested",
+        "ordinary agent, seed, roster, archive, or despawn action is requested",
+        "signed event or current model-policy projection is missing or invalid"
       ],
       "priority": 0
     },
@@ -3834,5 +3833,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "ea4fb1ab7c22de2cb149f37607a7026f00b09c861899b4bfc6e10c5a9e1828d1"
+  "routing_sha256": "bf125396632172d133e0c46c23f46563ff455a48c7702421b4c199550df3e8ac"
 }

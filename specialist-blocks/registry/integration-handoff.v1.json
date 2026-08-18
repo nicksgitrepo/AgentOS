@@ -53,7 +53,7 @@
       "PLANNED": 0,
       "NOT_APPLICABLE": 1,
       "alias_mappings": 10,
-      "catalog_sha256": "f64d34ea48bc539bb0969b58847d12376fcc6b664ac4c9f9e85a506ca5165d67"
+      "catalog_sha256": "f2488cc28d057ba06942fe5a735fc2fdeef7ce8db9238a6745b38d3198b49d5b"
     }
   },
   "lanes": {
@@ -62,7 +62,7 @@
     "entries": [
       {"generic_id": "AGENT.BOOTSTRAP", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.bootstrap-project-initializer", "status": "CANDIDATE"},
       {"generic_id": "AGENT.PROJECT_CONTROLLER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.project-controller", "status": "CANDIDATE"},
-      {"generic_id": "AGENT.INTENT_REGULATOR", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.intent-regulator", "status": "CANDIDATE"},
+      {"generic_id": "AGENT.PRODUCT_OWNER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.product-owner", "status": "CANDIDATE"},
       {"generic_id": "AGENT.RESOURCE_SCHEDULER", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.resource-scheduler", "status": "CANDIDATE"},
       {"generic_id": "AGENT.RUNTIME_DEPLOYMENT", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.runtime-deployment-operator", "status": "CANDIDATE"},
       {"generic_id": "AGENT.INDEPENDENT_AUDITOR", "child_id": "ARCHIVED_SOURCE_TASK", "package_id": "specialist.control.independent-auditor", "status": "CANDIDATE"}

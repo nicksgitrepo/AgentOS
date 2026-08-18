@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.agent_lifecycle_custody.v2",
+  "title": "Receipt-driven Spawner-exclusive lifecycle custody",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spawn", "transition", "despawn", "restart"],
+  "properties": {
+    "spawn": {"const": "CURRENT_SPAWNER_PLUS_PROJECT_BOUND_ONE_USE_ADMISSION_RECEIPT"},
+    "transition": {"const": "CANONICAL_TYPED_PROJECT_RECEIPT_RESOLVED_AND_CONSUMED_ONCE"},
+    "despawn": {"const": "HANDOFF_SCOPE_EVIDENCE_WORKTREE_ZERO_CUSTODY_ZERO_AND_DESPAWN_RECEIPTS"},
+    "restart": {"const": "DURABLE_MONOTONIC_ATTACHMENT_GENERATION_FENCES_OLD_CAPABILITY"}
+  }
+}

@@ -90,6 +90,7 @@ export async function runCanonicalCampaign({
   globalGovernanceContext,
   globalGovernanceAuthorityStore,
 } = {}) {
+  throw Object.assign(new Error("Canonical campaign execution through the retired Intent Regulator runtime is unavailable; use governed Controller workflow, Product Owner intent, and Spawner lifecycle authorities"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   assertUniversalDevelopmentMode("CAMPAIGN");
   assert(typeof clock === "function", "canonical campaign clock must be callable");
   assert(typeof persistCampaignState === "function", "canonical campaign requires durable campaign-state persistence", "CAMPAIGN_PERSISTENCE_REQUIRED");
@@ -518,5 +519,6 @@ export async function runCanonicalCampaign({
 }
 
 export function inspectCanonicalCampaignRuntime({authorityRoot, repositoryRoot = process.cwd()} = {}) {
+  throw Object.assign(new Error("Retired Intent Regulator campaign runtime inspection requires the read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
   return inspectPersistentIntentRuntime({authorityRoot, repositoryRoot});
 }

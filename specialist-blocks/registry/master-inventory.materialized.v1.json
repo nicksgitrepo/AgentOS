@@ -99,8 +99,8 @@
       "role_kind": "ROUTER"
     },
     {
-      "canonical_id": "inventory.permanent-governance-control.intent-regulator-owner-voice",
-      "title": "Intent Regulator/Owner Voice",
+      "canonical_id": "inventory.permanent-governance-control.product-owner-intent-custodian",
+      "title": "Product Owner/Intent Custodian",
       "aliases": [],
       "family": "permanent-governance-control",
       "subfamily": "governance",
@@ -26220,12 +26220,12 @@
       "required_upstream_router": null
     },
     {
-      "canonical_id": "AGENT.INTENT_REGULATOR",
-      "title": "Intent Regulator",
+      "canonical_id": "AGENT.PRODUCT_OWNER",
+      "title": "Product Owner",
       "aliases": [],
       "family": "control-plane",
       "subfamily": "control-plane",
-      "purpose": "Operate the portable governance control for Intent Regulator.",
+      "purpose": "Operate the portable governance control for Product Owner.",
       "triggers": [
         "typed control-plane request"
       ],
@@ -30747,5 +30747,5 @@
     "ATOMIC_SPECIALIST": 92,
     "COMPILED_AGENT_PACKAGE": 0
   },
-  "inventory_sha256": "dba276c6eba8b21d95b48f1463c5aee29fbc41169137a0b52ab9c3fd03a283d3"
+  "inventory_sha256": "f7b9b24c4a762edaa6f15cbba3788d14b7bd75f96e124ef57f649e18c6f4186b"
 }

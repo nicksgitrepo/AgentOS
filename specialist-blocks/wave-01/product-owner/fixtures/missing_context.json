@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.product-owner",
+  "class": "missing_context",
+  "fixture_id": "product-owner-missing-intent-escalation",
+  "expected": "DENY",
+  "hostile": true,
+  "vector": {"entrypoint":"evaluateProductOwnerBoundary","input":{"schema":"agentos.product_owner_boundary_input.v1","version":1,"request_kind":"MISSING_INTENT","admission_status":"CURRENT","model_context_status":"CURRENT","intent_context_status":"MISSING","project_binding_status":"MATCHED","detail_level":"SIMPLE"},"expected_readback":{"disposition":"ESCALATE_USER","route":"PRODUCT_OWNER_BOUNDED_QUESTION","all_side_effect_counts":0}},
+  "note": "Missing intent becomes a simple question, never an invented answer."
+}

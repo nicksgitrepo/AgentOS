@@ -1,9 +1,31 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "FIXTURE.CONTROLLER.ROUTING",
+  "attack_vector": "ROUTING",
+  "input_class": "HOSTILE_NEGATIVE",
+  "operational_entrypoint": "control/controller-workflow-regulator.mjs#compileControllerWorkflowMonitorTick",
+  "setup": ["ISOLATED_TEST_CUSTODY", "SEALED_CANONICAL_TEST_AUTHORITY", "NO_PRODUCTION_STORE_PROVISION"],
+  "canonical_input": {"class": "routing", "vector_ref": "ROUTING"},
+  "required_assertions": ["TYPED_SEMANTIC_OUTCOME", "NO_ADAPTER_INVOCATION", "NO_CONTROLLER_STATE_CHANGE"],
+  "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "routing",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic typed checkpoint identifies a bounded control-plane route and leaves downstream work to the named specialist."
+  "vector": {
+    "entrypoint": "compileControllerWorkflowMonitorTick",
+    "input": {
+      "minutesSinceUsefulProgress": 0,
+      "activeWorkInProgress": true,
+      "claimedBlocker": false,
+      "protectedBlockerProven": false
+    },
+    "assertions": [
+      "MOVING status is returned",
+      "no adapter is invoked",
+      "no lifecycle state is changed"
+    ]
+  },
+  "note": "Concrete useful progress needs no workflow mutation."
 }

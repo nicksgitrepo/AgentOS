@@ -5,10 +5,32 @@
   "block_id": "specialist.control.project-controller",
   "status": "EXECUTABLE",
   "answer_type": "FOUR_VALUED",
-  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
-  "question": "Does the typed output bind the exact candidate digest, route, lifecycle intent, evidence, residuals, and named next authority without claiming completion?",
-  "evidence": ["candidate_digest", "gate.09-output-handoff.answer", "handoff_recipient", "residuals"],
-  "next": {"YES": "10-proof-acceptance", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "10-proof-acceptance"},
-  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
-  "gate_sha256": "c21dbc46067ff6ff2309b9cc352784ab9d5d272124183359c3497947ac785b4d"
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Does output bind the exact progress or one-Spawner operation, signed evidence, state readback, route, residuals, and named authority without approving downstream work?",
+  "evidence": [
+    "candidate_digest",
+    "gate.09-output-handoff.answer",
+    "handoff_recipient",
+    "residuals"
+  ],
+  "next": {
+    "YES": "10-proof-acceptance",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "10-proof-acceptance"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "4bca205ecafe7242dcca9c0c4e2a5e84f6643e33ba36eeea912b1968c15c0ff3"
 }

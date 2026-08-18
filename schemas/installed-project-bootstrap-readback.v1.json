@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.installed_project_bootstrap_readback.v1",
+  "title": "Installed project Bootstrap loader readback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "binding_sha256", "authority_sha256", "loader_sha256", "manifest_sha256", "custody_controller_sha256", "project_store_root", "project_identity_sha256", "bootstrap_custody_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.installed_project_bootstrap_readback.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_INACTIVE", "ACCEPTED_ACTIVE"]},
+    "binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "loader_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "custody_controller_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_store_root": {"type": ["string", "null"]},
+    "project_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "bootstrap_custody_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

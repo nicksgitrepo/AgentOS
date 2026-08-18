@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.controller_hostile_evaluation.v1",
+  "title": "AgentOS Controller hostile evaluation",
+  "type": "object",
+  "required": [
+    "schema", "version", "candidate_package_file_sha256", "fixture_manifest_sha256",
+    "implementation_modules", "result_count", "negative_assertion_count",
+    "mutation_sensitivity", "operational_ceiling", "results", "status", "evaluation_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.controller_hostile_evaluation.v1"},
+    "version": {"const": 1},
+    "candidate_package_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fixture_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "implementation_modules": {"type": "array", "items": {"type": "object", "required": ["entrypoint", "file_sha256"], "properties": {"entrypoint": {"type": "string", "pattern": "^control/"}, "file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "additionalProperties": false}},
+    "result_count": {"type": "integer", "const": 17},
+    "negative_assertion_count": {"type": "integer", "minimum": 1},
+    "mutation_sensitivity": {"type": "object", "required": ["status", "weakened_gate_ids", "gate_count", "mutation_detected"], "properties": {"status": {"enum": ["INTACT", "WEAKENED"]}, "weakened_gate_ids": {"type": "array", "items": {"type": "string"}}, "gate_count": {"type": "integer", "const": 12}, "mutation_detected": {"type": "boolean"}}, "additionalProperties": false},
+    "operational_ceiling": {"const": "CONTROLLER_OPERATIONAL_STORE_INACTIVE"},
+    "results": {"type": "array", "minItems": 17, "maxItems": 17, "items": {"type": "object", "required": ["fixture_id", "fixture_class", "attack_vector", "gate_id", "expected_outcome", "actual_outcome", "implementation_entrypoint", "implementation_file_sha256", "semantic_rejection", "operational_ceiling", "adapter_invocation_count", "state_change_count", "negative_assertion_count", "result"], "properties": {"fixture_id": {"type": "string"}, "fixture_class": {"type": "string"}, "attack_vector": {"type": "string"}, "gate_id": {"type": "string"}, "expected_outcome": {"enum": ["DENY", "ESCALATE", "ROUTE"]}, "actual_outcome": {"enum": ["DENY", "ESCALATE", "ROUTE"]}, "implementation_entrypoint": {"type": "string", "pattern": "^control/"}, "implementation_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "semantic_rejection": {"type": "boolean"}, "operational_ceiling": {"type": ["string", "null"]}, "adapter_invocation_count": {"type": "integer", "minimum": 0}, "state_change_count": {"type": "integer", "minimum": 0}, "negative_assertion_count": {"type": "integer", "minimum": 1}, "error_code": {"type": ["string", "null"]}, "error_message_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}, "result": {"const": "PENDING"}}, "additionalProperties": false}},
+    "status": {"const": "PENDING"},
+    "evaluation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

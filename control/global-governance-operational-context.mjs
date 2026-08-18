@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
-import {MODEL_POLICY_ROLE_CLASSES} from "./eco-model-policy.mjs";
+import {MODEL_POLICY_ROLE_CLASSES, MODEL_POLICY_ROLE_TASK_CLASSES, selectEcoModelRoute} from "./eco-model-policy.mjs";
 import {resolveCanonicalGlobalGovernanceProjection, resolveGlobalGovernanceStoreForMemoryAdapter} from "./global-governance-bootstrap.mjs";
 import {GLOBAL_GOVERNANCE_MEMORY_WRITERS, readGlobalGovernanceMemory, replayGlobalGovernanceMemory} from "./global-governance-memory.mjs";
 
@@ -15,8 +15,8 @@ function body(value) { return {...structuredClone(value), context_sha256: null};
 function compileGlobalBehaviorPolicy(roleClass) {
   const policy = {
     schema: "agentos.global_agent_behavior_policy.v1", version: 1, project_agnostic: true,
-    human_facing_role: "AGENTOS.PROJECT_OWNER", default_explanation_level: "SIMPLE", technical_details_require_explicit_advanced_choice: true,
-    current_role_human_facing_authority: roleClass === "PERMANENT_ROLE" ? "ONLY_WHEN_BOUND_AS_PROJECT_OWNER" : "NONE",
+    human_facing_role: "AGENTOS.PRODUCT_OWNER", default_explanation_level: "SIMPLE", technical_details_require_explicit_advanced_choice: true,
+    current_role_human_facing_authority: roleClass === "PRODUCT_OWNER" ? "PROJECT_OWNER_ONLY" : "NONE",
     bootstrap_spawn_exception: "START_EXACTLY_ONE_SPAWNER", ordinary_spawn_authority: "AGENTOS.SPAWNER", all_despawn_authority: "AGENTOS.SPAWNER",
     auditor_group_size: 6, auditor_closeout: "DESPAWN_AFTER_ACCEPTED_HANDOFF_AND_ZERO_AGENT_REFERENCES",
     builder_requires_isolated_worktree: true, project_owner_monitor_minutes: 15, controller_progress_monitor_minutes: 15,
@@ -40,12 +40,21 @@ export function compileOperationalGlobalGovernanceContext({authorityStore, roleC
   assert(MODEL_POLICY_ROLE_CLASSES.includes(roleClass), "Operational role class is invalid");
   assert(typeof operationalId === "string" && ID.test(operationalId), "Operational context identity is invalid");
   const governed = resolveCanonicalGlobalGovernanceProjection({authorityStore, roleClass});
+  const roleTaskClass = MODEL_POLICY_ROLE_TASK_CLASSES[roleClass];
+  const selectedRoute = roleTaskClass === undefined ? null : selectEcoModelRoute({snapshot: governed.snapshot, taskClass: roleTaskClass, roleCapabilityFloor: 0, requiredContextTokens: 0, requiredCapabilities: [], nowUtc: governed.observed_at_utc});
+  const compactSelection = selectedRoute === null ? governed.projection.selected : {
+    model_id: selectedRoute.model_id, reasoning_effort: selectedRoute.reasoning_effort,
+    capability_floor: selectedRoute.capability_floor, context_floor_tokens: selectedRoute.context_floor_tokens,
+    input_usd_per_million: selectedRoute.input_usd_per_million, output_usd_per_million: selectedRoute.output_usd_per_million,
+    max_concurrency: selectedRoute.max_concurrency, max_heavyweight_processes: selectedRoute.max_heavyweight_processes,
+    fallback_models: selectedRoute.fallback_models, escalation_triggers: selectedRoute.escalation_triggers,
+  };
   const context = {
     schema: OPERATIONAL_GLOBAL_GOVERNANCE_CONTEXT_SCHEMA, version: 1, status: "READY", operational_id: operationalId,
     role_class: roleClass, read_only_projection: true, global_memory_write_capability: roleClass === "SPAWNER",
     ledger_head_sha256: governed.ledger_head_sha256, memory_readback_sha256: governed.readback_sha256,
     bootstrap_sha256: governed.bootstrap_sha256, snapshot_sha256: governed.snapshot.snapshot_sha256,
-    projection_sha256: governed.projection.projection_sha256, compact_selection: governed.projection.selected,
+    projection_sha256: governed.projection.projection_sha256, compact_selection: compactSelection,
     global_behavior_policy: compileGlobalBehaviorPolicy(roleClass),
     worker_binding_rule: roleClass === "WORKING_AGENT" ? "BOUND_UNTIL_HANDOFF_OR_TYPED_SAFE_REFRESH" : "CURRENT_HEAD_REQUIRED_BEFORE_WORK",
     context_sha256: null,

@@ -352,7 +352,7 @@ async function run(repoRoot) {
       version: 1,
       status: "REPAIR_RECHECK_PASSED_ACCEPTANCE_STILL_OPEN",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "Intent Regulator",
+      controller_display_name: "Controller",
       campaign_id: CAMPAIGN_ID,
       campaign_version: CAMPAIGN_VERSION,
       candidate_sha256: candidate.candidate_sha256,
@@ -361,7 +361,7 @@ async function run(repoRoot) {
       repair_task_sha256: task.task_sha256,
       recheck_sha256: recheck.record.recheck_sha256,
       custody: {
-        controller: "Intent Regulator routed and re-checked the repair; it did not claim Feature-Agent code completion.",
+        controller: "Controller routed and re-checked workflow progress; it did not claim builder completion or Product Owner intent authority.",
         feature_agent: {session_id: featureReadback.session_id, commit: featureReadback.build_commit, tree: featureReadback.build_tree},
         auditor: {session_id: auditorReadback.session_id, verified_commit: auditorReadback.build_commit, verified_tree: auditorReadback.build_tree},
       },

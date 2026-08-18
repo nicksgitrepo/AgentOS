@@ -5,10 +5,32 @@
   "block_id": "specialist.control.project-controller",
   "status": "EXECUTABLE",
   "answer_type": "FOUR_VALUED",
-  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
-  "question": "Does the request remain limited to lifecycle intent and typed routing, with Product, deployment, publication, Memory, and domain-specialist work excluded or split?",
-  "evidence": ["gate.03-scope-nongoals.answer", "request.scope", "scope.non_goals", "typed_route"],
-  "next": {"YES": "04-source-evidence-freshness", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "04-source-evidence-freshness"},
-  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
-  "gate_sha256": "508c0dc44dc70b0f02d2074893d773fccaf7b1608abf0bca67358c7f3a167ce5"
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Does the request remain workflow-only, with intent, human conversation, campaigns, phases, tasks, ordinary lifecycle, roster, Memory, delivery, and acceptance excluded?",
+  "evidence": [
+    "gate.03-scope-nongoals.answer",
+    "request.scope",
+    "scope.non_goals",
+    "typed_route"
+  ],
+  "next": {
+    "YES": "04-source-evidence-freshness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "04-source-evidence-freshness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "02f5043e7bd605f1030459e39cae42d7d704bfff29daf932a8fba01bdec5b475"
 }

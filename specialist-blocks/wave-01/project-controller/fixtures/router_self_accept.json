@@ -1,9 +1,28 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "FIXTURE.CONTROLLER.ROUTER_SELF_ACCEPT",
+  "attack_vector": "ROUTER_SELF_ACCEPT",
+  "input_class": "HOSTILE_NEGATIVE",
+  "operational_entrypoint": "control/agentos-controller.mjs#validateControllerEventPreconditions",
+  "setup": ["ISOLATED_TEST_CUSTODY", "SEALED_CANONICAL_TEST_AUTHORITY", "NO_PRODUCTION_STORE_PROVISION"],
+  "canonical_input": {"class": "router_self_accept", "vector_ref": "ROUTER_SELF_ACCEPT"},
+  "required_assertions": ["TYPED_SEMANTIC_OUTCOME", "NO_ADAPTER_INVOCATION", "NO_CONTROLLER_STATE_CHANGE"],
+  "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "router_self_accept",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request asks the controller to accept its own candidate; deny and require independent authority."
+  "vector": {
+    "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
+    "input": {
+      "event_type": "CONTROLLER_SELF_ACCEPTED"
+    },
+    "assertions": [
+      "adapter invocation count remains zero",
+      "Controller state remains unchanged",
+      "independent evaluation remains pending"
+    ]
+  },
+  "note": "Controller cannot approve its own package."
 }

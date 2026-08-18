@@ -50,11 +50,30 @@ const FAMILY_ROUTER = Object.freeze({
 const P0_SOURCE_BY_RECIPE = Object.freeze({
   "recipe.agent.bootstrap": "inventory.permanent-governance-control.bootstrap-project-initializer",
   "recipe.agent.project-controller": "inventory.permanent-governance-control.global-controller-15-minute-orchestrator",
-  "recipe.agent.intent-regulator": "inventory.permanent-governance-control.intent-regulator-owner-voice",
+  "recipe.agent.product-owner": "inventory.permanent-governance-control.product-owner-intent-custodian",
   "recipe.agent.resource-scheduler": "inventory.permanent-governance-control.scheduler-hardware-resource-governor",
   "recipe.agent.runtime-deployment": "inventory.permanent-governance-control.runtime-deployment-operator",
   "recipe.agent.independent-auditor": "inventory.permanent-governance-control.independent-auditor",
 });
+
+const RETIRED_RECIPE_AUTHORITY = Object.freeze([
+  "recipe.agent.intent-regulator",
+  "inventory.permanent-governance-control.intent-regulator-owner-voice",
+  "specialist.control.intent-regulator",
+  "AGENT.INTENT_REGULATOR",
+]);
+
+export function assertNoRetiredRecipeAuthority(catalog) {
+  const currentRecipes = catalog?.recipes ?? [];
+  if (!Array.isArray(currentRecipes)) throw new Error("recipe catalog recipes must be an array");
+  for (const recipe of currentRecipes) {
+    const serialized = JSON.stringify(recipe);
+    if (RETIRED_RECIPE_AUTHORITY.some((retiredId) => serialized.includes(retiredId))) {
+      throw new Error("retired Intent Regulator recipe remains in the current recipe catalog");
+    }
+  }
+  return true;
+}
 
 const P4_RECIPE_OVERRIDES = Object.freeze({
   "inventory.product-client-experience.interaction-designer": {
@@ -358,10 +377,11 @@ function compiledRecipe(entry, override) {
 
 export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGenerated = true} = {}) {
   const libraryRoot = path.join(repositoryRoot, "specialist-blocks");
-  const compiled = compileSpecialistLibrary({repositoryRoot, writeGenerated: true});
+  const compiled = compileSpecialistLibrary({repositoryRoot, writeGenerated});
   const inventoryEntries = compiled.inventory.entries.filter((entry) => entry.canonical_id.startsWith("inventory.")).sort((left, right) => left.canonical_id.localeCompare(right.canonical_id));
   const catalogPath = path.join(libraryRoot, "registry", "recipe-catalog.v1.json");
   const existingCatalog = readJson(catalogPath, "recipe catalog");
+  assertNoRetiredRecipeAuthority(existingCatalog);
   const existingByRecipeId = new Map((existingCatalog.recipes ?? []).map((recipe) => [recipe.recipe_id, recipe]));
   const inventoryById = new Map(inventoryEntries.map((entry) => [entry.canonical_id, entry]));
   const recipes = [];
@@ -409,6 +429,7 @@ export function scaffoldRecipeCatalog({repositoryRoot = process.cwd(), writeGene
     aliases,
     recipes_sha256: null,
   };
+  assertNoRetiredRecipeAuthority(catalog);
   catalog.recipes_sha256 = canonicalDigest(catalog);
   if (writeGenerated) fs.writeFileSync(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`);
   return catalog;

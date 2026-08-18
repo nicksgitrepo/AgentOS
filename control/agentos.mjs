@@ -2,13 +2,15 @@
 
 /* Stable public kernel surface for the complete AgentOS runtime. */
 
-export * from "./intent-regulator-runtime.mjs";
+// The legacy Intent Regulator campaign runtime is intentionally not part of
+// the public AgentOS facade.  Product Owner owns intent; Controller regulates
+// workflow; Spawner owns ordinary lifecycle authority.
+export {compileControllerWorkflowRegulatorContract, validateControllerWorkflowRegulator, assertControllerWorkflowOperation, compileControllerWorkflowMonitorTick} from "./controller-workflow-regulator.mjs";
 export * from "./native-self-development-adapter.mjs";
-export {createCampaignStatePersistence, createWorkflowStatePersistence, createQuestionQueuePersistence, bootstrapAndStartAgentOS} from "./bootstrap-runtime.mjs";
+export {createCampaignStatePersistence, createWorkflowStatePersistence, createQuestionQueuePersistence} from "./bootstrap-runtime.mjs";
 export {compileRapidPrototypeWorkflow, compileRapidPrototypeWorkflowFromInventory} from "./rapid-prototype-workflow.mjs";
 export {compileFeatureLaneGoal, validateFeatureLaneGoal, assertFeatureLaneGoalBinding} from "./feature-lane-goal.mjs";
 export {compileVisibleTaskParityReadback, compileVisibleTaskRegistryFromHost, validateVisibleTaskParity} from "./canonical-feature-inventory.mjs";
-export {runCanonicalCampaign, inspectCanonicalCampaignRuntime} from "./canonical-campaign-orchestration-adapter.mjs";
 export {compileGeneratedProjectRoleLibrary, compileGeneratedTaskRolePacket, compileGovernanceBinding, prepareGovernanceUpgrade} from "./four-library-governance.mjs";
 export {compileLayeredGovernanceContract, validateLayeredGovernanceContract, activateLayeredGovernance, compareLayeredGovernanceEvidence, validateLayeredGovernanceEvidence} from "./layered-governance-contract.mjs";
 export {compileProjectContract, compileProjectContractWithReceipt, reassessProjectContract} from "./bootstrap-project-contract.mjs";
@@ -61,12 +63,10 @@ export {
 export {compileTaskContextPolicy, compileTaskContextItem, selectTaskContext} from "./task-context-firewall.mjs";
 export {admitExecutionRoute, runAdmittedTask} from "./task-routing-admission.mjs";
 export {compileTaskRoutingEvaluation, replayTaskRouting} from "./task-routing-evaluation.mjs";
-export {openPersistentIntentRuntime, inspectPersistentIntentRuntime} from "./persistent-intent-runtime.mjs";
-export {compilePersistentRuntimeObservation, compilePersistentRuntimeRoute} from "./persistent-intent-runtime-integration.mjs";
-export {compileContinuousOperatingLoop, runContinuousOperatingLoop, runContinuousOperatingLoopIteration} from "./continuous-operating-loop.mjs";
-export {readProjectMemoryLedger, reconstructProjectMemory, appendProjectMemoryEvent, readProjectMemorySnapshot, writeProjectMemorySnapshotCompareAndSwap, recoverProjectMemoryLock} from "./project-memory-store.mjs";
-export {compileProjectMemoryArtifact, validateProjectMemoryArtifact, writeProjectMemoryArtifact, readProjectMemoryArtifact} from "./project-memory-artifacts.mjs";
-export {compileBootstrapProjectMemoryBinding, createProjectMemoryRuntime, assertProjectMemoryRuntimeReady, initializeBootstrapProjectMemory, compileProjectMemoryTaskContext, importProjectMemoryCapsuleAuthoritatively, compileProjectMemoryActivationReceipt, validateProjectMemoryActivationReceipt, compileProjectMemoryCurrentReadback, validateProjectMemoryCurrentReadback} from "./project-memory-runtime.mjs";
+// Authority-bearing legacy Runtime/loop and raw project-memory filesystem APIs
+// are intentionally not part of the public kernel. Trusted Bootstrap adapters
+// may use their internal migration readers, but callers cannot select roots,
+// paths, clocks, adapters, or writer authority through this facade.
 export {compileOfflinePolicy, authorizeOfflineAction, transitionOfflinePolicy} from "./private-offline-mode.mjs";
 export {compileProviderNeutralDiscovery, findOfflineUsableAdapters} from "./private-provider-discovery.mjs";
 export {allocateTestBuild, formatTestBuildTag, parseTestBuildTag, buildReleaseArtifactManifest} from "./release-lifecycle.mjs";
@@ -83,7 +83,6 @@ export {
   rejectRuntimeOperationAuthorization,
   createRuntimeOperationDecisionPacket,
 } from "./delivery-operation-governance.mjs";
-export {startLocalSelfDevelopment} from "./start-local-self-development.mjs";
 export * as apprenticeship from "./apprenticeship-contracts.mjs";
 
 /*
@@ -94,7 +93,10 @@ export * as apprenticeship from "./apprenticeship-contracts.mjs";
  */
 export * as bootstrap from "./bootstrap-compiler.mjs";
 export * as bootstrapConversation from "./bootstrap-conversation.mjs";
-export * as bootstrapRuntime from "./bootstrap-runtime.mjs";
+// bootstrap-runtime still contains the historical campaign transition seam;
+// it is intentionally not exposed as a namespace because that path used to
+// let an Intent Regulator act as Controller.  Bootstrap and Spawner will bind
+// the replacement workflow path through their governed entrypoints.
 export * as projectContract from "./bootstrap-project-contract.mjs";
 export * as decisionTree from "./governance-decision-tree.mjs";
 export * as gateCatalog from "./gate-catalog-compiler.mjs";
@@ -107,7 +109,7 @@ export * as hostAttachment from "./native-host-attachment.mjs";
 export * as hostContract from "./native-host-contract.mjs";
 export * as nativeSessions from "./native-session-team.mjs";
 export * as nativeRunner from "./native-session-runner.mjs";
-export * as controller from "./agentos-controller.mjs";
+export * as controllerWorkflow from "./controller-workflow-regulator.mjs";
 export * as controllerImportPlanner from "./controller-import-planner.mjs";
 export * as controllerImportCloseout from "./controller-import-closeout.mjs";
 export * as controllerEscalation from "./controller-escalation-continuation.mjs";
@@ -137,15 +139,11 @@ export * as localProofEvidenceGate from "./local-proof-evidence-gate.mjs";
 export * as autonomousDispatchLivenessGate from "./autonomous-dispatch-liveness-gate.mjs";
 export * as harnessCollisionGate from "./harness-collision-gate.mjs";
 export * as projectImport from "./project-import.mjs";
-export * as controllerSupervisor from "./controller-supervisor-runtime.mjs";
 export * as stopWorkflowGate from "./stop-workflow-gate.mjs";
 export * as candidateScopeGate from "./candidate-scope-gate.mjs";
 export * as dynamicLanes from "./dynamic-project-lanes.mjs";
 export * as featureInventory from "./canonical-feature-inventory.mjs";
 export * as projectMemory from "./project-memory.mjs";
-export * as projectMemoryStore from "./project-memory-store.mjs";
-export * as projectMemoryArtifacts from "./project-memory-artifacts.mjs";
-export * as projectMemoryRuntime from "./project-memory-runtime.mjs";
 export * as projectMap from "./project-map.mjs";
 export * as projectContext from "./project-context-store.mjs";
 export * as privateControlBundle from "./private-control-bundle.mjs";
@@ -165,10 +163,10 @@ export * as platformFoundationMerge from "./platform-foundation-merge.mjs";
 export * as deliveryClosure from "./delivery-closure-foundation.mjs";
 export * as deliveryOperationGovernance from "./delivery-operation-governance.mjs";
 export * as repairRecovery from "./repair-recovery.mjs";
-export * as continuousLoop from "./continuous-operating-loop.mjs";
 export * as apprenticeshipRunner from "./apprenticeship-native-runner.mjs";
-export * as projectOwnerConversation from "./project-owner-conversation.mjs";
-export * as projectOwnerBootstrap from "./project-owner-bootstrap.mjs";
-export * as agentLifecycleCustody from "./agent-lifecycle-custody.mjs";
+export * as productOwnerOperational from "./product-owner-operational.mjs";
+// Project Owner's public surface is conversation and intent only.  The
+// Bootstrap compiler remains an internal setup dependency so Product Owner
+// cannot reach Controller workflow mutation through a namespace export.
 export * as collaborativeAuditWorkflow from "./collaborative-audit-workflow.mjs";
 export * as featureImplementationLoop from "./feature-implementation-loop.mjs";

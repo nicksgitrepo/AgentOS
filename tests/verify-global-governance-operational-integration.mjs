@@ -26,6 +26,8 @@ for (const roleClass of MODEL_POLICY_ROLE_CLASSES) {
   assert.equal(contexts[roleClass].global_memory_write_capability, roleClass === "SPAWNER");
   assert.equal(contexts[roleClass].ledger_head_sha256, first.readback.live_ledger_head_sha256);
   assert.equal(contexts[roleClass].snapshot_sha256, first.snapshot.snapshot_sha256);
+  assert(contexts[roleClass].compact_selection !== null, `${roleClass} did not receive a selected economical model route`);
+  assert.equal(contexts[roleClass].global_behavior_policy.current_role_human_facing_authority, roleClass === "PRODUCT_OWNER" ? "PROJECT_OWNER_ONLY" : "NONE");
 }
 
 assert.throws(() => assertOperationalGlobalGovernanceContext(structuredClone(contexts.RUNTIME), {authorityStore: first.authorityStore, expectedRoleClass: "RUNTIME"}), /not constructed from canonical global governance memory/u);
@@ -48,4 +50,4 @@ const rebuilt = compileOperationalGlobalGovernanceContext({authorityStore: secon
 assert.equal(assertOperationalGlobalGovernanceContext(rebuilt, {authorityStore: second.authorityStore, expectedRoleClass: "RUNTIME"}).status, "READY_FOR_WORK");
 
 fs.rmSync(root, {recursive: true, force: true});
-console.log("PASS operational global governance: all eight role classes receive canonical compact projections, non-writers cannot widen authority, scheduler fails closed, supersession invalidates contexts, and active workers remain exactly bound until handoff");
+console.log("PASS operational global governance: every concrete permanent role receives a canonical economical model selection, only Product Owner is human-facing, non-writers cannot widen authority, supersession invalidates contexts, and active workers remain exactly bound until handoff");

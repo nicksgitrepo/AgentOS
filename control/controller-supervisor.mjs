@@ -316,7 +316,7 @@ export function validateSupervisorObservation(observation) {
 }
 
 export function compileSupervisorObservation({
-  controllerDisplayName = "Intent Regulator",
+  controllerDisplayName = "Controller",
   projectId,
   campaignId,
   campaignVersion,

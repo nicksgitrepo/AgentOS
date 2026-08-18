@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_lifecycle_store.v2",
+  "title": "Project-bound durable Spawner lifecycle store",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_identity_sha256", "project_store_id", "store_id", "attachment_generation", "event_count", "head_sha256", "events"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_lifecycle_store.v2"},
+    "version": {"const": 2},
+    "project_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_store_id": {"type": "string", "pattern": "^PROJECT\\.STORE\\.[A-F0-9]{64}$"},
+    "store_id": {"type": "string", "pattern": "^LIFECYCLE\\.STORE\\.[A-F0-9]{64}$"},
+    "attachment_generation": {"type": "integer", "minimum": 1},
+    "event_count": {"type": "integer", "minimum": 0},
+    "head_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "events": {"type": "array", "items": {"type": "object"}}
+  }
+}

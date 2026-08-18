@@ -6,8 +6,8 @@
   "purpose": "Select and start exactly one owner-authorized control-plane task from a completed inactive handoff without activating the campaign.",
   "role_display": {
     "machine_role": "AGENTOS_CONTROLLER",
-    "public_name": "Intent Regulator",
-    "task_title_rule": "Continuation task metadata and start/completion handoffs use an Intent Regulator title; Bootstrap is not an ongoing task role.",
+    "public_name": "Controller",
+    "task_title_rule": "Continuation task metadata and workflow handoffs use a Controller title; Product Owner separately owns user intent and ordinary conversation.",
     "history_rule": "Accepted v1 records from before the display guard remain readable; newly compiled records carry the canonical role fields."
   },
   "selection": {

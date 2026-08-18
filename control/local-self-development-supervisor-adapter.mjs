@@ -393,7 +393,7 @@ export function compileControllerPlanningProgress({goal, taskId, sourceCommit, s
     version: 1,
     status,
     controller_role: "AGENTOS_CONTROLLER",
-    controller_display_name: "Intent Regulator",
+    controller_display_name: "Controller",
     project_id: goal.project_id,
     campaign_id: goal.campaign_id,
     campaign_version: goal.campaign_version,
@@ -1395,7 +1395,7 @@ function compileSupervisorHandoff({previous, goal, status, sourceCommit, sourceT
     version: 1,
     status,
     controller_role: "AGENTOS_CONTROLLER",
-    controller_display_name: previous.controller_display_name ?? "Intent Regulator",
+    controller_display_name: previous.controller_display_name ?? "Controller",
     project_id: previous.project_id ?? goal.project_id,
     campaign_id: goal.campaign_id,
     campaign_version: goal.campaign_version,
@@ -1457,6 +1457,7 @@ function compileLifecycleResolution({goal, finding, sourceCommit, sourceTree, ta
 }
 
 export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, schedulerRoot = null, schedulerPolicy = null}) {
+  throw Object.assign(new Error("Legacy self-development supervisor is retired; use the sealed Controller workflow authority"), {code: "RETIRED_ROLE_AUTHORITY_FORBIDDEN"});
   const campaignRoot = safeRoot(runtimeRoot, "local supervisor campaign root");
   const repositoryRoot = safeRoot(repoRoot, "local supervisor repository root");
   const schedulerOptions = {authorityRoot: schedulerRoot ?? path.join(campaignRoot, "scheduler-authority")};
@@ -1585,7 +1586,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
     findings.sort((left, right) => compareFindingIds(left.finding_id, right.finding_id));
     const ownerDecisionRequired = handoff.owner_decision_required === true;
     return compileSupervisorObservation({
-      controllerDisplayName: handoff.controller_display_name ?? "Intent Regulator",
+      controllerDisplayName: handoff.controller_display_name ?? "Controller",
       projectId: handoff.project_id ?? candidate?.project_id ?? "PROJECT",
       campaignId: handoff.campaign_id,
       campaignVersion: handoff.campaign_version,
@@ -1750,7 +1751,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       version: 1,
       status: "ROUTED_TO_DURABLE_CAMPAIGN_ROLES",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "Intent Regulator",
+      controller_display_name: "Controller",
       project_id: goal.project_id,
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,
@@ -2086,7 +2087,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       sourceTree: finalizerResult.adopted_tree,
       nextAction: campaignProgressTask
         ? "The owner-defined first useful workflow is complete at an audited local checkpoint; the Controller will remain available for a new bounded intent without prompting for approval."
-        : "Intent Regulator reconciles the durable campaign roles at the adopted checkpoint, then continues the next safe control-plane action without an outside prompt.",
+        : "Controller reconciles workflow at the adopted checkpoint, then continues the next safe control-plane action without taking Product Owner or Spawner authority.",
       permissions,
         repair: {
         summary: campaignProgressTask
@@ -2218,7 +2219,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       version: 1,
       status: "RECONCILING_DURABLE_CAMPAIGN_ROLES",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "Intent Regulator",
+      controller_display_name: "Controller",
       project_id: goal.project_id,
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,
@@ -2353,7 +2354,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       version: 1,
       status: "PASS",
       controller_role: "AGENTOS_CONTROLLER",
-      controller_display_name: "Intent Regulator",
+      controller_display_name: "Controller",
       project_id: goal.project_id,
       campaign_id: goal.campaign_id,
       campaign_version: goal.campaign_version,

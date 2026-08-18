@@ -135,7 +135,7 @@ const focusedBudgets = new Map([
   ["control/content-addressing.mjs", 120],
   ["control/bootstrap-output-definitions.mjs", 350],
   ["control/governance-library.mjs", 350],
-  ["control/governance-role-definitions.mjs", 300],
+  ["control/governance-role-definitions.mjs", 350],
   ["control/role-governance-library.mjs", 600],
   ["control/development-plan.mjs", 350],
   ["control/native-session-runner.mjs", 400],

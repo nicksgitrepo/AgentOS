@@ -453,8 +453,8 @@ export function compileContinuationHandoff({task, completedHandoff, parentReconc
     audit_reconciliation: structuredClone(auditReconciliation),
     findings: [],
     next_action: phase === "START"
-      ? "Intent Regulator will run only the selected control-plane task; keep the campaign inactive and do not spawn Product agents."
-      : "Review the exact completed Intent Regulator handoff; keep the campaign inactive until a separate start boundary is authorized.",
+      ? "Controller will regulate only the selected control-plane task; keep the campaign inactive and do not spawn Product agents."
+      : "Review the exact completed Controller handoff; keep the campaign inactive until a separate start boundary is authorized.",
     stop_conditions: structuredClone(task.stop_conditions),
     undo: structuredClone(task.undo),
     recorded_at_utc: recordedAtUtc,

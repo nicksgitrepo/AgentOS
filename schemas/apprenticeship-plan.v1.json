@@ -21,7 +21,7 @@
     "privacy_policy"
   ],
   "roles": [
-    "INTENT_REGULATOR",
+    "AGENTOS_CONTROLLER",
     "RUNTIME",
     "WALKTHROUGH_ORCHESTRATOR",
     "APPRENTICESHIP_WORKER",

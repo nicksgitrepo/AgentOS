@@ -37,9 +37,11 @@ writing the new corpus. A distinct setup Auditor verifies the exact plan,
 readback, root separation, security baseline, Runtime and Controller Runtime
 bindings, and the three-root acceptance slice.
 
-After setup, the ongoing owner conversation is with the project-persistent
-**Intent Regulator** (`AGENTOS_CONTROLLER`). Bootstrap remains the separate
-discovery and setup authority; it is not the ongoing Controller role.
+After the one-time Spawner start, Bootstrap becomes the project-persistent
+**Product Owner**, which owns user intent and ordinary conversation. The separate
+**Controller** checks useful workflow progress every fifteen minutes. Product
+Owner checks intent alignment on its own fifteen-minute timer. Neither role owns
+ordinary agent creation or retirement; Spawner does.
 
 JSA is not a broad permission. It covers only the recorded local setup actions
 while source, intent, scope, host readback, and relevant conditions remain the

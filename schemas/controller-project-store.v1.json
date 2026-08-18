@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.controller_project_store.v1",
+  "title": "Opaque project-scoped Controller store",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_store_id", "attachment_generation", "state_present", "event_count", "event_head_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.controller_project_store.v1"},
+    "version": {"const": 1},
+    "project_store_id": {"type": "string", "pattern": "^PROJECT\\.STORE\\.[A-Z0-9]+$"},
+    "attachment_generation": {"type": "integer", "minimum": 1},
+    "state_present": {"type": "boolean"},
+    "event_count": {"type": "integer", "minimum": 0},
+    "event_head_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

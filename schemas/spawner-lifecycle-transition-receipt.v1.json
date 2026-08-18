@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_lifecycle_transition_receipt.v1",
+  "title": "Spawner lifecycle transition receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "receipt_ref", "receipt_kind", "project_identity_sha256", "project_store_id", "agent_id", "role_id", "admission_receipt_ref", "request_id", "issuer_role", "subject_sha256", "assertions", "spawner_context_sha256", "model_snapshot_sha256", "model_selection_sha256", "occurred_at_utc", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_lifecycle_transition_receipt.v1"},
+    "version": {"const": 1},
+    "receipt_ref": {"type": "string", "pattern": "^ref:(spawner-admission|admission|handoff|scope|evidence|worktree-release|custody-release|lifecycle)/[0-9a-f]{64}$"},
+    "receipt_kind": {"enum": ["SPAWNER_ADMISSION", "SPAWN_ADMISSION", "HANDOFF_ACCEPTANCE", "SCOPE_CLOSEOUT", "EVIDENCE_PRESERVATION", "WORKTREE_RELEASE", "CUSTODY_RELEASE", "DESPAWN_ELIGIBILITY"]},
+    "project_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_store_id": {"type": "string"},
+    "agent_id": {"type": "string"},
+    "role_id": {"type": "string"},
+    "admission_receipt_ref": {"type": "string"},
+    "request_id": {"type": "string"},
+    "issuer_role": {"type": "string"},
+    "subject_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["admission_current", "handoff_accepted", "scope_closed", "evidence_preserved", "worktree_reference_count", "custody_reference_count", "despawn_eligible"],
+      "properties": {
+        "admission_current": {"type": "boolean"},
+        "handoff_accepted": {"type": "boolean"},
+        "scope_closed": {"type": "boolean"},
+        "evidence_preserved": {"type": "boolean"},
+        "worktree_reference_count": {"type": "integer", "minimum": 0},
+        "custody_reference_count": {"type": "integer", "minimum": 0},
+        "despawn_eligible": {"type": "boolean"}
+      }
+    },
+    "spawner_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "model_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "model_selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "occurred_at_utc": {"type": "string", "format": "date-time"},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

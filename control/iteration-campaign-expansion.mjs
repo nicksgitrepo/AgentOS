@@ -279,7 +279,7 @@ function emptyCampaignBinding() {
     scope_class: ITERATION_CAMPAIGN_SCOPE,
     dependency_id: "ITER-002",
     admitted_role: ITERATION_CAMPAIGN_ROLE,
-    persistent_coordinator: "INTENT_REGULATOR",
+    persistent_coordinator: "AGENTOS_CONTROLLER",
   };
 }
 
@@ -341,7 +341,7 @@ function admittedDecision(normalized) {
   return {
     classification: "INTERNAL_AGENTOS_CONTINUATION",
     decision: "CONTINUE_WITHOUT_OWNER_APPROVAL",
-    route: "INTENT_REGULATOR_CONTINUE",
+    route: "CONTROLLER_CONTINUE",
     reason: "Typed internal AgentOS campaign work remains source-bound and may continue without a new owner approval pause.",
     continuation: "CONTINUE",
     source_binding: normalized.source_binding,
@@ -532,7 +532,7 @@ function validateCampaignBinding(binding) {
   exactKeys(binding, ["campaign_id", "campaign_version", "kind", "scope_class", "dependency_id", "admitted_role", "persistent_coordinator"], "iteration campaign binding");
   assert(binding.campaign_id === ITERATION_CAMPAIGN_ID && binding.campaign_version === ITERATION_CAMPAIGN_VERSION, "iteration campaign binding identity is invalid");
   assert(binding.kind === "CAMPAIGN_EXPANSION" && binding.scope_class === ITERATION_CAMPAIGN_SCOPE, "iteration campaign binding kind or scope is invalid");
-  assert(binding.dependency_id === "ITER-002" && binding.admitted_role === ITERATION_CAMPAIGN_ROLE && binding.persistent_coordinator === "INTENT_REGULATOR", "iteration campaign binding governance is invalid");
+  assert(binding.dependency_id === "ITER-002" && binding.admitted_role === ITERATION_CAMPAIGN_ROLE && binding.persistent_coordinator === "AGENTOS_CONTROLLER", "iteration campaign binding governance is invalid");
   return binding;
 }
 
@@ -563,7 +563,7 @@ export function validateIterationCampaignExpansionAdmission(admission) {
   assert(typeof admission.owner_choice_required === "boolean", "iteration owner-choice state is invalid");
   for (const field of ["identity_match", "capability_available", "dependency_satisfied", "owner_intent_resolved"]) assert(admission[field] === null || typeof admission[field] === "boolean", `iteration ${field} is invalid`);
   if (admission.status === "ADMITTED") {
-    assert(admission.classification === "INTERNAL_AGENTOS_CONTINUATION" && admission.route === "INTENT_REGULATOR_CONTINUE", "admitted iteration classification is invalid");
+    assert(admission.classification === "INTERNAL_AGENTOS_CONTINUATION" && admission.route === "CONTROLLER_CONTINUE", "admitted iteration classification is invalid");
     assert(admission.source_binding.status === "MATCH", "admitted iteration source is not matched");
     assert(admission.identity_match === true && admission.capability_available === true && admission.dependency_satisfied === true && admission.owner_intent_resolved === true, "admitted iteration conditions are not satisfied");
     assert(admission.role === ITERATION_CAMPAIGN_ROLE && admission.scope_class === ITERATION_CAMPAIGN_SCOPE, "admitted iteration role or scope is invalid");

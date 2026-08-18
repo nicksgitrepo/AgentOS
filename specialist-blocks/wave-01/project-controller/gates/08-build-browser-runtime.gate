@@ -5,10 +5,32 @@
   "block_id": "specialist.control.project-controller",
   "status": "EXECUTABLE",
   "answer_type": "FOUR_VALUED",
-  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
-  "question": "Are build, browser, runtime, deployment, and publication side effects absent or explicitly denied for this control-plane transition?",
-  "evidence": ["browser_side_effect_check", "build_action", "gate.08-build-browser-runtime.answer", "runtime_action"],
-  "next": {"YES": "09-output-handoff", "NO": "OUTCOME:DENY", "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY", "NOT_APPLICABLE": "09-output-handoff"},
-  "rules": {"ambiguity": "DENY", "missing_evidence": "DENY", "stale_source": "DENY", "authority_conflict": "ESCALATE", "unsafe_action": "DENY", "unknown_scope": "DEPENDENT_ACTION_ONLY"},
-  "gate_sha256": "70a4277a97c60cd0cb136c106e13802353f6d1f77308fe74a2a6006da2047590"
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Are build, browser, campaign, task, ordinary lifecycle, merge, release, deployment, publication, runtime, and memory-write side effects absent?",
+  "evidence": [
+    "adapter_spy_counts",
+    "gate.08-build-browser-runtime.answer",
+    "state_readback",
+    "zero_forbidden_side_effects"
+  ],
+  "next": {
+    "YES": "09-output-handoff",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "09-output-handoff"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "cdb5303c082240b7638ebce30d98df367622e8e6549023dd369784ef49ebf0d4"
 }

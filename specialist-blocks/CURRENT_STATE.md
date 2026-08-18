@@ -107,7 +107,7 @@ dossier, one hostile-fixture set, and one typed handoff.
 |---|---|---|---|---|
 | L1 | `AGENT.BOOTSTRAP` | child `ARCHIVED_SOURCE_TASK` (`Bernoulli`) | Build `specialist.control.bootstrap-project-initializer`. | `CANDIDATE` |
 | L2 | `AGENT.PROJECT_CONTROLLER` | child `ARCHIVED_SOURCE_TASK` (`Godel`) | Build `specialist.control.project-controller`. | `CANDIDATE` |
-| L3 | `AGENT.INTENT_REGULATOR` | child `ARCHIVED_SOURCE_TASK` (`Franklin`) | Build `specialist.control.intent-regulator`. | `CANDIDATE` |
+| L3 | `AGENT.PRODUCT_OWNER` | child `ARCHIVED_SOURCE_TASK` (`Franklin`) | Build `specialist.control.product-owner`. | `CANDIDATE` |
 | L4 | `AGENT.RESOURCE_SCHEDULER` | child `ARCHIVED_SOURCE_TASK` (`Locke`) | Build `specialist.control.resource-scheduler`. | `CANDIDATE` |
 | L5 | `AGENT.RUNTIME_DEPLOYMENT` | child `ARCHIVED_SOURCE_TASK` (`Hilbert`) | Build `specialist.control.runtime-deployment-operator`. | `CANDIDATE` |
 | L6 | `AGENT.INDEPENDENT_AUDITOR` | child `ARCHIVED_SOURCE_TASK` (`Darwin`) | Build `specialist.control.independent-auditor`. | `CANDIDATE` |
@@ -349,7 +349,7 @@ remain external gates.
   validation, and prove all ten web atoms reuse one immutable Top 10 hash and
   all ten API atoms reuse one immutable API Top 10 hash.
 - Exactly six P0 lanes remain the only materially active lane set:
-  `AGENT.BOOTSTRAP`, `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
+  `AGENT.BOOTSTRAP`, `AGENT.PROJECT_CONTROLLER`, `AGENT.PRODUCT_OWNER`,
   `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
   `AGENT.INDEPENDENT_AUDITOR`; each is `CANDIDATE`/inactive. P1–P6 packages
   are compiled candidates or planned backlog entries, not active lanes.
@@ -388,7 +388,7 @@ remain external gates.
   gate files, and `1,700` hostile fixtures. Utility/harm and admission remain
   external and pending; no P3 package is an active lane.
 - Exactly six P0 lanes remain the only materially active lane set:
-  `AGENT.BOOTSTRAP`, `AGENT.PROJECT_CONTROLLER`, `AGENT.INTENT_REGULATOR`,
+  `AGENT.BOOTSTRAP`, `AGENT.PROJECT_CONTROLLER`, `AGENT.PRODUCT_OWNER`,
   `AGENT.RESOURCE_SCHEDULER`, `AGENT.RUNTIME_DEPLOYMENT`, and
   `AGENT.INDEPENDENT_AUDITOR`; each is `CANDIDATE`/inactive. P1–P6 packages
   are compiled candidates or planned backlog entries, not active lanes.

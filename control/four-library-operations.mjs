@@ -11,6 +11,7 @@ import {
   GOVERNANCE_VERSION,
   GENERATED_PROJECT_ROLE_KIND,
   PROJECT_GENERAL_KIND,
+  RETIRED_CURRENT_ROLE_IDS,
   GOVERNANCE_UPDATE_MODES,
   GovernanceValidationError,
   assert,
@@ -73,6 +74,7 @@ function validateGeneratedRolePacket(packet, label, {baseRolePacket, projectGene
     "allowed_authority", "prohibited_authority", "required_evidence", "digest",
   ], label);
   requireIdentifier(packet.role_id, `${label}.role_id`);
+  assert(!RETIRED_CURRENT_ROLE_IDS.includes(packet.role_id), `${label}.role_id is retired and cannot hold generated authority`);
   requireString(packet.display_name, `${label}.display_name`);
   requireString(packet.role_kind, `${label}.role_kind`);
   requireString(packet.lifetime, `${label}.lifetime`);
@@ -265,6 +267,7 @@ export function validateGeneratedTaskRolePacket(value, {generatedProjectRoleLibr
   requireDigest(value.task_id_sha256, "generated task role packet task id");
   requireSafeToken(value.task_kind, "generated task role packet task kind");
   requireIdentifier(value.role_id, "generated task role packet role id");
+  assert(!RETIRED_CURRENT_ROLE_IDS.includes(value.role_id), "generated task role packet role is retired");
   if (value.lane_id !== null) requireLaneIdentifier(value.lane_id, "generated task role packet lane id");
   requireDigest(value.generated_project_role_library_digest, "generated task role packet library digest");
   assert(value.task_gate_catalog_sha256 === TASK_GATE_CATALOG_SHA256, "generated task role packet task-gate catalog differs");
@@ -350,8 +353,8 @@ export function validateGovernanceBinding(value, {baseGeneralLibrary = null, bas
   exactKeys(value.library_digests, ["base_general", "base_role", "project_general", "generated_project_role"], "governance binding.library_digests");
   for (const field of Object.keys(value.library_digests)) requireDigest(value.library_digests[field], `governance binding.library_digests.${field}`);
   validateOwnership(value.ownership, "governance binding.ownership");
-  assert(value.ownership.owner_role === "PROJECT_OWNER", "governance binding ownership.owner_role is invalid");
-  assert(value.ownership.authoring_role === "INTENT_REGULATOR", "governance binding ownership.authoring_role is invalid");
+  assert(value.ownership.owner_role === "AGENTOS.PRODUCT_OWNER", "governance binding ownership.owner_role is invalid");
+  assert(value.ownership.authoring_role === "AGENTOS.SPAWNER", "governance binding ownership.authoring_role is invalid");
   validateLineage(value.lineage, "governance binding.lineage");
   validatePacketDigest(value, "governance binding");
   if (baseGeneralLibrary !== null) {
@@ -406,7 +409,7 @@ export function compileGovernanceBinding({
       project_general: projectGeneralLibrary.digest,
       generated_project_role: generatedProjectRoleLibrary.digest,
     },
-    ownership: {owner_role: "PROJECT_OWNER", authoring_role: "INTENT_REGULATOR"},
+    ownership: {owner_role: "AGENTOS.PRODUCT_OWNER", authoring_role: "AGENTOS.SPAWNER"},
     lineage: makeLineage(previous),
     digest: null,
   };

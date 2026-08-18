@@ -60,7 +60,7 @@ function clause(questionId, root, surfaces) {
 const manifestBody = {
   schema: "governance.changed_surface_manifest.v1",
   checkpoint_id: "CHECKPOINT-ARCHITECTURE-001",
-  originating_owner_role_id: "INTENT_REGULATOR",
+  originating_owner_role_id: "AGENTOS.PRODUCT_OWNER",
   root_id: "WORKTREE-ARCHITECTURE-001",
   branch: "campaign/main",
   commit: SOURCE_COMMIT,
@@ -94,15 +94,23 @@ const defaultDefinitions = defaultRoleDefinitions({
   ],
 });
 assert.deepEqual(defaultDefinitions.map((role) => role.role_id), [
+  "AGENTOS.MEMORY",
+  "AGENTOS.ORCHESTRATOR",
+  "AGENTOS.PRODUCT_OWNER",
+  "AGENTOS.RUNTIME",
+  "AGENTOS.SCHEDULER",
+  "AGENTOS_CONTROLLER",
   "CAMPAIGN_ORCHESTRATOR",
   "INDEPENDENT_AUDITOR",
-  "INTENT_REGULATOR",
-  "RUNTIME",
   "WORKER_BUILD",
   "WORKER_UI",
 ]);
-assert.equal(defaultDefinitions.find((role) => role.role_id === "INTENT_REGULATOR").role_scope, "PERSISTENT");
-assert.equal(defaultDefinitions.find((role) => role.role_id === "RUNTIME").role_scope, "PERSISTENT");
+assert.equal(defaultDefinitions.find((role) => role.role_id === "AGENTOS.PRODUCT_OWNER").role_scope, "PERSISTENT");
+assert.equal(defaultDefinitions.find((role) => role.role_id === "AGENTOS_CONTROLLER").role_kind, "CONTROLLER");
+assert.equal(defaultDefinitions.find((role) => role.role_id === "AGENTOS.RUNTIME").role_scope, "PERSISTENT");
+assert.deepEqual(defaultDefinitions.filter((role) => role.role_scope === "PERSISTENT").map((role) => role.role_id), [
+  "AGENTOS.MEMORY", "AGENTOS.ORCHESTRATOR", "AGENTOS.PRODUCT_OWNER", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS_CONTROLLER",
+]);
 assert.equal(defaultDefinitions.find((role) => role.role_id === "CAMPAIGN_ORCHESTRATOR").role_scope, "CAMPAIGN");
 assert.equal(defaultDefinitions.find((role) => role.role_id === "INDEPENDENT_AUDITOR").role_scope, "CAMPAIGN");
 assert.equal(defaultDefinitions.find((role) => role.role_id === "WORKER_UI").role_kind, "ONE_LANE_WORKER");
@@ -126,13 +134,18 @@ assert.equal(catalog.task_gate_catalog_sha256, TASK_GATE_CATALOG_SHA256);
 assert(catalog.roles.every((role) => role.universal_task_gate_question_ids.length === TASK_GATE_QUESTIONS.length));
 assert.equal(catalog.role_definition_source_sha256, ROLE_DEFINITION_SOURCE_SHA256);
 assert.deepEqual(catalog.roles.map((role) => role.role_id), [
+  "AGENTOS.MEMORY",
+  "AGENTOS.ORCHESTRATOR",
+  "AGENTOS.PRODUCT_OWNER",
+  "AGENTOS.RUNTIME",
+  "AGENTOS.SCHEDULER",
+  "AGENTOS_CONTROLLER",
   "CAMPAIGN_ORCHESTRATOR",
   "INDEPENDENT_AUDITOR",
-  "INTENT_REGULATOR",
-  "RUNTIME",
   "WORKER_BUILD",
   "WORKER_UI",
 ]);
+assert.equal(catalog.roles.some((role) => /INTENT_REGULATOR|PROJECT_OWNER/u.test(role.role_id)), false);
 assert.equal(catalog.roles.find((role) => role.role_id === "WORKER_UI").generated_rules.length, 1);
 
 const roleLibrary = generateRoleSpecificGovernanceLibrary({
@@ -149,8 +162,10 @@ const roleLibrary = generateRoleSpecificGovernanceLibrary({
       shared_clause_ids: [generalIds.find((id) => id === "GENERAL_RECOVERY_BOUNDARIES"), "GENERAL_DELIVERY_CLOSURE", "GENERAL_RESPONSE_HANDOFF_GATING"].sort(),
     },
     {
-      role_id: "INTENT_REGULATOR",
-      public_name: "Intent Regulator",
+      role_id: "AGENTOS.PRODUCT_OWNER",
+      public_name: "Product Owner",
+      role_scope: "PERSISTENT",
+      role_kind: "PRODUCT_OWNER",
       question_ids: ["DB-GENERAL-001", "FR-GENERAL-001"].sort(),
       shared_clause_ids: ["GENERAL_DELIVERY_CLOSURE", "GENERAL_INTENT_SCOPE", "GENERAL_RESPONSE_HANDOFF_GATING", "GENERAL_SOURCE_BINDING"].sort(),
     },
@@ -241,6 +256,24 @@ assert.throws(() => compileRoleGovernanceCatalog({
   generalLibrary: general,
   workerLanes: ["Feature Agent"],
 }), /not an admitted named lane|private, secret, provider-bound/u);
+
+const retiredExplicitRole = {
+  role_id: "INTENT_REGULATOR",
+  public_name: "Retired Intent Role",
+  role_scope: "PERSISTENT",
+  role_kind: "NAMED_ROLE",
+  lane_id: null,
+  question_ids: ["FR-GENERAL-001"],
+  shared_clause_ids: ["GENERAL_DELIVERY_CLOSURE", "GENERAL_RESPONSE_HANDOFF_GATING"],
+};
+assert.throws(() => generateRoleSpecificGovernanceLibrary({
+  sourceCommit: SOURCE_COMMIT,
+  sourceTree: SOURCE_TREE,
+  bootstrapPlanSha256: PLAN_DIGEST,
+  governanceTree,
+  generalLibrary: general,
+  roles: [retiredExplicitRole],
+}), /retired role INTENT_REGULATOR/u);
 
 const wrongContract = structuredClone(candidate);
 wrongContract.acceptance_contract_sha256 = DIGEST;

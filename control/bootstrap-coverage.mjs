@@ -544,15 +544,15 @@ function compileRows(discovery, answers) {
       source_refs: ["project.audit_interval", "OPERATIONS.HEARTBEAT_INTERVAL_MINUTES"],
       status: "OWNER_CONFIRMED",
       blocking: false,
-      reason: "OWNER_AUDIT_INTERVAL_BOUND_TO_PERSISTENT_INTENT_REGULATOR_POLICY",
+      reason: "OWNER_AUDIT_INTERVAL_BOUND_TO_PERSISTENT_CONTROLLER_WORKFLOW_POLICY",
       owner_decision_required: true,
     }
     : {
       source_kind: "PORTABLE_DEFAULT",
-      source_refs: ["OPERATIONS.HEARTBEAT_INTERVAL_MINUTES", "PERSISTENT_INTENT_REGULATOR"],
+      source_refs: ["OPERATIONS.HEARTBEAT_INTERVAL_MINUTES", "PERSISTENT_CONTROLLER", "PERSISTENT_PRODUCT_OWNER"],
       status: "DEFAULTED",
       blocking: false,
-      reason: "PERSISTENT_INTENT_REGULATOR_AND_SAFE_15_MINUTE_AUDIT_DEFAULT_BOUND",
+      reason: "SEPARATE_PERSISTENT_CONTROLLER_AND_PRODUCT_OWNER_15_MINUTE_DEFAULTS_BOUND",
     }));
 
   const safetyDefinition = BOOTSTRAP_OUTPUT_DEFINITIONS.find((entry) => entry.output_id === "BOOTSTRAP_SAFETY_ANALYSIS");

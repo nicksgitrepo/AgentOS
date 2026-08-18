@@ -350,9 +350,9 @@ export class PersistentIntentRuntime {
 }
 
 export function openPersistentIntentRuntime(options = {}) {
-  return new PersistentIntentRuntime(options);
+  throw Object.assign(new Error("Persistent Intent Regulator authority is retired; use the read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
 }
 
 export function inspectPersistentIntentRuntime({authorityRoot, repositoryRoot = process.cwd()} = {}) {
-  return inspectRuntimeStorage({authorityRoot, repositoryRoot});
+  throw Object.assign(new Error("Persistent Intent Regulator authority is retired; use the read-only migration adapter"), {code: "READ_ONLY_MIGRATION_REQUIRED"});
 }

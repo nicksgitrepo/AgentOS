@@ -50,7 +50,7 @@
     },
     "persistent_coordinator": {
       "machine_role": "AGENTOS_CONTROLLER",
-      "public_name": "Intent Regulator",
+      "public_name": "Controller",
       "runtime": "PERSISTENT_PROJECT_RUNTIME"
     },
     "foundation_rules": {

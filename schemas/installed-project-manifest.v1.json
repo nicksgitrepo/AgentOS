@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.installed_project_manifest.v1",
+  "title": "Installed project custody manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_identity_sha256", "bootstrap_custody_sha256", "store_relative_path", "activation_rule", "consumer_data_present", "manifest_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.installed_project_manifest.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_INACTIVE", "ACCEPTED_ACTIVE"]},
+    "project_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "bootstrap_custody_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "store_relative_path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"},
+    "activation_rule": {"const": "REQUIRES_SEPARATE_PROJECT_INSTALL_ACCEPTANCE_AND_PINNED_BOOTSTRAP_BINDING"},
+    "consumer_data_present": {"const": false},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
