@@ -206,6 +206,11 @@ function canonicalEvidenceRefs(refs) {
   return structuredClone(refs).sort((left, right) => compareUtf8(left?.evidence_id ?? "", right?.evidence_id ?? ""));
 }
 
+function canonicalHostileRefs(refs) {
+  assert(Array.isArray(refs), "Controller action hostile fixture refs are required");
+  return structuredClone(refs).sort(compareUtf8);
+}
+
 function validateHostileRefs(refs) {
   assert(Array.isArray(refs) && refs.length > 0, "Controller action hostile fixture refs are required");
   assert(refs.every((value) => typeof value === "string" && IDENTIFIER.test(value)), "Controller action hostile fixture ref is invalid");
@@ -436,7 +441,7 @@ export function compileControllerActionReceipt({receiptId, actionId, previousRec
     semantic_after_sha256: semanticAfterSha256,
     progress_delta_sha256: canonicalDigest({semantic_before_sha256: semanticBeforeSha256, semantic_after_sha256: semanticAfterSha256}),
     evidence_refs: canonicalEvidenceRefs(evidenceRefs),
-    hostile_fixture_refs: [...hostileFixtureRefs].sort(compareUtf8),
+    hostile_fixture_refs: canonicalHostileRefs(hostileFixtureRefs),
     next_action: nextAction,
     next_handler: nextHandler ?? expectedHandler,
     continuation: structuredClone(continuation ?? compileControllerContinuation(nextAction, {protectedEventId: protectedEvent?.blocker_id ?? null})),
@@ -538,22 +543,27 @@ function dispatchDefect({currentReceipt, defectClass, message, onDefect}) {
 }
 
 function validateHandlerResult(result) {
-  exactKeys(result, HANDLER_RESULT_KEYS, "Controller action handler result");
-  requireSha(result.semantic_after_sha256, "Controller handler semantic state after");
-  requireIdentifier(result.next_action, "Controller handler next action");
-  requireIdentifier(result.next_handler, "Controller handler next handler");
-  validateControllerContinuation(result.continuation, result.next_action);
-  requireSha(result.continuation_sha256, "Controller handler continuation digest");
-  assert(result.continuation_sha256 === controllerContinuationDigest(result.continuation), "Controller handler continuation digest mismatch");
-  validateEvidenceRefs(result.evidence_refs, "Controller handler evidence refs");
-  validateHostileRefs(result.hostile_fixture_refs);
-  const descriptor = CONTROLLER_ACTION_REGISTRY[result.next_action];
+  const normalized = {
+    ...structuredClone(result),
+    evidence_refs: canonicalEvidenceRefs(result?.evidence_refs),
+    hostile_fixture_refs: canonicalHostileRefs(result?.hostile_fixture_refs),
+  };
+  exactKeys(normalized, HANDLER_RESULT_KEYS, "Controller action handler result");
+  requireSha(normalized.semantic_after_sha256, "Controller handler semantic state after");
+  requireIdentifier(normalized.next_action, "Controller handler next action");
+  requireIdentifier(normalized.next_handler, "Controller handler next handler");
+  validateControllerContinuation(normalized.continuation, normalized.next_action);
+  requireSha(normalized.continuation_sha256, "Controller handler continuation digest");
+  assert(normalized.continuation_sha256 === controllerContinuationDigest(normalized.continuation), "Controller handler continuation digest mismatch");
+  validateEvidenceRefs(normalized.evidence_refs, "Controller handler evidence refs");
+  validateHostileRefs(normalized.hostile_fixture_refs);
+  const descriptor = CONTROLLER_ACTION_REGISTRY[normalized.next_action];
   assert(descriptor !== undefined, "Controller handler successor action is not registered");
-  if (descriptor.mode === "PROTECTED_WAIT") validateProtectedEvent(result.protected_event);
-  else assert(result.protected_event === null, "Controller handler protected event is bound to a non-protected route");
-  if (result.next_action === "SELF_REPAIR_WORKFLOW_DEAD_END") validateControllerActionDefect(result.defect);
-  else assert(result.defect === null, "Controller handler defect must be null outside self-repair");
-  return result;
+  if (descriptor.mode === "PROTECTED_WAIT") validateProtectedEvent(normalized.protected_event);
+  else assert(normalized.protected_event === null, "Controller handler protected event is bound to a non-protected route");
+  if (normalized.next_action === "SELF_REPAIR_WORKFLOW_DEAD_END") validateControllerActionDefect(normalized.defect);
+  else assert(normalized.defect === null, "Controller handler defect must be null outside self-repair");
+  return normalized;
 }
 
 export function advanceControllerAction(currentReceipt, {handlers, persist, onDefect, startNextLifecycle, maxTransitions = 16} = {}) {
@@ -574,7 +584,7 @@ export function advanceControllerAction(currentReceipt, {handlers, persist, onDe
     try { result = handler(structuredClone(cursor)); }
     catch (error) { return dispatchDefect({currentReceipt: cursor, defectClass: "DISPATCH_FAILED", message: error instanceof Error ? error.message : "Controller handler failed", onDefect}); }
     try {
-      validateHandlerResult(result);
+      result = validateHandlerResult(result);
       assert(result.next_handler === controllerActionHandlerFor(result.next_action), "Controller handler successor does not match the action registry");
     } catch (error) {
       return dispatchDefect({currentReceipt: cursor, defectClass: /semantic state after|semantic state/u.test(error.message) ? "UNCHANGED_SEMANTIC_STATE" : "INVALID_SUCCESSOR", message: error.message, onDefect});

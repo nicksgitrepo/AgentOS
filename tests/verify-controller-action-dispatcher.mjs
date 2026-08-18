@@ -194,6 +194,40 @@ assert.equal(bounded.dispatched_count, 1);
 assert.equal(bounded.receipt.next_action, "INJECT_ORCHESTRATOR_GOVERNANCE");
 assert.equal(boundedPersisted.length, 1);
 assert.equal(bounded.next_lifecycle.started_same_turn, true);
+
+const unsortedHandlerPersisted = [];
+const unsortedHandler = {
+  ...handlers,
+  "HANDLER.PERMANENT_ROLE_ADMISSION": () => ({
+    semantic_after_sha256: HASH("state-unsorted-handler"),
+    next_action: "INJECT_ORCHESTRATOR_GOVERNANCE",
+    next_handler: "HANDLER.ORCHESTRATOR_GOVERNANCE",
+    continuation: compileControllerContinuation("INJECT_ORCHESTRATOR_GOVERNANCE"),
+    continuation_sha256: controllerContinuationDigest(compileControllerContinuation("INJECT_ORCHESTRATOR_GOVERNANCE")),
+    evidence_refs: [evidence("EVIDENCE.CONTROLLER.Z_HANDLER"), evidence("EVIDENCE.CONTROLLER.A_HANDLER")],
+    hostile_fixture_refs: ["FIXTURE.CONTROLLER.Z_HANDLER", "FIXTURE.CONTROLLER.A_HANDLER"],
+    protected_event: null,
+    defect: null,
+  }),
+};
+const unsortedHandlerResult = advanceControllerAction(initial, {
+  handlers: unsortedHandler,
+  maxTransitions: 1,
+  persist: (receipt) => { unsortedHandlerPersisted.push(receipt); return true; },
+  startNextLifecycle: (cursor) => compileControllerNextLifecycleHandoff({
+    sourceReceiptSha256: cursor.receipt_sha256,
+    nextAction: cursor.next_action,
+    nextHandler: cursor.next_handler,
+    handoffRef: "ref:controller-action/unsorted-handler-successor",
+  }),
+});
+assert.equal(unsortedHandlerResult.status, "ROUTED_SAME_TURN");
+assert.deepEqual(
+  unsortedHandlerPersisted[0].evidence_refs.map(({evidence_id}) => evidence_id),
+  ["EVIDENCE.CONTROLLER.A_HANDLER", "EVIDENCE.CONTROLLER.Z_HANDLER"],
+  "handler evidence must be canonicalized before validation and persistence",
+);
+assert.deepEqual(unsortedHandlerPersisted[0].hostile_fixture_refs, ["FIXTURE.CONTROLLER.A_HANDLER", "FIXTURE.CONTROLLER.Z_HANDLER"]);
 const missingStopDecision = structuredClone(persisted[1]);
 missingStopDecision.stop_workflow_decision = null;
 assert.throws(() => validateControllerActionReceipt(missingStopDecision), /stop-workflow decision/u);

@@ -1058,7 +1058,7 @@
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
-      "sha256": "34f497b0f13860146798e0a155a6f7da6d5d083f7b756a033a86955ffaf71498"
+      "sha256": "31ae2551e5ce82a4446ff1aadc5211695dfb8157c53644a3a516d64eaf3a60c1"
     },
     "controller_action_dispatcher_contract": {
       "path": "schemas/controller-action-dispatcher.v1.json",
@@ -1066,7 +1066,7 @@
     },
     "controller_action_dispatcher_verifier": {
       "path": "tests/verify-controller-action-dispatcher.mjs",
-      "sha256": "067c9581a0001c5f47dd91cb07760037b881b54094fa6ad29dae52f3cf47b6b8"
+      "sha256": "81639c81f39b6405a7c3a6f4d8e8d5a10d791293c4946197b9a56ef816154f3b"
     },
     "controller_startup_sequence_controller": {
       "path": "control/controller-startup-sequence.mjs",
