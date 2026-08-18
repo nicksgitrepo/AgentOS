@@ -199,6 +199,59 @@ assert.equal(boundedReadback.final_next_action, "START_INDEPENDENT_REAUDIT");
 assert.equal(boundedReadback.final_next_handler, "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT");
 assert.equal(boundedReadback.next_lifecycle.status, "STARTED");
 assert.equal(boundedReadback.next_lifecycle.started_same_turn, true);
+
+// The continuation-repair route must be executable, not merely present in a
+// registry or schema. Exercise the real Spawner compiler handler through the
+// Orchestrator adapter and require a same-turn lifecycle handoff.
+const compilerSuccessor = compileActionResultContinuation({
+  actionId: "TURN_CONTINUATION_REPAIR",
+  resultId: "RESULT.ORCHESTRATOR.TURN.CONTINUATION.REPAIR",
+  result: {
+    status: "REPAIR_REQUIRED",
+    controller_approval_required: false,
+    execution_owner: "LANE_AGENT",
+    direct_consumer: "INDEPENDENT_PLATFORM_REVIEW",
+  },
+  semanticBeforeSha256: sha("compiler-before"),
+  semanticAfterSha256: sha("compiler-after"),
+  nextAction: "COMPILE_BLOCK_PATCH",
+  nextHandler: "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER",
+  continuation: compileControllerContinuation("COMPILE_BLOCK_PATCH"),
+  persistence: {status: "PERSISTED", receipt_ref: "ref:control-plane/turn-continuation-repair", receipt_sha256: sha("compiler-receipt"), atomic: true, same_turn: true, write_scope: "CONTROL_PLANE_ONLY"},
+  evidenceRefs: [evidence("EVIDENCE.TURN.CONTINUATION.REPAIR")],
+  hostileFixtureRefs: ["FIXTURE.TURN.CONTINUATION.REPAIR_ROUTE"],
+});
+const compilerReadback = dispatchOrchestratorSuccessor({
+  successor: compilerSuccessor,
+  dispatchId: "DISPATCH.ORCHESTRATOR.TURN.CONTINUATION.REPAIR.001",
+  handlers: {
+    "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER": (cursor) => ({
+      semantic_after_sha256: sha(`${cursor.semantic_after_sha256}:compiled`),
+      next_action: "REPAIR_BLOCKS",
+      next_handler: "HANDLER.ORCHESTRATOR_BLOCK_REPAIR",
+      continuation: compileControllerContinuation("REPAIR_BLOCKS"),
+      continuation_sha256: canonicalDigest(compileControllerContinuation("REPAIR_BLOCKS")),
+      evidence_refs: [evidence("EVIDENCE.SPAWNER.COMPILER.REPAIR")],
+      hostile_fixture_refs: ["FIXTURE.SPAWNER.COMPILER.REPAIR"],
+      protected_event: null,
+      defect: null,
+    }),
+  },
+  persist: () => true,
+  startNextLifecycle: (cursor) => compileControllerNextLifecycleHandoff({
+    sourceReceiptSha256: cursor.receipt_sha256,
+    nextAction: cursor.next_action,
+    nextHandler: cursor.next_handler,
+    handoffRef: "ref:controller/next-lifecycle/spawner-compiler-repair",
+  }),
+  maxTransitions: 1,
+});
+validateOrchestratorSuccessorDispatchReadback(compilerReadback);
+assert.equal(compilerReadback.source_action, "COMPILE_BLOCK_PATCH");
+assert.equal(compilerReadback.source_handler, "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER");
+assert.equal(compilerReadback.dispatch_observed, true);
+assert.equal(compilerReadback.status, "DISPATCHED_SAME_TURN");
+
 assert.throws(() => dispatchOrchestratorSuccessor({
   successor,
   dispatchId: "DISPATCH.ORCHESTRATOR.MISSING_NEXT_LIFECYCLE_STARTER",

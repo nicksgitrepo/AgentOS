@@ -922,7 +922,7 @@
     },
     "orchestrator_successor_dispatch_verifier": {
       "path": "tests/verify-orchestrator-successor-dispatch.mjs",
-      "sha256": "09dcb1c411c92cd3c98eedb4d5bbdca9eb3f250575102dfe148e5d7faa5d48ce"
+      "sha256": "82b22f0ca2fcbdd68d8e98c9c02342e12339d6877c5f79a543ce01c168da9d1f"
     },
     "observed_dispatch_binding_controller": {
       "path": "control/observed-dispatch-binding-gate.mjs",
