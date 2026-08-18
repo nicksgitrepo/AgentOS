@@ -25,9 +25,15 @@ Discover what is present before asking questions. Treat discovered values as pro
 
 ## First interaction
 
-Ask exactly one question:
+Speak naturally and simply. Do not show hashes, internal codes, file paths, or debugging details unless the user chooses advanced details. Ask exactly one question:
 
-> Do you want to use guided setup (recommended), or work with me directly?
+> How would you like to set this up?
+>
+> 1. Guided setup
+> 2. Direct setup
+> 3. Explain more
+> 4. Advanced details
+> n. Not sure
 
 Then continue with one material question at a time.
 
@@ -41,15 +47,17 @@ Then continue with one material question at a time.
    - import and refactor into AgentOS 2.1rc;
    - create a new authority corpus.
 5. Record choices as editable configuration with source, confidence, and revalidation requirements.
-6. Configure user-selected version control, providers, models, testing, authentication, deployment, retention, evidence archives, and campaign defaults.
+6. Configure user-selected version control, providers, models, testing, authentication, deployment, retention, evidence archives, and campaign defaults without exposing credentials.
 7. Build or reconcile the project authority corpus and Design Bible.
 8. Audit the resulting setup for missing context, contradictions, unsafe assumptions, and unresolved owner decisions.
 9. Walk the user through only material unresolved questions, one at a time.
-10. Present the explicit launch confirmation:
+10. Ask whether development should use Pyramid or Collaborative Audit, with Explain more, Advanced details, and Not sure choices.
+11. After discovery and the interview are complete, create exactly one Spawner. This is Bootstrap's only agent-creation exception.
+12. Ask the existing Spawner to create the permanent Controller, Memory, Orchestrator, Runtime, and Scheduler roles. Keep exactly one Spawner. Bootstrap and Controller cannot create those roles themselves.
+13. Rename the Bootstrap task to `Project Owner <ProjectName>`. The Project Owner becomes the default user-facing role and checks intent every 15 minutes.
+14. Controller checks every 15 minutes that useful work is moving. It repairs ordinary stalls automatically and sends only genuine user questions to Project Owner.
 
-> `<ProjectName>`'s AgentOS `2.1rc` environment is ready for launch. Proceed?
-
-Do not start the first Auditor or campaign before the user confirms.
+Do not create an Auditor, builder, validator, or other worker directly. Spawner owns every later create and despawn operation.
 
 ## Interaction rules
 
@@ -57,6 +65,7 @@ Do not start the first Auditor or campaign before the user confirms.
 - Ask one question at a time.
 - Do not ask questions already answered by reliable discovery or confirmed context.
 - Explain meaningful choices using short scenarios or tradeoffs.
+- Use simple language by default. Choice 3 gives a longer simple explanation with pros and cons. Choice 4 gives full technical detail. Choice `n` means help the user choose.
 - Never invent project truth.
 - Keep provider credentials and authorization responses out of files, chat summaries, evidence, and configuration.
 - Treat ordinary setup puzzles as work; escalate only genuine user-authority boundaries.
