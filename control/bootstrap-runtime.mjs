@@ -11,6 +11,7 @@ import {validateProjectImportPlan} from "./project-import.mjs";
 import {validateAuditDrivenMigrationRecord, validateRapidPrototypeWorkflow, validateRapidPrototypeWorkflowInventoryBinding} from "./rapid-prototype-workflow.mjs";
 import {assertUniversalDevelopmentMode} from "./governance-library.mjs";
 import {initializeBootstrapProjectMemory} from "./project-memory-runtime.mjs";
+import {requireGlobalGovernanceRoleProjection, validateGlobalGovernanceBootstrap} from "./global-governance-bootstrap.mjs";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -164,8 +165,14 @@ export async function bootstrapAndStartAgentOS({
   monitorOnSameTurnBoundExhausted = null,
   monitorOptions = {},
   startMonitor = monitorObservation !== null,
+  globalGovernanceBootstrap,
+  globalGovernanceEvents,
+  globalGovernanceReadback,
+  globalGovernanceObservedAtUtc,
 } = {}) {
   assertUniversalDevelopmentMode("BOOTSTRAP");
+  validateGlobalGovernanceBootstrap(globalGovernanceBootstrap, {events: globalGovernanceEvents, readback: globalGovernanceReadback, observedAtUtc: globalGovernanceObservedAtUtc});
+  const globalGovernanceProjections = Object.freeze(Object.fromEntries(["CONTROLLER", "SPAWNER", "SCHEDULER", "RUNTIME", "ORCHESTRATOR", "PERMANENT_ROLE", "INERT_SEED", "WORKING_AGENT"].map((roleClass) => [roleClass, requireGlobalGovernanceRoleProjection({bootstrap: globalGovernanceBootstrap, events: globalGovernanceEvents, readback: globalGovernanceReadback, roleClass, observedAtUtc: globalGovernanceObservedAtUtc})])));
   const persistence = persistCampaignState === null
     ? createCampaignStatePersistence({authorityRoot, repositoryRoot, relativePath: statePath})
     : {persistCampaignState};
@@ -383,6 +390,7 @@ export async function bootstrapAndStartAgentOS({
     workflow_state_path: workflowPersistence?.state_path ?? null,
     questions_path: questionPersistence?.question_path ?? null,
     memory: memoryState,
+    global_governance: Object.freeze({bootstrap_sha256: globalGovernanceBootstrap.bootstrap_sha256, snapshot_sha256: globalGovernanceBootstrap.snapshot_sha256, projections: globalGovernanceProjections}),
     refresh_memory: memoryRuntime === null ? null : ({observedAtUtc = new Date().toISOString()} = {}) => {
       memoryState = memoryRuntime.loadCurrent({observedAtUtc});
       return memoryState;

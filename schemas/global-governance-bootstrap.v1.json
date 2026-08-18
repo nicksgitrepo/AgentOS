@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"agentos.global_governance_bootstrap.v1","type":"object","additionalProperties":false,
+  "required":["schema","version","status","read_only","memory_readback_sha256","snapshot_sha256","observed_at_utc","projections","invalidation","active_worker_refresh","bootstrap_sha256"],
+  "properties":{"schema":{"const":"agentos.global_governance_bootstrap.v1"},"version":{"const":1},"status":{"const":"READY"},"read_only":{"const":true},"memory_readback_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"snapshot_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"observed_at_utc":{"type":"string","format":"date-time"},"projections":{"type":"array","minItems":8,"maxItems":8,"uniqueItems":true},"invalidation":{"const":"SNAPSHOT_CHANGE_INVALIDATES_DEPENDENT_CONTEXTS_AND_INERT_SEEDS"},"active_worker_refresh":{"const":"BOUND_UNTIL_HANDOFF_OR_TYPED_SAFE_REFRESH"},"bootstrap_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}}
+}

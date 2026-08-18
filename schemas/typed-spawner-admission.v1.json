@@ -64,6 +64,7 @@
     "controller_id": {"$ref": "#/$defs/identity"},
     "governance_readiness_sha256": {"$ref": "#/$defs/sha256"},
     "sealed_handoff_sha256": {"$ref": "#/$defs/sha256"},
+    "global_model_policy_projection_sha256": {"$ref": "#/$defs/sha256"},
     "block_set": {"$ref": "#/$defs/blockSet"},
     "custody": {"$ref": "#/$defs/custody"},
     "admission_state": {"const": "ADMITTED_COMPILER_ONLY"},
@@ -79,7 +80,7 @@
     "admission_sha256": {"$ref": "#/$defs/sha256"}
   },
   "required": [
-    "schema", "version", "spawner_id", "controller_id", "governance_readiness_sha256", "sealed_handoff_sha256",
+    "schema", "version", "spawner_id", "controller_id", "governance_readiness_sha256", "sealed_handoff_sha256", "global_model_policy_projection_sha256",
     "block_set", "custody", "admission_state", "mode", "temporary_admission", "worker_spawned", "wave_activation",
     "product_mutation", "provider_access", "credential_access", "permanent_roles_constructed", "next_action", "admission_sha256"
   ],

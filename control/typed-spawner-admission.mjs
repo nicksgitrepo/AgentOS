@@ -6,6 +6,7 @@ import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {validateControllerGovernanceReadiness} from "./controller-governance-readiness.mjs";
 import {validateSealedBootstrapHandoff} from "./sealed-bootstrap-handoff.mjs";
 import {SPAWNER_BLOCK_LAYERS} from "./spawner-bootstrap-governance.mjs";
+import {validateModelPolicyProjection} from "./eco-model-policy.mjs";
 
 export const TYPED_SPAWNER_ADMISSION_SCHEMA = "agentos.typed_spawner_admission.v1";
 export const TYPED_SPAWNER_BLOCK_SET_SCHEMA = "agentos.spawner_governing_block_set.v1";
@@ -20,6 +21,7 @@ const PLACEHOLDER = /(?:^|[^A-Z])(TBD|TODO|FIXME|PLACEHOLDER|FILL[ _-]?ME|LATER)
 const PLACEHOLDER_ONLY = /^(?:TBD|TODO|FIXME|PLACEHOLDER|FILL[ _-]?ME|LATER)$/iu;
 const ADMISSION_KEYS = Object.freeze([
   "schema", "version", "spawner_id", "controller_id", "governance_readiness_sha256", "sealed_handoff_sha256",
+  "global_model_policy_projection_sha256",
   "block_set", "custody", "admission_state", "mode", "temporary_admission", "worker_spawned", "wave_activation",
   "product_mutation", "provider_access", "credential_access", "permanent_roles_constructed", "next_action", "admission_sha256",
 ]);
@@ -139,13 +141,19 @@ function validateCustody(custody, {controllerId, spawnerId, readinessSha256, han
   return custody;
 }
 
-export function validateTypedSpawnerAdmission(admission, {governanceReadiness = null, sealedBootstrapHandoff = null} = {}) {
+export function validateTypedSpawnerAdmission(admission, {governanceReadiness = null, sealedBootstrapHandoff = null, globalPolicyProjection = null, modelPolicySnapshot = null} = {}) {
   exactKeys(admission, ADMISSION_KEYS, "Typed Spawner admission");
   assert(admission.schema === TYPED_SPAWNER_ADMISSION_SCHEMA && admission.version === TYPED_SPAWNER_ADMISSION_VERSION, "Typed Spawner admission identity is invalid");
   requireToken(admission.spawner_id, "Spawner admission spawner");
   requireIdentityToken(admission.controller_id, "Spawner admission Controller");
   requireSha(admission.governance_readiness_sha256, "Spawner admission governance readiness");
   requireSha(admission.sealed_handoff_sha256, "Spawner admission sealed handoff");
+  requireSha(admission.global_model_policy_projection_sha256, "Spawner global model-policy projection");
+  if (globalPolicyProjection !== null || modelPolicySnapshot !== null) {
+    assert(globalPolicyProjection !== null && modelPolicySnapshot !== null, "Spawner admission requires projection and snapshot together");
+    validateModelPolicyProjection(globalPolicyProjection, {snapshot: modelPolicySnapshot, expectedRoleClass: "SPAWNER"});
+    assert(admission.global_model_policy_projection_sha256 === globalPolicyProjection.projection_sha256, "Spawner global model-policy projection is stale");
+  }
   validateSpawnerGoverningBlockSet(admission.block_set);
   validateCustody(admission.custody, {
     controllerId: admission.controller_id,
@@ -178,12 +186,13 @@ export function validateTypedSpawnerAdmission(admission, {governanceReadiness = 
   return admission;
 }
 
-export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanceReadiness, sealedBootstrapHandoff, blockSet, admittedAtUtc} = {}) {
+export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanceReadiness, sealedBootstrapHandoff, blockSet, globalPolicyProjection, modelPolicySnapshot, admittedAtUtc} = {}) {
   validateControllerGovernanceReadiness(governanceReadiness);
   validateSealedBootstrapHandoff(sealedBootstrapHandoff);
   assert(governanceReadiness.status === "READY_TO_ACCEPT_WORK", "Spawner admission requires Controller governance readiness");
   assert(sealedBootstrapHandoff.next_action === "ADMIT_TYPED_AGENT_SPAWNER", "Spawner admission requires sealed-handoff successor");
   validateSpawnerGoverningBlockSet(blockSet);
+  validateModelPolicyProjection(globalPolicyProjection, {snapshot: modelPolicySnapshot, expectedRoleClass: "SPAWNER"});
   requireToken(spawnerId, "Spawner admission spawner");
   requireIdentityToken(controllerId, "Spawner admission Controller");
   requireUtc(admittedAtUtc, "Spawner admission time");
@@ -204,6 +213,7 @@ export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanc
     controller_id: controllerId,
     governance_readiness_sha256: governanceReadiness.readiness_sha256,
     sealed_handoff_sha256: sealedBootstrapHandoff.handoff_sha256,
+    global_model_policy_projection_sha256: globalPolicyProjection.projection_sha256,
     block_set: structuredClone(blockSet),
     custody,
     admission_state: "ADMITTED_COMPILER_ONLY",
@@ -219,7 +229,7 @@ export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanc
     admission_sha256: null,
   };
   admission.admission_sha256 = digestWithout(admission, "admission_sha256");
-  return validateTypedSpawnerAdmission(admission, {governanceReadiness, sealedBootstrapHandoff});
+  return validateTypedSpawnerAdmission(admission, {governanceReadiness, sealedBootstrapHandoff, globalPolicyProjection, modelPolicySnapshot});
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Typed Spawner admission contract loaded\n");

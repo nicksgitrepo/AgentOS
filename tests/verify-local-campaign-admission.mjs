@@ -121,7 +121,7 @@ assert.throws(() => compileControllerEvent({
 }), /stable identifier/u);
 const generatedEventId = localStartEventId("a".repeat(40));
 assert.match(generatedEventId, /LOCAL-SELF-DEVELOPMENT-AUTHORIZED-A{12}/u);
-assert.doesNotThrow(() => compileControllerEvent({
+assert.throws(() => compileControllerEvent({
   eventId: generatedEventId,
   eventType: "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
   sourceRole: "AGENTOS_CONTROLLER",
@@ -134,7 +134,7 @@ assert.doesNotThrow(() => compileControllerEvent({
   priorControllerHeadSha256: null,
   payload: {},
   occurredAtUtc: NOW,
-}));
+}), /event type is invalid/u, "Controller must reject legacy local campaign admission; Spawner owns agent creation");
 
 assert.throws(() => parseLocalStartArgs([process.cwd()]), /AGENTOS_BOOTSTRAP_HANDOFF_REQUIRED/u);
 const handoffRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-bootstrap-handoff-"));

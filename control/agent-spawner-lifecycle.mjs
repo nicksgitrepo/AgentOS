@@ -11,6 +11,7 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {assertVerifiedIndependentClearance} from "./independent-spawner-clearance.mjs";
 
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
 export const AGENT_SPAWNER_LIFECYCLE_VERSION = 1;
@@ -40,7 +41,6 @@ export const AGENT_SPAWNER_NEXT_ACTIONS = Object.freeze([
 export const AGENT_SPAWNER_EVENT_TYPES = Object.freeze([
   "START_COMPILER",
   "BLOCK_LIBRARY_UPDATED",
-  "INDEPENDENT_CLEARANCE_GRANTED",
   "ADMIT_GOVERNED_SPAWN",
   "START_GOVERNED_SPAWN",
   "PROTECTED_HOLD",
@@ -303,11 +303,14 @@ export function compileAgentSpawnerLifecycle({
  * source roots remain preserved, independent clearance is verified, and every
  * provider/credential/product/external capability stays closed.
  */
-export function admitAgentSpawnerIndependentClearance(lifecycle) {
+export function admitAgentSpawnerIndependentClearance(lifecycle, {clearance, candidate, usedReceiptSha256s = []} = {}) {
   validateAgentSpawnerLifecycle(lifecycle);
   assert(lifecycle.mode === "COMPILER_ONLY", "Governed admission must start from the compiler lifecycle");
   assert(lifecycle.state === "COMPILER_ACTIVE" && lifecycle.next_action === "ADMIT_GOVERNED_SPAWN", "Spawner is not at an independently cleared admission successor");
-  assert(lifecycle.qa.independent_clearance_status === "CLEARED" && lifecycle.qa.status === "INDEPENDENT_PASS", "Governed admission requires independent QA clearance");
+  assertVerifiedIndependentClearance(clearance, candidate, usedReceiptSha256s);
+  assert(candidate.lifecycle_candidate_sha256 === lifecycle.candidate_sha256 && candidate.roster_projection_sha256 === lifecycle.roster_projection_sha256 && candidate.context_sha256 === lifecycle.context_sha256, "Independent clearance does not bind the current lifecycle");
+  assert(lifecycle.qa.independent_clearance_status === "CLEARED" && lifecycle.qa.status === "INDEPENDENT_PASS", "Governed admission requires independently verified QA clearance");
+  assert(lifecycle.qa.independent_clearance_receipt_sha256 === clearance.receipt_sha256, "Lifecycle clearance claim does not bind the verified receipt");
   assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Governed admission requires complete blocks and a published roster");
   return compileAgentSpawnerLifecycle({
     lifecycleId: lifecycle.lifecycle_id,
@@ -360,16 +363,6 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       next.state = "COMPILER_ACTIVE";
       next.protected_hold_event_sha256 = null;
       next.execution.compiler_ticks += 1;
-      break;
-    case "INDEPENDENT_CLEARANCE_GRANTED":
-      next.qa.status = "INDEPENDENT_PASS";
-      next.qa.independent_clearance_status = "CLEARED";
-      next.qa.independent_clearance_receipt_sha256 = event.event_sha256;
-      if (next.mode === "GOVERNED_SPAWN" && next.qa.incomplete_block_count === 0 && next.qa.pending_route_count === 0) {
-        next.state = "SPAWN_ADMITTED";
-        next.authority.temporary_worker_admission = true;
-        next.authority.spawn_authority = true;
-      }
       break;
     case "ADMIT_GOVERNED_SPAWN":
       assert(lifecycle.mode === "GOVERNED_SPAWN", "Governed spawn admission requires governed-spawn mode");

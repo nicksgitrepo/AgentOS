@@ -57,19 +57,9 @@
     "naming_rule": "Temporary role display names carry the exact version and two-digit test-build tag."
   },
   "event_types": [
-    "BOOTSTRAP_REQUESTED",
-    "BOOTSTRAP_PROMOTED",
-    "USER_REVIEW_RETURNED",
-    "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
-    "CAMPAIGN_APPROVED",
-    "AGENT_STALLED",
-    "POLICY_AMENDMENT",
-    "CHECKPOINT_READY",
-    "AUDITOR_RELEASE_CLEARED",
-    "RUNTIME_DEPLOYED",
-    "ACCEPTED_LIVE",
-    "TRUE_OWNER_BOUNDARY",
-    "RECONCILIATION_TICK"
+    "SPAWNER_START_REQUESTED",
+    "SPAWNER_WAKE_REQUESTED",
+    "REDISTRIBUTION_RECEIVED"
   ],
   "campaign_boundary": {
     "orchestrator": "CAMPAIGN_SCOPED",

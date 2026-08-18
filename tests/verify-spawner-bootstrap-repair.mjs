@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
@@ -15,6 +17,7 @@ import {
   compileRedistributionHandoff,
   compileSpawnerTurnCloseout,
   transitionInertSeed,
+  resolveCanonicalSpawnerBootstrapPackage,
   validateCanonicalSpawnerBootstrapPackage,
 } from "../control/spawner-bootstrap-governance.mjs";
 import {
@@ -30,19 +33,22 @@ import {
 import {admitAgentSpawnerIsolatedLocalCustody} from "../control/agent-spawner-lifecycle.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NOW = "2026-08-17T23:30:00.000Z";
+const NOW = "2026-08-18T16:30:00.000Z";
 const SHA = (character) => character.repeat(64);
 const blockPackage = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/control-plane/agent-spawner/block.json"), "utf8"));
 const preparedPolicy = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));
 
-validateCanonicalSpawnerBootstrapPackage(blockPackage);
+const resolvedPackage = resolveCanonicalSpawnerBootstrapPackage({authorityRoot: root});
+validateCanonicalSpawnerBootstrapPackage(blockPackage, resolvedPackage);
 const packageRoot = path.join(root, "specialist-blocks/control-plane/agent-spawner");
 const gateManifest = JSON.parse(fs.readFileSync(path.join(packageRoot, "gates/manifest.json"), "utf8"));
 assert.equal(gateManifest.manifest_sha256, canonicalDigest({...gateManifest, manifest_sha256: null}));
 assert.equal(blockPackage.gate_manifest_sha256, gateManifest.manifest_sha256);
-for (const relative of gateManifest.ordered_gate_paths) {
-  const gate = JSON.parse(fs.readFileSync(path.join(packageRoot, relative), "utf8"));
-  assert.equal(gate.gate_sha256, canonicalDigest({...gate, gate_sha256: null}), `gate digest mismatch: ${relative}`);
+for (const entry of gateManifest.entries) {
+  const gateBytes = fs.readFileSync(path.join(packageRoot, entry.path));
+  const gate = JSON.parse(gateBytes);
+  assert.equal(crypto.createHash("sha256").update(gateBytes).digest("hex"), entry.file_sha256, `gate file digest mismatch: ${entry.path}`);
+  assert.equal(gate.gate_sha256, canonicalDigest({...gate, gate_sha256: null}), `gate digest mismatch: ${entry.path}`);
 }
 const decisionTree = JSON.parse(fs.readFileSync(path.join(packageRoot, "decision-tree.json"), "utf8"));
 assert.equal(decisionTree.decision_tree_sha256, canonicalDigest({...decisionTree, decision_tree_sha256: null}));
@@ -61,7 +67,7 @@ validateModelPolicySnapshot(activePolicy, {nowUtc: NOW, requireActive: true});
 const narrowRoute = selectEcoModelRoute({
   snapshot: activePolicy,
   taskClass: "NARROW_CODING",
-  roleCapabilityFloor: 50,
+  roleCapabilityFloor: 49,
   requiredContextTokens: 64000,
   requiredCapabilities: ["CODE", "TOOLS"],
   nowUtc: NOW,
@@ -70,7 +76,7 @@ assert.equal(narrowRoute.model_id, "gpt-5.6-luna", "ECO must select the least-co
 const securityRoute = selectEcoModelRoute({
   snapshot: activePolicy,
   taskClass: "SECURITY_REVIEW",
-  roleCapabilityFloor: 60,
+  roleCapabilityFloor: 59,
   requiredContextTokens: 128000,
   requiredCapabilities: ["SECURITY"],
   nowUtc: NOW,
@@ -78,6 +84,7 @@ const securityRoute = selectEcoModelRoute({
 assert.equal(securityRoute.model_id, "gpt-5.6-sol", "security capability floor must reject cheaper incapable models");
 
 const projection = compileModelPolicyProjection({snapshot: activePolicy, roleClass: "WORKING_AGENT", selectedRoute: narrowRoute, projectedAtUtc: NOW});
+const seedProjection = compileModelPolicyProjection({snapshot: activePolicy, roleClass: "INERT_SEED", selectedRoute: narrowRoute, projectedAtUtc: NOW});
 assert.equal(projection.read_only, true);
 assert.equal(projection.mutation_authority, false);
 assert.deepEqual(Object.keys(projection.selected).sort(), [
@@ -85,43 +92,82 @@ assert.deepEqual(Object.keys(projection.selected).sort(), [
   "max_concurrency", "max_heavyweight_processes", "model_id", "output_usd_per_million", "reasoning_effort",
 ].sort());
 
-function evidenceFor(layer, index) {
-  const record = {
-    block_id: `BLOCK.${layer}.${index}`,
-    layer,
-    block_sha256: SHA(String(index + 1)),
-    status: "COMPLETE_QA_PASS",
-    non_placeholder: true,
-    evaluation: "PASS",
-    availability: "AVAILABLE",
-    observed_at_utc: NOW,
-    expires_at_utc: "2026-09-16T23:30:00.000Z",
-    contradictions: [],
-    gates: [{gate_id: `GATE.${layer}.${index}`, outcome: "PASS", evidence_sha256: SHA(String(index + 2))}],
-    evidence_sha256: null,
-  };
-  record.evidence_sha256 = canonicalDigest({...record, evidence_sha256: null});
-  return record;
-}
-const blocks = SPAWNER_BLOCK_LAYERS.map(evidenceFor);
-const admission = compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.TEST", spawnerPackage: blockPackage, requiredLayers: SPAWNER_BLOCK_LAYERS, applicableBlocks: blocks, modelPolicyProjection: projection, observedAtUtc: NOW});
+const admission = compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.TEST", authorityRoot: root, requiredLayers: SPAWNER_BLOCK_LAYERS, modelPolicyProjection: projection, observedAtUtc: NOW});
 assert.equal(admission.status, "READY_FOR_INERT_SEED");
-assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.MISSING", spawnerPackage: blockPackage, requiredLayers: SPAWNER_BLOCK_LAYERS, applicableBlocks: blocks.slice(1), modelPolicyProjection: projection, observedAtUtc: NOW}), /missing/iu);
-const staleBlocks = structuredClone(blocks);
-staleBlocks[0].expires_at_utc = "2026-08-16T00:00:00.000Z";
-staleBlocks[0].evidence_sha256 = canonicalDigest({...staleBlocks[0], evidence_sha256: null});
-assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.STALE", spawnerPackage: blockPackage, requiredLayers: SPAWNER_BLOCK_LAYERS, applicableBlocks: staleBlocks, modelPolicyProjection: projection, observedAtUtc: NOW}), /stale/iu);
-const inconclusive = structuredClone(blocks);
-inconclusive[0].evaluation = "UNKNOWN";
-inconclusive[0].evidence_sha256 = canonicalDigest({...inconclusive[0], evidence_sha256: null});
-assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.UNKNOWN", spawnerPackage: blockPackage, requiredLayers: SPAWNER_BLOCK_LAYERS, applicableBlocks: inconclusive, modelPolicyProjection: projection, observedAtUtc: NOW}), /inconclusive/iu);
+assert.equal(admission.block_evidence.length, SPAWNER_BLOCK_LAYERS.length);
+assert(admission.block_evidence.every((entry) => fs.existsSync(path.join(root, entry.artifact_path))));
+assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.CALLER", authorityRoot: root, spawnerPackage: blockPackage, applicableBlocks: [{status: "PASS"}], requiredLayers: SPAWNER_BLOCK_LAYERS, modelPolicyProjection: projection, observedAtUtc: NOW}), /Caller-supplied/iu);
+assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.MISSING_LAYER", authorityRoot: root, requiredLayers: SPAWNER_BLOCK_LAYERS.slice(1), modelPolicyProjection: projection, observedAtUtc: NOW}), /applicable layers differ/iu);
 
-const seed = compileInertSeed({seedId: "SEED.SPAWNER.TEST", admission, contextSha256: SHA("a"), rosterSha256: SHA("b"), modelPolicySnapshotSha256: activePolicy.snapshot_sha256, createdAtUtc: NOW});
+const shaBytes = (bytes) => crypto.createHash("sha256").update(bytes).digest("hex");
+function hostileAuthority(mutator) {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-spawner-artifact-hostile-"));
+  fs.mkdirSync(path.join(temp, "specialist-blocks/control-plane"), {recursive: true});
+  fs.cpSync(packageRoot, path.join(temp, "specialist-blocks/control-plane/agent-spawner"), {recursive: true});
+  mutator(temp);
+  return temp;
+}
+function rebindAdmissionBlock(temp, fileName, mutate) {
+  const directory = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission");
+  const blockPath = path.join(directory, fileName);
+  const block = JSON.parse(fs.readFileSync(blockPath, "utf8"));
+  mutate(block);
+  block.content_sha256 = canonicalDigest(block.semantic_content);
+  block.source_identity.content_sha256 = block.content_sha256;
+  block.block_sha256 = canonicalDigest({...block, block_sha256: null});
+  fs.writeFileSync(blockPath, `${JSON.stringify(block)}\n`);
+  const manifestPath = path.join(directory, "manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const entry = manifest.entries.find((candidate) => candidate.path === fileName);
+  entry.file_sha256 = shaBytes(fs.readFileSync(blockPath));
+  entry.block_sha256 = block.block_sha256;
+  manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
+}
+function expectHostile(mutator, pattern) {
+  const temp = hostileAuthority(mutator);
+  try { assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.HOSTILE", authorityRoot: temp, requiredLayers: SPAWNER_BLOCK_LAYERS, modelPolicyProjection: projection, observedAtUtc: NOW}), pattern); }
+  finally { fs.rmSync(temp, {recursive: true, force: true}); }
+}
+expectHostile((temp) => fs.unlinkSync(path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/task.block.json")), /ENOENT|artifact/iu);
+expectHostile((temp) => rebindAdmissionBlock(temp, "global.block.json", (block) => { block.expires_at_utc = "2026-08-16T00:00:00.000Z"; }), /stale/iu);
+expectHostile((temp) => rebindAdmissionBlock(temp, "project.block.json", (block) => { block.semantic_content.purpose = "TODO"; }), /placeholder|incomplete/iu);
+expectHostile((temp) => {
+  const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath));
+  manifest.entries[1].block_id = manifest.entries[0].block_id;
+  manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
+}, /identity differs|duplicated/iu);
+expectHostile((temp) => {
+  const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath));
+  [manifest.entries[0].path, manifest.entries[1].path] = [manifest.entries[1].path, manifest.entries[0].path];
+  manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
+}, /file digest differs|identity differs/iu);
+expectHostile((temp) => {
+  const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/admission/manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath));
+  manifest.entries[0].file_sha256 = "a".repeat(64);
+  manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
+}, /placeholder-style/iu);
+expectHostile((temp) => {
+  const manifestPath = path.join(temp, "specialist-blocks/control-plane/agent-spawner/gates/manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath));
+  manifest.entries[1].gate_id = manifest.entries[0].gate_id;
+  manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+}, /manifest binding differs|ID\/path binding differs|duplicate/iu);
+
+const seed = compileInertSeed({seedId: "SEED.SPAWNER.TEST", admission, contextSha256: SHA("a"), rosterSha256: SHA("b"), modelPolicySnapshotSha256: activePolicy.snapshot_sha256, modelPolicyProjection: seedProjection, createdAtUtc: NOW});
 assert.equal(seed.execution_authority, false);
 assert.throws(() => transitionInertSeed(seed, {transition: "EXECUTE_WORK", observedAtUtc: NOW}), /never execute/iu);
-const clone = transitionInertSeed(seed, {transition: "CLONE_TO_WORKER", observedAtUtc: NOW});
+const clone = transitionInertSeed(seed, {transition: "CLONE_TO_WORKER", observedAtUtc: NOW, workerModelPolicyProjection: projection});
 assert.equal(clone.source_seed_sha256, seed.seed_sha256);
 assert.equal(clone.bound_model_policy_snapshot_sha256, activePolicy.snapshot_sha256);
+assert.equal(clone.compact_model_policy.model_id, narrowRoute.model_id);
 
 for (const operation of CONTROLLER_FORBIDDEN_OPERATIONS) assert.throws(() => assertControllerOperationAuthorized(operation), /forbidden/iu);
 assert.equal(assertControllerOperationAuthorized("startAgentSpawner"), "startAgentSpawner");
@@ -149,7 +195,7 @@ assert.equal(closeout.status, "VALID_CLOSEOUT");
 const unavailable = structuredClone(activePolicy);
 unavailable.models.forEach((model) => { model.host_available = false; });
 unavailable.snapshot_sha256 = canonicalDigest({...unavailable, snapshot_sha256: null});
-assert.throws(() => selectEcoModelRoute({snapshot: unavailable, taskClass: "NARROW_CODING", roleCapabilityFloor: 50, requiredContextTokens: 64000, nowUtc: NOW}), /No available model/iu);
+assert.throws(() => selectEcoModelRoute({snapshot: unavailable, taskClass: "NARROW_CODING", roleCapabilityFloor: 49, requiredContextTokens: 64000, nowUtc: NOW}), /Host availability binding differs|No available model/iu);
 const stalePolicy = structuredClone(activePolicy);
 stalePolicy.expires_at_utc = "2026-08-16T00:00:00.000Z";
 stalePolicy.snapshot_sha256 = canonicalDigest({...stalePolicy, snapshot_sha256: null});

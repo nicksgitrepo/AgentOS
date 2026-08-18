@@ -125,13 +125,13 @@ export function validateAgentSpawnerGovernedAdmission(readback, {sourceContinuat
   return readback;
 }
 
-export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuation, lifecycleBefore, evidenceRefs, hostileFixtureRefs} = {}) {
+export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuation, lifecycleBefore, independentClearance, clearanceCandidate, usedClearanceReceiptSha256s = [], evidenceRefs, hostileFixtureRefs} = {}) {
   validateAgentSpawnerCompilerContinuation(sourceContinuation);
   validateAgentSpawnerLifecycle(lifecycleBefore);
   assert(sourceContinuation.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission source must be the compiler admission successor");
   assert(sourceContinuation.lifecycle_after_sha256 === lifecycleBefore.lifecycle_sha256, "Governed-admission source lifecycle does not match compiler continuation");
   assert(lifecycleBefore.qa.independent_clearance_status === "CLEARED" && lifecycleBefore.qa.status === "INDEPENDENT_PASS", "Governed admission requires independent clearance");
-  const lifecycleAfter = admitAgentSpawnerIndependentClearance(lifecycleBefore);
+  const lifecycleAfter = admitAgentSpawnerIndependentClearance(lifecycleBefore, {clearance: independentClearance, candidate: clearanceCandidate, usedReceiptSha256s: usedClearanceReceiptSha256s});
   const readback = {
     schema: AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA,
     version: AGENT_SPAWNER_GOVERNED_ADMISSION_VERSION,

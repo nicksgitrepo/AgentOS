@@ -13,19 +13,14 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
-import {
-  compileCampaignPolicyProjection,
-  reconcileCampaignPolicy,
-  validateCampaignPolicyReconciliation,
-} from "./campaign-policy-reconcile.mjs";
-import {reconcilePolicyAtCampaignBoundary} from "./campaign-state-owner.mjs";
-import {validatePolicyAmendment, validatePolicyState} from "./global-policy-state.mjs";
+import {validatePolicyState} from "./global-policy-state.mjs";
 import {AGENTOS_CONTROLLER_DISPLAY_NAME, AGENTOS_CONTROLLER_ROLE, validateControllerRoleDisplay} from "./controller-role-display.mjs";
 import {
   validateGovernanceArchitecture,
 } from "./role-governance-library.mjs";
 import {ARCHITECTURE_ACCEPTANCE_REQUIREMENTS} from "./governance-library.mjs";
 import {assertControllerOperationAuthorized} from "./spawner-bootstrap-governance.mjs";
+import {requireGlobalGovernanceRoleProjection} from "./global-governance-bootstrap.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -37,50 +32,18 @@ const AGENT_BINDING_SCHEMA = "agentos.controller_agent_binding.v1";
 const RUNTIME_READBACK_SCHEMA = "agentos.controller_runtime_readback.v1";
 const ADAPTER_READBACK_SCHEMA = "agentos.controller_adapter_readback.v1";
 const ARCHITECTURE_REPAIR_GATE_SCHEMA = "agentos.controller_architecture_repair_gate.v1";
-const EVENT_TYPES = Object.freeze([
-  "BOOTSTRAP_REQUESTED",
+export const CONTROLLER_EVENT_TYPES = Object.freeze([
   "SPAWNER_START_REQUESTED",
   "SPAWNER_WAKE_REQUESTED",
   "REDISTRIBUTION_RECEIVED",
-  "BOOTSTRAP_PROMOTED",
-  "USER_REVIEW_RETURNED",
-  "LOCAL_SELF_DEVELOPMENT_AUTHORIZED",
-  "CAMPAIGN_APPROVED",
-  "AGENT_STALLED",
-  "POLICY_AMENDMENT",
-  "CHECKPOINT_READY",
-  "AUDITOR_RELEASE_CLEARED",
-  "RUNTIME_DEPLOYED",
-  "ACCEPTED_LIVE",
-  "TRUE_OWNER_BOUNDARY",
-  "RECONCILIATION_TICK",
 ]);
+const EVENT_TYPES = CONTROLLER_EVENT_TYPES;
 const OPERATION_NAMES = Object.freeze([
-  "runBootstrap",
   "validateControllerGovernance",
   "validateSpawnerHandoff",
   "startAgentSpawner",
   "wakeAgentSpawner",
-  "observeAgentSpawner",
   "dispatchRedistribution",
-  "bindPersistentRuntime",
-  "reconcileUserReview",
-  "admitLocalSelfDevelopment",
-  "spawnCampaignOrchestrator",
-  "spawnIndependentAuditor",
-  "spawnFeatureAgents",
-  "recoverStalledSession",
-  "wakeControllerAgent",
-  "applyPolicyReconciliation",
-  "verifyCheckpoint",
-  "notifyAuditor",
-  "spawnNextCampaignOrchestrator",
-  "deployAcceptedArtifact",
-  "runLiveAudit",
-  "sendLiveDeltaToNextOrchestrator",
-  "closeCampaign",
-  "archiveCampaignAgents",
-  "reconcileLiveness",
 ]);
 const OPERATION_SET = new Set(OPERATION_NAMES);
 const OPERATIONAL_STATUSES = Object.freeze([
@@ -647,124 +610,6 @@ function sessionIdsFromSpawnReadback(readback) {
   return [...new Set(ids)];
 }
 
-function spawnCampaignRolesWithRollback({adapters, state, event, payload, operations}) {
-  assert(typeof adapters.archiveCampaignAgents === "function", "campaign spawn cleanup adapter is unavailable");
-  const readbacks = [];
-  const spawnedSessionIds = [];
-  try {
-    for (const operation of operations) {
-      const readback = requireReadback({adapters, operation, state, event, payload});
-      readbacks.push(readback);
-      spawnedSessionIds.push(...sessionIdsFromSpawnReadback(readback));
-    }
-    return readbacks;
-  } catch (error) {
-    const uniqueSpawnedSessionIds = [...new Set(spawnedSessionIds)].sort(compareUtf8);
-    if (uniqueSpawnedSessionIds.length === 0) throw error;
-    try {
-      const cleanup = requireReadback({
-        adapters,
-        operation: "archiveCampaignAgents",
-        state,
-        event,
-        payload: {
-          ...payload,
-          spawned_session_ids: uniqueSpawnedSessionIds,
-          cleanup_reason: "campaign role spawn failed before activation",
-        },
-      });
-      const archived = cleanup.details?.archived_session_ids;
-      assert(Array.isArray(archived), "campaign spawn cleanup readback lacks archived_session_ids");
-      const archivedSet = new Set(archived);
-      assert(archivedSet.size === archived.length && uniqueSpawnedSessionIds.every((sessionId) => archivedSet.has(sessionId)), "campaign spawn cleanup did not confirm every created session");
-    } catch (cleanupError) {
-      const combined = new Error(`campaign role spawn failed and cleanup failed: ${cleanupError.message}`);
-      combined.code = "CAMPAIGN_SPAWN_CLEANUP_FAILED";
-      combined.cause = error;
-      combined.cleanup_error = cleanupError.message;
-      combined.spawned_session_ids = uniqueSpawnedSessionIds;
-      throw combined;
-    }
-    throw error;
-  }
-}
-
-function validateLocalAuthorizationEnvelope(authorization) {
-  exactKeys(authorization, [
-    "schema", "version", "status", "source", "owner_decision", "campaign_id", "campaign_version", "source_commit", "source_tree",
-    "parent_audit_packet_sha256", "parent_audit_addendum_sha256", "owner_intent_sha256", "decision_tree_requirement_sha256",
-    "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "model_plan_sha256", "scope_sha256", "permissions",
-    "worker_roles", "stop_conditions", "authorization_sha256",
-  ], "local self-development authorization event");
-  assert(authorization.schema === "agentos.local_development_authorization.v1" && authorization.version === 1 && authorization.status === "AUTHORIZED", "local self-development authorization is invalid");
-  assert(authorization.source === "OWNER_EXISTING_CONSENT", "local self-development authorization is not current owner consent");
-  requireSha(authorization.authorization_sha256, "local self-development authorization digest");
-  assert(authorization.authorization_sha256 === digestWithout(authorization, "authorization_sha256"), "local self-development authorization digest mismatch");
-  assert(authorization.permissions.local_development_writes_allowed === true && authorization.permissions.local_worker_agent_spawns_allowed === true, "local self-development permissions are not enabled");
-  for (const field of ["product_writes_allowed", "product_agent_spawns_allowed", "external_deployment_allowed", "external_release_allowed", "external_publication_allowed", "external_push_allowed", "external_merge_allowed", "secrets_allowed", "destructive_work_allowed"]) assert(authorization.permissions[field] === false, `local self-development authorization crosses ${field}`);
-  return authorization;
-}
-
-function validateLocalAdmissionEnvelope(admission, candidate, authorization) {
-  requireRecord(admission, "local self-development admission");
-  assert(admission.schema === "agentos.local_campaign_admission.v1" && admission.version === 1 && admission.status === "CAMPAIGN_ADMITTED", "local self-development admission is invalid");
-  assert(admission.active_campaign === false && admission.next_event === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED", "local self-development admission crossed its start boundary");
-  assert(admission.campaign_id === candidate.campaign_id && admission.campaign_version === candidate.campaign_version, "local self-development admission campaign differs");
-  assert(admission.controller_candidate_sha256 === candidate.candidate_sha256 && admission.authorization_sha256 === authorization.authorization_sha256, "local self-development admission identity differs");
-  requireSha(admission.admission_sha256, "local self-development admission digest");
-  assert(admission.admission_sha256 === digestWithout(admission, "admission_sha256"), "local self-development admission digest mismatch");
-  return admission;
-}
-
-function policyAmendmentNeedsControllerRotation(amendment) {
-  return amendment.affected_variable_ids.includes("MODEL.PROFILE") || amendment.affected_variable_ids.some((id) => id.startsWith("MODEL.ROLE."));
-}
-
-function validateNextRoster(previous, next, reconciliation) {
-  validateRoster(previous, "previous campaign roster");
-  validateRoster(next, "next campaign roster");
-  const oldByRole = new Map(previous.map((record) => [record.role, record]));
-  const assignments = new Map(reconciliation.next_assignments.map((record) => [record.role, record]));
-  for (const record of next) {
-    const old = oldByRole.get(record.role);
-    const assignment = assignments.get(record.role);
-    assert(old && assignment, `next campaign roster has an unplanned role: ${record.role}`);
-    assert(record.model_class === assignment.model_class, `next campaign roster model differs for ${record.role}`);
-    if (assignment.assignment_status === "ROTATE_AT_BOUNDARY") assert(record.session_id !== old.session_id, `rotated campaign role retained stale session: ${record.role}`);
-    else assert(record.session_id === old.session_id, `retained campaign role changed session: ${record.role}`);
-  }
-}
-
-function makeActiveCampaign({state, candidate, orchestrator, auditor, features, stage = "BUILDING"}) {
-  const projection = compileCampaignPolicyProjection({policyState: state.policy_state, campaignId: candidate.campaign_id, campaignVersion: candidate.campaign_version});
-  const roleModel = (role) => projection.role_models.find((record) => record.role === role).model_class;
-  const roster = [
-    {role: "CAMPAIGN_ORCHESTRATOR", session_id: orchestrator, model_class: roleModel("CAMPAIGN_ORCHESTRATOR")},
-    {role: "INDEPENDENT_AUDITOR", session_id: auditor, model_class: roleModel("INDEPENDENT_AUDITOR")},
-    {role: "FEATURE_AGENT", session_id: features[0], model_class: roleModel("FEATURE_AGENT")},
-  ].sort((left, right) => compareUtf8(left.role, right.role));
-  return {
-    campaign_id: candidate.campaign_id,
-    campaign_version: candidate.campaign_version,
-    candidate: structuredClone(candidate),
-    candidate_sha256: candidate.candidate_sha256,
-    orchestrator_session_id: orchestrator,
-    auditor_session_id: auditor,
-    feature_agent_session_ids: sorted(features),
-    platform_agent_session_ids: [],
-    roster,
-    stage,
-    policy_epoch: state.policy_epoch,
-    policy_state_sha256: state.policy_state_sha256,
-    latest_checkpoint_sha256: null,
-    next_orchestrator_session_id: null,
-    next_orchestrator_orientation_only: true,
-    deployment_identity: null,
-    rollback_identity: null,
-    live_audit_identity: null,
-  };
-}
-
 function updateState(state, patch) {
   const next = {...state, ...patch, state_sha256: null};
   next.state_sha256 = digestWithout(next, "state_sha256");
@@ -775,40 +620,36 @@ function appendReadbacks(state, readbacks) {
   return [...state.action_receipts, ...readbacks];
 }
 
-function queueCandidate(state, candidate, occurredAtUtc) {
-  const existing = state.campaign_queue.find((entry) => entry.campaign_id === candidate.campaign_id);
-  if (existing) {
-    assert(existing.candidate.candidate_sha256 === candidate.candidate_sha256, "controller queue campaign candidate changed");
-    return state.campaign_queue;
-  }
-  return [...state.campaign_queue, {
-    campaign_id: candidate.campaign_id,
-    campaign_version: candidate.campaign_version,
-    candidate: structuredClone(candidate),
-    status: "PROPOSED",
-    queued_at_utc: occurredAtUtc,
-    admitted_at_utc: null,
-  }].sort((left, right) => compareUtf8(left.campaign_id, right.campaign_id));
-}
-
-function markQueueActive(queue, campaignId, occurredAtUtc) {
-  return queue.map((entry) => entry.campaign_id === campaignId
-    ? {...entry, status: "ACTIVE", admitted_at_utc: occurredAtUtc}
-    : entry);
-}
-
-function markQueueClosed(queue, campaignId) {
-  return queue.map((entry) => entry.campaign_id === campaignId ? {...entry, status: "CLOSED"} : entry);
-}
-
-export function processControllerEvent({state, event, adapters = {}, nowUtc = event?.occurred_at_utc}) {
+export function validateControllerEventPreconditions({state, event, globalGovernance}) {
   validateAgentOSControllerState(state);
   validateControllerEvent(event);
+  const globalProjection = requireGlobalGovernanceRoleProjection({bootstrap: globalGovernance?.bootstrap, events: globalGovernance?.events, readback: globalGovernance?.readback, roleClass: "CONTROLLER", observedAtUtc: globalGovernance?.observedAtUtc});
+  requireSha(event.payload.global_model_policy_projection_sha256, "Controller global model-policy projection");
+  assert(event.payload.global_model_policy_projection_sha256 === globalProjection.projection_sha256, "Controller global model-policy projection is stale or widened");
   assert(event.controller_id === state.logical_controller_id && event.project_id === state.project_id, "controller event is not bound to project controller");
   assert(event.sequence === state.event_cursor + 1, "controller event sequence is not the next event");
   assert(event.prior_controller_head_sha256 === state.event_ledger_head_sha256, "controller event prior head is stale");
   assert(event.policy_epoch === state.policy_epoch && event.policy_state_sha256 === state.policy_state_sha256, "controller event policy is stale");
-  if (state.active_campaign_id !== null) assert(event.campaign_id === state.active_campaign_id || event.event_type === "TRUE_OWNER_BOUNDARY", "controller event campaign differs from active campaign");
+  assert(state.active_campaign_id === null && event.campaign_id === null, "Controller Spawner events cannot bind an ordinary campaign");
+  if (event.event_type === "SPAWNER_START_REQUESTED") {
+    assert(!state.action_receipts.some((record) => record.operation === "startAgentSpawner"), "Controller may start exactly one Agent Spawner");
+    requireIdentifier(event.payload.spawner_id, "Agent Spawner identity");
+    requireSha(event.payload.bootstrap_package_sha256, "Agent Spawner bootstrap package");
+  } else if (event.event_type === "SPAWNER_WAKE_REQUESTED") {
+    const starts = state.action_receipts.filter((record) => record.operation === "startAgentSpawner");
+    assert(starts.length === 1, "Controller cannot wake an absent or duplicate Spawner");
+    requireIdentifier(event.payload.spawner_id, "Agent Spawner identity");
+    assert(starts[0].details.spawner_id === event.payload.spawner_id, "Controller cannot wake a different Spawner");
+  } else if (event.event_type === "REDISTRIBUTION_RECEIVED") {
+    requireSha(event.payload.redistribution_handoff_sha256, "Redistribution handoff");
+  } else {
+    throw new Error(`CONTROLLER_EVENT_FORBIDDEN: ${event.event_type}`);
+  }
+  return {state, event};
+}
+
+export function processControllerEvent({state, event, adapters = {}, nowUtc = event?.occurred_at_utc, globalGovernance}) {
+  validateControllerEventPreconditions({state, event, globalGovernance});
   const readbacks = [];
   let next = state;
   const payload = event.payload;
@@ -853,254 +694,6 @@ export function processControllerEvent({state, event, adapters = {}, nowUtc = ev
       assert(dispatched.details.status === "DISPATCHED" && dispatched.details.approval_required === false, "Controller treated redistribution as approval");
       requireString(dispatched.details.destination, "Redistribution destination");
       next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
-      break;
-    }
-    case "BOOTSTRAP_REQUESTED": {
-      assert(state.active_campaign === null, "Bootstrap cannot start while a campaign is active");
-      add("runBootstrap");
-      next = updateState(next, {operational_status: "BOOTSTRAPPING"});
-      break;
-    }
-    case "BOOTSTRAP_PROMOTED": {
-      assert(state.active_campaign === null, "Bootstrap promotion cannot occur during an active campaign");
-      const readback = add("bindPersistentRuntime");
-      const details = requireDetails(readback, ["runtime_id", "controller_runtime_id"], "Runtime binding");
-      assert(details.runtime_id === state.runtime_id, "Runtime binding changed the persistent Runtime identity");
-      next = updateState(next, {operational_status: "OWNER_REVIEW_PENDING"});
-      break;
-    }
-    case "USER_REVIEW_RETURNED": {
-      assert(state.active_campaign === null, "User Review return cannot replace an active campaign");
-      const readback = add("reconcileUserReview");
-      const details = requireDetails(readback, ["candidate"], "User Review reconciliation");
-      validateControllerCampaignCandidate(details.candidate);
-      assert(details.candidate.project_id === state.project_id && details.candidate.policy_epoch === state.policy_epoch && details.candidate.policy_state_sha256 === state.policy_state_sha256, "User Review candidate is stale for project policy");
-      next = updateState(next, {operational_status: "OWNER_REVIEW_PENDING", campaign_queue: queueCandidate(next, details.candidate, event.occurred_at_utc)});
-      break;
-    }
-    case "LOCAL_SELF_DEVELOPMENT_AUTHORIZED": {
-      assert(state.active_campaign === null, "local self-development admission cannot replace an active campaign");
-      assert(state.runtime_id !== null, "persistent Runtime is required before local self-development admission");
-      const candidate = payload.candidate;
-      validateControllerCampaignCandidate(candidate);
-      assert(candidate.project_id === state.project_id && candidate.policy_epoch === state.policy_epoch && candidate.policy_state_sha256 === state.policy_state_sha256, "local self-development candidate is stale");
-      const authorization = validateLocalAuthorizationEnvelope(payload.authorization);
-      assert(authorization.campaign_id === candidate.campaign_id && authorization.campaign_version === candidate.campaign_version, "local self-development authorization campaign differs");
-      assert(authorization.source_commit === candidate.source_commit && authorization.source_tree === candidate.source_tree, "local self-development authorization source differs");
-      assert(authorization.policy_epoch === candidate.policy_epoch && authorization.policy_state_sha256 === candidate.policy_state_sha256, "local self-development authorization policy differs");
-      assert(authorization.owner_intent_sha256 === candidate.owner_intent_sha256 && authorization.acceptance_contract_sha256 === candidate.acceptance_contract_sha256, "local self-development authorization intent differs");
-      const admission = validateLocalAdmissionEnvelope(payload.admission, candidate, authorization);
-      const identityBinding = payload.identity_binding;
-      requireRecord(identityBinding, "local self-development identity binding");
-      requireSha(identityBinding.binding_sha256, "local self-development identity binding digest");
-      const admissionReadback = add("admitLocalSelfDevelopment", {authorization, admission, candidate, identity_binding: identityBinding});
-      const admissionDetails = requireDetails(admissionReadback, ["status", "admission_sha256", "authorization_sha256", "candidate_sha256", "identity_binding_sha256"], "local self-development admission");
-      assert(admissionDetails.status === "CAMPAIGN_ADMITTED" && admissionDetails.admission_sha256 === admission.admission_sha256 && admissionDetails.authorization_sha256 === authorization.authorization_sha256 && admissionDetails.candidate_sha256 === candidate.candidate_sha256 && admissionDetails.identity_binding_sha256 === identityBinding.binding_sha256, "local self-development admission readback differs");
-      // Feature custody must exist before the Auditor reports on the changed tree.
-      const [orchestratorReadback, featureReadback, auditorReadback] = spawnCampaignRolesWithRollback({
-        adapters,
-        state: next,
-        event,
-        payload,
-        operations: ["spawnCampaignOrchestrator", "spawnFeatureAgents", "spawnIndependentAuditor"],
-      });
-      readbacks.push(orchestratorReadback, featureReadback, auditorReadback);
-      const orchestrator = requireDetails(orchestratorReadback, ["session_id", "worker_readback"], "local Campaign Orchestrator spawn").session_id;
-      const auditor = requireDetails(auditorReadback, ["session_id", "worker_readback"], "local Independent Auditor spawn").session_id;
-      const featureDetails = requireDetails(featureReadback, ["feature_agent_session_ids", "worker_readbacks"], "local Feature Agent spawn");
-      const features = featureDetails.feature_agent_session_ids;
-      sortedUnique(features, "local Feature Agent spawn sessions");
-      assert(features.length > 0 && !features.includes(orchestrator) && !features.includes(auditor), "local campaign worker sessions are not independent");
-      const activeCampaign = makeActiveCampaign({state: next, candidate, orchestrator, auditor, features, stage: "BUILDING_AND_AUDITING"});
-      next = updateState(next, {operational_status: "CAMPAIGN_ACTIVE", active_campaign_id: candidate.campaign_id, active_campaign: activeCampaign, campaign_queue: markQueueActive(queueCandidate(next, candidate, event.occurred_at_utc), candidate.campaign_id, event.occurred_at_utc)});
-      break;
-    }
-    case "CAMPAIGN_APPROVED": {
-      assert(state.active_campaign === null, "a campaign is already active");
-      assert(state.runtime_id !== null, "persistent Runtime is required before campaign admission");
-      assert(payload.authorization === undefined && payload.admission === undefined, "local self-development must use LOCAL_SELF_DEVELOPMENT_AUTHORIZED");
-      const candidate = payload.candidate;
-      validateControllerCampaignCandidate(candidate);
-      assert(candidate.project_id === state.project_id && candidate.policy_epoch === state.policy_epoch && candidate.policy_state_sha256 === state.policy_state_sha256, "approved campaign candidate is stale");
-      if (payload.owner_approval_sha256 !== undefined) requireSha(payload.owner_approval_sha256, "campaign owner approval");
-      const queued = state.campaign_queue.find((entry) => entry.campaign_id === candidate.campaign_id);
-      if (queued) assert(queued.candidate.candidate_sha256 === candidate.candidate_sha256, "approved candidate differs from queued review candidate");
-      const [orchestratorReadback, auditorReadback, featureReadback] = spawnCampaignRolesWithRollback({
-        adapters,
-        state: next,
-        event,
-        payload,
-        operations: ["spawnCampaignOrchestrator", "spawnIndependentAuditor", "spawnFeatureAgents"],
-      });
-      readbacks.push(orchestratorReadback, auditorReadback, featureReadback);
-      const orchestrator = requireDetails(orchestratorReadback, ["session_id"], "Campaign Orchestrator spawn").session_id;
-      const auditor = requireDetails(auditorReadback, ["session_id"], "Auditor spawn").session_id;
-      const features = requireDetails(featureReadback, ["feature_agent_session_ids"], "Feature Agent spawn").feature_agent_session_ids;
-      sortedUnique(features, "Feature Agent spawn sessions");
-      assert(features.length > 0 && !features.includes(orchestrator) && !features.includes(auditor), "campaign roster sessions are not independent");
-      const activeCampaign = makeActiveCampaign({state: next, candidate, orchestrator, auditor, features});
-      next = updateState(next, {operational_status: "CAMPAIGN_ACTIVE", active_campaign_id: candidate.campaign_id, active_campaign: activeCampaign, campaign_queue: markQueueActive(queueCandidate(next, candidate, event.occurred_at_utc), candidate.campaign_id, event.occurred_at_utc)});
-      break;
-    }
-    case "AGENT_STALLED": {
-      assert(state.active_campaign !== null, "stalled-agent recovery requires an active campaign");
-      if (payload.judgment_required === true) {
-        const readback = add("wakeControllerAgent");
-        const details = requireDetails(readback, ["judgment_id", "reason", "affected_outcomes"], "Controller judgment wake");
-        next = updateState(next, {
-          operational_status: "OWNER_ONLY",
-          pending_judgments: [...next.pending_judgments, {judgment_id: details.judgment_id, reason: details.reason, affected_outcomes: sorted(details.affected_outcomes), created_at_utc: event.occurred_at_utc}],
-        });
-      } else {
-        const readback = add("recoverStalledSession");
-        const details = requireDetails(readback, ["replacement_session_id", "role"], "stalled-agent recovery");
-        requireString(details.replacement_session_id, "replacement session");
-        requireString(details.role, "recovered role");
-        next = updateState(next, {operational_status: "CAMPAIGN_ACTIVE"});
-      }
-      break;
-    }
-    case "POLICY_AMENDMENT": {
-      const amendment = payload.amendment;
-      const nextPolicyState = payload.next_policy_state;
-      requireRecord(amendment, "policy amendment event amendment");
-      validatePolicyAmendment(amendment);
-      validatePolicyState(nextPolicyState);
-      assert(amendment.project_id === state.project_id && amendment.parent_policy_state_sha256 === state.policy_state_sha256, "policy amendment is not based on current controller policy");
-      assert(nextPolicyState.project_id === state.project_id && nextPolicyState.parent_policy_state_sha256 === state.policy_state_sha256 && nextPolicyState.policy_epoch === state.policy_epoch + 1, "policy amendment next state is not the immediate child");
-      let reconciliation = null;
-      let nextProjection = null;
-      if (state.active_campaign !== null) {
-        const boundary = reconcilePolicyAtCampaignBoundary({
-          currentPolicyState: state.policy_state,
-          nextPolicyState,
-          amendment,
-          campaignId: state.active_campaign.campaign_id,
-          campaignVersion: state.active_campaign.campaign_version,
-          activeRoster: state.active_campaign.roster,
-          currentBoundary: payload.current_boundary ?? amendment.effective_boundary,
-        });
-        reconciliation = boundary.reconciliation;
-        nextProjection = boundary.nextProjection;
-      } else {
-        nextProjection = compileCampaignPolicyProjection({policyState: nextPolicyState, campaignId: event.campaign_id ?? "PROJECT", campaignVersion: "next"});
-      }
-      const readback = add("applyPolicyReconciliation", {amendment, next_policy_state: nextPolicyState, reconciliation});
-      const details = requireDetails(readback, state.active_campaign === null
-        ? ["policy_state_sha256", "controller_session_id"]
-        : ["policy_state_sha256", "controller_session_id", "reconciliation_sha256", "next_roster", "recompiled_candidate"], "policy reconciliation");
-      assert(details.policy_state_sha256 === nextPolicyState.policy_state_sha256, "policy adapter did not persist the next policy state");
-      if (reconciliation !== null) {
-        requireSha(details.reconciliation_sha256, "policy reconciliation readback");
-        assert(details.reconciliation_sha256 === reconciliation.reconciliation_sha256, "policy adapter reconciliation differs");
-        validateNextRoster(state.active_campaign.roster, details.next_roster, reconciliation);
-        validateControllerCampaignCandidate(details.recompiled_candidate);
-        assert(details.recompiled_candidate.project_id === state.project_id
-          && details.recompiled_candidate.campaign_id === state.active_campaign.campaign_id
-          && details.recompiled_candidate.campaign_version === state.active_campaign.campaign_version
-          && details.recompiled_candidate.policy_epoch === nextPolicyState.policy_epoch
-          && details.recompiled_candidate.policy_state_sha256 === nextPolicyState.policy_state_sha256,
-        "policy reconciliation did not return a candidate compiled for the next policy");
-      }
-      const controllerAgent = compileControllerAgentBinding({
-        projectId: state.project_id,
-        logicalControllerId: state.logical_controller_id,
-        sessionId: details.controller_session_id,
-        policyEpoch: nextPolicyState.policy_epoch,
-        policyStateSha256: nextPolicyState.policy_state_sha256,
-        observedAtUtc: event.occurred_at_utc,
-      });
-      const activeCampaign = state.active_campaign === null ? null : {
-        ...state.active_campaign,
-        candidate: details.recompiled_candidate,
-        candidate_sha256: details.recompiled_candidate.candidate_sha256,
-        roster: details.next_roster,
-        policy_epoch: nextPolicyState.policy_epoch,
-        policy_state_sha256: nextPolicyState.policy_state_sha256,
-      };
-      next = updateState(next, {
-        current_session_id: details.controller_session_id,
-        controller_agent: controllerAgent,
-        policy_state: structuredClone(nextPolicyState),
-        policy_epoch: nextPolicyState.policy_epoch,
-        policy_state_sha256: nextPolicyState.policy_state_sha256,
-        active_campaign: activeCampaign,
-        operational_status: activeCampaign === null ? "OWNER_REVIEW_PENDING" : "CAMPAIGN_ACTIVE",
-      });
-      break;
-    }
-    case "CHECKPOINT_READY": {
-      assert(state.active_campaign !== null, "checkpoint requires an active campaign");
-      const verified = add("verifyCheckpoint");
-      const verifiedDetails = requireDetails(verified, ["checkpoint_sha256"], "checkpoint verification");
-      requireSha(payload.checkpoint_sha256, "checkpoint event");
-      assert(verifiedDetails.checkpoint_sha256 === payload.checkpoint_sha256, "checkpoint readback differs from event");
-      const notified = add("notifyAuditor", {checkpoint_sha256: payload.checkpoint_sha256});
-      const notifiedDetails = requireDetails(notified, ["checkpoint_sha256", "auditor_session_id"], "Auditor notification");
-      assert(notifiedDetails.checkpoint_sha256 === payload.checkpoint_sha256 && notifiedDetails.auditor_session_id === state.active_campaign.auditor_session_id, "Auditor notification is not bound to checkpoint/roster");
-      next = updateState(next, {active_campaign: {...next.active_campaign, latest_checkpoint_sha256: payload.checkpoint_sha256}});
-      break;
-    }
-    case "AUDITOR_RELEASE_CLEARED": {
-      assert(state.active_campaign !== null, "release clearance requires an active campaign");
-      requireSha(payload.candidate_sha256, "release candidate");
-      assert(payload.candidate_sha256 === state.active_campaign.candidate_sha256, "release clearance candidate differs");
-      const orientation = add("spawnNextCampaignOrchestrator");
-      const orientationDetails = requireDetails(orientation, ["session_id", "orientation_only"], "next orchestrator orientation");
-      assert(orientationDetails.orientation_only === true, "next orchestrator is not orientation-only");
-      const deployment = add("deployAcceptedArtifact", {candidate_sha256: payload.candidate_sha256});
-      const deploymentDetails = requireDetails(deployment, ["candidate_sha256", "deployed_identity", "rollback_identity"], "deployment");
-      assert(deploymentDetails.candidate_sha256 === payload.candidate_sha256, "deployment candidate differs");
-      next = updateState(next, {operational_status: "DEPLOYMENT_PENDING", active_campaign: {...next.active_campaign, next_orchestrator_session_id: orientationDetails.session_id, deployment_identity: deploymentDetails.deployed_identity, rollback_identity: deploymentDetails.rollback_identity}});
-      break;
-    }
-    case "RUNTIME_DEPLOYED": {
-      assert(state.active_campaign !== null, "live audit requires an active campaign");
-      requireString(payload.deployed_identity, "deployed identity");
-      assert(payload.deployed_identity === state.active_campaign.deployment_identity, "Runtime deployment identity differs");
-      const liveAudit = add("runLiveAudit", payload);
-      const details = requireDetails(liveAudit, ["candidate_sha256", "deployed_identity", "live_audit_identity"], "live audit");
-      assert(details.candidate_sha256 === state.active_campaign.candidate_sha256 && details.deployed_identity === payload.deployed_identity, "live audit is not bound to deployed candidate");
-      next = updateState(next, {active_campaign: {...next.active_campaign, live_audit_identity: details.live_audit_identity}});
-      break;
-    }
-    case "ACCEPTED_LIVE": {
-      assert(state.active_campaign !== null, "accepted-live closure requires an active campaign");
-      assert(state.active_campaign.live_audit_identity !== null, "accepted-live closure requires a live audit");
-      add("sendLiveDeltaToNextOrchestrator");
-      add("closeCampaign");
-      add("archiveCampaignAgents");
-      const closedId = state.active_campaign.campaign_id;
-      next = updateState(next, {
-        operational_status: "EVENT_DRIVEN_WAIT",
-        active_campaign_id: null,
-        active_campaign: null,
-        campaign_queue: markQueueClosed(next.campaign_queue, closedId),
-        last_closed_campaign_id: closedId,
-      });
-      break;
-    }
-    case "TRUE_OWNER_BOUNDARY": {
-      assert(event.source_role === "OWNER", "owner boundary must come from the owner authority");
-      const boundary = {
-        boundary_id: payload.boundary_id,
-        scope: payload.scope,
-        reason: payload.reason,
-        recommended_action: payload.recommended_action,
-        created_at_utc: event.occurred_at_utc,
-      };
-      validateOwnerBoundary(boundary);
-      next = updateState(next, {operational_status: "OWNER_ONLY", pending_owner_boundaries: [...next.pending_owner_boundaries, boundary]});
-      break;
-    }
-    case "RECONCILIATION_TICK": {
-      const readback = add("reconcileLiveness", {observed_at_utc: nowUtc});
-      const details = requireDetails(readback, ["observed_at_utc"], "liveness reconciliation");
-      requireUtc(details.observed_at_utc, "liveness reconciliation observation");
-      const operationalStatus = next.active_campaign === null && ["IDLE", "EVENT_DRIVEN_WAIT"].includes(next.operational_status)
-        ? "EVENT_DRIVEN_WAIT"
-        : next.operational_status;
-      next = updateState(next, {last_reconciliation_at: details.observed_at_utc, operational_status: operationalStatus});
       break;
     }
     default:
@@ -1160,24 +753,19 @@ export function writeAgentOSControllerStateCompareAndSwap({authorityRoot, stateP
   return {state_sha256: readback.state_sha256, path: statePath};
 }
 
-export function applyAndWriteAgentOSControllerEvent({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, nowUtc = event.occurred_at_utc}) {
+export function applyAndWriteAgentOSControllerEvent({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, nowUtc = event.occurred_at_utc, globalGovernance}) {
   const current = readAgentOSControllerState({authorityRoot, statePath});
   assert(current !== null, "controller state is missing");
   if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
-  const state = processControllerEvent({state: current, event, adapters, nowUtc});
+  const state = processControllerEvent({state: current, event, adapters, nowUtc, globalGovernance});
   const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
   return {state, persistence};
 }
 
 function nativeEventOperations(event) {
-  if (event.event_type === "LOCAL_SELF_DEVELOPMENT_AUTHORIZED") return ["admitLocalSelfDevelopment", "spawnCampaignOrchestrator", "spawnFeatureAgents", "spawnIndependentAuditor"];
-  if (event.event_type === "CAMPAIGN_APPROVED") return ["spawnCampaignOrchestrator", "spawnIndependentAuditor", "spawnFeatureAgents"];
-  if (event.event_type === "RECONCILIATION_TICK") return ["reconcileLiveness"];
-  if (event.event_type === "BOOTSTRAP_REQUESTED") return ["runBootstrap"];
-  if (event.event_type === "BOOTSTRAP_PROMOTED") return ["bindPersistentRuntime"];
-  if (event.event_type === "USER_REVIEW_RETURNED") return ["reconcileUserReview"];
-  if (event.event_type === "AGENT_STALLED") return [event.payload?.judgment_required === true ? "wakeControllerAgent" : "recoverStalledSession"];
-  if (event.event_type === "POLICY_AMENDMENT") return ["applyPolicyReconciliation"];
+  if (event.event_type === "SPAWNER_START_REQUESTED") return ["validateControllerGovernance", "validateSpawnerHandoff", "startAgentSpawner"];
+  if (event.event_type === "SPAWNER_WAKE_REQUESTED") return ["wakeAgentSpawner"];
+  if (event.event_type === "REDISTRIBUTION_RECEIVED") return ["dispatchRedistribution"];
   throw new Error(`NATIVE_CONTROLLER_EVENT_UNSUPPORTED: ${event.event_type} has no asynchronous host route`);
 }
 
@@ -1207,46 +795,19 @@ async function invokeAsyncControllerAdapter({adapters, operation, state, event, 
  * validated, and are then replayed as immutable readbacks through that same
  * state machine. This keeps provider I/O out of the state transition logic.
  */
-export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, nowUtc = event.occurred_at_utc}) {
+export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, nowUtc = event.occurred_at_utc, globalGovernance}) {
   const current = readAgentOSControllerState({authorityRoot, statePath});
   assert(current !== null, "controller state is missing");
   if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
+  validateControllerEventPreconditions({state: current, event, globalGovernance});
   const operations = nativeEventOperations(event);
   const prepared = new Map();
-  const spawned = [];
-  try {
-    for (const operation of operations) {
-      const readback = await invokeAsyncControllerAdapter({adapters, operation, state: current, event, payload: event.payload});
-      prepared.set(operation, readback);
-      spawned.push(...sessionIdsFromSpawnReadback(readback));
-    }
-  } catch (error) {
-    if (spawned.length > 0 && typeof adapters?.archiveCampaignAgents === "function") {
-      try {
-        await invokeAsyncControllerAdapter({
-          adapters,
-          operation: "archiveCampaignAgents",
-          state: current,
-          event,
-          payload: {...event.payload, spawned_session_ids: [...new Set(spawned)].sort(compareUtf8), cleanup_reason: "asynchronous controller event failed before state commit"},
-        });
-      } catch (cleanupError) {
-        error.code = "CAMPAIGN_SPAWN_CLEANUP_FAILED";
-        error.cleanup_error = cleanupError?.message ?? String(cleanupError);
-        error.spawned_session_ids = [...new Set(spawned)].sort(compareUtf8);
-      }
-    }
-    throw error;
+  for (const operation of operations) {
+    const readback = await invokeAsyncControllerAdapter({adapters, operation, state: current, event, payload: event.payload});
+    prepared.set(operation, readback);
   }
   const synchronousAdapters = Object.fromEntries(operations.map((operation) => [operation, () => prepared.get(operation)]));
-  // The synchronous state machine verifies that a rollback adapter exists
-  // before it begins a multi-role spawn. The host calls already completed
-  // above; this sentinel is intentionally unreachable on the successful
-  // replay path.
-  synchronousAdapters.archiveCampaignAgents = () => {
-    throw new Error("native rollback was already handled before controller replay");
-  };
-  const state = processControllerEvent({state: current, event, adapters: synchronousAdapters, nowUtc});
+  const state = processControllerEvent({state: current, event, adapters: synchronousAdapters, nowUtc, globalGovernance});
   const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
   return {state, persistence, host_readbacks: Object.fromEntries(prepared)};
 }

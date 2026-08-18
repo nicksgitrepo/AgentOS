@@ -546,7 +546,7 @@
     },
     "agentos_controller": {
       "path": "control/agentos-controller.mjs",
-      "sha256": "20f4381d96fa9f8b47ccd2399129750e89ea0ae6d269b6415206db8ad041b88d"
+      "sha256": "97f7fb906f04d6369a2609c32baf23942d3ef6ff3f89cb0d42a810c31053caf7"
     },
     "controller_role_display": {
       "path": "control/controller-role-display.mjs",
@@ -554,7 +554,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "83167bcc6b4b690ca7d26e19a92ae3bf5712508070624796fbe8dae2dbee09de"
+      "sha256": "007330764fbecc7e89d35e50bb62c9c8968ccaa0ec4db178a19061fa95654eec"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -810,7 +810,7 @@
     },
     "local_campaign_admission_verifier": {
       "path": "tests/verify-local-campaign-admission.mjs",
-      "sha256": "3bc3854893c89e692038926302eaac0e3172b7747eb23be43c4d01876e2d98c3"
+      "sha256": "bbf140dd537cc399e9bc622933e1ffba8417ef62615bd2a29d5c5cf4f807b161"
     },
     "controller_supervisor_liveness_verifier": {
       "path": "tests/verify-controller-supervisor-liveness.mjs",
@@ -818,7 +818,7 @@
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",
-      "sha256": "9b927e3420b017dc0b8fb54a29e1d9d782268d85170bbbaa93398c1ff5b3fb7e"
+      "sha256": "3b96a5e70f0abc50919a2b88176375e6317a01d7ec61c98bfec49def8a1d8757"
     },
     "project_context_store_controller": {
       "path": "control/project-context-store.mjs",
@@ -890,7 +890,7 @@
     },
     "bootstrap_runtime_controller": {
       "path": "control/bootstrap-runtime.mjs",
-      "sha256": "e2f3deed5cc4ef12c1381b57bdc2627049c863135d20d204105ffcada38100ca"
+      "sha256": "2315e62bba8e433dd2d5a8277300cf159a219664c7efc9eccb0f2884af59f7da"
     },
     "intent_regulator_runtime_controller": {
       "path": "control/intent-regulator-runtime.mjs",
@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "b4ec6567f479762565506f52e29d7a41b72e5076dfda43108627c3ec1041fa7e"
+      "sha256": "56febd1258c95d5f60eb29e30ce8d477a88a7a388c401c64ef42a2149fffe5d4"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -1058,15 +1058,15 @@
     },
     "typed_spawner_admission_controller": {
       "path": "control/typed-spawner-admission.mjs",
-      "sha256": "abde85b74ea0f903c8368b7fe765f2b158d413d6e8c7282bf6948d1abf941763"
+      "sha256": "4509dcc8aa03ee88355e7f3117f1086030223f604f7e479f27b5a80651ce0163"
     },
     "typed_spawner_admission_contract": {
       "path": "schemas/typed-spawner-admission.v1.json",
-      "sha256": "f995ff9cf8ae5368dcc1f5a6065ecf22e3300c56508ca59d6063885cbfcab378"
+      "sha256": "880adad005a79dcc92fc047c5b2c2c4a294c87c49bbddb50efcd194f375db282"
     },
     "typed_spawner_admission_verifier": {
       "path": "tests/verify-typed-spawner-admission.mjs",
-      "sha256": "346934886b8a76859efbea83ca51013ada1ece52764fddebe1b6cc835c7050f8"
+      "sha256": "d872d1c4dbb0f0dd5fe07e99d65e55df1327937a26f819232bed086b7231092f"
     },
     "controller_action_dispatcher_controller": {
       "path": "control/controller-action-dispatcher.mjs",
@@ -1114,11 +1114,11 @@
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "ddcdae348c934ebde96975956bdbd61957a864eb04bac36516821bee421c29eb"
+      "sha256": "e48f45d6283801b20ca7653a4f112856769865680b1585db4e0b61f434d1a04b"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "95f9945dba9339762485a11e21efabfa0e12c0ae34877b66b22179d31d0e5399"
+      "sha256": "2f3dd8b7d1ad8925d0264ab6e42540809237dee03453067cf7dea7580b227f11"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1126,7 +1126,7 @@
     },
     "agent_spawner_compiler_continuation_verifier": {
       "path": "tests/verify-agent-spawner-compiler-continuation.mjs",
-      "sha256": "4fa71b6dc9aaf327f1db4f0b6d3698d82b4d551297438c046560baa7062bdacc"
+      "sha256": "a2f58da33575b3c85393b5d050f25deda420c5d78edbb32694f8930af4ac5fa2"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
@@ -2338,7 +2338,7 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "69b292336919b71db5f064a4c4d1822778a2d78251c372931da05ae2adf957c3"
+      "sha256": "9d4ac33ee51c40aab073d17ab8a38406ee4d15ca7e87150f8e4c1bfd9a413fe3"
     },
     "agent_spawner_governed_admission_contract": {
       "path": "schemas/agent-spawner-governed-admission.v1.json",
@@ -2346,23 +2346,11 @@
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
-      "sha256": "23b52cc09b6f9e9a7e1fc5c2b3bf6cc8ab82b1b9171c5705589b603c5d653297"
-    },
-    "turn_continuation_gate_controller": {
-      "path": "control/turn-continuation-gate.mjs",
-      "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"
-    },
-    "turn_continuation_gate_contract": {
-      "path": "schemas/turn-continuation-gate.v1.json",
-      "sha256": "487d23fbc00c0dbe291641da45ca27276dd0676ae8ca7eeccf2bf81b6989b9e6"
-    },
-    "turn_continuation_gate_verifier": {
-      "path": "tests/verify-turn-continuation-gate.mjs",
-      "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
+      "sha256": "b9157ef8dc328610922c408985e768d5c154ff20f7c476b847fdd3e3a8767e7a"
     },
     "spawner_bootstrap_governance_controller": {
       "path": "control/spawner-bootstrap-governance.mjs",
-      "sha256": "8ffd63a2dea0fcd877ad152271469beec36b0f34656efb4766f777b18e6385b4"
+      "sha256": "430d75dce3b90e00827b341fee430f27ccbe0001b4de2a2fbbc837a93182a7cf"
     },
     "spawner_defect_repair_loop_controller": {
       "path": "control/spawner-defect-repair-loop.mjs",
@@ -2370,15 +2358,15 @@
     },
     "eco_model_policy_controller": {
       "path": "control/eco-model-policy.mjs",
-      "sha256": "f2d163b41d0d349bc155b5db87d480a7f7e5342006b4bd40128f4bcb2af37a28"
+      "sha256": "06f68ff8b9a280dcebfacef89643659431678072c367abf3239cc22ea36f2681"
     },
     "global_governance_memory_controller": {
       "path": "control/global-governance-memory.mjs",
-      "sha256": "6af8661caa37e91fddaeb0806ec11c7010bc077c9acbcd55789736a31a5de96c"
+      "sha256": "b1a2c5e2e0081e0d9651ffeab18476353242294ac8b2a984be8820cd2a3e1028"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",
-      "sha256": "d93d73de416278c611b62e64d4b5a52d1df12d31c147c616752543e106f70988"
+      "sha256": "477a671b43299d8ef05e9ffceda3c2f51a7a14df85b83e880b49be1d78e643c3"
     },
     "spawner_defect_envelope_contract": {
       "path": "schemas/spawner-defect-envelope.v2.json",
@@ -2402,7 +2390,7 @@
     },
     "model_policy_snapshot_contract": {
       "path": "schemas/model-policy-snapshot.v1.json",
-      "sha256": "3bb37b9aa81de6175d01717cf080610a062198a596a4ba0283f9df44e92fa801"
+      "sha256": "d73be890d4d7a20b7f8193e3f86070b240412ab6e45e82be838df1b8970bf895"
     },
     "global_governance_memory_contract": {
       "path": "schemas/global-governance-memory.v1.json",
@@ -2414,12 +2402,12 @@
     },
     "initial_model_policy_snapshot_fixture": {
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
-      "sha256": "d8b1096c6e8d8bb5b935b1393062cd2bc4175d8dc30fbf6ff672d61608947c1a",
+      "sha256": "1e20be5cbfd41bb9a8d6ee9f4e9ab5614311fd16a55632a46ff6377d20078090",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "55e9fe8819208c299f012048a476d05f8e39a11167af11a60af7ac8fb37dfb20"
+      "sha256": "7dc2e7a49cc9b831b763f2999f39af0131d880e0a5a977bbf0099e5f09ab6461"
     },
     "canonical_spawner_decision_tree": {
       "path": "specialist-blocks/control-plane/agent-spawner/decision-tree.json",
@@ -2427,7 +2415,7 @@
     },
     "canonical_spawner_gate_manifest": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
-      "sha256": "a41715a5fcc4e5e13b9aa0cf87428aaf3d1b7993f48644b85fb0899b688e3289"
+      "sha256": "af7c99c419c0c4ec00414122bc7173c358f9f8f51a2ecae7dbd70567c84a83a7"
     },
     "canonical_spawner_controller_authority_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/controller-authority.gate",
@@ -2463,15 +2451,97 @@
     },
     "canonical_spawner_registry": {
       "path": "specialist-blocks/registry/spawner-bootstrap.v1.json",
-      "sha256": "ef09b8760d182e87c22e3da6d4ee7aafc2374878c881193deb7731b4f7a91574"
+      "sha256": "88a578951d57ba329812b9c07497aadeec79875456ee0171fdf67a006e21a6bb"
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "729cade84445ed81423a241683feb9e242bc3f25d1c580e903041a24ac710d1c"
+      "sha256": "643682bf847f59eb7521048f071987d82996c5cf847308e469df143e370b8a81"
     },
     "global_governance_memory_verifier": {
       "path": "tests/verify-global-governance-memory.mjs",
-      "sha256": "fda6ef693a94e65c0ed3f65bcaafe40e05f105727f9451d0f030507e1a77943b"
+      "sha256": "dc8fa88e1beff91e164182862df745a8b22c98746413ff135f16c2a0c6dcb7c8"
+    },
+    "independent_spawner_clearance_controller": {
+      "path": "control/independent-spawner-clearance.mjs",
+      "sha256": "6e0570f0931072dca7aeee184154a645d602167ed8f991af0d786d27dcfce5fa"
+    },
+    "independent_spawner_clearance_contract": {
+      "path": "schemas/independent-spawner-clearance.v1.json",
+      "sha256": "3641b7110a0efa440d38027e208671ffc828df2dc86b10a16a9a17acb39b1d70"
+    },
+    "independent_spawner_clearance_verifier": {
+      "path": "tests/verify-independent-spawner-clearance.mjs",
+      "sha256": "f3d7b0e0834274c1da4a3c7f693f108aac409ab71ed605a06011a86a0717d69b"
+    },
+    "global_governance_bootstrap_controller": {
+      "path": "control/global-governance-bootstrap.mjs",
+      "sha256": "a95765e32d004b22a80cf3c4c185162d21a0ece4b9e7c3fa5975a5d7efed26fe"
+    },
+    "global_governance_bootstrap_contract": {
+      "path": "schemas/global-governance-bootstrap.v1.json",
+      "sha256": "1cd1c0fba83651aca5422bb4c1bfa9724dcfd01c8bb0a6be57689261b6b31095"
+    },
+    "eco_model_policy_source_binding_verifier": {
+      "path": "tests/verify-eco-model-policy-source-binding.mjs",
+      "sha256": "3a3f61a6bd69d16befaebdceb3919a94615b22a9a4889035b1a85eabb4a5f105",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "model_policy_evidence_manifest": {
+      "path": "fixtures/model-policy-evidence/manifest.json",
+      "sha256": "14e0f8970f5ed9ff8530d2d47402dcf90b6f5ef0fbd4ccad2e3aac0bdcdec95f",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "model_policy_openai_source_artifact": {
+      "path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json",
+      "sha256": "ecbe0cc9f6bb6b9004b3990787e1b2a9b3549e8a80dad5e50512e23176f4666e",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "model_policy_comparative_source_artifact": {
+      "path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-18.json",
+      "sha256": "9bd0c413a6460c82e1e5c47c6fd0255f69c9d276bb57903edfb0fc8b9be826fe",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "model_policy_host_source_artifact": {
+      "path": "fixtures/model-policy-evidence/current-host.2026-08-18.json",
+      "sha256": "86756e6e401703d92de7e06e44a221eaae0ceef1aef115b2e6e135e8155c0d0c",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "spawner_admission_manifest": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/manifest.json",
+      "sha256": "fcf5fed89fd5a3cfd8d7a26b8950fedf25c10a7d9b4274deaab6f3ae67ececdc"
+    },
+    "spawner_admission_global_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/global.block.json",
+      "sha256": "c35a7bb47fdf6358d3a14b0b3cf4cf8dcced370bb66eb4caf60802d1bc1e0777"
+    },
+    "spawner_admission_project_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/project.block.json",
+      "sha256": "2756d85746784eba68b23cd40758248d1018d5e2a946e16cca7bbbc477e99904"
+    },
+    "spawner_admission_role_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/role.block.json",
+      "sha256": "15a36ccfbcf73eb0160c7b226a40d91b169c6d69c263a6c550d8fc666c8b8592"
+    },
+    "spawner_admission_technology_standard_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/technology-standard.block.json",
+      "sha256": "2c68d7dda6da8618c55746f0792b12a91958c47f505166d3a6f651d23eb49f85"
+    },
+    "spawner_admission_environment_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/environment.block.json",
+      "sha256": "153e9a662e2a9d6b6051880a39766eeb5878a56efa82d0fa97bf15e9bb0ec9b5"
+    },
+    "spawner_admission_task_block": {
+      "path": "specialist-blocks/control-plane/agent-spawner/admission/task.block.json",
+      "sha256": "afbdab9e03c6c83dbc067b1b36e50c25dc8a1114cfff76714710664948a72600"
+    },
+    "global_governance_test_fixture_helper": {
+      "path": "tests/helpers/global-governance-fixture.mjs",
+      "sha256": "c954110c8887f08e33548baa20ec527de9d0b87fcb72406d1eb49f264453b2f1",
+      "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
+    },
+    "independent_clearance_test_fixture_helper": {
+      "path": "tests/helpers/independent-clearance-fixture.mjs",
+      "sha256": "19eaf5460a4fe26f946d324ce93bde432d1fa7889a27c96dcff668163acfbe72"
     }
   },
   "compatibility_only": {

@@ -1,16 +1,16 @@
 {
-  "schema": "agentos.spawner_gate_manifest.v1",
-  "version": 1,
+  "schema": "agentos.spawner_gate_manifest.v2",
+  "version": 2,
   "block_id": "AGENTOS.SPECIALIST.AGENT_SPAWNER",
-  "ordered_gate_paths": [
-    "gates/ownership-classification.gate",
-    "gates/controller-authority.gate",
-    "gates/exact-block-qa.gate",
-    "gates/seed-inertness.gate",
-    "gates/model-policy.gate",
-    "gates/memory-readback.gate",
-    "gates/turn-closeout.gate",
-    "gates/git-integration.gate"
+  "entries": [
+    {"gate_id":"SPAWNER.OWNERSHIP_CLASSIFICATION","path":"gates/ownership-classification.gate","file_sha256":"c7a02b4886d777bea05ab8fca7997b90b517996ae359f9c74edd92c33dc3f987","gate_sha256":"c0285e659a393d38b7b722a6c21684a907b65d5f2b51b064bada47e260fc3f60","hostile_fixture_ids":["FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER","FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION"]},
+    {"gate_id":"SPAWNER.AUTHORITY_SEPARATION","path":"gates/controller-authority.gate","file_sha256":"b90ca0a3e039dfe26b2cd6e27f5350c287f5b15035954a25a1debff29395e15f","gate_sha256":"e7d8e5e8f3d2298792985070611d9a5bc0db435e636ee53e1fb5124f2fd26dd6","hostile_fixture_ids":["FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT","FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"]},
+    {"gate_id":"SPAWNER.EXACT_BLOCK_QA","path":"gates/exact-block-qa.gate","file_sha256":"61cef996119bca989c389a0b0361ce9144072c32143894b1b766b1f17646a3ec","gate_sha256":"59c530490f030d947cf6e7961ea8b6bae7f593d7ea81db35025c29820df3a75d","hostile_fixture_ids":["FIXTURE.SPAWNER.CALLER_ASSERTED_QA","FIXTURE.SPAWNER.DIGEST_ALIAS","FIXTURE.SPAWNER.DUPLICATE_GATE_ID","FIXTURE.SPAWNER.FORGED_MANIFEST","FIXTURE.SPAWNER.MISSING_FILE","FIXTURE.SPAWNER.PLACEHOLDER_CONTENT","FIXTURE.SPAWNER.STALE_BLOCK","FIXTURE.SPAWNER.SWAPPED_FILE"]},
+    {"gate_id":"SPAWNER.SEED_INERTNESS","path":"gates/seed-inertness.gate","file_sha256":"8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff","gate_sha256":"a0204753eefac1f79375851d21d213a9e27d9b600b942df7a21f5dea5f627086","hostile_fixture_ids":["FIXTURE.SPAWNER.SEED_EXECUTION","FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE"]},
+    {"gate_id":"SPAWNER.ECO_MODEL_POLICY","path":"gates/model-policy.gate","file_sha256":"cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58","gate_sha256":"beee49d7229a3922fd94ce5e42ea360863933d476cec0a79c50ab77bc5b48761","hostile_fixture_ids":["FIXTURE.SPAWNER.FABRICATED_ECONOMICS","FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE","FIXTURE.SPAWNER.MODEL_UNAVAILABLE","FIXTURE.SPAWNER.UNLISTED_MODEL"]},
+    {"gate_id":"SPAWNER.GLOBAL_MEMORY","path":"gates/memory-readback.gate","file_sha256":"0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3","gate_sha256":"2712f067731009758ec9ee2fe1d06916ef48a9f364b974dabe30e651dd895c95","hostile_fixture_ids":["FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE","FIXTURE.SPAWNER.STALE_MEMORY_READBACK","FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"]},
+    {"gate_id":"SPAWNER.TURN_CONTINUATION","path":"gates/turn-closeout.gate","file_sha256":"fc8ae6ae68c5b75c468a8754413dcde956540c73f04b851defd86ed51c0f73ec","gate_sha256":"61b11aad1466127dd47a88be0a106bcb473afe921c8f6d081a72e4f58e95bfd8","hostile_fixture_ids":["FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"]},
+    {"gate_id":"SPAWNER.GIT_INTEGRATION","path":"gates/git-integration.gate","file_sha256":"43e1f1e57b5a4a5fa1fab5535c11283b7811c271bdc9afc6ed5993160ef07d9e","gate_sha256":"d64cb50a12c41c9db0306c2026b61e7c89720be3f8614b487e16b7613085b2d4","hostile_fixture_ids":["FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"]}
   ],
-  "manifest_sha256": "ba5c362eabd0d6ef7bd0bbc995b3eb349cd1e573f9e818f8e55f79fd5ba2804b"
+  "manifest_sha256": "a79277e7ec1722ac07b28e325d161a162187c62132dcb31bbdd50d61dd0deae9"
 }

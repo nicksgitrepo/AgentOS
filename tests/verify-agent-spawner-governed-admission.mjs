@@ -10,8 +10,14 @@ import {
   compileAgentSpawnerGovernedAdmission,
   validateAgentSpawnerGovernedAdmission,
 } from "../control/agent-spawner-governed-admission.mjs";
+import {independentlyVerifyTestCandidate} from "./helpers/independent-clearance-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
+const clearanceCandidate = {
+  commit_sha1: "1".repeat(40), tree_sha1: "2".repeat(40), package_sha256: SHA("3"), package_file_sha256: SHA("4"),
+  evidence_set_sha256: SHA("5"), lifecycle_candidate_sha256: SHA("a"), roster_projection_sha256: SHA("e"), context_sha256: SHA("c"),
+};
+const {clearance, receipt: clearanceReceipt} = independentlyVerifyTestCandidate(clearanceCandidate);
 const common = {
   lifecycleId: "LIFECYCLE.SPAWNER.GOVERNED_ADMISSION",
   candidateSha256: SHA("a"),
@@ -23,7 +29,7 @@ const common = {
     incomplete_block_count: 0,
     pending_route_count: 1,
     independent_clearance_status: "CLEARED",
-    independent_clearance_receipt_sha256: SHA("9"),
+    independent_clearance_receipt_sha256: clearanceReceipt.receipt_sha256,
   },
   execution: {compiler_ticks: 2, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false},
 };
@@ -45,6 +51,8 @@ const readback = compileAgentSpawnerGovernedAdmission({
   adapterId: "ADAPTER.SPAWNER.GOVERNED_ADMISSION",
   sourceContinuation: realContinuation,
   lifecycleBefore: published,
+  independentClearance: clearance,
+  clearanceCandidate,
   evidenceRefs: [
     {evidence_id: "EVIDENCE.SPAWNER.ADAPTER.CUSTODY", reference: "opaque:spawner/isolated-custody", sha256: SHA("f")},
     {evidence_id: "EVIDENCE.SPAWNER.ADAPTER.ROSTER", reference: "opaque:spawner/published-roster", sha256: SHA("0")},

@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.model_policy_source_artifact.v1",
+  "version": 1,
+  "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
+  "authority_class": "FIRST_PARTY_PROVIDER",
+  "provider_id": "OPENAI",
+  "source_url": "https://developers.openai.com/api/docs/models/compare",
+  "observed_at_utc": "2026-08-18T16:00:00.000Z",
+  "expires_at_utc": "2026-08-25T16:00:00.000Z",
+  "max_age_days": 7,
+  "uncertainty": "MEDIUM",
+  "summary": {
+    "models": [
+      {"model_id":"gpt-5.6-luna","input_usd_per_million":0.2,"output_usd_per_million":1.2,"context_tokens":1050000,"supported_reasoning_efforts":["none","low","medium","high","xhigh","max"],"capabilities":["CODE","LONG_CONTEXT","TEXT","TOOLS","VISION"]},
+      {"model_id":"gpt-5.6-sol","input_usd_per_million":5,"output_usd_per_million":30,"context_tokens":1050000,"supported_reasoning_efforts":["none","low","medium","high","xhigh","max"],"capabilities":["CODE","LONG_CONTEXT","SECURITY","TEXT","TOOLS","VISION"]},
+      {"model_id":"gpt-5.6-terra","input_usd_per_million":2,"output_usd_per_million":12,"context_tokens":1050000,"supported_reasoning_efforts":["none","low","medium","high","xhigh","max"],"capabilities":["CODE","LONG_CONTEXT","TEXT","TOOLS","VISION"]}
+    ],
+    "observation_note": "Direct current compare-page readback governs. Search-index excerpts showed newer Terra/Luna prices, so pricing uncertainty is MEDIUM and the conflict is explicit in the snapshot."
+  },
+  "summary_sha256": "097f60b3aba7735f85dec85e2b6f568caaec0d3814b88eb5e128c8b795749f5e",
+  "artifact_sha256": "b935101dcc9773f813207ec07cfb7bd1d4918e6d5a81d845cd10b82855594c30"
+}

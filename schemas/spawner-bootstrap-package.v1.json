@@ -13,8 +13,8 @@
     "content_addressed": {"const": true},
     "gate_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "decision_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gates": {"type": "array", "minItems": 12},
-    "hostile_fixtures": {"type": "array", "minItems": 12, "uniqueItems": true},
+    "gates": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true},
+    "hostile_fixtures": {"type": "array", "minItems": 8, "uniqueItems": true},
     "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   }
 }

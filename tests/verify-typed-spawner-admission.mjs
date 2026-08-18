@@ -13,9 +13,13 @@ import {
   compileTypedSpawnerAdmission,
   validateTypedSpawnerAdmission,
 } from "../control/typed-spawner-admission.mjs";
+import {compileTestGlobalGovernance} from "./helpers/global-governance-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
+const globalFixture = compileTestGlobalGovernance();
+const globalPolicyProjection = globalFixture.projection("SPAWNER");
+const modelPolicySnapshot = globalFixture.snapshot;
 const LAYERS = ["ENVIRONMENT", "GLOBAL", "PROJECT", "ROLE", "TASK", "TECHNOLOGY_OR_STANDARD"];
 const blockEvidence = LAYERS.map((layer, index) => {
   const block = {block_id: `SPAWNER.BLOCK.${layer}`, layer, block_sha256: SHA(String(index + 1)), status: "COMPLETE_QA_PASS", non_placeholder: true, evaluation: "PASS", expires_at_utc: "2026-09-16T00:00:00.000Z", contradictions: [], gate_evidence: [{gate_id: `SPAWNER.GATE.${layer}`, outcome: "PASS", evidence_sha256: SHA(String(index + 2))}], evidence_sha256: null};
@@ -57,9 +61,11 @@ const admission = compileTypedSpawnerAdmission({
   governanceReadiness: readiness,
   sealedBootstrapHandoff: handoff,
   blockSet,
+  globalPolicyProjection,
+  modelPolicySnapshot,
   admittedAtUtc: NOW,
 });
-validateTypedSpawnerAdmission(admission, {governanceReadiness: readiness, sealedBootstrapHandoff: handoff});
+validateTypedSpawnerAdmission(admission, {governanceReadiness: readiness, sealedBootstrapHandoff: handoff, globalPolicyProjection, modelPolicySnapshot});
 assert.equal(admission.admission_state, "ADMITTED_COMPILER_ONLY");
 assert.equal(admission.mode, "COMPILER_ONLY");
 assert.equal(admission.temporary_admission, false);

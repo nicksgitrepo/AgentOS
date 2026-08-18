@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.model_policy_source_artifact.v1",
+  "version": 1,
+  "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
+  "authority_class": "COMPARATIVE_BENCHMARK",
+  "provider_id": "ARTIFICIAL_ANALYSIS",
+  "source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+  "observed_at_utc": "2026-08-18T16:00:00.000Z",
+  "expires_at_utc": "2026-09-17T16:00:00.000Z",
+  "max_age_days": 30,
+  "uncertainty": "MEDIUM",
+  "summary": {
+    "methodology_scope": "Artificial Analysis Intelligence Index and first-party API speed observations; comparative evidence only.",
+    "models": [
+      {"model_id":"gpt-5.6-luna","reasoning_effort":"xhigh","capability_score":49,"output_tokens_per_second":189,"input_usd_per_million":0.2,"output_usd_per_million":1.2},
+      {"model_id":"gpt-5.6-sol","reasoning_effort":"max","capability_score":59,"output_tokens_per_second":70.6,"input_usd_per_million":5,"output_usd_per_million":30},
+      {"model_id":"gpt-5.6-terra","reasoning_effort":"max","capability_score":55,"output_tokens_per_second":136.8,"input_usd_per_million":2.5,"output_usd_per_million":15}
+    ]
+  },
+  "summary_sha256": "b56932662532cf71b14bffe0e57a1ef5d87751ecc98ea903986c5ea331fcc47a",
+  "artifact_sha256": "36775513ae6e6f9b329438fd1ba174ebc4d60cdce140a927bd5313f9322e9e8a"
+}

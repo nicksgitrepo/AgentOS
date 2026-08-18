@@ -20,9 +20,11 @@ import {
   validatePermanentRoleRoster,
 } from "../control/permanent-role-roster.mjs";
 import {controllerActionHandlerFor, controllerContinuationDigest} from "../control/controller-action-dispatcher.mjs";
+import {compileTestGlobalGovernance} from "./helpers/global-governance-fixture.mjs";
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
+const globalFixture = compileTestGlobalGovernance();
 const LAYERS = ["ENVIRONMENT", "GLOBAL", "PROJECT", "ROLE", "TASK", "TECHNOLOGY_OR_STANDARD"];
 const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b"];
 const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f"];
@@ -72,6 +74,8 @@ const admission = compileTypedSpawnerAdmission({
   governanceReadiness: readiness,
   sealedBootstrapHandoff: handoff,
   blockSet,
+  globalPolicyProjection: globalFixture.projection("SPAWNER"),
+  modelPolicySnapshot: globalFixture.snapshot,
   admittedAtUtc: NOW,
 });
 
