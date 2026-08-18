@@ -37,10 +37,22 @@ forgedFallback.route_sha256 = canonicalDigest({...forgedFallback, route_sha256: 
 assert.throws(() => validateEcoModelRoute(forgedFallback, {snapshot: active}), /most economical/iu, "fallback model bypassed an available preferred model");
 
 const workerProjection = compileModelPolicyProjection({snapshot: active, roleClass: "WORKING_AGENT", selectedRoute: narrowRoute, projectedAtUtc: NOW});
+assert.throws(() => compileModelPolicyProjection({snapshot: active, roleClass: "WORKING_AGENT", selectedRoute: narrowRoute}), /projection time/iu);
 const forgedProjection = structuredClone(workerProjection);
 Object.assign(forgedProjection.selected, {model_id: terra.model_id, input_usd_per_million: terra.input_usd_per_million, output_usd_per_million: terra.output_usd_per_million});
 forgedProjection.projection_sha256 = canonicalDigest({...forgedProjection, projection_sha256: null});
 assert.throws(() => validateModelPolicyProjection(forgedProjection, {snapshot: active, expectedRoleClass: "WORKING_AGENT", nowUtc: NOW}), /most economical/iu, "a forged compact projection bypassed task routing");
+for (const projectedAtUtc of [undefined, "2020-01-01T00:00:00.000Z", "2999-01-01T00:00:00.000Z"]) {
+  const forgedTime = structuredClone(workerProjection);
+  forgedTime.projected_at_utc = projectedAtUtc;
+  forgedTime.projection_sha256 = canonicalDigest({...forgedTime, projection_sha256: null});
+  assert.throws(() => validateModelPolicyProjection(forgedTime, {snapshot: active, expectedRoleClass: "WORKING_AGENT", nowUtc: NOW}), /projection time|must be UTC/iu);
+}
+const forgedFloors = structuredClone(workerProjection);
+Object.assign(forgedFloors.selected, {capability_floor: 0, context_floor_tokens: 1});
+forgedFloors.projection_sha256 = canonicalDigest({...forgedFloors, projection_sha256: null});
+assert.throws(() => validateModelPolicyProjection(forgedFloors, {snapshot: active, expectedRoleClass: "WORKING_AGENT", nowUtc: NOW}), /floors differ/iu);
+assert.throws(() => selectEcoModelRoute({snapshot: active, taskClass: "NARROW_CODING", roleCapabilityFloor: 60, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc: NOW}), /cannot widen/iu);
 
 function copiedAuthority() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-model-evidence-"));

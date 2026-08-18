@@ -998,12 +998,12 @@
     },
     "eco_model_policy_controller": {
       "path": "control/eco-model-policy.mjs",
-      "sha256": "8cb9df06d05e082c2c820bfcd9630bcc90f19193e828d1e3563ae32d268f41eb",
+      "sha256": "3eaff96b19cf5b0d14244f2af6347b0ee5ae14fa17e0fedee68c1f197cb65814",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "eco_model_policy_source_binding_verifier": {
       "path": "tests/verify-eco-model-policy-source-binding.mjs",
-      "sha256": "3f0f271b278db1267e373ffce52818a7b06dc21b6820dd1e9138dea28c7a04b9",
+      "sha256": "41ffb4c8898616f293cba427c7a411400283f6b4f9c0ad031f707c8b9466c161",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "evidence_library_compiler": {
@@ -1164,7 +1164,7 @@
     },
     "global_governance_bootstrap_controller": {
       "path": "control/global-governance-bootstrap.mjs",
-      "sha256": "303c29c6e6ddf28405edd2b3e891b2f65351a1d12460791ca35b9abe57f83a5f"
+      "sha256": "44794f390b7875eff0ad79146abecca7b1ae5840d8cd4dd95dff32440f6d3c2c"
     },
     "global_governance_memory_contract": {
       "path": "schemas/global-governance-memory.v1.json",
@@ -1176,7 +1176,7 @@
     },
     "global_governance_memory_verifier": {
       "path": "tests/verify-global-governance-memory.mjs",
-      "sha256": "2ac851c6dc008bc42c3aa57b6d21ac45aa5af7d815cac5099f9789967084b724"
+      "sha256": "2be1a1af53fc9b63ccca2548cd9563a88c99cc00063de5fce0283d02e1b65ba5"
     },
     "global_governance_operational_context_contract": {
       "path": "schemas/global-governance-operational-context.v1.json",

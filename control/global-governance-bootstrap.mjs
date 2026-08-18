@@ -21,12 +21,16 @@ export function validateGlobalGovernanceBootstrap(envelope, {events, readback, .
   assert(envelope.schema === GLOBAL_GOVERNANCE_BOOTSTRAP_SCHEMA && envelope.version === 1 && envelope.status === "READY" && envelope.read_only === true, "Global governance bootstrap identity is invalid");
   validateGlobalGovernanceMemoryReadback(readback, {events});
   assert(readback.readback_sha256 === envelope.memory_readback_sha256, "Global governance bootstrap readback is stale");
+  assert(envelope.observed_at_utc === readback.observed_at_utc, "Global governance bootstrap time differs from the current memory readback", "GLOBAL_MEMORY_TRUSTED_TIME_OVERRIDE");
   const replay = replayGlobalGovernanceMemory(events);
   assert(replay.status === "READY" && replay.current_snapshot.snapshot_sha256 === envelope.snapshot_sha256, "Global governance bootstrap snapshot is stale");
   assert(Array.isArray(envelope.projections) && envelope.projections.length === MODEL_POLICY_ROLE_CLASSES.length, "Global governance bootstrap role visibility is incomplete");
   const roleIds = envelope.projections.map((entry) => entry.role_class);
   assert(JSON.stringify(roleIds) === JSON.stringify(MODEL_POLICY_ROLE_CLASSES), "Global governance bootstrap role projection order/coverage differs");
-  envelope.projections.forEach((projection) => validateModelPolicyProjection(projection, {snapshot: replay.current_snapshot, expectedRoleClass: projection.role_class, nowUtc: new Date().toISOString()}));
+  envelope.projections.forEach((projection) => {
+    assert(projection.projected_at_utc === envelope.observed_at_utc, "Global governance projection time differs from the current memory readback", "POLICY_PROJECTION_TIME_INVALID");
+    validateModelPolicyProjection(projection, {snapshot: replay.current_snapshot, expectedRoleClass: projection.role_class, nowUtc: new Date().toISOString()});
+  });
   assert(envelope.invalidation === "SNAPSHOT_CHANGE_INVALIDATES_DEPENDENT_CONTEXTS_AND_INERT_SEEDS", "Global governance bootstrap invalidation rule is incomplete");
   assert(envelope.active_worker_refresh === "BOUND_UNTIL_HANDOFF_OR_TYPED_SAFE_REFRESH", "Global governance active-worker binding is incomplete");
   assert(typeof envelope.memory_readback_sha256 === "string" && SHA.test(envelope.memory_readback_sha256), "Global governance bootstrap readback digest is invalid");

@@ -307,6 +307,9 @@ export function selectEcoModelRoute({snapshot, taskClass, roleCapabilityFloor, r
   validateModelPolicySnapshot(snapshot, {nowUtc, requireActive: true});
   assert(MODEL_POLICY_TASK_CLASSES.includes(taskClass), "Requested task class is invalid");
   const task = snapshot.task_classes.find((entry) => entry.task_class === taskClass);
+  assert(Number.isFinite(roleCapabilityFloor) && roleCapabilityFloor <= task.minimum_capability_score, "Caller cannot widen the canonical task capability floor", "ECO_ROUTE_ROLE_AUTHORITY_REQUIRED");
+  assert(Number.isInteger(requiredContextTokens) && requiredContextTokens <= task.minimum_context_tokens, "Caller cannot widen the canonical task context floor", "ECO_ROUTE_ROLE_AUTHORITY_REQUIRED");
+  assert(Array.isArray(requiredCapabilities) && requiredCapabilities.every((capability) => task.required_capabilities.includes(capability)), "Caller cannot widen the canonical task capability set", "ECO_ROUTE_ROLE_AUTHORITY_REQUIRED");
   const capabilityFloor = Math.max(task.minimum_capability_score, roleCapabilityFloor);
   const contextFloor = Math.max(task.minimum_context_tokens, requiredContextTokens);
   const required = sortedUnique([...new Set([...task.required_capabilities, ...requiredCapabilities])], "ECO route required capabilities");
@@ -334,9 +337,9 @@ export function validateEcoModelRoute(route, {snapshot} = {}) {
   const task = snapshot.task_classes.find((entry) => entry.task_class === route.task_class);
   assert(task && MODEL_POLICY_TASK_CLASSES.includes(route.task_class), "ECO route task class is unlisted");
   const required = sortedUnique(route.required_capabilities, "ECO route required capabilities");
-  assert(task.required_capabilities.every((capability) => required.includes(capability)), "ECO route omits a task capability requirement");
-  assert(Number.isFinite(route.capability_floor) && route.capability_floor >= task.minimum_capability_score, "ECO route capability floor is below the task minimum");
-  assert(Number.isInteger(route.context_floor_tokens) && route.context_floor_tokens >= task.minimum_context_tokens, "ECO route context floor is below the task minimum");
+  assert(JSON.stringify(required) === JSON.stringify([...task.required_capabilities].sort(compareUtf8)), "ECO route capability requirements differ from canonical task policy");
+  assert(route.capability_floor === task.minimum_capability_score, "ECO route capability floor differs from canonical task policy");
+  assert(route.context_floor_tokens === task.minimum_context_tokens, "ECO route context floor differs from canonical task policy");
   assert(route.reasoning_effort === task.preferred_reasoning_effort, "ECO route reasoning differs from the task policy");
   assert(route.max_concurrency === task.max_concurrency && route.max_heavyweight_processes === task.max_heavyweight_processes, "ECO route resource ceilings differ from the task policy");
   assert(JSON.stringify(route.fallback_models) === JSON.stringify(task.fallback_models) && JSON.stringify(route.escalation_triggers) === JSON.stringify(task.escalation_triggers), "ECO route fallback or escalation policy differs from the task policy");
@@ -356,6 +359,9 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
   exactKeys(projection, ["schema", "version", "status", "read_only", "role_class", "snapshot_sha256", "expires_at_utc", "spawn_eligible", "selected", "mutation_authority", "projected_at_utc", "projection_sha256"], "Model-policy projection");
   validateModelPolicySnapshot(snapshot, {nowUtc, requireActive: true});
   assert(projection.schema === MODEL_POLICY_PROJECTION_SCHEMA && projection.version === 1 && projection.status === "READY" && projection.read_only === true && projection.spawn_eligible === true, "Model-policy projection identity is invalid");
+  requireUtc(projection.projected_at_utc, "Model-policy projection time");
+  requireUtc(nowUtc, "Model-policy projection validation time");
+  assert(Date.parse(projection.projected_at_utc) >= Date.parse(snapshot.observed_at_utc) && Date.parse(projection.projected_at_utc) <= Date.parse(nowUtc), "Model-policy projection time is stale or future", "POLICY_PROJECTION_TIME_INVALID");
   assert(MODEL_POLICY_ROLE_CLASSES.includes(projection.role_class) && (expectedRoleClass === null || projection.role_class === expectedRoleClass), "Model-policy projection role differs");
   assert(projection.snapshot_sha256 === snapshot.snapshot_sha256 && projection.expires_at_utc === snapshot.expires_at_utc, "Model-policy projection snapshot is stale");
   assert(projection.mutation_authority === ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"].includes(projection.role_class), "Model-policy projection writer authority differs");
@@ -364,7 +370,8 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
     const task = snapshot.task_classes.find((entry) => entry.task_class === projection.selected.task_class);
     assert(task, "Compact projection task class is unlisted");
     const required = sortedUnique(projection.selected.required_capabilities, "Compact projection required capabilities");
-    assert(task.required_capabilities.every((capability) => required.includes(capability)), "Compact projection omits a task capability requirement");
+    assert(JSON.stringify(required) === JSON.stringify([...task.required_capabilities].sort(compareUtf8)), "Compact projection capability requirements differ from canonical task policy");
+    assert(projection.selected.capability_floor === task.minimum_capability_score && projection.selected.context_floor_tokens === task.minimum_context_tokens, "Compact projection floors differ from canonical task policy");
     assert(projection.selected.reasoning_effort === task.preferred_reasoning_effort, "Compact projection reasoning differs from task policy");
     assert(projection.selected.max_concurrency === task.max_concurrency && projection.selected.max_heavyweight_processes === task.max_heavyweight_processes, "Compact projection resource ceilings differ from task policy");
     assert(JSON.stringify(projection.selected.fallback_models) === JSON.stringify(task.fallback_models) && JSON.stringify(projection.selected.escalation_triggers) === JSON.stringify(task.escalation_triggers), "Compact projection fallback or escalation policy differs");
@@ -381,6 +388,7 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
 }
 
 export function compileModelPolicyProjection({snapshot, roleClass, selectedRoute = null, projectedAtUtc}) {
+  requireUtc(projectedAtUtc, "Model-policy projection time");
   validateModelPolicySnapshot(snapshot, {nowUtc: projectedAtUtc, requireActive: true});
   assert(MODEL_POLICY_ROLE_CLASSES.includes(roleClass), "Model-policy projection role class is invalid");
   if (MODEL_POLICY_COMPACT_SELECTION_ROLES.includes(roleClass)) assert(selectedRoute !== null, `${roleClass} requires a selected compact route`);
