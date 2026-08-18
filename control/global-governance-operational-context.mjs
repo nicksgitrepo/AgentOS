@@ -43,8 +43,9 @@ export function compileOperationalGlobalGovernanceContext({authorityStore, roleC
   const roleTaskClass = MODEL_POLICY_ROLE_TASK_CLASSES[roleClass];
   const selectedRoute = roleTaskClass === undefined ? null : selectEcoModelRoute({snapshot: governed.snapshot, taskClass: roleTaskClass, roleCapabilityFloor: 0, requiredContextTokens: 0, requiredCapabilities: [], nowUtc: governed.observed_at_utc});
   const compactSelection = selectedRoute === null ? governed.projection.selected : {
+    task_class: selectedRoute.task_class, route_class: selectedRoute.route_class,
     model_id: selectedRoute.model_id, reasoning_effort: selectedRoute.reasoning_effort,
-    capability_floor: selectedRoute.capability_floor, context_floor_tokens: selectedRoute.context_floor_tokens,
+    capability_floor: selectedRoute.capability_floor, required_capabilities: selectedRoute.required_capabilities, context_floor_tokens: selectedRoute.context_floor_tokens,
     input_usd_per_million: selectedRoute.input_usd_per_million, output_usd_per_million: selectedRoute.output_usd_per_million,
     max_concurrency: selectedRoute.max_concurrency, max_heavyweight_processes: selectedRoute.max_heavyweight_processes,
     fallback_models: selectedRoute.fallback_models, escalation_triggers: selectedRoute.escalation_triggers,

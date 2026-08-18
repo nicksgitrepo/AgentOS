@@ -103,7 +103,7 @@ const seedProjection = compileModelPolicyProjection({snapshot: activePolicy, rol
 assert.equal(projection.read_only, true);
 assert.equal(projection.mutation_authority, false);
 assert.deepEqual(Object.keys(projection.selected).sort(), [
-  "capability_floor", "context_floor_tokens", "escalation_triggers", "fallback_models", "input_usd_per_million",
+  "task_class", "route_class", "capability_floor", "required_capabilities", "context_floor_tokens", "escalation_triggers", "fallback_models", "input_usd_per_million",
   "max_concurrency", "max_heavyweight_processes", "model_id", "output_usd_per_million", "reasoning_effort",
 ].sort());
 

@@ -16,7 +16,7 @@ export function compileTestGlobalGovernance({nowUtc = "2026-08-18T08:30:00.000Z"
   const events = [event];
   const readback = compileGlobalGovernanceMemoryReadback({events, historicalActivationReceiptSha256: canonicalDigest({receipt: "historical-test-activation"}), observedAtUtc: nowUtc});
   const route = selectEcoModelRoute({snapshot, taskClass: "NARROW_CODING", roleCapabilityFloor: 49, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc});
-  const bootstrap = compileGlobalGovernanceBootstrap({events, readback, workerRoute: route, observedAtUtc: nowUtc});
+  const bootstrap = compileGlobalGovernanceBootstrap({events, readback, observedAtUtc: nowUtc});
   const context = {bootstrap, events, readback, observedAtUtc: nowUtc};
   return {snapshot, route, ...context, projection: (roleClass) => requireGlobalGovernanceRoleProjection({...context, roleClass})};
 }

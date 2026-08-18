@@ -998,12 +998,12 @@
     },
     "eco_model_policy_controller": {
       "path": "control/eco-model-policy.mjs",
-      "sha256": "e531452b2bf2ca4a5f18e88edfdebc07b155518fe6b695d59512a5a5b3eeeb4c",
+      "sha256": "8cb9df06d05e082c2c820bfcd9630bcc90f19193e828d1e3563ae32d268f41eb",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "eco_model_policy_source_binding_verifier": {
       "path": "tests/verify-eco-model-policy-source-binding.mjs",
-      "sha256": "257c893177814cf82b42ee0189fc0856b75cf22d3e497530008677eec60b98f6",
+      "sha256": "3f0f271b278db1267e373ffce52818a7b06dc21b6820dd1e9138dea28c7a04b9",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "evidence_library_compiler": {
@@ -1164,7 +1164,7 @@
     },
     "global_governance_bootstrap_controller": {
       "path": "control/global-governance-bootstrap.mjs",
-      "sha256": "e4ad607e04f5270c43de92a1851505167696c2de42fa552dec3b7c9a522d3cf7"
+      "sha256": "303c29c6e6ddf28405edd2b3e891b2f65351a1d12460791ca35b9abe57f83a5f"
     },
     "global_governance_memory_contract": {
       "path": "schemas/global-governance-memory.v1.json",
@@ -1176,7 +1176,7 @@
     },
     "global_governance_memory_verifier": {
       "path": "tests/verify-global-governance-memory.mjs",
-      "sha256": "f9408cfb95cc7916d3d44248b8003732b9274c5e378da988a7d0be85cacb9c2f"
+      "sha256": "2ac851c6dc008bc42c3aa57b6d21ac45aa5af7d815cac5099f9789967084b724"
     },
     "global_governance_operational_context_contract": {
       "path": "schemas/global-governance-operational-context.v1.json",
@@ -1184,7 +1184,7 @@
     },
     "global_governance_operational_context_controller": {
       "path": "control/global-governance-operational-context.mjs",
-      "sha256": "01c47e7fd96bc623cf489a16caa970519319fc6c8f6d032cf9c5fd1bb7d28b67"
+      "sha256": "fdc6fc01a5cd40bfd7cb6d7cbffd0afc278888fd79cece169adc04e77ce2a17f"
     },
     "global_governance_operational_context_verifier": {
       "path": "tests/verify-global-governance-operational-integration.mjs",
@@ -1200,7 +1200,7 @@
     },
     "global_governance_test_fixture_helper": {
       "path": "tests/helpers/global-governance-fixture.mjs",
-      "sha256": "bf4f8dc8c49a76814d508133f81f30cfd84393ba2a001ed60a4bbee3402f6ad8",
+      "sha256": "8d744f6f743926f4dc3435b015ee302d0a8369f264ba50c24cd04f1aab18b962",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "global_policy_article": {
@@ -1377,7 +1377,7 @@
     },
     "inert_seed_lifecycle_contract": {
       "path": "schemas/inert-seed-lifecycle.v1.json",
-      "sha256": "ead450bb38ce5c4eec1e985ab8f265ee1dccd800c94e2d8d26c1c9c9df2afd1d"
+      "sha256": "961a4460105c842a13d8ff31a08a955dc330f432e4d584475215c0366408479b"
     },
     "initial_model_policy_snapshot_fixture": {
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
@@ -2463,7 +2463,7 @@
     },
     "retired_operational_authority_verifier": {
       "path": "tests/verify-retired-operational-authority.mjs",
-      "sha256": "b4551800dc1a461246c9c63f217aa4cf6a4819d24c1b90eca27120bda76a27c7"
+      "sha256": "fddc4afccf9cce10818adbf8d27e513d02aebc6038e35dd540093df69db4d2ea"
     },
     "roadmap11_workflow_distillation_audit": {
       "path": "docs/feature-audits/ROADMAP_11_WORKFLOW_DISTILLATION/auditreport.md",
@@ -2611,7 +2611,7 @@
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "95972d827851ece7160eb6cee278f60bed03f944aa2a252baccc3e210cff9915"
+      "sha256": "6ef8bfb6c229bb3000bfb9b297ab84214f546e68af3f52a801382d43c993771f"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_caller_asserted_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/caller-asserted-qa.json",

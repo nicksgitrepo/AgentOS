@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {auditModelPolicyEvidenceStore, selectEcoModelRoute, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
+import {auditModelPolicyEvidenceStore, compileModelPolicyProjection, selectEcoModelRoute, validateEcoModelRoute, validateModelPolicyProjection, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const NOW = "2026-08-18T08:30:00.000Z";
@@ -15,6 +15,32 @@ const activate = (snapshot) => { snapshot.status = "ACCEPTED_ACTIVE"; snapshot.s
 const active = activate(structuredClone(prepared));
 validateModelPolicySnapshot(active, {nowUtc: NOW, requireActive: true});
 assert.equal(selectEcoModelRoute({snapshot: active, taskClass: "NARROW_CODING", roleCapabilityFloor: 49, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc: NOW}).model_id, "gpt-5.6-luna");
+
+const staleWithoutCallerClock = structuredClone(active);
+staleWithoutCallerClock.observed_at_utc = "2020-01-01T00:00:00.000Z";
+staleWithoutCallerClock.expires_at_utc = "2020-01-02T00:00:00.000Z";
+staleWithoutCallerClock.snapshot_sha256 = canonicalDigest({...staleWithoutCallerClock, snapshot_sha256: null});
+assert.throws(() => validateModelPolicySnapshot(staleWithoutCallerClock, {requireActive: true}), /stale/iu, "omitting validation time trusted the stale snapshot's own timestamp");
+
+const narrowRoute = selectEcoModelRoute({snapshot: active, taskClass: "NARROW_CODING", roleCapabilityFloor: 49, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc: NOW});
+const forgedExpensivePreferred = structuredClone(narrowRoute);
+const terra = active.models.find((model) => model.model_id === "gpt-5.6-terra");
+Object.assign(forgedExpensivePreferred, {model_id: terra.model_id, selected_capability_score: terra.capability_score, selected_context_tokens: terra.context_tokens, input_usd_per_million: terra.input_usd_per_million, output_usd_per_million: terra.output_usd_per_million});
+forgedExpensivePreferred.route_sha256 = canonicalDigest({...forgedExpensivePreferred, route_sha256: null});
+assert.throws(() => validateEcoModelRoute(forgedExpensivePreferred, {snapshot: active}), /most economical/iu, "a more expensive preferred model bypassed economic selection");
+
+const broadRoute = selectEcoModelRoute({snapshot: active, taskClass: "BROAD_ARCHITECTURE", roleCapabilityFloor: 55, requiredContextTokens: 256000, requiredCapabilities: ["CODE", "LONG_CONTEXT", "TOOLS"], nowUtc: NOW});
+const forgedFallback = structuredClone(broadRoute);
+const sol = active.models.find((model) => model.model_id === "gpt-5.6-sol");
+Object.assign(forgedFallback, {model_id: sol.model_id, selected_capability_score: sol.capability_score, selected_context_tokens: sol.context_tokens, input_usd_per_million: sol.input_usd_per_million, output_usd_per_million: sol.output_usd_per_million, route_class: "FALLBACK"});
+forgedFallback.route_sha256 = canonicalDigest({...forgedFallback, route_sha256: null});
+assert.throws(() => validateEcoModelRoute(forgedFallback, {snapshot: active}), /most economical/iu, "fallback model bypassed an available preferred model");
+
+const workerProjection = compileModelPolicyProjection({snapshot: active, roleClass: "WORKING_AGENT", selectedRoute: narrowRoute, projectedAtUtc: NOW});
+const forgedProjection = structuredClone(workerProjection);
+Object.assign(forgedProjection.selected, {model_id: terra.model_id, input_usd_per_million: terra.input_usd_per_million, output_usd_per_million: terra.output_usd_per_million});
+forgedProjection.projection_sha256 = canonicalDigest({...forgedProjection, projection_sha256: null});
+assert.throws(() => validateModelPolicyProjection(forgedProjection, {snapshot: active, expectedRoleClass: "WORKING_AGENT", nowUtc: NOW}), /most economical/iu, "a forged compact projection bypassed task routing");
 
 function copiedAuthority() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-model-evidence-"));

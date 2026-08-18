@@ -35,6 +35,7 @@ const EFFORTS = new Set(["none", "low", "medium", "high", "xhigh", "max"]);
 const MODULE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DEFAULT_EVIDENCE_MANIFEST = "fixtures/model-policy-evidence/manifest.json";
 const CANONICAL_SOURCE_REGISTRY = "fixtures/model-policy-evidence/source-registry.v1.json";
+function trustedNowUtc() { return new Date().toISOString(); }
 
 function assert(condition, message, code = "MODEL_POLICY_INVALID") {
   if (!condition) { const error = new Error(message); error.code = code; throw error; }
@@ -132,7 +133,7 @@ function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, ar
   return artifact;
 }
 
-function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot, evidenceManifestPath} = {}) {
+function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = trustedNowUtc(), requireActive = false, authorityRoot, evidenceManifestPath} = {}) {
   exactKeys(snapshot, ["schema", "version", "status", "project_agnostic", "visibility", "contains_consumer_context", "raw_browsing_transcripts", "observed_at_utc", "expires_at_utc", "evidence", "conflicts", "models", "task_classes", "snapshot_sha256"], "Model-policy snapshot");
   assert(snapshot.schema === MODEL_POLICY_SNAPSHOT_SCHEMA && snapshot.version === 1, "Model-policy snapshot identity is invalid");
   assert(["PREPARED_INACTIVE", "ACCEPTED_ACTIVE", "SUPERSEDED"].includes(snapshot.status), "Model-policy snapshot status is invalid");
@@ -272,24 +273,19 @@ function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = sna
   return snapshot;
 }
 
-export function validateModelPolicySnapshot(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot = undefined, evidenceManifestPath = undefined} = {}) {
+export function validateModelPolicySnapshot(snapshot, {nowUtc = trustedNowUtc(), requireActive = false, authorityRoot = undefined, evidenceManifestPath = undefined} = {}) {
   assert(authorityRoot === undefined && evidenceManifestPath === undefined, "Caller-supplied model evidence roots or manifests are forbidden");
   return validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc, requireActive, authorityRoot: MODULE_ROOT, evidenceManifestPath: DEFAULT_EVIDENCE_MANIFEST});
 }
 
-export function auditModelPolicyEvidenceStore(snapshot, {nowUtc = snapshot?.observed_at_utc, requireActive = false, authorityRoot, evidenceManifestPath = DEFAULT_EVIDENCE_MANIFEST} = {}) {
+export function auditModelPolicyEvidenceStore(snapshot, {nowUtc = trustedNowUtc(), requireActive = false, authorityRoot, evidenceManifestPath = DEFAULT_EVIDENCE_MANIFEST} = {}) {
   return validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc, requireActive, authorityRoot, evidenceManifestPath});
 }
 
 function projectedCost(model) { return model.input_usd_per_million + (model.output_usd_per_million * 3); }
 
-export function selectEcoModelRoute({snapshot, taskClass, roleCapabilityFloor, requiredContextTokens, requiredCapabilities = [], nowUtc}) {
-  validateModelPolicySnapshot(snapshot, {nowUtc, requireActive: true});
-  assert(MODEL_POLICY_TASK_CLASSES.includes(taskClass), "Requested task class is invalid");
-  const task = snapshot.task_classes.find((entry) => entry.task_class === taskClass);
-  const capabilityFloor = Math.max(task.minimum_capability_score, roleCapabilityFloor);
-  const contextFloor = Math.max(task.minimum_context_tokens, requiredContextTokens);
-  const required = new Set([...task.required_capabilities, ...requiredCapabilities]);
+function resolveEconomicalCandidates(snapshot, task, {capabilityFloor, contextFloor, requiredCapabilities}) {
+  const required = new Set(requiredCapabilities);
   const capable = snapshot.models.filter((model) => model.host_available
     && model.capability_score >= capabilityFloor
     && model.context_tokens >= contextFloor
@@ -301,19 +297,30 @@ export function selectEcoModelRoute({snapshot, taskClass, roleCapabilityFloor, r
   const preferred = capable.filter((model) => task.preferred_models.includes(model.model_id));
   const fallback = capable.filter((model) => task.fallback_models.includes(model.model_id));
   const candidates = preferred.length > 0 ? preferred : fallback;
-  assert(candidates.length > 0, "No listed preferred or fallback model satisfies the task capability/cost/context/reasoning floor", "NO_CAPABLE_ECONOMICAL_MODEL");
   candidates.sort((left, right) => projectedCost(left) - projectedCost(right)
     || right.capability_score - left.capability_score
     || compareUtf8(left.model_id, right.model_id));
+  return {candidates, routeClass: preferred.length > 0 ? "PREFERRED" : "FALLBACK"};
+}
+
+export function selectEcoModelRoute({snapshot, taskClass, roleCapabilityFloor, requiredContextTokens, requiredCapabilities = [], nowUtc}) {
+  validateModelPolicySnapshot(snapshot, {nowUtc, requireActive: true});
+  assert(MODEL_POLICY_TASK_CLASSES.includes(taskClass), "Requested task class is invalid");
+  const task = snapshot.task_classes.find((entry) => entry.task_class === taskClass);
+  const capabilityFloor = Math.max(task.minimum_capability_score, roleCapabilityFloor);
+  const contextFloor = Math.max(task.minimum_context_tokens, requiredContextTokens);
+  const required = sortedUnique([...new Set([...task.required_capabilities, ...requiredCapabilities])], "ECO route required capabilities");
+  const {candidates, routeClass} = resolveEconomicalCandidates(snapshot, task, {capabilityFloor, contextFloor, requiredCapabilities: required});
+  assert(candidates.length > 0, "No listed preferred or fallback model satisfies the task capability/cost/context/reasoning floor", "NO_CAPABLE_ECONOMICAL_MODEL");
   const selected = candidates[0];
   const route = {
     schema: "agentos.eco_model_route.v1", version: 1, status: "READY", task_class: taskClass,
     model_id: selected.model_id, reasoning_effort: task.preferred_reasoning_effort,
-    capability_floor: capabilityFloor, selected_capability_score: selected.capability_score,
+    capability_floor: capabilityFloor, required_capabilities: required, selected_capability_score: selected.capability_score,
     context_floor_tokens: contextFloor, selected_context_tokens: selected.context_tokens,
     input_usd_per_million: selected.input_usd_per_million, output_usd_per_million: selected.output_usd_per_million,
     max_concurrency: task.max_concurrency, max_heavyweight_processes: task.max_heavyweight_processes,
-    route_class: preferred.length > 0 ? "PREFERRED" : "FALLBACK", fallback_models: task.fallback_models, escalation_triggers: task.escalation_triggers,
+    route_class: routeClass, fallback_models: task.fallback_models, escalation_triggers: task.escalation_triggers,
     snapshot_sha256: snapshot.snapshot_sha256, route_sha256: null,
   };
   route.route_sha256 = canonicalDigest(digestBody(route, "route_sha256"));
@@ -321,9 +328,21 @@ export function selectEcoModelRoute({snapshot, taskClass, roleCapabilityFloor, r
 }
 
 export function validateEcoModelRoute(route, {snapshot} = {}) {
-  exactKeys(route, ["schema", "version", "status", "task_class", "model_id", "reasoning_effort", "capability_floor", "selected_capability_score", "context_floor_tokens", "selected_context_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "route_class", "fallback_models", "escalation_triggers", "snapshot_sha256", "route_sha256"], "ECO model route");
+  exactKeys(route, ["schema", "version", "status", "task_class", "model_id", "reasoning_effort", "capability_floor", "required_capabilities", "selected_capability_score", "context_floor_tokens", "selected_context_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "route_class", "fallback_models", "escalation_triggers", "snapshot_sha256", "route_sha256"], "ECO model route");
   assert(route.schema === "agentos.eco_model_route.v1" && route.version === 1 && route.status === "READY", "ECO route identity is invalid");
   assert(snapshot?.snapshot_sha256 === route.snapshot_sha256, "ECO route is bound to another snapshot");
+  const task = snapshot.task_classes.find((entry) => entry.task_class === route.task_class);
+  assert(task && MODEL_POLICY_TASK_CLASSES.includes(route.task_class), "ECO route task class is unlisted");
+  const required = sortedUnique(route.required_capabilities, "ECO route required capabilities");
+  assert(task.required_capabilities.every((capability) => required.includes(capability)), "ECO route omits a task capability requirement");
+  assert(Number.isFinite(route.capability_floor) && route.capability_floor >= task.minimum_capability_score, "ECO route capability floor is below the task minimum");
+  assert(Number.isInteger(route.context_floor_tokens) && route.context_floor_tokens >= task.minimum_context_tokens, "ECO route context floor is below the task minimum");
+  assert(route.reasoning_effort === task.preferred_reasoning_effort, "ECO route reasoning differs from the task policy");
+  assert(route.max_concurrency === task.max_concurrency && route.max_heavyweight_processes === task.max_heavyweight_processes, "ECO route resource ceilings differ from the task policy");
+  assert(JSON.stringify(route.fallback_models) === JSON.stringify(task.fallback_models) && JSON.stringify(route.escalation_triggers) === JSON.stringify(task.escalation_triggers), "ECO route fallback or escalation policy differs from the task policy");
+  const {candidates, routeClass} = resolveEconomicalCandidates(snapshot, task, {capabilityFloor: route.capability_floor, contextFloor: route.context_floor_tokens, requiredCapabilities: required});
+  assert(candidates.length > 0, "No listed preferred or fallback model satisfies the route requirements", "NO_CAPABLE_ECONOMICAL_MODEL");
+  assert(route.route_class === routeClass && route.model_id === candidates[0].model_id, "ECO route is not the most economical capable model from the task's preferred/fallback policy", "ECO_ROUTE_NOT_ECONOMICAL");
   const model = snapshot.models.find((entry) => entry.model_id === route.model_id);
   assert(model && model.host_available, "ECO route model is unavailable or unlisted");
   assert(model.supported_reasoning_efforts.includes(route.reasoning_effort) && model.host_supported_reasoning_efforts.includes(route.reasoning_effort), "ECO route reasoning mode is unsupported on the current host");
@@ -333,7 +352,7 @@ export function validateEcoModelRoute(route, {snapshot} = {}) {
   return route;
 }
 
-export function validateModelPolicyProjection(projection, {snapshot, expectedRoleClass = null, nowUtc = projection?.projected_at_utc} = {}) {
+export function validateModelPolicyProjection(projection, {snapshot, expectedRoleClass = null, nowUtc = trustedNowUtc()} = {}) {
   exactKeys(projection, ["schema", "version", "status", "read_only", "role_class", "snapshot_sha256", "expires_at_utc", "spawn_eligible", "selected", "mutation_authority", "projected_at_utc", "projection_sha256"], "Model-policy projection");
   validateModelPolicySnapshot(snapshot, {nowUtc, requireActive: true});
   assert(projection.schema === MODEL_POLICY_PROJECTION_SCHEMA && projection.version === 1 && projection.status === "READY" && projection.read_only === true && projection.spawn_eligible === true, "Model-policy projection identity is invalid");
@@ -341,7 +360,16 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
   assert(projection.snapshot_sha256 === snapshot.snapshot_sha256 && projection.expires_at_utc === snapshot.expires_at_utc, "Model-policy projection snapshot is stale");
   assert(projection.mutation_authority === ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"].includes(projection.role_class), "Model-policy projection writer authority differs");
   if (MODEL_POLICY_COMPACT_SELECTION_ROLES.includes(projection.role_class)) {
-    exactKeys(projection.selected, ["model_id", "reasoning_effort", "capability_floor", "context_floor_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "fallback_models", "escalation_triggers"], "Compact model-policy selection");
+    exactKeys(projection.selected, ["task_class", "route_class", "model_id", "reasoning_effort", "capability_floor", "required_capabilities", "context_floor_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "fallback_models", "escalation_triggers"], "Compact model-policy selection");
+    const task = snapshot.task_classes.find((entry) => entry.task_class === projection.selected.task_class);
+    assert(task, "Compact projection task class is unlisted");
+    const required = sortedUnique(projection.selected.required_capabilities, "Compact projection required capabilities");
+    assert(task.required_capabilities.every((capability) => required.includes(capability)), "Compact projection omits a task capability requirement");
+    assert(projection.selected.reasoning_effort === task.preferred_reasoning_effort, "Compact projection reasoning differs from task policy");
+    assert(projection.selected.max_concurrency === task.max_concurrency && projection.selected.max_heavyweight_processes === task.max_heavyweight_processes, "Compact projection resource ceilings differ from task policy");
+    assert(JSON.stringify(projection.selected.fallback_models) === JSON.stringify(task.fallback_models) && JSON.stringify(projection.selected.escalation_triggers) === JSON.stringify(task.escalation_triggers), "Compact projection fallback or escalation policy differs");
+    const economical = resolveEconomicalCandidates(snapshot, task, {capabilityFloor: projection.selected.capability_floor, contextFloor: projection.selected.context_floor_tokens, requiredCapabilities: required});
+    assert(economical.candidates.length > 0 && projection.selected.route_class === economical.routeClass && projection.selected.model_id === economical.candidates[0].model_id, "Compact projection does not select the most economical capable task model", "ECO_PROJECTION_NOT_ECONOMICAL");
     const model = snapshot.models.find((entry) => entry.model_id === projection.selected.model_id);
     assert(model && model.host_available && model.capability_score >= projection.selected.capability_floor && model.context_tokens >= projection.selected.context_floor_tokens, "Compact projection model is unavailable or below its floor");
     assert(model.supported_reasoning_efforts.includes(projection.selected.reasoning_effort) && model.host_supported_reasoning_efforts.includes(projection.selected.reasoning_effort), "Compact projection reasoning is unsupported on the current host");
@@ -362,8 +390,9 @@ export function compileModelPolicyProjection({snapshot, roleClass, selectedRoute
     role_class: roleClass, snapshot_sha256: snapshot.snapshot_sha256, expires_at_utc: snapshot.expires_at_utc,
     spawn_eligible: true,
     selected: selectedRoute === null ? null : {
+      task_class: selectedRoute.task_class, route_class: selectedRoute.route_class,
       model_id: selectedRoute.model_id, reasoning_effort: selectedRoute.reasoning_effort,
-      capability_floor: selectedRoute.capability_floor, context_floor_tokens: selectedRoute.context_floor_tokens,
+      capability_floor: selectedRoute.capability_floor, required_capabilities: selectedRoute.required_capabilities, context_floor_tokens: selectedRoute.context_floor_tokens,
       input_usd_per_million: selectedRoute.input_usd_per_million, output_usd_per_million: selectedRoute.output_usd_per_million,
       max_concurrency: selectedRoute.max_concurrency, max_heavyweight_processes: selectedRoute.max_heavyweight_processes,
       fallback_models: selectedRoute.fallback_models, escalation_triggers: selectedRoute.escalation_triggers,

@@ -2,7 +2,7 @@ import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.
 import fs from "node:fs";
 import path from "node:path";
 import {createHmac, randomBytes, timingSafeEqual} from "node:crypto";
-import {MODEL_POLICY_ROLE_CLASSES, compileModelPolicyProjection, validateEcoModelRoute, validateModelPolicyProjection} from "./eco-model-policy.mjs";
+import {MODEL_POLICY_ROLE_CLASSES, compileModelPolicyProjection, selectEcoModelRoute, validateModelPolicyProjection} from "./eco-model-policy.mjs";
 import {assertProjectAgnosticGovernanceValue, readGlobalGovernanceMemory, replayGlobalGovernanceMemory, validateGlobalGovernanceMemoryReadback} from "./global-governance-memory.mjs";
 import {assertSealedCanonicalAuthority} from "./sealed-canonical-authority.mjs";
 import {consumeInstalledGlobalGovernanceProvisioning} from "./installed-global-governance-provisioning.mjs";
@@ -34,12 +34,16 @@ export function validateGlobalGovernanceBootstrap(envelope, {events, readback, .
   return envelope;
 }
 
-export function compileGlobalGovernanceBootstrap({events, readback, workerRoute, seedRoute = workerRoute, observedAtUtc} = {}) {
+export function compileGlobalGovernanceBootstrap(options = {}) {
+  assert(options && typeof options === "object" && !Array.isArray(options), "Global governance bootstrap input must be an object");
+  assert(Object.keys(options).every((key) => ["events", "readback", "observedAtUtc"].includes(key)), "Caller-supplied model routes or bootstrap authority are forbidden", "GLOBAL_POLICY_ROUTE_CALLER_FORBIDDEN");
+  let {events, readback, observedAtUtc} = options;
   assert(observedAtUtc === undefined || observedAtUtc === readback?.observed_at_utc, "Global governance bootstrap time must be the canonical current readback time", "GLOBAL_MEMORY_TRUSTED_TIME_OVERRIDE");
   observedAtUtc = readback?.observed_at_utc;
   validateGlobalGovernanceMemoryReadback(readback, {events});
   const snapshot = replayGlobalGovernanceMemory(events).current_snapshot;
-  validateEcoModelRoute(workerRoute, {snapshot}); validateEcoModelRoute(seedRoute, {snapshot});
+  const workerRoute = selectEcoModelRoute({snapshot, taskClass: "NARROW_CODING", roleCapabilityFloor: 0, requiredContextTokens: 0, requiredCapabilities: [], nowUtc: observedAtUtc});
+  const seedRoute = workerRoute;
   const projections = MODEL_POLICY_ROLE_CLASSES.map((roleClass) => compileModelPolicyProjection({
     snapshot, roleClass,
     selectedRoute: roleClass === "WORKING_AGENT" ? workerRoute : roleClass === "INERT_SEED" ? seedRoute : null,

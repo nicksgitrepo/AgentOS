@@ -50,7 +50,8 @@ const bootstrapContext = compileBootstrapModelPolicyContext({snapshot: active, s
 assert.deepEqual(bootstrapContext.projections.map((entry) => entry.role_class), MODEL_POLICY_ROLE_CLASSES);
 assert(bootstrapContext.projections.every((entry) => entry.read_only === true && entry.snapshot_sha256 === active.snapshot_sha256));
 assert.equal(bootstrapContext.injection, "AUTOMATIC_BEFORE_ROSTER_OR_WORKER_ADMISSION");
-const governedBootstrap = compileGlobalGovernanceBootstrap({events: [event], readback, workerRoute: route, observedAtUtc: NOW});
+const governedBootstrap = compileGlobalGovernanceBootstrap({events: [event], readback, observedAtUtc: NOW});
+assert.throws(() => compileGlobalGovernanceBootstrap({events: [event], readback, workerRoute: route, observedAtUtc: NOW}), /Caller-supplied model routes/iu);
 for (const roleClass of MODEL_POLICY_ROLE_CLASSES) assert.equal(requireGlobalGovernanceRoleProjection({bootstrap: governedBootstrap, events: [event], readback, roleClass}).role_class, roleClass);
 assert.throws(() => validateGlobalGovernanceBootstrap(governedBootstrap, {events: [event]}), /readback/iu);
 const missingIntegration = structuredClone(governedBootstrap);
