@@ -984,6 +984,18 @@
       "path": "tests/verify-autonomous-dispatch-liveness-gate.mjs",
       "sha256": "23d796d3b6106de41b66014fb614c115cfb2ef90ef3a9a756512e007a92eaf5e"
     },
+    "action_result_continuation_controller": {
+      "path": "control/action-result-continuation.mjs",
+      "sha256": "7899920b80095df978d2c4f5ef06bc2a715ed29642dc0e1d7450e67b2618e486"
+    },
+    "action_result_continuation_contract": {
+      "path": "schemas/action-result-continuation.v1.json",
+      "sha256": "6cdc7c57fbe1c522e6b7bf250a121ad1867d8988fc6180fd876e1d584f426f10"
+    },
+    "action_result_continuation_verifier": {
+      "path": "tests/verify-action-result-continuation.mjs",
+      "sha256": "57aead32d6b99f3f9b45c1be755d5352b73d55305dccef866cedddc9a4e15f0b"
+    },
     "turn_continuation_gate_controller": {
       "path": "control/turn-continuation-gate.mjs",
       "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"

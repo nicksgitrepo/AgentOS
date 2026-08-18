@@ -82,4 +82,35 @@ const protectedRecord = compileActionResultContinuation({
 validateActionResultContinuation(protectedRecord);
 assert.equal(protectedRecord.continuation.mode, "EVENT_DRIVEN_PROTECTED_WAIT");
 
+// Compilers canonicalize incidental input ordering, while validation still
+// rejects duplicate evidence/fixture identities.
+const unsorted = compileActionResultContinuation({
+  actionId: "HANDLER.ORCHESTRATOR_REPAIR",
+  resultId: "RESULT.ORCHESTRATOR_REPAIR.UNSORTED",
+  result: {status: "REPAIR_REQUIRED"},
+  semanticBeforeSha256: sha("unsorted-before"),
+  semanticAfterSha256: sha("unsorted-after"),
+  nextAction: "START_NEXT_LOCAL_BLOCK_REPAIR",
+  nextHandler: "HANDLER.CONTROLLER_LOCAL_BLOCK_REPAIR",
+  continuation,
+  persistence,
+  evidenceRefs: [evidence("EVIDENCE.Z"), evidence("EVIDENCE.A")],
+  hostileFixtureRefs: ["FIXTURE.Z", "FIXTURE.A"],
+});
+assert.deepEqual(unsorted.evidence_refs.map((ref) => ref.evidence_id), ["EVIDENCE.A", "EVIDENCE.Z"]);
+assert.deepEqual(unsorted.hostile_fixture_refs, ["FIXTURE.A", "FIXTURE.Z"]);
+assert.throws(() => compileActionResultContinuation({
+  actionId: "HANDLER.ORCHESTRATOR_REPAIR",
+  resultId: "RESULT.ORCHESTRATOR_REPAIR.DUPLICATE",
+  result: {status: "REPAIR_REQUIRED"},
+  semanticBeforeSha256: sha("duplicate-before"),
+  semanticAfterSha256: sha("duplicate-after"),
+  nextAction: "START_NEXT_LOCAL_BLOCK_REPAIR",
+  nextHandler: "HANDLER.CONTROLLER_LOCAL_BLOCK_REPAIR",
+  continuation,
+  persistence,
+  evidenceRefs: [evidence("EVIDENCE.A"), evidence("EVIDENCE.A")],
+  hostileFixtureRefs: ["FIXTURE.A"],
+}), /sorted and unique/u);
+
 console.log("PASS action-result continuation: persisted result, non-terminal successor, same-turn routing, protected event wait, and hostile closeout coverage");

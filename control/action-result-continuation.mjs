@@ -148,6 +148,12 @@ export function compileActionResultContinuation({
   hostileFixtureRefs,
   status = "RESULT_PERSISTED",
 } = {}) {
+  const normalizedEvidenceRefs = Array.isArray(evidenceRefs)
+    ? [...evidenceRefs].sort((left, right) => compareUtf8(left?.evidence_id ?? "", right?.evidence_id ?? ""))
+    : evidenceRefs;
+  const normalizedHostileFixtureRefs = Array.isArray(hostileFixtureRefs)
+    ? [...hostileFixtureRefs].sort(compareUtf8)
+    : hostileFixtureRefs;
   const record = {
     schema: ACTION_RESULT_CONTINUATION_SCHEMA,
     version: ACTION_RESULT_CONTINUATION_VERSION,
@@ -162,8 +168,8 @@ export function compileActionResultContinuation({
     continuation: structuredClone(continuation),
     continuation_sha256: isRecord(continuation) ? canonicalDigest(continuation) : null,
     persistence: structuredClone(persistence),
-    evidence_refs: structuredClone(evidenceRefs),
-    hostile_fixture_refs: structuredClone(hostileFixtureRefs),
+    evidence_refs: structuredClone(normalizedEvidenceRefs),
+    hostile_fixture_refs: structuredClone(normalizedHostileFixtureRefs),
     status,
     record_sha256: null,
   };
