@@ -195,6 +195,17 @@ function validateEvidenceRefs(refs, label = "Controller action evidence refs") {
   return refs;
 }
 
+/*
+ * Receipt construction is a canonicalization boundary.  Callers may collect
+ * evidence in discovery order, but persisted Controller receipts must be
+ * deterministic before validation and hashing.  Duplicate IDs are not
+ * repaired here; validation still rejects them as a real governance defect.
+ */
+function canonicalEvidenceRefs(refs) {
+  assert(Array.isArray(refs), "Controller action evidence refs are required");
+  return structuredClone(refs).sort((left, right) => compareUtf8(left?.evidence_id ?? "", right?.evidence_id ?? ""));
+}
+
 function validateHostileRefs(refs) {
   assert(Array.isArray(refs) && refs.length > 0, "Controller action hostile fixture refs are required");
   assert(refs.every((value) => typeof value === "string" && IDENTIFIER.test(value)), "Controller action hostile fixture ref is invalid");
@@ -280,7 +291,7 @@ export function compileControllerActionDefect({defectId, defectClass, evidenceRe
     version: CONTROLLER_ACTION_VERSION,
     defect_id: defectId,
     defect_class: defectClass,
-    evidence_refs: structuredClone(evidenceRefs),
+    evidence_refs: canonicalEvidenceRefs(evidenceRefs),
     required_gate: requiredGate,
     stop_condition: stopCondition,
     roster_invalidation: rosterInvalidation,
@@ -424,7 +435,7 @@ export function compileControllerActionReceipt({receiptId, actionId, previousRec
     semantic_before_sha256: semanticBeforeSha256,
     semantic_after_sha256: semanticAfterSha256,
     progress_delta_sha256: canonicalDigest({semantic_before_sha256: semanticBeforeSha256, semantic_after_sha256: semanticAfterSha256}),
-    evidence_refs: structuredClone(evidenceRefs),
+    evidence_refs: canonicalEvidenceRefs(evidenceRefs),
     hostile_fixture_refs: [...hostileFixtureRefs].sort(compareUtf8),
     next_action: nextAction,
     next_handler: nextHandler ?? expectedHandler,

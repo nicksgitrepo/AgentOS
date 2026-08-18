@@ -48,6 +48,31 @@ assert.equal(initial.continuation.mode, "IMMEDIATE_SAME_TURN");
 assert.equal(initial.continuation.timer_deferral, false);
 assert.equal(initial.continuation.heartbeat_deferral, false);
 
+const unsortedEvidenceReceipt = compileControllerActionReceipt({
+  receiptId: "RECEIPT.CONTROLLER.UNSORTED_EVIDENCE",
+  actionId: "UNSORTED_EVIDENCE",
+  semanticBeforeSha256: HASH("unsorted-before"),
+  semanticAfterSha256: HASH("unsorted-after"),
+  evidenceRefs: [evidence("EVIDENCE.CONTROLLER.Z_LAST"), evidence("EVIDENCE.CONTROLLER.A_FIRST")],
+  hostileFixtureRefs: hostile("UNSORTED_EVIDENCE"),
+  nextAction: "ADMIT_NEXT_PERMANENT_ROLE",
+});
+assert.deepEqual(
+  unsortedEvidenceReceipt.evidence_refs.map(({evidence_id}) => evidence_id),
+  ["EVIDENCE.CONTROLLER.A_FIRST", "EVIDENCE.CONTROLLER.Z_LAST"],
+  "Controller receipt construction must canonicalize evidence order",
+);
+validateControllerActionReceipt(unsortedEvidenceReceipt);
+assert.throws(() => compileControllerActionReceipt({
+  receiptId: "RECEIPT.CONTROLLER.DUPLICATE_EVIDENCE",
+  actionId: "DUPLICATE_EVIDENCE",
+  semanticBeforeSha256: HASH("duplicate-before"),
+  semanticAfterSha256: HASH("duplicate-after"),
+  evidenceRefs: [evidence("EVIDENCE.CONTROLLER.DUPLICATE"), evidence("EVIDENCE.CONTROLLER.DUPLICATE")],
+  hostileFixtureRefs: hostile("DUPLICATE_EVIDENCE"),
+  nextAction: "ADMIT_NEXT_PERMANENT_ROLE",
+}), /sorted and unique|duplicate/u, "duplicate evidence IDs must remain a hard failure");
+
 const emittedInventory = [
   "ADMIT_TYPED_AGENT_SPAWNER", "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME", "START_COMPILER", "COMPILE_BLOCK_PATCH", "COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER",
   "WAIT_FOR_INDEPENDENT_CLEARANCE", "ADMIT_GOVERNED_SPAWN", "START_GOVERNED_SPAWN", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT",
