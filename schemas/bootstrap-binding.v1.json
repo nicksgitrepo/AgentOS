@@ -2366,7 +2366,7 @@
     },
     "spawner_defect_repair_loop_controller": {
       "path": "control/spawner-defect-repair-loop.mjs",
-      "sha256": "f32ba90bb457d1a0626103db4a56be0562e0be7ac58bee7b1d1c4895e2883c2d"
+      "sha256": "620b8b4c9ccbdeb6c5136f08c1f9c3ae5e3ab6b2f3b76bb7bd98b1ee9c809004"
     },
     "eco_model_policy_controller": {
       "path": "control/eco-model-policy.mjs",
@@ -2374,7 +2374,7 @@
     },
     "global_governance_memory_controller": {
       "path": "control/global-governance-memory.mjs",
-      "sha256": "051713c6fd5930ffe13ee88c2b115184b3488a4e0d906bb3bdd54caf65594253"
+      "sha256": "6af8661caa37e91fddaeb0806ec11c7010bc077c9acbcd55789736a31a5de96c"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",

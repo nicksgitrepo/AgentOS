@@ -71,4 +71,3 @@ export function reenterFailedSpawnerRepair({failedDefect, failureEvidenceSha256,
     affectedDigests: [failedDefect.defect_sha256], requiredRepair: "Classify the failed repair as a new defect, preserve prior evidence, patch the owning layer, add a hostile regression, invalidate dependents, and rerun QA.", observedAtUtc,
   });
 }
-

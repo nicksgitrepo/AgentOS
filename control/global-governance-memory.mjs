@@ -119,4 +119,3 @@ export function assertGlobalPolicyVisibility(roleClass, readback) {
   assert(readback?.status === "CURRENT", "Global model policy is not visible to the reader");
   return Object.freeze({role_class: roleClass, read_only: true, snapshot_sha256: readback.current_snapshot_sha256, readback_sha256: readback.readback_sha256});
 }
-
