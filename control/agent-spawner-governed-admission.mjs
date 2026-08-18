@@ -126,12 +126,15 @@ export function validateAgentSpawnerGovernedAdmission(readback, options = {}) {
   return validateGovernedAdmissionStructure(readback, options);
 }
 
-export function compileAgentSpawnerGovernedAdmission({adapterId, sourceContinuation, lifecycleBefore, clearanceAuthorityRoot, clearanceReceiptSha256, evidenceRefs, hostileFixtureRefs} = {}) {
+export function compileAgentSpawnerGovernedAdmission(options = {}) {
+  assert(options && typeof options === "object" && !Array.isArray(options), "Governed admission input must be an object");
+  assert(Object.keys(options).every((key) => ["adapterId", "sourceContinuation", "lifecycleBefore", "clearanceReceiptSha256", "evidenceRefs", "hostileFixtureRefs"].includes(key)), "Governed admission rejects caller clearance authority, roots, candidates, and PASS claims");
+  const {adapterId, sourceContinuation, lifecycleBefore, clearanceReceiptSha256, evidenceRefs, hostileFixtureRefs} = options;
   validateAgentSpawnerCompilerContinuation(sourceContinuation);
   validateAgentSpawnerLifecycle(lifecycleBefore);
   assert(sourceContinuation.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission source must be the compiler admission successor");
   assert(sourceContinuation.lifecycle_after_sha256 === lifecycleBefore.lifecycle_sha256, "Governed-admission source lifecycle does not match compiler continuation");
-  const clearance = verifyIndependentSpawnerClearance({authorityRoot: clearanceAuthorityRoot, receiptSha256: clearanceReceiptSha256});
+  const clearance = verifyIndependentSpawnerClearance({receiptSha256: clearanceReceiptSha256});
   assertVerifiedIndependentClearance(clearance, clearance.candidate);
   assert(clearance.candidate.lifecycle_candidate_sha256 === lifecycleBefore.candidate_sha256 && clearance.candidate.roster_projection_sha256 === lifecycleBefore.roster_projection_sha256 && clearance.candidate.context_sha256 === lifecycleBefore.context_sha256, "Canonical independent clearance does not bind the current lifecycle");
   assert(lifecycleBefore.qa.independent_clearance_receipt_sha256 === clearance.receipt_sha256, "Lifecycle clearance reference does not bind the consumed canonical receipt");

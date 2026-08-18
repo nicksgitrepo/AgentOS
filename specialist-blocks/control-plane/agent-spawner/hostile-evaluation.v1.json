@@ -1,0 +1,417 @@
+{
+  "schema": "agentos.spawner_hostile_evaluation.v1",
+  "version": 1,
+  "candidate_package_file_sha256": "34b2c0ba1fde14c817d9812ed325bd8f885204b7b7823920ec293b4cfbe4f713",
+  "fixture_manifest_sha256": "06e9f0a1d149dc0ff8f8da2ef50bf674030fed62b5bc5b2f5ec0d6977a580b03",
+  "gate_contracts_sha256": "598b4d9d5825fd237b3eb75e686cdcadc2c2f17c161904d912c7c34084e09186",
+  "result_count": 26,
+  "negative_assertion_count": 26,
+  "mutation_sensitivity": [
+    {
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+        "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+        "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+        "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+        "FIXTURE.SPAWNER.UNLISTED_MODEL"
+      ],
+      "failed_fixture_count": 4,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+        "FIXTURE.SPAWNER.DIGEST_ALIAS",
+        "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+        "FIXTURE.SPAWNER.FORGED_MANIFEST",
+        "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+        "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+        "FIXTURE.SPAWNER.INVALID_DIGEST",
+        "FIXTURE.SPAWNER.MISSING_FILE",
+        "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+        "FIXTURE.SPAWNER.STALE_BLOCK",
+        "FIXTURE.SPAWNER.SWAPPED_FILE"
+      ],
+      "failed_fixture_count": 11,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"
+      ],
+      "failed_fixture_count": 1,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+        "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+        "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
+      ],
+      "failed_fixture_count": 3,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+        "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.SEED_EXECUTION",
+        "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE"
+      ],
+      "failed_fixture_count": 2,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"
+      ],
+      "failed_fixture_count": 1,
+      "result": "PASS"
+    }
+  ],
+  "results": [
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CALLER_ASSERTED_QA",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "CALLER_ASSERTED_QA",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "CALLER_EVIDENCE_FORBIDDEN",
+      "error_message_sha256": "7889b83e02dde98eb03a82712c5b3238a108080408146a571b0708b2e5e8dde9",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CONTROLLER_ASYNC_SIDE_EFFECT",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "attack_vector": "CONTROLLER_ASYNC_SIDE_EFFECT",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "CONTROLLER_OPERATION_FORBIDDEN",
+      "error_message_sha256": "db18d3a5fb8ab45586388b617d7f11f13d4acbea6443505b0d43e569eb3d62a9",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CONTROLLER_DIRECT_SPAWN",
+      "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+      "attack_vector": "CONTROLLER_DIRECT_SPAWN",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "CONTROLLER_OPERATION_FORBIDDEN",
+      "error_message_sha256": "6ec35931bbd961a9729bce72dbd03083c32d6e09a1814a612fb77003f02d1625",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.CROSS_PROJECT_LEAKAGE",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "CROSS_PROJECT_LEAKAGE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "GLOBAL_MEMORY_PRIVATE_CONTENT",
+      "error_message_sha256": "5a38d3ee23ee375467a02b8639455d35abfb171784f1ef3ef77c124f3292ab5f",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DIGEST_ALIAS",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "DIGEST_ALIAS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "cf93c822cec6eda8c9370e7672b69ad50475dace0fbaaad0926f2645287f7b2d",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK",
+      "gate_id": "SPAWNER.GIT_INTEGRATION",
+      "attack_vector": "DIRTY_REMOTE_READBACK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "Error",
+      "error_message_sha256": "785d985eaa8a842457be578cd03051e3e0c8246bd57f8a2cad0393ec300ccf01",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.DUPLICATE_GATE_ID",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "DUPLICATE_GATE_ID",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "847305c3b3e88e5be1ffd94b61fd2464542554c58177cc3bd7d4f9edb7b96054",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FABRICATED_ECONOMICS",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "FABRICATED_ECONOMICS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "MODEL_POLICY_INVALID",
+      "error_message_sha256": "da3eccc9fc8e0093b3d40e45134460b2a7bd7881cba15941d068e25c97d7cbb3",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FALSE_PROTECTED_BLOCKER",
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "attack_vector": "FALSE_PROTECTED_BLOCKER",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "FALSE_PROTECTED_BLOCKER",
+      "error_message_sha256": "83deb64ca3c86759aebfd795a05828dd83d691581cd7dcf025bcd2a1ae074e5c",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FORGED_MANIFEST",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "FORGED_MANIFEST",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "8f9f672101b7a0d817555846054e6af78c4f605c528f2e7f286dd6d809ad71bf",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INCOMPLETE_LAYER",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "INCOMPLETE_LAYER",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "59612e13d2f4a2c2b5cffecca3a3524a79326177f3258741d8421d9b7453fa45",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INCONCLUSIVE_QA",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "INCONCLUSIVE_QA",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "CALLER_EVIDENCE_FORBIDDEN",
+      "error_message_sha256": "9912831f02d02257082c0b21b12cf92cc6db19e09502e6980c5cdd651e666054",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.INVALID_DIGEST",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "INVALID_DIGEST",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "PLACEHOLDER_EVIDENCE",
+      "error_message_sha256": "411103858a4fca5f373270a6c6307c2dda578c80c54e90b68ebc3f91744ad2ce",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MISSING_FILE",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "MISSING_FILE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "ENOENT",
+      "error_message_sha256": "d5583adb9698fe0371f7a914852c6bbb79e140e82010d65cec65652c2770e7c1",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MISSING_MODEL_EVIDENCE",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "MISSING_MODEL_EVIDENCE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "BENCHMARK_EVIDENCE_MISSING",
+      "error_message_sha256": "91fbedbad60a4745218c02d88b0894f498dcf212b00f361af8eef9b77060fcbe",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.MODEL_UNAVAILABLE",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "MODEL_UNAVAILABLE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "MODEL_POLICY_INVALID",
+      "error_message_sha256": "b0e2f4082a474325afcfa82886f34734d88730a8f3d4668da6f07e53fd103d01",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.OUT_OF_LANE_MUTATION",
+      "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+      "attack_vector": "OUT_OF_LANE_MUTATION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "SPAWNER_DEFECT_LOOP_INVALID",
+      "error_message_sha256": "726d313082ddae04b1d5675ede639d521203db02a483181ba1138167ff3db4ef",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.PLACEHOLDER_CONTENT",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "PLACEHOLDER_CONTENT",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "86a0c3191fe1875383271face032274505a1dc7dd6251282de1c18a4e0ca276f",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SEED_EXECUTION",
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "attack_vector": "SEED_EXECUTION",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "DIRECT_SEED_AUTHORITY_FORBIDDEN",
+      "error_message_sha256": "01d985aa1405ca5e2da72f276ca1e7df03d84bf887c1617d8668178af0993e6a",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SELF_ISSUED_CLEARANCE",
+      "gate_id": "SPAWNER.SEED_INERTNESS",
+      "attack_vector": "SELF_ISSUED_CLEARANCE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "SEALED_CLEARANCE_AUTHORITY_REQUIRED",
+      "error_message_sha256": "e9c62841861dcd1578a6501d005d9737d87e60a17830a49a5c0983eb77f0b45e",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.STALE_BLOCK",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "STALE_BLOCK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "c6a8b64a988c852808b6a03ce28ca41e7b941c83486e45196e9984731c27d1eb",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.STALE_MEMORY_READBACK",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "STALE_MEMORY_READBACK",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "GLOBAL_MEMORY_READBACK_STALE",
+      "error_message_sha256": "fbc0cf216d93fcbd00c5512c6499596a72f7a2ec7c3b240ddd25aa75fe7bcd71",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.SWAPPED_FILE",
+      "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+      "attack_vector": "SWAPPED_FILE",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "BLOCK_FILE_DIGEST_MISMATCH",
+      "error_message_sha256": "e83e0c4b269582eb8da5334bc88aadc4458a2c6668d418c5dafd28e0b1383e34",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR",
+      "gate_id": "SPAWNER.TURN_CONTINUATION",
+      "attack_vector": "TURN_WITHOUT_SUCCESSOR",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "SPAWNER_GOVERNANCE_INVALID",
+      "error_message_sha256": "fd5c41152c3ef234d2228cf2adc64c6608e082b3a5b847504e51eb004d5a3458",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.UNLISTED_MODEL",
+      "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+      "attack_vector": "UNLISTED_MODEL",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "MODEL_SOURCE_UNLISTED",
+      "error_message_sha256": "3dfd4b51d51c3758305eecfdf258bacc8681209178b2007f3391ae59d8ea0e5f",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER",
+      "gate_id": "SPAWNER.GLOBAL_MEMORY",
+      "attack_vector": "WRONG_GLOBAL_MEMORY_WRITER",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/spawner-hostile-fixture-evaluator.mjs",
+      "negative_assertion_count": 1,
+      "error_code": "GLOBAL_MEMORY_WRITER_FORBIDDEN",
+      "error_message_sha256": "4135d566a1aec01413f0b54db9a9b11d960df0b2b08d7135a061155ccc3cc64d",
+      "result": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "evaluation_sha256": "21d46b487ba562b15de156ab662bd6c4a714ff610d416d389f48dde1edfd5779"
+}

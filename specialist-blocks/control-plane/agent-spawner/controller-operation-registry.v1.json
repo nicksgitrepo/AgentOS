@@ -1,0 +1,56 @@
+{
+  "schema": "agentos.controller_operation_registry.v1",
+  "version": 1,
+  "operations": [
+    {
+      "event_type": "REDISTRIBUTION_RECEIVED",
+      "issuer_role": "AGENT_SPAWNER",
+      "adapters": [
+        "dispatchRedistribution"
+      ],
+      "authority": "REDISTRIBUTION_DISPATCH_ONLY"
+    },
+    {
+      "event_type": "SPAWNER_LIVENESS_RECONCILE_REQUESTED",
+      "issuer_role": "AGENTOS_CONTROLLER",
+      "adapters": [
+        "reconcileLiveness"
+      ],
+      "authority": "OBSERVE_AND_RECONCILE_ONE_SPAWNER"
+    },
+    {
+      "event_type": "SPAWNER_OBSERVE_REQUESTED",
+      "issuer_role": "AGENTOS_CONTROLLER",
+      "adapters": [
+        "observeAgentSpawner"
+      ],
+      "authority": "OBSERVE_ONE_SPAWNER"
+    },
+    {
+      "event_type": "SPAWNER_START_REQUESTED",
+      "issuer_role": "AGENTOS_CONTROLLER",
+      "adapters": [
+        "validateControllerGovernance",
+        "validateSpawnerHandoff",
+        "startAgentSpawner"
+      ],
+      "authority": "START_EXACTLY_ONE_SPAWNER"
+    },
+    {
+      "event_type": "SPAWNER_WAKE_REQUESTED",
+      "issuer_role": "AGENTOS_CONTROLLER",
+      "adapters": [
+        "wakeAgentSpawner"
+      ],
+      "authority": "WAKE_EXACTLY_ONE_SPAWNER"
+    }
+  ],
+  "forbidden_adapter_classes": [
+    "ORDINARY_AGENT_LIFECYCLE",
+    "ROLE_COMPILATION",
+    "ROSTER_MUTATION",
+    "SEED_LIFECYCLE",
+    "HANDOFF_APPROVAL"
+  ],
+  "registry_sha256": "8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8"
+}

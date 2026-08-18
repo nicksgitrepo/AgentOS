@@ -15,7 +15,7 @@ assert.equal(audited.receipt.receipt_sha256, valid.receiptSha256);
 assert.throws(() => assertVerifiedIndependentClearance(audited.clearance, audited.candidate), /not verified and consumed/iu, "audit-only fixture minted an admission token");
 
 const synthetic = fixture();
-assert.throws(() => verifyIndependentSpawnerClearance({authorityRoot: synthetic.authorityRoot, receiptSha256: synthetic.receiptSha256}), /stale or synthetic/iu, "caller-selected synthetic candidate was accepted by production verification");
+assert.throws(() => verifyIndependentSpawnerClearance({authorityRoot: synthetic.authorityRoot, receiptSha256: synthetic.receiptSha256}), /Caller-supplied clearance authority/iu, "caller-selected synthetic candidate was accepted by production verification");
 
 for (const [label, mutate, pattern] of [
   ["unknown issuer", (receipt) => { receipt.issuer_id = "EVALUATOR.UNKNOWN"; }, /unknown|role-mismatched/iu],

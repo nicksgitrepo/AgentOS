@@ -7,7 +7,7 @@ import path from "node:path";
 import {spawn} from "node:child_process";
 import {once} from "node:events";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {MODEL_POLICY_ROLE_CLASSES, compileBootstrapModelPolicyContext, compileModelPolicyProjection, selectEcoModelRoute, validateModelPolicyProjection} from "../control/eco-model-policy.mjs";
+import {MODEL_POLICY_ROLE_CLASSES, compileBootstrapModelPolicyContext, compileModelPolicyProjection, selectEcoModelRoute, validateModelPolicyProjection, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 import {
   GLOBAL_GOVERNANCE_MEMORY_GENESIS,
   assertProjectAgnosticGovernanceValue,
@@ -24,7 +24,7 @@ import {compileGlobalGovernanceBootstrap, requireGlobalGovernanceRoleProjection,
 import {appendAuthorizedGlobalGovernanceMemoryEvent, compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 
-const NOW = "2026-08-18T16:30:00.000Z";
+const NOW = "2026-08-18T08:30:00.000Z";
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));
 const active = structuredClone(prepared);
@@ -51,12 +51,13 @@ assert.deepEqual(bootstrapContext.projections.map((entry) => entry.role_class), 
 assert(bootstrapContext.projections.every((entry) => entry.read_only === true && entry.snapshot_sha256 === active.snapshot_sha256));
 assert.equal(bootstrapContext.injection, "AUTOMATIC_BEFORE_ROSTER_OR_WORKER_ADMISSION");
 const governedBootstrap = compileGlobalGovernanceBootstrap({events: [event], readback, workerRoute: route, observedAtUtc: NOW});
-for (const roleClass of MODEL_POLICY_ROLE_CLASSES) assert.equal(requireGlobalGovernanceRoleProjection({bootstrap: governedBootstrap, events: [event], readback, roleClass, observedAtUtc: NOW}).role_class, roleClass);
+for (const roleClass of MODEL_POLICY_ROLE_CLASSES) assert.equal(requireGlobalGovernanceRoleProjection({bootstrap: governedBootstrap, events: [event], readback, roleClass}).role_class, roleClass);
 assert.throws(() => validateGlobalGovernanceBootstrap(governedBootstrap, {events: [event]}), /readback/iu);
 const missingIntegration = structuredClone(governedBootstrap);
 missingIntegration.projections = missingIntegration.projections.filter((entry) => entry.role_class !== "SCHEDULER");
 missingIntegration.bootstrap_sha256 = canonicalDigest({...missingIntegration, bootstrap_sha256: null});
-assert.throws(() => validateGlobalGovernanceBootstrap(missingIntegration, {events: [event], readback, observedAtUtc: NOW}), /visibility is incomplete/iu);
+assert.throws(() => validateGlobalGovernanceBootstrap(missingIntegration, {events: [event], readback}), /visibility is incomplete/iu);
+assert.throws(() => validateGlobalGovernanceBootstrap(governedBootstrap, {events: [event], readback, observedAtUtc: NOW}), /trusted time cannot be supplied/iu);
 const widenedProjection = structuredClone(workerProjection);
 widenedProjection.selected.consumer_data = "FORBIDDEN";
 widenedProjection.projection_sha256 = canonicalDigest({...widenedProjection, projection_sha256: null});
@@ -75,18 +76,23 @@ for (const privateValue of [
   {safe_label: "Bearer abcdefghijklmnopqrstuvwxyz"},
   {safe_label: "api_key=not-a-real-key-but-forbidden"},
   {safe_label: Buffer.from("password=encoded-private-value").toString("base64")},
+  {safe_label: "%2FUsers%2Fprivate%2Fconsumer-context.json"},
+  {safe_label: "\\u002fhome\\u002fprivate\\u002fraw-chat.txt"},
+  {safe_label: "ｂｅａｒｅｒ abcdefghijklmnopqrstuvwxyz"},
   {safe_label: [{nested: {conversation: "prompt text"}}]},
 ]) assert.throws(() => assertProjectAgnosticGovernanceValue(privateValue), /private|transcript|secret|filesystem|forbidden/iu);
+assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.BAD.TIME", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: "not-a-time"}), /exact UTC timestamp/iu);
+assert.throws(() => replayGlobalGovernanceMemory([event, {...event, sequence: 1, prior_event_sha256: event.event_sha256, observed_at_utc: "2026-08-18T07:00:00.000Z", event_sha256: canonicalDigest({...event, sequence: 1, prior_event_sha256: event.event_sha256, observed_at_utc: "2026-08-18T07:00:00.000Z", event_sha256: null})}]), /non-monotonic|current model policy|future-dated/iu);
 const unknownSource = structuredClone(active);
 unknownSource.evidence[0].source_url = "https://unknown.invalid/model-research";
 unknownSource.snapshot_sha256 = canonicalDigest({...unknownSource, snapshot_sha256: null});
-assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.BAD.URL", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: unknownSource, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /canonical registry|source identity/iu);
+assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.BAD.URL", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: unknownSource, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /fields mismatch|raw URL|canonical registry|source identity/iu);
 
 const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-global-memory-"));
 try {
   const fixture = materializeTestGlobalGovernanceStore({authorityRoot, nowUtc: NOW});
-  const writerContext = compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256: fixture.bootstrap.bootstrap_sha256, roleClass: "SPAWNER", operationalId: "CONTEXT.SPAWNER.MEMORY.TEST"});
-  const controllerContext = compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256: fixture.bootstrap.bootstrap_sha256, roleClass: "CONTROLLER", operationalId: "CONTEXT.CONTROLLER.MEMORY.TEST"});
+  const writerContext = compileOperationalGlobalGovernanceContext({authorityStore: fixture.authorityStore, roleClass: "SPAWNER", operationalId: "CONTEXT.SPAWNER.MEMORY.TEST"});
+  const controllerContext = compileOperationalGlobalGovernanceContext({authorityStore: fixture.authorityStore, roleClass: "CONTROLLER", operationalId: "CONTEXT.CONTROLLER.MEMORY.TEST"});
   const supersessionEvent = compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.MODEL_POLICY.TEST.SUPERSEDED", sequence: 1, eventType: "MODEL_POLICY_SUPERSEDED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: fixture.snapshot.snapshot_sha256, reasonCode: "ROUTING_POLICY_REFRESH", priorEventSha256: fixture.events[0].event_sha256, observedAtUtc: NOW});
   assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext: controllerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256}), /Only a canonical Spawner|writer/iu);
   const appended = appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext, bootstrapSha256: fixture.bootstrap.bootstrap_sha256});
@@ -117,14 +123,14 @@ const next = structuredClone(active);
 next.task_classes.find((task) => task.task_class === "NARROW_CODING").max_concurrency = 3;
 next.snapshot_sha256 = canonicalDigest({...next, snapshot_sha256: null});
 const nextEvent = compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.MODEL_POLICY.2", sequence: 2, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: next, priorEventSha256: superseded.event_sha256, observedAtUtc: NOW});
-const updatedReplay = replayGlobalGovernanceMemory([event, superseded, nextEvent], {observedAtUtc: NOW});
+const updatedReplay = replayGlobalGovernanceMemory([event, superseded, nextEvent]);
 assert.equal(updatedReplay.current_snapshot.snapshot_sha256, next.snapshot_sha256);
 assert.equal(workerProjection.snapshot_sha256, active.snapshot_sha256, "active worker must retain its bound snapshot until safe refresh or handoff");
 assert.throws(() => validateGlobalGovernanceMemoryReadback(readback, {events: [event, superseded, nextEvent]}), /stale/iu);
-assert.throws(() => replayGlobalGovernanceMemory([event, nextEvent], {observedAtUtc: NOW}), /noncontiguous|superseded or invalidated/iu);
+assert.throws(() => replayGlobalGovernanceMemory([event, nextEvent]), /noncontiguous|superseded or invalidated/iu);
 const invalidTarget = compileGlobalGovernanceMemoryEvent({eventId: "GLOBAL.MODEL_POLICY.BAD_TARGET", sequence: 1, eventType: "MODEL_POLICY_INVALIDATED", writerRole: "SPAWNER", targetSnapshotSha256: "f".repeat(64), reasonCode: "SOURCE_CONTRADICTION", priorEventSha256: event.event_sha256, observedAtUtc: NOW});
-assert.throws(() => replayGlobalGovernanceMemory([event, invalidTarget], {observedAtUtc: NOW}), /target is stale or unknown/iu);
-assert.throws(() => replayGlobalGovernanceMemory([event], {observedAtUtc: "2026-08-20T16:00:00.000Z"}), /stale/iu);
+assert.throws(() => replayGlobalGovernanceMemory([event, invalidTarget]), /target is stale or unknown/iu);
+assert.throws(() => validateModelPolicySnapshot(active, {nowUtc: "2026-08-26T08:00:00.000Z", requireActive: true}), /stale/iu);
 const contextDigest = canonicalDigest({context: active.snapshot_sha256});
 const seedDigest = canonicalDigest({seed: contextDigest});
 assert.deepEqual(computeInvalidationClosure({changedDigests: [active.snapshot_sha256], dependencyGraph: [

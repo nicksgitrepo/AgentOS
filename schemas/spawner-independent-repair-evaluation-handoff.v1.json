@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.invalid/schemas/spawner-independent-repair-evaluation-handoff.v1.json",
+  "title": "AgentOS Spawner Independent Repair Evaluation Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "handoff_id", "defect_sha256", "candidate_commit", "candidate_tree", "package_sha256", "evidence_set_sha256", "builder_identity_sha256", "model_policy_snapshot_sha256", "verifier_route_sha256", "verifier_task_class", "verifier_capability_floor", "verifier_selection", "independent_identity_required", "read_only_candidate_custody", "builder_key_access", "governance_write_capability", "verifier_may_patch_candidate", "repair_worker_may_self_clear", "required_outcomes", "fail_or_inconclusive_route", "elapsed_time_may_weaken_sequence", "hostile_fixture_ids", "observed_at_utc", "handoff_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_independent_repair_evaluation_handoff.v1"},
+    "version": {"const": 1},
+    "handoff_id": {"type": "string", "minLength": 1},
+    "defect_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_commit": {"$ref": "#/$defs/gitObject"},
+    "candidate_tree": {"$ref": "#/$defs/gitObject"},
+    "package_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_set_sha256": {"$ref": "#/$defs/sha256"},
+    "builder_identity_sha256": {"$ref": "#/$defs/sha256"},
+    "model_policy_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "verifier_route_sha256": {"$ref": "#/$defs/sha256"},
+    "verifier_task_class": {"const": "DETERMINISTIC_QA"},
+    "verifier_capability_floor": {"type": "number", "exclusiveMinimum": 0},
+    "verifier_selection": {"const": "MOST_ECONOMICAL_CAPABLE_AVAILABLE_MODEL"},
+    "independent_identity_required": {"const": true},
+    "read_only_candidate_custody": {"const": true},
+    "builder_key_access": {"const": false},
+    "governance_write_capability": {"const": false},
+    "verifier_may_patch_candidate": {"const": false},
+    "repair_worker_may_self_clear": {"const": false},
+    "required_outcomes": {"const": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "fail_or_inconclusive_route": {"const": "TYPED_OWNED_DEFECT_REENTERS_AUTONOMOUS_REPAIR"},
+    "elapsed_time_may_weaken_sequence": {"const": false},
+    "hostile_fixture_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]+$"}},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "handoff_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+  }
+}

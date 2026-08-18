@@ -1,23 +1,42 @@
 {
-  "schema": "agentos.controller_issuer_registry.v1",
-  "version": 1,
-  "authority_epoch": 1,
-  "maximum_event_age_seconds": 300,
-  "maximum_future_skew_seconds": 5,
+  "schema": "agentos.controller_issuer_registry.v2",
+  "version": 2,
+  "authority_epoch": 2,
+  "nonce_domain": "AGENTOS.CONTROLLER.EVENT.V2",
+  "trusted_time_policy": {
+    "clock_source": "HOST_MONOTONIC_WALLCLOCK",
+    "maximum_event_age_seconds": 900,
+    "maximum_future_skew_seconds": 5
+  },
   "issuers": [
     {
+      "issuer_id": "ISSUER.AGENTOS_CONTROLLER.EVENT_BRIDGE.V1",
       "issuer_role": "AGENTOS_CONTROLLER",
+      "status": "ACTIVE",
+      "activated_at_utc": "2026-08-18T00:00:00.000Z",
+      "revoked_at_utc": null,
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEASNdaflRqs7rzdJ3YkO5J3Z6VNkbhsmPVJE0gf/dAOdc=\n-----END PUBLIC KEY-----\n",
       "event_types": [
         "SPAWNER_START_REQUESTED",
-        "SPAWNER_WAKE_REQUESTED"
-      ]
+        "SPAWNER_WAKE_REQUESTED",
+        "SPAWNER_OBSERVE_REQUESTED",
+        "SPAWNER_LIVENESS_RECONCILE_REQUESTED"
+      ],
+      "sequence_domain": "CONTROLLER_STATE_EVENT_CURSOR"
     },
     {
+      "issuer_id": "ISSUER.AGENT_SPAWNER.REDISTRIBUTION.V1",
       "issuer_role": "AGENT_SPAWNER",
+      "status": "ACTIVE",
+      "activated_at_utc": "2026-08-18T00:00:00.000Z",
+      "revoked_at_utc": null,
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA/hE58cPPHLIsmkpM9h3gq+EjiulHewBlbb8aC17Qa9k=\n-----END PUBLIC KEY-----\n",
       "event_types": [
         "REDISTRIBUTION_RECEIVED"
-      ]
+      ],
+      "sequence_domain": "CONTROLLER_STATE_EVENT_CURSOR"
     }
   ],
-  "registry_sha256": "cb8469a3fe019da9e6823afc34a6d2e81b04b11f46a2acb96cb454fbdc8ac4fa"
+  "operation_registry_sha256": "8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8",
+  "registry_sha256": "1502baca58eadffadedec77ba490d65531321e2d2229b46c5cfbfdcdd8404cf2"
 }

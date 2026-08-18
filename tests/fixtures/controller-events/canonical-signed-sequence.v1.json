@@ -1,0 +1,128 @@
+{
+  "schema": "agentos.controller_signed_event_fixture.v1",
+  "trusted_now_utc": "2026-08-18T08:01:00.000Z",
+  "controller_projection_sha256": "42cc6760bad50fc2eaca72e1eeb37932d737e8b7fbabc894b3516bced4826898",
+  "events": [
+    {
+      "schema": "agentos.controller_event.v1",
+      "version": 1,
+      "event_id": "SIGNED-EVENT-1",
+      "event_type": "SPAWNER_START_REQUESTED",
+      "issuer_id": "ISSUER.AGENTOS_CONTROLLER.EVENT_BRIDGE.V1",
+      "source_role": "AGENTOS_CONTROLLER",
+      "authority_epoch": 2,
+      "nonce": "8b05a92ff1bc64b623bf5728b2b90c27443c1c3a318c2302762a311bf3d4376e",
+      "controller_id": "AGENTOS-CONTROLLER-1",
+      "project_id": "synthetic-project",
+      "policy_epoch": 1,
+      "policy_state_sha256": "d57caaddd28d76449429803c73afa7ce70201c9f5d190364c61f8f90b35c660d",
+      "campaign_id": null,
+      "sequence": 1,
+      "prior_controller_head_sha256": null,
+      "payload": {
+        "spawner_id": "AGENTOS-SPAWNER-1",
+        "bootstrap_package_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "global_model_policy_projection_sha256": "42cc6760bad50fc2eaca72e1eeb37932d737e8b7fbabc894b3516bced4826898"
+      },
+      "occurred_at_utc": "2026-08-18T08:00:00.000Z",
+      "event_sha256": "de65a377b340576fa50d466e8b9ce05133452394ceafe6725f2fc84f131617ef",
+      "signature_base64": "nAS20C1D51CVrjQXv76hRTFYHG/xPn1DguxhEU8cCCinS7iZ1AbefxMUc21mYFH3GPnXwk+55ykBoIvYxLMjBw=="
+    },
+    {
+      "schema": "agentos.controller_event.v1",
+      "version": 1,
+      "event_id": "SIGNED-EVENT-2",
+      "event_type": "SPAWNER_WAKE_REQUESTED",
+      "issuer_id": "ISSUER.AGENTOS_CONTROLLER.EVENT_BRIDGE.V1",
+      "source_role": "AGENTOS_CONTROLLER",
+      "authority_epoch": 2,
+      "nonce": "668911e82303ae6fbbde11c0159ee0bd9cfa260f590dfc3670173d352fc60cbc",
+      "controller_id": "AGENTOS-CONTROLLER-1",
+      "project_id": "synthetic-project",
+      "policy_epoch": 1,
+      "policy_state_sha256": "d57caaddd28d76449429803c73afa7ce70201c9f5d190364c61f8f90b35c660d",
+      "campaign_id": null,
+      "sequence": 2,
+      "prior_controller_head_sha256": "de65a377b340576fa50d466e8b9ce05133452394ceafe6725f2fc84f131617ef",
+      "payload": {
+        "spawner_id": "AGENTOS-SPAWNER-1",
+        "global_model_policy_projection_sha256": "42cc6760bad50fc2eaca72e1eeb37932d737e8b7fbabc894b3516bced4826898"
+      },
+      "occurred_at_utc": "2026-08-18T08:00:01.000Z",
+      "event_sha256": "17ec6d6963d8272753f459a9768c25eb4f87205002fa5076c7429753235c47d2",
+      "signature_base64": "DsOxZJxYlebv6tRFUtWwcSUfEz1ClBFaiW5XncFKIZqUH+cAGIG42mks6x419PhbxHm1NQilNmXjalY8nElTCg=="
+    },
+    {
+      "schema": "agentos.controller_event.v1",
+      "version": 1,
+      "event_id": "SIGNED-EVENT-3",
+      "event_type": "REDISTRIBUTION_RECEIVED",
+      "issuer_id": "ISSUER.AGENT_SPAWNER.REDISTRIBUTION.V1",
+      "source_role": "AGENT_SPAWNER",
+      "authority_epoch": 2,
+      "nonce": "16fd864c11d6a4788cb178f2eae7dab38e42727913e5d6973f117172b9e2f9b3",
+      "controller_id": "AGENTOS-CONTROLLER-1",
+      "project_id": "synthetic-project",
+      "policy_epoch": 1,
+      "policy_state_sha256": "d57caaddd28d76449429803c73afa7ce70201c9f5d190364c61f8f90b35c660d",
+      "campaign_id": null,
+      "sequence": 3,
+      "prior_controller_head_sha256": "17ec6d6963d8272753f459a9768c25eb4f87205002fa5076c7429753235c47d2",
+      "payload": {
+        "redistribution_handoff_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "global_model_policy_projection_sha256": "42cc6760bad50fc2eaca72e1eeb37932d737e8b7fbabc894b3516bced4826898"
+      },
+      "occurred_at_utc": "2026-08-18T08:00:02.000Z",
+      "event_sha256": "f4944c304573961c3001209d88de98f8eac89cd8b7c54452d667f7cfa121afd9",
+      "signature_base64": "ds3/YwB7RLIoUcAv9s+IlgVy+Mxu1wp46A8N6q3M+r+hWwPZoSExQhexZeN4VwNEhlmqHXaFV4Nl1fRctXmJBw=="
+    },
+    {
+      "schema": "agentos.controller_event.v1",
+      "version": 1,
+      "event_id": "SIGNED-EVENT-4",
+      "event_type": "SPAWNER_OBSERVE_REQUESTED",
+      "issuer_id": "ISSUER.AGENTOS_CONTROLLER.EVENT_BRIDGE.V1",
+      "source_role": "AGENTOS_CONTROLLER",
+      "authority_epoch": 2,
+      "nonce": "272e832defdcee2ad17fec67890757163556543990ae04fe922ef119866a46fb",
+      "controller_id": "AGENTOS-CONTROLLER-1",
+      "project_id": "synthetic-project",
+      "policy_epoch": 1,
+      "policy_state_sha256": "d57caaddd28d76449429803c73afa7ce70201c9f5d190364c61f8f90b35c660d",
+      "campaign_id": null,
+      "sequence": 4,
+      "prior_controller_head_sha256": "f4944c304573961c3001209d88de98f8eac89cd8b7c54452d667f7cfa121afd9",
+      "payload": {
+        "spawner_id": "AGENTOS-SPAWNER-1",
+        "global_model_policy_projection_sha256": "42cc6760bad50fc2eaca72e1eeb37932d737e8b7fbabc894b3516bced4826898"
+      },
+      "occurred_at_utc": "2026-08-18T08:00:03.000Z",
+      "event_sha256": "fb37410747085986f4d600682aa232496d3fa00037c669e995126d0442520570",
+      "signature_base64": "MSl58cuq4zWVSlsg9PL4K3MOd1tTHl1nxxv4CS1oBviz9hMA9np0Y+5AUv/sfNYVxXr4wmpbgtDJ18oqasLRBA=="
+    },
+    {
+      "schema": "agentos.controller_event.v1",
+      "version": 1,
+      "event_id": "SIGNED-EVENT-5",
+      "event_type": "SPAWNER_LIVENESS_RECONCILE_REQUESTED",
+      "issuer_id": "ISSUER.AGENTOS_CONTROLLER.EVENT_BRIDGE.V1",
+      "source_role": "AGENTOS_CONTROLLER",
+      "authority_epoch": 2,
+      "nonce": "dc0c2acc968c3a2c2fc936970a113bb7d8f454078672fffb39197a989f7953f1",
+      "controller_id": "AGENTOS-CONTROLLER-1",
+      "project_id": "synthetic-project",
+      "policy_epoch": 1,
+      "policy_state_sha256": "d57caaddd28d76449429803c73afa7ce70201c9f5d190364c61f8f90b35c660d",
+      "campaign_id": null,
+      "sequence": 5,
+      "prior_controller_head_sha256": "fb37410747085986f4d600682aa232496d3fa00037c669e995126d0442520570",
+      "payload": {
+        "spawner_id": "AGENTOS-SPAWNER-1",
+        "global_model_policy_projection_sha256": "42cc6760bad50fc2eaca72e1eeb37932d737e8b7fbabc894b3516bced4826898"
+      },
+      "occurred_at_utc": "2026-08-18T08:00:04.000Z",
+      "event_sha256": "ff1a2c90963c305b3a716894cd4a1074305e75fe47b4911cff6d781cb03d0972",
+      "signature_base64": "v178GdK22u8BDRBL0mIIKMZdQznw4h5X593RuT+g8FILSD2AtxgGeMj5xJP75TJEDmlnbuojSn2rFGrw+dRZBw=="
+    }
+  ]
+}

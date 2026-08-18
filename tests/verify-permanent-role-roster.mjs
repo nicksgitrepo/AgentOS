@@ -32,7 +32,7 @@ const NOW = "2026-08-16T00:00:00.000Z";
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const governanceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-permanent-role-governance-"));
 const globalFixture = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot});
-const permanentRoleContext = compileOperationalGlobalGovernanceContext({authorityRoot: governanceRoot, bootstrapSha256: globalFixture.bootstrap.bootstrap_sha256, roleClass: "PERMANENT_ROLE", operationalId: "CONTEXT.PERMANENT.ROLE.ROSTER.TEST"});
+const permanentRoleContext = compileOperationalGlobalGovernanceContext({authorityStore: globalFixture.authorityStore, roleClass: "PERMANENT_ROLE", operationalId: "CONTEXT.PERMANENT.ROLE.ROSTER.TEST"});
 const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b"];
 const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f"];
 const redigest = (value, field) => {
@@ -63,29 +63,25 @@ const handoff = compileSealedBootstrapHandoff({
 });
 const blockSet = compileSpawnerGoverningBlockSet({
   blockSetId: "SPAWNER.BLOCK.SET.PERMANENT.ROLE.TEST",
-  authorityRoot: repositoryRoot,
-  globalGovernanceAuthorityRoot: governanceRoot,
-  globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceAuthorityStore: globalFixture.authorityStore,
 });
 const admission = compileTypedSpawnerAdmission({
   spawnerId: "AGENTOS-SPAWNER-1",
   controllerId: "CONTROLLER-TASK-1",
   governanceReadiness: readiness,
   sealedBootstrapHandoff: handoff,
-  authorityRoot: repositoryRoot,
-  globalGovernanceAuthorityRoot: governanceRoot,
-  globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceAuthorityStore: globalFixture.authorityStore,
 });
 
 assert.throws(() => compilePermanentRoleCandidate({
   roleId: PERMANENT_ROLE_IDS[0], blockSetSha256: SHA("8"), independentEvaluationSha256: SHA("9"),
   stopConditions: "Reject incomplete permanent role governance before admission.",
-  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityStore: globalFixture.authorityStore,
 }), /hostile fixture ids input is required/u);
 assert.throws(() => compilePermanentRoleCandidate({
   roleId: "AGENTOS.UNKNOWN", blockSetSha256: SHA("8"), independentEvaluationSha256: SHA("9"),
   hostileFixtureIds: ["FIXTURE.PERMANENT.UNKNOWN"], stopConditions: "Reject incomplete permanent role governance before admission.",
-  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityStore: globalFixture.authorityStore,
 }), /role is not canonical/u);
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: [null]}), /Permanent role candidate must be an object/u);
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: [], admittedRoleIds: null}), /admitted roles are required/u);
@@ -96,7 +92,7 @@ const candidates = PERMANENT_ROLE_IDS.map((roleId, index) => compilePermanentRol
   independentEvaluationSha256: SHA(EVALUATION_DIGEST_CHARS[index]),
   hostileFixtureIds: [`FIXTURE.PERMANENT.${roleId.split(".").at(-1)}.ADMISSION`, `FIXTURE.PERMANENT.${roleId.split(".").at(-1)}.QA`],
   stopConditions: "Reject incomplete permanent role governance before admission.",
-  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityStore: globalFixture.authorityStore,
 }));
 
 let roster = compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates});
@@ -111,7 +107,7 @@ assert.equal(roster.activation_state, "OFF");
 assert.equal(roster.worker_spawned_count, 0);
 
 for (let index = 0; index < PERMANENT_ROLE_IDS.length; index += 1) {
-  roster = admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[index], {globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256});
+  roster = admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[index], {globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityStore: globalFixture.authorityStore});
   assert.deepEqual(roster.admitted_role_ids, PERMANENT_ROLE_IDS.slice(0, index + 1));
   assert.equal(roster.worker_spawned_count, 0);
   assert.equal(roster.activation_state, "OFF");
@@ -149,7 +145,7 @@ redigest(duplicateRoleSet, "roster_sha256");
 assert.throws(() => validatePermanentRoleRoster(duplicateRoleSet), /role set is incomplete or reordered/u);
 
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: candidates.slice(0, -1)}), /candidates are incomplete/u);
-assert.throws(() => admitNextPermanentRole(compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates}), PERMANENT_ROLE_IDS[1], {globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256}), /typed next role/u);
+assert.throws(() => admitNextPermanentRole(compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates}), PERMANENT_ROLE_IDS[1], {globalGovernanceContext: permanentRoleContext, globalGovernanceAuthorityStore: globalFixture.authorityStore}), /typed next role/u);
 
 const badQa = structuredClone(roster);
 badQa.candidates[0].qa_status = "QA_PENDING";

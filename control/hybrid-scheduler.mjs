@@ -1152,11 +1152,10 @@ export function createHybridScheduler({
   policy = compileHybridSchedulerPolicy(),
   clock = () => new Date().toISOString(),
   globalGovernanceContext,
-  globalGovernanceAuthorityRoot,
-  globalGovernanceBootstrapSha256,
+  globalGovernanceAuthorityStore,
 } = {}) {
   assert(authorityRoot !== null && authorityRoot !== undefined, "hybrid scheduler requires a durable authority root", "SCHEDULER_AUTHORITY_REQUIRED");
-  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "SCHEDULER", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "SCHEDULER"});
   validateHybridSchedulerPolicy(policy);
   assert(typeof clock === "function", "hybrid scheduler clock must be callable");
   const root = ensureSchedulerRoot(authorityRoot);

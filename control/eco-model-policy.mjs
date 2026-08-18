@@ -46,6 +46,24 @@ function sortedUnique(values, label) {
   return result;
 }
 
+function assertCanonicalSourceEndpoint(sourceEntry) {
+  const common = ["query_policy", "fragment_policy", "redirect_policy", "content_type", "acquisition_method", "final_url", "redirect_chain"];
+  common.forEach((field) => requireString(Array.isArray(sourceEntry[field]) ? "ARRAY" : sourceEntry[field], `Model source ${field}`));
+  assert(sourceEntry.query_policy === "DENY" && sourceEntry.fragment_policy === "DENY", "Model source query/fragment policy must deny widening");
+  assert(Array.isArray(sourceEntry.redirect_chain) && sourceEntry.redirect_chain.length === 0, "Model source redirect chain must be empty");
+  assert(sourceEntry.final_url === sourceEntry.canonical_source_url, "Model source final URL differs or redirected");
+  if (sourceEntry.authority_class === "HOST_ATTESTATION") {
+    assert(sourceEntry.expected_scheme === "host-attestation:" && JSON.stringify(sourceEntry.exact_path_segments) === JSON.stringify(["codex-model-catalog"]) && sourceEntry.port_policy === "NOT_APPLICABLE" && sourceEntry.redirect_policy === "NOT_APPLICABLE", "Host source endpoint contract is invalid");
+    return;
+  }
+  const endpoint = new URL(sourceEntry.canonical_source_url);
+  assert(endpoint.protocol === sourceEntry.expected_scheme && endpoint.protocol === "https:", "Model source scheme is invalid");
+  assert(Array.isArray(sourceEntry.exact_path_segments) && sourceEntry.exact_path_segments.length > 0 && sourceEntry.exact_path_segments.every((segment) => /^[a-z0-9][a-z0-9-]*$/u.test(segment)), "Model source exact path segments are invalid");
+  assert(endpoint.hostname === sourceEntry.allowed_domain && endpoint.pathname === `/${sourceEntry.exact_path_segments.join("/")}`, "Model source exact host/path identity differs");
+  assert(endpoint.username === "" && endpoint.password === "" && endpoint.port === "" && endpoint.search === "" && endpoint.hash === "", "Model source endpoint contains userinfo, port, query, or fragment");
+  assert(sourceEntry.port_policy === "DEFAULT_ONLY" && sourceEntry.redirect_policy === "DENY", "Model source port/redirect policy is not fail-closed");
+}
+
 function resolveArtifact(root, relativePath) {
   requireString(relativePath, "Model evidence artifact path");
   const resolved = path.resolve(root, relativePath);
@@ -57,10 +75,10 @@ function resolveArtifact(root, relativePath) {
 }
 
 function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, artifactResolution, sourceEntry) {
-  exactKeys(evidence, ["evidence_id", "authority_class", "source_url", "observed_at_utc", "expires_at_utc", "max_age_days", "uncertainty", "artifact_path", "artifact_sha256", "file_sha256", "summary_sha256", "raw_transcript_stored"], "Model evidence");
+  exactKeys(evidence, ["evidence_id", "authority_class", "observed_at_utc", "expires_at_utc", "max_age_days", "uncertainty", "artifact_sha256", "file_sha256", "summary_sha256", "raw_transcript_stored"], "Model evidence");
   requireString(evidence.evidence_id, "Model evidence ID");
   assert(["FIRST_PARTY_PROVIDER", "COMPARATIVE_BENCHMARK", "HOST_ATTESTATION"].includes(evidence.authority_class), "Model evidence authority class is invalid");
-  assert(evidence.source_url === sourceEntry.canonical_source_url && evidence.authority_class === sourceEntry.authority_class, "Model evidence source identity is not in the canonical registry");
+  assert(evidence.authority_class === sourceEntry.authority_class, "Model evidence source identity is not in the canonical registry");
   requireUtc(evidence.observed_at_utc, "Model evidence observation time");
   requireUtc(evidence.expires_at_utc, "Model evidence expiry");
   const observedMs = Date.parse(evidence.observed_at_utc);
@@ -71,7 +89,6 @@ function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, ar
   requireSha(evidence.summary_sha256, "Model evidence summary");
   requireSha(evidence.artifact_sha256, "Model evidence artifact digest");
   requireSha(evidence.file_sha256, "Model evidence file digest");
-  requireString(evidence.artifact_path, "Model evidence artifact path");
   assert(evidence.raw_transcript_stored === false, "Raw browsing transcripts are forbidden");
   assert(manifestEntry.evidence_id === evidence.evidence_id && manifestEntry.authority_class === evidence.authority_class, "Model evidence manifest identity differs");
   assert(manifestEntry.artifact_sha256 === evidence.artifact_sha256 && manifestEntry.file_sha256 === evidence.file_sha256, "Model evidence manifest digest differs");
@@ -79,10 +96,10 @@ function validateEvidence(evidence, snapshotObservedMs, nowMs, manifestEntry, ar
   const artifact = artifactResolution.value;
   exactKeys(artifact, ["schema", "version", "evidence_id", "authority_class", "provider_id", "source_url", "observed_at_utc", "expires_at_utc", "max_age_days", "uncertainty", "summary", "summary_sha256", "artifact_sha256"], "Model source artifact");
   assert(artifact.schema === "agentos.model_policy_source_artifact.v1" && artifact.version === 1, "Model source artifact identity is invalid");
-  assert(artifact.evidence_id === evidence.evidence_id && artifact.authority_class === evidence.authority_class && artifact.source_url === evidence.source_url, "Model evidence source identity differs from artifact");
-  assert(artifact.provider_id === sourceEntry.provider_id && evidence.artifact_path === sourceEntry.artifact_path, "Model evidence provider or artifact path differs from canonical source registry");
+  assert(artifact.evidence_id === evidence.evidence_id && artifact.authority_class === evidence.authority_class && artifact.source_url === sourceEntry.canonical_source_url, "Model evidence source identity differs from artifact");
+  assert(artifact.provider_id === sourceEntry.provider_id, "Model evidence provider differs from canonical source registry");
   if (sourceEntry.allowed_domain !== "HOST_ATTESTATION") assert(new URL(artifact.source_url).hostname === sourceEntry.allowed_domain, "Model evidence source domain is redirected or lookalike");
-  const acquisitionReceipt = canonicalDigest({evidence_id: sourceEntry.evidence_id, canonical_source_url: sourceEntry.canonical_source_url, source_revision: sourceEntry.source_revision, acquired_at_utc: sourceEntry.acquired_at_utc, provider_id: sourceEntry.provider_id});
+  const acquisitionReceipt = canonicalDigest({evidence_id: sourceEntry.evidence_id, canonical_source_url: sourceEntry.canonical_source_url, final_url: sourceEntry.final_url, redirect_chain: sourceEntry.redirect_chain, expected_scheme: sourceEntry.expected_scheme, exact_path_segments: sourceEntry.exact_path_segments, content_type: sourceEntry.content_type, acquisition_method: sourceEntry.acquisition_method, source_revision: sourceEntry.source_revision, acquired_at_utc: sourceEntry.acquired_at_utc, provider_id: sourceEntry.provider_id});
   assert(acquisitionReceipt === sourceEntry.acquisition_receipt_sha256, "Model evidence acquisition receipt is invalid");
   assert(Date.parse(sourceEntry.acquired_at_utc) <= Date.parse(evidence.observed_at_utc) && Date.parse(sourceEntry.acquired_at_utc) <= nowMs, "Model evidence acquisition time is future or inconsistent");
   assert(artifact.observed_at_utc === evidence.observed_at_utc && artifact.expires_at_utc === evidence.expires_at_utc && artifact.max_age_days === evidence.max_age_days && artifact.uncertainty === evidence.uncertainty, "Model evidence freshness differs from artifact");
@@ -131,12 +148,13 @@ function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = sna
   assert(sourceRegistry.registry_sha256 === canonicalDigest(digestBody(sourceRegistry, "registry_sha256")) && sourceRegistry.registry_sha256 === manifest.source_registry_sha256, "Model evidence source registry digest is invalid or substituted");
   assert(Array.isArray(sourceRegistry.entries) && sourceRegistry.entries.length === manifest.entries.length, "Model evidence source registry coverage is incomplete");
   for (const sourceEntry of sourceRegistry.entries) {
-    const sourceKeys = ["evidence_id", "authority_class", "provider_id", "canonical_source_url", "allowed_domain", "source_revision", "acquired_at_utc", "acquisition_receipt_sha256", "artifact_path"];
+    const sourceKeys = ["evidence_id", "authority_class", "provider_id", "canonical_source_url", "expected_scheme", "exact_path_segments", "query_policy", "fragment_policy", "port_policy", "redirect_policy", "content_type", "acquisition_method", "final_url", "redirect_chain", "allowed_domain", "source_revision", "acquired_at_utc", "acquisition_receipt_sha256", "artifact_path"];
     if (sourceEntry.authority_class === "COMPARATIVE_BENCHMARK") sourceKeys.push("model_source_urls");
     exactKeys(sourceEntry, sourceKeys, "Model evidence source registry entry");
     assert(["FIRST_PARTY_PROVIDER", "COMPARATIVE_BENCHMARK", "HOST_ATTESTATION"].includes(sourceEntry.authority_class), "Model source authority class is invalid");
+    assertCanonicalSourceEndpoint(sourceEntry);
     requireSha(sourceEntry.acquisition_receipt_sha256, "Model source acquisition receipt"); requireUtc(sourceEntry.acquired_at_utc, "Model source acquisition time");
-    if (sourceEntry.authority_class === "FIRST_PARTY_PROVIDER") assert(sourceEntry.provider_id === "OPENAI" && sourceEntry.allowed_domain === "developers.openai.com", "First-party model source identity is not allowlisted");
+    if (sourceEntry.authority_class === "FIRST_PARTY_PROVIDER") assert(sourceEntry.provider_id === "OPENAI" && sourceEntry.allowed_domain === "developers.openai.com" && sourceEntry.canonical_source_url === "https://developers.openai.com/api/docs/models/compare" && JSON.stringify(sourceEntry.exact_path_segments) === JSON.stringify(["api", "docs", "models", "compare"]), "First-party model source identity or exact endpoint is not allowlisted");
     if (sourceEntry.authority_class === "COMPARATIVE_BENCHMARK") {
       assert(sourceEntry.provider_id === "ARTIFICIAL_ANALYSIS" && sourceEntry.allowed_domain === "artificialanalysis.ai", "Comparative model source identity is not allowlisted");
       exactKeys(sourceEntry.model_source_urls, ["gpt-5.6-luna", "gpt-5.6-sol", "gpt-5.6-terra"], "Comparative model source URL registry");
@@ -159,23 +177,30 @@ function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = sna
     const sourceEntry = sourceRegistry.entries.find((candidate) => candidate.evidence_id === entry.evidence_id);
     assert(manifestEntry, `Model evidence is absent from canonical manifest: ${entry.evidence_id}`, "BENCHMARK_EVIDENCE_MISSING");
     assert(sourceEntry, `Model evidence is absent from canonical source registry: ${entry.evidence_id}`, "BENCHMARK_EVIDENCE_MISSING");
-    assert(entry.artifact_path === path.posix.join(path.posix.dirname(evidenceManifestPath), manifestEntry.path), "Model evidence artifact path differs from canonical manifest");
-    artifactByEvidence.set(entry.evidence_id, validateEvidence(entry, snapshotObservedMs, nowMs, manifestEntry, resolveArtifact(authorityRoot, entry.artifact_path), sourceEntry));
+    artifactByEvidence.set(entry.evidence_id, validateEvidence(entry, snapshotObservedMs, nowMs, manifestEntry, resolveArtifact(authorityRoot, path.posix.join(path.posix.dirname(evidenceManifestPath), manifestEntry.path)), sourceEntry));
   });
   assert(new Set(snapshot.evidence.map((entry) => entry.evidence_id)).size === snapshot.evidence.length, "Model evidence IDs contain duplicates");
   assert(snapshot.evidence.some((entry) => entry.authority_class === "FIRST_PARTY_PROVIDER") && snapshot.evidence.some((entry) => entry.authority_class === "COMPARATIVE_BENCHMARK") && snapshot.evidence.some((entry) => entry.authority_class === "HOST_ATTESTATION"), "Model evidence authority coverage is incomplete");
   assert(Array.isArray(snapshot.conflicts), "Model-policy conflicts must be explicit");
   for (const conflict of snapshot.conflicts) {
-    exactKeys(conflict, ["field", "first_party_value", "comparative_value", "resolution"], "Model-policy conflict");
+    exactKeys(conflict, ["conflict_id", "field", "first_party_evidence_id", "first_party_artifact_sha256", "first_party_value", "comparative_evidence_id", "comparative_artifact_sha256", "comparative_value", "authority_ordering", "selected_value", "resolution", "rationale_code", "observed_at_utc", "expires_at_utc", "supersession_trigger", "conflict_sha256"], "Model-policy conflict");
+    assert(/^CONFLICT\.[A-Z0-9._:-]+$/u.test(conflict.conflict_id), "Model-policy conflict identity is invalid");
     assert(/^gpt-[a-z0-9.-]+\.(?:input|output)_usd_per_million$/u.test(conflict.field), "Model-policy conflict field is not an allowlisted pricing identifier");
     assert(/^\d+(?:\.\d+)?$/u.test(conflict.first_party_value) && /^\d+(?:\.\d+)?$/u.test(conflict.comparative_value), "Model-policy conflict values must be numeric facts");
-    assert(conflict.resolution === "FIRST_PARTY_GOVERNS", "Model-policy conflict does not honor first-party authority");
+    requireSha(conflict.first_party_artifact_sha256, "First-party conflict artifact"); requireSha(conflict.comparative_artifact_sha256, "Comparative conflict artifact"); requireSha(conflict.conflict_sha256, "Model-policy conflict");
+    requireUtc(conflict.observed_at_utc, "Model-policy conflict observation"); requireUtc(conflict.expires_at_utc, "Model-policy conflict expiry");
+    assert(canonicalJson(conflict.authority_ordering) === canonicalJson(["FIRST_PARTY_PROVIDER", "COMPARATIVE_BENCHMARK"]), "Model-policy conflict authority ordering is invalid");
+    assert(conflict.selected_value === conflict.first_party_value && conflict.resolution === "FIRST_PARTY_GOVERNS", "Model-policy conflict does not honor first-party authority");
+    assert(conflict.rationale_code === "PROVIDER_FACT_OVERRIDES_COMPARATIVE_ECONOMICS" && conflict.supersession_trigger === "ANY_BOUND_SOURCE_REVISION_OR_VALUE_CHANGE", "Model-policy conflict rationale or supersession trigger is invalid");
+    assert(conflict.conflict_sha256 === canonicalDigest({...conflict, conflict_sha256: null}), "Model-policy conflict digest mismatch");
   }
   assert(Array.isArray(snapshot.models) && snapshot.models.length > 0, "Model-policy models are missing");
   const modelIds = new Set();
   const providerArtifact = [...artifactByEvidence.values()].find((artifact) => artifact.authority_class === "FIRST_PARTY_PROVIDER");
   const benchmarkArtifact = [...artifactByEvidence.values()].find((artifact) => artifact.authority_class === "COMPARATIVE_BENCHMARK");
   const hostArtifact = [...artifactByEvidence.values()].find((artifact) => artifact.authority_class === "HOST_ATTESTATION");
+  assert(!/conflict is explicit/iu.test(providerArtifact.summary.observation_note) || snapshot.conflicts.length > 0, "First-party source note claims an explicit conflict but structured conflicts are absent");
+  const derivedConflictFields = new Set();
   for (const model of snapshot.models) {
     exactKeys(model, ["model_id", "provider_id", "provider_evidence_id", "benchmark_evidence_id", "host_evidence_id", "host_available", "availability_evidence", "capability_score", "input_usd_per_million", "output_usd_per_million", "output_tokens_per_second", "context_tokens", "supported_reasoning_efforts", "host_supported_reasoning_efforts", "capabilities"], "Model-policy model");
     assert(MODEL.test(model.model_id), "Model ID is invalid");
@@ -204,9 +229,11 @@ function validateModelPolicySnapshotAgainstEvidenceStore(snapshot, {nowUtc = sna
     assert(model.host_available === hostModel.available, `Host availability binding differs: ${model.model_id}`);
     assert(canonicalJson(model.host_supported_reasoning_efforts) === canonicalJson(hostModel.supported_reasoning_efforts), `Host reasoning support differs: ${model.model_id}`);
     for (const costField of ["input_usd_per_million", "output_usd_per_million"]) if (benchmarkModel[costField] !== providerModel[costField]) {
-      assert(snapshot.conflicts.some((conflict) => conflict.field === `${model.model_id}.${costField}` && conflict.first_party_value === String(providerModel[costField]) && conflict.comparative_value === String(benchmarkModel[costField]) && conflict.resolution === "FIRST_PARTY_GOVERNS"), `Source pricing conflict is not explicitly resolved: ${model.model_id}.${costField}`);
+      const field = `${model.model_id}.${costField}`; derivedConflictFields.add(field);
+      assert(snapshot.conflicts.some((conflict) => conflict.field === field && conflict.first_party_evidence_id === providerArtifact.evidence_id && conflict.first_party_artifact_sha256 === providerArtifact.artifact_sha256 && conflict.first_party_value === String(providerModel[costField]) && conflict.comparative_evidence_id === benchmarkArtifact.evidence_id && conflict.comparative_artifact_sha256 === benchmarkArtifact.artifact_sha256 && conflict.comparative_value === String(benchmarkModel[costField]) && conflict.selected_value === String(providerModel[costField]) && conflict.resolution === "FIRST_PARTY_GOVERNS"), `Source pricing conflict is not explicitly resolved: ${field}`);
     }
   }
+  assert(snapshot.conflicts.length === derivedConflictFields.size && snapshot.conflicts.every((conflict) => derivedConflictFields.has(conflict.field)), "Structured source conflicts differ from independently derived source artifacts");
   assert(providerArtifact.summary.models.length === snapshot.models.length && benchmarkArtifact.summary.models.length === snapshot.models.length && hostArtifact.summary.models.length === snapshot.models.length, "Snapshot model coverage differs from governing sources");
   assert(Array.isArray(snapshot.task_classes) && snapshot.task_classes.length === MODEL_POLICY_TASK_CLASSES.length, "Model-policy task-class matrix is incomplete");
   const taskIds = new Set();

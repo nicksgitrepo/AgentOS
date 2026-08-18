@@ -113,12 +113,12 @@ export function validateSpawnerGoverningBlockSet(blockSet) {
   return blockSet;
 }
 
-export function compileSpawnerGoverningBlockSet({blockSetId, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256, requiredLayers = undefined, blockEvidence = undefined, hostileFixtureIds = undefined, independentEvaluationSha256 = undefined} = {}) {
+export function compileSpawnerGoverningBlockSet({blockSetId, globalGovernanceAuthorityStore, requiredLayers = undefined, blockEvidence = undefined, hostileFixtureIds = undefined, independentEvaluationSha256 = undefined} = {}) {
   assert(requiredLayers === undefined && blockEvidence === undefined && hostileFixtureIds === undefined && independentEvaluationSha256 === undefined, "Caller-authored governing block evidence is forbidden");
-  const exactAdmission = compileExactSpawnerAdmission({requestId: `${blockSetId}.EXACT_ADMISSION`, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
-  const resolution = resolveCanonicalSpawnerBootstrapPackage({authorityRoot});
+  const exactAdmission = compileExactSpawnerAdmission({requestId: `${blockSetId}.EXACT_ADMISSION`, globalGovernanceAuthorityStore});
+  const resolution = resolveCanonicalSpawnerBootstrapPackage();
   const canonicalBlockEvidence = exactAdmission.block_evidence.map((block) => {
-    const artifact = JSON.parse(fs.readFileSync(path.join(authorityRoot, block.artifact_path), "utf8"));
+    const artifact = JSON.parse(fs.readFileSync(path.join(path.resolve(path.dirname(new URL(import.meta.url).pathname), ".."), block.artifact_path), "utf8"));
     const evidence = {
       block_id: block.block_id, layer: block.layer, block_sha256: block.block_sha256, status: "COMPLETE_QA_PASS", non_placeholder: true, evaluation: "PASS",
       expires_at_utc: artifact.expires_at_utc, contradictions: [],
@@ -136,7 +136,7 @@ export function compileSpawnerGoverningBlockSet({blockSetId, authorityRoot, glob
     validated_at_utc: exactAdmission.observed_at_utc,
     status: "COMPLETE_QA_PASS",
     hostile_fixture_ids: [...resolution.spawner_package.hostile_fixtures].sort(compareUtf8),
-    independent_evaluation_sha256: resolution.review_manifest.manifest_sha256,
+    independent_evaluation_sha256: resolution.hostile_evaluation.evaluation_sha256,
     authority: "CANONICAL_SIGNED_GATE_REVIEW_AUTHORITY",
     stop_conditions: resolution.spawner_package.stop_conditions.join(" "),
     block_set_sha256: null,
@@ -202,14 +202,14 @@ export function validateTypedSpawnerAdmission(admission, {governanceReadiness = 
   return admission;
 }
 
-export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanceReadiness, sealedBootstrapHandoff, authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256, blockSet = undefined, globalPolicyProjection = undefined, modelPolicySnapshot = undefined} = {}) {
+export function compileTypedSpawnerAdmission({spawnerId, controllerId, governanceReadiness, sealedBootstrapHandoff, globalGovernanceAuthorityStore, blockSet = undefined, globalPolicyProjection = undefined, modelPolicySnapshot = undefined} = {}) {
   validateControllerGovernanceReadiness(governanceReadiness);
   validateSealedBootstrapHandoff(sealedBootstrapHandoff);
   assert(governanceReadiness.status === "READY_TO_ACCEPT_WORK", "Spawner admission requires Controller governance readiness");
   assert(sealedBootstrapHandoff.next_action === "ADMIT_TYPED_AGENT_SPAWNER", "Spawner admission requires sealed-handoff successor");
   assert(blockSet === undefined && globalPolicyProjection === undefined && modelPolicySnapshot === undefined, "Caller-authored block sets or model-policy projections are forbidden");
-  const canonicalBlockSet = compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER.BLOCK.SET.CANONICAL", authorityRoot, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
-  const governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "SPAWNER"});
+  const canonicalBlockSet = compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER.BLOCK.SET.CANONICAL", globalGovernanceAuthorityStore});
+  const governed = resolveCanonicalGlobalGovernanceProjection({authorityStore: globalGovernanceAuthorityStore, roleClass: "SPAWNER"});
   const canonicalProjection = governed.projection;
   requireToken(spawnerId, "Spawner admission spawner");
   requireIdentityToken(controllerId, "Spawner admission Controller");

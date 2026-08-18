@@ -169,12 +169,11 @@ export async function bootstrapAndStartAgentOS({
   globalGovernanceEvents,
   globalGovernanceReadback,
   globalGovernanceObservedAtUtc,
-  globalGovernanceAuthorityRoot,
-  globalGovernanceBootstrapSha256,
+  globalGovernanceAuthorityStore,
 } = {}) {
   assertUniversalDevelopmentMode("BOOTSTRAP");
   assert(globalGovernanceBootstrap === undefined && globalGovernanceEvents === undefined && globalGovernanceReadback === undefined && globalGovernanceObservedAtUtc === undefined, "Bootstrap Runtime rejects caller-supplied global-governance objects; provide only canonical store references");
-  const operationalGlobalGovernanceContexts = compileAllOperationalGlobalGovernanceContexts({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256});
+  const operationalGlobalGovernanceContexts = compileAllOperationalGlobalGovernanceContexts({authorityStore: globalGovernanceAuthorityStore});
   const persistence = persistCampaignState === null
     ? createCampaignStatePersistence({authorityRoot, repositoryRoot, relativePath: statePath})
     : {persistCampaignState};
@@ -257,8 +256,7 @@ export async function bootstrapAndStartAgentOS({
   const regulator = createIntentRegulatorRuntime({
     ...runtimeOptions,
     operationalGlobalGovernanceContexts,
-    globalGovernanceAuthorityRoot,
-    globalGovernanceBootstrapSha256,
+    globalGovernanceAuthorityStore,
     configuration,
     authorityRoot,
     repositoryRoot,
@@ -395,7 +393,7 @@ export async function bootstrapAndStartAgentOS({
     workflow_state_path: workflowPersistence?.state_path ?? null,
     questions_path: questionPersistence?.question_path ?? null,
     memory: memoryState,
-    global_governance: Object.freeze({bootstrap_sha256: globalGovernanceBootstrapSha256, contexts: operationalGlobalGovernanceContexts}),
+    global_governance: Object.freeze({bootstrap_sha256: operationalGlobalGovernanceContexts.SPAWNER.bootstrap_sha256, contexts: operationalGlobalGovernanceContexts}),
     refresh_memory: memoryRuntime === null ? null : ({observedAtUtc = new Date().toISOString()} = {}) => {
       memoryState = memoryRuntime.loadCurrent({observedAtUtc});
       return memoryState;

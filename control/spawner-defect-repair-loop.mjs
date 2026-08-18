@@ -13,6 +13,7 @@ import {
 
 export const SPAWNER_DEFECT_ENVELOPE_SCHEMA = "agentos.spawner_defect_envelope.v2";
 export const SPAWNER_REPAIR_RECEIPT_SCHEMA = "agentos.spawner_repair_receipt.v1";
+export const SPAWNER_INDEPENDENT_REPAIR_EVALUATION_HANDOFF_SCHEMA = "agentos.spawner_independent_repair_evaluation_handoff.v1";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 function assert(condition, message, code = "SPAWNER_DEFECT_LOOP_INVALID") { if (!condition) { const error = new Error(message); error.code = code; throw error; } }
@@ -70,4 +71,28 @@ export function reenterFailedSpawnerRepair({failedDefect, failureEvidenceSha256,
     withinSpawnerAuthority: true, evidenceSha256: failureEvidenceSha256,
     affectedDigests: [failedDefect.defect_sha256], requiredRepair: "Classify the failed repair as a new defect, preserve prior evidence, patch the owning layer, add a hostile regression, invalidate dependents, and rerun QA.", observedAtUtc,
   });
+}
+
+export function compileIndependentRepairEvaluationHandoff({handoffId, defect, candidateCommit, candidateTree, packageSha256, evidenceSetSha256, builderIdentitySha256, modelPolicySnapshotSha256, verifierRouteSha256, verifierCapabilityFloor, hostileFixtureIds, observedAtUtc}) {
+  assert(defect?.schema === SPAWNER_DEFECT_ENVELOPE_SCHEMA && defect.ownership_classification?.ownership === "SPAWNER_LANE", "Independent repair evaluation requires an owned Spawner defect");
+  requireText(handoffId, "Independent evaluation handoff identity");
+  assert(/^[0-9a-f]{40}$/u.test(candidateCommit) && /^[0-9a-f]{40}$/u.test(candidateTree), "Independent evaluation candidate Git identity is invalid");
+  [packageSha256, evidenceSetSha256, builderIdentitySha256, modelPolicySnapshotSha256, verifierRouteSha256].forEach((value) => requireSha(value, "Independent evaluation binding"));
+  assert(Number.isFinite(verifierCapabilityFloor) && verifierCapabilityFloor > 0, "Independent verifier capability floor is invalid");
+  assert(Array.isArray(hostileFixtureIds) && hostileFixtureIds.length > 0 && new Set(hostileFixtureIds).size === hostileFixtureIds.length, "Independent evaluation hostile fixture inventory is invalid");
+  const handoff = {
+    schema: SPAWNER_INDEPENDENT_REPAIR_EVALUATION_HANDOFF_SCHEMA, version: 1, handoff_id: handoffId,
+    defect_sha256: defect.defect_sha256, candidate_commit: candidateCommit, candidate_tree: candidateTree,
+    package_sha256: packageSha256, evidence_set_sha256: evidenceSetSha256, builder_identity_sha256: builderIdentitySha256,
+    model_policy_snapshot_sha256: modelPolicySnapshotSha256, verifier_route_sha256: verifierRouteSha256,
+    verifier_task_class: "DETERMINISTIC_QA", verifier_capability_floor: verifierCapabilityFloor,
+    verifier_selection: "MOST_ECONOMICAL_CAPABLE_AVAILABLE_MODEL", independent_identity_required: true,
+    read_only_candidate_custody: true, builder_key_access: false, governance_write_capability: false,
+    verifier_may_patch_candidate: false, repair_worker_may_self_clear: false,
+    required_outcomes: ["PASS", "FAIL", "INCONCLUSIVE"], fail_or_inconclusive_route: "TYPED_OWNED_DEFECT_REENTERS_AUTONOMOUS_REPAIR",
+    elapsed_time_may_weaken_sequence: false, hostile_fixture_ids: [...hostileFixtureIds].sort(compareUtf8),
+    observed_at_utc: observedAtUtc, handoff_sha256: null,
+  };
+  handoff.handoff_sha256 = canonicalDigest(digestBody(handoff, "handoff_sha256"));
+  return Object.freeze(handoff);
 }

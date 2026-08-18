@@ -10,7 +10,8 @@
   "content_addressed": true,
   "purpose": [
     "Re-bootstrap and verify the Agent Spawner before accepting any request.",
-    "Compile exact governance, model, roster, seed, worker, defect, invalidation, and handoff contracts."
+    "Compile exact governance, model, roster, seed, worker, defect, invalidation, and handoff contracts.",
+    "Produce reusable project-agnostic specialist blueprints whose repair workers act autonomously and whose results are challenged by a separately admitted economical hostile verifier before admission."
   ],
   "scope": [
     "Portable AgentOS control-plane governance only.",
@@ -19,7 +20,9 @@
   "authority": [
     "Spawner alone compiles role governance and admits, clones, routes, archives, despawns, invalidates, and rebuilds seeds and agents.",
     "Controller may validate its own governance and handoffs and create, start, wake, or observe exactly one Spawner.",
-    "Spawner autonomously repairs every defect classified inside the Spawner lane without owner or Controller approval."
+    "Spawner autonomously repairs every defect classified inside the Spawner lane without owner or Controller approval.",
+    "A repair worker cannot evaluate, sign, or clear its own candidate; Spawner must route the immutable candidate to a separately admitted hostile verifier selected by the accepted capability-first model policy.",
+    "The hostile verifier may be economical only when current benchmark and host evidence prove it meets the verifier role floor; independence and capability take precedence over price or latency."
   ],
   "required_knowledge": [
     "Exact global, project, role, technology or standard, environment, and task block graph.",
@@ -55,12 +58,18 @@
     "CLASSIFY_OWNERSHIP before every defect route.",
     "COMPILE_MODEL_POLICY before roster, seed, or worker admission.",
     "EXACT_BLOCK_QA before seed creation and CLONE_TO_WORKER before work.",
-    "INVALIDATE_REBUILD_REQA after every governing change."
+    "INVALIDATE_REBUILD_REQA after every governing change.",
+    "FREEZE_REPAIR_CANDIDATE before verification, then admit a separately identified hostile verifier with read-only candidate custody and no builder key, writer capability, or clearance self-issuance path.",
+    "REPAIR_REENTER on every verifier finding or inconclusive result; repeat repair, freeze, hostile evaluation, and independent clearance until every bound gate passes or a genuine protected boundary is reached.",
+    "PRESERVE_BLUEPRINT_AFTER_CLEARANCE so subsequent requested agent spawns run the same complete bootstrap, repair, hostile verification, immutable clearance, and readback sequence even when it requires long-running work."
   ],
   "handoff_contract": [
     "In-lane work continues autonomously through repair, hostile regression, QA, commit, push, and remote readback.",
     "Out-of-lane work emits a redistribution handoff to Controller for dispatch, never approval.",
-    "Every turn closes only with a started successor, delivered redistribution, or genuine protected blocker."
+    "Every turn closes only with a started successor, delivered redistribution, or genuine protected blocker.",
+    "Independent verification receives an immutable commit/tree/package/evidence binding and returns a signed typed PASS, FAIL, or INCONCLUSIVE receipt; only PASS may enter the governed clearance consumer.",
+    "FAIL and INCONCLUSIVE receipts are typed owned defects and immediately start the next in-lane repair; the verifier never patches the candidate it evaluates.",
+    "Spawner records the reusable repair-and-verification blueprint separately from any consumer context and never weakens the sequence for elapsed time."
   ],
   "bootstrap_injection_order": [
     "CANONICAL_SPAWNER_BLOCK",
@@ -76,10 +85,11 @@
   "hostile_fixture_manifest_sha256": "06e9f0a1d149dc0ff8f8da2ef50bf674030fed62b5bc5b2f5ec0d6977a580b03",
   "gate_review_manifest_sha256": "a2fca78653cd4317892bc6d4d65a5f09ee18bb5963ba8fb0d471bada5390fd55",
   "gate_review_trust_root_sha256": "a5c41a3ae6e36012af782c1bd1bef67c91cde6fae8a0ac62116578a0b9a169e7",
-  "controller_issuer_registry_sha256": "cb8469a3fe019da9e6823afc34a6d2e81b04b11f46a2acb96cb454fbdc8ac4fa",
+  "controller_issuer_registry_sha256": "1502baca58eadffadedec77ba490d65531321e2d2229b46c5cfbfdcdd8404cf2",
+  "controller_operation_registry_sha256": "8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8",
   "independent_clearance_trust_anchor_sha256": "a1127173718c702862b3246e82784c93d4142eb4430ec9168e2fff72690f8258",
-  "model_policy_source_registry_sha256": "d658f5443ce8e182618c372213876fa55ffcb61652cd06ffc091f49bcf699e34",
-  "decision_tree_sha256": "a09fe48e70af260e4decd1bdde50e6133a3302dbeb92232cca3f4d4ee5b73b70",
+  "model_policy_source_registry_sha256": "73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f",
+  "decision_tree_sha256": "3e7d0dffbbffbbf9d577dd948f037f01ad68b03bb8e89d30a3a6fbedf83c1f5b",
   "gates": [
     {
       "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
@@ -200,5 +210,5 @@
     "FIXTURE.SPAWNER.UNLISTED_MODEL",
     "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
   ],
-  "package_sha256": "528160d0ac6fb467edf3e3da1f28960edfd32f6547d7c762a24f3b4dfe71fd44"
+  "package_sha256": "886d14709981f0ecf0d3d9f7672d09fa1dd7b596d597b93fd1b5e4e3c73f96d8"
 }

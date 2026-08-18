@@ -13,17 +13,20 @@ export const GLOBAL_GOVERNANCE_MEMORY_GENESIS = canonicalDigest({schema: "agento
 export const GLOBAL_GOVERNANCE_MEMORY_WRITERS = Object.freeze(["SPAWNER", "GOVERNED_MEMORY_ADAPTER"]);
 
 const SHA256 = /^[0-9a-f]{64}$/u;
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
+const MAX_READBACK_AGE_MS = 24 * 60 * 60 * 1000;
 const EVENT_KEYS = ["schema", "version", "event_id", "sequence", "event_type", "writer_role", "prior_event_sha256", "snapshot", "target_snapshot_sha256", "reason_code", "observed_at_utc", "event_sha256"];
 const READBACK_KEYS = ["schema", "version", "status", "historical_activation_receipt_sha256", "live_event_count", "live_ledger_head_sha256", "current_snapshot_sha256", "observed_at_utc", "readback_sha256"];
 const LOCK_KEYS = ["schema", "version", "process_id", "target_relative_path", "acquired_at_utc", "fence_sha256"];
 const FORBIDDEN_KEY = /(?:consumer|customer|project_(?:id|name|path|context)|credential|secret|password|passkey|api_?key|access_?token|bearer|session_(?:id|state)|deployment|raw_(?:chat|prompt|transcript)|conversation)/iu;
-const FORBIDDEN_VALUE = /(?:(?:consumer|customer)[._ -]?(?:name|id|data|context)?|\b(?:user|assistant|system)\s*:|system prompt|raw (?:chat|prompt|browsing transcript)|bearer\s+[a-z0-9._~+/-]+=*|(?:api[_ -]?key|password|credential|access[_ -]?token)\s*[:=]|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bsk-[A-Za-z0-9_-]{12,}|(?:^|[\s"'])(?:\/Users\/|\/home\/|\/tmp\/|~\/|[A-Za-z]:\\))/iu;
+const FORBIDDEN_VALUE = /(?:(?:consumer|customer)|project[._ -](?:name|id|data|context|path)|\b(?:user|assistant|system)\s*:|system prompt|prompt text|raw (?:chat|prompt|browsing transcript)|bearer\s+[a-z0-9._~+/-]+=*|(?:api[_ -]?key|password|credential|access[_ -]?token)\s*[:=]|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bsk-[A-Za-z0-9_-]{12,}|\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b|(?:^|[\s"'])(?:\/U(?:sers)\/|\/home\/|\/tmp\/|\/var\/folders\/|~\/|[A-Za-z]:\\))/iu;
 const SAFE_FALSE_KEYS = new Set(["contains_consumer_context", "raw_browsing_transcripts", "raw_transcript_stored"]);
 
 function assert(condition, message, code = "GLOBAL_GOVERNANCE_MEMORY_INVALID") {
   if (!condition) { const error = new Error(message); error.code = code; throw error; }
 }
 function requireSha(value, label) { assert(typeof value === "string" && SHA256.test(value), `${label} must be a SHA-256`); }
+function requireUtc(value, label) { assert(typeof value === "string" && ISO_UTC.test(value) && Number.isFinite(Date.parse(value)), `${label} must be an exact UTC timestamp`); return Date.parse(value); }
 function digestBody(value, field) { return {...structuredClone(value), [field]: null}; }
 function exactKeys(value, keys, label) {
   assert(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
@@ -38,14 +41,21 @@ function resolveRegularRoot(authorityRoot, relativePath) {
 }
 
 function decodedVariants(value) {
-  const variants = [];
+  const normalized = value.normalize("NFKC").replace(/\r\n?/gu, "\n");
+  const variants = [normalized];
+  let percent = normalized;
+  for (let pass = 0; pass < 3; pass += 1) {
+    try { const decoded = decodeURIComponent(percent); if (decoded === percent) break; percent = decoded.normalize("NFKC"); variants.push(percent); } catch { break; }
+  }
+  const escaped = normalized.replace(/\\u\{([0-9a-f]{1,6})\}|\\u([0-9a-f]{4})|\\x([0-9a-f]{2})/giu, (_match, braced, unicode, hex) => String.fromCodePoint(Number.parseInt(braced ?? unicode ?? hex, 16)));
+  if (escaped !== normalized) variants.push(escaped);
   if (/^[A-Za-z0-9+/]{24,}={0,2}$/u.test(value) && value.length % 4 === 0) {
     try { const decoded = Buffer.from(value, "base64").toString("utf8"); if (/^[\x09\x0a\x0d\x20-\x7e]+$/u.test(decoded)) variants.push(decoded); } catch {}
   }
   if (/^[0-9a-f]{24,}$/iu.test(value) && value.length % 2 === 0) {
     try { const decoded = Buffer.from(value, "hex").toString("utf8"); if (/^[\x09\x0a\x0d\x20-\x7e]+$/u.test(decoded)) variants.push(decoded); } catch {}
   }
-  return variants;
+  return [...new Set(variants)];
 }
 
 export function assertProjectAgnosticGovernanceValue(value, trail = "global_governance") {
@@ -59,19 +69,28 @@ export function assertProjectAgnosticGovernanceValue(value, trail = "global_gove
     return value;
   }
   if (typeof value === "string") {
-    assert(!FORBIDDEN_VALUE.test(value), `${trail} contains private, transcript, secret, or filesystem content`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
-    for (const decoded of decodedVariants(value)) assert(!FORBIDDEN_VALUE.test(decoded), `${trail} contains encoded private content`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+    assert(value.length <= 1024 && !/[\r\n]/u.test(value), `${trail} contains forbidden private multiline or unbounded prose`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+    for (const decoded of decodedVariants(value)) {
+      assert(!FORBIDDEN_VALUE.test(decoded), `${trail} contains encoded private content`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+      assert(!/^https?:\/\//iu.test(decoded), `${trail} contains a raw URL; global memory requires a canonical source-registry identifier`, "GLOBAL_MEMORY_PRIVATE_CONTENT");
+    }
   }
   return value;
 }
 
-function validateGlobalEvent(event, {nowUtc = event?.observed_at_utc} = {}) {
+function trustedNowUtc() { return new Date().toISOString(); }
+
+function validateGlobalEvent(event) {
   exactKeys(event, EVENT_KEYS, "Global governance memory event");
   assertProjectAgnosticGovernanceValue(event);
   assert(event.schema === GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA && event.version === 1, "Global governance memory event identity is invalid");
   assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(event.writer_role), "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(["MODEL_POLICY_ACCEPTED", "MODEL_POLICY_SUPERSEDED", "MODEL_POLICY_INVALIDATED"].includes(event.event_type), "Global governance memory event type is invalid");
   assert(Number.isSafeInteger(event.sequence) && event.sequence >= 0, "Global governance memory sequence is invalid");
+  const observedMs = requireUtc(event.observed_at_utc, "Global governance observation time");
+  const nowUtc = trustedNowUtc();
+  const trustedMs = requireUtc(nowUtc, "Global governance trusted time");
+  assert(observedMs <= trustedMs, "Global governance event is future-dated", "GLOBAL_MEMORY_EVENT_FUTURE");
   requireSha(event.prior_event_sha256, "Global governance memory prior head");
   if (event.event_type === "MODEL_POLICY_ACCEPTED") {
     assert(event.target_snapshot_sha256 === null && event.reason_code === null, "Policy acceptance cannot target or explain another snapshot");
@@ -93,18 +112,22 @@ export function compileGlobalGovernanceMemoryEvent({eventId, sequence, eventType
   requireSha(priorEventSha256, "Global governance memory prior head");
   const event = {schema: GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA, version: 1, event_id: eventId, sequence, event_type: eventType, writer_role: writerRole, prior_event_sha256: priorEventSha256, snapshot, target_snapshot_sha256: targetSnapshotSha256, reason_code: reasonCode, observed_at_utc: observedAtUtc, event_sha256: null};
   event.event_sha256 = canonicalDigest(digestBody(event, "event_sha256"));
-  return validateGlobalEvent(event, {nowUtc: observedAtUtc});
+  return validateGlobalEvent(event);
 }
 
-export function replayGlobalGovernanceMemory(events, {observedAtUtc = events.at(-1)?.observed_at_utc ?? new Date().toISOString()} = {}) {
+export function replayGlobalGovernanceMemory(events) {
   assert(Array.isArray(events), "Global governance memory events must be an array");
   let head = GLOBAL_GOVERNANCE_MEMORY_GENESIS;
   let current = null;
   const history = [];
+  let priorObservedMs = -Infinity;
   for (let index = 0; index < events.length; index += 1) {
     const event = events[index];
     assertProjectAgnosticGovernanceValue(event);
-    validateGlobalEvent(event, {nowUtc: event.observed_at_utc});
+    validateGlobalEvent(event);
+    const observedMs = Date.parse(event.observed_at_utc);
+    assert(observedMs >= priorObservedMs, "Global governance event time is non-monotonic", "GLOBAL_MEMORY_TIME_NON_MONOTONIC");
+    priorObservedMs = observedMs;
     assert(event.sequence === index && event.prior_event_sha256 === head, "Global governance memory chain is stale or noncontiguous", "GLOBAL_MEMORY_CAS_STALE");
     if (event.event_type === "MODEL_POLICY_ACCEPTED") {
       assert(current === null, "A current model policy must be superseded or invalidated before replacement", "GLOBAL_MEMORY_INVALID_SUPERSESSION");
@@ -116,7 +139,7 @@ export function replayGlobalGovernanceMemory(events, {observedAtUtc = events.at(
     }
     head = event.event_sha256;
   }
-  if (current !== null) validateModelPolicySnapshot(current, {nowUtc: observedAtUtc, requireActive: true});
+  if (current !== null) validateModelPolicySnapshot(current, {nowUtc: trustedNowUtc(), requireActive: true});
   return Object.freeze({status: current === null ? "UNAVAILABLE" : "READY", event_count: events.length, head_sha256: head, current_snapshot: current, history: [...history]});
 }
 
@@ -147,6 +170,10 @@ export function recoverGlobalGovernanceMemoryLock({authorityRoot, relativePath =
 export function compileGlobalGovernanceMemoryReadback({events, historicalActivationReceiptSha256, observedAtUtc}) {
   requireSha(historicalActivationReceiptSha256, "Historical activation receipt");
   const replay = replayGlobalGovernanceMemory(events);
+  requireUtc(observedAtUtc, "Global governance readback time");
+  const trustedMs = Date.now();
+  assert(Date.parse(observedAtUtc) <= trustedMs, "Global governance readback is future-dated", "GLOBAL_MEMORY_READBACK_STALE");
+  assert(events.length === 0 || Date.parse(observedAtUtc) >= Date.parse(events.at(-1).observed_at_utc), "Global governance readback predates the live ledger head");
   assert(replay.status === "READY", "Global governance model policy is unavailable", "MODEL_POLICY_UNAVAILABLE");
   validateModelPolicySnapshot(replay.current_snapshot, {nowUtc: observedAtUtc, requireActive: true});
   const readback = {schema: GLOBAL_GOVERNANCE_MEMORY_READBACK_SCHEMA, version: 1, status: "CURRENT", historical_activation_receipt_sha256: historicalActivationReceiptSha256, live_event_count: replay.event_count, live_ledger_head_sha256: replay.head_sha256, current_snapshot_sha256: replay.current_snapshot.snapshot_sha256, observed_at_utc: observedAtUtc, readback_sha256: null};
@@ -154,12 +181,17 @@ export function compileGlobalGovernanceMemoryReadback({events, historicalActivat
   return readback;
 }
 
-export function validateGlobalGovernanceMemoryReadback(readback, {events, observedAtUtc = readback?.observed_at_utc} = {}) {
+export function validateGlobalGovernanceMemoryReadback(readback, {events, ...forbiddenClockOverrides} = {}) {
+  assert(Object.keys(forbiddenClockOverrides).length === 0, "Global governance trusted time cannot be supplied by a caller", "GLOBAL_MEMORY_TRUSTED_TIME_OVERRIDE");
   exactKeys(readback, READBACK_KEYS, "Global governance memory readback");
   assert(readback?.schema === GLOBAL_GOVERNANCE_MEMORY_READBACK_SCHEMA && readback.version === 1 && readback.status === "CURRENT", "Global governance memory readback identity is invalid");
+  requireUtc(readback.observed_at_utc, "Global governance readback time");
+  const trustedMs = Date.now();
+  assert(Date.parse(readback.observed_at_utc) <= trustedMs, "Global governance readback is future-dated", "GLOBAL_MEMORY_READBACK_STALE");
+  assert(trustedMs - Date.parse(readback.observed_at_utc) <= MAX_READBACK_AGE_MS, "Global governance readback is stale", "GLOBAL_MEMORY_READBACK_STALE");
   const replay = replayGlobalGovernanceMemory(events);
   assert(readback.live_event_count === replay.event_count && readback.live_ledger_head_sha256 === replay.head_sha256 && readback.current_snapshot_sha256 === replay.current_snapshot?.snapshot_sha256, "Global governance memory readback is stale", "GLOBAL_MEMORY_READBACK_STALE");
-  validateModelPolicySnapshot(replay.current_snapshot, {nowUtc: observedAtUtc, requireActive: true});
+  validateModelPolicySnapshot(replay.current_snapshot, {nowUtc: trustedNowUtc(), requireActive: true});
   requireSha(readback.readback_sha256, "Global governance memory readback digest");
   assert(readback.readback_sha256 === canonicalDigest(digestBody(readback, "readback_sha256")), "Global governance memory readback digest mismatch");
   return readback;

@@ -23,8 +23,8 @@ import {assertControllerOperationAuthorized} from "./spawner-bootstrap-governanc
 import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
 import {
   assertCanonicalControllerEventAuthority,
-  compileControllerEventNonce,
-  resolveCanonicalControllerIssuer,
+  consumeControllerEventOnce,
+  loadCanonicalControllerOperationRegistry,
 } from "./controller-event-authority.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -37,19 +37,10 @@ const AGENT_BINDING_SCHEMA = "agentos.controller_agent_binding.v1";
 const RUNTIME_READBACK_SCHEMA = "agentos.controller_runtime_readback.v1";
 const ADAPTER_READBACK_SCHEMA = "agentos.controller_adapter_readback.v1";
 const ARCHITECTURE_REPAIR_GATE_SCHEMA = "agentos.controller_architecture_repair_gate.v1";
-export const CONTROLLER_EVENT_TYPES = Object.freeze([
-  "SPAWNER_START_REQUESTED",
-  "SPAWNER_WAKE_REQUESTED",
-  "REDISTRIBUTION_RECEIVED",
-]);
+const CONTROLLER_OPERATION_REGISTRY = loadCanonicalControllerOperationRegistry();
+export const CONTROLLER_EVENT_TYPES = Object.freeze(CONTROLLER_OPERATION_REGISTRY.operations.map((entry) => entry.event_type));
 const EVENT_TYPES = CONTROLLER_EVENT_TYPES;
-const OPERATION_NAMES = Object.freeze([
-  "validateControllerGovernance",
-  "validateSpawnerHandoff",
-  "startAgentSpawner",
-  "wakeAgentSpawner",
-  "dispatchRedistribution",
-]);
+const OPERATION_NAMES = Object.freeze(CONTROLLER_OPERATION_REGISTRY.operations.flatMap((entry) => entry.adapters));
 const OPERATION_SET = new Set(OPERATION_NAMES);
 const OPERATIONAL_STATUSES = Object.freeze([
   "IDLE",
@@ -539,10 +530,11 @@ export function compileAgentOSControllerState({
 }
 
 export function validateControllerEvent(event) {
-  exactKeys(event, ["schema", "version", "event_id", "event_type", "source_role", "authority_epoch", "nonce", "controller_id", "project_id", "policy_epoch", "policy_state_sha256", "campaign_id", "sequence", "prior_controller_head_sha256", "payload", "occurred_at_utc", "event_sha256"], "controller event");
+  exactKeys(event, ["schema", "version", "event_id", "event_type", "issuer_id", "source_role", "authority_epoch", "nonce", "controller_id", "project_id", "policy_epoch", "policy_state_sha256", "campaign_id", "sequence", "prior_controller_head_sha256", "payload", "occurred_at_utc", "event_sha256", "signature_base64"], "controller event");
   assert(event.schema === EVENT_SCHEMA && event.version === 1, "controller event identity is invalid");
   requireIdentifier(event.event_id, "controller event ID");
   assert(EVENT_TYPES.includes(event.event_type), "controller event type is invalid");
+  requireIdentifier(event.issuer_id, "controller event issuer ID");
   requireString(event.source_role, "controller event source role");
   assert(Number.isSafeInteger(event.authority_epoch) && event.authority_epoch >= 1, "controller event authority epoch is invalid");
   requireSha(event.nonce, "controller event nonce");
@@ -556,35 +548,14 @@ export function validateControllerEvent(event) {
   requireRecord(event.payload, "controller event payload");
   requireUtc(event.occurred_at_utc, "controller event time");
   requireSha(event.event_sha256, "controller event digest");
-  assert(event.event_sha256 === digestWithout(event, "event_sha256"), "controller event digest mismatch");
+  requireString(event.signature_base64, "controller event signature");
   return event;
 }
 
-export function compileControllerEvent({eventId, eventType, controllerId, projectId, policyEpoch, policyStateSha256, campaignId = null, sequence, priorControllerHeadSha256 = null, payload = {}}) {
-  assert(EVENT_TYPES.includes(eventType), "controller event type is invalid");
-  const {registry, issuer_role: sourceRole} = resolveCanonicalControllerIssuer(eventType);
-  const event = {
-    schema: EVENT_SCHEMA,
-    version: 1,
-    event_id: eventId,
-    event_type: eventType,
-    source_role: sourceRole,
-    authority_epoch: registry.authority_epoch,
-    nonce: null,
-    controller_id: controllerId,
-    project_id: projectId,
-    policy_epoch: policyEpoch,
-    policy_state_sha256: policyStateSha256,
-    campaign_id: campaignId,
-    sequence,
-    prior_controller_head_sha256: priorControllerHeadSha256,
-    payload: structuredClone(payload),
-    occurred_at_utc: new Date().toISOString(),
-    event_sha256: null,
-  };
-  event.nonce = compileControllerEventNonce(event);
-  event.event_sha256 = digestWithout(event, "event_sha256");
-  return validateControllerEvent(event);
+export function compileControllerEvent() {
+  const error = new Error("Controller events require an externally held canonical Ed25519 issuer key; local role claims cannot compile signed authority");
+  error.code = "CONTROLLER_EVENT_EXTERNAL_SIGNATURE_REQUIRED";
+  throw error;
 }
 
 function requireReadback({adapters, operation, state, event, payload = {}}) {
@@ -632,11 +603,12 @@ function appendReadbacks(state, readbacks) {
   return [...state.action_receipts, ...readbacks];
 }
 
-export function validateControllerEventPreconditions({state, event, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
+export function validateControllerEventPreconditions({state, event, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
+  assert(Object.keys(unexpected).length === 0, "Controller preconditions reject caller-supplied authority overrides");
   validateAgentOSControllerState(state);
   validateControllerEvent(event);
   const controllerAuthority = assertCanonicalControllerEventAuthority({event, state});
-  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "CONTROLLER", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "CONTROLLER"});
   requireSha(event.payload.global_model_policy_projection_sha256, "Controller global model-policy projection");
   assert(event.payload.global_model_policy_projection_sha256 === globalGovernanceContext.projection_sha256, "Controller global model-policy projection is stale or widened");
   assert(event.controller_id === state.logical_controller_id && event.project_id === state.project_id, "controller event is not bound to project controller");
@@ -653,6 +625,11 @@ export function validateControllerEventPreconditions({state, event, globalGovern
     assert(starts.length === 1, "Controller cannot wake an absent or duplicate Spawner");
     requireIdentifier(event.payload.spawner_id, "Agent Spawner identity");
     assert(starts[0].details.spawner_id === event.payload.spawner_id, "Controller cannot wake a different Spawner");
+  } else if (["SPAWNER_OBSERVE_REQUESTED", "SPAWNER_LIVENESS_RECONCILE_REQUESTED"].includes(event.event_type)) {
+    const starts = state.action_receipts.filter((record) => record.operation === "startAgentSpawner");
+    assert(starts.length === 1, "Controller cannot observe or reconcile an absent or duplicate Spawner");
+    requireIdentifier(event.payload.spawner_id, "Agent Spawner identity");
+    assert(starts[0].details.spawner_id === event.payload.spawner_id, "Controller cannot observe or reconcile a different Spawner");
   } else if (event.event_type === "REDISTRIBUTION_RECEIVED") {
     requireSha(event.payload.redistribution_handoff_sha256, "Redistribution handoff");
   } else {
@@ -661,8 +638,8 @@ export function validateControllerEventPreconditions({state, event, globalGovern
   return {state, event, controllerAuthority};
 }
 
-export function processControllerEvent({state, event, adapters = {}, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
-  validateControllerEventPreconditions({state, event, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+function processControllerEvent({state, event, adapters = {}, globalGovernanceContext, globalGovernanceAuthorityStore}) {
+  validateControllerEventPreconditions({state, event, globalGovernanceContext, globalGovernanceAuthorityStore});
   const readbacks = [];
   let next = state;
   const payload = event.payload;
@@ -697,6 +674,20 @@ export function processControllerEvent({state, event, adapters = {}, globalGover
       const wake = add("wakeAgentSpawner", payload);
       requireDetails(wake, ["spawner_id", "status"], "Spawner wake");
       assert(wake.details.spawner_id === payload.spawner_id && wake.details.status === "WOKEN", "Spawner wake readback differs");
+      next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
+      break;
+    }
+    case "SPAWNER_OBSERVE_REQUESTED": {
+      const observed = add("observeAgentSpawner", payload);
+      requireDetails(observed, ["spawner_id", "status"], "Spawner observation");
+      assert(observed.details.spawner_id === payload.spawner_id && ["HEALTHY", "DEGRADED", "STOPPED"].includes(observed.details.status), "Spawner observation readback differs");
+      next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
+      break;
+    }
+    case "SPAWNER_LIVENESS_RECONCILE_REQUESTED": {
+      const reconciled = add("reconcileLiveness", payload);
+      requireDetails(reconciled, ["spawner_id", "status", "ordinary_role_mutation"], "Spawner liveness reconciliation");
+      assert(reconciled.details.spawner_id === payload.spawner_id && reconciled.details.status === "RECONCILED" && reconciled.details.ordinary_role_mutation === false, "Spawner liveness reconciliation exceeded Controller authority");
       next = updateState(next, {operational_status: "EVENT_DRIVEN_WAIT"});
       break;
     }
@@ -766,20 +757,22 @@ export function writeAgentOSControllerStateCompareAndSwap({authorityRoot, stateP
   return {state_sha256: readback.state_sha256, path: statePath};
 }
 
-export function applyAndWriteAgentOSControllerEvent({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
+export function applyAndWriteAgentOSControllerEvent({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
+  assert(Object.keys(unexpected).length === 0, "Controller event rejects caller-supplied authority overrides");
   const current = readAgentOSControllerState({authorityRoot, statePath});
   assert(current !== null, "controller state is missing");
   if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
-  const state = processControllerEvent({state: current, event, adapters, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  validateControllerEventPreconditions({state: current, event, globalGovernanceContext, globalGovernanceAuthorityStore});
+  consumeControllerEventOnce({stateRoot: authorityRoot, event});
+  const state = processControllerEvent({state: current, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore});
   const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
   return {state, persistence};
 }
 
 function nativeEventOperations(event) {
-  if (event.event_type === "SPAWNER_START_REQUESTED") return ["validateControllerGovernance", "validateSpawnerHandoff", "startAgentSpawner"];
-  if (event.event_type === "SPAWNER_WAKE_REQUESTED") return ["wakeAgentSpawner"];
-  if (event.event_type === "REDISTRIBUTION_RECEIVED") return ["dispatchRedistribution"];
-  throw new Error(`NATIVE_CONTROLLER_EVENT_UNSUPPORTED: ${event.event_type} has no asynchronous host route`);
+  const operation = CONTROLLER_OPERATION_REGISTRY.operations.find((entry) => entry.event_type === event.event_type);
+  assert(operation !== undefined, `NATIVE_CONTROLLER_EVENT_UNSUPPORTED: ${event.event_type} has no asynchronous host route`);
+  return operation.adapters;
 }
 
 async function invokeAsyncControllerAdapter({adapters, operation, state, event, payload = {}}) {
@@ -808,11 +801,13 @@ async function invokeAsyncControllerAdapter({adapters, operation, state, event, 
  * validated, and are then replayed as immutable readbacks through that same
  * state machine. This keeps provider I/O out of the state transition logic.
  */
-export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
+export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, statePath = "agentos/controller-state.json", expectedStateSha256, event, adapters, globalGovernanceContext, globalGovernanceAuthorityStore, ...unexpected}) {
+  assert(Object.keys(unexpected).length === 0, "Controller event rejects caller-supplied authority overrides");
   const current = readAgentOSControllerState({authorityRoot, statePath});
   assert(current !== null, "controller state is missing");
   if (expectedStateSha256 !== undefined) assert(current.state_sha256 === expectedStateSha256, "controller event parent state is stale");
-  validateControllerEventPreconditions({state: current, event, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  validateControllerEventPreconditions({state: current, event, globalGovernanceContext, globalGovernanceAuthorityStore});
+  consumeControllerEventOnce({stateRoot: authorityRoot, event});
   const operations = nativeEventOperations(event);
   const prepared = new Map();
   for (const operation of operations) {
@@ -820,7 +815,7 @@ export async function applyAndWriteAgentOSControllerEventAsync({authorityRoot, s
     prepared.set(operation, readback);
   }
   const synchronousAdapters = Object.fromEntries(operations.map((operation) => [operation, () => prepared.get(operation)]));
-  const state = processControllerEvent({state: current, event, adapters: synchronousAdapters, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  const state = processControllerEvent({state: current, event, adapters: synchronousAdapters, globalGovernanceContext, globalGovernanceAuthorityStore});
   const persistence = writeAgentOSControllerStateCompareAndSwap({authorityRoot, statePath, expectedStateSha256: current.state_sha256, state});
   return {state, persistence, host_readbacks: Object.fromEntries(prepared)};
 }

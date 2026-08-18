@@ -85,12 +85,12 @@ export function validatePermanentRoleCandidate(candidate) {
   return candidate;
 }
 
-export function compilePermanentRoleCandidate({roleId, blockSetSha256, independentEvaluationSha256, hostileFixtureIds, stopConditions, globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256} = {}) {
+export function compilePermanentRoleCandidate({roleId, blockSetSha256, independentEvaluationSha256, hostileFixtureIds, stopConditions, globalGovernanceContext, globalGovernanceAuthorityStore} = {}) {
   requireToken(roleId, "Permanent role candidate role");
   requireSha(blockSetSha256, "Permanent role candidate block set");
   requireSha(independentEvaluationSha256, "Permanent role candidate evaluation");
   assert(Array.isArray(hostileFixtureIds), "Permanent role candidate hostile fixture ids input is required");
-  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "PERMANENT_ROLE", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "PERMANENT_ROLE"});
   const candidate = {
     schema: PERMANENT_ROLE_CANDIDATE_SCHEMA,
     version: PERMANENT_ROLE_ROSTER_VERSION,
@@ -189,13 +189,13 @@ export function compilePermanentRoleRoster({spawnerAdmissionSha256, candidates, 
   return validatePermanentRoleRoster(roster);
 }
 
-export function admitNextPermanentRole(roster, roleId, {globalGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256} = {}) {
+export function admitNextPermanentRole(roster, roleId, {globalGovernanceContext, globalGovernanceAuthorityStore} = {}) {
   validatePermanentRoleRoster(roster);
   requireToken(roleId, "Permanent roster requested role");
   assert(roster.next_role_id === roleId, "Permanent role admission must follow the typed next role");
   const next = structuredClone(roster);
   const candidate = next.candidates.find((item) => item.role_id === roleId);
-  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityRoot: globalGovernanceAuthorityRoot, expectedRoleClass: "PERMANENT_ROLE", bootstrapSha256: globalGovernanceBootstrapSha256});
+  assertOperationalGlobalGovernanceContext(globalGovernanceContext, {authorityStore: globalGovernanceAuthorityStore, expectedRoleClass: "PERMANENT_ROLE"});
   assert(candidate.global_governance_context_sha256 === globalGovernanceContext.context_sha256, "Permanent role candidate global-governance context is stale");
   assert(candidate !== undefined && candidate.admission_state === "QA_READY_NOT_ADMITTED", "Permanent role candidate is not independently ready");
   candidate.admission_state = "ADMITTED_CONTROL_PLANE_ONLY";

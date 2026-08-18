@@ -5,7 +5,7 @@
   "authority_class": "COMPARATIVE_BENCHMARK",
   "provider_id": "ARTIFICIAL_ANALYSIS",
   "source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
-  "observed_at_utc": "2026-08-18T16:00:00.000Z",
+  "observed_at_utc": "2026-08-18T08:00:00.000Z",
   "expires_at_utc": "2026-09-17T16:00:00.000Z",
   "max_age_days": 30,
   "uncertainty": "MEDIUM",
@@ -36,11 +36,11 @@
         "reasoning_effort": "max",
         "capability_score": 57,
         "output_tokens_per_second": 120.3,
-        "input_usd_per_million": 2,
-        "output_usd_per_million": 12
+        "input_usd_per_million": 2.5,
+        "output_usd_per_million": 15
       }
     ]
   },
-  "summary_sha256": "0d3727875054e43255b101bd2d2aadb11d83994c9c6976fa3d8c8327a69b94d8",
-  "artifact_sha256": "b0281528e3054918a388dc19de8cbee593a215c1e500d100c4d5811c69662b58"
+  "summary_sha256": "6f81797ebfcbb0464e3a4586f9fd8073f16f3cfee6012c875aefb54d5b3d7a3a",
+  "artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153"
 }

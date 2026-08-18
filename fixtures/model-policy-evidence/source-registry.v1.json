@@ -7,6 +7,19 @@
       "authority_class": "COMPARATIVE_BENCHMARK",
       "provider_id": "ARTIFICIAL_ANALYSIS",
       "canonical_source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+      "expected_scheme": "https:",
+      "exact_path_segments": [
+        "models",
+        "gpt-5-6-sol"
+      ],
+      "query_policy": "DENY",
+      "fragment_policy": "DENY",
+      "port_policy": "DEFAULT_ONLY",
+      "redirect_policy": "DENY",
+      "content_type": "text/html",
+      "acquisition_method": "GOVERNED_OFFLINE_EVIDENCE_IMPORT",
+      "final_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+      "redirect_chain": [],
       "model_source_urls": {
         "gpt-5.6-luna": "https://artificialanalysis.ai/models/gpt-5-6-luna",
         "gpt-5.6-sol": "https://artificialanalysis.ai/models/gpt-5-6-sol",
@@ -14,8 +27,8 @@
       },
       "allowed_domain": "artificialanalysis.ai",
       "source_revision": "OBSERVATION.2026-08-18",
-      "acquired_at_utc": "2026-08-18T16:00:00.000Z",
-      "acquisition_receipt_sha256": "59f120026c3fe695500de8ca3aad7c45277cc90104fdde0826c711e4b7ee312d",
+      "acquired_at_utc": "2026-08-18T08:00:00.000Z",
+      "acquisition_receipt_sha256": "548c0a244c8c0fb4e0c25d4664f5bfb5f1f5333d7edd2787535c5620faea9bbb",
       "artifact_path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-18.json"
     },
     {
@@ -23,10 +36,22 @@
       "authority_class": "HOST_ATTESTATION",
       "provider_id": "CURRENT_CODEX_HOST",
       "canonical_source_url": "host-attestation:codex-model-catalog",
+      "expected_scheme": "host-attestation:",
+      "exact_path_segments": [
+        "codex-model-catalog"
+      ],
+      "query_policy": "DENY",
+      "fragment_policy": "DENY",
+      "port_policy": "NOT_APPLICABLE",
+      "redirect_policy": "NOT_APPLICABLE",
+      "content_type": "application/vnd.agentos.host-attestation+json",
+      "acquisition_method": "CURRENT_HOST_SIGNED_READBACK",
+      "final_url": "host-attestation:codex-model-catalog",
+      "redirect_chain": [],
       "allowed_domain": "HOST_ATTESTATION",
       "source_revision": "HOST.CATALOG.2026-08-18",
-      "acquired_at_utc": "2026-08-18T16:00:00.000Z",
-      "acquisition_receipt_sha256": "a0c78fffc7a78f61549d3431fc6f39e00b9946d368f775f7f1047b2d01193fb8",
+      "acquired_at_utc": "2026-08-18T08:00:00.000Z",
+      "acquisition_receipt_sha256": "cdb7e8c9ee2d7bf6f70cd4b9ce769b6fd648d7a8a8cad0c2cd4f4f022ff68105",
       "artifact_path": "fixtures/model-policy-evidence/current-host.2026-08-18.json"
     },
     {
@@ -34,12 +59,27 @@
       "authority_class": "FIRST_PARTY_PROVIDER",
       "provider_id": "OPENAI",
       "canonical_source_url": "https://developers.openai.com/api/docs/models/compare",
+      "expected_scheme": "https:",
+      "exact_path_segments": [
+        "api",
+        "docs",
+        "models",
+        "compare"
+      ],
+      "query_policy": "DENY",
+      "fragment_policy": "DENY",
+      "port_policy": "DEFAULT_ONLY",
+      "redirect_policy": "DENY",
+      "content_type": "text/html",
+      "acquisition_method": "GOVERNED_OFFLINE_EVIDENCE_IMPORT",
+      "final_url": "https://developers.openai.com/api/docs/models/compare",
+      "redirect_chain": [],
       "allowed_domain": "developers.openai.com",
       "source_revision": "DOCS.MODEL_COMPARE.2026-08-18",
-      "acquired_at_utc": "2026-08-18T16:00:00.000Z",
-      "acquisition_receipt_sha256": "545ccfe713020519ec960a2109107a7b8f739471c26d8358854a5dec3399be9e",
+      "acquired_at_utc": "2026-08-18T08:00:00.000Z",
+      "acquisition_receipt_sha256": "a96f0d8d94cdd6fb965cb0685a41537469a515c103faaa5e2567f6522d188955",
       "artifact_path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json"
     }
   ],
-  "registry_sha256": "d658f5443ce8e182618c372213876fa55ffcb61652cd06ffc091f49bcf699e34"
+  "registry_sha256": "73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f"
 }

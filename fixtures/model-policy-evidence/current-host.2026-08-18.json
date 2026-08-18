@@ -5,18 +5,48 @@
   "authority_class": "HOST_ATTESTATION",
   "provider_id": "CURRENT_CODEX_HOST",
   "source_url": "host-attestation:codex-model-catalog",
-  "observed_at_utc": "2026-08-18T16:00:00.000Z",
+  "observed_at_utc": "2026-08-18T08:00:00.000Z",
   "expires_at_utc": "2026-08-19T16:00:00.000Z",
   "max_age_days": 1,
   "uncertainty": "LOW",
   "summary": {
     "host_id": "CURRENT_CODEX_HOST",
     "models": [
-      {"model_id":"gpt-5.6-luna","available":true,"supported_reasoning_efforts":["low","medium","high","xhigh","max"]},
-      {"model_id":"gpt-5.6-sol","available":true,"supported_reasoning_efforts":["low","medium","high","xhigh","max"]},
-      {"model_id":"gpt-5.6-terra","available":true,"supported_reasoning_efforts":["low","medium","high","xhigh","max"]}
+      {
+        "model_id": "gpt-5.6-luna",
+        "available": true,
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      },
+      {
+        "model_id": "gpt-5.6-sol",
+        "available": true,
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      },
+      {
+        "model_id": "gpt-5.6-terra",
+        "available": true,
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
     ]
   },
   "summary_sha256": "8d261155b7f284110332c77ea17af939e0b357030dcc8407f06b4d3f0a5154a5",
-  "artifact_sha256": "9e3d3a6ecf04aa07340188ab85e43da9559970555ac178dc890054e78a827fc2"
+  "artifact_sha256": "e60b95ca1587c93613799ca21638bc19b0d502706f66074da2e7fd3f3882a63d"
 }

@@ -6,53 +6,90 @@
   "visibility": "PRIVATE_GLOBAL_GOVERNANCE",
   "contains_consumer_context": false,
   "raw_browsing_transcripts": false,
-  "observed_at_utc": "2026-08-18T16:00:00.000Z",
+  "observed_at_utc": "2026-08-18T08:00:00.000Z",
   "expires_at_utc": "2026-08-19T16:00:00.000Z",
   "evidence": [
     {
       "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
       "authority_class": "FIRST_PARTY_PROVIDER",
-      "source_url": "https://developers.openai.com/api/docs/models/compare",
-      "observed_at_utc": "2026-08-18T16:00:00.000Z",
-      "expires_at_utc": "2026-08-25T16:00:00.000Z",
+      "observed_at_utc": "2026-08-18T08:00:00.000Z",
+      "expires_at_utc": "2026-08-25T08:00:00.000Z",
       "max_age_days": 7,
       "uncertainty": "MEDIUM",
-      "artifact_path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json",
-      "artifact_sha256": "b935101dcc9773f813207ec07cfb7bd1d4918e6d5a81d845cd10b82855594c30",
-      "file_sha256": "ecbe0cc9f6bb6b9004b3990787e1b2a9b3549e8a80dad5e50512e23176f4666e",
+      "artifact_sha256": "eefc73fdba47487473d8ee312e93c4f7c27231537e891b3aa1a9a8da85eb90be",
+      "file_sha256": "21a81b105e9a7e22baab1503d2091910c36b7038559d8b303147fdd3529ce3ef",
       "summary_sha256": "097f60b3aba7735f85dec85e2b6f568caaec0d3814b88eb5e128c8b795749f5e",
       "raw_transcript_stored": false
     },
     {
       "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
       "authority_class": "COMPARATIVE_BENCHMARK",
-      "source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
-      "observed_at_utc": "2026-08-18T16:00:00.000Z",
+      "observed_at_utc": "2026-08-18T08:00:00.000Z",
       "expires_at_utc": "2026-09-17T16:00:00.000Z",
       "max_age_days": 30,
       "uncertainty": "MEDIUM",
-      "artifact_path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-18.json",
-      "artifact_sha256": "b0281528e3054918a388dc19de8cbee593a215c1e500d100c4d5811c69662b58",
-      "file_sha256": "5e3280d3373689dbfe39b724751421fe709e2ec42d20e29647c7ce172bcc5070",
-      "summary_sha256": "0d3727875054e43255b101bd2d2aadb11d83994c9c6976fa3d8c8327a69b94d8",
+      "artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153",
+      "file_sha256": "99edf65d85d572ed8fd7d06eb885e318b684dc2a4b4b6aa33d94a531c0811d48",
+      "summary_sha256": "6f81797ebfcbb0464e3a4586f9fd8073f16f3cfee6012c875aefb54d5b3d7a3a",
       "raw_transcript_stored": false
     },
     {
       "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-18",
       "authority_class": "HOST_ATTESTATION",
-      "source_url": "host-attestation:codex-model-catalog",
-      "observed_at_utc": "2026-08-18T16:00:00.000Z",
+      "observed_at_utc": "2026-08-18T08:00:00.000Z",
       "expires_at_utc": "2026-08-19T16:00:00.000Z",
       "max_age_days": 1,
       "uncertainty": "LOW",
-      "artifact_path": "fixtures/model-policy-evidence/current-host.2026-08-18.json",
-      "artifact_sha256": "9e3d3a6ecf04aa07340188ab85e43da9559970555ac178dc890054e78a827fc2",
-      "file_sha256": "86756e6e401703d92de7e06e44a221eaae0ceef1aef115b2e6e135e8155c0d0c",
+      "artifact_sha256": "e60b95ca1587c93613799ca21638bc19b0d502706f66074da2e7fd3f3882a63d",
+      "file_sha256": "01bd95c166c312ee976d3d11f5e6f95cac59733c84e5d32427ce6ad2f8e3e497",
       "summary_sha256": "8d261155b7f284110332c77ea17af939e0b357030dcc8407f06b4d3f0a5154a5",
       "raw_transcript_stored": false
     }
   ],
-  "conflicts": [],
+  "conflicts": [
+    {
+      "conflict_id": "CONFLICT.GPT_5_6_TERRA.INPUT_USD_PER_MILLION",
+      "field": "gpt-5.6-terra.input_usd_per_million",
+      "first_party_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
+      "first_party_artifact_sha256": "eefc73fdba47487473d8ee312e93c4f7c27231537e891b3aa1a9a8da85eb90be",
+      "first_party_value": "2",
+      "comparative_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
+      "comparative_artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153",
+      "comparative_value": "2.5",
+      "authority_ordering": [
+        "FIRST_PARTY_PROVIDER",
+        "COMPARATIVE_BENCHMARK"
+      ],
+      "selected_value": "2",
+      "resolution": "FIRST_PARTY_GOVERNS",
+      "rationale_code": "PROVIDER_FACT_OVERRIDES_COMPARATIVE_ECONOMICS",
+      "observed_at_utc": "2026-08-18T08:00:00.000Z",
+      "expires_at_utc": "2026-08-19T16:00:00.000Z",
+      "supersession_trigger": "ANY_BOUND_SOURCE_REVISION_OR_VALUE_CHANGE",
+      "conflict_sha256": "a2b7e5b583bbcf8732b0a0e252d57cb2c816df74b7765baec5bfaa05b457d70b"
+    },
+    {
+      "conflict_id": "CONFLICT.GPT_5_6_TERRA.OUTPUT_USD_PER_MILLION",
+      "field": "gpt-5.6-terra.output_usd_per_million",
+      "first_party_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
+      "first_party_artifact_sha256": "eefc73fdba47487473d8ee312e93c4f7c27231537e891b3aa1a9a8da85eb90be",
+      "first_party_value": "12",
+      "comparative_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
+      "comparative_artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153",
+      "comparative_value": "15",
+      "authority_ordering": [
+        "FIRST_PARTY_PROVIDER",
+        "COMPARATIVE_BENCHMARK"
+      ],
+      "selected_value": "12",
+      "resolution": "FIRST_PARTY_GOVERNS",
+      "rationale_code": "PROVIDER_FACT_OVERRIDES_COMPARATIVE_ECONOMICS",
+      "observed_at_utc": "2026-08-18T08:00:00.000Z",
+      "expires_at_utc": "2026-08-19T16:00:00.000Z",
+      "supersession_trigger": "ANY_BOUND_SOURCE_REVISION_OR_VALUE_CHANGE",
+      "conflict_sha256": "ab90f3a02849dd410c9f4b3dc4c3666d9263d9c0f4275b5636b59c963324cc64"
+    }
+  ],
   "models": [
     {
       "model_id": "gpt-5.6-luna",
@@ -369,5 +406,5 @@
       ]
     }
   ],
-  "snapshot_sha256": "436f5236dc6f673b82fa78d3d616ed242d27e6e0b5cbbdf03f99096b83b2bf4c"
+  "snapshot_sha256": "4cf8659fc4392d0449c4c759e6fbb27fe980e49ef45f6c7d224401d21e800764"
 }

@@ -13,10 +13,10 @@ function assert(value, message, code = "OPERATIONAL_GLOBAL_GOVERNANCE_INVALID") 
 function exact(value, keys, label) { assert(value && typeof value === "object" && !Array.isArray(value), `${label} must be an object`); assert(JSON.stringify(Object.keys(value).sort(compareUtf8)) === JSON.stringify([...keys].sort(compareUtf8)), `${label} fields mismatch`); }
 function body(value) { return {...structuredClone(value), context_sha256: null}; }
 
-export function compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256, roleClass, operationalId} = {}) {
+export function compileOperationalGlobalGovernanceContext({authorityStore, roleClass, operationalId} = {}) {
   assert(MODEL_POLICY_ROLE_CLASSES.includes(roleClass), "Operational role class is invalid");
   assert(typeof operationalId === "string" && ID.test(operationalId), "Operational context identity is invalid");
-  const governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot, bootstrapSha256, roleClass});
+  const governed = resolveCanonicalGlobalGovernanceProjection({authorityStore, roleClass});
   const context = {
     schema: OPERATIONAL_GLOBAL_GOVERNANCE_CONTEXT_SCHEMA, version: 1, status: "READY", operational_id: operationalId,
     role_class: roleClass, read_only_projection: true, global_memory_write_capability: roleClass === "SPAWNER",
@@ -31,7 +31,7 @@ export function compileOperationalGlobalGovernanceContext({authorityRoot, bootst
   return Object.freeze(context);
 }
 
-export function assertOperationalGlobalGovernanceContext(context, {authorityRoot, expectedRoleClass, bootstrapSha256, activeWorker = false} = {}) {
+export function assertOperationalGlobalGovernanceContext(context, {authorityStore, expectedRoleClass, activeWorker = false} = {}) {
   exact(context, ["schema", "version", "status", "operational_id", "role_class", "read_only_projection", "global_memory_write_capability", "ledger_head_sha256", "memory_readback_sha256", "bootstrap_sha256", "snapshot_sha256", "projection_sha256", "compact_selection", "worker_binding_rule", "context_sha256"], "Operational global-governance context");
   assert(issuedContexts.has(context), "Operational context was not constructed from canonical global governance memory");
   assert(context.schema === OPERATIONAL_GLOBAL_GOVERNANCE_CONTEXT_SCHEMA && context.version === 1 && context.status === "READY", "Operational context identity is invalid");
@@ -40,7 +40,7 @@ export function assertOperationalGlobalGovernanceContext(context, {authorityRoot
   for (const field of ["ledger_head_sha256", "memory_readback_sha256", "bootstrap_sha256", "snapshot_sha256", "projection_sha256", "context_sha256"]) assert(typeof context[field] === "string" && SHA.test(context[field]), `Operational context ${field} is invalid`);
   assert(context.context_sha256 === canonicalDigest(body(context)), "Operational context digest mismatch");
   let governed;
-  try { governed = resolveCanonicalGlobalGovernanceProjection({authorityRoot, bootstrapSha256, roleClass: expectedRoleClass}); }
+  try { governed = resolveCanonicalGlobalGovernanceProjection({authorityStore, roleClass: expectedRoleClass}); }
   catch (error) {
     if (expectedRoleClass === "WORKING_AGENT" && activeWorker) return Object.freeze({status: "BOUND_UNTIL_HANDOFF", context});
     throw error;
@@ -82,11 +82,11 @@ export function appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, rela
   }
   try {
     const events = readGlobalGovernanceMemory({authorityRoot, relativePath});
-    const replay = replayGlobalGovernanceMemory(events, {observedAtUtc: event.observed_at_utc});
+    const replay = replayGlobalGovernanceMemory(events);
     assert(replay.head_sha256 === expectedHeadSha256, "Global governance memory compare-and-swap head is stale", "GLOBAL_MEMORY_CAS_STALE");
     if (events.some((entry) => entry.event_sha256 === event.event_sha256)) return {status: "IDEMPOTENT", replay, fence_sha256: lock.fence_sha256};
     assert(event.sequence === events.length && event.prior_event_sha256 === replay.head_sha256, "Global governance memory append is not bound to the current head");
-    const nextReplay = replayGlobalGovernanceMemory([...events, event], {observedAtUtc: event.observed_at_utc});
+    const nextReplay = replayGlobalGovernanceMemory([...events, event]);
     const temporary = `${target}.tmp.${lock.fence_sha256}`;
     const descriptor = fs.openSync(temporary, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0), 0o600);
     try { fs.writeFileSync(descriptor, `${[...events, event].map((entry) => canonicalJson(entry)).join("\n")}\n`); fs.fsyncSync(descriptor); } finally { fs.closeSync(descriptor); }
@@ -101,6 +101,6 @@ export function appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot, rela
   }
 }
 
-export function compileAllOperationalGlobalGovernanceContexts({authorityRoot, bootstrapSha256} = {}) {
-  return Object.freeze(Object.fromEntries(MODEL_POLICY_ROLE_CLASSES.map((roleClass) => [roleClass, compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256, roleClass, operationalId: `CONTEXT.${roleClass}.BOOTSTRAP`})])));
+export function compileAllOperationalGlobalGovernanceContexts({authorityStore} = {}) {
+  return Object.freeze(Object.fromEntries(MODEL_POLICY_ROLE_CLASSES.map((roleClass) => [roleClass, compileOperationalGlobalGovernanceContext({authorityStore, roleClass, operationalId: `CONTEXT.${roleClass}.BOOTSTRAP`})])));
 }

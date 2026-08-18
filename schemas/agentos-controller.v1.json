@@ -57,15 +57,17 @@
     "naming_rule": "Temporary role display names carry the exact version and two-digit test-build tag."
   },
   "event_types": [
+    "REDISTRIBUTION_RECEIVED",
+    "SPAWNER_LIVENESS_RECONCILE_REQUESTED",
+    "SPAWNER_OBSERVE_REQUESTED",
     "SPAWNER_START_REQUESTED",
-    "SPAWNER_WAKE_REQUESTED",
-    "REDISTRIBUTION_RECEIVED"
+    "SPAWNER_WAKE_REQUESTED"
   ],
   "event_authority": {
     "registry": "specialist-blocks/control-plane/agent-spawner/controller-issuer-registry.v1.json",
-    "controller_issuer_operations": ["SPAWNER_START_REQUESTED", "SPAWNER_WAKE_REQUESTED"],
+    "controller_issuer_operations": ["SPAWNER_LIVENESS_RECONCILE_REQUESTED", "SPAWNER_OBSERVE_REQUESTED", "SPAWNER_START_REQUESTED", "SPAWNER_WAKE_REQUESTED"],
     "spawner_issuer_operations": ["REDISTRIBUTION_RECEIVED"],
-    "required_event_bindings": ["authority_epoch", "nonce", "monotonic_sequence", "prior_ledger_head", "trusted_time"],
+    "required_event_bindings": ["authority_epoch", "issuer_id", "nonce", "monotonic_sequence", "prior_ledger_head", "signature_base64", "trusted_time"],
     "caller_overrides_forbidden": ["source_role", "occurred_at_utc", "authority_registry", "replay_state", "trusted_time"],
     "adapter_rule": "Resolve and validate canonical issuer, current authority epoch, trusted time, nonce, sequence, replay head, state, custody, and global policy before any adapter invocation."
   },

@@ -293,8 +293,8 @@ const fake = makeFakeHost();
 const recorder = persistRecorder();
 const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-runtime-"));
 const globalFixture = materializeTestGlobalGovernanceStore({authorityRoot});
-const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityRoot, bootstrapSha256: globalFixture.bootstrap.bootstrap_sha256, roleClass: "SCHEDULER", operationalId: "CONTEXT.SCHEDULER.CANONICAL.CAMPAIGN.TEST"});
-const governanceOptions = {globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityRoot: authorityRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256};
+const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityStore: globalFixture.authorityStore, roleClass: "SCHEDULER", operationalId: "CONTEXT.SCHEDULER.CANONICAL.CAMPAIGN.TEST"});
+const governanceOptions = {globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityStore: globalFixture.authorityStore};
 const result = await runCanonicalCampaign({
   ...governanceOptions,
   bootstrapPlan,
@@ -384,7 +384,7 @@ const rejectedFake = makeFakeHost({acceptAudits: false});
 const rejectedRecorder = persistRecorder();
 const rejectedAuthorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-canonical-rejected-"));
 const rejectedGlobalFixture = materializeTestGlobalGovernanceStore({authorityRoot: rejectedAuthorityRoot});
-const rejectedSchedulerContext = compileOperationalGlobalGovernanceContext({authorityRoot: rejectedAuthorityRoot, bootstrapSha256: rejectedGlobalFixture.bootstrap.bootstrap_sha256, roleClass: "SCHEDULER", operationalId: "CONTEXT.SCHEDULER.CANONICAL.REJECTED.TEST"});
+const rejectedSchedulerContext = compileOperationalGlobalGovernanceContext({authorityStore: rejectedGlobalFixture.authorityStore, roleClass: "SCHEDULER", operationalId: "CONTEXT.SCHEDULER.CANONICAL.REJECTED.TEST"});
 const rejectedResult = await runCanonicalCampaign({
   bootstrapPlan,
   admission,
@@ -392,8 +392,7 @@ const rejectedResult = await runCanonicalCampaign({
   hostAttachment: attachment,
   authorityRoot: rejectedAuthorityRoot,
   globalGovernanceContext: rejectedSchedulerContext,
-  globalGovernanceAuthorityRoot: rejectedAuthorityRoot,
-  globalGovernanceBootstrapSha256: rejectedGlobalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceAuthorityStore: rejectedGlobalFixture.authorityStore,
   laneWork: laneWork(),
   projectBinding: {project_id: PROJECT_ID},
   persistCampaignState: rejectedRecorder.persist,

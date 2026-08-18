@@ -15,6 +15,8 @@ import {
   opaqueSchedulerWorktreeRef,
 } from "./hybrid-scheduler.mjs";
 import {compileOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
+import {openGlobalGovernanceAuthorityStore} from "./global-governance-bootstrap.mjs";
+import {getSealedCanonicalAuthority} from "./sealed-canonical-authority.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -1510,8 +1512,8 @@ const evidenceWorktree = args.evidence_worktree ? path.resolve(args.evidence_wor
 const decisionTreePath = args.decision_tree ? path.resolve(args.decision_tree) : null;
 const nowUtc = new Date().toISOString();
 const schedulerRootInput = args.scheduler_root ?? process.env.AGENTOS_SCHEDULER_ROOT;
-const globalGovernanceAuthorityRoot = args.global_governance_authority_root;
-const globalGovernanceBootstrapSha256 = args.global_governance_bootstrap_sha256;
+const globalGovernanceStoreRoot = args.global_governance_store_root;
+const globalGovernanceStoreBootstrap = args.global_governance_store_bootstrap;
 
 requireString(role, "worker role");
 requireString(sessionId, "worker session");
@@ -1528,8 +1530,9 @@ requireUtc(nowUtc, "worker time");
 assert(fs.existsSync(worktreePath) && fs.statSync(worktreePath).isDirectory(), "worker worktree is unavailable");
 const schedulerRoot = path.resolve(schedulerRootInput);
 process.env.AGENTOS_SCHEDULER_ROOT = schedulerRoot;
-const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.WORKER.${crypto.createHash("sha256").update(sessionId).digest("hex").slice(0, 24).toUpperCase()}`});
-checkScheduler = createHybridScheduler({authorityRoot: schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+const globalGovernanceAuthorityStore = openGlobalGovernanceAuthorityStore({sealedAuthority: getSealedCanonicalAuthority(), authorityRoot: path.resolve(globalGovernanceStoreRoot), bootstrapSha256: globalGovernanceStoreBootstrap});
+const schedulerGovernanceContext = compileOperationalGlobalGovernanceContext({authorityStore: globalGovernanceAuthorityStore, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.WORKER.${crypto.createHash("sha256").update(sessionId).digest("hex").slice(0, 24).toUpperCase()}`});
+checkScheduler = createHybridScheduler({authorityRoot: schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityStore});
 checkSchedulerContext = {taskId, role};
 
 function writeFileAtomic(target, content) {

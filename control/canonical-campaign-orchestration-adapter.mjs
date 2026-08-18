@@ -88,8 +88,7 @@ export async function runCanonicalCampaign({
   schedulerRoot = null,
   schedulerPolicy = null,
   globalGovernanceContext,
-  globalGovernanceAuthorityRoot,
-  globalGovernanceBootstrapSha256,
+  globalGovernanceAuthorityStore,
 } = {}) {
   assertUniversalDevelopmentMode("CAMPAIGN");
   assert(typeof clock === "function", "canonical campaign clock must be callable");
@@ -121,8 +120,7 @@ export async function runCanonicalCampaign({
     policy: schedulerPolicy ?? undefined,
     clock,
     globalGovernanceContext,
-    globalGovernanceAuthorityRoot,
-    globalGovernanceBootstrapSha256,
+    globalGovernanceAuthorityStore,
   });
   const initialTime = clock();
   requireUtc(initialTime, "canonical campaign start time");

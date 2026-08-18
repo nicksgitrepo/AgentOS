@@ -46,9 +46,7 @@ const handoff = compileSealedBootstrapHandoff({
 assert.throws(() => compileSpawnerGoverningBlockSet({blockSetId: "SPAWNER-BLOCK-SET-INVALID", requiredLayers: [], blockEvidence: []}), /Caller-authored/iu);
 const blockSet = compileSpawnerGoverningBlockSet({
   blockSetId: "SPAWNER-BLOCK-SET-1",
-  authorityRoot: repositoryRoot,
-  globalGovernanceAuthorityRoot: governanceRoot,
-  globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceAuthorityStore: globalFixture.authorityStore,
 });
 
 const admission = compileTypedSpawnerAdmission({
@@ -56,9 +54,7 @@ const admission = compileTypedSpawnerAdmission({
   controllerId: "CONTROLLER-TASK-1",
   governanceReadiness: readiness,
   sealedBootstrapHandoff: handoff,
-  authorityRoot: repositoryRoot,
-  globalGovernanceAuthorityRoot: governanceRoot,
-  globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256,
+  globalGovernanceAuthorityStore: globalFixture.authorityStore,
 });
 validateTypedSpawnerAdmission(admission, {governanceReadiness: readiness, sealedBootstrapHandoff: handoff, globalPolicyProjection, modelPolicySnapshot});
 assert.equal(admission.admission_state, "ADMITTED_COMPILER_ONLY");
@@ -70,22 +66,22 @@ assert.equal(admission.permanent_roles_constructed, 0);
 assert.equal(admission.next_action, "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME");
 
 const blockedReadiness = compileControllerGovernanceReadiness({controllerId: "CONTROLLER-TASK-1", governance: null, observedAtUtc: NOW});
-assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: blockedReadiness, sealedBootstrapHandoff: handoff, authorityRoot: repositoryRoot, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256}), /Controller governance readiness/u);
+assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: blockedReadiness, sealedBootstrapHandoff: handoff, globalGovernanceAuthorityStore: globalFixture.authorityStore}), /Controller governance readiness/u);
 
 const badHandoff = {...handoff, next_action: "SKIP_TO_WAVE", handoff_sha256: null};
 badHandoff.handoff_sha256 = canonicalDigest({...badHandoff, handoff_sha256: null});
-assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: badHandoff, authorityRoot: repositoryRoot, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256}), /next action is invalid/u);
+assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: badHandoff, globalGovernanceAuthorityStore: globalFixture.authorityStore}), /next action is invalid/u);
 
 const incompleteBlocks = {...blockSet, status: "INCOMPLETE", block_set_sha256: null};
 incompleteBlocks.block_set_sha256 = canonicalDigest({...incompleteBlocks, block_set_sha256: null});
-assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: handoff, blockSet: incompleteBlocks, authorityRoot: repositoryRoot, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256}), /Caller-authored/iu);
+assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: handoff, blockSet: incompleteBlocks, globalGovernanceAuthorityStore: globalFixture.authorityStore}), /Caller-authored/iu);
 
 const placeholderBlocks = structuredClone(blockSet);
 placeholderBlocks.block_evidence[0].non_placeholder = false;
 placeholderBlocks.block_evidence[0].evidence_sha256 = canonicalDigest({...placeholderBlocks.block_evidence[0], evidence_sha256: null});
 placeholderBlocks.block_set_sha256 = null;
 placeholderBlocks.block_set_sha256 = canonicalDigest({...placeholderBlocks, block_set_sha256: null});
-assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: handoff, blockSet: placeholderBlocks, authorityRoot: repositoryRoot, globalGovernanceAuthorityRoot: governanceRoot, globalGovernanceBootstrapSha256: globalFixture.bootstrap.bootstrap_sha256}), /Caller-authored/iu);
+assert.throws(() => compileTypedSpawnerAdmission({spawnerId: "AGENTOS-SPAWNER-1", controllerId: "CONTROLLER-TASK-1", governanceReadiness: readiness, sealedBootstrapHandoff: handoff, blockSet: placeholderBlocks, globalGovernanceAuthorityStore: globalFixture.authorityStore}), /Caller-authored/iu);
 
 const activationBypass = {...admission, worker_spawned: true, admission_sha256: null};
 activationBypass.admission_sha256 = canonicalDigest({...activationBypass, admission_sha256: null});

@@ -9,7 +9,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {auditModelPolicyEvidenceStore, selectEcoModelRoute, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NOW = "2026-08-18T16:30:00.000Z";
+const NOW = "2026-08-18T08:30:00.000Z";
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json")));
 const activate = (snapshot) => { snapshot.status = "ACCEPTED_ACTIVE"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); return snapshot; };
 const active = activate(structuredClone(prepared));
@@ -46,6 +46,9 @@ hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "
 hostile(({snapshot}) => { snapshot.models.push({...snapshot.models[0], model_id: "unlisted-cheap-model"}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /unlisted|coverage differs/iu);
 hostile(({snapshot}) => { snapshot.models[0].input_usd_per_million = 0.0001; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /First-party model fact conflict/iu);
 hostile(({snapshot}) => { snapshot.task_classes[2].preferred_reasoning_effort = "ultra"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /reasoning preference/iu);
+hostile(({snapshot}) => { snapshot.conflicts = []; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /claims an explicit conflict|not explicitly resolved|Structured source conflicts/iu);
+hostile(({snapshot}) => { snapshot.conflicts[0].comparative_value = "2"; snapshot.conflicts[0].conflict_sha256 = canonicalDigest({...snapshot.conflicts[0], conflict_sha256: null}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /not explicitly resolved|Structured source conflicts/iu);
+hostile(({snapshot}) => { snapshot.conflicts[0].authority_ordering = ["COMPARATIVE_BENCHMARK", "FIRST_PARTY_PROVIDER"]; snapshot.conflicts[0].conflict_sha256 = canonicalDigest({...snapshot.conflicts[0], conflict_sha256: null}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /authority ordering/iu);
 hostile(({authorityRoot, snapshot}) => {
   rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-18", (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
 }, /Host availability binding differs/iu);

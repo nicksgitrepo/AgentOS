@@ -1,29 +1,29 @@
 {
   "schema": "agentos.model_policy_evidence_manifest.v1",
   "version": 1,
-  "source_registry_sha256": "d658f5443ce8e182618c372213876fa55ffcb61652cd06ffc091f49bcf699e34",
+  "source_registry_sha256": "73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f",
   "entries": [
     {
       "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
       "path": "artificial-analysis.2026-08-18.json",
       "authority_class": "COMPARATIVE_BENCHMARK",
-      "artifact_sha256": "b0281528e3054918a388dc19de8cbee593a215c1e500d100c4d5811c69662b58",
-      "file_sha256": "5e3280d3373689dbfe39b724751421fe709e2ec42d20e29647c7ce172bcc5070"
+      "artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153",
+      "file_sha256": "99edf65d85d572ed8fd7d06eb885e318b684dc2a4b4b6aa33d94a531c0811d48"
     },
     {
       "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-18",
       "path": "current-host.2026-08-18.json",
       "authority_class": "HOST_ATTESTATION",
-      "artifact_sha256": "9e3d3a6ecf04aa07340188ab85e43da9559970555ac178dc890054e78a827fc2",
-      "file_sha256": "86756e6e401703d92de7e06e44a221eaae0ceef1aef115b2e6e135e8155c0d0c"
+      "artifact_sha256": "e60b95ca1587c93613799ca21638bc19b0d502706f66074da2e7fd3f3882a63d",
+      "file_sha256": "01bd95c166c312ee976d3d11f5e6f95cac59733c84e5d32427ce6ad2f8e3e497"
     },
     {
       "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
       "path": "openai-model-catalog.2026-08-18.json",
       "authority_class": "FIRST_PARTY_PROVIDER",
-      "artifact_sha256": "b935101dcc9773f813207ec07cfb7bd1d4918e6d5a81d845cd10b82855594c30",
-      "file_sha256": "ecbe0cc9f6bb6b9004b3990787e1b2a9b3549e8a80dad5e50512e23176f4666e"
+      "artifact_sha256": "eefc73fdba47487473d8ee312e93c4f7c27231537e891b3aa1a9a8da85eb90be",
+      "file_sha256": "21a81b105e9a7e22baab1503d2091910c36b7038559d8b303147fdd3529ce3ef"
     }
   ],
-  "manifest_sha256": "583f0cfaf78fffef27ce58992f2b44d2fc3dcb51e708a1ccca6dd89394e2703a"
+  "manifest_sha256": "c88e15390e67648413022cbf67205ba7c187a74eebf1e77f5eb161ea93223d45"
 }

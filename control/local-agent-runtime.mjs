@@ -17,6 +17,7 @@ import {
   opaqueSchedulerWorktreeRef,
 } from "./hybrid-scheduler.mjs";
 import {compileOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";
+import {globalGovernanceStoreProcessBridge} from "./global-governance-bootstrap.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -244,8 +245,7 @@ export function createLocalWorkerLaunchAdmission({
   taskKind,
   mode = "ASYNC",
   effectiveArgv,
-  globalGovernanceAuthorityRoot,
-  globalGovernanceBootstrapSha256,
+  globalGovernanceAuthorityStore,
 } = {}) {
   requireString(schedulerRoot, "local worker scheduler root");
   assert(path.isAbsolute(schedulerRoot), "local worker scheduler root must be absolute");
@@ -312,9 +312,9 @@ export function createLocalWorkerLaunchAdmission({
     secretPolicy: "REDACTED",
   });
   const schedulerGovernanceContext = scheduler === null
-    ? compileOperationalGlobalGovernanceContext({authorityRoot: globalGovernanceAuthorityRoot, bootstrapSha256: globalGovernanceBootstrapSha256, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.${requestId}`})
+    ? compileOperationalGlobalGovernanceContext({authorityStore: globalGovernanceAuthorityStore, roleClass: "SCHEDULER", operationalId: `CONTEXT.SCHEDULER.${requestId}`})
     : null;
-  const boundScheduler = scheduler ?? createHybridScheduler({authorityRoot: schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  const boundScheduler = scheduler ?? createHybridScheduler({authorityRoot: schedulerRoot, globalGovernanceContext: schedulerGovernanceContext, globalGovernanceAuthorityStore});
   const assertBound = (admitted) => {
     if (admitted.request_id !== requestId
       || admitted.requester_id !== requesterId
@@ -836,7 +836,7 @@ export function validateDurableWorkerSessionCommand(command, session) {
   return command;
 }
 
-export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, task, taskId = "INITIAL", taskKind = "INITIAL", featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, workerScriptPath = null, sessionId = null, timeoutMs = 30_000, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256}) {
+export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, task, taskId = "INITIAL", taskKind = "INITIAL", featureWorktree = null, evidenceWorktree = null, decisionTreePath = null, workerScriptPath = null, sessionId = null, timeoutMs = 30_000, globalGovernanceAuthorityStore}) {
   assert(LOCAL_WORKER_ROLES.includes(role), `unsupported durable worker role: ${role}`);
   requireString(repoRoot, "durable adapter repository root");
   requireString(runtimeRoot, "durable adapter runtime root");
@@ -884,12 +884,13 @@ export async function startDurableWorkerSession({repoRoot, runtimeRoot, role, ca
   const workerScript = workerScriptPath === null ? new URL("./local-agent-worker.mjs", import.meta.url).pathname : safeChild(root, path.relative(root, workerScriptPath));
   const sessionScript = new URL("./local-agent-session.mjs", import.meta.url).pathname;
   const schedulerRoot = safeChild(runtime, "scheduler-authority");
-  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath, "--global-governance-authority-root", globalGovernanceAuthorityRoot, "--global-governance-bootstrap-sha256", globalGovernanceBootstrapSha256];
+  const governanceBridge = globalGovernanceStoreProcessBridge(globalGovernanceAuthorityStore);
+  const args = [sessionScript, "--role", role, "--session-id", durableSessionId, "--campaign-id", campaignId, "--campaign-version", campaignVersion, "--candidate-sha256", candidateSha256, "--source-commit", sourceCommit, "--source-tree", sourceTree, "--worktree", worktree, "--task", task, "--task-id", taskId, "--task-kind", taskKind, "--scheduler-root", schedulerRoot, "--repository-root", root, "--worker-script", workerScript, "--heartbeat-path", heartbeatPath, "--command-path", commandPath, "--command-result-path", commandResultPath, "--initial-readback-path", initialReadbackPath, "--global-governance-store-root", governanceBridge.authority_root, "--global-governance-store-bootstrap", governanceBridge.bootstrap_sha256];
   if (feature !== null) args.push("--feature-worktree", feature);
   if (evidence !== null) args.push("--evidence-worktree", evidence);
   if (decisionTree !== null) args.push("--decision-tree", decisionTree);
   const effectiveArgv = [process.execPath, ...args];
-  const binding = createLocalWorkerLaunchAdmission({schedulerRoot, repositoryRoot: root, worktreePath: worktree, workerScriptPath: sessionScript, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, sessionId: durableSessionId, launchId: durableSessionId, task, taskId, taskKind, mode: "ASYNC", effectiveArgv, globalGovernanceAuthorityRoot, globalGovernanceBootstrapSha256});
+  const binding = createLocalWorkerLaunchAdmission({schedulerRoot, repositoryRoot: root, worktreePath: worktree, workerScriptPath: sessionScript, role, campaignId, campaignVersion, candidateSha256, sourceCommit, sourceTree, sessionId: durableSessionId, launchId: durableSessionId, task, taskId, taskKind, mode: "ASYNC", effectiveArgv, globalGovernanceAuthorityStore});
   const scheduled = await binding.scheduler.run({
     request: binding.request,
     admission: binding.admission,
