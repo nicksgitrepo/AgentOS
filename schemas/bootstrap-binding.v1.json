@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "ece39f332b1196b75cc1d71703684e1d9210d09c76cf81143e73d66fa24c455e"
+      "sha256": "27119bf28e5cf3cc7939df7c8a3f2f6a84737c07c7d5401ce60ec82ada0b649d"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -1007,6 +1007,18 @@
     "turn_continuation_gate_verifier": {
       "path": "tests/verify-turn-continuation-gate.mjs",
       "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
+    },
+    "receipt_serialization_gate_controller": {
+      "path": "control/receipt-serialization-gate.mjs",
+      "sha256": "6b17010e45a0a49af3ee01e6947ee85440418dffa0dea497b9eef4a328277059"
+    },
+    "receipt_serialization_gate_contract": {
+      "path": "schemas/receipt-serialization-gate.v1.json",
+      "sha256": "a6fb6441d71728b86d7d56e6085f4eb05ba3938e6f160fa53b9e5d14e933a1a2"
+    },
+    "receipt_serialization_gate_verifier": {
+      "path": "tests/verify-receipt-serialization-gate.mjs",
+      "sha256": "5a72dea92475e1e035f938da352b21f09250db61bbbfef981006d4e6185491e2"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",
