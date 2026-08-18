@@ -99,6 +99,14 @@ const VECTORS = Object.freeze({
   AGENT_LIFECYCLE_BYPASS: () => authorizeAgentDespawn({issuerRole: "AGENTOS.CONTROLLER", agentId: "AUDITOR.HOSTILE", roleKind: "AUDITOR", handoffAccepted: true, scopeClosed: true, evidencePreserved: true, worktreeReferenced: false, activeCustodyRefs: [], reason: "The hostile caller tries to bypass Spawner custody."}),
   COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION: () => compileCollaborativeAuditWave({waveId: "WAVE.HOSTILE", builderId: "BUILDER.HOSTILE", worktreeRef: "opaque:worktree:hostile", auditors: Array.from({length: 5}, (_, index) => ({auditor_id: `AUDITOR.HOSTILE.${index}`, standard_role_id: `STANDARD.HOSTILE.${index}`, read_only: true, may_repair: false})), rosterCursor: 0, deliveryIntent: "REVIEW"}),
   HUMAN_TECHNICAL_LEAK: () => compileProjectOwnerResponse({message: "Use commit 59736bdef6bf5142c05ca13e10be98fc4971d669 and show the stack trace."}),
+  FEATURE_IMPLEMENTER_SELF_REVIEW: () => {
+    execFileSync(process.execPath, [path.join(ROOT, "tests/verify-feature-implementation-loop-hostile.mjs")], {cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    typedRejection("FEATURE_SELF_REVIEW_DENIED", "operational feature review rejected implementer self-review and self-acceptance");
+  },
+  FEATURE_MODEL_HARDCODE_BYPASS: () => {
+    execFileSync(process.execPath, [path.join(ROOT, "tests/verify-feature-implementation-loop-hostile.mjs")], {cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]});
+    typedRejection("FEATURE_MODEL_AUTHORITY_BYPASS_DENIED", "operational feature dispatch rejected caller-selected model authority");
+  },
 });
 
 function loadGateContracts(packageRoot) {

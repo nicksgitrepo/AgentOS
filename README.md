@@ -12,6 +12,18 @@ The Bootstrap entrypoint is:
 
 For the short, plain-language start sequence, read [`BOOTSTRAP.md`](BOOTSTRAP.md). It describes the one-time Bootstrap-to-Spawner start, the Project Owner role, and the Pyramid and Collaborative Audit workflow choices. The typed files under `control/` and `schemas/` remain authoritative.
 
+Feature work follows a bounded planner → implementer → Orchestrator review
+loop. A capability-strong planner writes a careful, comprehensive plan with
+clear non-goals and detailed implementation instructions, without
+over-engineering, premature abstraction, or scope creep. Economical, capable
+subagents implement it in an isolated work area and run the assigned tests, but
+never review, judge, or accept their own work. The Orchestrator independently
+accepts the candidate or returns detailed, issue-bound repair instructions until it passes.
+Model names such as `Luna xhigh` are suggestions only: the current canonical
+model policy chooses the actual model. See the [feature-loop guide](docs/feature-planner-implementer-review-loop.md),
+[feature plan template](templates/feature-planning/FEATURE_PLAN.md), and
+[Orchestrator review template](templates/feature-planning/ORCHESTRATOR_REVIEW.md).
+
 From this checkout, its full path is:
 
 `<AGENTOS_ROOT>/bootstrap/START-HERE.md`

@@ -171,3 +171,4 @@ export * as projectOwnerConversation from "./project-owner-conversation.mjs";
 export * as projectOwnerBootstrap from "./project-owner-bootstrap.mjs";
 export * as agentLifecycleCustody from "./agent-lifecycle-custody.mjs";
 export * as collaborativeAuditWorkflow from "./collaborative-audit-workflow.mjs";
+export * as featureImplementationLoop from "./feature-implementation-loop.mjs";

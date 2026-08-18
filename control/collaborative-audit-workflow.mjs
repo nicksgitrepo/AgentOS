@@ -5,6 +5,7 @@
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {authorizeAgentDespawn, authorizeAgentSpawn} from "./agent-lifecycle-custody.mjs";
 import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
+import {selectEcoModelRoute} from "./eco-model-policy.mjs";
 
 export const COLLABORATIVE_AUDIT_SCHEMA = "agentos.collaborative_audit_workflow.v1";
 export const AUDIT_FINDING_SCHEMA = "agentos.standard_audit_finding.v1";
@@ -21,6 +22,7 @@ function id(value, label) { assert(typeof value === "string" && ID.test(value), 
 function sha(value, label) { assert(typeof value === "string" && /^[0-9a-f]{64}$/u.test(value), `${label} must be a SHA-256`); }
 function text(value, label, minimum = 8) { assert(typeof value === "string" && value.trim().length >= minimum, `${label} is incomplete`); }
 function body(value, field) { return {...structuredClone(value), [field]: null}; }
+function exact(value, keys, label) { assert(value && typeof value === "object" && !Array.isArray(value), `${label} is invalid`); assert(JSON.stringify(Object.keys(value).sort(compareUtf8)) === JSON.stringify([...keys].sort(compareUtf8)), `${label} fields differ`); }
 
 export function validateStandardAuditFinding(finding) {
   assert(finding?.schema === AUDIT_FINDING_SCHEMA && finding.version === 1, "Audit finding identity is invalid");
@@ -36,6 +38,10 @@ export function validateCollaborativeAuditWave(wave) {
   assert(Number.isInteger(wave.active_auditor_count) && wave.active_auditor_count >= 0 && wave.active_auditor_count <= 6, "Audit wave active auditor count is invalid");
   assert(Array.isArray(wave.individual_report_paths) && wave.individual_report_paths.length === 6 && new Set(wave.individual_report_paths).size === 6, "Audit wave report paths are invalid");
   assert(Array.isArray(wave.issues), "Audit wave issues are invalid"); wave.issues.forEach(validateStandardAuditFinding);
+  if (wave.escalation !== null) {
+    exact(wave.escalation, ["agent_id", "cloned_chat_ref", "model_id", "reasoning_effort", "route_sha256", "capability_floor", "selected_capability_score", "model_policy_snapshot_sha256", "model_policy_projection_sha256", "spawn_receipt_sha256", "partner_auditor_ids", "combined_report_path", "worktree_ref"], "Audit escalation");
+    id(wave.escalation.agent_id, "escalation agent"); assert(/^opaque:builder-chat:/u.test(wave.escalation.cloned_chat_ref), "Escalation chat reference is invalid"); text(wave.escalation.model_id, "escalation model", 3); text(wave.escalation.reasoning_effort, "escalation reasoning", 3); sha(wave.escalation.route_sha256, "escalation route"); assert(Number.isFinite(wave.escalation.capability_floor) && Number.isFinite(wave.escalation.selected_capability_score) && wave.escalation.selected_capability_score >= wave.escalation.capability_floor, "Escalation capability floor is invalid"); sha(wave.escalation.model_policy_snapshot_sha256, "escalation model policy"); sha(wave.escalation.model_policy_projection_sha256, "escalation model projection"); sha(wave.escalation.spawn_receipt_sha256, "escalation spawn receipt"); assert(Array.isArray(wave.escalation.partner_auditor_ids) && wave.escalation.partner_auditor_ids.length === 6 && new Set(wave.escalation.partner_auditor_ids).size === 6, "Escalation partner auditors are invalid"); assert(wave.escalation.worktree_ref === wave.builder_worktree_ref && wave.escalation.combined_report_path === wave.combined_report_path, "Escalation custody differs from the audit wave");
+  }
   assert(typeof wave.next_audit_group_may_start === "boolean" && typeof wave.next_builder_may_take_worktree === "boolean", "Audit wave continuation flags are invalid");
   if (wave.status === "SIX_AUDITORS_ACTIVE") assert(wave.active_auditor_count === 6, "Active audit wave must have six auditors");
   if (["BULK_REPAIR_ACTIVE", "REAUDIT_REQUIRED", "ESCALATION_REQUIRED", "ESCALATION_REPAIR_ACTIVE", "WAVE_ACCEPTED", "RUNTIME_INTEGRATING", "WAVE_CLOSED"].includes(wave.status)) assert(wave.active_auditor_count === 0, "Handed-off audit wave retained temporary auditors");
@@ -122,7 +128,7 @@ export function recordAuditRound(wave, {results, auditorGroupIds} = {}) {
     issue.history.push({state: issue.state, actor: "SIX_AUDITOR_CONSENSUS", outcome: result.passed ? "CORRECTED" : "FAILED_REAUDIT"}); issue.finding_sha256 = canonicalDigest(body(issue, "finding_sha256"));
   }
   for (const auditorId of auditorGroupIds) authorizeAgentDespawn({issuerRole: "AGENTOS.SPAWNER", agentId: auditorId, roleKind: "AUDITOR", handoffAccepted: true, scopeClosed: true, evidencePreserved: true, worktreeReferenced: false, activeCustodyRefs: [], reason: "The re-audit result is accepted and this temporary auditor scope is complete."});
-  const unresolved = next.issues.filter((item) => item.state !== "CORRECTED"); next.status = unresolved.length === 0 ? "WAVE_ACCEPTED" : unresolved.some((item) => item.state === "ESCALATION_REQUIRED") ? "ESCALATION_REQUIRED" : "BULK_REPAIR_ACTIVE"; next.runtime_integration = unresolved.length === 0 ? "READY" : "NOT_READY"; next.next_action = unresolved.length === 0 ? "RUNTIME_INTEGRATE_ACCEPTED_WAVE" : next.status === "ESCALATION_REQUIRED" ? "FINISH_NON_ESCALATED_ISSUES_THEN_REQUEST_SOL_ULTRA_CLONE" : "BUILDER_REPAIR_COMBINED_REPORT_IN_BULK"; next.wave_sha256 = canonicalDigest(body(next, "wave_sha256")); return Object.freeze(validateCollaborativeAuditWave(next));
+  const unresolved = next.issues.filter((item) => item.state !== "CORRECTED"); next.status = unresolved.length === 0 ? "WAVE_ACCEPTED" : unresolved.some((item) => item.state === "ESCALATION_REQUIRED") ? "ESCALATION_REQUIRED" : "BULK_REPAIR_ACTIVE"; next.runtime_integration = unresolved.length === 0 ? "READY" : "NOT_READY"; next.next_action = unresolved.length === 0 ? "RUNTIME_INTEGRATE_ACCEPTED_WAVE" : next.status === "ESCALATION_REQUIRED" ? "FINISH_NON_ESCALATED_ISSUES_THEN_REQUEST_POLICY_ROUTED_ESCALATION_CLONE" : "BUILDER_REPAIR_COMBINED_REPORT_IN_BULK"; next.wave_sha256 = canonicalDigest(body(next, "wave_sha256")); return Object.freeze(validateCollaborativeAuditWave(next));
 }
 
 export function recordIssueAudit(wave, {issueId, passed, auditorGroupIds} = {}) {
@@ -135,14 +141,12 @@ export function requestEscalationClone(wave, {cloneAgentId, originalBuilderChatR
   validateCollaborativeAuditWave(wave); assert(wave.status === "ESCALATION_REQUIRED", "Audit wave does not require escalation"); id(cloneAgentId, "escalation clone");
   assert(typeof originalBuilderChatRef === "string" && /^opaque:builder-chat:/u.test(originalBuilderChatRef), "Escalation requires the original builder chat reference");
   const governed = resolveCanonicalGlobalGovernanceProjection({authorityStore: globalGovernanceAuthorityStore, roleClass: "WORKING_AGENT"});
-  const sol = governed.snapshot.models.find((model) => model.model_id === "gpt-5.6-sol");
-  assert(sol?.host_available === true, "Current model policy must prove Sol availability before escalation spawn");
-  assert(sol.supported_reasoning_efforts.includes("ultra") && sol.host_supported_reasoning_efforts.includes("ultra"), "Current model policy must prove Sol ultra availability before escalation spawn");
   assert(governed.snapshot.status === "ACCEPTED_ACTIVE" && governed.projection.snapshot_sha256 === governed.snapshot.snapshot_sha256, "Current model policy projection is not accepted and current");
+  const route = selectEcoModelRoute({snapshot: governed.snapshot, taskClass: "FINAL_INTEGRATION", roleCapabilityFloor: 59, requiredContextTokens: 256000, requiredCapabilities: ["CODE", "LONG_CONTEXT", "TOOLS"], nowUtc: governed.observed_at_utc});
   assert(Array.isArray(freshAuditorIds) && freshAuditorIds.length === 6 && new Set(freshAuditorIds).size === 6, "Escalation requires six fresh partner auditors"); freshAuditorIds.forEach((value) => id(value, "escalation partner auditor"));
   assert(wave.issues.every((item) => item.state === "CORRECTED" || item.state === "ESCALATION_REQUIRED"), "Original builder must finish all eligible issues before escalation");
   const spawn = authorizeAgentSpawn({issuerRole: "AGENTOS.SPAWNER", requestedRole: "AGENTOS.ESCALATION_BUILDER", bootstrapSpawnerStarted: true, worktreeRef: wave.builder_worktree_ref, partnerAuditorIds: freshAuditorIds});
-  const next = structuredClone(wave); next.escalation = {agent_id: cloneAgentId, cloned_chat_ref: originalBuilderChatRef, model_id: "gpt-5.6-sol", reasoning_effort: "ultra", model_policy_snapshot_sha256: governed.snapshot.snapshot_sha256, model_policy_projection_sha256: governed.projection.projection_sha256, spawn_receipt_sha256: spawn.receipt_sha256, partner_auditor_ids: [...freshAuditorIds].sort(compareUtf8), combined_report_path: wave.combined_report_path, worktree_ref: wave.builder_worktree_ref}; next.status = "ESCALATION_REPAIR_ACTIVE"; next.next_action = "SOL_ULTRA_CLONE_REPAIR_ESCALATED_ISSUES"; next.wave_sha256 = canonicalDigest(body(next, "wave_sha256")); return Object.freeze(validateCollaborativeAuditWave(next));
+  const next = structuredClone(wave); next.escalation = {agent_id: cloneAgentId, cloned_chat_ref: originalBuilderChatRef, model_id: route.model_id, reasoning_effort: route.reasoning_effort, route_sha256: route.route_sha256, capability_floor: route.capability_floor, selected_capability_score: route.selected_capability_score, model_policy_snapshot_sha256: governed.snapshot.snapshot_sha256, model_policy_projection_sha256: governed.projection.projection_sha256, spawn_receipt_sha256: spawn.receipt_sha256, partner_auditor_ids: [...freshAuditorIds].sort(compareUtf8), combined_report_path: wave.combined_report_path, worktree_ref: wave.builder_worktree_ref}; next.status = "ESCALATION_REPAIR_ACTIVE"; next.next_action = "POLICY_ROUTED_ESCALATION_CLONE_REPAIR_ESCALATED_ISSUES"; next.wave_sha256 = canonicalDigest(body(next, "wave_sha256")); return Object.freeze(validateCollaborativeAuditWave(next));
 }
 
 export function beginRuntimeIntegration(wave) {

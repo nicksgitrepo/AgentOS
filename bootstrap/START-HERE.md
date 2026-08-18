@@ -59,6 +59,40 @@ Then continue with one material question at a time.
 
 Do not create an Auditor, builder, validator, or other worker directly. Spawner owns every later create and despawn operation.
 
+## Feature work after setup
+
+For every feature, a capability-strong planner writes a careful and complete
+plan before a builder starts. The plan states the plain-language outcome,
+scope, non-goals, existing context, acceptance checks, detailed implementation
+steps, and evidence needed for handoff. It deliberately avoids
+over-engineering, premature abstraction, and scope creep.
+
+Economical, capable subagents implement that plan in an isolated work area.
+They follow the detailed instructions and run the assigned tests, but they never
+review, judge, or accept their own work. A model name written in a plan, such as
+`Luna xhigh`, is only a suggestion. The current canonical model policy and host
+capability readback choose the actual model; an unavailable suggestion never
+overrides policy.
+
+The Orchestrator independently compares the candidate with the plan, current
+source, acceptance checks, tests, and evidence. It either accepts the complete
+result or returns detailed issue-bound repair instructions naming the exact
+location, evidence, expected result, and re-test. The implementer repairs that
+bounded list, and the Orchestrator reviews again until the result is accepted.
+
+This feature loop runs inside the Project Owner's selected Audit-Driven
+Integration Pyramid or Collaborative Audit workflow. Pyramid lanes still use
+smallest repair, independent hostile audit, affected proof, and Platform handoff.
+Collaborative Audit still gives one builder one isolated area and six distinct
+read-only checkers; the Orchestrator combines their reports and fresh groups
+re-audit repairs.
+
+Protected blockers remain governed. A missing owner decision, stale source,
+model-policy gap, custody uncertainty, authentication or secret boundary,
+spending, publication, merge, deployment, or destructive action holds only
+the dependent work. No plan, implementer, reviewer, or workflow choice may
+bypass that hold; unrelated safe work continues when allowed.
+
 ## Interaction rules
 
 - Prefer discovery and reasonable defaults over long questionnaires.

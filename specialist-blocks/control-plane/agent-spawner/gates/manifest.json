@@ -102,7 +102,17 @@
         "FIXTURE.SPAWNER.AUTHORITY_CHAIN_MISMATCH",
         "FIXTURE.SPAWNER.DIRTY_REMOTE_READBACK"
       ]
+    },
+    {
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "path": "gates/feature-implementation-loop.gate",
+      "file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0",
+      "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
+        "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
+      ]
     }
   ],
-  "manifest_sha256": "099a38df85f424e342c84ca13632ecb9b295eaba72c2a02df2e9c3431d88eee9"
+  "manifest_sha256": "629861f05f46812ba036a31d95422f53591ecf047e92fdd5fce6d7f392a1497e"
 }

@@ -11,6 +11,21 @@ This file is a simple guide. The typed AgentOS contracts remain the authority.
 7. Bootstrap becomes **Project Owner _Project Name_**. The Project Owner is the person-facing agent and uses simple, natural language by default.
 8. The Project Owner asks whether to use the Pyramid workflow or Collaborative Audit workflow.
 9. The Project Owner checks project direction every 15 minutes. Controller checks every 15 minutes that useful work is really moving and repairs ordinary stalls automatically.
+10. For each feature, a capability-strong planner writes a careful, complete,
+    bounded plan before implementation starts. The plan avoids over-engineering,
+    premature abstraction, and scope creep.
+11. Economical, capable subagents implement the plan in an isolated work area
+    using its detailed instructions. Implementers run the assigned tests, but
+    they never review, judge, or accept their own work.
+12. The Orchestrator independently reviews the plan, candidate, tests, and
+    evidence. It accepts a complete result or returns detailed, issue-bound
+    repair instructions until the result is accepted.
+13. A model name in a plan (for example, `Luna xhigh`) is only a suggestion.
+    The current canonical model policy chooses the actual model and any fallback.
+14. Protected blockers remain governed. They hold only the dependent action and
+    are never bypassed by a planner, implementer, model suggestion, or reviewer.
+
+The reusable feature records are [`templates/feature-planning/FEATURE_PLAN.md`](templates/feature-planning/FEATURE_PLAN.md), [`templates/feature-planning/ORCHESTRATOR_REVIEW.md`](templates/feature-planning/ORCHESTRATOR_REVIEW.md), and [`docs/feature-planner-implementer-review-loop.md`](docs/feature-planner-implementer-review-loop.md). The typed AgentOS contracts and the selected workflow remain authoritative.
 
 ## Collaborative Audit in simple terms
 

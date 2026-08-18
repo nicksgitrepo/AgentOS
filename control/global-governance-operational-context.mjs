@@ -20,7 +20,18 @@ function compileGlobalBehaviorPolicy(roleClass) {
     bootstrap_spawn_exception: "START_EXACTLY_ONE_SPAWNER", ordinary_spawn_authority: "AGENTOS.SPAWNER", all_despawn_authority: "AGENTOS.SPAWNER",
     auditor_group_size: 6, auditor_closeout: "DESPAWN_AFTER_ACCEPTED_HANDOFF_AND_ZERO_AGENT_REFERENCES",
     builder_requires_isolated_worktree: true, project_owner_monitor_minutes: 15, controller_progress_monitor_minutes: 15,
-    supported_development_workflows: ["COLLABORATIVE_AUDIT", "PYRAMID"], policy_sha256: null,
+    supported_development_workflows: ["COLLABORATIVE_AUDIT", "PYRAMID"],
+    feature_implementation_loop: Object.freeze({
+      planning: "BOUNDED_COMPREHENSIVE_REQUIRED",
+      scope_control: "AVOID_OVER_ENGINEERING_PREMATURE_ABSTRACTIONS_AND_SCOPE_CREEP",
+      planner: "CAPABILITY_FIRST",
+      implementers: "ECONOMICAL_CAPABLE",
+      model_name_authority: "ADVISORY_SUGGESTION_ONLY",
+      implementer_self_review: "FORBIDDEN",
+      review_acceptance: "ORCHESTRATOR_ONLY",
+      repair_feedback: "REENTER_IMPLEMENTATION_UNTIL_ACCEPTED_OR_GENUINE_PROTECTED_BLOCKER",
+    }),
+    policy_sha256: null,
   };
   policy.policy_sha256 = canonicalDigest({...policy, policy_sha256: null}); return Object.freeze(policy);
 }

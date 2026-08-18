@@ -9,15 +9,15 @@
   "observed_at_utc": "2026-08-17T00:00:00.000Z",
   "expires_at_utc": "2026-09-16T00:00:00.000Z",
   "semantic_content": {
-    "purpose": "Bind every requested role to complete purpose, scope, authority, knowledge, stop conditions, hostile fixtures, handoff duties, and an immutable inert-seed lifecycle.",
+    "purpose": "Bind every requested role to complete purpose, scope, authority, knowledge, stop conditions, hostile fixtures, feature review separation, handoff duties, and an immutable inert-seed lifecycle.",
     "admission": "A role remains unspawnable until canonical role bytes, all dependencies, current model policy, and independent clearance resolve and pass.",
     "seed_rule": "Seeds are immutable checkpoints and never execute work."
   },
-  "content_sha256": "d4a470d48841b12dcbbef38f8c27db7def416dce62cf18ec6f0d02ad0be7eda6",
+  "content_sha256": "84116f8e98f74e89bfee79d7bc616d32b8f27e94d4ffc160ec163160ed6c699f",
   "source_identity": {
     "source_id": "SOURCE.AGENTOS.ROLE_GOVERNANCE",
     "source_version": "1.0.0",
-    "content_sha256": "d4a470d48841b12dcbbef38f8c27db7def416dce62cf18ec6f0d02ad0be7eda6"
+    "content_sha256": "84116f8e98f74e89bfee79d7bc616d32b8f27e94d4ffc160ec163160ed6c699f"
   },
   "dependencies": [
     "BLOCK.SPAWNER.GLOBAL",
@@ -34,6 +34,15 @@
       ]
     },
     {
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "gate_file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0",
+      "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
+        "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
+      ]
+    },
+    {
       "gate_id": "SPAWNER.SEED_INERTNESS",
       "gate_file_sha256": "8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff",
       "gate_sha256": "a0204753eefac1f79375851d21d213a9e27d9b600b942df7a21f5dea5f627086",
@@ -42,5 +51,5 @@
       ]
     }
   ],
-  "block_sha256": "3b3ae92c5e634d56b68920a3ba79d610aba9378307cf1a727fa793f68ad035ff"
+  "block_sha256": "cfcd06262b2c9071ff6b91f6967eca3fac958762cf5097ce9bf23bfa2b4b856a"
 }

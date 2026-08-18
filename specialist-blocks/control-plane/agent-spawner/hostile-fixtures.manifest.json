@@ -108,6 +108,20 @@
       "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
     },
     {
+      "fixture_id": "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "path": "fixtures/feature-implementer-self-review.json",
+      "file_sha256": "dae56e95bc05ac767433abd401484264a6f54f3ed0f46dee91ef09452f2f1e95",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS",
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "path": "fixtures/feature-model-hardcode-bypass.json",
+      "file_sha256": "a8deeb529142e7a8b56ce569702a9e074d1cced85133e3a7902ba11b7a55d3d9",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
+    },
+    {
       "fixture_id": "FIXTURE.SPAWNER.FIXTURE_INVENTORY_ALIAS",
       "gate_id": "SPAWNER.EXACT_BLOCK_QA",
       "path": "fixtures/fixture-inventory-alias.json",
@@ -255,5 +269,5 @@
       "expected_outcome": "REJECT_WITH_TYPED_DEFECT"
     }
   ],
-  "manifest_sha256": "13b461e0344bdf842bf406c270e1af12f8bf51ff71cedb1d0ece048affbd2ef0"
+  "manifest_sha256": "963992e6accbd5d60fad1fca8bb0632b69f6df58d77cd1609430e3297270076a"
 }

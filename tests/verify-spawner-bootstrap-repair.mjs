@@ -48,8 +48,8 @@ const governedFixture = materializeTestGlobalGovernanceStore({authorityRoot: gov
 
 const resolvedPackage = prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation({});
 assert.equal(resolvedPackage.disposition, "PREPARED_FOR_EXTERNAL_REVIEW_NOT_ADMITTED");
-assert.equal(resolvedPackage.hostile_evaluation.result_count, 36);
-assert.equal(new Set(resolvedPackage.hostile_evaluation.results.map((entry) => entry.fixture_id)).size, 36);
+assert.equal(resolvedPackage.hostile_evaluation.result_count, 38);
+assert.equal(new Set(resolvedPackage.hostile_evaluation.results.map((entry) => entry.fixture_id)).size, 38);
 assert(resolvedPackage.hostile_evaluation.results.every((entry) => entry.implementation_entrypoint.startsWith("control/") && entry.negative_assertion_count >= 2));
 assert.equal(resolvedPackage.spawner_package.package_sha256, blockPackage.package_sha256);
 assert.throws(() => validateCanonicalSpawnerBootstrapPackage(blockPackage, resolvedPackage), /sealed canonical artifact resolution/iu);

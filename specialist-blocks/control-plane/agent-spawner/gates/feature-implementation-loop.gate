@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.spawner_gate.v1",
+  "version": 1,
+  "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+  "question": "Does this feature have a bounded comprehensive plan, a canonical capability-first model route, separate implementer and Orchestrator identities, detailed repair feedback for every failed review, and Orchestrator-only acceptance with no open findings?",
+  "pass": "AUTHORIZE_BOUNDED_FEATURE_IMPLEMENTATION_OR_ACCEPTED_HANDOFF",
+  "fail": "REJECT_SELF_REVIEW_MODEL_OVERRIDE_SCOPE_WIDENING_OR_DEFICIENT_FEEDBACK",
+  "unknown": "REJECT_UNPROVEN_FEATURE_RESULT",
+  "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e"
+}

@@ -1,11 +1,11 @@
 {
   "schema": "agentos.spawner_hostile_evaluation.v1",
   "version": 1,
-  "candidate_package_file_sha256": "9aad662a873fb07f5b60d0949da7026001459bbeffbe1106a148053866f311b1",
-  "fixture_manifest_sha256": "13b461e0344bdf842bf406c270e1af12f8bf51ff71cedb1d0ece048affbd2ef0",
-  "gate_contracts_sha256": "ab56182a6fe89817c0d3dd3401beb94f4fde5b7ec9a99221b36a834292310f21",
-  "result_count": 36,
-  "negative_assertion_count": 73,
+  "candidate_package_file_sha256": "4e6c311c13f5b9c4f8a39c2a64d094bf84967fd4c4ebd167c4619841d831c2c2",
+  "fixture_manifest_sha256": "963992e6accbd5d60fad1fca8bb0632b69f6df58d77cd1609430e3297270076a",
+  "gate_contracts_sha256": "2b0859eff4f699ed79020e0205e06966ca81573b2dbfde7e63acd76784acdfbf",
+  "result_count": 38,
+  "negative_assertion_count": 79,
   "mutation_sensitivity": [
     {
       "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
@@ -52,6 +52,16 @@
         "FIXTURE.SPAWNER.SWAPPED_FILE"
       ],
       "failed_fixture_count": 16,
+      "result": "PASS"
+    },
+    {
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "mutation": "NEGATIVE_BRANCHES_REPLACED_WITH_CONTINUE",
+      "failed_fixture_ids": [
+        "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
+        "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
+      ],
+      "failed_fixture_count": 2,
       "result": "PASS"
     },
     {
@@ -287,6 +297,30 @@
       "negative_assertion_count": 2,
       "error_code": "FALSE_PROTECTED_BLOCKER",
       "error_message_sha256": "83deb64ca3c86759aebfd795a05828dd83d691581cd7dcf025bcd2a1ae074e5c",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "attack_vector": "FEATURE_IMPLEMENTER_SELF_REVIEW",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/feature-implementation-loop.mjs#compileOrchestratorFeatureReview",
+      "negative_assertion_count": 3,
+      "error_code": "FEATURE_SELF_REVIEW_DENIED",
+      "error_message_sha256": "ba0fe935677ef043e4fcc371997d142af0d55a95482014a3c84cbe5707c491d1",
+      "result": "PASS"
+    },
+    {
+      "fixture_id": "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS",
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "attack_vector": "FEATURE_MODEL_HARDCODE_BYPASS",
+      "expected_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
+      "implementation_entrypoint": "control/feature-implementation-loop.mjs#compileFeatureImplementationDispatch",
+      "negative_assertion_count": 3,
+      "error_code": "FEATURE_MODEL_AUTHORITY_BYPASS_DENIED",
+      "error_message_sha256": "1fcbef1fb7247ff93bfe79fdc4b8d05d8aef60b77ebd26f6ba21add5240db063",
       "result": "PASS"
     },
     {
@@ -543,5 +577,5 @@
     }
   ],
   "status": "PASS",
-  "evaluation_sha256": "d41dce6c982961785d3eef00df14931420deb0bb20d0f998044fe47216c6e471"
+  "evaluation_sha256": "4cbcdf779cff8fc1a55d63badda454f26b40577e37d32afce3476b9a45ac9f1d"
 }

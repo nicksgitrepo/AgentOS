@@ -33,9 +33,9 @@
       "layer": "ROLE",
       "version": "1.0.0",
       "path": "role.block.json",
-      "file_sha256": "ab0d9906358871dda74beac320f163846134f79d839bfde349ed42a5844ed8f1",
-      "block_sha256": "3b3ae92c5e634d56b68920a3ba79d610aba9378307cf1a727fa793f68ad035ff",
-      "content_sha256": "d4a470d48841b12dcbbef38f8c27db7def416dce62cf18ec6f0d02ad0be7eda6"
+      "file_sha256": "643a0e3174f30d9e9c207ef41e34c5b04721269246079a16c728671a093baadf",
+      "block_sha256": "cfcd06262b2c9071ff6b91f6967eca3fac958762cf5097ce9bf23bfa2b4b856a",
+      "content_sha256": "84116f8e98f74e89bfee79d7bc616d32b8f27e94d4ffc160ec163160ed6c699f"
     },
     {
       "block_id": "BLOCK.SPAWNER.TECHNOLOGY_STANDARD",
@@ -60,10 +60,11 @@
       "layer": "TASK",
       "version": "1.0.0",
       "path": "task.block.json",
-      "file_sha256": "f04e4c6191bd896b04179f885865e5a37d824c8f9b5910592dd5f59ad1a17bc3",
-      "block_sha256": "18dd20b31a5b75277e5e5dfa161bb8c33c3f13c80cba8e3287d8e387f1d1224e",
-      "content_sha256": "2e56cc3c686e6148fa4a316bf73e503f96def854f131f196ac3abd76d54a2b4e"
+      "file_sha256": "bdc8fd23d2a0fae48e3ed42e05519c91ef54626b0489255f5a2bed4889a8630c",
+      "block_sha256": "828bb5b89c8563ae6adc185046b17c59d73a6abe9f69ba38b497c91ae1004357",
+      "content_sha256": "fbb216ffb1125dbe14240d2988d8305b3986c6f1d3d7560add49ac5d9a91caf5"
     }
   ],
-  "manifest_sha256": "6caaf4e52d2167c07d3aed91b02c088b6f44c5e3e96acd24cde2a460f8aa3af0"
+  "manifest_sha256": "95d7dc16e24f4f4b8328f1a4af97250823a0c87825950787062569e566cc2881",
+  "gate_manifest_sha256": "5f10c8f9560430f208876d21c770c265934d9e3f54aafacf183870a516ebbaab"
 }

@@ -40,7 +40,11 @@ const fresh = Array.from({length: 6}, (_, index) => `ESCALATION.AUDITOR.${index 
 assert.throws(() => requestEscalationClone(state, {cloneAgentId: "BUILDER.SOL.1", originalBuilderChatRef: "opaque:builder-chat:one", freshAuditorIds: fresh}), /sealed global-governance authority/iu);
 const governanceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-collaborative-governance-"));
 const governance = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot});
-assert.throws(() => requestEscalationClone(state, {cloneAgentId: "BUILDER.SOL.1", originalBuilderChatRef: "opaque:builder-chat:one", globalGovernanceAuthorityStore: governance.authorityStore, freshAuditorIds: fresh}), /prove Sol ultra availability/iu);
+state = requestEscalationClone(state, {cloneAgentId: "BUILDER.ESCALATION.1", originalBuilderChatRef: "opaque:builder-chat:one", globalGovernanceAuthorityStore: governance.authorityStore, freshAuditorIds: fresh});
+assert.equal(state.status, "ESCALATION_REPAIR_ACTIVE");
+assert.equal(state.escalation.model_id, governance.snapshot.task_classes.find((entry) => entry.task_class === "FINAL_INTEGRATION").preferred_models[0]);
+assert.equal(state.escalation.reasoning_effort, governance.snapshot.task_classes.find((entry) => entry.task_class === "FINAL_INTEGRATION").preferred_reasoning_effort);
+assert.equal(typeof state.escalation.route_sha256, "string");
 
 const normalWave = compileCollaborativeAuditWave({waveId: "WAVE.2", builderId: "BUILDER.2", worktreeRef: "opaque:worktree:wave-2", auditors, rosterCursor: 0, deliveryIntent: "REVIEW"});
 const normalFinding = compileStandardAuditFinding({issueId: "AGENTOS-ISSUE-2026-0002", title: "Repairable lifecycle gap", severity: "MEDIUM", weaknessId: "CWE-664", summary: "A normal repair needs one independent audit before Runtime may integrate it.", research: "The governed workflow preserves separation between the repairing builder and the six independent auditors who verify the result.", evidenceRefs: ["ref:test:normal-cycle"], affectedScope: "Collaborative audit repair cycle", repairAcceptance: "Six fresh auditors accept the repair before Runtime begins integration.", auditorId: "AUDITOR.1"});
@@ -54,4 +58,4 @@ assert.throws(() => closeAcceptedWave(state, {runtimeMerged: true, runtimeDeploy
 state = closeAcceptedWave(state, {runtimeMerged: true, runtimeDeployed: false, deploymentRequired: false, builderHandoffAccepted: true, worktreeReferenced: false});
 assert.equal(state.status, "WAVE_CLOSED"); assert.equal(state.next_action, "ORCHESTRATOR_CONTINUE_NEXT_SIX_AND_SPAWNER_ATTACH_NEXT_BUILDER"); assert.equal(state.roster_cursor, 6); assert.equal(state.next_builder_may_take_worktree, true);
 fs.rmSync(governanceRoot, {recursive: true, force: true});
-console.log("PASS collaborative audit workflow: six independent reports, standard issues, bulk repair, three-attempt ceiling, fail-closed governed Sol ultra escalation, re-audit, Runtime integration, safe despawn, and next-six continuation");
+console.log("PASS collaborative audit workflow: six independent reports, standard issues, bulk repair, three-attempt ceiling, fail-closed capability-first economic escalation, re-audit, Runtime integration, safe despawn, and next-six continuation");

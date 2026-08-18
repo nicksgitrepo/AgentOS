@@ -9,15 +9,15 @@
   "observed_at_utc": "2026-08-17T00:00:00.000Z",
   "expires_at_utc": "2026-09-16T00:00:00.000Z",
   "semantic_content": {
-    "purpose": "Bind the exact requested task class, acceptance criteria, capability floor, allowed authority, stop conditions, handoff contract, and mandatory successor semantics.",
+    "purpose": "Bind the exact requested task class, bounded feature plan, acceptance criteria, capability floor, allowed authority, stop conditions, handoff contract, and mandatory successor semantics.",
     "admission": "Task execution begins only from a worker cloned from a verified inert seed after exact block, model-policy, memory, host, and independent-clearance gates pass.",
     "closeout": "Every turn starts a successor, delivers redistribution, or proves a genuine protected blocker."
   },
-  "content_sha256": "2e56cc3c686e6148fa4a316bf73e503f96def854f131f196ac3abd76d54a2b4e",
+  "content_sha256": "fbb216ffb1125dbe14240d2988d8305b3986c6f1d3d7560add49ac5d9a91caf5",
   "source_identity": {
     "source_id": "SOURCE.AGENTOS.TASK",
     "source_version": "1.0.0",
-    "content_sha256": "2e56cc3c686e6148fa4a316bf73e503f96def854f131f196ac3abd76d54a2b4e"
+    "content_sha256": "fbb216ffb1125dbe14240d2988d8305b3986c6f1d3d7560add49ac5d9a91caf5"
   },
   "dependencies": [
     "BLOCK.SPAWNER.ENVIRONMENT",
@@ -35,6 +35,15 @@
       ]
     },
     {
+      "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+      "gate_file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0",
+      "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e",
+      "hostile_fixture_ids": [
+        "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
+        "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
+      ]
+    },
+    {
       "gate_id": "SPAWNER.TURN_CONTINUATION",
       "gate_file_sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234",
       "gate_sha256": "e627c7a2bf76e742af21cb5d6cddfeec77de0ab8924781ccf4c576df68ecb5dd",
@@ -43,5 +52,5 @@
       ]
     }
   ],
-  "block_sha256": "18dd20b31a5b75277e5e5dfa161bb8c33c3f13c80cba8e3287d8e387f1d1224e"
+  "block_sha256": "828bb5b89c8563ae6adc185046b17c59d73a6abe9f69ba38b497c91ae1004357"
 }
