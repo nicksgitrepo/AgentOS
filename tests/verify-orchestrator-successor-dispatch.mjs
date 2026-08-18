@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
-import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
@@ -20,6 +19,7 @@ import {
   ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS,
 } from "../control/orchestrator-successor-dispatch.mjs";
 import {compileActionResultContinuation} from "../control/action-result-continuation.mjs";
+import fs from "node:fs";
 
 const sha = (value) => canonicalDigest({value});
 const evidence = (id) => ({evidence_id: id, reference: `opaque:${id.toLowerCase()}`, sha256: sha(id)});
@@ -30,6 +30,8 @@ assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("REPAIR_BLOCKS"));
 assert(ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("COMPILE_BLOCK_PATCH"));
 assert(!ORCHESTRATOR_DISPATCHABLE_ACTIONS.includes("RUNTIME_ATOMIC_GIT_REPOINT"));
 assert.deepEqual(ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS, ["RUNTIME_ATOMIC_GIT_REPOINT"]);
+const dispatchSchema = JSON.parse(fs.readFileSync(new URL("../schemas/orchestrator-successor-dispatch.v1.json", import.meta.url), "utf8"));
+assert(dispatchSchema.$defs.dispatchableAction.enum.includes("COMPILE_BLOCK_PATCH"), "Orchestrator schema must admit the block compiler route");
 const baseResult = {
   status: "CANDIDATE_REVIEW_PASS_NO_DELTA",
   candidate_sha256: sha("candidate"),
