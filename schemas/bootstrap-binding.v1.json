@@ -986,7 +986,7 @@
     },
     "turn_continuation_gate_controller": {
       "path": "control/turn-continuation-gate.mjs",
-      "sha256": "ad3ccef6ef1d5fdb2ade536e733f9796d7c043a2ed8178bb003118bbddea9c16"
+      "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"
     },
     "turn_continuation_gate_contract": {
       "path": "schemas/turn-continuation-gate.v1.json",
@@ -994,7 +994,7 @@
     },
     "turn_continuation_gate_verifier": {
       "path": "tests/verify-turn-continuation-gate.mjs",
-      "sha256": "f7a713895ee2d84739cc9cb724a3ef8a2da3261813acb4eee805c1caac49102e"
+      "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
     },
     "controller_owner_event_wake_controller": {
       "path": "control/controller-owner-event-wake.mjs",

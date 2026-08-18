@@ -86,5 +86,10 @@ assert.throws(() => compileTurnContinuationRepair({
   evidenceCeiling: "Dispatch evidence was not supplied.",
 }), /successor dispatch reference/u);
 
+const incompleteFixtureCoverage = structuredClone(repaired);
+incompleteFixtureCoverage.hostile_fixture_refs = incompleteFixtureCoverage.hostile_fixture_refs.filter((fixture) => fixture !== "FIXTURE.TURN_CONTINUATION.AUTHORITY_DRIFT");
+incompleteFixtureCoverage.gate_sha256 = canonicalDigest({...incompleteFixtureCoverage, gate_sha256: null});
+assert.throws(() => validateTurnContinuationGate(incompleteFixtureCoverage), /fixture coverage is incomplete/u);
+
 assert.equal(TURN_CONTINUATION_HOSTILE_FIXTURE_REFS.length, 8);
 console.log("PASS turn continuation gate: overlong turns require a real same-turn dispatch readback; malformed retries, commentary-only closeouts, null reasons, false protected waits, and timer-only liveness fail closed");

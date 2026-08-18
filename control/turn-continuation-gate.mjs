@@ -148,6 +148,9 @@ export function validateTurnContinuationGate(gate) {
   validateSuccessor(gate.successor);
   validateCustody(gate.custody);
   sortedUnique(gate.hostile_fixture_refs, "turn continuation hostile fixtures");
+  for (const fixture of TURN_CONTINUATION_HOSTILE_FIXTURE_REFS) {
+    assert(gate.hostile_fixture_refs.includes(fixture), `turn continuation hostile fixture coverage is incomplete: ${fixture}`);
+  }
   assert(["PROGRESS_STARTED", "REPAIR_REQUIRED", "PROTECTED_WAIT"].includes(gate.status), "turn continuation status is invalid");
   if (gate.status === "PROGRESS_STARTED") {
     assert(gate.turn.overlong === false, "an overlong turn cannot claim progress started");
