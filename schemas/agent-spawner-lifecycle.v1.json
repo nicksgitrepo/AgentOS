@@ -30,6 +30,10 @@
     "lifecycle_sha256": {"$ref": "#/$defs/sha256"}
   },
   "allOf": [
+    {"if": {"properties": {"state": {"enum": ["SPAWN_ADMITTED", "SPAWN_ACTIVE"]}}}, "then": {"properties": {"qa": {"properties": {
+      "incomplete_block_count": {"const": 0},
+      "pending_route_count": {"const": 0}
+    }}}}},
     {"if": {"properties": {"state": {"const": "STALLED"}}}, "then": {"properties": {
       "mode": {"const": "GOVERNED_SPAWN"},
       "qa": {"properties": {

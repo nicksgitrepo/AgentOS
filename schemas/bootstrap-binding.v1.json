@@ -1082,7 +1082,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "b43ddfc9717f36935d07203328c76cd956f178f4e0f91d5cc49d28ecc3393247"
+      "sha256": "f95d2d459b5ed974b893a6dc22781f539c9957133de6ccee9bbabd6f8ee51421"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1094,11 +1094,11 @@
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "356d4415864f57712efe9cecaec8465d655dea6b18e7922589d733cf2535ad69"
+      "sha256": "33e11d2fc4d07804e53e14abf78f0e0a27326ffb4e476666ed259474d3d4e7e6"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "c997774c2c60680902d122f5b303c2e79bcef922f6a86b64b3971433f7c7b7b7"
+      "sha256": "1d5853685445115125ba574aedb19a0cfcde4c4d08a15cb0e8c9af3e57b44997"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",

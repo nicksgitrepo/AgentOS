@@ -93,6 +93,14 @@ assert.equal(admitted.persistent_state, "ADMITTED");
 assert.equal(admitted.wave_activation, "OFF");
 assert.equal(admitted.authority.spawn_authority, true);
 
+assert.throws(() => compileAgentSpawnerLifecycle({
+  ...common,
+  lifecycleId: "LIFECYCLE.SPAWNER.UNPUBLISHED_ROSTER",
+  mode: "GOVERNED_SPAWN",
+  state: "SPAWN_ADMITTED",
+  qa: {...clearedQa, pending_route_count: 1},
+}), /pending roster route|published roster/u, "Spawner cannot admit workers before the roster is published");
+
 // Local pyramid audit/repair may be admitted without external utility/harm
 // clearance when custody is isolated, product/provider/external authority is
 // false, and the resource ceiling is enforced.  This is ordinary reversible

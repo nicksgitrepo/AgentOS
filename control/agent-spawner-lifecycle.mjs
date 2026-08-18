@@ -181,6 +181,7 @@ function validateAuthority(authority, lifecycle) {
     assert(authority.temporary_worker_admission === true, "Spawn authority requires worker admission");
     assert(lifecycle.qa.independent_clearance_status === "CLEARED" || authority.isolated_local_custody === true, "Spawn authority requires independent clearance or proven isolated local custody");
     assert(lifecycle.qa.incomplete_block_count === 0, "Spawn authority cannot use incomplete blocks");
+    assert(lifecycle.qa.pending_route_count === 0, "Spawn authority cannot use an unpublished roster");
   }
 }
 
@@ -235,6 +236,7 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   if (lifecycle.state === "SPAWN_ADMITTED" || lifecycle.state === "SPAWN_ACTIVE") {
     assert(lifecycle.mode === "GOVERNED_SPAWN", "Governed spawn state requires governed-spawn mode");
     assert(lifecycle.authority.spawn_authority === true, "Governed spawn state lacks spawn authority");
+    assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0, "Governed spawn state cannot hide incomplete blocks or pending roster routes");
   }
   if (lifecycle.qa.independent_clearance_status === "PENDING_EXTERNAL_AUTHORITY") {
     assert(!(lifecycle.mode === "GOVERNED_SPAWN" && (lifecycle.state === "SPAWN_ADMITTED" || lifecycle.state === "SPAWN_ACTIVE") && lifecycle.authority.isolated_local_custody === false), "Pending utility/harm cannot admit or activate non-isolated governed spawning");
@@ -370,7 +372,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
     case "INDEPENDENT_CLEARANCE_GRANTED":
       next.qa.independent_clearance_status = "CLEARED";
       next.qa.independent_clearance_receipt_sha256 = event.event_sha256;
-      if (next.mode === "GOVERNED_SPAWN" && next.qa.incomplete_block_count === 0) {
+      if (next.mode === "GOVERNED_SPAWN" && next.qa.incomplete_block_count === 0 && next.qa.pending_route_count === 0) {
         next.state = "SPAWN_ADMITTED";
         next.authority.temporary_worker_admission = true;
         next.authority.spawn_authority = true;
@@ -378,7 +380,7 @@ export function advanceAgentSpawnerLifecycle(lifecycle, event) {
       break;
     case "ADMIT_GOVERNED_SPAWN":
       assert(lifecycle.mode === "GOVERNED_SPAWN", "Governed spawn admission requires governed-spawn mode");
-      assert(lifecycle.qa.incomplete_block_count === 0 && (lifecycle.qa.independent_clearance_status === "CLEARED" || lifecycle.authority.isolated_local_custody === true), "Governed spawn admission requires complete blocks and clearance or isolated local custody");
+      assert(lifecycle.qa.incomplete_block_count === 0 && lifecycle.qa.pending_route_count === 0 && (lifecycle.qa.independent_clearance_status === "CLEARED" || lifecycle.authority.isolated_local_custody === true), "Governed spawn admission requires complete blocks, a published roster, and clearance or isolated local custody");
       next.state = "SPAWN_ADMITTED";
       next.authority.temporary_worker_admission = true;
       next.authority.spawn_authority = true;
