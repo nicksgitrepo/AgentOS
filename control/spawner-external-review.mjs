@@ -3,9 +3,11 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import {execFileSync} from "node:child_process";
 import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
-import {assertSealedCanonicalAuthority} from "./sealed-canonical-authority.mjs";
+import {assertSealedCanonicalAuthority, getSealedCanonicalAuthority, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
 import {consumeProtectedSpawnerReviewProvisioning} from "./protected-spawner-review-provisioning.mjs";
+import {validateSpawnerGitAncestry} from "./spawner-git-ancestry.mjs";
 
 const stores = new WeakMap(); let installedStore = null;
 const SHA = /^[0-9a-f]{64}$/u;
@@ -19,7 +21,7 @@ export function installExternalSpawnerReviewStore({sealedAuthority, reviewProvis
   assertSealedCanonicalAuthority(sealedAuthority);
   const {realRoot} = consumeProtectedSpawnerReviewProvisioning(reviewProvisioning);
   const registry = read(realRoot, "reviewer-registry.v1.json");
-  exact(registry, ["schema", "version", "authority_epoch", "registry_issuer_id", "registry_public_key_pem", "reviewers", "registry_sha256"], "external reviewer registry");
+  exact(registry, ["schema", "version", "authority_epoch", "registry_issuer_id", "registry_public_key_pem", "authorized_predecessor_commit", "reviewers", "registry_sha256"], "external reviewer registry");
   if (registry.schema !== "agentos.external_spawner_reviewer_registry.v1" || registry.version !== 1 || registry.registry_sha256 !== canonicalDigest({...registry, registry_sha256: null})) fail("external reviewer registry identity/digest differs");
   if (!Array.isArray(registry.reviewers) || registry.reviewers.length === 0) fail("external reviewer registry is empty");
   for (const reviewer of registry.reviewers) {
@@ -31,6 +33,25 @@ export function installExternalSpawnerReviewStore({sealedAuthority, reviewProvis
     verifySigned(admission, "receipt_sha256", "signature_base64", registry.registry_public_key_pem, "reviewer admission receipt");
   }
   const capability = Object.freeze(Object.create(null)); stores.set(capability, Object.freeze({root: realRoot, registry})); installedStore = capability; return capability;
+}
+
+function verifyCandidateCommitBytes(candidate, ancestry) {
+  const repositoryRoot = sealedAuthorityRepositoryRoot(getSealedCanonicalAuthority());
+  validateSpawnerGitAncestry(ancestry, {repositoryRoot});
+  const packageRoot = "specialist-blocks/control-plane/agent-spawner";
+  const paths = new Set([
+    `${packageRoot}/block.json`, `${packageRoot}/gates/manifest.json`, `${packageRoot}/decision-tree.json`,
+    `${packageRoot}/hostile-fixtures.manifest.json`, `${packageRoot}/hostile-evaluation.v1.json`, `${packageRoot}/admission/manifest.json`,
+    `${packageRoot}/controller-issuer-registry.v1.json`, `${packageRoot}/controller-operation-registry.v1.json`,
+    `${packageRoot}/independent-clearance-trust-anchor.v1.json`, "fixtures/model-policy-evidence/source-registry.v1.json",
+  ]);
+  for (const gate of candidate.resolved_gates) paths.add(gate.artifact_path);
+  for (const fixture of candidate.fixture_manifest.entries) paths.add(`${packageRoot}/${fixture.path}`);
+  for (const relative of paths) {
+    let committed; try { committed = execFileSync("git", ["-C", repositoryRoot, "show", `${ancestry.candidate_commit}:${relative}`], {encoding: null, stdio: ["ignore", "pipe", "pipe"]}); } catch { fail(`reviewed candidate commit does not contain canonical artifact: ${relative}`, "SPAWNER_AUTHORITY_CHAIN_MISMATCH"); }
+    const live = fs.readFileSync(path.join(repositoryRoot, relative));
+    if (!committed.equals(live)) fail(`reviewed candidate commit bytes differ from canonical artifact: ${relative}`, "SPAWNER_AUTHORITY_CHAIN_MISMATCH");
+  }
 }
 
 function consume(root, receipt) {
@@ -50,9 +71,11 @@ export function verifyAndConsumeCurrentExternalSpawnerReview({candidate, hostile
   const current = read(store.root, "current-review.v1.json"); exact(current, ["schema", "version", "receipt_sha256"], "current external review reference");
   if (current.schema !== "agentos.current_external_spawner_review.v1" || current.version !== 1 || !SHA.test(current.receipt_sha256)) fail("current external review reference differs");
   const receipt = read(store.root, `receipts/${current.receipt_sha256}.json`);
-  exact(receipt, ["schema", "version", "receipt_id", "reviewer_id", "reviewer_role", "authority_epoch", "candidate_package_sha256", "candidate_package_file_sha256", "candidate_root_sha256", "gate_manifest_sha256", "fixture_manifest_sha256", "hostile_evaluation_sha256", "fixture_result_count", "fixture_inventory_sha256", "scope", "custody", "result", "issued_at_utc", "expires_at_utc", "nonce_sha256", "receipt_sha256", "signature_base64"], "external Spawner review receipt");
+  exact(receipt, ["schema", "version", "receipt_id", "reviewer_id", "reviewer_role", "authority_epoch", "git_ancestry", "candidate_package_sha256", "candidate_package_file_sha256", "candidate_root_sha256", "gate_manifest_sha256", "fixture_manifest_sha256", "hostile_evaluation_sha256", "fixture_result_count", "fixture_inventory_sha256", "scope", "custody", "result", "issued_at_utc", "expires_at_utc", "nonce_sha256", "receipt_sha256", "signature_base64"], "external Spawner review receipt");
   const reviewer = store.registry.reviewers.find((entry) => entry.reviewer_id === receipt.reviewer_id);
   if (!reviewer || receipt.reviewer_role !== reviewer.role || receipt.authority_epoch !== store.registry.authority_epoch) fail("external review issuer is unknown, revoked, stale, or role-mismatched");
+  if (receipt.git_ancestry?.authorized_predecessor_commit !== store.registry.authorized_predecessor_commit) fail("external review authorized predecessor differs from protected reviewer registry", "SPAWNER_AUTHORITY_CHAIN_MISMATCH");
+  verifyCandidateCommitBytes(candidate, receipt.git_ancestry);
   const expectedInventory = hostileEvaluation.results.map((entry) => ({fixture_id: entry.fixture_id, gate_id: entry.gate_id, result: entry.result, actual_outcome: entry.actual_outcome, error_code: entry.error_code})).sort((a, b) => compareUtf8(a.fixture_id, b.fixture_id));
   if (receipt.candidate_package_sha256 !== candidate.spawner_package.package_sha256 || receipt.candidate_package_file_sha256 !== candidate.package_file_sha256 || receipt.candidate_root_sha256 !== candidate.review_candidate_root_sha256 || receipt.gate_manifest_sha256 !== candidate.manifest.manifest_sha256 || receipt.fixture_manifest_sha256 !== candidate.fixture_manifest.manifest_sha256 || receipt.hostile_evaluation_sha256 !== hostileEvaluation.evaluation_sha256 || receipt.fixture_result_count !== expectedInventory.length || receipt.fixture_inventory_sha256 !== canonicalDigest(expectedInventory)) fail("external review candidate or executed evidence binding differs");
   if (receipt.result !== "PASS" || receipt.reviewer_role !== "AGENT.INDEPENDENT_EVALUATOR" || JSON.stringify(receipt.scope) !== JSON.stringify(["CANDIDATE_COMPONENT_ROOT", "GATE_BYTES", "HOSTILE_FIXTURE_EXECUTION"]) || receipt.custody?.read_only_candidate !== true || receipt.custody?.builder_separated !== true || receipt.custody?.governance_write_capability !== false) fail("external review result, scope, or custody differs");

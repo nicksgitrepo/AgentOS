@@ -2603,11 +2603,11 @@
     },
     "spawner_external_review_contract": {
       "path": "schemas/spawner-external-review.v1.json",
-      "sha256": "cc1017a518b4da2b66406b54c25f17f2b744b82e68b535a1ddd14e0e8ae3aaad"
+      "sha256": "f96113d76ce37551157c9757575aaf6d3f3c0050880a6b94b08eb8f17162e09e"
     },
     "spawner_external_review_controller": {
       "path": "control/spawner-external-review.mjs",
-      "sha256": "8dc88e920b4f091c5892db235cfde6147adf030282ade3ecc23ec31d3f36081a"
+      "sha256": "ee307687e1b4d987c0b90d36151dc79c923abc1cccc9878547c010bf84abf16b"
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",
