@@ -107,6 +107,12 @@ for (const [label, overrides] of [["INCOMPLETE_BLOCKS", {incompleteBlockCount: 1
     hostileFixtureRefs: hostile(label),
   }), /cannot activate without a typed true blocker/u, `governed activation cannot bypass ${label.toLowerCase()}`);
 }
+assert.throws(() => compileControllerStartupSuccessor({
+  ...base,
+  stage: "GOVERNED_SPAWN_ADMITTED",
+  routeFacts: facts({nextRoleId: "AGENTOS.RUNTIME"}),
+  hostileFixtureRefs: hostile("PENDING_ROLE"),
+}), /cannot activate without a typed true blocker/u, "governed activation cannot bypass an incomplete permanent roster");
 
 const governedWait = compileControllerStartupSuccessor({
   ...base,

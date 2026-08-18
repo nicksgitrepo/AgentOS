@@ -115,7 +115,8 @@ function validateProtectedEvent(event) {
 function body(sequence) { const copy = structuredClone(sequence); copy.sequence_sha256 = null; return copy; }
 
 function safeGovernedSpawnRoute(routeFacts) {
-  return routeFacts.incomplete_block_count === 0
+  return routeFacts.next_role_id === null
+    && routeFacts.incomplete_block_count === 0
     && routeFacts.pending_route_count === 0
     && (routeFacts.isolated_local_custody || routeFacts.independent_clearance_status === "CLEARED");
 }

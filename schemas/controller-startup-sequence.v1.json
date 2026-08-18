@@ -32,8 +32,8 @@
     {"if": {"properties": {"stage": {"const": "ORCHESTRATOR_GOVERNANCE_READY"}}}, "then": {"properties": {"next_action": {"const": "START_COMPILER"}}}},
     {"if": {"properties": {"stage": {"const": "SPAWNER_COMPILER_ACTIVE"}}}, "then": {"properties": {"next_action": {"enum": ["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "ADMIT_GOVERNED_SPAWN"]}}}},
     {"if": {"properties": {"stage": {"const": "SPAWNER_ROSTER_PUBLISHED"}}}, "then": {"properties": {"next_action": {"const": "ADMIT_GOVERNED_SPAWN"}}}},
-    {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ADMITTED"}}}, "then": {"properties": {"next_action": {"enum": ["START_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"]}, "route_facts": {"properties": {"incomplete_block_count": {"const": 0}, "pending_route_count": {"const": 0}}}}}},
-    {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ACTIVE"}}}, "then": {"properties": {"next_action": {"const": "START_IMPORT_ORCHESTRATOR"}, "route_facts": {"properties": {"incomplete_block_count": {"const": 0}, "pending_route_count": {"const": 0}}}}}},
+    {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ADMITTED"}}}, "then": {"properties": {"next_action": {"enum": ["START_GOVERNED_SPAWN", "WAIT_FOR_INDEPENDENT_CLEARANCE"]}, "route_facts": {"properties": {"next_role_id": {"const": null}, "incomplete_block_count": {"const": 0}, "pending_route_count": {"const": 0}}}}}},
+    {"if": {"properties": {"stage": {"const": "GOVERNED_SPAWN_ACTIVE"}}}, "then": {"properties": {"next_action": {"const": "START_IMPORT_ORCHESTRATOR"}, "route_facts": {"properties": {"next_role_id": {"const": null}, "incomplete_block_count": {"const": 0}, "pending_route_count": {"const": 0}}}}}},
     {"if": {"properties": {"stage": {"const": "IMPORT_ORCHESTRATOR_ACTIVE"}}}, "then": {"properties": {"next_action": {"const": "REQUEST_SPAWNER_QA"}}}}
   ],
   "$defs": {
