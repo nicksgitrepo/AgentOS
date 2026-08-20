@@ -18,6 +18,9 @@
     "12-gate-pack-digests",
     "atomic-scope-and-upstream-router",
     "hostile-fixture-catalog",
+    "17-operational-hostile-vectors-through-security-router-boundary",
+    "zero-side-effect-readbacks",
+    "forbidden-operation-mutation-proof",
     "independent-reviewer-required",
     "source-lock-digest"
   ],
@@ -25,8 +28,9 @@
     "applicability and project context remain external",
     "candidate is not admitted or activated",
     "independent utility/harm evaluation has not run",
+    "independent evaluator must re-run the immutable candidate and may recheck earlier accepted packages",
     "main AgentOS 3.0 integration owner must intake exact digest"
   ],
-  "next_action": "Route the immutable P1 candidate through the upstream router and independent evaluator; preserve activation OFF.",
+  "next_action": "Route the immutable P1 candidate through the independent evaluator; preserve activation OFF.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

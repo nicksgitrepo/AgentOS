@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "1aed4bac84f56a26ba0e47110ce99c6db56a3a927965dd91204850f40af84467"
+      "sha256": "656bd3bb8758f04732a3dfe29b3e8ec8dbad770d800d78da8908e57ac574ac21"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3164,6 +3164,34 @@
     "orchestrator_coordination_package_operational_evaluator_verifier": {
       "path": "tests/verify-orchestrator-coordination-package-evaluator.mjs",
       "sha256": "c4d796a5f2495203a23920634771b74d00fa08f4ca569726475e5232d7c2be52"
+    },
+    "security_router_boundary_gate": {
+      "path": "control/security-router-boundary-gate.mjs",
+      "sha256": "9d7ca216357ffbbc3a7568fc14cab60b48671d73f5cb0c4ebb8c38a1de17dfdc"
+    },
+    "security_router_boundary_input_contract": {
+      "path": "schemas/security-router-boundary-input.v1.json",
+      "sha256": "8cc4e28225c03a67842f56f810e98c22fa7fe83b2e272cac20a0e0f55f25767b"
+    },
+    "security_router_boundary_result_contract": {
+      "path": "schemas/security-router-boundary-result.v1.json",
+      "sha256": "3ff67f1342925481d774c442b34b72bdb205445f1d324e1068bfadb74fc8d361"
+    },
+    "security_router_package_operational_evaluation_contract": {
+      "path": "schemas/security-router-package-operational-evaluation.v1.json",
+      "sha256": "d2b344c0dd4b1ee1fad94ee6fed579a97352227a3e94a34fcda990be86b91463"
+    },
+    "security_router_package_operational_evaluator": {
+      "path": "control/security-router-package-evaluator.mjs",
+      "sha256": "16a5379c328fa3c7e6021b11b1a2e479d2f2f25d2fc4c4089c08ea08f73f27fd"
+    },
+    "security_router_boundary_verifier": {
+      "path": "tests/verify-security-router-boundary.mjs",
+      "sha256": "4b49dfd9dc908e28b0f0d23b54bc1bcdb4319585af3d4879003464119cd81a48"
+    },
+    "security_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-02/security-router/handoff.json",
+      "sha256": "a8d5eb791138aa286f7b3e63a7c49b48fe1657c790a15fc106e7d8a8dd92bc66"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",

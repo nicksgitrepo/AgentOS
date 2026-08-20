@@ -1,9 +1,41 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.security.router.broad_when_narrow_exists",
   "block_id": "specialist.security.router",
   "class": "broad_when_narrow_exists",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/security-router-boundary-gate.mjs#evaluateSecurityRouterBoundary",
+    "input": {
+      "schema": "agentos.security_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_SIGNAL",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SECURITY_ROUTER",
+        "custody_ref": "ref:SECURITY_ROUTER/BOUND",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "signal": "RBAC",
+        "target_ref": "specialist.security.rbac",
+        "context_complete": true,
+        "scope": "BROAD",
+        "requested_action": "CLASSIFY",
+        "requested_tools": [
+          "READ_SOURCE"
+        ],
+        "scope_expanded": true
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "SECURITY_ROUTER_SCOPE_EXPANSION_FORBIDDEN",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

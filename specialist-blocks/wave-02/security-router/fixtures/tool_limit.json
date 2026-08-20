@@ -1,9 +1,40 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.security.router.tool_limit",
   "block_id": "specialist.security.router",
   "class": "tool_limit",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/security-router-boundary-gate.mjs#evaluateSecurityRouterBoundary",
+    "input": {
+      "schema": "agentos.security_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_SIGNAL",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SECURITY_ROUTER",
+        "custody_ref": "ref:SECURITY_ROUTER/BOUND",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "signal": "OAUTH",
+        "target_ref": "specialist.security.oauth-identity",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "CLASSIFY",
+        "requested_tools": [
+          "WRITE_FILE"
+        ]
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "READ_ONLY_TOOLS_REQUIRED",
+      "error_code": "SECURITY_ROUTER_TOOL_SCOPE_FORBIDDEN",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

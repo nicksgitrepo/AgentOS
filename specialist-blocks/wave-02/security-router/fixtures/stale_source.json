@@ -1,9 +1,40 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.security.router.stale_source",
   "block_id": "specialist.security.router",
   "class": "stale_source",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/security-router-boundary-gate.mjs#evaluateSecurityRouterBoundary",
+    "input": {
+      "schema": "agentos.security_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_SIGNAL",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SECURITY_ROUTER",
+        "custody_ref": "ref:SECURITY_ROUTER/BOUND",
+        "source_status": "STALE",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "signal": "OAUTH",
+        "target_ref": "specialist.security.oauth-identity",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "CLASSIFY",
+        "requested_tools": [
+          "READ_SOURCE"
+        ]
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "SECURITY_ROUTER_SOURCE_STALE_OR_UNVERIFIED",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }
