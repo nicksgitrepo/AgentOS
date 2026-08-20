@@ -51,6 +51,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRODUCT_CLIENT_ROUTER",
+      "package_path": "specialist-blocks/wave-02/product-client-router",
+      "candidate_commit": "7e9350d90cd3b06d5bd2b80836e14660af3dd662",
+      "candidate_tree": "545d08a1b6f4687808da51ff7890bd3d20a233af",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/7e9350d90cd3b06d5bd2b80836e14660af3dd662",
+      "receipt_sha256": "df12755741d7fbacdb2d96accc15bec726a76cd184281aba23516dc7f2ff609b",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -121,5 +131,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "e3adefea8b8fb7a13eca0f33d1417e4922e1280b6620b3b18c1f6b711385ef8b"
+  "ledger_sha256": "f32a9f56bee39e72d0f96f7f9f87aa86ead4f99e6d4aff653cc98cc1c9e7f607"
 }

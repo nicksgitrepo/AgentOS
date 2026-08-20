@@ -65,6 +65,9 @@ assert.match(acceptedProviderEdge.build_state, /^ACCEPTED_/u, "Provider Edge Rou
 const acceptedDesktopOfflineRealtime = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER");
 assert(acceptedDesktopOfflineRealtime, "Desktop Offline Realtime Router missing from roster");
 assert.match(acceptedDesktopOfflineRealtime.build_state, /^ACCEPTED_/u, "Desktop Offline Realtime Router is not marked accepted in the readback index");
-assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.PRODUCT_CLIENT_ROUTER");
+const acceptedProductClient = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.PRODUCT_CLIENT_ROUTER");
+assert(acceptedProductClient, "Product Client Router missing from roster");
+assert.match(acceptedProductClient.build_state, /^ACCEPTED_/u, "Product Client Router is not marked accepted in the readback index");
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);
