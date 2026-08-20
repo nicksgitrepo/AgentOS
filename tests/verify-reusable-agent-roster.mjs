@@ -86,6 +86,6 @@ assert.match(acceptedWorktreeCustody.build_state, /^ACCEPTED_/u, "Worktree/Custo
 const acceptedAssurance = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.ASSURANCE_ENTERPRISE_ROUTER");
 assert(acceptedAssurance, "Assurance and Enterprise Router missing from roster");
 assert.match(acceptedAssurance.build_state, /^ACCEPTED_/u, "Assurance and Enterprise Router is not marked accepted in the readback index");
-assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.SECURITY_ACCESS_CONTROL_ROUTER");
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.SECURITY_OWASP_ASVS_ROUTER");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);

@@ -11,66 +11,16 @@ dependencies, scores, gates, fixtures, model routes, and build state.
 The Spawner is already admitted and is reused by its immutable receipt. The
 Controller, Product Owner, Memory, Runtime, Scheduler, and Orchestrator
 packages have passed their independent checks and are reused by their exact
-candidate readbacks. Security Router, Data Router, Observability Router,
-Provider/Edge Router, Desktop/Offline/Realtime Client Router, and Product/Client
-Contract Router, Software Language/Runtime Router, and Bootstrap/Project
-Initializer have now passed their independent checks and are registered as
-accepted platform packages. Only one package may be in
-qualification at a time. A package is not
-built merely because a name exists: its exact
-blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
-QA, and independent evaluation must all be current.
-
-### Permanent AgentOS roles
-
-1. `AGENTOS.SPAWNER` — admitted governance and lifecycle owner.
-2. `AGENTOS_CONTROLLER` — workflow regulation and useful-progress checks only; independently accepted.
-3. `AGENTOS.PRODUCT_OWNER` — user intent and normal human conversation only; independently accepted.
-4. `AGENTOS.MEMORY` — governed memory adapter; independently accepted.
-5. `AGENTOS.RUNTIME` — runtime and rollback custody only; independently accepted.
-6. `AGENTOS.SCHEDULER` — resource and work scheduling only; independently accepted.
-7. `AGENTOS.ORCHESTRATOR` — plan coordination and typed handoffs; independently accepted.
-
-### Platform agents
-
-After the permanent roles, the queue covers client, backend/API, data,
-infrastructure/cloud, release, assurance, and delivery integration. Existing
-routers and narrow platform packages are listed in the machine registry with
-their actual dependencies and are not promoted until their predecessors are
-accepted.
-
-### Specialist auditors
-
-The final tier contains narrow security, standards, quality, regulatory,
-scientific, operational, and domain auditors. One standard or failure class is
-kept per auditor when that produces a tighter pass. Temporary auditors close
-only after an accepted handoff, closed scope, preserved evidence, and zero
-worktree or custody references; only the Spawner may despawn them.
-
-## Entry contract
-
-Every registry entry records its stable identity and display name, family,
-narrow purpose, applicability triggers, authority, forbidden actions, stop
-conditions, required block graph, knowledge/context inputs, exact gate files,
-hostile fixtures, evidence and handoff contract, lifecycle, model task class
-and capability floor, predecessors, likely consumers, reuse score, risk, build
-and QA state, independent-evaluation state, and invalidation links. Reusable
-governance and standard blocks are explicitly marked as blocks, not agents.
-
-Model names are suggestions only. The current capability-first route comes
-from the accepted global model-policy snapshot, with freshness, availability,
-context, cost, concurrency, fallback, and escalation checks applied at spawn.
-Seeds are immutable clean checkpoints and never perform work.
-
-Security Router, Data Router, Observability Router, Provider/Edge Router,
+candidate readbacks. Security Router, Data Router, Observability Router, Provider/Edge Router,
 Desktop/Offline/Realtime Client Router, Product/Client Contract Router,
 Software Language/Runtime Router, Bootstrap/Project Initializer, Central
 Integrator, Release Manager, Worktree/Custody Manager, Assurance/Enterprise
 Router, Independent Auditor, AI/Search/RAG Router, Workflow Router,
 Accounting/Job-Cost Router, Graphics/Industrial 3D Router, Privacy
-Data-Lifecycle Router, and Regulatory Applicability Router are accepted from
-their exact independent receipts. The current queue item is
-`AGENT.SECURITY_ACCESS_CONTROL_ROUTER`; its package, gates, hostile vectors,
+Data-Lifecycle Router, Regulatory Applicability Router, Access-Control
+Composition Router, and OWASP API Top 10 Router are accepted from their exact
+independent receipts. The current queue item is
+`AGENT.SECURITY_OWASP_ASVS_ROUTER`; its package, gates, hostile vectors,
 model route, and local proof are next for one-at-a-time qualification.
 All other
 entries remain queued or blocked on predecessors as recorded in the machine

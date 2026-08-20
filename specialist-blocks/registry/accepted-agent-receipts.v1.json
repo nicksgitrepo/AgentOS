@@ -181,6 +181,26 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_ACCESS_CONTROL_ROUTER",
+      "package_path": "specialist-blocks/wave-03/access-control-router",
+      "candidate_commit": "61fb3248b61572e89c3ecceae1986655109ff25e",
+      "candidate_tree": "caf9515a8397ce3243087f15831e0e8f56fcdee2",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/61fb3248b61572e89c3ecceae1986655109ff25e",
+      "receipt_sha256": "83fe1507cd4cfe02b6c35c1765ff6ce58ec398cae5a5f322f8c03d354354e547",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
+      "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
+      "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
+      "candidate_tree": "6e1c9c0b42007b8e064c40da90887faa772748b5",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/0ed1b5b760528663d520c2b6d0df088fe2841c4b",
+      "receipt_sha256": "8317493302bfbe4d985ca437996d7bd32b0e91f0c9b799c82261c9ed1b0465b9",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -261,5 +281,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "26740c56ece816608d126eebe94e4af582470209a3f4abeecbcf25909d682293"
+  "ledger_sha256": "48adafc8a3516956f72cca91545e3b8ce4da8ecc59551fd24ced3b5cd3748a56"
 }
