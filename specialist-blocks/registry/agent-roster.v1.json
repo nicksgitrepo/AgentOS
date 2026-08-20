@@ -8058,105 +8058,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.AUTHORITY_CONFLICT",
+            "fixture_id": "data-lifecycle-router-authority-conflict",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/authority_conflict.json",
-            "file_sha256": "d442e1707dd583a634fde830f80c9abe837226653c4b1ee672418a94620990d3",
+            "file_sha256": "f2f3cd3d183ba63a5660ed91a5e4925f7be3407025b717649a67ec92b19acca5",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "data-lifecycle-router-broad-when-narrow-exists",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "d7aae880116824ae5dfe78e05c3420424e85e197904be565b84eea3dd09d60e7",
+            "file_sha256": "a637040da6c0e3b2a9f9608b7b7cd1fac58d75d1b720b3b7cec0ffa19e181240",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "data-lifecycle-router-cross-provider-version-claim",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "afb316878b7f46767da0860f97c9649ceb76664ccb9d218aef8b463cf1414cb1",
+            "file_sha256": "a9fa0adec38d7a6665139750c6289695fb93cd0504ff14ef2c664712218a57e1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.DATA_LIMIT",
+            "fixture_id": "data-lifecycle-router-data-limit",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/data_limit.json",
-            "file_sha256": "b813ef467b2f186e50a214befc07f42cc70dda79c86202c30ba656422f6ca7df",
+            "file_sha256": "354c391a381d02561b86e0b9c6ec41352bbf8f5011079e80cfed4228d6913193",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "data-lifecycle-router-duplicate-sibling-authority",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "d3834c7d0cbcbb99e580b2b72afb7a2114223a0e527bec1f41af3cf835564ca8",
+            "file_sha256": "8608777e2c9290cbe9497b638668df13129d985c50cc7722a1ee4f2846f3e067",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.FALSE_POSITIVE",
+            "fixture_id": "data-lifecycle-router-false-positive",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/false_positive.json",
-            "file_sha256": "f4519595805a7ca99618a02561ed20bd36ef5101460bb8789b2ff09249e65551",
+            "file_sha256": "bbc806e4e6295a48dc33fba6dd4cf65ab3c6509e50ec41262ff7aa01e1aa585c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.HANDOFF",
+            "fixture_id": "data-lifecycle-router-handoff",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/handoff.json",
-            "file_sha256": "34a62041920c693c670bf5796e672a0de0a01e2303ce50d04d3f4081e9449f6a",
+            "file_sha256": "2561e634b2ef53de3b619b2ab88e1ccc029f9acb2ffd6381eb2b54150f72f351",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.MISSING_CONTEXT",
+            "fixture_id": "data-lifecycle-router-missing-context",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/missing_context.json",
-            "file_sha256": "ad101dbb0d8f855854ea91a79f3c774957df850b54f88deca84f2e1563e67e66",
+            "file_sha256": "f9d72f6f20ef8d46676c90118105d6fb27cfd5f146d92604e28774ed5c0747f4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.NARROWNESS",
+            "fixture_id": "data-lifecycle-router-narrowness",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/narrowness.json",
-            "file_sha256": "100defb03f15d2bbd457950c083f07a3d1152d4764ee3a59949caedef9dc28e4",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "666d6a84d538adb10787a77e375eba9b5011454a86f5dd67e7ba56f00ca5aa6e",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.ROUTER_SELF_ACCEPT",
+            "fixture_id": "data-lifecycle-router-router-self-accept",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/router_self_accept.json",
-            "file_sha256": "68639e24ebccf3345dc72940cf4466a55bbe97ba1a1716958455d969924369e3",
+            "file_sha256": "7c55928aefbe04b22c130550e1432b55b385c2bae3c277902d291f81d0c964e3",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.ROUTING",
+            "fixture_id": "data-lifecycle-router-routing",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/routing.json",
-            "file_sha256": "40e467c8edebcade15263c704d1b64e3cf228336fbb0913ae7be3bda0fe76a3e",
+            "file_sha256": "733d75706ee480e8259a00fc4ad457203dc2e0c869d1901df1c890414e86e23b",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "data-lifecycle-router-silent-scope-expansion",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "6fb7bc86e95e294721a9bf4a0409c2af57de5a206b2417effd4d0bce314155e4",
+            "file_sha256": "375fb7470506966dfff5fafadc9a2877ca1a22e79cf04ca77e6f05822e8de2b0",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.STALE_SOURCE",
+            "fixture_id": "data-lifecycle-router-stale-source",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/stale_source.json",
-            "file_sha256": "d01b3111a45320e4c51ac9f434f4c8bd9916c3c81ae80fe69208c636aeaf287c",
+            "file_sha256": "d995e14265ba1cc61f207713a81627cefada61a3f84e6e2590482ba9b2429e32",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.TOOL_LIMIT",
+            "fixture_id": "data-lifecycle-router-tool-limit",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/tool_limit.json",
-            "file_sha256": "e29e1903da6e520e04305495c8d534cc5c66470a0e519587d54ebc146c3d8ed9",
+            "file_sha256": "c8835469fcbf4851efefedab8ee150aa3e8e87b0b206e37c5572a0515947e879",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.UMBRELLA_AUTHORITY",
+            "fixture_id": "data-lifecycle-router-umbrella-authority",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/umbrella_authority.json",
-            "file_sha256": "0772ca05ebd712043382034e4e31d62e1ac931bb5ae7d5e16a1594d301da0c16",
+            "file_sha256": "bb3f140fd277ae7062bc3dcb7d2fa945ba09091e661a24f42b8b14fd931a207b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.UNRELATED_SCOPE",
+            "fixture_id": "data-lifecycle-router-unrelated-scope",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/unrelated_scope.json",
-            "file_sha256": "110c5aab707bbbd6cd8108ee97c01afe0842dd2a419be8fe8dbac8de414c3232",
+            "file_sha256": "0b81730ea198c0b2b34b66fb572260a6facaa8cda23d80c8716f478e1adf2e24",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.privacy.data-lifecycle-router.UNSAFE_ACTION",
+            "fixture_id": "data-lifecycle-router-unsafe-action",
             "path": "specialist-blocks/wave-03/data-lifecycle-router/fixtures/unsafe_action.json",
-            "file_sha256": "17894fb45d27eb585fcf7652a177b0d1b076289a41282f3586bb8c4b77edf7ff",
+            "file_sha256": "f651da7333b02a3f0bd27ecaae9af9f9b3863ccb5dd61dd7f137e02e8ec05bd9",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "32e2f045d95f95dfc6f2ca2f1fa6644fffd1625b8ceae864d8d08c07385f006d"
+  "roster_sha256": "03d2025fe4d2e69e23b4b54e92bf1c26528d45ca029c543f569e29768a493db5"
 }

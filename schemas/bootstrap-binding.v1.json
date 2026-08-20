@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "632d0f291c18c877cbaa566889a603c1189fc5d2d68bd6b23f8d13f875e24945"
+      "sha256": "974d815b0dfd7fac3588f3bc7c543647c4c67584d9805b7b0bee1c5dab61d5f0"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3420,6 +3420,34 @@
     "industrial_3d_router_candidate_handoff": {
       "path": "specialist-blocks/wave-06/industrial-3d-router/handoff.json",
       "sha256": "660335ac6108abeac4380fc2d757039568d11e1bf1260ca49ae74c58de0fea84"
+    },
+    "data_lifecycle_router_boundary_gate": {
+      "path": "control/data-lifecycle-router-boundary-gate.mjs",
+      "sha256": "f490c955c2d34b65b19befa99c6cf6b325c98a4d3aea63e3af5e607718543940"
+    },
+    "data_lifecycle_router_boundary_input_contract": {
+      "path": "schemas/data-lifecycle-router-boundary-input.v1.json",
+      "sha256": "50f568d149d5144dd2aee18d7675deea3183f96506fbcd19844d432a3f4bfe53"
+    },
+    "data_lifecycle_router_boundary_result_contract": {
+      "path": "schemas/data-lifecycle-router-boundary-result.v1.json",
+      "sha256": "6b0f5441fb609131af88aa74ffd413ad6b798cb7ff45973aea94bfafbb9cceee"
+    },
+    "data_lifecycle_router_package_operational_evaluation_contract": {
+      "path": "schemas/data-lifecycle-router-package-operational-evaluation.v1.json",
+      "sha256": "95ffbe4dc8b7c3c387a59b5f762f4689c5f86d5a8283cd321577cf6165143783"
+    },
+    "data_lifecycle_router_package_operational_evaluator": {
+      "path": "control/data-lifecycle-router-package-evaluator.mjs",
+      "sha256": "b3763ad081612fd3a7dceb24c4b84b3e79847a478719f99b2d1877c52db27174"
+    },
+    "data_lifecycle_router_boundary_verifier": {
+      "path": "tests/verify-data-lifecycle-router-boundary.mjs",
+      "sha256": "aca5e3637f2e35dc7bee6291cc7d7f5e69a063de4b96ce290201ea5201d9bf15"
+    },
+    "data_lifecycle_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/data-lifecycle-router/handoff.json",
+      "sha256": "207c762c79880e3bb7156b4e9c9f63bcc5d531d1dcbb084e6190015b3e3ea08a"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
