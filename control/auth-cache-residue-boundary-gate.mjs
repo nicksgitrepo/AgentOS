@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-/* Read-only AUTH_CACHE_RESIDUE Composition Router. It classifies typed access
- * control signals and assembles the smallest downstream specialist set. It
+/* Read-only Authorization Cache Residue specialist boundary. It analyzes only
+ * cache invalidation evidence and hands remediation to the governed owner. It
  * never makes an authorization decision or changes policy, credentials, or
  * project state. */
 import {canonicalDigest} from "./content-addressing.mjs";
@@ -12,7 +12,7 @@ export const AUTH_CACHE_RESIDUE_RESULT_SCHEMA = "agentos.auth_cache_residue_boun
 const SHA256 = /^[0-9a-f]{64}$/u;
 const ID = /^[A-Z][A-Z0-9._:-]{1,160}$/u;
 const REQUESTS = new Set([
-  "CLASSIFY_AUTH_CACHE_RESIDUE", "ASSEMBLE_AUTH_CACHE_RESIDUE_CONTEXT", "ROUTE_AUTH_CACHE_RESIDUE_HANDOFF",
+  "ANALYZE_AUTHORIZATION_CACHE", "REVIEW_CACHE_INVALIDATION", "HANDOFF_CACHE_REMEDIATION",
   "NOT_APPLICABLE", "UNRELATED_REQUEST", "REPAIR", "ACCEPT", "ADMIT", "ACTIVATE", "MERGE",
   "PUSH", "DEPLOY", "PUBLISH", "WRITE_PROJECT", "WRITE_MEMORY", "SELF_REVIEW", "ANSWER_USER",
   "DECIDE_AUTHORIZATION", "MUTATE_POLICY", "ISSUE_CREDENTIAL", "CHANGE_ROLE", "CHANGE_TENANT",
@@ -23,7 +23,7 @@ const FORBIDDEN = new Set([
   "WRITE_MEMORY", "SELF_REVIEW", "ANSWER_USER", "DECIDE_AUTHORIZATION", "MUTATE_POLICY",
   "ISSUE_CREDENTIAL", "CHANGE_ROLE", "CHANGE_TENANT", "CERTIFY_SECURITY", "OVERRIDE_SCOPE"
 ]);
-const TOOLS = new Set(["READ_AUTH_CACHE_RESIDUE_SIGNAL", "READ_SOURCE_LOCK", "READ_ATTRIBUTE_CATALOG", "READ_CONTEXT", "READ_ATTRIBUTE_CATALOG"]);
+const TOOLS = new Set(["READ_AUTHORIZATION_CACHE_EVIDENCE", "READ_CACHE_INVALIDATION_EVIDENCE", "READ_SOURCE_LOCK", "READ_CONTEXT"]);
 const FLAGS = ["authority_conflict", "scope_expanded", "protected_data", "stale_source", "unsupported_tool", "duplicate_authority", "self_acceptance", "unrelated_scope", "missing_context", "unsafe_action", "broad_claim", "cross_provider", "false_positive"];
 const REQUIRED_BLOCKS = [
   "BLOCK.SECURITY.AUTHORITY", "BLOCK.SECURITY.EVIDENCE", "BLOCK.SECURITY.SCOPE",
@@ -45,15 +45,15 @@ function result(disposition, route, code, input, extra = {}) {
     routing_allowed: false, acceptance_allowed: false, authorization_decision_allowed: false,
     policy_mutation_allowed: false, credential_issue_allowed: false,
     external_side_effects: {
-      auth_cache_residue_reads: 0, protected_data_reads: 0, authorization_decisions: 0,
+      authorization_cache_reads: 0, protected_data_reads: 0, authorization_decisions: 0,
       policy_mutations: 0, memory_writes: 0, acceptance_calls: 0, credential_accesses: 0, state_changes: 0
     }, error_code: code, input_sha256: canonicalDigest(input), ...extra
   };
   return Object.freeze({...base, result_sha256: canonicalDigest({...base, result_sha256: null})});
 }
 function validate(input) {
-  exact(input, new Set(["schema", "version", "request_kind", "evidence"]), "AUTH_CACHE_RESIDUE router input");
-  assert(input.schema === AUTH_CACHE_RESIDUE_INPUT_SCHEMA && input.version === 1, "AUTH_CACHE_RESIDUE router schema mismatch", "AUTH_CACHE_RESIDUE_SCHEMA_MISMATCH");
+  exact(input, new Set(["schema", "version", "request_kind", "evidence"]), "Authorization Cache Residue input");
+  assert(input.schema === AUTH_CACHE_RESIDUE_INPUT_SCHEMA && input.version === 1, "Authorization Cache Residue schema mismatch", "AUTH_CACHE_RESIDUE_SCHEMA_MISMATCH");
   assert(REQUESTS.has(input.request_kind), "AUTH_CACHE_RESIDUE request is unknown", "AUTH_CACHE_RESIDUE_REQUEST_INVALID");
   exact(input.evidence, new Set([
     "authority_status", "auth_cache_residue_domain", "control_identity", "control_activity", "control_entity", "control_scope", "control_version",
@@ -62,7 +62,7 @@ function validate(input) {
     "requested_action", "requested_tools", "required_block_identities", "model_policy_status", "model_route_status", "authority_scope",
     "project_data_present", "secret_data_present", "authorization_decision_requested", "policy_mutation_requested", "credential_issue_requested",
     "adversarial_flags"
-  ]), "AUTH_CACHE_RESIDUE router evidence");
+  ]), "Authorization Cache Residue analysis evidence");
   const e = input.evidence;
   for (const key of [
     "authority_status", "auth_cache_residue_domain", "control_identity", "control_activity", "control_entity", "control_scope", "control_version",
@@ -71,7 +71,7 @@ function validate(input) {
     "model_route_status", "authority_scope"
   ]) str(e[key], `evidence.${key}`);
   digest(e.candidate_digest, "evidence.candidate_digest");
-  assert(e.auth_cache_residue_domain === "AUTH_CACHE_RESIDUE", "security domain is not typed", "AUTH_CACHE_RESIDUE_DOMAIN_INVALID");
+  assert(e.auth_cache_residue_domain === "AUTHORIZATION_CACHE_RESIDUE", "security domain is not typed", "AUTH_CACHE_RESIDUE_DOMAIN_INVALID");
   assert(Array.isArray(e.required_block_identities) && e.required_block_identities.length === REQUIRED_BLOCKS.length && new Set(e.required_block_identities).size === REQUIRED_BLOCKS.length, "required block identities are incomplete", "AUTH_CACHE_RESIDUE_BLOCK_BINDING_INVALID");
   e.required_block_identities.forEach((value, index) => { id(value, "required_block_identities[]"); assert(value === REQUIRED_BLOCKS[index], "required block identity is not canonical", "AUTH_CACHE_RESIDUE_BLOCK_BINDING_INVALID"); });
   assert(Array.isArray(e.requested_tools) && e.requested_tools.length > 0, "requested tools are invalid", "AUTH_CACHE_RESIDUE_TOOL_SCOPE_INVALID");
@@ -100,8 +100,8 @@ export function evaluateAuthCacheResidueBoundary(input) {
   if (f.false_positive) return result("DENY", "TYPED_EVIDENCE_REQUIRED", "AUTH_CACHE_RESIDUE_FINDING_UNSUPPORTED", input);
   if (f.unsafe_action) return result("DENY", "NO_AUTH_CACHE_RESIDUE_SIDE_EFFECT", "AUTH_CACHE_RESIDUE_OPERATION_FORBIDDEN", input);
   if (e.authority_status !== "CURRENT" || e.policy_status !== "CURRENT" || e.source_status !== "CURRENT_VERIFIED" || e.candidate_status !== "CURRENT_CANDIDATE" || e.context_status !== "AUTH_CACHE_RESIDUE_CONTEXT" || e.model_policy_status !== "CURRENT" || e.model_route_status !== "BOUND" || e.context_complete !== true) return result("DENY", "TYPED_CONTEXT_REQUIRED", "AUTH_CACHE_RESIDUE_CONTEXT_BINDING_INVALID", input);
-  if (e.authority_scope !== "AUTH_CACHE_RESIDUE") return result("DENY", "NARROW_SCOPE_REQUIRED", "AUTH_CACHE_RESIDUE_SCOPE_INVALID", input);
-  if (!["CLASSIFY", "ASSEMBLE", "ROUTE"].includes(e.requested_action)) return result("DENY", "TYPED_CONTEXT_REQUIRED", "AUTH_CACHE_RESIDUE_ACTION_INVALID", input);
+  if (e.authority_scope !== "AUTHORIZATION_CACHE_RESIDUE") return result("DENY", "NARROW_SCOPE_REQUIRED", "AUTH_CACHE_RESIDUE_SCOPE_INVALID", input);
+  if (!["ANALYZE", "REVIEW", "HANDOFF"].includes(e.requested_action)) return result("DENY", "TYPED_CONTEXT_REQUIRED", "AUTH_CACHE_RESIDUE_ACTION_INVALID", input);
   if (e.auth_cache_residue_signal !== "SECURITY.AUTHORIZATION_CACHE_RESIDUE" || e.signal_status !== "BOUND" || e.task_status !== "AUTHORIZATION_CACHE_RESIDUE_ANALYSIS") return result("DENY", "TYPED_CONTEXT_REQUIRED", "AUTH_CACHE_RESIDUE_SIGNAL_INVALID", input);
   if (e.control_identity !== "CONTROL.AUTHORIZATION_CACHE_RESIDUE" || e.control_version !== "1" || e.source_identity !== "SOURCE.AGENTOS_AUTHORIZATION_CACHE_RESIDUE" || e.source_version !== "1") return result("DENY", "SOURCE_REFRESH_REQUIRED", "AUTH_CACHE_RESIDUE_SOURCE_BINDING_INVALID", input);
   return result("ROUTE", "AUTH_CACHE_RESIDUE_REMEDIATION_HANDOFF", "AUTH_CACHE_RESIDUE_ANALYSIS_READY", input, {routing_allowed: true, selected_owner: "AGENTOS.ORCHESTRATOR", handoff: {status: "WAITING_WITH_RECEIPT", next_action: "Hand the typed authorization-cache residue evidence to the project owner for remediation; do not decide authorization, mutate policy, issue credentials, or widen scope.", execution_instruction: false}});

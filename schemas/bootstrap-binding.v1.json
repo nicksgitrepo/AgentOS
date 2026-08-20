@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "91a15d26baf26a21c767df35786ecd9fb52ea4ca1d6afa8a85fb8b5223bd381a"
+      "sha256": "e9f8e1346c08d7c622795588ec9ec49973d0fc1b909edecc6e477e11cb54e547"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4517,15 +4517,15 @@
     },
     "auth_cache_residue_boundary_gate": {
       "path": "control/auth-cache-residue-boundary-gate.mjs",
-      "sha256": "fa5df159e7db7b728ac63b72848e0ae9367203600c96fac76843a95e6a7a7987"
+      "sha256": "c28d85c95835fcf23c4d47020ba63463f2680b9f86746b3ccbc9c30c353c7e0a"
     },
     "auth_cache_residue_boundary_input_contract": {
       "path": "schemas/auth-cache-residue-boundary-input.v1.json",
-      "sha256": "7a1dd240a174564241ee6d6eb344becfd7edad60fdb56a679eaca92ed4c9817b"
+      "sha256": "7fefde8bf45a42815611150c1b5d2a411a0b8ccd566337ec8d2456744b096ed0"
     },
     "auth_cache_residue_boundary_result_contract": {
       "path": "schemas/auth-cache-residue-boundary-result.v1.json",
-      "sha256": "9b58d73aaee4de77eeaf32e48894d20ed8f566e74fc8747fc63117d102bda80d"
+      "sha256": "6e52310e4b6ea70668570779d1fd095825c28d09c250841f1b5b324db7949ecf"
     },
     "auth_cache_residue_package_operational_evaluation_contract": {
       "path": "schemas/auth-cache-residue-package-operational-evaluation.v1.json",
@@ -4537,7 +4537,7 @@
     },
     "auth_cache_residue_boundary_verifier": {
       "path": "tests/verify-auth-cache-residue-boundary.mjs",
-      "sha256": "22b4245d57270c3cec1177659a98e2eab87708e3b3619496cae53f43c8e69c06"
+      "sha256": "4609fbc261b58bc5fc20b04f2d493ea3a3df7a49ad70086e34a3b26e56a7b0b4"
     },
     "auth_cache_residue_candidate_handoff": {
       "path": "specialist-blocks/wave-03/cache-residue/handoff.json",

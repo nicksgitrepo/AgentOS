@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/auth-cache-residue-boundary-input.v1.json",
-  "title": "Project-agnostic AUTH_CACHE_RESIDUE Composition router input",
+  "title": "Project-agnostic Authorization Cache Residue analysis input",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "request_kind", "evidence"],
@@ -15,7 +15,7 @@
       "required": ["authority_status", "auth_cache_residue_domain", "control_identity", "control_activity", "control_entity", "control_scope", "control_version", "policy_status", "source_status", "source_identity", "source_version", "source_effective_date", "source_retrieved_date", "candidate_status", "candidate_digest", "auth_cache_residue_signal", "signal_status", "task_status", "context_status", "context_complete", "requested_action", "requested_tools", "required_block_identities", "model_policy_status", "model_route_status", "authority_scope", "project_data_present", "secret_data_present", "authorization_decision_requested", "policy_mutation_requested", "credential_issue_requested", "adversarial_flags"],
       "properties": {
         "authority_status": {"type": "string"},
-        "auth_cache_residue_domain": {"const": "AUTH_CACHE_RESIDUE"},
+        "auth_cache_residue_domain": {"const": "AUTHORIZATION_CACHE_RESIDUE"},
         "control_identity": {"type": "string"},
         "control_activity": {"type": "string"},
         "control_entity": {"type": "string"},

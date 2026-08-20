@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/auth-cache-residue-boundary-result.v1.json",
-  "title": "Project-agnostic AUTH_CACHE_RESIDUE Composition router result",
+  "title": "Project-agnostic Authorization Cache Residue analysis result",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "disposition", "route", "routing_allowed", "acceptance_allowed", "authorization_decision_allowed", "policy_mutation_allowed", "credential_issue_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
@@ -15,7 +15,7 @@
     "authorization_decision_allowed": {"const": false},
     "policy_mutation_allowed": {"const": false},
     "credential_issue_allowed": {"const": false},
-    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["auth_cache_residue_reads", "protected_data_reads", "authorization_decisions", "policy_mutations", "memory_writes", "acceptance_calls", "credential_accesses", "state_changes"], "properties": {"auth_cache_residue_reads": {"const": 0}, "protected_data_reads": {"const": 0}, "authorization_decisions": {"const": 0}, "policy_mutations": {"const": 0}, "memory_writes": {"const": 0}, "acceptance_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
+    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["authorization_cache_reads", "protected_data_reads", "authorization_decisions", "policy_mutations", "memory_writes", "acceptance_calls", "credential_accesses", "state_changes"], "properties": {"authorization_cache_reads": {"const": 0}, "protected_data_reads": {"const": 0}, "authorization_decisions": {"const": 0}, "policy_mutations": {"const": 0}, "memory_writes": {"const": 0}, "acceptance_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
     "error_code": {"type": "string"},
     "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "selected_owner": {"type": "string"},

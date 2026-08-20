@@ -23,7 +23,7 @@ for (const file of files) {
   assert.equal(actual.authorization_decision_allowed, false, fixture.fixture_id);
   assert.equal(actual.policy_mutation_allowed, false, fixture.fixture_id);
   assert.equal(actual.credential_issue_allowed, false, fixture.fixture_id);
-  assert.deepEqual(actual.external_side_effects, {auth_cache_residue_reads: 0, protected_data_reads: 0, authorization_decisions: 0, policy_mutations: 0, memory_writes: 0, acceptance_calls: 0, credential_accesses: 0, state_changes: 0}, fixture.fixture_id);
+  assert.deepEqual(actual.external_side_effects, {authorization_cache_reads: 0, protected_data_reads: 0, authorization_decisions: 0, policy_mutations: 0, memory_writes: 0, acceptance_calls: 0, credential_accesses: 0, state_changes: 0}, fixture.fixture_id);
 }
 const valid = JSON.parse(fs.readFileSync(path.join(fixtureRoot, "routing.json"), "utf8")).vector.input;
 assert.throws(() => evaluateAuthCacheResidueBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "AUTH_CACHE_RESIDUE_UNKNOWN_FIELD");
@@ -32,4 +32,4 @@ const privatePath = ["/", "Users", "/", "secret"].join("");
 assert.throws(() => evaluateAuthCacheResidueBoundary({...valid, evidence: {...valid.evidence, control_activity: `PRIVATE CHAT ${privatePath}`}}), (error) => error.code === "AUTH_CACHE_RESIDUE_PRIVACY_DENIED");
 assert.equal(evaluateAuthCacheResidueBoundary({...valid, evidence: {...valid.evidence, authorization_decision_requested: true}}).error_code, "AUTH_CACHE_RESIDUE_AUTHORIZATION_SIDE_EFFECT_FORBIDDEN");
 assert.equal(evaluateAuthCacheResidueBoundary({...valid, evidence: {...valid.evidence, source_identity: "SOURCE.OTHER"}}).error_code, "AUTH_CACHE_RESIDUE_SOURCE_BINDING_INVALID");
-console.log("PASS AUTH_CACHE_RESIDUE Composition Router boundary: 17 executable typed vectors, authorization/policy denials, zero security or state side effects");
+console.log("PASS Authorization Cache Residue boundary: 17 executable typed vectors, authorization/policy denials, zero security or state side effects");
