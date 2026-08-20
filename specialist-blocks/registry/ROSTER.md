@@ -13,8 +13,9 @@ Controller, Product Owner, Memory, Runtime, Scheduler, and Orchestrator
 packages have passed their independent checks and are reused by their exact
 candidate readbacks. Security Router, Data Router, Observability Router,
 Provider/Edge Router, Desktop/Offline/Realtime Client Router, and Product/Client
-Contract Router have now passed their independent checks and are registered
-as accepted platform packages. Only one package may be in qualification at a time. A package is not
+Contract Router, and Software Language/Runtime Router have now passed their
+independent checks and are registered as accepted platform packages. Only one package may be in
+qualification at a time. A package is not
 built merely because a name exists: its exact
 blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
 QA, and independent evaluation must all be current.
@@ -61,10 +62,10 @@ context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
 Security Router, Data Router, Observability Router, Provider/Edge Router,
-Desktop/Offline/Realtime Client Router, and Product/Client Contract Router are
-accepted from their exact independent
+Desktop/Offline/Realtime Client Router, Product/Client Contract Router, and
+Software Language/Runtime Router are accepted from their exact independent
 receipts. The current queue item is
-`AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER`; its package, gates, hostile vectors, model route,
+`AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER`; its package, gates, hostile vectors, model route,
 and local proof are next for one-at-a-time qualification. All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact

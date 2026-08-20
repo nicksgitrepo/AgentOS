@@ -27264,9 +27264,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers software-language-runtime; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/software-language-runtime-router/evaluation.json"
@@ -39556,17 +39556,17 @@
       "rank": 14,
       "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 80.85,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 15,
       "stable_agent_id": "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 79.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 16,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "a8568339fb6761c655f2cf043fd644c3909f4fa888d3a1b1c9ff06f5918ef4c3"
+  "roster_sha256": "c903c10dbf6b71177582da53275a8daa924bf8c6e3f2a6819d8e11087a0a5012"
 }
