@@ -5,5 +5,6 @@
   "class": "unrelated_scope",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; unrelated candidate or Product work is outside the review contract."
+  "note": "Synthetic hostile fixture for unrelated_scope; unrelated candidate or Product work is outside the review contract.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"unrelated_scope": true}, "expected_readback": {"disposition": "DENY", "route": "NO_AUDIT_SCOPE", "error_code": "INDEPENDENT_AUDITOR_SCOPE_NOT_APPLICABLE"}}
 }

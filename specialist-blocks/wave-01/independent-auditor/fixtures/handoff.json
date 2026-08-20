@@ -5,5 +5,6 @@
   "class": "handoff",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for handoff; a valid receipt routes only the exact digest, proof, residuals, and next action."
+  "note": "Synthetic hostile fixture for handoff; a valid receipt routes only the exact digest, proof, residuals, and next action.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {}, "expected_readback": {"disposition": "ROUTE", "route": "EVALUATION_RECEIPT_TO_SPAWNER", "error_code": "INDEPENDENT_AUDITOR_EVALUATION_READY"}}
 }

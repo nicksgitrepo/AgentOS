@@ -5,5 +5,6 @@
   "class": "false_positive",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; an unrelated or unsupported finding cannot become an evaluation receipt."
+  "note": "Synthetic hostile fixture for false_positive; an unrelated or unsupported finding cannot become an evaluation receipt.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"false_positive": true}, "expected_readback": {"disposition": "DENY", "route": "TYPED_EVIDENCE_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_FINDING_UNSUPPORTED"}}
 }

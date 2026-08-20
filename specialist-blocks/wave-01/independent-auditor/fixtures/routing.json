@@ -5,5 +5,6 @@
   "class": "routing",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for routing; the smallest sufficient typed evidence-review route is selected without granting Product or acceptance authority."
+  "note": "Synthetic hostile fixture for routing; the smallest sufficient typed evidence-review route is selected without granting Product or acceptance authority.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {}, "expected_readback": {"disposition": "ROUTE", "route": "EVALUATION_RECEIPT_TO_SPAWNER", "error_code": "INDEPENDENT_AUDITOR_EVALUATION_READY"}}
 }

@@ -5,5 +5,6 @@
   "class": "broad_when_narrow_exists",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; the auditor denies a broader authority claim when a narrower evidence review is sufficient."
+  "note": "Synthetic hostile fixture for broad_when_narrow_exists; the auditor denies a broader authority claim when a narrower evidence review is sufficient.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"broad_claim": true}, "expected_readback": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_SCOPE_EXPANSION_FORBIDDEN"}}
 }

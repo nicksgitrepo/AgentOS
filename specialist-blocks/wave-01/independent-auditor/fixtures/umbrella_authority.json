@@ -5,5 +5,6 @@
   "class": "umbrella_authority",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; the control-plane auditor cannot substitute for a broad family or licensed domain authority."
+  "note": "Synthetic hostile fixture for umbrella_authority; the control-plane auditor cannot substitute for a broad family or licensed domain authority.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"broad_claim": true}, "expected_readback": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_SCOPE_EXPANSION_FORBIDDEN"}}
 }

@@ -5,5 +5,6 @@
   "class": "silent_scope_expansion",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for silent_scope_expansion; an evidence review cannot silently expand into Product, release, or professional authority."
+  "note": "Synthetic hostile fixture for silent_scope_expansion; an evidence review cannot silently expand into Product, release, or professional authority.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"scope_expanded": true}, "expected_readback": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_SCOPE_EXPANSION_FORBIDDEN"}}
 }

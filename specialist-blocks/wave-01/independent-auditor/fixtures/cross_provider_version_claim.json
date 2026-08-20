@@ -5,5 +5,6 @@
   "class": "cross_provider_version_claim",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; an evidence identity cannot be transferred to an unnamed provider or edition."
+  "note": "Synthetic hostile fixture for cross_provider_version_claim; an evidence identity cannot be transferred to an unnamed provider or edition.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"cross_provider": true}, "expected_readback": {"disposition": "DENY", "route": "REFRESH_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_SOURCE_STALE_OR_UNVERIFIED"}}
 }
