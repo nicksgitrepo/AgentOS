@@ -29,6 +29,16 @@ for (const entry of roster.entries) {
   if (entry.package_path !== null && entry.build_state !== "PLANNED_MISSING_PACKAGE") assert(safe(`${entry.package_path}/block.json`), `${entry.stable_agent_id} package missing`);
   assert(entry.model_route.task_class && Number.isInteger(entry.model_route.minimum_capability));
 }
+// A roster projection must preserve each executable fixture's canonical
+// expected disposition.  In particular, a valid accept/route vector must not
+// silently collapse to the generic DENY fallback.
+const memoryEntry = roster.entries.find((entry) => entry.stable_agent_id === "AGENTOS.MEMORY");
+assert(memoryEntry, "Memory roster entry missing");
+for (const rosterFixture of memoryEntry.hostile_fixtures.fixtures) {
+  const source = JSON.parse(fs.readFileSync(path.join(root, rosterFixture.path), "utf8"));
+  const canonicalDisposition = source.vector?.expected_readback?.disposition;
+  if (canonicalDisposition) assert.equal(rosterFixture.expected_outcome, canonicalDisposition, `${rosterFixture.fixture_id} lost canonical disposition`);
+}
 assert.equal(new Set(roster.build_queue.map((item) => item.rank)).size, roster.build_queue.length);
 assert.deepEqual(roster.tiers.map((tier) => tier.tier), ["PERMANENT_AGENTOS_ROLES", "PLATFORM_AGENTS", "SPECIALIST_AUDITORS"]);
 assert.equal(roster.tiers[0].order[0], "AGENTOS.SPAWNER");

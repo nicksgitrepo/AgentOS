@@ -85,7 +85,14 @@ function fixtureInventory(root, relativePath, block) {
   const fixtures = fs.readdirSync(fixtureDirectory).filter((name) => name.endsWith(".json")).sort().map((name) => {
     const fixturePath = path.join(relativePath, "fixtures", name).split(path.sep).join("/");
     const fixture = readJson(root, fixturePath);
-    return {fixture_id: fixture.fixture_id ?? `${block.block_id}.${normalize(name.replace(/\.json$/u, ""))}`, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: fixture.expected ?? fixture.expected_outcome ?? "DENY"};
+    // The executable vector is the authority for the expected disposition.
+    // Keep legacy top-level fields as compatibility fallbacks, but never
+    // replace a canonical nested readback with the generic DENY default.
+    const expectedOutcome = fixture.vector?.expected_readback?.disposition
+      ?? fixture.expected
+      ?? fixture.expected_outcome
+      ?? "DENY";
+    return {fixture_id: fixture.fixture_id ?? `${block.block_id}.${normalize(name.replace(/\.json$/u, ""))}`, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: expectedOutcome};
   });
   return {status: fixtures.length ? "BOUND" : "NO_DIRECT_FIXTURES", fixtures};
 }

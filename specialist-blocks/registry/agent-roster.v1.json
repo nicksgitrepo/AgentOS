@@ -28351,103 +28351,103 @@
             "fixture_id": "specialist.control.memory.authority_conflict",
             "path": "specialist-blocks/wave-01/memory/fixtures/authority_conflict.json",
             "file_sha256": "5de2acf095b142742a00c990934a9b56a4bb80d04c993628883528bfb4e8281f",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_WRITER"
           },
           {
             "fixture_id": "specialist.control.memory.broad_when_narrow_exists",
             "path": "specialist-blocks/wave-01/memory/fixtures/broad_when_narrow_exists.json",
             "file_sha256": "a70566ff626babca2b7000896749d3ea0627b714ebb2f02a1014d72eb55b73ba",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_SCOPE"
           },
           {
             "fixture_id": "specialist.control.memory.cross_provider_version_claim",
             "path": "specialist-blocks/wave-01/memory/fixtures/cross_provider_version_claim.json",
             "file_sha256": "ebc0caa52ebbac0e66604b7d16d518e6cf686a10c62277b9f24439140b9b4363",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_BINDING"
           },
           {
             "fixture_id": "specialist.control.memory.data_limit",
             "path": "specialist-blocks/wave-01/memory/fixtures/data_limit.json",
             "file_sha256": "b789df22aae9c3c00b702f95f11c9b93a23d61da779cf2f11bc3dd563baf05ff",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_PRIVACY"
           },
           {
             "fixture_id": "specialist.control.memory.duplicate_sibling_authority",
             "path": "specialist-blocks/wave-01/memory/fixtures/duplicate_sibling_authority.json",
             "file_sha256": "7cbb7645bf94eb5f5313c650505b8cee4eab3068449d164febab7835ff4a4eec",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_AUTHORITY"
           },
           {
             "fixture_id": "specialist.control.memory.false_positive",
             "path": "specialist-blocks/wave-01/memory/fixtures/false_positive.json",
             "file_sha256": "055129cdaa93525fa708eeebedb12c639d51ee4c04a4a67eecb6d07f4e2ec9c1",
-            "expected_outcome": "DENY"
+            "expected_outcome": "ACCEPT_RECORD"
           },
           {
             "fixture_id": "specialist.control.memory.handoff",
             "path": "specialist-blocks/wave-01/memory/fixtures/handoff.json",
             "file_sha256": "c97ba12cb409383f5e27b9669d047ec05ff336345a3103d310e0e571d8c0c29d",
-            "expected_outcome": "DENY"
+            "expected_outcome": "ACCEPT_HANDOFF"
           },
           {
             "fixture_id": "specialist.control.memory.missing_context",
             "path": "specialist-blocks/wave-01/memory/fixtures/missing_context.json",
             "file_sha256": "8835a890ad066b978f88572fd4a29da2718fc0802d97cb0227d0041c04e903f7",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_CONTEXT"
           },
           {
             "fixture_id": "specialist.control.memory.narrowness",
             "path": "specialist-blocks/wave-01/memory/fixtures/narrowness.json",
             "file_sha256": "30817412d0ae6b35cd858a02518da9a285dd583a0f9bae54dfe66b4e0fd1cf80",
-            "expected_outcome": "DENY"
+            "expected_outcome": "ACCEPT_NARROW_SCOPE"
           },
           {
             "fixture_id": "specialist.control.memory.router_self_accept",
             "path": "specialist-blocks/wave-01/memory/fixtures/router_self_accept.json",
             "file_sha256": "14d64ebedb3a3020bc24cbfae64b92fdee50409384f38fe1dd86b464ba4ae1f3",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_SELF_ACCEPTANCE"
           },
           {
             "fixture_id": "specialist.control.memory.routing",
             "path": "specialist-blocks/wave-01/memory/fixtures/routing.json",
             "file_sha256": "4b505908e2eb8c0b81ab86be6ae13e460b0cb00bef493064abfd517c2516aba4",
-            "expected_outcome": "DENY"
+            "expected_outcome": "ROUTE_READ_ONLY"
           },
           {
             "fixture_id": "specialist.control.memory.silent_scope_expansion",
             "path": "specialist-blocks/wave-01/memory/fixtures/silent_scope_expansion.json",
             "file_sha256": "6608ee092ea9efb862d595476aa8e48479c2e357e2bc17cbe5214947ae748e92",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_SCOPE"
           },
           {
             "fixture_id": "specialist.control.memory.stale_source",
             "path": "specialist-blocks/wave-01/memory/fixtures/stale_source.json",
             "file_sha256": "dfe5be6b174d2f6ef7903155a1f8ed35cd16c6be50111cc88bae97651f277d05",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_STALE"
           },
           {
             "fixture_id": "specialist.control.memory.tool_limit",
             "path": "specialist-blocks/wave-01/memory/fixtures/tool_limit.json",
             "file_sha256": "d59e65d9a92dcff6e3defec108d68656c65bb549a5e1e06ee88f7ad9f18b969f",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_CUSTODY"
           },
           {
             "fixture_id": "specialist.control.memory.umbrella_authority",
             "path": "specialist-blocks/wave-01/memory/fixtures/umbrella_authority.json",
             "file_sha256": "66a31d2f4b6031d2ff160748cc5e3b29636d97aa94ab13ddf51df222d781d00c",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_AUTHORITY"
           },
           {
             "fixture_id": "specialist.control.memory.unrelated_scope",
             "path": "specialist-blocks/wave-01/memory/fixtures/unrelated_scope.json",
             "file_sha256": "c95ad8e20930fa6de108aa665786fd803f953dd31ccd1278861d927e61f79564",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_PRIVACY"
           },
           {
             "fixture_id": "specialist.control.memory.unsafe_action",
             "path": "specialist-blocks/wave-01/memory/fixtures/unsafe_action.json",
             "file_sha256": "ab89f4cded75365e47de9de180ab18bf324fb13a928f2e249b938ab26fcfdc67",
-            "expected_outcome": "DENY"
+            "expected_outcome": "REJECT_UNSAFE"
           }
         ]
       },
@@ -28773,7 +28773,7 @@
             "fixture_id": "product-owner-authority-conflict",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/authority_conflict.json",
             "file_sha256": "b5681c70d4fd9b0a4c6dbec1320a519cc076619b0bb9f686e5ef89a053ea6313",
-            "expected_outcome": "ESCALATE"
+            "expected_outcome": "ESCALATE_USER"
           },
           {
             "fixture_id": "product-owner-implementation-denial",
@@ -28809,19 +28809,19 @@
             "fixture_id": "product-owner-declared-intent-handoff",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/handoff.json",
             "file_sha256": "978294eb9041f06623c7825c3359b068454e8bf3a7c589b1dcd3a86ba34197bf",
-            "expected_outcome": "ROUTE"
+            "expected_outcome": "ROUTE_HANDOFF"
           },
           {
             "fixture_id": "product-owner-missing-intent-escalation",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/missing_context.json",
             "file_sha256": "63f53332700ea6dfdbee767f80b86fed4579c64bbd908d501dee20019f8d9a98",
-            "expected_outcome": "DENY"
+            "expected_outcome": "ESCALATE_USER"
           },
           {
             "fixture_id": "product-owner-intent-clarification",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/narrowness.json",
             "file_sha256": "05f5a8e752c9bea289fff1f43dc1f46c534b1b5fd3654825b0b2f40a35271f73",
-            "expected_outcome": "ROUTE"
+            "expected_outcome": "ALLOW_CONVERSATION"
           },
           {
             "fixture_id": "product-owner-self-review-denial",
@@ -28833,7 +28833,7 @@
             "fixture_id": "product-owner-simple-explanation",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/routing.json",
             "file_sha256": "b03a7e61d8731524a19733c9d833c42611d2a4d56e4ab51308ac5a913ac186d4",
-            "expected_outcome": "ROUTE"
+            "expected_outcome": "ALLOW_CONVERSATION"
           },
           {
             "fixture_id": "product-owner-silent-workflow-denial",
@@ -39983,5 +39983,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "2c402cdc4a028e7a003f9bc189dd66ccb4183add505bb131c2bdad3abb15a478"
+  "roster_sha256": "f3a50682bcc4101ab88d6465926d3a590b93fe6bfcb030425120e7d87f5a63d2"
 }
