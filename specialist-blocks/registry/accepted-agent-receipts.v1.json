@@ -121,6 +121,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.GRAPHICS_INDUSTRIAL_3D_ROUTER",
+      "package_path": "specialist-blocks/wave-06/industrial-3d-router",
+      "candidate_commit": "63e1f174228cf6df2067fa6ee072ce7b91a72aa2",
+      "candidate_tree": "a49ead051404986f2ba17f24f0d441885b732c1f",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/63e1f174228cf6df2067fa6ee072ce7b91a72aa2",
+      "receipt_sha256": "1831e95e7cf201d72aaca9eb2d622bfff07d34fb413ddb73b10648aa40002d8a",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER",
       "package_path": "specialist-blocks/wave-02/provider-edge-router",
       "candidate_commit": "3994c3bfb699b226afeb3d5e34f12acbd42b1408",
@@ -231,5 +241,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "fe3b82307b2ac01bc2bd7ea359be6a5347ed4ddc82386c9604684d3b8580fd24"
+  "ledger_sha256": "0c970ccedde1aff76358a9bdf092e5eda14b0277cfaa6f83197641ca5f6eeba5"
 }
