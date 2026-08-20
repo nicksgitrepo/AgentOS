@@ -2572,7 +2572,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-04/release-manager/handoff.json",
-        "handoff_file_sha256": "f5e13e088c8b1c90e6bdac350020cdc955b89d5716934822280ebf4a7751dfa2",
+        "handoff_file_sha256": "89b0cd23ebce74dd1747932540b3be04cfb8a5b8b5297f3f0608585063f9b9f9",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.release-manager.v1"
       },
