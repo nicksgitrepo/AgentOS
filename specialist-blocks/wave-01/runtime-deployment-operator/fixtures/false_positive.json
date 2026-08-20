@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.runtime-deployment-operator",
+  "fixture_id": "specialist.control.runtime-deployment-operator.FALSE_POSITIVE",
   "class": "false_positive",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture: a lookalike request has no runtime, deployment, or rollback evidence signal; deny false-positive routing."
+  "note": "Synthetic hostile fixture: a lookalike request has no runtime, deployment, or rollback evidence signal; deny false-positive routing.",
+  "vector": {"entrypoint":"control/runtime-deployment-boundary-gate.mjs#evaluateRuntimeDeploymentBoundary","input":{"schema":"agentos.runtime_deployment_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{"scope":"UNRELATED"}},"expected_readback":{"disposition":"DENY","route":"NO_RUNTIME_SCOPE","error_code":"RUNTIME_SCOPE_NOT_APPLICABLE","zero_side_effects":true}}
 }

@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.runtime-deployment-operator",
+  "fixture_id": "specialist.control.runtime-deployment-operator.DUPLICATE_SIBLING_AUTHORITY",
   "class": "duplicate_sibling_authority",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture: a sibling claims the same runtime custody decision; deny duplicate authority and preserve the declared owner boundary."
+  "note": "Synthetic hostile fixture: a sibling claims the same runtime custody decision; deny duplicate authority and preserve the declared owner boundary.",
+  "vector": {"entrypoint":"control/runtime-deployment-boundary-gate.mjs#evaluateRuntimeDeploymentBoundary","input":{"schema":"agentos.runtime_deployment_boundary_input.v1","version":1,"request_kind":"RUNTIME_READINESS","evidence":{"artifact":{"identity":"ARTIFACT.RUNTIME.001","digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","provenance_status":"VERIFIED","provider_identity":"AGENTOS_LOCAL","version":"1.0.0"},"authority":{"status":"CURRENT","owner_approval":"BOUND","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.RUNTIME.001","owner":"AGENTOS.RUNTIME"},"runtime_target":"TARGET.SYNTHETIC","scope":"RUNTIME_EVIDENCE_ONLY","source_lock":{"status":"CURRENT","identity":"SOURCE.RUNTIME.001","version":"1"},"sibling_authorities":["AGENTOS.RUNTIME","DUPLICATE"]}},"expected_readback":{"disposition":"DENY","route":"SINGLE_AUTHORITY_REQUIRED","error_code":"RUNTIME_DUPLICATE_AUTHORITY","zero_side_effects":true}}
 }

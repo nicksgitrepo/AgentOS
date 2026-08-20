@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.runtime-deployment-operator",
+  "fixture_id": "specialist.control.runtime-deployment-operator.TOOL_LIMIT",
   "class": "tool_limit",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture: the request requires an unapproved write-capable or external-control tool; deny unsupported tool access."
+  "note": "Synthetic hostile fixture: the request requires an unapproved write-capable or external-control tool; deny unsupported tool access.",
+  "vector": {"entrypoint":"control/runtime-deployment-boundary-gate.mjs#evaluateRuntimeDeploymentBoundary","input":{"schema":"agentos.runtime_deployment_boundary_input.v1","version":1,"request_kind":"RUNTIME_READINESS","evidence":{"artifact":{"identity":"ARTIFACT.RUNTIME.001","digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","provenance_status":"VERIFIED","provider_identity":"AGENTOS_LOCAL","version":"1.0.0"},"authority":{"status":"CURRENT","owner_approval":"BOUND","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.RUNTIME.001","owner":"AGENTOS.RUNTIME"},"runtime_target":"TARGET.SYNTHETIC","scope":"RUNTIME_EVIDENCE_ONLY","source_lock":{"status":"CURRENT","identity":"SOURCE.RUNTIME.001","version":"1"},"tool_mode":"WRITE"}},"expected_readback":{"disposition":"DENY","route":"READ_ONLY_TOOLS_REQUIRED","error_code":"RUNTIME_TOOL_SCOPE_FORBIDDEN","zero_side_effects":true}}
 }

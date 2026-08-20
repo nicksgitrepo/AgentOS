@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.runtime-deployment-operator",
+  "fixture_id": "specialist.control.runtime-deployment-operator.ROUTING",
   "class": "routing",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture: typed artifact, runtime target, rollback, and custody signals select this narrow control-plane route."
+  "note": "Synthetic hostile fixture: typed artifact, runtime target, rollback, and custody signals select this narrow control-plane route.",
+  "vector": {"entrypoint":"control/runtime-deployment-boundary-gate.mjs#evaluateRuntimeDeploymentBoundary","input":{"schema":"agentos.runtime_deployment_boundary_input.v1","version":1,"request_kind":"ARTIFACT_PROVENANCE","evidence":{"artifact":{"identity":"ARTIFACT.RUNTIME.001","digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","provenance_status":"VERIFIED","provider_identity":"AGENTOS_LOCAL","version":"1.0.0"},"authority":{"status":"CURRENT","owner_approval":"BOUND","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.RUNTIME.001","owner":"AGENTOS.RUNTIME"},"runtime_target":"TARGET.SYNTHETIC","scope":"RUNTIME_EVIDENCE_ONLY","source_lock":{"status":"CURRENT","identity":"SOURCE.RUNTIME.001","version":"1"}}},"expected_readback":{"disposition":"ROUTE","route":"RUNTIME_EVIDENCE_HANDOFF","error_code":"RUNTIME_EVIDENCE_READY","zero_side_effects":true}}
 }

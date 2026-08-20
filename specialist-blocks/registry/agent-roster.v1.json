@@ -29085,103 +29085,103 @@
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/authority_conflict.json",
-            "file_sha256": "9fed3ede130791d802bf0d843ff9bfefdb380dd2403192df0be824238b04858f",
+            "file_sha256": "524430b9ce07afb01c3409b8c2bef492226aa75881c48b36c8432a81016a64c6",
             "expected_outcome": "ESCALATE"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "85baf9472cb7f2131f5e290720252a69156427590acc3919afbe438fb3b3c4d8",
+            "file_sha256": "394ddc4e54c0c7435f91dcb9ee8c58edc1cc9f2a0be6699cbe14d04f97b0913c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "8579ad011d9c34415e5c9605deb57be99b222f202c11420523abc2e69518a353",
+            "file_sha256": "a31838da2e222dca00a4c2a59dd71deeed822a9a037538b633b5fd4a4056cadb",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.DATA_LIMIT",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/data_limit.json",
-            "file_sha256": "1b16297ade6ac4101a28a78818071512e08420d6ea4512a3c30d2a566e96c369",
+            "file_sha256": "a7dbe2dcd230a4d37cf459167ca480c7d4822a5be6dcba7bf17a402399ace0f8",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "68bbd3ba39c7524c01d780fcb620024c1761184263fc1d78c1a952a76a1e1718",
+            "file_sha256": "96bd1a3b54ed4f873a063993acffc0895c64b295b42707451a0dc57655693a45",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/false_positive.json",
-            "file_sha256": "998fc0d75370be85fa25b1ea83c66914ff9c10ce50a13ffce11946f9bf81715d",
+            "file_sha256": "1ac21e8c87f27e8be2a6758ce39b668bcf0336f153c4b2e306043eaefb2b4fb7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.HANDOFF",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/handoff.json",
-            "file_sha256": "89d66db2a778fae90bdb266b4fb2e5551a59e63616eb41963f7fb9f3a9d6240c",
+            "file_sha256": "939bb8ef0717fc0427614f53720246736ac1869033758fa8d59c40573d5bbc32",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/missing_context.json",
-            "file_sha256": "3a0da48d71530bf77a04a16179d4d832fcaddb401dd64be78901bc1c2851dc24",
+            "file_sha256": "35f341ae635a45014f89be6ba73f49747d746e061ccdf6157138cad9a2d6c8e4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.NARROWNESS",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/narrowness.json",
-            "file_sha256": "9369120e3dec6887ae11e510796fc4420c5ea9b69ebb1b13a26a82f92ff63511",
+            "file_sha256": "893fb78e6b959c2036d60ed6d404d5ca3c31a5e8a3d6aec8761beae2a7ee0ca4",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/router_self_accept.json",
-            "file_sha256": "8a5005ee27c3c5b90bff705ebbf4e2a9a461b66909ae82a2f86facd7468ed31c",
+            "file_sha256": "3afa99d5ec3cb18285daead85c63034915a288724039d3c6e5fa9508e8b00a58",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.ROUTING",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/routing.json",
-            "file_sha256": "725f895612f3865e311129e4c561bcd57c6021ba783e0bf912a4850d59febe27",
+            "file_sha256": "62b92621c0389174b934a29a0d875cc6535ec9446a64a72b4549068a370017f2",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/silent_scope_expansion.json",
-            "file_sha256": "40447cdf283d665c121cb2fd77a49499f0c26a84c102d6ee3596df03b856cf1a",
+            "file_sha256": "363b0c4db34e79bf91e80fffac8d6b130d572718b1091f2725f4b425b3c2aa12",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.STALE_SOURCE",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/stale_source.json",
-            "file_sha256": "790f490e986c85ffe7349083c2964ff6e0258840b2e22797dd8ccdce47871ce9",
+            "file_sha256": "8c3da58a1278133a98cd089e7b5b7f2a3200227b4ef5f7d48a53154eb048730e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.TOOL_LIMIT",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/tool_limit.json",
-            "file_sha256": "94e97e09108d03d3f67ce65027f9a698cdcd0d3f831c29ebbaed0ce3239ae868",
+            "file_sha256": "dbf8e2ad9d3567aabba0785fa66896b370941b6b7343f9c9cf30b4653fd1b07b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/umbrella_authority.json",
-            "file_sha256": "890bae188556b680d7339cdd8d143c69a1b13d0a4e3de672d19e3c197c1e052b",
+            "file_sha256": "b8d07952d51987046d7223517e942f9a3827df391bf66bef75e50e1479facbee",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/unrelated_scope.json",
-            "file_sha256": "518be72aa169c0bbfc51e3f40653add9735fb184d58bd2af0322411774baa2b5",
+            "file_sha256": "524948624bb9876c85a5fb0d9a0441b1e0ef2eca90696ad5263c10d8964d683b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.runtime-deployment-operator.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/unsafe_action.json",
-            "file_sha256": "9a16f62a4e283bb9ad4029eccd154c4c8f76f59aa634d2c2d43808f091db35c3",
+            "file_sha256": "d95b1496cf99a6d297536f0556ed629317e736812cf4420d5eaed9861b488f96",
             "expected_outcome": "DENY"
           }
         ]
@@ -39983,5 +39983,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "f3a50682bcc4101ab88d6465926d3a590b93fe6bfcb030425120e7d87f5a63d2"
+  "roster_sha256": "30737c65ba8ef88ac8b6f0466864189464f67ccb6c49ecf6dce06595d702b50f"
 }

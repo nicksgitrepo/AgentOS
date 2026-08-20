@@ -6,6 +6,13 @@
   "candidate_digest": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
+  "pre_admission_evaluator": "control/runtime-deployment-package-evaluator.mjs",
+  "implementation_entrypoint": "evaluateRuntimeDeploymentBoundary",
+  "implementation_artifacts": [
+    "control/runtime-deployment-boundary-gate.mjs",
+    "control/runtime-deployment-package-evaluator.mjs"
+  ],
+  "authority_status": "NON_AUTHORITATIVE_OPERATIONAL_EVIDENCE_ONLY",
   "cases": [
     {
       "case_id": "runtime-deployment-operator-authority_conflict",
