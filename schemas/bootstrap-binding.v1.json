@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "dc9fe20427d5de1290d7e9552f4806f9abb4b454bb4dbe8becbb6866deba30ae"
+      "sha256": "fdb67dd710ab10f19ab831cd1d2e81d62cb066fef7f457fb888e007bd1633451"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4582,6 +4582,26 @@
     "cve_inventory_boundary_verifier": {
       "path": "tests/verify-cve-inventory-boundary.mjs",
       "sha256": "afbb9c91efa7a3219090fe855d63fad1bfcc4018473bfc3829662a453a315212"
+    },
+    "deadlock_boundary_gate": {
+      "path": "control/deadlock-boundary-gate.mjs",
+      "sha256": "b7b3050d8b42cfa57247c8def6bced55e5e95d17ae1f66225f551068ddddf3f2"
+    },
+    "deadlock_boundary_input_contract": {
+      "path": "schemas/deadlock-boundary-input.v1.json",
+      "sha256": "022d28471d4a16c1889b56a98b62af13780330291fa18cc5ed7b6c1c909d2845"
+    },
+    "deadlock_boundary_result_contract": {
+      "path": "schemas/deadlock-boundary-result.v1.json",
+      "sha256": "48f5ec0ef10f60e1e978a7a17db2bd2c5cf12fe63c91839142fe44c4a8a1c87b"
+    },
+    "deadlock_package_operational_evaluator": {
+      "path": "control/deadlock-package-evaluator.mjs",
+      "sha256": "7e147c83ad8bea3d366cf5cef2376c7750f915b524fd4dbea36688ccefa585e9"
+    },
+    "deadlock_boundary_verifier": {
+      "path": "tests/verify-deadlock-boundary.mjs",
+      "sha256": "8a4805f93dc37db9ec7a51e8250f2e63644bc562a015c92025e839f10fecf137"
     },
     "concurrent_authorization_boundary_gate": {
       "path": "control/concurrent-authorization-boundary-gate.mjs",

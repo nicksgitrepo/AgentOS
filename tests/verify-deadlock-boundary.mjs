@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {canonicalDigest} from "../control/content-addressing.mjs";
+import {evaluateDeadlockBoundary, DEADLOCK_INPUT_SCHEMA, DEADLOCK_RESULT_SCHEMA} from "../control/deadlock-boundary-gate.mjs";
+const root = path.resolve(new URL("..", import.meta.url).pathname);
+const fixtureRoot = path.join(root, "specialist-blocks/wave-03/deadlock/fixtures");
+const files = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
+assert.equal(files.length, 17);
+const ids = new Set();
+for (const file of files) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(fixtureRoot, file), "utf8"));
+  assert.equal(fixture.vector.entrypoint, "control/deadlock-boundary-gate.mjs#evaluateDeadlockBoundary");
+  assert.equal(fixture.vector.input.schema, DEADLOCK_INPUT_SCHEMA);
+  assert(!ids.has(fixture.fixture_id), "duplicate fixture " + fixture.fixture_id); ids.add(fixture.fixture_id);
+  const actual = evaluateDeadlockBoundary(fixture.vector.input);
+  assert.equal(actual.schema, DEADLOCK_RESULT_SCHEMA, fixture.fixture_id);
+  assert.equal(actual.disposition, fixture.vector.expected_readback.disposition, fixture.fixture_id);
+  assert.equal(actual.route, fixture.vector.expected_readback.route, fixture.fixture_id);
+  assert.equal(actual.error_code, fixture.vector.expected_readback.error_code, fixture.fixture_id);
+  assert.equal(actual.result_sha256, canonicalDigest({...actual, result_sha256: null}), fixture.fixture_id);
+  assert.equal(actual.acceptance_allowed, false, fixture.fixture_id);
+  assert.equal(actual.certification_allowed, false, fixture.fixture_id);
+  assert.equal(actual.lock_mutation_allowed, false, fixture.fixture_id);
+  assert.deepEqual(actual.external_side_effects, {trace_reads: 0, lock_graph_reads: 0, source_reads: 0, deadlock_decisions: 0, lock_writes: 0, dependency_mutations: 0, memory_writes: 0, acceptance_calls: 0, credential_accesses: 0, state_changes: 0}, fixture.fixture_id);
+}
+const valid = JSON.parse(fs.readFileSync(path.join(fixtureRoot, "routing.json"), "utf8")).vector.input;
+assert.throws(() => evaluateDeadlockBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "DEADLOCK_UNKNOWN_FIELD");
+assert.throws(() => evaluateDeadlockBoundary({...valid, evidence: {...valid.evidence, candidate_digest: "a".repeat(64)}}), (error) => error.code === "DEADLOCK_DIGEST_INVALID");
+const missingFlag = {...valid, evidence: {...valid.evidence, adversarial_flags: {...valid.evidence.adversarial_flags}}};
+delete missingFlag.evidence.adversarial_flags.unverified_order;
+assert.throws(() => evaluateDeadlockBoundary(missingFlag), (error) => error.code === "DEADLOCK_FLAGS_INVALID");
+assert.equal(evaluateDeadlockBoundary({...valid, request_kind: "HANDOFF_DEADLOCK", evidence: {...valid.evidence, requested_action: "ANALYZE"}}).error_code, "DEADLOCK_ACTION_INVALID");
+const privatePath = ["/", "Users", "/", "secret"].join("");
+assert.throws(() => evaluateDeadlockBoundary({...valid, evidence: {...valid.evidence, control_activity: "PRIVATE CHAT " + privatePath}}), (error) => error.code === "DEADLOCK_PRIVACY_DENIED");
+assert.equal(evaluateDeadlockBoundary({...valid, evidence: {...valid.evidence, adversarial_flags: {...valid.evidence.adversarial_flags, lock_order_ambiguous: true}}}).error_code, "DEADLOCK_ORDERING_UNPROVEN");
+assert.equal(evaluateDeadlockBoundary({...valid, evidence: {...valid.evidence, lock_mutation_requested: true}}).error_code, "DEADLOCK_SIDE_EFFECT_FORBIDDEN");
+assert.equal(evaluateDeadlockBoundary({...valid, evidence: {...valid.evidence, source_identity: "SOURCE.OTHER"}}).error_code, "DEADLOCK_SOURCE_BINDING_INVALID");
+console.log("PASS Deadlock boundary: 17 executable typed vectors, ordering denials, zero lock or dependency side effects");
