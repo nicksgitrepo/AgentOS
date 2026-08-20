@@ -1077,9 +1077,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers assurance-enterprise; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/assurance-enterprise-router/evaluation.json"
@@ -39596,17 +39596,17 @@
       "rank": 19,
       "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 79.05,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 20,
       "stable_agent_id": "AGENT.CONTROL_INDEPENDENT_AUDITOR",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 21,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "d2605b79dec2e2956d28a8cd3b433028d702977fe8cab1c53ed5a2c7cbadf86f"
+  "roster_sha256": "5fb9f75c176f9bfee879903ccd9d855fecb1e4bb774df029790758cb71ecd872"
 }

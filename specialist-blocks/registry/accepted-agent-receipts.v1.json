@@ -11,6 +11,16 @@
   },
   "entries": [
     {
+      "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_ROUTER",
+      "package_path": "specialist-blocks/wave-02/assurance-enterprise-router",
+      "candidate_commit": "9b9f289c3639f75a9a3174a926f30d31fc9ed640",
+      "candidate_tree": "fd82a645b4bfcd5269b6665dd33f59c70af84208",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/9b9f289c3639f75a9a3174a926f30d31fc9ed640",
+      "receipt_sha256": "fbb7f9da3d320ac3bd34edd7ec5b13cf92adfb686861c0b2cfff212c545065e5",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER",
       "package_path": "specialist-blocks/wave-01/agent-bootstrap",
       "candidate_commit": "765ba94f7b0c30a91e5d720e748c8383d8fc4bf9",
@@ -181,5 +191,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "602277df6ac89936a04588ea3f6becd9abf45ef637eb30092b117541b08196cc"
+  "ledger_sha256": "abeaaa080ed8845111e321388e93a12673b75cdff72b7fa22c1d3cbefc72a16c"
 }
