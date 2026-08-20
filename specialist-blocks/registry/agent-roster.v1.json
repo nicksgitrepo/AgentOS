@@ -19304,103 +19304,103 @@
           {
             "fixture_id": "specialist.security.owasp-asvs-router.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/authority_conflict.json",
-            "file_sha256": "e45506cdd62d4228cfc061d86711c0915c27b199c584aa5ff04ab9f6fa439b7a",
+            "file_sha256": "0ee7d8bca68b5cefde434114c527debfd1f079fd49265511188563b98cd8bec3",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "d279fca8335d80a81ba997b19c9325592607920b2dacd28a88c8be21dd9d378e",
+            "file_sha256": "ebd708d6070da52726fa113738d9ace6d9c9470d9b92bd7bdd9fa4a64aef1d20",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "57b49f49a3382943c8f3feea1e2856e4019eea77dd3e220345e84da2142eaa65",
+            "file_sha256": "43a5404f2d69e201d24695f5eddeed20e6e2fea6f5a9e2c8f1d502ad82d57dd4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.DATA_LIMIT",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/data_limit.json",
-            "file_sha256": "e67ec832125ef3a837ec311b3d4bed33f5a6113c370d50a047c349eab063b9e1",
+            "file_sha256": "0d36c22a82354113c7cfe2c165c872cfdbef10ea7d462a6cfc292c48eec1753c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "7bb66259529d95af1938f1e1cc599a62153d00979d91e47c64b456c428e96bf1",
+            "file_sha256": "7cc101a42731df6b7f1240b1a1413a884f9e8009d8c1817aab685aa86f574998",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/false_positive.json",
-            "file_sha256": "99b93d4206733a6de3c013e5c7245f1176fbb2c7519060e973ab63c0500c3b89",
+            "file_sha256": "058a4b71d2f5c00b390ec98591701939ca45184af180f2740f16e75a20c30c8d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.HANDOFF",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/handoff.json",
-            "file_sha256": "8a3f4b0fddd5f9f7fb3235a7b5d1fc1e8eafe820b7b5c1fcd8988723e01285e6",
+            "file_sha256": "8b957821ca576b64cdc126869bda8aeca9cc7d3448f4b6f4436de75efbd2d109",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/missing_context.json",
-            "file_sha256": "d2d3975a1356747cbb48ac9e5435bff061d9b869d69e852309fd1e3589c1375a",
+            "file_sha256": "30a86bd393420b48c1b126619985b33c49c5541ac06d166a3dc3d30d87cf08ba",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.NARROWNESS",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/narrowness.json",
-            "file_sha256": "691c6d39d58b8f543f673624c1a6a17f466d4e095141fdd8d4eda956ef23bb1d",
+            "file_sha256": "cf1d4c3f522f0619aa73576af60699f160dc7d464a167b1d470ab9a713385186",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/router_self_accept.json",
-            "file_sha256": "640b386c2070d4af2079d523f7c81354f9db54029c1772952b81094940db9f0c",
+            "file_sha256": "2c3f334544f6db64d946efce825b8a870c97aeb0ceeaf83b4fc591f16637061a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.ROUTING",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/routing.json",
-            "file_sha256": "18461bd3df07ae288f83738c85174667841131649a1ddd329ad3d221889aeb2d",
+            "file_sha256": "81af3e2910623106565b8e8663a7490dda0f40d1f53657fb434bf25b9724c199",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "cf93fe2f5a091ae9c71099803f298525f605ebf188f6ff8639f76d9fd442146f",
+            "file_sha256": "96e92dce778a945534f070684117f847a8115e9a25e8833cc8930739b101c8c7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.STALE_SOURCE",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/stale_source.json",
-            "file_sha256": "6057cf8c9b0a65b1dedf18105feb8b0735d9c9bacd987fd509327c66818425f1",
+            "file_sha256": "d17790155eed3e8cf33ef100b7612a403e7fef139379c8aa0e664ada196f88bc",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.TOOL_LIMIT",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/tool_limit.json",
-            "file_sha256": "62f25ae11e35c6c46859f93da4f94640d19af67af853b4deb10800e7310938e0",
+            "file_sha256": "347475cffdaefa6609af8489323be4905863e938ec613a0c16a045c2f65f11da",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/umbrella_authority.json",
-            "file_sha256": "a565c6209fc08a1a7c35fe13855137afe99d31878182c5752609deeca95e4cc6",
+            "file_sha256": "00196c106ba1b93a8b49eb1c4ede7065efbe6879803e0e171b0fbb2f13822ab5",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/unrelated_scope.json",
-            "file_sha256": "0ca7232e472b1b935e49cc0f89e14b739e90040e51a203ffff26a0bbf7f67745",
+            "file_sha256": "709d4f33ae7bb0871e49e0fa4bcd6286231a7e2530bf2bc55d4cab2bfc6ae2d7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.owasp-asvs-router.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-03/owasp-asvs-router/fixtures/unsafe_action.json",
-            "file_sha256": "8ea6a5b06eb179a529f0c5770ce839337c2f984a7fbfb2bf7b048fbd1c6f8791",
+            "file_sha256": "72d1a911c809d96bdafcccc2761d8a5eb5d7a43d34903609d648e93d4891da59",
             "expected_outcome": "DENY"
           }
         ]

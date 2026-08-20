@@ -3533,6 +3533,34 @@
       "path": "specialist-blocks/wave-03/owasp-api-top10-router/handoff.json",
       "sha256": "e1cc450458239b1ed2bd9fd4faaac310c69c571429f99f15f3aea2b68e340ab7"
     },
+    "owasp_asvs_router_boundary_gate": {
+      "path": "control/owasp-asvs-router-boundary-gate.mjs",
+      "sha256": "db5ea7f1fa3467ffc892dff6a157aa9267ded097559500a6f25cb7c4306d52e0"
+    },
+    "owasp_asvs_router_boundary_input_contract": {
+      "path": "schemas/owasp-asvs-router-boundary-input.v1.json",
+      "sha256": "42b50cb1fb456974d1907e68567cbbb7cbe6f28bedac2b81f81603ac7badbcc6"
+    },
+    "owasp_asvs_router_boundary_result_contract": {
+      "path": "schemas/owasp-asvs-router-boundary-result.v1.json",
+      "sha256": "915c8af3c23764e7647b9921550cc0189a4840940ceadb518465a8f2223c34e7"
+    },
+    "owasp_asvs_router_package_operational_evaluation_contract": {
+      "path": "schemas/owasp-asvs-router-package-operational-evaluation.v1.json",
+      "sha256": "2855552d887ced20be020b1fcf5e86db90155b795d931ac8d35f419ede84b971"
+    },
+    "owasp_asvs_router_package_operational_evaluator": {
+      "path": "control/owasp-asvs-router-package-evaluator.mjs",
+      "sha256": "2ac1ff9dfae87b8248a8189487ad6bff9bf659d88f1d2fcc1686e828a97e1237"
+    },
+    "owasp_asvs_router_boundary_verifier": {
+      "path": "tests/verify-owasp-asvs-router-boundary.mjs",
+      "sha256": "674e637b9c03ca715660216a2fc118aa4b56feadb6425f94e7a871eacea31cef"
+    },
+    "owasp_asvs_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/owasp-asvs-router/handoff.json",
+      "sha256": "a7329d17813358ba1e406d81a60440fd8837b01cad9d7423dfc2f5b16715f1bf"
+    },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
       "sha256": "a9dcad2b29050cade8d726c7c2b7b3e44e00232ad9a09ecffe1e3be52c763ea8"
