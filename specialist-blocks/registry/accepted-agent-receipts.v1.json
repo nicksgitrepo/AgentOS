@@ -211,6 +211,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRODUCT_CLIENT_PRODUCT_INTERACTION",
+      "package_path": "specialist-blocks/wave-05/product-interaction",
+      "candidate_commit": "3b837fbce32252723cd4e0b6cc738f6fad5906b2",
+      "candidate_tree": "8ab4aa0b5d84362e6a67c2e76febe9dd9b31fd57",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/3b837fbce32252723cd4e0b6cc738f6fad5906b2",
+      "receipt_sha256": "a43e75d89d685166e419aa239de71137f6ddc3847c5fc9a0fa7d7c8387307bab",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_RESPONSIVE_WEB",
       "package_path": "specialist-blocks/wave-05/responsive-web",
       "candidate_commit": "337fd54db745465eaf2fade67472f740c5c90bf4",
@@ -371,5 +381,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "41a856e2bfbe72d7e89dd492be995b55d894dfd05f7868bea23659787f2d3cdc"
+  "ledger_sha256": "13ae37ade3466567ec3ae010bdd06eeefef4b12d245613d862eeb336c64c0ee6"
 }
