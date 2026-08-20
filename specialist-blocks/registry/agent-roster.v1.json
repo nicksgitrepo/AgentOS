@@ -27218,7 +27218,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/software-language-runtime-router/handoff.json",
-        "handoff_file_sha256": "cf37d3bc6927d70122a78a918cd63e63d04877f4958965cb04b43e935c0bbbde",
+        "handoff_file_sha256": "e1d415731425eb458ff26d614b286c90f9d536f301f4e6576327649305c746f0",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.software-language-runtime-router.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "83cfbc7b1698610a4426b8b4868117e05e8c55a5b4d0bf2fe777c7ac957770d7"
+  "roster_sha256": "a8568339fb6761c655f2cf043fd644c3909f4fa888d3a1b1c9ff06f5918ef4c3"
 }

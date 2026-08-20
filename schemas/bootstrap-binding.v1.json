@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "362297404446233d9bb651aa92cee070318a7e0aee48957ba74fc367a3f03d49"
+      "sha256": "b491bc53c9618d42898acb85661becc101dd7d493e73710cf75c7a8b4a288abe"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
