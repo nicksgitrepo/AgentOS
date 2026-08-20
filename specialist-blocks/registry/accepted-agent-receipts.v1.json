@@ -311,6 +311,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_DEADLOCK",
+      "package_path": "specialist-blocks/wave-03/deadlock",
+      "candidate_commit": "350dfbbf910f279a675da3a056470f6f7e92a569",
+      "candidate_tree": "542194d078a693c18bd4c103b4664bad07548309",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/350dfbbf910f279a675da3a056470f6f7e92a569",
+      "receipt_sha256": "2a8db82c6cf378a8967b98e018b94c77529b2e7c518bf770d92d86d2d6fa3ce7",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
       "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
@@ -431,5 +441,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "029ea8be38aed85691385c1f55d1d2f3fe876992c73e984aed1464b1b11e8006"
+  "ledger_sha256": "1857faab816566ff665b46a895fad67a42727f7fcfcb4bd9e990b679d8c8f45d"
 }
