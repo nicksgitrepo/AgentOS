@@ -114,6 +114,7 @@ function fixtureInventory(root, relativePath, block) {
     // Keep legacy top-level fields as compatibility fallbacks, but never
     // replace a canonical nested readback with the generic DENY default.
     const expectedOutcome = fixture.vector?.expected_readback?.disposition
+      ?? fixture.expected_readback?.disposition
       ?? fixture.expected
       ?? fixture.expected_outcome
       ?? "DENY";

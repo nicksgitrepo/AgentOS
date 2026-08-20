@@ -3079,11 +3079,11 @@
     },
     "reusable_agent_roster_compiler": {
       "path": "control/reusable-agent-roster-compiler.mjs",
-      "sha256": "88510d8fe1157e181167e9ea2b470a7e328f4ad54e10fd7a0aba9711c63cb78c"
+      "sha256": "03417fe4866ad4d5b0e0564cbac378f4ec12812e814c10dc8f505119803995d2"
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "fc0ef7abbaf4e13c313163b478318d03e1bfb5faa3ca36f9933d1a2ab9a70a0f"
+      "sha256": "f1fb9d0aa31580994a9d9fee8c63266ddd48f948a7a42fe6443984c160ba7140"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3248,6 +3248,34 @@
     "observability_router_candidate_handoff": {
       "path": "specialist-blocks/wave-04/observability-router/handoff.json",
       "sha256": "3e111f6ee9ee786d4fa400252bd28214c324ce1ecf696b0194a732bdac1a79b8"
+    },
+    "provider_edge_router_boundary_gate": {
+      "path": "control/provider-edge-router-boundary-gate.mjs",
+      "sha256": "1e7cbe3898ba80c6dbf10dd09a8c1b687c097134992c1da78a3c904066a23b8b"
+    },
+    "provider_edge_router_boundary_input_contract": {
+      "path": "schemas/provider-edge-router-boundary-input.v1.json",
+      "sha256": "f266104d2c7a328cebdb759438eeb9dad4f64e455f7ccb3a5631303b433e7966"
+    },
+    "provider_edge_router_boundary_result_contract": {
+      "path": "schemas/provider-edge-router-boundary-result.v1.json",
+      "sha256": "0937c6d78a23812940a8a57e78d960250e0891a0b1be8534c57ea4525a51c98b"
+    },
+    "provider_edge_router_package_operational_evaluation_contract": {
+      "path": "schemas/provider-edge-router-package-operational-evaluation.v1.json",
+      "sha256": "215fa2466f128f9eaafaa51a7c4745a20807f57ef5181dd688aa802c34160481"
+    },
+    "provider_edge_router_package_operational_evaluator": {
+      "path": "control/provider-edge-router-package-evaluator.mjs",
+      "sha256": "8a6e8fce480e9b525964f56e9e03c7e02c5564477ada8e3fa8d11a1f1b4f672e"
+    },
+    "provider_edge_router_boundary_verifier": {
+      "path": "tests/verify-provider-edge-router-boundary.mjs",
+      "sha256": "1413807c0cfe8084b03188c724d88cb2590cbb93c5fb7138d3478863e40fd400"
+    },
+    "provider_edge_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-02/provider-edge-router/handoff.json",
+      "sha256": "03c85684d6bae808baab9cf08d9d07106f12a2917548fe15e8592dcfc05839c1"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",

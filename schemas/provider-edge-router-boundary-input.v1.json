@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/provider-edge-router-boundary-input.v1.json",
+  "title": "AgentOS Provider Edge Router Boundary Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.provider_edge_router_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string", "enum": ["ROUTE_PROVIDER_EDGE", "CLASSIFY_PROVIDER_SIGNAL", "NOT_APPLICABLE", "UNRELATED_REQUEST", "SPAWN", "ADMIT", "ARCHIVE", "DESPAWN", "DEPLOY", "PUBLISH", "MUTATE_PROVIDER", "WRITE_PROJECT", "ACCEPT", "SELF_REVIEW"]},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_status", "custody_status", "custody_owner", "custody_ref", "source_status", "source_identity", "source_version", "provider_identity", "provider_version", "signal", "target_ref", "context_complete", "scope", "requested_action", "provider_evidence"],
+      "properties": {
+        "authority_status": {"type": "string"}, "custody_status": {"type": "string"}, "custody_owner": {"type": "string"}, "custody_ref": {"type": "string"}, "source_status": {"type": "string"}, "source_identity": {"type": "string"}, "source_version": {"type": "string"}, "provider_identity": {"type": "string"}, "provider_version": {"type": "string"}, "signal": {"type": "string"}, "target_ref": {"type": "string"}, "context_complete": {"type": "boolean"}, "scope": {"type": "string"}, "requested_action": {"type": "string"}, "requested_tools": {"type": "array", "items": {"type": "string"}, "maxItems": 4}, "self_acceptance": {"type": "boolean"}, "scope_expanded": {"type": "boolean"}, "authority_conflict": {"type": "boolean"}, "project_data_present": {"type": "boolean"}, "secret_data_present": {"type": "boolean"}, "provider_evidence": {"type": "string"}
+      }
+    }
+  }
+}

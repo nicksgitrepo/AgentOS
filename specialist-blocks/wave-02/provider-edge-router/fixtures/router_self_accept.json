@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.platform.provider-edge-router",
-  "class": "router_self_accept",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for router_self_accept; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.platform.provider-edge-router.ROUTER_SELF_ACCEPT","block_id":"specialist.platform.provider-edge-router","class":"router_self_accept","hostile":true,"vector":{"entrypoint":"control/provider-edge-router-boundary-gate.mjs#evaluateProviderEdgeRouterBoundary","input":{"schema":"agentos.provider_edge_router_boundary_input.v1","version":1,"request_kind":"CLASSIFY_PROVIDER_SIGNAL","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.PLATFORM_PROVIDER_EDGE_ROUTER","custody_ref":"ref:PROVIDER_EDGE_ROUTER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.ATOMIC_SPECIALIZATION_LAW","source_version":"1","provider_identity":"CLOUDFLARE","provider_version":"CURRENT","signal":"EDGE.CLOUDFLARE_CACHE","target_ref":"specialist.platform.cloudflare-cache","context_complete":true,"scope":"NARROW","requested_action":"CLASSIFY","requested_tools":["READ_SOURCE","READ_CONTEXT"],"self_acceptance":true,"provider_evidence":"BOUNDED"}}},"expected_readback":{"disposition":"DENY","route":"INDEPENDENT_REVIEW_REQUIRED","error_code":"PROVIDER_EDGE_ROUTER_SELF_ACCEPTANCE_FORBIDDEN","zero_side_effects":true,"acceptance_allowed":false}}
