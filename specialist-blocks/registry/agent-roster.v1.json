@@ -10646,7 +10646,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/product-client-router/handoff.json",
-        "handoff_file_sha256": "c954020f505b5110bbb9af06973d27971700143060d0bd3b4bc2f11829ec5876",
+        "handoff_file_sha256": "e45d492d9d58b839185e665dadf0380c405e943574e3e6731b755d8a298dec67",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.product-client-router.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "d35b702acae9a845fcd064c8f93d4eacfedf0e7305f5ec4ac8ce48aeea59024c"
+  "roster_sha256": "d235bcf724a4e5dcc0640c03afe76f7fb85aab84b71f408b1040360ef5c72f4b"
 }

@@ -5,8 +5,8 @@
   "block_id": "specialist.product-client.router",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "909b0a2f5408292ed415383c7df3469f6f1aba28de1c2579219419390289b560",
-  "source_commit": "3c6cf8b420c7d4f54ba4c551266a4e27e3cdd913",
-  "source_tree": "a77308b8a879200cb2d0053fabc5c3284f1ba3a4",
+  "source_commit": "975bcf26e535b65a5218bd678d701800da288979",
+  "source_tree": "b0fd7f3be529443e127420b42264d12937a725a7",
   "changed_paths": [
     "specialist-blocks/wave-02/product-client-router/block.json",
     "specialist-blocks/wave-02/product-client-router/evaluation.json",
