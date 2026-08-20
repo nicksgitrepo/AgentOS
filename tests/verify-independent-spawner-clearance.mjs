@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import {auditIndependentClearanceFixture, assertVerifiedIndependentClearance, installIndependentClearanceAuthorityStore, verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
+import {auditIndependentClearanceFixture, assertVerifiedIndependentClearance, inspectIndependentSpawnerClearance, installCanonicalIndependentClearanceAuthorityStore, installIndependentClearanceAuthorityStore, verifyIndependentSpawnerClearance} from "../control/independent-spawner-clearance.mjs";
 import {prepareProtectedEvaluatorProvisioning} from "../control/protected-evaluator-provisioning.mjs";
 import {getSealedCanonicalAuthority} from "../control/sealed-canonical-authority.mjs";
 import {prepareCanonicalIndependentClearanceFixture} from "./helpers/independent-clearance-fixture.mjs";
@@ -58,5 +58,11 @@ const concurrent = fixture();
 fs.writeFileSync(path.join(concurrent.authorityRoot, "consumption-ledger.v1.json.lock"), "other-fenced-writer\n");
 assert.throws(() => auditIndependentClearanceFixture({...concurrent, consume: true}), /locked by another consumer/iu);
 
-for (const value of [valid, synthetic, provisioned, forgedRoot, revoked, staleCandidate, replay, concurrent]) fs.rmSync(value.root, {recursive: true, force: true});
+const canonicalAnchor = fixture();
+fs.copyFileSync(path.resolve("specialist-blocks/control-plane/agent-spawner/independent-evaluator-registry.v2.json"), path.join(canonicalAnchor.authorityRoot, "evaluator-registry.v2.json"));
+const canonicalProvisioning = prepareProtectedEvaluatorProvisioning({sealedAuthority, clearanceStoreRoot: canonicalAnchor.authorityRoot, candidateRepositoryRoot: canonicalAnchor.repositoryRoot});
+installCanonicalIndependentClearanceAuthorityStore({sealedAuthority, evaluatorProvisioning: canonicalProvisioning});
+assert.throws(() => inspectIndependentSpawnerClearance({receiptSha256: "f".repeat(64)}), (error) => error?.code === "ENOENT", "canonical clearance store fell back to the retired static trust anchor");
+
+for (const value of [valid, synthetic, provisioned, forgedRoot, revoked, staleCandidate, replay, concurrent, canonicalAnchor]) fs.rmSync(value.root, {recursive: true, force: true});
 console.log("PASS canonical independent Spawner clearance: anchored registry, actual Git/files, immutable signature, stale/synthetic/self/revoked/substitution denial, durable replay CAS, and audit-token separation");

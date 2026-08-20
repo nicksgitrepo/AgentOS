@@ -141,8 +141,9 @@ function consumeReceipt({authorityRoot, receipt, candidateAuthority, nowUtc}) {
   } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); fs.closeSync(lock); if (fs.existsSync(lockPath)) fs.unlinkSync(lockPath); }
 }
 
-function verifyBundle({authorityRoot, repositoryRoot, receiptSha256, consume, issueToken}) {
-  sha(receiptSha256, "Independent clearance receipt reference"); const nowUtc = new Date().toISOString(), anchor = loadIndependentClearanceTrustAnchor();
+function verifyBundle({authorityRoot, repositoryRoot, receiptSha256, consume, issueToken, anchor}) {
+  sha(receiptSha256, "Independent clearance receipt reference"); const nowUtc = new Date().toISOString();
+  assert(record(anchor), "Independent-clearance store is missing its sealed trust anchor");
   const registry = validateIndependentEvaluatorRegistryAuthoritatively(readJson(within(authorityRoot, "evaluator-registry.v2.json", "Evaluator registry"), "Evaluator registry"), {anchor, nowUtc});
   const candidateAuthority = readJson(within(authorityRoot, "candidate-authority.v1.json", "Spawner candidate authority"), "Spawner candidate authority"); const candidate = resolveSpawnerCandidateFromRepository({repositoryRoot, candidateAuthority});
   const receipt = readJson(within(authorityRoot, `receipts/${receiptSha256}.json`, "Independent clearance receipt"), "Independent clearance receipt"); assert(receipt.receipt_sha256 === receiptSha256, "Independent clearance receipt reference is aliased"); validateReceipt({receipt, registry, candidate, candidateAuthority, nowUtc});
@@ -160,7 +161,7 @@ export function installIndependentClearanceAuthorityStore({sealedAuthority, eval
   const registry = readJson(within(realRoot, "evaluator-registry.v2.json", "Evaluator registry"), "Evaluator registry");
   validateIndependentEvaluatorRegistryAuthoritatively(registry, {anchor, nowUtc: new Date().toISOString()});
   const store = Object.freeze(Object.create(null));
-  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot}));
+  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot, anchor}));
   installedClearanceStore = store;
   return store;
 }
@@ -175,7 +176,7 @@ export function installCanonicalIndependentClearanceAuthorityStore({sealedAuthor
   const evaluator = registry.evaluators.find((entry) => entry.issuer_id === admission.subject_id);
   assert(evaluator && evaluator.admission_receipt_sha256 === admission.admission_sha256 && canonicalJson(evaluator.scope) === canonicalJson(admission.scope) && canonicalJson(evaluator.separated_from_roles) === canonicalJson(admission.separated_from_roles), "Canonical evaluator registry does not bind the admitted independent evaluator");
   const store = Object.freeze(Object.create(null));
-  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot}));
+  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot, anchor}));
   installedClearanceStore = store;
   return store;
 }
@@ -191,5 +192,5 @@ export function inspectIndependentSpawnerClearance({receiptSha256} = {}) {
   assert(store, "Canonical independent-clearance store is not installed by sealed bootstrap", "SEALED_CLEARANCE_AUTHORITY_REQUIRED");
   return verifyBundle({...store, receiptSha256, consume: false, issueToken: false}).clearance;
 }
-export function auditIndependentClearanceFixture({authorityRoot, repositoryRoot, receiptSha256, consume = false} = {}) { return verifyBundle({authorityRoot: fs.realpathSync.native(authorityRoot), repositoryRoot: fs.realpathSync.native(repositoryRoot), receiptSha256, consume, issueToken: false}); }
+export function auditIndependentClearanceFixture({authorityRoot, repositoryRoot, receiptSha256, consume = false} = {}) { return verifyBundle({authorityRoot: fs.realpathSync.native(authorityRoot), repositoryRoot: fs.realpathSync.native(repositoryRoot), receiptSha256, consume, issueToken: false, anchor: loadIndependentClearanceTrustAnchor()}); }
 export function assertVerifiedIndependentClearance(clearance, expectedCandidate) { assert(record(clearance) && verifiedClearances.has(clearance), "Independent clearance was not verified and consumed through the canonical authority store"); same(clearance.candidate, expectedCandidate, "Verified independent clearance candidate binding"); return clearance; }

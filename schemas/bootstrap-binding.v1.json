@@ -1393,11 +1393,11 @@
     },
     "independent_spawner_clearance_controller": {
       "path": "control/independent-spawner-clearance.mjs",
-      "sha256": "e017075cce9c653d9030970f6d166c31a65270a7b52dd325ae5af1c5ffbdc337"
+      "sha256": "0ae3f37f3e13340c800750c4636023c9535fc090e0657aaee33f9c636ebe74d9"
     },
     "independent_spawner_clearance_verifier": {
       "path": "tests/verify-independent-spawner-clearance.mjs",
-      "sha256": "537cda3a49abf607a94dc7c60fcdc76d3763caa4b45cff548273ac4b70d5041d"
+      "sha256": "6caf53beb73fb4086c3188a91930d0354cf66bbc3f1a1bf6e144d321687d1c22"
     },
     "inert_seed_lifecycle_contract": {
       "path": "schemas/inert-seed-lifecycle.v1.json",
