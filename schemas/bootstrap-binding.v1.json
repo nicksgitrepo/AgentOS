@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "6743a6405e1ee3da2a25d6e632693c61fc6e054bd004c0bf8630ad6684df1e4d"
+      "sha256": "5b527b3e04776bda49fbeb34c0b239b906e4435c12fb28f52d7572bcc936d178"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3984,6 +3984,34 @@
     "ios_swiftui_candidate_handoff": {
       "path": "specialist-blocks/wave-05/ios-swiftui/handoff.json",
       "sha256": "b56483b65d4f2664c27e6442a5bf66e19e4838cc354c6804cfcb2a430d3e7c62"
+    },
+    "responsive_web_boundary_gate": {
+      "path": "control/responsive-web-boundary-gate.mjs",
+      "sha256": "a74af6d02547d7862eb77da26c4e3c10beebc5e1e7de0b8aaf74ea2424205766"
+    },
+    "responsive_web_boundary_input_contract": {
+      "path": "schemas/responsive-web-boundary-input.v1.json",
+      "sha256": "d3c4bc3ef9d9cfa96befb18554a81f3ce9c8dd060c458dc102d0c786676437e9"
+    },
+    "responsive_web_boundary_result_contract": {
+      "path": "schemas/responsive-web-boundary-result.v1.json",
+      "sha256": "5a8cf844890ffcc822e8934a10e276513cef1050a866cb8678d0fd0ffba501cf"
+    },
+    "responsive_web_package_operational_evaluation_contract": {
+      "path": "schemas/responsive-web-package-operational-evaluation.v1.json",
+      "sha256": "505e340986ef9fe751dfe945e351f446d4f51b99fac7476bc16ac8fc7c30b068"
+    },
+    "responsive_web_package_operational_evaluator": {
+      "path": "control/responsive-web-package-evaluator.mjs",
+      "sha256": "23a13986e6a01850175acdc637edd0ec96a737e5ceaecdc4c10bb3664fd41775"
+    },
+    "responsive_web_boundary_verifier": {
+      "path": "tests/verify-responsive-web-boundary.mjs",
+      "sha256": "8e6a9d8b58853becd8576e8534eecfb891d1dba6fc5ceafb362085a6c1956409"
+    },
+    "responsive_web_candidate_handoff": {
+      "path": "specialist-blocks/wave-05/responsive-web/handoff.json",
+      "sha256": "47bb4f8bb7f81475eb0e27b3a6b9951e3de2f04b46611c9b23a4c095ff534631"
     }
   },
   "compatibility_only": {

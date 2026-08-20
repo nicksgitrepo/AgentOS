@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/responsive-web-router-boundary-input.v1.json",
+  "title": "Project-agnostic Responsive Web applicability router input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "request_kind",
+    "evidence"
+  ],
+  "properties": {
+    "schema": {
+      "const": "agentos.responsive_web_boundary_input.v1"
+    },
+    "version": {
+      "const": 1
+    },
+    "request_kind": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_status",
+        "responsive_web_domain",
+        "control_identity",
+        "control_activity",
+        "control_entity",
+        "control_scope",
+        "control_version",
+        "policy_status",
+        "source_status",
+        "source_identity",
+        "source_version",
+        "source_effective_date",
+        "source_retrieved_date",
+        "candidate_status",
+        "candidate_digest",
+        "responsive_web_signal",
+        "signal_status",
+        "task_status",
+        "context_status",
+        "context_complete",
+        "requested_action",
+        "requested_tools",
+        "required_block_identities",
+        "model_policy_status",
+        "model_route_status",
+        "standard_edition",
+        "verification_level",
+        "applicability_status",
+        "authority_scope",
+        "project_data_present",
+        "secret_data_present",
+        "verification_requested",
+        "acceptance_requested",
+        "adversarial_flags"
+      ],
+      "properties": {
+        "authority_status": {
+          "type": "string"
+        },
+        "responsive_web_domain": {
+          "const": "RESPONSIVE_WEB"
+        },
+        "control_identity": {
+          "type": "string"
+        },
+        "control_activity": {
+          "type": "string"
+        },
+        "control_entity": {
+          "type": "string"
+        },
+        "control_scope": {
+          "type": "string"
+        },
+        "control_version": {
+          "type": "string"
+        },
+        "policy_status": {
+          "type": "string"
+        },
+        "source_status": {
+          "type": "string"
+        },
+        "source_identity": {
+          "type": "string"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "source_effective_date": {
+          "type": "string"
+        },
+        "source_retrieved_date": {
+          "type": "string"
+        },
+        "candidate_status": {
+          "type": "string"
+        },
+        "candidate_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "responsive_web_signal": {
+          "type": "string"
+        },
+        "signal_status": {
+          "type": "string"
+        },
+        "task_status": {
+          "type": "string"
+        },
+        "context_status": {
+          "type": "string"
+        },
+        "context_complete": {
+          "type": "boolean"
+        },
+        "requested_action": {
+          "type": "string"
+        },
+        "requested_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_block_identities": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "model_policy_status": {
+          "type": "string"
+        },
+        "model_route_status": {
+          "type": "string"
+        },
+        "standard_edition": {
+          "type": "string"
+        },
+        "verification_level": {
+          "type": "string"
+        },
+        "applicability_status": {
+          "type": "string"
+        },
+        "authority_scope": {
+          "type": "string"
+        },
+        "project_data_present": {
+          "type": "boolean"
+        },
+        "secret_data_present": {
+          "type": "boolean"
+        },
+        "verification_requested": {
+          "type": "boolean"
+        },
+        "acceptance_requested": {
+          "type": "boolean"
+        },
+        "adversarial_flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
