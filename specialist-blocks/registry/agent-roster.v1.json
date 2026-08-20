@@ -7865,7 +7865,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/provider-edge-router/handoff.json",
-        "handoff_file_sha256": "03c85684d6bae808baab9cf08d9d07106f12a2917548fe15e8592dcfc05839c1",
+        "handoff_file_sha256": "6c88a092dcc5c4e117e354e10749c8a1db09dbef2454c4fffa5a0ea226094fb3",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.provider-edge-router.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "9c6c3aa5d0d56f088fd1ffc26d2b190a3fc5f1f5152ae97c66fcdbb56ac37ff5"
+  "roster_sha256": "227917da7245cdcfd9f03210b651f7426a610c328e1b1587cff0f78b2586b953"
 }

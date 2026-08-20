@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "f1fb9d0aa31580994a9d9fee8c63266ddd48f948a7a42fe6443984c160ba7140"
+      "sha256": "7285ca051e5aa542425f64881a887c609cb28cb2f936ee60306eed676d185bb4"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3275,7 +3275,7 @@
     },
     "provider_edge_router_candidate_handoff": {
       "path": "specialist-blocks/wave-02/provider-edge-router/handoff.json",
-      "sha256": "03c85684d6bae808baab9cf08d9d07106f12a2917548fe15e8592dcfc05839c1"
+      "sha256": "6c88a092dcc5c4e117e354e10749c8a1db09dbef2454c4fffa5a0ea226094fb3"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",
