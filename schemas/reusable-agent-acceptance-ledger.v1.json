@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/reusable-agent-acceptance-ledger.v1.json",
+  "title": "Project-agnostic reusable AgentOS package acceptance readback index",
+  "description": "A read-only index of independent evaluator handoffs used to keep the reusable roster queue truthful. It is not an activation or spawn authority; governed Spawner admission still consumes the original sealed receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "project_agnostic", "provenance", "entries", "ledger_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.reusable_agent_acceptance_ledger.v1"},
+    "version": {"const": 1},
+    "status": {"const": "READ_ONLY_INDEPENDENT_EVALUATION_INDEX"},
+    "project_agnostic": {"const": true},
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evaluator_identity", "source_kind", "activation_allowed", "spawn_authority"],
+      "properties": {
+        "evaluator_identity": {"const": "AGENTOS.INDEPENDENT_EVALUATOR"},
+        "source_kind": {"const": "TYPED_INDEPENDENT_HANDOFF_READBACK"},
+        "activation_allowed": {"const": false},
+        "spawn_authority": {"const": "SEALED_SPAWNER_ONLY"}
+      }
+    },
+    "entries": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["stable_agent_id", "package_path", "candidate_commit", "candidate_tree", "independent_status", "receipt_ref", "receipt_sha256", "readback_scope"],
+        "properties": {
+          "stable_agent_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,120}$"},
+          "package_path": {"type": "string", "pattern": "^specialist-blocks/[A-Za-z0-9._/-]+$"},
+          "candidate_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "candidate_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "independent_status": {"const": "PASS"},
+          "receipt_ref": {"type": "string", "pattern": "^INDEPENDENT_EVALUATOR_HANDOFF/[0-9a-f]{40}$"},
+          "receipt_sha256": {"anyOf": [{"type": "string", "pattern": "^[0-9a-f]{64}$"}, {"type": "null"}]},
+          "readback_scope": {"enum": ["EXACT_RECEIPT_RETAINED", "READBACK_SUMMARY_ONLY"]}
+        }
+      }
+    },
+    "ledger_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -28191,9 +28191,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "EXECUTED_REVIEW_REQUIRED",
-      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/project-controller/evaluation.json"
@@ -28513,9 +28513,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers memory; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "EXECUTED_REVIEW_REQUIRED",
-      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/memory/evaluation.json"
@@ -28831,9 +28831,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers plan-coordination; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "UTILITY_HARM_PENDING",
-      "independent_evaluation_state": "UTILITY_HARM_PENDING",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/orchestrator/evaluation.json"
@@ -29135,9 +29135,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "UTILITY_HARM_PENDING",
-      "independent_evaluation_state": "UTILITY_HARM_PENDING",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/product-owner/evaluation.json"
@@ -29475,9 +29475,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers delivery-operations; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "UTILITY_HARM_PENDING",
-      "independent_evaluation_state": "UTILITY_HARM_PENDING",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/runtime-deployment-operator/evaluation.json"
@@ -29795,9 +29795,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers resource-scheduling; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "UTILITY_HARM_PENDING",
-      "independent_evaluation_state": "UTILITY_HARM_PENDING",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/resource-scheduler/evaluation.json"
@@ -39454,15 +39454,15 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 95.25,
-      "reason": "Already accepted; reuse its exact receipt until invalidated."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 2,
       "stable_agent_id": "AGENTOS_CONTROLLER",
       "tier": "PERMANENT_AGENTOS_ROLES",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 94.05,
-      "reason": "Highest eligible unaccepted permanent role; package, gates, and hostile vectors exist."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 3,
@@ -39470,7 +39470,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Waits for dependency-safe permanent-role predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 4,
@@ -39478,7 +39478,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Waits for dependency-safe permanent-role predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 5,
@@ -39486,7 +39486,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Waits for dependency-safe permanent-role predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 6,
@@ -39494,7 +39494,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Waits for dependency-safe permanent-role predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 7,
@@ -39502,15 +39502,15 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Waits for dependency-safe permanent-role predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 8,
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 82.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 9,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "eb121eabcce9cd41ef114ca09e9ccf700013bdc3da934f62f78a8367ffe3d4b4"
+  "roster_sha256": "a7f47f2eda600ecc153942109120e0382ed2789f869ff4dfbe3f801086ef8fbb"
 }

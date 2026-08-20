@@ -3079,19 +3079,31 @@
     },
     "reusable_agent_roster_compiler": {
       "path": "control/reusable-agent-roster-compiler.mjs",
-      "sha256": "2fee3b8e1b5b4eb3360a5602ca329d46b6ab9ec3af5a593b7c1b39967efe9870"
+      "sha256": "2bd419bb172e3888c7626161a49337c84eef08daec6547fe74e2c85a22d04f0e"
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "52f6c39c39304b808a4fe17e9e528505e05ce9e7767faebfcca754131cf2e0f1"
+      "sha256": "1aed4bac84f56a26ba0e47110ce99c6db56a3a927965dd91204850f40af84467"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
-      "sha256": "0d2f929b4161cd5359b87e5480a42b9ac1c020c74c179ee261ec3a8b9905a8ee"
+      "sha256": "7ff7cacb06d3e8d6acbcd707a3e794ea13fc186a42fc6486d2f97fd3e1b597af"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
-      "sha256": "1fd9429cd3b30abbe4b2bc7d92b3320e784b110d4a9c7f8db44e02691e73f0af"
+      "sha256": "a2dbda7451cb9071888e3323e799d6c4e03057284e99c6d86382c3b179f16ed4"
+    },
+    "reusable_agent_acceptance_ledger_contract": {
+      "path": "schemas/reusable-agent-acceptance-ledger.v1.json",
+      "sha256": "056c5c106dc42ec98c291cf3fa9b950f840d989488d616ab2444ec92b67069c4"
+    },
+    "reusable_agent_acceptance_ledger_registry": {
+      "path": "specialist-blocks/registry/accepted-agent-receipts.v1.json",
+      "sha256": "b8044af6740c3113a3e5cbce6cea43f92e67ba3ecd829aeb7d5ede623f3b6fdf"
+    },
+    "reusable_agent_acceptance_ledger_verifier": {
+      "path": "tests/verify-reusable-agent-acceptance-ledger.mjs",
+      "sha256": "d1199fd73c0aa12d902165236601e66c68087c472864dac6750b0c3565117921"
     },
     "runtime_deployment_boundary_gate": {
       "path": "control/runtime-deployment-boundary-gate.mjs",

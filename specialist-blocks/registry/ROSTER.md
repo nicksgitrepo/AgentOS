@@ -9,10 +9,11 @@ dependencies, scores, gates, fixtures, model routes, and build state.
 ## Build order
 
 The Spawner is already admitted and is reused by its immutable receipt. The
-Controller, Product Owner, Memory, Runtime, and Scheduler packages have
-passed their independent checks and are reused by their exact receipts. The
-current package is Orchestrator; only one package may be in qualification at
-a time. A package is not built merely because a name exists: its exact
+Controller, Product Owner, Memory, Runtime, Scheduler, and Orchestrator
+packages have passed their independent checks and are reused by their exact
+candidate readbacks. The current package is Security Router; only one package
+may be in qualification at a time. A package is not built merely because a
+name exists: its exact
 blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
 QA, and independent evaluation must all be current.
 
@@ -24,7 +25,7 @@ QA, and independent evaluation must all be current.
 4. `AGENTOS.MEMORY` — governed memory adapter; independently accepted.
 5. `AGENTOS.RUNTIME` — runtime and rollback custody only; independently accepted.
 6. `AGENTOS.SCHEDULER` — resource and work scheduling only; independently accepted.
-7. `AGENTOS.ORCHESTRATOR` — plan coordination and typed handoffs; current candidate, awaiting independent evaluation.
+7. `AGENTOS.ORCHESTRATOR` — plan coordination and typed handoffs; independently accepted.
 
 ### Platform agents
 
@@ -57,10 +58,11 @@ from the accepted global model-policy snapshot, with freshness, availability,
 context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
-The current queue item is `AGENTOS.ORCHESTRATOR`. Its package, gates, hostile
-vectors, and local proof are complete, but it is not admitted or active until
-the one independent evaluation passes. All other entries remain queued or
-blocked on predecessors as recorded in the machine registry.
+The current queue item is `AGENT.SECURITY_ROUTER`. Its package, gates, hostile
+vectors, model route, and local proof are next for one-at-a-time qualification.
+All other entries remain queued or blocked on predecessors as recorded in the
+machine registry. The acceptance ledger is a read-only index of exact
+independent readbacks; it never grants activation or spawn authority.
 
 The machine-readable source of the full backlog is
 `master-inventory.v1.json`. The generic priority overlay is
@@ -113,9 +115,9 @@ The materialized roster distinguishes these role kinds:
 
 The legacy materialized-library counts below are retained only as historical
 inventory context. The current authority is the generated registry above:
-`127` entries from `126` package directories (`125` current and `1` archived),
-with `96` agent roles, `7` reusable governance blocks, `23` reusable standard
-blocks, and `1` planned plus `3` candidate permanent-role package entries. The registry's ordered
+`127` entries from `127` package directories (`126` current and `1` archived),
+with `96` agent roles, `7` reusable governance blocks, and `23` reusable standard
+blocks. The registry's ordered
 queue, not the historical recipe counts, controls what may be built.
 
 The on-demand recipe and master-inventory catalogs remain useful source

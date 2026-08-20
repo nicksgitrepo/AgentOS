@@ -1,0 +1,75 @@
+{
+  "schema": "agentos.reusable_agent_acceptance_ledger.v1",
+  "version": 1,
+  "status": "READ_ONLY_INDEPENDENT_EVALUATION_INDEX",
+  "project_agnostic": true,
+  "provenance": {
+    "evaluator_identity": "AGENTOS.INDEPENDENT_EVALUATOR",
+    "source_kind": "TYPED_INDEPENDENT_HANDOFF_READBACK",
+    "activation_allowed": false,
+    "spawn_authority": "SEALED_SPAWNER_ONLY"
+  },
+  "entries": [
+    {
+      "stable_agent_id": "AGENTOS.MEMORY",
+      "package_path": "specialist-blocks/wave-01/memory",
+      "candidate_commit": "a51ff068c3369b66722c759958fade8b0523fdd3",
+      "candidate_tree": "6bbd683d868d37d845a306e453e59243afa8139d",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/a51ff068c3369b66722c759958fade8b0523fdd3",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    },
+    {
+      "stable_agent_id": "AGENTOS.ORCHESTRATOR",
+      "package_path": "specialist-blocks/wave-01/orchestrator",
+      "candidate_commit": "abd8c59a88df65a3333155871ccf6f5064be9b23",
+      "candidate_tree": "8ca1a47485fe5833a965c27d420244bd43b94f9d",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/abd8c59a88df65a3333155871ccf6f5064be9b23",
+      "receipt_sha256": "a2e947908ddf46ccbf22b5df74ae51e0283628e4f11a259b7bb89d3602785f04",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
+      "stable_agent_id": "AGENTOS.PRODUCT_OWNER",
+      "package_path": "specialist-blocks/wave-01/product-owner",
+      "candidate_commit": "ac31996d36c1c2486112aedb0b15a119d8b99294",
+      "candidate_tree": "0e8b9e62cd093727d25c3685ebd66f2c00144d70",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/ac31996d36c1c2486112aedb0b15a119d8b99294",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    },
+    {
+      "stable_agent_id": "AGENTOS.RUNTIME",
+      "package_path": "specialist-blocks/wave-01/runtime-deployment-operator",
+      "candidate_commit": "373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
+      "candidate_tree": "9bd8881ca7ef4fb6cffc795bdf352b655f050423",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    },
+    {
+      "stable_agent_id": "AGENTOS.SCHEDULER",
+      "package_path": "specialist-blocks/wave-01/resource-scheduler",
+      "candidate_commit": "d43d148aadd42e440f821dc289480fefe39eadce",
+      "candidate_tree": "568ef50d9722340705f08de8baece902d55d1777",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/d43d148aadd42e440f821dc289480fefe39eadce",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    },
+    {
+      "stable_agent_id": "AGENTOS_CONTROLLER",
+      "package_path": "specialist-blocks/wave-01/project-controller",
+      "candidate_commit": "66d7e8f469d7cba9962f5477e88a6d0e7efd4e7e",
+      "candidate_tree": "fc725e5e88bab0d8281129f8a72c910838fc6b4c",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/66d7e8f469d7cba9962f5477e88a6d0e7efd4e7e",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    }
+  ],
+  "ledger_sha256": "9f4dd533868dbee2c92e4dc52efc4828ac1cd6e3f8abf95fdf6e3c0b2e74a169"
+}
