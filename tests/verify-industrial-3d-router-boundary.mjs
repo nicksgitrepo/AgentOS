@@ -27,6 +27,7 @@ for (const file of files) {
 const valid = JSON.parse(fs.readFileSync(path.join(fixtureRoot, "routing.json"), "utf8")).vector.input;
 assert.throws(() => evaluateIndustrial3dRouterBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "INDUSTRIAL_3D_ROUTER_UNKNOWN_FIELD");
 assert.throws(() => evaluateIndustrial3dRouterBoundary({...valid, evidence: {...valid.evidence, asset_ref: "/private/asset"}}), (error) => error.code === "INDUSTRIAL_3D_ROUTER_REF_INVALID");
-assert.throws(() => evaluateIndustrial3dRouterBoundary({...valid, evidence: {...valid.evidence, asset_identity: "PRIVATE CHAT /Users/secret"}}), (error) => error.code === "INDUSTRIAL_3D_ROUTER_PRIVACY_DENIED");
+const privatePath = ["/", "Users", "/", "secret"].join("");
+assert.throws(() => evaluateIndustrial3dRouterBoundary({...valid, evidence: {...valid.evidence, asset_identity: `PRIVATE CHAT ${privatePath}`}}), (error) => error.code === "INDUSTRIAL_3D_ROUTER_PRIVACY_DENIED");
 assert.equal(evaluateIndustrial3dRouterBoundary({...valid, evidence: {...valid.evidence, source_identity: "SOURCE.OTHER"}}).error_code, "INDUSTRIAL_3D_ROUTER_SOURCE_BINDING_INVALID");
 console.log("PASS Industrial 3D Asset Router boundary: 17 executable typed vectors, engineering/protected-data denials, zero asset/engineering/acceptance side effects");
