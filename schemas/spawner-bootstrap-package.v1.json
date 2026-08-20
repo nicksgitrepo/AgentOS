@@ -27,6 +27,7 @@
     "controller_issuer_registry_sha256",
     "controller_operation_registry_sha256",
     "independent_clearance_trust_anchor_sha256",
+    "canonical_evaluator_trust_root_sha256",
     "model_policy_source_registry_sha256",
     "decision_tree_sha256",
     "gates",
@@ -72,6 +73,10 @@
       "pattern": "^[0-9a-f]{64}$"
     },
     "independent_clearance_trust_anchor_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "canonical_evaluator_trust_root_sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
     },

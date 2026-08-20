@@ -76,6 +76,7 @@ widenedProjection.projection_sha256 = canonicalDigest({...widenedProjection, pro
 assert.throws(() => validateModelPolicyProjection(widenedProjection, {snapshot: active, expectedRoleClass: "WORKING_AGENT", nowUtc: NOW}), /fields mismatch/iu);
 
 assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "CONTROLLER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /writer is forbidden/iu);
+assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "BOOTSTRAP_GENESIS", snapshot: active, priorEventSha256: event.event_sha256, observedAtUtc: NOW}), /limited to the first accepted snapshot/iu);
 const leaked = structuredClone(active);
 leaked.project_ref = "FORBIDDEN_PROJECT";
 leaked.snapshot_sha256 = canonicalDigest({...leaked, snapshot_sha256: null});

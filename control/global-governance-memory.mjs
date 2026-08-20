@@ -11,6 +11,7 @@ export const GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA = "agentos.global_governance_
 export const GLOBAL_GOVERNANCE_MEMORY_READBACK_SCHEMA = "agentos.global_governance_memory_readback.v1";
 export const GLOBAL_GOVERNANCE_MEMORY_GENESIS = canonicalDigest({schema: "agentos.global_governance_memory_genesis.v1"});
 export const GLOBAL_GOVERNANCE_MEMORY_WRITERS = Object.freeze(["SPAWNER", "GOVERNED_MEMORY_ADAPTER"]);
+export const GLOBAL_GOVERNANCE_GENESIS_WRITER = "BOOTSTRAP_GENESIS";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const SAFE_EVENT_ID = /^GGM\.(?:ACCEPTED|SUPERSEDED|INVALIDATED)\.[0-9A-F]{48}$/u;
@@ -96,9 +97,11 @@ function validateGlobalEvent(event) {
   assertProjectAgnosticGovernanceValue(event);
   assert(event.schema === GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA && event.version === 1, "Global governance memory event identity is invalid");
   assert(typeof event.event_id === "string" && SAFE_EVENT_ID.test(event.event_id) && event.event_id === mintedEventId(event), "Global governance memory event ID is not internally derived", "GLOBAL_MEMORY_EVENT_ID_INVALID");
-  assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(event.writer_role), "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
+  const genesisWrite = event.writer_role === GLOBAL_GOVERNANCE_GENESIS_WRITER;
+  assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(event.writer_role) || genesisWrite, "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(["MODEL_POLICY_ACCEPTED", "MODEL_POLICY_SUPERSEDED", "MODEL_POLICY_INVALIDATED"].includes(event.event_type), "Global governance memory event type is invalid");
   assert(Number.isSafeInteger(event.sequence) && event.sequence >= 0, "Global governance memory sequence is invalid");
+  if (genesisWrite) assert(event.sequence === 0 && event.event_type === "MODEL_POLICY_ACCEPTED" && event.prior_event_sha256 === GLOBAL_GOVERNANCE_MEMORY_GENESIS, "Bootstrap genesis writer is limited to the first accepted snapshot", "GLOBAL_MEMORY_GENESIS_WRITER_FORBIDDEN");
   const observedMs = requireUtc(event.observed_at_utc, "Global governance observation time");
   const nowUtc = trustedNowUtc();
   const trustedMs = requireUtc(nowUtc, "Global governance trusted time");
@@ -120,10 +123,12 @@ function validateGlobalEvent(event) {
 export function compileGlobalGovernanceMemoryEvent(options = {}) {
   assert(options && typeof options === "object" && !Object.prototype.hasOwnProperty.call(options, "eventId") && !Object.prototype.hasOwnProperty.call(options, "event_id"), "Global governance event identity is minted internally", "GLOBAL_MEMORY_EVENT_ID_CALLER_FORBIDDEN");
   const {sequence, eventType, writerRole, snapshot = null, targetSnapshotSha256 = null, reasonCode = null, priorEventSha256, observedAtUtc} = options;
-  assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(writerRole), "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
+  const genesisWrite = writerRole === GLOBAL_GOVERNANCE_GENESIS_WRITER;
+  assert(GLOBAL_GOVERNANCE_MEMORY_WRITERS.includes(writerRole) || genesisWrite, "Global governance memory writer is forbidden", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(["MODEL_POLICY_ACCEPTED", "MODEL_POLICY_SUPERSEDED", "MODEL_POLICY_INVALIDATED"].includes(eventType), "Global governance memory event type is invalid");
   assert(Number.isSafeInteger(sequence) && sequence >= 0, "Global governance memory sequence is invalid");
   requireSha(priorEventSha256, "Global governance memory prior head");
+  if (genesisWrite) assert(sequence === 0 && eventType === "MODEL_POLICY_ACCEPTED" && priorEventSha256 === GLOBAL_GOVERNANCE_MEMORY_GENESIS, "Bootstrap genesis writer is limited to the first accepted snapshot", "GLOBAL_MEMORY_GENESIS_WRITER_FORBIDDEN");
   const event = {schema: GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA, version: 1, event_id: null, sequence, event_type: eventType, writer_role: writerRole, prior_event_sha256: priorEventSha256, snapshot, target_snapshot_sha256: targetSnapshotSha256, reason_code: reasonCode, observed_at_utc: observedAtUtc, event_sha256: null};
   event.event_id = mintedEventId(event);
   event.event_sha256 = canonicalDigest(digestBody(event, "event_sha256"));

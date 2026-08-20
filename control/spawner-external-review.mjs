@@ -44,6 +44,8 @@ function verifyCandidateCommitBytes(candidate, ancestry) {
     `${packageRoot}/hostile-fixtures.manifest.json`, `${packageRoot}/hostile-evaluation.v1.json`, `${packageRoot}/admission/manifest.json`,
     `${packageRoot}/controller-issuer-registry.v1.json`, `${packageRoot}/controller-operation-registry.v1.json`,
     `${packageRoot}/independent-clearance-trust-anchor.v1.json`, "fixtures/model-policy-evidence/source-registry.v1.json",
+    `${packageRoot}/canonical-evaluator-trust-root.v1.json`, `${packageRoot}/external-reviewer-registry.v1.json`,
+    `${packageRoot}/independent-evaluator-admission.v1.json`, `${packageRoot}/independent-evaluator-registry.v2.json`,
   ]);
   for (const gate of candidate.resolved_gates) paths.add(gate.artifact_path);
   for (const fixture of candidate.fixture_manifest.entries) paths.add(`${packageRoot}/${fixture.path}`);

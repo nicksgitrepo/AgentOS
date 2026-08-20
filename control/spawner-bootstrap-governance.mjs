@@ -137,6 +137,7 @@ function validateCanonicalSpawnerBootstrapPackageShape(spawnerPackage) {
   assertNonPlaceholderSha(spawnerPackage.controller_issuer_registry_sha256, "Spawner Controller issuer registry");
   assertNonPlaceholderSha(spawnerPackage.controller_operation_registry_sha256, "Spawner Controller operation registry");
   assertNonPlaceholderSha(spawnerPackage.independent_clearance_trust_anchor_sha256, "Spawner independent-clearance trust anchor");
+  assertNonPlaceholderSha(spawnerPackage.canonical_evaluator_trust_root_sha256, "Spawner canonical evaluator trust root");
   assertNonPlaceholderSha(spawnerPackage.model_policy_source_registry_sha256, "Spawner model-policy source registry");
   assertNonPlaceholderSha(spawnerPackage.decision_tree_sha256, "Spawner decision tree");
   assert(Array.isArray(spawnerPackage.gates) && spawnerPackage.gates.length >= 8, "Spawner bootstrap gate pack is incomplete");
@@ -185,6 +186,7 @@ function resolveCanonicalHostileFixtureInventory({authorityRoot, packageDirector
     admission_manifest_sha256: admissionManifest.manifest_sha256,
     controller_issuer_registry_sha256: spawnerPackage.controller_issuer_registry_sha256,
     controller_operation_registry_sha256: spawnerPackage.controller_operation_registry_sha256,
+    canonical_evaluator_trust_root_sha256: spawnerPackage.canonical_evaluator_trust_root_sha256,
     decision_tree_sha256: spawnerPackage.decision_tree_sha256,
     fixture_manifest_sha256: fixtureManifest.manifest_sha256,
     gate_manifest_sha256: spawnerPackage.gate_manifest_sha256,
@@ -200,14 +202,17 @@ export function auditSpawnerBootstrapPackageAtUntrustedRoot({authorityRoot, pack
   const controllerIssuerRegistry = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "controller-issuer-registry.v1.json"), "Spawner Controller issuer registry").value;
   const controllerOperationRegistry = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "controller-operation-registry.v1.json"), "Spawner Controller operation registry").value;
   const clearanceTrustAnchor = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "independent-clearance-trust-anchor.v1.json"), "Spawner independent-clearance trust anchor").value;
+  const canonicalEvaluatorTrustRoot = readJsonArtifact(authorityRoot, path.posix.join(packageDirectory, "canonical-evaluator-trust-root.v1.json"), "Spawner canonical evaluator trust root").value;
   const modelSourceRegistry = readJsonArtifact(authorityRoot, "fixtures/model-policy-evidence/source-registry.v1.json", "Spawner model-policy source registry").value;
   assertDigest(controllerIssuerRegistry, "registry_sha256", "Spawner Controller issuer registry");
   assertDigest(controllerOperationRegistry, "registry_sha256", "Spawner Controller operation registry");
   assertDigest(clearanceTrustAnchor, "anchor_sha256", "Spawner independent-clearance trust anchor");
+  assertDigest(canonicalEvaluatorTrustRoot, "trust_root_sha256", "Spawner canonical evaluator trust root");
   assertDigest(modelSourceRegistry, "registry_sha256", "Spawner model-policy source registry");
   assert(controllerIssuerRegistry.registry_sha256 === spawnerPackage.controller_issuer_registry_sha256, "Spawner Controller issuer registry binding differs");
   assert(controllerOperationRegistry.registry_sha256 === spawnerPackage.controller_operation_registry_sha256 && controllerIssuerRegistry.operation_registry_sha256 === controllerOperationRegistry.registry_sha256, "Spawner Controller operation registry binding differs");
   assert(clearanceTrustAnchor.anchor_sha256 === spawnerPackage.independent_clearance_trust_anchor_sha256, "Spawner independent-clearance trust anchor binding differs");
+  assert(canonicalEvaluatorTrustRoot.trust_root_sha256 === spawnerPackage.canonical_evaluator_trust_root_sha256, "Spawner canonical evaluator trust-root binding differs");
   assert(modelSourceRegistry.registry_sha256 === spawnerPackage.model_policy_source_registry_sha256, "Spawner model-policy source registry binding differs");
   const manifestPath = path.posix.join(packageDirectory, "gates/manifest.json");
   const decisionTreePath = path.posix.join(packageDirectory, "decision-tree.json");

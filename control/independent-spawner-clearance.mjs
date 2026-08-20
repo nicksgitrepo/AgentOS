@@ -42,6 +42,21 @@ export function loadIndependentClearanceTrustAnchor() {
   return anchor;
 }
 
+function loadCanonicalEvaluatorTrustRoot() {
+  const authority = getSealedCanonicalAuthority();
+  const root = readSealedAuthorityBinding(authority, "spawner_canonical_evaluator_trust_root").value;
+  exact(root, ["schema", "version", "registry_id", "registry_issuer_id", "registry_public_key_pem", "minimum_authority_epoch", "registry_sha256", "evaluator_admission_sha256", "external_reviewer_registry_sha256", "trust_root_sha256"], "Canonical evaluator trust root");
+  assert(root.schema === "agentos.canonical_evaluator_trust_root.v1" && root.version === 1, "Canonical evaluator trust-root identity differs");
+  sha(root.registry_sha256, "Canonical evaluator registry"); sha(root.evaluator_admission_sha256, "Canonical evaluator admission"); sha(root.external_reviewer_registry_sha256, "Canonical external reviewer registry");
+  assert(root.trust_root_sha256 === canonicalDigest(body(root, "trust_root_sha256")), "Canonical evaluator trust-root digest mismatch");
+  const admission = readSealedAuthorityBinding(authority, "spawner_independent_evaluator_admission").value;
+  exact(admission, ["schema", "version", "issuer_id", "subject_id", "subject_role", "result", "authority_epoch", "issued_at_utc", "expires_at_utc", "scope", "separated_from_roles", "admission_sha256", "signature_base64"], "Canonical evaluator admission");
+  assert(admission.schema === "agentos.independent_evaluator_admission.v1" && admission.version === 1 && admission.issuer_id === root.registry_issuer_id && admission.subject_role === "AGENT.INDEPENDENT_EVALUATOR" && admission.result === "ADMITTED", "Canonical evaluator admission identity differs");
+  assert(admission.admission_sha256 === root.evaluator_admission_sha256 && admission.admission_sha256 === canonicalDigest(body(admission, "admission_sha256", "signature_base64")), "Canonical evaluator admission digest differs");
+  assert(verifySignature(null, Buffer.from(admission.admission_sha256, "hex"), root.registry_public_key_pem, Buffer.from(admission.signature_base64, "base64")), "Canonical evaluator admission signature differs");
+  return {anchor: root, admission};
+}
+
 function validateIndependentEvaluatorRegistryAuthoritatively(registry, {anchor, nowUtc} = {}) {
   exact(registry, ["schema", "version", "registry_id", "authority_epoch", "evaluators", "registry_sha256"], "Independent evaluator registry");
   assert(registry.schema === INDEPENDENT_CLEARANCE_REGISTRY_SCHEMA && registry.version === 2, "Independent evaluator registry identity is invalid");
@@ -144,6 +159,21 @@ export function installIndependentClearanceAuthorityStore({sealedAuthority, eval
   const anchor = loadIndependentClearanceTrustAnchor();
   const registry = readJson(within(realRoot, "evaluator-registry.v2.json", "Evaluator registry"), "Evaluator registry");
   validateIndependentEvaluatorRegistryAuthoritatively(registry, {anchor, nowUtc: new Date().toISOString()});
+  const store = Object.freeze(Object.create(null));
+  clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot}));
+  installedClearanceStore = store;
+  return store;
+}
+
+export function installCanonicalIndependentClearanceAuthorityStore({sealedAuthority, evaluatorProvisioning} = {}) {
+  assertSealedCanonicalAuthority(sealedAuthority);
+  const provision = consumeProtectedEvaluatorProvisioning(evaluatorProvisioning);
+  const realRoot = provision.clearanceStoreRoot;
+  const {anchor, admission} = loadCanonicalEvaluatorTrustRoot();
+  const registry = readJson(within(realRoot, "evaluator-registry.v2.json", "Evaluator registry"), "Evaluator registry");
+  validateIndependentEvaluatorRegistryAuthoritatively(registry, {anchor, nowUtc: new Date().toISOString()});
+  const evaluator = registry.evaluators.find((entry) => entry.issuer_id === admission.subject_id);
+  assert(evaluator && evaluator.admission_receipt_sha256 === admission.admission_sha256 && canonicalJson(evaluator.scope) === canonicalJson(admission.scope) && canonicalJson(evaluator.separated_from_roles) === canonicalJson(admission.separated_from_roles), "Canonical evaluator registry does not bind the admitted independent evaluator");
   const store = Object.freeze(Object.create(null));
   clearanceStores.set(store, Object.freeze({authorityRoot: realRoot, repositoryRoot: provision.candidateRepositoryRoot}));
   installedClearanceStore = store;
