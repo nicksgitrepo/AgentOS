@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.worktree-custody",
-  "class": "umbrella_authority",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.worktree-custody","fixture_id":"specialist.control.worktree-custody.UMBRELLA_AUTHORITY","class":"umbrella_authority","vector":{"entrypoint":"control/worktree-custody-boundary-gate.mjs#evaluateWorktreeCustodyBoundary","input":{"schema":"agentos.worktree_custody_boundary_input.v1","version":1,"request_kind":"BIND_CANDIDATE","evidence":{"authority_scope":"UMBRELLA"}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"WORKTREE_CUSTODY_UMBRELLA_AUTHORITY_FORBIDDEN","acceptance_allowed":false}}}

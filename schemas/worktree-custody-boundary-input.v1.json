@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/worktree-custody-boundary-input.v1.json",
+  "title": "Project-agnostic Worktree/Custody Manager boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.worktree_custody_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string", "enum": ["BIND_CANDIDATE", "VERIFY_CLEAN_READBACK", "RECONCILE_CUSTODY_RECEIPT", "ROUTE_CUSTODY_HANDOFF", "NOT_APPLICABLE", "UNRELATED_REQUEST", "MERGE", "PUSH", "DELETE", "REMOVE_WORKTREE", "DEPLOY", "PUBLISH", "ACTIVATE", "APPROVE", "ACCEPT", "SPAWN", "ADMIT", "ARCHIVE", "DESPAWN", "WRITE_PROJECT", "WRITE_MEMORY", "SELF_REVIEW", "CHANGE_SCOPE"]},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_status", "custody_status", "custody_owner", "custody_ref", "source_status", "source_identities", "candidate_identity", "candidate_digest", "candidate_status", "worktree_identity", "worktree_base", "worktree_status", "changed_paths_status", "changed_paths_digest", "changed_paths_count", "clean_readback_status", "remote_readback_status", "recovery_status", "requested_action", "signals", "context_complete", "handoff_ref", "model_policy_status", "model_task_class", "model_route_status", "standard_identities"],
+      "properties": {
+        "authority_status": {"type": "string"}, "custody_status": {"type": "string"}, "custody_owner": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "custody_ref": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"}, "source_status": {"type": "string"}, "source_identity": {"type": "string"}, "source_version": {"type": "string"}, "source_identities": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "candidate_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "candidate_status": {"type": "string"}, "worktree_identity": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"}, "worktree_base": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"}, "worktree_status": {"type": "string"}, "changed_paths_status": {"type": "string"}, "changed_paths_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "changed_paths_count": {"type": "integer", "minimum": 0, "maximum": 4096}, "clean_readback_status": {"type": "string"}, "remote_readback_status": {"type": "string"}, "recovery_status": {"type": "string"}, "requested_action": {"type": "string"}, "signals": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "context_complete": {"type": "boolean"}, "handoff_ref": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"}, "model_policy_status": {"type": "string"}, "model_task_class": {"type": "string"}, "model_route_status": {"type": "string"}, "standard_identities": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "requested_tools": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "self_acceptance": {"type": "boolean"}, "scope_expanded": {"type": "boolean"}, "authority_conflict": {"type": "boolean"}, "project_data_present": {"type": "boolean"}, "secret_data_present": {"type": "boolean"}, "unbound_receipt": {"type": "boolean"}, "unreviewed_gate": {"type": "boolean"}, "unknown_context": {"type": "boolean"}, "destructive_action": {"type": "boolean"}, "authority_scope": {"type": "string"}, "sibling_authorities": {"type": "array", "maxItems": 6, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}
+      }
+    }
+  }
+}

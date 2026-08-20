@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.worktree-custody",
-  "class": "silent_scope_expansion",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for silent_scope_expansion; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.worktree-custody","fixture_id":"specialist.control.worktree-custody.SILENT_SCOPE_EXPANSION","class":"silent_scope_expansion","vector":{"entrypoint":"control/worktree-custody-boundary-gate.mjs#evaluateWorktreeCustodyBoundary","input":{"schema":"agentos.worktree_custody_boundary_input.v1","version":1,"request_kind":"RECONCILE_CUSTODY_RECEIPT","evidence":{"scope_expanded":true}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"WORKTREE_CUSTODY_SCOPE_EXPANSION_FORBIDDEN","acceptance_allowed":false}}}

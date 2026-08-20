@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.worktree-custody",
-  "class": "unrelated_scope",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.worktree-custody","fixture_id":"specialist.control.worktree-custody.UNRELATED_SCOPE","class":"unrelated_scope","vector":{"entrypoint":"control/worktree-custody-boundary-gate.mjs#evaluateWorktreeCustodyBoundary","input":{"schema":"agentos.worktree_custody_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{}},"expected_readback":{"disposition":"DENY","route":"NO_CUSTODY_SCOPE","error_code":"WORKTREE_CUSTODY_SCOPE_NOT_APPLICABLE","acceptance_allowed":false}}}

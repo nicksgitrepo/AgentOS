@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.worktree-custody",
-  "class": "narrowness",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.worktree-custody","fixture_id":"specialist.control.worktree-custody.NARROWNESS","class":"narrowness","vector":{"entrypoint":"control/worktree-custody-boundary-gate.mjs#evaluateWorktreeCustodyBoundary","input":{"schema":"agentos.worktree_custody_boundary_input.v1","version":1,"request_kind":"BIND_CANDIDATE","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.CONTROL_WORKTREE_CUSTODY","custody_ref":"ref:WORKTREE_CUSTODY/BOUND","source_status":"CURRENT","source_version":"1.2","source_identities":["SOURCE.ATOMIC_SPECIALIZATION_LAW","SOURCE.GIT_WORKTREE","SOURCE.SLSA_PROVENANCE"],"candidate_identity":"CANDIDATE.AGENTOS.CURRENT","candidate_digest":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","candidate_status":"CURRENT_CANDIDATE","worktree_identity":"ref:WORKTREE/CURRENT","worktree_base":"ref:WORKTREE/BASE","worktree_status":"BOUND","changed_paths_status":"BOUND","changed_paths_digest":"abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789","changed_paths_count":3,"clean_readback_status":"CURRENT","remote_readback_status":"MATCHED","recovery_status":"CURRENT","requested_action":"BIND","signals":["AGENT.WORKTREE_CUSTODY","CANDIDATE_IDENTITY"],"context_complete":true,"handoff_ref":"ref:HANDOFF/WORKTREE_CUSTODY","model_policy_status":"CURRENT","model_task_class":"DETERMINISTIC_QA","model_route_status":"BOUND","standard_identities":["SPECIALIST.STANDARD.NIST_SSDF","SPECIALIST.STANDARD.SLSA"],"requested_tools":["READ_PROVENANCE"],"authority_scope":"NARROW_WORKTREE_CUSTODY","sibling_authorities":["WORKTREE_CUSTODY"]}},"expected_readback":{"disposition":"ROUTE","route":"SPAWNER_CUSTODY_HANDOFF","error_code":"WORKTREE_CUSTODY_ROUTE_READY","acceptance_allowed":false}}}
