@@ -3227,7 +3227,7 @@
     },
     "release_manager_candidate_handoff": {
       "path": "specialist-blocks/wave-04/release-manager/handoff.json",
-      "sha256": "89b0cd23ebce74dd1747932540b3be04cfb8a5b8b5297f3f0608585063f9b9f9"
+      "sha256": "389e817da2ce163a083cfb5a95df3776e26c64ebd54c5cba0b352414990c096c"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
