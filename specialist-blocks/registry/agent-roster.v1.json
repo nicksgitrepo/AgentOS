@@ -8534,9 +8534,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/accessibility-wcag/evaluation.json"
@@ -39716,17 +39716,17 @@
       "rank": 34,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ACCESSIBILITY_WCAG",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 35,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 36,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "5c6599d35d65495ec8f7e8be4441fc5b0ed8ff366f37c03928767470f68d6e20"
+  "roster_sha256": "673eefb6590b056a341ac84070ab9be1ae0a26165295cb0485f8192e73d40fc6"
 }

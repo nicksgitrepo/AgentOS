@@ -171,6 +171,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRODUCT_CLIENT_ACCESSIBILITY_WCAG",
+      "package_path": "specialist-blocks/wave-05/accessibility-wcag",
+      "candidate_commit": "762fb3f0a439e4feb78761b6102a0c3b94a06ece",
+      "candidate_tree": "10d444224b44df2ae8c65011d026d41d0c7c09a8",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/762fb3f0a439e4feb78761b6102a0c3b94a06ece",
+      "receipt_sha256": "aac0adee3ac54811d49d8e83eec8dfb8607ebe15814faf30844ac6ddeaa5be8b",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER",
       "package_path": "specialist-blocks/wave-05/desktop-offline-realtime-router",
       "candidate_commit": "9bb69747e917ad2987ac153d34c7e4d15ef2484d",
@@ -331,5 +341,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "0863596605d1bd52147c2ec3ee1b20a61bbfb791bb811f8920c95507f8b5a6ac"
+  "ledger_sha256": "0bac1fcdecceb0852c5c417c9ab02092f1223f84fb107920a9e5f769c9ff0f5a"
 }
