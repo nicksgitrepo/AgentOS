@@ -3111,11 +3111,11 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "a03c1f3d8efe1bcb4a1214adb4b7ae0b3ed53daa222c598d9c4da70fe06eaaee"
+      "sha256": "1f82a4b5256480b2b7949430969c83eca449633d7ac6d64264e55e44b80107c5"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
-      "sha256": "29f46e29cb403ef80021abc6b835c4a1c5081ff8e4649afde4f8d595510fc6ba"
+      "sha256": "db88bac236ce67c2f543f67f4d350df6d84402034a187656c38d781f3cf4124d"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -3127,7 +3127,7 @@
     },
     "reusable_agent_acceptance_ledger_registry": {
       "path": "specialist-blocks/registry/accepted-agent-receipts.v1.json",
-      "sha256": "97f79f3bdddf4a613d8b0b34bd1771f6e77c97c108d4505dc95fb7601370f50d"
+      "sha256": "d870b6c5387a6f05df3d7b34e2562c4336cf0906ab03614200b5ff909e22ca8f"
     },
     "reusable_agent_acceptance_ledger_verifier": {
       "path": "tests/verify-reusable-agent-acceptance-ledger.mjs",
@@ -3956,6 +3956,34 @@
     "android_kotlin_candidate_handoff": {
       "path": "specialist-blocks/wave-05/android-kotlin/handoff.json",
       "sha256": "d984b6073077c0b0a934873faa6ee603157e2a6c76ad6dbea62dc80987bbec37"
+    },
+    "ios_swiftui_boundary_gate": {
+      "path": "control/ios-swiftui-boundary-gate.mjs",
+      "sha256": "d3c89dec87b0f8c56c96a18d474d4b3ea51a627fd4ff2b57a0587dae6012a93d"
+    },
+    "ios_swiftui_boundary_input_contract": {
+      "path": "schemas/ios-swiftui-boundary-input.v1.json",
+      "sha256": "3dd4b33255770c8cc43dd2e22f730608551afa2ef7a7e059f8b376c0abcb48dd"
+    },
+    "ios_swiftui_boundary_result_contract": {
+      "path": "schemas/ios-swiftui-boundary-result.v1.json",
+      "sha256": "1ebbe89a94aaceaa46eb90af321b04fb09c94cfd1564fabf6b1048825bddeb11"
+    },
+    "ios_swiftui_package_operational_evaluation_contract": {
+      "path": "schemas/ios-swiftui-package-operational-evaluation.v1.json",
+      "sha256": "7e996a597f1c95cef3fccc71cb360c545e4d6ff1fe6430f5cd83932fa26e0e13"
+    },
+    "ios_swiftui_package_operational_evaluator": {
+      "path": "control/ios-swiftui-package-evaluator.mjs",
+      "sha256": "424dbea146e7c95bd0f1efe172f0dfe18af29c48148118b6ea1bc7fc52258e6a"
+    },
+    "ios_swiftui_boundary_verifier": {
+      "path": "tests/verify-ios-swiftui-boundary.mjs",
+      "sha256": "096c05cdf9886c8cc1bd2bd597cd9d189bb05eb4660c7907cf132dd039b08ea9"
+    },
+    "ios_swiftui_candidate_handoff": {
+      "path": "specialist-blocks/wave-05/ios-swiftui/handoff.json",
+      "sha256": "b56483b65d4f2664c27e6442a5bf66e19e4838cc354c6804cfcb2a430d3e7c62"
     }
   },
   "compatibility_only": {

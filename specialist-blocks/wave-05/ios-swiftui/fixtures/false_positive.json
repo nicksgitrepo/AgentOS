@@ -1,9 +1,95 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.product-client.ios-swiftui.FALSE_POSITIVE",
   "block_id": "specialist.product-client.ios-swiftui",
   "class": "false_positive",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable typed adversarial vector for iOS/SwiftUI routing; no project, consumer, secret, or provider data.",
+  "vector": {
+    "entrypoint": "control/ios-swiftui-boundary-gate.mjs#evaluateIosSwiftuiBoundary",
+    "input": {
+      "schema": "agentos.ios_swiftui_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_IOS_SWIFTUI",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "ios_swiftui_domain": "IOS_SWIFTUI",
+        "control_identity": "CONTROL.IOS_SWIFTUI_ROUTER",
+        "control_activity": "CLASSIFY_IOS_SWIFTUI_APPLICABILITY",
+        "control_entity": "CLIENT_SURFACE",
+        "control_scope": "VERSIONED_IOS_SWIFTUI_APPLICABILITY",
+        "control_version": "1",
+        "policy_status": "CURRENT",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.APPLE_SWIFTUI",
+        "source_version": "CURRENT",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-20",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "ios_swiftui_signal": "CLIENT.IOS_SWIFTUI",
+        "signal_status": "BOUND",
+        "task_status": "IOS_SWIFTUI_CLASSIFICATION",
+        "context_status": "IOS_SWIFTUI_ROUTER_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ROUTE",
+        "requested_tools": [
+          "READ_IOS_SWIFTUI_SIGNAL",
+          "READ_SOURCE_LOCK",
+          "READ_IOS_SWIFTUI_REQUIREMENTS",
+          "READ_CONTEXT",
+          "READ_APPLICABILITY_RULES"
+        ],
+        "required_block_identities": [
+          "BLOCK.CLIENT.AUTHORITY",
+          "BLOCK.CLIENT.EVIDENCE",
+          "BLOCK.CLIENT.SCOPE",
+          "BLOCK.CLIENT.CUSTODY",
+          "BLOCK.CLIENT.HANDOFF",
+          "BLOCK.CLIENT.ROUTER"
+        ],
+        "model_policy_status": "CURRENT",
+        "model_route_status": "BOUND",
+        "standard_edition": "CURRENT",
+        "verification_level": "BASELINE",
+        "applicability_status": "BOUND",
+        "authority_scope": "IOS_SWIFTUI",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "verification_requested": false,
+        "acceptance_requested": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "TYPED_EVIDENCE_REQUIRED",
+      "error_code": "IOS_SWIFTUI_ROUTER_FINDING_UNSUPPORTED",
+      "external_side_effects": {
+        "source_reads": 0,
+        "protected_data_reads": 0,
+        "verification_runs": 0,
+        "standard_mutations": 0,
+        "memory_writes": 0,
+        "acceptance_calls": 0,
+        "credential_accesses": 0,
+        "state_changes": 0
+      }
+    }
+  }
 }

@@ -8847,9 +8847,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/android-kotlin/evaluation.json"
@@ -9305,103 +9305,103 @@
           {
             "fixture_id": "specialist.product-client.ios-swiftui.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/authority_conflict.json",
-            "file_sha256": "c0942e6b6d98dce638adc17400b60ab56a828420f2785a2f3f996f3f6cb7d2a3",
+            "file_sha256": "e7b0e2e2703993b18abffd069650cfd7a8bbeb6a8958ca2844703e000585f485",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "b796fdf507ddc28deffc9e5e323fa3116611284e4dbff98a673bdfac97e8adcc",
+            "file_sha256": "30a5825fd71904f2f3e2251728b8d7f8ff714c329088953ee4e2492cc82d631c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "54a16d77936eaef26b25915be3aeb5e3894d40ba0d954c809db3bdd24847a272",
+            "file_sha256": "c89cd5dd1bd3550268f9b93b189a8bb3b5ae685375f17bcd03fdeabebe313d51",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.DATA_LIMIT",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/data_limit.json",
-            "file_sha256": "a1ab33ace08e7a312f52ce06d3c634c657ebaaa31c6806d3d87b58d8fe57642b",
+            "file_sha256": "6c317b4abb62fb4d1c48eff57c084b919f39480c07a1ea757483d9c0d261335b",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "29be048509abe2735e9341560d6050f31a8b07bada99d57b52879369873244a2",
+            "file_sha256": "9924797a0861ed92b72d2fc52421f695a43c59e8efa75d8e71a4e4669fd1b8d1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/false_positive.json",
-            "file_sha256": "328e5b72e3a93b4fa446d0ac7fec6a8c632011c8c0bb166886ed4713085200be",
+            "file_sha256": "93336c25167142d15266ebb444128fd04752496ad59cdf9653307519268ec38d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.HANDOFF",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/handoff.json",
-            "file_sha256": "710392058599e32342ff7c2910526f14f0e5b86c9cc984728e741914fb977cad",
+            "file_sha256": "b559d4007e61270316e62f5d2b0d764419d5cf82ef81572acd776d17aed3374f",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/missing_context.json",
-            "file_sha256": "48fd6e1f4182609ba50ca8f2c74ef8d569999e431cfbe1eaeb573edaa06986e2",
+            "file_sha256": "011354a6663fa9fb8a8b83353230a87d30c87541462a355eff28b031856547eb",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.NARROWNESS",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/narrowness.json",
-            "file_sha256": "5a3b0e19da638acb28733db233ce1f5bfd9d53909be8350399b01df29a80975e",
+            "file_sha256": "4cbc16b391ab23d40d01ee16b6bbe068bf01af402078a7bbb0e058ee7160917c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/router_self_accept.json",
-            "file_sha256": "c9a58463b7ba42711cff41e93258bcdf91c4c02ad4850c1e5eb83e5282c299ad",
+            "file_sha256": "d4e5d2ce79a059e75e692e9b6f4e2a700133b6a0be264a67fb979faec0f20b68",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.ROUTING",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/routing.json",
-            "file_sha256": "4a1cd22152a5b70f5b3ee84523f7d162576cccaefd996f373bd751d69cb96746",
+            "file_sha256": "aca99c95445d55477e0d9c8913c8de9efbf2ac680f028ae098d879c4ee2151ad",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/silent_scope_expansion.json",
-            "file_sha256": "626b129f13cf481daecc8fc3abfc473b07f60ec79f3a0118748b2fc3f7e9cc47",
+            "file_sha256": "5768f16c39fd9dfc26f3795bfb1d85810fa4e00e360507bbe0020e5cc124de34",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.STALE_SOURCE",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/stale_source.json",
-            "file_sha256": "57b0e4c6bc56636e3171cc158acaad8d31f06ea13c801eb946cafec42772efda",
+            "file_sha256": "6324316576666efa196b09418ed8001c20202582a9d23327b308fbdc634e82f4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.TOOL_LIMIT",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/tool_limit.json",
-            "file_sha256": "5758da7a09455c21c9b344f3da4e8d40d2eaed4e3e331be543481cc139306641",
+            "file_sha256": "ec5ce30b7dea53492f9407859ae51b4c0ceca839e972bde56f4babfede569ce5",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/umbrella_authority.json",
-            "file_sha256": "a989fd4d77b18f6a473bc4adb1091d0afd74655dc4d004dc8fedde3250c72875",
+            "file_sha256": "e9b49de3860343829142e48a7c23fa49992a022e53189b8cb97a6178c1028eb1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/unrelated_scope.json",
-            "file_sha256": "106e2ebe3899c1db5b28f857fec02ae95b74bee7b71861a6b3015308bea285e5",
+            "file_sha256": "f319f4db767b6c824a60bfc5701e9e8fc491c4e0cad1e3379168595c712cfc14",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.ios-swiftui.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-05/ios-swiftui/fixtures/unsafe_action.json",
-            "file_sha256": "8bf5d634ee903226d0b6587a350cc3a22ec1406a551f38dbd62ecdab6b91fd8b",
+            "file_sha256": "d8b5f8427f91dc11a5bfcb19c42418c83cad93291c08f442b6aa1f243b2955e6",
             "expected_outcome": "DENY"
           }
         ]
@@ -39724,17 +39724,17 @@
       "rank": 35,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 36,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 37,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "a4f113d36bbd7824bfe993e632ddd99e6b62980ab70a995d4ed4d5115aa0e95e"
+  "roster_sha256": "d3fcd0cf89a8e1e42e421d0022ed437d8a1210b9ebff19508cec604f38f602c2"
 }
