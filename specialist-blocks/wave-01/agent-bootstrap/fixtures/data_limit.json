@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "data_limit",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: discovery requests protected or private project data outside typed custody; deny and preserve data custody."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.DATA_LIMIT","block_id":"specialist.control.bootstrap-project-initializer","class":"data_limit","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"DISCOVER_SETUP_CONTEXT","evidence":{"project_data_present":true}}},"expected_readback":{"disposition":"DENY","route":"DATA_CUSTODY_REQUIRED","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_PROTECTED_DATA_FORBIDDEN","zero_side_effects":true,"acceptance_allowed":false}}

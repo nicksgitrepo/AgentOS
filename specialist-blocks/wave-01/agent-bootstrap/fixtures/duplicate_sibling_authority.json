@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "duplicate_sibling_authority",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: the initializer is asked to decide a sibling controller's scheduling or adoption authority; deny duplicate authority."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.DUPLICATE_SIBLING_AUTHORITY","block_id":"specialist.control.bootstrap-project-initializer","class":"duplicate_sibling_authority","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"DISCOVER_SETUP_CONTEXT","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER","custody_ref":"ref:CONTROL_BOOTSTRAP_PROJECT_INITIALIZER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.JSON_SCHEMA_2020_12","source_version":"DRAFT_2020_12","bootstrap_surface":"DISCOVERY","signal":"PROJECT_BOOTSTRAP","target_ref":"AGENTOS_SCHEDULER","project_context_ref":"ref:PROJECT/BOUND","context_complete":true,"scope":"NARROW","requested_action":"DISCOVER_AND_TYPE","requested_tools":["READ_SOURCE","READ_FILESYSTEM_METADATA","READ_GIT_METADATA"],"discovery_evidence":"TYPED_PROVENANCE","source_control_readback":"BOUND","unknowns_typed":true,"conflicts_typed":true,"unknown_count":0,"conflict_count":0}}},"expected_readback":{"disposition":"DENY","route":"CONTROL_PLANE_HANDOFF_REQUIRED","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_TARGET_MISMATCH","zero_side_effects":true,"acceptance_allowed":false}}

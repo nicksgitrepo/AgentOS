@@ -372,6 +372,34 @@
       "path": "schemas/bootstrap-discovery.v1.json",
       "sha256": "4fec273638e0468e5c023f6cc75c7ee5e976b0872c24bca9cd38f5bdb00f3969"
     },
+    "bootstrap_project_initializer_boundary_gate": {
+      "path": "control/bootstrap-project-initializer-boundary-gate.mjs",
+      "sha256": "9d05bc7629d192b56051b9a500190263c2007c2c708f76e8adf1e17293c17cfc"
+    },
+    "bootstrap_project_initializer_boundary_input_contract": {
+      "path": "schemas/bootstrap-project-initializer-boundary-input.v1.json",
+      "sha256": "2de12d8307ec075dcd0bad693fb590a10928115253e9d4efd150b08cd1ae01e2"
+    },
+    "bootstrap_project_initializer_boundary_result_contract": {
+      "path": "schemas/bootstrap-project-initializer-boundary-result.v1.json",
+      "sha256": "931c866a58c6919196d67813cacd2e73d4fac563af0c4376bf25259b81456796"
+    },
+    "bootstrap_project_initializer_package_operational_evaluation_contract": {
+      "path": "schemas/bootstrap-project-initializer-package-operational-evaluation.v1.json",
+      "sha256": "8b698bda8170651e4286e741dc6f429340dcff17a972435a90a7098fe78f9ac6"
+    },
+    "bootstrap_project_initializer_package_operational_evaluator": {
+      "path": "control/bootstrap-project-initializer-package-evaluator.mjs",
+      "sha256": "4a72d8e8e0a2dfbc87212cd2008a735e64ba871530c808e1a864fb02b1a66229"
+    },
+    "bootstrap_project_initializer_boundary_verifier": {
+      "path": "tests/verify-bootstrap-project-initializer-boundary.mjs",
+      "sha256": "ae25466879c2d3123530a35c39f8ae37542ea2a6302dada579d474e6d9a48e01"
+    },
+    "bootstrap_project_initializer_candidate_handoff": {
+      "path": "specialist-blocks/wave-01/agent-bootstrap/handoff.json",
+      "sha256": "2416b07a4de7622fc0ad85b01a9dbbdd6b0e93bed61f2006f27cde690bbdcd40"
+    },
     "bootstrap_dynamic_authority_article": {
       "path": "governance/2.1rc/dynamic-bootstrap-authority.md",
       "sha256": "1a51b1232101fc576520c330fae80c994b6aad7a4781684fa4cb94a41e501beb"
@@ -3083,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "10871e357c70697de127802558d68fba9c2ac8f083e5f55e5c5d3bb1ce029ae7"
+      "sha256": "2e4cc22607232b2abed7988aa57df3fa0214910029a221ace8831ed2fef1bd87"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",

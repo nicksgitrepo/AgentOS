@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "unrelated_scope",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: the request concerns unrelated implementation, release, operations, or domain work; deny this route."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.UNRELATED_SCOPE","block_id":"specialist.control.bootstrap-project-initializer","class":"unrelated_scope","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{}}},"expected_readback":{"disposition":"DENY","route":"NO_BOOTSTRAP_SCOPE","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_SCOPE_NOT_APPLICABLE","zero_side_effects":true,"acceptance_allowed":false}}

@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "unsafe_action",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: the request asks for Product write, provider identity creation, adoption, activation, deployment, publication, or migration; deny and preserve custody."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.UNSAFE_ACTION","block_id":"specialist.control.bootstrap-project-initializer","class":"unsafe_action","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"WRITE_PROJECT","evidence":{}}},"expected_readback":{"disposition":"DENY","route":"NO_INITIALIZER_SIDE_EFFECT","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_OPERATION_FORBIDDEN","zero_side_effects":true,"acceptance_allowed":false}}

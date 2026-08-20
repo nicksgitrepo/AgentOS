@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "broad_when_narrow_exists",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: a narrow setup-signal route exists but the initializer claims unrelated implementation authority; deny scope expansion."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.BROAD_WHEN_NARROW_EXISTS","block_id":"specialist.control.bootstrap-project-initializer","class":"broad_when_narrow_exists","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"DISCOVER_SETUP_CONTEXT","evidence":{"scope":"BROAD"}}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_SCOPE_EXPANSION_FORBIDDEN","zero_side_effects":true,"acceptance_allowed":false}}

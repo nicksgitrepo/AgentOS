@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "false_positive",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: generic initialization wording has no typed bootstrap signal or custody; deny the false-positive route."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.FALSE_POSITIVE","block_id":"specialist.control.bootstrap-project-initializer","class":"false_positive","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"NOT_APPLICABLE","evidence":{}}},"expected_readback":{"disposition":"DENY","route":"NO_BOOTSTRAP_SCOPE","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_SCOPE_NOT_APPLICABLE","zero_side_effects":true,"acceptance_allowed":false}}

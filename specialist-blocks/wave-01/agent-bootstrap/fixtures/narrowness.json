@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "narrowness",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: the request is limited to read-only setup discovery and typed bootstrap readiness; route the smallest sufficient control-plane block."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.NARROWNESS","block_id":"specialist.control.bootstrap-project-initializer","class":"narrowness","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"DISCOVER_SETUP_CONTEXT","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER","custody_ref":"ref:CONTROL_BOOTSTRAP_PROJECT_INITIALIZER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.JSON_SCHEMA_2020_12","source_version":"DRAFT_2020_12","bootstrap_surface":"DISCOVERY","signal":"RUNTIME_DISCOVERY","target_ref":"AGENTOS_CONTROLLER","project_context_ref":"ref:PROJECT/BOUND","context_complete":true,"scope":"NARROW","requested_action":"DISCOVER_AND_TYPE","requested_tools":["READ_SOURCE","READ_FILESYSTEM_METADATA","READ_GIT_METADATA"],"discovery_evidence":"TYPED_PROVENANCE","source_control_readback":"BOUND","unknowns_typed":true,"conflicts_typed":true,"unknown_count":0,"conflict_count":0}}},"expected_readback":{"disposition":"ROUTE","route":"CONTROLLER_HANDOFF","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_ROUTE_READY","zero_side_effects":true,"acceptance_allowed":false}}

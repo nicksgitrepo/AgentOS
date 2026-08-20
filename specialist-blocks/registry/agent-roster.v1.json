@@ -1531,103 +1531,103 @@
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/authority_conflict.json",
-            "file_sha256": "53983ddf19ccd9016816870eb24f6ef8b8e177bdb3e776883cce66382a252b17",
+            "file_sha256": "3398e3ffb47215cf6e0353e140b544c74e807e3e4d3bba2963571eea51c587f3",
             "expected_outcome": "ESCALATE"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "cdd0db6bf9bb24fd2b57a49416c55dc31d5e2bb43c27f6530a4d6b6f447d90d1",
+            "file_sha256": "07bc30d93ff73c57728697d580df4aa3451086dc513154eda0536d90588fc44f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "2563ec814a53f63b83742c522ba18cc714b061f87588dc425e580d8be0245c9b",
+            "file_sha256": "90b064d76441e8527f74af0bd55cb92ebc7d42de4e021083cea96b0aa50518c4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.DATA_LIMIT",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/data_limit.json",
-            "file_sha256": "0947c9ae8cf172c373646610fbfee6821463934443da93fb9665c3f4a855133a",
+            "file_sha256": "47fd1a5c2d9a27ae62c9a0a4e720489ff90971349e205af1fc4067cd16be8cb9",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "fc638f73b22bc3fae585f43b5e79df184aec55599acf6fc9fe3c6e621b805bad",
+            "file_sha256": "6b6651a598835bd32d3b4ed00b379daca1c8a7bb69b031641e152d2b60972c3c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/false_positive.json",
-            "file_sha256": "0b5a7f0b79217964328a40567a408c7be8dbe136d0aa2f442298a027c715ee0a",
+            "file_sha256": "ee06881b7bc82b9e1b14e317bb4bb669f2816bbcb136d14247721e0b83f5d678",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.HANDOFF",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/handoff.json",
-            "file_sha256": "c6de5d04245c87069c6a388b492ee95fde5c6e8a5ba6e06e79f79dd9356340dc",
+            "file_sha256": "9054a8baa77d699ddbc91c3d082815a5f5c41f7bd4721ce57032c966cc7a0c0f",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/missing_context.json",
-            "file_sha256": "b5353ba7251e3d91324b12345df49284dfb3d37fa7c2df56b3be70894816b22f",
+            "file_sha256": "e4f3362c7f1ca60cb4a27195d423c9e19ee0da8633d4b82aab85498a5423358b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.NARROWNESS",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/narrowness.json",
-            "file_sha256": "17859a66f5769b508499876c49bf08fe19367f07c35aed4dcaf5e4fd1bd8c6db",
+            "file_sha256": "c9b2f4381c3cfb7153d1a79befe4da8b7f8bcbe2d7136cf04af8ee5353f98620",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/router_self_accept.json",
-            "file_sha256": "0e88536f3b95496be346c72afc2c934e5982ce2604a07c39097fac5a5ec8e7ab",
+            "file_sha256": "c3a561760725e8fb491f230ff140f9cee4f4a71dd609e354fd33206ca1142e2d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.ROUTING",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/routing.json",
-            "file_sha256": "e2ee87cb735da4aed3aae880bc94e5616213da8f630195b6fd61890fba47752d",
+            "file_sha256": "9fd527138f00e50eb59e92e39bb9c253d5a0d8799672b95d1a8a65edec272c66",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/silent_scope_expansion.json",
-            "file_sha256": "3ac1819837f4abebca98795d60ea6bfe1c8ddbaea69f0309ace84edccd103a5b",
+            "file_sha256": "0cc9449bd0d3e135813ec00b0ce67ab5fa48f06a784f69263fbc7d49f2644fd1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.STALE_SOURCE",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/stale_source.json",
-            "file_sha256": "32fcad877a405df9d4fc139c152d67b3d19b883e4d7e5d9f0f4394602a29116d",
+            "file_sha256": "c1a575de3fbefbf49709b08b11c012deb5601a32786989b2bcf11f2ca800ad1e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.TOOL_LIMIT",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/tool_limit.json",
-            "file_sha256": "2c0a31ded872ecf2f223e85ff258b8997f61beefc7eb78906a29e0b9ba4eea8c",
+            "file_sha256": "c73476b21edb3f54431cea9d9349fc1f9d7302fb84d89c532e6797b7763f1b0f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/umbrella_authority.json",
-            "file_sha256": "ef696455868f5ed14a7fa0bac1c6e44c18c18e56db296ea4bb6909be75ff2568",
+            "file_sha256": "56dd9ec13be751f0a8701829eb06e3d64295437968627d35f857e9e582d9bbfb",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/unrelated_scope.json",
-            "file_sha256": "2a3a24d9454d903cb486653b2df0eaa1691dce972897d956b48ea5bc159e8893",
+            "file_sha256": "8e457c9d91ab7b4615616ddcb6c02c7c3fbe6536d7a945e9f2be396f5bc6f421",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.bootstrap-project-initializer.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-01/agent-bootstrap/fixtures/unsafe_action.json",
-            "file_sha256": "15a3796904679fef8c09bae5abb29bdce5f66df21808bdbd3a26f0bbd0048aa1",
+            "file_sha256": "c3f1a59ba3c41757a616e3b9dceb6904c2035feac8567ec8d7ea86e5671f67fa",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "c903c10dbf6b71177582da53275a8daa924bf8c6e3f2a6819d8e11087a0a5012"
+  "roster_sha256": "d410ac08ac18c7589161278c7ec4569e94b9fdebbfc713effe4605536c5e3328"
 }

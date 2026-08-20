@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.bootstrap-project-initializer",
-  "class": "router_self_accept",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture: the candidate claims its own acceptance or activation; deny self-acceptance and preserve the independent review gate."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.control.bootstrap-project-initializer.ROUTER_SELF_ACCEPT","block_id":"specialist.control.bootstrap-project-initializer","class":"router_self_accept","hostile":true,"vector":{"entrypoint":"control/bootstrap-project-initializer-boundary-gate.mjs#evaluateBootstrapProjectInitializerBoundary","input":{"schema":"agentos.bootstrap_project_initializer_boundary_input.v1","version":1,"request_kind":"DISCOVER_SETUP_CONTEXT","evidence":{"self_acceptance":true}}},"expected_readback":{"disposition":"DENY","route":"INDEPENDENT_REVIEW_REQUIRED","error_code":"BOOTSTRAP_PROJECT_INITIALIZER_SELF_ACCEPTANCE_FORBIDDEN","zero_side_effects":true,"acceptance_allowed":false}}
