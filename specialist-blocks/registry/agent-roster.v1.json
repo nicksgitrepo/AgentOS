@@ -11781,105 +11781,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.access-control-router.AUTHORITY_CONFLICT",
+            "fixture_id": "access-control-router-authority_conflict",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/authority_conflict.json",
-            "file_sha256": "c74a66532de65a85c9ee2f7e676facfd848b483603ce36619fc30686a00d4642",
+            "file_sha256": "af5d7082c929e3770d182314bb7cf3f5e3796fd05f8be18b9858f87349fddfdb",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "access-control-router-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e6a68207b53c34365e46bcc2237aaa5e55b376ec7624f835edd11e07342cb9d4",
+            "file_sha256": "3af96246c25e0b4e286435369b2f07588f4a4dadb4f76ff7a50c1ca504909777",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "access-control-router-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "88ad558fbedb50aab7dd3db65ba8089a36d4157bc5f04ba3383528f439004bd5",
+            "file_sha256": "20db1529af05ad544934a6d4dbef933752cbd4668b8f81552c8d176ee6577bc6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.DATA_LIMIT",
+            "fixture_id": "access-control-router-data_limit",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/data_limit.json",
-            "file_sha256": "e00a381fbd46c75f50cdbec26f46dc9df8b0502b5867004301c25c8636ee1a92",
+            "file_sha256": "cd81a26c1c8a648de4b5862c62b1735b539fa42fb47b146ec574e898e1f60276",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "access-control-router-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "abf941cd7409bbac673dca6c00a6f8201f1c4b68d919c51eff0e7e8417e24f62",
+            "file_sha256": "778bd091a5b2744a48c40d8aaafa57ec91502bed15bc8cd49b9c09df4dc250cd",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.FALSE_POSITIVE",
+            "fixture_id": "access-control-router-false_positive",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/false_positive.json",
-            "file_sha256": "823491a3894aedeeca91e3ab9db6f1f374a45ab2fc07f5730923923070e016ea",
+            "file_sha256": "9b340900f1983d8499965e971bd75e719a1f7c84a96a0cb477dd37b60aecd1e1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.HANDOFF",
+            "fixture_id": "access-control-router-handoff",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/handoff.json",
-            "file_sha256": "022b368b7d339edbaae41933ad1166d790bd0bef20eed2e8c651fb7bbdb3b03f",
+            "file_sha256": "a5c36eb21c8286c5ef2b54bccc7b46e655244f7b9c0a3e8b74722390698ec357",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.MISSING_CONTEXT",
+            "fixture_id": "access-control-router-missing_context",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/missing_context.json",
-            "file_sha256": "3036a17925d48b0ce3a76d6a9b27076728ecbf281188200ebd307d6369b4d869",
+            "file_sha256": "3a17785dcb23472f6ca3a6d2569b652e65a7cdf08073cf62e73a996e149dd254",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.NARROWNESS",
+            "fixture_id": "access-control-router-narrowness",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/narrowness.json",
-            "file_sha256": "eee0e633e3f7a4c96c4f476dd1d0046d600a634c466bea187ba1ca1a2325f6a5",
+            "file_sha256": "1a4f8337a42a515e8331b55417494f092d6dcf21143dc8aff0e872f08db994ff",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.ROUTER_SELF_ACCEPT",
+            "fixture_id": "access-control-router-router_self_accept",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/router_self_accept.json",
-            "file_sha256": "33f2244329ffa6eb5c2a467afa96dee0c120f987d571539d46741f427de03d59",
+            "file_sha256": "fa0f0fbd41fb9734560409a05f485de5e2f373036b9489a49a62c45defb4894c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.ROUTING",
+            "fixture_id": "access-control-router-routing",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/routing.json",
-            "file_sha256": "c3e7ecf7d73399116d054d3d2cff2ff70c4494e63d291c04346c96bb95db3187",
+            "file_sha256": "c9036205fee7b04b7d77a2a6d092b827bde1751aee338f333057b7909c1fe1d6",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "access-control-router-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "31027af31fd2b8c66bd929076188d8c973679bffaa88caa2d4b2f4ea711b5206",
+            "file_sha256": "2a6e40a0866ac18833ed6f2152525b8e7ef25d2991d09b15fca083f3aa197b1a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.STALE_SOURCE",
+            "fixture_id": "access-control-router-stale_source",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/stale_source.json",
-            "file_sha256": "5ad09fa735ed8c0c5cec2815b858bbd385f29414f16b6b440cb90f94c7b8e206",
+            "file_sha256": "1fb2bcd18b71daa95291890799f150ef02e4cdc98e52d6c7f4595ea4a92bd914",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.TOOL_LIMIT",
+            "fixture_id": "access-control-router-tool_limit",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/tool_limit.json",
-            "file_sha256": "8ecd5800997d37f95c281a700cc196e980b627373c203d8b9f252b404f12fa86",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "039dbc6c784d160ac94f180a41757fbb94e6ced7ea4ea21e28f311f1440a24d4",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.UMBRELLA_AUTHORITY",
+            "fixture_id": "access-control-router-umbrella_authority",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/umbrella_authority.json",
-            "file_sha256": "d2b99031a8fbcf81bea479fdae4cdb74663a689b9b89f41e3d57fbee1218efa8",
+            "file_sha256": "f84601354d8157fa4c795f1ec566eb04a2c6ec729de8f8bfd334dfb7d6f12a78",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.UNRELATED_SCOPE",
+            "fixture_id": "access-control-router-unrelated_scope",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/unrelated_scope.json",
-            "file_sha256": "d83bf146b485c2994ba2ba2dca11f217eba4a58efe6673fa5835cf96145ff50b",
+            "file_sha256": "64bc46604f21e6c0fdc7d3086b6e1e57686da31a54d50e9f6292b5a53b4590a4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.access-control-router.UNSAFE_ACTION",
+            "fixture_id": "access-control-router-unsafe_action",
             "path": "specialist-blocks/wave-03/access-control-router/fixtures/unsafe_action.json",
-            "file_sha256": "13a1e126f5d775c0eb1e2ff03e4b8daf7ba8d1c5c47437034beb733b829b1fca",
+            "file_sha256": "9d17f1dea761db3bb0ae56877c491ed5debca0c7c041742c558c9679c9a9a220",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "aeec92bbd7a84ec1f9a25627b50ef401d3e604e96c85fcdf174ceb3c5924516b"
+  "roster_sha256": "96a8538ebf938380f2eab1375a751ac7f49e85e22f6d8384f0ce02047d15dbde"
 }
