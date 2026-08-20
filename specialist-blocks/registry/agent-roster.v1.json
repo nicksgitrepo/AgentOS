@@ -11470,105 +11470,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.abac.AUTHORITY_CONFLICT",
+            "fixture_id": "abac-authority_conflict",
             "path": "specialist-blocks/wave-03/abac/fixtures/authority_conflict.json",
-            "file_sha256": "a560b11b17c514e9ecee3d4fce8338c2db8c3bb34a38321b3174f43c2d0a7256",
+            "file_sha256": "c24b3961d504560db17009f8ff0791943dff6ed46985c4b9b7c365b2382fce60",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "abac-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/abac/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "5153dc31ae4782b3e8d59b5507205cbba4a18ee76c5ba15c422444a0dcb9f6eb",
+            "file_sha256": "b17afc28c7477c3257f0cd8adfb2339430a6dc86a1ed4d79ab1aeec981cf1854",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "abac-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/abac/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "d28166c433094ab1276d7abfa9b48c4c8ddcaf8f5089a944cce65b4f609d4cb4",
+            "file_sha256": "aff4ca56f224e190bb307923dea845ec399f9ffc325b95fa5ba603e9e33aa433",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.DATA_LIMIT",
+            "fixture_id": "abac-data_limit",
             "path": "specialist-blocks/wave-03/abac/fixtures/data_limit.json",
-            "file_sha256": "41e3997279b213fa2303f4230abd19953290987d4d0acb93e4de908ac873cbb7",
+            "file_sha256": "2723eba78b2223e67cc5840e8c127e94effa67755c375323bf151d42d3b67a67",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.abac.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "abac-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/abac/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "a229def2c2c004f87a17992ae9fa46e365b946e969d0f0bf13c893340c1bc973",
+            "file_sha256": "d8b748ccd134cbac25d8a9b60d72278daef4f23365e5fd6179f4a09cb65a0559",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.FALSE_POSITIVE",
+            "fixture_id": "abac-false_positive",
             "path": "specialist-blocks/wave-03/abac/fixtures/false_positive.json",
-            "file_sha256": "9ac624f9b967bfd8b32b09e62da8cc3d60a015444dd6b83c6a832a5c23d7ae7e",
+            "file_sha256": "0d2bbedda3151b2a51eb4d1faa5fafa687eadf41632e24f72d4b3983c1471f5a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.HANDOFF",
+            "fixture_id": "abac-handoff",
             "path": "specialist-blocks/wave-03/abac/fixtures/handoff.json",
-            "file_sha256": "fd54d5e50d63c0f44165e5456cd79b3c76ba36e7db7749a6fede39a978546ec3",
+            "file_sha256": "5b51105c6f04b5e8ba7d96cd6e0caf3871111cc0698094e97aa909342d882147",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.abac.MISSING_CONTEXT",
+            "fixture_id": "abac-missing_context",
             "path": "specialist-blocks/wave-03/abac/fixtures/missing_context.json",
-            "file_sha256": "7d456f120fafa3cde3f5ee878f9dd678ec9840224c30534222e44b5e5ca61db9",
+            "file_sha256": "179c7ec29ae539b8352f8454a73d9fdf9e7751ed762a2770d61142c8945e0b8b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.NARROWNESS",
+            "fixture_id": "abac-narrowness",
             "path": "specialist-blocks/wave-03/abac/fixtures/narrowness.json",
-            "file_sha256": "57e95eb1cb18987064cda4be990f4c80717e38137757f265b10ce2d4c0a4cc17",
+            "file_sha256": "3c52c95d13333dd41ae1125bc610ac9d577af42472cbd09bc9dcf2d386a6ba5c",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.abac.ROUTER_SELF_ACCEPT",
+            "fixture_id": "abac-router_self_accept",
             "path": "specialist-blocks/wave-03/abac/fixtures/router_self_accept.json",
-            "file_sha256": "f0aa3c6c26ed1a3a97d1c963a97021f29a03ef452e891c47ef57b3961599fbf2",
+            "file_sha256": "36442b0269d6300aae4604beec2e01da4fe8c4177890f6952488db9fcd32a0af",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.ROUTING",
+            "fixture_id": "abac-routing",
             "path": "specialist-blocks/wave-03/abac/fixtures/routing.json",
-            "file_sha256": "d4c8bf967675a60827bf51869d4a38e3dd2d0bfdf7e19336c0147e2bf08eda92",
+            "file_sha256": "7ec5dcd1d1ec97ccc762dd503be9e3191ddebdb5014d5a5ecdb871aabde65e46",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.abac.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "abac-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/abac/fixtures/silent_scope_expansion.json",
-            "file_sha256": "7df32055001deaf522fa8dd720a0950a92e767b00414def1e5c92dcdfe3c485d",
+            "file_sha256": "eda3300b11fe7b6b30403c0c99d86e566d6cee812f3ddbe6a8b6e8d60cf6bcbc",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.STALE_SOURCE",
+            "fixture_id": "abac-stale_source",
             "path": "specialist-blocks/wave-03/abac/fixtures/stale_source.json",
-            "file_sha256": "636f58f95e6e26ac9a8b91307da8e0925dc55152c8bd79d94fdf8f08fc055e6b",
+            "file_sha256": "f5905f7b77debf52bad181e70b014f4382115dad2b3db235e087767d271d6bf6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.TOOL_LIMIT",
+            "fixture_id": "abac-tool_limit",
             "path": "specialist-blocks/wave-03/abac/fixtures/tool_limit.json",
-            "file_sha256": "2750d1979732ae97e6f1c4775f4fe1f2b96b8b65bc387fd6b12b0483f2524a68",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "ef57a59d97a136e6d3f4b21a096da2490a10c2e46bc48ebf7d5b76fba9232e60",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.UMBRELLA_AUTHORITY",
+            "fixture_id": "abac-umbrella_authority",
             "path": "specialist-blocks/wave-03/abac/fixtures/umbrella_authority.json",
-            "file_sha256": "a786e399f43c20ee1d7f18efc6f7c2404cf3da494b1e974ece9527ce0bc82649",
+            "file_sha256": "32e09ff3630074d02831b4887c05fc7b072b94fd58937bf710cc94ed3d8c67aa",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.UNRELATED_SCOPE",
+            "fixture_id": "abac-unrelated_scope",
             "path": "specialist-blocks/wave-03/abac/fixtures/unrelated_scope.json",
-            "file_sha256": "77c6620ea448982d2e231663ed08a8aca360164dfa1f4ca2c51f99e802a0b69d",
+            "file_sha256": "03a3de7ae80df0608e97f9d0e9b91a0e7389f5ffad4181a1c02c3b13ede8e210",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.abac.UNSAFE_ACTION",
+            "fixture_id": "abac-unsafe_action",
             "path": "specialist-blocks/wave-03/abac/fixtures/unsafe_action.json",
-            "file_sha256": "01823ad876b2f05504f5d4dda39b461a838ff7b3b3ceb39d5bc4971ca8d1f573",
+            "file_sha256": "bf9de80de9d3fb5e242a2020275708290059bca8b0f5e6e2b537e5ac94a46018",
             "expected_outcome": "DENY"
           }
         ]
@@ -11581,7 +11581,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/abac/handoff.json",
-        "handoff_file_sha256": "6841fc96f2668780601cc4efeb547c620505439c678b66b7ee71c4989923ebab",
+        "handoff_file_sha256": "cf0d38d30ae5ec342dfd868268f54377297ed85159358edf49e4ad9dbbb2ab50",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.abac.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "f565c29ea6723ac5320380ea522597256f64aace75eef0a145e1044dd6936a39"
+  "roster_sha256": "6b054d607dbbb7ffbc81df390d74ebab23792c60cb6f9296e0e90e89cbc4bbd0"
 }

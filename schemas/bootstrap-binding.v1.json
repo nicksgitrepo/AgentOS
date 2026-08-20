@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "c75a8df7b569005391c8a6f1ef5ac7f69eff73ab03b04c5a666ee8a326a5e85a"
+      "sha256": "28e47445588c8a2180e12903ccc8a6def85782fb09915500560ceb3024e50fc6"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4486,6 +4486,34 @@
     "workflow_router_package_operational_evaluator": {
       "path": "control/workflow-router-package-evaluator.mjs",
       "sha256": "3be61569e716359bf5a2cddeaa22d0da8e9a330591cb17acbc3d99bd45be816b"
+    },
+    "abac_boundary_gate": {
+      "path": "control/abac-boundary-gate.mjs",
+      "sha256": "bd521ed55bc9faada94ee4d36a3828c4c3d8b7ff4d368f8f2d122e1944cff20c"
+    },
+    "abac_boundary_input_contract": {
+      "path": "schemas/abac-boundary-input.v1.json",
+      "sha256": "e7a4ec16fc8d95f556844fe4c92734eaea7efafbc4d73842c6e7344c988414fc"
+    },
+    "abac_boundary_result_contract": {
+      "path": "schemas/abac-boundary-result.v1.json",
+      "sha256": "83bfd344a5f846a8d5d6227d760bc8d0f4ee0fa5aba01d38bb27b9b9464e9a37"
+    },
+    "abac_package_operational_evaluation_contract": {
+      "path": "schemas/abac-package-operational-evaluation.v1.json",
+      "sha256": "9f4a2de8c07ff99ecf68a970ccb22aad57e32be9320220a0b1629cd424eab072"
+    },
+    "abac_package_operational_evaluator": {
+      "path": "control/abac-package-evaluator.mjs",
+      "sha256": "b76b456362c77403017f38d56446919e40ddf8a092dda0c036bfceca8dcda0ae"
+    },
+    "abac_boundary_verifier": {
+      "path": "tests/verify-abac-boundary.mjs",
+      "sha256": "a108cb512a542d899fdb8c7bcf9444383cce092e356f945558f7e98cb8a0ad8f"
+    },
+    "abac_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/abac/handoff.json",
+      "sha256": "cf0d38d30ae5ec342dfd868268f54377297ed85159358edf49e4ad9dbbb2ab50"
     },
     "worktree_custody_boundary_gate": {
       "path": "control/worktree-custody-boundary-gate.mjs",
