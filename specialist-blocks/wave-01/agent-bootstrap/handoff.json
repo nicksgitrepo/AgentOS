@@ -5,8 +5,8 @@
   "block_id": "specialist.control.bootstrap-project-initializer",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "11a185be1a8e886618fda5b7a3b06e1199e5fb3b95a6e1f216868fe352bb0d05",
-  "source_commit": "9e2323e022b73fe9a83abaa50fe942afe7c84aa1",
-  "source_tree": "b1993d5d27abaa049b8decfb07deeb13eb078ca4",
+  "source_commit": "5c628c996b5547b16328adb3d2bc48298ab9b2da",
+  "source_tree": "bfdc6d46f3f190b4d7c2f22932c56d805c5b1bfc",
   "changed_paths": [
     "specialist-blocks/wave-01/agent-bootstrap/block.json",
     "specialist-blocks/wave-01/agent-bootstrap/evaluation.json",

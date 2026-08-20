@@ -398,7 +398,7 @@
     },
     "bootstrap_project_initializer_candidate_handoff": {
       "path": "specialist-blocks/wave-01/agent-bootstrap/handoff.json",
-      "sha256": "65784f613af54145e8da01a7a2a198728bacee22f0af6221841d0ef3c43fc5bd"
+      "sha256": "f8117a343499846551a8ac3bdd221fd335eefe567d7b32466b091255df7e80f8"
     },
     "bootstrap_dynamic_authority_article": {
       "path": "governance/2.1rc/dynamic-bootstrap-authority.md",
