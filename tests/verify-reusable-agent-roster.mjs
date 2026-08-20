@@ -71,6 +71,9 @@ assert.match(acceptedProductClient.build_state, /^ACCEPTED_/u, "Product Client R
 const acceptedSoftwareLanguageRuntime = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER");
 assert(acceptedSoftwareLanguageRuntime, "Software Language and Runtime Router missing from roster");
 assert.match(acceptedSoftwareLanguageRuntime.build_state, /^ACCEPTED_/u, "Software Language and Runtime Router is not marked accepted in the readback index");
-assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER");
+const acceptedBootstrapInitializer = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER");
+assert(acceptedBootstrapInitializer, "Bootstrap/Project Initializer missing from roster");
+assert.match(acceptedBootstrapInitializer.build_state, /^ACCEPTED_/u, "Bootstrap/Project Initializer is not marked accepted in the readback index");
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.CONTROL_CENTRAL_INTEGRATOR");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);

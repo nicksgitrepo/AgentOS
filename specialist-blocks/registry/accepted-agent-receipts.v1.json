@@ -11,6 +11,16 @@
   },
   "entries": [
     {
+      "stable_agent_id": "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER",
+      "package_path": "specialist-blocks/wave-01/agent-bootstrap",
+      "candidate_commit": "765ba94f7b0c30a91e5d720e748c8383d8fc4bf9",
+      "candidate_tree": "ee7aa7891fb7f2a31556c15612d9b4a66ec882a2",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/765ba94f7b0c30a91e5d720e748c8383d8fc4bf9",
+      "receipt_sha256": "c65d531671f8e93352bd4a1756310f49615118877085d482467d4cadb6a51e4b",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "package_path": "specialist-blocks/wave-02/data-router",
       "candidate_commit": "ad8f1a84c673d00a6f000067f836731884dfcd51",
@@ -141,5 +151,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "9ff9da5d595a7e2898079fbe7a932d3373fcb7ca4dbddef6d2d5993ba597937a"
+  "ledger_sha256": "b62b27aad6d079ae121146206ada482d2f4837b391069da83fe395038ac7b1b9"
 }

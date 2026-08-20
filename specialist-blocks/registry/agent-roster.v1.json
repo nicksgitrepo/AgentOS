@@ -1683,9 +1683,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers foundation; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "UTILITY_HARM_PENDING",
-      "independent_evaluation_state": "UTILITY_HARM_PENDING",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/agent-bootstrap/evaluation.json"
@@ -39564,17 +39564,17 @@
       "rank": 15,
       "stable_agent_id": "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 79.85,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 16,
       "stable_agent_id": "AGENT.CONTROL_CENTRAL_INTEGRATOR",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 79.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 17,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "96ce8a26df5624a20eedb1afdb15e97b6ef1692dfcec06a57dd1b3092219894e"
+  "roster_sha256": "cdc6982b886373330237f944a37b5e4e069ae4ff62a6d1a6da1513ea18aa80cc"
 }
