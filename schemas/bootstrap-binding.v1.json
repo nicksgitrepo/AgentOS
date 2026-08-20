@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "16f13509912b4debf13bbfd6ccf40b71d63736ac932f674114c73d3ef9c0d06e"
+      "sha256": "2924bf9bae21b507c49c95e470af602c85ee3449253c3e96f542acbcc9cce64e"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3220,6 +3220,34 @@
     "security_router_candidate_handoff": {
       "path": "specialist-blocks/wave-02/security-router/handoff.json",
       "sha256": "0970f1669f2ccece159a7c3d9d53ace8379b08487e0e11b9ad513f55681c4131"
+    },
+    "observability_router_boundary_gate": {
+      "path": "control/observability-router-boundary-gate.mjs",
+      "sha256": "1c7b612612acd06baa9c3c027903db565c625ce0d593dd95abc8105811622c88"
+    },
+    "observability_router_boundary_input_contract": {
+      "path": "schemas/observability-router-boundary-input.v1.json",
+      "sha256": "ac204b9563b7a55a89690f5e13044f03908d251abee3bb1d6f0696b6fcaa9016"
+    },
+    "observability_router_boundary_result_contract": {
+      "path": "schemas/observability-router-boundary-result.v1.json",
+      "sha256": "0f8e517424f36e03d8897b8a27987e023335d173e1c7fba098d0cf5dccb9338d"
+    },
+    "observability_router_package_operational_evaluation_contract": {
+      "path": "schemas/observability-router-package-operational-evaluation.v1.json",
+      "sha256": "d2f2f6b024fe600b71b920dd3e0f1d6434b73cdce49ed30f05ad9ee5d747f929"
+    },
+    "observability_router_package_operational_evaluator": {
+      "path": "control/observability-router-package-evaluator.mjs",
+      "sha256": "b7ae7ab10ea1f6bcd5b609be174f31782833fa562123e41aaab3867083240f7d"
+    },
+    "observability_router_boundary_verifier": {
+      "path": "tests/verify-observability-router-boundary.mjs",
+      "sha256": "0f563d159a2119a5303201419cf087c4b93fefb6f6a0bee703568a3334d41174"
+    },
+    "observability_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-04/observability-router/handoff.json",
+      "sha256": "173b3398999b43bfa0a665d04cfb2cf469c3b0539e7d76d16ea213f985b109e1"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",

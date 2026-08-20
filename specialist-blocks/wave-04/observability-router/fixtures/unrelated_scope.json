@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.delivery-operations.observability-router",
-  "class": "unrelated_scope",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.delivery-operations.observability-router.UNRELATED_SCOPE","block_id":"specialist.delivery-operations.observability-router","class":"unrelated_scope","hostile":true,"vector":{"entrypoint":"control/observability-router-boundary-gate.mjs#evaluateObservabilityRouterBoundary","input":{"schema":"agentos.observability_router_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{}},"expected_readback":{"disposition":"DENY","route":"NO_OBSERVABILITY_SCOPE","error_code":"OBSERVABILITY_ROUTER_SCOPE_NOT_APPLICABLE","zero_side_effects":true,"acceptance_allowed":false}}}
