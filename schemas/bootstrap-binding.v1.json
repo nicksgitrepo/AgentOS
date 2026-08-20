@@ -98,7 +98,7 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "ab0bd93679e6e80a56e5fe2d2aed50c80a23097ab36409c09ad91b698d2f6cae"
+      "sha256": "5e6b50edb22e88fc10993afc9e2dd8a0ad1c0ac78be759556e7a340852b427aa"
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
@@ -2615,7 +2615,7 @@
     },
     "spawner_bootstrap_governance_controller": {
       "path": "control/spawner-bootstrap-governance.mjs",
-      "sha256": "46f1db0e0a3cd46e2a8c9e29cde8b0f2425ba3b617b57239f0a874fbc9b2f25f"
+      "sha256": "25544feac6b3ff7400369023a64756a3a14003391cf39c8f2f82f17beadb77ff"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",
@@ -2635,7 +2635,7 @@
     },
     "spawner_bootstrap_preparation_verifier": {
       "path": "tests/verify-spawner-bootstrap-preparation.mjs",
-      "sha256": "19ce2c524e036978af5d12534845840b2ca5bfd4c251c7f5542fcf0d80c7b03a"
+      "sha256": "690dba56933895d96abb62272992cb20d3219ea13cc8e796d9d1aaf1421629c0"
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",

@@ -62,6 +62,7 @@ const REPEATED_SHA = /^([0-9a-f])\1{63}$/u;
 const CANONICAL_PACKAGE_PATH = "specialist-blocks/control-plane/agent-spawner/block.json";
 const CANONICAL_BLOCK_MANIFEST_PATH = "specialist-blocks/control-plane/agent-spawner/admission/manifest.json";
 const canonicalPackageResolutions = new WeakSet();
+const canonicalExactAdmissions = new WeakSet();
 let cachedCanonicalPackageResolution = null;
 let cachedExternalReviewGeneration = -1;
 
@@ -398,6 +399,7 @@ export function compileExactSpawnerAdmission(options = {}) {
     spawner_package_file_sha256: resolvedPackage.package_file_sha256,
     hostile_fixture_ids: [...spawnerPackage.hostile_fixtures].sort(compareUtf8),
     hostile_evaluation_sha256: resolvedPackage.hostile_evaluation.evaluation_sha256,
+    external_review_receipt_sha256: resolvedPackage.external_review.receipt_sha256,
     spawner_stop_conditions: [...spawnerPackage.stop_conditions],
     block_manifest_sha256: resolvedBlocks.manifest.manifest_sha256,
     block_manifest_file_sha256: resolvedBlocks.manifest_file_sha256,
@@ -411,6 +413,12 @@ export function compileExactSpawnerAdmission(options = {}) {
     admission_sha256: null,
   };
   admission.admission_sha256 = canonicalDigest(body(admission, "admission_sha256"));
+  canonicalExactAdmissions.add(admission);
+  return Object.freeze(admission);
+}
+
+export function assertCanonicalExactSpawnerAdmission(admission) {
+  assert(canonicalExactAdmissions.has(admission) && admission?.schema === SPAWNER_ADMISSION_SCHEMA && admission.status === "READY_FOR_INERT_SEED", "Exact Spawner admission was not produced from current canonical package, blocks, model policy, and global memory", "CANONICAL_EXACT_ADMISSION_REQUIRED");
   return admission;
 }
 
