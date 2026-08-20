@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "c42c3ea8d53012b730f3df869197615d6fab4a7f155bd1ce33dfd995f257db5f"
+      "sha256": "f4555a61d2ecd8a1b696f49c3859bf39aeaafcfb46b1ae150097649a76b1d034"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4562,6 +4562,26 @@
     "cve_applicability_boundary_verifier": {
       "path": "tests/verify-cve-applicability-boundary.mjs",
       "sha256": "478cbe9df8d3bd03af76a8460b348cbd9d8102d6147dbf3e29b5c4be27988b7d"
+    },
+    "cve_inventory_boundary_gate": {
+      "path": "control/cve-inventory-boundary-gate.mjs",
+      "sha256": "ea935047320ed5d3547e7db1907da50ab3b3edd69b497212d955d485f2475b60"
+    },
+    "cve_inventory_boundary_input_contract": {
+      "path": "schemas/cve-inventory-boundary-input.v1.json",
+      "sha256": "ee633e2ac88ed6e52948b1c5127d0212f7fe64b93c9e68efc743ce67875c8562"
+    },
+    "cve_inventory_boundary_result_contract": {
+      "path": "schemas/cve-inventory-boundary-result.v1.json",
+      "sha256": "a2ad698f3748859a9471f25123745755c7058f18e7323349e96555901ab069bc"
+    },
+    "cve_inventory_package_operational_evaluator": {
+      "path": "control/cve-inventory-package-evaluator.mjs",
+      "sha256": "1702d02019321d5bdb37dd24c8fe3b41f269c324eda4c2f75739f9e40ada1017"
+    },
+    "cve_inventory_boundary_verifier": {
+      "path": "tests/verify-cve-inventory-boundary.mjs",
+      "sha256": "afbb9c91efa7a3219090fe855d63fad1bfcc4018473bfc3829662a453a315212"
     },
     "concurrent_authorization_boundary_gate": {
       "path": "control/concurrent-authorization-boundary-gate.mjs",
