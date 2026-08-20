@@ -9104,7 +9104,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-05/desktop-offline-realtime-router/handoff.json",
-        "handoff_file_sha256": "79f7191bcd523402109c970acdf1ee45bc8a354d3a78e11017ba6efd794d8075",
+        "handoff_file_sha256": "5e6d63fc8a4b819ca34b32a5f5fb31b9502847002b53d2fb511533683680d50b",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.desktop-offline-realtime-router.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "0594f6e9d671c5012a1fa3f81457e62a80d218d7aab2d3ac224068e7e4c72f2b"
+  "roster_sha256": "4dff95622563ed1545e8ee434322aa025168fec78202c5daf5f9de7c8237c778"
 }

@@ -5,8 +5,8 @@
   "block_id": "specialist.product-client.desktop-offline-realtime-router",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "e464d23a1a094b5caef18b09eff054369ba33fdfd4f553d4452d6778edb18cb2",
-  "source_commit": "421968026752d92473261e6d99493056cc046f67",
-  "source_tree": "8663ced54c07cae7616cf349f78db7846e686a55",
+  "source_commit": "2132ecb55d5dcebb0fe11033799ff82cc790591f",
+  "source_tree": "730b2543f5a493e96d40641ef3aab70346081110",
   "changed_paths": [
     "specialist-blocks/wave-05/desktop-offline-realtime-router/block.json",
     "specialist-blocks/wave-05/desktop-offline-realtime-router/evaluation.json",
